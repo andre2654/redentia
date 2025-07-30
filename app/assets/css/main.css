@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap');
+@import 'tailwindcss';
+@import '@nuxt/ui';
+
+:root {
+  --ui-primary: #b9ecc1;
+  --ui-secondary: #a7d6ff;
+  --ui-tertiary: #042f54;
+}
+
+.dark {
+  --ui-primary: #b9ecc1;
+  --ui-secondary: #a7d6ff;
+  --ui-tertiary: #042f54;
+}
+
+body {
+  @apply bg-black text-white;
+}
+
+* {
+  font-family: 'Sora';
+  box-sizing: border-box;
+}
+
+@layer utilities {
+  * {
+    @apply border-gray-700;
+  }
+
+  hr {
+    @apply border-gray-700;
+  }
+}
+
+button:disabled {
+  @apply cursor-not-allowed opacity-50;
+}
+
+.glass {
+  backdrop-filter: blur(10px);
+  box-shadow:
+    inset 5px 5px 10px 0px rgba(255, 255, 255, 0.2),
+    inset 0px 1px 2px 0px rgba(255, 255, 255, 0.6),
+    inset -2px -2px 2px 0px rgba(255, 255, 255, 0.2);
+}
