@@ -96,7 +96,6 @@ import { resolveComponent } from 'vue'
 
 const IconArrowFinanceUp = resolveComponent('IconArrowFinanceUp')
 const IconAI = resolveComponent('IconAi')
-const UBadge = resolveComponent('UBadge')
 const UButton = resolveComponent('UButton')
 const UDropdownMenu = resolveComponent('UDropdownMenu')
 
