@@ -1,12 +1,6 @@
 <template>
   <div class="flex flex-col items-center gap-12 pt-20">
-    <div class="flex flex-col items-center gap-6">
-      <IconLogoFull class="h-12 w-auto fill-white" />
-      <p class="text-xl font-thin">
-        Ajudando investidores a gerir seus patrimonios
-      </p>
-      <AtomsTickerCarousel class="w-[335px]" no-control />
-    </div>
+    <AtomsAuthHeader />
     <UForm
       :schema="schema"
       :state="state"
@@ -56,7 +50,7 @@
       </AtomsButton>
       <NuxtLink
         to="/auth/register"
-        class="hover:text-secondary my-2 text-left text-[12px] font-thin text-white/80"
+        class="hover:text-secondary my-2 text-left text-[12px] text-white/80"
       >
         Cadastre-se
       </NuxtLink>
@@ -73,6 +67,8 @@
 import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
 
+const router = useRouter()
+
 const schema = z.object({
   email: z.string().email('Invalid email'),
   password: z.string().min(8, 'Password must be at least 8 characters long'),
@@ -86,13 +82,10 @@ const state = reactive({
   show: false,
 })
 
-const toast = useToast()
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-  toast.add({
-    title: 'Success',
-    description: 'Form has been submitted',
-    color: 'success',
-  })
+  showSuccessNotification('Login successful', 'Welcome back!')
   console.log(event.data)
+
+  router.push('/')
 }
 </script>

@@ -1,20 +1,37 @@
 <template>
   <div class="mx-auto flex min-h-screen w-full max-w-[1400px] border-x">
     <div
-      class="flex w-[330px] min-w-[330px] flex-col justify-between border-r pt-4 max-xl:hidden"
+      class="sticky top-0 flex h-screen w-[330px] min-w-[330px] flex-col justify-between border-r pt-4 max-xl:hidden"
     >
-      <div class="flex items-center gap-3 px-6">
-        <div class="h-[35px] w-[35px] rounded-md bg-[#D9D9D9]"></div>
-        <div class="flex flex-col">
-          <div class="text-[14px]">André Saraiva</div>
-          <span class="text-[12px] text-gray-400">Plano gratuito</span>
+      <div class="flex items-center justify-between px-6">
+        <div class="flex items-center gap-3">
+          <div class="h-[35px] w-[35px] rounded-md bg-[#D9D9D9]"></div>
+          <div class="flex flex-col">
+            <div class="text-[14px]">André Saraiva</div>
+            <span class="text-[12px] text-gray-400">Plano gratuito</span>
+          </div>
+        </div>
+        <div class="flex items-center">
+          <UButton
+            color="neutral"
+            variant="link"
+            :trailing-icon="
+              interfaceStore.revealAmount ? 'i-lucide-eye-off' : 'i-lucide-eye'
+            "
+            @click="interfaceStore.toggleRevealAmount"
+          />
+          <UButton
+            color="neutral"
+            variant="link"
+            trailing-icon="i-lucide-cog"
+          />
         </div>
       </div>
 
       <div class="flex flex-col gap-8">
         <div class="flex flex-col gap-3">
           <AtomsSidebarButton to="/" text="Visão Geral" />
-          <AtomsSidebarButton to="/carteira" text="Sua carteira" />
+          <AtomsSidebarButton to="/wallet" text="Sua carteira" />
           <AtomsSidebarButton
             to="/planejador"
             text="Planejador de aportes"
@@ -75,6 +92,7 @@ defineProps({
 })
 
 const allAttrs = useAttrs()
+const interfaceStore = useInterfaceStore()
 
 const containerProps = Object.fromEntries(
   Object.entries(allAttrs)

@@ -47,9 +47,12 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      htmlAttrs: {
-        class: 'dark',
-      },
+      link: [
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap'
+        }
+      ],
       bodyAttrs: {
         class: 'dark',
       },

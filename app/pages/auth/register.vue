@@ -1,11 +1,6 @@
 <template>
   <div class="flex flex-col items-center gap-12 pt-20">
-    <div class="flex flex-col items-center gap-6">
-      <IconLogoFull class="h-12 w-auto fill-white" />
-      <p class="text-xl font-thin">
-        Ajudando investidores a gerir seus patrimonios
-      </p>
-    </div>
+    <AtomsAuthHeader />
     <UForm
       :schema="schema"
       :state="state"
@@ -27,27 +22,11 @@
 
       <!-- Password -->
       <UFormField name="password" class="mb-2">
-        <AtomsFormInput
+        <AtomsFormInputPassword
           v-model="state.password"
-          :type="state.show ? 'text' : 'password'"
-          placeholder="Password"
           :aria-invalid="score < 4"
-          aria-describedby="password-strength"
           class="w-full"
-          size="lg"
-        >
-          <template #trailing>
-            <UButton
-              color="neutral"
-              variant="link"
-              size="sm"
-              :icon="state.show ? 'i-lucide-eye-off' : 'i-lucide-eye'"
-              :aria-label="state.show ? 'Hide password' : 'Show password'"
-              :aria-pressed="state.show"
-              @click="state.show = !state.show"
-            />
-          </template>
-        </AtomsFormInput>
+        />
       </UFormField>
 
       <!-- Password Strength -->
@@ -64,10 +43,10 @@
           id="password-strength"
           class="flex flex-col gap-3 text-sm font-medium"
         >
-          <span class="mx-auto text-center text-[13px] font-thin">{{
+          <span class="mx-auto text-center text-[13px] font-light">{{
             text
           }}</span>
-          <span class="text-[13px] font-thin text-white/80">
+          <span class="text-[13px] font-extralight text-white/80">
             your password must contain:
           </span>
         </div>
@@ -83,7 +62,7 @@
               :name="req.met ? 'i-lucide-circle-check' : 'i-lucide-circle-x'"
               class="size-4 shrink-0"
             />
-            <span class="text-xs font-thin">{{ req.text }}</span>
+            <span class="text-xs font-medium">{{ req.text }}</span>
           </li>
         </ul>
       </div>
@@ -93,7 +72,7 @@
       </AtomsButton>
       <NuxtLink
         to="/auth/login"
-        class="hover:text-secondary my-2 text-left text-[12px] font-thin text-white/80"
+        class="hover:text-secondary my-2 text-left text-[12px] text-white/80"
       >
         Já tem uma conta? Faça login
       </NuxtLink>
@@ -158,13 +137,8 @@ const text = computed(() => {
   return 'Strong password'
 })
 
-const toast = useToast()
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-  toast.add({
-    title: 'Success',
-    description: 'Form has been submitted',
-    color: 'success',
-  })
+  showSuccessNotification('Login successful', 'Welcome back!')
   console.log(event.data)
 }
 </script>

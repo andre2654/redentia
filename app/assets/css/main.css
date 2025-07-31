@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap');
 @import 'tailwindcss';
 @import '@nuxt/ui';
 
@@ -23,13 +22,24 @@ body {
   box-sizing: border-box;
 }
 
+input:focus,
+textarea:focus {
+  box-shadow: none;
+}
+
+.hide-amount .redentia-amount {
+  @apply blur-xs;
+}
+
 @layer utilities {
-  * {
-    @apply border-gray-700;
+  *,
+  hr {
+    @apply border-[#535353];
   }
 
-  hr {
-    @apply border-gray-700;
+  .light-border *,
+  .light-border hr {
+    @apply border-[#A5A5A5];
   }
 }
 

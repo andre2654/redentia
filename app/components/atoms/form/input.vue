@@ -12,7 +12,11 @@
       },
     }"
     size="lg"
-  />
+  >
+    <template #trailing>
+      <slot name="trailing" />
+    </template>
+  </UInput>
 </template>
 
 <style scoped>
