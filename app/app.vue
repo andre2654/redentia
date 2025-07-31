@@ -6,8 +6,6 @@
 </template>
 
 <script setup lang="ts">
-import { useHead } from 'nuxt/app'
-
 const uAppConfig = {
   toaster: {
     position: 'top-right',
@@ -17,10 +15,9 @@ const uAppConfig = {
 
 const interfaceStore = useInterfaceStore()
 
-// add class on body
-useHead({
-  bodyAttrs: {
-    class: computed(() => (interfaceStore.revealAmount ? '' : 'hide-amount')),
-  },
+onMounted(() => {
+  watchEffect(() => {
+    document.body.classList.toggle('hide-amount', !interfaceStore.revealAmount)
+  })
 })
 </script>

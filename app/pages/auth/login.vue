@@ -22,27 +22,11 @@
 
       <!-- Password -->
       <UFormField name="password" class="mb-2">
-        <AtomsFormInput
+        <AtomsFormInputPassword
           v-model="state.password"
-          :type="state.show ? 'text' : 'password'"
-          placeholder="Password"
           :aria-invalid="score < 4"
-          aria-describedby="password-strength"
           class="w-full"
-          size="lg"
-        >
-          <template #trailing>
-            <UButton
-              color="neutral"
-              variant="link"
-              size="sm"
-              :icon="state.show ? 'i-lucide-eye-off' : 'i-lucide-eye'"
-              :aria-label="state.show ? 'Hide password' : 'Show password'"
-              :aria-pressed="state.show"
-              @click="state.show = !state.show"
-            />
-          </template>
-        </AtomsFormInput>
+        />
       </UFormField>
 
       <AtomsButton type="submit" color="tertiary" class="mt-3 w-full">
@@ -79,7 +63,6 @@ type Schema = z.infer<typeof schema>
 const state = reactive({
   email: '',
   password: '',
-  show: false,
 })
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {

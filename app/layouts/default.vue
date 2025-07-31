@@ -21,6 +21,7 @@
             @click="interfaceStore.toggleRevealAmount"
           />
           <UButton
+            to="/settings"
             color="neutral"
             variant="link"
             trailing-icon="i-lucide-cog"
@@ -62,17 +63,20 @@
       </div>
       <AtomsSidebarMonthGoal />
     </div>
-    <div class="flex w-full flex-col overflow-hidden">
+    <div class="relative flex w-full flex-col">
       <div
-        class="flex h-12 w-full items-center gap-4 border-b px-6"
+        class="sticky top-0 z-10 flex w-full items-center gap-4 border-b px-6 py-4 backdrop-blur-lg max-md:flex-col md:justify-between"
         v-bind="headerProps"
       >
-        <h1 class="min-w-max font-medium">
+        <h1 class="min-w-max font-medium max-md:text-[20px]">
           {{ title }}
         </h1>
-        <AtomsTickerCarousel v-if="enableTickersCarousel" />
+        <AtomsTickerCarousel
+          v-if="enableTickersCarousel"
+          class="w-full md:max-w-[750px]"
+        />
       </div>
-      <div v-bind="containerProps" class="flex-1">
+      <div v-bind="containerProps">
         <slot />
       </div>
     </div>

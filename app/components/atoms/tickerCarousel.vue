@@ -1,9 +1,12 @@
 <template>
-  <div class="flex items-center gap-3 overflow-hidden">
-    <div id="carousel-tickercarousel" class="relative flex-1 overflow-hidden">
+  <div class="relative flex w-full min-w-0 items-center gap-3 overflow-hidden">
+    <div
+      id="carousel-tickercarousel"
+      class="relative min-w-0 flex-1 overflow-hidden"
+    >
       <div
         ref="carousel"
-        class="flex items-center will-change-transform"
+        class="flex max-w-full items-center whitespace-nowrap will-change-transform"
         :style="{ transform: `translateX(${position}px)` }"
       >
         <div
@@ -116,7 +119,7 @@ onUnmounted(() => {
   height: 100%;
   position: absolute;
   box-shadow:
-    inset 30px 0px 20px 0px rgba(0, 0, 0, 0.8),
-    inset -30px 0px 20px 0px rgba(0, 0, 0, 0.8);
+    inset 10px 0px 20px 0px rgba(0, 0, 0, 1),
+    inset -10px 0px 20px 0px rgba(0, 0, 0, 1);
 }
 </style>

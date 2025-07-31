@@ -113,7 +113,6 @@ type Schema = z.infer<typeof schema>
 const state = reactive({
   email: '',
   password: '',
-  show: false,
 })
 
 const requirements = computed(() =>
