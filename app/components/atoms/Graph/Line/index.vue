@@ -160,7 +160,7 @@ const setupCanvasEvents = (chart: ChartJS) => {
       }
       event.preventDefault()
     } else if (isInsideChart) {
-      // Modo hover normal - só ativa se estiver dentro da área do gráfico
+      // Modo hover normal - só ativa se estiver dentro da área do gráfico e NÃO estiver arrastando
       const dataIndex = chart.scales.x.getValueForPixel(x)
       if (typeof dataIndex === 'number') {
         const roundedIndex = Math.round(dataIndex)
@@ -174,6 +174,11 @@ const setupCanvasEvents = (chart: ChartJS) => {
           chart.update('none')
         }
       }
+    } else {
+      // Fora da área do gráfico e não arrastando - limpa hover
+      isHovering.value = false
+      hoverIndex.value = null
+      chart.update('none')
     }
   }
 
@@ -200,6 +205,9 @@ const setupCanvasEvents = (chart: ChartJS) => {
         isDragging.value = false
         dragStartIndex.value = null
         dragEndIndex.value = null
+        // Limpa também o estado de hover para evitar que a linha volte
+        isHovering.value = false
+        hoverIndex.value = null
         chart.update('none')
       }, 100)
     }
