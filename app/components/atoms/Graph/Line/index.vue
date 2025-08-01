@@ -263,7 +263,7 @@ const hoverLinePlugin = {
       ctx.restore()
     }
 
-    // Desenha área de seleção durante drag
+    // Desenha overlay de opacidade durante drag
     if (
       isDragging.value &&
       dragStartIndex.value !== null &&
@@ -276,12 +276,36 @@ const hoverLinePlugin = {
       const endX = x.getPixelForValue(endIdx)
 
       ctx.save()
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.05)'
-      ctx.fillRect(startX, top, endX - startX, bottom - top)
 
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)'
-      ctx.lineWidth = 1
+      // Aplica opacidade reduzida apenas nas áreas fora da seleção
+      // Área esquerda
+      if (startX > chart.chartArea.left) {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.6)'
+        ctx.fillRect(
+          chart.chartArea.left,
+          top,
+          startX - chart.chartArea.left,
+          bottom - top
+        )
+      }
+
+      // Área direita
+      if (endX < chart.chartArea.right) {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.6)'
+        ctx.fillRect(
+          endX,
+          top,
+          chart.chartArea.right - endX,
+          bottom - top
+        )
+      }
+
+      // Adiciona uma borda sutil na área selecionada
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)'
+      ctx.lineWidth = 2
+      ctx.setLineDash([4, 4])
       ctx.strokeRect(startX, top, endX - startX, bottom - top)
+
       ctx.restore()
     }
   },
