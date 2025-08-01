@@ -268,12 +268,11 @@ const hoverLinePlugin = {
       const endX = x.getPixelForValue(endIdx)
 
       ctx.save()
-      ctx.fillStyle = 'rgba(4, 206, 0, 0.1)'
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.05)'
       ctx.fillRect(startX, top, endX - startX, bottom - top)
 
-      ctx.strokeStyle = 'rgba(4, 206, 0, 0.3)'
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)'
       ctx.lineWidth = 1
-      ctx.setLineDash([5, 5])
       ctx.strokeRect(startX, top, endX - startX, bottom - top)
       ctx.restore()
     }
@@ -385,37 +384,6 @@ const chartOptions = computed(() => ({
     tooltip: {
       enabled: false,
     },
-  },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onHover: (event: any, _elements: any) => {
-    if (isDragging.value) return // Desabilita hover durante drag
-
-    const points = event.chart.getElementsAtEventForMode(
-      event,
-      'nearest',
-      { intersect: true },
-      false
-    )
-
-    if (points.length) {
-      const colorArray = []
-      const datapoint = points[0].index
-      const borderColor = event.chart.data.datasets[0].borderColor
-
-      for (let i = 0; i < event.chart.data.datasets[0].data.length; i++) {
-        if (datapoint === i) {
-          colorArray.push(borderColor)
-        } else {
-          colorArray.push('white')
-        }
-      }
-
-      event.chart.config.options.scales.x.ticks.color = colorArray
-      event.chart.update('none')
-    } else {
-      event.chart.config.options.scales.x.ticks.color = 'white'
-      event.chart.update('none')
-    }
   },
 }))
 
