@@ -118,7 +118,7 @@
   <!-- Layout -->
   <div class="mx-auto flex min-h-screen w-full max-w-[1400px] lg:border-x">
     <div
-      class="sticky top-0 flex h-screen w-[330px] min-w-[330px] flex-col justify-between border-r pt-4 max-xl:hidden"
+      class="sticky top-0 flex h-screen min-h-fit w-[330px] min-w-[330px] flex-col justify-between border-r pt-4 max-xl:hidden"
     >
       <div class="flex items-center justify-between px-6">
         <div class="flex items-center gap-3">
@@ -183,7 +183,7 @@
     </div>
     <div class="relative flex w-full flex-col max-md:pb-[115px]">
       <div
-        class="sticky top-0 z-10 flex w-full items-center gap-4 border-b px-6 py-4 backdrop-blur-lg max-md:flex-col md:justify-between"
+        class="sticky top-0 z-10 flex w-full items-center justify-between gap-4 border-b px-6 py-4 backdrop-blur-lg"
         v-bind="headerProps"
       >
         <slot name="header">
@@ -192,7 +192,7 @@
           </h1>
           <AtomsTickerCarousel
             v-if="enableTickersCarousel"
-            class="w-full md:max-w-[750px]"
+            class="w-full max-md:hidden md:max-w-[750px]"
           />
         </slot>
       </div>
