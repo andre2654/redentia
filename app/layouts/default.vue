@@ -147,6 +147,7 @@
 
       <div class="flex flex-col gap-8">
         <div class="flex flex-col gap-3">
+          <MoleculesSearchAssets />
           <AtomsSidebarButton to="/" text="Visão Geral" />
           <AtomsSidebarButton to="/wallet" text="Sua carteira" />
           <AtomsSidebarButton
@@ -184,13 +185,15 @@
         class="sticky top-0 z-10 flex w-full items-center gap-4 border-b px-6 py-4 backdrop-blur-lg max-md:flex-col md:justify-between"
         v-bind="headerProps"
       >
-        <h1 class="min-w-max font-medium max-md:text-[20px]">
-          {{ title }}
-        </h1>
-        <AtomsTickerCarousel
-          v-if="enableTickersCarousel"
-          class="w-full md:max-w-[750px]"
-        />
+        <slot name="header">
+          <h1 class="min-w-max font-medium max-md:text-[20px]">
+            {{ title }}
+          </h1>
+          <AtomsTickerCarousel
+            v-if="enableTickersCarousel"
+            class="w-full md:max-w-[750px]"
+          />
+        </slot>
       </div>
       <div v-bind="containerProps" class="flex-1">
         <slot />
