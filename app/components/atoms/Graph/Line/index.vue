@@ -11,7 +11,6 @@ import {
   Filler,
 } from 'chart.js'
 import { Line } from 'vue-chartjs'
-import Legend from './Legend.vue'
 
 interface IChartDataPoint {
   date: string
@@ -44,6 +43,58 @@ const props = withDefaults(defineProps<Props>(), {
 const isDragging = ref(false)
 const dragStartIndex = ref<number | null>(null)
 const dragEndIndex = ref<number | null>(null)
+const isHovering = ref(false)
+const hoverIndex = ref<number | null>(null)
+const tooltipPosition = ref({ x: 0, y: 0 })
+
+// Dados do tooltip
+const tooltipData = computed(() => {
+  if (
+    isDragging.value &&
+    dragStartIndex.value !== null &&
+    dragEndIndex.value !== null
+  ) {
+    // Durante o drag, mostra informações da seleção
+    const startIdx = Math.min(dragStartIndex.value, dragEndIndex.value)
+    const endIdx = Math.max(dragStartIndex.value, dragEndIndex.value)
+
+    if (startIdx === endIdx || !props.data[startIdx] || !props.data[endIdx]) {
+      return null
+    }
+
+    const startData = props.data[startIdx]
+    const endData = props.data[endIdx]
+    const change = endData.value - startData.value
+    const changePercent = (change / startData.value) * 100
+
+    return {
+      label: `${startData.date} → ${endData.date}`,
+      value: `${change >= 0 ? '+' : ''}R$ ${change.toLocaleString('pt-BR', {
+        minimumFractionDigits: 2,
+      })} (${change >= 0 ? '+' : ''}${changePercent.toFixed(2)}%)`,
+      color: change >= 0 ? '#04CE00' : '#FF4757',
+    }
+  }
+
+  if (
+    isHovering.value &&
+    hoverIndex.value !== null &&
+    props.data[hoverIndex.value]
+  ) {
+    // Durante o hover, mostra informações do ponto específico
+    const dataPoint = props.data[hoverIndex.value]
+    return {
+      label: dataPoint.date,
+      value: `R$ ${dataPoint.value.toLocaleString('pt-BR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })}`,
+      color: props.colors[0],
+    }
+  }
+
+  return null
+})
 
 // Referência para o chart
 const chartRef = ref<InstanceType<typeof Line> | null>(null)
@@ -76,21 +127,44 @@ const setupCanvasEvents = (chart: ChartJS) => {
   }
 
   const handleMouseMove = (event: MouseEvent) => {
-    if (!isDragging.value) return
-
     const canvasPosition = canvas.getBoundingClientRect()
     const x = event.clientX - canvasPosition.left
 
-    const dataIndex = chart.scales.x.getValueForPixel(x)
-    if (typeof dataIndex === 'number') {
-      const roundedIndex = Math.round(dataIndex)
+    // Atualiza posição do tooltip
+    tooltipPosition.value = { x: event.clientX, y: event.clientY }
 
-      if (roundedIndex >= 0 && roundedIndex < props.data.length) {
-        dragEndIndex.value = roundedIndex
-        chart.update('none')
+    if (isDragging.value) {
+      const dataIndex = chart.scales.x.getValueForPixel(x)
+      if (typeof dataIndex === 'number') {
+        const roundedIndex = Math.round(dataIndex)
+
+        if (roundedIndex >= 0 && roundedIndex < props.data.length) {
+          dragEndIndex.value = roundedIndex
+          chart.update('none')
+        }
+      }
+      event.preventDefault()
+    } else {
+      // Modo hover normal
+      const dataIndex = chart.scales.x.getValueForPixel(x)
+      if (typeof dataIndex === 'number') {
+        const roundedIndex = Math.round(dataIndex)
+        if (roundedIndex >= 0 && roundedIndex < props.data.length) {
+          isHovering.value = true
+          hoverIndex.value = roundedIndex
+        } else {
+          isHovering.value = false
+          hoverIndex.value = null
+        }
       }
     }
-    event.preventDefault()
+  }
+
+  const handleMouseLeave = () => {
+    if (!isDragging.value) {
+      isHovering.value = false
+      hoverIndex.value = null
+    }
   }
 
   const handleMouseUp = () => {
@@ -105,12 +179,14 @@ const setupCanvasEvents = (chart: ChartJS) => {
   }
 
   canvas.addEventListener('mousedown', handleMouseDown)
+  canvas.addEventListener('mouseleave', handleMouseLeave)
   document.addEventListener('mousemove', handleMouseMove)
   document.addEventListener('mouseup', handleMouseUp)
 
   // Retorna função de limpeza
   return () => {
     canvas.removeEventListener('mousedown', handleMouseDown)
+    canvas.removeEventListener('mouseleave', handleMouseLeave)
     document.removeEventListener('mousemove', handleMouseMove)
     document.removeEventListener('mouseup', handleMouseUp)
   }
@@ -290,12 +366,11 @@ const chartOptions = computed(() => ({
     },
   },
   plugins: {
-    tooltip: {
-      enabled: !isDragging.value,
-      external: false,
-    },
     legend: {
       display: false,
+    },
+    tooltip: {
+      enabled: false,
     },
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -350,15 +425,42 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="flex h-full w-full flex-col gap-6">
+  <div class="relative flex h-full w-full flex-col gap-6">
     <div :style="{ height: `${height}px` }" class="w-full">
       <Line ref="chartRef" :data="chartData" :options="chartOptions" />
     </div>
+
+    <!-- Tooltip dinâmico -->
+    <div
+      v-if="(isHovering || isDragging) && tooltipData"
+      class="pointer-events-none fixed z-50 rounded-lg border border-white/10 bg-gray-800 px-3 py-2 shadow-lg transition-all duration-150"
+      :style="{
+        left: `${tooltipPosition.x + 10}px`,
+        top: `${tooltipPosition.y - 60}px`,
+      }"
+    >
+      <div class="flex items-center gap-3">
+        <div
+          class="h-2 w-2 rounded-full"
+          :style="{ backgroundColor: tooltipData.color }"
+        />
+        <div class="flex flex-col gap-1">
+          <span class="text-sm font-medium text-white">
+            {{ tooltipData.label }}
+          </span>
+          <span class="text-xs text-white/70">
+            {{ tooltipData.value }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legenda fixa -->
     <div
       v-if="showLegend && legendData.length > 0"
       class="flex w-full justify-end"
     >
-      <Legend :legend-items="legendData" />
+      <AtomsGraphLineLegend :legend-items="legendData" />
     </div>
   </div>
 </template>
