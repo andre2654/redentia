@@ -1,5 +1,5 @@
 <template>
-  <div class="relative flex w-full min-w-0 items-center gap-3 overflow-hidden">
+  <div class="relative flex min-w-0 items-center gap-3 overflow-hidden">
     <div
       id="carousel-tickercarousel"
       class="relative min-w-0 flex-1 overflow-hidden"
