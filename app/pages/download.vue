@@ -65,11 +65,31 @@
             <IconArrowDown class="fill-secondary inline-block w-6" />
           </div>
           <ul class="space-y-2">
-            <li>Toque em 'Baixar aplicativo Android'</li>
-            <li>Vá até Arquivos/File e encontre o app</li>
-            <li>Clique em: Configurações > Permitir desta fonte > Instalar</li>
-            <li>Pronto! O app vai aparecer no seu menu de aplicativos</li>
-            <li>Agora é só aproveitar o aplicativo</li>
+            <li
+              class="border-secondary rounded-lg border px-4 py-3 text-center text-[15px]"
+            >
+              Toque em 'Baixar aplicativo Android'
+            </li>
+            <li
+              class="border-secondary rounded-lg border px-4 py-3 text-center text-[15px]"
+            >
+              Vá até Arquivos/File e encontre o app
+            </li>
+            <li
+              class="border-secondary rounded-lg border px-4 py-3 text-center text-[15px]"
+            >
+              Clique em: Configurações > Permitir desta fonte > Instalar
+            </li>
+            <li
+              class="border-secondary rounded-lg border px-4 py-3 text-center text-[15px]"
+            >
+              Pronto! O app vai aparecer no seu menu de aplicativos
+            </li>
+            <li
+              class="border-secondary rounded-lg border px-4 py-3 text-center text-[15px]"
+            >
+              Agora é só aproveitar o aplicativo
+            </li>
           </ul>
           <AtomsInstallAppButtonAndroid
             id="download-android-btn"
@@ -86,11 +106,31 @@
             <IconArrowDown class="fill-secondary inline-block w-6" />
           </div>
           <ul class="space-y-2">
-            <li>Toque em 'Baixar aplicativo iOS'</li>
-            <li>Vá até Arquivos/File e encontre o app</li>
-            <li>Clique em: Configurações > Permitir desta fonte > Instalar</li>
-            <li>Pronto! O app vai aparecer no seu menu de aplicativos</li>
-            <li>Agora é só aproveitar o aplicativo</li>
+            <li
+              class="border-secondary rounded-lg border px-4 py-3 text-center text-[15px]"
+            >
+              Toque em 'Baixar aplicativo iOS'
+            </li>
+            <li
+              class="border-secondary rounded-lg border px-4 py-3 text-center text-[15px]"
+            >
+              Vá até Arquivos/File e encontre o app
+            </li>
+            <li
+              class="border-secondary rounded-lg border px-4 py-3 text-center text-[15px]"
+            >
+              Clique em: Configurações > Permitir desta fonte > Instalar
+            </li>
+            <li
+              class="border-secondary rounded-lg border px-4 py-3 text-center text-[15px]"
+            >
+              Pronto! O app vai aparecer no seu menu de aplicativos
+            </li>
+            <li
+              class="border-secondary rounded-lg border px-4 py-3 text-center text-[15px]"
+            >
+              Agora é só aproveitar o aplicativo
+            </li>
           </ul>
           <AtomsInstallAppButtonIOS
             id="download-ios-btn"
@@ -117,9 +157,3 @@ const installApp = () => {
   console.log('Install app button clicked')
 }
 </script>
-
-<style scoped>
-ul li {
-  /* @apply border-secondary rounded-lg border px-4 py-3 text-center text-[15px]; */
-}
-</style>

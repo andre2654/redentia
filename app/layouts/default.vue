@@ -74,7 +74,7 @@
       >
         <IconAi class="fill-secondary h-5 w-5" />
         <div class="flex flex-col">
-          <span class="text-secondary text-[12px] font-thin"
+          <span class="text-secondary text-[12px] font-extralight"
             >Acesse de graça</span
           >
           <span class="text-secondary text-[16px]">Assessoria</span>
@@ -170,7 +170,7 @@
         >
           <IconAi class="fill-secondary h-5 w-5" />
           <div class="flex flex-col">
-            <span class="text-secondary text-[12px] font-thin"
+            <span class="text-secondary text-[12px] font-extralight"
               >Acesse de graça</span
             >
             <span class="text-secondary text-[16px]">Assessoria</span>
