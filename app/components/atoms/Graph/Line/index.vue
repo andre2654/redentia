@@ -39,6 +39,11 @@ const props = withDefaults(defineProps<Props>(), {
   showLegend: true,
 })
 
+function transparentize(value: string, opacity: number) {
+  const alpha = opacity === undefined ? 0.5 : 1 - opacity
+  return colorLib(value).alpha(alpha).rgbString()
+}
+
 // Estados para funcionalidade de arrastar
 const isDragging = ref(false)
 const dragStartIndex = ref<number | null>(null)
@@ -106,33 +111,58 @@ const setupCanvasEvents = (chart: ChartJS) => {
   const canvas = chart.canvas
 
   const handleMouseDown = (event: MouseEvent) => {
+    // Validações de segurança
+    if (!chart || !chart.chartArea || !chart.scales || !chart.scales.x) {
+      return
+    }
+
     const canvasPosition = canvas.getBoundingClientRect()
     const x = event.clientX - canvasPosition.left
 
     if (x >= chart.chartArea.left && x <= chart.chartArea.right) {
-      const dataIndex = chart.scales.x.getValueForPixel(x)
-      if (typeof dataIndex === 'number') {
-        const roundedIndex = Math.round(dataIndex)
+      try {
+        const dataIndex = chart.scales.x.getValueForPixel(x)
+        if (typeof dataIndex === 'number' && !isNaN(dataIndex)) {
+          const roundedIndex = Math.round(dataIndex)
 
-        if (roundedIndex >= 0 && roundedIndex < props.data.length) {
-          isDragging.value = true
-          dragStartIndex.value = roundedIndex
-          dragEndIndex.value = roundedIndex
-
-          chart.update('none')
-          event.preventDefault()
+          if (roundedIndex >= 0 && roundedIndex < props.data.length) {
+            isDragging.value = true
+            dragStartIndex.value = roundedIndex
+            dragEndIndex.value = roundedIndex
+            // Não chama chart.update() - deixa o plugin lidar com a renderização
+            event.preventDefault()
+          }
         }
+      } catch {
+        // Ignora erros silenciosamente
       }
     }
   }
 
   const handleMouseMove = (event: MouseEvent) => {
+    // Verifica se o chart ainda existe e tem as propriedades necessárias
+    if (!chart || !chart.chartArea || !chart.scales || !chart.scales.x) {
+      return
+    }
+
     const canvasPosition = canvas.getBoundingClientRect()
     const x = event.clientX - canvasPosition.left
     const y = event.clientY - canvasPosition.top
 
     // Atualiza posição do tooltip
     tooltipPosition.value = { x: event.clientX, y: event.clientY }
+
+    // Verifica se está dentro da área do canvas
+    const isInsideCanvas =
+      x >= 0 && x <= canvas.width && y >= 0 && y <= canvas.height
+
+    // Se não estiver no canvas e não estiver arrastando, limpa tudo
+    if (!isInsideCanvas && !isDragging.value) {
+      isHovering.value = false
+      hoverIndex.value = null
+      // NÃO chama chart.update() - apenas limpa estado
+      return
+    }
 
     // Verifica se está dentro da área do gráfico
     const isInsideChart =
@@ -141,44 +171,49 @@ const setupCanvasEvents = (chart: ChartJS) => {
       y >= chart.chartArea.top &&
       y <= chart.chartArea.bottom
 
-    if (!isInsideChart && !isDragging.value) {
-      isHovering.value = false
-      hoverIndex.value = null
-      chart.update('none')
-      return
-    }
-
     if (isDragging.value) {
-      const dataIndex = chart.scales.x.getValueForPixel(x)
-      if (typeof dataIndex === 'number') {
-        const roundedIndex = Math.round(dataIndex)
-
-        if (roundedIndex >= 0 && roundedIndex < props.data.length) {
-          dragEndIndex.value = roundedIndex
-          chart.update('none')
+      // Durante drag, permite movimento mesmo fora da área do gráfico (mas dentro do canvas)
+      if (isInsideCanvas) {
+        try {
+          const dataIndex = chart.scales.x.getValueForPixel(x)
+          if (typeof dataIndex === 'number' && !isNaN(dataIndex)) {
+            const roundedIndex = Math.round(dataIndex)
+            // Garante que o índice está dentro dos limites
+            const clampedIndex = Math.max(
+              0,
+              Math.min(roundedIndex, props.data.length - 1)
+            )
+            dragEndIndex.value = clampedIndex
+            // NÃO chama chart.update() - deixa o plugin renderizar
+          }
+        } catch {
+          // Ignora erros silenciosamente
         }
       }
       event.preventDefault()
     } else if (isInsideChart) {
-      // Modo hover normal - só ativa se estiver dentro da área do gráfico e NÃO estiver arrastando
-      const dataIndex = chart.scales.x.getValueForPixel(x)
-      if (typeof dataIndex === 'number') {
-        const roundedIndex = Math.round(dataIndex)
-        if (roundedIndex >= 0 && roundedIndex < props.data.length) {
-          isHovering.value = true
-          hoverIndex.value = roundedIndex
-          chart.update('none')
-        } else {
-          isHovering.value = false
-          hoverIndex.value = null
-          chart.update('none')
+      // Modo hover normal - só ativa se estiver dentro da área do gráfico
+      try {
+        const dataIndex = chart.scales.x.getValueForPixel(x)
+        if (typeof dataIndex === 'number' && !isNaN(dataIndex)) {
+          const roundedIndex = Math.round(dataIndex)
+          if (roundedIndex >= 0 && roundedIndex < props.data.length) {
+            isHovering.value = true
+            hoverIndex.value = roundedIndex
+            // NÃO chama chart.update() - deixa o plugin renderizar
+          } else {
+            isHovering.value = false
+            hoverIndex.value = null
+            // NÃO chama chart.update() - deixa o plugin renderizar
+          }
         }
+      } catch {
+        // Ignora erros silenciosamente
       }
     } else {
-      // Fora da área do gráfico e não arrastando - limpa hover
+      // Fora da área do gráfico e não arrastando - limpa hover mas não atualiza chart
       isHovering.value = false
       hoverIndex.value = null
-      chart.update('none')
     }
   }
 
@@ -187,20 +222,17 @@ const setupCanvasEvents = (chart: ChartJS) => {
     isHovering.value = false
     hoverIndex.value = null
 
-    // Atualiza o gráfico para remover a linha
-    if (chartInstance.value) {
-      chartInstance.value.update('none')
-    }
-
     // Se não estiver arrastando, limpa o estado de drag também
     if (!isDragging.value) {
       dragStartIndex.value = null
       dragEndIndex.value = null
     }
+    // NÃO chama chart.update() - deixa o plugin lidar com a limpeza visual
   }
 
   const handleMouseUp = () => {
     if (isDragging.value) {
+      // Usa um delay para garantir estabilidade
       setTimeout(() => {
         isDragging.value = false
         dragStartIndex.value = null
@@ -208,8 +240,8 @@ const setupCanvasEvents = (chart: ChartJS) => {
         // Limpa também o estado de hover para evitar que a linha volte
         isHovering.value = false
         hoverIndex.value = null
-        chart.update('none')
-      }, 100)
+        // NÃO chama chart.update() - deixa o plugin lidar com a limpeza visual
+      }, 150)
     }
   }
 
@@ -227,86 +259,115 @@ const setupCanvasEvents = (chart: ChartJS) => {
   }
 }
 
-function transparentize(value: string, opacity: number) {
-  const alpha = opacity === undefined ? 0.5 : 1 - opacity
-  return colorLib(value).alpha(alpha).rgbString()
-}
-
 const hoverLinePlugin = {
   id: 'hover-line-plugin',
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   afterDraw: (chart: any) => {
+    // Validações de segurança
+    if (
+      !chart ||
+      !chart.ctx ||
+      !chart.chartArea ||
+      !chart.scales ||
+      !chart.scales.x
+    ) {
+      return
+    }
+
     const {
       ctx,
       chartArea: { top, bottom },
       scales: { x },
     } = chart
 
-    // Desenha linha vertical durante hover (mas não durante drag)
-    if (isHovering.value && hoverIndex.value !== null && !isDragging.value) {
-      const xCoor = x.getPixelForValue(hoverIndex.value)
-      const backgroundColor = props.colors[0]
-      const gradientBg = ctx.createLinearGradient(0, bottom, 0, top)
-
-      gradientBg.addColorStop(1, transparentize(backgroundColor, 1))
-      gradientBg.addColorStop(0.5, transparentize(backgroundColor, 0))
-      gradientBg.addColorStop(0, transparentize(backgroundColor, 1))
-
-      ctx.save()
-      ctx.beginPath()
-      ctx.lineWidth = 2
-      ctx.strokeStyle = gradientBg
-      ctx.moveTo(xCoor, top)
-      ctx.lineTo(xCoor, bottom)
-      ctx.stroke()
-      ctx.closePath()
-      ctx.restore()
+    // Mais validações
+    if (
+      !ctx ||
+      !top ||
+      !bottom ||
+      !x ||
+      typeof x.getPixelForValue !== 'function'
+    ) {
+      return
     }
 
-    // Desenha overlay de opacidade durante drag
-    if (
-      isDragging.value &&
-      dragStartIndex.value !== null &&
-      dragEndIndex.value !== null
-    ) {
-      const startIdx = Math.min(dragStartIndex.value, dragEndIndex.value)
-      const endIdx = Math.max(dragStartIndex.value, dragEndIndex.value)
+    try {
+      // Desenha linha vertical durante hover (mas não durante drag)
+      if (isHovering.value && hoverIndex.value !== null && !isDragging.value) {
+        const xCoor = x.getPixelForValue(hoverIndex.value)
+        if (typeof xCoor !== 'number' || isNaN(xCoor)) {
+          return
+        }
 
-      const startX = x.getPixelForValue(startIdx)
-      const endX = x.getPixelForValue(endIdx)
+        const backgroundColor = props.colors[0]
+        const gradientBg = ctx.createLinearGradient(0, bottom, 0, top)
 
-      ctx.save()
+        gradientBg.addColorStop(1, transparentize(backgroundColor, 1))
+        gradientBg.addColorStop(0.5, transparentize(backgroundColor, 0))
+        gradientBg.addColorStop(0, transparentize(backgroundColor, 1))
 
-      // Aplica opacidade reduzida apenas nas áreas fora da seleção
-      // Área esquerda
-      if (startX > chart.chartArea.left) {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.6)'
-        ctx.fillRect(
-          chart.chartArea.left,
-          top,
-          startX - chart.chartArea.left,
-          bottom - top
-        )
+        ctx.save()
+        ctx.beginPath()
+        ctx.lineWidth = 2
+        ctx.strokeStyle = gradientBg
+        ctx.moveTo(xCoor, top)
+        ctx.lineTo(xCoor, bottom)
+        ctx.stroke()
+        ctx.closePath()
+        ctx.restore()
       }
 
-      // Área direita
-      if (endX < chart.chartArea.right) {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.6)'
-        ctx.fillRect(
-          endX,
-          top,
-          chart.chartArea.right - endX,
-          bottom - top
-        )
+      // Desenha overlay de opacidade durante drag
+      if (
+        isDragging.value &&
+        dragStartIndex.value !== null &&
+        dragEndIndex.value !== null
+      ) {
+        const startIdx = Math.min(dragStartIndex.value, dragEndIndex.value)
+        const endIdx = Math.max(dragStartIndex.value, dragEndIndex.value)
+
+        const startX = x.getPixelForValue(startIdx)
+        const endX = x.getPixelForValue(endIdx)
+
+        if (
+          typeof startX !== 'number' ||
+          typeof endX !== 'number' ||
+          isNaN(startX) ||
+          isNaN(endX)
+        ) {
+          return
+        }
+
+        ctx.save()
+
+        // Aplica opacidade reduzida apenas nas áreas fora da seleção
+        // Área esquerda
+        if (startX > chart.chartArea.left) {
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.6)'
+          ctx.fillRect(
+            chart.chartArea.left,
+            top,
+            startX - chart.chartArea.left,
+            bottom - top
+          )
+        }
+
+        // Área direita
+        if (endX < chart.chartArea.right) {
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.6)'
+          ctx.fillRect(endX, top, chart.chartArea.right - endX, bottom - top)
+        }
+
+        // Adiciona uma borda sutil na área selecionada
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)'
+        ctx.lineWidth = 2
+        ctx.setLineDash([4, 4])
+        ctx.strokeRect(startX, top, endX - startX, bottom - top)
+
+        ctx.restore()
       }
-
-      // Adiciona uma borda sutil na área selecionada
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)'
-      ctx.lineWidth = 2
-      ctx.setLineDash([4, 4])
-      ctx.strokeRect(startX, top, endX - startX, bottom - top)
-
-      ctx.restore()
+    } catch {
+      // Ignora erros silenciosamente para evitar crashes
     }
   },
 }
@@ -364,7 +425,6 @@ const chartData = computed(() => {
   }
 })
 
-// Referência para o chart
 // Opções do gráfico
 const chartOptions = computed(() => ({
   responsive: true,
