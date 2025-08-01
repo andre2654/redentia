@@ -439,15 +439,15 @@ const chartOptions = computed(() => ({
         display: false,
       },
       ticks: {
-        color: 'white',
         autoSkip: true,
         autoSkipPadding: 8,
         maxRotation: 0,
         minRotation: 0,
         font: {
-          size: 12,
+          size: 13,
         },
-        maxTicksLimit: 8,
+        color: 'rgba(255, 255, 255, 0.7)',
+        maxTicksLimit: 10,
       },
     },
     y: {
@@ -455,10 +455,10 @@ const chartOptions = computed(() => ({
         color: 'rgba(255, 255, 255, 0.1)',
       },
       ticks: {
-        maxTicksLimit: 6,
+        maxTicksLimit: 5,
         color: 'rgba(255, 255, 255, 0.7)',
         font: {
-          size: 11,
+          size: 13,
         },
         callback: function (value: number) {
           return `R$ ${Number(value).toLocaleString('pt-BR', {
