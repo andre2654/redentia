@@ -97,6 +97,26 @@ const tooltipData = computed(() => {
   return null
 })
 
+// Cor dinâmica baseada no período selecionado
+const dynamicColor = computed(() => {
+  if (
+    isDragging.value &&
+    dragStartIndex.value !== null &&
+    dragEndIndex.value !== null
+  ) {
+    const startIdx = Math.min(dragStartIndex.value, dragEndIndex.value)
+    const endIdx = Math.max(dragStartIndex.value, dragEndIndex.value)
+    
+    if (props.data[startIdx] && props.data[endIdx]) {
+      const startData = props.data[startIdx]
+      const endData = props.data[endIdx]
+      const isPositive = endData.value >= startData.value
+      return isPositive ? '#04CE00' : '#FF4757'
+    }
+  }
+  return props.colors[0]
+})
+
 const chartRef = ref<InstanceType<typeof Line> | null>(null)
 const chartInstance = ref<ChartJS | null>(null)
 let cleanupEvents: (() => void) | null = null
@@ -268,7 +288,7 @@ const hoverLinePlugin = {
           return
         }
 
-        const backgroundColor = props.colors[0]
+        const backgroundColor = dynamicColor.value
         const gradientBg = ctx.createLinearGradient(0, bottom, 0, top)
 
         gradientBg.addColorStop(1, transparentize(backgroundColor, 1))
@@ -306,6 +326,12 @@ const hoverLinePlugin = {
           return
         }
 
+        // Calcula se o período é positivo ou negativo
+        const startData = props.data[startIdx]
+        const endData = props.data[endIdx]
+        const isPositive = endData.value >= startData.value
+        const selectionColor = isPositive ? '#04CE00' : '#FF4757'
+
         ctx.save()
 
         // Área esquerda
@@ -325,10 +351,9 @@ const hoverLinePlugin = {
           ctx.fillRect(endX, top, chart.chartArea.right - endX, bottom - top)
         }
 
-        // Adiciona uma borda sutil na área selecionada
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)'
-        ctx.lineWidth = 1
-        ctx.strokeRect(startX, top, endX - startX, bottom - top)
+        // Adiciona um overlay sutil com a cor do período
+        ctx.fillStyle = transparentize(selectionColor, 0.9)
+        ctx.fillRect(startX, top, endX - startX, bottom - top)
 
         ctx.restore()
       }
@@ -369,21 +394,21 @@ const chartData = computed(() => {
             chartArea.top
           )
 
-          gradientBg.addColorStop(1, transparentize(props.colors[0], 0.7))
-          gradientBg.addColorStop(0.3, transparentize(props.colors[0], 1))
+          gradientBg.addColorStop(1, transparentize(dynamicColor.value, 0.7))
+          gradientBg.addColorStop(0.3, transparentize(dynamicColor.value, 1))
 
           return gradientBg
         },
         borderWidth: 1.5,
         fill: true,
-        borderColor: props.colors[0],
+        borderColor: dynamicColor.value,
         pointHitRadius: 10,
         pointRadius: 0,
         pointHoverRadius: 8,
-        pointBackgroundColor: props.colors[0],
+        pointBackgroundColor: dynamicColor.value,
         pointBorderWidth: 3,
         pointHoverBorderWidth: 10,
-        pointHoverBorderColor: transparentize(props.colors[0], 0.9),
+        pointHoverBorderColor: transparentize(dynamicColor.value, 0.9),
         tension: 0.1,
       },
     ],
