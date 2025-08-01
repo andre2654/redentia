@@ -129,9 +129,22 @@ const setupCanvasEvents = (chart: ChartJS) => {
   const handleMouseMove = (event: MouseEvent) => {
     const canvasPosition = canvas.getBoundingClientRect()
     const x = event.clientX - canvasPosition.left
+    const y = event.clientY - canvasPosition.top
 
     // Atualiza posição do tooltip
     tooltipPosition.value = { x: event.clientX, y: event.clientY }
+
+    // Verifica se está dentro da área do gráfico
+    const isInsideChart = x >= chart.chartArea.left && 
+                         x <= chart.chartArea.right && 
+                         y >= chart.chartArea.top && 
+                         y <= chart.chartArea.bottom
+
+    if (!isInsideChart && !isDragging.value) {
+      isHovering.value = false
+      hoverIndex.value = null
+      return
+    }
 
     if (isDragging.value) {
       const dataIndex = chart.scales.x.getValueForPixel(x)
@@ -144,8 +157,8 @@ const setupCanvasEvents = (chart: ChartJS) => {
         }
       }
       event.preventDefault()
-    } else {
-      // Modo hover normal
+    } else if (isInsideChart) {
+      // Modo hover normal - só ativa se estiver dentro da área do gráfico
       const dataIndex = chart.scales.x.getValueForPixel(x)
       if (typeof dataIndex === 'number') {
         const roundedIndex = Math.round(dataIndex)
@@ -161,9 +174,14 @@ const setupCanvasEvents = (chart: ChartJS) => {
   }
 
   const handleMouseLeave = () => {
+    // Remove tooltip quando sair do canvas
+    isHovering.value = false
+    hoverIndex.value = null
+    
+    // Se não estiver arrastando, limpa o estado de drag também
     if (!isDragging.value) {
-      isHovering.value = false
-      hoverIndex.value = null
+      dragStartIndex.value = null
+      dragEndIndex.value = null
     }
   }
 
@@ -191,41 +209,6 @@ const setupCanvasEvents = (chart: ChartJS) => {
     document.removeEventListener('mouseup', handleMouseUp)
   }
 }
-
-// Computed para dados da legenda - dinamico baseado no estado de drag
-const legendData = computed(() => {
-  if (
-    !isDragging.value ||
-    dragStartIndex.value === null ||
-    dragEndIndex.value === null
-  ) {
-    return props.legend
-  }
-
-  // Durante o drag, mostra informações da seleção
-  const startIdx = Math.min(dragStartIndex.value, dragEndIndex.value)
-  const endIdx = Math.max(dragStartIndex.value, dragEndIndex.value)
-
-  if (startIdx === endIdx || !props.data[startIdx] || !props.data[endIdx]) {
-    return props.legend
-  }
-
-  const startData = props.data[startIdx]
-  const endData = props.data[endIdx]
-  const change = endData.value - startData.value
-  const changePercent = (change / startData.value) * 100
-
-  return [
-    {
-      ...props.legend[0],
-      label: `${startData.date} → ${endData.date}`,
-      value: `${change >= 0 ? '+' : ''}R$ ${change.toLocaleString('pt-BR', {
-        minimumFractionDigits: 2,
-      })} (${change >= 0 ? '+' : ''}${changePercent.toFixed(2)}%)`,
-      color: change >= 0 ? '#04CE00' : '#FF4757',
-    },
-  ]
-})
 
 function transparentize(value: string, opacity: number) {
   const alpha = opacity === undefined ? 0.5 : 1 - opacity
@@ -425,7 +408,10 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="relative flex h-full w-full flex-col gap-6">
+  <div 
+    class="relative flex h-full w-full flex-col gap-6"
+    @mouseleave="isHovering = false; hoverIndex = null"
+  >
     <div :style="{ height: `${height}px` }" class="w-full">
       <Line ref="chartRef" :data="chartData" :options="chartOptions" />
     </div>
@@ -453,14 +439,6 @@ onUnmounted(() => {
           </span>
         </div>
       </div>
-    </div>
-
-    <!-- Legenda fixa -->
-    <div
-      v-if="showLegend && legendData.length > 0"
-      class="flex w-full justify-end"
-    >
-      <AtomsGraphLineLegend :legend-items="legendData" />
     </div>
   </div>
 </template>
