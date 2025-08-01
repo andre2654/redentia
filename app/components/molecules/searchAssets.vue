@@ -11,8 +11,10 @@
       }"
     >
       <template #trailing>
-        <UKbd value="meta" variant="soft" color="neutral" />
-        <UKbd value="K" variant="soft" color="neutral" />
+        <div class="flex items-center gap-2 max-lg:hidden">
+          <UKbd value="meta" variant="soft" color="neutral" />
+          <UKbd value="K" variant="soft" color="neutral" />
+        </div>
       </template>
     </UButton>
 

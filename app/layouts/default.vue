@@ -51,6 +51,7 @@
     </div>
     <div class="flex w-full flex-col gap-8">
       <div class="flex flex-col gap-3">
+        <MoleculesSearchAssets class="mx-auto" />
         <AtomsSidebarButton to="/" text="Visão Geral" />
         <AtomsSidebarButton to="/wallet" text="Sua carteira" />
         <AtomsSidebarButton
