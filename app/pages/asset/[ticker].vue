@@ -24,25 +24,23 @@
           </h2>
           <UButtonGroup orientation="horizontal" variant="soft">
             <UButton
-              :color="selectedTimeRange === 'month' ? 'primary' : 'neutral'"
-              :variant="selectedTimeRange === 'month' ? 'solid' : 'subtle'"
+              color="neutral"
+              :variant="selectedTimeRange === 'month' ? 'soft' : 'link'"
               label="Mês"
               @click="selectedTimeRange = 'month'"
             />
             <UButton
-              :color="selectedTimeRange === 'year' ? 'primary' : 'neutral'"
-              :variant="selectedTimeRange === 'year' ? 'solid' : 'subtle'"
+              color="neutral"
+              :variant="selectedTimeRange === 'year' ? 'soft' : 'link'"
               label="Ano"
               @click="selectedTimeRange = 'year'"
             />
-            <UDropdownMenu :items="timeRangeOptions" label="Outro">
-              <UButton
-                label="Outro"
-                icon="i-lucide-menu"
-                color="neutral"
-                variant="outline"
-              />
-            </UDropdownMenu>
+            <UButton
+              color="neutral"
+              :variant="selectedTimeRange === 'ytd' ? 'soft' : 'link'"
+              label="Ano até hoje"
+              @click="selectedTimeRange = 'ytd'"
+            />
           </UButtonGroup>
         </div>
         <AtomsGraphLine
@@ -60,47 +58,14 @@
 import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 
-type ChartTimeRange = 'month' | 'year' | 'ytd' | '3months' | '6months'
+type ChartTimeRange = 'month' | 'year' | 'ytd'
 
 const route = useRoute()
+const { getAsset } = useAssetsService()
 
 const ticker = route.params.ticker as string
-
-// Mock do asset - vou criar dados de exemplo já que o service está apresentando problemas
-const asset = {
-  stock: ticker,
-  name: `Empresa ${ticker.toUpperCase()}`,
-  close: 85.5,
-  change: 2.15,
-  volume: 1000000,
-  market_cap: 15000000000,
-  logo: null,
-  sector: 'Financeiro',
-  type: 'stock' as const,
-}
-
+const asset = await getAsset(ticker)
 const selectedTimeRange = ref<ChartTimeRange>('month')
-
-const timeRangeOptions = [
-  [
-    {
-      label: '3 Meses',
-      click: () => (selectedTimeRange.value = '3months'),
-    },
-  ],
-  [
-    {
-      label: '6 Meses',
-      click: () => (selectedTimeRange.value = '6months'),
-    },
-  ],
-  [
-    {
-      label: 'Ano até hoje',
-      click: () => (selectedTimeRange.value = 'ytd'),
-    },
-  ],
-]
 
 // Mock data melhorado com dados realistas
 const generateMockData = (timeRange: ChartTimeRange) => {
@@ -108,10 +73,6 @@ const generateMockData = (timeRange: ChartTimeRange) => {
     switch (range) {
       case 'month':
         return 30
-      case '3months':
-        return 90
-      case '6months':
-        return 180
       case 'year':
         return 365
       case 'ytd': {

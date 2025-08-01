@@ -359,9 +359,8 @@ const hoverLinePlugin = {
         }
 
         // Adiciona uma borda sutil na área selecionada
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)'
-        ctx.lineWidth = 2
-        ctx.setLineDash([4, 4])
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)'
+        ctx.lineWidth = 1
         ctx.strokeRect(startX, top, endX - startX, bottom - top)
 
         ctx.restore()
