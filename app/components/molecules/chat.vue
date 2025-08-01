@@ -1,8 +1,10 @@
 <template>
   <div class="flex flex-col items-center justify-between gap-[100px]">
-    <div class="flex flex-col items-center justify-center gap-4 pt-[100px]">
-      <h2 class="text-2xl">Faça alguma pergunta</h2>
-      <p class="text-[13px] font-light text-white/60">
+    <div
+      class="flex flex-col items-center justify-center gap-4 px-3 pt-[100px]"
+    >
+      <h2 class="text-center text-2xl">Faça alguma pergunta</h2>
+      <p class="text-center text-[13px] font-light text-white/60">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer
         vulputate erat non massa tristique.
       </p>

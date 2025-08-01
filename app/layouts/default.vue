@@ -115,7 +115,7 @@
   </div>
 
   <!-- Layout -->
-  <div class="mx-auto flex min-h-screen w-full max-w-[1400px] border-x">
+  <div class="mx-auto flex min-h-screen w-full max-w-[1400px] lg:border-x">
     <div
       class="sticky top-0 flex h-screen w-[330px] min-w-[330px] flex-col justify-between border-r pt-4 max-xl:hidden"
     >
@@ -192,7 +192,7 @@
           class="w-full md:max-w-[750px]"
         />
       </div>
-      <div v-bind="containerProps">
+      <div v-bind="containerProps" class="flex-1">
         <slot />
       </div>
     </div>

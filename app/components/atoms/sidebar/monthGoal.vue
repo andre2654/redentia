@@ -3,9 +3,12 @@
     <div class="flex flex-col gap-1 px-3 pt-3">
       <div class="text-[14px] font-medium">Meta de renda mensal</div>
       <b class="redentia-amount text-[16px] font-bold">R$ 5.000,00</b>
-      <button class="glass mt-4 max-w-fit rounded-full px-3 py-1 text-[8px]">
+      <NuxtLink
+        to="/settings"
+        class="glass mt-4 max-w-fit rounded-full px-3 py-1 text-[10px]"
+      >
         Configurar
-      </button>
+      </NuxtLink>
     </div>
     <div class="flex w-full flex-col gap-1 text-[11px]">
       <span class="text-primary pl-3">

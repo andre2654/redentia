@@ -5,9 +5,9 @@
         <MoleculesWalletAssetAccordion />
         <MoleculesWalletAssetAccordion />
       </div>
-      <div class="flex flex-col gap-[50px]">
-        <AtomsAiInsight class="mx-auto max-w-[900px]" />
-        <MoleculesChat class="bg-white/10" />
+      <div class="flex flex-col items-center gap-[50px]">
+        <AtomsAiInsight class="mx-4 max-w-[900px]" />
+        <MoleculesChat class="w-full bg-white/10" />
       </div>
     </div>
   </NuxtLayout>
