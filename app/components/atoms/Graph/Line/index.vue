@@ -143,6 +143,7 @@ const setupCanvasEvents = (chart: ChartJS) => {
     if (!isInsideChart && !isDragging.value) {
       isHovering.value = false
       hoverIndex.value = null
+      chart.update('none')
       return
     }
 
@@ -165,9 +166,11 @@ const setupCanvasEvents = (chart: ChartJS) => {
         if (roundedIndex >= 0 && roundedIndex < props.data.length) {
           isHovering.value = true
           hoverIndex.value = roundedIndex
+          chart.update('none')
         } else {
           isHovering.value = false
           hoverIndex.value = null
+          chart.update('none')
         }
       }
     }
@@ -177,6 +180,11 @@ const setupCanvasEvents = (chart: ChartJS) => {
     // Remove tooltip quando sair do canvas
     isHovering.value = false
     hoverIndex.value = null
+    
+    // Atualiza o gráfico para remover a linha
+    if (chartInstance.value) {
+      chartInstance.value.update('none')
+    }
     
     // Se não estiver arrastando, limpa o estado de drag também
     if (!isDragging.value) {
@@ -224,6 +232,27 @@ const hoverLinePlugin = {
       chartArea: { top, bottom },
       scales: { x },
     } = chart
+
+    // Desenha linha vertical durante hover (mas não durante drag)
+    if (isHovering.value && hoverIndex.value !== null && !isDragging.value) {
+      const xCoor = x.getPixelForValue(hoverIndex.value)
+      const backgroundColor = props.colors[0]
+      const gradientBg = ctx.createLinearGradient(0, bottom, 0, top)
+
+      gradientBg.addColorStop(1, transparentize(backgroundColor, 1))
+      gradientBg.addColorStop(0.5, transparentize(backgroundColor, 0))
+      gradientBg.addColorStop(0, transparentize(backgroundColor, 1))
+
+      ctx.save()
+      ctx.beginPath()
+      ctx.lineWidth = 2
+      ctx.strokeStyle = gradientBg
+      ctx.moveTo(xCoor, top)
+      ctx.lineTo(xCoor, bottom)
+      ctx.stroke()
+      ctx.closePath()
+      ctx.restore()
+    }
 
     // Desenha área de seleção durante drag
     if (
