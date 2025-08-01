@@ -106,7 +106,7 @@ const dynamicColor = computed(() => {
   ) {
     const startIdx = Math.min(dragStartIndex.value, dragEndIndex.value)
     const endIdx = Math.max(dragStartIndex.value, dragEndIndex.value)
-    
+
     if (props.data[startIdx] && props.data[endIdx]) {
       const startData = props.data[startIdx]
       const endData = props.data[endIdx]
