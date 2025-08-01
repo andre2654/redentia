@@ -448,6 +448,7 @@ const chartOptions = computed(() => ({
         },
         color: 'rgba(255, 255, 255, 0.7)',
         maxTicksLimit: 10,
+        padding: 20,
       },
     },
     y: {
