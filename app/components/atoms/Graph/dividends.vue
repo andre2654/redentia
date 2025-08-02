@@ -37,7 +37,12 @@
       @mouseleave="hoveredIndex = null"
     >
       <div class="relative h-80 w-full">
-        <Bar ref="chartRef" :data="chartData" :options="chartOptions" />
+        <Bar
+          ref="chartRef"
+          :data="chartData"
+          :options="chartOptions"
+          :plugins="[predictionLabelPlugin]"
+        />
       </div>
 
       <!-- Tooltip dinâmico -->
@@ -534,9 +539,9 @@ const predictionLabelPlugin = {
 
               // Desenha o texto "PREV" abaixo do ícone
               ctx.save()
-              ctx.translate(centerPoint.x, centerPoint.y)
-              ctx.font = 'bold 12px Arial'
-              ctx.fillStyle = '#1a202c'
+              ctx.translate(centerPoint.x, centerPoint.y + 40) // Move para baixo da barra
+              ctx.font = 'bold 10px Arial'
+              ctx.fillStyle = '#a7d6ff'
               ctx.textAlign = 'center'
               ctx.textBaseline = 'middle'
               ctx.rotate(-Math.PI / 2)
@@ -556,7 +561,7 @@ const predictionLabelPlugin = {
   },
 }
 
-// Registra os componentes do Chart.js
+// Registra os componentes do Chart.js (sem o plugin personalizado)
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -565,8 +570,7 @@ ChartJS.register(
   PointElement,
   Title,
   Tooltip,
-  Legend,
-  predictionLabelPlugin
+  Legend
 )
 
 // Configuração dos dados do gráfico
@@ -581,21 +585,26 @@ const chartData = computed(() => {
   const primaryColor = '#04CE00'
   const secondaryColor = '#a7d6ff'
 
-  // Separa cores para barras normais e previsão
-  const backgroundColors = displayData.value.map((item) =>
-    item.isPrediction
-      ? transparentize(secondaryColor, 0.8)
-      : transparentize(primaryColor, 0.8)
-  )
+  // Função para criar gradiente de barras
+  const createBarGradient = (
+    ctx: CanvasRenderingContext2D,
+    chartArea: { top: number; bottom: number },
+    color: string,
+    opacity: number = 0.3
+  ) => {
+    const gradient = ctx.createLinearGradient(
+      0,
+      chartArea.top,
+      0,
+      chartArea.bottom
+    )
+    gradient.addColorStop(0, transparentize(color, opacity)) // Opacidade variável no topo
+    gradient.addColorStop(1, transparentize(color, 1.0)) // 0% de opacidade na base
+    return gradient
+  }
 
   const borderColors = displayData.value.map((item) =>
     item.isPrediction ? secondaryColor : primaryColor
-  )
-
-  const hoverBackgroundColors = displayData.value.map((item) =>
-    item.isPrediction
-      ? transparentize(secondaryColor, 0.2)
-      : transparentize(primaryColor, 0.2)
   )
 
   return {
@@ -606,14 +615,58 @@ const chartData = computed(() => {
       {
         label: 'Dividendos',
         data: displayData.value.map((item) => item.value),
-        backgroundColor: backgroundColors,
+        backgroundColor: (context: {
+          chart: {
+            canvas: HTMLCanvasElement
+            chartArea?: { top: number; bottom: number }
+          }
+          dataIndex?: number
+        }) => {
+          const chart = context.chart
+          const { chartArea } = chart
+
+          if (!chartArea || context.dataIndex === undefined) {
+            return primaryColor
+          }
+
+          const item = displayData.value[context.dataIndex]
+          if (!item) return primaryColor
+
+          const color = item.isPrediction ? secondaryColor : primaryColor
+          const canvasCtx = chart.canvas.getContext('2d')
+          if (!canvasCtx) return color
+
+          return createBarGradient(canvasCtx, chartArea, color, 0.3)
+        },
         borderColor: borderColors,
         borderWidth: 1.5,
-        hoverBackgroundColor: hoverBackgroundColors,
+        hoverBackgroundColor: (context: {
+          chart: {
+            canvas: HTMLCanvasElement
+            chartArea?: { top: number; bottom: number }
+          }
+          dataIndex?: number
+        }) => {
+          const chart = context.chart
+          const { chartArea } = chart
+
+          if (!chartArea || context.dataIndex === undefined) {
+            return primaryColor
+          }
+
+          const item = displayData.value[context.dataIndex]
+          if (!item) return primaryColor
+
+          const color = item.isPrediction ? secondaryColor : primaryColor
+          const canvasCtx = chart.canvas.getContext('2d')
+          if (!canvasCtx) return color
+
+          return createBarGradient(canvasCtx, chartArea, color, 0.1)
+        },
         hoverBorderColor: borderColors,
         hoverBorderWidth: 3,
         borderRadius: 0,
-        borderSkipped: false,
+        borderSkipped: 'bottom',
         type: 'bar' as const,
         yAxisID: 'y',
         order: 2, // Barras ficam atrás
@@ -634,8 +687,6 @@ const chartData = computed(() => {
         pointBackgroundColor: displayData.value.map((item) =>
           item.isPrediction ? 'rgba(245, 158, 11, 0.7)' : '#F59E0B'
         ),
-        pointBorderColor: '#FFFFFF',
-        pointBorderWidth: 2,
         type: 'line' as const,
         yAxisID: 'y1',
         tension: 0.4, // Suaviza a linha
