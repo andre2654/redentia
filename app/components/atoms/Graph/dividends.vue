@@ -36,104 +36,48 @@
       class="relative rounded-lg bg-gray-900/50 p-4"
       @mouseleave="hoveredIndex = null"
     >
-      <div class="flex h-80 items-end justify-center gap-2">
-        <div
-          v-for="(dividend, index) in displayData"
-          :key="index"
-          class="relative flex flex-col items-center gap-2"
-          @mouseenter="hoveredIndex = index"
-          @mousemove="updateTooltipPosition($event)"
-        >
-          <!-- Barra do dividendo -->
-          <div class="relative flex h-64 w-8 flex-col justify-end">
-            <div
-              class="w-full cursor-pointer rounded-t-md bg-emerald-500 transition-all duration-700 ease-out hover:bg-emerald-400"
-              :style="{
-                height: `${(dividend.value / maxValue) * 100}%`,
-                minHeight: dividend.value > 0 ? '4px' : '0px',
-              }"
-            />
-          </div>
-
-          <!-- Label da data -->
-          <div class="flex h-12 w-8 items-center justify-center">
-            <span
-              class="origin-center -rotate-45 transform whitespace-nowrap text-xs text-white/70"
-            >
-              {{ dividend.label }}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Linha de tendência de Dividend Yield -->
-      <div
-        v-if="displayData.length > 1"
-        class="pointer-events-none absolute top-4 flex items-start justify-center"
-        :style="{
-          left: '16px',
-          right: '16px',
-          height: '256px',
-        }"
-      >
-        <div class="relative flex h-full items-end justify-center gap-2">
-          <svg
-            class="absolute top-0"
-            :style="{
-              width: `${(displayData.length - 1) * 40 + 32}px`,
-              height: '256px',
-            }"
-            :viewBox="`0 0 ${(displayData.length - 1) * 40 + 32} 256`"
-            preserveAspectRatio="xMidYMid meet"
-          >
-            <polyline
-              :points="trendLinePoints"
-              fill="none"
-              stroke="#F59E0B"
-              stroke-width="2"
-              stroke-dasharray="4,4"
-              opacity="0.9"
-            />
-            <!-- Pontos da linha de tendência -->
-            <circle
-              v-for="(point, index) in trendPoints"
-              :key="`trend-${index}`"
-              :cx="point.x"
-              :cy="point.y"
-              r="3"
-              fill="#F59E0B"
-              opacity="1"
-            />
-          </svg>
-        </div>
+      <div class="h-80 w-full">
+        <Bar ref="chartRef" :data="chartData" :options="chartOptions" />
       </div>
 
       <!-- Tooltip dinâmico -->
       <div
         v-if="hoveredIndex !== null && tooltipData"
-        class="pointer-events-none fixed z-10 rounded-lg bg-black/30 px-3 py-2 backdrop-blur-md transition-all duration-150"
+        class="pointer-events-none fixed z-50 rounded-lg border border-white/10 bg-black/90 px-3 py-2 backdrop-blur-md transition-all duration-150"
         :style="{
           left: `${tooltipPosition.x + 10}px`,
-          top: `${tooltipPosition.y - 60}px`,
+          top: `${tooltipPosition.y - 100}px`,
         }"
       >
         <div class="flex gap-3">
-          <div class="mt-1 h-3 w-3 rounded-full bg-emerald-500" />
-          <div class="flex flex-col gap-1">
-            <span class="text-[13px] font-medium text-white">
-              {{ tooltipData.label }}
-            </span>
-            <span class="text-[13px] text-emerald-400">
-              R$
-              {{
-                tooltipData.value.toLocaleString('pt-BR', {
-                  minimumFractionDigits: 2,
-                })
-              }}
-            </span>
-            <span class="text-[11px] text-amber-400">
-              DY: {{ tooltipData.dividendYield.toFixed(2) }}%
-            </span>
+          <div class="flex flex-col gap-2">
+            <!-- Indicador de dividendo -->
+            <div class="flex items-center gap-2">
+              <div class="h-3 w-3 rounded-full bg-emerald-500" />
+              <div class="flex flex-col">
+                <span class="text-[13px] font-medium text-white">
+                  {{ tooltipData.label }}
+                </span>
+                <span class="text-[13px] text-emerald-400">
+                  R$
+                  {{
+                    tooltipData.value.toLocaleString('pt-BR', {
+                      minimumFractionDigits: 2,
+                    })
+                  }}
+                </span>
+              </div>
+            </div>
+            <!-- Indicador de yield -->
+            <div class="flex items-center gap-2">
+              <div class="h-3 w-3 rounded-full bg-amber-500" />
+              <div class="flex flex-col">
+                <span class="text-[11px] text-amber-400"> Dividend Yield </span>
+                <span class="text-[13px] font-medium text-amber-400">
+                  {{ tooltipData.dividendYield.toFixed(2) }}%
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -149,21 +93,6 @@
         <label for="group-by-year" class="text-sm text-white/70">
           Agrupar dividendos por ano
         </label>
-      </div>
-
-      <!-- Legenda da linha de tendência -->
-      <div class="mt-2 flex items-center gap-4 text-xs text-white/60">
-        <div class="flex items-center gap-2">
-          <div class="h-3 w-3 rounded bg-emerald-500" />
-          <span>Dividendos</span>
-        </div>
-        <div class="flex items-center gap-2">
-          <div
-            class="h-0.5 w-4 bg-amber-500"
-            style="border: 1px dashed #f59e0b; background: none"
-          />
-          <span>Tendência D.Y.</span>
-        </div>
       </div>
     </div>
 
@@ -205,7 +134,21 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend,
+  type ChartEvent,
+  type ActiveElement,
+} from 'chart.js'
+import { Bar } from 'vue-chartjs'
 
 interface DividendData {
   date: string
@@ -225,10 +168,9 @@ const selectedTimeRange = ref<'year' | '3years' | '5years' | 'max'>('5years')
 const groupByYear = ref(false)
 const hoveredIndex = ref<number | null>(null)
 const tooltipPosition = ref({ x: 0, y: 0 })
-
-const updateTooltipPosition = (event: MouseEvent) => {
-  tooltipPosition.value = { x: event.clientX, y: event.clientY }
-}
+const chartRef = ref<InstanceType<typeof Bar> | null>(null)
+const chartInstance = ref<ChartJS | null>(null)
+let cleanupEvents: (() => void) | null = null
 
 // Gerador de dados de dividendos mock
 const generateMockDividendData = (): DividendData[] => {
@@ -353,7 +295,7 @@ const displayData = computed(() => {
     .sort((a, b) => a.year - b.year)
 })
 
-// Tooltip data
+// Tooltip data para hover
 const tooltipData = computed(() => {
   if (hoveredIndex.value === null || !displayData.value[hoveredIndex.value]) {
     return null
@@ -370,41 +312,212 @@ const tooltipData = computed(() => {
   }
 })
 
-// Pontos da linha de tendência para dividend yield
-const trendPoints = computed(() => {
-  if (displayData.value.length === 0) return []
+// Setup de eventos do canvas para interação
+const setupCanvasEvents = (chart: ChartJS) => {
+  const canvas = chart.canvas
 
-  return displayData.value.map((item, index) => {
-    const stockPrice = _getStockPrice(item.year)
-    const dividendYield = (item.value / stockPrice) * 100
-    const maxDY = 8 // Assumindo um DY máximo de 8% para escala
+  const handleMouseMove = (event: MouseEvent) => {
+    tooltipPosition.value = { x: event.clientX, y: event.clientY }
 
-    // Calcula a posição X baseada no centro de cada barra
-    // Gap de 8px entre barras (gap-2) + largura da barra 32px (w-8)
-    const barWidth = 32
-    const gapBetweenBars = 8
-    const barCenterX = index * (barWidth + gapBetweenBars) + barWidth / 2
+    const points = chart.getElementsAtEventForMode(
+      event,
+      'nearest',
+      { intersect: true },
+      true
+    )
 
-    // Converte o dividend yield para coordenada Y (invertida, pois SVG Y cresce para baixo)
-    const yPosition = 256 - Math.min((dividendYield / maxDY) * 256, 256)
-
-    return {
-      x: barCenterX,
-      y: Math.max(yPosition, 0), // Garante que nunca seja negativo
+    if (points.length) {
+      hoveredIndex.value = points[0].index
+    } else {
+      hoveredIndex.value = null
     }
+  }
+
+  const handleMouseLeave = () => {
+    hoveredIndex.value = null
+  }
+
+  canvas.addEventListener('mousemove', handleMouseMove)
+  canvas.addEventListener('mouseleave', handleMouseLeave)
+
+  return () => {
+    canvas.removeEventListener('mousemove', handleMouseMove)
+    canvas.removeEventListener('mouseleave', handleMouseLeave)
+  }
+}
+
+// Registra os componentes do Chart.js
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement,
+  PointElement,
+  Title,
+  Tooltip,
+  Legend
+)
+
+// Configuração dos dados do gráfico
+const chartData = computed(() => {
+  // Calcula o dividend yield para cada ponto
+  const yieldData = displayData.value.map((item) => {
+    const stockPrice = _getStockPrice(item.year)
+    return (item.value / stockPrice) * 100
   })
+
+  return {
+    labels: displayData.value.map((item) => item.label),
+    datasets: [
+      {
+        label: 'Dividendos',
+        data: displayData.value.map((item) => item.value),
+        backgroundColor: '#10B981', // emerald-500
+        hoverBackgroundColor: '#059669', // emerald-600
+        borderRadius: 4,
+        borderSkipped: false,
+        type: 'bar' as const,
+        yAxisID: 'y',
+      },
+      {
+        label: 'Dividend Yield (%)',
+        data: yieldData,
+        borderColor: '#F59E0B', // amber-500
+        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+        borderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        pointBackgroundColor: '#F59E0B',
+        pointBorderColor: '#FFFFFF',
+        pointBorderWidth: 2,
+        type: 'line' as const,
+        yAxisID: 'y1',
+        tension: 0.4, // Suaviza a linha
+      },
+    ],
+  }
 })
 
-// String dos pontos para a polyline SVG
-const trendLinePoints = computed(() => {
-  return trendPoints.value.map((point) => `${point.x},${point.y}`).join(' ')
+// Configuração das opções do gráfico
+const chartOptions = computed(() => ({
+  responsive: true,
+  maintainAspectRatio: false,
+  interaction: {
+    mode: 'index' as const,
+    intersect: false,
+  },
+  plugins: {
+    legend: {
+      display: true,
+      position: 'top' as const,
+      labels: {
+        color: 'rgba(255, 255, 255, 0.7)',
+        font: {
+          size: 12,
+        },
+        usePointStyle: true,
+        pointStyle: 'circle',
+        padding: 20,
+      },
+    },
+    tooltip: {
+      enabled: false, // Usamos tooltip customizado
+    },
+  },
+  scales: {
+    x: {
+      grid: {
+        display: false,
+      },
+      ticks: {
+        color: 'rgba(255, 255, 255, 0.7)',
+        font: {
+          size: 12,
+        },
+        maxRotation: 45,
+        minRotation: 45,
+      },
+    },
+    y: {
+      type: 'linear' as const,
+      display: true,
+      position: 'left' as const,
+      grid: {
+        color: 'rgba(255, 255, 255, 0.1)',
+      },
+      ticks: {
+        color: 'rgba(255, 255, 255, 0.7)',
+        font: {
+          size: 12,
+        },
+        callback: function (value: number) {
+          return `R$ ${Number(value).toLocaleString('pt-BR', {
+            minimumFractionDigits: 2,
+          })}`
+        },
+      },
+      title: {
+        display: true,
+        text: 'Dividendos (R$)',
+        color: 'rgba(255, 255, 255, 0.7)',
+        font: {
+          size: 11,
+        },
+      },
+    },
+    y1: {
+      type: 'linear' as const,
+      display: true,
+      position: 'right' as const,
+      grid: {
+        drawOnChartArea: false,
+      },
+      ticks: {
+        color: 'rgba(245, 158, 11, 0.7)', // amber-500 com opacidade
+        font: {
+          size: 12,
+        },
+        callback: function (value: number) {
+          return `${Number(value).toFixed(1)}%`
+        },
+      },
+      title: {
+        display: true,
+        text: 'Dividend Yield (%)',
+        color: 'rgba(245, 158, 11, 0.7)',
+        font: {
+          size: 11,
+        },
+      },
+    },
+  },
+  onHover: (_event: ChartEvent, elements: ActiveElement[]) => {
+    if (elements.length > 0) {
+      hoveredIndex.value = elements[0].index
+    } else {
+      hoveredIndex.value = null
+    }
+  },
+}))
+
+// Lifecycle hooks
+onMounted(() => {
+  setTimeout(() => {
+    if (chartRef.value?.chart) {
+      chartInstance.value = chartRef.value.chart
+      cleanupEvents = setupCanvasEvents(chartRef.value.chart)
+    }
+  }, 100)
 })
 
-// Calcula valores máximos e estatísticas
-const maxValue = computed(() => {
-  return Math.max(...displayData.value.map((item) => item.value), 0.1)
+onUnmounted(() => {
+  if (cleanupEvents) {
+    cleanupEvents()
+    cleanupEvents = null
+  }
 })
 
+// Calcula valores das estatísticas
 const totalDividends = computed(() => {
   return displayData.value.reduce((sum, item) => sum + item.value, 0)
 })
