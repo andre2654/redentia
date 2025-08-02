@@ -65,6 +65,35 @@
       </div>
     </div>
 
+    <!-- Details in wallet -->
+    <div
+      class="bg-tertiary border-secondary flex w-full gap-3 border-b-4 px-6 py-4"
+    >
+      <IconAi class="fill-secondary mt-1 h-5" />
+      <div class="flex flex-col gap-4">
+        <h2 class="text-secondary text-lg font-bold">Na sua carteira</h2>
+        <div class="flex flex-wrap gap-4">
+          <MoleculesTickerIndicator
+            name="Score de viabilidade"
+            value="Alta"
+            help-text="Dividend Yield é a relação entre o dividendo pago por ação e o preço da ação."
+            is-intelligent
+          />
+          <MoleculesTickerIndicator
+            name="Grau de Endividamento Inteligente"
+            value="Baixo"
+            help-text="Dividend Yield é a relação entre o dividendo pago por ação e o preço da ação."
+            is-intelligent
+          /><MoleculesTickerIndicator
+            name="Proteção do Minoritário"
+            value="Alto"
+            help-text="Dividend Yield é a relação entre o dividendo pago por ação e o preço da ação."
+            is-intelligent
+          />
+        </div>
+      </div>
+    </div>
+
     <!-- Asset Details -->
     <div class="flex flex-col gap-4 border-b p-4">
       <h2 class="mb-4 text-lg font-bold">Indicadores básicos</h2>
@@ -127,11 +156,6 @@
           is-intelligent
         />
       </div>
-    </div>
-
-    <!-- Portfolio Allocation Chart -->
-    <div class="flex flex-col gap-4 border-b p-4">
-      <AtomsGraphBar />
     </div>
 
     <!-- Dividends Chart -->

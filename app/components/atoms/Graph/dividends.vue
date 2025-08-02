@@ -32,11 +32,8 @@
     </div>
 
     <!-- Gráfico de barras para dividendos -->
-    <div
-      class="relative rounded-lg bg-gray-900/50 p-4"
-      @mouseleave="hoveredIndex = null"
-    >
-      <div class="relative h-80 w-full">
+    <div class="relative" @mouseleave="hoveredIndex = null">
+      <div class="relative h-[350px] w-full">
         <Bar
           ref="chartRef"
           :data="chartData"
@@ -677,12 +674,12 @@ const chartData = computed(() => {
         borderColor: displayData.value.map((item) =>
           item.isPrediction ? 'rgba(245, 158, 11, 0.7)' : '#F59E0B'
         ),
-        borderWidth: 2,
+        borderWidth: 1.5,
         pointRadius: displayData.value.map((item) =>
-          item.isPrediction ? 6 : 4
+          item.isPrediction ? 5 : 3
         ), // Pontos maiores para previsão
         pointHoverRadius: displayData.value.map((item) =>
-          item.isPrediction ? 8 : 6
+          item.isPrediction ? 7 : 5
         ),
         pointBackgroundColor: displayData.value.map((item) =>
           item.isPrediction ? 'rgba(245, 158, 11, 0.7)' : '#F59E0B'
@@ -723,9 +720,7 @@ const chartOptions = computed(() => ({
         },
         usePointStyle: true,
         pointStyle: 'circle',
-        padding: 20,
-        boxWidth: 12,
-        boxHeight: 12,
+        padding: 3,
       },
     },
     tooltip: {

@@ -118,8 +118,5 @@ onUnmounted(() => {
   width: 100%;
   height: 100%;
   position: absolute;
-  box-shadow:
-    inset 10px 0px 20px 0px rgba(0, 0, 0, 1),
-    inset -10px 0px 20px 0px rgba(0, 0, 0, 1);
 }
 </style>

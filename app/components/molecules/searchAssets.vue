@@ -28,7 +28,11 @@
         :ui="{
           item: 'space-y-1',
         }"
-      />
+      >
+        <template #footer>
+          <AtomsTickerCarousel class="w-full" no-control />
+        </template>
+      </UCommandPalette>
     </template>
   </UModal>
 </template>
