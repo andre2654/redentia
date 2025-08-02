@@ -1,6 +1,9 @@
 <template>
   <UApp :toaster="uAppConfig.toaster">
-    <AtomsInstallAppBanner class="max-xl:hidden" />
+    <AtomsInstallAppBanner
+      v-if="route.path !== '/download'"
+      class="max-xl:hidden"
+    />
     <NuxtPage />
   </UApp>
 </template>
@@ -14,6 +17,7 @@ const uAppConfig = {
 }
 
 const interfaceStore = useInterfaceStore()
+const route = useRoute()
 
 onMounted(() => {
   watchEffect(() => {
