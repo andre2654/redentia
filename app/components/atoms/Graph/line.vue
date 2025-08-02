@@ -1,3 +1,44 @@
+<template>
+  <div
+    class="graph relative flex h-full w-full flex-col gap-6"
+    @mouseleave="
+      () => {
+        isHovering = false
+        hoverIndex = null
+      }
+    "
+  >
+    <div :style="{ height: `${height}px` }" class="w-full">
+      <Line ref="chartRef" :data="chartData" :options="chartOptions" />
+    </div>
+
+    <!-- Tooltip dinâmico -->
+    <div
+      v-if="(isHovering || isDragging) && tooltipData"
+      class="pointer-events-none fixed z-10 rounded-lg bg-black/30 px-3 py-2 backdrop-blur-md transition-all duration-150"
+      :style="{
+        left: `${tooltipPosition.x + 10}px`,
+        top: `${tooltipPosition.y - 60}px`,
+      }"
+    >
+      <div class="flex gap-3">
+        <div
+          class="mt-1 h-3 w-3 rounded-full"
+          :style="{ backgroundColor: tooltipData.color }"
+        />
+        <div class="flex flex-col gap-1">
+          <span class="text-[13px] text-white">
+            {{ tooltipData.label }}
+          </span>
+          <span class="text-[13px] font-light text-white/70">
+            {{ tooltipData.value }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
 <script setup lang="ts">
 import { computed, ref, onMounted, onUnmounted } from 'vue'
 import colorLib from '@kurkle/color'
@@ -486,49 +527,8 @@ onUnmounted(() => {
 })
 </script>
 
-<template>
-  <div
-    class="relative flex h-full w-full flex-col gap-6"
-    @mouseleave="
-      () => {
-        isHovering = false
-        hoverIndex = null
-      }
-    "
-  >
-    <div :style="{ height: `${height}px` }" class="w-full">
-      <Line ref="chartRef" :data="chartData" :options="chartOptions" />
-    </div>
-
-    <!-- Tooltip dinâmico -->
-    <div
-      v-if="(isHovering || isDragging) && tooltipData"
-      class="pointer-events-none fixed z-10 rounded-lg bg-black/30 px-3 py-2 backdrop-blur-md transition-all duration-150"
-      :style="{
-        left: `${tooltipPosition.x + 10}px`,
-        top: `${tooltipPosition.y - 60}px`,
-      }"
-    >
-      <div class="flex gap-3">
-        <div
-          class="mt-1 h-3 w-3 rounded-full"
-          :style="{ backgroundColor: tooltipData.color }"
-        />
-        <div class="flex flex-col gap-1">
-          <span class="text-[13px] text-white">
-            {{ tooltipData.label }}
-          </span>
-          <span class="text-[13px] font-light text-white/70">
-            {{ tooltipData.value }}
-          </span>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
-<style module>
-.chart {
+<style scoped>
+.graph:deep(canvas) {
   width: 100% !important;
 }
 </style>

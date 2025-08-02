@@ -1,5 +1,5 @@
 <template>
-  <div class="flex w-full flex-col gap-4">
+  <div class="graph flex w-full flex-col gap-4">
     <!-- Controles de período -->
     <div class="flex items-center justify-between">
       <h2 class="text-lg font-semibold text-white">Dividendos</h2>
@@ -114,7 +114,7 @@
       </div>
 
       <!-- Checkbox para agrupar por ano -->
-      <div class="mt-4 flex items-center gap-2">
+      <div class="ml-2 mt-2 flex items-center gap-2">
         <input
           id="group-by-year"
           v-model="groupByYear"
@@ -128,9 +128,9 @@
     </div>
 
     <!-- Resumo dos dividendos -->
-    <div class="grid grid-cols-2 gap-4 text-sm md:grid-cols-3">
-      <div class="flex flex-col gap-1 rounded-lg bg-gray-800/50 p-3">
-        <span class="text-xs text-white/60">Total no período</span>
+    <div class="flex items-center gap-4">
+      <div class="flex w-full flex-col items-center gap-1 p-3">
+        <span class="text-center text-xs text-white/60">Total no período</span>
         <span class="text-lg font-semibold" style="color: #04ce00">
           R$
           {{
@@ -138,8 +138,9 @@
           }}
         </span>
       </div>
-      <div class="flex flex-col gap-1 rounded-lg bg-gray-800/50 p-3">
-        <span class="text-xs text-white/60">Maior pagamento</span>
+      <hr class="h-[50px] border" />
+      <div class="flex w-full flex-col items-center gap-1 p-3">
+        <span class="text-center text-xs text-white/60">Maior pagamento</span>
         <span class="text-lg font-semibold text-white">
           R$
           {{
@@ -147,8 +148,9 @@
           }}
         </span>
       </div>
-      <div class="flex flex-col gap-1 rounded-lg bg-gray-800/50 p-3">
-        <span class="text-xs text-white/60"
+      <hr class="h-[50px] border" />
+      <div class="flex w-full flex-col items-center gap-1 p-3">
+        <span class="text-center text-xs text-white/60"
           >Média {{ groupByYear ? 'anual' : 'por pagamento' }}</span
         >
         <span class="text-lg font-semibold text-white">
@@ -720,7 +722,7 @@ const chartOptions = computed(() => ({
         },
         usePointStyle: true,
         pointStyle: 'circle',
-        padding: 3,
+        padding: 10,
       },
     },
     tooltip: {
@@ -870,5 +872,9 @@ const averageDividend = computed(() => {
 /* Animação suave para as barras */
 .transition-all {
   transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.graph:deep(canvas) {
+  width: 100% !important;
 }
 </style>
