@@ -36,29 +36,47 @@
       class="relative rounded-lg bg-gray-900/50 p-4"
       @mouseleave="hoveredIndex = null"
     >
-      <div class="h-80 w-full">
+      <div class="relative h-80 w-full">
         <Bar ref="chartRef" :data="chartData" :options="chartOptions" />
       </div>
 
       <!-- Tooltip dinâmico -->
       <div
         v-if="hoveredIndex !== null && tooltipData"
-        class="pointer-events-none fixed z-50 rounded-lg border border-white/10 bg-black/90 px-3 py-2 backdrop-blur-md transition-all duration-150"
+        class="pointer-events-none fixed z-10 rounded-lg bg-black/30 px-3 py-2 backdrop-blur-md transition-all duration-150"
         :style="{
           left: `${tooltipPosition.x + 10}px`,
-          top: `${tooltipPosition.y - 100}px`,
+          top: `${tooltipPosition.y - 60}px`,
         }"
       >
         <div class="flex gap-3">
           <div class="flex flex-col gap-2">
             <!-- Indicador de dividendo -->
             <div class="flex items-center gap-2">
-              <div class="h-3 w-3 rounded-full bg-emerald-500" />
+              <div
+                class="h-3 w-3 rounded-full"
+                :style="{
+                  backgroundColor: tooltipData.isPrediction
+                    ? '#a7d6ff'
+                    : '#04CE00',
+                }"
+              />
               <div class="flex flex-col">
                 <span class="text-[13px] font-medium text-white">
                   {{ tooltipData.label }}
+                  <span
+                    v-if="tooltipData.isPrediction"
+                    class="ml-1 text-[11px] text-[#a7d6ff]"
+                  >
+                    (previsão)
+                  </span>
                 </span>
-                <span class="text-[13px] text-emerald-400">
+                <span
+                  class="text-[13px]"
+                  :style="{
+                    color: tooltipData.isPrediction ? '#a7d6ff' : '#04CE00',
+                  }"
+                >
                   R$
                   {{
                     tooltipData.value.toLocaleString('pt-BR', {
@@ -70,11 +88,22 @@
             </div>
             <!-- Indicador de yield -->
             <div class="flex items-center gap-2">
-              <div class="h-3 w-3 rounded-full bg-amber-500" />
+              <div
+                class="h-3 w-3 rounded-full"
+                :class="
+                  tooltipData.isPrediction ? 'bg-amber-500/50' : 'bg-amber-500'
+                "
+              />
               <div class="flex flex-col">
                 <span class="text-[11px] text-amber-400"> Dividend Yield </span>
                 <span class="text-[13px] font-medium text-amber-400">
                   {{ tooltipData.dividendYield.toFixed(2) }}%
+                  <span
+                    v-if="tooltipData.isPrediction"
+                    class="text-[10px] opacity-70"
+                  >
+                    (est.)
+                  </span>
                 </span>
               </div>
             </div>
@@ -100,7 +129,7 @@
     <div class="grid grid-cols-2 gap-4 text-sm md:grid-cols-3">
       <div class="flex flex-col gap-1 rounded-lg bg-gray-800/50 p-3">
         <span class="text-xs text-white/60">Total no período</span>
-        <span class="text-lg font-semibold text-emerald-400">
+        <span class="text-lg font-semibold" style="color: #04ce00">
           R$
           {{
             totalDividends.toLocaleString('pt-BR', { minimumFractionDigits: 2 })
@@ -134,7 +163,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, onUnmounted } from 'vue'
+import { computed, ref, onMounted, onUnmounted, nextTick } from 'vue'
+import colorLib from '@kurkle/color'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -149,6 +179,11 @@ import {
   type ActiveElement,
 } from 'chart.js'
 import { Bar } from 'vue-chartjs'
+
+function transparentize(value: string, opacity: number) {
+  const alpha = opacity === undefined ? 0.5 : 1 - opacity
+  return colorLib(value).alpha(alpha).rgbString()
+}
 
 interface DividendData {
   date: string
@@ -263,36 +298,140 @@ const filteredData = computed(() => {
   }
 })
 
+// Calcula a previsão do próximo pagamento
+const getNextPaymentPrediction = computed(() => {
+  const dataToUse = props.data.length > 0 ? props.data : mockDividendData
+
+  if (dataToUse.length === 0) return null
+
+  if (groupByYear.value) {
+    // Previsão anual: próximo ano com média dos últimos anos
+    const currentYear = new Date().getFullYear()
+    const recentYears = dataToUse.filter((item) => item.year >= currentYear - 3)
+
+    if (recentYears.length === 0) return null
+
+    // Calcula média anual dos últimos anos
+    const yearlyTotals = recentYears.reduce(
+      (acc, item) => {
+        if (!acc[item.year]) acc[item.year] = 0
+        acc[item.year] += item.value
+        return acc
+      },
+      {} as Record<number, number>
+    )
+
+    const yearlyValues = Object.values(yearlyTotals)
+    const averageAnnual =
+      yearlyValues.reduce((sum, val) => sum + val, 0) / yearlyValues.length
+
+    return {
+      label: `${currentYear + 1}`,
+      value: Math.round(averageAnnual * 100) / 100,
+      year: currentYear + 1,
+      isPrediction: true,
+    }
+  } else {
+    // Previsão mensal: encontra o mês mais frequente e calcula próxima data
+    const currentDate = new Date()
+    const currentYear = currentDate.getFullYear()
+    const currentMonth = currentDate.getMonth() + 1
+
+    // Analisa frequência dos meses de pagamento
+    const monthFrequency = dataToUse.reduce(
+      (acc, item) => {
+        const month = parseInt(item.date.split('/')[1])
+        acc[month] = (acc[month] || 0) + 1
+        return acc
+      },
+      {} as Record<number, number>
+    )
+
+    // Encontra o mês mais frequente
+    const mostFrequentMonth = Object.entries(monthFrequency).sort(
+      ([, a], [, b]) => b - a
+    )[0]?.[0]
+
+    if (!mostFrequentMonth) return null
+
+    const nextMonth = parseInt(mostFrequentMonth)
+
+    // Determina próxima data de pagamento
+    let nextYear = currentYear
+    if (nextMonth <= currentMonth) {
+      nextYear = currentYear + 1
+    }
+
+    // Calcula valor baseado na média dos últimos pagamentos do mesmo mês
+    const sameMonthPayments = dataToUse.filter((item) => {
+      const itemMonth = parseInt(item.date.split('/')[1])
+      return itemMonth === nextMonth && item.year >= currentYear - 3
+    })
+
+    const averageValue =
+      sameMonthPayments.length > 0
+        ? sameMonthPayments.reduce((sum, payment) => sum + payment.value, 0) /
+          sameMonthPayments.length
+        : dataToUse.slice(-4).reduce((sum, payment) => sum + payment.value, 0) /
+          Math.min(4, dataToUse.length)
+
+    // Gera data estimada (dia 15 do mês)
+    const nextDate = `15/${nextMonth.toString().padStart(2, '0')}/${nextYear.toString().slice(-2)}`
+
+    return {
+      label: nextDate,
+      value: Math.round(averageValue * 100) / 100,
+      year: nextYear,
+      isPrediction: true,
+    }
+  }
+})
+
 // Agrupa dados por ano se necessário
 const displayData = computed(() => {
+  let baseData: Array<{
+    label: string
+    value: number
+    year: number
+    isPrediction?: boolean
+  }>
+
   if (!groupByYear.value) {
-    return filteredData.value.map((item) => ({
+    baseData = filteredData.value.map((item) => ({
       label: item.date,
       value: item.value,
       year: item.year,
     }))
+  } else {
+    // Agrupa por ano
+    const groupedByYear = filteredData.value.reduce(
+      (acc, item) => {
+        if (!acc[item.year]) {
+          acc[item.year] = { total: 0, count: 0 }
+        }
+        acc[item.year].total += item.value
+        acc[item.year].count++
+        return acc
+      },
+      {} as Record<number, { total: number; count: number }>
+    )
+
+    baseData = Object.entries(groupedByYear)
+      .map(([year, data]) => ({
+        label: year,
+        value: data.total,
+        year: parseInt(year),
+      }))
+      .sort((a, b) => a.year - b.year)
   }
 
-  // Agrupa por ano
-  const groupedByYear = filteredData.value.reduce(
-    (acc, item) => {
-      if (!acc[item.year]) {
-        acc[item.year] = { total: 0, count: 0 }
-      }
-      acc[item.year].total += item.value
-      acc[item.year].count++
-      return acc
-    },
-    {} as Record<number, { total: number; count: number }>
-  )
+  // Adiciona previsão se disponível
+  const prediction = getNextPaymentPrediction.value
+  if (prediction) {
+    baseData.push(prediction)
+  }
 
-  return Object.entries(groupedByYear)
-    .map(([year, data]) => ({
-      label: year,
-      value: data.total,
-      year: parseInt(year),
-    }))
-    .sort((a, b) => a.year - b.year)
+  return baseData
 })
 
 // Tooltip data para hover
@@ -309,27 +448,34 @@ const tooltipData = computed(() => {
     label: groupByYear.value ? `Ano ${item.label}` : item.label,
     value: item.value,
     dividendYield,
+    isPrediction: item.isPrediction || false,
   }
 })
 
 // Setup de eventos do canvas para interação
 const setupCanvasEvents = (chart: ChartJS) => {
+  if (!chart?.canvas) return () => {}
+
   const canvas = chart.canvas
 
   const handleMouseMove = (event: MouseEvent) => {
-    tooltipPosition.value = { x: event.clientX, y: event.clientY }
+    try {
+      tooltipPosition.value = { x: event.clientX, y: event.clientY }
 
-    const points = chart.getElementsAtEventForMode(
-      event,
-      'nearest',
-      { intersect: true },
-      true
-    )
+      const points = chart.getElementsAtEventForMode(
+        event,
+        'nearest',
+        { intersect: true },
+        true
+      )
 
-    if (points.length) {
-      hoveredIndex.value = points[0].index
-    } else {
-      hoveredIndex.value = null
+      if (points && points.length > 0) {
+        hoveredIndex.value = points[0].index
+      } else {
+        hoveredIndex.value = null
+      }
+    } catch {
+      // Ignora erros silenciosamente
     }
   }
 
@@ -337,13 +483,77 @@ const setupCanvasEvents = (chart: ChartJS) => {
     hoveredIndex.value = null
   }
 
-  canvas.addEventListener('mousemove', handleMouseMove)
-  canvas.addEventListener('mouseleave', handleMouseLeave)
+  try {
+    canvas.addEventListener('mousemove', handleMouseMove)
+    canvas.addEventListener('mouseleave', handleMouseLeave)
 
-  return () => {
-    canvas.removeEventListener('mousemove', handleMouseMove)
-    canvas.removeEventListener('mouseleave', handleMouseLeave)
+    return () => {
+      try {
+        canvas.removeEventListener('mousemove', handleMouseMove)
+        canvas.removeEventListener('mouseleave', handleMouseLeave)
+      } catch {
+        // Ignora erros silenciosamente
+      }
+    }
+  } catch {
+    return () => {}
   }
+}
+
+// Plugin personalizado para desenhar texto nas barras de previsão
+const predictionLabelPlugin = {
+  id: 'predictionLabel',
+  afterDatasetsDraw(chart: ChartJS) {
+    const { ctx } = chart
+    const meta = chart.getDatasetMeta(0) // Dataset das barras
+
+    if (!meta.data) return
+
+    try {
+      ctx.save()
+
+      // Obter dados de forma segura
+      const currentData = displayData.value || []
+
+      meta.data.forEach(
+        (
+          bar: { getCenterPoint: () => { x: number; y: number } },
+          index: number
+        ) => {
+          if (index >= currentData.length) return
+
+          const dataPoint = currentData[index]
+          if (dataPoint?.isPrediction) {
+            try {
+              const centerPoint = bar.getCenterPoint()
+
+              ctx.save()
+              ctx.translate(centerPoint.x, centerPoint.y)
+
+              ctx.restore()
+
+              // Desenha o texto "PREV" abaixo do ícone
+              ctx.save()
+              ctx.translate(centerPoint.x, centerPoint.y)
+              ctx.font = 'bold 12px Arial'
+              ctx.fillStyle = '#1a202c'
+              ctx.textAlign = 'center'
+              ctx.textBaseline = 'middle'
+              ctx.rotate(-Math.PI / 2)
+              ctx.fillText('PREV', 0, 0)
+              ctx.restore()
+            } catch {
+              // Ignora erros silenciosamente
+            }
+          }
+        }
+      )
+
+      ctx.restore()
+    } catch {
+      // Ignora erros silenciosamente
+    }
+  },
 }
 
 // Registra os componentes do Chart.js
@@ -355,7 +565,8 @@ ChartJS.register(
   PointElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  predictionLabelPlugin
 )
 
 // Configuração dos dados do gráfico
@@ -366,33 +577,76 @@ const chartData = computed(() => {
     return (item.value / stockPrice) * 100
   })
 
+  // Define cores base
+  const primaryColor = '#04CE00'
+  const secondaryColor = '#a7d6ff'
+
+  // Separa cores para barras normais e previsão
+  const backgroundColors = displayData.value.map((item) =>
+    item.isPrediction
+      ? transparentize(secondaryColor, 0.8)
+      : transparentize(primaryColor, 0.8)
+  )
+
+  const borderColors = displayData.value.map((item) =>
+    item.isPrediction ? secondaryColor : primaryColor
+  )
+
+  const hoverBackgroundColors = displayData.value.map((item) =>
+    item.isPrediction
+      ? transparentize(secondaryColor, 0.2)
+      : transparentize(primaryColor, 0.2)
+  )
+
   return {
-    labels: displayData.value.map((item) => item.label),
+    labels: displayData.value.map((item) =>
+      item.isPrediction ? `${item.label} (prev.)` : item.label
+    ),
     datasets: [
       {
         label: 'Dividendos',
         data: displayData.value.map((item) => item.value),
-        backgroundColor: '#10B981', // emerald-500
-        hoverBackgroundColor: '#059669', // emerald-600
-        borderRadius: 4,
+        backgroundColor: backgroundColors,
+        borderColor: borderColors,
+        borderWidth: 1.5,
+        hoverBackgroundColor: hoverBackgroundColors,
+        hoverBorderColor: borderColors,
+        hoverBorderWidth: 3,
+        borderRadius: 0,
         borderSkipped: false,
         type: 'bar' as const,
         yAxisID: 'y',
+        order: 2, // Barras ficam atrás
       },
       {
         label: 'Dividend Yield (%)',
         data: yieldData,
-        borderColor: '#F59E0B', // amber-500
-        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+        borderColor: displayData.value.map((item) =>
+          item.isPrediction ? 'rgba(245, 158, 11, 0.7)' : '#F59E0B'
+        ),
         borderWidth: 2,
-        pointRadius: 4,
-        pointHoverRadius: 6,
-        pointBackgroundColor: '#F59E0B',
+        pointRadius: displayData.value.map((item) =>
+          item.isPrediction ? 6 : 4
+        ), // Pontos maiores para previsão
+        pointHoverRadius: displayData.value.map((item) =>
+          item.isPrediction ? 8 : 6
+        ),
+        pointBackgroundColor: displayData.value.map((item) =>
+          item.isPrediction ? 'rgba(245, 158, 11, 0.7)' : '#F59E0B'
+        ),
         pointBorderColor: '#FFFFFF',
         pointBorderWidth: 2,
         type: 'line' as const,
         yAxisID: 'y1',
         tension: 0.4, // Suaviza a linha
+        order: 1, // Linha fica na frente
+        // Linha pontilhada para previsão
+        segment: {
+          borderDash: (ctx: { p1DataIndex: number }) => {
+            const index = ctx.p1DataIndex
+            return displayData.value[index]?.isPrediction ? [5, 5] : []
+          },
+        },
       },
     ],
   }
@@ -409,7 +663,8 @@ const chartOptions = computed(() => ({
   plugins: {
     legend: {
       display: true,
-      position: 'top' as const,
+      position: 'bottom' as const,
+      align: 'start' as const,
       labels: {
         color: 'rgba(255, 255, 255, 0.7)',
         font: {
@@ -418,6 +673,8 @@ const chartOptions = computed(() => ({
         usePointStyle: true,
         pointStyle: 'circle',
         padding: 20,
+        boxWidth: 12,
+        boxHeight: 12,
       },
     },
     tooltip: {
@@ -492,9 +749,13 @@ const chartOptions = computed(() => ({
     },
   },
   onHover: (_event: ChartEvent, elements: ActiveElement[]) => {
-    if (elements.length > 0) {
-      hoveredIndex.value = elements[0].index
-    } else {
+    try {
+      if (elements && elements.length > 0) {
+        hoveredIndex.value = elements[0].index
+      } else {
+        hoveredIndex.value = null
+      }
+    } catch {
       hoveredIndex.value = null
     }
   },
@@ -502,33 +763,60 @@ const chartOptions = computed(() => ({
 
 // Lifecycle hooks
 onMounted(() => {
-  setTimeout(() => {
+  nextTick(() => {
     if (chartRef.value?.chart) {
       chartInstance.value = chartRef.value.chart
       cleanupEvents = setupCanvasEvents(chartRef.value.chart)
     }
-  }, 100)
+  })
 })
 
 onUnmounted(() => {
-  if (cleanupEvents) {
-    cleanupEvents()
-    cleanupEvents = null
+  try {
+    if (cleanupEvents) {
+      cleanupEvents()
+      cleanupEvents = null
+    }
+    if (chartInstance.value) {
+      chartInstance.value.destroy()
+      chartInstance.value = null
+    }
+  } catch {
+    // Ignora erros silenciosamente
   }
 })
 
 // Calcula valores das estatísticas
 const totalDividends = computed(() => {
-  return displayData.value.reduce((sum, item) => sum + item.value, 0)
+  try {
+    const data = displayData.value
+    if (!data || !Array.isArray(data)) return 0
+    return data.reduce((sum, item) => sum + (item?.value || 0), 0)
+  } catch {
+    return 0
+  }
 })
 
 const maxDividend = computed(() => {
-  return Math.max(...displayData.value.map((item) => item.value), 0)
+  try {
+    const data = displayData.value
+    if (!data || !Array.isArray(data) || data.length === 0) return 0
+    return Math.max(...data.map((item) => item?.value || 0))
+  } catch {
+    return 0
+  }
 })
 
 const averageDividend = computed(() => {
-  if (displayData.value.length === 0) return 0
-  return totalDividends.value / displayData.value.length
+  try {
+    const data = displayData.value
+    const total = totalDividends.value
+    if (!data || !Array.isArray(data) || data.length === 0 || total === 0)
+      return 0
+    return total / data.length
+  } catch {
+    return 0
+  }
 })
 </script>
 
