@@ -23,7 +23,7 @@
             base: 'text-[13px] gap-2',
           }"
         >
-          Adicione à carteira
+          <span class="max-md:hidden">Adicione à carteira</span>
         </UButton>
       </div>
     </template>
@@ -33,7 +33,7 @@
       <div class="flex flex-col gap-4">
         <div class="flex items-center justify-between">
           <h2 class="mb-4 text-lg font-semibold">
-            Cotação da {{ asset.stock }}
+            Cotação <span class="max-md:hidden">da {{ asset.stock }}</span>
           </h2>
           <UButtonGroup orientation="horizontal" variant="soft">
             <UButton

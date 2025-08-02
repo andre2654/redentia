@@ -1,6 +1,6 @@
 <template>
   <UApp :toaster="uAppConfig.toaster">
-    <AtomsInstallAppBanner />
+    <AtomsInstallAppBanner class="max-xl:hidden" />
     <NuxtPage />
   </UApp>
 </template>

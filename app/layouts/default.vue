@@ -86,10 +86,10 @@
 
   <!-- Menu mobile -->
   <div
-    class="fixed bottom-6 left-1/2 z-10 flex -translate-x-1/2 items-center gap-8 rounded-full border bg-black/60 p-4 backdrop-blur-lg xl:hidden"
+    class="fixed bottom-6 left-1/2 z-10 flex -translate-x-1/2 items-center gap-8 rounded-full border bg-black/20 px-3 py-3 backdrop-blur-sm xl:hidden"
   >
     <button
-      class="h-[28px] w-[28px] rounded-md bg-[#D9D9D9]"
+      class="h-[20px] w-[20px] rounded-md bg-[#D9D9D9]"
       @click="menuMobileActive = true"
     ></button>
     <NuxtLink
@@ -97,21 +97,28 @@
       active-class="text-primary"
       class="flex flex-col items-center"
     >
-      <UIcon name="i-solar-wallet-bold" class="size-8" />
+      <UIcon name="i-solar-wallet-bold" class="size-6" />
     </NuxtLink>
     <NuxtLink
       to="/"
       active-class="text-primary"
       class="flex flex-col items-center"
     >
-      <UIcon name="i-si-dashboard-vert-fill" class="size-8" />
+      <UIcon name="i-si-dashboard-vert-fill" class="size-6" />
     </NuxtLink>
     <NuxtLink
       to="/dividends"
       active-class="text-primary"
       class="flex flex-col items-center"
     >
-      <UIcon name="i-mingcute-pig-money-fill" class="size-8" />
+      <UIcon name="i-mingcute-pig-money-fill" class="size-6" />
+    </NuxtLink>
+    <NuxtLink
+      to="/download"
+      class="to-secondary from-primary flex items-center gap-2 rounded-full bg-gradient-to-r px-3 py-2 hover:opacity-80"
+    >
+      <IconLogo class="h-4 fill-black" />
+      <span class="text-[12px] font-medium text-black">Baixar</span>
     </NuxtLink>
   </div>
 
@@ -181,7 +188,7 @@
       </div>
       <AtomsSidebarMonthGoal />
     </div>
-    <div class="relative flex w-full flex-col max-md:pb-[115px]">
+    <div class="relative flex w-full flex-col max-xl:pb-[110px]">
       <div
         class="sticky top-0 z-10 flex w-full items-center justify-between gap-4 border-b px-6 py-4 backdrop-blur-lg"
         v-bind="headerProps"
