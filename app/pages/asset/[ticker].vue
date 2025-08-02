@@ -128,6 +128,11 @@
         />
       </div>
     </div>
+
+    <!-- Portfolio Allocation Chart -->
+    <div class="flex flex-col gap-4 border-b p-4">
+      <AtomsGraphBar />
+    </div>
   </NuxtLayout>
 </template>
 
