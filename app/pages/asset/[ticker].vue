@@ -133,6 +133,11 @@
     <div class="flex flex-col gap-4 border-b p-4">
       <AtomsGraphBar />
     </div>
+
+    <!-- Dividends Chart -->
+    <div class="flex flex-col gap-4 border-b p-4">
+      <AtomsGraphDividends />
+    </div>
   </NuxtLayout>
 </template>
 
