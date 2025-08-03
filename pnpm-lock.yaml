@@ -7,6 +7,7 @@ specifiers:
   '@pinia-plugin-persistedstate/nuxt': 1.2.1
   '@pinia/nuxt': 0.5.3
   chart.js: ^4.5.0
+  chartjs-chart-treemap: ^3.1.0
   eslint: 9.9.0
   nuxt: 4.0.1
   pinia: 2.2.1
@@ -24,6 +25,7 @@ dependencies:
   '@nuxt/ui': 3.3.0_pedbtpqpgwwexinqamiembypai
   '@pinia/nuxt': 0.5.3_vue@3.5.17
   chart.js: 4.5.0
+  chartjs-chart-treemap: 3.1.0_chart.js@4.5.0
   nuxt: 4.0.1_eslint@9.9.0
   pinia: 2.2.1_vue@3.5.17
   vue: 3.5.17
@@ -4458,6 +4460,14 @@ packages:
     engines: {pnpm: '>=8'}
     dependencies:
       '@kurkle/color': 0.3.4
+    dev: false
+
+  /chartjs-chart-treemap/3.1.0_chart.js@4.5.0:
+    resolution: {integrity: sha512-0LJxj4J9sCTHmrXCFlqtoBKMJDcS7VzFeRgNBRZRwU1QSpCXJKTNk5TysPEs5/YW0XYvZoN8u44RqqLf0pAzQw==}
+    peerDependencies:
+      chart.js: '>=3.0.0'
+    dependencies:
+      chart.js: 4.5.0
     dev: false
 
   /chokidar/3.6.0:
