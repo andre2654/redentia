@@ -188,7 +188,7 @@
       </div>
       <AtomsSidebarMonthGoal />
     </div>
-    <div class="relative flex w-full flex-col max-xl:pb-[110px]">
+    <div class="relative flex w-full flex-col">
       <div
         class="sticky top-0 z-10 flex w-full items-center justify-between gap-4 border-b px-6 py-4 backdrop-blur-lg"
         v-bind="headerProps"
