@@ -146,14 +146,16 @@ const selectedTimeRange = ref<ChartTimeRange>('month')
 const showMap = ref(true)
 const treemapFilter = ref<'all' | 'positive' | 'negative'>('all')
 
-// Dados mock para o treemap de ações
+// Dados mock para o treemap - separados por categorias
 const stocksData = [
+  // AÇÕES
   {
     symbol: 'PETR4',
     name: 'Petrobras PN',
     price: 32.45,
     change: 8.5,
     volume: 45000000,
+    category: 'acoes' as const,
   },
   {
     symbol: 'VALE3',
@@ -161,6 +163,7 @@ const stocksData = [
     price: 68.2,
     change: -6.8,
     volume: 38000000,
+    category: 'acoes' as const,
   },
   {
     symbol: 'ITUB4',
@@ -168,6 +171,7 @@ const stocksData = [
     price: 28.9,
     change: 12.3,
     volume: 42000000,
+    category: 'acoes' as const,
   },
   {
     symbol: 'BBDC4',
@@ -175,6 +179,7 @@ const stocksData = [
     price: 13.85,
     change: -9.2,
     volume: 35000000,
+    category: 'acoes' as const,
   },
   {
     symbol: 'ABEV3',
@@ -182,6 +187,7 @@ const stocksData = [
     price: 11.76,
     change: 4.7,
     volume: 28000000,
+    category: 'acoes' as const,
   },
   {
     symbol: 'WEGE3',
@@ -189,6 +195,7 @@ const stocksData = [
     price: 45.3,
     change: -3.4,
     volume: 15000000,
+    category: 'acoes' as const,
   },
   {
     symbol: 'MGLU3',
@@ -196,6 +203,7 @@ const stocksData = [
     price: 8.45,
     change: -15.6,
     volume: 55000000,
+    category: 'acoes' as const,
   },
   {
     symbol: 'VVAR3',
@@ -203,6 +211,7 @@ const stocksData = [
     price: 3.22,
     change: 18.9,
     volume: 32000000,
+    category: 'acoes' as const,
   },
   {
     symbol: 'SUZB3',
@@ -210,6 +219,7 @@ const stocksData = [
     price: 52.8,
     change: 7.1,
     volume: 18000000,
+    category: 'acoes' as const,
   },
   {
     symbol: 'JBSS3',
@@ -217,6 +227,7 @@ const stocksData = [
     price: 34.2,
     change: -4.8,
     volume: 22000000,
+    category: 'acoes' as const,
   },
   {
     symbol: 'RENT3',
@@ -224,6 +235,7 @@ const stocksData = [
     price: 65.4,
     change: 9.3,
     volume: 16000000,
+    category: 'acoes' as const,
   },
   {
     symbol: 'LREN3',
@@ -231,62 +243,89 @@ const stocksData = [
     price: 19.85,
     change: -7.9,
     volume: 25000000,
+    category: 'acoes' as const,
+  },
+
+  // FIIs (Fundos Imobiliários)
+  {
+    symbol: 'HGLG11',
+    name: 'CSHG Logística FII',
+    price: 145.5,
+    change: 5.8,
+    volume: 2500000,
+    category: 'fiis' as const,
   },
   {
-    symbol: 'RADL3',
-    name: 'Raia Drogasil ON',
-    price: 26.7,
-    change: 5.2,
-    volume: 14000000,
+    symbol: 'XPML11',
+    name: 'XP Malls FII',
+    price: 98.3,
+    change: -3.2,
+    volume: 1800000,
+    category: 'fiis' as const,
   },
   {
-    symbol: 'RAIL3',
-    name: 'Rumo ON',
-    price: 18.9,
-    change: -11.4,
-    volume: 30000000,
+    symbol: 'BCFF11',
+    name: 'BTG Pactual Corporate FII',
+    price: 89.75,
+    change: 7.4,
+    volume: 3200000,
+    category: 'fiis' as const,
   },
   {
-    symbol: 'CCRO3',
-    name: 'CCR ON',
-    price: 10.25,
-    change: 13.7,
-    volume: 26000000,
-  },
-  {
-    symbol: 'CSAN3',
-    name: 'Cosan ON',
-    price: 15.6,
+    symbol: 'KNRI11',
+    name: 'Kinea Rendimentos Imobiliários FII',
+    price: 95.6,
     change: -8.1,
-    volume: 20000000,
+    volume: 2100000,
+    category: 'fiis' as const,
   },
   {
-    symbol: 'PCAR3',
-    name: 'P&G Car ON',
-    price: 42.15,
+    symbol: 'VISC11',
+    name: 'Vinci Shopping Centers FII',
+    price: 105.2,
+    change: 4.3,
+    volume: 1900000,
+    category: 'fiis' as const,
+  },
+  {
+    symbol: 'MXRF11',
+    name: 'Maxi Renda FII',
+    price: 11.85,
+    change: -5.7,
+    volume: 4500000,
+    category: 'fiis' as const,
+  },
+  {
+    symbol: 'HGRU11',
+    name: 'CSHG Renda Urbana FII',
+    price: 115.4,
     change: 6.9,
-    volume: 12000000,
+    volume: 1600000,
+    category: 'fiis' as const,
   },
   {
-    symbol: 'BRDT3',
-    name: 'Bradesco ON',
-    price: 23.45,
-    change: -5.3,
-    volume: 19000000,
+    symbol: 'BTLG11',
+    name: 'BTG Logística FII',
+    price: 98.95,
+    change: -4.5,
+    volume: 2800000,
+    category: 'fiis' as const,
   },
   {
-    symbol: 'EMBR3',
-    name: 'Embraer ON',
-    price: 38.7,
-    change: 10.8,
-    volume: 17000000,
+    symbol: 'XPPR11',
+    name: 'XP Properties FII',
+    price: 102.3,
+    change: 8.7,
+    volume: 1400000,
+    category: 'fiis' as const,
   },
   {
-    symbol: 'GOAU4',
-    name: 'Gerdau PN',
-    price: 12.3,
-    change: -12.5,
-    volume: 29000000,
+    symbol: 'GGRC11',
+    name: 'General Shopping e Outlets FII',
+    price: 85.2,
+    change: -6.3,
+    volume: 2200000,
+    category: 'fiis' as const,
   },
 ]
 

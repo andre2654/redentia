@@ -3,11 +3,42 @@
     class="treemap-container relative flex h-full w-full flex-col"
     @mouseleave="onMouseLeave"
   >
+    <!-- Layout responsivo para grupos -->
     <div
-      :style="{ height: `${responsiveHeight}px` }"
-      class="min-h-[200px] w-full"
+      class="flex h-full w-full flex-col lg:flex-row"
+      :style="{ minHeight: `${responsiveHeight}px` }"
     >
-      <canvas ref="canvasRef" class="h-full w-full" />
+      <!-- Grupo Ações -->
+      <div
+        v-if="groupedData.acoes.length > 0"
+        class="group-container flex flex-1 flex-col gap-2"
+      >
+        <h3 class="text-[12px] font-medium text-white/80">Ações</h3>
+        <div class="canvas-container relative min-h-[200px] flex-1">
+          <canvas ref="canvasAcoesRef" class="h-full w-full" />
+        </div>
+      </div>
+
+      <!-- Grupo FIIs -->
+      <div
+        v-if="groupedData.fiis.length > 0"
+        class="group-container flex flex-1 flex-col gap-2"
+      >
+        <h3 class="text-[12px] font-medium text-white/80">FIIs</h3>
+        <div class="canvas-container relative min-h-[200px] flex-1">
+          <canvas ref="canvasFiisRef" class="h-full w-full" />
+        </div>
+      </div>
+
+      <!-- Fallback para dados sem categoria -->
+      <div
+        v-if="groupedData.outros.length > 0"
+        class="group-container flex flex-1 flex-col gap-2"
+      >
+        <div class="canvas-container relative min-h-[200px] flex-1">
+          <canvas ref="canvasOutrosRef" class="h-full w-full" />
+        </div>
+      </div>
     </div>
 
     <!-- Tooltip dinâmico responsivo -->
@@ -60,6 +91,7 @@ interface TreemapItem {
   change: number
   volume: number
   marketCap?: number
+  category?: 'acoes' | 'fiis' // Nova propriedade para categorização
 }
 
 interface TooltipData {
@@ -85,6 +117,7 @@ interface Rectangle {
   height: number
   item: TreemapItem
   color: string
+  groupName?: string // Novo campo para identificar o grupo
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -142,10 +175,56 @@ const forceRerender = () => {
   })
 }
 
-const canvasRef = ref<HTMLCanvasElement | null>(null)
+const canvasAcoesRef = ref<HTMLCanvasElement | null>(null)
+const canvasFiisRef = ref<HTMLCanvasElement | null>(null)
+const canvasOutrosRef = ref<HTMLCanvasElement | null>(null)
 const tooltipData = ref<TooltipData | null>(null)
 const tooltipPosition = ref({ x: 0, y: 0 })
 const rectangles = ref<Rectangle[]>([])
+
+// Agrupa os dados por categoria
+const groupedData = computed(() => {
+  let filteredData = [...props.data]
+
+  // Filtra por tipo se especificado
+  if (props.showPositive && !props.showNegative) {
+    filteredData = filteredData.filter((item) => item.change >= 0)
+  } else if (props.showNegative && !props.showPositive) {
+    filteredData = filteredData.filter((item) => item.change < 0)
+  }
+
+  // Ordena por mudança percentual absoluta (maiores variações primeiro)
+  filteredData.sort((a, b) => Math.abs(b.change) - Math.abs(a.change))
+
+  // Agrupa por categoria
+  const groups = {
+    acoes: filteredData.filter((item) => item.category === 'acoes'),
+    fiis: filteredData.filter((item) => item.category === 'fiis'),
+    outros: filteredData.filter(
+      (item) =>
+        !item.category ||
+        (item.category !== 'acoes' && item.category !== 'fiis')
+    ),
+  }
+
+  // Número de itens baseado no tamanho da tela para cada grupo
+  const screenWidth = typeof window !== 'undefined' ? window.innerWidth : 1200
+  let maxItemsPerGroup = 8
+
+  if (screenWidth < 640)
+    maxItemsPerGroup = 4 // Mobile
+  else if (screenWidth < 768)
+    maxItemsPerGroup = 5 // Tablet small
+  else if (screenWidth < 1024)
+    maxItemsPerGroup = 6 // Tablet
+  else maxItemsPerGroup = 8 // Desktop
+
+  return {
+    acoes: groups.acoes.slice(0, maxItemsPerGroup),
+    fiis: groups.fiis.slice(0, maxItemsPerGroup),
+    outros: groups.outros.slice(0, maxItemsPerGroup * 2), // Mais itens se não há categorização
+  }
+})
 
 // Função para calcular a cor baseada na mudança percentual
 const getColor = (change: number): string => {
@@ -170,35 +249,6 @@ const getBorderColor = (change: number): string => {
     return '#FF4757' // Vermelho sólido
   }
 }
-
-// Processa e filtra os dados
-const processedData = computed(() => {
-  let filteredData = [...props.data]
-
-  // Filtra por tipo se especificado
-  if (props.showPositive && !props.showNegative) {
-    filteredData = filteredData.filter((item) => item.change >= 0)
-  } else if (props.showNegative && !props.showPositive) {
-    filteredData = filteredData.filter((item) => item.change < 0)
-  }
-
-  // Ordena por mudança percentual absoluta (maiores variações primeiro)
-  filteredData.sort((a, b) => Math.abs(b.change) - Math.abs(a.change))
-
-  // Número de itens baseado no tamanho da tela
-  const screenWidth = typeof window !== 'undefined' ? window.innerWidth : 1200
-  let maxItems = 15
-
-  if (screenWidth < 640)
-    maxItems = 8 // Mobile
-  else if (screenWidth < 768)
-    maxItems = 10 // Tablet small
-  else if (screenWidth < 1024)
-    maxItems = 12 // Tablet
-  else maxItems = 15 // Desktop
-
-  return filteredData.slice(0, maxItems)
-})
 
 // Algoritmo de treemap squarified para layout organizado e responsivo
 const createTreemap = (
@@ -336,9 +386,12 @@ const layoutRow = (
   })
 }
 
-// Renderiza o treemap no canvas de forma responsiva
-const renderTreemap = () => {
-  const canvas = canvasRef.value
+// Renderiza um treemap específico para um grupo
+const renderTreemapForGroup = (
+  canvas: HTMLCanvasElement,
+  data: TreemapItem[],
+  groupName: string
+) => {
   if (!canvas) return
 
   const ctx = canvas.getContext('2d')
@@ -367,24 +420,27 @@ const renderTreemap = () => {
   ctx.clearRect(0, 0, containerRect.width, containerRect.height)
 
   // Se não há dados, não renderiza
-  if (processedData.value.length === 0) return
+  if (data.length === 0) return
 
   // Cria os retângulos do treemap
-  const rects = createTreemap(
-    processedData.value,
-    containerRect.width,
-    containerRect.height
-  )
-  rectangles.value = rects
+  const rects = createTreemap(data, containerRect.width, containerRect.height)
+
+  // Adiciona os retângulos deste grupo aos retângulos globais
+  rectangles.value = [
+    ...rectangles.value.filter(
+      (r) => !r.groupName || r.groupName !== groupName
+    ),
+    ...rects.map((r) => ({ ...r, groupName })),
+  ]
 
   // Calcula escala responsiva baseada no tamanho do container
   const baseScale = Math.min(
-    containerRect.width / 800,
-    containerRect.height / 400
+    containerRect.width / 400,
+    containerRect.height / 300
   )
-  const fontScale = Math.max(0.6, Math.min(1.2, baseScale))
+  const fontScale = Math.max(0.7, Math.min(1.4, baseScale))
 
-  // Renderiza cada retângulo
+  // Renderiza cada retângulo com texto proporcional ao tamanho
   rects.forEach((rectItem) => {
     // Desenha o retângulo com cantos arredondados responsivos
     const borderRadius = 0
@@ -403,84 +459,117 @@ const renderTreemap = () => {
 
     // Desenha a borda com cor sólida (sem transparência)
     ctx.strokeStyle = getBorderColor(rectItem.item.change)
-    ctx.lineWidth = Math.max(1, 1.5 * fontScale)
+    ctx.lineWidth = Math.max(1, 2 * fontScale)
     ctx.stroke()
 
-    // Desenha o texto se o retângulo for grande o suficiente
+    // Calcula o tamanho da fonte baseado na área do retângulo (inspirado no mapa de criptos)
+    const area = rectItem.width * rectItem.height
+    const areaFactor = Math.sqrt(area) / 100 // Fator baseado na raiz quadrada da área
+
+    // Tamanho base proporcional à área (como no mapa de criptos)
+    const symbolFontSize = Math.max(
+      10,
+      Math.min(32, areaFactor * 8 * fontScale)
+    )
+    const changeFontSize = Math.max(8, symbolFontSize * 0.75)
+    const priceFontSize = Math.max(7, symbolFontSize * 0.6)
+
+    // Requisitos mínimos para mostrar texto
+    const minWidth = 35
+    const minHeight = 20
+    const minAreaForPrice = 4000
+    const minAreaForSymbol = 1000
+
     const centerX = rectItem.x + rectItem.width / 2
     const centerY = rectItem.y + rectItem.height / 2
 
-    // Determina o tamanho da fonte baseado no tamanho do retângulo e responsividade
-    const area = rectItem.width * rectItem.height
-    let baseFontSize = 12
-    if (area < 1500) baseFontSize = 8
-    else if (area < 3000) baseFontSize = 9
-    else if (area < 5000) baseFontSize = 10
-    else if (area < 8000) baseFontSize = 11
-    else if (area > 15000) baseFontSize = 14
-
-    const fontSize = Math.max(8, baseFontSize * fontScale)
-    const minWidth = 40 * fontScale
-    const minHeight = 25 * fontScale
-
-    if (rectItem.width > minWidth && rectItem.height > minHeight) {
-      // Sombra do texto para melhor legibilidade
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.3)'
-      ctx.font = `bold ${fontSize}px Inter, sans-serif`
+    // Mostra texto apenas se o retângulo for grande o suficiente
+    if (
+      rectItem.width > minWidth &&
+      rectItem.height > minHeight &&
+      area > minAreaForSymbol
+    ) {
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
 
-      // Symbol com sombra
+      // Sombra do texto para melhor legibilidade
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'
+
+      // Symbol com sombra (maior destaque como no mapa de criptos)
+      ctx.font = `bold ${symbolFontSize}px Inter, -apple-system, sans-serif`
       ctx.fillText(
         rectItem.item.symbol,
         centerX + 1,
-        centerY - fontSize / 2 + 1
+        centerY - changeFontSize / 2 + 1
       )
 
       // Change percentage com sombra
-      ctx.font = `${fontSize - 2}px Inter, sans-serif`
+      ctx.font = `600 ${changeFontSize}px Inter, -apple-system, sans-serif`
       const changeText = `${rectItem.item.change >= 0 ? '+' : ''}${rectItem.item.change.toFixed(1)}%`
-      ctx.fillText(changeText, centerX + 1, centerY + fontSize / 2 + 1)
+      ctx.fillText(changeText, centerX + 1, centerY + symbolFontSize / 2 + 1)
 
       // Texto principal branco
       ctx.fillStyle = 'white'
-      ctx.font = `bold ${fontSize}px Inter, sans-serif`
 
-      // Symbol
-      ctx.fillText(rectItem.item.symbol, centerX, centerY - fontSize / 2)
+      // Symbol (texto principal maior)
+      ctx.font = `bold ${symbolFontSize}px Inter, -apple-system, sans-serif`
+      ctx.fillText(rectItem.item.symbol, centerX, centerY - changeFontSize / 2)
 
       // Change percentage
-      ctx.font = `${fontSize - 2}px Inter, sans-serif`
-      ctx.fillText(changeText, centerX, centerY + fontSize / 2)
+      ctx.font = `600 ${changeFontSize}px Inter, -apple-system, sans-serif`
+      ctx.fillText(changeText, centerX, centerY + symbolFontSize / 2)
 
-      // Preço se houver espaço suficiente
-      const minHeightForPrice = 50 * fontScale
-      if (
-        rectItem.height > minHeightForPrice &&
-        rectItem.width > 60 * fontScale
-      ) {
-        ctx.font = `${fontSize - 3}px Inter, sans-serif`
+      // Preço apenas em retângulos maiores
+      if (area > minAreaForPrice && rectItem.height > 60) {
+        ctx.font = `500 ${priceFontSize}px Inter, -apple-system, sans-serif`
         ctx.fillStyle = 'rgba(255, 255, 255, 0.8)'
         ctx.fillText(
           `R$ ${rectItem.item.price.toFixed(2)}`,
           centerX,
-          centerY + fontSize + 5
+          centerY + symbolFontSize / 2 + changeFontSize + 4
         )
       }
     }
   })
 }
 
-// Event handlers
-const handleMouseMove = (event: MouseEvent) => {
-  const canvas = canvasRef.value
-  if (!canvas) return
+// Renderiza todos os treemaps
+const renderTreemap = () => {
+  // Limpa os retângulos anteriores
+  rectangles.value = []
 
-  const rect = canvas.getBoundingClientRect()
+  // Renderiza cada grupo
+  if (canvasAcoesRef.value && groupedData.value.acoes.length > 0) {
+    renderTreemapForGroup(
+      canvasAcoesRef.value,
+      groupedData.value.acoes,
+      'acoes'
+    )
+  }
+
+  if (canvasFiisRef.value && groupedData.value.fiis.length > 0) {
+    renderTreemapForGroup(canvasFiisRef.value, groupedData.value.fiis, 'fiis')
+  }
+
+  if (canvasOutrosRef.value && groupedData.value.outros.length > 0) {
+    renderTreemapForGroup(
+      canvasOutrosRef.value,
+      groupedData.value.outros,
+      'outros'
+    )
+  }
+}
+
+// Event handlers para múltiplos canvas
+const handleMouseMove = (event: MouseEvent) => {
+  const target = event.target as HTMLCanvasElement
+  if (!target) return
+
+  const rect = target.getBoundingClientRect()
   const x = event.clientX - rect.left
   const y = event.clientY - rect.top
 
-  // Encontra o retângulo sob o mouse
+  // Encontra o retângulo sob o mouse em todos os grupos
   const hoveredRect = rectangles.value.find(
     (r) => x >= r.x && x <= r.x + r.width && y >= r.y && y <= r.y + r.height
   )
@@ -552,11 +641,19 @@ const onMouseLeave = () => {
 onMounted(async () => {
   await nextTick()
 
-  const canvas = canvasRef.value
-  if (canvas) {
-    canvas.addEventListener('mousemove', handleMouseMove)
-    canvas.addEventListener('mouseleave', onMouseLeave)
-  }
+  // Adiciona event listeners para todos os canvas
+  const canvases = [
+    canvasAcoesRef.value,
+    canvasFiisRef.value,
+    canvasOutrosRef.value,
+  ].filter(Boolean)
+
+  canvases.forEach((canvas) => {
+    if (canvas) {
+      canvas.addEventListener('mousemove', handleMouseMove)
+      canvas.addEventListener('mouseleave', onMouseLeave)
+    }
+  })
 
   // Inicializa o tamanho da janela
   updateWindowSize()
@@ -596,16 +693,19 @@ onMounted(async () => {
     }
     window.removeEventListener('resize', handleResize)
     window.removeEventListener('orientationchange', handleResize)
-    if (canvas) {
-      canvas.removeEventListener('mousemove', handleMouseMove)
-      canvas.removeEventListener('mouseleave', onMouseLeave)
-    }
+
+    canvases.forEach((canvas) => {
+      if (canvas) {
+        canvas.removeEventListener('mousemove', handleMouseMove)
+        canvas.removeEventListener('mouseleave', onMouseLeave)
+      }
+    })
   })
 })
 
 // Observa mudanças nos dados
 watch(
-  () => processedData.value,
+  () => groupedData.value,
   () => {
     nextTick(() => renderTreemap())
   },
@@ -634,5 +734,17 @@ defineExpose({
 <style scoped>
 .treemap-container canvas {
   cursor: pointer;
+}
+
+.canvas-container {
+  border-radius: 0.375rem;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Layout responsivo para grupos */
+@media (max-width: 1023px) {
+  .treemap-container .flex-row {
+    flex-direction: column;
+  }
 }
 </style>
