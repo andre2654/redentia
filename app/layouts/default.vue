@@ -20,7 +20,7 @@
 
     <div class="flex w-[400px] items-center justify-between px-6">
       <div class="flex items-center gap-3">
-        <div class="h-[45px] w-[45px] rounded-md bg-[#D9D9D9]"></div>
+        <UAvatar alt="Benjamin Canac" size="xl" />
         <div class="flex flex-col">
           <div class="text-[16px]">André Saraiva</div>
           <span class="text-[14px] text-gray-400">Plano gratuito</span>
@@ -88,10 +88,13 @@
   <div
     class="fixed bottom-6 left-1/2 z-10 flex -translate-x-1/2 items-center gap-8 rounded-full border bg-black/20 px-3 py-3 backdrop-blur-sm xl:hidden"
   >
-    <button
-      class="h-[20px] w-[20px] rounded-md bg-[#D9D9D9]"
+    <UAvatar
+      alt="Benjamin Canac"
+      size="sm"
+      class="ring-secondary rounded-full ring-4"
       @click="menuMobileActive = true"
-    ></button>
+    />
+
     <NuxtLink
       to="/wallet"
       active-class="text-primary"
@@ -129,7 +132,7 @@
     >
       <div class="flex items-center justify-between px-6">
         <div class="flex items-center gap-3">
-          <div class="h-[35px] w-[35px] rounded-md bg-[#D9D9D9]"></div>
+          <UAvatar alt="Benjamin Canac" size="lg" />
           <div class="flex flex-col">
             <div class="text-[14px]">André Saraiva</div>
             <span class="text-[12px] text-gray-400">Plano gratuito</span>

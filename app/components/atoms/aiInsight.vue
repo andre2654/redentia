@@ -1,5 +1,7 @@
 <template>
-  <div class="bg-tertiary text-secondary flex gap-5 rounded-md p-4">
+  <div
+    class="bg-tertiary/40 border-tertiary text-secondary flex gap-5 rounded-md border p-4"
+  >
     <IconAi class="fill-secondary h-8 w-8" />
     <div class="flex flex-col gap-4">
       <div class="flex items-center gap-2">
