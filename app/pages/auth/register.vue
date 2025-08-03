@@ -140,4 +140,9 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
   showSuccessNotification('Login successful', 'Welcome back!')
   console.log(event.data)
 }
+
+definePageMeta({
+  isPublicRoute: true,
+  hideInstallAppBanner: true,
+})
 </script>

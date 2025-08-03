@@ -17,8 +17,7 @@ const interfaceStore = useInterfaceStore()
 const route = useRoute()
 
 const showBanner = computed(() => {
-  const preventBannerRoutes = ['/download', '/auth/login', '/auth/register']
-  return !preventBannerRoutes.includes(route.path)
+  return !route.meta.hideInstallAppBanner
 })
 
 onMounted(() => {

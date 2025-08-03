@@ -25,3 +25,7 @@ function showNotification(type: 'success' | 'error' | 'info', title: string, des
 export function showSuccessNotification(title: string, description: string) {
   showNotification('success', title, description)
 }
+
+export function showErrorNotification(title: string, description: string) {
+  showNotification('error', title, description)
+}

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col">
+  <div class="mx-auto flex max-w-[1400px] flex-col border-x">
     <div class="py-5">
       <NuxtLink to="/">
         <IconLogoFull class="mx-auto h-auto w-[200px] fill-white" />
@@ -51,7 +51,7 @@
         </div>
       </div>
     </div>
-    <div class="flex bg-white/10 py-[60px] text-white max-sm:px-4">
+    <div class="flex py-[60px] text-white max-sm:px-4">
       <div
         class="mx-auto flex w-full max-w-[900px] justify-center gap-5 max-md:flex-col"
       >
@@ -140,6 +140,7 @@
       </div>
     </div>
   </div>
+  <Footer />
 </template>
 
 <script setup lang="ts">
@@ -155,4 +156,9 @@ const scrollToDownloadSection = (system: 'android' | 'ios') => {
 const installApp = () => {
   console.log('Install app button clicked')
 }
+
+definePageMeta({
+  isPublicRoute: true,
+  hideInstallAppBanner: true,
+})
 </script>

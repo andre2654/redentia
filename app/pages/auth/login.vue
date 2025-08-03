@@ -71,4 +71,9 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
   router.push('/')
 }
+
+definePageMeta({
+  isPublicRoute: true,
+  hideInstallAppBanner: true,
+})
 </script>

@@ -208,6 +208,8 @@
       </div>
     </div>
   </div>
+
+  <Footer />
 </template>
 
 <script lang="ts" setup>
