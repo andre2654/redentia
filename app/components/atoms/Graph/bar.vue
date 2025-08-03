@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col gap-6">
     <span class="text-[16px]">Setores</span>
-    <div class="flex gap-2">
+    <AtomsDraggableContainer class="no-scrollbar gap-2">
       <div
         v-for="item in portfolioData"
         :key="item.label"
@@ -23,7 +23,7 @@
         </div>
         <span class="label -ml-1 max-w-fit text-[14px]">{{ item.label }}</span>
       </div>
-    </div>
+    </AtomsDraggableContainer>
   </div>
 </template>
 

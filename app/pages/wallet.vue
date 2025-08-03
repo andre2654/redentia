@@ -8,9 +8,9 @@
       <div class="flex flex-col gap-[30px] border-b p-6">
         <h2 class="text-[18px] font-bold">Composição</h2>
         <div class="flex items-center justify-center gap-7 max-lg:flex-col">
-          <AtomsGraphBar />
+          <AtomsGraphBar class="max-sm:max-w-[300px]" />
           <hr class="border-x max-lg:w-[200px] lg:h-[200px]" />
-          <AtomsGraphBar />
+          <AtomsGraphBar class="max-sm:max-w-[300px]" />
         </div>
       </div>
       <div class="mt-[50px] flex flex-col items-center gap-[50px]">

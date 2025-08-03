@@ -41,6 +41,15 @@ textarea:focus {
   .light-border hr {
     @apply border-[#A5A5A5];
   }
+
+  // Remove scrollbar
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
 
 button:disabled {
