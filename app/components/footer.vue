@@ -15,7 +15,7 @@
       </div>
     </div>
     <div
-      class="mx-auto flex w-full max-w-[1400px] flex-col gap-6 pb-[80px] pt-[50px] max-lg:items-center"
+      class="mx-auto flex w-full max-w-[1400px] flex-col gap-6 pb-[105px] pt-[50px] max-lg:items-center"
     >
       <NuxtLink to="/">
         <IconLogoFull class="w-[150px] fill-white" />
