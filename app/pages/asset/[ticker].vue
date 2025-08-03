@@ -182,7 +182,7 @@
       <div
         class="flex flex-col gap-2 rounded-lg border p-4"
         :class="{
-          'bg-secondary/10 border-secondary text-secondary': showRelevantDocs,
+          'bg-tertiary/40 border-tertiary text-secondary': showRelevantDocs,
         }"
       >
         <div class="flex items-center justify-between">
@@ -221,6 +221,8 @@
         Brasil, a B3, sob o código BBAS3.
       </p>
     </div>
+
+    <MoleculesChat class="w-full bg-white/10" />
   </NuxtLayout>
 </template>
 
