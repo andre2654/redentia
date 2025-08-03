@@ -1,7 +1,9 @@
 <template>
   <div
     class="flex w-fit flex-col gap-2 px-[30px]"
-    :class="[message.type === 'bot' ? 'mr-auto' : 'ml-auto']"
+    :class="[
+      message.type === 'bot' ? 'mr-auto items-start' : 'ml-auto items-end',
+    ]"
   >
     <div v-if="message.type === 'bot'" class="flex items-center gap-2">
       <IconLogo class="w-6 fill-white" />
@@ -16,7 +18,7 @@
     >
       {{ message.content }}
     </p>
-    <small class="text-[11px] text-white/60">
+    <small class="text-xs text-white/60">
       {{ new Date(message.timestamp).toLocaleTimeString() }}
     </small>
   </div>

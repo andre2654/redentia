@@ -6,7 +6,7 @@
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer
         vulputate erat non massa tristique.
       </p>
-      <div class="grid max-w-[800px] grid-cols-3 gap-3">
+      <div class="grid max-w-[800px] grid-cols-2 gap-3 md:grid-cols-3">
         <div v-for="(suggestion, idx) in suggestions" :key="idx" class="mb-2">
           <button
             class="glass flex h-[130px] items-center justify-center rounded-lg bg-gradient-to-t from-white/10 to-transparent p-3 text-[13px] font-medium hover:from-white/20"
@@ -28,7 +28,7 @@
     </div>
 
     <div
-      class="sticky bottom-0 flex w-full flex-col gap-3 bg-white/10 p-3 backdrop-blur-[99px]"
+      class="sticky bottom-0 flex w-full flex-col gap-3 bg-white/10 p-3 pb-6 backdrop-blur-[99px]"
     >
       <UTextarea
         placeholder="Faça qualquer pesquisa..."
