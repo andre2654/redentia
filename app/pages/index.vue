@@ -99,19 +99,21 @@
       </div>
       <div class="flex flex-col gap-3 px-6">
         <h2 class="text-[18px] font-bold">Maiores altas e baixas</h2>
-        <div v-if="showMap">
-          <AtomsGraphTreemap
-            :data="stocksData"
-            :height="400"
-            :show-positive="
-              treemapFilter === 'all' || treemapFilter === 'positive'
-            "
-            :show-negative="
-              treemapFilter === 'all' || treemapFilter === 'negative'
-            "
-          />
-        </div>
-        <div v-else class="flex flex-wrap gap-4">
+      </div>
+      <div v-if="showMap">
+        <AtomsGraphTreemap
+          :data="stocksData"
+          :height="400"
+          :show-positive="
+            treemapFilter === 'all' || treemapFilter === 'positive'
+          "
+          :show-negative="
+            treemapFilter === 'all' || treemapFilter === 'negative'
+          "
+        />
+      </div>
+      <template v-else>
+        <div class="flex flex-wrap gap-4">
           <AtomsTicker v-for="index in 8" :key="index" />
         </div>
         <NuxtLink
@@ -120,19 +122,19 @@
         >
           Ver todos
         </NuxtLink>
-      </div>
-      <div class="flex flex-col gap-3 px-6">
-        <h2 class="text-[18px] font-bold">Maiores baixas e baixas</h2>
-        <div class="flex flex-wrap gap-4">
-          <AtomsTicker v-for="index in 8" :key="index" />
+        <div class="flex flex-col gap-3 px-6">
+          <h2 class="text-[18px] font-bold">Maiores baixas e baixas</h2>
+          <div class="flex flex-wrap gap-4">
+            <AtomsTicker v-for="index in 8" :key="index" />
+          </div>
         </div>
-      </div>
-      <NuxtLink
-        to="/assets"
-        class="mt-4 flex items-center justify-center gap-2 hover:underline"
-      >
-        Ver todos
-      </NuxtLink>
+        <NuxtLink
+          to="/assets"
+          class="mt-4 flex items-center justify-center gap-2 hover:underline"
+        >
+          Ver todos
+        </NuxtLink>
+      </template>
     </div>
   </NuxtLayout>
 </template>
