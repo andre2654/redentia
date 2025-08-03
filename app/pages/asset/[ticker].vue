@@ -10,9 +10,11 @@
             class="h-6 w-6 rounded-full"
           />
           <h1 class="min-w-max font-medium max-md:text-[20px]">
-            {{ asset.name }}
+            {{ asset.stock }}
           </h1>
-          <span class="text-sm text-white/70">({{ asset.stock }})</span>
+          <div class="text-sm">
+            R$ 23,00 <span class="text-green-500">(+2,00% hoje)</span>
+          </div>
         </div>
         <UButton
           color="neutral"
@@ -67,7 +69,7 @@
 
     <!-- Details in wallet -->
     <div
-      class="bg-tertiary border-secondary flex w-full gap-3 border-b-4 px-6 py-4"
+      class="bg-tertiary/40 border-secondary flex w-full gap-3 border-b-[10px] px-6 py-4"
     >
       <IconAi class="fill-secondary mt-1 h-5" />
       <div class="flex flex-col gap-4">
@@ -156,11 +158,68 @@
           is-intelligent
         />
       </div>
+      <div class="flex flex-col gap-1">
+        <AtomsAiInsight class="max-w-[900px]" />
+        <small class="text-white/70">
+          * Isso não é uma recomendação de investimento
+        </small>
+      </div>
     </div>
 
     <!-- Dividends Chart -->
     <div class="flex flex-col gap-4 border-b p-4">
       <AtomsGraphDividends />
+    </div>
+
+    <!-- Asset docs -->
+    <div class="flex flex-col gap-4 p-4">
+      <h2 class="text-lg font-bold">Documentos</h2>
+      <div class="flex items-center gap-2">
+        <IconAi class="fill-secondary h-5" />
+        <UCheckbox v-model="showRelevantDocs" color="secondary" />
+        <h2 class="text-secondary">Mostrar somente relevantes</h2>
+      </div>
+      <div
+        class="flex flex-col gap-2 rounded-lg border p-4"
+        :class="{
+          'bg-secondary/10 border-secondary text-secondary': showRelevantDocs,
+        }"
+      >
+        <div class="flex items-center justify-between">
+          <div class="flex flex-col">
+            <b class="text-[14px]"
+              >Esclarecimentos sobre questionamentos da CVM/B3 - Comunicado ao
+              Mercado</b
+            >
+            <p class="text-[11px]">
+              Negociações atípicas de valores mobiliários
+            </p>
+          </div>
+          <AtomsButton> Ver </AtomsButton>
+        </div>
+      </div>
+    </div>
+
+    <!-- Asset Info -->
+    <div class="flex flex-col gap-4 p-4">
+      <img
+        v-if="asset.logo"
+        :src="asset.logo"
+        alt="Asset Logo"
+        class="h-[200px] w-[200px] rounded-lg"
+      />
+      <b class="text-lg">{{ asset.name }}</b>
+      <b class="text-lg">00.000.000/0001-91</b>
+      <p class="text-sm text-white/80">
+        O Banco do Brasil S.A, mais conhecido como BB, é uma das maiores
+        instituições financeiras do país, sendo sua atuação ligada ao segmento
+        de serviços bancários. Criado no início do século XIX, ainda no Brasil
+        Império, o Banco do Brasil se tornou uma das maiores instituições
+        financeiras do país ao longo do tempo, figurando na lista dos cinco
+        maiores bancos de varejo do Brasil. O Banco do Brasil é constituído como
+        sociedade de economia mista e suas ações são negociadas na Bolsa do
+        Brasil, a B3, sob o código BBAS3.
+      </p>
     </div>
   </NuxtLayout>
 </template>
@@ -177,6 +236,7 @@ const { getAsset } = useAssetsService()
 const ticker = route.params.ticker as string
 const asset = await getAsset(ticker)
 const selectedTimeRange = ref<ChartTimeRange>('month')
+const showRelevantDocs = ref(true)
 
 // Mock data melhorado com dados realistas
 const generateMockData = (timeRange: ChartTimeRange) => {

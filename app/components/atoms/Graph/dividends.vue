@@ -760,6 +760,7 @@ const chartOptions = computed(() => ({
             minimumFractionDigits: 2,
           })}`
         },
+        maxTicksLimit: 5,
       },
       title: {
         display: true,
