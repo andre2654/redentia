@@ -1,6 +1,6 @@
 <template>
-  <NuxtLayout title="Visão geral">
-    <div class="flex h-full flex-col gap-4 pt-6">
+  <NuxtLayout title="Visão geral" hide-search-bar>
+    <div class="flex h-full flex-col gap-4 pb-8 pt-6">
       <div class="flex flex-col px-6">
         <h2 class="text-[18px] font-bold">Ações e fundos imobiliarios</h2>
         <p class="text-[13px] font-extralight">
@@ -73,32 +73,30 @@
             <UCheckbox v-model="showMap" color="secondary" />
             <h2 class="text-secondary">Mostrar mapa</h2>
           </div>
-          <div v-if="showMap" class="flex gap-2">
-            <UButtonGroup orientation="horizontal" variant="soft" size="xs">
-              <UButton
-                color="neutral"
-                :variant="treemapFilter === 'all' ? 'soft' : 'link'"
-                label="Todos"
-                @click="treemapFilter = 'all'"
-              />
-              <UButton
-                color="green"
-                :variant="treemapFilter === 'positive' ? 'soft' : 'link'"
-                label="Altas"
-                @click="treemapFilter = 'positive'"
-              />
-              <UButton
-                color="red"
-                :variant="treemapFilter === 'negative' ? 'soft' : 'link'"
-                label="Baixas"
-                @click="treemapFilter = 'negative'"
-              />
-            </UButtonGroup>
-          </div>
         </div>
       </div>
-      <div class="flex flex-col gap-3 px-6">
+      <div class="flex items-center justify-between gap-3 px-6">
         <h2 class="text-[18px] font-bold">Maiores altas e baixas</h2>
+        <UButtonGroup v-if="showMap" orientation="horizontal" variant="soft">
+          <UButton
+            color="neutral"
+            :variant="treemapFilter === 'all' ? 'soft' : 'link'"
+            label="Todos"
+            @click="treemapFilter = 'all'"
+          />
+          <UButton
+            color="neutral"
+            :variant="treemapFilter === 'positive' ? 'soft' : 'link'"
+            label="Altas"
+            @click="treemapFilter = 'positive'"
+          />
+          <UButton
+            color="neutral"
+            :variant="treemapFilter === 'negative' ? 'soft' : 'link'"
+            label="Baixas"
+            @click="treemapFilter = 'negative'"
+          />
+        </UButtonGroup>
       </div>
       <div v-if="showMap">
         <AtomsGraphTreemap
@@ -113,7 +111,7 @@
         />
       </div>
       <template v-else>
-        <div class="flex flex-wrap gap-4">
+        <div class="flex flex-wrap justify-center gap-6">
           <AtomsTicker v-for="index in 8" :key="index" />
         </div>
         <NuxtLink
@@ -124,17 +122,17 @@
         </NuxtLink>
         <div class="flex flex-col gap-3 px-6">
           <h2 class="text-[18px] font-bold">Maiores baixas e baixas</h2>
-          <div class="flex flex-wrap gap-4">
+          <div class="flex flex-wrap justify-center gap-6">
             <AtomsTicker v-for="index in 8" :key="index" />
           </div>
         </div>
-        <NuxtLink
-          to="/assets"
-          class="mt-4 flex items-center justify-center gap-2 hover:underline"
-        >
-          Ver todos
-        </NuxtLink>
       </template>
+      <NuxtLink
+        to="/assets"
+        class="mt-4 flex items-center justify-center gap-2 hover:underline"
+      >
+        Ver todos
+      </NuxtLink>
     </div>
   </NuxtLayout>
 </template>

@@ -5,7 +5,7 @@
   >
     <!-- Layout responsivo para grupos -->
     <div
-      class="flex h-full w-full flex-col lg:flex-row"
+      class="flex h-full w-full flex-col gap-2 lg:flex-row"
       :style="{ minHeight: `${responsiveHeight}px` }"
     >
       <!-- Grupo Ações -->
@@ -13,7 +13,7 @@
         v-if="groupedData.acoes.length > 0"
         class="group-container flex flex-1 flex-col gap-2"
       >
-        <h3 class="text-[12px] font-medium text-white/80">Ações</h3>
+        <h3 class="px-6 text-[12px] font-medium text-white/80">Ações</h3>
         <div class="canvas-container relative min-h-[200px] flex-1">
           <canvas ref="canvasAcoesRef" class="h-full w-full" />
         </div>
@@ -24,7 +24,7 @@
         v-if="groupedData.fiis.length > 0"
         class="group-container flex flex-1 flex-col gap-2"
       >
-        <h3 class="text-[12px] font-medium text-white/80">FIIs</h3>
+        <h3 class="px-6 text-[12px] font-medium text-white/80">FIIs</h3>
         <div class="canvas-container relative min-h-[200px] flex-1">
           <canvas ref="canvasFiisRef" class="h-full w-full" />
         </div>
@@ -162,6 +162,26 @@ const updateWindowSize = () => {
       newSize.height !== windowSize.value.height
     ) {
       windowSize.value = newSize
+
+      // Força limpeza de cache de layout
+      nextTick(() => {
+        // Força recálculo de todos os containers
+        const containers = [
+          canvasAcoesRef.value?.parentElement,
+          canvasFiisRef.value?.parentElement,
+          canvasOutrosRef.value?.parentElement,
+        ].filter(Boolean)
+
+        containers.forEach((container) => {
+          if (container) {
+            const display = container.style.display
+            container.style.display = 'none'
+            void container.offsetHeight
+            container.style.display = display || ''
+          }
+        })
+      })
+
       return true
     }
   }
@@ -209,15 +229,15 @@ const groupedData = computed(() => {
 
   // Número de itens baseado no tamanho da tela para cada grupo
   const screenWidth = typeof window !== 'undefined' ? window.innerWidth : 1200
-  let maxItemsPerGroup = 8
+  let maxItemsPerGroup = 12
 
   if (screenWidth < 640)
-    maxItemsPerGroup = 4 // Mobile
+    maxItemsPerGroup = 8 // Mobile
   else if (screenWidth < 768)
-    maxItemsPerGroup = 5 // Tablet small
+    maxItemsPerGroup = 12 // Tablet small
   else if (screenWidth < 1024)
-    maxItemsPerGroup = 6 // Tablet
-  else maxItemsPerGroup = 8 // Desktop
+    maxItemsPerGroup = 12 // Tablet
+  else maxItemsPerGroup = 12 // Desktop
 
   return {
     acoes: groups.acoes.slice(0, maxItemsPerGroup),
@@ -401,144 +421,177 @@ const renderTreemapForGroup = (
   const container = canvas.parentElement
   if (!container) return
 
+  // Força o recálculo das dimensões do container
+  const forceReflow = () => {
+    // Limpa estilos inline que podem estar interferindo
+    canvas.style.width = ''
+    canvas.style.height = ''
+    container.style.display = 'none'
+    void container.offsetHeight // Força reflow
+    container.style.display = ''
+  }
+
+  // Para resize aumentando, força um reflow
+  forceReflow()
+
   // Aguarda um momento para garantir que o container tem dimensões corretas
-  setTimeout(() => {
-    const containerRect = container.getBoundingClientRect()
+  requestAnimationFrame(() => {
+    // Aguarda mais um frame para garantir estabilidade
+    requestAnimationFrame(() => {
+      const containerRect = container.getBoundingClientRect()
 
-    // Se o container não tem tamanho válido, não renderiza
-    if (containerRect.width <= 0 || containerRect.height <= 0) return
-
-    // Ajusta o canvas para o tamanho do container
-    const dpr = window.devicePixelRatio || 1
-
-    // Garante dimensões mínimas
-    const width = Math.max(200, containerRect.width)
-    const height = Math.max(150, containerRect.height)
-
-    canvas.width = width * dpr
-    canvas.height = height * dpr
-    canvas.style.width = width + 'px'
-    canvas.style.height = height + 'px'
-
-    ctx.scale(dpr, dpr)
-
-    // Limpa o canvas
-    ctx.clearRect(0, 0, width, height)
-
-    // Se não há dados, não renderiza
-    if (data.length === 0) return
-
-    // Cria os retângulos do treemap
-    const rects = createTreemap(data, width, height)
-
-    // Remove retângulos antigos deste grupo e adiciona os novos
-    rectangles.value = [
-      ...rectangles.value.filter(
-        (r) => !r.groupName || r.groupName !== groupName
-      ),
-      ...rects.map((r) => ({ ...r, groupName })),
-    ]
-
-    // Calcula escala responsiva baseada no tamanho do container
-    const baseScale = Math.min(width / 400, height / 300)
-    const fontScale = Math.max(0.7, Math.min(1.4, baseScale))
-
-    // Renderiza cada retângulo com texto proporcional ao tamanho
-    rects.forEach((rectItem) => {
-      // Desenha o retângulo com cantos arredondados responsivos
-      const borderRadius = 0
-
-      // Preenche com a cor de fundo (com transparência)
-      ctx.fillStyle = rectItem.color
-      ctx.beginPath()
-      ctx.roundRect(
-        rectItem.x,
-        rectItem.y,
-        rectItem.width,
-        rectItem.height,
-        borderRadius
-      )
-      ctx.fill()
-
-      // Desenha a borda com cor sólida (sem transparência)
-      ctx.strokeStyle = getBorderColor(rectItem.item.change)
-      ctx.lineWidth = Math.max(1, 2 * fontScale)
-      ctx.stroke()
-
-      // Calcula o tamanho da fonte baseado na área do retângulo (inspirado no mapa de criptos)
-      const area = rectItem.width * rectItem.height
-      const areaFactor = Math.sqrt(area) / 100 // Fator baseado na raiz quadrada da área
-
-      // Tamanho base proporcional à área (como no mapa de criptos)
-      const symbolFontSize = Math.max(
-        10,
-        Math.min(32, areaFactor * 8 * fontScale)
-      )
-      const changeFontSize = Math.max(8, symbolFontSize * 0.75)
-      const priceFontSize = Math.max(7, symbolFontSize * 0.6)
-
-      // Requisitos mínimos para mostrar texto
-      const minWidth = 35
-      const minHeight = 20
-      const minAreaForPrice = 4000
-      const minAreaForSymbol = 1000
-
-      const centerX = rectItem.x + rectItem.width / 2
-      const centerY = rectItem.y + rectItem.height / 2
-
-      // Mostra texto apenas se o retângulo for grande o suficiente
-      if (
-        rectItem.width > minWidth &&
-        rectItem.height > minHeight &&
-        area > minAreaForSymbol
-      ) {
-        ctx.textAlign = 'center'
-        ctx.textBaseline = 'middle'
-
-        // Sombra do texto para melhor legibilidade
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'
-
-        // Symbol com sombra (maior destaque como no mapa de criptos)
-        ctx.font = `bold ${symbolFontSize}px Inter, -apple-system, sans-serif`
-        ctx.fillText(
-          rectItem.item.symbol,
-          centerX + 1,
-          centerY - changeFontSize / 2 + 1
-        )
-
-        // Change percentage com sombra
-        ctx.font = `600 ${changeFontSize}px Inter, -apple-system, sans-serif`
-        const changeText = `${rectItem.item.change >= 0 ? '+' : ''}${rectItem.item.change.toFixed(1)}%`
-        ctx.fillText(changeText, centerX + 1, centerY + symbolFontSize / 2 + 1)
-
-        // Texto principal branco
-        ctx.fillStyle = 'white'
-
-        // Symbol (texto principal maior)
-        ctx.font = `bold ${symbolFontSize}px Inter, -apple-system, sans-serif`
-        ctx.fillText(
-          rectItem.item.symbol,
-          centerX,
-          centerY - changeFontSize / 2
-        )
-
-        // Change percentage
-        ctx.font = `600 ${changeFontSize}px Inter, -apple-system, sans-serif`
-        ctx.fillText(changeText, centerX, centerY + symbolFontSize / 2)
-
-        // Preço apenas em retângulos maiores
-        if (area > minAreaForPrice && rectItem.height > 60) {
-          ctx.font = `500 ${priceFontSize}px Inter, -apple-system, sans-serif`
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.8)'
-          ctx.fillText(
-            `R$ ${rectItem.item.price.toFixed(2)}`,
-            centerX,
-            centerY + symbolFontSize / 2 + changeFontSize + 4
-          )
-        }
+      // Se o container não tem tamanho válido, tenta novamente após um delay
+      if (containerRect.width <= 0 || containerRect.height <= 0) {
+        setTimeout(() => renderTreemapForGroup(canvas, data, groupName), 100)
+        return
       }
+
+      // Ajusta o canvas para o tamanho do container com margem de segurança
+      const dpr = window.devicePixelRatio || 1
+
+      // Usa as dimensões exatas do container (sem adicionar dimensões mínimas)
+      const width = Math.floor(containerRect.width)
+      const height = Math.floor(containerRect.height)
+
+      // Garante que as dimensões são válidas
+      if (width <= 0 || height <= 0) return
+
+      // Limpa qualquer transformação anterior
+      ctx.setTransform(1, 0, 0, 1, 0, 0)
+
+      // Define as dimensões do canvas
+      canvas.width = width * dpr
+      canvas.height = height * dpr
+
+      // IMPORTANTE: Define o tamanho CSS do canvas para corresponder exatamente ao container
+      canvas.style.width = width + 'px'
+      canvas.style.height = height + 'px'
+
+      // Aplica a escala para dispositivos de alta densidade
+      ctx.scale(dpr, dpr)
+
+      // Limpa o canvas
+      ctx.clearRect(0, 0, width, height)
+
+      // Se não há dados, não renderiza
+      if (data.length === 0) return
+
+      // Cria os retângulos do treemap
+      const rects = createTreemap(data, width, height)
+
+      // Remove retângulos antigos deste grupo e adiciona os novos
+      rectangles.value = [
+        ...rectangles.value.filter(
+          (r) => !r.groupName || r.groupName !== groupName
+        ),
+        ...rects.map((r) => ({ ...r, groupName })),
+      ]
+
+      // Calcula escala responsiva baseada no tamanho do container
+      const baseScale = Math.min(width / 400, height / 300)
+      const fontScale = Math.max(0.7, Math.min(1.4, baseScale))
+
+      // Renderiza cada retângulo com texto proporcional ao tamanho
+      rects.forEach((rectItem) => {
+        // Desenha o retângulo com cantos arredondados responsivos
+        const borderRadius = 0
+
+        // Preenche com a cor de fundo (com transparência)
+        ctx.fillStyle = rectItem.color
+        ctx.beginPath()
+        ctx.roundRect(
+          rectItem.x,
+          rectItem.y,
+          rectItem.width,
+          rectItem.height,
+          borderRadius
+        )
+        ctx.fill()
+
+        // Desenha a borda com cor sólida (sem transparência)
+        ctx.strokeStyle = getBorderColor(rectItem.item.change)
+        ctx.lineWidth = Math.max(1, 2 * fontScale)
+        ctx.stroke()
+
+        // Calcula o tamanho da fonte baseado na área do retângulo (inspirado no mapa de criptos)
+        const area = rectItem.width * rectItem.height
+        const areaFactor = Math.sqrt(area) / 100 // Fator baseado na raiz quadrada da área
+
+        // Tamanho base proporcional à área (como no mapa de criptos)
+        const symbolFontSize = Math.max(
+          10,
+          Math.min(32, areaFactor * 8 * fontScale)
+        )
+        const changeFontSize = Math.max(8, symbolFontSize * 0.75)
+        const priceFontSize = Math.max(7, symbolFontSize * 0.6)
+
+        // Requisitos mínimos para mostrar texto
+        const minWidth = 35
+        const minHeight = 20
+        const minAreaForPrice = 4000
+        const minAreaForSymbol = 1000
+
+        const centerX = rectItem.x + rectItem.width / 2
+        const centerY = rectItem.y + rectItem.height / 2
+
+        // Mostra texto apenas se o retângulo for grande o suficiente
+        if (
+          rectItem.width > minWidth &&
+          rectItem.height > minHeight &&
+          area > minAreaForSymbol
+        ) {
+          ctx.textAlign = 'center'
+          ctx.textBaseline = 'middle'
+
+          // Sombra do texto para melhor legibilidade
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'
+
+          // Symbol com sombra (maior destaque como no mapa de criptos)
+          ctx.font = `bold ${symbolFontSize}px Inter, -apple-system, sans-serif`
+          ctx.fillText(
+            rectItem.item.symbol,
+            centerX + 1,
+            centerY - changeFontSize / 2 + 1
+          )
+
+          // Change percentage com sombra
+          ctx.font = `600 ${changeFontSize}px Inter, -apple-system, sans-serif`
+          const changeText = `${rectItem.item.change >= 0 ? '+' : ''}${rectItem.item.change.toFixed(1)}%`
+          ctx.fillText(
+            changeText,
+            centerX + 1,
+            centerY + symbolFontSize / 2 + 1
+          )
+
+          // Texto principal branco
+          ctx.fillStyle = 'white'
+
+          // Symbol (texto principal maior)
+          ctx.font = `bold ${symbolFontSize}px Inter, -apple-system, sans-serif`
+          ctx.fillText(
+            rectItem.item.symbol,
+            centerX,
+            centerY - changeFontSize / 2
+          )
+
+          // Change percentage
+          ctx.font = `600 ${changeFontSize}px Inter, -apple-system, sans-serif`
+          ctx.fillText(changeText, centerX, centerY + symbolFontSize / 2)
+
+          // Preço apenas em retângulos maiores
+          if (area > minAreaForPrice && rectItem.height > 60) {
+            ctx.font = `500 ${priceFontSize}px Inter, -apple-system, sans-serif`
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)'
+            ctx.fillText(
+              `R$ ${rectItem.item.price.toFixed(2)}`,
+              centerX,
+              centerY + symbolFontSize / 2 + changeFontSize + 4
+            )
+          }
+        }
+      })
     })
-  }, 10) // Small delay to ensure container is properly sized
+  })
 }
 
 // Renderiza todos os treemaps
@@ -548,26 +601,33 @@ const renderTreemap = () => {
     // Limpa os retângulos anteriores
     rectangles.value = []
 
-    // Renderiza cada grupo se existir e tiver dados
-    if (canvasAcoesRef.value && groupedData.value.acoes.length > 0) {
-      renderTreemapForGroup(
-        canvasAcoesRef.value,
-        groupedData.value.acoes,
-        'acoes'
-      )
-    }
+    // Aguarda mais um frame para garantir que o layout foi atualizado
+    requestAnimationFrame(() => {
+      // Renderiza cada grupo se existir e tiver dados
+      if (canvasAcoesRef.value && groupedData.value.acoes.length > 0) {
+        renderTreemapForGroup(
+          canvasAcoesRef.value,
+          groupedData.value.acoes,
+          'acoes'
+        )
+      }
 
-    if (canvasFiisRef.value && groupedData.value.fiis.length > 0) {
-      renderTreemapForGroup(canvasFiisRef.value, groupedData.value.fiis, 'fiis')
-    }
+      if (canvasFiisRef.value && groupedData.value.fiis.length > 0) {
+        renderTreemapForGroup(
+          canvasFiisRef.value,
+          groupedData.value.fiis,
+          'fiis'
+        )
+      }
 
-    if (canvasOutrosRef.value && groupedData.value.outros.length > 0) {
-      renderTreemapForGroup(
-        canvasOutrosRef.value,
-        groupedData.value.outros,
-        'outros'
-      )
-    }
+      if (canvasOutrosRef.value && groupedData.value.outros.length > 0) {
+        renderTreemapForGroup(
+          canvasOutrosRef.value,
+          groupedData.value.outros,
+          'outros'
+        )
+      }
+    })
   })
 }
 
@@ -662,7 +722,6 @@ const onMouseLeave = () => {
 // Handler melhorado para mouse leave que funciona com múltiplos canvas
 const handleCanvasMouseLeave = (event: MouseEvent) => {
   // Verifica se o mouse realmente saiu do canvas e não foi para outro elemento filho
-  const target = event.target as HTMLCanvasElement
   const relatedTarget = event.relatedTarget as HTMLElement
 
   // Se o mouse foi para outro canvas, não limpa o tooltip
@@ -704,12 +763,8 @@ onMounted(async () => {
 
   // Sistema de resize melhorado e mais robusto
   let resizeTimeout: NodeJS.Timeout | null = null
-  let isResizing = false
 
   const handleResize = () => {
-    // Marca que está redimensionando
-    isResizing = true
-
     // Cancela timeout anterior se existir
     if (resizeTimeout) {
       clearTimeout(resizeTimeout)
@@ -724,15 +779,42 @@ onMounted(async () => {
         // Re-renderiza após um pequeno delay para garantir estabilidade
         setTimeout(() => {
           renderTreemap()
-          isResizing = false
         }, 50)
-      } else {
-        isResizing = false
       }
-    }, 300) // Increased debounce time for better stability
+    }, 200) // Debounce time otimizado para responsividade
   }
 
-  // Só precisa do listener principal de resize
+  // Observer para mudanças de tamanho dos containers
+  let resizeObserver: ResizeObserver | null = null
+
+  if (typeof ResizeObserver !== 'undefined') {
+    resizeObserver = new ResizeObserver((entries) => {
+      // Verifica se alguma entrada teve mudança real de tamanho
+      const hasRealChange = entries.some((entry) => {
+        const { width, height } = entry.contentRect
+        return width > 0 && height > 0
+      })
+
+      if (hasRealChange) {
+        handleResize()
+      }
+    })
+
+    // Observa todos os containers de canvas
+    const containers = [
+      canvasAcoesRef.value?.parentElement,
+      canvasFiisRef.value?.parentElement,
+      canvasOutrosRef.value?.parentElement,
+    ].filter(Boolean) as Element[]
+
+    containers.forEach((container) => {
+      if (resizeObserver) {
+        resizeObserver.observe(container)
+      }
+    })
+  }
+
+  // Listeners de window como fallback
   window.addEventListener('resize', handleResize)
 
   // Para dispositivos móveis
@@ -745,6 +827,11 @@ onMounted(async () => {
     if (resizeTimeout) {
       clearTimeout(resizeTimeout)
     }
+
+    if (resizeObserver) {
+      resizeObserver.disconnect()
+    }
+
     window.removeEventListener('resize', handleResize)
     window.removeEventListener('orientationchange', handleResize)
 
@@ -788,11 +875,22 @@ defineExpose({
 <style scoped>
 .treemap-container canvas {
   cursor: pointer;
+  /* Garante que o canvas não extrapole o container */
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
 }
 
 .canvas-container {
-  border-radius: 0.375rem;
-  background-color: rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  position: relative;
+}
+
+.group-container {
+  /* Garante que cada grupo respeite seus limites */
+  overflow: hidden;
+  min-width: 0;
+  min-height: 0;
 }
 
 /* Layout responsivo para grupos */

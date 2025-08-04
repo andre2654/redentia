@@ -158,7 +158,7 @@
 
       <div class="flex flex-col gap-8">
         <div class="flex flex-col gap-3">
-          <MoleculesSearchAssets />
+          <MoleculesSearchAssets v-if="!hideSearchBar" />
           <AtomsSidebarButton to="/" text="Visão Geral" />
           <AtomsSidebarButton to="/wallet" text="Sua carteira" />
           <AtomsSidebarButton
@@ -222,6 +222,10 @@ defineProps({
     default: 'Title',
   },
   enableTickersCarousel: {
+    type: Boolean,
+    default: false,
+  },
+  hideSearchBar: {
     type: Boolean,
     default: false,
   },
