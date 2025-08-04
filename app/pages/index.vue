@@ -103,7 +103,7 @@
       <div v-if="showMap">
         <AtomsGraphTreemap
           :data="stocksData"
-          :height="400"
+          :height="550"
           :show-positive="
             treemapFilter === 'all' || treemapFilter === 'positive'
           "

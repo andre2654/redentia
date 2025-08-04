@@ -35,7 +35,7 @@
         v-if="groupedData.outros.length > 0"
         class="group-container flex flex-1 flex-col gap-2"
       >
-        <div class="canvas-container relative min-h-[200px] flex-1">
+        <div class="canvas-container relative min-h-[350px] flex-1">
           <canvas ref="canvasOutrosRef" class="h-full w-full" />
         </div>
       </div>
@@ -121,7 +121,7 @@ interface Rectangle {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  height: 400,
+  height: 600,
   showPositive: true,
   showNegative: true,
 })
@@ -516,7 +516,11 @@ const renderTreemapForGroup = (
 
         // Symbol (texto principal maior)
         ctx.font = `bold ${symbolFontSize}px Inter, -apple-system, sans-serif`
-        ctx.fillText(rectItem.item.symbol, centerX, centerY - changeFontSize / 2)
+        ctx.fillText(
+          rectItem.item.symbol,
+          centerX,
+          centerY - changeFontSize / 2
+        )
 
         // Change percentage
         ctx.font = `600 ${changeFontSize}px Inter, -apple-system, sans-serif`
@@ -584,10 +588,12 @@ const handleMouseMove = (event: MouseEvent) => {
 
   // Encontra o retângulo sob o mouse APENAS no grupo correto
   const hoveredRect = rectangles.value.find(
-    (r) => 
+    (r) =>
       r.groupName === targetGroupName &&
-      x >= r.x && x <= r.x + r.width && 
-      y >= r.y && y <= r.y + r.height
+      x >= r.x &&
+      x <= r.x + r.width &&
+      y >= r.y &&
+      y <= r.y + r.height
   )
 
   if (hoveredRect) {
@@ -658,16 +664,17 @@ const handleCanvasMouseLeave = (event: MouseEvent) => {
   // Verifica se o mouse realmente saiu do canvas e não foi para outro elemento filho
   const target = event.target as HTMLCanvasElement
   const relatedTarget = event.relatedTarget as HTMLElement
-  
+
   // Se o mouse foi para outro canvas, não limpa o tooltip
-  if (relatedTarget && (
-    relatedTarget === canvasAcoesRef.value || 
-    relatedTarget === canvasFiisRef.value || 
-    relatedTarget === canvasOutrosRef.value
-  )) {
+  if (
+    relatedTarget &&
+    (relatedTarget === canvasAcoesRef.value ||
+      relatedTarget === canvasFiisRef.value ||
+      relatedTarget === canvasOutrosRef.value)
+  ) {
     return
   }
-  
+
   tooltipData.value = null
 }
 
@@ -702,7 +709,7 @@ onMounted(async () => {
   const handleResize = () => {
     // Marca que está redimensionando
     isResizing = true
-    
+
     // Cancela timeout anterior se existir
     if (resizeTimeout) {
       clearTimeout(resizeTimeout)
@@ -713,7 +720,7 @@ onMounted(async () => {
       if (updateWindowSize()) {
         // Limpa tooltips durante resize
         tooltipData.value = null
-        
+
         // Re-renderiza após um pequeno delay para garantir estabilidade
         setTimeout(() => {
           renderTreemap()
