@@ -3,7 +3,8 @@ export default defineAppConfig({
     colors: {
       primary: '#1a202c',
       secondary: '#a7d6ff',
-      tertiary: '#042f54'
+      tertiary: '#042f54',
+      colorBackground: '#fff',
     },
     avatar: {
       slots: {

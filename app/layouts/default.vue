@@ -128,7 +128,7 @@
   <!-- Layout -->
   <div class="mx-auto flex min-h-screen w-full max-w-[1400px] lg:border-x">
     <div
-      class="sticky top-0 flex h-screen min-h-fit w-[330px] min-w-[330px] flex-col justify-between border-r pt-4 max-xl:hidden"
+      class="bg-tertiary sticky top-0 flex h-screen min-h-fit w-[330px] min-w-[330px] flex-col justify-between border-r pt-4 text-white max-xl:hidden dark:bg-black"
     >
       <div class="flex items-center justify-between px-6">
         <div class="flex items-center gap-3">
@@ -177,7 +177,7 @@
         </div>
         <NuxtLink
           to="/help"
-          active-class="border-x-4 border-x-secondary bg-tertiary"
+          active-class="border-x-4 border-x-secondary bg-tertiary "
           class="hover:bg-secondary/20 flex items-center justify-center gap-4 border-y px-6 py-2"
         >
           <IconAi class="fill-secondary h-5 w-5" />
@@ -191,9 +191,9 @@
       </div>
       <AtomsSidebarMonthGoal />
     </div>
-    <div class="relative flex w-full flex-col">
+    <div class="relative flex w-full flex-col bg-white dark:bg-black">
       <div
-        class="sticky top-0 z-10 flex w-full items-center justify-between gap-4 border-b px-6 py-4 backdrop-blur-lg"
+        class="light:bg-black/10 sticky top-0 z-10 flex w-full items-center justify-between gap-4 border-b px-6 py-4 backdrop-blur-lg"
         v-bind="headerProps"
       >
         <slot name="header">

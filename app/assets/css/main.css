@@ -2,19 +2,25 @@
 @import '@nuxt/ui';
 
 :root {
+  --ui-colorBackground: #fff;
   --ui-primary: #b9ecc1;
   --ui-secondary: #a7d6ff;
   --ui-tertiary: #042f54;
 }
 
 .dark {
+  --ui-colorBackground: black;
   --ui-primary: #b9ecc1;
   --ui-secondary: #a7d6ff;
   --ui-tertiary: #042f54;
 }
 
 body {
-  @apply bg-black text-white;
+  background: linear-gradient(to right, #042f54 50%, #fff 50%);
+}
+
+.dark body {
+  background: black;
 }
 
 * {
@@ -34,12 +40,24 @@ textarea:focus {
 @layer utilities {
   *,
   hr {
-    @apply border-[#535353];
+    @apply border-transparent;
   }
 
   .light-border *,
   .light-border hr {
-    @apply border-[#A5A5A5];
+    @apply border-transparent;
+  }
+
+  .dark {
+    *,
+    hr {
+      @apply border-[#535353];
+    }
+
+    .light-border *,
+    .light-border hr {
+      @apply border-[#A5A5A5];
+    }
   }
 
   // Remove scrollbar
