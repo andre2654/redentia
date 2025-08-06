@@ -2,7 +2,7 @@
   <div class="flex flex-col">
     <div
       class="flex h-[55px] w-full border-b"
-      :class="{ 'light-border bg-[#535353]': opened }"
+      :class="{ 'light-border bg-black/10 dark:bg-[#535353]': opened }"
     >
       <div class="flex w-[150px] flex-col justify-center border-r px-4">
         <b class="text-[15px] font-medium"> Ações </b>
@@ -33,7 +33,7 @@
       :data="data"
       :columns="columns"
       :ui="{
-        root: 'bg-white/10 max-h-[400px]',
+        root: 'bg-black/10 dark:bg-white/10 max-h-[400px]',
         td: 'py-3',
         th: 'whitespace-nowrap min-w-max',
       }"
@@ -355,11 +355,7 @@ const columns = ref([
           src: row.original.logo,
           class: 'pointer-events-none h-6 w-6 select-none rounded object-cover',
         }),
-        h(
-          'span',
-          { class: 'text-[14px] font-medium text-white' },
-          row.original.ticker
-        ),
+        h('span', { class: 'text-[14px] font-medium' }, row.original.ticker),
       ])
     },
   },
@@ -369,11 +365,7 @@ const columns = ref([
       return getHeader(column, 'Nome')
     },
     cell: ({ row }) => {
-      return h(
-        'span',
-        { class: 'text-[12px] text-white/70' },
-        row.original.name
-      )
+      return h('span', { class: 'text-[12px] opacity-70' }, row.original.name)
     },
   },
   {
@@ -384,7 +376,7 @@ const columns = ref([
     cell: ({ row }) => {
       return h(
         'span',
-        { class: 'text-[14px] text-white' },
+        { class: 'text-[14px]' },
         new Intl.NumberFormat('pt-BR', {
           style: 'currency',
           currency: 'BRL',
@@ -400,7 +392,7 @@ const columns = ref([
     cell: ({ row }) => {
       return h(
         'span',
-        { class: 'text-[14px] text-white' },
+        { class: 'text-[14px]' },
         new Intl.NumberFormat('pt-BR', {
           style: 'currency',
           currency: 'BRL',
@@ -410,7 +402,7 @@ const columns = ref([
     footer: () => {
       return h(
         'span',
-        { class: 'text-[14px] text-white' },
+        { class: 'text-[14px]' },
         new Intl.NumberFormat('pt-BR', {
           style: 'currency',
           currency: 'BRL',
@@ -442,11 +434,7 @@ const columns = ref([
         (acc, item) => acc + item.percentageChangeToday,
         0
       )
-      return h(
-        'span',
-        { class: 'text-[14px] text-white' },
-        `${totalChange}% hoje`
-      )
+      return h('span', { class: 'text-[14px]' }, `${totalChange}% hoje`)
     },
   },
   {

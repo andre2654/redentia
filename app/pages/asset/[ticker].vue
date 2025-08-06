@@ -69,7 +69,7 @@
 
     <!-- Details in wallet -->
     <div
-      class="bg-tertiary/40 border-secondary flex w-full gap-3 border-b-[10px] px-6 py-4"
+      class="bg-tertiary dark:bg-tertiary/40 border-secondary flex w-full gap-3 border-b-[10px] px-6 py-4 text-white"
     >
       <IconAi class="fill-secondary mt-1 h-5" />
       <div class="flex flex-col gap-4">
@@ -160,7 +160,7 @@
       </div>
       <div class="flex flex-col gap-1">
         <AtomsAiInsight class="max-w-[900px]" />
-        <small class="text-white/70">
+        <small class="opacity-70">
           * Isso não é uma recomendação de investimento
         </small>
       </div>
@@ -182,7 +182,8 @@
       <div
         class="flex flex-col gap-2 rounded-lg border p-4"
         :class="{
-          'bg-tertiary/40 border-tertiary text-secondary': showRelevantDocs,
+          'bg-tertiary dark:bg-tertiary/40 border-tertiary text-secondary':
+            showRelevantDocs,
         }"
       >
         <div class="flex items-center justify-between">
@@ -210,7 +211,7 @@
       />
       <b class="text-lg">{{ asset.name }}</b>
       <b class="text-lg">00.000.000/0001-91</b>
-      <p class="text-sm text-white/80">
+      <p class="text-sm opacity-70">
         O Banco do Brasil S.A, mais conhecido como BB, é uma das maiores
         instituições financeiras do país, sendo sua atuação ligada ao segmento
         de serviços bancários. Criado no início do século XIX, ainda no Brasil
