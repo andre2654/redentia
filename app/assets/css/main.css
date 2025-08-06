@@ -2,14 +2,16 @@
 @import '@nuxt/ui';
 
 :root {
-  --ui-colorBackground: #fff;
+  --ui-color-background: #fff;
+  --ui-color-text: #000;
   --ui-primary: #b9ecc1;
   --ui-secondary: #a7d6ff;
   --ui-tertiary: #042f54;
 }
 
 .dark {
-  --ui-colorBackground: black;
+  --ui-color-background: black;
+  --ui-color-text: white;
   --ui-primary: #b9ecc1;
   --ui-secondary: #a7d6ff;
   --ui-tertiary: #042f54;

@@ -15,7 +15,7 @@
     <!-- Tooltip dinâmico -->
     <div
       v-if="(isHovering || isDragging) && tooltipData"
-      class="pointer-events-none fixed z-10 rounded-lg bg-black/30 px-3 py-2 backdrop-blur-md transition-all duration-150"
+      class="pointer-events-none fixed z-10 rounded-lg bg-white/30 px-3 py-2 backdrop-blur-md transition-all duration-150 dark:bg-black/30"
       :style="{
         left: `${tooltipPosition.x + 10}px`,
         top: `${tooltipPosition.y - 60}px`,
@@ -27,10 +27,10 @@
           :style="{ backgroundColor: tooltipData.color }"
         />
         <div class="flex flex-col gap-1">
-          <span class="text-[13px] text-white">
+          <span class="text-[13px]">
             {{ tooltipData.label }}
           </span>
-          <span class="text-[13px] font-light text-white/70">
+          <span class="text-[13px] font-light">
             {{ tooltipData.value }}
           </span>
         </div>
@@ -79,6 +79,8 @@ const props = withDefaults(defineProps<Props>(), {
   height: 300,
   showLegend: true,
 })
+
+const colorMode = useColorMode()
 
 function transparentize(value: string, opacity: number) {
   const alpha = opacity === undefined ? 0.5 : 1 - opacity
@@ -456,59 +458,68 @@ const chartData = computed(() => {
   }
 })
 
-const chartOptions = computed(() => ({
-  responsive: true,
-  maintainAspectRatio: false,
-  interaction: {
-    intersect: false,
-    mode: 'index',
-  },
-  scales: {
-    x: {
-      grid: {
+const uiPrimaryColor = computed(() => {
+  return getComputedStyle(document.documentElement)
+    .getPropertyValue('--ui-color-text')
+    .trim()
+})
+
+const chartOptions = computed(() => {
+  return {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: {
+      intersect: false,
+      mode: 'index',
+    },
+    scales: {
+      x: {
+        grid: {
+          display: false,
+        },
+        ticks: {
+          autoSkip: true,
+          autoSkipPadding: 8,
+          maxRotation: 0,
+          minRotation: 0,
+          font: {
+            size: 13,
+          },
+          maxTicksLimit: 10,
+          padding: 20,
+        },
+      },
+      y: {
+        grid: {
+          color: 'rgba(255, 255, 255, 0.1)',
+        },
+        ticks: {
+          maxTicksLimit: 5,
+          font: {
+            size: 13,
+          },
+          callback: function (value: number) {
+            return `R$ ${Number(value).toLocaleString('pt-BR', {
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            })}`
+          },
+        },
+      },
+    },
+    plugins: {
+      legend: {
         display: false,
       },
-      ticks: {
-        autoSkip: true,
-        autoSkipPadding: 8,
-        maxRotation: 0,
-        minRotation: 0,
-        font: {
-          size: 13,
-        },
-        color: 'rgba(255, 255, 255, 0.7)',
-        maxTicksLimit: 10,
-        padding: 20,
+      tooltip: {
+        enabled: false,
+      },
+      colors: {
+        forceOverride: true,
       },
     },
-    y: {
-      grid: {
-        color: 'rgba(255, 255, 255, 0.1)',
-      },
-      ticks: {
-        maxTicksLimit: 5,
-        color: 'rgba(255, 255, 255, 0.7)',
-        font: {
-          size: 13,
-        },
-        callback: function (value: number) {
-          return `R$ ${Number(value).toLocaleString('pt-BR', {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
-          })}`
-        },
-      },
-    },
-  },
-  plugins: {
-    legend: {
-      display: false,
-    },
-    tooltip: {
-      enabled: false,
-    },
-  },
-}))
+  }
+})
 
 onMounted(() => {
   setTimeout(() => {
