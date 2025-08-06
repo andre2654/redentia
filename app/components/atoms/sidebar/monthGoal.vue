@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-primary/15 flex h-[300px] flex-col gap-5">
+  <div class="flex h-[300px] flex-col gap-5 dark:bg-white/5">
     <div class="flex flex-col gap-1 px-3 pt-3">
       <div class="text-[14px] font-medium">Meta de renda mensal</div>
       <b class="redentia-amount text-[16px] font-bold">R$ 5.000,00</b>
@@ -19,11 +19,28 @@
         Faltam <b class="redentia-amount">R$ 300,00</b> para atingir a meta
       </span>
     </div>
-    <div
-      class="border-primary bg-primary/20 flex flex-1 flex-col items-center border-t-4 pt-6"
-    >
-      <span class="font-extralight">Renda atual</span>
-      <b class="redentia-amount">R$ 4.700,00</b>
+    <div class="flex flex-1 justify-between gap-2">
+      <div class="flex h-full w-full flex-col justify-end">
+        <div class="flex flex-col items-center justify-center">
+          <small> Julho </small>
+          <b class="text-[10px]"> R$ 4.700,00 </b>
+        </div>
+        <div class="bg-primary/10 border-t-primary h-[100%] border-t-2" />
+      </div>
+      <div class="flex h-full w-full flex-col justify-end">
+        <div class="flex flex-col items-center justify-center">
+          <small> Julho </small>
+          <b class="text-[10px]"> R$ 4.700,00 </b>
+        </div>
+        <div class="bg-primary/10 border-t-primary h-[80%] border-t-2" />
+      </div>
+      <div class="flex h-full w-full flex-col justify-end">
+        <div class="flex flex-col items-center justify-center">
+          <small> Julho </small>
+          <b class="text-[10px]"> R$ 4.700,00 </b>
+        </div>
+        <div class="bg-primary/10 border-t-primary h-[50%] border-t-2" />
+      </div>
     </div>
   </div>
 </template>
