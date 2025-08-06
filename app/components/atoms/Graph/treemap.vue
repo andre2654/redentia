@@ -44,13 +44,13 @@
     <!-- Tooltip dinâmico responsivo -->
     <div
       v-if="tooltipData"
-      class="pointer-events-none fixed z-10 rounded-lg bg-black/30 px-3 py-2 backdrop-blur-md transition-all duration-150"
+      class="pointer-events-none fixed z-10 rounded-lg px-3 py-2 backdrop-blur-md transition-all duration-150 dark:bg-black/30"
       :style="{
         left: `${tooltipPosition.x + 10}px`,
         top: `${tooltipPosition.y - 10}px`,
       }"
     >
-      <div class="flex flex-col gap-1 text-xs text-white sm:text-sm">
+      <div class="flex flex-col gap-1 text-xs sm:text-sm">
         <div class="flex items-center gap-2">
           <div
             class="h-2 w-2 flex-shrink-0 rounded-sm sm:h-3 sm:w-3"
@@ -60,9 +60,7 @@
             tooltipData.symbol
           }}</span>
         </div>
-        <span class="truncate text-xs text-white/80">{{
-          tooltipData.name
-        }}</span>
+        <span class="truncate text-xs">{{ tooltipData.name }}</span>
         <span class="text-sm font-semibold"
           >R$ {{ tooltipData.price.toFixed(2) }}</span
         >
@@ -510,7 +508,6 @@ const renderTreemapForGroup = (
 
         // Desenha a borda com cor sólida (sem transparência)
         ctx.strokeStyle = getBorderColor(rectItem.item.change)
-        ctx.lineWidth = Math.max(1, 2 * fontScale)
         ctx.stroke()
 
         // Calcula o tamanho da fonte baseado na área do retângulo (inspirado no mapa de criptos)

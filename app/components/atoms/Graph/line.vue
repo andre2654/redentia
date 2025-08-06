@@ -15,7 +15,7 @@
     <!-- Tooltip dinâmico -->
     <div
       v-if="(isHovering || isDragging) && tooltipData"
-      class="pointer-events-none fixed z-10 rounded-lg bg-white/30 px-3 py-2 backdrop-blur-md transition-all duration-150 dark:bg-black/30"
+      class="pointer-events-none fixed z-10 rounded-lg px-3 py-2 backdrop-blur-md transition-all duration-150 dark:bg-black/30"
       :style="{
         left: `${tooltipPosition.x + 10}px`,
         top: `${tooltipPosition.y - 60}px`,

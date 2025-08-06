@@ -1,12 +1,12 @@
 <template>
   <NuxtLayout
     title="Assessoria"
-    header-class="bg-tertiary/70"
+    header-class="bg-tertiary/70 text-white"
     container-class="bg-tertiary"
     enable-tickers-carousel
   >
     <MoleculesChat
-      class="h-full"
+      class="h-full text-white"
       :suggestions="[
         'Analise meus investimentos e me fale onde posso melhorar',
         'Tenho R$ 100,00 para investir, qual ação comprar?',

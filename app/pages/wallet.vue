@@ -15,7 +15,7 @@
       </div>
       <div class="mt-[50px] flex flex-col items-center gap-[50px]">
         <AtomsAiInsight class="mx-4 max-w-[900px]" />
-        <MoleculesChat class="w-full bg-white/10" />
+        <MoleculesChat class="w-full bg-black/10 dark:bg-white/10" />
       </div>
     </div>
   </NuxtLayout>
