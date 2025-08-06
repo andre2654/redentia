@@ -45,7 +45,7 @@
       <!-- Tooltip dinâmico -->
       <div
         v-if="hoveredIndex !== null && tooltipData"
-        class="pointer-events-none fixed z-10 rounded-lg bg-black/30 px-3 py-2 backdrop-blur-md transition-all duration-150"
+        class="pointer-events-none fixed z-10 rounded-lg px-3 py-2 backdrop-blur-md transition-all duration-150 dark:bg-black/30"
         :style="{
           left: `${tooltipPosition.x + 10}px`,
           top: `${tooltipPosition.y - 60}px`,
@@ -64,7 +64,7 @@
                 }"
               />
               <div class="flex flex-col">
-                <span class="text-[13px] font-medium text-white">
+                <span class="text-[13px] font-medium">
                   {{ tooltipData.label }}
                   <span
                     v-if="tooltipData.isPrediction"
@@ -121,7 +121,7 @@
           type="checkbox"
           class="h-4 w-4 rounded border-gray-600 bg-gray-700 text-emerald-500 focus:ring-emerald-500"
         />
-        <label for="group-by-year" class="text-sm text-white/70">
+        <label for="group-by-year" class="text-sm opacity-70">
           Agrupar dividendos por ano
         </label>
       </div>
@@ -130,7 +130,7 @@
     <!-- Resumo dos dividendos -->
     <div class="flex items-center gap-4">
       <div class="flex w-full flex-col items-center gap-1 p-3">
-        <span class="text-center text-xs text-white/60">Total no período</span>
+        <span class="text-center text-xs opacity-60">Total no período</span>
         <span class="text-lg font-semibold" style="color: #04ce00">
           R$
           {{
@@ -140,8 +140,8 @@
       </div>
       <hr class="h-[50px] border" />
       <div class="flex w-full flex-col items-center gap-1 p-3">
-        <span class="text-center text-xs text-white/60">Maior pagamento</span>
-        <span class="text-lg font-semibold text-white">
+        <span class="text-center text-xs opacity-60">Maior pagamento</span>
+        <span class="text-lg font-semibold">
           R$
           {{
             maxDividend.toLocaleString('pt-BR', { minimumFractionDigits: 2 })
@@ -150,10 +150,10 @@
       </div>
       <hr class="h-[50px] border" />
       <div class="flex w-full flex-col items-center gap-1 p-3">
-        <span class="text-center text-xs text-white/60"
+        <span class="text-center text-xs opacity-60"
           >Média {{ groupByYear ? 'anual' : 'por pagamento' }}</span
         >
-        <span class="text-lg font-semibold text-white">
+        <span class="text-lg font-semibold">
           R$
           {{
             averageDividend.toLocaleString('pt-BR', {
@@ -183,6 +183,8 @@ import {
   type ActiveElement,
 } from 'chart.js'
 import { Bar } from 'vue-chartjs'
+
+const colorMode = useColorMode()
 
 function transparentize(value: string, opacity: number) {
   const alpha = opacity === undefined ? 0.5 : 1 - opacity
@@ -728,6 +730,9 @@ const chartOptions = computed(() => ({
     tooltip: {
       enabled: false, // Usamos tooltip customizado
     },
+    colors: {
+      forceOverride: true,
+    },
   },
   scales: {
     x: {
@@ -735,7 +740,6 @@ const chartOptions = computed(() => ({
         display: false,
       },
       ticks: {
-        color: 'rgba(255, 255, 255, 0.7)',
         font: {
           size: 12,
         },
@@ -751,7 +755,6 @@ const chartOptions = computed(() => ({
         color: 'rgba(255, 255, 255, 0.1)',
       },
       ticks: {
-        color: 'rgba(255, 255, 255, 0.7)',
         font: {
           size: 12,
         },

@@ -1,7 +1,7 @@
 <template>
   <NuxtLayout
     title="Assessoria"
-    header-class="bg-tertiary/70 text-white"
+    header-class="bg-tertiary/95 text-white"
     container-class="bg-tertiary"
     enable-tickers-carousel
   >

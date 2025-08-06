@@ -9,7 +9,7 @@
       >
         <div class="flex h-[150px] flex-col gap-1">
           <div
-            class="w-[12px] rounded-full bg-white/20"
+            class="w-[12px] rounded-full bg-black/20 dark:bg-white/20"
             :style="{
               height: 100 - percentageHeight(item.actual, item.ideal) + '%',
             }"

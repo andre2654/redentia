@@ -159,7 +159,7 @@
         />
       </div>
       <div class="flex flex-col gap-1">
-        <AtomsAiInsight class="max-w-[900px]" />
+        <AtomsAiInsight />
         <small class="opacity-70">
           * Isso não é uma recomendação de investimento
         </small>
@@ -223,7 +223,7 @@
       </p>
     </div>
 
-    <MoleculesChat class="w-full bg-white/10" />
+    <MoleculesChat class="w-full bg-black/10 dark:bg-white/10" />
   </NuxtLayout>
 </template>
 
