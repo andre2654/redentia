@@ -29,6 +29,7 @@
 
     <div
       class="sticky bottom-0 flex w-full flex-col gap-3 bg-black/10 p-3 pb-6 backdrop-blur-[99px] dark:bg-white/10"
+      v-bind="textareaContainerProps"
     >
       <UTextarea
         placeholder="Faça qualquer pesquisa..."
@@ -67,4 +68,12 @@ defineProps<{
   suggestions?: string[]
   messages?: IChatMessage[]
 }>()
+
+const allAttrs = useAttrs()
+
+const textareaContainerProps = Object.fromEntries(
+  Object.entries(allAttrs)
+    .filter(([k]) => k.startsWith('textarea-container-'))
+    .map(([k, v]) => [k.replace('textarea-container-', ''), v])
+)
 </script>

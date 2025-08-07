@@ -1,5 +1,5 @@
 <template>
-  <NuxtLayout title="Visão geral" enable-tickers-carousel>
+  <NuxtLayout title="Visão geral">
     <div id="overview" class="flex flex-col gap-[40px] px-6 py-4">
       <div class="flex flex-col gap-1">
         <h1 class="text-xl font-semibold">Complete o seu cadastro</h1>

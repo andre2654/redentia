@@ -24,13 +24,22 @@
         :loading="status === 'pending'"
         :groups="groups"
         placeholder="Buscar ações ou FIIs..."
-        class="h-80"
+        class="h-[500px]"
         :ui="{
           item: 'space-y-1',
         }"
       >
         <template #footer>
-          <AtomsTickerCarousel class="w-full" no-control />
+          <div class="flex w-full flex-col items-center gap-3 pt-5">
+            <NuxtLink
+              to="/search"
+              class="flex items-center gap-3 text-sm underline hover:opacity-70"
+            >
+              <UIcon name="i-lucide-search" class="h-4 w-4" />
+              <span>Ou acesse a busca avançada clicando aqui</span>
+            </NuxtLink>
+            <AtomsTickerCarousel class="w-full" no-control />
+          </div>
         </template>
       </UCommandPalette>
     </template>

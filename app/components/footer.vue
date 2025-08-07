@@ -17,18 +17,6 @@
     <div
       class="mx-auto flex w-full max-w-[1400px] flex-col gap-6 pb-[105px] pt-[50px] max-lg:items-center"
     >
-      <ClientOnly v-if="!colorMode?.forced">
-        <UButton
-          :icon="isDark ? 'i-lucide-moon' : 'i-lucide-sun'"
-          color="neutral"
-          variant="link"
-          @click="isDark = !isDark"
-        />
-
-        <template #fallback>
-          <div class="size-8" />
-        </template>
-      </ClientOnly>
       <NuxtLink to="/">
         <IconLogoFull class="w-[150px] fill-white" />
       </NuxtLink>
@@ -50,6 +38,16 @@
           </NuxtLink>
         </div>
       </div>
+      <ClientOnly v-if="!colorMode?.forced">
+        <UButton
+          class="max-w-fit"
+          :icon="isDark ? 'i-lucide-moon' : 'i-lucide-sun'"
+          color="neutral"
+          variant="soft"
+          :label="isDark ? 'Mudar para claro' : 'Mudar para escuro'"
+          @click="isDark = !isDark"
+        />
+      </ClientOnly>
     </div>
   </div>
 </template>

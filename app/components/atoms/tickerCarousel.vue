@@ -18,7 +18,7 @@
             :src="item.logo"
             class="pointer-events-none h-6 w-6 select-none rounded object-cover"
           />
-          <span class="select-none text-[14px] font-medium text-white">{{
+          <span class="select-none text-[14px] font-medium">{{
             item.ticker
           }}</span>
           <span class="font-regular select-none text-[12px] text-green-500">{{

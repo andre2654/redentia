@@ -3,7 +3,6 @@
     title="Assessoria"
     header-class="bg-tertiary/95 text-white"
     container-class="bg-tertiary"
-    enable-tickers-carousel
   >
     <MoleculesChat
       class="h-full text-white"
@@ -12,6 +11,7 @@
         'Tenho R$ 100,00 para investir, qual ação comprar?',
         'Rebalance minha carteira para focar em dividendos',
       ]"
+      textarea-container-class="bg-gray-200"
       :messages="messages"
     />
   </NuxtLayout>

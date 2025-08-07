@@ -2,7 +2,7 @@
   <!-- Menu mobile active -->
   <div
     v-if="menuMobileActive"
-    class="fixed left-0 top-0 z-20 flex h-screen w-screen flex-col items-center justify-center gap-8 bg-black"
+    class="fixed left-0 top-0 z-20 flex h-screen w-screen flex-col items-center justify-center gap-8 bg-black text-white"
   >
     <UButton
       color="neutral"
@@ -86,7 +86,7 @@
 
   <!-- Menu mobile -->
   <div
-    class="fixed bottom-6 left-1/2 z-10 flex -translate-x-1/2 items-center gap-8 rounded-full border bg-black/20 px-3 py-3 backdrop-blur-sm xl:hidden"
+    class="light:border-gray-300 fixed bottom-6 left-1/2 z-10 flex -translate-x-1/2 items-center gap-8 rounded-full border bg-white/80 px-3 py-3 backdrop-blur-sm xl:hidden dark:bg-black/20"
   >
     <UAvatar
       alt="Benjamin Canac"
@@ -193,17 +193,13 @@
     </div>
     <div class="relative flex w-full flex-col bg-white dark:bg-black">
       <div
-        class="sticky top-0 z-10 flex w-full items-center justify-between gap-4 border-b px-6 py-4 backdrop-blur-lg"
+        class="light:max-xl:border-gray-300 sticky top-0 z-10 flex w-full items-center justify-between gap-4 border-b px-6 py-4 backdrop-blur-lg"
         v-bind="headerProps"
       >
         <slot name="header">
-          <h1 class="min-w-max font-medium max-md:text-[20px]">
+          <h1 class="min-w-max text-[20px] font-bold max-md:text-[24px]">
             {{ title }}
           </h1>
-          <AtomsTickerCarousel
-            v-if="enableTickersCarousel"
-            class="w-full max-md:hidden md:max-w-[750px]"
-          />
         </slot>
       </div>
       <div v-bind="containerProps" class="flex-1">
@@ -220,10 +216,6 @@ defineProps({
   title: {
     type: String,
     default: 'Title',
-  },
-  enableTickersCarousel: {
-    type: Boolean,
-    default: false,
   },
   hideSearchBar: {
     type: Boolean,
