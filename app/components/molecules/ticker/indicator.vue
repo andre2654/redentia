@@ -3,7 +3,7 @@
     <div class="flex items-center gap-3">
       <span class="text-[14px]">{{ name }}</span>
       <UTooltip :text="helpText" :delay-duration="0">
-        <UIcon name="iconamoon-information-circle-fill" class="text-white" />
+        <UIcon name="iconamoon-information-circle-fill" />
       </UTooltip>
     </div>
 

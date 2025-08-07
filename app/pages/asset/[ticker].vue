@@ -69,7 +69,7 @@
 
     <!-- Details in wallet -->
     <div
-      class="bg-tertiary dark:bg-tertiary/40 border-secondary flex w-full gap-3 border-b-[10px] px-6 py-4 text-white"
+      class="dark:bg-tertiary/40 border-b-secondary bg-tertiary flex w-full gap-3 border-b-[6px] px-6 py-4 text-white"
     >
       <IconAi class="fill-secondary mt-1 h-5" />
       <div class="flex flex-col gap-4">
