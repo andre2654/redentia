@@ -716,6 +716,11 @@ const onMouseLeave = () => {
   tooltipData.value = null
 }
 
+// Handler para scroll - oculta tooltip durante scroll
+const onScroll = () => {
+  tooltipData.value = null
+}
+
 // Handler melhorado para mouse leave que funciona com múltiplos canvas
 const handleCanvasMouseLeave = (event: MouseEvent) => {
   // Verifica se o mouse realmente saiu do canvas e não foi para outro elemento filho
@@ -751,6 +756,9 @@ onMounted(async () => {
       canvas.addEventListener('mouseleave', handleCanvasMouseLeave)
     }
   })
+
+  // Adiciona listener de scroll para ocultar tooltip
+  window.addEventListener('scroll', onScroll, { passive: true })
 
   // Inicializa o tamanho da janela
   updateWindowSize()
@@ -831,6 +839,7 @@ onMounted(async () => {
 
     window.removeEventListener('resize', handleResize)
     window.removeEventListener('orientationchange', handleResize)
+    window.removeEventListener('scroll', onScroll)
 
     canvases.forEach((canvas) => {
       if (canvas) {

@@ -489,14 +489,21 @@ const setupCanvasEvents = (chart: ChartJS) => {
     hoveredIndex.value = null
   }
 
+  const handleScroll = () => {
+    // Oculta tooltip durante scroll
+    hoveredIndex.value = null
+  }
+
   try {
     canvas.addEventListener('mousemove', handleMouseMove)
     canvas.addEventListener('mouseleave', handleMouseLeave)
+    window.addEventListener('scroll', handleScroll, { passive: true })
 
     return () => {
       try {
         canvas.removeEventListener('mousemove', handleMouseMove)
         canvas.removeEventListener('mouseleave', handleMouseLeave)
+        window.removeEventListener('scroll', handleScroll)
       } catch {
         // Ignora erros silenciosamente
       }

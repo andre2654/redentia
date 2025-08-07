@@ -281,16 +281,27 @@ const setupCanvasEvents = (chart: ChartJS) => {
     }
   }
 
+  const handleScroll = () => {
+    // Oculta tooltip durante scroll
+    isHovering.value = false
+    hoverIndex.value = null
+    isDragging.value = false
+    dragStartIndex.value = null
+    dragEndIndex.value = null
+  }
+
   canvas.addEventListener('mousedown', handleMouseDown)
   canvas.addEventListener('mouseleave', handleMouseLeave)
   document.addEventListener('mousemove', handleMouseMove)
   document.addEventListener('mouseup', handleMouseUp)
+  window.addEventListener('scroll', handleScroll, { passive: true })
 
   return () => {
     canvas.removeEventListener('mousedown', handleMouseDown)
     canvas.removeEventListener('mouseleave', handleMouseLeave)
     document.removeEventListener('mousemove', handleMouseMove)
     document.removeEventListener('mouseup', handleMouseUp)
+    window.removeEventListener('scroll', handleScroll)
   }
 }
 
