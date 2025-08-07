@@ -195,7 +195,7 @@
     </div>
     <div class="relative flex w-full flex-col bg-white dark:bg-black">
       <div
-        class="light:max-xl:border-gray-300 sticky top-0 z-10 flex w-full items-center justify-between gap-4 border-b px-6 py-4 backdrop-blur-lg"
+        class="light:border-gray-300 sticky top-0 z-10 flex w-full items-center justify-between gap-4 border-b px-6 py-4 backdrop-blur-lg"
         v-bind="headerProps"
       >
         <slot name="header">

@@ -10,7 +10,9 @@
       </div>
       <div class="flex flex-col">
         <img src="/assets/images/banner.png" class="max-md:hidden" />
-        <MoleculesSearchAssets class="rounded-none border-y py-4" />
+        <MoleculesSearchAssets
+          class="light:border-b-gray-300 rounded-none border-y py-4"
+        />
       </div>
       <div class="flex items-center gap-6 px-6">
         <MoleculesTickerIndicator
