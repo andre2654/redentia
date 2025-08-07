@@ -8,7 +8,10 @@
           vulputate erat non massa tristique.
         </p>
       </div>
-      <MoleculesSearchAssets class="rounded-none border-y py-4" />
+      <div class="flex flex-col">
+        <img src="/assets/images/banner.png" class="max-md:hidden" />
+        <MoleculesSearchAssets class="rounded-none border-y py-4" />
+      </div>
       <div class="flex items-center gap-6 px-6">
         <MoleculesTickerIndicator
           name="IBOVESPA"
