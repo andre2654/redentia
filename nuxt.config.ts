@@ -58,7 +58,8 @@ export default defineNuxtConfig({
         {
           rel: 'stylesheet',
           href: 'https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap'
-        }
+        },
+        { rel: 'icon', type: 'image/png', href: '/favicon.png' }
       ],
       bodyAttrs: {
         // class: 'dark',
