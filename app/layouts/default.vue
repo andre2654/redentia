@@ -126,7 +126,9 @@
   </div>
 
   <!-- Layout -->
-  <div class="mx-auto flex min-h-screen w-full max-w-[1400px] lg:border-x">
+  <div
+    class="light:border-r-gray-200 mx-auto flex min-h-screen w-full max-w-[1400px] xl:border-x"
+  >
     <div
       class="bg-tertiary sticky top-0 flex h-screen min-h-fit w-[330px] min-w-[330px] flex-col justify-between border-r pt-4 text-white max-xl:hidden dark:bg-black"
     >
