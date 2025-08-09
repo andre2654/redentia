@@ -42,24 +42,12 @@ textarea:focus {
 @layer utilities {
   *,
   hr {
-    @apply border-transparent;
+    @apply border-[#535353];
   }
 
   .light-border *,
   .light-border hr {
-    @apply border-transparent;
-  }
-
-  .dark {
-    *,
-    hr {
-      @apply border-[#535353];
-    }
-
-    .light-border *,
-    .light-border hr {
-      @apply border-[#A5A5A5];
-    }
+    @apply border-[#A5A5A5];
   }
 
   // Remove scrollbar

@@ -86,7 +86,7 @@
 
   <!-- Menu mobile -->
   <div
-    class="fixed bottom-6 left-1/2 z-10 flex -translate-x-1/2 items-center gap-8 rounded-full border bg-black/20 px-3 py-3 backdrop-blur-sm xl:hidden"
+    class="fixed bottom-6 left-1/2 z-10 flex -translate-x-1/2 items-center gap-8 rounded-full border bg-[#2d1d00] px-3 py-3 backdrop-blur-sm xl:hidden dark:bg-black/20"
   >
     <UAvatar
       alt="Benjamin Canac"
@@ -128,8 +128,13 @@
   <!-- Layout -->
   <div class="light:border-r-gray-200 flex min-h-screen w-full">
     <div
-      class="sticky top-0 flex h-screen min-h-fit w-[330px] min-w-[330px] flex-col justify-between border-r bg-black pt-4 text-white max-xl:hidden"
+      class="sticky top-0 flex h-screen min-h-fit w-[330px] min-w-[330px] flex-col justify-between gap-[50px] border-r bg-black text-white max-xl:hidden"
     >
+      <div
+        class="flex h-[60px] items-center justify-center border-b bg-black px-6"
+      >
+        <IconLogoFull class="w-[140px] fill-white" />
+      </div>
       <div class="flex items-center justify-between px-6">
         <div class="flex items-center gap-3">
           <UAvatar alt="Benjamin Canac" size="lg" />
@@ -193,7 +198,7 @@
     </div>
     <div class="relative flex w-full flex-col bg-white dark:bg-black">
       <div
-        class="light:border-gray-300 sticky top-0 z-10 flex w-full items-center justify-between gap-4 border-b px-6 py-4 backdrop-blur-lg"
+        class="light:bg-gray-100 light:border-gray-300 light:text-black sticky top-0 z-10 flex h-[60px] w-full items-center justify-between gap-4 border-b px-6 py-4 backdrop-blur-lg"
         v-bind="headerProps"
       >
         <slot name="header">
