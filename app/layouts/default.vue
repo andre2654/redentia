@@ -86,42 +86,42 @@
 
   <!-- Menu mobile -->
   <div
-    class="light:border-gray-300 fixed bottom-6 left-1/2 z-10 flex -translate-x-1/2 items-center gap-8 rounded-full border bg-white/80 px-3 py-3 backdrop-blur-sm xl:hidden dark:bg-black/20"
+    class="fixed bottom-6 left-1/2 z-10 flex -translate-x-1/2 items-center gap-8 rounded-full border bg-black/20 px-3 py-3 backdrop-blur-sm xl:hidden"
   >
     <UAvatar
       alt="Benjamin Canac"
       size="sm"
-      class="ring-secondary rounded-full ring-4"
+      class="ring-tertiary rounded-full ring-2"
       @click="menuMobileActive = true"
     />
 
     <NuxtLink
       to="/wallet"
-      active-class="text-primary"
-      class="flex flex-col items-center"
+      active-class="bg-primary/90 text-black"
+      class="flex flex-col items-center rounded-full p-1"
     >
       <UIcon name="i-solar-wallet-bold" class="size-6" />
     </NuxtLink>
     <NuxtLink
       to="/"
-      active-class="text-primary"
-      class="flex flex-col items-center"
+      active-class="bg-primary/90 text-black"
+      class="flex flex-col items-center rounded-full p-1"
     >
       <UIcon name="i-si-dashboard-vert-fill" class="size-6" />
     </NuxtLink>
     <NuxtLink
       to="/dividends"
-      active-class="text-primary"
-      class="flex flex-col items-center"
+      active-class="bg-primary/90 text-black"
+      class="flex flex-col items-center rounded-full p-1"
     >
       <UIcon name="i-mingcute-pig-money-fill" class="size-6" />
     </NuxtLink>
     <NuxtLink
       to="/download"
-      class="to-secondary from-primary flex items-center gap-2 rounded-full bg-gradient-to-r px-3 py-2 hover:opacity-80"
+      class="bg-tertiary flex items-center gap-2 rounded-full px-3 py-2 text-white hover:opacity-80"
     >
-      <IconLogo class="h-4 fill-black" />
-      <span class="text-[12px] font-medium text-black">Baixar</span>
+      <IconLogo class="h-4 fill-white" />
+      <span class="text-[12px] font-medium">Baixar</span>
     </NuxtLink>
   </div>
 
