@@ -2,7 +2,7 @@
   <NuxtLayout name="static" title="Entre em contato">
     <section class="flex flex-col items-center gap-8 px-10 py-8">
       <div class="max-w-2xl text-center">
-        <p class="text-lg text-white/90">
+        <p class="text-lg opacity-90">
           Tem alguma dúvida, sugestão ou precisa de ajuda? Nossa equipe está
           pronta para atendê-lo. Envie sua mensagem e retornaremos o mais breve
           possível.
@@ -17,7 +17,7 @@
       >
         <!-- Nome -->
         <UFormField name="name" class="mb-2">
-          <label class="mb-2 block text-sm font-medium text-white/80">
+          <label class="mb-2 block text-sm font-medium opacity-80">
             Nome completo *
           </label>
           <AtomsFormInput
@@ -31,7 +31,7 @@
 
         <!-- Email -->
         <UFormField name="email" class="mb-2">
-          <label class="mb-2 block text-sm font-medium text-white/80">
+          <label class="mb-2 block text-sm font-medium opacity-80">
             Email *
           </label>
           <AtomsFormInput
@@ -45,7 +45,7 @@
 
         <!-- Telefone -->
         <UFormField name="phone" class="mb-2">
-          <label class="mb-2 block text-sm font-medium text-white/80">
+          <label class="mb-2 block text-sm font-medium opacity-80">
             Telefone
           </label>
           <AtomsFormInput
@@ -59,7 +59,7 @@
 
         <!-- Assunto -->
         <UFormField name="subject" class="mb-2">
-          <label class="mb-2 block text-sm font-medium text-white/80">
+          <label class="mb-2 block text-sm font-medium opacity-80">
             Assunto *
           </label>
           <USelect
@@ -83,7 +83,7 @@
 
         <!-- Mensagem -->
         <UFormField name="message" class="mb-4">
-          <label class="mb-2 block text-sm font-medium text-white/80">
+          <label class="mb-2 block text-sm font-medium opacity-80">
             Mensagem *
           </label>
           <UTextarea
@@ -115,7 +115,7 @@
                 base: 'bg-black border-gray-800',
               }"
             />
-            <label class="text-xs text-white/70">
+            <label class="text-xs opacity-70">
               Ao enviar esta mensagem, você concorda com nossos
               <NuxtLink
                 to="/redentia/terms"
@@ -148,7 +148,7 @@
 
       <!-- Informações de contato alternativas -->
       <div class="mt-8 w-full max-w-2xl">
-        <h3 class="mb-4 text-center text-lg font-semibold text-white">
+        <h3 class="mb-4 text-center text-lg font-semibold">
           Outras formas de contato
         </h3>
         <div class="grid gap-4 md:grid-cols-3">
@@ -156,10 +156,10 @@
             <div class="mb-2 text-blue-400">
               <UIcon name="i-lucide-mail" class="mx-auto h-6 w-6" />
             </div>
-            <h4 class="mb-1 font-medium text-white">Email</h4>
+            <h4 class="mb-1 font-medium">Email</h4>
             <a
               href="mailto:contato@redentia.com.br"
-              class="text-sm text-white/70 hover:text-blue-400"
+              class="text-sm opacity-70 hover:text-blue-400"
             >
               contato@redentia.com.br
             </a>
@@ -169,16 +169,16 @@
             <div class="mb-2 text-blue-400">
               <UIcon name="i-lucide-message-circle" class="mx-auto h-6 w-6" />
             </div>
-            <h4 class="mb-1 font-medium text-white">Chat Online</h4>
-            <p class="text-sm text-white/70">Disponível na plataforma</p>
+            <h4 class="mb-1 font-medium">Chat Online</h4>
+            <p class="text-sm opacity-70">Disponível na plataforma</p>
           </div>
 
           <div class="rounded-lg bg-white/5 p-4 text-center">
             <div class="mb-2 text-blue-400">
               <UIcon name="i-lucide-clock" class="mx-auto h-6 w-6" />
             </div>
-            <h4 class="mb-1 font-medium text-white">Horário de Atendimento</h4>
-            <p class="text-sm text-white/70">
+            <h4 class="mb-1 font-medium">Horário de Atendimento</h4>
+            <p class="text-sm opacity-70">
               Segunda a Sexta<br />
               9h às 18h
             </p>
@@ -188,17 +188,17 @@
 
       <!-- FAQ rápido -->
       <div class="mt-8 w-full max-w-2xl">
-        <h3 class="mb-4 text-center text-lg font-semibold text-white">
+        <h3 class="mb-4 text-center text-lg font-semibold">
           Perguntas Frequentes
         </h3>
         <div class="space-y-3">
           <details class="rounded-lg bg-white/5 p-4">
             <summary
-              class="cursor-pointer font-medium text-white hover:text-blue-400"
+              class="opacity-hover:text-blue-400 cursor-pointer font-medium"
             >
               Como posso conectar minha corretora?
             </summary>
-            <p class="mt-2 text-sm text-white/70">
+            <p class="mt-2 text-sm opacity-70">
               Você pode conectar sua corretora através do CEI (Canal Eletrônico
               do Investidor) ou diretamente com as APIs das principais
               corretoras do mercado.
@@ -207,11 +207,11 @@
 
           <details class="rounded-lg bg-white/5 p-4">
             <summary
-              class="cursor-pointer font-medium text-white hover:text-blue-400"
+              class="opacity-hover:text-blue-400 cursor-pointer font-medium"
             >
               Meus dados estão seguros?
             </summary>
-            <p class="mt-2 text-sm text-white/70">
+            <p class="mt-2 text-sm opacity-70">
               Sim! Utilizamos criptografia de nível bancário e seguimos todas as
               diretrizes da LGPD. Seus dados são protegidos com as melhores
               práticas de segurança do mercado.
@@ -220,11 +220,11 @@
 
           <details class="rounded-lg bg-white/5 p-4">
             <summary
-              class="cursor-pointer font-medium text-white hover:text-blue-400"
+              class="opacity-hover:text-blue-400 cursor-pointer font-medium"
             >
               Posso cancelar minha assinatura a qualquer momento?
             </summary>
-            <p class="mt-2 text-sm text-white/70">
+            <p class="mt-2 text-sm opacity-70">
               Sim, você pode cancelar sua assinatura a qualquer momento através
               da plataforma ou entrando em contato conosco.
             </p>
