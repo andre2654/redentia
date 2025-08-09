@@ -86,7 +86,7 @@
 
   <!-- Menu mobile -->
   <div
-    class="fixed bottom-6 left-1/2 z-10 flex -translate-x-1/2 items-center gap-8 rounded-full border bg-[#2d1d00] px-3 py-3 backdrop-blur-sm xl:hidden dark:bg-black/20"
+    class="fixed bottom-6 left-1/2 z-10 flex -translate-x-1/2 items-center gap-8 rounded-full border bg-black/20 px-3 py-3 backdrop-blur-sm xl:hidden"
   >
     <UAvatar
       alt="Benjamin Canac"
