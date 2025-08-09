@@ -2,7 +2,9 @@
   <div class="mx-auto flex max-w-[1400px] flex-col border-x border-x-gray-200">
     <div class="py-5">
       <NuxtLink to="/">
-        <IconLogoFull class="mx-auto h-auto w-[200px] fill-white" />
+        <IconLogoFull
+          class="mx-auto h-auto w-[200px] fill-black dark:fill-white"
+        />
       </NuxtLink>
     </div>
     <h1
