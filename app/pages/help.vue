@@ -1,7 +1,7 @@
 <template>
   <NuxtLayout
     title="Assessoria"
-    header-class="bg-tertiary text-white"
+    header-class="bg-tertiary/90 text-white"
     container-class="bg-tertiary"
   >
     <MoleculesChat
