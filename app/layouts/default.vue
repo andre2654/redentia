@@ -126,11 +126,9 @@
   </div>
 
   <!-- Layout -->
-  <div
-    class="light:border-r-gray-200 mx-auto flex min-h-screen w-full max-w-[1400px] xl:border-x"
-  >
+  <div class="light:border-r-gray-200 flex min-h-screen w-full">
     <div
-      class="bg-tertiary sticky top-0 flex h-screen min-h-fit w-[330px] min-w-[330px] flex-col justify-between border-r pt-4 text-white max-xl:hidden dark:bg-black"
+      class="sticky top-0 flex h-screen min-h-fit w-[330px] min-w-[330px] flex-col justify-between border-r bg-black pt-4 text-white max-xl:hidden"
     >
       <div class="flex items-center justify-between px-6">
         <div class="flex items-center gap-3">
@@ -195,7 +193,7 @@
     </div>
     <div class="relative flex w-full flex-col bg-white dark:bg-black">
       <div
-        class="light:border-gray-300 light:bg-white/70 sticky top-0 z-10 flex w-full items-center justify-between gap-4 border-b px-6 py-4 backdrop-blur-lg"
+        class="light:border-gray-300 sticky top-0 z-10 flex w-full items-center justify-between gap-4 border-b px-6 py-4 backdrop-blur-lg"
         v-bind="headerProps"
       >
         <slot name="header">
