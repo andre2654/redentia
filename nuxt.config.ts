@@ -62,9 +62,6 @@ export default defineNuxtConfig({
         },
         { rel: 'icon', type: 'image/png', href: '/favicon.png' }
       ],
-      bodyAttrs: {
-        // class: 'dark',
-      },
     }
   },
   pwa: {
@@ -73,7 +70,7 @@ export default defineNuxtConfig({
       name: 'Redentia',
       short_name: 'Redentia',
       description: ' A única plataforma de finanças realmente inteligente, com tudo que você precisa para gerenciar seus investimentos e finanças pessoais de forma rápida e fácil.',
-      theme_color: '#b9ecc1',
+      theme_color: 'black',
       start_url: '/',
       launch_handler: { client_mode: ["focus-existing", "navigate-existing"] },
       display: 'standalone',
