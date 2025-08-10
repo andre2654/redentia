@@ -155,7 +155,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.3"
       }
     },
@@ -197,8 +197,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -213,8 +213,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -260,8 +260,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -281,7 +281,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "7.4"
       }
     },
@@ -297,12 +297,12 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.0"
       }
     },
@@ -449,8 +449,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -491,7 +491,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.1"
       }
     },
@@ -612,8 +612,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -638,8 +638,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -722,7 +722,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.4"
       }
     },
@@ -743,8 +743,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -785,7 +785,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.1"
       }
     },
@@ -806,8 +806,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -848,8 +848,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -869,8 +869,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -974,7 +974,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.4"
       }
     },
@@ -995,8 +995,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -1048,8 +1048,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -1069,8 +1069,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -1106,8 +1106,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -1169,13 +1169,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -1216,8 +1216,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -1232,8 +1232,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -1253,8 +1253,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -1321,8 +1321,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -1374,8 +1374,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -1395,8 +1395,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -1437,8 +1437,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -1479,8 +1479,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -1548,13 +1548,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -1595,8 +1595,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -1648,7 +1648,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.8"
       }
     },
@@ -1669,7 +1669,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "07"
       }
     },
@@ -1690,8 +1690,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -1780,13 +1780,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -1817,8 +1817,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -1859,8 +1859,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -1912,8 +1912,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -2007,7 +2007,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.0"
       }
     },
@@ -2028,7 +2028,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "6.4"
       }
     },
@@ -2087,8 +2087,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -2134,7 +2134,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "9.0"
       }
     },
@@ -2176,8 +2176,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -2192,13 +2192,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -2239,8 +2239,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -2255,13 +2255,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -2276,8 +2276,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -2324,7 +2324,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.0"
       }
     },
@@ -2340,8 +2340,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -2435,8 +2435,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -2461,8 +2461,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -2482,8 +2482,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -2556,8 +2556,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -2609,8 +2609,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -2630,8 +2630,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -2667,8 +2667,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -2693,8 +2693,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -2735,8 +2735,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -2756,8 +2756,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -2772,13 +2772,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -2798,8 +2798,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -2825,8 +2825,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -2872,7 +2872,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.3"
       }
     },
@@ -2893,8 +2893,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -2994,8 +2994,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -3020,8 +3020,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -3047,12 +3047,12 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.3"
       }
     },
@@ -3137,7 +3137,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.7"
       }
     },
@@ -3164,13 +3164,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -3190,8 +3190,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -3211,7 +3211,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "9.1"
       }
     },
@@ -3232,8 +3232,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -3306,8 +3306,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -3348,7 +3348,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.8"
       }
     },
@@ -3369,7 +3369,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8"
       }
     },
@@ -3411,8 +3411,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -3427,8 +3427,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -3533,8 +3533,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -3602,8 +3602,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -3660,8 +3660,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -3783,8 +3783,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -3804,8 +3804,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -3846,7 +3846,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.3"
       }
     },
@@ -3867,7 +3867,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.5"
       }
     },
@@ -3888,8 +3888,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -3974,8 +3974,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -4034,8 +4034,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -4135,8 +4135,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -4198,7 +4198,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.4"
       }
     },
@@ -4219,8 +4219,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -4246,13 +4246,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -4363,13 +4363,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -4411,8 +4411,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -4432,8 +4432,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -4453,8 +4453,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -4485,8 +4485,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -4538,7 +4538,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "9.0"
       }
     },
@@ -4576,8 +4576,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -4652,13 +4652,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -4689,8 +4689,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -4710,8 +4710,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -4796,8 +4796,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -4828,8 +4828,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -4866,8 +4866,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -4892,7 +4892,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.2"
       }
     },
@@ -5158,8 +5158,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -5212,8 +5212,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -5244,7 +5244,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "6.4"
       }
     },
@@ -5265,8 +5265,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -5393,8 +5393,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -5425,8 +5425,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -5457,7 +5457,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.1"
       }
     },
@@ -5478,7 +5478,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.8"
       }
     },
@@ -5630,8 +5630,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -5716,7 +5716,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "7.4"
       }
     },
@@ -5743,13 +5743,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -5878,8 +5878,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -5910,7 +5910,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.3"
       }
     },
@@ -5953,7 +5953,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.3"
       }
     },
@@ -5996,7 +5996,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "9.2"
       }
     },
@@ -6017,8 +6017,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -6066,13 +6066,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -6131,8 +6131,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -6201,8 +6201,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -6243,8 +6243,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -6285,7 +6285,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "7.8"
       }
     },
@@ -6402,8 +6402,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -6627,7 +6627,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "5.7"
       }
     },
@@ -6714,7 +6714,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.3"
       }
     },
@@ -6767,8 +6767,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -6896,8 +6896,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -7011,8 +7011,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -7081,8 +7081,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -7119,12 +7119,12 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.6"
       }
     },
@@ -7210,7 +7210,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.4"
       }
     },
@@ -7270,12 +7270,12 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.0"
       }
     },
@@ -7312,8 +7312,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -7338,7 +7338,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.1"
       }
     },
@@ -7370,8 +7370,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -7391,7 +7391,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.4"
       }
     },
@@ -7440,13 +7440,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -7477,8 +7477,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -7509,8 +7509,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -7530,8 +7530,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -7584,8 +7584,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -7755,7 +7755,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "9.1"
       }
     },
@@ -7830,8 +7830,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -7846,8 +7846,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -7872,7 +7872,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "9.1"
       }
     },
@@ -7893,8 +7893,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -7909,13 +7909,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -7935,8 +7935,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -7999,8 +7999,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -8036,13 +8036,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -8181,8 +8181,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -8197,8 +8197,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -8255,8 +8255,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -8271,8 +8271,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -8318,8 +8318,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -8371,8 +8371,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -8653,8 +8653,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -8685,8 +8685,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -8750,8 +8750,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -8782,7 +8782,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.4"
       }
     },
@@ -8803,7 +8803,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.1"
       }
     },
@@ -8856,8 +8856,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -8932,8 +8932,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -8969,8 +8969,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -9028,8 +9028,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -9060,8 +9060,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -9081,7 +9081,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.8"
       }
     },
@@ -9145,7 +9145,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.3"
       }
     },
@@ -9166,7 +9166,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.4"
       }
     },
@@ -9182,13 +9182,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -9247,12 +9247,12 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.3"
       }
     },
@@ -9403,7 +9403,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.7"
       }
     },
@@ -9435,7 +9435,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.0"
       }
     },
@@ -9451,8 +9451,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -9498,8 +9498,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -9540,8 +9540,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -9625,8 +9625,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -9827,7 +9827,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.4"
       }
     },
@@ -9870,8 +9870,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -9907,8 +9907,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -9933,8 +9933,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -10050,8 +10050,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -10082,8 +10082,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -10189,8 +10189,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -10221,8 +10221,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -10258,13 +10258,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -10284,8 +10284,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -10359,8 +10359,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -10422,8 +10422,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -10449,8 +10449,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -10497,7 +10497,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.7"
       }
     },
@@ -10561,8 +10561,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -10710,8 +10710,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -10770,13 +10770,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -10796,8 +10796,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -10817,8 +10817,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -10838,8 +10838,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -10934,8 +10934,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -10955,8 +10955,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -11037,8 +11037,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -11159,8 +11159,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -11365,8 +11365,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -11402,8 +11402,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -11461,7 +11461,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "9.1"
       }
     },
@@ -11666,7 +11666,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "4.7"
       }
     },
@@ -11804,7 +11804,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.8"
       }
     },
@@ -11825,8 +11825,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -11841,8 +11841,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -11991,13 +11991,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -12039,7 +12039,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "07"
       }
     },
@@ -12191,7 +12191,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.3"
       }
     },
@@ -12244,8 +12244,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -12286,7 +12286,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.7"
       }
     },
@@ -12405,8 +12405,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -12465,13 +12465,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -12523,7 +12523,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.5"
       }
     },
@@ -12555,8 +12555,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -12576,8 +12576,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -12651,7 +12651,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "17"
       }
     },
@@ -12714,8 +12714,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -12806,13 +12806,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -12885,8 +12885,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -13080,7 +13080,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8"
       }
     },
@@ -13117,8 +13117,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -13143,8 +13143,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -13186,8 +13186,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -13207,7 +13207,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.4"
       }
     },
@@ -13256,13 +13256,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -13303,8 +13303,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -13385,13 +13385,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -13428,8 +13428,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -13588,8 +13588,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -13685,13 +13685,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -13711,8 +13711,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -13796,7 +13796,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.8"
       }
     },
@@ -13927,7 +13927,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "9.0"
       }
     },
@@ -14110,8 +14110,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -14217,7 +14217,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "3.5"
       }
     },
@@ -14233,13 +14233,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -14357,7 +14357,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "9.0"
       }
     },
@@ -14373,13 +14373,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -14432,8 +14432,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -14518,8 +14518,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -14550,8 +14550,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -14582,8 +14582,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -14609,8 +14609,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -14663,13 +14663,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -14689,8 +14689,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -14753,8 +14753,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -14774,8 +14774,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -14795,8 +14795,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -14924,8 +14924,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -14945,8 +14945,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -14987,8 +14987,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -15030,8 +15030,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -15094,7 +15094,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.4"
       }
     },
@@ -15126,8 +15126,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -15206,13 +15206,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -15274,8 +15274,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -15290,13 +15290,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
         "reputacao": "N",
-        "notaMedia": "Não encontrado"
+        "notaMedia": null
       }
     },
     {
@@ -15348,8 +15348,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -15595,7 +15595,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.3"
       }
     },
@@ -15616,8 +15616,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -15637,8 +15637,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -15697,13 +15697,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -15835,8 +15835,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -15926,8 +15926,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -15947,7 +15947,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.7"
       }
     },
@@ -15984,12 +15984,12 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.6"
       }
     },
@@ -16005,13 +16005,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -16097,8 +16097,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -16118,7 +16118,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "5.7"
       }
     },
@@ -16189,13 +16189,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -16237,7 +16237,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.1"
       }
     },
@@ -16286,13 +16286,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -16409,8 +16409,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -16496,8 +16496,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -16711,7 +16711,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "7.5"
       }
     },
@@ -16808,7 +16808,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.3"
       }
     },
@@ -16894,8 +16894,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -16932,13 +16932,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -16964,13 +16964,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -17032,8 +17032,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -17080,12 +17080,12 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.4"
       }
     },
@@ -17106,8 +17106,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -17138,8 +17138,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -17279,8 +17279,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -17300,8 +17300,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -17454,12 +17454,12 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.1"
       }
     },
@@ -17534,8 +17534,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -17561,8 +17561,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -17698,7 +17698,7 @@
       "reclameAqui": {
         "fonte": "Reclame Aqui",
         "reputacao": "N",
-        "notaMedia": "Não encontrado"
+        "notaMedia": null
       }
     },
     {
@@ -17713,8 +17713,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -17803,8 +17803,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -17841,12 +17841,12 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.6"
       }
     },
@@ -17927,8 +17927,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -17985,8 +17985,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -18017,7 +18017,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.2"
       }
     },
@@ -18038,8 +18038,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -18070,8 +18070,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -18130,8 +18130,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -18167,7 +18167,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "7.5"
       }
     },
@@ -18347,13 +18347,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -18389,13 +18389,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -18415,8 +18415,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -18695,8 +18695,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -18711,13 +18711,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -18870,8 +18870,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -18912,13 +18912,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -18970,8 +18970,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -18986,13 +18986,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -19088,7 +19088,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.7"
       }
     },
@@ -19218,8 +19218,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -19267,8 +19267,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -19368,8 +19368,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -19384,8 +19384,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -19405,13 +19405,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -19431,8 +19431,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -19452,7 +19452,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.0"
       }
     },
@@ -19468,8 +19468,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -19548,8 +19548,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -19624,8 +19624,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -19640,13 +19640,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -19839,7 +19839,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "4.7"
       }
     },
@@ -19866,13 +19866,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -19969,7 +19969,7 @@
       "reclameAqui": {
         "fonte": "Reclame Aqui",
         "reputacao": "N",
-        "notaMedia": "Não encontrado"
+        "notaMedia": null
       }
     },
     {
@@ -20094,8 +20094,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -20180,8 +20180,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -20217,7 +20217,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.0"
       }
     },
@@ -20271,8 +20271,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -20292,8 +20292,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -20357,8 +20357,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -20394,13 +20394,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
         "reputacao": "REGULAR",
-        "notaMedia": "Não encontrado"
+        "notaMedia": null
       }
     },
     {
@@ -20415,13 +20415,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -20507,7 +20507,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.7"
       }
     },
@@ -20523,8 +20523,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -20549,8 +20549,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -20587,12 +20587,12 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.6"
       }
     },
@@ -20700,7 +20700,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.1"
       }
     },
@@ -20721,8 +20721,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -20765,7 +20765,7 @@
       "reclameAqui": {
         "fonte": "Reclame Aqui",
         "reputacao": "N",
-        "notaMedia": "Não encontrado"
+        "notaMedia": null
       }
     },
     {
@@ -21068,7 +21068,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "17"
       }
     },
@@ -21122,8 +21122,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -21229,7 +21229,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.8"
       }
     },
@@ -21371,8 +21371,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -21431,13 +21431,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -21457,8 +21457,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -21553,8 +21553,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -21580,13 +21580,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -21606,7 +21606,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "16"
       }
     },
@@ -21622,13 +21622,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -21670,8 +21670,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -21772,8 +21772,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -21804,13 +21804,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -21869,13 +21869,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -21923,8 +21923,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -22079,8 +22079,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -22106,13 +22106,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -22340,7 +22340,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "3.5"
       }
     },
@@ -22433,8 +22433,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -22509,8 +22509,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -22567,8 +22567,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -22638,13 +22638,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -22675,8 +22675,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -22816,7 +22816,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.0"
       }
     },
@@ -22909,13 +22909,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
         "reputacao": "REGULAR",
-        "notaMedia": "Não encontrado"
+        "notaMedia": null
       }
     },
     {
@@ -22935,8 +22935,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -22995,13 +22995,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -23016,8 +23016,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -23140,8 +23140,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -23172,8 +23172,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -23193,8 +23193,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -23225,8 +23225,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -23367,8 +23367,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -23591,8 +23591,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -23645,13 +23645,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -23791,8 +23791,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -23851,13 +23851,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
         "reputacao": "N",
-        "notaMedia": "Não encontrado"
+        "notaMedia": null
       }
     },
     {
@@ -23960,8 +23960,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -24003,13 +24003,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -24172,8 +24172,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -24314,8 +24314,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -24500,8 +24500,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -24738,8 +24738,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -24770,8 +24770,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -24786,13 +24786,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -24845,8 +24845,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -24958,8 +24958,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -25093,8 +25093,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -25136,7 +25136,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.7"
       }
     },
@@ -25245,7 +25245,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "9.0"
       }
     },
@@ -25277,7 +25277,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.3"
       }
     },
@@ -25298,7 +25298,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "16"
       }
     },
@@ -25616,8 +25616,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -25752,8 +25752,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -25811,7 +25811,7 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8"
       }
     },
@@ -25915,8 +25915,8 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
@@ -25947,13 +25947,13 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -26072,8 +26072,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {
@@ -26253,12 +26253,12 @@
       "type": "stock",
       "glassdoor": {
         "fonte": "Glassdoor",
-        "nota": "Não encontrado",
-        "avaliacoes": "Não encontrado"
+        "nota": null,
+        "avaliacoes": null
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
+        "reputacao": null,
         "notaMedia": "8.4"
       }
     },
@@ -26520,8 +26520,8 @@
       },
       "reclameAqui": {
         "fonte": "Reclame Aqui",
-        "reputacao": "Não encontrado",
-        "notaMedia": "Não encontrado"
+        "reputacao": null,
+        "notaMedia": null
       }
     },
     {

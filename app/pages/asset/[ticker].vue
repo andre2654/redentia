@@ -152,14 +152,14 @@
           help-text="Dividend Yield é a relação entre o dividendo pago por ação e o preço da ação."
           is-intelligent
         /><MoleculesTickerIndicator
-          v-if="asset.reclameAqui"
+          v-if="asset.reclameAqui?.notaMedia"
           name="Pontuação Reclame Aqui"
           :value="asset.reclameAqui.notaMedia + '/10'"
           help-text="Pontuação média do ativo no Reclame Aqui."
           is-intelligent
         />
         <MoleculesTickerIndicator
-          v-if="asset.glassdoor"
+          v-if="asset.glassdoor?.nota"
           name="Pontuação Glassdoor"
           :value="asset.glassdoor.nota + '/5'"
           help-text="Pontuação média do ativo no Glassdoor."
