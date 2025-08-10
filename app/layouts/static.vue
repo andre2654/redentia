@@ -1,5 +1,7 @@
 <template>
-  <div class="mx-auto flex max-w-[1400px] flex-col border-x border-x-gray-200">
+  <div
+    class="light:border-x-gray-200 mx-auto flex max-w-[1400px] flex-col min-[1400px]:border-x"
+  >
     <div class="py-5">
       <NuxtLink to="/">
         <IconLogoFull

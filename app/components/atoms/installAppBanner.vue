@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex w-full items-center justify-between border-x border-b bg-black px-7 py-3"
+    class="flex w-full items-center justify-between border-b bg-black px-7 py-3"
   >
     <div class="flex items-center gap-2">
       <IconLogo
