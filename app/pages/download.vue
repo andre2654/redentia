@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto flex max-w-[1400px] flex-col border-x">
+  <div class="flex flex-col border-x bg-black">
     <div class="py-5">
       <NuxtLink to="/">
         <IconLogoFull class="mx-auto h-auto w-[200px] fill-white" />
@@ -17,12 +17,6 @@
         precisa para gerenciar seus investimentos e finanças pessoais de forma
         rápida e fácil.
       </p>
-      <div class="flex items-center gap-4 max-md:flex-col">
-        <AtomsInstallAppButtonAndroid
-          @click="scrollToDownloadSection('android')"
-        />
-        <AtomsInstallAppButtonIOS @click="scrollToDownloadSection('ios')" />
-      </div>
       <div class="mx-auto mt-6 flex w-full max-w-[900px] gap-4 max-md:flex-col">
         <div
           class="flex w-full flex-col items-center justify-center rounded-lg bg-[#4388FF] p-6 text-center text-lg leading-[30px] text-white"
@@ -90,11 +84,14 @@
               Agora é só aproveitar o aplicativo
             </li>
           </ul>
-          <AtomsInstallAppButtonAndroid
+          <button
             id="download-android-btn"
-            class="!bg-[#5139FF]"
+            class="to-secondary from-primary flex items-center justify-center gap-2 rounded-full bg-gradient-to-r px-3 py-1 font-bold text-black hover:opacity-80"
             @click="installApp"
-          />
+          >
+            <IconLogo class="h-4 fill-black" />
+            Instalar para Android
+          </button>
         </div>
         <div class="flex w-full flex-col gap-5">
           <h2 class="text-center text-2xl">Como baixar para iOS?</h2>
@@ -131,11 +128,14 @@
               Agora é só aproveitar o aplicativo
             </li>
           </ul>
-          <AtomsInstallAppButtonIOS
-            id="download-ios-btn"
-            class="!bg-[#5139FF]"
+          <button
+            id="download-android-btn"
+            class="to-secondary from-primary flex items-center justify-center gap-2 rounded-full bg-gradient-to-r px-3 py-1 font-bold text-black hover:opacity-80"
             @click="installApp"
-          />
+          >
+            <IconLogo class="h-4 fill-black" />
+            Instalar para IOS
+          </button>
         </div>
       </div>
     </div>
@@ -144,17 +144,17 @@
 </template>
 
 <script setup lang="ts">
-const scrollToDownloadSection = (system: 'android' | 'ios') => {
-  const sectionId =
-    system === 'android' ? 'download-android-btn' : 'download-ios-btn'
-  const section = document.getElementById(sectionId)
-  if (section) {
-    section.scrollIntoView({ behavior: 'smooth', block: 'center' })
-  }
-}
-
 const installApp = () => {
-  console.log('Install app button clicked')
+  const pwa = usePWA()
+
+  if (!pwa) return
+
+  if (!pwa.isPWAInstalled) {
+    pwa.install()
+    hideInstallAppBanner()
+  } else {
+    navigateTo('/')
+  }
 }
 
 definePageMeta({

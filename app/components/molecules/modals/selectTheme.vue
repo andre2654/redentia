@@ -10,11 +10,11 @@
           <p class="font-bold">Tema claro (padrão)</p>
           <button
             class="relative rounded-lg border-4"
-            :class="{ 'border-primary': isDark }"
-            @click="isDark = true"
+            :class="{ 'border-primary': color === 'light' }"
+            @click="color = 'light'"
           >
             <div
-              v-if="isDark"
+              v-if="color === 'light'"
               class="bg-primary/20 absolute left-0 top-0 flex h-full w-full items-center justify-center"
             >
               <span
@@ -42,11 +42,11 @@
           <p class="font-bold">Tema escuro</p>
           <button
             class="relative rounded-lg border-4"
-            :class="{ 'border-primary': !isDark }"
-            @click="isDark = false"
+            :class="{ 'border-primary': color === 'dark' }"
+            @click="color = 'dark'"
           >
             <div
-              v-if="!isDark"
+              v-if="color === 'dark'"
               class="bg-primary/20 absolute left-0 top-0 flex h-full w-full items-center justify-center"
             >
               <span
@@ -81,12 +81,12 @@ const { setThemeAlreadySelected } = useInterfaceStore()
 
 const open = ref(true)
 
-const isDark = computed({
+const color = computed({
   get() {
-    return colorMode.value === 'dark'
+    return colorMode.value
   },
-  set(_isDark) {
-    colorMode.preference = _isDark ? 'dark' : 'light'
+  set(_color) {
+    colorMode.preference = _color
     setThemeAlreadySelected(true)
   },
 })

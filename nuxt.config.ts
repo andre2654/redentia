@@ -10,6 +10,7 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@pinia/nuxt',
     '@pinia-plugin-persistedstate/nuxt',
+    '@vite-pwa/nuxt'
   ],
   ssr: false,
   vite: {
@@ -64,6 +65,56 @@ export default defineNuxtConfig({
       bodyAttrs: {
         // class: 'dark',
       },
+    }
+  },
+  pwa: {
+    registerType: 'autoUpdate',
+    manifest: {
+      name: 'Redentia',
+      short_name: 'Redentia',
+      description: ' A única plataforma de finanças realmente inteligente, com tudo que você precisa para gerenciar seus investimentos e finanças pessoais de forma rápida e fácil.',
+      theme_color: '#b9ecc1',
+      start_url: '/',
+      launch_handler: { client_mode: ["focus-existing", "navigate-existing"] },
+      display: 'standalone',
+      orientation: "portrait",
+      icons: [
+        {
+          src: '/192x192.png',
+          sizes: '192x192',
+          type: 'image/png',
+        },
+        {
+          src: '/512x512.png',
+          sizes: '512x512',
+          type: 'image/png',
+        },
+      ],
+      screenshots: [
+        {
+          src: "/screenshots/desktop.png",
+          sizes: "1611x950",
+          type: "image/png",
+          form_factor: "wide"
+        },
+        {
+          src: "/screenshots/mobile.png",
+          sizes: "510x950",
+          type: "image/png",
+          form_factor: "narrow"
+        },
+      ]
+    },
+    client: {
+      installPrompt: true,
+      periodicSyncForUpdates: 3600,
+    },
+    devOptions: {
+      enabled: false,
+      suppressWarnings: true,
+      navigateFallback: '/',
+      navigateFallbackAllowlist: [/^\/$/],
+      type: 'module',
     }
   }
 })

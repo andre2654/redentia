@@ -5,7 +5,7 @@
         !nuxtColorModeLocalStorage || nuxtColorModeLocalStorage === 'system'
       "
     />
-    <!-- <AtomsInstallAppBanner v-if="showBanner" class="max-xl:hidden" /> -->
+    <AtomsInstallAppBanner v-if="showBanner" />
     <NuxtPage />
   </UApp>
 </template>
