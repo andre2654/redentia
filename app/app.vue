@@ -1,5 +1,10 @@
 <template>
   <UApp :toaster="uAppConfig.toaster">
+    <MoleculesModalsSelectTheme
+      v-if="
+        !nuxtColorModeLocalStorage || nuxtColorModeLocalStorage === 'system'
+      "
+    />
     <!-- <AtomsInstallAppBanner v-if="showBanner" class="max-xl:hidden" /> -->
     <NuxtPage />
   </UApp>
@@ -25,4 +30,6 @@ onMounted(() => {
     document.body.classList.toggle('hide-amount', !interfaceStore.revealAmount)
   })
 })
+
+const nuxtColorModeLocalStorage = localStorage.getItem('nuxt-color-mode')
 </script>
