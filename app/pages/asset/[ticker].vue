@@ -152,9 +152,17 @@
           help-text="Dividend Yield é a relação entre o dividendo pago por ação e o preço da ação."
           is-intelligent
         /><MoleculesTickerIndicator
-          name="Proteção do Minoritário"
-          value="Alto"
-          help-text="Dividend Yield é a relação entre o dividendo pago por ação e o preço da ação."
+          v-if="asset.reclameAqui"
+          name="Pontuação Reclame Aqui"
+          :value="asset.reclameAqui.notaMedia + '/10'"
+          help-text="Pontuação média do ativo no Reclame Aqui."
+          is-intelligent
+        />
+        <MoleculesTickerIndicator
+          v-if="asset.glassdoor"
+          name="Pontuação Glassdoor"
+          :value="asset.glassdoor.nota + '/5'"
+          help-text="Pontuação média do ativo no Glassdoor."
           is-intelligent
         />
       </div>
