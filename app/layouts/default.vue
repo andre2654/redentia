@@ -86,7 +86,7 @@
 
   <!-- Menu mobile -->
   <div
-    class="fixed bottom-0 z-10 flex w-full items-center justify-between gap-8 border-t bg-black px-3 py-3 text-white xl:hidden"
+    class="bg-tertiary fixed bottom-0 z-10 flex w-full items-center justify-between gap-8 border-t px-3 py-3 text-white xl:hidden"
   >
     <UAvatar
       alt="Benjamin Canac"
@@ -118,7 +118,7 @@
     </NuxtLink>
     <NuxtLink
       to="/download"
-      class="bg-tertiary flex items-center gap-2 rounded-full px-3 py-2 text-white"
+      class="flex items-center gap-2 rounded-full bg-white/10 px-4 py-1 text-white"
     >
       <IconLogo class="h-4 fill-white" />
       <span class="text-[12px] font-medium">Baixar</span>
