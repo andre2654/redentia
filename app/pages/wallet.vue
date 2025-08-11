@@ -1,7 +1,7 @@
 <template>
   <NuxtLayout title="Sua carteira">
     <div class="flex h-full flex-col justify-between">
-      <div class="flex flex-col">
+      <div class="mt-5 flex flex-col px-6">
         <MoleculesWalletAssetAccordion />
         <MoleculesWalletAssetAccordion />
       </div>
@@ -20,5 +20,3 @@
     </div>
   </NuxtLayout>
 </template>
-
-<script setup lang="ts"></script>

@@ -1,10 +1,18 @@
 <template>
   <div class="flex flex-col">
-    <div
-      class="flex h-[55px] w-full border-b"
-      :class="{ 'light-border bg-black/10 dark:bg-[#535353]': opened }"
+    <button
+      class="flex h-[55px] w-full items-center gap-6 rounded-md px-6 hover:bg-black/5 hover:dark:bg-white/5"
+      :class="{ 'rounded-b-none bg-black/5 dark:bg-white/5': opened }"
+      @click="opened = !opened"
     >
-      <div class="flex w-[150px] flex-col justify-center border-r px-4">
+      <UIcon
+        name="ic-round-arrow-forward-ios"
+        class="transition-transform"
+        :class="{
+          'rotate-90': opened,
+        }"
+      />
+      <div class="flex flex-col justify-center">
         <b class="text-[15px] font-medium"> Ações </b>
         <span class="redentia-amount text-[11px]">R$ 20.200,00</span>
       </div>
@@ -14,14 +22,7 @@
           >+21.01% <b class="redentia-amount">(R$ 300,00)</b> hoje</span
         >
       </div>
-      <button
-        class="ml-auto border-l px-6 hover:opacity-50"
-        @click="opened = !opened"
-      >
-        <span v-if="!opened" class="text-[20px]">+</span>
-        <span v-else class="text-[20px]">-</span>
-      </button>
-    </div>
+    </button>
 
     <UTable
       v-show="opened"
@@ -33,9 +34,13 @@
       :data="data"
       :columns="columns"
       :ui="{
-        root: 'bg-black/10 dark:bg-white/10 max-h-[400px]',
+        root: 'max-h-[400px] no-scrollbar',
         td: 'py-3',
-        th: 'whitespace-nowrap min-w-max',
+        separator: 'bg-transparent',
+        tbody: 'divide-none ',
+        thead: 'bg-transparent',
+        tfoot: 'bg-transparent',
+        th: 'whitespace-nowrap min-w-max bg-black/5 dark:bg-white/5',
       }"
       sticky
     >
