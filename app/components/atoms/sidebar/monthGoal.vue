@@ -1,11 +1,14 @@
 <template>
-  <div class="flex h-[300px] flex-col gap-5 dark:bg-white/5">
+  <div
+    v-if="hasMonthGoal"
+    class="bg-black/2 flex h-[300px] flex-col gap-5 dark:bg-white/5"
+  >
     <div class="flex flex-col gap-1 px-3 pt-3">
       <div class="text-[14px] font-medium">Meta de renda mensal</div>
       <b class="redentia-amount text-[16px] font-bold">R$ 5.000,00</b>
       <NuxtLink
         to="/settings"
-        class="glass mt-4 max-w-fit rounded-full px-3 py-1 text-[10px]"
+        class="mt-4 max-w-fit rounded-full border border-black px-3 text-[10px]"
       >
         Configurar
       </NuxtLink>
@@ -43,4 +46,22 @@
       </div>
     </div>
   </div>
+  <div
+    v-else
+    class="bg-black/2 flex h-[300px] flex-col items-center justify-center gap-5 dark:bg-white/5"
+  >
+    <span class="max-w-[80%] text-center">
+      Você ainda não definiu uma meta mensal
+    </span>
+    <NuxtLink
+      to="/settings"
+      class="mt-4 max-w-fit rounded-full border border-black px-3 text-[10px]"
+    >
+      Configurar
+    </NuxtLink>
+  </div>
 </template>
+
+<script setup lang="ts">
+const hasMonthGoal = ref(false)
+</script>
