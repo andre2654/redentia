@@ -97,30 +97,30 @@
 
     <NuxtLink
       to="/wallet"
-      active-class="bg-primary/90 text-black"
-      class="flex flex-col items-center rounded-full p-1"
+      active-class="bg-white/20"
+      class="flex flex-col items-center rounded-full p-2"
     >
       <UIcon name="i-solar-wallet-bold" class="size-6" />
     </NuxtLink>
     <NuxtLink
       to="/"
-      active-class="bg-primary/90 text-black"
-      class="flex flex-col items-center rounded-full p-1"
+      active-class="bg-white/20"
+      class="flex flex-col items-center rounded-full p-2"
     >
       <UIcon name="i-si-dashboard-vert-fill" class="size-6" />
     </NuxtLink>
     <NuxtLink
       to="/dividends"
-      active-class="bg-primary/90 text-black"
-      class="flex flex-col items-center rounded-full p-1"
+      active-class="bg-white/20"
+      class="flex flex-col items-center rounded-full p-2"
     >
       <UIcon name="i-mingcute-pig-money-fill" class="size-6" />
     </NuxtLink>
     <NuxtLink
       to="/download"
-      class="bg-primary flex items-center gap-2 rounded-full px-3 py-2 text-black"
+      class="bg-tertiary flex items-center gap-2 rounded-full px-3 py-2 text-white"
     >
-      <IconLogo class="h-4 fill-black" />
+      <IconLogo class="h-4 fill-white" />
       <span class="text-[12px] font-medium">Baixar</span>
     </NuxtLink>
   </div>
