@@ -1,8 +1,8 @@
 <template>
   <NuxtLayout
     title="Assessoria"
-    header-class="bg-tertiary/90 text-white"
-    container-class="bg-tertiary"
+    header-class="!text-white !bg-tertiary/90"
+    container-class="bg-gradient-to-b from-[#042f54] to-[#0b3f6d]"
   >
     <MoleculesChat
       class="h-full text-white"
