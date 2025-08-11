@@ -182,15 +182,13 @@
         </div>
         <NuxtLink
           to="/help"
-          active-class="border-x-4 border-x-secondary bg-tertiary "
+          active-class="border-x-4 border-x-tertiary dark:!border-x-secondary bg-secondary dark:bg-tertiary"
           class="hover:bg-secondary/20 flex items-center justify-center gap-4 border-y px-6 py-2"
         >
-          <IconAi class="fill-secondary h-5 w-5" />
-          <div class="flex flex-col">
-            <span class="text-secondary text-[12px] font-extralight"
-              >Acesse de graça</span
-            >
-            <span class="text-secondary text-[16px]">Assessoria</span>
+          <IconAi class="fill-tertiary dark:fill-secondary h-5 w-5" />
+          <div class="text-tertiary dark:text-secondary flex flex-col">
+            <span class="text-[10px]">Acesse de graça</span>
+            <span class="text-[16px] font-bold">Assessoria</span>
           </div>
         </NuxtLink>
       </div>
