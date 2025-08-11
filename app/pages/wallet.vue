@@ -3,8 +3,9 @@
     <div class="flex h-full flex-col justify-between">
       <div class="flex flex-col gap-[20px] border-b p-6">
         <h2 class="text-[18px] font-bold">Por tipo</h2>
-        <div class="flex flex-col divide-y">
+        <div class="flex flex-col space-y-4">
           <MoleculesWalletAssetAccordion />
+          <hr class="mx-6" />
           <MoleculesWalletAssetAccordion />
         </div>
       </div>

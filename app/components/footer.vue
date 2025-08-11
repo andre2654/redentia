@@ -1,5 +1,5 @@
 <template>
-  <div class="flex w-full flex-col bg-black text-white">
+  <div class="flex w-full flex-col bg-black/45 text-white dark:bg-black">
     <div class="w-full border-y py-5">
       <div
         class="mx-auto flex max-w-[1400px] items-center justify-between text-[15px] max-lg:flex-col max-lg:gap-[40px]"

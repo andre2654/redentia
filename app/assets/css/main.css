@@ -43,15 +43,14 @@ textarea:focus {
 @layer utilities {
   .dark *,
   .dark hr {
-    @apply border-[#535353];
+    border-color: #535353;
   }
 
   *,
   hr {
-    @apply border-gray-300;
+    border-color: #d1d5db;
   }
 
-  // Remove scrollbar
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
