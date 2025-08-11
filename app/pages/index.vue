@@ -11,10 +11,26 @@
       <div class="flex flex-col">
         <UCarousel
           v-slot="{ item }"
+          class="w-full md:hidden"
+          loop
+          dots
+          :items="[
+            '/assets/images/banner-mobile.png',
+            '/assets/images/banner2-mobile.png',
+          ]"
+          :ui="{
+            dots: 'bottom-3',
+            dot: 'bg-white/10 data-[state=active]:bg-white',
+          }"
+        >
+          <img :src="item" />
+        </UCarousel>
+        <UCarousel
+          v-slot="{ item }"
+          class="w-full max-md:hidden"
           loop
           dots
           :items="['/assets/images/banner.png', '/assets/images/banner2.png']"
-          class="w-full"
           :ui="{
             dots: 'bottom-3',
             dot: 'bg-white/10 data-[state=active]:bg-white',
