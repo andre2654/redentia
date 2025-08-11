@@ -1,9 +1,12 @@
 <template>
   <NuxtLayout title="Sua carteira">
     <div class="flex h-full flex-col justify-between">
-      <div class="mt-5 flex flex-col px-6">
-        <MoleculesWalletAssetAccordion />
-        <MoleculesWalletAssetAccordion />
+      <div class="flex flex-col gap-[20px] border-b p-6">
+        <h2 class="text-[18px] font-bold">Por tipo</h2>
+        <div class="flex flex-col divide-y">
+          <MoleculesWalletAssetAccordion />
+          <MoleculesWalletAssetAccordion />
+        </div>
       </div>
       <div class="flex flex-col gap-[30px] border-b p-6">
         <h2 class="text-[18px] font-bold">Composição</h2>
