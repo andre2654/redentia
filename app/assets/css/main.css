@@ -27,6 +27,7 @@ body {
 
 * {
   font-family: 'Sora';
+  line-height: 25px;
   box-sizing: border-box;
 }
 

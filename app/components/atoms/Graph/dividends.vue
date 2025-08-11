@@ -90,15 +90,10 @@
             </div>
             <!-- Indicador de yield -->
             <div class="flex items-center gap-2">
-              <div
-                class="h-3 w-3 rounded-full"
-                :class="
-                  tooltipData.isPrediction ? 'bg-amber-500/50' : 'bg-amber-500'
-                "
-              />
+              <div class="h-3 w-3 rounded-full bg-[#a7d6ff]" />
               <div class="flex flex-col">
-                <span class="text-[11px] text-amber-400"> Dividend Yield </span>
-                <span class="text-[13px] font-medium text-amber-400">
+                <span class="text-[11px] text-[#a7d6ff]"> Dividend Yield </span>
+                <span class="text-[13px] font-medium text-[#a7d6ff]">
                   {{ tooltipData.dividendYield.toFixed(2) }}%
                   <span
                     v-if="tooltipData.isPrediction"
@@ -114,54 +109,42 @@
       </div>
 
       <!-- Checkbox para agrupar por ano -->
-      <div class="ml-2 mt-2 flex items-center gap-2">
-        <input
-          id="group-by-year"
-          v-model="groupByYear"
-          type="checkbox"
-          class="h-4 w-4 rounded border-gray-600 bg-gray-700 text-emerald-500 focus:ring-emerald-500"
-        />
-        <label for="group-by-year" class="text-sm opacity-70">
-          Agrupar dividendos por ano
-        </label>
+      <div class="flex items-center gap-2">
+        <IconAi class="fill-secondary h-5" />
+        <UCheckbox v-model="groupByYear" color="secondary" />
+        <h2 class="text-secondary">Agrupar dividendos por ano</h2>
       </div>
     </div>
 
     <!-- Resumo dos dividendos -->
-    <div class="flex items-center gap-4">
-      <div class="flex w-full flex-col items-center gap-1 p-3">
-        <span class="text-center text-xs opacity-60">Total no período</span>
-        <span class="text-lg font-semibold" style="color: #04ce00">
-          R$
-          {{
-            totalDividends.toLocaleString('pt-BR', { minimumFractionDigits: 2 })
-          }}
-        </span>
-      </div>
-      <hr class="h-[50px] border" />
-      <div class="flex w-full flex-col items-center gap-1 p-3">
-        <span class="text-center text-xs opacity-60">Maior pagamento</span>
-        <span class="text-lg font-semibold">
-          R$
-          {{
-            maxDividend.toLocaleString('pt-BR', { minimumFractionDigits: 2 })
-          }}
-        </span>
-      </div>
-      <hr class="h-[50px] border" />
-      <div class="flex w-full flex-col items-center gap-1 p-3">
-        <span class="text-center text-xs opacity-60"
-          >Média {{ groupByYear ? 'anual' : 'por pagamento' }}</span
-        >
-        <span class="text-lg font-semibold">
-          R$
-          {{
-            averageDividend.toLocaleString('pt-BR', {
-              minimumFractionDigits: 2,
-            })
-          }}
-        </span>
-      </div>
+    <div class="flex items-center justify-center gap-8">
+      <MoleculesTickerIndicator
+        name="Total no período"
+        :value="
+          totalDividends.toLocaleString('pt-BR', { minimumFractionDigits: 2 })
+        "
+        help-text="Total de dividendos pagos no período."
+        is-intelligent
+        :help-text-with-tooltip="false"
+      />
+      <MoleculesTickerIndicator
+        name="Maior pagamento"
+        :value="
+          maxDividend.toLocaleString('pt-BR', { minimumFractionDigits: 2 })
+        "
+        help-text="Maior pagamento de dividendos no período."
+        is-intelligent
+        :help-text-with-tooltip="false"
+      />
+      <MoleculesTickerIndicator
+        name="Média"
+        :value="
+          averageDividend.toLocaleString('pt-BR', { minimumFractionDigits: 2 })
+        "
+        help-text="Média de dividendos pagos no período."
+        is-intelligent
+        :help-text-with-tooltip="false"
+      />
     </div>
   </div>
 </template>
@@ -673,7 +656,7 @@ const chartData = computed(() => {
         },
         hoverBorderColor: borderColors,
         hoverBorderWidth: 3,
-        borderRadius: 0,
+        borderRadius: 10,
         borderSkipped: 'bottom',
         type: 'bar' as const,
         yAxisID: 'y',
@@ -682,28 +665,20 @@ const chartData = computed(() => {
       {
         label: 'Dividend Yield (%)',
         data: yieldData,
-        borderColor: displayData.value.map((item) =>
-          item.isPrediction ? 'rgba(245, 158, 11, 0.7)' : '#F59E0B'
-        ),
-        borderWidth: 1.5,
-        pointRadius: displayData.value.map((item) =>
-          item.isPrediction ? 5 : 3
-        ), // Pontos maiores para previsão
-        pointHoverRadius: displayData.value.map((item) =>
-          item.isPrediction ? 7 : 5
-        ),
-        pointBackgroundColor: displayData.value.map((item) =>
-          item.isPrediction ? 'rgba(245, 158, 11, 0.7)' : '#F59E0B'
-        ),
+        borderColor: '#a7d6ff',
+        borderWidth: 1,
+        pointRadius: 0,
+        pointHoverRadius: 5,
+        pointBackgroundColor: '#a7d6ff',
         type: 'line' as const,
         yAxisID: 'y1',
-        tension: 0.4, // Suaviza a linha
+        tension: 0.6, // Suaviza a linha
         order: 1, // Linha fica na frente
         // Linha pontilhada para previsão
         segment: {
           borderDash: (ctx: { p1DataIndex: number }) => {
             const index = ctx.p1DataIndex
-            return displayData.value[index]?.isPrediction ? [5, 5] : []
+            return displayData.value[index]?.isPrediction ? [6, 6] : []
           },
         },
       },
@@ -721,9 +696,9 @@ const chartOptions = computed(() => ({
   },
   plugins: {
     legend: {
-      display: true,
-      position: 'bottom' as const,
-      align: 'start' as const,
+      display: false,
+      position: 'top' as const,
+      align: 'center' as const,
       labels: {
         color: 'rgba(255, 255, 255, 0.7)',
         font: {
@@ -731,7 +706,7 @@ const chartOptions = computed(() => ({
         },
         usePointStyle: true,
         pointStyle: 'circle',
-        padding: 10,
+        padding: 5,
       },
     },
     tooltip: {
@@ -789,7 +764,7 @@ const chartOptions = computed(() => ({
         drawOnChartArea: false,
       },
       ticks: {
-        color: 'rgba(245, 158, 11, 0.7)', // amber-500 com opacidade
+        color: '#a7d6ff', // amber-500 com opacidade
         font: {
           size: 12,
         },
@@ -800,7 +775,7 @@ const chartOptions = computed(() => ({
       title: {
         display: true,
         text: 'Dividend Yield (%)',
-        color: 'rgba(245, 158, 11, 0.7)',
+        color: '#a7d6ff',
         font: {
           size: 11,
         },

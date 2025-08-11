@@ -31,7 +31,7 @@
     </template>
 
     <!-- Graph -->
-    <div class="w-full border-b p-4">
+    <div class="w-full border-b p-6">
       <div class="flex flex-col gap-4">
         <div class="flex items-center justify-between">
           <h2 class="mb-4 text-lg font-semibold">
@@ -173,6 +173,7 @@
           value="Baixo"
           help-text="Dividend Yield é a relação entre o dividendo pago por ação e o preço da ação."
           is-intelligent
+          :help-text-with-tooltip="false"
         /><MoleculesTickerIndicator
           v-if="asset.reclameAqui?.notaMedia"
           name="Pontuação Reclame Aqui"
@@ -190,16 +191,10 @@
           :help-text-with-tooltip="false"
         />
       </div>
-      <div class="flex flex-col gap-1">
-        <AtomsAiInsight />
-        <small class="opacity-70">
-          * Isso não é uma recomendação de investimento
-        </small>
-      </div>
     </div>
 
     <!-- Dividends Chart -->
-    <div class="flex flex-col gap-4 border-b p-4">
+    <div class="flex flex-col gap-4 border-b p-6">
       <AtomsGraphDividends />
     </div>
 
@@ -218,10 +213,10 @@
             showRelevantDocs,
         }"
       >
-        <div class="flex items-center justify-between">
+        <div v-for="i in 10" :key="i" class="flex items-center justify-between">
           <div class="flex flex-col">
             <b class="text-[14px]"
-              >Esclarecimentos sobre questionamentos da CVM/B3 - Comunicado ao
+              >- Esclarecimentos sobre questionamentos da CVM/B3 - Comunicado ao
               Mercado</b
             >
             <p class="text-[11px]">
