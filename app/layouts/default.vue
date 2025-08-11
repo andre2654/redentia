@@ -182,7 +182,7 @@
         </div>
         <NuxtLink
           to="/help"
-          active-class="border-x-4 border-x-tertiary dark:!border-x-secondary bg-secondary dark:bg-tertiary"
+          active-class="border-x-4 border-x-tertiary dark:!border-x-secondary bg-secondary/20"
           class="hover:bg-secondary/20 flex items-center justify-center gap-4 border-y px-6 py-2"
         >
           <IconAi class="fill-tertiary dark:fill-secondary h-5 w-5" />
