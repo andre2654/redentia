@@ -69,7 +69,7 @@ export default defineNuxtConfig({
     manifest: {
       name: 'Redentia',
       short_name: 'Redentia',
-      description: ' A única plataforma de finanças realmente inteligente, com tudo que você precisa para gerenciar seus investimentos e finanças pessoais de forma rápida e fácil.',
+      description: ' A única plataforma de finanças realmente inteligente, com tudo para gerenciar seus investimentos de forma rápida e fácil.',
       theme_color: 'black',
       start_url: '/',
       launch_handler: { client_mode: ["focus-existing", "navigate-existing"] },
