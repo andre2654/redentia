@@ -76,12 +76,13 @@
         @click="seeMyInsights = !seeMyInsights"
       >
         <UIcon
-          name="ic-round-arrow-forward-ios transition-transform"
+          name="ic-round-arrow-forward-ios"
+          class="transition-transform"
           :class="{
             'rotate-90': seeMyInsights,
           }"
         />
-        <h2 class="text-lg font-semibold">Na sua carteira</h2>
+        <h2 class="text-lg font-semibold">Sua carteira</h2>
       </button>
       <div
         v-if="seeMyInsights"
@@ -92,17 +93,20 @@
           value="Alta"
           help-text="Dividend Yield é a relação entre o dividendo pago por ação e o preço da ação."
           is-intelligent
+          :help-text-with-tooltip="false"
         />
         <MoleculesTickerIndicator
           name="Grau de Endividamento Inteligente"
           value="Baixo"
           help-text="Dividend Yield é a relação entre o dividendo pago por ação e o preço da ação."
           is-intelligent
+          :help-text-with-tooltip="false"
         /><MoleculesTickerIndicator
           name="Proteção do Minoritário"
           value="Alto"
           help-text="Dividend Yield é a relação entre o dividendo pago por ação e o preço da ação."
           is-intelligent
+          :help-text-with-tooltip="false"
         />
       </div>
     </div>
@@ -145,7 +149,8 @@
         @click="seeSmartIndicators = !seeSmartIndicators"
       >
         <UIcon
-          name="ic-round-arrow-forward-ios transition-transform"
+          name="ic-round-arrow-forward-ios"
+          class="transition-transform"
           :class="{
             'rotate-90': seeSmartIndicators,
           }"
@@ -161,6 +166,7 @@
           value="Alta"
           help-text="Dividend Yield é a relação entre o dividendo pago por ação e o preço da ação."
           is-intelligent
+          :help-text-with-tooltip="false"
         />
         <MoleculesTickerIndicator
           name="Grau de Endividamento Inteligente"
@@ -173,6 +179,7 @@
           :value="asset.reclameAqui.notaMedia + '/10'"
           help-text="Pontuação média do ativo no Reclame Aqui."
           is-intelligent
+          :help-text-with-tooltip="false"
         />
         <MoleculesTickerIndicator
           v-if="asset.glassdoor?.nota"
@@ -180,6 +187,7 @@
           :value="asset.glassdoor.nota + '/5'"
           help-text="Pontuação média do ativo no Glassdoor."
           is-intelligent
+          :help-text-with-tooltip="false"
         />
       </div>
       <div class="flex flex-col gap-1">

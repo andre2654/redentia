@@ -1,8 +1,8 @@
 <template>
-  <div class="flex w-fit max-w-fit flex-col">
+  <div class="flex w-fit max-w-fit flex-col gap-3">
     <div class="flex items-center gap-3">
       <span class="text-[14px]">{{ name }}</span>
-      <UTooltip :text="helpText" :delay-duration="0">
+      <UTooltip v-if="helpTextWithTooltip" :text="helpText" :delay-duration="0">
         <UIcon name="iconamoon-information-circle-fill" />
       </UTooltip>
     </div>
@@ -14,6 +14,10 @@
         value
       }}</b>
     </div>
+
+    <small v-if="!helpTextWithTooltip" class="opacity-60">
+      {{ helpText }}
+    </small>
   </div>
 </template>
 
@@ -34,6 +38,10 @@ defineProps({
   isIntelligent: {
     type: Boolean,
     default: false,
+  },
+  helpTextWithTooltip: {
+    type: Boolean,
+    default: true,
   },
 })
 </script>
