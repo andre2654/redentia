@@ -1,5 +1,5 @@
 <template>
-  <div class="flex max-w-fit flex-col">
+  <div class="flex w-fit max-w-fit flex-col">
     <div class="flex items-center gap-3">
       <span class="text-[14px]">{{ name }}</span>
       <UTooltip :text="helpText" :delay-duration="0">

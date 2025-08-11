@@ -69,37 +69,50 @@
 
     <!-- Details in wallet -->
     <div
-      class="dark:bg-tertiary/40 border-b-secondary bg-tertiary flex w-full gap-3 border-b-[6px] px-6 py-4 text-white"
+      class="dark:bg-tertiary/40 bg-tertiary flex w-full flex-col gap-3 px-6 py-4 text-white"
     >
-      <IconAi class="fill-secondary mt-1 h-5" />
-      <div class="flex flex-col gap-4">
-        <h2 class="text-secondary text-lg font-bold">Na sua carteira</h2>
-        <div class="flex flex-wrap gap-4">
-          <MoleculesTickerIndicator
-            name="Score de viabilidade"
-            value="Alta"
-            help-text="Dividend Yield é a relação entre o dividendo pago por ação e o preço da ação."
-            is-intelligent
-          />
-          <MoleculesTickerIndicator
-            name="Grau de Endividamento Inteligente"
-            value="Baixo"
-            help-text="Dividend Yield é a relação entre o dividendo pago por ação e o preço da ação."
-            is-intelligent
-          /><MoleculesTickerIndicator
-            name="Proteção do Minoritário"
-            value="Alto"
-            help-text="Dividend Yield é a relação entre o dividendo pago por ação e o preço da ação."
-            is-intelligent
-          />
-        </div>
+      <button
+        class="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-white/10"
+        @click="seeMyInsights = !seeMyInsights"
+      >
+        <UIcon
+          name="ic-round-arrow-forward-ios transition-transform"
+          :class="{
+            'rotate-90': seeMyInsights,
+          }"
+        />
+        <h2 class="text-lg font-semibold">Na sua carteira</h2>
+      </button>
+      <div
+        v-if="seeMyInsights"
+        class="flex w-full gap-6 px-6 max-md:flex-col md:flex-wrap"
+      >
+        <MoleculesTickerIndicator
+          name="Score de viabilidade"
+          value="Alta"
+          help-text="Dividend Yield é a relação entre o dividendo pago por ação e o preço da ação."
+          is-intelligent
+        />
+        <MoleculesTickerIndicator
+          name="Grau de Endividamento Inteligente"
+          value="Baixo"
+          help-text="Dividend Yield é a relação entre o dividendo pago por ação e o preço da ação."
+          is-intelligent
+        /><MoleculesTickerIndicator
+          name="Proteção do Minoritário"
+          value="Alto"
+          help-text="Dividend Yield é a relação entre o dividendo pago por ação e o preço da ação."
+          is-intelligent
+        />
       </div>
     </div>
 
     <!-- Asset Details -->
     <div class="flex flex-col gap-4 border-b p-4">
-      <h2 class="mb-4 text-lg font-bold">Indicadores básicos</h2>
-      <div class="flex w-full flex-wrap gap-7">
+      <h2 class="mb-4 px-6 text-lg font-bold">Indicadores básicos</h2>
+      <div
+        class="grid w-full grid-cols-3 gap-6 px-6 lg:grid-cols-6 xl:grid-cols-10"
+      >
         <MoleculesTickerIndicator
           name="D.Y."
           value="10%"
@@ -127,19 +140,22 @@
           help-text="Dividend Yield é a relação entre o dividendo pago por ação e o preço da ação."
         />
       </div>
-      <div class="mb-4 mt-4 flex flex-col gap-1">
-        <div class="flex items-center gap-2">
-          <IconAi class="fill-secondary h-5" />
-          <h2 class="text-secondary text-lg font-bold">
-            Indicadores inteligentes
-          </h2>
-        </div>
-        <p class="text-[13px]">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer
-          vulputate erat non massa tristique.
-        </p>
-      </div>
-      <div class="flex w-full flex-wrap gap-7">
+      <button
+        class="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-black/10 hover:dark:bg-white/10"
+        @click="seeSmartIndicators = !seeSmartIndicators"
+      >
+        <UIcon
+          name="ic-round-arrow-forward-ios transition-transform"
+          :class="{
+            'rotate-90': seeSmartIndicators,
+          }"
+        />
+        <h2 class="text-lg font-semibold">Indicadores inteligentes</h2>
+      </button>
+      <div
+        v-if="seeSmartIndicators"
+        class="flex w-full gap-6 px-6 max-md:flex-col md:flex-wrap"
+      >
         <MoleculesTickerIndicator
           name="Score de viabilidade"
           value="Alta"
@@ -248,6 +264,8 @@ const ticker = route.params.ticker as string
 const asset = await getAsset(ticker)
 const selectedTimeRange = ref<ChartTimeRange>('month')
 const showRelevantDocs = ref(true)
+const seeMyInsights = ref(true)
+const seeSmartIndicators = ref(true)
 
 // Mock data melhorado com dados realistas
 const generateMockData = (timeRange: ChartTimeRange) => {
