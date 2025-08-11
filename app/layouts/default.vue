@@ -128,12 +128,12 @@
   <!-- Layout -->
   <div class="light:border-r-gray-200 flex min-h-screen w-full">
     <div
-      class="sticky top-0 flex h-screen min-h-fit w-[330px] min-w-[330px] flex-col justify-between gap-[50px] border-r bg-black text-white max-xl:hidden"
+      class="sticky top-0 flex h-screen min-h-fit w-[330px] min-w-[330px] flex-col justify-between gap-[50px] border-r bg-white max-xl:hidden dark:bg-black"
     >
       <div
-        class="flex h-[60px] items-center justify-center border-b bg-black px-6"
+        class="flex h-[60px] items-center justify-center border-b bg-gray-100 px-6 dark:bg-black"
       >
-        <IconLogoFull class="w-[140px] fill-white" />
+        <IconLogoFull class="w-[140px] fill-black dark:fill-white" />
       </div>
       <div class="flex items-center justify-between px-6">
         <div class="flex items-center gap-3">
@@ -198,7 +198,7 @@
     </div>
     <div class="relative flex w-full flex-col bg-white dark:bg-black">
       <div
-        class="light:bg-gray-100 light:border-gray-300 light:text-black sticky top-0 z-10 flex h-[60px] w-full items-center justify-between gap-4 border-b px-6 py-4 backdrop-blur-lg"
+        class="light:bg-gray-100 light:text-black sticky top-0 z-10 flex h-[60px] w-full items-center justify-between gap-4 border-b px-6 py-4 backdrop-blur-lg"
         v-bind="headerProps"
       >
         <slot name="header">

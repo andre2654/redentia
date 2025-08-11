@@ -4,8 +4,8 @@
 :root {
   --ui-color-background: #fff;
   --ui-color-text: #000;
-  --ui-primary: #b9ecc1;
-  --ui-secondary: #a7d6ff;
+  --ui-primary: #85c18e;
+  --ui-secondary: #5b96c9;
   --ui-tertiary: #042f54;
 }
 
@@ -41,14 +41,14 @@ textarea:focus {
 }
 
 @layer utilities {
-  *,
-  hr {
+  .dark *,
+  .dark hr {
     @apply border-[#535353];
   }
 
-  .light-border *,
-  .light-border hr {
-    @apply border-[#A5A5A5];
+  *,
+  hr {
+    @apply border-gray-300;
   }
 
   // Remove scrollbar
