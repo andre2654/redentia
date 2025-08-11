@@ -9,7 +9,19 @@
         </p>
       </div>
       <div class="flex flex-col">
-        <img src="/assets/images/banner.png" class="max-md:hidden" />
+        <UCarousel
+          v-slot="{ item }"
+          loop
+          dots
+          :items="['/assets/images/banner.png', '/assets/images/banner2.png']"
+          class="w-full"
+          :ui="{
+            dots: 'bottom-3',
+            dot: 'bg-white/10 data-[state=active]:bg-white',
+          }"
+        >
+          <img :src="item" />
+        </UCarousel>
         <MoleculesSearchAssets
           class="light:border-b-gray-300 rounded-none border-y py-4"
         />
