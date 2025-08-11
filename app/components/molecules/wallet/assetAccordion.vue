@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col">
     <button
-      class="flex h-[55px] w-full items-center gap-6 rounded-md px-6 hover:bg-black/5 hover:dark:bg-white/5"
+      class="flex w-full items-center gap-6 rounded-md px-6 hover:bg-black/5 max-md:py-3 md:h-[55px] hover:dark:bg-white/5"
       :class="{ 'rounded-b-none bg-black/5 dark:bg-white/5': opened }"
       @click="opened = !opened"
     >
@@ -12,15 +12,15 @@
           'rotate-90': opened,
         }"
       />
-      <div class="flex flex-col justify-center">
+      <div class="flex min-w-fit flex-col justify-center">
         <b class="text-[15px] font-medium"> Ações </b>
         <span class="redentia-amount text-[11px]">R$ 20.200,00</span>
       </div>
-      <div class="flex items-center gap-3 px-4">
+      <div class="flex min-w-fit items-center gap-3 px-4">
         <IconArrowFinanceUp class="w-4 fill-green-500" />
         <span class="text-[12px] font-medium text-green-500"
-          >+21.01% <b class="redentia-amount">(R$ 300,00)</b> hoje</span
-        >
+          >+21.01% <b class="redentia-amount max-sm:hidden">(R$ 300,00) hoje</b>
+        </span>
       </div>
     </button>
 
