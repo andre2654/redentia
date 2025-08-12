@@ -1,33 +1,33 @@
 <template>
   <div
-    class="mx-auto flex max-w-[1400px] flex-col bg-black min-[1400px]:border-x"
+    class="mx-auto flex max-w-[1400px] flex-col bg-white min-[1400px]:border-x dark:bg-black"
   >
     <div class="py-5">
       <NuxtLink to="/">
-        <IconLogoFull class="mx-auto h-auto w-[200px] fill-white" />
+        <IconLogoFull
+          class="mx-auto h-auto w-[200px] fill-black dark:fill-white"
+        />
       </NuxtLink>
     </div>
     <img src="/assets/images/mockup-app.png" class="w-full" />
     <div
-      class="flex flex-col items-center gap-4 bg-black py-[60px] max-sm:px-4"
+      class="flex flex-col items-center gap-4 bg-white py-[60px] max-sm:px-4 dark:bg-black"
     >
-      <h1 class="text-center text-4xl font-bold text-white">
-        Baixe nosso aplicativo!
-      </h1>
-      <p class="max-w-[600px] text-center text-lg text-white">
+      <h1 class="text-center text-4xl font-bold">Baixe nosso aplicativo!</h1>
+      <p class="max-w-[600px] text-center text-lg">
         A única plataforma de finanças realmente inteligente, com tudo que você
         precisa para gerenciar seus investimentos e finanças pessoais de forma
         rápida e fácil.
       </p>
       <div class="mx-auto mt-6 flex w-full max-w-[900px] gap-4 max-md:flex-col">
         <div
-          class="flex w-full flex-col items-center justify-center rounded-lg bg-[#4388FF] p-6 text-center text-lg leading-[30px] text-white"
+          class="flex w-full flex-col items-center justify-center rounded-lg bg-[#4388FF] p-6 text-center text-lg leading-[30px]"
         >
           <span> Experiência completa, rápida e segura! </span>
           <b> No seu celular, com redentia.com! </b>
         </div>
         <div
-          class="flex w-full flex-col items-start justify-center gap-4 rounded-lg bg-[#4388FF] p-6 text-white"
+          class="flex w-full flex-col items-start justify-center gap-4 rounded-lg bg-[#4388FF] p-6"
         >
           <b class="w-full text-center text-2xl">
             Por que baixar o aplicativo Redentia?
@@ -47,7 +47,7 @@
         </div>
       </div>
     </div>
-    <div class="flex py-[60px] text-white max-sm:px-4">
+    <div class="flex py-[60px] max-sm:px-4">
       <div
         class="mx-auto flex w-full max-w-[900px] justify-center gap-5 max-md:flex-col"
       >
