@@ -126,14 +126,14 @@
   </div>
 
   <!-- Layout -->
-  <div class="light:border-r-gray-200 flex min-h-screen w-full">
+  <div class="flex min-h-screen w-full">
     <div
-      class="bg-black/2 sticky top-0 flex h-screen min-h-fit w-[330px] min-w-[330px] flex-col justify-between gap-[50px] border-r max-xl:hidden dark:bg-black"
+      class="bg-black/2 sticky top-0 flex h-screen min-h-fit w-[330px] min-w-[330px] flex-col justify-between gap-[50px] max-xl:hidden dark:bg-black"
     >
       <div
-        class="flex h-[60px] items-center justify-center border-b bg-gray-100 px-6 dark:bg-black"
+        class="bg-tertiary/95 flex h-[60px] items-center justify-center px-6 dark:border-b"
       >
-        <IconLogoFull class="w-[140px] fill-black dark:fill-white" />
+        <IconLogoFull class="w-[140px] fill-white" />
       </div>
       <div class="flex items-center justify-between px-6">
         <div class="flex items-center gap-3">
