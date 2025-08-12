@@ -21,13 +21,13 @@
       </p>
       <div class="mx-auto mt-6 flex w-full max-w-[900px] gap-4 max-md:flex-col">
         <div
-          class="flex w-full flex-col items-center justify-center rounded-lg bg-[#4388FF] p-6 text-center text-lg leading-[30px]"
+          class="bg-tertiary flex w-full flex-col items-center justify-center rounded-lg p-6 text-center text-lg leading-[30px] text-white"
         >
           <span> Experiência completa, rápida e segura! </span>
           <b> No seu celular, com redentia.com! </b>
         </div>
         <div
-          class="flex w-full flex-col items-start justify-center gap-4 rounded-lg bg-[#4388FF] p-6"
+          class="bg-tertiary flex w-full flex-col items-start justify-center gap-4 rounded-lg p-6 text-white"
         >
           <b class="w-full text-center text-2xl">
             Por que baixar o aplicativo Redentia?
@@ -54,10 +54,10 @@
         <div class="flex w-full flex-col gap-5">
           <h2 class="text-center text-2xl">Como baixar para Android?</h2>
           <div
-            class="rounded-lg bg-[#6EB1FE] py-3 text-center font-bold text-black"
+            class="bg-tertiary rounded-lg py-3 text-center font-bold text-white"
           >
             Siga os passos abaixo
-            <IconArrowDown class="inline-block w-6 fill-black" />
+            <IconArrowDown class="inline-block w-6 fill-white" />
           </div>
           <ul class="space-y-2">
             <li
@@ -88,7 +88,7 @@
           </ul>
           <button
             id="download-android-btn"
-            class="to-secondary from-primary flex items-center justify-center gap-2 rounded-full bg-gradient-to-r px-3 py-1 font-bold text-black hover:opacity-80"
+            class="to-secondary from-primary flex items-center justify-center gap-2 rounded-full bg-gradient-to-r px-3 py-2 font-bold text-black hover:opacity-80"
             @click="installApp"
           >
             <IconLogo class="h-4 fill-black" />
@@ -98,10 +98,10 @@
         <div class="flex w-full flex-col gap-5">
           <h2 class="text-center text-2xl">Como baixar para iOS?</h2>
           <div
-            class="rounded-lg bg-[#6EB1FE] py-3 text-center font-bold text-black"
+            class="bg-tertiary rounded-lg py-3 text-center font-bold text-white"
           >
             Siga os passos abaixo
-            <IconArrowDown class="inline-block w-6 fill-black" />
+            <IconArrowDown class="inline-block w-6 fill-white" />
           </div>
           <ul class="space-y-2">
             <li
@@ -132,7 +132,7 @@
           </ul>
           <button
             id="download-android-btn"
-            class="to-secondary from-primary flex items-center justify-center gap-2 rounded-full bg-gradient-to-r px-3 py-1 font-bold text-black hover:opacity-80"
+            class="to-secondary from-primary flex items-center justify-center gap-2 rounded-full bg-gradient-to-r px-3 py-2 font-bold text-black hover:opacity-80"
             @click="installApp"
           >
             <IconLogo class="h-4 fill-black" />
