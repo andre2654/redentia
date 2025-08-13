@@ -166,7 +166,7 @@
         Ver todos
       </NuxtLink>
       <div
-        class="dark:bg-tertiary/40 bg-tertiary text-secondary flex w-full flex-col gap-3 px-6 py-4"
+        class="bg-tertiary/40 text-secondary flex w-full flex-col gap-3 px-6 py-4"
       >
         <div class="flex items-center gap-2 px-3 py-2">
           <IconAi class="fill-secondary h-5" />
