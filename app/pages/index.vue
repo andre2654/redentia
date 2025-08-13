@@ -42,16 +42,19 @@
           name="IBOVESPA"
           value="+21,01%"
           help-text="Dividend Yield é a relação entre o dividendo pago por ação e o preço da ação."
+          :loading="loading"
         />
         <MoleculesTickerIndicator
           name="FII"
           value="+21,01%"
           help-text="Dividend Yield é a relação entre o dividendo pago por ação e o preço da ação."
+          :loading="loading"
         />
         <MoleculesTickerIndicator
           name="Dólar"
           value="+21,01%"
           help-text="Dividend Yield é a relação entre o dividendo pago por ação e o preço da ação."
+          :loading="loading"
         />
       </div>
       <div class="w-full border-b p-4">
@@ -86,6 +89,7 @@
             :colors="chartConfig.colors"
             :legend="chartConfig.legend"
             :height="350"
+            :loading="loading"
           />
         </div>
       </div>
@@ -172,6 +176,7 @@ import { generateChartConfig } from '~/helpers/utils'
 
 const selectedTimeRange = ref<ChartTimeRange>('month')
 const showMap = ref(false)
+const loading = ref(true)
 const treemapFilter = ref<'all' | 'positive' | 'negative'>('all')
 
 // Dados mock para o treemap - separados por categorias
@@ -364,4 +369,10 @@ const chartConfig = computed(() =>
     basePrice: 1000,
   })
 )
+
+onMounted(() => {
+  setTimeout(() => {
+    loading.value = false
+  }, 3000)
+})
 </script>

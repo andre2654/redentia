@@ -9,7 +9,13 @@
     "
   >
     <div :style="{ height: `${height}px` }" class="w-full">
-      <Line ref="chartRef" :data="chartData" :options="chartOptions" />
+      <USkeleton v-if="loading" class="h-full w-full" />
+      <Line
+        v-show="!loading"
+        ref="chartRef"
+        :data="chartData"
+        :options="chartOptions"
+      />
     </div>
 
     <!-- Tooltip dinâmico -->
@@ -71,6 +77,7 @@ interface Props {
   legend?: IChartLegendItem[]
   height?: number
   showLegend?: boolean
+  loading?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {

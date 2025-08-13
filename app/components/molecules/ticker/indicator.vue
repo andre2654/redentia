@@ -10,9 +10,13 @@
     <div class="flex items-center gap-2">
       <IconAi v-if="isIntelligent" class="fill-secondary h-5" />
 
-      <b class="text-[18px]" :class="{ 'text-secondary': isIntelligent }">{{
-        value
-      }}</b>
+      <USkeleton v-if="loading" class="w-18 h-8" />
+      <b
+        v-else
+        class="text-[18px]"
+        :class="{ 'text-secondary': isIntelligent }"
+        >{{ value }}</b
+      >
     </div>
 
     <small v-if="!helpTextWithTooltip" class="opacity-60">
@@ -42,6 +46,10 @@ defineProps({
   helpTextWithTooltip: {
     type: Boolean,
     default: true,
+  },
+  loading: {
+    type: Boolean,
+    default: false,
   },
 })
 </script>
