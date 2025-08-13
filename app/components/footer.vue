@@ -43,8 +43,8 @@
           <UButton
             class="max-w-fit"
             :icon="colorTheme.icon"
-            color="neutral"
-            variant="soft"
+            color="primary"
+            variant="outline"
             :label="colorTheme.label"
           />
         </UDropdownMenu>

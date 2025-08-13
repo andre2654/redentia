@@ -1,6 +1,6 @@
 <template>
   <NuxtLayout title="Visão geral" hide-search-bar>
-    <div class="flex h-full flex-col gap-4 pb-8 pt-6">
+    <div class="flex h-full flex-col gap-4 pt-6">
       <div class="flex flex-col px-6">
         <h2 class="text-[18px] font-bold">Ações e fundos imobiliarios</h2>
         <p class="text-[13px] font-extralight">
@@ -165,6 +165,19 @@
       >
         Ver todos
       </NuxtLink>
+      <div
+        class="dark:bg-tertiary/40 bg-tertiary text-secondary flex w-full flex-col gap-3 px-6 py-4"
+      >
+        <div class="flex items-center gap-2 px-3 py-2">
+          <IconAi class="fill-secondary h-5" />
+          <h2 class="text-lg font-semibold">Filtros inteligentes</h2>
+        </div>
+        <div class="flex w-full gap-6 px-6 max-md:flex-col md:flex-wrap">
+          <NuxtLink to="/redentia/about" class="hover:underline">
+            Menores P/VP
+          </NuxtLink>
+        </div>
+      </div>
     </div>
   </NuxtLayout>
 </template>
