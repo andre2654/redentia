@@ -11,32 +11,27 @@
       <div class="flex flex-col">
         <UCarousel
           v-slot="{ item }"
-          class="w-full md:hidden"
+          class="w-full"
           loop
           dots
           :items="[
-            '/assets/images/banner-mobile.png',
-            '/assets/images/banner2-mobile.png',
+            {
+              desktop: '/assets/images/banner.png',
+              mobile: '/assets/images/banner-mobile.png',
+            },
+            {
+              desktop: '/assets/images/banner2.png',
+              mobile: '/assets/images/banner2-mobile.png',
+            },
           ]"
           :ui="{
             dots: 'bottom-3',
             dot: 'bg-white/10 data-[state=active]:bg-white',
+            item: 'ps-0',
           }"
         >
-          <img :src="item" />
-        </UCarousel>
-        <UCarousel
-          v-slot="{ item }"
-          class="w-full max-md:hidden"
-          loop
-          dots
-          :items="['/assets/images/banner.png', '/assets/images/banner2.png']"
-          :ui="{
-            dots: 'bottom-3',
-            dot: 'bg-white/10 data-[state=active]:bg-white',
-          }"
-        >
-          <img :src="item" />
+          <img :src="item.desktop" class="max-md:hidden" />
+          <img :src="item.mobile" class="md:hidden" />
         </UCarousel>
         <MoleculesSearchAssets
           class="light:border-b-gray-300 rounded-none border-y py-4"
@@ -144,7 +139,7 @@
         />
       </div>
       <template v-else>
-        <div class="grid grid-cols-2 justify-center gap-6 px-6">
+        <div class="grid grid-cols-1 justify-center gap-6 px-6 md:grid-cols-2">
           <AtomsTicker v-for="index in 8" :key="index" />
         </div>
         <NuxtLink
@@ -155,7 +150,7 @@
         </NuxtLink>
         <div class="flex flex-col gap-3 px-6">
           <h2 class="text-[18px] font-bold">Maiores baixas e baixas</h2>
-          <div class="grid grid-cols-2 justify-center gap-6">
+          <div class="grid grid-cols-1 justify-center gap-6 md:grid-cols-2">
             <AtomsTicker v-for="index in 8" :key="index" />
           </div>
         </div>
@@ -176,7 +171,7 @@ import type { ChartTimeRange } from '~/types/chart'
 import { generateChartConfig } from '~/helpers/utils'
 
 const selectedTimeRange = ref<ChartTimeRange>('month')
-const showMap = ref(true)
+const showMap = ref(false)
 const treemapFilter = ref<'all' | 'positive' | 'negative'>('all')
 
 // Dados mock para o treemap - separados por categorias

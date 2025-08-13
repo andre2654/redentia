@@ -80,8 +80,6 @@ const props = withDefaults(defineProps<Props>(), {
   showLegend: true,
 })
 
-const colorMode = useColorMode()
-
 function transparentize(value: string, opacity: number) {
   const alpha = opacity === undefined ? 0.5 : 1 - opacity
   return colorLib(value).alpha(alpha).rgbString()
@@ -469,12 +467,6 @@ const chartData = computed(() => {
   }
 })
 
-const uiPrimaryColor = computed(() => {
-  return getComputedStyle(document.documentElement)
-    .getPropertyValue('--ui-color-text')
-    .trim()
-})
-
 const chartOptions = computed(() => {
   return {
     responsive: true,
@@ -491,12 +483,12 @@ const chartOptions = computed(() => {
         ticks: {
           autoSkip: true,
           autoSkipPadding: 8,
-          maxRotation: 0,
+          maxRotation: 45,
           minRotation: 0,
           font: {
             size: 13,
           },
-          maxTicksLimit: 10,
+          maxTicksLimit: 15,
           padding: 20,
         },
       },
