@@ -1,4 +1,34 @@
+// Gera configuração de gráfico (data, cores, legend) para uso em AtomsGraphLine
 import type { ChartTimeRange, IChartDataPoint } from '../types/chart'
+export function generateChartConfig({
+  timeRange,
+  label = 'IBOV',
+  basePrice = 1000,
+}: {
+  timeRange: ChartTimeRange
+  label?: string
+  basePrice?: number
+}) {
+  const data = generateMockChartData(timeRange, basePrice)
+  const currentPrice = data[data.length - 1]?.value || 0
+  const previousPrice = data[data.length - 2]?.value || currentPrice
+  const change = currentPrice - previousPrice
+  const color = change >= 0 ? '#04CE00' : '#FF4757'
+  return {
+    data,
+    colors: [color],
+    legend: [
+      {
+        label,
+        color,
+        value: `R$ ${currentPrice.toLocaleString('pt-BR', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}`,
+      },
+    ],
+  }
+}
 
 // Gera dados mock para gráficos de linha
 export function generateMockChartData(timeRange: ChartTimeRange, basePrice = 1000): IChartDataPoint[] {

@@ -256,7 +256,7 @@
 
 <script setup lang="ts">
 import type { ChartTimeRange } from '~/types/chart'
-import { generateMockChartData } from '~/helpers/utils'
+import { generateChartConfig } from '~/helpers/utils'
 
 const route = useRoute()
 const { getAsset } = useAssetsService()
@@ -269,28 +269,11 @@ const seeMyInsights = ref(true)
 const seeSmartIndicators = ref(true)
 
 // Configuração do gráfico baseada no período selecionado
-const chartConfig = computed(() => {
-  const data = generateMockChartData(
-    selectedTimeRange.value,
-    asset.close || 100
-  )
-  const currentPrice = data[data.length - 1]?.value || 0
-  const previousPrice = data[data.length - 2]?.value || currentPrice
-  const change = currentPrice - previousPrice
-  const color = change >= 0 ? '#04CE00' : '#FF4757'
-  return {
-    data,
-    colors: [color],
-    legend: [
-      {
-        label: ticker.toUpperCase(),
-        color,
-        value: `R$ ${currentPrice.toLocaleString('pt-BR', {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })}`,
-      },
-    ],
-  }
-})
+const chartConfig = computed(() =>
+  generateChartConfig({
+    timeRange: selectedTimeRange.value,
+    label: ticker.toUpperCase(),
+    basePrice: asset.close || 100,
+  })
+)
 </script>

@@ -173,7 +173,7 @@
 <script lang="ts" setup>
 import type { ChartTimeRange } from '~/types/chart'
 
-import { generateMockChartData } from '~/helpers/utils'
+import { generateChartConfig } from '~/helpers/utils'
 
 const selectedTimeRange = ref<ChartTimeRange>('month')
 const showMap = ref(true)
@@ -362,27 +362,11 @@ const stocksData = [
   },
 ]
 
-const chartConfig = computed(() => {
-  const data = generateMockChartData(selectedTimeRange.value)
-  const currentPrice = data[data.length - 1]?.value || 0
-  const previousPrice = data[data.length - 2]?.value || currentPrice
-  const change = currentPrice - previousPrice
-
-  const color = change >= 0 ? '#04CE00' : '#FF4757'
-
-  return {
-    data,
-    colors: [color],
-    legend: [
-      {
-        label: 'IBOV',
-        color,
-        value: `R$ ${currentPrice.toLocaleString('pt-BR', {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })}`,
-      },
-    ],
-  }
-})
+const chartConfig = computed(() =>
+  generateChartConfig({
+    timeRange: selectedTimeRange.value,
+    label: 'IBOV',
+    basePrice: 1000,
+  })
+)
 </script>
