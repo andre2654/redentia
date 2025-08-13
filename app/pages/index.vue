@@ -146,27 +146,21 @@
         <div class="grid grid-cols-1 justify-center gap-6 px-6 md:grid-cols-2">
           <AtomsTicker v-for="index in 8" :key="index" />
         </div>
-        <NuxtLink
-          to="/assets"
-          class="mt-4 flex items-center justify-center gap-2 hover:underline"
-        >
+        <NuxtLink to="/assets" class="mt-2 flex gap-2 px-6 hover:underline">
           Ver todos
         </NuxtLink>
-        <div class="flex flex-col gap-3 px-6">
+        <div class="mt-4 flex flex-col gap-3 px-6">
           <h2 class="text-[18px] font-bold">Maiores baixas e baixas</h2>
           <div class="grid grid-cols-1 justify-center gap-6 md:grid-cols-2">
             <AtomsTicker v-for="index in 8" :key="index" />
           </div>
         </div>
       </template>
-      <NuxtLink
-        to="/assets"
-        class="mt-4 flex items-center justify-center gap-2 hover:underline"
-      >
+      <NuxtLink to="/assets" class="mt-2 flex gap-2 px-6 hover:underline">
         Ver todos
       </NuxtLink>
       <div
-        class="bg-tertiary/40 text-secondary flex w-full flex-col gap-3 px-6 py-4"
+        class="dark:bg-tertiary/40 text-secondary flex w-full flex-col gap-3 border-t bg-black/5 px-6 py-4"
       >
         <div class="flex items-center gap-2 px-3 py-2">
           <IconAi class="fill-secondary h-5" />

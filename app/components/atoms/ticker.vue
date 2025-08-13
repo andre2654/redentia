@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="bg-black/3 flex items-center gap-2 rounded-md p-2 dark:bg-white/5"
-  >
+  <div class="flex items-center gap-2 rounded-md p-2">
     <img
       width="50"
       class="rounded-lg"
