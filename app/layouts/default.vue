@@ -128,7 +128,7 @@
   <!-- Layout -->
   <div class="flex min-h-screen w-full">
     <div
-      class="bg-black/2 sticky top-0 flex h-screen min-h-fit w-[330px] min-w-[330px] flex-col justify-between gap-[50px] max-xl:hidden dark:bg-black"
+      class="bg-black/2 sticky top-0 flex h-screen min-h-fit w-[330px] min-w-[330px] flex-col justify-between gap-[50px] border-r max-xl:hidden dark:bg-black"
     >
       <div
         class="bg-tertiary/95 flex h-[60px] items-center justify-center px-6 dark:border-b"
