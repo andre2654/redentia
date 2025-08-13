@@ -1,27 +1,18 @@
 {
   // https://nuxt.com/docs/guide/concepts/typescript
+  "extends": "./.nuxt/tsconfig.json",
   "compilerOptions": {
     "paths": {
-      "~/*": ["./*"]
+      "~/*": ["./app/*"],
+      "@/*": ["./app/*"]
     },
-    "moduleResolution": "Node",
-    "target": "ESNext",
-    "module": "ESNext",
-    "strict": true,
-    "types": ["@types/node", "@nuxt/types", "@nuxtjs/tailwindcss"]
+    "moduleResolution": "node",
+    "types": [
+      "@types/node",
+      "@nuxt/types",
+      "@nuxtjs/tailwindcss",
+      "@nuxt/auto-imports"
+    ]
   },
-  "references": [
-    {
-      "path": "./.nuxt/tsconfig.app.json"
-    },
-    {
-      "path": "./.nuxt/tsconfig.server.json"
-    },
-    {
-      "path": "./.nuxt/tsconfig.shared.json"
-    },
-    {
-      "path": "./.nuxt/tsconfig.node.json"
-    }
-  ]
+  "files": ["@types/**/*.d.ts"]
 }

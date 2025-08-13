@@ -171,9 +171,9 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
+import type { ChartTimeRange } from '~/types/chart'
 
-type ChartTimeRange = 'month' | 'year' | 'ytd'
+import { generateMockChartData } from '~/helpers/utils'
 
 const selectedTimeRange = ref<ChartTimeRange>('month')
 const showMap = ref(true)
@@ -362,52 +362,8 @@ const stocksData = [
   },
 ]
 
-const generateMockData = (timeRange: ChartTimeRange) => {
-  const getDaysFromRange = (range: ChartTimeRange): number => {
-    switch (range) {
-      case 'month':
-        return 30
-      case 'year':
-        return 365
-      case 'ytd': {
-        const now = new Date()
-        const startOfYear = new Date(now.getFullYear(), 0, 1)
-        return Math.ceil(
-          (now.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24)
-        )
-      }
-      default:
-        return 30
-    }
-  }
-
-  const days = getDaysFromRange(timeRange)
-  const data = []
-  const basePrice = 1000
-  let currentPrice = basePrice
-
-  const now = new Date()
-
-  for (let i = days - 1; i >= 0; i--) {
-    const date = new Date(now)
-    date.setDate(date.getDate() - i)
-
-    // Simulação de variação de preço mais realística
-    const variation = (Math.random() - 0.5) * 0.08 // Variação de -4% a +4%
-    currentPrice = Math.max(currentPrice * (1 + variation), 1)
-
-    data.push({
-      date: date.toLocaleDateString('pt-BR'),
-      value: Math.round(currentPrice * 100) / 100,
-      timestamp: date.getTime(),
-    })
-  }
-
-  return data
-}
-
 const chartConfig = computed(() => {
-  const data = generateMockData(selectedTimeRange.value)
+  const data = generateMockChartData(selectedTimeRange.value)
   const currentPrice = data[data.length - 1]?.value || 0
   const previousPrice = data[data.length - 2]?.value || currentPrice
   const change = currentPrice - previousPrice
