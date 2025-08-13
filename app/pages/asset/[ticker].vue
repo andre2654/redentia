@@ -255,10 +255,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useRoute } from 'vue-router'
-
-type ChartTimeRange = 'month' | 'year' | 'ytd'
+import type { ChartTimeRange } from '~/types/chart'
+import { generateMockChartData } from '~/helpers/utils'
 
 const route = useRoute()
 const { getAsset } = useAssetsService()
