@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-tertiary flex w-full flex-col text-white dark:bg-black">
+  <div class="bg-tertiary flex w-full flex-col text-white dark:bg-white/5">
     <div class="w-full bg-white/5 py-5">
       <div
         class="mx-auto flex max-w-[1400px] items-center justify-between text-[15px] max-lg:flex-col max-lg:gap-[40px]"
@@ -38,29 +38,41 @@
           </NuxtLink>
         </div>
       </div>
-      <ClientOnly v-if="!colorMode?.forced">
-        <UButton
-          class="max-w-fit"
-          :icon="isDark ? 'i-lucide-moon' : 'i-lucide-sun'"
-          color="neutral"
-          variant="soft"
-          :label="isDark ? 'Mudar para claro' : 'Mudar para escuro'"
-          @click="isDark = !isDark"
-        />
+      <ClientOnly>
+        <UDropdownMenu :items="themeOptions" :ui="{ width: 'w-48' }">
+          <UButton
+            class="max-w-fit"
+            :icon="colorTheme.icon"
+            color="neutral"
+            variant="soft"
+            :label="colorTheme.label"
+          />
+        </UDropdownMenu>
       </ClientOnly>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-const colorMode = useColorMode()
+import { EColorTheme } from '~/enums/general'
 
-const isDark = computed({
-  get() {
-    return colorMode.value === 'dark'
+const { colorIcons, colorLabels, colorTheme } = useInterface()
+
+const themeOptions = [
+  {
+    label: colorLabels[EColorTheme.Light],
+    icon: colorIcons[EColorTheme.Light],
+    onSelect: () => (colorTheme.value = EColorTheme.Light),
   },
-  set(_isDark) {
-    colorMode.preference = _isDark ? 'dark' : 'light'
+  {
+    label: colorLabels[EColorTheme.Dark],
+    icon: colorIcons[EColorTheme.Dark],
+    onSelect: () => (colorTheme.value = EColorTheme.Dark),
   },
-})
+  {
+    label: colorLabels[EColorTheme.System],
+    icon: colorIcons[EColorTheme.System],
+    onSelect: () => (colorTheme.value = EColorTheme.System),
+  },
+]
 </script>

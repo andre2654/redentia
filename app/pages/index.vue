@@ -144,7 +144,7 @@
         />
       </div>
       <template v-else>
-        <div class="flex flex-wrap justify-center gap-6">
+        <div class="grid grid-cols-2 justify-center gap-6 px-6">
           <AtomsTicker v-for="index in 8" :key="index" />
         </div>
         <NuxtLink
@@ -155,7 +155,7 @@
         </NuxtLink>
         <div class="flex flex-col gap-3 px-6">
           <h2 class="text-[18px] font-bold">Maiores baixas e baixas</h2>
-          <div class="flex flex-wrap justify-center gap-6">
+          <div class="grid grid-cols-2 justify-center gap-6">
             <AtomsTicker v-for="index in 8" :key="index" />
           </div>
         </div>

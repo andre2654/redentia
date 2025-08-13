@@ -10,7 +10,7 @@
       </NuxtLink>
     </div>
     <h1
-      class="text-shadow-lg to-secondary from-primary flex h-[200px] w-full items-center justify-center bg-gradient-to-r bg-cover bg-center text-center text-[45px] font-bold text-black"
+      class="text-shadow-lg bg-tertiary flex h-[200px] w-full items-center justify-center text-center text-[45px] font-bold text-white"
     >
       {{ title }}
     </h1>
