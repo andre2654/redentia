@@ -99,13 +99,25 @@
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer
           vulputate erat non massa tristique.
         </p>
-        <div class="mt-3 flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <IconAi class="fill-secondary h-5" />
-            <UCheckbox v-model="showMap" color="secondary" />
-            <h2 class="text-secondary">Mostrar mapa</h2>
-          </div>
-        </div>
+        <label
+          for="map-toggle"
+          class="hover:bg-secondary/10 mt-3 flex max-w-fit items-center justify-between gap-4 rounded-full border px-3 py-1"
+          :class="{
+            'bg-tertiary/60 !border-tertiary': showMap,
+          }"
+        >
+          <IconAi class="fill-secondary h-5" />
+          <h2 class="text-secondary select-none">Mostrar mapa</h2>
+          <USwitch
+            id="map-toggle"
+            v-model="showMap"
+            color="secondary"
+            checked-icon="lucide-check"
+            :ui="{
+              base: 'data-[state=checked]:border-secondary',
+            }"
+          />
+        </label>
       </div>
       <div class="flex items-center justify-between gap-3 px-6">
         <h2 class="text-[18px] font-bold">Maiores altas e baixas</h2>
