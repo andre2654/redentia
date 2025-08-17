@@ -103,7 +103,7 @@
           for="map-toggle"
           class="hover:bg-secondary/10 mt-3 flex max-w-fit items-center justify-between gap-4 rounded-full border px-3 py-1"
           :class="{
-            'bg-tertiary/60 !border-tertiary': showMap,
+            'bg-secondary/15 dark:bg-tertiary/60 !border-tertiary': showMap,
           }"
         >
           <IconAi class="fill-secondary h-5" />
