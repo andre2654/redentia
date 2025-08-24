@@ -42,18 +42,21 @@
               color="neutral"
               :variant="selectedTimeRange === 'month' ? 'soft' : 'link'"
               label="Mês"
+              :disabled="isLoadingChart"
               @click="selectedTimeRange = 'month'"
             />
             <UButton
               color="neutral"
               :variant="selectedTimeRange === 'year' ? 'soft' : 'link'"
               label="Ano"
+              :disabled="isLoadingChart"
               @click="selectedTimeRange = 'year'"
             />
             <UButton
               color="neutral"
               :variant="selectedTimeRange === 'ytd' ? 'soft' : 'link'"
               label="Ano até hoje"
+              :disabled="isLoadingChart"
               @click="selectedTimeRange = 'ytd'"
             />
           </UButtonGroup>
@@ -63,6 +66,7 @@
           :colors="chartConfig.colors"
           :legend="chartConfig.legend"
           :height="350"
+          :loading="isLoadingChart"
         />
       </div>
     </div>
@@ -267,6 +271,7 @@ const selectedTimeRange = ref<ChartTimeRange>('month')
 const showRelevantDocs = ref(true)
 const seeMyInsights = ref(true)
 const seeSmartIndicators = ref(true)
+const isLoadingChart = ref(false)
 
 // Configuração do gráfico baseada no período selecionado
 const chartConfig = computed(() =>
@@ -276,4 +281,12 @@ const chartConfig = computed(() =>
     basePrice: asset.close || 100,
   })
 )
+
+// Simula loading quando muda o período
+watch(selectedTimeRange, () => {
+  isLoadingChart.value = true
+  setTimeout(() => {
+    isLoadingChart.value = false
+  }, 2000) // Loading por 2 segundos
+})
 </script>
