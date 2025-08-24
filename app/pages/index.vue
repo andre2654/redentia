@@ -68,18 +68,21 @@
                 color="neutral"
                 :variant="selectedTimeRange === 'month' ? 'soft' : 'link'"
                 label="Mês"
+                :disabled="loading"
                 @click="selectedTimeRange = 'month'"
               />
               <UButton
                 color="neutral"
                 :variant="selectedTimeRange === 'year' ? 'soft' : 'link'"
                 label="Ano"
+                :disabled="loading"
                 @click="selectedTimeRange = 'year'"
               />
               <UButton
                 color="neutral"
                 :variant="selectedTimeRange === 'ytd' ? 'soft' : 'link'"
                 label="Ano até hoje"
+                :disabled="loading"
                 @click="selectedTimeRange = 'ytd'"
               />
             </UButtonGroup>

@@ -3,7 +3,13 @@
     class="graph relative flex h-full w-full flex-col gap-6"
     @mouseleave="onRootMouseLeave"
   >
-    <div :style="{ height: `${height}px` }" class="w-full">
+    <div :style="{ height: `${height}px` }" class="relative w-full">
+      <span
+        v-if="loading"
+        class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white p-3 text-xl text-gray-300 dark:bg-black dark:text-gray-700"
+      >
+        Carregando...
+      </span>
       <Line
         ref="chartRef"
         :data="chartData"
@@ -36,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { computed, ref, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import colorLib from '@kurkle/color'
 import type { Chart as ChartJS, Plugin } from 'chart.js'
 import {
@@ -83,7 +89,6 @@ const props = withDefaults(defineProps<Props>(), {
 function getIndexFromEvt(chart: ChartJS, e: MouseEvent) {
   // posição relativa ao canvas, já corrigida por DPR/scroll
   const pos = getRelativePosition(e, chart)
-  // @ts-expect-error: tipos internos do Chart.js
   const { chartArea, scales } = chart
   const xScale = scales?.x
   if (!xScale || !chartArea) return null
@@ -108,7 +113,7 @@ function transparentize(hex: string, opacity: number) {
   const alpha = opacity === undefined ? 0.5 : 1 - opacity
   return colorLib(hex).alpha(alpha).rgbString()
 }
-const clamp = (n: number, min: number, max: number) =>
+const _clamp = (n: number, min: number, max: number) =>
   Math.max(min, Math.min(n, max))
 
 /* ========== Estados de interação ========== */
@@ -152,20 +157,67 @@ const tooltipData = computed(() => {
     props.data[hoverIndex.value]
   ) {
     const p = props.data[hoverIndex.value]
-    return {
-      label: p.date,
-      value: `R$ ${p.value.toLocaleString('pt-BR', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      })}`,
-      color: props.colors[0],
+    if (p) {
+      return {
+        label: p.date,
+        value: `R$ ${p.value.toLocaleString('pt-BR', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}`,
+        color: props.colors[0] || '#04CE00',
+      }
     }
   }
   return null
 })
 
+/* ========== Dados de loading simulados ========== */
+const loadingData = ref<IChartDataPoint[]>([])
+const loadingAnimationFrame = ref<number | null>(null)
+
+function generateLoadingData() {
+  const now = new Date()
+  const data: IChartDataPoint[] = []
+
+  for (let i = 29; i >= 0; i--) {
+    const date = new Date(now)
+    date.setDate(date.getDate() - i)
+
+    // Valores aleatórios que variam sutilmente
+    const baseValue = 1000 + Math.sin(i * 0.1) * 200
+    const randomVariation = (Math.random() - 0.5) * 100
+    const value = Math.max(800, baseValue + randomVariation)
+
+    data.push({
+      date: date.toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+      }),
+      value: Math.round(value),
+      timestamp: date.getTime(),
+    })
+  }
+
+  return data
+}
+
+function _animateLoadingData() {
+  if (!props.loading) return
+
+  loadingData.value = generateLoadingData()
+
+  loadingAnimationFrame.value = requestAnimationFrame(() => {
+    setTimeout(() => _animateLoadingData(), 800) // Atualiza a cada 800ms
+  })
+}
+
 /* ========== Cor dinâmica (mesmo resultado) ========== */
 const dynamicColor = computed(() => {
+  // Se estiver carregando, sempre retorna cinza
+  if (props.loading) {
+    return '#6B7280' // gray-500
+  }
+
   if (
     isDragging.value &&
     dragStartIndex.value !== null &&
@@ -179,7 +231,7 @@ const dynamicColor = computed(() => {
         : '#FF4757'
     }
   }
-  return props.colors[0]
+  return props.colors[0] || '#04CE00'
 })
 
 /* ========== Chart refs/instância ========== */
@@ -192,6 +244,7 @@ function setupCanvasEvents(chart: ChartJS) {
   const canvas = chart.canvas
 
   const onMouseDown = (e: MouseEvent) => {
+    if (props.loading) return // Desabilita durante loading
     const idx = getIndexFromEvt(chart, e)
     if (idx === null) return
     isDragging.value = true
@@ -201,6 +254,7 @@ function setupCanvasEvents(chart: ChartJS) {
   }
 
   const onMouseMove = (e: MouseEvent) => {
+    if (props.loading) return // Desabilita durante loading
     tooltipPosition.value = { x: e.clientX, y: e.clientY }
 
     if (isDragging.value) {
@@ -281,7 +335,6 @@ const hoverLinePlugin: Plugin<'line'> = {
   id: 'hover-line-plugin',
   afterDraw: (chart) => {
     // Garantias de segurança
-    // @ts-expect-error tipos internos do Chart.js
     const { ctx, chartArea, scales } = chart || {}
     if (!ctx || !chartArea || !scales?.x) return
 
@@ -328,6 +381,11 @@ const hoverLinePlugin: Plugin<'line'> = {
 
         const startData = props.data[startIdx]
         const endData = props.data[endIdx]
+
+        if (!startData || !endData) {
+          return
+        }
+
         const isPositive = endData.value >= startData.value
         const selectionColor = isPositive ? '#04CE00' : '#FF4757'
 
@@ -353,6 +411,7 @@ const hoverLinePlugin: Plugin<'line'> = {
 }
 
 /* ========== Registro único do Chart.js (evita duplicatas em HMR/SSR) ========== */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const registered = (ChartCore as any)._adapters?._customRegisteredOnce
 if (!registered) {
   ChartCore.register(
@@ -363,39 +422,46 @@ if (!registered) {
     Title,
     Filler
   )
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ;(ChartCore as any)._adapters = { _customRegisteredOnce: true }
 }
 
 /* ========== Data/Options (mesmo visual) ========== */
-const chartData = computed(() => ({
-  labels: props.data.map((d) => d.date),
-  datasets: [
-    {
-      data: props.data.map((d) => d.value),
-      label: props.legend[0]?.label || 'Preço',
-      backgroundColor: (ctx: any) => {
-        const { chart } = ctx
-        const area = chart?.chartArea
-        if (!area) return null
-        const g = chart.ctx.createLinearGradient(0, area.bottom, 0, area.top)
-        g.addColorStop(1, transparentize(dynamicColor.value, 0.7))
-        g.addColorStop(0.3, transparentize(dynamicColor.value, 1))
-        return g
+const chartData = computed(() => {
+  // Usa dados de loading se estiver carregando, senão usa dados reais
+  const dataToUse = props.loading ? loadingData.value : props.data
+
+  return {
+    labels: dataToUse.map((d) => d.date),
+    datasets: [
+      {
+        data: dataToUse.map((d) => d.value),
+        label: props.legend[0]?.label || 'Preço',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        backgroundColor: (ctx: any) => {
+          const { chart } = ctx
+          const area = chart?.chartArea
+          if (!area) return null
+          const g = chart.ctx.createLinearGradient(0, area.bottom, 0, area.top)
+          g.addColorStop(1, transparentize(dynamicColor.value, 0.7))
+          g.addColorStop(0.3, transparentize(dynamicColor.value, 1))
+          return g
+        },
+        borderWidth: 1.5,
+        fill: true,
+        borderColor: dynamicColor.value,
+        pointHitRadius: props.loading ? 0 : 10, // Desabilita interação durante loading
+        pointRadius: 0,
+        pointHoverRadius: props.loading ? 0 : 8,
+        pointBackgroundColor: dynamicColor.value,
+        pointBorderWidth: 3,
+        pointHoverBorderWidth: props.loading ? 0 : 10,
+        pointHoverBorderColor: transparentize(dynamicColor.value, 0.9),
+        tension: props.loading ? 0.5 : 0.1,
       },
-      borderWidth: 1.5,
-      fill: true,
-      borderColor: dynamicColor.value,
-      pointHitRadius: 10,
-      pointRadius: 0,
-      pointHoverRadius: 8,
-      pointBackgroundColor: dynamicColor.value,
-      pointBorderWidth: 3,
-      pointHoverBorderWidth: 10,
-      pointHoverBorderColor: transparentize(dynamicColor.value, 0.9),
-      tension: 0.1,
-    },
-  ],
-}))
+    ],
+  }
+})
 
 const chartOptions = computed(() => ({
   responsive: true,
@@ -415,11 +481,10 @@ const chartOptions = computed(() => ({
       },
     },
     y: {
-      grid: { color: 'rgba(255, 255, 255, 0.1)' },
       ticks: {
         maxTicksLimit: 5,
         font: { size: 13 },
-        callback: (v: number) =>
+        callback: (v: string | number) =>
           `R$ ${Number(v).toLocaleString('pt-BR', {
             minimumFractionDigits: 0,
             maximumFractionDigits: 0,
@@ -441,12 +506,46 @@ onMounted(async () => {
   if (!chart) return
   chartInstance.value = chart
   removeCanvasEvents = setupCanvasEvents(chart)
+
+  // Inicia animação se já estiver em loading
+  if (props.loading) {
+    loadingData.value = generateLoadingData()
+    _animateLoadingData()
+  }
 })
+
+// Watcher para controlar animação de loading
+watch(
+  () => props.loading,
+  (newLoading) => {
+    if (newLoading) {
+      // Inicia animação de loading
+      loadingData.value = generateLoadingData()
+      _animateLoadingData()
+      // Desabilita interações durante loading
+      isDragging.value = false
+      dragStartIndex.value = null
+      dragEndIndex.value = null
+      isHovering.value = false
+      hoverIndex.value = null
+    } else {
+      // Para animação de loading
+      if (loadingAnimationFrame.value) {
+        cancelAnimationFrame(loadingAnimationFrame.value)
+        loadingAnimationFrame.value = null
+      }
+    }
+  }
+)
 
 onUnmounted(() => {
   if (removeCanvasEvents) {
     removeCanvasEvents()
     removeCanvasEvents = null
+  }
+  if (loadingAnimationFrame.value) {
+    cancelAnimationFrame(loadingAnimationFrame.value)
+    loadingAnimationFrame.value = null
   }
 })
 
