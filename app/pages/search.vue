@@ -139,6 +139,12 @@ onMounted(async () => {
     ...asset,
     mdi: ['jan', 'mar'], // mock
   }))
+
+  // Força uma atualização da paginação após carregar os dados
+  await nextTick()
+  if (table.value?.tableApi) {
+    table.value.tableApi.setPageIndex(0)
+  }
 })
 
 function getHeader(column: any, label: string) {
