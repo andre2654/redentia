@@ -1,20 +1,14 @@
 <template>
   <div
     class="graph relative flex h-full w-full flex-col gap-6"
-    @mouseleave="
-      () => {
-        isHovering = false
-        hoverIndex = null
-      }
-    "
+    @mouseleave="onRootMouseLeave"
   >
     <div :style="{ height: `${height}px` }" class="w-full">
-      <USkeleton v-if="loading" class="h-full w-full" />
       <Line
-        v-show="!loading"
         ref="chartRef"
         :data="chartData"
         :options="chartOptions"
+        :plugins="localPlugins"
       />
     </div>
 
@@ -33,12 +27,8 @@
           :style="{ backgroundColor: tooltipData.color }"
         />
         <div class="flex flex-col gap-1">
-          <span class="text-[13px]">
-            {{ tooltipData.label }}
-          </span>
-          <span class="text-[13px] font-light">
-            {{ tooltipData.value }}
-          </span>
+          <span class="text-[13px]">{{ tooltipData.label }}</span>
+          <span class="text-[13px] font-light">{{ tooltipData.value }}</span>
         </div>
       </div>
     </div>
@@ -46,10 +36,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, onUnmounted } from 'vue'
+import { computed, ref, onMounted, onUnmounted, nextTick } from 'vue'
 import colorLib from '@kurkle/color'
+import type { Chart as ChartJS, Plugin } from 'chart.js'
 import {
-  Chart as ChartJS,
+  Chart as ChartCore,
   CategoryScale,
   LinearScale,
   PointElement,
@@ -58,19 +49,19 @@ import {
   Filler,
 } from 'chart.js'
 import { Line } from 'vue-chartjs'
+import { getRelativePosition } from 'chart.js/helpers'
 
+/* ========== Tipos ========== */
 interface IChartDataPoint {
   date: string
   value: number
   timestamp: number
 }
-
 interface IChartLegendItem {
   label: string
   color: string
   value?: string | number
 }
-
 interface Props {
   data: IChartDataPoint[]
   colors?: string[]
@@ -80,25 +71,56 @@ interface Props {
   loading?: boolean
 }
 
+/* ========== Props/Defaults ========== */
 const props = withDefaults(defineProps<Props>(), {
   colors: () => ['#04CE00'],
   legend: () => [],
   height: 300,
   showLegend: true,
+  loading: false,
 })
 
-function transparentize(value: string, opacity: number) {
-  const alpha = opacity === undefined ? 0.5 : 1 - opacity
-  return colorLib(value).alpha(alpha).rgbString()
+function getIndexFromEvt(chart: ChartJS, e: MouseEvent) {
+  // posição relativa ao canvas, já corrigida por DPR/scroll
+  const pos = getRelativePosition(e, chart)
+  // @ts-expect-error: tipos internos do Chart.js
+  const { chartArea, scales } = chart
+  const xScale = scales?.x
+  if (!xScale || !chartArea) return null
+
+  // só considera dentro da área útil do gráfico
+  const insideChart =
+    pos.x >= chartArea.left &&
+    pos.x <= chartArea.right &&
+    pos.y >= chartArea.top &&
+    pos.y <= chartArea.bottom
+  if (!insideChart) return null
+
+  const idx = xScale.getValueForPixel(pos.x)
+  return typeof idx === 'number' && !Number.isNaN(idx)
+    ? Math.max(0, Math.min(Math.round(idx), props.data.length - 1))
+    : null
 }
 
+/* ========== Utils ========== */
+const BLACK_60 = 'rgba(0, 0, 0, 0.6)'
+function transparentize(hex: string, opacity: number) {
+  const alpha = opacity === undefined ? 0.5 : 1 - opacity
+  return colorLib(hex).alpha(alpha).rgbString()
+}
+const clamp = (n: number, min: number, max: number) =>
+  Math.max(min, Math.min(n, max))
+
+/* ========== Estados de interação ========== */
 const isDragging = ref(false)
 const dragStartIndex = ref<number | null>(null)
 const dragEndIndex = ref<number | null>(null)
+
 const isHovering = ref(false)
 const hoverIndex = ref<number | null>(null)
 const tooltipPosition = ref({ x: 0, y: 0 })
 
+/* ========== Tooltip dinâmico (mesmo resultado) ========== */
 const tooltipData = computed(() => {
   if (
     isDragging.value &&
@@ -107,10 +129,8 @@ const tooltipData = computed(() => {
   ) {
     const startIdx = Math.min(dragStartIndex.value, dragEndIndex.value)
     const endIdx = Math.max(dragStartIndex.value, dragEndIndex.value)
-
-    if (startIdx === endIdx || !props.data[startIdx] || !props.data[endIdx]) {
+    if (startIdx === endIdx || !props.data[startIdx] || !props.data[endIdx])
       return null
-    }
 
     const startData = props.data[startIdx]
     const endData = props.data[endIdx]
@@ -131,21 +151,20 @@ const tooltipData = computed(() => {
     hoverIndex.value !== null &&
     props.data[hoverIndex.value]
   ) {
-    const dataPoint = props.data[hoverIndex.value]
+    const p = props.data[hoverIndex.value]
     return {
-      label: dataPoint.date,
-      value: `R$ ${dataPoint.value.toLocaleString('pt-BR', {
+      label: p.date,
+      value: `R$ ${p.value.toLocaleString('pt-BR', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })}`,
       color: props.colors[0],
     }
   }
-
   return null
 })
 
-// Cor dinâmica baseada no período selecionado
+/* ========== Cor dinâmica (mesmo resultado) ========== */
 const dynamicColor = computed(() => {
   if (
     isDragging.value &&
@@ -154,140 +173,87 @@ const dynamicColor = computed(() => {
   ) {
     const startIdx = Math.min(dragStartIndex.value, dragEndIndex.value)
     const endIdx = Math.max(dragStartIndex.value, dragEndIndex.value)
-
     if (props.data[startIdx] && props.data[endIdx]) {
-      const startData = props.data[startIdx]
-      const endData = props.data[endIdx]
-      const isPositive = endData.value >= startData.value
-      return isPositive ? '#04CE00' : '#FF4757'
+      return props.data[endIdx].value >= props.data[startIdx].value
+        ? '#04CE00'
+        : '#FF4757'
     }
   }
   return props.colors[0]
 })
 
+/* ========== Chart refs/instância ========== */
 const chartRef = ref<InstanceType<typeof Line> | null>(null)
 const chartInstance = ref<ChartJS | null>(null)
-let cleanupEvents: (() => void) | null = null
+let removeCanvasEvents: (() => void) | null = null
 
-const setupCanvasEvents = (chart: ChartJS) => {
+/* ========== Eventos do canvas (com cleanup) ========== */
+function setupCanvasEvents(chart: ChartJS) {
   const canvas = chart.canvas
 
-  const handleMouseDown = (event: MouseEvent) => {
-    if (!chart || !chart.chartArea || !chart.scales || !chart.scales.x) {
-      return
-    }
-
-    const canvasPosition = canvas.getBoundingClientRect()
-    const x = event.clientX - canvasPosition.left
-
-    if (x >= chart.chartArea.left && x <= chart.chartArea.right) {
-      try {
-        const dataIndex = chart.scales.x.getValueForPixel(x)
-        if (typeof dataIndex === 'number' && !isNaN(dataIndex)) {
-          const roundedIndex = Math.round(dataIndex)
-
-          if (roundedIndex >= 0 && roundedIndex < props.data.length) {
-            isDragging.value = true
-            dragStartIndex.value = roundedIndex
-            dragEndIndex.value = roundedIndex
-            event.preventDefault()
-          }
-        }
-      } catch {
-        // Ignora erros silenciosamente
-      }
-    }
+  const onMouseDown = (e: MouseEvent) => {
+    const idx = getIndexFromEvt(chart, e)
+    if (idx === null) return
+    isDragging.value = true
+    dragStartIndex.value = idx
+    dragEndIndex.value = idx
+    e.preventDefault()
   }
 
-  const handleMouseMove = (event: MouseEvent) => {
-    if (!chart || !chart.chartArea || !chart.scales || !chart.scales.x) {
+  const onMouseMove = (e: MouseEvent) => {
+    tooltipPosition.value = { x: e.clientX, y: e.clientY }
+
+    if (isDragging.value) {
+      const idx = getIndexFromEvt(chart, e)
+      if (idx !== null) dragEndIndex.value = idx
+      e.preventDefault()
       return
     }
 
-    const canvasPosition = canvas.getBoundingClientRect()
-    const x = event.clientX - canvasPosition.left
-    const y = event.clientY - canvasPosition.top
-
-    tooltipPosition.value = { x: event.clientX, y: event.clientY }
-
-    const isInsideCanvas =
+    const rect = canvas.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+    const insideCanvas =
       x >= 0 && x <= canvas.width && y >= 0 && y <= canvas.height
-
-    if (!isInsideCanvas && !isDragging.value) {
+    if (!insideCanvas) {
       isHovering.value = false
       hoverIndex.value = null
       return
     }
 
-    const isInsideChart =
-      x >= chart.chartArea.left &&
-      x <= chart.chartArea.right &&
-      y >= chart.chartArea.top &&
-      y <= chart.chartArea.bottom
-
-    if (isDragging.value) {
-      if (isInsideCanvas) {
-        try {
-          const dataIndex = chart.scales.x.getValueForPixel(x)
-          if (typeof dataIndex === 'number' && !isNaN(dataIndex)) {
-            const roundedIndex = Math.round(dataIndex)
-            const clampedIndex = Math.max(
-              0,
-              Math.min(roundedIndex, props.data.length - 1)
-            )
-            dragEndIndex.value = clampedIndex
-          }
-        } catch {
-          // Ignora erros silenciosamente
-        }
-      }
-      event.preventDefault()
-    } else if (isInsideChart) {
-      try {
-        const dataIndex = chart.scales.x.getValueForPixel(x)
-        if (typeof dataIndex === 'number' && !isNaN(dataIndex)) {
-          const roundedIndex = Math.round(dataIndex)
-          if (roundedIndex >= 0 && roundedIndex < props.data.length) {
-            isHovering.value = true
-            hoverIndex.value = roundedIndex
-          } else {
-            isHovering.value = false
-            hoverIndex.value = null
-          }
-        }
-      } catch {
-        // Ignora erros silenciosamente
-      }
+    const idx = getIndexFromEvt(chart, e)
+    if (idx !== null) {
+      isHovering.value = true
+      hoverIndex.value = idx
     } else {
       isHovering.value = false
       hoverIndex.value = null
     }
   }
 
-  const handleMouseLeave = () => {
+  const onMouseLeave = () => {
     isHovering.value = false
     hoverIndex.value = null
-
     if (!isDragging.value) {
       dragStartIndex.value = null
       dragEndIndex.value = null
     }
   }
 
-  const handleMouseUp = () => {
-    if (isDragging.value) {
-      setTimeout(() => {
-        isDragging.value = false
-        dragStartIndex.value = null
-        dragEndIndex.value = null
-        isHovering.value = false
-        hoverIndex.value = null
-      }, 150)
-    }
+  const onMouseUp = () => {
+    if (!isDragging.value) return
+    // Mesmo comportamento: pequeno delay para “concluir” seleção
+    setTimeout(() => {
+      isDragging.value = false
+      dragStartIndex.value = null
+      dragEndIndex.value = null
+      isHovering.value = false
+      hoverIndex.value = null
+    }, 150)
   }
 
-  const handleScroll = () => {
-    // Oculta tooltip durante scroll
+  const onScroll = () => {
+    // Oculta tooltip durante scroll (mesmo resultado do seu código)
     isHovering.value = false
     hoverIndex.value = null
     isDragging.value = false
@@ -295,69 +261,48 @@ const setupCanvasEvents = (chart: ChartJS) => {
     dragEndIndex.value = null
   }
 
-  canvas.addEventListener('mousedown', handleMouseDown)
-  canvas.addEventListener('mouseleave', handleMouseLeave)
-  document.addEventListener('mousemove', handleMouseMove)
-  document.addEventListener('mouseup', handleMouseUp)
-  window.addEventListener('scroll', handleScroll, { passive: true })
+  canvas.addEventListener('mousedown', onMouseDown)
+  canvas.addEventListener('mouseleave', onMouseLeave)
+  document.addEventListener('mousemove', onMouseMove)
+  document.addEventListener('mouseup', onMouseUp)
+  window.addEventListener('scroll', onScroll, { passive: true })
 
   return () => {
-    canvas.removeEventListener('mousedown', handleMouseDown)
-    canvas.removeEventListener('mouseleave', handleMouseLeave)
-    document.removeEventListener('mousemove', handleMouseMove)
-    document.removeEventListener('mouseup', handleMouseUp)
-    window.removeEventListener('scroll', handleScroll)
+    canvas.removeEventListener('mousedown', onMouseDown)
+    canvas.removeEventListener('mouseleave', onMouseLeave)
+    document.removeEventListener('mousemove', onMouseMove)
+    document.removeEventListener('mouseup', onMouseUp)
+    window.removeEventListener('scroll', onScroll)
   }
 }
 
-const hoverLinePlugin = {
+/* ========== Plugin da linha/seleção (tipado) ========== */
+const hoverLinePlugin: Plugin<'line'> = {
   id: 'hover-line-plugin',
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  afterDraw: (chart: any) => {
-    if (
-      !chart ||
-      !chart.ctx ||
-      !chart.chartArea ||
-      !chart.scales ||
-      !chart.scales.x
-    ) {
-      return
-    }
+  afterDraw: (chart) => {
+    // Garantias de segurança
+    // @ts-expect-error tipos internos do Chart.js
+    const { ctx, chartArea, scales } = chart || {}
+    if (!ctx || !chartArea || !scales?.x) return
 
-    const {
-      ctx,
-      chartArea: { top, bottom },
-      scales: { x },
-    } = chart
-
-    if (
-      !ctx ||
-      !top ||
-      !bottom ||
-      !x ||
-      typeof x.getPixelForValue !== 'function'
-    ) {
-      return
-    }
+    const { top, bottom, left, right } = chartArea
+    const xScale = scales.x
 
     try {
+      // Linha de hover
       if (isHovering.value && hoverIndex.value !== null && !isDragging.value) {
-        const xCoor = x.getPixelForValue(hoverIndex.value)
-        if (typeof xCoor !== 'number' || isNaN(xCoor)) {
-          return
-        }
+        const xCoor = xScale.getPixelForValue(hoverIndex.value)
+        if (typeof xCoor !== 'number' || Number.isNaN(xCoor)) return
 
-        const backgroundColor = dynamicColor.value
-        const gradientBg = ctx.createLinearGradient(0, bottom, 0, top)
-
-        gradientBg.addColorStop(1, transparentize(backgroundColor, 1))
-        gradientBg.addColorStop(0.5, transparentize(backgroundColor, 0))
-        gradientBg.addColorStop(0, transparentize(backgroundColor, 1))
+        const bg = ctx.createLinearGradient(0, bottom, 0, top)
+        bg.addColorStop(1, transparentize(dynamicColor.value, 1))
+        bg.addColorStop(0.5, transparentize(dynamicColor.value, 0))
+        bg.addColorStop(0, transparentize(dynamicColor.value, 1))
 
         ctx.save()
         ctx.beginPath()
         ctx.lineWidth = 2
-        ctx.strokeStyle = gradientBg
+        ctx.strokeStyle = bg
         ctx.moveTo(xCoor, top)
         ctx.lineTo(xCoor, bottom)
         ctx.stroke()
@@ -365,6 +310,7 @@ const hoverLinePlugin = {
         ctx.restore()
       }
 
+      // Seleção por drag
       if (
         isDragging.value &&
         dragStartIndex.value !== null &&
@@ -373,179 +319,144 @@ const hoverLinePlugin = {
         const startIdx = Math.min(dragStartIndex.value, dragEndIndex.value)
         const endIdx = Math.max(dragStartIndex.value, dragEndIndex.value)
 
-        const startX = x.getPixelForValue(startIdx)
-        const endX = x.getPixelForValue(endIdx)
-
+        const startX = xScale.getPixelForValue(startIdx)
+        const endX = xScale.getPixelForValue(endIdx)
         if (
-          typeof startX !== 'number' ||
-          typeof endX !== 'number' ||
-          isNaN(startX) ||
-          isNaN(endX)
-        ) {
+          [startX, endX].some((v) => typeof v !== 'number' || Number.isNaN(v))
+        )
           return
-        }
 
-        // Calcula se o período é positivo ou negativo
         const startData = props.data[startIdx]
         const endData = props.data[endIdx]
         const isPositive = endData.value >= startData.value
         const selectionColor = isPositive ? '#04CE00' : '#FF4757'
 
         ctx.save()
-
-        // Área esquerda
-        if (startX > chart.chartArea.left) {
-          ctx.fillStyle = 'rgba(0, 0, 0, 0.6)'
-          ctx.fillRect(
-            chart.chartArea.left,
-            top,
-            startX - chart.chartArea.left,
-            bottom - top
-          )
+        // Áreas escurecidas
+        if (startX > left) {
+          ctx.fillStyle = BLACK_60
+          ctx.fillRect(left, top, startX - left, bottom - top)
         }
-
-        // Área direita
-        if (endX < chart.chartArea.right) {
-          ctx.fillStyle = 'rgba(0, 0, 0, 0.6)'
-          ctx.fillRect(endX, top, chart.chartArea.right - endX, bottom - top)
+        if (endX < right) {
+          ctx.fillStyle = BLACK_60
+          ctx.fillRect(endX, top, right - endX, bottom - top)
         }
-
-        // Adiciona um overlay sutil com a cor do período
+        // Overlay sutil na área selecionada
         ctx.fillStyle = transparentize(selectionColor, 0.9)
         ctx.fillRect(startX, top, endX - startX, bottom - top)
-
         ctx.restore()
       }
     } catch {
-      // Ignora erros silenciosamente para evitar crashes
+      // evita crash silenciosamente (mantendo seu comportamento)
     }
   },
 }
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Filler,
-  hoverLinePlugin
-)
+/* ========== Registro único do Chart.js (evita duplicatas em HMR/SSR) ========== */
+const registered = (ChartCore as any)._adapters?._customRegisteredOnce
+if (!registered) {
+  ChartCore.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Filler
+  )
+  ;(ChartCore as any)._adapters = { _customRegisteredOnce: true }
+}
 
-const chartData = computed(() => {
-  return {
-    labels: props.data.map((item) => item.date),
-    datasets: [
-      {
-        data: props.data.map((item) => item.value),
-        label: props.legend[0]?.label || 'Preço',
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        backgroundColor: (context: any) => {
-          const chart = context.chart
-          const { ctx, chartArea } = chart
-
-          if (!chartArea) return null
-
-          const gradientBg = ctx.createLinearGradient(
-            0,
-            chartArea.bottom,
-            0,
-            chartArea.top
-          )
-
-          gradientBg.addColorStop(1, transparentize(dynamicColor.value, 0.7))
-          gradientBg.addColorStop(0.3, transparentize(dynamicColor.value, 1))
-
-          return gradientBg
-        },
-        borderWidth: 1.5,
-        fill: true,
-        borderColor: dynamicColor.value,
-        pointHitRadius: 10,
-        pointRadius: 0,
-        pointHoverRadius: 8,
-        pointBackgroundColor: dynamicColor.value,
-        pointBorderWidth: 3,
-        pointHoverBorderWidth: 10,
-        pointHoverBorderColor: transparentize(dynamicColor.value, 0.9),
-        tension: 0.1,
+/* ========== Data/Options (mesmo visual) ========== */
+const chartData = computed(() => ({
+  labels: props.data.map((d) => d.date),
+  datasets: [
+    {
+      data: props.data.map((d) => d.value),
+      label: props.legend[0]?.label || 'Preço',
+      backgroundColor: (ctx: any) => {
+        const { chart } = ctx
+        const area = chart?.chartArea
+        if (!area) return null
+        const g = chart.ctx.createLinearGradient(0, area.bottom, 0, area.top)
+        g.addColorStop(1, transparentize(dynamicColor.value, 0.7))
+        g.addColorStop(0.3, transparentize(dynamicColor.value, 1))
+        return g
       },
-    ],
-  }
-})
-
-const chartOptions = computed(() => {
-  return {
-    responsive: true,
-    maintainAspectRatio: false,
-    interaction: {
-      intersect: false,
-      mode: 'index',
+      borderWidth: 1.5,
+      fill: true,
+      borderColor: dynamicColor.value,
+      pointHitRadius: 10,
+      pointRadius: 0,
+      pointHoverRadius: 8,
+      pointBackgroundColor: dynamicColor.value,
+      pointBorderWidth: 3,
+      pointHoverBorderWidth: 10,
+      pointHoverBorderColor: transparentize(dynamicColor.value, 0.9),
+      tension: 0.1,
     },
-    scales: {
-      x: {
-        grid: {
-          display: false,
-        },
-        ticks: {
-          autoSkip: true,
-          autoSkipPadding: 8,
-          maxRotation: 45,
-          minRotation: 0,
-          font: {
-            size: 13,
-          },
-          maxTicksLimit: 15,
-          padding: 20,
-        },
-      },
-      y: {
-        grid: {
-          color: 'rgba(255, 255, 255, 0.1)',
-        },
-        ticks: {
-          maxTicksLimit: 5,
-          font: {
-            size: 13,
-          },
-          callback: function (value: number) {
-            return `R$ ${Number(value).toLocaleString('pt-BR', {
-              minimumFractionDigits: 0,
-              maximumFractionDigits: 0,
-            })}`
-          },
-        },
+  ],
+}))
+
+const chartOptions = computed(() => ({
+  responsive: true,
+  maintainAspectRatio: false,
+  interaction: { intersect: false, mode: 'index' as const },
+  scales: {
+    x: {
+      grid: { display: false },
+      ticks: {
+        autoSkip: true,
+        autoSkipPadding: 8,
+        maxRotation: 45,
+        minRotation: 0,
+        font: { size: 13 },
+        maxTicksLimit: 15,
+        padding: 20,
       },
     },
-    plugins: {
-      legend: {
-        display: false,
-      },
-      tooltip: {
-        enabled: false,
-      },
-      colors: {
-        forceOverride: true,
+    y: {
+      grid: { color: 'rgba(255, 255, 255, 0.1)' },
+      ticks: {
+        maxTicksLimit: 5,
+        font: { size: 13 },
+        callback: (v: number) =>
+          `R$ ${Number(v).toLocaleString('pt-BR', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+          })}`,
       },
     },
-  }
-})
+  },
+  plugins: {
+    legend: { display: false },
+    tooltip: { enabled: false },
+    colors: { forceOverride: true },
+  },
+}))
 
-onMounted(() => {
-  setTimeout(() => {
-    if (chartRef.value?.chart) {
-      chartInstance.value = chartRef.value.chart
-      cleanupEvents = setupCanvasEvents(chartRef.value.chart)
-    }
-  }, 100)
+/* ========== Lifecycle ========== */
+onMounted(async () => {
+  await nextTick()
+  const chart = chartRef.value?.chart
+  if (!chart) return
+  chartInstance.value = chart
+  removeCanvasEvents = setupCanvasEvents(chart)
 })
 
 onUnmounted(() => {
-  if (cleanupEvents) {
-    cleanupEvents()
-    cleanupEvents = null
+  if (removeCanvasEvents) {
+    removeCanvasEvents()
+    removeCanvasEvents = null
   }
 })
+
+/* ========== Handlers do template ========== */
+const onRootMouseLeave = () => {
+  isHovering.value = false
+  hoverIndex.value = null
+}
+
+const localPlugins = [hoverLinePlugin]
 </script>
 
 <style scoped>
