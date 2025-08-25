@@ -200,6 +200,11 @@ const tooltipData = ref<TooltipData | null>(null)
 const tooltipPosition = ref({ x: 0, y: 0 })
 const rectangles = ref<Rectangle[]>([])
 
+// Estados de animação
+const isAnimating = ref(false)
+const animationProgress = ref(0)
+const animationDuration = 1000 // 1 segundo
+
 // Agrupa os dados por categoria
 const groupedData = computed(() => {
   let filteredData = [...props.data]
@@ -288,12 +293,12 @@ const createTreemap = (
   // Cria lista de items com valores normalizados
   const items = data.map((item, index) => ({
     item,
-    value: normalizedValues[index],
+    value: normalizedValues[index] || 0,
     color: getColor(item.change),
   }))
 
   // Ordena por valor (maior para menor) para melhor layout
-  items.sort((a, b) => b.value - a.value)
+  items.sort((a, b) => (b.value || 0) - (a.value || 0))
 
   // Determina a orientação inicial baseada no aspect ratio
   const aspectRatio = width / height
@@ -317,6 +322,8 @@ const squarify = (
   }
 
   const item = items[0]
+  if (!item) return layoutRow(row, w, h, x, y, dx)
+  
   const newRow = [...row, item]
   const remainingItems = items.slice(1)
 
@@ -401,6 +408,154 @@ const layoutRow = (
     }
 
     return rect
+  })
+}
+
+// Função de easing para animações suaves
+const easeOutCubic = (t: number): number => {
+  return 1 - Math.pow(1 - t, 3)
+}
+
+// Função para animar os retângulos
+const animateRectangles = (
+  ctx: CanvasRenderingContext2D,
+  rects: Rectangle[],
+  width: number,
+  height: number,
+  fontScale: number,
+  progress: number
+) => {
+  rects.forEach((rectItem, index) => {
+    // Delay escalonado para cada retângulo
+    const delay = index * 0.05
+    const adjustedProgress = Math.max(0, Math.min(1, (progress - delay) / (1 - delay)))
+    const itemProgress = easeOutCubic(adjustedProgress)
+    
+    if (adjustedProgress <= 0) return
+
+    // Para a animação, mantemos as posições originais e apenas animamos a escala
+    const scaleProgress = itemProgress
+    const opacity = itemProgress
+    
+    if (rectItem.width > 0 && rectItem.height > 0) {
+      // Salva o estado do contexto
+      ctx.save()
+      
+      // Desenha o retângulo mantendo a posição original
+      const borderRadius = 0
+
+      // Preenche com a cor de fundo (com transparência animada)
+      const originalColor = rectItem.color
+      const rgbaMatch = originalColor.match(/rgba?\(([^)]+)\)/)
+      
+      if (rgbaMatch && rgbaMatch[1]) {
+        const values = rgbaMatch[1].split(',').map(v => v.trim())
+        if (values.length >= 3) {
+          const alphaValue = values[3]
+          const alpha = values.length === 4 && alphaValue ? parseFloat(alphaValue) * opacity : opacity
+          ctx.fillStyle = `rgba(${values[0]}, ${values[1]}, ${values[2]}, ${alpha})`
+        }
+      } else {
+        ctx.fillStyle = originalColor
+        ctx.globalAlpha = opacity
+      }
+      
+      // Aplica transformação de escala no centro do retângulo
+      const centerX = rectItem.x + rectItem.width / 2
+      const centerY = rectItem.y + rectItem.height / 2
+      
+      ctx.translate(centerX, centerY)
+      ctx.scale(scaleProgress, scaleProgress)
+      ctx.translate(-centerX, -centerY)
+      
+      ctx.beginPath()
+      ctx.roundRect(rectItem.x, rectItem.y, rectItem.width, rectItem.height, borderRadius)
+      ctx.fill()
+
+      // Desenha a borda com cor sólida
+      const borderColor = getBorderColor(rectItem.item.change)
+      ctx.strokeStyle = borderColor
+      ctx.stroke()
+
+      // Renderiza texto sempre (sem animação de opacidade)
+      // Calcula o tamanho da fonte baseado na área do retângulo
+      const area = rectItem.width * rectItem.height
+      const areaFactor = Math.sqrt(area) / 100
+
+      const symbolFontSize = Math.max(10, Math.min(32, areaFactor * 8 * fontScale))
+      const changeFontSize = Math.max(8, symbolFontSize * 0.75)
+      const priceFontSize = Math.max(7, symbolFontSize * 0.6)
+
+      const minWidth = 35
+      const minHeight = 20
+      const minAreaForPrice = 4000
+      const minAreaForSymbol = 1000
+
+      const textCenterX = rectItem.x + rectItem.width / 2
+      const textCenterY = rectItem.y + rectItem.height / 2
+
+      // Mostra texto apenas se o retângulo for grande o suficiente
+      if (
+        rectItem.width > minWidth &&
+        rectItem.height > minHeight &&
+        area > minAreaForSymbol
+      ) {
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+
+        // Sombra do texto para melhor legibilidade
+        ctx.globalAlpha = 0.5
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'
+
+        // Symbol com sombra
+        ctx.font = `bold ${symbolFontSize}px Inter, -apple-system, sans-serif`
+        ctx.fillText(
+          rectItem.item.symbol,
+          textCenterX + 1,
+          textCenterY - changeFontSize / 2 + 1
+        )
+
+        // Change percentage com sombra
+        ctx.font = `600 ${changeFontSize}px Inter, -apple-system, sans-serif`
+        const changeText = `${rectItem.item.change >= 0 ? '+' : ''}${rectItem.item.change.toFixed(1)}%`
+        ctx.fillText(
+          changeText,
+          textCenterX + 1,
+          textCenterY + symbolFontSize / 2 + 1
+        )
+
+        // Texto principal branco
+        ctx.globalAlpha = 1
+        ctx.fillStyle = 'white'
+
+        // Symbol (texto principal maior)
+        ctx.font = `bold ${symbolFontSize}px Inter, -apple-system, sans-serif`
+        ctx.fillText(
+          rectItem.item.symbol,
+          textCenterX,
+          textCenterY - changeFontSize / 2
+        )
+
+        // Change percentage
+        ctx.font = `600 ${changeFontSize}px Inter, -apple-system, sans-serif`
+        ctx.fillText(changeText, textCenterX, textCenterY + symbolFontSize / 2)
+
+        // Preço apenas em retângulos maiores
+        if (area > minAreaForPrice && rectItem.height > 60) {
+          ctx.font = `500 ${priceFontSize}px Inter, -apple-system, sans-serif`
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.8)'
+          ctx.globalAlpha = 0.8
+          ctx.fillText(
+            `R$ ${rectItem.item.price.toFixed(2)}`,
+            textCenterX,
+            textCenterY + symbolFontSize / 2 + changeFontSize + 4
+          )
+        }
+      }
+      
+      // Restaura o estado do contexto
+      ctx.restore()
+    }
   })
 }
 
@@ -489,104 +644,38 @@ const renderTreemapForGroup = (
       const baseScale = Math.min(width / 400, height / 300)
       const fontScale = Math.max(0.7, Math.min(1.4, baseScale))
 
-      // Renderiza cada retângulo com texto proporcional ao tamanho
-      rects.forEach((rectItem) => {
-        // Desenha o retângulo com cantos arredondados responsivos
-        const borderRadius = 0
-
-        // Preenche com a cor de fundo (com transparência)
-        ctx.fillStyle = rectItem.color
-        ctx.beginPath()
-        ctx.roundRect(
-          rectItem.x,
-          rectItem.y,
-          rectItem.width,
-          rectItem.height,
-          borderRadius
-        )
-        ctx.fill()
-
-        // Desenha a borda com cor sólida (sem transparência)
-        ctx.strokeStyle = getBorderColor(rectItem.item.change)
-        ctx.stroke()
-
-        // Calcula o tamanho da fonte baseado na área do retângulo (inspirado no mapa de criptos)
-        const area = rectItem.width * rectItem.height
-        const areaFactor = Math.sqrt(area) / 100 // Fator baseado na raiz quadrada da área
-
-        // Tamanho base proporcional à área (como no mapa de criptos)
-        const symbolFontSize = Math.max(
-          10,
-          Math.min(32, areaFactor * 8 * fontScale)
-        )
-        const changeFontSize = Math.max(8, symbolFontSize * 0.75)
-        const priceFontSize = Math.max(7, symbolFontSize * 0.6)
-
-        // Requisitos mínimos para mostrar texto
-        const minWidth = 35
-        const minHeight = 20
-        const minAreaForPrice = 4000
-        const minAreaForSymbol = 1000
-
-        const centerX = rectItem.x + rectItem.width / 2
-        const centerY = rectItem.y + rectItem.height / 2
-
-        // Mostra texto apenas se o retângulo for grande o suficiente
-        if (
-          rectItem.width > minWidth &&
-          rectItem.height > minHeight &&
-          area > minAreaForSymbol
-        ) {
-          ctx.textAlign = 'center'
-          ctx.textBaseline = 'middle'
-
-          // Sombra do texto para melhor legibilidade
-          ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'
-
-          // Symbol com sombra (maior destaque como no mapa de criptos)
-          ctx.font = `bold ${symbolFontSize}px Inter, -apple-system, sans-serif`
-          ctx.fillText(
-            rectItem.item.symbol,
-            centerX + 1,
-            centerY - changeFontSize / 2 + 1
-          )
-
-          // Change percentage com sombra
-          ctx.font = `600 ${changeFontSize}px Inter, -apple-system, sans-serif`
-          const changeText = `${rectItem.item.change >= 0 ? '+' : ''}${rectItem.item.change.toFixed(1)}%`
-          ctx.fillText(
-            changeText,
-            centerX + 1,
-            centerY + symbolFontSize / 2 + 1
-          )
-
-          // Texto principal branco
-          ctx.fillStyle = 'white'
-
-          // Symbol (texto principal maior)
-          ctx.font = `bold ${symbolFontSize}px Inter, -apple-system, sans-serif`
-          ctx.fillText(
-            rectItem.item.symbol,
-            centerX,
-            centerY - changeFontSize / 2
-          )
-
-          // Change percentage
-          ctx.font = `600 ${changeFontSize}px Inter, -apple-system, sans-serif`
-          ctx.fillText(changeText, centerX, centerY + symbolFontSize / 2)
-
-          // Preço apenas em retângulos maiores
-          if (area > minAreaForPrice && rectItem.height > 60) {
-            ctx.font = `500 ${priceFontSize}px Inter, -apple-system, sans-serif`
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)'
-            ctx.fillText(
-              `R$ ${rectItem.item.price.toFixed(2)}`,
-              centerX,
-              centerY + symbolFontSize / 2 + changeFontSize + 4
-            )
-          }
+      // Inicia animação
+      isAnimating.value = true
+      animationProgress.value = 0
+      
+      // Limpa tooltip durante animação
+      tooltipData.value = null
+      
+      const startTime = Date.now()
+      
+      const renderFrame = () => {
+        const elapsed = Date.now() - startTime
+        const progress = Math.min(elapsed / animationDuration, 1)
+        
+        animationProgress.value = progress
+        
+        // Limpa o canvas
+        ctx.clearRect(0, 0, width, height)
+        
+        if (progress < 1) {
+          // Renderiza com animação
+          animateRectangles(ctx, rects, width, height, fontScale, progress)
+          requestAnimationFrame(renderFrame)
+        } else {
+          // Renderização final sem animação
+          isAnimating.value = false
+          animationProgress.value = 1
+          animateRectangles(ctx, rects, width, height, fontScale, 1)
         }
-      })
+      }
+      
+      // Inicia a animação
+      renderFrame()
     })
   })
 }
@@ -630,6 +719,9 @@ const renderTreemap = () => {
 
 // Event handlers para múltiplos canvas
 const handleMouseMove = (event: MouseEvent) => {
+  // Se está animando, não processa hover para evitar bugs de posicionamento
+  if (isAnimating.value) return
+
   const target = event.target as HTMLCanvasElement
   if (!target) return
 
@@ -897,6 +989,22 @@ defineExpose({
   overflow: hidden;
   min-width: 0;
   min-height: 0;
+}
+
+/* Animações de entrada */
+.canvas-container {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Layout responsivo para grupos */
