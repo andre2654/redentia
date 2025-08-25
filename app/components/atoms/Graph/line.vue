@@ -57,6 +57,8 @@ import {
 import { Line } from 'vue-chartjs'
 import { getRelativePosition } from 'chart.js/helpers'
 
+const { colorTheme } = useInterface()
+
 /* ========== Tipos ========== */
 interface IChartDataPoint {
   date: string
@@ -108,7 +110,12 @@ function getIndexFromEvt(chart: ChartJS, e: MouseEvent) {
 }
 
 /* ========== Utils ========== */
-const BLACK_60 = 'rgba(0, 0, 0, 0.6)'
+const overlayColor = computed(() => {
+  // Verifica se está no tema dark através da classe no html ou body
+  const isDark = colorTheme.value.color === 'dark'
+  return isDark ? 'rgba(0, 0, 0, 0.6)' : 'rgba(255, 255, 255, 0.8)'
+})
+
 function transparentize(hex: string, opacity: number) {
   const alpha = opacity === undefined ? 0.5 : 1 - opacity
   return colorLib(hex).alpha(alpha).rgbString()
@@ -392,11 +399,11 @@ const hoverLinePlugin: Plugin<'line'> = {
         ctx.save()
         // Áreas escurecidas
         if (startX > left) {
-          ctx.fillStyle = BLACK_60
+          ctx.fillStyle = overlayColor.value
           ctx.fillRect(left, top, startX - left, bottom - top)
         }
         if (endX < right) {
-          ctx.fillStyle = BLACK_60
+          ctx.fillStyle = overlayColor.value
           ctx.fillRect(endX, top, right - endX, bottom - top)
         }
         // Overlay sutil na área selecionada
