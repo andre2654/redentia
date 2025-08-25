@@ -199,6 +199,7 @@ const canvasOutrosRef = ref<HTMLCanvasElement | null>(null)
 const tooltipData = ref<TooltipData | null>(null)
 const tooltipPosition = ref({ x: 0, y: 0 })
 const rectangles = ref<Rectangle[]>([])
+const hoveredRectangle = ref<Rectangle | null>(null)
 
 // Estados de animação
 const isAnimating = ref(false)
@@ -323,7 +324,7 @@ const squarify = (
 
   const item = items[0]
   if (!item) return layoutRow(row, w, h, x, y, dx)
-  
+
   const newRow = [...row, item]
   const remainingItems = items.slice(1)
 
@@ -428,53 +429,71 @@ const animateRectangles = (
   rects.forEach((rectItem, index) => {
     // Delay escalonado para cada retângulo
     const delay = index * 0.05
-    const adjustedProgress = Math.max(0, Math.min(1, (progress - delay) / (1 - delay)))
+    const adjustedProgress = Math.max(
+      0,
+      Math.min(1, (progress - delay) / (1 - delay))
+    )
     const itemProgress = easeOutCubic(adjustedProgress)
-    
+
     if (adjustedProgress <= 0) return
 
     // Para a animação, mantemos as posições originais e apenas animamos a escala
     const scaleProgress = itemProgress
-    const opacity = itemProgress
-    
+    let opacity = itemProgress
+
+    // Aplica efeito de hover - reduz opacidade se outro retângulo está sendo hovered
+    if (hoveredRectangle.value && hoveredRectangle.value !== rectItem) {
+      opacity *= 0.3 // Reduz para 30% da opacidade normal
+    }
+
     if (rectItem.width > 0 && rectItem.height > 0) {
       // Salva o estado do contexto
       ctx.save()
-      
+
       // Desenha o retângulo mantendo a posição original
       const borderRadius = 0
 
       // Preenche com a cor de fundo (com transparência animada)
       const originalColor = rectItem.color
       const rgbaMatch = originalColor.match(/rgba?\(([^)]+)\)/)
-      
+
       if (rgbaMatch && rgbaMatch[1]) {
-        const values = rgbaMatch[1].split(',').map(v => v.trim())
+        const values = rgbaMatch[1].split(',').map((v) => v.trim())
         if (values.length >= 3) {
           const alphaValue = values[3]
-          const alpha = values.length === 4 && alphaValue ? parseFloat(alphaValue) * opacity : opacity
+          const alpha =
+            values.length === 4 && alphaValue
+              ? parseFloat(alphaValue) * opacity
+              : opacity
           ctx.fillStyle = `rgba(${values[0]}, ${values[1]}, ${values[2]}, ${alpha})`
         }
       } else {
         ctx.fillStyle = originalColor
         ctx.globalAlpha = opacity
       }
-      
+
       // Aplica transformação de escala no centro do retângulo
       const centerX = rectItem.x + rectItem.width / 2
       const centerY = rectItem.y + rectItem.height / 2
-      
+
       ctx.translate(centerX, centerY)
       ctx.scale(scaleProgress, scaleProgress)
       ctx.translate(-centerX, -centerY)
-      
+
       ctx.beginPath()
-      ctx.roundRect(rectItem.x, rectItem.y, rectItem.width, rectItem.height, borderRadius)
+      ctx.roundRect(
+        rectItem.x,
+        rectItem.y,
+        rectItem.width,
+        rectItem.height,
+        borderRadius
+      )
       ctx.fill()
 
       // Desenha a borda com cor sólida
       const borderColor = getBorderColor(rectItem.item.change)
       ctx.strokeStyle = borderColor
+      ctx.globalAlpha = opacity
       ctx.stroke()
 
       // Renderiza texto sempre (sem animação de opacidade)
@@ -482,7 +501,10 @@ const animateRectangles = (
       const area = rectItem.width * rectItem.height
       const areaFactor = Math.sqrt(area) / 100
 
-      const symbolFontSize = Math.max(10, Math.min(32, areaFactor * 8 * fontScale))
+      const symbolFontSize = Math.max(
+        10,
+        Math.min(32, areaFactor * 8 * fontScale)
+      )
       const changeFontSize = Math.max(8, symbolFontSize * 0.75)
       const priceFontSize = Math.max(7, symbolFontSize * 0.6)
 
@@ -503,8 +525,8 @@ const animateRectangles = (
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
 
-        // Sombra do texto para melhor legibilidade
-        ctx.globalAlpha = 0.5
+        // Sombra do texto para melhor legibilidade (com opacidade ajustada pelo hover)
+        ctx.globalAlpha = 0.5 * opacity
         ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'
 
         // Symbol com sombra
@@ -524,8 +546,8 @@ const animateRectangles = (
           textCenterY + symbolFontSize / 2 + 1
         )
 
-        // Texto principal branco
-        ctx.globalAlpha = 1
+        // Texto principal branco (com opacidade ajustada pelo hover)
+        ctx.globalAlpha = opacity
         ctx.fillStyle = 'white'
 
         // Symbol (texto principal maior)
@@ -540,11 +562,11 @@ const animateRectangles = (
         ctx.font = `600 ${changeFontSize}px Inter, -apple-system, sans-serif`
         ctx.fillText(changeText, textCenterX, textCenterY + symbolFontSize / 2)
 
-        // Preço apenas em retângulos maiores
+        // Preço apenas em retângulos maiores (com opacidade ajustada pelo hover)
         if (area > minAreaForPrice && rectItem.height > 60) {
           ctx.font = `500 ${priceFontSize}px Inter, -apple-system, sans-serif`
           ctx.fillStyle = 'rgba(255, 255, 255, 0.8)'
-          ctx.globalAlpha = 0.8
+          ctx.globalAlpha = 0.8 * opacity
           ctx.fillText(
             `R$ ${rectItem.item.price.toFixed(2)}`,
             textCenterX,
@@ -552,11 +574,50 @@ const animateRectangles = (
           )
         }
       }
-      
+
       // Restaura o estado do contexto
       ctx.restore()
     }
   })
+}
+
+// Renderiza um treemap específico para um grupo (versão estática para hover)
+const renderTreemapForGroupStatic = (
+  canvas: HTMLCanvasElement,
+  data: TreemapItem[],
+  groupName: string
+) => {
+  if (!canvas) return
+
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return
+
+  const container = canvas.parentElement
+  if (!container) return
+
+  const containerRect = container.getBoundingClientRect()
+  if (containerRect.width <= 0 || containerRect.height <= 0) return
+
+  const width = Math.floor(containerRect.width)
+  const height = Math.floor(containerRect.height)
+
+  if (width <= 0 || height <= 0) return
+
+  // Usa as dimensões já configuradas do canvas
+  ctx.clearRect(0, 0, width, height)
+
+  if (data.length === 0) return
+
+  // Busca os retângulos já criados para este grupo
+  const groupRects = rectangles.value.filter((r) => r.groupName === groupName)
+  if (groupRects.length === 0) return
+
+  // Calcula escala responsiva
+  const baseScale = Math.min(width / 400, height / 300)
+  const fontScale = Math.max(0.7, Math.min(1.4, baseScale))
+
+  // Renderiza sem animação (progress = 1)
+  animateRectangles(ctx, groupRects, width, height, fontScale, 1)
 }
 
 // Renderiza um treemap específico para um grupo
@@ -647,21 +708,21 @@ const renderTreemapForGroup = (
       // Inicia animação
       isAnimating.value = true
       animationProgress.value = 0
-      
+
       // Limpa tooltip durante animação
       tooltipData.value = null
-      
+
       const startTime = Date.now()
-      
+
       const renderFrame = () => {
         const elapsed = Date.now() - startTime
         const progress = Math.min(elapsed / animationDuration, 1)
-        
+
         animationProgress.value = progress
-        
+
         // Limpa o canvas
         ctx.clearRect(0, 0, width, height)
-        
+
         if (progress < 1) {
           // Renderiza com animação
           animateRectangles(ctx, rects, width, height, fontScale, progress)
@@ -673,7 +734,7 @@ const renderTreemapForGroup = (
           animateRectangles(ctx, rects, width, height, fontScale, 1)
         }
       }
-      
+
       // Inicia a animação
       renderFrame()
     })
@@ -745,6 +806,38 @@ const handleMouseMove = (event: MouseEvent) => {
       y <= r.y + r.height
   )
 
+  // Atualiza o estado do hover
+  const prevHoveredRect = hoveredRectangle.value
+  hoveredRectangle.value = hoveredRect || null
+
+  // Se mudou o hover, força re-renderização de todos os grupos
+  if (prevHoveredRect !== hoveredRectangle.value) {
+    requestAnimationFrame(() => {
+      // Re-renderiza todos os grupos para aplicar o efeito de hover globalmente
+      if (canvasAcoesRef.value && groupedData.value.acoes.length > 0) {
+        renderTreemapForGroupStatic(
+          canvasAcoesRef.value,
+          groupedData.value.acoes,
+          'acoes'
+        )
+      }
+      if (canvasFiisRef.value && groupedData.value.fiis.length > 0) {
+        renderTreemapForGroupStatic(
+          canvasFiisRef.value,
+          groupedData.value.fiis,
+          'fiis'
+        )
+      }
+      if (canvasOutrosRef.value && groupedData.value.outros.length > 0) {
+        renderTreemapForGroupStatic(
+          canvasOutrosRef.value,
+          groupedData.value.outros,
+          'outros'
+        )
+      }
+    })
+  }
+
   if (hoveredRect) {
     tooltipData.value = {
       symbol: hoveredRect.item.symbol,
@@ -806,6 +899,32 @@ const formatVolume = (volume: number): string => {
 
 const onMouseLeave = () => {
   tooltipData.value = null
+  hoveredRectangle.value = null
+
+  // Re-renderiza todos os grupos para remover o efeito de hover
+  requestAnimationFrame(() => {
+    if (canvasAcoesRef.value && groupedData.value.acoes.length > 0) {
+      renderTreemapForGroupStatic(
+        canvasAcoesRef.value,
+        groupedData.value.acoes,
+        'acoes'
+      )
+    }
+    if (canvasFiisRef.value && groupedData.value.fiis.length > 0) {
+      renderTreemapForGroupStatic(
+        canvasFiisRef.value,
+        groupedData.value.fiis,
+        'fiis'
+      )
+    }
+    if (canvasOutrosRef.value && groupedData.value.outros.length > 0) {
+      renderTreemapForGroupStatic(
+        canvasOutrosRef.value,
+        groupedData.value.outros,
+        'outros'
+      )
+    }
+  })
 }
 
 // Handler para scroll - oculta tooltip durante scroll
@@ -829,6 +948,32 @@ const handleCanvasMouseLeave = (event: MouseEvent) => {
   }
 
   tooltipData.value = null
+  hoveredRectangle.value = null
+
+  // Re-renderiza todos os grupos para remover o efeito de hover
+  requestAnimationFrame(() => {
+    if (canvasAcoesRef.value && groupedData.value.acoes.length > 0) {
+      renderTreemapForGroupStatic(
+        canvasAcoesRef.value,
+        groupedData.value.acoes,
+        'acoes'
+      )
+    }
+    if (canvasFiisRef.value && groupedData.value.fiis.length > 0) {
+      renderTreemapForGroupStatic(
+        canvasFiisRef.value,
+        groupedData.value.fiis,
+        'fiis'
+      )
+    }
+    if (canvasOutrosRef.value && groupedData.value.outros.length > 0) {
+      renderTreemapForGroupStatic(
+        canvasOutrosRef.value,
+        groupedData.value.outros,
+        'outros'
+      )
+    }
+  })
 }
 
 // Lifecycle
