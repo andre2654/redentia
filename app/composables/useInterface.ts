@@ -1,7 +1,5 @@
 import { EColorTheme } from '~/enums/general'
 
-const colorMode = useColorMode()
-
 export function useInterface() {
   const colorIcons = {
     [EColorTheme.Light]: 'i-lucide-sun',
@@ -17,7 +15,7 @@ export function useInterface() {
 
   const colorTheme = computed({
     get() {
-      const currentTheme = colorMode.preference as EColorTheme
+      const currentTheme = useNuxtApp().$colorMode.preference as EColorTheme
       return {
         color: currentTheme,
         icon: colorIcons[currentTheme],
@@ -25,7 +23,7 @@ export function useInterface() {
       }
     },
     set(theme: EColorTheme) {
-      colorMode.preference = theme
+      useNuxtApp().$colorMode.preference = theme
     },
   })
 

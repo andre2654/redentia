@@ -120,8 +120,6 @@ function transparentize(hex: string, opacity: number) {
   const alpha = opacity === undefined ? 0.5 : 1 - opacity
   return colorLib(hex).alpha(alpha).rgbString()
 }
-const _clamp = (n: number, min: number, max: number) =>
-  Math.max(min, Math.min(n, max))
 
 /* ========== Estados de interação ========== */
 const isDragging = ref(false)
@@ -488,6 +486,13 @@ const chartOptions = computed(() => ({
       },
     },
     y: {
+      grid: {
+        display: true,
+        color:
+          colorTheme.value.color === 'dark'
+            ? 'rgba(255, 255, 255, 0.2)'
+            : 'rgba(0, 0, 0, 0.1)',
+      },
       ticks: {
         maxTicksLimit: 5,
         font: { size: 13 },
