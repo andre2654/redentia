@@ -123,8 +123,8 @@
         </label>
       </div>
       <div class="flex flex-col">
-        <div v-if="showMap" class="flex flex-col">
-          <UButtonGroup orientation="horizontal" variant="soft">
+        <div v-if="showMap" class="mb-6 flex flex-col px-6">
+          <UButtonGroup orientation="horizontal" variant="soft" class="ml-auto">
             <UButton
               color="neutral"
               :variant="treemapFilter === 'all' ? 'soft' : 'link'"
@@ -162,7 +162,7 @@
           <div
             v-for="index in 5"
             :key="index"
-            class="max-[600px]:nth-[1]:hidden max-[900px]:nth-[2]:hidden max-[1550px]:nth-[3]:hidden max-[1900px]:nth-[4]:hidden flex flex-col items-center gap-3 bg-gradient-to-t from-white/10 to-transparent p-6"
+            class="max-[600px]:nth-[1]:hidden max-[900px]:nth-[2]:hidden max-[1550px]:nth-[3]:hidden max-[1900px]:nth-[4]:hidden flex flex-col gap-3 bg-gradient-to-t from-white/10 to-transparent p-6"
           >
             <h2 class="text-[18px] font-bold">Maiores altas e baixas</h2>
             <div class="flex flex-col gap-2">
