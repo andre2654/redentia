@@ -97,7 +97,7 @@
         </div>
       </div>
       <div class="flex flex-col px-6">
-        <h2 class="text-[18px] font-bold">Maiores altas e baixas</h2>
+        <h2 class="text-[18px] font-bold">Rankings</h2>
         <p class="text-[13px] font-extralight">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer
           vulputate erat non massa tristique.
@@ -122,69 +122,69 @@
           />
         </label>
       </div>
-      <div class="flex items-center justify-between gap-3 px-6">
-        <h2 class="text-[18px] font-bold">Maiores altas e baixas</h2>
-        <UButtonGroup v-if="showMap" orientation="horizontal" variant="soft">
-          <UButton
-            color="neutral"
-            :variant="treemapFilter === 'all' ? 'soft' : 'link'"
-            label="Todos"
-            @click="treemapFilter = 'all'"
+      <div class="flex flex-col">
+        <div v-if="showMap" class="flex flex-col">
+          <UButtonGroup orientation="horizontal" variant="soft">
+            <UButton
+              color="neutral"
+              :variant="treemapFilter === 'all' ? 'soft' : 'link'"
+              label="Todos"
+              @click="treemapFilter = 'all'"
+            />
+            <UButton
+              color="neutral"
+              :variant="treemapFilter === 'positive' ? 'soft' : 'link'"
+              label="Altas"
+              @click="treemapFilter = 'positive'"
+            />
+            <UButton
+              color="neutral"
+              :variant="treemapFilter === 'negative' ? 'soft' : 'link'"
+              label="Baixas"
+              @click="treemapFilter = 'negative'"
+            />
+          </UButtonGroup>
+          <AtomsGraphTreemap
+            :data="stocksData"
+            :height="550"
+            :show-positive="
+              treemapFilter === 'all' || treemapFilter === 'positive'
+            "
+            :show-negative="
+              treemapFilter === 'all' || treemapFilter === 'negative'
+            "
           />
-          <UButton
-            color="neutral"
-            :variant="treemapFilter === 'positive' ? 'soft' : 'link'"
-            label="Altas"
-            @click="treemapFilter = 'positive'"
-          />
-          <UButton
-            color="neutral"
-            :variant="treemapFilter === 'negative' ? 'soft' : 'link'"
-            label="Baixas"
-            @click="treemapFilter = 'negative'"
-          />
-        </UButtonGroup>
-      </div>
-      <div v-if="showMap">
-        <AtomsGraphTreemap
-          :data="stocksData"
-          :height="550"
-          :show-positive="
-            treemapFilter === 'all' || treemapFilter === 'positive'
-          "
-          :show-negative="
-            treemapFilter === 'all' || treemapFilter === 'negative'
-          "
-        />
-      </div>
-      <template v-else>
-        <div class="grid grid-cols-1 justify-center gap-6 px-6 md:grid-cols-2">
-          <AtomsTicker v-for="index in 8" :key="index" />
         </div>
-        <NuxtLink to="/assets" class="mt-2 flex gap-2 px-6 hover:underline">
-          Ver todos
-        </NuxtLink>
-        <div class="mt-4 flex flex-col gap-3 px-6">
-          <h2 class="text-[18px] font-bold">Maiores baixas e baixas</h2>
-          <div class="grid grid-cols-1 justify-center gap-6 md:grid-cols-2">
-            <AtomsTicker v-for="index in 8" :key="index" />
+        <div
+          v-else
+          class="grid grid-cols-5 divide-x border-t max-[1900px]:grid-cols-4 max-[1550px]:grid-cols-3 max-[900px]:grid-cols-2 max-[600px]:grid-cols-1"
+        >
+          <div
+            v-for="index in 5"
+            :key="index"
+            class="max-[600px]:nth-[1]:hidden max-[900px]:nth-[2]:hidden max-[1550px]:nth-[3]:hidden max-[1900px]:nth-[4]:hidden flex flex-col items-center gap-3 bg-gradient-to-t from-white/10 to-transparent p-6"
+          >
+            <h2 class="text-[18px] font-bold">Maiores altas e baixas</h2>
+            <div class="flex flex-col gap-2">
+              <AtomsTicker v-for="index2 in 6" :key="index2" />
+            </div>
+            <NuxtLink to="/assets" class="hover:underline">
+              Ver todos
+            </NuxtLink>
           </div>
         </div>
-      </template>
-      <NuxtLink to="/assets" class="mt-2 flex gap-2 px-6 hover:underline">
-        Ver todos
-      </NuxtLink>
-      <div
-        class="dark:bg-tertiary/40 text-secondary flex w-full flex-col gap-3 border-t bg-black/5 px-6 py-4"
-      >
-        <div class="flex items-center gap-2 px-3 py-2">
-          <IconAi class="fill-secondary h-5" />
-          <h2 class="text-lg font-semibold">Filtros inteligentes</h2>
-        </div>
-        <div class="flex w-full gap-6 px-6 max-md:flex-col md:flex-wrap">
-          <NuxtLink to="/redentia/about" class="hover:underline">
-            Menores P/VP
-          </NuxtLink>
+        <div
+          class="dark:bg-tertiary/40 text-secondary flex w-full flex-col gap-3 border-t bg-black/5 px-6 py-4"
+        >
+          <div class="flex items-center gap-2 px-3 py-2">
+            <IconAi class="fill-secondary h-5" />
+            <h2 class="text-lg font-semibold">Filtros inteligentes</h2>
+          </div>
+          <div class="flex w-full gap-6 px-6 max-md:flex-col md:flex-wrap">
+            <NuxtLink to="/redentia/about" class="hover:underline">
+              Menores P/VP
+            </NuxtLink>
+          </div>
         </div>
       </div>
     </div>
