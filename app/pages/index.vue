@@ -8,30 +8,32 @@
           vulputate erat non massa tristique.
         </p>
       </div>
-      <UCarousel
-        v-slot="{ item }"
-        class="w-full overflow-hidden rounded-[30px]"
-        loop
-        dots
-        :items="[
-          {
-            desktop: '/assets/images/banner.png',
-            mobile: '/assets/images/banner-mobile.png',
-          },
-          {
-            desktop: '/assets/images/banner2.png',
-            mobile: '/assets/images/banner2-mobile.png',
-          },
-        ]"
-        :ui="{
-          dots: 'bottom-3',
-          dot: 'bg-white/10 data-[state=active]:bg-white',
-          item: 'ps-0',
-        }"
-      >
-        <img :src="item.desktop" class="max-md:hidden" />
-        <img :src="item.mobile" class="md:hidden" />
-      </UCarousel>
+      <div class="carousel-container overflow-hidden rounded-[30px]">
+        <UCarousel
+          v-slot="{ item }"
+          class="w-full"
+          loop
+          dots
+          :items="[
+            {
+              desktop: '/assets/images/banner.png',
+              mobile: '/assets/images/banner-mobile.png',
+            },
+            {
+              desktop: '/assets/images/banner2.png',
+              mobile: '/assets/images/banner2-mobile.png',
+            },
+          ]"
+          :ui="{
+            dots: 'bottom-3',
+            dot: 'bg-white/10 data-[state=active]:bg-white',
+            item: 'ps-0',
+          }"
+        >
+          <img :src="item.desktop" class="max-md:hidden" />
+          <img :src="item.mobile" class="md:hidden" />
+        </UCarousel>
+      </div>
       <MoleculesSearchAssets
         class="max-w-[400px] rounded-full bg-white/10 py-4"
       />
@@ -392,3 +394,9 @@ onMounted(() => {
   }, 3000)
 })
 </script>
+
+<style scoped>
+.carousel-container {
+  box-shadow: 0px 0px 80px 0px rgba(55, 77, 60, 0.6);
+}
+</style>

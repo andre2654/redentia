@@ -197,13 +197,22 @@
     </div>
     <div class="relative flex w-full flex-col bg-white p-4 dark:bg-black">
       <div
-        class="sticky top-4 z-10 flex h-[60px] w-full items-center justify-between gap-4 rounded-full bg-white/10 px-6 py-4 backdrop-blur-lg"
+        class="sticky top-4 z-10 flex h-[60px] w-full items-center justify-between gap-4 rounded-full bg-white/10 px-6 py-4 mix-blend-difference backdrop-blur-lg"
         v-bind="headerProps"
       >
         <slot name="header">
-          <h1 class="min-w-max text-[20px] font-bold max-md:text-[24px]">
-            {{ title }}
-          </h1>
+          <div class="relative isolate">
+            <h1
+              class="select-none text-[20px] font-bold text-black max-md:text-[24px]"
+            >
+              {{ title }}
+            </h1>
+            <h1
+              class="pointer-events-none absolute inset-0 text-[20px] font-bold text-white mix-blend-difference max-md:text-[24px]"
+            >
+              {{ title }}
+            </h1>
+          </div>
         </slot>
       </div>
       <div v-bind="containerProps" class="flex-1">
