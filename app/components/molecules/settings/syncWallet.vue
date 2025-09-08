@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-6 px-6 py-3.5">
+  <div class="flex flex-col gap-6 p-6">
     <div class="flex flex-col">
       <h3 class="text-[18px] font-bold">Sincronização de carteira</h3>
       <p class="text-[13px] font-extralight">

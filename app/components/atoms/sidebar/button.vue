@@ -1,6 +1,6 @@
 <template>
   <NuxtLink
-    active-class="bg-primary/10 text-primary border-l-primary border-l-4 font-bold"
+    active-class="bg-primary/10 text-primary font-bold rounded-full"
     class="px-6 py-3 text-left"
     :class="{
       'cursor-not-allowed opacity-50': disabled,

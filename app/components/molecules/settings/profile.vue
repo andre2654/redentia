@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-6 px-6 py-3.5">
+  <div class="flex flex-col gap-6 p-6">
     <h3 class="text-[18px] font-bold">Perfil</h3>
     <UFileUpload
       accept="image/*"

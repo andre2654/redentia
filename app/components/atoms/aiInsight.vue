@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-tertiary dark:bg-tertiary/40 border-tertiary text-secondary flex gap-5 rounded-md border p-4"
+    class="bg-tertiary dark:bg-tertiary/40 !border-tertiary text-secondary flex gap-5 rounded-[20px] border p-6"
   >
     <IconAi class="fill-secondary h-8 w-8" />
     <div class="flex flex-col gap-4">

@@ -8,35 +8,33 @@
           vulputate erat non massa tristique.
         </p>
       </div>
-      <div class="flex flex-col">
-        <UCarousel
-          v-slot="{ item }"
-          class="w-full"
-          loop
-          dots
-          :items="[
-            {
-              desktop: '/assets/images/banner.png',
-              mobile: '/assets/images/banner-mobile.png',
-            },
-            {
-              desktop: '/assets/images/banner2.png',
-              mobile: '/assets/images/banner2-mobile.png',
-            },
-          ]"
-          :ui="{
-            dots: 'bottom-3',
-            dot: 'bg-white/10 data-[state=active]:bg-white',
-            item: 'ps-0',
-          }"
-        >
-          <img :src="item.desktop" class="max-md:hidden" />
-          <img :src="item.mobile" class="md:hidden" />
-        </UCarousel>
-        <MoleculesSearchAssets
-          class="light:border-b-gray-300 rounded-none border-y py-4"
-        />
-      </div>
+      <UCarousel
+        v-slot="{ item }"
+        class="w-full overflow-hidden rounded-[30px]"
+        loop
+        dots
+        :items="[
+          {
+            desktop: '/assets/images/banner.png',
+            mobile: '/assets/images/banner-mobile.png',
+          },
+          {
+            desktop: '/assets/images/banner2.png',
+            mobile: '/assets/images/banner2-mobile.png',
+          },
+        ]"
+        :ui="{
+          dots: 'bottom-3',
+          dot: 'bg-white/10 data-[state=active]:bg-white',
+          item: 'ps-0',
+        }"
+      >
+        <img :src="item.desktop" class="max-md:hidden" />
+        <img :src="item.mobile" class="md:hidden" />
+      </UCarousel>
+      <MoleculesSearchAssets
+        class="max-w-[400px] rounded-full bg-white/10 py-4"
+      />
       <div class="flex items-center gap-6 px-6">
         <MoleculesTickerIndicator
           name="IBOVESPA"
@@ -57,7 +55,7 @@
           :loading="loading"
         />
       </div>
-      <div class="w-full border-b p-4">
+      <div class="w-full p-4">
         <div class="flex flex-col gap-4">
           <div class="flex items-center justify-between">
             <h2 class="mb-4 text-lg font-semibold">
@@ -104,7 +102,7 @@
         </p>
         <label
           for="map-toggle"
-          class="hover:bg-secondary/10 mt-3 flex max-w-fit items-center justify-between gap-4 rounded-full border px-3 py-1"
+          class="hover:bg-secondary/10 mt-3 flex max-w-fit items-center justify-between gap-4 rounded-full border px-3 py-2"
           :class="{
             'bg-secondary/15 dark:bg-tertiary/60 !border-tertiary': showMap,
           }"
@@ -122,69 +120,65 @@
           />
         </label>
       </div>
-      <div class="flex flex-col">
-        <div v-if="showMap" class="mb-6 flex flex-col px-6">
-          <UButtonGroup orientation="horizontal" variant="soft" class="ml-auto">
-            <UButton
-              color="neutral"
-              :variant="treemapFilter === 'all' ? 'soft' : 'link'"
-              label="Todos"
-              @click="treemapFilter = 'all'"
-            />
-            <UButton
-              color="neutral"
-              :variant="treemapFilter === 'positive' ? 'soft' : 'link'"
-              label="Altas"
-              @click="treemapFilter = 'positive'"
-            />
-            <UButton
-              color="neutral"
-              :variant="treemapFilter === 'negative' ? 'soft' : 'link'"
-              label="Baixas"
-              @click="treemapFilter = 'negative'"
-            />
-          </UButtonGroup>
-          <AtomsGraphTreemap
-            :data="stocksData"
-            :height="550"
-            :show-positive="
-              treemapFilter === 'all' || treemapFilter === 'positive'
-            "
-            :show-negative="
-              treemapFilter === 'all' || treemapFilter === 'negative'
-            "
+      <div v-if="showMap" class="mb-6 flex flex-col px-6">
+        <UButtonGroup orientation="horizontal" variant="soft" class="ml-auto">
+          <UButton
+            color="neutral"
+            :variant="treemapFilter === 'all' ? 'soft' : 'link'"
+            label="Todos"
+            @click="treemapFilter = 'all'"
           />
-        </div>
+          <UButton
+            color="neutral"
+            :variant="treemapFilter === 'positive' ? 'soft' : 'link'"
+            label="Altas"
+            @click="treemapFilter = 'positive'"
+          />
+          <UButton
+            color="neutral"
+            :variant="treemapFilter === 'negative' ? 'soft' : 'link'"
+            label="Baixas"
+            @click="treemapFilter = 'negative'"
+          />
+        </UButtonGroup>
+        <AtomsGraphTreemap
+          :data="stocksData"
+          :height="550"
+          :show-positive="
+            treemapFilter === 'all' || treemapFilter === 'positive'
+          "
+          :show-negative="
+            treemapFilter === 'all' || treemapFilter === 'negative'
+          "
+        />
+      </div>
+      <div
+        v-else
+        class="grid grid-cols-5 gap-2 max-[1900px]:grid-cols-4 max-[1550px]:grid-cols-3 max-[900px]:grid-cols-2 max-[600px]:grid-cols-1"
+      >
         <div
-          v-else
-          class="grid grid-cols-5 divide-x border-t max-[1900px]:grid-cols-4 max-[1550px]:grid-cols-3 max-[900px]:grid-cols-2 max-[600px]:grid-cols-1"
+          v-for="index in 5"
+          :key="index"
+          class="max-[600px]:nth-[1]:hidden max-[900px]:nth-[2]:hidden max-[1550px]:nth-[3]:hidden max-[1900px]:nth-[4]:hidden flex flex-col gap-3 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6"
         >
-          <div
-            v-for="index in 5"
-            :key="index"
-            class="max-[600px]:nth-[1]:hidden max-[900px]:nth-[2]:hidden max-[1550px]:nth-[3]:hidden max-[1900px]:nth-[4]:hidden flex flex-col gap-3 bg-gradient-to-t from-white/10 to-transparent p-6"
-          >
-            <h2 class="text-[18px] font-bold">Maiores altas e baixas</h2>
-            <div class="flex flex-col gap-2">
-              <AtomsTicker v-for="index2 in 6" :key="index2" />
-            </div>
-            <NuxtLink to="/assets" class="hover:underline">
-              Ver todos
-            </NuxtLink>
+          <h2 class="text-[18px] font-bold">Maiores altas e baixas</h2>
+          <div class="flex flex-col gap-2">
+            <AtomsTicker v-for="index2 in 6" :key="index2" />
           </div>
+          <NuxtLink to="/assets" class="hover:underline"> Ver todos </NuxtLink>
         </div>
-        <div
-          class="dark:bg-tertiary/40 text-secondary flex w-full flex-col gap-3 border-t bg-black/5 px-6 py-4"
-        >
-          <div class="flex items-center gap-2 px-3 py-2">
-            <IconAi class="fill-secondary h-5" />
-            <h2 class="text-lg font-semibold">Filtros inteligentes</h2>
-          </div>
-          <div class="flex w-full gap-6 px-6 max-md:flex-col md:flex-wrap">
-            <NuxtLink to="/redentia/about" class="hover:underline">
-              Menores P/VP
-            </NuxtLink>
-          </div>
+      </div>
+      <div
+        class="dark:bg-tertiary/40 text-secondary flex w-full flex-col gap-3 rounded-[30px] bg-black/5 px-6 py-4"
+      >
+        <div class="flex items-center gap-2 px-3 py-2">
+          <IconAi class="fill-secondary h-5" />
+          <h2 class="text-lg font-semibold">Filtros inteligentes</h2>
+        </div>
+        <div class="flex w-full gap-6 px-6 max-md:flex-col md:flex-wrap">
+          <NuxtLink to="/redentia/about" class="hover:underline">
+            Menores P/VP
+          </NuxtLink>
         </div>
       </div>
     </div>

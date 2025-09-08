@@ -8,9 +8,9 @@
           vulputate erat non massa tristique.
         </p>
       </div>
-      <div class="flex flex-col border-y">
-        <MoleculesSettingsProfile class="border-b" />
-        <MoleculesSettingsSyncWallet />
+      <div class="flex flex-col gap-6">
+        <MoleculesSettingsProfile class="rounded-[30px] bg-white/10" />
+        <MoleculesSettingsSyncWallet class="rounded-[30px] bg-white/10" />
       </div>
     </div>
   </NuxtLayout>

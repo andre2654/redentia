@@ -31,7 +31,7 @@
     </template>
 
     <!-- Graph -->
-    <div class="w-full border-b p-6">
+    <div class="w-full p-6">
       <div class="flex flex-col gap-4">
         <div class="flex items-center justify-between">
           <h2 class="mb-4 text-lg font-semibold">
@@ -73,7 +73,7 @@
 
     <!-- Details in wallet -->
     <div
-      class="dark:bg-tertiary/40 bg-tertiary flex w-full flex-col gap-3 px-6 py-4 text-white"
+      class="dark:bg-tertiary/40 bg-tertiary flex w-full flex-col gap-3 rounded-[30px] px-6 py-4 text-white"
     >
       <button
         class="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-white/10"
@@ -116,7 +116,7 @@
     </div>
 
     <!-- Asset Details -->
-    <div class="flex flex-col gap-4 border-b p-4">
+    <div class="flex flex-col gap-4 p-4">
       <h2 class="mb-4 px-6 text-lg font-bold">Indicadores básicos</h2>
       <div
         class="grid w-full grid-cols-3 gap-6 px-6 lg:grid-cols-6 xl:grid-cols-10"
@@ -198,22 +198,37 @@
     </div>
 
     <!-- Dividends Chart -->
-    <div class="flex flex-col gap-4 border-b p-6">
+    <div class="flex flex-col gap-4 p-6">
       <AtomsGraphDividends />
     </div>
 
     <!-- Asset docs -->
     <div class="flex flex-col gap-4 p-4">
       <h2 class="text-lg font-bold">Documentos</h2>
-      <div class="flex items-center gap-2">
-        <IconAi class="fill-secondary h-5" />
-        <UCheckbox v-model="showRelevantDocs" color="secondary" />
-        <h2 class="text-secondary">Mostrar somente relevantes</h2>
-      </div>
-      <div
-        class="flex flex-col gap-2 rounded-lg border p-4"
+      <label
+        for="map-toggle"
+        class="hover:bg-secondary/10 mt-3 flex max-w-fit items-center justify-between gap-4 rounded-full border px-3 py-2"
         :class="{
-          'bg-tertiary dark:bg-tertiary/40 border-tertiary text-secondary':
+          'bg-secondary/15 dark:bg-tertiary/60 !border-tertiary':
+            showRelevantDocs,
+        }"
+      >
+        <IconAi class="fill-secondary h-5" />
+        <h2 class="text-secondary select-none">Mostrar somente relevantes</h2>
+        <USwitch
+          id="map-toggle"
+          v-model="showRelevantDocs"
+          color="secondary"
+          checked-icon="lucide-check"
+          :ui="{
+            base: 'data-[state=checked]:border-secondary',
+          }"
+        />
+      </label>
+      <div
+        class="flex flex-col gap-2 rounded-[30px] border p-6"
+        :class="{
+          'bg-tertiary dark:bg-tertiary/40 !border-tertiary text-secondary':
             showRelevantDocs,
         }"
       >
@@ -254,7 +269,9 @@
       </p>
     </div>
 
-    <MoleculesChat class="w-full bg-black/10 dark:bg-white/10" />
+    <MoleculesChat
+      class="w-full overflow-hidden rounded-[30px] bg-black/10 dark:bg-white/10"
+    />
   </NuxtLayout>
 </template>
 

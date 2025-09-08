@@ -128,75 +128,76 @@
   <!-- Layout -->
   <div class="flex min-h-screen w-full">
     <div
-      class="bg-black/2 sticky top-0 flex h-screen min-h-fit w-[330px] min-w-[330px] flex-col justify-between gap-[50px] border-r max-xl:hidden dark:bg-black"
+      class="sticky top-0 h-screen min-h-fit w-[380px] min-w-[380px] p-4 max-xl:hidden"
     >
       <div
-        class="bg-tertiary/95 flex h-[60px] items-center justify-center px-6 dark:border-b"
+        class="flex flex-col justify-between gap-[50px] rounded-[30px] bg-white/10 p-4"
       >
-        <IconLogoFull class="w-[140px] fill-white" />
-      </div>
-      <div class="flex items-center justify-between px-6">
-        <div class="flex items-center gap-3">
-          <UAvatar alt="Benjamin Canac" size="lg" />
-          <div class="flex flex-col">
-            <div class="text-[14px]">André Saraiva</div>
-            <span class="text-[12px] text-gray-400">Plano gratuito</span>
+        <div class="flex items-center justify-between px-6">
+          <div class="flex items-center gap-3">
+            <UAvatar alt="Benjamin Canac" size="lg" />
+            <div class="flex flex-col">
+              <div class="text-[14px]">André Saraiva</div>
+              <span class="text-[12px] text-gray-400">Plano gratuito</span>
+            </div>
+          </div>
+          <div class="flex items-center">
+            <UButton
+              color="neutral"
+              variant="link"
+              :trailing-icon="
+                interfaceStore.revealAmount
+                  ? 'i-lucide-eye-off'
+                  : 'i-lucide-eye'
+              "
+              @click="interfaceStore.toggleRevealAmount"
+            />
+            <UButton
+              to="/settings"
+              color="neutral"
+              variant="link"
+              trailing-icon="i-lucide-cog"
+            />
           </div>
         </div>
-        <div class="flex items-center">
-          <UButton
-            color="neutral"
-            variant="link"
-            :trailing-icon="
-              interfaceStore.revealAmount ? 'i-lucide-eye-off' : 'i-lucide-eye'
-            "
-            @click="interfaceStore.toggleRevealAmount"
-          />
-          <UButton
-            to="/settings"
-            color="neutral"
-            variant="link"
-            trailing-icon="i-lucide-cog"
-          />
-        </div>
-      </div>
 
-      <div class="flex flex-col gap-8">
-        <div class="flex flex-col gap-3">
-          <MoleculesSearchAssets v-if="!hideSearchBar" />
-          <AtomsSidebarButton to="/" text="Visão Geral" />
-          <AtomsSidebarButton to="/wallet" text="Sua carteira" />
-          <AtomsSidebarButton
-            to="/planejador"
-            text="Planejador de aportes"
-            disabled
-            is-sub-item
-          />
-          <AtomsSidebarButton to="/ideal" text="Ideal" disabled is-sub-item />
-          <AtomsSidebarButton to="/dividends" text="Proventos" />
-          <AtomsSidebarButton
-            to="/calculadora"
-            text="Calculadora inteligente"
-            disabled
-          />
-        </div>
-        <NuxtLink
-          to="/help"
-          active-class="border-x-4 border-x-tertiary dark:!border-x-secondary bg-secondary/20"
-          class="hover:bg-secondary/20 flex items-center justify-center gap-4 border-y px-6 py-2"
-        >
-          <IconAi class="fill-tertiary dark:fill-secondary h-5 w-5" />
-          <div class="text-tertiary dark:text-secondary flex flex-col">
-            <span class="text-[10px]">Acesse de graça</span>
-            <span class="text-[16px] font-bold">Assessoria</span>
+        <div class="flex flex-col gap-8">
+          <div class="flex flex-col gap-3">
+            <MoleculesSearchAssets v-if="!hideSearchBar" />
+            <AtomsSidebarButton to="/" text="Visão Geral" />
+            <AtomsSidebarButton to="/wallet" text="Sua carteira" />
+            <AtomsSidebarButton
+              to="/planejador"
+              text="Planejador de aportes"
+              disabled
+              is-sub-item
+            />
+            <AtomsSidebarButton to="/ideal" text="Ideal" disabled is-sub-item />
+            <AtomsSidebarButton to="/dividends" text="Proventos" />
+            <AtomsSidebarButton
+              to="/calculadora"
+              text="Calculadora inteligente"
+              disabled
+            />
           </div>
-        </NuxtLink>
+          <NuxtLink
+            to="/help"
+            active-class="border-x-4 border-x-tertiary dark:!border-x-secondary bg-secondary/20"
+            class="hover:bg-secondary/20 flex items-center justify-center gap-4 border-y px-6 py-2"
+          >
+            <IconAi class="fill-tertiary dark:fill-secondary h-5 w-5" />
+            <div class="text-tertiary dark:text-secondary flex flex-col">
+              <span class="text-[10px]">Acesse de graça</span>
+              <span class="text-[16px] font-bold">Assessoria</span>
+            </div>
+          </NuxtLink>
+        </div>
+        <AtomsSidebarMonthGoal />
       </div>
-      <AtomsSidebarMonthGoal />
     </div>
-    <div class="relative flex w-full flex-col bg-white dark:bg-black">
+    <div class="relative flex w-full flex-col bg-white p-4 dark:bg-black">
       <div
-        class="light:bg-gray-100 light:text-black sticky top-0 z-10 flex h-[60px] w-full items-center justify-between gap-4 border-b px-6 py-4 backdrop-blur-lg"
+        class="sticky top-4 z-10 flex h-[60px] w-full items-center justify-between gap-4 rounded-full bg-white/10 px-6 py-4 backdrop-blur-lg"
         v-bind="headerProps"
       >
         <slot name="header">

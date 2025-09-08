@@ -109,15 +109,29 @@
       </div>
 
       <!-- Checkbox para agrupar por ano -->
-      <div class="flex items-center gap-2">
+      <label
+        for="map-toggle"
+        class="hover:bg-secondary/10 mt-3 flex max-w-fit items-center justify-between gap-4 rounded-full border px-3 py-2"
+        :class="{
+          'bg-secondary/15 dark:bg-tertiary/60 !border-tertiary': groupByYear,
+        }"
+      >
         <IconAi class="fill-secondary h-5" />
-        <UCheckbox v-model="groupByYear" color="secondary" />
-        <h2 class="text-secondary">Agrupar dividendos por ano</h2>
-      </div>
+        <h2 class="text-secondary select-none">Agrupar por ano</h2>
+        <USwitch
+          id="map-toggle"
+          v-model="groupByYear"
+          color="secondary"
+          checked-icon="lucide-check"
+          :ui="{
+            base: 'data-[state=checked]:border-secondary',
+          }"
+        />
+      </label>
     </div>
 
     <!-- Resumo dos dividendos -->
-    <div class="flex items-center justify-center gap-8">
+    <div class="flex items-center justify-between gap-8">
       <MoleculesTickerIndicator
         name="Total no período"
         :value="
