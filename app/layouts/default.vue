@@ -196,9 +196,10 @@
       </div>
     </div>
     <div class="relative flex w-full flex-col bg-white p-4 dark:bg-black">
-      <div
-        class="sticky top-4 z-10 flex h-[60px] w-full items-center justify-between gap-4 rounded-full bg-white/10 px-6 py-4 mix-blend-difference backdrop-blur-lg"
+      <header
         v-bind="headerProps"
+        ref="header"
+        class="sticky top-0 z-10 flex h-[60px] w-full items-center justify-between gap-4 bg-white/10 px-6 py-4 mix-blend-difference backdrop-blur-lg sm:top-4 sm:rounded-full"
       >
         <slot name="header">
           <div class="relative isolate">
@@ -214,7 +215,7 @@
             </h1>
           </div>
         </slot>
-      </div>
+      </header>
       <div v-bind="containerProps" class="flex-1">
         <slot />
       </div>
