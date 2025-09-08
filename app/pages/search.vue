@@ -287,12 +287,12 @@ const columns = ref([
       const change = row.original.change
       return h('div', { class: 'flex items-center gap-2' }, [
         h(IconArrowFinanceUp, {
-          class: `w-4 ${change >= 0 ? 'fill-green-500' : 'fill-red-500 rotate-180'}`,
+          class: `w-4 ${change >= 0 ? 'fill-primary' : 'fill-red-500 rotate-180'}`,
         }),
         h(
           'span',
           {
-            class: `text-[14px] font-medium ${change >= 0 ? 'text-green-500' : 'text-red-500'}`,
+            class: `text-[14px] font-medium ${change >= 0 ? 'text-primary' : 'text-red-500'}`,
           },
           `${change >= 0 ? '+' : ''}${change?.toFixed(2)}% hoje`
         ),

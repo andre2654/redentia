@@ -81,7 +81,7 @@ interface Props {
 
 /* ========== Props/Defaults ========== */
 const props = withDefaults(defineProps<Props>(), {
-  colors: () => ['#04CE00'],
+  colors: () => ['#b9ecc1'],
   legend: () => [],
   height: 300,
   showLegend: true,
@@ -152,7 +152,7 @@ const tooltipData = computed(() => {
       value: `${change >= 0 ? '+' : ''}R$ ${change.toLocaleString('pt-BR', {
         minimumFractionDigits: 2,
       })} (${change >= 0 ? '+' : ''}${changePercent.toFixed(2)}%)`,
-      color: change >= 0 ? '#04CE00' : '#FF4757',
+      color: change >= 0 ? '#b9ecc1' : '#8E3939',
     }
   }
 
@@ -169,7 +169,7 @@ const tooltipData = computed(() => {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2,
         })}`,
-        color: props.colors[0] || '#04CE00',
+        color: props.colors[0] || '#b9ecc1',
       }
     }
   }
@@ -232,11 +232,11 @@ const dynamicColor = computed(() => {
     const endIdx = Math.max(dragStartIndex.value, dragEndIndex.value)
     if (props.data[startIdx] && props.data[endIdx]) {
       return props.data[endIdx].value >= props.data[startIdx].value
-        ? '#04CE00'
-        : '#FF4757'
+        ? '#b9ecc1'
+        : '#8E3939'
     }
   }
-  return props.colors[0] || '#04CE00'
+  return props.colors[0] || '#b9ecc1'
 })
 
 /* ========== Chart refs/instância ========== */
@@ -392,7 +392,7 @@ const hoverLinePlugin: Plugin<'line'> = {
         }
 
         const isPositive = endData.value >= startData.value
-        const selectionColor = isPositive ? '#04CE00' : '#FF4757'
+        const selectionColor = isPositive ? '#b9ecc1' : '#8E3939'
 
         ctx.save()
         // Áreas escurecidas

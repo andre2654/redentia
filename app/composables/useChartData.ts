@@ -6,24 +6,24 @@ export const useChartData = () => {
     const data: IChartDataPoint[] = [];
     const basePrice = Math.random() * 100 + 50; // Preço base entre 50-150
     let currentPrice = basePrice;
-    
+
     const now = new Date();
-    
+
     for (let i = days - 1; i >= 0; i--) {
       const date = new Date(now);
       date.setDate(date.getDate() - i);
-      
+
       // Simula variação de preço (-5% a +5%)
       const variation = (Math.random() - 0.5) * 0.1;
       currentPrice = Math.max(currentPrice * (1 + variation), 1);
-      
+
       data.push({
         date: date.toLocaleDateString('pt-BR'),
         value: Math.round(currentPrice * 100) / 100,
         timestamp: date.getTime()
       });
     }
-    
+
     return data;
   };
 
@@ -46,18 +46,18 @@ export const useChartData = () => {
     const currentPrice = priceData[priceData.length - 1]?.value || 0;
     const previousPrice = priceData[priceData.length - 2]?.value || currentPrice;
     const change = currentPrice - previousPrice;
-    
-    const color = change >= 0 ? '#04CE00' : '#FF4757';
-    
+
+    const color = change >= 0 ? '#b9ecc1' : '#8E3939';
+
     return {
       data: priceData,
       colors: [color],
       legend: [{
         label: ticker.toUpperCase(),
         color,
-        value: `R$ ${currentPrice.toLocaleString('pt-BR', { 
-          minimumFractionDigits: 2, 
-          maximumFractionDigits: 2 
+        value: `R$ ${currentPrice.toLocaleString('pt-BR', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
         })}`
       }]
     };
@@ -70,15 +70,15 @@ export const useChartData = () => {
   };
 
   const formatTooltipValue = (value: number): string => {
-    return `R$ ${value.toLocaleString('pt-BR', { 
-      minimumFractionDigits: 2, 
-      maximumFractionDigits: 2 
+    return `R$ ${value.toLocaleString('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
     })}`;
   };
 
   const formatAxisLabel = (dateString: string, timeRange: ChartTimeRange): string => {
     const date = new Date(dateString.split('/').reverse().join('-'));
-    
+
     switch (timeRange) {
       case 'month':
         return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });

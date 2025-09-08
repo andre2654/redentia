@@ -66,7 +66,7 @@
         >
         <span
           class="text-sm font-bold"
-          :class="tooltipData.change >= 0 ? 'text-green-400' : 'text-red-400'"
+          :class="tooltipData.change >= 0 ? 'text-primary' : 'text-red-400'"
         >
           {{ tooltipData.change >= 0 ? '+' : ''
           }}{{ tooltipData.change.toFixed(2) }}%
@@ -256,21 +256,21 @@ const getColor = (change: number): string => {
     // Verde para positivos - mesma cor do gráfico de linha
     const intensity = Math.min(Math.abs(change) / 15, 1) // Normaliza até 15%
     const alpha = 0.05 + intensity * 0.3 // De 20% a 60% de opacidade para o fundo
-    return `rgba(4, 206, 0, ${alpha})` // #04CE00 com transparência
+    return `rgba(4, 206, 0, ${alpha})` // #b9ecc1 com transparência
   } else {
     // Vermelho para negativos - mesma cor do gráfico de linha
     const intensity = Math.min(Math.abs(change) / 15, 1) // Normaliza até 15%
     const alpha = 0.05 + intensity * 0.3 // De 20% a 60% de opacidade para o fundo
-    return `rgba(255, 71, 87, ${alpha})` // #FF4757 com transparência
+    return `rgba(255, 71, 87, ${alpha})` // #8E3939 com transparência
   }
 }
 
 // Função para obter a cor da borda (sem transparência)
 const getBorderColor = (change: number): string => {
   if (change >= 0) {
-    return '#04CE00' // Verde sólido
+    return '#b9ecc1' // Verde sólido
   } else {
-    return '#FF4757' // Vermelho sólido
+    return '#8E3939' // Vermelho sólido
   }
 }
 

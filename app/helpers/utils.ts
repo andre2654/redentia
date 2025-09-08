@@ -13,7 +13,7 @@ export function generateChartConfig({
   const currentPrice = data[data.length - 1]?.value || 0
   const previousPrice = data[data.length - 2]?.value || currentPrice
   const change = currentPrice - previousPrice
-  const color = change >= 0 ? '#04CE00' : '#FF4757'
+  const color = change >= 0 ? '#b9ecc1' : '#8E3939'
   return {
     data,
     colors: [color],

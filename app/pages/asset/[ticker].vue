@@ -13,7 +13,7 @@
             {{ asset.stock }}
           </h1>
           <div class="text-sm">
-            R$ 23,00 <span class="text-green-500">(+2,00% hoje)</span>
+            R$ 23,00 <span class="text-primary">(+2,00% hoje)</span>
           </div>
         </div>
         <UButton

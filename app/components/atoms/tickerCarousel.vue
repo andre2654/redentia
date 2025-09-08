@@ -21,7 +21,7 @@
           <span class="select-none text-[14px] font-medium">{{
             item.ticker
           }}</span>
-          <span class="font-regular select-none text-[12px] text-green-500">{{
+          <span class="font-regular text-primary select-none text-[12px]">{{
             item.change
           }}</span>
         </div>

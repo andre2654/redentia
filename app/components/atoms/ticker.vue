@@ -13,7 +13,7 @@
       </div>
       <div class="flex gap-2">
         <span class="text-[16px] font-semibold">R$ 50,00</span>
-        <span class="text-[13px] text-green-500">(+2,00% hoje)</span>
+        <span class="text-primary text-[13px]">(+2,00% hoje)</span>
       </div>
     </div>
   </div>

@@ -56,7 +56,7 @@
             v-for="req in requirements"
             :key="req.text"
             class="flex items-center gap-2"
-            :class="req.met ? 'text-green-300' : 'text-white/80'"
+            :class="req.met ? 'text-primary' : 'text-white/80'"
           >
             <UIcon
               :name="req.met ? 'i-lucide-circle-check' : 'i-lucide-circle-x'"

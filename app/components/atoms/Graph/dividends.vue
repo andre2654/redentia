@@ -60,7 +60,7 @@
                 :style="{
                   backgroundColor: tooltipData.isPrediction
                     ? '#a7d6ff'
-                    : '#04CE00',
+                    : '#b9ecc1',
                 }"
               />
               <div class="flex flex-col">
@@ -76,7 +76,7 @@
                 <span
                   class="text-[13px]"
                   :style="{
-                    color: tooltipData.isPrediction ? '#a7d6ff' : '#04CE00',
+                    color: tooltipData.isPrediction ? '#a7d6ff' : '#b9ecc1',
                   }"
                 >
                   R$
@@ -587,7 +587,7 @@ const chartData = computed(() => {
   })
 
   // Define cores base
-  const primaryColor = '#04CE00'
+  const primaryColor = '#b9ecc1'
   const secondaryColor = '#a7d6ff'
 
   // Função para criar gradiente de barras

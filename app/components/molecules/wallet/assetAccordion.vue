@@ -17,8 +17,8 @@
         <span class="redentia-amount text-[11px]">R$ 20.200,00</span>
       </div>
       <div class="flex min-w-fit items-center gap-3 px-4">
-        <IconArrowFinanceUp class="w-4 fill-green-500" />
-        <span class="text-[12px] font-medium text-green-500"
+        <IconArrowFinanceUp class="fill-primary w-4" />
+        <span class="text-primary text-[12px] font-medium"
           >+21.01% <b class="redentia-amount max-sm:hidden">(R$ 300,00) hoje</b>
         </span>
       </div>
@@ -423,12 +423,12 @@ const columns = ref([
     cell: ({ row }) => {
       return h('div', { class: 'flex items-center gap-2' }, [
         h(IconArrowFinanceUp, {
-          class: 'w-4 fill-green-500',
+          class: 'w-4 fill-primary',
         }),
         h(
           'span',
           {
-            class: 'text-[14px] font-medium text-green-500',
+            class: 'text-[14px] font-medium text-primary',
           },
           `${row.original.percentageChangeToday}% hoje`
         ),
