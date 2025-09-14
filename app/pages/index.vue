@@ -154,63 +154,138 @@
           "
         />
       </div>
-      <div
-        v-else
-        class="grid grid-cols-4 gap-2 max-[1550px]:grid-cols-3 max-[900px]:grid-cols-2 max-[600px]:grid-cols-1"
-      >
+      <template v-else>
         <div
-          class="flex flex-col gap-3 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6"
+          class="grid grid-cols-4 gap-2 max-[1550px]:grid-cols-3 max-[900px]:grid-cols-2 max-[600px]:grid-cols-1"
         >
-          <h2 class="text-[18px] font-bold">Ações</h2>
-          <div class="flex flex-col gap-2">
-            <AtomsTicker
-              v-for="stock in topAssets.stocks"
-              :key="stock?.ticker"
-              :stock="stock"
-            />
+          <div
+            class="flex flex-col gap-3 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6"
+          >
+            <h2 class="text-[18px] font-bold">Ações</h2>
+            <div class="flex flex-col gap-2">
+              <AtomsTicker
+                v-for="stock in topAssets.top.stocks"
+                :key="stock?.ticker"
+                :stock="stock"
+              />
+            </div>
+            <NuxtLink to="/assets" class="hover:underline">
+              Ver todos
+            </NuxtLink>
           </div>
-          <NuxtLink to="/assets" class="hover:underline"> Ver todos </NuxtLink>
+          <div
+            class="flex flex-col gap-3 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6 max-[600px]:hidden"
+          >
+            <h2 class="text-[18px] font-bold">ETFs</h2>
+            <div class="flex flex-col gap-2">
+              <AtomsTicker
+                v-for="stock in topAssets.top.etfs"
+                :key="stock?.ticker"
+                :stock="stock"
+              />
+            </div>
+            <NuxtLink to="/assets" class="hover:underline">
+              Ver todos
+            </NuxtLink>
+          </div>
+          <div
+            class="flex flex-col gap-3 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6 max-[900px]:hidden"
+          >
+            <h2 class="text-[18px] font-bold">Reits</h2>
+            <div class="flex flex-col gap-2">
+              <AtomsTicker
+                v-for="stock in topAssets.top.reits"
+                :key="stock?.ticker"
+                :stock="stock"
+              />
+            </div>
+            <NuxtLink to="/assets" class="hover:underline">
+              Ver todos
+            </NuxtLink>
+          </div>
+          <div
+            class="flex flex-col gap-3 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6 max-[1550px]:hidden"
+          >
+            <h2 class="text-[18px] font-bold">BDRs</h2>
+            <div class="flex flex-col gap-2">
+              <AtomsTicker
+                v-for="stock in topAssets.top.bdrs"
+                :key="stock?.ticker"
+                :stock="stock"
+              />
+            </div>
+            <NuxtLink to="/assets" class="hover:underline">
+              Ver todos
+            </NuxtLink>
+          </div>
         </div>
+
         <div
-          class="flex flex-col gap-3 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6 max-[600px]:hidden"
+          class="grid grid-cols-4 gap-2 max-[1550px]:grid-cols-3 max-[900px]:grid-cols-2 max-[600px]:grid-cols-1"
         >
-          <h2 class="text-[18px] font-bold">ETFs</h2>
-          <div class="flex flex-col gap-2">
-            <AtomsTicker
-              v-for="stock in topAssets.etfs"
-              :key="stock?.ticker"
-              :stock="stock"
-            />
+          <div
+            class="flex flex-col gap-3 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6"
+          >
+            <h2 class="text-[18px] font-bold">Ações</h2>
+            <div class="flex flex-col gap-2">
+              <AtomsTicker
+                v-for="stock in topAssets.bottom.stocks"
+                :key="stock?.ticker"
+                :stock="stock"
+              />
+            </div>
+            <NuxtLink to="/assets" class="hover:underline">
+              Ver todos
+            </NuxtLink>
           </div>
-          <NuxtLink to="/assets" class="hover:underline"> Ver todos </NuxtLink>
-        </div>
-        <div
-          class="flex flex-col gap-3 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6 max-[900px]:hidden"
-        >
-          <h2 class="text-[18px] font-bold">Reits</h2>
-          <div class="flex flex-col gap-2">
-            <AtomsTicker
-              v-for="stock in topAssets.reits"
-              :key="stock?.ticker"
-              :stock="stock"
-            />
+          <div
+            class="flex flex-col gap-3 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6 max-[600px]:hidden"
+          >
+            <h2 class="text-[18px] font-bold">ETFs</h2>
+            <div class="flex flex-col gap-2">
+              <AtomsTicker
+                v-for="stock in topAssets.bottom.etfs"
+                :key="stock?.ticker"
+                :stock="stock"
+              />
+            </div>
+            <NuxtLink to="/assets" class="hover:underline">
+              Ver todos
+            </NuxtLink>
           </div>
-          <NuxtLink to="/assets" class="hover:underline"> Ver todos </NuxtLink>
-        </div>
-        <div
-          class="flex flex-col gap-3 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6 max-[1550px]:hidden"
-        >
-          <h2 class="text-[18px] font-bold">BDRs</h2>
-          <div class="flex flex-col gap-2">
-            <AtomsTicker
-              v-for="stock in topAssets.bdrs"
-              :key="stock?.ticker"
-              :stock="stock"
-            />
+          <div
+            class="flex flex-col gap-3 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6 max-[900px]:hidden"
+          >
+            <h2 class="text-[18px] font-bold">Reits</h2>
+            <div class="flex flex-col gap-2">
+              <AtomsTicker
+                v-for="stock in topAssets.bottom.reits"
+                :key="stock?.ticker"
+                :stock="stock"
+              />
+            </div>
+            <NuxtLink to="/assets" class="hover:underline">
+              Ver todos
+            </NuxtLink>
           </div>
-          <NuxtLink to="/assets" class="hover:underline"> Ver todos </NuxtLink>
+          <div
+            class="flex flex-col gap-3 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6 max-[1550px]:hidden"
+          >
+            <h2 class="text-[18px] font-bold">BDRs</h2>
+            <div class="flex flex-col gap-2">
+              <AtomsTicker
+                v-for="stock in topAssets.bottom.bdrs"
+                :key="stock?.ticker"
+                :stock="stock"
+              />
+            </div>
+            <NuxtLink to="/assets" class="hover:underline">
+              Ver todos
+            </NuxtLink>
+          </div>
         </div>
-      </div>
+      </template>
+
       <div
         class="dark:bg-tertiary/40 text-secondary flex w-full flex-col gap-3 rounded-[30px] bg-black/5 px-6 py-4"
       >
@@ -425,10 +500,18 @@ const stocksData = [
 
 const topAssets = ref({
   loading: false,
-  stocks: [],
-  etfs: [],
-  reits: [],
-  bdrs: [],
+  top: {
+    stocks: [],
+    etfs: [],
+    reits: [],
+    bdrs: [],
+  },
+  bottom: {
+    stocks: [],
+    etfs: [],
+    reits: [],
+    bdrs: [],
+  },
 })
 
 const chartConfig = computed(() =>
@@ -440,17 +523,27 @@ const chartConfig = computed(() =>
 )
 
 onMounted(async () => {
-  const [stocks, etfs, reits, bdrs] = await Promise.all([
-    getTopStocks(),
-    getTopETFs(),
-    getTopReits(),
-    getTopBDRs(),
+  const [
+    [topStocks, bottomStocks],
+    [topETFs, bottomETFs],
+    [topReits, bottomReits],
+    [topBDRs, bottomBDRs],
+  ] = await Promise.all([
+    Promise.all([getTopStocks('top', 100000), getTopStocks('bottom', 100000)]),
+    Promise.all([getTopETFs('top', 100000), getTopETFs('bottom', 100000)]),
+    Promise.all([getTopReits('top', 100000), getTopReits('bottom', 100000)]),
+    Promise.all([getTopBDRs('top', 100000), getTopBDRs('bottom', 100000)]),
   ])
 
-  topAssets.value.stocks = stocks
-  topAssets.value.etfs = etfs
-  topAssets.value.reits = reits
-  topAssets.value.bdrs = bdrs
+  topAssets.value.top.stocks = topStocks
+  topAssets.value.top.etfs = topETFs
+  topAssets.value.top.reits = topReits
+  topAssets.value.top.bdrs = topBDRs
+
+  topAssets.value.bottom.stocks = bottomStocks
+  topAssets.value.bottom.etfs = bottomETFs
+  topAssets.value.bottom.reits = bottomReits
+  topAssets.value.bottom.bdrs = bottomBDRs
 
   setTimeout(() => {
     loading.value = false

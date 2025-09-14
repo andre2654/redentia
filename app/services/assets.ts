@@ -15,26 +15,30 @@ export const useAssetsService = () => {
     return asset!
   }
 
-  async function getTopStocks(): Promise<IAsset[]> {
-    const resp = await $fetch<IAsset[]>('https://redentia-api.saraivada.com/api/top-stocks')
+  async function getTopStocks(side: 'top' | 'bottom', volume: number): Promise<IAsset[]> {
+    const query = side === 'top' ? `?side=top&volume=${volume}` : `?side=bottom&volume=${volume}`
+    const resp = await $fetch<IAsset[]>(`https://redentia-api.saraivada.com/api/top-stocks${query}`)
 
     return resp.data
   }
 
-  async function getTopETFs(): Promise<IAsset[]> {
-    const resp = await $fetch<IAsset[]>('https://redentia-api.saraivada.com/api/top-etfs')
+  async function getTopETFs(side: 'top' | 'bottom', volume: number): Promise<IAsset[]> {
+    const query = side === 'top' ? `?side=top&volume=${volume}` : `?side=bottom&volume=${volume}`
+    const resp = await $fetch<IAsset[]>(`https://redentia-api.saraivada.com/api/top-etfs${query}`)
 
     return resp.data
   }
 
-  async function getTopReits(): Promise<IAsset[]> {
-    const resp = await $fetch<IAsset[]>('https://redentia-api.saraivada.com/api/top-reits')
+  async function getTopReits(side: 'top' | 'bottom', volume: number): Promise<IAsset[]> {
+    const query = side === 'top' ? `?side=top&volume=${volume}` : `?side=bottom&volume=${volume}`
+    const resp = await $fetch<IAsset[]>(`https://redentia-api.saraivada.com/api/top-reits${query}`)
 
     return resp.data
   }
 
-  async function getTopBDRs(): Promise<IAsset[]> {
-    const resp = await $fetch<IAsset[]>('https://redentia-api.saraivada.com/api/top-reits')
+  async function getTopBDRs(side: 'top' | 'bottom', volume: number): Promise<IAsset[]> {
+    const query = side === 'top' ? `?side=top&volume=${volume}` : `?side=bottom&volume=${volume}`
+    const resp = await $fetch<IAsset[]>(`https://redentia-api.saraivada.com/api/top-bdrs${query}`)
 
     return resp.data
   }
