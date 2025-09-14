@@ -113,5 +113,8 @@ export default defineNuxtConfig({
       navigateFallbackAllowlist: [/^\/$/],
       type: 'module',
     }
+  },
+  experimental: {
+    viewTransition: true
   }
 })

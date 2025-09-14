@@ -131,14 +131,16 @@
       class="sticky top-0 h-screen min-h-fit w-[380px] min-w-[380px] p-4 max-xl:hidden"
     >
       <div
-        class="flex flex-col justify-between gap-[50px] rounded-[30px] bg-white/10 p-4"
+        class="flex flex-col justify-between gap-[50px] rounded-[30px] bg-white/5 p-4 py-8"
       >
         <div class="flex items-center justify-between px-6">
           <div class="flex items-center gap-3">
-            <UAvatar alt="Benjamin Canac" size="lg" />
+            <UAvatar alt="Benjamin Canac" size="xl" />
             <div class="flex flex-col">
-              <div class="text-[14px]">André Saraiva</div>
-              <span class="text-[12px] text-gray-400">Plano gratuito</span>
+              <div class="text-[15px]">André Saraiva</div>
+              <span class="-mt-1 text-[12px] text-gray-400"
+                >Plano gratuito</span
+              >
             </div>
           </div>
           <div class="flex items-center">
@@ -199,7 +201,7 @@
       <header
         v-bind="headerProps"
         ref="header"
-        class="sticky top-0 z-10 flex h-[60px] w-full items-center justify-between gap-4 bg-white/10 px-6 py-4 mix-blend-difference backdrop-blur-lg sm:top-4 sm:rounded-full"
+        class="sticky top-0 z-10 flex h-[60px] w-full items-center justify-between gap-4 bg-white/5 px-6 py-4 mix-blend-difference backdrop-blur-lg sm:top-4 sm:rounded-[25px]"
       >
         <slot name="header">
           <div class="relative isolate">

@@ -15,8 +15,36 @@ export const useAssetsService = () => {
     return asset!
   }
 
+  async function getTopStocks(): Promise<IAsset[]> {
+    const resp = await $fetch<IAsset[]>('https://redentia-api.saraivada.com/api/top-stocks')
+
+    return resp.data
+  }
+
+  async function getTopETFs(): Promise<IAsset[]> {
+    const resp = await $fetch<IAsset[]>('https://redentia-api.saraivada.com/api/top-etfs')
+
+    return resp.data
+  }
+
+  async function getTopReits(): Promise<IAsset[]> {
+    const resp = await $fetch<IAsset[]>('https://redentia-api.saraivada.com/api/top-reits')
+
+    return resp.data
+  }
+
+  async function getTopBDRs(): Promise<IAsset[]> {
+    const resp = await $fetch<IAsset[]>('https://redentia-api.saraivada.com/api/top-reits')
+
+    return resp.data
+  }
+
   return {
     getAssets,
-    getAsset
+    getAsset,
+    getTopStocks,
+    getTopETFs,
+    getTopReits,
+    getTopBDRs
   }
 }

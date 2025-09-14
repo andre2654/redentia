@@ -7,13 +7,13 @@
       icon="i-lucide-search"
       :ui="{
         base: 'text-[16px] px-6 py-3',
-        label: 'mr-6',
+        label: 'mr-auto',
       }"
     >
       <template #trailing>
         <div class="flex items-center gap-2 max-lg:hidden">
-          <UKbd value="meta" variant="soft" color="neutral" />
-          <UKbd value="K" variant="soft" color="neutral" />
+          <UKbd value="meta" variant="link" color="neutral" />
+          <UKbd value="K" variant="link" color="neutral" />
         </div>
       </template>
     </UButton>

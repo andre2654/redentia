@@ -156,16 +156,57 @@
       </div>
       <div
         v-else
-        class="grid grid-cols-5 gap-2 max-[1900px]:grid-cols-4 max-[1550px]:grid-cols-3 max-[900px]:grid-cols-2 max-[600px]:grid-cols-1"
+        class="grid grid-cols-4 gap-2 max-[1550px]:grid-cols-3 max-[900px]:grid-cols-2 max-[600px]:grid-cols-1"
       >
         <div
-          v-for="index in 5"
-          :key="index"
-          class="max-[600px]:nth-[1]:hidden max-[900px]:nth-[2]:hidden max-[1550px]:nth-[3]:hidden max-[1900px]:nth-[4]:hidden flex flex-col gap-3 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6"
+          class="flex flex-col gap-3 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6"
         >
-          <h2 class="text-[18px] font-bold">Maiores altas e baixas</h2>
+          <h2 class="text-[18px] font-bold">Ações</h2>
           <div class="flex flex-col gap-2">
-            <AtomsTicker v-for="index2 in 6" :key="index2" />
+            <AtomsTicker
+              v-for="stock in topAssets.stocks"
+              :key="stock?.ticker"
+              :stock="stock"
+            />
+          </div>
+          <NuxtLink to="/assets" class="hover:underline"> Ver todos </NuxtLink>
+        </div>
+        <div
+          class="flex flex-col gap-3 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6 max-[600px]:hidden"
+        >
+          <h2 class="text-[18px] font-bold">ETFs</h2>
+          <div class="flex flex-col gap-2">
+            <AtomsTicker
+              v-for="stock in topAssets.etfs"
+              :key="stock?.ticker"
+              :stock="stock"
+            />
+          </div>
+          <NuxtLink to="/assets" class="hover:underline"> Ver todos </NuxtLink>
+        </div>
+        <div
+          class="flex flex-col gap-3 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6 max-[900px]:hidden"
+        >
+          <h2 class="text-[18px] font-bold">Reits</h2>
+          <div class="flex flex-col gap-2">
+            <AtomsTicker
+              v-for="stock in topAssets.reits"
+              :key="stock?.ticker"
+              :stock="stock"
+            />
+          </div>
+          <NuxtLink to="/assets" class="hover:underline"> Ver todos </NuxtLink>
+        </div>
+        <div
+          class="flex flex-col gap-3 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6 max-[1550px]:hidden"
+        >
+          <h2 class="text-[18px] font-bold">BDRs</h2>
+          <div class="flex flex-col gap-2">
+            <AtomsTicker
+              v-for="stock in topAssets.bdrs"
+              :key="stock?.ticker"
+              :stock="stock"
+            />
           </div>
           <NuxtLink to="/assets" class="hover:underline"> Ver todos </NuxtLink>
         </div>
@@ -191,6 +232,8 @@
 import type { ChartTimeRange } from '~/types/chart'
 
 import { generateChartConfig } from '~/helpers/utils'
+
+const { getTopStocks, getTopETFs, getTopReits, getTopBDRs } = useAssetsService()
 
 const selectedTimeRange = ref<ChartTimeRange>('month')
 const showMap = ref(false)
@@ -380,6 +423,14 @@ const stocksData = [
   },
 ]
 
+const topAssets = ref({
+  loading: false,
+  stocks: [],
+  etfs: [],
+  reits: [],
+  bdrs: [],
+})
+
 const chartConfig = computed(() =>
   generateChartConfig({
     timeRange: selectedTimeRange.value,
@@ -388,10 +439,28 @@ const chartConfig = computed(() =>
   })
 )
 
-onMounted(() => {
+onMounted(async () => {
+  const [stocks, etfs, reits, bdrs] = await Promise.all([
+    getTopStocks(),
+    getTopETFs(),
+    getTopReits(),
+    getTopBDRs(),
+  ])
+
+  topAssets.value.stocks = stocks
+  topAssets.value.etfs = etfs
+  topAssets.value.reits = reits
+  topAssets.value.bdrs = bdrs
+
   setTimeout(() => {
     loading.value = false
   }, 3000)
+})
+
+definePageMeta({
+  layoutTransition: {
+    name: 'slide-in',
+  },
 })
 </script>
 
