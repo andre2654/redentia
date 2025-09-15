@@ -1,5 +1,8 @@
 <template>
-  <div class="flex items-center gap-2 rounded-md p-2">
+  <NuxtLink
+    :to="`/asset/${stock?.ticker}`"
+    class="flex items-center gap-2 rounded-md p-2 hover:brightness-105"
+  >
     <img
       v-if="hasLogo"
       width="50"
@@ -28,7 +31,7 @@
         >
       </div>
     </div>
-  </div>
+  </NuxtLink>
 </template>
 
 <script lang="ts" setup>
