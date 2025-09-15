@@ -61,13 +61,12 @@
             />
           </UButtonGroup>
         </div>
-        <AtomsGraphLine
-          :data="chartConfig.data"
-          :colors="chartConfig.colors"
-          :legend="chartConfig.legend"
-          :height="350"
-          :loading="isLoadingChart"
-        />
+          <AtomsGraphLine
+            :data="chartData"
+            :legend="chartLabel"
+            :height="350"
+            :loading="isLoadingChart"
+          />
       </div>
     </div>
 
@@ -280,7 +279,7 @@ import type { ChartTimeRange } from '~/types/chart'
 import { generateChartConfig } from '~/helpers/utils'
 
 const route = useRoute()
-const { getAsset } = useAssetsService()
+const { getAsset, assetHistoricPrices } = useAssetsService()
 
 const ticker = route.params.ticker as string
 const asset = await getAsset(ticker)
@@ -290,20 +289,47 @@ const seeMyInsights = ref(true)
 const seeSmartIndicators = ref(true)
 const isLoadingChart = ref(false)
 
-// Configuração do gráfico baseada no período selecionado
-const chartConfig = computed(() =>
+interface ChartPoint {
+  date: string
+  value: number
+  timestamp: number
+}
+const chartData = ref<ChartPoint[]>([])
+
+// Mantém apenas o label do chartConfig
+const chartLabel = computed(() =>
   generateChartConfig({
     timeRange: selectedTimeRange.value,
     label: ticker.toUpperCase(),
     basePrice: asset.close || 100,
-  })
+  }).legend
 )
 
-// Simula loading quando muda o período
-watch(selectedTimeRange, () => {
+async function fetchChartData() {
   isLoadingChart.value = true
-  setTimeout(() => {
-    isLoadingChart.value = false
-  }, 2000) // Loading por 2 segundos
+  let period: '1mo' | 'ytd' | '12mo' = '1mo'
+  if (selectedTimeRange.value === 'month') period = '1mo'
+  else if (selectedTimeRange.value === 'year') period = '12mo'
+  else if (selectedTimeRange.value === 'ytd') period = 'ytd'
+  const data = await assetHistoricPrices(ticker, period)
+  // Transforma para o formato aceito pelo gráfico
+  chartData.value = Array.isArray(data)
+    ? data.map((item) => ({
+        date: item.price_at,
+        value: item.market_price,
+        timestamp: new Date(item.price_at).getTime(),
+      }))
+    : []
+  isLoadingChart.value = false
+}
+
+// Busca inicial
+onMounted(() => {
+  fetchChartData()
+})
+
+// Atualiza ao trocar o período
+watch(selectedTimeRange, () => {
+  fetchChartData()
 })
 </script>

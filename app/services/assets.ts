@@ -43,12 +43,19 @@ export const useAssetsService = () => {
     return resp.data
   }
 
+  async function assetHistoricPrices(ticker: string, period: '1mo' | 'ytd' | '12mo') {
+    const resp = await $fetch(`https://redentia-api.saraivada.com/api/tickers/${ticker}/prices?mode=${period}`)
+
+    return resp.data
+  }
+
   return {
     getAssets,
     getAsset,
     getTopStocks,
     getTopETFs,
     getTopReits,
-    getTopBDRs
+    getTopBDRs,
+    assetHistoricPrices
   }
 }
