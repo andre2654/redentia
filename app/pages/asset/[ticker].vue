@@ -13,7 +13,13 @@
             {{ asset.stock }}
           </h1>
           <div class="text-sm">
-            R$ 23,00 <span class="text-primary">(+2,00% hoje)</span>
+            R$ {{ asset.market_price }}
+            <span
+              :class="[
+                asset.change_percent > 0 ? 'text-green-400' : 'text-red-400',
+              ]"
+              >({{ asset.change_percent }}% hoje)</span
+            >
           </div>
         </div>
         <UButton
@@ -61,12 +67,12 @@
             />
           </UButtonGroup>
         </div>
-          <AtomsGraphLine
-            :data="chartData"
-            :legend="chartLabel"
-            :height="350"
-            :loading="isLoadingChart"
-          />
+        <AtomsGraphLine
+          :data="chartData"
+          :legend="chartLabel"
+          :height="350"
+          :loading="isLoadingChart"
+        />
       </div>
     </div>
 
@@ -254,17 +260,21 @@
         alt="Asset Logo"
         class="h-[200px] w-[200px] rounded-lg"
       />
-      <b class="text-lg">{{ asset.name }}</b>
-      <b class="text-lg">00.000.000/0001-91</b>
+      <b class="text-lg">{{ asset.ticker }} - {{ asset.industry_category }}</b>
+      <b class="text-lg"
+        >{{ asset.city }}, {{ asset.state }} - {{ asset.country }}</b
+      >
+      <b class="text-lg">Setor: {{ asset.sector }}</b>
+      <b class="text-lg">Funcionários: {{ asset.employees }}</b>
+      <a
+        v-if="asset.website"
+        :href="asset.website"
+        target="_blank"
+        class="text-primary underline"
+        >Site oficial</a
+      >
       <p class="text-sm opacity-70">
-        O Banco do Brasil S.A, mais conhecido como BB, é uma das maiores
-        instituições financeiras do país, sendo sua atuação ligada ao segmento
-        de serviços bancários. Criado no início do século XIX, ainda no Brasil
-        Império, o Banco do Brasil se tornou uma das maiores instituições
-        financeiras do país ao longo do tempo, figurando na lista dos cinco
-        maiores bancos de varejo do Brasil. O Banco do Brasil é constituído como
-        sociedade de economia mista e suas ações são negociadas na Bolsa do
-        Brasil, a B3, sob o código BBAS3.
+        {{ asset.long_business_summary }}
       </p>
     </div>
 
@@ -279,10 +289,10 @@ import type { ChartTimeRange } from '~/types/chart'
 import { generateChartConfig } from '~/helpers/utils'
 
 const route = useRoute()
-const { getAsset, assetHistoricPrices } = useAssetsService()
+const { getAsset, assetHistoricPrices, getTickerDetails } = useAssetsService()
 
 const ticker = route.params.ticker as string
-const asset = await getAsset(ticker)
+const asset = await getTickerDetails(ticker)
 const selectedTimeRange = ref<ChartTimeRange>('month')
 const showRelevantDocs = ref(true)
 const seeMyInsights = ref(true)
@@ -297,12 +307,13 @@ interface ChartPoint {
 const chartData = ref<ChartPoint[]>([])
 
 // Mantém apenas o label do chartConfig
-const chartLabel = computed(() =>
-  generateChartConfig({
-    timeRange: selectedTimeRange.value,
-    label: ticker.toUpperCase(),
-    basePrice: asset.close || 100,
-  }).legend
+const chartLabel = computed(
+  () =>
+    generateChartConfig({
+      timeRange: selectedTimeRange.value,
+      label: ticker.toUpperCase(),
+      basePrice: asset.close || 100,
+    }).legend
 )
 
 async function fetchChartData() {
