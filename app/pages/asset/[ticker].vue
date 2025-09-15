@@ -3,23 +3,27 @@
     <template #header>
       <div class="flex w-full items-center justify-between">
         <div class="flex items-center gap-3">
+          <USkeleton v-if="isLoadingAsset" class="h-6 w-6 rounded-full" />
           <img
-            v-if="asset.logo"
+            v-else-if="asset?.logo"
             :src="asset.logo"
             alt="Asset Logo"
             class="h-6 w-6 rounded-full"
           />
           <h1 class="min-w-max font-medium max-md:text-[20px]">
-            {{ asset.stock }}
+            <span>{{ ticker }}</span>
           </h1>
-          <div class="text-sm">
-            R$ {{ asset.market_price }}
-            <span
-              :class="[
-                asset.change_percent > 0 ? 'text-green-400' : 'text-red-400',
-              ]"
-              >({{ asset.change_percent }}% hoje)</span
-            >
+          <div class="flex items-center gap-2 text-sm">
+            <USkeleton v-if="isLoadingAsset" class="h-4 w-[80px]" />
+            <template v-else>
+              <span>R$ {{ asset?.market_price }}</span>
+              <span
+                :class="[
+                  asset?.change_percent > 0 ? 'text-green-400' : 'text-red-400',
+                ]"
+                >({{ asset?.change_percent }}% hoje)</span
+              >
+            </template>
           </div>
         </div>
         <UButton
@@ -41,7 +45,7 @@
       <div class="flex flex-col gap-4">
         <div class="flex items-center justify-between">
           <h2 class="mb-4 text-lg font-semibold">
-            Cotação <span class="max-md:hidden">da {{ asset.stock }}</span>
+            Cotação <span class="max-md:hidden">da {{ ticker }}</span>
           </h2>
           <UButtonGroup orientation="horizontal" variant="soft">
             <UButton
@@ -184,17 +188,15 @@
           is-intelligent
           :help-text-with-tooltip="false"
         /><MoleculesTickerIndicator
-          v-if="asset.reclameAqui?.notaMedia"
           name="Pontuação Reclame Aqui"
-          :value="asset.reclameAqui.notaMedia + '/10'"
+          :value="'5/10'"
           help-text="Pontuação média do ativo no Reclame Aqui."
           is-intelligent
           :help-text-with-tooltip="false"
         />
         <MoleculesTickerIndicator
-          v-if="asset.glassdoor?.nota"
           name="Pontuação Glassdoor"
-          :value="asset.glassdoor.nota + '/5'"
+          :value="'5/5'"
           help-text="Pontuação média do ativo no Glassdoor."
           is-intelligent
           :help-text-with-tooltip="false"
@@ -254,28 +256,41 @@
 
     <!-- Asset Info -->
     <div class="flex flex-col gap-4 p-4">
+      <USkeleton v-if="isLoadingAsset" class="h-[200px] w-[200px] rounded-lg" />
       <img
-        v-if="asset.logo"
+        v-else-if="asset?.logo"
         :src="asset.logo"
         alt="Asset Logo"
         class="h-[200px] w-[200px] rounded-lg"
       />
-      <b class="text-lg">{{ asset.ticker }} - {{ asset.industry_category }}</b>
-      <b class="text-lg"
-        >{{ asset.city }}, {{ asset.state }} - {{ asset.country }}</b
-      >
-      <b class="text-lg">Setor: {{ asset.sector }}</b>
-      <b class="text-lg">Funcionários: {{ asset.employees }}</b>
-      <a
-        v-if="asset.website"
-        :href="asset.website"
-        target="_blank"
-        class="text-primary underline"
-        >Site oficial</a
-      >
-      <p class="text-sm opacity-70">
-        {{ asset.long_business_summary }}
-      </p>
+      <div class="grid gap-2">
+        <USkeleton v-if="isLoadingAsset" class="h-4 w-[250px]" />
+        <USkeleton v-if="isLoadingAsset" class="h-4 w-[200px]" />
+        <USkeleton v-if="isLoadingAsset" class="h-4 w-[180px]" />
+        <USkeleton v-if="isLoadingAsset" class="h-4 w-[160px]" />
+        <USkeleton v-if="isLoadingAsset" class="h-4 w-[120px]" />
+        <USkeleton v-if="isLoadingAsset" class="h-4 w-[100px]" />
+        <template v-else>
+          <b class="text-lg"
+            >{{ asset?.ticker }} - {{ asset?.industry_category }}</b
+          >
+          <b class="text-lg"
+            >{{ asset?.city }}, {{ asset?.state }} - {{ asset?.country }}</b
+          >
+          <b class="text-lg">Setor: {{ asset?.sector }}</b>
+          <b class="text-lg">Funcionários: {{ asset?.employees }}</b>
+          <a
+            v-if="asset?.website"
+            :href="asset.website"
+            target="_blank"
+            class="text-primary underline"
+            >Site oficial</a
+          >
+          <p class="text-sm opacity-70">
+            {{ asset?.long_business_summary }}
+          </p>
+        </template>
+      </div>
     </div>
 
     <MoleculesChat
@@ -289,10 +304,11 @@ import type { ChartTimeRange } from '~/types/chart'
 import { generateChartConfig } from '~/helpers/utils'
 
 const route = useRoute()
-const { getAsset, assetHistoricPrices, getTickerDetails } = useAssetsService()
+const { assetHistoricPrices, getTickerDetails } = useAssetsService()
 
 const ticker = route.params.ticker as string
-const asset = await getTickerDetails(ticker)
+const asset = ref()
+const isLoadingAsset = ref(true)
 const selectedTimeRange = ref<ChartTimeRange>('month')
 const showRelevantDocs = ref(true)
 const seeMyInsights = ref(true)
@@ -312,7 +328,7 @@ const chartLabel = computed(
     generateChartConfig({
       timeRange: selectedTimeRange.value,
       label: ticker.toUpperCase(),
-      basePrice: asset.close || 100,
+      basePrice: asset.value?.close || 100,
     }).legend
 )
 
@@ -335,7 +351,10 @@ async function fetchChartData() {
 }
 
 // Busca inicial
-onMounted(() => {
+onMounted(async () => {
+  isLoadingAsset.value = true
+  asset.value = await getTickerDetails(ticker)
+  isLoadingAsset.value = false
   fetchChartData()
 })
 
