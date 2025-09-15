@@ -316,187 +316,7 @@ const loading = ref(true)
 const treemapFilter = ref<'all' | 'positive' | 'negative'>('all')
 
 // Dados mock para o treemap - separados por categorias
-const stocksData = [
-  // AÇÕES
-  {
-    symbol: 'PETR4',
-    name: 'Petrobras PN',
-    price: 32.45,
-    change: 8.5,
-    volume: 45000000,
-    category: 'acoes' as const,
-  },
-  {
-    symbol: 'VALE3',
-    name: 'Vale ON',
-    price: 68.2,
-    change: -6.8,
-    volume: 38000000,
-    category: 'acoes' as const,
-  },
-  {
-    symbol: 'ITUB4',
-    name: 'Itaú Unibanco PN',
-    price: 28.9,
-    change: 12.3,
-    volume: 42000000,
-    category: 'acoes' as const,
-  },
-  {
-    symbol: 'BBDC4',
-    name: 'Bradesco PN',
-    price: 13.85,
-    change: -9.2,
-    volume: 35000000,
-    category: 'acoes' as const,
-  },
-  {
-    symbol: 'ABEV3',
-    name: 'Ambev ON',
-    price: 11.76,
-    change: 4.7,
-    volume: 28000000,
-    category: 'acoes' as const,
-  },
-  {
-    symbol: 'WEGE3',
-    name: 'WEG ON',
-    price: 45.3,
-    change: -3.4,
-    volume: 15000000,
-    category: 'acoes' as const,
-  },
-  {
-    symbol: 'MGLU3',
-    name: 'Magazine Luiza ON',
-    price: 8.45,
-    change: -15.6,
-    volume: 55000000,
-    category: 'acoes' as const,
-  },
-  {
-    symbol: 'VVAR3',
-    name: 'Via Varejo ON',
-    price: 3.22,
-    change: 18.9,
-    volume: 32000000,
-    category: 'acoes' as const,
-  },
-  {
-    symbol: 'SUZB3',
-    name: 'Suzano ON',
-    price: 52.8,
-    change: 7.1,
-    volume: 18000000,
-    category: 'acoes' as const,
-  },
-  {
-    symbol: 'JBSS3',
-    name: 'JBS ON',
-    price: 34.2,
-    change: -4.8,
-    volume: 22000000,
-    category: 'acoes' as const,
-  },
-  {
-    symbol: 'RENT3',
-    name: 'Localiza ON',
-    price: 65.4,
-    change: 9.3,
-    volume: 16000000,
-    category: 'acoes' as const,
-  },
-  {
-    symbol: 'LREN3',
-    name: 'Lojas Renner ON',
-    price: 19.85,
-    change: -7.9,
-    volume: 25000000,
-    category: 'acoes' as const,
-  },
-
-  // FIIs (Fundos Imobiliários)
-  {
-    symbol: 'HGLG11',
-    name: 'CSHG Logística FII',
-    price: 145.5,
-    change: 5.8,
-    volume: 2500000,
-    category: 'fiis' as const,
-  },
-  {
-    symbol: 'XPML11',
-    name: 'XP Malls FII',
-    price: 98.3,
-    change: -3.2,
-    volume: 1800000,
-    category: 'fiis' as const,
-  },
-  {
-    symbol: 'BCFF11',
-    name: 'BTG Pactual Corporate FII',
-    price: 89.75,
-    change: 7.4,
-    volume: 3200000,
-    category: 'fiis' as const,
-  },
-  {
-    symbol: 'KNRI11',
-    name: 'Kinea Rendimentos Imobiliários FII',
-    price: 95.6,
-    change: -8.1,
-    volume: 2100000,
-    category: 'fiis' as const,
-  },
-  {
-    symbol: 'VISC11',
-    name: 'Vinci Shopping Centers FII',
-    price: 105.2,
-    change: 4.3,
-    volume: 1900000,
-    category: 'fiis' as const,
-  },
-  {
-    symbol: 'MXRF11',
-    name: 'Maxi Renda FII',
-    price: 11.85,
-    change: -5.7,
-    volume: 4500000,
-    category: 'fiis' as const,
-  },
-  {
-    symbol: 'HGRU11',
-    name: 'CSHG Renda Urbana FII',
-    price: 115.4,
-    change: 6.9,
-    volume: 1600000,
-    category: 'fiis' as const,
-  },
-  {
-    symbol: 'BTLG11',
-    name: 'BTG Logística FII',
-    price: 98.95,
-    change: -4.5,
-    volume: 2800000,
-    category: 'fiis' as const,
-  },
-  {
-    symbol: 'XPPR11',
-    name: 'XP Properties FII',
-    price: 102.3,
-    change: 8.7,
-    volume: 1400000,
-    category: 'fiis' as const,
-  },
-  {
-    symbol: 'GGRC11',
-    name: 'General Shopping e Outlets FII',
-    price: 85.2,
-    change: -6.3,
-    volume: 2200000,
-    category: 'fiis' as const,
-  },
-]
+const stocksData = ref([])
 
 const topAssets = ref({
   loading: false,
@@ -544,6 +364,49 @@ onMounted(async () => {
   topAssets.value.bottom.etfs = bottomETFs
   topAssets.value.bottom.reits = bottomReits
   topAssets.value.bottom.bdrs = bottomBDRs
+
+  const newdatatreemap = []
+  topStocks.forEach((stock) => {
+    newdatatreemap.push({
+      symbol: stock.ticker,
+      name: stock.name,
+      price: stock.market_price,
+      change: stock.change_percent,
+      category: 'acoes' as const,
+    })
+  })
+
+  bottomStocks.forEach((stock) => {
+    newdatatreemap.push({
+      symbol: stock.ticker,
+      name: stock.name,
+      price: stock.market_price,
+      change: stock.change_percent,
+      category: 'acoes' as const,
+    })
+  })
+
+  topReits.forEach((stock) => {
+    newdatatreemap.push({
+      symbol: stock.ticker,
+      name: stock.name,
+      price: stock.market_price,
+      change: stock.change_percent,
+      category: 'fiis' as const,
+    })
+  })
+
+  bottomReits.forEach((stock) => {
+    newdatatreemap.push({
+      symbol: stock.ticker,
+      name: stock.name,
+      price: stock.market_price,
+      change: stock.change_percent,
+      category: 'fiis' as const,
+    })
+  })
+
+  stocksData.value = newdatatreemap
 
   setTimeout(() => {
     loading.value = false

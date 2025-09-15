@@ -71,9 +71,6 @@
           {{ tooltipData.change >= 0 ? '+' : ''
           }}{{ tooltipData.change.toFixed(2) }}%
         </span>
-        <span class="text-xs text-white/70"
-          >Vol: {{ formatVolume(tooltipData.volume) }}</span
-        >
       </div>
     </div>
   </div>
@@ -87,7 +84,6 @@ interface TreemapItem {
   name: string
   price: number
   change: number
-  volume: number
   marketCap?: number
   category?: 'acoes' | 'fiis' // Nova propriedade para categorização
 }
@@ -97,7 +93,6 @@ interface TooltipData {
   name: string
   price: number
   change: number
-  volume: number
   color: string
 }
 
@@ -844,7 +839,6 @@ const handleMouseMove = (event: MouseEvent) => {
       name: hoveredRect.item.name,
       price: hoveredRect.item.price,
       change: hoveredRect.item.change,
-      volume: hoveredRect.item.volume,
       color: getBorderColor(hoveredRect.item.change), // Usa a cor sólida da borda
     }
 
@@ -884,17 +878,6 @@ const handleMouseMove = (event: MouseEvent) => {
   } else {
     tooltipData.value = null
   }
-}
-
-const formatVolume = (volume: number): string => {
-  if (volume >= 1000000000) {
-    return `${(volume / 1000000000).toFixed(1)}B`
-  } else if (volume >= 1000000) {
-    return `${(volume / 1000000).toFixed(1)}M`
-  } else if (volume >= 1000) {
-    return `${(volume / 1000).toFixed(1)}K`
-  }
-  return volume.toString()
 }
 
 const onMouseLeave = () => {
