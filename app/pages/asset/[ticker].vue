@@ -41,7 +41,7 @@
     </template>
 
     <!-- Graph -->
-    <div class="w-full p-6">
+    <div class="w-full py-6">
       <div class="flex flex-col gap-4">
         <div class="flex items-center justify-between">
           <h2 class="mb-4 text-lg font-semibold">

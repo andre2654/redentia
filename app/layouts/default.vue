@@ -197,11 +197,13 @@
         <AtomsSidebarMonthGoal />
       </div>
     </div>
-    <div class="relative flex w-full flex-col bg-white p-4 dark:bg-black">
+    <div
+      class="relative flex w-full flex-col bg-white py-4 md:px-4 dark:bg-black"
+    >
       <header
         v-bind="headerProps"
         ref="header"
-        class="sticky top-0 z-10 flex h-[60px] w-full items-center justify-between gap-4 bg-white/5 px-6 py-4 mix-blend-difference backdrop-blur-lg sm:top-4 sm:rounded-[25px]"
+        class="sticky top-0 z-10 flex h-[60px] w-full items-center justify-between gap-4 bg-white/5 px-6 py-4 mix-blend-difference backdrop-blur-lg sm:top-4 md:rounded-[25px]"
       >
         <slot name="header">
           <div class="relative isolate">
@@ -218,7 +220,7 @@
           </div>
         </slot>
       </header>
-      <div v-bind="containerProps" class="flex-1">
+      <div v-bind="containerProps" class="flex-1 max-md:px-4">
         <slot />
       </div>
     </div>
