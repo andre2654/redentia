@@ -293,9 +293,7 @@
       </div>
     </div>
 
-    <MoleculesChat
-      class="w-full overflow-hidden rounded-[30px] bg-black/10 dark:bg-white/10"
-    />
+    <MoleculesChat class="w-full bg-black/10 dark:bg-white/10" />
   </NuxtLayout>
 </template>
 

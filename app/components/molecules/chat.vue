@@ -1,5 +1,7 @@
 <template>
-  <div class="flex flex-col items-center justify-between gap-[100px]">
+  <div
+    class="flex flex-col items-center justify-between gap-[100px] rounded-[30px]"
+  >
     <div class="flex flex-col items-center justify-center gap-4 px-3 pt-[70px]">
       <h2 class="text-center text-2xl">Faça alguma pergunta</h2>
       <p class="text-center text-[13px] font-light opacity-60">
@@ -28,7 +30,7 @@
     </div>
 
     <div
-      class="sticky bottom-0 flex w-full flex-col gap-3 bg-black/10 p-3 pb-6 backdrop-blur-[99px] dark:bg-white/10"
+      class="sticky bottom-0 flex w-full flex-col gap-3 rounded-b-[30px] bg-black/10 p-3 pb-6 backdrop-blur-[99px] dark:bg-white/10"
       v-bind="textareaContainerProps"
     >
       <UTextarea
