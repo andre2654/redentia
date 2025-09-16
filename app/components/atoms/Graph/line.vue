@@ -433,8 +433,10 @@ if (!registered) {
 
 /* ========== Data/Options (mesmo visual) ========== */
 const chartData = computed(() => {
-  // Usa dados de loading se estiver carregando, senão usa dados reais
-  const dataToUse = props.loading ? loadingData.value : props.data
+  // Se estiver carregando mas já houver dados reais, não muda o conteúdo do gráfico
+  const hasRealData = props.data && props.data.length > 0
+  const dataToUse =
+    props.loading && !hasRealData ? loadingData.value : props.data
 
   return {
     labels: dataToUse.map((d) => d.date),
@@ -519,8 +521,8 @@ onMounted(async () => {
   chartInstance.value = chart
   removeCanvasEvents = setupCanvasEvents(chart)
 
-  // Inicia animação se já estiver em loading
-  if (props.loading) {
+  // Só anima se não houver dados reais
+  if (props.loading && (!props.data || props.data.length === 0)) {
     loadingData.value = generateLoadingData()
     _animateLoadingData()
   }
@@ -531,9 +533,11 @@ watch(
   () => props.loading,
   (newLoading) => {
     if (newLoading) {
-      // Inicia animação de loading
-      loadingData.value = generateLoadingData()
-      _animateLoadingData()
+      // Só anima se não houver dados reais
+      if (!props.data || props.data.length === 0) {
+        loadingData.value = generateLoadingData()
+        _animateLoadingData()
+      }
       // Desabilita interações durante loading
       isDragging.value = false
       dragStartIndex.value = null

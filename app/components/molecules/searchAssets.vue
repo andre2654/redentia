@@ -30,7 +30,7 @@
         }"
       >
         <template #footer>
-          <div class="flex w-full flex-col items-center gap-3 pt-5">
+          <div class="flex w-full flex-col items-center gap-3">
             <NuxtLink
               to="/search"
               class="flex items-center gap-3 text-sm underline hover:opacity-70"
@@ -38,7 +38,7 @@
               <UIcon name="i-lucide-search" class="h-4 w-4" />
               <span>Ou acesse a busca avançada clicando aqui</span>
             </NuxtLink>
-            <AtomsTickerCarousel class="w-full" no-control />
+            <!-- <AtomsTickerCarousel class="w-full" no-control /> -->
           </div>
         </template>
       </UCommandPalette>
@@ -64,7 +64,7 @@ async function fetchAcoesFiis(q: string): Promise<IAsset[]> {
 
   return allData.filter(
     (item) =>
-      item.stock.toLowerCase().includes(q.toLowerCase()) ||
+      item.ticker.toLowerCase().includes(q.toLowerCase()) ||
       item.name.toLowerCase().includes(q.toLowerCase())
   )
 }
@@ -82,34 +82,45 @@ const { data: ativos, status } = await useAsyncData(
 const groups = computed(() => {
   const acaoItems =
     ativos.value
-      ?.filter((item) => item.type === 'stock')
+      ?.filter((item) => item.type === 'STOCK')
       .map((item) => ({
-        id: item.stock,
-        label: item.stock,
+        id: item.ticker,
+        label: item.ticker,
         suffix: item.name,
-        to: `/asset/${item.stock}`,
+        to: `/asset/${item.ticker}`,
         avatar: { src: item.logo },
       })) || []
 
   const fiiItems =
     ativos.value
-      ?.filter((item) => item.type === 'fund')
+      ?.filter((item) => item.type === 'FUND')
       .map((item) => ({
-        id: item.stock,
-        label: item.stock,
+        id: item.ticker,
+        label: item.ticker,
         suffix: item.name,
-        to: `/asset/${item.stock}`,
+        to: `/asset/${item.ticker}`,
         avatar: { src: item.logo },
       })) || []
 
   const bdrItems =
     ativos.value
-      ?.filter((item) => item.type === 'bdr')
+      ?.filter((item) => item.type === 'BDR')
       .map((item) => ({
-        id: item.stock,
-        label: item.stock,
+        id: item.ticker,
+        label: item.ticker,
         suffix: item.name,
-        to: `/asset/${item.stock}`,
+        to: `/asset/${item.ticker}`,
+        avatar: { src: item.logo },
+      })) || []
+
+  const reitItems =
+    ativos.value
+      ?.filter((item) => item.type === 'REIT')
+      .map((item) => ({
+        id: item.ticker,
+        label: item.ticker,
+        suffix: item.name,
+        to: `/asset/${item.ticker}`,
         avatar: { src: item.logo },
       })) || []
 
@@ -130,6 +141,12 @@ const groups = computed(() => {
       id: 'bdrs',
       label: 'BDRs',
       items: bdrItems,
+      ignoreFilter: true,
+    },
+    {
+      id: 'reits',
+      label: 'REITs',
+      items: reitItems,
       ignoreFilter: true,
     },
   ]

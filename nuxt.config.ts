@@ -16,6 +16,11 @@ export default defineNuxtConfig({
   vite: {
     plugins: [svgLoader()],
   },
+  runtimeConfig: {
+    public: {
+      cacheTempInSeconds: 60,
+    }
+  },
   components: [
     {
       path: '~/components',

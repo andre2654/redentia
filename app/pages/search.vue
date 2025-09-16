@@ -119,7 +119,7 @@ const globalFilter = ref('')
 const table = useTemplateRef('table')
 const sorting = ref([
   {
-    id: 'stock',
+    id: 'ticker',
     desc: false,
   },
 ])
@@ -222,7 +222,7 @@ const columns = ref([
       }),
   },
   {
-    accessorKey: 'stock',
+    accessorKey: 'ticker',
     header: ({ column }) => {
       return getHeader(column, 'Ticker')
     },
@@ -232,7 +232,7 @@ const columns = ref([
           src: row.original.logo,
           class: 'pointer-events-none h-6 w-6 select-none rounded object-cover',
         }),
-        h('span', { class: 'text-[14px] font-medium' }, row.original.stock),
+        h('span', { class: 'text-[14px] font-medium' }, row.original.ticker),
       ])
     },
   },
@@ -263,7 +263,7 @@ const columns = ref([
     },
   },
   {
-    accessorKey: 'close',
+    accessorKey: 'market_price',
     header: ({ column }) => {
       return getHeader(column, 'Preço')
     },
@@ -274,27 +274,27 @@ const columns = ref([
         new Intl.NumberFormat('pt-BR', {
           style: 'currency',
           currency: 'BRL',
-        }).format(row.original.close)
+        }).format(row.original.market_price)
       )
     },
   },
   {
-    accessorKey: 'change',
+    accessorKey: 'change_percent',
     header: ({ column }) => {
       return getHeader(column, 'Variação')
     },
     cell: ({ row }) => {
-      const change = row.original.change
+      const change_percent = row.original.change_percent
       return h('div', { class: 'flex items-center gap-2' }, [
         h(IconArrowFinanceUp, {
-          class: `w-4 ${change >= 0 ? 'fill-primary' : 'fill-red-500 rotate-180'}`,
+          class: `w-4 ${change_percent >= 0 ? 'fill-primary' : 'fill-red-500 rotate-180'}`,
         }),
         h(
           'span',
           {
-            class: `text-[14px] font-medium ${change >= 0 ? 'text-primary' : 'text-red-500'}`,
+            class: `text-[14px] font-medium ${change_percent >= 0 ? 'text-primary' : 'text-red-500'}`,
           },
-          `${change >= 0 ? '+' : ''}${change?.toFixed(2)}% hoje`
+          `${change_percent >= 0 ? '+' : ''}${change_percent?.toFixed(2)}% hoje`
         ),
       ])
     },

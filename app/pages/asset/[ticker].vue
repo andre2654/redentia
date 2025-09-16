@@ -313,7 +313,7 @@ const selectedTimeRange = ref<ChartTimeRange>('month')
 const showRelevantDocs = ref(true)
 const seeMyInsights = ref(true)
 const seeSmartIndicators = ref(true)
-const isLoadingChart = ref(false)
+const isLoadingChart = ref(true)
 
 interface ChartPoint {
   date: string
