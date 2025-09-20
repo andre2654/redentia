@@ -206,7 +206,7 @@
 
     <!-- Dividends Chart -->
     <div class="flex flex-col gap-4 p-6">
-      <AtomsGraphDividends />
+      <AtomsGraphDividends :data="dividendsData" :loading="isLoadingDividends" />
     </div>
 
     <!-- Asset docs -->
@@ -302,11 +302,21 @@ import type { ChartTimeRange } from '~/types/chart'
 import { generateChartConfig } from '~/helpers/utils'
 
 const route = useRoute()
-const { assetHistoricPrices, getTickerDetails } = useAssetsService()
+const { assetHistoricPrices, getTickerDetails, getTickerDividends } =
+  useAssetsService()
+
+interface DividendData {
+  ticker: string
+  payment_date: string
+  rate: string
+  label: string
+}
 
 const ticker = route.params.ticker as string
 const asset = ref()
 const isLoadingAsset = ref(true)
+const dividendsData = ref<DividendData[]>([])
+const isLoadingDividends = ref(false)
 const selectedTimeRange = ref<ChartTimeRange>('month')
 const showRelevantDocs = ref(true)
 const seeMyInsights = ref(true)
@@ -348,12 +358,24 @@ async function fetchChartData() {
   isLoadingChart.value = false
 }
 
+async function fetchDividendsData() {
+  isLoadingDividends.value = true
+  try {
+    const data = await getTickerDividends(ticker)
+    dividendsData.value = Array.isArray(data) ? data : []
+  } catch {
+    dividendsData.value = []
+  }
+  isLoadingDividends.value = false
+}
+
 // Busca inicial
 onMounted(async () => {
   isLoadingAsset.value = true
   asset.value = await getTickerDetails(ticker)
   isLoadingAsset.value = false
   fetchChartData()
+  fetchDividendsData()
 })
 
 // Atualiza ao trocar o período

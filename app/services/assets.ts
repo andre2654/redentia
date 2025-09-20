@@ -65,6 +65,14 @@ export const useAssetsService = () => {
     return resp.data
   }
 
+  async function getTickerDividends(ticker: string) {
+    const url = `https://redentia-api.saraivada.com/api/dividends/${ticker}`
+    const resp = await preventWithCache(url, async () =>
+      await $fetch(url, { method: 'GET' })
+    )
+    return resp.data
+  }
+
   return {
     getAssets,
     getTopStocks,
@@ -72,6 +80,7 @@ export const useAssetsService = () => {
     getTopReits,
     getTopBDRs,
     assetHistoricPrices,
-    getTickerDetails
+    getTickerDetails,
+    getTickerDividends
   }
 }

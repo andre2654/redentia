@@ -34,10 +34,13 @@
     <!-- Gráfico de barras para dividendos -->
     <div class="relative" @mouseleave="hoveredIndex = null">
       <div class="relative h-[350px] w-full">
+        <div v-if="props.loading" class="absolute inset-0 flex items-center justify-center bg-black/20 rounded-lg">
+          <span class="text-white">Carregando dividendos...</span>
+        </div>
         <Bar
           ref="chartRef"
-          :data="chartData"
-          :options="chartOptions"
+          :data="chartData as any"
+          :options="chartOptions as any"
           :plugins="[predictionLabelPlugin]"
         />
       </div>
@@ -181,7 +184,7 @@ import {
 } from 'chart.js'
 import { Bar } from 'vue-chartjs'
 
-const colorMode = useColorMode()
+const _colorMode = useColorMode()
 
 function transparentize(value: string, opacity: number) {
   const alpha = opacity === undefined ? 0.5 : 1 - opacity
@@ -194,12 +197,21 @@ interface DividendData {
   year: number
 }
 
+interface ApiDividendData {
+  ticker: string
+  payment_date: string
+  rate: string
+  label: string
+}
+
 interface Props {
-  data?: DividendData[]
+  data?: ApiDividendData[]
+  loading?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   data: () => [],
+  loading: false,
 })
 
 const selectedTimeRange = ref<'year' | '3years' | '5years' | 'max'>('5years')
@@ -209,6 +221,29 @@ const tooltipPosition = ref({ x: 0, y: 0 })
 const chartRef = ref<InstanceType<typeof Bar> | null>(null)
 const chartInstance = ref<ChartJS | null>(null)
 let cleanupEvents: (() => void) | null = null
+
+// Função para transformar dados da API no formato esperado
+const transformApiData = (apiData: ApiDividendData[]): DividendData[] => {
+  return apiData.map(item => {
+    const date = new Date(item.payment_date)
+    const day = date.getDate().toString().padStart(2, '0')
+    const month = (date.getMonth() + 1).toString().padStart(2, '0')
+    const year = date.getFullYear()
+    const shortYear = year.toString().slice(-2)
+    
+    return {
+      date: `${day}/${month}/${shortYear}`,
+      value: parseFloat(item.rate),
+      year: year
+    }
+  }).sort((a, b) => {
+    // Ordena por ano e depois por mês
+    if (a.year !== b.year) return a.year - b.year
+    const monthA = parseInt(a.date.split('/')[1] || '1')
+    const monthB = parseInt(b.date.split('/')[1] || '1')
+    return monthA - monthB
+  })
+}
 
 // Gerador de dados de dividendos mock
 const generateMockDividendData = (): DividendData[] => {
@@ -250,8 +285,8 @@ const generateMockDividendData = (): DividendData[] => {
   return data.sort((a, b) => {
     // Ordena por ano e depois por mês
     if (a.year !== b.year) return a.year - b.year
-    const monthA = parseInt(a.date.split('/')[1])
-    const monthB = parseInt(b.date.split('/')[1])
+    const monthA = parseInt(a.date.split('/')[1] || '1')
+    const monthB = parseInt(b.date.split('/')[1] || '1')
     return monthA - monthB
   })
 }
@@ -283,10 +318,15 @@ const _getStockPrice = (year: number): number => {
   return _mockStockPrices[year] || 35.0
 }
 
+// Dados transformados usando dados reais ou mock
+const transformedData = computed(() => {
+  return props.data.length > 0 ? transformApiData(props.data) : mockDividendData
+})
+
 // Filtra dados baseado no período selecionado
 const filteredData = computed(() => {
   const currentYear = new Date().getFullYear()
-  const dataToUse = props.data.length > 0 ? props.data : mockDividendData
+  const dataToUse = transformedData.value
 
   switch (selectedTimeRange.value) {
     case 'year':
@@ -303,7 +343,7 @@ const filteredData = computed(() => {
 
 // Calcula a previsão do próximo pagamento
 const getNextPaymentPrediction = computed(() => {
-  const dataToUse = props.data.length > 0 ? props.data : mockDividendData
+  const dataToUse = transformedData.value
 
   if (dataToUse.length === 0) return null
 
@@ -318,7 +358,7 @@ const getNextPaymentPrediction = computed(() => {
     const yearlyTotals = recentYears.reduce(
       (acc, item) => {
         if (!acc[item.year]) acc[item.year] = 0
-        acc[item.year] += item.value
+        acc[item.year]! += item.value
         return acc
       },
       {} as Record<number, number>
@@ -343,7 +383,7 @@ const getNextPaymentPrediction = computed(() => {
     // Analisa frequência dos meses de pagamento
     const monthFrequency = dataToUse.reduce(
       (acc, item) => {
-        const month = parseInt(item.date.split('/')[1])
+        const month = parseInt(item.date.split('/')[1] || '1')
         acc[month] = (acc[month] || 0) + 1
         return acc
       },
@@ -367,7 +407,7 @@ const getNextPaymentPrediction = computed(() => {
 
     // Calcula valor baseado na média dos últimos pagamentos do mesmo mês
     const sameMonthPayments = dataToUse.filter((item) => {
-      const itemMonth = parseInt(item.date.split('/')[1])
+      const itemMonth = parseInt(item.date.split('/')[1] || '1')
       return itemMonth === nextMonth && item.year >= currentYear - 3
     })
 
@@ -412,8 +452,8 @@ const displayData = computed(() => {
         if (!acc[item.year]) {
           acc[item.year] = { total: 0, count: 0 }
         }
-        acc[item.year].total += item.value
-        acc[item.year].count++
+        acc[item.year]!.total += item.value
+        acc[item.year]!.count++
         return acc
       },
       {} as Record<number, { total: number; count: number }>
@@ -444,6 +484,8 @@ const tooltipData = computed(() => {
   }
 
   const item = displayData.value[hoveredIndex.value]
+  if (!item) return null
+  
   const stockPrice = _getStockPrice(item.year)
   const dividendYield = (item.value / stockPrice) * 100
 
@@ -473,7 +515,7 @@ const setupCanvasEvents = (chart: ChartJS) => {
       )
 
       if (points && points.length > 0) {
-        hoveredIndex.value = points[0].index
+        hoveredIndex.value = points[0]?.index ?? null
       } else {
         hoveredIndex.value = null
       }
@@ -526,16 +568,13 @@ const predictionLabelPlugin = {
       const currentData = displayData.value || []
 
       meta.data.forEach(
-        (
-          bar: { getCenterPoint: () => { x: number; y: number } },
-          index: number
-        ) => {
+        (bar: unknown, index: number) => {
           if (index >= currentData.length) return
 
           const dataPoint = currentData[index]
-          if (dataPoint?.isPrediction) {
+          if (dataPoint?.isPrediction && bar && typeof bar === 'object' && 'getCenterPoint' in bar) {
             try {
-              const centerPoint = bar.getCenterPoint()
+              const centerPoint = (bar as { getCenterPoint: () => { x: number; y: number } }).getCenterPoint()
 
               ctx.save()
               ctx.translate(centerPoint.x, centerPoint.y)
@@ -671,7 +710,7 @@ const chartData = computed(() => {
         hoverBorderColor: borderColors,
         hoverBorderWidth: 3,
         borderRadius: 10,
-        borderSkipped: 'bottom',
+        borderSkipped: false,
         type: 'bar' as const,
         yAxisID: 'y',
         order: 2, // Barras ficam atrás
@@ -799,7 +838,7 @@ const chartOptions = computed(() => ({
   onHover: (_event: ChartEvent, elements: ActiveElement[]) => {
     try {
       if (elements && elements.length > 0) {
-        hoveredIndex.value = elements[0].index
+        hoveredIndex.value = elements[0]?.index ?? null
       } else {
         hoveredIndex.value = null
       }
