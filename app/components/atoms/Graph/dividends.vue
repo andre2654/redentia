@@ -34,7 +34,10 @@
     <!-- Gráfico de barras para dividendos -->
     <div class="relative" @mouseleave="hoveredIndex = null">
       <div class="relative h-[350px] w-full">
-        <div v-if="props.loading" class="absolute inset-0 flex items-center justify-center bg-black/20 rounded-lg">
+        <div
+          v-if="props.loading"
+          class="absolute inset-0 flex items-center justify-center rounded-lg bg-black/20"
+        >
           <span class="text-white">Carregando dividendos...</span>
         </div>
         <Bar
@@ -224,25 +227,27 @@ let cleanupEvents: (() => void) | null = null
 
 // Função para transformar dados da API no formato esperado
 const transformApiData = (apiData: ApiDividendData[]): DividendData[] => {
-  return apiData.map(item => {
-    const date = new Date(item.payment_date)
-    const day = date.getDate().toString().padStart(2, '0')
-    const month = (date.getMonth() + 1).toString().padStart(2, '0')
-    const year = date.getFullYear()
-    const shortYear = year.toString().slice(-2)
-    
-    return {
-      date: `${day}/${month}/${shortYear}`,
-      value: parseFloat(item.rate),
-      year: year
-    }
-  }).sort((a, b) => {
-    // Ordena por ano e depois por mês
-    if (a.year !== b.year) return a.year - b.year
-    const monthA = parseInt(a.date.split('/')[1] || '1')
-    const monthB = parseInt(b.date.split('/')[1] || '1')
-    return monthA - monthB
-  })
+  return apiData
+    .map((item) => {
+      const date = new Date(item.payment_date)
+      const day = date.getDate().toString().padStart(2, '0')
+      const month = (date.getMonth() + 1).toString().padStart(2, '0')
+      const year = date.getFullYear()
+      const shortYear = year.toString().slice(-2)
+
+      return {
+        date: `${day}/${month}/${shortYear}`,
+        value: parseFloat(item.rate),
+        year: year,
+      }
+    })
+    .sort((a, b) => {
+      // Ordena por ano e depois por mês
+      if (a.year !== b.year) return a.year - b.year
+      const monthA = parseInt(a.date.split('/')[1] || '1')
+      const monthB = parseInt(b.date.split('/')[1] || '1')
+      return monthA - monthB
+    })
 }
 
 // Gerador de dados de dividendos mock
@@ -485,7 +490,7 @@ const tooltipData = computed(() => {
 
   const item = displayData.value[hoveredIndex.value]
   if (!item) return null
-  
+
   const stockPrice = _getStockPrice(item.year)
   const dividendYield = (item.value / stockPrice) * 100
 
@@ -567,36 +572,41 @@ const predictionLabelPlugin = {
       // Obter dados de forma segura
       const currentData = displayData.value || []
 
-      meta.data.forEach(
-        (bar: unknown, index: number) => {
-          if (index >= currentData.length) return
+      meta.data.forEach((bar: unknown, index: number) => {
+        if (index >= currentData.length) return
 
-          const dataPoint = currentData[index]
-          if (dataPoint?.isPrediction && bar && typeof bar === 'object' && 'getCenterPoint' in bar) {
-            try {
-              const centerPoint = (bar as { getCenterPoint: () => { x: number; y: number } }).getCenterPoint()
+        const dataPoint = currentData[index]
+        if (
+          dataPoint?.isPrediction &&
+          bar &&
+          typeof bar === 'object' &&
+          'getCenterPoint' in bar
+        ) {
+          try {
+            const centerPoint = (
+              bar as { getCenterPoint: () => { x: number; y: number } }
+            ).getCenterPoint()
 
-              ctx.save()
-              ctx.translate(centerPoint.x, centerPoint.y)
+            ctx.save()
+            ctx.translate(centerPoint.x, centerPoint.y)
 
-              ctx.restore()
+            ctx.restore()
 
-              // Desenha o texto "PREV" abaixo do ícone
-              ctx.save()
-              ctx.translate(centerPoint.x, centerPoint.y + 40) // Move para baixo da barra
-              ctx.font = 'bold 10px Arial'
-              ctx.fillStyle = '#a7d6ff'
-              ctx.textAlign = 'center'
-              ctx.textBaseline = 'middle'
-              ctx.rotate(-Math.PI / 2)
-              ctx.fillText('PREV', 0, 0)
-              ctx.restore()
-            } catch {
-              // Ignora erros silenciosamente
-            }
+            // Desenha o texto "PREV" abaixo do ícone
+            ctx.save()
+            ctx.translate(centerPoint.x, centerPoint.y + 40) // Move para baixo da barra
+            ctx.font = 'bold 10px Arial'
+            ctx.fillStyle = '#a7d6ff'
+            ctx.textAlign = 'center'
+            ctx.textBaseline = 'middle'
+            ctx.rotate(-Math.PI / 2)
+            ctx.fillText('PREV', 0, 0)
+            ctx.restore()
+          } catch {
+            // Ignora erros silenciosamente
           }
         }
-      )
+      })
 
       ctx.restore()
     } catch {

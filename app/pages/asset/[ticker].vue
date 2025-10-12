@@ -206,7 +206,10 @@
 
     <!-- Dividends Chart -->
     <div class="flex flex-col gap-4 p-6">
-      <AtomsGraphDividends :data="dividendsData" :loading="isLoadingDividends" />
+      <AtomsGraphDividends
+        :data="dividendsData"
+        :loading="isLoadingDividends"
+      />
     </div>
 
     <!-- Asset docs -->
