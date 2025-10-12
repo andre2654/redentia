@@ -1,4 +1,4 @@
-import type { IAsset } from "~/types/asset"
+import type { IAsset, FundamentusApiResponse } from "~/types/asset"
 
 export const useAssetsService = () => {
   const { preventWithCache } = usePrevents()
@@ -73,10 +73,10 @@ export const useAssetsService = () => {
     return resp.data
   }
 
-  async function getTickerFundamentus(ticker: string) {
+  async function getTickerFundamentus(ticker: string): Promise<FundamentusApiResponse> {
     const url = `https://redentia-api.saraivada.com/api/fundamentals/${ticker}/overview`
     const resp = await preventWithCache(url, async () =>
-      await $fetch(url, { method: 'GET' })
+      await $fetch<FundamentusApiResponse>(url, { method: 'GET' })
     )
     return resp.data
   }
