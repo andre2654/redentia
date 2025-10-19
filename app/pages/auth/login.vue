@@ -83,7 +83,9 @@ async function onSubmit(_: FormSubmitEvent<Schema>) {
     showErrorNotification('Falha no login', message)
   }
 }
-
+onMounted(async () => {
+  await getCSRFToken()
+})
 definePageMeta({
   isPublicRoute: true,
   hideInstallAppBanner: true,

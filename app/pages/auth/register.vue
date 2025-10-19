@@ -232,8 +232,7 @@ async function onSubmit(_: FormSubmitEvent<Schema>) {
   }
 }
 onMounted(async () => {
-  const resp = await getCSRFToken()
-  console.log(resp.headers.getSetCookie())
+  await getCSRFToken()
 })
 definePageMeta({
   isPublicRoute: true,

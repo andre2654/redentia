@@ -30,6 +30,7 @@ export const useAuthService = () => {
     async function getCSRFToken() {
         const resp = await fetch(`https://redentia-api.saraivada.com/sanctum/csrf-cookie`, {
             method: 'GET',
+            credentials: 'include',
         })
         return resp
     }
@@ -41,6 +42,7 @@ export const useAuthService = () => {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
             },
+            credentials: 'include',
             body,
         })
         return resp
@@ -53,6 +55,7 @@ export const useAuthService = () => {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
             },
+            credentials: 'include',
             body,
         })
         return resp
