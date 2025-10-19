@@ -134,6 +134,7 @@ import type { FormSubmitEvent } from '@nuxt/ui'
 import { vMaska } from 'maska/vue'
 
 const { register, getCSRFToken } = useAuthService()
+const { getMe } = useProfileService()
 
 const passwordRequirements = [
   { regex: /.{8,}/, text: 'At least 8 characters' },
@@ -213,7 +214,6 @@ async function onSubmit(_: FormSubmitEvent<Schema>) {
       })
       cookie.value = resp.token
       const auth = useAuthStore()
-      const { getMe } = useProfileService()
       const profile = await getMe()
       auth.$patch({ me: profile })
       showSuccessNotification('Cadastro concluído', 'Bem-vindo!')

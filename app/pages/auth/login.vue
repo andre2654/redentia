@@ -48,6 +48,8 @@ import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
 
 const router = useRouter()
+const { login, getCSRFToken } = useAuthService()
+const { getMe } = useProfileService()
 
 const schema = z.object({
   login: z.string().min(3, 'Login obrigatório'),
@@ -63,7 +65,6 @@ const state = reactive({
 
 async function onSubmit(_: FormSubmitEvent<Schema>) {
   try {
-    const { login } = useAuthService()
     const resp = await login({ login: state.login, password: state.password })
     if (resp?.token) {
       const cookie = useCookie<string | null>('auth:token', {
@@ -71,7 +72,6 @@ async function onSubmit(_: FormSubmitEvent<Schema>) {
       })
       cookie.value = resp.token
       const auth = useAuthStore()
-      const { getMe } = useProfileService()
       const profile = await getMe()
       auth.$patch({ me: profile })
       showSuccessNotification('Login efetuado', 'Bem-vindo de volta!')
