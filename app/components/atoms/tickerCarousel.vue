@@ -42,6 +42,8 @@
 <script setup>
 import { ref, computed } from 'vue'
 
+const { getTopStocks, getTopETFs, getTopReits, getTopBDRs } = useAssetsService()
+
 defineProps({
   noControl: {
     type: Boolean,
@@ -51,25 +53,9 @@ defineProps({
 
 const isPaused = ref(false)
 
-const items = [
-  {
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/5/52/BB-logo1.jpg',
-    ticker: 'BBAS3',
-    change: '+21.01%',
-  },
-  {
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/5/52/BB-logo1.jpg',
-    ticker: 'BBAS3',
-    change: '+21.01%',
-  },
-  {
-    logo: 'https://upload.wikimedia.org/wikipedia/commons/5/52/BB-logo1.jpg',
-    ticker: 'BBAS3',
-    change: '+21.01%',
-  },
-]
+const items = ref([])
 
-const repeatedItems = computed(() => [...items, ...items, ...items])
+const repeatedItems = computed(() => [...items.value])
 
 const position = ref(0)
 const speed = 0.5
@@ -94,7 +80,13 @@ const loop = () => {
   animationFrame = requestAnimationFrame(loop)
 }
 
-onMounted(() => {
+onMounted(async () => {
+  const data = await getTopStocks('top', 100000)
+  items.value = data.map((asset) => ({
+    logo: asset.logo || '/default-logo.png',
+    ticker: asset.ticker,
+    change: `${asset.change_percent.toFixed(2)}%`,
+  }))
   animationFrame = requestAnimationFrame(loop)
 })
 

@@ -157,7 +157,7 @@ export interface FundamentusData {
     roe?: number // ROE
     roa?: number // ROA
     netMargin?: number // Margem Líquida
-    
+
     // Demonstrações financeiras
     cashFlow?: {
         operatingCashFlow?: number
@@ -165,7 +165,7 @@ export interface FundamentusData {
         financingCashFlow?: number
         freeCashFlow?: number
     }
-    
+
     balanceSheet?: {
         totalAssets?: number
         totalLiabilities?: number
@@ -175,7 +175,7 @@ export interface FundamentusData {
         longTermDebt?: number
         cash?: number
     }
-    
+
     incomeStatement?: {
         totalRevenue?: number
         grossProfit?: number
@@ -184,7 +184,7 @@ export interface FundamentusData {
         ebitda?: number
         operatingExpenses?: number
     }
-    
+
     // Outras métricas
     marketCap?: number
     enterpriseValue?: number
