@@ -16,7 +16,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
     // If authenticated but profile not loaded, try fetching it
     if (token) {
         try {
-            const { useAuthStore } = await import('~/stores/auth')
             const auth = useAuthStore()
             if (!auth.me) await auth.fetchProfile()
         } catch {

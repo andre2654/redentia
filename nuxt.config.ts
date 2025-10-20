@@ -57,6 +57,7 @@ export default defineNuxtConfig({
       title: 'Redentia',
       htmlAttrs: {
         lang: 'en',
+        class: 'dark'
       },
       viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
       charset: 'utf-8',
@@ -67,7 +68,8 @@ export default defineNuxtConfig({
         },
         { rel: 'icon', type: 'image/png', href: '/favicon.png' }
       ],
-    }
+    },
+
   },
   pwa: {
     registerType: 'autoUpdate',

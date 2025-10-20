@@ -1,10 +1,10 @@
 <template>
-  <div class="flex min-h-screen flex-col items-center justify-center gap-12">
-    <AtomsAuthHeader />
+  <NuxtLayout name="static" :title="false" :showLogo="false">
+    <AtomsAuthHeader class="mt-16" />
     <UForm
       :schema="schema"
       :state="state"
-      class="flex w-[335px] flex-col gap-2"
+      class="mx-auto mb-8 flex w-[335px] flex-col gap-2"
       @submit="onSubmit"
     >
       <h1 class="text-[13px] font-bold text-white/80">Login</h1>
@@ -40,7 +40,7 @@
         de idade
       </p>
     </UForm>
-  </div>
+  </NuxtLayout>
 </template>
 
 <script setup lang="ts">
@@ -48,8 +48,8 @@ import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
 
 const router = useRouter()
-const { login, getCSRFToken } = useAuthService()
-const { getMe } = useProfileService()
+const { login } = useAuthService()
+const authStore = useAuthStore()
 
 const schema = z.object({
   login: z.string().min(3, 'Login obrigatório'),
@@ -66,26 +66,20 @@ const state = reactive({
 async function onSubmit(_: FormSubmitEvent<Schema>) {
   try {
     const resp = await login({ login: state.login, password: state.password })
-    if (resp?.token) {
-      const cookie = useCookie<string | null>('auth:token', {
-        maxAge: 3600 * 24 * 30,
-      })
-      cookie.value = resp.token
-      const auth = useAuthStore()
-      const profile = await getMe()
-      auth.$patch({ me: profile })
+    if (resp.access_token) {
+      authStore.addToken(resp.access_token)
+      await authStore.fetchProfile()
       showSuccessNotification('Login efetuado', 'Bem-vindo de volta!')
       router.push('/')
     }
   } catch (e) {
+    console.log(e)
     const message =
-      e instanceof Error ? e.message : 'Verifique suas credenciais'
+      e instanceof Error ? e?.data?.message : 'Verifique suas credenciais'
     showErrorNotification('Falha no login', message)
   }
 }
-onMounted(async () => {
-  await getCSRFToken()
-})
+
 definePageMeta({
   isPublicRoute: true,
   hideInstallAppBanner: true,

@@ -1,10 +1,10 @@
 <template>
-  <div class="flex min-h-screen flex-col items-center justify-center gap-12">
-    <AtomsAuthHeader />
+  <NuxtLayout name="static" :title="false" :showLogo="false">
+    <AtomsAuthHeader class="mt-16" />
     <UForm
       :schema="schema"
       :state="state"
-      class="flex w-[335px] flex-col gap-2"
+      class="mx-auto mb-8 flex w-[335px] flex-col gap-2"
       @submit="onSubmit"
     >
       <h1 class="text-[13px] font-bold text-white/80">Registro</h1>
@@ -35,7 +35,7 @@
       <UFormField name="celular">
         <AtomsFormInput
           v-model="state.celular"
-          v-maska="'(##) # ####-####'"
+          v-maska="'+55 (##) # ####-####'"
           type="text"
           placeholder="Celular"
           size="lg"
@@ -125,7 +125,7 @@
         de idade
       </p>
     </UForm>
-  </div>
+  </NuxtLayout>
 </template>
 
 <script setup lang="ts">
@@ -133,8 +133,8 @@ import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
 import { vMaska } from 'maska/vue'
 
-const { register, getCSRFToken } = useAuthService()
-const { getMe } = useProfileService()
+const { register } = useAuthService()
+const authStore = useAuthStore()
 
 const passwordRequirements = [
   { regex: /.{8,}/, text: 'At least 8 characters' },
@@ -148,7 +148,7 @@ const schema = z
     name: z.string().min(2, 'Nome obrigatório'),
     login: z.string().min(3, 'Login obrigatório'),
     email: z.string().email('Invalid email'),
-    celular: z.string().min(8, 'Celular obrigatório'),
+    celular: z.string().min(20, 'Celular obrigatório'),
     password: z
       .string()
       .refine(
@@ -204,7 +204,7 @@ async function onSubmit(_: FormSubmitEvent<Schema>) {
       name: state.name,
       login: state.login,
       email: state.email,
-      celular: state.celular,
+      celular: '+' + state.celular.replace(/\D/g, ''),
       password: state.password,
       password_confirmation: state.password_confirmation,
     })
@@ -213,9 +213,7 @@ async function onSubmit(_: FormSubmitEvent<Schema>) {
         maxAge: 3600 * 24 * 30,
       })
       cookie.value = resp.token
-      const auth = useAuthStore()
-      const profile = await getMe()
-      auth.$patch({ me: profile })
+      await authStore.fetchProfile()
       showSuccessNotification('Cadastro concluído', 'Bem-vindo!')
       router.push('/')
     } else {
@@ -231,9 +229,7 @@ async function onSubmit(_: FormSubmitEvent<Schema>) {
     showErrorNotification('Falha no cadastro', message)
   }
 }
-onMounted(async () => {
-  await getCSRFToken()
-})
+
 definePageMeta({
   isPublicRoute: true,
   hideInstallAppBanner: true,

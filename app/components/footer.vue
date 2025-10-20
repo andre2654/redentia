@@ -38,7 +38,7 @@
           </NuxtLink>
         </div>
       </div>
-      <ClientOnly>
+      <!-- <ClientOnly>
         <UDropdownMenu :items="themeOptions" :ui="{ width: 'w-48' }">
           <UButton
             class="max-w-fit"
@@ -48,7 +48,7 @@
             :label="colorTheme.label"
           />
         </UDropdownMenu>
-      </ClientOnly>
+      </ClientOnly> -->
     </div>
   </div>
 </template>
