@@ -53,7 +53,7 @@
       <div class="flex flex-col gap-3">
         <MoleculesSearchAssets class="mx-auto" />
         <AtomsSidebarButton to="/" text="Visão Geral" />
-        <AtomsSidebarButton to="/wallet" text="Sua carteira" />
+        <AtomsSidebarButton to="/wallet" text="Sua carteira" disabled />
         <AtomsSidebarButton
           to="/planejador"
           text="Planejador de aportes"
@@ -61,7 +61,7 @@
           is-sub-item
         />
         <AtomsSidebarButton to="/ideal" text="Ideal" disabled is-sub-item />
-        <AtomsSidebarButton to="/dividends" text="Proventos" />
+        <AtomsSidebarButton to="/dividends" text="Proventos" disabled />
         <AtomsSidebarButton
           to="/calculadora"
           text="Calculadora inteligente"
@@ -98,7 +98,7 @@
     <NuxtLink
       to="/wallet"
       active-class="bg-white/20"
-      class="flex flex-col items-center rounded-full p-2"
+      class="flex flex-col items-center rounded-full p-2 pointer-events-none opacity-70"
     >
       <UIcon name="i-solar-wallet-bold" class="size-6" />
     </NuxtLink>
@@ -112,7 +112,7 @@
     <NuxtLink
       to="/dividends"
       active-class="bg-white/20"
-      class="flex flex-col items-center rounded-full p-2"
+      class="flex flex-col items-center rounded-full p-2 pointer-events-none opacity-70"
     >
       <UIcon name="i-mingcute-pig-money-fill" class="size-6" />
     </NuxtLink>
@@ -167,7 +167,7 @@
           <div class="flex flex-col gap-3">
             <MoleculesSearchAssets v-if="!hideSearchBar" />
             <AtomsSidebarButton to="/" text="Visão Geral" />
-            <AtomsSidebarButton to="/wallet" text="Sua carteira" />
+            <AtomsSidebarButton to="/wallet" text="Sua carteira" disabled />
             <AtomsSidebarButton
               to="/planejador"
               text="Planejador de aportes"
@@ -175,7 +175,7 @@
               is-sub-item
             />
             <AtomsSidebarButton to="/ideal" text="Ideal" disabled is-sub-item />
-            <AtomsSidebarButton to="/dividends" text="Proventos" />
+            <AtomsSidebarButton to="/dividends" text="Proventos" disabled />
             <AtomsSidebarButton
               to="/calculadora"
               text="Calculadora inteligente"

@@ -53,7 +53,7 @@ const authStore = useAuthStore()
 
 const schema = z.object({
   login: z.string().min(3, 'Login obrigatório'),
-  password: z.string().min(8, 'Password must be at least 8 characters long'),
+  password: z.string().min(8, 'Senha deve ter no mínimo 8 caracteres'),
 })
 
 type Schema = z.infer<typeof schema>

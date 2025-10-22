@@ -112,8 +112,7 @@ function getIndexFromEvt(chart: ChartJS, e: MouseEvent) {
 /* ========== Utils ========== */
 const overlayColor = computed(() => {
   // Verifica se está no tema dark através da classe no html ou body
-  const isDark = colorTheme.value.color === 'dark'
-  return isDark ? 'rgba(0, 0, 0, 0.6)' : 'rgba(255, 255, 255, 0.8)'
+  return 'rgba(0, 0, 0, 0.6)' 
 })
 
 function transparentize(hex: string, opacity: number) {

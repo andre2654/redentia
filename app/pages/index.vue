@@ -293,9 +293,48 @@
           <IconAi class="fill-secondary h-5" />
           <h2 class="text-lg font-semibold">Filtros inteligentes</h2>
         </div>
-        <div class="flex w-full gap-6 px-6 max-md:flex-col md:flex-wrap">
-          <NuxtLink to="/redentia/about" class="hover:underline">
-            Menores P/VP
+        <div class="flex w-full gap-3 px-6 max-md:flex-col md:flex-wrap">
+          <NuxtLink
+            :to="{ path: '/search', query: { p_max: 20 } }"
+            class="hover:underline"
+          >
+            Preço até R$ 20
+          </NuxtLink>
+          <NuxtLink
+            :to="{ path: '/search', query: { mc_max: 2000000000 } }"
+            class="hover:underline"
+          >
+            Small Caps (MC ≤ R$ 2 bi)
+          </NuxtLink>
+          <NuxtLink
+            :to="{ path: '/search', query: { ch_min: 0 } }"
+            class="hover:underline"
+          >
+            Alta no dia (> 0%)
+          </NuxtLink>
+          <NuxtLink
+            :to="{ path: '/search', query: { ch_max: 0 } }"
+            class="hover:underline"
+          >
+            Queda no dia (< 0%)
+          </NuxtLink>
+          <NuxtLink
+            :to="{ path: '/search', query: { stock: 0, bdr: 0 } }"
+            class="hover:underline"
+          >
+            Somente FIIs
+          </NuxtLink>
+          <NuxtLink
+            :to="{ path: '/search', query: { stock: 0, reit: 0 } }"
+            class="hover:underline"
+          >
+            Somente BDRs
+          </NuxtLink>
+          <NuxtLink
+            :to="{ path: '/search', query: { p_min: 10, p_max: 50 } }"
+            class="hover:underline"
+          >
+            Preço entre R$ 10 e R$ 50
           </NuxtLink>
         </div>
       </div>
@@ -349,10 +388,10 @@ onMounted(async () => {
     [topReits, bottomReits],
     [topBDRs, bottomBDRs],
   ] = await Promise.all([
-    Promise.all([getTopStocks('top', 100000), getTopStocks('bottom', 100000)]),
-    Promise.all([getTopETFs('top', 100000), getTopETFs('bottom', 100000)]),
-    Promise.all([getTopReits('top', 100000), getTopReits('bottom', 100000)]),
-    Promise.all([getTopBDRs('top', 100000), getTopBDRs('bottom', 100000)]),
+    Promise.all([getTopStocks('top', 1000000), getTopStocks('bottom', 1000000)]),
+    Promise.all([getTopETFs('top', 1000000), getTopETFs('bottom', 1000000)]),
+    Promise.all([getTopReits('top', 1000000), getTopReits('bottom', 1000000)]),
+    Promise.all([getTopBDRs('top', 1000000), getTopBDRs('bottom', 1000000)]),
   ])
 
   topAssets.value.top.stocks = topStocks

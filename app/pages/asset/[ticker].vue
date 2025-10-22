@@ -277,7 +277,7 @@
           >
             Fluxo de Caixa
           </h3>
-          <AtomsGraphCashFlow
+          <AtomsGraphCashFlowPro
             :data="transformedFundamentusData"
             :is-loading="isLoadingFundamentus"
           />
@@ -290,7 +290,7 @@
           >
             Balanço Patrimonial
           </h3>
-          <AtomsGraphBalance
+          <AtomsGraphBalancePro
             :data="transformedFundamentusData"
             :is-loading="isLoadingFundamentus"
           />
@@ -303,7 +303,7 @@
           >
             Demonstração de Resultados (DRE)
           </h3>
-          <AtomsGraphIncome
+          <AtomsGraphIncomePro
             :data="transformedFundamentusData"
             :is-loading="isLoadingFundamentus"
           />

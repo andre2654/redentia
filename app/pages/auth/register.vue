@@ -137,30 +137,30 @@ const { register } = useAuthService()
 const authStore = useAuthStore()
 
 const passwordRequirements = [
-  { regex: /.{8,}/, text: 'At least 8 characters' },
-  { regex: /\d/, text: 'At least 1 number' },
-  { regex: /[a-z]/, text: 'At least 1 lowercase letter' },
-  { regex: /[A-Z]/, text: 'At least 1 uppercase letter' },
+  { regex: /.{8,}/, text: 'Pelo menos 8 caracteres' },
+  { regex: /\d/, text: 'Ao menos 1 número' },
+  { regex: /[a-z]/, text: 'Ao menos 1 letra minúscula' },
+  { regex: /[A-Z]/, text: 'Ao menos 1 letra maiúscula' },
 ]
 
 const schema = z
   .object({
     name: z.string().min(2, 'Nome obrigatório'),
     login: z.string().min(3, 'Login obrigatório'),
-    email: z.string().email('Invalid email'),
+    email: z.string().email('Email inválido'),
     celular: z.string().min(20, 'Celular obrigatório'),
     password: z
       .string()
       .refine(
         (value) => passwordRequirements.every((req) => req.regex.test(value)),
         {
-          message: 'Password does not meet all requirements',
+          message: 'A senha não atende a todos os requisitos',
         }
       ),
     password_confirmation: z.string(),
   })
   .refine((data) => data.password === data.password_confirmation, {
-    message: 'Passwords must match',
+    message: 'As senhas devem ser iguais',
     path: ['password_confirmation'],
   })
 
@@ -190,10 +190,10 @@ const color = computed(() => {
 })
 
 const text = computed(() => {
-  if (score.value === 0) return 'Enter a password'
-  if (score.value <= 2) return 'Weak password'
-  if (score.value === 3) return 'Medium password'
-  return 'Strong password'
+  if (score.value === 0) return 'Digite uma senha'
+  if (score.value <= 2) return 'Senha fraca'
+  if (score.value === 3) return 'Senha média'
+  return 'Senha forte'
 })
 
 const router = useRouter()

@@ -1,14 +1,76 @@
 <template>
-  <NuxtLayout title="Visão geral" hide-search-bar>
+  <NuxtLayout title="Busca" hide-search-bar>
     <div class="flex h-full flex-col pb-8 pt-6">
       <div class="flex flex-col px-6">
-        <h2 class="text-[18px] font-bold">Ações e fundos imobiliarios</h2>
+        <h2 class="text-[18px] font-bold">Filtros avançados</h2>
         <p class="text-[13px] font-extralight">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer
           vulputate erat non massa tristique.
         </p>
       </div>
-      <MoleculesSearchAssets class="mt-4 rounded-none border-y py-4" />
+      <div class="px-6 py-2 mt-4">
+        <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
+          <div class="rounded-[12px] flex flex-col gap-2">
+            <div class="flex items-center justify-between text-[15px] font-semibold">
+              <span>Market Cap (R$)</span>
+            </div>
+            <span class="text-[11px] font-normal opacity-70">{{ formatCurrencyBRL(marketCapRange[0]) }} - {{ formatCurrencyBRL(marketCapRange[1]) }}</span>
+            <USlider v-model="marketCapRange" :min="minMax.mcMin" :max="minMax.mcMax" :step="minMax.mcStep" />
+          </div>
+
+          <div class="rounded-[12px] flex flex-col gap-2">
+            <div class="flex items-center justify-between text-[15px] font-semibold">
+              <span>Preço (R$)</span>
+            </div>
+            <span class="text-[11px] font-normal opacity-70">
+              <template v-if="!assetsLoading">{{ formatCurrencyBRL(priceRange[0]) }} - {{ formatCurrencyBRL(priceRange[1]) }}</template>
+              <template v-else>...</template>
+            </span>
+            <USlider v-model="priceRange" :min="minMax.priceMin" :max="minMax.priceMax" :step="0.01" :disabled="assetsLoading" />
+          </div>
+
+          <div class="rounded-[12px] flex flex-col gap-2">
+            <div class="flex items-center justify-between text-[15px] font-semibold">
+              <span>Variação (%)</span>
+            </div>
+            <span class="text-[11px] font-normal opacity-70">
+              <template v-if="!assetsLoading">{{ formatPercent(changeRange[0]) }} - {{ formatPercent(changeRange[1]) }}</template>
+              <template v-else>...</template>
+            </span>
+            <USlider v-model="changeRange" :min="minMax.changeMin" :max="minMax.changeMax" :step="0.1" :disabled="assetsLoading" />
+          </div>
+
+          <div class="rounded-[12px] flex flex-col gap-8">
+            <div class="text-[15px] font-semibold">Grupo</div>
+            <div class="flex flex-wrap items-center gap-3">
+              <UCheckbox v-model="showStock" label="Ação" :disabled="assetsLoading" />
+              <UCheckbox v-model="showReit" label="REIT" :disabled="assetsLoading" />
+              <UCheckbox v-model="showBdr" label="BDR" :disabled="assetsLoading" />
+            </div>
+          </div>
+        </div>
+      </div>
+        <div class="mt-4 rounded-none border-y py-4">
+        <AtomsFormInput
+          id="global-search-input"
+          v-model="globalFilter"
+          placeholder="Buscar ativos..."
+          size="lg"
+          variant="soft"
+          icon="i-lucide-search"
+          class="w-full"
+          :ui="{
+            base: 'bg-black border-none',
+          }"
+        >
+        <template #trailing>
+          <div class="flex items-center gap-2 max-lg:hidden">
+            <UKbd value="meta" variant="link" color="neutral" />
+            <UKbd value="K" variant="link" color="neutral" />
+          </div>
+        </template>
+        </AtomsFormInput>
+      </div>
       <UTable
         ref="table"
         v-model:sorting="sorting"
@@ -16,7 +78,7 @@
         v-model:expanded="expanded"
         v-model:global-filter="globalFilter"
         v-model:pagination="pagination"
-        :data="data"
+        :data="filteredData"
         :columns="columns"
         :pagination-options="{
           getPaginationRowModel: getPaginationRowModel(),
@@ -31,6 +93,7 @@
           th: 'whitespace-nowrap min-w-max bg-black/5 dark:bg-white/5',
         }"
         sticky
+        v-if="!assetsLoading"
       >
         <template #expanded="{ row }">
           <pre>{{ row.original }}</pre>
@@ -64,27 +127,24 @@
                 trailing-icon="i-lucide-ellipsis-vertical"
               />
             </UDropdownMenu>
-            <UPopover>
-              <UButton
-                color="neutral"
-                variant="link"
-                trailing-icon="i-lucide-search"
-              />
-              <template #content>
-                <AtomsFormInput
-                  v-model="globalFilter"
-                  placeholder="Search..."
-                  class="w-[200px]"
-                />
-              </template>
-            </UPopover>
+            <UButton
+              color="neutral"
+              variant="link"
+              trailing-icon="i-lucide-search"
+              @click="focusGlobalSearch"
+            />
           </div>
         </template>
       </UTable>
 
+      <!-- Skeleton enquanto carrega -->
+      <div v-else class="mt-4 space-y-2 px-6">
+        <USkeleton v-for="i in 6" :key="i" class="h-8 w-full rounded-md" />
+      </div>
+
       <!-- Paginação -->
       <div
-        v-if="data.length > 0"
+        v-if="!assetsLoading && data.length > 0"
         class="border-default mt-6 flex justify-center border-t pt-4"
       >
         <UPagination
@@ -106,9 +166,11 @@ import { getPaginationRowModel } from '@tanstack/vue-table'
 import { resolveComponent } from 'vue'
 
 const { getAssets } = useAssetsService()
+const router = useRouter()
 
 const allAssets = ref<IAsset[]>([])
 const data = ref<(IAsset & { mdi: string[] })[]>([])
+const assetsLoading = ref(true)
 
 const IconArrowFinanceUp = resolveComponent('IconArrowFinanceUp')
 const IconAI = resolveComponent('IconAi')
@@ -126,24 +188,166 @@ const sorting = ref([
 const columnVisibility = ref({})
 const expanded = ref({})
 
+function goToAsset(ticker: string) {
+  router.push(`/asset/${ticker}`)
+}
+
+defineShortcuts({
+  meta_k: () => {
+    focusGlobalSearch()
+  },
+})
+
+function focusGlobalSearch() {
+  const el = document.getElementById('global-search-input') as HTMLInputElement | null
+  el?.focus()
+}
+
+
 // Paginação usando TanStack Table
 const pagination = ref({
   pageIndex: 0,
   pageSize: 10,
 })
 
-onMounted(async () => {
-  allAssets.value = await getAssets()
-  // Adiciona o campo mdi mockado em cada asset
-  data.value = allAssets.value.map((asset) => ({
-    ...asset,
-    mdi: ['jan', 'mar'], // mock
-  }))
+// Filtros avançados controlados por URL
+const route = useRoute()
+// Sliders (ranges)
+const marketCapRange = ref<number[]>([0, 1_000_000_000_000])
+const priceRange = ref<number[]>([0, 1000])
+const changeRange = ref<number[]>([-20, 20])
+const minMax = {
+  mcMin: 0,
+  mcMax: 1_000_000_000_000,
+  mcStep: 1_000_000,
+  priceMin: 0,
+  priceMax: 1_000,
+  changeMin: -50,
+  changeMax: 50,
+}
+const showStock = ref(true)
+const showReit = ref(true)
+const showBdr = ref(true)
 
-  // Força uma atualização da paginação após carregar os dados
-  await nextTick()
-  if (table.value?.tableApi) {
-    table.value.tableApi.setPageIndex(0)
+function normalizeBool(v: unknown, def = true) {
+  if (v === undefined) return def
+  if (typeof v === 'boolean') return v
+  if (typeof v === 'string') return v === '1' || v.toLowerCase() === 'true'
+  return def
+}
+
+function readFiltersFromUrl() {
+  const q = route.query
+  const toNum = (v: unknown, fallback: number) => {
+    const n = typeof v === 'string' || typeof v === 'number' ? Number(v) : NaN
+    return Number.isFinite(n) ? n : fallback
+  }
+  marketCapRange.value = [
+    toNum(q.mc_min, minMax.mcMin),
+    toNum(q.mc_max, minMax.mcMax),
+  ]
+  priceRange.value = [
+    toNum(q.p_min, minMax.priceMin),
+    toNum(q.p_max, minMax.priceMax),
+  ]
+  changeRange.value = [
+    toNum(q.ch_min, minMax.changeMin),
+    toNum(q.ch_max, minMax.changeMax),
+  ]
+  showStock.value = normalizeBool(q.stock, true)
+  showReit.value = normalizeBool(q.reit, true)
+  showBdr.value = normalizeBool(q.bdr, true)
+}
+
+function buildQueryFromFilters() {
+  const q: Record<string, any> = {}
+  if (marketCapRange.value?.length === 2) {
+    const [a, b] = marketCapRange.value
+    if (a > minMax.mcMin) q.mc_min = a
+    if (b < minMax.mcMax) q.mc_max = b
+  }
+  if (priceRange.value?.length === 2) {
+    const [a, b] = priceRange.value
+    if (a > minMax.priceMin) q.p_min = a
+    if (b < minMax.priceMax) q.p_max = b
+  }
+  if (changeRange.value?.length === 2) {
+    const [a, b] = changeRange.value
+    if (a > minMax.changeMin) q.ch_min = a
+    if (b < minMax.changeMax) q.ch_max = b
+  }
+  if (!showStock.value) q.stock = '0'
+  if (!showReit.value) q.reit = '0'
+  if (!showBdr.value) q.bdr = '0'
+  return q
+}
+
+// Dados filtrados
+const filteredData = computed(() => {
+  if (assetsLoading.value) return []
+  const allowedTypes = new Set<string>([
+    ...(showStock.value ? ['stock', 'STOCK'] : []),
+    ...(showReit.value ? ['reit', 'REIT'] : []),
+    ...(showBdr.value ? ['bdr', 'BDR'] : []),
+  ])
+
+  const toNum = (v: unknown) => {
+    const n = Number(v)
+    return Number.isFinite(n) ? n : undefined
+  }
+
+  const mcMin = marketCapRange.value?.[0]
+  const mcMax = marketCapRange.value?.[1]
+  const prMin = priceRange.value?.[0]
+  const prMax = priceRange.value?.[1]
+  const chMin = changeRange.value?.[0]
+  const chMax = changeRange.value?.[1]
+
+  return data.value.filter((it) => {
+    // tipo
+    const t = (it.type || '').toString()
+    if (allowedTypes.size && !allowedTypes.has(t)) return false
+    // market cap
+    if (mcMin !== undefined && it.market_cap < mcMin) return false
+    if (mcMax !== undefined && it.market_cap > mcMax) return false
+    // preço atual
+    const price = it.market_price ?? it.close
+    if (prMin !== undefined && price < prMin) return false
+    if (prMax !== undefined && price > prMax) return false
+    // variação percentual
+    const change = it.change_percent ?? it.change
+    if (chMin !== undefined && change < chMin) return false
+    if (chMax !== undefined && change > chMax) return false
+    return true
+  })
+})
+
+function formatCurrencyBRL(n: number) {
+  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(n || 0)
+}
+function formatPercent(n: number) {
+  const num = Number(n || 0)
+  return `${num.toFixed(1)}%`
+}
+onMounted(async () => {
+  assetsLoading.value = true
+  try {
+    allAssets.value = await getAssets()
+    // Adiciona o campo mdi mockado em cada asset
+    data.value = allAssets.value.map((asset) => ({
+      ...asset,
+      mdi: ['jan', 'mar'], // mock
+    }))
+
+    // Força uma atualização da paginação após carregar os dados
+    await nextTick()
+    if (table.value?.tableApi) {
+      table.value.tableApi.setPageIndex(0)
+    }
+    // Lê filtros da URL ao montar
+    readFiltersFromUrl()
+  } finally {
+    assetsLoading.value = false
   }
 })
 
@@ -227,7 +431,7 @@ const columns = ref([
       return getHeader(column, 'Ticker')
     },
     cell: ({ row }) => {
-      return h('div', { class: 'flex items-center gap-2' }, [
+      return h('div', { class: 'flex items-center gap-2 cursor-pointer', onClick: () => goToAsset(row.original.ticker) }, [
         h('img', {
           src: row.original.logo,
           class: 'pointer-events-none h-6 w-6 select-none rounded object-cover',
@@ -242,7 +446,7 @@ const columns = ref([
       return getHeader(column, 'Nome')
     },
     cell: ({ row }) => {
-      return h('span', { class: 'text-[12px] opacity-70' }, row.original.name)
+      return h('span', { class: 'text-[12px] opacity-70 cursor-pointer', onClick: () => goToAsset(row.original.ticker) }, row.original.name)
     },
   },
   {
@@ -253,7 +457,7 @@ const columns = ref([
     cell: ({ row }) => {
       return h(
         'span',
-        { class: 'text-[14px]' },
+        { class: 'text-[14px] cursor-pointer', onClick: () => goToAsset(row.original.ticker) },
         new Intl.NumberFormat('pt-BR', {
           style: 'currency',
           currency: 'BRL',
@@ -270,7 +474,7 @@ const columns = ref([
     cell: ({ row }) => {
       return h(
         'span',
-        { class: 'text-[14px]' },
+        { class: 'text-[14px] cursor-pointer', onClick: () => goToAsset(row.original.ticker) },
         new Intl.NumberFormat('pt-BR', {
           style: 'currency',
           currency: 'BRL',
@@ -285,7 +489,7 @@ const columns = ref([
     },
     cell: ({ row }) => {
       const change_percent = row.original.change_percent
-      return h('div', { class: 'flex items-center gap-2' }, [
+      return h('div', { class: 'flex items-center gap-2 cursor-pointer', onClick: () => goToAsset(row.original.ticker) }, [
         h(IconArrowFinanceUp, {
           class: `w-4 ${change_percent >= 0 ? 'fill-primary' : 'fill-red-500 rotate-180'}`,
         }),
@@ -306,7 +510,11 @@ const columns = ref([
       return h(
         'div',
         {
-          class: 'flex items-center gap-2',
+          class: 'flex items-center gap-2 cursor-pointer',
+          onClick: () => {
+            const row: any = _row
+            goToAsset(row?.original?.ticker || '')
+          }
         },
         [
           h(IconAI, {
