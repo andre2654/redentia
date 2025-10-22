@@ -20,9 +20,9 @@
 
     <div class="flex w-[400px] items-center justify-between px-6">
       <div class="flex items-center gap-3">
-        <UAvatar :alt="authStore.me?.user?.name || 'Usuário'" size="xl" />
+        <UAvatar :alt="authStore.me?.name || 'Usuário'" size="xl" />
         <div class="flex flex-col">
-          <div class="text-[16px]">{{ authStore.me?.user?.name || 'Usuário' }}</div>
+          <div class="text-[16px]">{{ authStore.me?.name || 'Usuário' }}</div>
           <span class="text-[14px] text-gray-400">Plano gratuito</span>
         </div>
       </div>
@@ -96,7 +96,7 @@
     class="bg-tertiary/90 border-t-tertiary fixed bottom-0 z-10 flex w-full items-center justify-between gap-8 border-t px-3 py-3 text-white backdrop-blur xl:hidden"
   >
     <UAvatar
-      :alt="authStore.me?.user?.name || 'Usuário'"
+      :alt="authStore.me?.name || 'Usuário'"
       size="sm"
       class="ring-tertiary rounded-full ring-2"
       @click="menuMobileActive = true"
@@ -142,9 +142,9 @@
       >
         <div class="flex items-center justify-between px-6">
           <div class="flex items-center gap-3">
-            <UAvatar :alt="authStore.me?.user?.name || 'Usuário'" size="xl" />
+            <UAvatar :alt="authStore.me?.name || 'Usuário'" size="xl" />
             <div class="flex flex-col">
-              <div class="text-[15px]">{{ authStore.me?.user?.name || 'Usuário' }}</div>
+              <div class="text-[15px]">{{ authStore.me?.name || 'Usuário' }}</div>
               <span class="-mt-1 text-[12px] text-gray-400"
                 >Plano gratuito</span
               >
