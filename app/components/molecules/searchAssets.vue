@@ -28,16 +28,20 @@
         :ui="{
           item: 'space-y-1',
         }"
+        @update:model-value="onSelect"
       >
         <template #footer>
           <div class="flex w-full flex-col items-center gap-3">
-            <NuxtLink
+            <UButton
               to="/search"
-              class="flex items-center gap-3 text-sm underline hover:opacity-70"
+              color="secondary"
+              variant="solid"
+              size="lg"
+              icon="i-lucide-search"
+              :ui="{ base: 'w-full justify-center', label: 'text-[14px]' }"
             >
-              <UIcon name="i-lucide-search" class="h-4 w-4" />
-              <span>Ou acesse a busca avançada clicando aqui</span>
-            </NuxtLink>
+              Acessar busca avançada
+            </UButton>
             <!-- <AtomsTickerCarousel class="w-full" no-control /> -->
           </div>
         </template>
@@ -59,25 +63,19 @@ defineShortcuts({
   },
 })
 
-async function fetchAcoesFiis(q: string): Promise<IAsset[]> {
-  const allData: IAsset[] = await getAssets()
-
-  return allData.filter(
-    (item) =>
-      item.ticker.toLowerCase().includes(q.toLowerCase()) ||
-      item.name.toLowerCase().includes(q.toLowerCase())
-  )
-}
-
 const { data: ativos, status } = await useAsyncData(
   'assets',
-  () => fetchAcoesFiis(searchTerm.value),
+  () => getAssets(),
   {
-    watch: [searchTerm],
     immediate: true,
     default: () => [],
   }
 )
+
+function onSelect() {
+  searchTerm.value = ''
+  open.value = false
+}
 
 const groups = computed(() => {
   const acaoItems =
@@ -129,25 +127,21 @@ const groups = computed(() => {
       id: 'stocks',
       label: 'Ações',
       items: acaoItems,
-      ignoreFilter: true,
     },
     {
       id: 'funds',
       label: 'FIIs',
       items: fiiItems,
-      ignoreFilter: true,
     },
     {
       id: 'bdrs',
       label: 'BDRs',
       items: bdrItems,
-      ignoreFilter: true,
     },
     {
       id: 'reits',
       label: 'REITs',
       items: reitItems,
-      ignoreFilter: true,
     },
   ]
 })
