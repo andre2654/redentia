@@ -20,9 +20,9 @@
 
     <div class="flex w-[400px] items-center justify-between px-6">
       <div class="flex items-center gap-3">
-        <UAvatar alt="Benjamin Canac" size="xl" />
+        <UAvatar :alt="authStore.me?.user?.name || 'Usuário'" size="xl" />
         <div class="flex flex-col">
-          <div class="text-[16px]">André Saraiva</div>
+          <div class="text-[16px]">{{ authStore.me?.user?.name || 'Usuário' }}</div>
           <span class="text-[14px] text-gray-400">Plano gratuito</span>
         </div>
       </div>
@@ -46,6 +46,13 @@
           :ui="{
             trailingIcon: 'size-7',
           }"
+        />
+        <UButton
+          color="neutral"
+          variant="link"
+          trailing-icon="i-lucide-log-out"
+          :ui="{ trailingIcon: 'size-7' }"
+          @click="makeLogout"
         />
       </div>
     </div>
@@ -89,7 +96,7 @@
     class="bg-tertiary/90 border-t-tertiary fixed bottom-0 z-10 flex w-full items-center justify-between gap-8 border-t px-3 py-3 text-white backdrop-blur xl:hidden"
   >
     <UAvatar
-      alt="Benjamin Canac"
+      :alt="authStore.me?.user?.name || 'Usuário'"
       size="sm"
       class="ring-tertiary rounded-full ring-2"
       @click="menuMobileActive = true"
@@ -135,9 +142,9 @@
       >
         <div class="flex items-center justify-between px-6">
           <div class="flex items-center gap-3">
-            <UAvatar alt="Benjamin Canac" size="xl" />
+            <UAvatar :alt="authStore.me?.user?.name || 'Usuário'" size="xl" />
             <div class="flex flex-col">
-              <div class="text-[15px]">André Saraiva</div>
+              <div class="text-[15px]">{{ authStore.me?.user?.name || 'Usuário' }}</div>
               <span class="-mt-1 text-[12px] text-gray-400"
                 >Plano gratuito</span
               >
@@ -160,6 +167,12 @@
               variant="link"
               trailing-icon="i-lucide-cog"
             />
+              <UButton
+                color="neutral"
+                variant="link"
+                trailing-icon="i-lucide-log-out"
+                @click="makeLogout"
+              />
           </div>
         </div>
 
@@ -243,6 +256,8 @@ defineProps({
 
 const allAttrs = useAttrs()
 const interfaceStore = useInterfaceStore()
+const authStore = useAuthStore()
+const router = useRouter()
 
 const menuMobileActive = ref(false)
 
@@ -257,4 +272,9 @@ const headerProps = Object.fromEntries(
     .filter(([k]) => k.startsWith('header-'))
     .map(([k, v]) => [k.replace('header-', ''), v])
 )
+
+async function makeLogout() {
+  await authStore.logout()
+  router.push('/auth/login')
+}
 </script>

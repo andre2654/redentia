@@ -11,21 +11,43 @@ export const useAuthStore = defineStore('auth', {
     }
   },
   getters: {
-    isAuthenticated: () => !!this.token,
+    isAuthenticated() {
+      return !!this.token
+    },
   },
   actions: {
     async fetchProfile() {
       const { me } = useAuthService()
 
-      const profile = await me()
-      this.me = profile as unknown as IProfile
+      // API returns: { me: { user: {...} }, token: string }
+      const response = await me() as unknown as { data?: any, me?: { user: IProfile }, token?: string }
+      const apiPayload = (response as any)?.data ?? response
+      const user = apiPayload?.me?.user ?? apiPayload?.user ?? apiPayload
+      const token = apiPayload?.token
+
+      if (user && user.name) {
+        this.me = {
+          id: String((user as any).id ?? ''),
+          name: (user as any).name,
+          email: (user as any).email ?? '',
+        }
+      }
+
+      if (token) {
+        this.addToken(token)
+      }
       return this.me
     },
     async logout() {
-      const { logout } = useAuthService()
-
-      await logout()
-      this.clearAuthData()
+      try {
+        const { logout } = useAuthService()
+  
+        await logout()
+      } catch (error) {
+        console.error(error)
+      } finally {
+        this.clearAuthData()
+      }
     },
     addToken(token: string) {
       const cookie = useCookie<string | null>('auth:token', {
