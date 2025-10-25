@@ -163,48 +163,166 @@ async function trySend() {
   internalMessages.value = [...internalMessages.value, userMsg]
   inputValue.value = ''
 
-  // Chama IA
-  isLoading.value = true
-  try {
-    const resp: any = await $fetch(
-      'https://n8n.saraivada.com/webhook/redentia-assessor',
-      {
-        method: 'POST',
-        body: {
-          message: text,
-          route: props.routePath,
-        },
-        timeout: 600000,
-      }
-    )
+  // Streaming IA
+  startStreamingRequest(text)
+}
 
-    const botText = (resp && resp.output.message) || 'Não consegui gerar uma resposta agora.'
-    const botMsg: IChatMessage = {
-      id: uuid(),
-      content: botText,
-      type: 'bot',
-      timestamp: new Date(),
-      actions: Array.isArray(resp.output?.actions) ? resp.output.actions : undefined,
-    }
-    internalMessages.value = [...internalMessages.value, botMsg]
-    // Futuro: resp.actions pode virar botões de ação
-  } catch (e) {
-    const botMsg: IChatMessage = {
-      id: uuid(),
-      content: 'Ocorreu um erro ao contactar a assessoria. Tente novamente.',
-      type: 'bot',
-      timestamp: new Date(),
-    }
-    internalMessages.value = [...internalMessages.value, botMsg]
-  } finally {
-    isLoading.value = false
-    nextTick(() => {
-      try {
-        const el = document.scrollingElement || document.documentElement
-        el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
-      } catch {}
-    })
+async function startStreamingRequest(prompt: string) {
+  isLoading.value = true
+  // Mensagem placeholder do bot para preencher progressivamente
+  const botId = uuid()
+  const placeholder: IChatMessage = {
+    id: botId,
+    content: '',
+    type: 'bot',
+    timestamp: new Date(),
   }
+  internalMessages.value = [...internalMessages.value, placeholder]
+
+  const controller = new AbortController()
+  const to = setTimeout(() => controller.abort('timeout'), 600000)
+  let buffer = ''
+  let builtJsonText = ''
+
+  try {
+    const res = await fetch('https://n8n.saraivada.com/webhook-test/redentia-assessor', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ message: prompt, route: props.routePath }),
+      signal: controller.signal,
+    })
+    if (!res.body) throw new Error('Resposta sem stream')
+    const reader = res.body.getReader()
+    const decoder = new TextDecoder()
+
+    while (true) {
+      const { value, done } = await reader.read()
+      if (done) break
+      const chunk = decoder.decode(value, { stream: true })
+      buffer += chunk
+
+      const { objects, rest } = extractJsonObjects(buffer)
+      buffer = rest
+      for (const objStr of objects) {
+        try {
+          const evt = JSON.parse(objStr)
+          if (evt?.type === 'item' && typeof evt.content === 'string') {
+            builtJsonText += evt.content
+            const partialMsg = extractMessageFromPartialJson(builtJsonText)
+            if (partialMsg && partialMsg.length > 0) {
+              isLoading.value = false
+              updateBotMessage(botId, { content: partialMsg })
+            }
+          } else if (evt?.type === 'end') {
+            // Tenta fechar e parsear o JSON final
+            try {
+              const final = JSON.parse(builtJsonText)
+              const msg = final?.message || extractMessageFromPartialJson(builtJsonText) || 'Não consegui gerar uma resposta agora.'
+              const actions = Array.isArray(final?.actions) ? final.actions : undefined
+              updateBotMessage(botId, { content: msg, actions })
+            } catch {
+              const fallback = extractMessageFromPartialJson(builtJsonText) || 'Não consegui gerar uma resposta agora.'
+              updateBotMessage(botId, { content: fallback })
+            }
+          }
+        } catch {
+          // ignora objetos inválidos
+        }
+      }
+      // Scroll suave conforme chegam chunks
+      nextTick(() => {
+        try {
+          const el = document.scrollingElement || document.documentElement
+          el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
+        } catch {}
+      })
+    }
+  } catch (e) {
+    updateBotMessage(botId, {
+      content: 'Ocorreu um erro ao contactar a assessoria. Tente novamente.',
+    })
+  } finally {
+    clearTimeout(to)
+    isLoading.value = false
+  }
+}
+
+function updateBotMessage(id: string, data: Partial<IChatMessage>) {
+  internalMessages.value = internalMessages.value.map((m) =>
+    m.id === id ? { ...m, ...data } : m
+  )
+}
+
+function extractJsonObjects(input: string): { objects: string[]; rest: string } {
+  const objs: string[] = []
+  let rest = input
+  let start = -1
+  let depth = 0
+  let inStr = false
+  let escape = false
+  for (let i = 0; i < input.length; i++) {
+    const ch = input[i]
+    if (inStr) {
+      if (escape) {
+        escape = false
+      } else if (ch === '\\') {
+        escape = true
+      } else if (ch === '"') {
+        inStr = false
+      }
+      continue
+    }
+    if (ch === '"') {
+      inStr = true
+      continue
+    }
+    if (ch === '{') {
+      if (depth === 0) start = i
+      depth++
+    } else if (ch === '}') {
+      depth--
+      if (depth === 0 && start !== -1) {
+        objs.push(input.slice(start, i + 1))
+        // Prepare para próximo objeto
+        rest = input.slice(i + 1)
+        // Reinicia busca no restante
+        return { objects: objs, rest }
+      }
+    }
+  }
+  return { objects: objs, rest }
+}
+
+function extractMessageFromPartialJson(s: string): string | undefined {
+  // Tenta parsear o JSON completo primeiro
+  try {
+    const obj = JSON.parse(s)
+    if (obj && typeof obj.message === 'string') return obj.message
+  } catch {}
+  // Fallback heurístico: extrai o valor de "message":"..."
+  const idx = s.indexOf('"message"')
+  if (idx === -1) return undefined
+  let i = s.indexOf('"', idx + 9)
+  if (i === -1) return undefined
+  // encontra a próxima aspa após os dois pontos
+  i = s.indexOf('"', i + 1)
+  if (i === -1) return undefined
+  let j = i + 1
+  let inEsc = false
+  for (; j < s.length; j++) {
+    const ch = s[j]
+    if (inEsc) {
+      inEsc = false
+      continue
+    }
+    if (ch === '\\') inEsc = true
+    else if (ch === '"') break
+  }
+  if (j >= s.length) return undefined
+  const raw = s.slice(i + 1, j)
+  return raw.replace(/\\n/g, '\n').replace(/\\"/g, '"')
 }
 
 function onActionClick(text: string) {
