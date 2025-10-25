@@ -14,6 +14,7 @@
             size="md"
             color="neutral"
             variant="soft"
+            @click="onSendSuggestion(suggestion)"
           >
             {{ suggestion }}
           </button>
@@ -23,8 +24,24 @@
 
     <!-- Chat content -->
     <div class="flex w-full flex-col gap-3">
-      <div v-for="message in messages" :key="message.id">
-        <AtomsChatMessage :message="message" />
+      <div v-for="message in internalMessages" :key="message.id">
+        <AtomsChatMessage :message="message" @action="onActionClick" />
+      </div>
+
+      <!-- Loading bubble -->
+      <div v-if="isLoading" class="flex w-fit flex-col gap-2 px-[30px] mr-auto items-start">
+        <div class="flex items-center gap-2">
+          <IconLogo class="w-6 fill-white" />
+          <span class="text-[17px] font-semibold">ASSESSORIA REDENTIA:</span>
+        </div>
+        <div class="rounded-lg border border-white/20 bg-white/10 py-3 pl-4 pr-7">
+          <span class="inline-flex items-center gap-1">
+            <span class="dot" />
+            <span class="dot" />
+            <span class="dot" />
+          </span>
+        </div>
+        <small class="text-xs text-white/60">digitando…</small>
       </div>
     </div>
 
@@ -39,7 +56,9 @@
         :ui="{
           base: 'text-[14px] max-h-[200px] bg-transparent ring-0 placeholder:text-black/40 dark:placeholder:text-white/40',
         }"
+        v-model="inputValue"
         autoresize
+        @keydown.enter.prevent="trySend()"
       />
 
       <AtomsButton
@@ -52,22 +71,19 @@
           leadingIcon: 'text-[#999595] w-6 h-6 -ml-2',
         }"
         icon="i-heroicons-outline-arrow-sm-right"
+        @click="trySend()"
       />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-interface IChatMessage {
-  id: string
-  content: string
-  type: 'user' | 'bot'
-  timestamp: Date
-}
+import type { IChatMessage } from '~/types/ai'
 
-defineProps<{
+const props = defineProps<{
   suggestions?: string[]
   messages?: IChatMessage[]
+  routePath: '/help' | '/ticker'
 }>()
 
 const allAttrs = useAttrs()
@@ -77,4 +93,140 @@ const textareaContainerProps = Object.fromEntries(
     .filter(([k]) => k.startsWith('textarea-container-'))
     .map(([k, v]) => [k.replace('textarea-container-', ''), v])
 )
+
+const inputValue = ref('')
+const isLoading = ref(false)
+const internalMessages = ref<IChatMessage[]>([])
+const CHAT_HELP_STORAGE_KEY = 'redentia_chat_help'
+
+onMounted(() => {
+  // Carrega do cache apenas no /help
+  if (props.routePath === '/help') {
+    try {
+      const raw = localStorage.getItem(CHAT_HELP_STORAGE_KEY)
+      if (raw) {
+        const parsed: any[] = JSON.parse(raw)
+        internalMessages.value = parsed.map((m) => ({
+          ...m,
+          timestamp: new Date(m.timestamp),
+        }))
+      } else if (props.messages?.length) {
+        internalMessages.value = props.messages
+      }
+    } catch {
+      internalMessages.value = props.messages || []
+    }
+  } else {
+    internalMessages.value = props.messages || []
+  }
+})
+
+watch(
+  internalMessages,
+  (val) => {
+    if (props.routePath === '/help') {
+      try {
+        localStorage.setItem(
+          CHAT_HELP_STORAGE_KEY,
+          JSON.stringify(val)
+        )
+      } catch {}
+    }
+  },
+  { deep: true }
+)
+
+function uuid() {
+  try {
+    return crypto.randomUUID()
+  } catch {
+    return `${Date.now()}-${Math.random().toString(16).slice(2)}`
+  }
+}
+
+function onSendSuggestion(text: string) {
+  inputValue.value = text
+  trySend()
+}
+
+async function trySend() {
+  const text = (inputValue.value || '').trim()
+  if (!text || isLoading.value) return
+
+  // Adiciona mensagem do usuário
+  const userMsg: IChatMessage = {
+    id: uuid(),
+    content: text,
+    type: 'user',
+    timestamp: new Date(),
+  }
+  internalMessages.value = [...internalMessages.value, userMsg]
+  inputValue.value = ''
+
+  // Chama IA
+  isLoading.value = true
+  try {
+    const resp: any = await $fetch(
+      'https://n8n.saraivada.com/webhook/redentia-assessor',
+      {
+        method: 'POST',
+        body: {
+          message: text,
+          route: props.routePath,
+        },
+        timeout: 600000,
+      }
+    )
+
+    const botText = (resp && resp.output.message) || 'Não consegui gerar uma resposta agora.'
+    const botMsg: IChatMessage = {
+      id: uuid(),
+      content: botText,
+      type: 'bot',
+      timestamp: new Date(),
+      actions: Array.isArray(resp.output?.actions) ? resp.output.actions : undefined,
+    }
+    internalMessages.value = [...internalMessages.value, botMsg]
+    // Futuro: resp.actions pode virar botões de ação
+  } catch (e) {
+    const botMsg: IChatMessage = {
+      id: uuid(),
+      content: 'Ocorreu um erro ao contactar a assessoria. Tente novamente.',
+      type: 'bot',
+      timestamp: new Date(),
+    }
+    internalMessages.value = [...internalMessages.value, botMsg]
+  } finally {
+    isLoading.value = false
+    nextTick(() => {
+      try {
+        const el = document.scrollingElement || document.documentElement
+        el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
+      } catch {}
+    })
+  }
+}
+
+function onActionClick(text: string) {
+  inputValue.value = text
+  trySend()
+}
 </script>
+
+<style scoped>
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.8);
+  animation: blink 1.4s infinite both;
+}
+.dot:nth-child(2) { animation-delay: 0.2s; }
+.dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes blink {
+  0%, 80%, 100% { opacity: 0; }
+  40% { opacity: 1; }
+}
+</style>

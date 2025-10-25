@@ -3,4 +3,5 @@ export interface IChatMessage {
   content: string
   type: 'user' | 'bot'
   timestamp: Date
+  actions?: string[]
 }

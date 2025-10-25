@@ -403,7 +403,7 @@
       </div>
     </div>
 
-    <MoleculesChat class="w-full bg-black/10 dark:bg-white/10" />
+    <MoleculesChat class="w-full bg-black/10 dark:bg-white/10" routePath="/ticker" />
   </NuxtLayout>
 </template>
 

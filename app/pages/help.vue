@@ -10,6 +10,7 @@
         ]"
         textarea-container-class="bg-gray-200"
         :messages="messages"
+        routePath="/help"
       />
     </div>
   </NuxtLayout>
@@ -21,25 +22,6 @@ const messages = ref<IChatMessage[]>([
     id: '1',
     content: 'Olá, como posso ajudar você hoje?',
     type: 'bot',
-    timestamp: new Date(),
-  },
-  {
-    id: '2',
-    content: 'Estou interessado em ações de tecnologia.',
-    type: 'user',
-    timestamp: new Date(),
-  },
-  {
-    id: '3',
-    content:
-      'Posso sugerir uma carteira inicial diversificada e indicar métricas para acompanhar: preço, variação no dia, valor de mercado e dividendos. Se quiser, envio filtros prontos para o seu perfil.',
-    type: 'bot',
-    timestamp: new Date(),
-  },
-  {
-    id: '4',
-    content: 'Obrigado! Vou analisar essas opções.',
-    type: 'user',
     timestamp: new Date(),
   },
 ])

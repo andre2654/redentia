@@ -18,6 +18,16 @@
     >
       {{ message.content }}
     </p>
+    <div v-if="message.type === 'bot' && message.actions?.length" class="flex flex-wrap gap-2">
+      <button
+        v-for="(act, i) in message.actions"
+        :key="i"
+        class="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[12px] hover:bg-white/20"
+        @click="$emit('action', act)"
+      >
+        {{ act }}
+      </button>
+    </div>
     <small class="text-xs text-white/60">
       {{ new Date(message.timestamp).toLocaleTimeString() }}
     </small>
@@ -28,5 +38,8 @@
 import type { IChatMessage } from '~/types/ai'
 defineProps<{
   message?: IChatMessage
+}>()
+defineEmits<{
+  (e: 'action', payload: string): void
 }>()
 </script>
