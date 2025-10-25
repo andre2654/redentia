@@ -169,7 +169,7 @@ async function trySend() {
 
 async function startStreamingRequest(prompt: string) {
   isLoading.value = true
-  // Mensagem placeholder do bot para preencher progressivamente
+  
   const botId = uuid()
   const placeholder: IChatMessage = {
     id: botId,
@@ -180,12 +180,10 @@ async function startStreamingRequest(prompt: string) {
   internalMessages.value = [...internalMessages.value, placeholder]
 
   const controller = new AbortController()
-  const to = setTimeout(() => controller.abort('timeout'), 600000)
-  let buffer = ''
-  let builtJsonText = ''
+  const timeout = setTimeout(() => controller.abort('timeout'), 600000)
 
   try {
-    const res = await fetch('https://n8n.saraivada.com/webhook-test/redentia-assessor', {
+    const res = await fetch('https://n8n.saraivada.com/webhook/redentia-assessor', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -193,60 +191,122 @@ async function startStreamingRequest(prompt: string) {
       body: JSON.stringify({ message: prompt, route: props.routePath }),
       signal: controller.signal,
     })
-    if (!res.body) throw new Error('Resposta sem stream')
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`)
+    }
+
+    if (!res.body) {
+      throw new Error('Resposta sem stream')
+    }
+
     const reader = res.body.getReader()
     const decoder = new TextDecoder()
+
+    let buffer = ''
+    let accumulatedMessage = ''
 
     while (true) {
       const { value, done } = await reader.read()
       if (done) break
-      const chunk = decoder.decode(value, { stream: true })
-      buffer += chunk
 
-      const { objects, rest } = extractJsonObjects(buffer)
+      buffer += decoder.decode(value, { stream: true })
+
+      // Extrai eventos n8n do buffer
+      const { events, rest } = extractN8nEvents(buffer)
       buffer = rest
-      for (const objStr of objects) {
-        try {
-          const evt = JSON.parse(objStr)
-          if (evt?.type === 'item' && typeof evt.content === 'string') {
-            builtJsonText += evt.content
-            const partialMsg = extractMessageFromPartialJson(builtJsonText)
-            if (partialMsg && partialMsg.length > 0) {
-              isLoading.value = false
-              updateBotMessage(botId, { content: partialMsg })
-            }
-          } else if (evt?.type === 'end') {
-            // Tenta fechar e parsear o JSON final
-            try {
-              const final = JSON.parse(builtJsonText)
-              const msg = final?.message || extractMessageFromPartialJson(builtJsonText) || 'Não consegui gerar uma resposta agora.'
-              const actions = Array.isArray(final?.actions) ? final.actions : undefined
-              updateBotMessage(botId, { content: msg, actions })
-            } catch {
-              const fallback = extractMessageFromPartialJson(builtJsonText) || 'Não consegui gerar uma resposta agora.'
-              updateBotMessage(botId, { content: fallback })
-            }
+
+      for (const event of events) {
+        if (event?.type === 'item' && typeof event.content === 'string') {
+          // Acumula o texto diretamente (agora é string pura, não JSON)
+          accumulatedMessage += event.content
+          
+          // Atualiza progressivamente na UI
+          isLoading.value = false
+          updateBotMessage(botId, { content: accumulatedMessage })
+          await nextTick()
+          scrollToBottom()
+        }
+
+        if (event?.type === 'end') {
+          // Finaliza com a mensagem completa
+          if (accumulatedMessage.trim()) {
+            updateBotMessage(botId, { content: accumulatedMessage.trim() })
           }
-        } catch {
-          // ignora objetos inválidos
+          break
         }
       }
-      // Scroll suave conforme chegam chunks
-      nextTick(() => {
-        try {
-          const el = document.scrollingElement || document.documentElement
-          el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
-        } catch {}
+    }
+
+    // Fallback se não chegou mensagem
+    const currentMsg = internalMessages.value.find(m => m.id === botId)
+    if (!currentMsg?.content) {
+      updateBotMessage(botId, { 
+        content: 'Não consegui gerar uma resposta. Tente novamente.' 
       })
     }
-  } catch (e) {
+
+  } catch (err) {
+    console.error('Erro no streaming:', err)
     updateBotMessage(botId, {
       content: 'Ocorreu um erro ao contactar a assessoria. Tente novamente.',
     })
   } finally {
-    clearTimeout(to)
+    clearTimeout(timeout)
     isLoading.value = false
   }
+}
+
+function extractN8nEvents(input: string): { events: any[]; rest: string } {
+  const events: any[] = []
+  let depth = 0
+  let start = -1
+  let inString = false
+  let escape = false
+  
+  for (let i = 0; i < input.length; i++) {
+    const char = input[i]
+    
+    if (escape) {
+      escape = false
+      continue
+    }
+    
+    if (inString) {
+      if (char === '\\') {
+        escape = true
+      } else if (char === '"') {
+        inString = false
+      }
+      continue
+    }
+    
+    if (char === '"') {
+      inString = true
+      continue
+    }
+    
+    if (char === '{') {
+      if (depth === 0) start = i
+      depth++
+    } else if (char === '}') {
+      depth--
+      if (depth === 0 && start !== -1) {
+        const objStr = input.slice(start, i + 1)
+        try {
+          const event = JSON.parse(objStr)
+          events.push(event)
+        } catch {
+          // Ignora JSONs inválidos
+        }
+        start = -1
+      }
+    }
+  }
+  
+  // Retorna eventos parseados e o resto do buffer (JSON incompleto)
+  const rest = start !== -1 ? input.slice(start) : ''
+  return { events, rest }
 }
 
 function updateBotMessage(id: string, data: Partial<IChatMessage>) {
@@ -255,74 +315,13 @@ function updateBotMessage(id: string, data: Partial<IChatMessage>) {
   )
 }
 
-function extractJsonObjects(input: string): { objects: string[]; rest: string } {
-  const objs: string[] = []
-  let rest = input
-  let start = -1
-  let depth = 0
-  let inStr = false
-  let escape = false
-  for (let i = 0; i < input.length; i++) {
-    const ch = input[i]
-    if (inStr) {
-      if (escape) {
-        escape = false
-      } else if (ch === '\\') {
-        escape = true
-      } else if (ch === '"') {
-        inStr = false
-      }
-      continue
-    }
-    if (ch === '"') {
-      inStr = true
-      continue
-    }
-    if (ch === '{') {
-      if (depth === 0) start = i
-      depth++
-    } else if (ch === '}') {
-      depth--
-      if (depth === 0 && start !== -1) {
-        objs.push(input.slice(start, i + 1))
-        // Prepare para próximo objeto
-        rest = input.slice(i + 1)
-        // Reinicia busca no restante
-        return { objects: objs, rest }
-      }
-    }
-  }
-  return { objects: objs, rest }
-}
-
-function extractMessageFromPartialJson(s: string): string | undefined {
-  // Tenta parsear o JSON completo primeiro
+function scrollToBottom() {
   try {
-    const obj = JSON.parse(s)
-    if (obj && typeof obj.message === 'string') return obj.message
-  } catch {}
-  // Fallback heurístico: extrai o valor de "message":"..."
-  const idx = s.indexOf('"message"')
-  if (idx === -1) return undefined
-  let i = s.indexOf('"', idx + 9)
-  if (i === -1) return undefined
-  // encontra a próxima aspa após os dois pontos
-  i = s.indexOf('"', i + 1)
-  if (i === -1) return undefined
-  let j = i + 1
-  let inEsc = false
-  for (; j < s.length; j++) {
-    const ch = s[j]
-    if (inEsc) {
-      inEsc = false
-      continue
-    }
-    if (ch === '\\') inEsc = true
-    else if (ch === '"') break
+    const el = document.scrollingElement || document.documentElement
+    el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
+  } catch (err) {
+    console.debug('Erro ao fazer scroll:', err)
   }
-  if (j >= s.length) return undefined
-  const raw = s.slice(i + 1, j)
-  return raw.replace(/\\n/g, '\n').replace(/\\"/g, '"')
 }
 
 function onActionClick(text: string) {
