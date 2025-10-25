@@ -49,6 +49,9 @@
       class="sticky bottom-0 flex w-full flex-col gap-3 rounded-b-[30px] bg-black/10 p-3 pb-6 backdrop-blur-[99px] dark:bg-white/10"
       v-bind="textareaContainerProps"
     >
+      <div v-if="props.ticker && props.routePath === '/ticker'" class="px-2 text-sm opacity-70">
+        Sobre {{ props.ticker }}:
+      </div>
       <UTextarea
         placeholder="Faça qualquer pesquisa..."
         size="md"
@@ -84,6 +87,7 @@ const props = defineProps<{
   suggestions?: string[]
   messages?: IChatMessage[]
   routePath: '/help' | '/ticker'
+  ticker?: string
 }>()
 
 const allAttrs = useAttrs()
@@ -153,7 +157,13 @@ async function trySend() {
   const text = (inputValue.value || '').trim()
   if (!text || isLoading.value) return
 
-  // Adiciona mensagem do usuário
+  // Adiciona contexto do ticker se estiver na página /ticker
+  let contextualText = text
+  if (props.routePath === '/ticker' && props.ticker) {
+    contextualText = `Sobre o ativo ${props.ticker}: ${text}`
+  }
+
+  // Adiciona mensagem do usuário (sem o contexto visível)
   const userMsg: IChatMessage = {
     id: uuid(),
     content: text,
@@ -163,8 +173,8 @@ async function trySend() {
   internalMessages.value = [...internalMessages.value, userMsg]
   inputValue.value = ''
 
-  // Streaming IA
-  startStreamingRequest(text)
+  // Streaming IA (envia com contexto)
+  startStreamingRequest(contextualText)
 }
 
 async function startStreamingRequest(prompt: string) {
