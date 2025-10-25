@@ -5,8 +5,7 @@
     <div class="flex flex-col items-center justify-center gap-4 px-3 pt-[70px]">
       <h2 class="text-center text-2xl">Faça alguma pergunta</h2>
       <p class="text-center text-[13px] font-light opacity-60">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer
-        vulputate erat non massa tristique.
+        Tire dúvidas sobre investimentos, compare ativos e peça análises em linguagem simples.
       </p>
       <div class="grid max-w-[800px] grid-cols-2 gap-3 md:grid-cols-3">
         <div v-for="(suggestion, idx) in suggestions" :key="idx" class="mb-2">

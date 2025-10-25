@@ -4,21 +4,20 @@
       <div class="flex flex-col gap-1">
         <h1 class="text-xl font-semibold">Complete o seu cadastro</h1>
         <p class="text-sm font-thin">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer
-          vulputate erat non massa tristique.
+          Leva menos de 2 minutos. Assim personalizamos sua experiência e liberamos recursos avançados.
         </p>
       </div>
       <div class="flex flex-col">
         <AtomsStep
           :step-number="1"
-          title="Lorem Ipsum"
-          description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vulputate erat non massa tristique."
+          title="Preencha seus dados básicos"
+          description="Informe nome, e-mail e defina uma senha segura. Você pode editar isso depois."
           has-more
         />
         <AtomsStep
           :step-number="2"
-          title="Lorem Ipsum"
-          description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vulputate erat non massa tristique."
+          title="Defina suas preferências"
+          description="Escolha tema claro/escuro e configure alertas e filtros favoritos."
         />
       </div>
     </div>

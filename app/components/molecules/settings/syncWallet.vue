@@ -10,20 +10,20 @@
     <div>
       <AtomsStep
         :step-number="1"
-        title="Lorem Ipsum"
-        description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vulputate erat non massa tristique."
+        title="Exporte seu extrato da corretora"
+        description="Baixe o PDF com a posição consolidada na sua corretora. Vamos usar esse arquivo para importar os ativos."
         has-more
       />
       <AtomsStep
         :step-number="2"
-        title="Lorem Ipsum"
-        description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vulputate erat non massa tristique."
+        title="Faça o upload do arquivo"
+        description="Arraste e solte o PDF aqui ou clique para selecionar. Arquivos suportados: PDF até 2MB."
         has-more
       />
       <AtomsStep
         :step-number="3"
-        title="Lorem Ipsum"
-        description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vulputate erat non massa tristique."
+        title="Confirme e salve"
+        description="Revise os ativos detectados, ajuste o que for necessário e salve para sincronizar sua carteira."
       />
     </div>
     <div class="flex flex-col gap-4">

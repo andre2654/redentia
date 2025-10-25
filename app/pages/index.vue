@@ -4,8 +4,7 @@
       <div class="flex flex-col px-6">
         <h2 class="text-[18px] font-bold">Ações e fundos imobiliarios</h2>
         <p class="text-[13px] font-extralight">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer
-          vulputate erat non massa tristique.
+          Acompanhe preços, variações e tendências de ações e FIIs em tempo real.
         </p>
       </div>
       <div class="carousel-container overflow-hidden rounded-[30px]">
@@ -99,8 +98,7 @@
       <div class="flex flex-col px-6">
         <h2 class="text-[18px] font-bold">Rankings</h2>
         <p class="text-[13px] font-extralight">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer
-          vulputate erat non massa tristique.
+          Veja os destaques de altas e baixas do dia. Ative o mapa para visualizar o desempenho por setor.
         </p>
         <label
           for="map-toggle"

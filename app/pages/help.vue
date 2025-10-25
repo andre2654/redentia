@@ -32,7 +32,7 @@ const messages = ref<IChatMessage[]>([
   {
     id: '3',
     content:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer vulputate erat non massa tristique, eget facilisis lorem ultrices. Duis hendrerit volutpat erat, ac accumsan purus bibendum a. Etiam eget elit et diam vulputate auctor convallis in libero. Suspendisse vehicula nisi volutpat sapien malesuada, in consectetur erat molestie.',
+      'Posso sugerir uma carteira inicial diversificada e indicar métricas para acompanhar: preço, variação no dia, valor de mercado e dividendos. Se quiser, envio filtros prontos para o seu perfil.',
     type: 'bot',
     timestamp: new Date(),
   },

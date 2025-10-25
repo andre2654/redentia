@@ -4,8 +4,7 @@
       <div class="flex flex-col px-6">
         <h2 class="text-[18px] font-bold">Configurações</h2>
         <p class="text-[13px] font-extralight">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer
-          vulputate erat non massa tristique.
+          Gerencie dados da sua conta, preferências de tema e sincronização da carteira.
         </p>
       </div>
       <div class="flex flex-col gap-6">

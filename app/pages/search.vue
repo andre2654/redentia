@@ -4,8 +4,7 @@
       <div class="flex flex-col px-6">
         <h2 class="text-[18px] font-bold">Filtros avançados</h2>
         <p class="text-[13px] font-extralight">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer
-          vulputate erat non massa tristique.
+          Refine sua busca por preço, valor de mercado, variação no dia e tipo de ativo. Combine filtros para encontrar oportunidades alinhadas ao seu perfil.
         </p>
       </div>
       <div class="px-6 py-2 mt-4">
