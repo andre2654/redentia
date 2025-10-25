@@ -235,7 +235,6 @@ async function startStreamingRequest(prompt: string) {
           isLoading.value = false
           updateBotMessage(botId, { content: accumulatedMessage })
           await nextTick()
-          scrollToBottom()
         }
 
         if (event?.type === 'end') {
@@ -323,15 +322,6 @@ function updateBotMessage(id: string, data: Partial<IChatMessage>) {
   internalMessages.value = internalMessages.value.map((m) =>
     m.id === id ? { ...m, ...data } : m
   )
-}
-
-function scrollToBottom() {
-  try {
-    const el = document.scrollingElement || document.documentElement
-    el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
-  } catch (err) {
-    console.debug('Erro ao fazer scroll:', err)
-  }
 }
 
 function onActionClick(text: string) {
