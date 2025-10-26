@@ -43,9 +43,9 @@
     <!-- Graph -->
     <div class="w-full py-6">
       <div class="flex flex-col gap-4">
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between px-6">
           <h2 class="mb-4 text-lg font-semibold">
-            Cotação <span class="max-md:hidden">da {{ ticker }}</span>
+            Cotação <span class="max-md:hidden">({{ ticker }})</span>
           </h2>
           <UButtonGroup orientation="horizontal" variant="soft">
             <UButton

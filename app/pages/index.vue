@@ -4,10 +4,11 @@
       <div class="flex flex-col px-6">
         <h2 class="text-[18px] font-bold">Ações e fundos imobiliarios</h2>
         <p class="text-[13px] font-extralight">
-          Acompanhe preços, variações e tendências de ações e FIIs em tempo real.
+          Acompanhe preços, variações e tendências de ações e FIIs em tempo
+          real.
         </p>
       </div>
-      <div class="carousel-container overflow-hidden rounded-[30px]">
+      <div class="carousel-container overflow-hidden md:rounded-[30px]">
         <UCarousel
           v-slot="{ item }"
           class="w-full"
@@ -34,7 +35,7 @@
         </UCarousel>
       </div>
       <MoleculesSearchAssets
-        class="max-w-[400px] rounded-full bg-white/10 py-4"
+        class="rounded-full py-4 md:max-w-[400px] md:bg-white/10"
       />
       <div class="flex items-center gap-6 px-6">
         <MoleculesTickerIndicator
@@ -98,7 +99,8 @@
       <div class="flex flex-col px-6">
         <h2 class="text-[18px] font-bold">Rankings</h2>
         <p class="text-[13px] font-extralight">
-          Veja os destaques de altas e baixas do dia. Ative o mapa para visualizar o desempenho por setor.
+          Veja os destaques de altas e baixas do dia. Ative o mapa para
+          visualizar o desempenho por setor.
         </p>
         <label
           for="map-toggle"
@@ -285,7 +287,7 @@
       </template>
 
       <div
-        class="dark:bg-tertiary/40 text-secondary flex w-full flex-col gap-3 rounded-[30px] bg-black/5 px-6 py-4"
+        class="dark:bg-tertiary/40 text-secondary flex w-full flex-col gap-3 bg-black/5 px-6 py-4 md:rounded-[30px]"
       >
         <div class="flex items-center gap-2 px-3 py-2">
           <IconAi class="fill-secondary h-5" />
@@ -386,7 +388,10 @@ onMounted(async () => {
     [topReits, bottomReits],
     [topBDRs, bottomBDRs],
   ] = await Promise.all([
-    Promise.all([getTopStocks('top', 1000000), getTopStocks('bottom', 1000000)]),
+    Promise.all([
+      getTopStocks('top', 1000000),
+      getTopStocks('bottom', 1000000),
+    ]),
     Promise.all([getTopETFs('top', 1000000), getTopETFs('bottom', 1000000)]),
     Promise.all([getTopReits('top', 1000000), getTopReits('bottom', 1000000)]),
     Promise.all([getTopBDRs('top', 1000000), getTopBDRs('bottom', 1000000)]),
