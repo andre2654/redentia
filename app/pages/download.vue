@@ -153,7 +153,6 @@ const installApp = () => {
 
   if (!pwa.isPWAInstalled) {
     pwa.install()
-    hideInstallAppBanner()
   } else {
     navigateTo('/')
   }
