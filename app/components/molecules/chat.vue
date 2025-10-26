@@ -1,11 +1,12 @@
 <template>
   <div
-    class="flex flex-col items-center justify-between gap-[100px] rounded-[30px]"
+    class="flex flex-col items-center justify-between gap-[100px] overflow-hidden md:rounded-[30px]"
   >
     <div class="flex flex-col items-center justify-center gap-4 px-3 pt-[70px]">
       <h2 class="text-center text-2xl">Faça alguma pergunta</h2>
       <p class="text-center text-[13px] font-light opacity-60">
-        Tire dúvidas sobre investimentos, compare ativos e peça análises em linguagem simples.
+        Tire dúvidas sobre investimentos, compare ativos e peça análises em
+        linguagem simples.
       </p>
       <div class="grid max-w-[800px] grid-cols-2 gap-3 md:grid-cols-3">
         <div v-for="(suggestion, idx) in suggestions" :key="idx" class="mb-2">
@@ -29,12 +30,17 @@
       </div>
 
       <!-- Loading bubble -->
-      <div v-if="isLoading" class="flex w-fit flex-col gap-2 px-[30px] mr-auto items-start">
+      <div
+        v-if="isLoading"
+        class="mr-auto flex w-fit flex-col items-start gap-2 px-[30px]"
+      >
         <div class="flex items-center gap-2">
           <IconLogo class="w-6 fill-white" />
           <span class="text-[17px] font-semibold">ASSESSORIA REDENTIA:</span>
         </div>
-        <div class="rounded-lg border border-white/20 bg-white/10 py-3 pl-4 pr-7">
+        <div
+          class="rounded-lg border border-white/20 bg-white/10 py-3 pl-4 pr-7"
+        >
           <span class="inline-flex items-center gap-1">
             <span class="dot" />
             <span class="dot" />
@@ -46,10 +52,13 @@
     </div>
 
     <div
-      class="sticky bottom-0 flex w-full flex-col gap-3 rounded-b-[30px] bg-black/10 p-3 pb-6 backdrop-blur-[99px] dark:bg-white/10"
+      class="flex w-full flex-col gap-3 bg-black/10 p-3 pb-6 backdrop-blur-[99px] dark:bg-white/10"
       v-bind="textareaContainerProps"
     >
-      <div v-if="props.ticker && props.routePath === '/ticker'" class="px-2 text-sm opacity-70">
+      <div
+        v-if="props.ticker && props.routePath === '/ticker'"
+        class="px-2 text-sm opacity-70"
+      >
         Sobre {{ props.ticker }}:
       </div>
       <UTextarea
@@ -130,10 +139,7 @@ watch(
   (val) => {
     if (props.routePath === '/help') {
       try {
-        localStorage.setItem(
-          CHAT_HELP_STORAGE_KEY,
-          JSON.stringify(val)
-        )
+        localStorage.setItem(CHAT_HELP_STORAGE_KEY, JSON.stringify(val))
       } catch {}
     }
   },
@@ -179,7 +185,7 @@ async function trySend() {
 
 async function startStreamingRequest(prompt: string) {
   isLoading.value = true
-  
+
   const botId = uuid()
   const placeholder: IChatMessage = {
     id: botId,
@@ -193,14 +199,17 @@ async function startStreamingRequest(prompt: string) {
   const timeout = setTimeout(() => controller.abort('timeout'), 600000)
 
   try {
-    const res = await fetch('https://n8n.saraivada.com/webhook/redentia-assessor', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ message: prompt, route: props.routePath }),
-      signal: controller.signal,
-    })
+    const res = await fetch(
+      'https://n8n.saraivada.com/webhook/redentia-assessor',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message: prompt, route: props.routePath }),
+        signal: controller.signal,
+      }
+    )
 
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`)
@@ -230,7 +239,7 @@ async function startStreamingRequest(prompt: string) {
         if (event?.type === 'item' && typeof event.content === 'string') {
           // Acumula o texto diretamente (agora é string pura, não JSON)
           accumulatedMessage += event.content
-          
+
           // Atualiza progressivamente na UI
           isLoading.value = false
           updateBotMessage(botId, { content: accumulatedMessage })
@@ -248,13 +257,12 @@ async function startStreamingRequest(prompt: string) {
     }
 
     // Fallback se não chegou mensagem
-    const currentMsg = internalMessages.value.find(m => m.id === botId)
+    const currentMsg = internalMessages.value.find((m) => m.id === botId)
     if (!currentMsg?.content) {
-      updateBotMessage(botId, { 
-        content: 'Não consegui gerar uma resposta. Tente novamente.' 
+      updateBotMessage(botId, {
+        content: 'Não consegui gerar uma resposta. Tente novamente.',
       })
     }
-
   } catch (err) {
     console.error('Erro no streaming:', err)
     updateBotMessage(botId, {
@@ -272,15 +280,15 @@ function extractN8nEvents(input: string): { events: any[]; rest: string } {
   let start = -1
   let inString = false
   let escape = false
-  
+
   for (let i = 0; i < input.length; i++) {
     const char = input[i]
-    
+
     if (escape) {
       escape = false
       continue
     }
-    
+
     if (inString) {
       if (char === '\\') {
         escape = true
@@ -289,12 +297,12 @@ function extractN8nEvents(input: string): { events: any[]; rest: string } {
       }
       continue
     }
-    
+
     if (char === '"') {
       inString = true
       continue
     }
-    
+
     if (char === '{') {
       if (depth === 0) start = i
       depth++
@@ -312,7 +320,7 @@ function extractN8nEvents(input: string): { events: any[]; rest: string } {
       }
     }
   }
-  
+
   // Retorna eventos parseados e o resto do buffer (JSON incompleto)
   const rest = start !== -1 ? input.slice(start) : ''
   return { events, rest }
@@ -339,11 +347,21 @@ function onActionClick(text: string) {
   background: rgba(255, 255, 255, 0.8);
   animation: blink 1.4s infinite both;
 }
-.dot:nth-child(2) { animation-delay: 0.2s; }
-.dot:nth-child(3) { animation-delay: 0.4s; }
+.dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
 
 @keyframes blink {
-  0%, 80%, 100% { opacity: 0; }
-  40% { opacity: 1; }
+  0%,
+  80%,
+  100% {
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
 }
 </style>

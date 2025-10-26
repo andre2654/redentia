@@ -373,18 +373,16 @@
         alt="Asset Logo"
         class="h-[200px] w-[200px] rounded-lg"
       />
-      <!-- <div class="grid gap-2">
+      <div class="grid gap-2">
         <USkeleton v-if="isLoadingAsset" class="h-4 w-[250px]" />
-        <USkeleton v-if="isLoadingAsset" class="h-4 w-[200px]" />
+        <!-- <USkeleton v-if="isLoadingAsset" class="h-4 w-[200px]" />
         <USkeleton v-if="isLoadingAsset" class="h-4 w-[180px]" />
         <USkeleton v-if="isLoadingAsset" class="h-4 w-[160px]" />
         <USkeleton v-if="isLoadingAsset" class="h-4 w-[120px]" />
-        <USkeleton v-if="isLoadingAsset" class="h-4 w-[100px]" />
+        <USkeleton v-if="isLoadingAsset" class="h-4 w-[100px]" /> -->
         <template v-else>
-          <b class="text-lg"
-            >{{ asset?.ticker }} - {{ asset?.industry_category }}</b
-          >
-          <b class="text-lg"
+          <b class="text-lg">{{ asset?.ticker }} - {{ asset?.name }}</b>
+          <!-- <b class="text-lg"
             >{{ asset?.city }}, {{ asset?.state }} - {{ asset?.country }}</b
           >
           <b class="text-lg">Setor: {{ asset?.sector }}</b>
@@ -398,9 +396,9 @@
           >
           <p class="text-sm opacity-70">
             {{ asset?.long_business_summary }}
-          </p>
+          </p> -->
         </template>
-      </div> -->
+      </div>
     </div>
 
     <MoleculesChat

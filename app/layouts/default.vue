@@ -105,7 +105,7 @@
     <NuxtLink
       to="/wallet"
       active-class="bg-white/20"
-      class="flex flex-col items-center rounded-full p-2 pointer-events-none opacity-70"
+      class="pointer-events-none flex flex-col items-center rounded-full p-2 opacity-70"
     >
       <UIcon name="i-solar-wallet-bold" class="size-6" />
     </NuxtLink>
@@ -119,7 +119,7 @@
     <NuxtLink
       to="/dividends"
       active-class="bg-white/20"
-      class="flex flex-col items-center rounded-full p-2 pointer-events-none opacity-70"
+      class="pointer-events-none flex flex-col items-center rounded-full p-2 opacity-70"
     >
       <UIcon name="i-mingcute-pig-money-fill" class="size-6" />
     </NuxtLink>
@@ -144,7 +144,9 @@
           <div class="flex items-center gap-3">
             <UAvatar :alt="authStore.me?.name || 'Usuário'" size="xl" />
             <div class="flex flex-col">
-              <div class="text-[15px]">{{ authStore.me?.name || 'Usuário' }}</div>
+              <div class="text-[15px]">
+                {{ authStore.me?.name || 'Usuário' }}
+              </div>
               <span class="-mt-1 text-[12px] text-gray-400"
                 >Plano gratuito</span
               >
@@ -167,12 +169,12 @@
               variant="link"
               trailing-icon="i-lucide-cog"
             />
-              <UButton
-                color="neutral"
-                variant="link"
-                trailing-icon="i-lucide-log-out"
-                @click="makeLogout"
-              />
+            <UButton
+              color="neutral"
+              variant="link"
+              trailing-icon="i-lucide-log-out"
+              @click="makeLogout"
+            />
           </div>
         </div>
 
@@ -211,29 +213,22 @@
       </div>
     </div>
     <div
-      class="relative flex w-full flex-col bg-white py-4 md:px-4 dark:bg-black"
+      class="relative flex w-full flex-col overflow-hidden bg-white md:px-4 md:py-4 dark:bg-black"
     >
       <header
         v-bind="headerProps"
         ref="header"
-        class="sticky top-0 z-10 flex h-[60px] w-full items-center justify-between gap-4 bg-white/5 px-6 py-4 mix-blend-difference backdrop-blur-lg sm:top-4 md:rounded-[25px]"
+        class="z-10 flex h-[60px] w-full items-center justify-between gap-4 bg-white/5 px-6 py-4 md:rounded-[25px]"
       >
         <slot name="header">
-          <div class="relative isolate">
-            <h1
-              class="select-none text-[20px] font-bold text-black max-md:text-[24px]"
-            >
-              {{ title }}
-            </h1>
-            <h1
-              class="pointer-events-none absolute inset-0 text-[20px] font-bold text-white mix-blend-difference max-md:text-[24px]"
-            >
-              {{ title }}
-            </h1>
-          </div>
+          <h1
+            class="select-none text-[20px] font-bold text-white max-md:text-[24px]"
+          >
+            {{ title }}
+          </h1>
         </slot>
       </header>
-      <div v-bind="containerProps" class="flex-1 max-md:px-4">
+      <div v-bind="containerProps" class="flex-1">
         <slot />
       </div>
     </div>
