@@ -26,7 +26,7 @@
             </template>
           </div>
         </div>
-        <UButton
+        <!-- <UButton
           color="neutral"
           variant="link"
           icon="i-lucide-plus"
@@ -36,7 +36,7 @@
           }"
         >
           <span class="max-md:hidden">Adicione à carteira</span>
-        </UButton>
+        </UButton> -->
       </div>
     </template>
 
@@ -403,7 +403,11 @@
       </div>
     </div>
 
-    <MoleculesChat class="w-full bg-black/10 dark:bg-white/10" routePath="/ticker" :ticker="ticker" />
+    <MoleculesChat
+      class="w-full bg-black/10 dark:bg-white/10"
+      routePath="/ticker"
+      :ticker="ticker"
+    />
   </NuxtLayout>
 </template>
 

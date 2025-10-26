@@ -24,10 +24,9 @@
         class="flex w-full items-center max-lg:flex-col max-lg:gap-6 lg:items-end lg:justify-between"
       >
         <p class="text-[12px] text-white/80 max-lg:text-center">
-          @2025 Suble. Todos os direitos reservados.
+          @2025 Redentia. Todos os direitos reservados.
           <br />
-          NEW DAY MARKETING SOLUTIONS - FZCO - Etihad Airways Centre 5th Floor,
-          Abu Dhabi, UAE
+          NAV PAULISTA 1106 SALA 01 ANDAR, Bela Vista, São Paulo, SP
         </p>
         <div class="flex items-center gap-3">
           <NuxtLink to="/download">

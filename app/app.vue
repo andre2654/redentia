@@ -1,4 +1,5 @@
 <template>
+  <NuxtPwaManifest/>
   <UApp :toaster="uAppConfig.toaster">
     <AtomsInstallAppBanner v-if="showBanner" />
     <NuxtPage />
