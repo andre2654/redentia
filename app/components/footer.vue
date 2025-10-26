@@ -26,7 +26,7 @@
         <p class="text-[12px] text-white/80 max-lg:text-center">
           @2025 Redentia. Todos os direitos reservados.
           <br />
-          NAV PAULISTA 1106 SALA 01 ANDAR, Bela Vista, São Paulo, SP
+          AV. PAULISTA 1106 SALA 01 ANDAR, Bela Vista, São Paulo, SP
         </p>
         <div class="flex items-center gap-3">
           <NuxtLink to="/download">
