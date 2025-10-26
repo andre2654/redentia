@@ -320,7 +320,7 @@
     </div>
 
     <!-- Asset docs -->
-    <div class="flex flex-col gap-4 p-4">
+    <!-- <div class="flex flex-col gap-4 p-4">
       <h2 class="text-lg font-bold">Documentos</h2>
       <label
         for="map-toggle"
@@ -362,7 +362,7 @@
           <AtomsButton> Ver </AtomsButton>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <!-- Asset Info -->
     <div class="flex flex-col gap-4 p-4">
@@ -373,7 +373,7 @@
         alt="Asset Logo"
         class="h-[200px] w-[200px] rounded-lg"
       />
-      <div class="grid gap-2">
+      <!-- <div class="grid gap-2">
         <USkeleton v-if="isLoadingAsset" class="h-4 w-[250px]" />
         <USkeleton v-if="isLoadingAsset" class="h-4 w-[200px]" />
         <USkeleton v-if="isLoadingAsset" class="h-4 w-[180px]" />
@@ -400,7 +400,7 @@
             {{ asset?.long_business_summary }}
           </p>
         </template>
-      </div>
+      </div> -->
     </div>
 
     <MoleculesChat
