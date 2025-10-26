@@ -1,55 +1,42 @@
 <template>
   <div class="graph flex w-full flex-col gap-4">
-    <div class="flex items-center justify-between">
-      <h2 class="text-lg font-semibold text-white">Fluxo de Caixa</h2>
-    </div>
-
     <div class="relative" @mouseleave="hoveredIndex = null">
       <div class="relative h-[350px] w-full">
-        <div v-if="props.isLoading" class="absolute inset-0 flex items-center justify-center rounded-lg bg-black/20">
+        <div
+          v-if="props.isLoading"
+          class="absolute inset-0 flex items-center justify-center rounded-lg bg-black/20"
+        >
           <span class="text-white">Carregando...</span>
         </div>
-        <Bar ref="chartRef" :data="chartData as any" :options="chartOptions as any" />
+        <Bar
+          ref="chartRef"
+          :data="chartData as any"
+          :options="chartOptions as any"
+        />
       </div>
 
       <div
         v-if="hoveredIndex !== null && tooltipData"
         class="pointer-events-none fixed z-10 rounded-lg px-3 py-2 backdrop-blur-md transition-all duration-150 dark:bg-black/30"
-        :style="{ left: `${tooltipPosition.x + 10}px`, top: `${tooltipPosition.y - 60}px` }"
+        :style="{
+          left: `${tooltipPosition.x + 10}px`,
+          top: `${tooltipPosition.y - 60}px`,
+        }"
       >
         <div class="flex gap-3">
           <div class="flex flex-col">
             <span class="text-[13px] font-medium">{{ tooltipData.label }}</span>
             <span class="text-[13px]" :style="{ color: tooltipData.color }">
-              R$ {{ tooltipData.value.toLocaleString('pt-BR', { maximumFractionDigits: 0 }) }}
+              R$
+              {{
+                tooltipData.value.toLocaleString('pt-BR', {
+                  maximumFractionDigits: 0,
+                })
+              }}
             </span>
           </div>
         </div>
       </div>
-    </div>
-
-    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-      <MoleculesTickerIndicator
-        name="Operacional"
-        :value="formatCurrency(stats.operating)"
-        help-text="Atividades operacionais"
-        is-intelligent
-        :help-text-with-tooltip="false"
-      />
-      <MoleculesTickerIndicator
-        name="Investimento"
-        :value="formatCurrency(stats.investing)"
-        help-text="Atividades de investimento"
-        is-intelligent
-        :help-text-with-tooltip="false"
-      />
-      <MoleculesTickerIndicator
-        name="FCL"
-        :value="formatCurrency(stats.freeCashFlow)"
-        help-text="Fluxo de Caixa Livre"
-        is-intelligent
-        :help-text-with-tooltip="false"
-      />
     </div>
   </div>
 </template>
@@ -87,7 +74,12 @@ const hoveredIndex = ref<number | null>(null)
 const tooltipPosition = ref({ x: 0, y: 0 })
 let cleanupEvents: (() => void) | null = null
 
-const labels = ['Operacional', 'Investimento', 'Financiamento', 'Fluxo de Caixa Livre']
+const labels = [
+  'Operacional',
+  'Investimento',
+  'Financiamento',
+  'Fluxo de Caixa Livre',
+]
 
 const rawValues = computed(() => {
   const cf = props.data?.cashFlow
@@ -135,9 +127,11 @@ const chartOptions = computed(() => ({
       // Atualiza posição
       const anyEvt = event as unknown as { native?: MouseEvent }
       const native = anyEvt?.native
-      if (native) tooltipPosition.value = { x: native.clientX, y: native.clientY }
+      if (native)
+        tooltipPosition.value = { x: native.clientX, y: native.clientY }
     } catch {}
-    if (elements && elements.length > 0) hoveredIndex.value = elements[0]?.index ?? null
+    if (elements && elements.length > 0)
+      hoveredIndex.value = elements[0]?.index ?? null
     else hoveredIndex.value = null
   },
 }))
@@ -159,7 +153,11 @@ const stats = computed(() => ({
 }))
 
 function formatCurrency(n: number) {
-  return n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })
+  return n.toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    maximumFractionDigits: 0,
+  })
 }
 
 // Eventos extras no canvas para maior precisão do tooltip
@@ -169,8 +167,12 @@ function setupCanvasEvents(chart: any) {
   const handleMouseMove = (e: MouseEvent) => {
     tooltipPosition.value = { x: e.clientX, y: e.clientY }
   }
-  const handleMouseLeave = () => { hoveredIndex.value = null }
-  const handleScroll = () => { hoveredIndex.value = null }
+  const handleMouseLeave = () => {
+    hoveredIndex.value = null
+  }
+  const handleScroll = () => {
+    hoveredIndex.value = null
+  }
   canvas.addEventListener('mousemove', handleMouseMove)
   canvas.addEventListener('mouseleave', handleMouseLeave)
   window.addEventListener('scroll', handleScroll, { passive: true })
@@ -192,11 +194,15 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  try { cleanupEvents?.() } catch {}
+  try {
+    cleanupEvents?.()
+  } catch {}
   cleanupEvents = null
 })
 </script>
 
 <style scoped>
-.graph:deep(canvas) { width: 100% !important; }
+.graph:deep(canvas) {
+  width: 100% !important;
+}
 </style>
