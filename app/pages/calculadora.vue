@@ -1,7 +1,7 @@
 <template>
   <div>
     <NuxtLayout title="Calculadora Inteligente">
-      <div class="flex h-full flex-col gap-6 px-6 pt-6">
+      <div class="flex h-full flex-col gap-6 px-6 pb-8 pt-6">
         <!-- Descrição -->
         <div class="flex flex-col">
           <h2 class="text-[18px] font-bold">Planejamento financeiro</h2>
@@ -12,7 +12,7 @@
         </div>
 
         <!-- Selector de calculadora -->
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between gap-5 max-md:flex-col">
           <h2 class="text-lg font-semibold">Selecione a calculadora</h2>
           <UButtonGroup orientation="horizontal" variant="soft">
             <UButton
@@ -38,7 +38,7 @@
             <div class="flex items-center gap-3">
               <UIcon
                 name="i-lucide-trending-up"
-                class="size-6 text-secondary"
+                class="text-secondary size-6"
               />
               <h2 class="text-xl font-bold text-white">
                 Simulação de Investimento
@@ -52,10 +52,12 @@
                   v-model="compoundForm.initialValue"
                   placeholder="10000"
                   size="lg"
-                   :format-options="{
-      style: 'currency',
-      currency: 'BRL',
-    }"
+                  variant="soft"
+                  class="w-full"
+                  :format-options="{
+                    style: 'currency',
+                    currency: 'BRL',
+                  }"
                 />
               </UFormField>
 
@@ -64,6 +66,8 @@
                   v-model="compoundForm.monthlyValue"
                   placeholder="500"
                   size="lg"
+                  variant="soft"
+                  class="w-full"
                   :format-options="{
                     style: 'currency',
                     currency: 'BRL',
@@ -77,6 +81,7 @@
                     v-model="compoundForm.interestRate"
                     type="number"
                     step="0.01"
+                    variant="soft"
                     placeholder="10.5"
                     size="lg"
                     class="flex-1"
@@ -89,6 +94,7 @@
                     ]"
                     size="lg"
                     :ui="{ base: 'min-w-[120px]' }"
+                    variant="soft"
                   />
                 </div>
               </UFormField>
@@ -100,6 +106,7 @@
                     type="number"
                     placeholder="12"
                     size="lg"
+                    variant="soft"
                     class="flex-1"
                   />
                   <USelectMenu
@@ -110,6 +117,7 @@
                     ]"
                     size="lg"
                     :ui="{ base: 'min-w-[120px]' }"
+                    variant="soft"
                   />
                 </div>
               </UFormField>
@@ -124,26 +132,25 @@
             >
               Calcular Simulação
             </UButton>
-
           </div>
 
           <!-- Resultados -->
           <div
             v-if="compoundResult"
-            class="flex flex-col gap-6 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6"
+            class="flex flex-col gap-6 rounded-[30px] p-6"
           >
             <div class="flex items-center gap-3">
               <UIcon
                 name="i-lucide-bar-chart-3"
-                class="size-6 text-secondary"
+                class="text-secondary size-6"
               />
-              <h3 class="text-xl font-bold text-white">Resultados da Simulação</h3>
+              <h3 class="text-xl font-bold text-white">
+                Resultados da Simulação
+              </h3>
             </div>
 
             <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-              <div
-                class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4"
-              >
+              <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
                 <p class="text-[13px] font-extralight text-gray-400">
                   Total Investido
                 </p>
@@ -156,9 +163,7 @@
                   }}
                 </p>
               </div>
-              <div
-                class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4"
-              >
+              <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
                 <p class="text-[13px] font-extralight text-gray-400">
                   Total de Juros
                 </p>
@@ -171,13 +176,11 @@
                   }}
                 </p>
               </div>
-              <div
-                class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4"
-              >
+              <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
                 <p class="text-[13px] font-extralight text-gray-400">
                   Valor Final
                 </p>
-                <p class="text-2xl font-bold text-secondary">
+                <p class="text-secondary text-2xl font-bold">
                   {{
                     new Intl.NumberFormat('pt-BR', {
                       style: 'currency',
@@ -209,7 +212,7 @@
             class="flex flex-col gap-6 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6"
           >
             <div class="flex items-center gap-3">
-              <UIcon name="i-lucide-chart-line" class="size-6 text-secondary" />
+              <UIcon name="i-lucide-chart-line" class="text-secondary size-6" />
               <h2 class="text-xl font-bold text-white">
                 Análise de Histórico Real
               </h2>
@@ -226,12 +229,17 @@
                   searchable-placeholder="Buscar ação ou FII..."
                   placeholder="Selecione um ativo"
                   size="lg"
+                  class="w-full"
+                  variant="soft"
                   :loading="assetsLoading"
                 />
               </UFormField>
 
-              <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <UFormField label="Valor Inicial de Aporte (R$)" name="initialInvestment">
+              <div class="grid w-full grid-cols-1 gap-4 md:grid-cols-2">
+                <UFormField
+                  label="Valor Inicial de Aporte (R$)"
+                  name="initialInvestment"
+                >
                   <UInputNumber
                     v-model="stockForm.initialInvestment"
                     placeholder="10000"
@@ -240,6 +248,8 @@
                       style: 'currency',
                       currency: 'BRL',
                     }"
+                    class="w-full"
+                    variant="soft"
                   />
                 </UFormField>
 
@@ -249,6 +259,8 @@
                     type="date"
                     size="lg"
                     :max="today"
+                    class="w-full"
+                    variant="soft"
                   />
                 </UFormField>
 
@@ -261,6 +273,8 @@
                       style: 'currency',
                       currency: 'BRL',
                     }"
+                    variant="soft"
+                    class="w-full"
                   />
                 </UFormField>
 
@@ -270,6 +284,8 @@
                     type="date"
                     size="lg"
                     :max="today"
+                    variant="soft"
+                    class="w-full"
                   />
                 </UFormField>
               </div>
@@ -307,12 +323,12 @@
           <!-- Resultados -->
           <div
             v-if="stockResult"
-            class="flex flex-col gap-6 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6"
+            class="flex flex-col gap-6 rounded-[30px] p-6"
           >
             <div class="flex items-center gap-3">
               <UIcon
                 name="i-lucide-bar-chart-3"
-                class="size-6 text-secondary"
+                class="text-secondary size-6"
               />
               <h3 class="text-xl font-bold text-white">
                 Resultados do Investimento
@@ -338,7 +354,7 @@
                 <p class="text-[13px] font-extralight text-gray-400">
                   Valor Final
                 </p>
-                <p class="text-xl font-bold text-secondary">
+                <p class="text-secondary text-xl font-bold">
                   {{
                     new Intl.NumberFormat('pt-BR', {
                       style: 'currency',
@@ -357,7 +373,8 @@
                     stockResult.return >= 0 ? 'text-green-400' : 'text-red-400'
                   "
                 >
-                  {{ stockResult.return >= 0 ? '+' : '' }}{{ stockResult.return.toFixed(2) }}%
+                  {{ stockResult.return >= 0 ? '+' : ''
+                  }}{{ stockResult.return.toFixed(2) }}%
                 </p>
               </div>
               <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
@@ -425,7 +442,8 @@
 import type { IAsset } from '~/types/asset'
 import type { IChartDataPoint } from '~/types/chart'
 
-const { getAssets, assetHistoricPrices, getTickerDividends } = useAssetsService()
+const { getAssets, assetHistoricPrices, getTickerDividends } =
+  useAssetsService()
 
 // Estado da UI
 const selectedCalculator = ref<'compound' | 'stock'>('compound')
@@ -473,7 +491,10 @@ function calculateCompoundInterest() {
   // Adicionar ponto inicial
   const startDate = new Date()
   chartData.push({
-    date: startDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+    date: startDate.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+    }),
     value: balance,
     timestamp: startDate.getTime(),
   })
@@ -487,7 +508,10 @@ function calculateCompoundInterest() {
     const date = new Date()
     date.setMonth(date.getMonth() + i)
     chartData.push({
-      date: date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+      date: date.toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+      }),
       value: balance,
       timestamp: date.getTime(),
     })
@@ -535,14 +559,17 @@ const { data: allAssets } = await useAsyncData('assets-calculator', () =>
 
 const assetitems = computed(() => {
   if (!allAssets.value) return []
-  return allAssets.value
-    .filter((asset) => asset.type === 'STOCK' || asset.type === 'FUND')
-    .sort((a, b) => a.ticker.localeCompare(b.ticker)).map((item) => ({
+  return (
+    allAssets.value
+      .filter((asset) => asset.type === 'STOCK' || asset.type === 'FUND')
+      .sort((a, b) => a.ticker.localeCompare(b.ticker))
+      .map((item) => ({
         id: item.ticker,
         label: item.ticker,
         suffix: item.name,
         avatar: { src: item.logo },
       })) || []
+  )
 })
 
 async function calculateStockHistory() {
@@ -565,12 +592,13 @@ async function calculateStockHistory() {
     }
 
     // Buscar histórico de preços completo (12 meses)
-    const priceHistory = await assetHistoricPrices(ticker, '12mo')
-    
+    const priceHistory = await assetHistoricPrices(ticker, '5y')
+
     console.log('Histórico de preços:', priceHistory?.slice(0, 3)) // Debug: primeiros 3 itens
-    
+
     if (!priceHistory || priceHistory.length === 0) {
-      stockError.value = 'Não foi possível obter o histórico de preços para este ativo'
+      stockError.value =
+        'Não foi possível obter o histórico de preços para este ativo'
       return
     }
 
@@ -599,7 +627,8 @@ async function calculateStockHistory() {
     })
 
     if (relevantPrices.length === 0) {
-      stockError.value = 'Não há dados de preço disponíveis para o período selecionado'
+      stockError.value =
+        'Não há dados de preço disponíveis para o período selecionado'
       return
     }
 
@@ -613,7 +642,10 @@ async function calculateStockHistory() {
     // Adicionar ponto inicial
     const firstDate = new Date(firstPrice.price_at)
     chartData.push({
-      date: firstDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }),
+      date: firstDate.toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+      }),
       value: initialInvestment,
       timestamp: firstDate.getTime(),
     })
@@ -632,7 +664,8 @@ async function calculateStockHistory() {
       // Verificar se mudou de mês para adicionar aporte mensal
       if (
         monthlyInvestment > 0 &&
-        (currentMonth !== lastMonthProcessed || currentYear !== lastYearProcessed)
+        (currentMonth !== lastMonthProcessed ||
+          currentYear !== lastYearProcessed)
       ) {
         const newShares = monthlyInvestment / priceValue
         totalShares += newShares
@@ -667,10 +700,7 @@ async function calculateStockHistory() {
 
       // Adicionar ponto no gráfico (apenas alguns pontos para não sobrecarregar)
       // Adiciona um ponto a cada ~7 dias ou no último dia
-      if (
-        priceIndex % 7 === 0 ||
-        priceIndex === relevantPrices.length - 1
-      ) {
+      if (priceIndex % 7 === 0 || priceIndex === relevantPrices.length - 1) {
         const currentDate = new Date(currentPrice.price_at)
         chartData.push({
           date: currentDate.toLocaleDateString('pt-BR', {
@@ -687,9 +717,10 @@ async function calculateStockHistory() {
     const lastPrice = relevantPrices[relevantPrices.length - 1]
     const finalPrice = lastPrice.market_price
     const finalValue = totalShares * finalPrice
-    const returnPercentage = totalInvested > 0 
-      ? ((finalValue - totalInvested) / totalInvested) * 100 
-      : 0
+    const returnPercentage =
+      totalInvested > 0
+        ? ((finalValue - totalInvested) / totalInvested) * 100
+        : 0
     const averagePrice = totalShares > 0 ? totalInvested / totalShares : 0
 
     console.log('Resultados finais:', {
@@ -728,4 +759,3 @@ onMounted(() => {
   stockForm.value.startDate = start.toISOString().split('T')[0]
 })
 </script>
-
