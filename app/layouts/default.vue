@@ -72,7 +72,6 @@
         <AtomsSidebarButton
           to="/calculadora"
           text="Calculadora inteligente"
-          disabled
         />
       </div>
       <NuxtLink
@@ -194,7 +193,6 @@
             <AtomsSidebarButton
               to="/calculadora"
               text="Calculadora inteligente"
-              disabled
             />
           </div>
           <NuxtLink
