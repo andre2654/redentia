@@ -40,22 +40,17 @@
       <div class="flex items-center gap-6 px-6">
         <MoleculesTickerIndicator
           name="IBOVESPA"
-          value="+21,01%"
-          help-text="Dividend Yield é a relação entre o dividendo pago por ação e o preço da ação."
-          :loading="loading"
+          :value="ibovIndicator"
+          help-text="Índice Bovespa - principal indicador de desempenho das ações negociadas na B3."
+          :loading="loadingIndicators"
         />
         <MoleculesTickerIndicator
-          name="FII"
-          value="+21,01%"
-          help-text="Dividend Yield é a relação entre o dividendo pago por ação e o preço da ação."
-          :loading="loading"
+          name="IFIX"
+          :value="ifixIndicator"
+          help-text="Índice de Fundos Imobiliários - mede o desempenho dos FIIs mais negociados."
+          :loading="loadingIndicators"
         />
-        <MoleculesTickerIndicator
-          name="Dólar"
-          value="+21,01%"
-          help-text="Dividend Yield é a relação entre o dividendo pago por ação e o preço da ação."
-          :loading="loading"
-        />
+        
       </div>
       <div class="w-full p-4">
         <div class="flex flex-col gap-4">
@@ -80,17 +75,23 @@
               />
               <UButton
                 color="neutral"
-                :variant="selectedTimeRange === 'ytd' ? 'soft' : 'link'"
-                label="Ano até hoje"
+                :variant="selectedTimeRange === '3years' ? 'soft' : 'link'"
+                label="3 anos"
                 :disabled="loading"
-                @click="selectedTimeRange = 'ytd'"
+                @click="selectedTimeRange = '3years'"
+              />
+              <UButton
+                color="neutral"
+                :variant="selectedTimeRange === 'full' ? 'soft' : 'link'"
+                label="Tudo"
+                :disabled="loading"
+                @click="selectedTimeRange = 'full'"
               />
             </UButtonGroup>
           </div>
           <AtomsGraphLine
-            :data="chartConfig.data"
-            :colors="chartConfig.colors"
-            :legend="chartConfig.legend"
+            :data="ibovChartData"
+            :legend="ibovChartLabel"
             :height="350"
             :loading="loading"
           />
@@ -345,13 +346,12 @@
 <script lang="ts" setup>
 import type { ChartTimeRange } from '~/types/chart'
 
-import { generateChartConfig } from '~/helpers/utils'
-
-const { getTopStocks, getTopETFs, getTopReits, getTopBDRs } = useAssetsService()
+const { getTopStocks, getTopETFs, getTopReits, getTopBDRs, getIndiceHistoricPrices } = useAssetsService()
 
 const selectedTimeRange = ref<ChartTimeRange>('month')
 const showMap = ref(false)
 const loading = ref(true)
+const loadingIndicators = ref(true)
 const treemapFilter = ref<'all' | 'positive' | 'negative'>('all')
 
 // Dados mock para o treemap - separados por categorias
@@ -373,15 +373,86 @@ const topAssets = ref({
   },
 })
 
-const chartConfig = computed(() =>
-  generateChartConfig({
-    timeRange: selectedTimeRange.value,
+interface ChartPoint {
+  date: string
+  value: number
+  timestamp: number
+}
+
+interface IndiceData {
+  name: string
+  market_price: number
+  price_at: string
+}
+
+const ibovChartData = ref<ChartPoint[]>([])
+const ibovIndicator = ref('+0,00%')
+const ifixIndicator = ref('+0,00%')
+
+const ibovChartLabel = computed(() => [
+  {
     label: 'IBOV',
-    basePrice: 1000,
-  })
-)
+    color: '#10b981',
+    value: ibovChartData.value.length > 0 
+      ? ibovChartData.value[ibovChartData.value.length - 1].value.toFixed(2)
+      : '0'
+  }
+])
+
+async function fetchIbovChartData() {
+  loading.value = true
+  let period: '1mo' | 'ytd' | '3mo' | '12mo' | '3y' | '4y' | '5y' | 'full' = '1mo'
+  if (selectedTimeRange.value === 'month') period = '1mo'
+  else if (selectedTimeRange.value === 'year') period = '12mo'
+  else if (selectedTimeRange.value === '3years') period = '3y'
+  else if (selectedTimeRange.value === 'full') period = 'full'
+  
+  const data = await getIndiceHistoricPrices('ibov', period)
+  
+  ibovChartData.value = Array.isArray(data)
+    ? data.map((item: IndiceData) => ({
+        date: item.price_at,
+        value: item.market_price,
+        timestamp: new Date(item.price_at).getTime(),
+      }))
+    : []
+  loading.value = false
+}
+
+async function fetchIndicatorsData() {
+  loadingIndicators.value = true
+  try {
+    const [ibovData, ifixData] = await Promise.all([
+      getIndiceHistoricPrices('ibov', '1mo'),
+      getIndiceHistoricPrices('ifix', '1mo')
+    ])
+
+    // Calcular variação do IBOV (última cotação vs penúltima)
+    if (Array.isArray(ibovData) && ibovData.length > 1) {
+      const lastPrice = ibovData[ibovData.length - 1].market_price
+      const previousPrice = ibovData[ibovData.length - 2].market_price
+      const variation = ((lastPrice - previousPrice) / previousPrice) * 100
+      ibovIndicator.value = `${variation >= 0 ? '+' : ''}${variation.toFixed(2)}%`
+    }
+
+    // Calcular variação do IFIX (última cotação vs penúltima)
+    if (Array.isArray(ifixData) && ifixData.length > 1) {
+      const lastPrice = ifixData[ifixData.length - 1].market_price
+      const previousPrice = ifixData[ifixData.length - 2].market_price
+      const variation = ((lastPrice - previousPrice) / previousPrice) * 100
+      ifixIndicator.value = `${variation >= 0 ? '+' : ''}${variation.toFixed(2)}%`
+    }
+  } catch (error) {
+    console.error('Erro ao buscar dados dos indicadores:', error)
+  }
+  loadingIndicators.value = false
+}
 
 onMounted(async () => {
+  // Buscar dados dos índices
+  fetchIbovChartData()
+  fetchIndicatorsData()
+
   const [
     [topStocks, bottomStocks],
     [topETFs, bottomETFs],
@@ -449,10 +520,11 @@ onMounted(async () => {
   })
 
   stocksData.value = newdatatreemap
+})
 
-  setTimeout(() => {
-    loading.value = false
-  }, 3000)
+// Atualiza o gráfico ao trocar o período
+watch(selectedTimeRange, () => {
+  fetchIbovChartData()
 })
 
 definePageMeta({

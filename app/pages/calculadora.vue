@@ -431,6 +431,120 @@
                 />
               </div>
             </div>
+
+            <!-- Tabela de Dividendos -->
+            <div
+              v-if="stockForm.reinvestDividends && stockResult.dividendsHistory && stockResult.dividendsHistory.length > 0"
+              class="flex flex-col gap-4"
+            >
+              <div class="flex items-center gap-3">
+                <UIcon
+                  name="i-lucide-table"
+                  class="text-secondary size-6"
+                />
+                <h3 class="text-xl font-bold text-white">
+                  Histórico de Proventos
+                </h3>
+              </div>
+              
+              <!-- Estatísticas resumidas -->
+              <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
+                  <p class="text-[13px] font-extralight text-gray-400">
+                    Total de Pagamentos
+                  </p>
+                  <p class="text-xl font-bold text-white">
+                    {{ stockResult.dividendsHistory.length }}
+                  </p>
+                </div>
+                <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
+                  <p class="text-[13px] font-extralight text-gray-400">
+                    Total Recebido
+                  </p>
+                  <p class="text-xl font-bold text-green-400">
+                    {{
+                      new Intl.NumberFormat('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL',
+                      }).format(stockResult.totalDividends)
+                    }}
+                  </p>
+                </div>
+                <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
+                  <p class="text-[13px] font-extralight text-gray-400">
+                    Média por Pagamento
+                  </p>
+                  <p class="text-xl font-bold text-white">
+                    {{
+                      new Intl.NumberFormat('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL',
+                      }).format(
+                        stockResult.totalDividends / stockResult.dividendsHistory.length
+                      )
+                    }}
+                  </p>
+                </div>
+              </div>
+
+              <div class="max-h-[500px] overflow-y-auto rounded-lg border border-gray-700 bg-gray-800/30">
+                <table class="w-full">
+                  <thead class="sticky top-0 z-10 bg-gray-800">
+                    <tr class="border-b border-gray-700">
+                      <th class="px-4 py-3 text-left text-sm font-semibold">Data de Pagamento</th>
+                      <th class="px-4 py-3 text-left text-sm font-semibold">Valor por Ação</th>
+                      <th class="px-4 py-3 text-left text-sm font-semibold">Qtd. Ações</th>
+                      <th class="px-4 py-3 text-left text-sm font-semibold">Total Recebido</th>
+                      <th class="px-4 py-3 text-left text-sm font-semibold">Tipo</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="(dividend, index) in stockResult.dividendsHistory"
+                      :key="index"
+                      class="border-b border-gray-700/50 hover:bg-white/5"
+                    >
+                      <td class="px-4 py-3 text-sm">
+                        {{ new Date(dividend.payment_date).toLocaleDateString('pt-BR') }}
+                      </td>
+                      <td class="px-4 py-3 text-sm font-medium text-gray-300">
+                        {{
+                          new Intl.NumberFormat('pt-BR', {
+                            style: 'currency',
+                            currency: 'BRL',
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 4,
+                          }).format(parseFloat(dividend.rate))
+                        }}
+                      </td>
+                      <td class="px-4 py-3 text-sm text-gray-400">
+                        {{ (dividend.sharesAtTime || 0).toFixed(2) }}
+                      </td>
+                      <td class="px-4 py-3 text-sm font-bold text-green-400">
+                        {{
+                          new Intl.NumberFormat('pt-BR', {
+                            style: 'currency',
+                            currency: 'BRL',
+                          }).format(dividend.totalReceived || 0)
+                        }}
+                      </td>
+                      <td class="px-4 py-3">
+                        <span
+                          class="rounded-full px-2 py-1 text-xs font-medium"
+                          :class="
+                            dividend.label === 'JCP'
+                              ? 'bg-blue-500/20 text-blue-400'
+                              : 'bg-green-500/20 text-green-400'
+                          "
+                        >
+                          {{ dividend.label }}
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -542,6 +656,16 @@ const calculatingStock = ref(false)
 const stockError = ref('')
 const assetsLoading = ref(false)
 
+interface DividendHistoryItem {
+  ticker: string
+  payment_date: string
+  rate: string
+  label: string
+  'label '?: string  // API retorna com espaço
+  totalReceived: number  // Valor total recebido no dividendo
+  sharesAtTime: number   // Quantidade de ações na época
+}
+
 const stockResult = ref<{
   totalInvested: number
   finalValue: number
@@ -550,7 +674,24 @@ const stockResult = ref<{
   totalShares: number
   averagePrice: number
   chartData: IChartDataPoint[]
+  dividendsHistory: DividendHistoryItem[]
 } | null>(null)
+
+// Colunas da tabela de dividendos
+const dividendsColumns = [
+  {
+    key: 'payment_date',
+    label: 'Data de Pagamento',
+  },
+  {
+    key: 'rate',
+    label: 'Valor por Ação',
+  },
+  {
+    key: 'label',
+    label: 'Tipo',
+  },
+]
 
 // Carregar lista de ativos
 const { data: allAssets } = await useAsyncData('assets-calculator', () =>
@@ -592,7 +733,7 @@ async function calculateStockHistory() {
     }
 
     // Buscar histórico de preços completo (12 meses)
-    const priceHistory = await assetHistoricPrices(ticker, '5y')
+    const priceHistory = await assetHistoricPrices(ticker, 'full')
 
     console.log('Histórico de preços:', priceHistory?.slice(0, 3)) // Debug: primeiros 3 itens
 
@@ -619,6 +760,7 @@ async function calculateStockHistory() {
     let totalInvested = 0
     let totalDividends = 0
     const chartData: IChartDataPoint[] = []
+    const dividendsHistory: DividendHistoryItem[] = []
 
     // Filtrar histórico de preços dentro do período
     const relevantPrices = priceHistory.filter((price: any) => {
@@ -687,6 +829,16 @@ async function calculateStockHistory() {
           const dividendValue = totalShares * dividendRate
           totalDividends += dividendValue
 
+          // Adicionar ao histórico de dividendos para o gráfico
+          dividendsHistory.push({
+            ticker: ticker,
+            payment_date: dividend.payment_date,
+            rate: dividend.rate,
+            label: (dividend['label '] || dividend.label || 'Dividendo').trim(),
+            totalReceived: dividendValue,
+            sharesAtTime: totalShares,
+          })
+
           // Reinvestir dividendos
           if (stockForm.value.reinvestDividends) {
             const newShares = dividendValue / priceValue
@@ -732,6 +884,13 @@ async function calculateStockHistory() {
       totalDividends,
     })
 
+    // Ordenar dividendos por data (do mais antigo para o mais recente)
+    const sortedDividendsHistory = dividendsHistory
+      .filter(d => d.totalReceived !== undefined && d.sharesAtTime !== undefined)
+      .sort((a, b) => {
+        return new Date(a.payment_date).getTime() - new Date(b.payment_date).getTime()
+      })
+
     stockResult.value = {
       totalInvested,
       finalValue,
@@ -740,6 +899,7 @@ async function calculateStockHistory() {
       totalShares,
       averagePrice,
       chartData,
+      dividendsHistory: sortedDividendsHistory,
     }
   } catch (error: any) {
     console.error('Erro ao calcular histórico:', error)

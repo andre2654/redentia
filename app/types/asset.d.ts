@@ -21,7 +21,7 @@ export interface IAsset {
     website?: string,
     long_business_summary?: string,
     market_price?: number,
-    day_change_percent?: number
+    change_percent?: number
 }
 
 // Interface para resposta da API getTickerFundamentus

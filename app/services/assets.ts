@@ -49,8 +49,16 @@ export const useAssetsService = () => {
     return resp.data
   }
 
-  async function assetHistoricPrices(ticker: string, period: '1mo' | 'ytd' | '12mo') {
+  async function assetHistoricPrices(ticker: string, period: '1mo' | 'ytd' | '3mo' | '12mo' | '3y' | '4y' | '5y' | 'full') {
     const url = `https://redentia-api.saraivada.com/api/tickers/${ticker}/prices?mode=${period}`
+    const resp = await preventWithCache(url, async () =>
+      await $fetch(url, { method: 'GET' })
+    )
+    return resp.data
+  }
+
+  async function getIndiceHistoricPrices(indice: 'ibov' | 'ifix', period: '1mo' | 'ytd' | '3mo' | '12mo' | '3y' | '4y' | '5y' | 'full') {
+    const url = `https://redentia-api.saraivada.com/api/indices/${indice}/prices?mode=${period}`
     const resp = await preventWithCache(url, async () =>
       await $fetch(url, { method: 'GET' })
     )
@@ -90,6 +98,7 @@ export const useAssetsService = () => {
     assetHistoricPrices,
     getTickerDetails,
     getTickerDividends,
-    getTickerFundamentus
+    getTickerFundamentus,
+    getIndiceHistoricPrices
   }
 }

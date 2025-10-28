@@ -21,4 +21,4 @@ export interface IAssetPriceHistory {
   prices: IChartDataPoint[];
 }
 
-export type ChartTimeRange = 'month' | 'year' | 'ytd' | '3months' | '6months';
+export type ChartTimeRange = 'month' | 'year' | 'ytd' | '3months' | '6months' | '3years' | 'full';
