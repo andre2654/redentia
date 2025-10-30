@@ -1,6 +1,9 @@
 <template>
   <div class="flex flex-col items-center gap-6">
-    <IconLogoFull class="h-auto w-[180px] fill-white" />
+    <NuxtLink to="/">
+      <IconLogoFull class="h-auto w-[180px] fill-white" />
+    </NuxtLink>
+
     <p class="text-[15px] font-extralight">
       Ajudando investidores a gerir seus patrimonios
     </p>
