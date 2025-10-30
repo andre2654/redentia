@@ -85,6 +85,8 @@
       </div>
     </section>
 
+    <AtomsTickerCarousel class="w-full" no-control />
+
     <!-- Market Overview Section -->
     <section class="px-4 py-12 md:px-6 md:py-20">
       <div class="mx-auto max-w-7xl">
@@ -104,7 +106,7 @@
               <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
             </div>
             
-            <div class="relative">
+            <div class="relative flex flex-col gap-4">
               <div class="mb-2 flex items-center gap-2">
                 <div class="h-2 w-2 animate-pulse rounded-full bg-green-500 shadow-lg shadow-green-500/50 md:h-3 md:w-3"></div>
                 <span class="text-xs font-medium text-green-400 uppercase tracking-wider md:text-sm">Ao Vivo</span>
@@ -131,7 +133,7 @@
               <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
             </div>
             
-            <div class="relative">
+            <div class="relative flex flex-col gap-4">
               <div class="mb-2 flex items-center gap-2">
                 <div class="h-2 w-2 animate-pulse rounded-full bg-blue-500 shadow-lg shadow-blue-500/50 md:h-3 md:w-3"></div>
                 <span class="text-xs font-medium text-blue-400 uppercase tracking-wider md:text-sm">Ao Vivo</span>
@@ -432,12 +434,13 @@
               </div>
             </div>
 
-            <div class="mt-6 rounded-lg bg-black/20 p-4 backdrop-blur">
+            <div class="mt-6 w-full rounded-lg bg-black/20 p-4 backdrop-blur">
               <UTextarea
                 placeholder="Faça qualquer pergunta..."
                 size="md"
                 rows="2"
                 disabled
+                class="w-full"
                 :ui="{
                   base: 'text-[14px] bg-transparent ring-0 placeholder:text-white/40',
                 }"
