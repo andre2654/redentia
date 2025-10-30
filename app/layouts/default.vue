@@ -50,7 +50,8 @@
         <UButton
           color="neutral"
           variant="link"
-          trailing-icon="i-lucide-log-out"
+          icon="i-lucide-log-out"
+          label="sair"
           :ui="{ trailingIcon: 'size-7' }"
           @click="makeLogout"
         />
@@ -139,19 +140,21 @@
       <div
         class="flex flex-col justify-between gap-[50px] rounded-[30px] bg-white/5 p-4 py-8"
       >
-        <div class="flex items-center justify-between px-6">
-          <div class="flex items-center gap-3">
-            <UAvatar :alt="authStore.me?.name || 'Usuário'" size="xl" />
-            <div class="flex flex-col">
-              <div class="text-[15px]">
-                {{ authStore.me?.name || 'Usuário' }}
+        <div class="flex flex-col gap-3 px-6">
+          <div class="flex items-center">
+            <div class="flex items-center gap-3">
+              <UAvatar :alt="authStore.me?.name || 'Usuário'" size="xl" />
+              <div class="flex flex-col">
+                <div class="text-[15px]">
+                  {{ authStore.me?.name || 'Usuário' }}
+                </div>
+                <span class="-mt-1 text-[12px] text-gray-400"
+                  >Plano gratuito</span
+                >
               </div>
-              <span class="-mt-1 text-[12px] text-gray-400"
-                >Plano gratuito</span
-              >
             </div>
           </div>
-          <div class="flex items-center">
+           <div class="flex items-center">
             <UButton
               color="neutral"
               variant="link"
@@ -166,12 +169,14 @@
               to="/settings"
               color="neutral"
               variant="link"
+              label="Configurações"
               trailing-icon="i-lucide-cog"
             />
             <UButton
               color="neutral"
               variant="link"
-              trailing-icon="i-lucide-log-out"
+              label="sair"
+              icon="i-lucide-log-out"
               @click="makeLogout"
             />
           </div>
