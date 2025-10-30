@@ -830,21 +830,7 @@
           }"
         >
           <template #default="{ item, open }">
-            <UButton
-              color="neutral"
-              variant="ghost"
-              class="w-full"
-              :ui="{ rounded: 'rounded-none', padding: { sm: 'p-0' } }"
-            >
-              <div class="flex items-center justify-between w-full">
-                <span class="text-white font-semibold text-left">{{ item.label }}</span>
-                <UIcon
-                  name="i-lucide-chevron-down"
-                  class="size-5 text-gray-400 transition-transform"
-                  :class="[open && 'transform rotate-180']"
-                />
-              </div>
-            </UButton>
+            <span class="text-white font-semibold text-left">{{ item.label }}</span>
           </template>
 
           <template #item="{ item }">
@@ -927,7 +913,7 @@ const chatSuggestions = [
 const faqItems = [
   {
     label: 'A plataforma é realmente gratuita?',
-    content: 'Sim! A Redentia oferece acesso gratuito a todas as funcionalidades principais, incluindo gráficos em tempo real, calculadora de investimentos e assessoria de IA.',
+    content: 'Sim! Por enquanto A Redentia oferece acesso gratuito a todas as funcionalidades principais, incluindo gráficos em tempo real, calculadora de investimentos e assessoria de IA.',
   },
   {
     label: 'Como funciona a assessoria de IA?',
