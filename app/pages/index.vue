@@ -85,7 +85,7 @@
       </div>
     </section>
 
-    <AtomsTickerCarousel class="w-full" no-control />
+    <AtomsTickerCarousel class="w-full mt-5" no-control big />
 
     <!-- Market Overview Section -->
     <section class="px-4 py-12 md:px-6 md:py-20">

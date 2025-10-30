@@ -12,16 +12,32 @@
         <div
           v-for="(item, index) in repeatedItems"
           :key="index"
-          class="flex items-center gap-2 px-6 py-2"
+          :class="[
+            'flex items-center gap-2',
+            big ? 'px-8 py-3' : 'px-6 py-2'
+          ]"
         >
           <img
             :src="item.logo"
-            class="pointer-events-none h-6 w-6 select-none rounded object-cover"
+            :class="[
+              'pointer-events-none select-none rounded object-cover',
+              big ? 'h-10 w-10' : 'h-6 w-6'
+            ]"
           />
-          <span class="select-none text-[14px] font-medium">{{
+          <span 
+            :class="[
+              'select-none font-medium',
+              big ? 'text-[20px]' : 'text-[14px]'
+            ]"
+          >{{
             item.ticker
           }}</span>
-          <span class="font-regular text-primary select-none text-[12px]">{{
+          <span 
+            :class="[
+              'font-regular text-primary select-none',
+              big ? 'text-[16px]' : 'text-[12px]'
+            ]"
+          >{{
             item.change
           }}</span>
         </div>
@@ -33,8 +49,8 @@
       class="hover:opacity-100"
       @click="isPaused = !isPaused"
     >
-      <IconPlay v-if="isPaused" class="h-4 w-4 fill-white" />
-      <IconPause v-else class="h-4 w-4 fill-white" />
+      <IconPlay v-if="isPaused" :class="[big ? 'h-6 w-6' : 'h-4 w-4', 'fill-white']" />
+      <IconPause v-else :class="[big ? 'h-6 w-6' : 'h-4 w-4', 'fill-white']" />
     </button>
   </div>
 </template>
@@ -46,6 +62,10 @@ const { getTopStocks, getTopETFs, getTopReits, getTopBDRs } = useAssetsService()
 
 defineProps({
   noControl: {
+    type: Boolean,
+    default: false,
+  },
+  big: {
     type: Boolean,
     default: false,
   },
