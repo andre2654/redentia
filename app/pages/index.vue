@@ -1,63 +1,87 @@
 <template>
-  <NuxtLayout title="Visão geral" hide-search-bar>
-    <div class="flex h-full flex-col gap-4 pt-6">
-      <div class="flex flex-col px-6">
-        <h2 class="text-[18px] font-bold">Ações e fundos imobiliarios</h2>
-        <p class="text-[13px] font-extralight">
-          Acompanhe preços, variações e tendências de ações e FIIs em tempo
-          real.
-        </p>
+  <div class="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black">
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden px-6 pb-20 pt-32">
+      <div class="absolute inset-0 bg-[url('/assets/images/blue-bg.png')] bg-cover opacity-10"></div>
+      
+      <div class="relative mx-auto max-w-7xl">
+        <div class="flex flex-col items-center text-center">
+          <IconLogoFull class="mb-8 h-16 fill-white" />
+          <h1 class="mb-6 text-5xl font-bold text-white md:text-7xl">
+            Invista com
+            <span class="text-secondary">Inteligência Artificial</span>
+          </h1>
+          <p class="mb-8 max-w-2xl text-xl text-gray-300">
+            Acompanhe seus investimentos, receba insights personalizados e tome decisões
+            mais inteligentes com nossa assessoria de IA.
+          </p>
+          <div class="flex flex-wrap justify-center gap-4">
+            <UButton
+              to="/auth/register"
+              color="secondary"
+              size="xl"
+              icon="i-lucide-rocket"
+              class="px-8"
+            >
+              Começar Gratuitamente
+            </UButton>
+            <UButton
+              to="/auth/login"
+              color="neutral"
+              variant="soft"
+              size="xl"
+              icon="i-lucide-log-in"
+              class="px-8"
+            >
+              Fazer Login
+            </UButton>
+          </div>
+        </div>
       </div>
-      <div class="carousel-container overflow-hidden md:rounded-[30px]">
-        <UCarousel
-          v-slot="{ item }"
-          class="w-full"
-          loop
-          dots
-          :items="[
-            {
-              desktop: '/assets/images/banner.png',
-              mobile: '/assets/images/banner-mobile.png',
-            },
-            {
-              desktop: '/assets/images/banner2.png',
-              mobile: '/assets/images/banner2-mobile.png',
-            },
-          ]"
-          :ui="{
-            dots: 'bottom-3',
-            dot: 'bg-white/10 data-[state=active]:bg-white',
-            item: 'ps-0',
-          }"
-        >
-          <img :src="item.desktop" class="max-md:hidden" />
-          <img :src="item.mobile" class="md:hidden" />
-        </UCarousel>
-      </div>
-      <MoleculesSearchAssets
-        class="rounded-full py-4 md:max-w-[400px] md:bg-white/10"
-      />
-      <div class="flex items-center gap-6 px-6">
-        <MoleculesTickerIndicator
-          name="IBOVESPA"
-          :value="ibovIndicator"
-          help-text="Índice Bovespa - principal indicador de desempenho das ações negociadas na B3."
-          :loading="loadingIndicators"
-        />
-        <MoleculesTickerIndicator
-          name="IFIX"
-          :value="ifixIndicator"
-          help-text="Índice de Fundos Imobiliários - mede o desempenho dos FIIs mais negociados."
-          :loading="loadingIndicators"
-        />
-        
-      </div>
-      <div class="w-full p-4">
-        <div class="flex flex-col gap-4">
-          <div class="flex items-center justify-between">
-            <h2 class="mb-4 text-lg font-semibold">
-              Cotação <span class="max-md:hidden">do IBOV</span>
-            </h2>
+    </section>
+
+    <!-- Market Overview Section -->
+    <section class="px-6 py-20">
+      <div class="mx-auto max-w-7xl">
+        <div class="mb-12 text-center">
+          <h2 class="mb-4 text-4xl font-bold text-white">
+            Acompanhe o Mercado em Tempo Real
+          </h2>
+          <p class="text-lg text-gray-400">
+            Dados atualizados de ações, FIIs e muito mais
+          </p>
+        </div>
+
+        <!-- Indicators -->
+        <div class="mb-12 grid gap-6 md:grid-cols-2">
+          <div class="rounded-3xl bg-gradient-to-br from-green-500/10 to-transparent p-8">
+            <div class="mb-2 flex items-center gap-2">
+              <div class="h-3 w-3 animate-pulse rounded-full bg-green-500"></div>
+              <span class="text-sm text-gray-400">AO VIVO</span>
+            </div>
+            <h3 class="mb-2 text-2xl font-bold text-white">IBOVESPA</h3>
+            <p class="mb-1 text-4xl font-bold text-green-400">{{ ibovIndicator }}</p>
+            <p class="text-sm text-gray-400">
+              Índice Bovespa - principal indicador de desempenho das ações
+            </p>
+          </div>
+          <div class="rounded-3xl bg-gradient-to-br from-blue-500/10 to-transparent p-8">
+            <div class="mb-2 flex items-center gap-2">
+              <div class="h-3 w-3 animate-pulse rounded-full bg-blue-500"></div>
+              <span class="text-sm text-gray-400">AO VIVO</span>
+            </div>
+            <h3 class="mb-2 text-2xl font-bold text-white">IFIX</h3>
+            <p class="mb-1 text-4xl font-bold text-blue-400">{{ ifixIndicator }}</p>
+            <p class="text-sm text-gray-400">
+              Índice de Fundos Imobiliários - desempenho dos FIIs
+            </p>
+          </div>
+        </div>
+
+        <!-- Chart Preview -->
+        <div class="rounded-3xl bg-gradient-to-t from-white/10 to-transparent p-8">
+          <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
+            <h3 class="text-2xl font-semibold text-white">Cotação do IBOV</h3>
             <UButtonGroup orientation="horizontal" variant="soft">
               <UButton
                 color="neutral"
@@ -80,13 +104,6 @@
                 :disabled="loading"
                 @click="selectedTimeRange = '3years'"
               />
-              <UButton
-                color="neutral"
-                :variant="selectedTimeRange === 'full' ? 'soft' : 'link'"
-                label="Tudo"
-                :disabled="loading"
-                @click="selectedTimeRange = 'full'"
-              />
             </UButtonGroup>
           </div>
           <AtomsGraphLine
@@ -97,250 +114,509 @@
           />
         </div>
       </div>
-      <div class="flex flex-col px-6">
-        <h2 class="text-[18px] font-bold">Rankings</h2>
-        <p class="text-[13px] font-extralight">
-          Veja os destaques de altas e baixas do dia. Ative o mapa para
-          visualizar o desempenho por setor.
-        </p>
-        <label
-          for="map-toggle"
-          class="hover:bg-secondary/10 mt-3 flex max-w-fit items-center justify-between gap-4 rounded-full border px-3 py-2"
-          :class="{
-            'bg-secondary/15 dark:bg-tertiary/60 !border-tertiary': showMap,
-          }"
-        >
-          <IconAi class="fill-secondary h-5" />
-          <h2 class="text-secondary select-none">Mostrar mapa</h2>
-          <USwitch
-            id="map-toggle"
-            v-model="showMap"
-            color="secondary"
-            checked-icon="lucide-check"
-            :ui="{
-              base: 'data-[state=checked]:border-secondary',
-            }"
-          />
-        </label>
+    </section>
+
+    <!-- Interactive Calculator Section -->
+    <section class="px-6 py-20">
+      <div class="mx-auto max-w-7xl">
+        <div class="mb-12 text-center">
+          <div class="mb-4 flex items-center justify-center gap-2">
+            <UIcon name="i-lucide-calculator" class="text-secondary size-12" />
+          </div>
+          <h2 class="mb-4 text-4xl font-bold text-white">
+            Calculadora Inteligente
+          </h2>
+          <p class="text-lg text-gray-400">
+            Simule seus investimentos e veja quanto pode ganhar
+          </p>
+        </div>
+
+        <!-- Calculator Preview -->
+        <div class="relative">
+          <!-- Overlay for login prompt -->
+          <div
+            v-if="showCalculatorOverlay"
+            @click="redirectToLogin('calculadora')"
+            class="absolute inset-0 z-10 flex cursor-pointer items-center justify-center rounded-3xl bg-black/80 backdrop-blur-sm transition-all"
+          >
+            <div class="text-center">
+              <UIcon name="i-lucide-lock" class="text-secondary mx-auto mb-4 size-16" />
+              <h3 class="mb-2 text-2xl font-bold text-white">
+                Faça login para calcular
+              </h3>
+              <p class="mb-6 text-gray-400">
+                Crie sua conta gratuitamente e acesse a calculadora completa
+              </p>
+              <UButton
+                to="/auth/register"
+                color="secondary"
+                size="xl"
+                icon="i-lucide-user-plus"
+              >
+                Criar Conta Grátis
+              </UButton>
+            </div>
+          </div>
+
+          <div
+            class="rounded-3xl bg-gradient-to-t from-white/10 to-transparent p-8"
+            @click="showCalculatorOverlay = true"
+          >
+            <div class="mb-6 flex items-center gap-3">
+              <UIcon name="i-lucide-trending-up" class="text-secondary size-6" />
+              <h3 class="text-xl font-bold text-white">
+                Simulação de Juros Compostos
+              </h3>
+            </div>
+
+            <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <UFormField label="Valor Inicial (R$)" name="initialValue">
+                <UInputNumber
+                  :model-value="10000"
+                  placeholder="10000"
+                  size="lg"
+                  variant="soft"
+                  disabled
+                  class="w-full"
+                  :format-options="{
+                    style: 'currency',
+                    currency: 'BRL',
+                  }"
+                />
+              </UFormField>
+
+              <UFormField label="Aporte Mensal (R$)" name="monthlyValue">
+                <UInputNumber
+                  :model-value="500"
+                  placeholder="500"
+                  size="lg"
+                  variant="soft"
+                  disabled
+                  class="w-full"
+                  :format-options="{
+                    style: 'currency',
+                    currency: 'BRL',
+                  }"
+                />
+              </UFormField>
+
+              <UFormField label="Taxa de Juros (%)" name="interestRate">
+                <UInput
+                  :model-value="'10.5'"
+                  type="number"
+                  variant="soft"
+                  placeholder="10.5"
+                  size="lg"
+                  disabled
+                  class="flex-1"
+                />
+              </UFormField>
+
+              <UFormField label="Período (Anos)" name="period">
+                <UInput
+                  :model-value="'10'"
+                  type="number"
+                  placeholder="10"
+                  size="lg"
+                  variant="soft"
+                  disabled
+                  class="flex-1"
+                />
+              </UFormField>
+            </div>
+
+            <UButton
+              color="secondary"
+              size="xl"
+              block
+              icon="i-lucide-calculator"
+              class="mt-6"
+              disabled
+            >
+              Calcular Simulação
+            </UButton>
+
+            <!-- Mock Results -->
+            <div class="mt-8 grid grid-cols-1 gap-4 opacity-50 md:grid-cols-3">
+              <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
+                <p class="text-[13px] font-extralight text-gray-400">
+                  Total Investido
+                </p>
+                <p class="text-2xl font-bold text-white">R$ 70.000,00</p>
+              </div>
+              <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
+                <p class="text-[13px] font-extralight text-gray-400">
+                  Total de Juros
+                </p>
+                <p class="text-2xl font-bold text-green-400">R$ 48.562,31</p>
+              </div>
+              <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
+                <p class="text-[13px] font-extralight text-gray-400">Valor Final</p>
+                <p class="text-secondary text-2xl font-bold">R$ 118.562,31</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div v-if="showMap" class="mb-6 flex flex-col px-6">
-        <UButtonGroup orientation="horizontal" variant="soft" class="ml-auto">
-          <UButton
-            color="neutral"
-            :variant="treemapFilter === 'all' ? 'soft' : 'link'"
-            label="Todos"
-            @click="treemapFilter = 'all'"
-          />
-          <UButton
-            color="neutral"
-            :variant="treemapFilter === 'positive' ? 'soft' : 'link'"
-            label="Altas"
-            @click="treemapFilter = 'positive'"
-          />
-          <UButton
-            color="neutral"
-            :variant="treemapFilter === 'negative' ? 'soft' : 'link'"
-            label="Baixas"
-            @click="treemapFilter = 'negative'"
-          />
-        </UButtonGroup>
-        <AtomsGraphTreemap
-          :data="stocksData"
-          :height="550"
-          :show-positive="
-            treemapFilter === 'all' || treemapFilter === 'positive'
-          "
-          :show-negative="
-            treemapFilter === 'all' || treemapFilter === 'negative'
-          "
-        />
+    </section>
+
+    <!-- AI Chat Section -->
+    <section class="px-6 py-20">
+      <div class="mx-auto max-w-7xl">
+        <div class="mb-12 text-center">
+          <div class="mb-4 flex items-center justify-center gap-2">
+            <IconAi class="fill-secondary h-12" />
+          </div>
+          <h2 class="mb-4 text-4xl font-bold text-white">
+            Assessoria com Inteligência Artificial
+          </h2>
+          <p class="text-lg text-gray-400">
+            Tire dúvidas, compare ativos e receba análises personalizadas
+          </p>
+        </div>
+
+        <!-- Chat Preview -->
+        <div class="relative mx-auto max-w-4xl">
+          <!-- Overlay for login prompt -->
+          <div
+            v-if="showChatOverlay"
+            @click="redirectToLogin('chat')"
+            class="absolute inset-0 z-10 flex cursor-pointer items-center justify-center rounded-3xl bg-black/80 backdrop-blur-sm transition-all"
+          >
+            <div class="text-center">
+              <IconAi class="fill-secondary mx-auto mb-4 h-16" />
+              <h3 class="mb-2 text-2xl font-bold text-white">
+                Converse com nossa IA
+              </h3>
+              <p class="mb-6 text-gray-400">
+                Faça login e tenha acesso ilimitado à assessoria inteligente
+              </p>
+              <UButton
+                to="/auth/login"
+                color="secondary"
+                size="xl"
+                icon="i-lucide-message-circle"
+              >
+                Acessar Assessoria
+              </UButton>
+            </div>
+          </div>
+
+          <div
+            class="rounded-3xl bg-gradient-to-t from-white/10 to-transparent p-8"
+            @click="showChatOverlay = true"
+          >
+            <!-- Chat suggestions -->
+            <div class="mb-6 flex flex-col items-center gap-4">
+              <h3 class="text-center text-2xl text-white">Faça alguma pergunta</h3>
+              <p class="text-center text-[13px] font-light text-gray-400">
+                Tire dúvidas sobre investimentos, compare ativos e peça análises em
+                linguagem simples.
+              </p>
+            </div>
+
+            <!-- Suggestion Buttons -->
+            <div class="mb-8 grid grid-cols-2 gap-3 md:grid-cols-3">
+              <button
+                v-for="(suggestion, idx) in chatSuggestions"
+                :key="idx"
+                class="flex h-[120px] items-center justify-center rounded-lg bg-gradient-to-t from-white/10 to-transparent p-3 text-[13px] font-medium opacity-70 hover:from-white/20"
+                disabled
+              >
+                {{ suggestion }}
+              </button>
+            </div>
+
+            <!-- Mock Messages -->
+            <div class="space-y-4 opacity-60">
+              <div class="flex items-start gap-3">
+                <IconLogo class="mt-1 w-6 fill-white" />
+                <div class="flex-1 rounded-lg bg-white/5 p-4">
+                  <p class="text-sm text-white">
+                    Olá! Sou a assistente virtual da Redentia. Como posso ajudar você
+                    hoje?
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="mt-6 rounded-lg bg-black/20 p-4">
+              <UTextarea
+                placeholder="Faça qualquer pergunta..."
+                size="md"
+                rows="2"
+                disabled
+                :ui="{
+                  base: 'text-[14px] bg-transparent ring-0 placeholder:text-white/40',
+                }"
+              />
+            </div>
+          </div>
+        </div>
       </div>
-      <template v-else>
-        <div
-          class="grid grid-cols-4 gap-2 max-[1550px]:grid-cols-3 max-[900px]:grid-cols-2 max-[600px]:grid-cols-1"
-        >
+    </section>
+
+    <!-- Features Grid -->
+    <section class="px-6 py-20">
+      <div class="mx-auto max-w-7xl">
+        <div class="mb-12 text-center">
+          <h2 class="mb-4 text-4xl font-bold text-white">
+            Tudo que você precisa para investir melhor
+          </h2>
+          <p class="text-lg text-gray-400">
+            Ferramentas profissionais ao seu alcance
+          </p>
+        </div>
+
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <!-- Feature 1 -->
           <div
-            class="flex flex-col gap-3 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6"
+            class="group rounded-3xl bg-gradient-to-br from-purple-500/10 to-transparent p-8 transition-all hover:from-purple-500/20"
           >
-            <h2 class="text-[18px] font-bold">Ações</h2>
-            <div class="flex flex-col gap-2">
-              <AtomsTicker
-                v-for="stock in topAssets.top.stocks"
-                :key="stock?.ticker"
-                :stock="stock"
-              />
-            </div>
-            <NuxtLink to="/assets" class="hover:underline">
-              Ver todos
-            </NuxtLink>
+            <UIcon
+              name="i-lucide-line-chart"
+              class="text-purple-400 mb-4 size-12 transition-transform group-hover:scale-110"
+            />
+            <h3 class="mb-2 text-xl font-bold text-white">Gráficos Avançados</h3>
+            <p class="text-gray-400">
+              Visualize o desempenho dos seus ativos com gráficos interativos e em
+              tempo real
+            </p>
           </div>
+
+          <!-- Feature 2 -->
           <div
-            class="flex flex-col gap-3 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6 max-[600px]:hidden"
+            class="group rounded-3xl bg-gradient-to-br from-green-500/10 to-transparent p-8 transition-all hover:from-green-500/20"
           >
-            <h2 class="text-[18px] font-bold">ETFs</h2>
-            <div class="flex flex-col gap-2">
-              <AtomsTicker
-                v-for="stock in topAssets.top.etfs"
-                :key="stock?.ticker"
-                :stock="stock"
-              />
-            </div>
-            <NuxtLink to="/assets" class="hover:underline">
-              Ver todos
-            </NuxtLink>
+            <UIcon
+              name="i-lucide-wallet"
+              class="text-green-400 mb-4 size-12 transition-transform group-hover:scale-110"
+            />
+            <h3 class="mb-2 text-xl font-bold text-white">Gestão de Carteira</h3>
+            <p class="text-gray-400">
+              Acompanhe todos os seus investimentos em um só lugar de forma simples
+            </p>
           </div>
+
+          <!-- Feature 3 -->
           <div
-            class="flex flex-col gap-3 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6 max-[900px]:hidden"
+            class="group rounded-3xl bg-gradient-to-br from-blue-500/10 to-transparent p-8 transition-all hover:from-blue-500/20"
           >
-            <h2 class="text-[18px] font-bold">Reits</h2>
-            <div class="flex flex-col gap-2">
-              <AtomsTicker
-                v-for="stock in topAssets.top.reits"
-                :key="stock?.ticker"
-                :stock="stock"
-              />
-            </div>
-            <NuxtLink to="/assets" class="hover:underline">
-              Ver todos
-            </NuxtLink>
+            <UIcon
+              name="i-lucide-trending-up"
+              class="text-blue-400 mb-4 size-12 transition-transform group-hover:scale-110"
+            />
+            <h3 class="mb-2 text-xl font-bold text-white">Análise de Dividendos</h3>
+            <p class="text-gray-400">
+              Acompanhe seus proventos e veja o histórico completo de pagamentos
+            </p>
           </div>
+
+          <!-- Feature 4 -->
           <div
-            class="flex flex-col gap-3 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6 max-[1550px]:hidden"
+            class="group rounded-3xl bg-gradient-to-br from-yellow-500/10 to-transparent p-8 transition-all hover:from-yellow-500/20"
           >
-            <h2 class="text-[18px] font-bold">BDRs</h2>
-            <div class="flex flex-col gap-2">
-              <AtomsTicker
-                v-for="stock in topAssets.top.bdrs"
-                :key="stock?.ticker"
-                :stock="stock"
-              />
-            </div>
-            <NuxtLink to="/assets" class="hover:underline">
-              Ver todos
-            </NuxtLink>
+            <UIcon
+              name="i-lucide-bell"
+              class="text-yellow-400 mb-4 size-12 transition-transform group-hover:scale-110"
+            />
+            <h3 class="mb-2 text-xl font-bold text-white">Alertas Inteligentes</h3>
+            <p class="text-gray-400">
+              Receba notificações sobre mudanças importantes nos seus investimentos
+            </p>
           </div>
+
+          <!-- Feature 5 -->
+          <div
+            class="group rounded-3xl bg-gradient-to-br from-red-500/10 to-transparent p-8 transition-all hover:from-red-500/20"
+          >
+            <UIcon
+              name="i-lucide-shield"
+              class="text-red-400 mb-4 size-12 transition-transform group-hover:scale-110"
+            />
+            <h3 class="mb-2 text-xl font-bold text-white">Segurança Total</h3>
+            <p class="text-gray-400">
+              Seus dados protegidos com as melhores práticas de segurança
+            </p>
+          </div>
+
+          <!-- Feature 6 -->
+          <div
+            class="group rounded-3xl bg-gradient-to-br from-pink-500/10 to-transparent p-8 transition-all hover:from-pink-500/20"
+          >
+            <UIcon
+              name="i-lucide-smartphone"
+              class="text-pink-400 mb-4 size-12 transition-transform group-hover:scale-110"
+            />
+            <h3 class="mb-2 text-xl font-bold text-white">App Mobile</h3>
+            <p class="text-gray-400">
+              Acesse de qualquer lugar com nosso aplicativo para iOS e Android
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Top Assets Preview -->
+    <section class="px-6 py-20">
+      <div class="mx-auto max-w-7xl">
+        <div class="mb-12 text-center">
+          <h2 class="mb-4 text-4xl font-bold text-white">
+            Principais Ativos do Dia
+          </h2>
+          <p class="text-lg text-gray-400">
+            Veja as maiores altas e baixas em tempo real
+          </p>
         </div>
 
         <div
-          class="grid grid-cols-4 gap-2 max-[1550px]:grid-cols-3 max-[900px]:grid-cols-2 max-[600px]:grid-cols-1"
+          class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4"
         >
+          <!-- Top Stocks -->
           <div
-            class="flex flex-col gap-3 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6"
+            class="flex flex-col gap-3 rounded-[30px] bg-gradient-to-t from-green-500/10 to-transparent p-6"
           >
-            <h2 class="text-[18px] font-bold">Ações</h2>
+            <div class="mb-2 flex items-center justify-between">
+              <h3 class="text-[18px] font-bold text-white">Maiores Altas</h3>
+              <UIcon name="i-lucide-trending-up" class="size-5 text-green-400" />
+            </div>
             <div class="flex flex-col gap-2">
               <AtomsTicker
-                v-for="stock in topAssets.bottom.stocks"
+                v-for="stock in topAssets.top.stocks.slice(0, 5)"
                 :key="stock?.ticker"
                 :stock="stock"
               />
             </div>
-            <NuxtLink to="/assets" class="hover:underline">
-              Ver todos
-            </NuxtLink>
+            <UButton
+              to="/auth/register"
+              color="neutral"
+              variant="link"
+              class="mt-2"
+            >
+              Ver todos →
+            </UButton>
           </div>
-          <div
-            class="flex flex-col gap-3 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6 max-[600px]:hidden"
-          >
-            <h2 class="text-[18px] font-bold">ETFs</h2>
-            <div class="flex flex-col gap-2">
-              <AtomsTicker
-                v-for="stock in topAssets.bottom.etfs"
-                :key="stock?.ticker"
-                :stock="stock"
-              />
-            </div>
-            <NuxtLink to="/assets" class="hover:underline">
-              Ver todos
-            </NuxtLink>
-          </div>
-          <div
-            class="flex flex-col gap-3 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6 max-[900px]:hidden"
-          >
-            <h2 class="text-[18px] font-bold">Reits</h2>
-            <div class="flex flex-col gap-2">
-              <AtomsTicker
-                v-for="stock in topAssets.bottom.reits"
-                :key="stock?.ticker"
-                :stock="stock"
-              />
-            </div>
-            <NuxtLink to="/assets" class="hover:underline">
-              Ver todos
-            </NuxtLink>
-          </div>
-          <div
-            class="flex flex-col gap-3 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6 max-[1550px]:hidden"
-          >
-            <h2 class="text-[18px] font-bold">BDRs</h2>
-            <div class="flex flex-col gap-2">
-              <AtomsTicker
-                v-for="stock in topAssets.bottom.bdrs"
-                :key="stock?.ticker"
-                :stock="stock"
-              />
-            </div>
-            <NuxtLink to="/assets" class="hover:underline">
-              Ver todos
-            </NuxtLink>
-          </div>
-        </div>
-      </template>
 
-      <div
-        class="dark:bg-tertiary/40 text-secondary flex w-full flex-col gap-3 bg-black/5 px-6 py-4 md:rounded-[30px]"
-      >
-        <div class="flex items-center gap-2 px-3 py-2">
-          <IconAi class="fill-secondary h-5" />
-          <h2 class="text-lg font-semibold">Filtros inteligentes</h2>
-        </div>
-        <div class="flex w-full gap-3 px-6 max-md:flex-col md:flex-wrap">
-          <NuxtLink
-            :to="{ path: '/search', query: { p_max: 20 } }"
-            class="hover:underline"
+          <!-- Top ETFs -->
+          <div
+            class="flex flex-col gap-3 rounded-[30px] bg-gradient-to-t from-blue-500/10 to-transparent p-6"
           >
-            Preço até R$ 20
-          </NuxtLink>
-          <NuxtLink
-            :to="{ path: '/search', query: { mc_max: 2000000000 } }"
-            class="hover:underline"
+            <div class="mb-2 flex items-center justify-between">
+              <h3 class="text-[18px] font-bold text-white">ETFs em Alta</h3>
+              <UIcon name="i-lucide-bar-chart-2" class="size-5 text-blue-400" />
+            </div>
+            <div class="flex flex-col gap-2">
+              <AtomsTicker
+                v-for="stock in topAssets.top.etfs.slice(0, 5)"
+                :key="stock?.ticker"
+                :stock="stock"
+              />
+            </div>
+            <UButton
+              to="/auth/register"
+              color="neutral"
+              variant="link"
+              class="mt-2"
+            >
+              Ver todos →
+            </UButton>
+          </div>
+
+          <!-- Top REITs -->
+          <div
+            class="flex flex-col gap-3 rounded-[30px] bg-gradient-to-t from-purple-500/10 to-transparent p-6"
           >
-            Small Caps (MC ≤ R$ 2 bi)
-          </NuxtLink>
-          <NuxtLink
-            :to="{ path: '/search', query: { ch_min: 0 } }"
-            class="hover:underline"
+            <div class="mb-2 flex items-center justify-between">
+              <h3 class="text-[18px] font-bold text-white">FIIs em Destaque</h3>
+              <UIcon name="i-lucide-building" class="size-5 text-purple-400" />
+            </div>
+            <div class="flex flex-col gap-2">
+              <AtomsTicker
+                v-for="stock in topAssets.top.reits.slice(0, 5)"
+                :key="stock?.ticker"
+                :stock="stock"
+              />
+            </div>
+            <UButton
+              to="/auth/register"
+              color="neutral"
+              variant="link"
+              class="mt-2"
+            >
+              Ver todos →
+            </UButton>
+          </div>
+
+          <!-- Bottom Stocks -->
+          <div
+            class="flex flex-col gap-3 rounded-[30px] bg-gradient-to-t from-red-500/10 to-transparent p-6"
           >
-            Alta no dia (> 0%)
-          </NuxtLink>
-          <NuxtLink
-            :to="{ path: '/search', query: { ch_max: 0 } }"
-            class="hover:underline"
-          >
-            Queda no dia (< 0%)
-          </NuxtLink>
-          <NuxtLink
-            :to="{ path: '/search', query: { stock: 0, bdr: 0 } }"
-            class="hover:underline"
-          >
-            Somente FIIs
-          </NuxtLink>
-          <NuxtLink
-            :to="{ path: '/search', query: { stock: 0, reit: 0 } }"
-            class="hover:underline"
-          >
-            Somente BDRs
-          </NuxtLink>
-          <NuxtLink
-            :to="{ path: '/search', query: { p_min: 10, p_max: 50 } }"
-            class="hover:underline"
-          >
-            Preço entre R$ 10 e R$ 50
-          </NuxtLink>
+            <div class="mb-2 flex items-center justify-between">
+              <h3 class="text-[18px] font-bold text-white">Maiores Baixas</h3>
+              <UIcon name="i-lucide-trending-down" class="size-5 text-red-400" />
+            </div>
+            <div class="flex flex-col gap-2">
+              <AtomsTicker
+                v-for="stock in topAssets.bottom.stocks.slice(0, 5)"
+                :key="stock?.ticker"
+                :stock="stock"
+              />
+            </div>
+            <UButton
+              to="/auth/register"
+              color="neutral"
+              variant="link"
+              class="mt-2"
+            >
+              Ver todos →
+            </UButton>
+          </div>
         </div>
       </div>
-    </div>
-  </NuxtLayout>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="px-6 py-20">
+      <div class="mx-auto max-w-4xl">
+        <div
+          class="rounded-3xl bg-gradient-to-br from-secondary/20 to-transparent p-12 text-center"
+        >
+          <IconLogoFull class="mx-auto mb-6 h-12 fill-white" />
+          <h2 class="mb-4 text-4xl font-bold text-white">
+            Pronto para começar a investir melhor?
+          </h2>
+          <p class="mb-8 text-xl text-gray-300">
+            Crie sua conta gratuitamente e tenha acesso a todas as ferramentas
+          </p>
+          <div class="flex flex-wrap justify-center gap-4">
+            <UButton
+              to="/auth/register"
+              color="secondary"
+              size="xl"
+              icon="i-lucide-user-plus"
+              class="px-8"
+            >
+              Criar Conta Grátis
+            </UButton>
+            <UButton
+              to="/auth/login"
+              color="white"
+              variant="outline"
+              size="xl"
+              icon="i-lucide-log-in"
+              class="px-8"
+            >
+              Já tenho conta
+            </UButton>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <Footer />
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -349,13 +625,20 @@ import type { ChartTimeRange } from '~/types/chart'
 const { getTopStocks, getTopETFs, getTopReits, getTopBDRs, getIndiceHistoricPrices } = useAssetsService()
 
 const selectedTimeRange = ref<ChartTimeRange>('month')
-const showMap = ref(false)
 const loading = ref(true)
 const loadingIndicators = ref(true)
-const treemapFilter = ref<'all' | 'positive' | 'negative'>('all')
 
-// Dados mock para o treemap - separados por categorias
-const stocksData = ref([])
+const showCalculatorOverlay = ref(false)
+const showChatOverlay = ref(false)
+
+const chatSuggestions = [
+  'Qual a diferença entre ações e FIIs?',
+  'Como funcionam os dividendos?',
+  'O que é diversificação?',
+  'Quanto devo investir por mês?',
+  'Como escolher boas ações?',
+  'Vale a pena investir em ETFs?',
+]
 
 const topAssets = ref({
   loading: false,
@@ -398,6 +681,10 @@ const ibovChartLabel = computed(() => [
       : '0'
   }
 ])
+
+function redirectToLogin(source: string) {
+  navigateTo(`/auth/login?redirect=/${source === 'calculadora' ? 'calculadora' : 'help'}`)
+}
 
 async function fetchIbovChartData() {
   loading.value = true
@@ -477,49 +764,6 @@ onMounted(async () => {
   topAssets.value.bottom.etfs = bottomETFs
   topAssets.value.bottom.reits = bottomReits
   topAssets.value.bottom.bdrs = bottomBDRs
-
-  const newdatatreemap = []
-  topStocks.forEach((stock) => {
-    newdatatreemap.push({
-      symbol: stock.ticker,
-      name: stock.name,
-      price: stock.market_price,
-      change: stock.change_percent,
-      category: 'acoes' as const,
-    })
-  })
-
-  bottomStocks.forEach((stock) => {
-    newdatatreemap.push({
-      symbol: stock.ticker,
-      name: stock.name,
-      price: stock.market_price,
-      change: stock.change_percent,
-      category: 'acoes' as const,
-    })
-  })
-
-  topReits.forEach((stock) => {
-    newdatatreemap.push({
-      symbol: stock.ticker,
-      name: stock.name,
-      price: stock.market_price,
-      change: stock.change_percent,
-      category: 'fiis' as const,
-    })
-  })
-
-  bottomReits.forEach((stock) => {
-    newdatatreemap.push({
-      symbol: stock.ticker,
-      name: stock.name,
-      price: stock.market_price,
-      change: stock.change_percent,
-      category: 'fiis' as const,
-    })
-  })
-
-  stocksData.value = newdatatreemap
 })
 
 // Atualiza o gráfico ao trocar o período
@@ -528,6 +772,7 @@ watch(selectedTimeRange, () => {
 })
 
 definePageMeta({
+  isPublicRoute: true,
   layoutTransition: {
     name: 'slide-in',
   },

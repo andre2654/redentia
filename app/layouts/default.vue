@@ -59,7 +59,7 @@
     <div class="flex w-full flex-col gap-8">
       <div class="flex flex-col gap-3">
         <MoleculesSearchAssets class="mx-auto" />
-        <AtomsSidebarButton to="/" text="Visão Geral" />
+        <AtomsSidebarButton to="/overview" text="Visão Geral" />
         <AtomsSidebarButton to="/wallet" text="Sua carteira" disabled />
         <AtomsSidebarButton
           to="/planejador"
@@ -109,7 +109,7 @@
       <UIcon name="i-solar-wallet-bold" class="size-6" />
     </NuxtLink>
     <NuxtLink
-      to="/"
+      to="/overview"
       active-class="bg-white/20"
       class="flex flex-col items-center rounded-full p-2"
     >
@@ -180,7 +180,7 @@
         <div class="flex flex-col gap-8">
           <div class="flex flex-col gap-3">
             <MoleculesSearchAssets v-if="!hideSearchBar" />
-            <AtomsSidebarButton to="/" text="Visão Geral" />
+            <AtomsSidebarButton to="/overview" text="Visão Geral" />
             <AtomsSidebarButton to="/wallet" text="Sua carteira" disabled />
             <AtomsSidebarButton
               to="/planejador"
