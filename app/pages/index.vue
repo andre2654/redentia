@@ -156,7 +156,7 @@
         </div>
 
         <!-- Chart Preview -->
-        <div class="rounded-3xl bg-gradient-to-br from-white/10 via-white/5 to-transparent p-6 backdrop-blur-xl md:p-8">
+        <div class="rounded-3xl p-6 r-xl md:p-8">
           <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
             <h3 class="text-2xl font-semibold text-white">Cotação do IBOV</h3>
             <UButtonGroup orientation="horizontal" variant="soft">
