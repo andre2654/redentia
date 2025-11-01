@@ -1,5 +1,6 @@
 <template>
-  <NuxtPwaManifest/>
+  <Analytics />
+  <NuxtPwaManifest />
   <UApp :toaster="uAppConfig.toaster">
     <AtomsInstallAppBanner v-if="showBanner" />
     <NuxtPage />
@@ -7,6 +8,7 @@
 </template>
 
 <script setup lang="ts">
+import { Analytics } from '@vercel/analytics/nuxt'
 const uAppConfig = {
   toaster: {
     position: 'top-right',

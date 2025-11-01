@@ -6,6 +6,7 @@ specifiers:
   '@nuxt/ui': 3.3.0
   '@pinia-plugin-persistedstate/nuxt': 1.2.1
   '@pinia/nuxt': 0.5.3
+  '@vercel/analytics': ^1.5.0
   '@vite-pwa/nuxt': 1.0.4
   chart.js: 4.5.0
   chartjs-chart-treemap: 3.1.0
@@ -26,6 +27,7 @@ dependencies:
   '@kurkle/color': 0.4.0
   '@nuxt/ui': 3.3.0_pedbtpqpgwwexinqamiembypai
   '@pinia/nuxt': 0.5.3_vue@3.5.17
+  '@vercel/analytics': 1.5.0_byulm4enbc5end43flrxjmyocu
   '@vite-pwa/nuxt': 1.0.4
   chart.js: 4.5.0
   chartjs-chart-treemap: 3.1.0_chart.js@4.5.0
@@ -4206,6 +4208,36 @@ packages:
       hookable: 5.5.3
       unhead: 2.0.19
       vue: 3.5.17
+    dev: false
+
+  /@vercel/analytics/1.5.0_byulm4enbc5end43flrxjmyocu:
+    resolution: {integrity: sha512-MYsBzfPki4gthY5HnYN7jgInhAZ7Ac1cYDoRWFomwGHWEX7odTEzbtg9kf/QSo7XEsEAqlQugA6gJ2WS2DEa3g==}
+    peerDependencies:
+      '@remix-run/react': ^2
+      '@sveltejs/kit': ^1 || ^2
+      next: '>= 13'
+      react: ^18 || ^19 || ^19.0.0-rc
+      svelte: '>= 4'
+      vue: ^3
+      vue-router: ^4
+    peerDependenciesMeta:
+      '@remix-run/react':
+        optional: true
+      '@sveltejs/kit':
+        optional: true
+      next:
+        optional: true
+      react:
+        optional: true
+      svelte:
+        optional: true
+      vue:
+        optional: true
+      vue-router:
+        optional: true
+    dependencies:
+      vue: 3.5.17
+      vue-router: 4.5.1_vue@3.5.17
     dev: false
 
   /@vercel/nft/0.30.3_rollup@4.52.5:
