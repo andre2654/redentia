@@ -8,7 +8,7 @@
           real.
         </p>
       </div>
-      <div class="carousel-container overflow-hidden md:rounded-[30px]">
+      <!-- <div class="carousel-container overflow-hidden md:rounded-[30px]">
         <UCarousel
           v-slot="{ item }"
           class="w-full"
@@ -33,7 +33,7 @@
           <img :src="item.desktop" class="max-md:hidden" />
           <img :src="item.mobile" class="md:hidden" />
         </UCarousel>
-      </div>
+      </div> -->
       <MoleculesSearchAssets
         class="rounded-full py-4 md:max-w-[400px] md:bg-white/10"
       />
@@ -50,7 +50,6 @@
           help-text="Índice de Fundos Imobiliários - mede o desempenho dos FIIs mais negociados."
           :loading="loadingIndicators"
         />
-        
       </div>
       <div class="w-full p-4">
         <div class="flex flex-col gap-4">
@@ -346,7 +345,13 @@
 <script lang="ts" setup>
 import type { ChartTimeRange } from '~/types/chart'
 
-const { getTopStocks, getTopETFs, getTopReits, getTopBDRs, getIndiceHistoricPrices } = useAssetsService()
+const {
+  getTopStocks,
+  getTopETFs,
+  getTopReits,
+  getTopBDRs,
+  getIndiceHistoricPrices,
+} = useAssetsService()
 
 const selectedTimeRange = ref<ChartTimeRange>('month')
 const showMap = ref(false)
@@ -393,22 +398,24 @@ const ibovChartLabel = computed(() => [
   {
     label: 'IBOV',
     color: '#10b981',
-    value: ibovChartData.value.length > 0 
-      ? ibovChartData.value[ibovChartData.value.length - 1].value.toFixed(2)
-      : '0'
-  }
+    value:
+      ibovChartData.value.length > 0
+        ? ibovChartData.value[ibovChartData.value.length - 1].value.toFixed(2)
+        : '0',
+  },
 ])
 
 async function fetchIbovChartData() {
   loading.value = true
-  let period: '1mo' | 'ytd' | '3mo' | '12mo' | '3y' | '4y' | '5y' | 'full' = '1mo'
+  let period: '1mo' | 'ytd' | '3mo' | '12mo' | '3y' | '4y' | '5y' | 'full' =
+    '1mo'
   if (selectedTimeRange.value === 'month') period = '1mo'
   else if (selectedTimeRange.value === 'year') period = '12mo'
   else if (selectedTimeRange.value === '3years') period = '3y'
   else if (selectedTimeRange.value === 'full') period = 'full'
-  
+
   const data = await getIndiceHistoricPrices('ibov', period)
-  
+
   ibovChartData.value = Array.isArray(data)
     ? data.map((item: IndiceData) => ({
         date: item.price_at,
@@ -424,7 +431,7 @@ async function fetchIndicatorsData() {
   try {
     const [ibovData, ifixData] = await Promise.all([
       getIndiceHistoricPrices('ibov', '1mo'),
-      getIndiceHistoricPrices('ifix', '1mo')
+      getIndiceHistoricPrices('ifix', '1mo'),
     ])
 
     // Calcular variação do IBOV (última cotação vs penúltima)
@@ -539,4 +546,3 @@ definePageMeta({
   box-shadow: 0px 0px 80px 0px rgba(55, 77, 60, 0.6);
 }
 </style>
-
