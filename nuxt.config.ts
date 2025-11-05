@@ -10,11 +10,58 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@pinia/nuxt',
     '@pinia-plugin-persistedstate/nuxt',
-    '@vite-pwa/nuxt'
+    '@vite-pwa/nuxt',
+    '@nuxtjs/sitemap'
   ],
   ssr: false,
   vite: {
     plugins: [svgLoader()],
+  },
+  site: {
+    url: 'https://www.redentia.com',
+    name: 'Redentia',
+    description: 'A única plataforma de finanças realmente inteligente, com tudo para gerenciar seus investimentos de forma rápida e fácil.',
+    defaultLocale: 'pt-BR',
+  },
+  sitemap: {
+    xslColumns: [
+      { label: 'URL', width: '50%' },
+      { label: 'Última Modificação', select: 'sitemap:lastmod', width: '25%' },
+      { label: 'Prioridade', select: 'sitemap:priority', width: '12.5%' },
+      { label: 'Frequência', select: 'sitemap:changefreq', width: '12.5%' }
+    ],
+    strictNuxtContentPaths: true,
+    urls: [
+      // Páginas principais
+      { loc: '/', priority: 1.0, changefreq: 'daily' },
+      { loc: '/download', priority: 0.8, changefreq: 'weekly' },
+      
+      // Páginas institucionais
+      { loc: '/redentia/about', priority: 0.6, changefreq: 'monthly' },
+      { loc: '/redentia/contact', priority: 0.6, changefreq: 'monthly' },
+      { loc: '/redentia/how-works', priority: 0.7, changefreq: 'monthly' },
+      { loc: '/redentia/privacy', priority: 0.5, changefreq: 'monthly' },
+      { loc: '/redentia/terms', priority: 0.5, changefreq: 'monthly' },
+      { loc: '/redentia/cookies', priority: 0.4, changefreq: 'monthly' },
+    ],
+    exclude: [
+      // Páginas de autenticação
+      '/auth/**',
+      '/auth/login',
+      '/auth/register',
+      
+      // Áreas privadas
+      '/overview',
+      '/wallet',
+      '/settings',
+      '/search',
+      '/help',
+      '/calculadora',
+      '/step-by-step',
+      '/planejador',
+      '/dividends',
+      '/ideal',
+    ],
   },
   runtimeConfig: {
     public: {
