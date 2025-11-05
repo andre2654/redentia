@@ -31,19 +31,46 @@ export default defineNuxtConfig({
       { label: 'Frequência', select: 'sitemap:changefreq', width: '12.5%' }
     ],
     strictNuxtContentPaths: true,
-    urls: [
-      // Páginas principais
-      { loc: '/', priority: 1.0, changefreq: 'daily' },
-      { loc: '/download', priority: 0.8, changefreq: 'weekly' },
-      
-      // Páginas institucionais
-      { loc: '/redentia/about', priority: 0.6, changefreq: 'monthly' },
-      { loc: '/redentia/contact', priority: 0.6, changefreq: 'monthly' },
-      { loc: '/redentia/how-works', priority: 0.7, changefreq: 'monthly' },
-      { loc: '/redentia/privacy', priority: 0.5, changefreq: 'monthly' },
-      { loc: '/redentia/terms', priority: 0.5, changefreq: 'monthly' },
-      { loc: '/redentia/cookies', priority: 0.4, changefreq: 'monthly' },
+    sources: [
+      '/api/__sitemap__/urls'
     ],
+    urls: async () => {
+      const staticUrls = [
+        // Páginas principais
+        { loc: '/', priority: 1.0, changefreq: 'daily' },
+        { loc: '/download', priority: 0.8, changefreq: 'weekly' },
+        
+        // Páginas institucionais
+        { loc: '/redentia/about', priority: 0.6, changefreq: 'monthly' },
+        { loc: '/redentia/contact', priority: 0.6, changefreq: 'monthly' },
+        { loc: '/redentia/how-works', priority: 0.7, changefreq: 'monthly' },
+        { loc: '/redentia/privacy', priority: 0.5, changefreq: 'monthly' },
+        { loc: '/redentia/terms', priority: 0.5, changefreq: 'monthly' },
+        { loc: '/redentia/cookies', priority: 0.4, changefreq: 'monthly' },
+      ]
+
+      // Tentar buscar ativos da API para incluir no sitemap
+      try {
+        const response = await $fetch<any>('https://redentia-api.saraivada.com/api/tickers-full', {
+          timeout: 20000
+        })
+        
+        const assets = Array.isArray(response) ? response : (response?.data || [])
+        
+        // Limitar a 500 ativos mais relevantes
+        const assetUrls = assets.slice(0, 500).map((asset: any) => ({
+          loc: `/asset/${asset.ticker}`,
+          lastmod: new Date().toISOString(),
+          changefreq: 'daily',
+          priority: 0.7,
+        }))
+        
+        return [...staticUrls, ...assetUrls]
+      } catch (error) {
+        console.error('[Sitemap Config] Erro ao buscar ativos, usando apenas URLs estáticas:', error)
+        return staticUrls
+      }
+    },
     exclude: [
       // Páginas de autenticação
       '/auth/**',
