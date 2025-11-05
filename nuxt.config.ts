@@ -51,11 +51,18 @@ export default defineNuxtConfig({
 
       // Tentar buscar ativos da API para incluir no sitemap
       try {
-        const response = await $fetch<any>('https://redentia-api.saraivada.com/api/tickers-full', {
-          timeout: 20000
-        })
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 20000)
         
-        const assets = Array.isArray(response) ? response : (response?.data || [])
+        const response = await fetch('https://redentia-api.saraivada.com/api/tickers-full', {
+          signal: controller.signal
+        })
+        clearTimeout(timeoutId)
+        
+        const data = await response.json()
+        const assets = Array.isArray(data) ? data : (data?.data || [])
+        
+        console.log(`[Sitemap] Carregados ${assets.length} ativos da API`)
         
         // Limitar a 500 ativos mais relevantes
         const assetUrls = assets.slice(0, 500).map((asset: any) => ({
@@ -67,7 +74,7 @@ export default defineNuxtConfig({
         
         return [...staticUrls, ...assetUrls]
       } catch (error) {
-        console.error('[Sitemap Config] Erro ao buscar ativos, usando apenas URLs estáticas:', error)
+        console.warn('[Sitemap] Erro ao buscar ativos da API, usando apenas URLs estáticas')
         return staticUrls
       }
     },
