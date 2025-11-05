@@ -1,5 +1,5 @@
 # Robots.txt para Redentia - Plataforma de Investimentos
-# https://www.redentia.com
+# https://www.redentia.com.br
 
 # ========================================
 # Regras para todos os bots

@@ -18,7 +18,7 @@ export default defineNuxtConfig({
     plugins: [svgLoader()],
   },
   site: {
-    url: 'https://www.redentia.com',
+    url: 'https://www.redentia.com.br',
     name: 'Redentia',
     description: 'A única plataforma de finanças realmente inteligente, com tudo para gerenciar seus investimentos de forma rápida e fácil.',
     defaultLocale: 'pt-BR',
