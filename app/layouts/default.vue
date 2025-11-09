@@ -38,7 +38,7 @@
           }"
           @click="interfaceStore.toggleRevealAmount"
         />
-        <UButton
+        <!-- <UButton
           to="/settings"
           color="neutral"
           variant="link"
@@ -46,7 +46,7 @@
           :ui="{
             trailingIcon: 'size-7',
           }"
-        />
+        /> -->
         <UButton
           color="neutral"
           variant="link"
@@ -165,13 +165,13 @@
               "
               @click="interfaceStore.toggleRevealAmount"
             />
-            <UButton
+            <!-- <UButton
               to="/settings"
               color="neutral"
               variant="link"
               label="Configurações"
               trailing-icon="i-lucide-cog"
-            />
+            /> -->
             <UButton
               color="neutral"
               variant="link"

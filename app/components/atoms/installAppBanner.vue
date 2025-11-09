@@ -11,14 +11,43 @@
         <span class="-mt-1 text-[11px]">Instalação do aplicativo</span>
       </div>
     </div>
-    <NuxtLink
-      to="/download"
-      class="to-secondary from-primary flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 hover:opacity-80 dark:bg-gradient-to-r"
-    >
-      <IconLogo class="h-4 fill-white dark:fill-black" />
-      <span class="text-[12px] font-medium text-white dark:text-black"
-        >Baixar</span
+    <div class="flex items-center gap-2">
+      <NuxtLink
+        to="/download"
+        class="to-secondary from-primary flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 hover:opacity-80 dark:bg-gradient-to-r"
       >
-    </NuxtLink>
+        <IconLogo class="h-4 fill-white dark:fill-black" />
+        <span class="text-[12px] font-medium text-white dark:text-black"
+          >Baixar</span
+        >
+      </NuxtLink>
+      <button
+        @click="closeBanner"
+        class="group flex items-center justify-center rounded-full p-1 hover:bg-white/10"
+        aria-label="Fechar banner"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5 text-white/70 transition-colors group-hover:text-white"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
   </div>
 </template>
+
+<script setup lang="ts">
+const interfaceStore = useInterfaceStore()
+
+const closeBanner = () => {
+  interfaceStore.closeInstallBanner()
+}
+</script>

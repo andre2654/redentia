@@ -20,7 +20,7 @@ const interfaceStore = useInterfaceStore()
 const route = useRoute()
 
 const showBanner = computed(() => {
-  return !route.meta.hideInstallAppBanner
+  return !route.meta.hideInstallAppBanner && !interfaceStore.hideInstallBanner
 })
 
 onMounted(() => {
