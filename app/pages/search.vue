@@ -160,7 +160,7 @@
 </template>
 
 <script setup lang="ts">
-import type { IAsset } from '~/types/asset'
+import type { AssetMdiEntry, IAsset } from '~/types/asset'
 import { getPaginationRowModel } from '@tanstack/vue-table'
 import { resolveComponent } from 'vue'
 
@@ -168,7 +168,7 @@ const { getAssets } = useAssetsService()
 const router = useRouter()
 
 const allAssets = ref<IAsset[]>([])
-const data = ref<(IAsset & { mdi: string[] })[]>([])
+const data = ref<IAsset[]>([])
 const assetsLoading = ref(true)
 
 const IconArrowFinanceUp = resolveComponent('IconArrowFinanceUp')
@@ -200,6 +200,162 @@ defineShortcuts({
 function focusGlobalSearch() {
   const el = document.getElementById('global-search-input') as HTMLInputElement | null
   el?.focus()
+}
+
+const monthShortNames = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'] as const
+const currentMonthNumber = new Date().getMonth() + 1
+
+function toFiniteNumber(value: unknown) {
+  const num = Number(value)
+  return Number.isFinite(num) ? num : null
+}
+
+function getMonthLabel(monthNumber: number) {
+  const monthIndex = ((monthNumber - 1) % 12 + 12) % 12
+  return monthShortNames[monthIndex] ?? `M${monthNumber}`
+}
+
+function getOrderedMonths(startingMonth: number) {
+  const months: number[] = []
+  for (let i = 0; i < 12; i++) {
+    months.push(((startingMonth + i - 1) % 12) + 1)
+  }
+  return months
+}
+
+interface OccurrenceHighlight {
+  month: number
+  monthLabel: string
+  percentage: number | null
+}
+
+interface StarHighlight {
+  month: number
+  monthLabel: string
+}
+
+function getMdiHighlights(entries?: AssetMdiEntry[] | null) {
+  if (!entries?.length) {
+    return { occurrence: null, star: null }
+  }
+
+  const monthMap = new Map<number, AssetMdiEntry>()
+  for (const entry of entries) {
+    const month = toFiniteNumber(entry?.month)
+    if (!month) {
+      continue
+    }
+    if (!monthMap.has(month)) {
+      monthMap.set(month, entry)
+    }
+  }
+
+  if (!monthMap.size) {
+    return { occurrence: null, star: null }
+  }
+
+  const orderedMonths = getOrderedMonths(currentMonthNumber)
+
+  let occurrence: OccurrenceHighlight | null = null
+  for (const month of orderedMonths) {
+    const entry = monthMap.get(month)
+    if (!entry) {
+      continue
+    }
+    const occurrences = toFiniteNumber(entry.occurrences) ?? 0
+    const totalYears = toFiniteNumber(entry.total_years) ?? 0
+    if (occurrences > 0) {
+      const percentage = totalYears > 0 ? (occurrences / totalYears) * 100 : null
+      occurrence = {
+        month,
+        monthLabel: getMonthLabel(month),
+        percentage,
+      }
+      break
+    }
+  }
+
+  const sumRates = entries
+    .map((entry) => toFiniteNumber(entry.sum_rate))
+    .filter((value): value is number => value !== null)
+
+  const averageSumRate =
+    sumRates.length > 0 ? sumRates.reduce((acc, value) => acc + value, 0) / sumRates.length : null
+
+  let star: StarHighlight | null = null
+  const getStarForMonth = (month: number): StarHighlight | null => {
+    const entry = monthMap.get(month)
+    if (!entry) {
+      return null
+    }
+    const sumRate = toFiniteNumber(entry.sum_rate)
+    if (averageSumRate === null || sumRate === null || sumRate < averageSumRate) {
+      return null
+    }
+    return {
+      month,
+      monthLabel: getMonthLabel(month),
+    }
+  }
+
+  if (averageSumRate !== null) {
+    if (occurrence) {
+      star = getStarForMonth(occurrence.month)
+      if (!star) {
+        const startIndex = orderedMonths.indexOf(occurrence.month)
+        for (let offset = 1; offset < 12; offset++) {
+          const month = orderedMonths[(startIndex + offset) % 12]
+          if (month === occurrence.month) {
+            continue
+          }
+          const candidate = getStarForMonth(month)
+          if (candidate) {
+            star = candidate
+            break
+          }
+        }
+      }
+    } else {
+      for (const month of orderedMonths) {
+        const candidate = getStarForMonth(month)
+        if (candidate) {
+          star = candidate
+          break
+        }
+      }
+    }
+  }
+
+  return {
+    occurrence,
+    star,
+  }
+}
+
+interface MdiLabelSegments {
+  occurrenceLabel: string | null
+  starLabel: string | null
+}
+
+function getMdiLabels(entries?: AssetMdiEntry[] | null): MdiLabelSegments {
+  const { occurrence, star } = getMdiHighlights(entries)
+  if (!occurrence && !star) {
+    return { occurrenceLabel: null, starLabel: null }
+  }
+
+  if (occurrence && star && occurrence.month === star.month) {
+    return {
+      occurrenceLabel: null,
+      starLabel: `${star.monthLabel} (maior chance)`,
+    }
+  }
+
+  return {
+    occurrenceLabel: occurrence
+      ? `${occurrence.monthLabel} (${occurrence.percentage !== null ? `${Math.round(occurrence.percentage)}%` : '0%'})`
+      : null,
+    starLabel: star ? `${star.monthLabel} (maior chance)` : null,
+  }
 }
 
 
@@ -332,11 +488,7 @@ onMounted(async () => {
   assetsLoading.value = true
   try {
     allAssets.value = await getAssets()
-    // Adiciona o campo mdi mockado em cada asset
-    data.value = allAssets.value.map((asset) => ({
-      ...asset,
-      mdi: ['jan', 'mar'], // mock
-    }))
+    data.value = allAssets.value
 
     // Força uma atualização da paginação após carregar os dados
     await nextTick()
@@ -505,29 +657,80 @@ const columns = ref([
   {
     accessorKey: 'mdi',
     header: 'MDI',
-    cell: ({ row: _row }) => {
-      return h(
-        'div',
-        {
-          class: 'flex items-center gap-2 cursor-pointer',
-          onClick: () => {
-            const row: any = _row
-            goToAsset(row?.original?.ticker || '')
-          }
-        },
-        [
-          h(IconAI, {
-            class: 'h-auto w-5 fill-secondary',
-          }),
+    cell: ({ row }) => {
+      const asset = row.original as IAsset
+      const { occurrenceLabel, starLabel } = getMdiLabels(asset?.mdi)
+      const hasOccurrence = !!occurrenceLabel
+      const hasStar = !!starLabel
+      const hasAny = hasOccurrence || hasStar
+
+      const contents: any[] = []
+
+      if (!hasAny) {
+        contents.push(
           h(
             'span',
             {
-              class: 'text-[13px] text-secondary',
+              class: 'text-[13px] opacity-60',
             },
-            'Próximo mês'
-          ),
-        ]
-      )
+            'N/A'
+          )
+        )
+      } else {
+        if (hasOccurrence) {
+          contents.push(
+            h(
+              'span',
+              {
+                class: 'text-[13px]',
+              },
+              occurrenceLabel
+            )
+          )
+        }
+
+        if (hasOccurrence && hasStar) {
+          contents.push(
+            h(
+              'span',
+              {
+                class: 'text-[13px] opacity-60',
+              },
+              ' - '
+            )
+          )
+        }
+
+        if (hasStar) {
+          contents.push(
+            h(
+              'span',
+              {
+                class: 'flex items-center gap-1 text-[13px]',
+              },
+              [
+                h(IconAI, {
+                  class: 'w-[16px] fill-secondary',
+                }),
+                h(
+                  'span',
+                  {
+                    class: 'ml-1 text-secondary',
+                  },
+                  starLabel
+                ),
+              ]
+            )
+          )
+        }
+      }
+
+      return h('div', {
+        class: 'flex items-center gap-2 cursor-pointer',
+        onClick: () => {
+          goToAsset(asset?.ticker || asset?.stock || '')
+        },
+      }, contents)
     },
   },
 ])

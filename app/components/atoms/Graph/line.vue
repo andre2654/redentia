@@ -103,6 +103,12 @@ interface IHoverState {
 }
 
 type ChartPointLike = { x: number; y: number }
+type ChartFillStyle = CanvasGradient | string
+
+interface IClosingFillGradients {
+  positive: ChartFillStyle
+  negative: ChartFillStyle
+}
 
 interface Props {
   data: IChartDataPoint[]
@@ -497,7 +503,8 @@ function fillRegionBetween(
   pointA: ChartPointLike,
   pointB: ChartPointLike,
   closingY: number,
-  orientation: 'above' | 'below'
+  orientation: 'above' | 'below',
+  fillStyle: ChartFillStyle
 ): void {
   if (
     !pointA ||
@@ -513,20 +520,9 @@ function fillRegionBetween(
 
   if (pointA.x === pointB.x && pointA.y === pointB.y) return
 
-  const startY = orientation === 'below' ? closingY : Math.min(pointA.y, pointB.y)
-  const endY = orientation === 'below' ? Math.max(pointA.y, pointB.y) : closingY
-
-  if (startY === endY) return
-
-  const gradient = ctx.createLinearGradient(0, startY, 0, endY)
-
-  if (orientation === 'below') {
-    gradient.addColorStop(0, 'rgba(239, 68, 68, 0)')
-    gradient.addColorStop(1, 'rgba(239, 68, 68, 0.6)')
-  } else {
-    gradient.addColorStop(0, 'rgba(34, 197, 94, 0.6)')
-    gradient.addColorStop(1, 'rgba(34, 197, 94, 0)')
-  }
+  const relevantY =
+    orientation === 'below' ? Math.max(pointA.y, pointB.y) : Math.min(pointA.y, pointB.y)
+  if (relevantY === closingY) return
 
   ctx.beginPath()
   ctx.moveTo(pointA.x, pointA.y)
@@ -534,7 +530,7 @@ function fillRegionBetween(
   ctx.lineTo(pointB.x, closingY)
   ctx.lineTo(pointA.x, closingY)
   ctx.closePath()
-  ctx.fillStyle = gradient
+  ctx.fillStyle = fillStyle
   ctx.fill()
 }
 
@@ -545,7 +541,8 @@ function drawClosingFillSegment(
   valueA: number,
   valueB: number,
   closingValue: number,
-  closingY: number
+  closingY: number,
+  gradients: IClosingFillGradients
 ): 'above' | 'below' | 'mixed' {
   if (
     !Number.isFinite(valueA) ||
@@ -561,8 +558,12 @@ function drawClosingFillSegment(
   if (deltaA === 0 && deltaB === 0) return 'mixed'
 
   if ((deltaA <= 0 && deltaB <= 0) || (deltaA >= 0 && deltaB >= 0)) {
-    fillRegionBetween(ctx, pointA, pointB, closingY, deltaA < 0 ? 'below' : 'above')
-    return deltaA < 0 ? 'below' : 'above'
+    const targetOrientation = deltaA < 0 ? 'below' : 'above'
+    const targetGradient =
+      targetOrientation === 'below' ? gradients.negative : gradients.positive
+
+    fillRegionBetween(ctx, pointA, pointB, closingY, targetOrientation, targetGradient)
+    return targetOrientation
   }
 
   const denominator = valueB - valueA
@@ -583,12 +584,12 @@ function drawClosingFillSegment(
   }
 
   if (deltaA < 0) {
-    fillRegionBetween(ctx, pointA, intersectionPoint, closingY, 'below')
-    fillRegionBetween(ctx, intersectionPoint, pointB, closingY, 'above')
+    fillRegionBetween(ctx, pointA, intersectionPoint, closingY, 'below', gradients.negative)
+    fillRegionBetween(ctx, intersectionPoint, pointB, closingY, 'above', gradients.positive)
     return 'mixed'
   } else {
-    fillRegionBetween(ctx, pointA, intersectionPoint, closingY, 'above')
-    fillRegionBetween(ctx, intersectionPoint, pointB, closingY, 'below')
+    fillRegionBetween(ctx, pointA, intersectionPoint, closingY, 'above', gradients.positive)
+    fillRegionBetween(ctx, intersectionPoint, pointB, closingY, 'below', gradients.negative)
     return 'mixed'
   }
 }
@@ -743,11 +744,11 @@ const hoverLinePlugin: Plugin<'line'> = {
 
           if (!isHovering.value) {
             const formattedValue = formatCurrency(currentValue)
-            const text = `Fechamento anterior: ${formattedValue}`
+            const text = `Atual: ${formattedValue}`
 
             ctx.font = '12px sans-serif'
             ctx.textAlign = 'right'
-            ctx.textBaseline = 'bottom'
+            ctx.textBaseline = 'middle'
 
             const textMetrics = ctx.measureText(text)
             const textWidth = textMetrics.width
@@ -755,11 +756,12 @@ const hoverLinePlugin: Plugin<'line'> = {
             const horizontalPadding = 10
             const verticalPadding = 6
             const cornerRadius = 12
+            const boxHeight = textHeight + verticalPadding * 2
 
             const boxRight = right - 12
             const boxLeft = boxRight - textWidth - horizontalPadding * 2
-            const boxTop = yPosition - textHeight - verticalPadding
-            const boxBottom = yPosition + verticalPadding - 5
+            const boxTop = yPosition - boxHeight / 2
+            const boxBottom = boxTop + boxHeight
 
             ctx.fillStyle = 'rgba(17, 24, 39, 0.65)'
             ctx.strokeStyle = 'rgba(148, 163, 184, 0.35)'
@@ -780,7 +782,7 @@ const hoverLinePlugin: Plugin<'line'> = {
             ctx.stroke()
 
             ctx.fillStyle = 'rgba(148, 163, 184, 1)'
-            ctx.fillText(text, boxRight - horizontalPadding, boxBottom - verticalPadding)
+            ctx.fillText(text, boxRight - horizontalPadding, yPosition)
           }
 
           ctx.restore()
@@ -834,7 +836,7 @@ const hoverLinePlugin: Plugin<'line'> = {
         }
 
         // Overlay na seleção
-        ctx.fillStyle = 'rgba(148, 163, 184, 0.3)'
+        ctx.fillStyle = 'rgba(148, 163, 184, 0.1)'
         ctx.fillRect(startX, top, endX - startX, bottom - top)
 
         ctx.restore()
@@ -875,6 +877,42 @@ const closingDeltaFillPlugin: Plugin<'line'> = {
       ctx.rect(chartArea.left, chartArea.top, chartArea.right - chartArea.left, chartArea.bottom - chartArea.top)
       ctx.clip()
 
+      const chartTop = chartArea.top
+      const chartBottom = chartArea.bottom
+      const chartHeight = Math.max(1, chartBottom - chartTop)
+      const closingRatio = Math.min(1, Math.max(0, (closingY - chartTop) / chartHeight))
+
+      const positiveGradient = ctx.createLinearGradient(0, chartTop, 0, chartBottom)
+      positiveGradient.addColorStop(0, 'rgba(34, 197, 94, 0)')
+      positiveGradient.addColorStop(
+        Math.max(0, closingRatio - 0.25),
+        'rgba(34, 197, 94, 0.06)'
+      )
+      positiveGradient.addColorStop(
+        Math.max(0, closingRatio - 0.1),
+        'rgba(34, 197, 94, 0.18)'
+      )
+      positiveGradient.addColorStop(Math.max(0, closingRatio), 'rgba(34, 197, 94, 0.32)')
+      positiveGradient.addColorStop(1, 'rgba(34, 197, 94, 0)')
+
+      const negativeGradient = ctx.createLinearGradient(0, chartTop, 0, chartBottom)
+      negativeGradient.addColorStop(0, 'rgba(239, 68, 68, 0.32)')
+      negativeGradient.addColorStop(Math.min(1, closingRatio), 'rgba(239, 68, 68, 0.32)')
+      negativeGradient.addColorStop(
+        Math.min(1, closingRatio + 0.12),
+        'rgba(239, 68, 68, 0.18)'
+      )
+      negativeGradient.addColorStop(
+        Math.min(1, closingRatio + 0.3),
+        'rgba(239, 68, 68, 0.06)'
+      )
+      negativeGradient.addColorStop(1, 'rgba(239, 68, 68, 0)')
+
+      const gradients: IClosingFillGradients = {
+        positive: positiveGradient,
+        negative: negativeGradient,
+      }
+
       for (let i = 1; i < meta.data.length; i++) {
         const previousPoint = meta.data[i - 1] as unknown as ChartPointLike
         const currentPoint = meta.data[i] as unknown as ChartPointLike
@@ -891,7 +929,8 @@ const closingDeltaFillPlugin: Plugin<'line'> = {
           previousValue,
           currentValue,
           closeValue,
-          closingY
+          closingY,
+          gradients
         )
 
         segmentColors.push(segmentOrientation)
@@ -973,6 +1012,8 @@ const overlayLabelsPlugin: Plugin<'line'> = {
       const xTicks = xScale?.ticks ?? []
 
       xTicks.forEach((tick: any, tickIndex: number) => {
+        if (tickIndex === 0 || tickIndex === xTicks.length - 1) return
+
         const rawValue = typeof tick.value === 'number' ? tick.value : tickIndex
         const dataIndex = Number.isFinite(rawValue) ? Math.round(rawValue) : tickIndex
 
@@ -1088,11 +1129,15 @@ const chartOptions = computed(() => ({
     x: {
       offset: false,
       bounds: 'data',
-      display: false,
+      display: true,
       grid: {
-        display: false,
+        display: true,
+        color: 'rgba(255, 255, 255, 0.3)',
         drawBorder: false,
         drawTicks: false,
+        lineWidth: 0.5,
+        tickLength: 0,
+        tickWidth: 0,
       },
       ticks: {
         display: false,
@@ -1110,10 +1155,10 @@ const chartOptions = computed(() => ({
       reverse: false,
       grid: {
         display: true,
-        color: 'rgba(255, 255, 255, 0.2)',
+        color: 'rgba(255, 255, 255, 0.3)',
         drawBorder: false,
         drawTicks: false,
-        lineWidth: 1,
+        lineWidth: 0.5,
         tickLength: 0,
         tickWidth: 0,
       },
@@ -1135,14 +1180,14 @@ const chartOptions = computed(() => ({
     colors: { forceOverride: true },
     overlayLabels: {
       fontFamily: 'Inter, system-ui, sans-serif',
-      fontSize: 11,
-      xLabelColor: 'rgba(127, 140, 175, 0.85)',
-      yLabelColor: 'rgba(127, 140, 175, 0.8)',
-      xLabelOffset: 20,
+      fontSize: 13,
+      xLabelColor: 'rgba(255, 255, 255, 0.7)',
+      yLabelColor: 'rgba(255, 255, 255, 0.7)',
+      xLabelOffset: 5,
       yLabelOffset: 0,
       drawYAxisLine: false,
       maxXLabels: 6,
-      xLabelRotation: -50,
+      xLabelRotation: 0,
     },
   },
 }))

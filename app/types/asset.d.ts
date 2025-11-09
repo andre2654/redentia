@@ -1,5 +1,19 @@
 import type { IChartDataPoint } from './chart';
 
+export interface AssetMdiEntry {
+    ticker: string
+    month: number
+    occurrences: number
+    total_years: number
+    pm: string
+    sv: string
+    mdi: string
+    sum_rate: string
+    sum_total: string
+    years_back: number
+    calculated_at: string
+}
+
 export interface IAsset {
     stock: string,
     name: string,
@@ -9,7 +23,7 @@ export interface IAsset {
     market_cap: number,
     logo?: string,
     sector?: string,
-    type?: 'stock' | 'fund' | 'bdr',
+    type?: 'stock' | 'fund' | 'bdr' | 'STOCK' | 'ETF' | 'BDR' | 'REIT' | 'UNKNOWN',
     priceHistory?: IChartDataPoint[],
     // Campos opcionais para getTickerDetails
     ticker?: string,
@@ -21,7 +35,8 @@ export interface IAsset {
     website?: string,
     long_business_summary?: string,
     market_price?: number,
-    change_percent?: number
+    change_percent?: number,
+    mdi?: AssetMdiEntry[]
 }
 
 // Interface para resposta da API getTickerFundamentus
