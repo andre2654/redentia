@@ -7,14 +7,14 @@
       class="mx-auto mb-8 flex w-[335px] flex-col gap-2"
       @submit="onSubmit"
     >
-      <h1 class="text-[13px] font-bold text-white/80">Login</h1>
+      <h1 class="text-[13px] font-bold text-white/80">Usuário</h1>
 
       <!-- Login -->
       <UFormField name="login" class="mb-4">
         <AtomsFormInput
           v-model="state.login"
           type="text"
-          placeholder="Login"
+          placeholder="Usuário"
           size="lg"
           class="w-full"
         />
@@ -35,7 +35,7 @@
         Cadastre-se
       </NuxtLink>
       <p class="text-center text-[10px] text-white/70">
-        Ao fazer login e usar o PayToSee, você concorda com nossos Termos de
+        Ao fazer login e usar o Redentia, você concorda com nossos Termos de
         Serviço e Política de privacidade e confirma que tem pelo menos 18 anos
         de idade
       </p>

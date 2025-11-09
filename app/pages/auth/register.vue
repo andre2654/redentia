@@ -25,7 +25,7 @@
         <AtomsFormInput
           v-model="state.login"
           type="text"
-          placeholder="Login"
+          placeholder="Usuário"
           size="lg"
           class="w-full"
         />
@@ -90,7 +90,7 @@
             text
           }}</span>
           <span class="text-[13px] font-extralight text-white/80">
-            your password must contain:
+            Sua senha precisa ter:
           </span>
         </div>
 
@@ -120,7 +120,7 @@
         Já tem uma conta? Faça login
       </NuxtLink>
       <p class="text-center text-[10px] text-white/70">
-        Ao fazer login e usar o PayToSee, você concorda com nossos Termos de
+        Ao fazer login e usar o Redentia, você concorda com nossos Termos de
         Serviço e Política de privacidade e confirma que tem pelo menos 18 anos
         de idade
       </p>
