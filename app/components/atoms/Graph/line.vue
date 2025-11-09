@@ -119,6 +119,8 @@ interface Props {
   loading?: boolean
   locale?: string
   currency?: string
+  referenceValue?: number | string | null
+  showReferenceIndicator?: boolean
 }
 
 /* ========== Configurações padrão ========== */
@@ -143,6 +145,8 @@ const props = withDefaults(defineProps<Props>(), {
   loading: false,
   locale: 'pt-BR',
   currency: 'R$',
+  referenceValue: null,
+  showReferenceIndicator: true,
 })
 
 /* ========== Validação de dados ========== */
@@ -477,6 +481,9 @@ const dynamicColor = computed(() => {
 
 const closingLineValue = computed<number | null>(() => {
   try {
+    const overrideValue = parseNumericValue(props.referenceValue ?? null)
+    if (overrideValue !== null) return overrideValue
+
     const legendValue = props.legend?.find((item) =>
       typeof item.label === 'string' && item.label.toLowerCase().includes('fechamento')
     )?.value
@@ -724,7 +731,7 @@ const hoverLinePlugin: Plugin<'line'> = {
       const segmentOrientations: ('above' | 'below' | 'mixed')[] =
         (chart as any)._segmentOrientations ?? []
 
-      if (!props.loading && props.data.length > 0) {
+      if (!props.loading && props.data.length > 0 && props.showReferenceIndicator) {
         const currentValue = props.data[props.data.length - 1].value
         const yPosition = yScale.getPixelForValue(currentValue)
 
@@ -1129,7 +1136,7 @@ const chartOptions = computed(() => ({
     x: {
       offset: false,
       bounds: 'data',
-      display: true,
+      display: false,
       grid: {
         display: true,
         color: 'rgba(255, 255, 255, 0.3)',
@@ -1155,7 +1162,7 @@ const chartOptions = computed(() => ({
       reverse: false,
       grid: {
         display: true,
-        color: 'rgba(255, 255, 255, 0.3)',
+        color: 'rgba(255, 255, 255, 0.2)',
         drawBorder: false,
         drawTicks: false,
         lineWidth: 0.5,

@@ -82,6 +82,7 @@
 
     <!-- Details in wallet -->
     <div
+      v-if="false"
       class="dark:bg-tertiary/40 bg-tertiary flex w-full flex-col gap-3 rounded-[30px] px-6 py-4 text-white"
     >
       <button

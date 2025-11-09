@@ -200,6 +200,8 @@
                   :height="350"
                   :legend="[{ label: 'Patrimônio', color: '#00D9A5' }]"
                   :colors="['#00D9A5']"
+                  :reference-value="0"
+                  :show-reference-indicator="false"
                 />
               </div>
             </div>
