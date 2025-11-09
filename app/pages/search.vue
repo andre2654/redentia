@@ -383,6 +383,8 @@ const minMax = {
 const showStock = ref(true)
 const showReit = ref(true)
 const showBdr = ref(true)
+type GroupFilter = 'stocks' | 'etfs' | 'reits' | 'bdrs'
+const groupFilter = ref<GroupFilter | null>(null)
 
 function normalizeBool(v: unknown, def = true) {
   if (v === undefined) return def
@@ -412,6 +414,38 @@ function readFiltersFromUrl() {
   showStock.value = normalizeBool(q.stock, true)
   showReit.value = normalizeBool(q.reit, true)
   showBdr.value = normalizeBool(q.bdr, true)
+
+  const groupParam =
+    typeof q.group === 'string' ? (q.group as string).toLowerCase() : null
+  switch (groupParam) {
+    case 'stocks':
+      showStock.value = true
+      showReit.value = false
+      showBdr.value = false
+      groupFilter.value = 'stocks'
+      break
+    case 'etfs':
+      showStock.value = true
+      showReit.value = false
+      showBdr.value = false
+      groupFilter.value = 'etfs'
+      break
+    case 'reits':
+      showStock.value = false
+      showReit.value = true
+      showBdr.value = false
+      groupFilter.value = 'reits'
+      break
+    case 'bdrs':
+      showStock.value = false
+      showReit.value = false
+      showBdr.value = true
+      groupFilter.value = 'bdrs'
+      break
+    default:
+      groupFilter.value = null
+      break
+  }
 }
 
 function buildQueryFromFilters() {
@@ -440,11 +474,22 @@ function buildQueryFromFilters() {
 // Dados filtrados
 const filteredData = computed(() => {
   if (assetsLoading.value) return []
-  const allowedTypes = new Set<string>([
-    ...(showStock.value ? ['stock', 'STOCK'] : []),
-    ...(showReit.value ? ['reit', 'REIT'] : []),
-    ...(showBdr.value ? ['bdr', 'BDR'] : []),
-  ])
+  const allowedTypes = new Set<string>()
+  if (showStock.value) {
+    allowedTypes.add('STOCK')
+    if (groupFilter.value === 'etfs') {
+      allowedTypes.add('ETF')
+    }
+  } else if (groupFilter.value === 'etfs') {
+    allowedTypes.add('ETF')
+  }
+  if (showReit.value) {
+    allowedTypes.add('REIT')
+    allowedTypes.add('FUND')
+  }
+  if (showBdr.value) {
+    allowedTypes.add('BDR')
+  }
 
   const toNum = (v: unknown) => {
     const n = Number(v)
@@ -460,8 +505,14 @@ const filteredData = computed(() => {
 
   return data.value.filter((it) => {
     // tipo
-    const t = (it.type || '').toString()
-    if (allowedTypes.size && !allowedTypes.has(t)) return false
+    const normalizedType = (it.type || '').toString().toUpperCase()
+    if (allowedTypes.size && !allowedTypes.has(normalizedType)) return false
+    const applyEtfOnly =
+      groupFilter.value === 'etfs' &&
+      showStock.value &&
+      !showReit.value &&
+      !showBdr.value
+    if (applyEtfOnly && normalizedType !== 'ETF') return false
     // market cap
     if (mcMin !== undefined && it.market_cap < mcMin) return false
     if (mcMax !== undefined && it.market_cap > mcMax) return false

@@ -169,7 +169,10 @@
                 :stock="stock"
               />
             </div>
-            <NuxtLink to="/assets" class="hover:underline">
+            <NuxtLink
+              :to="{ path: '/search', query: rankingLinkQueries.top.stocks }"
+              class="hover:underline"
+            >
               Ver todos
             </NuxtLink>
           </div>
@@ -184,7 +187,10 @@
                 :stock="stock"
               />
             </div>
-            <NuxtLink to="/assets" class="hover:underline">
+            <NuxtLink
+              :to="{ path: '/search', query: rankingLinkQueries.top.etfs }"
+              class="hover:underline"
+            >
               Ver todos
             </NuxtLink>
           </div>
@@ -199,7 +205,10 @@
                 :stock="stock"
               />
             </div>
-            <NuxtLink to="/assets" class="hover:underline">
+            <NuxtLink
+              :to="{ path: '/search', query: rankingLinkQueries.top.reits }"
+              class="hover:underline"
+            >
               Ver todos
             </NuxtLink>
           </div>
@@ -214,7 +223,10 @@
                 :stock="stock"
               />
             </div>
-            <NuxtLink to="/assets" class="hover:underline">
+            <NuxtLink
+              :to="{ path: '/search', query: rankingLinkQueries.top.bdrs }"
+              class="hover:underline"
+            >
               Ver todos
             </NuxtLink>
           </div>
@@ -234,7 +246,10 @@
                 :stock="stock"
               />
             </div>
-            <NuxtLink to="/assets" class="hover:underline">
+            <NuxtLink
+              :to="{ path: '/search', query: rankingLinkQueries.bottom.stocks }"
+              class="hover:underline"
+            >
               Ver todos
             </NuxtLink>
           </div>
@@ -249,7 +264,10 @@
                 :stock="stock"
               />
             </div>
-            <NuxtLink to="/assets" class="hover:underline">
+            <NuxtLink
+              :to="{ path: '/search', query: rankingLinkQueries.bottom.etfs }"
+              class="hover:underline"
+            >
               Ver todos
             </NuxtLink>
           </div>
@@ -264,7 +282,10 @@
                 :stock="stock"
               />
             </div>
-            <NuxtLink to="/assets" class="hover:underline">
+            <NuxtLink
+              :to="{ path: '/search', query: rankingLinkQueries.bottom.reits }"
+              class="hover:underline"
+            >
               Ver todos
             </NuxtLink>
           </div>
@@ -279,7 +300,10 @@
                 :stock="stock"
               />
             </div>
-            <NuxtLink to="/assets" class="hover:underline">
+            <NuxtLink
+              :to="{ path: '/search', query: rankingLinkQueries.bottom.bdrs }"
+              class="hover:underline"
+            >
               Ver todos
             </NuxtLink>
           </div>
@@ -358,6 +382,21 @@ const showMap = ref(false)
 const loading = ref(true)
 const loadingIndicators = ref(true)
 const treemapFilter = ref<'all' | 'positive' | 'negative'>('all')
+
+const rankingLinkQueries = {
+  top: {
+    stocks: { ch_min: 0, group: 'stocks', reit: 0, bdr: 0 },
+    etfs: { ch_min: 0, group: 'etfs', reit: 0, bdr: 0 },
+    reits: { ch_min: 0, group: 'reits', stock: 0, bdr: 0 },
+    bdrs: { ch_min: 0, group: 'bdrs', stock: 0, reit: 0 },
+  },
+  bottom: {
+    stocks: { ch_max: 0, group: 'stocks', reit: 0, bdr: 0 },
+    etfs: { ch_max: 0, group: 'etfs', reit: 0, bdr: 0 },
+    reits: { ch_max: 0, group: 'reits', stock: 0, bdr: 0 },
+    bdrs: { ch_max: 0, group: 'bdrs', stock: 0, reit: 0 },
+  },
+} as const
 
 // Dados mock para o treemap - separados por categorias
 const stocksData = ref([])

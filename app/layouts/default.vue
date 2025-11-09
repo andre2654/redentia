@@ -212,7 +212,7 @@
             </div>
           </NuxtLink>
         </div>
-        <AtomsSidebarMonthGoal />
+        <AtomsSidebarMonthGoal v-if="false" />
       </div>
     </div>
     <div
