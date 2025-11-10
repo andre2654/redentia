@@ -40,12 +40,14 @@
       </div>
     </template>
 
-    <!-- Graph -->
-    <div class="w-full py-6">
-      <div class="flex flex-col gap-4">
-        <div class="flex items-center justify-between px-6">
-          <h2 class="mb-4 text-lg font-semibold">
-            Cotação <span class="max-md:hidden">({{ ticker }})</span>
+    <div class="flex flex-col gap-8 px-4 pb-10 pt-6 md:px-6">
+      <!-- Graph -->
+      <section>
+        <header
+          class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <h2 class="text-lg font-semibold text-white">
+            Cotação <span class="hidden sm:inline">({{ ticker }})</span>
           </h2>
           <UButtonGroup orientation="horizontal" variant="soft">
             <UButton
@@ -70,343 +72,294 @@
               @click="selectedTimeRange = 'ytd'"
             />
           </UButtonGroup>
-        </div>
+        </header>
         <AtomsGraphLine
           :data="chartData"
           :legend="chartLabel"
-          :height="350"
+          :height="320"
           :loading="isLoadingChart"
         />
-      </div>
-    </div>
+      </section>
 
-    <!-- Details in wallet -->
-    <div
-      v-if="false"
-      class="dark:bg-tertiary/40 bg-tertiary flex w-full flex-col gap-3 rounded-[30px] px-6 py-4 text-white"
-    >
-      <button
-        class="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-white/10"
-        @click="seeMyInsights = !seeMyInsights"
+      <!-- Asset Indicators -->
+      <section
+        class="rounded-3xl border border-white/5 bg-white/[0.02] p-6 backdrop-blur-sm"
       >
-        <UIcon
-          name="ic-round-arrow-forward-ios"
-          class="transition-transform"
-          :class="{
-            'rotate-90': seeMyInsights,
-          }"
-        />
-        <h2 class="text-lg font-semibold">Sua carteira</h2>
-      </button>
-      <div
-        v-if="seeMyInsights"
-        class="flex w-full gap-6 px-6 max-md:flex-col md:flex-wrap"
-      >
-        <MoleculesTickerIndicator
-          name="Score de viabilidade"
-          value="Alta"
-          help-text="Dividend Yield é a relação entre o dividendo pago por ação e o preço da ação."
-          is-intelligent
-          :help-text-with-tooltip="false"
-        />
-        <MoleculesTickerIndicator
-          name="Grau de Endividamento Inteligente"
-          value="Baixo"
-          help-text="Dividend Yield é a relação entre o dividendo pago por ação e o preço da ação."
-          is-intelligent
-          :help-text-with-tooltip="false"
-        /><MoleculesTickerIndicator
-          name="Proteção do Minoritário"
-          value="Alto"
-          help-text="Dividend Yield é a relação entre o dividendo pago por ação e o preço da ação."
-          is-intelligent
-          :help-text-with-tooltip="false"
-        />
-      </div>
-    </div>
+        <header class="mb-4 flex flex-col gap-2">
+          <h2 class="text-lg font-semibold text-white">Indicadores</h2>
+          <p class="text-sm text-white/60">
+            Principais métricas fundamentalistas e inteligência automatizada
+            para {{ ticker }}.
+          </p>
+        </header>
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          <template v-if="isLoadingFundamentus">
+            <USkeleton
+              v-for="i in 6"
+              :key="`basic-loading-${i}`"
+              class="h-20 w-full rounded-xl"
+            />
+          </template>
+          <template v-else-if="fundamentusData">
+            <MoleculesTickerIndicator
+              name="P/L"
+              :value="
+                parseFloat(fundamentusData.key_statistics.forward_pe).toFixed(1)
+              "
+              help-text="Preço sobre Lucro - indica quantos anos seriam necessários para recuperar o investimento."
+            />
+            <MoleculesTickerIndicator
+              name="P/VPA"
+              :value="
+                parseFloat(
+                  fundamentusData.key_statistics.price_to_book
+                ).toFixed(2)
+              "
+              help-text="Preço sobre Valor Patrimonial por Ação - compara o preço da ação com seu valor contábil."
+            />
+            <MoleculesTickerIndicator
+              name="Dividend Yield"
+              :value="
+                parseFloat(
+                  fundamentusData.key_statistics.dividend_yield
+                ).toFixed(1) + '%'
+              "
+              help-text="Dividend Yield é a relação entre o dividendo pago por ação e o preço da ação."
+            />
+            <MoleculesTickerIndicator
+              name="ROE"
+              :value="
+                (
+                  parseFloat(fundamentusData.financial_data.return_on_equity) *
+                  100
+                ).toFixed(1) + '%'
+              "
+              help-text="Return on Equity - rentabilidade sobre o patrimônio líquido."
+            />
+            <MoleculesTickerIndicator
+              name="ROA"
+              :value="
+                (
+                  parseFloat(fundamentusData.financial_data.return_on_assets) *
+                  100
+                ).toFixed(1) + '%'
+              "
+              help-text="Return on Assets - rentabilidade sobre os ativos totais."
+            />
+            <MoleculesTickerIndicator
+              name="Margem Líquida"
+              :value="
+                (
+                  parseFloat(fundamentusData.financial_data.profit_margins) *
+                  100
+                ).toFixed(1) + '%'
+              "
+              help-text="Percentual do lucro líquido em relação à receita total."
+            />
+          </template>
+          <template v-else>
+            <div
+              class="col-span-full rounded-xl border border-dashed border-white/10 p-6 text-center text-sm text-white/50"
+            >
+              Dados fundamentalistas indisponíveis no momento.
+            </div>
+          </template>
+        </div>
 
-    <!-- Asset Details -->
-    <div class="flex flex-col gap-4 p-4">
-      <h2 class="mb-4 px-6 text-lg font-bold">Indicadores básicos</h2>
-      <div
-        class="grid w-full grid-cols-3 gap-6 px-6 lg:grid-cols-6 xl:grid-cols-10"
-      >
-        <template v-if="isLoadingFundamentus">
-          <USkeleton v-for="i in 6" :key="i" class="h-16 w-full rounded-lg" />
-        </template>
-        <template v-else-if="fundamentusData">
-          <MoleculesTickerIndicator
-            name="P/L"
-            :value="
-              parseFloat(fundamentusData.key_statistics.forward_pe).toFixed(1)
-            "
-            help-text="Preço sobre Lucro - indica quantos anos seriam necessários para recuperar o investimento."
-          />
-          <MoleculesTickerIndicator
-            name="P/VPA"
-            :value="
-              parseFloat(fundamentusData.key_statistics.price_to_book).toFixed(
-                2
-              )
-            "
-            help-text="Preço sobre Valor Patrimonial por Ação - compara o preço da ação com seu valor contábil."
-          />
-          <MoleculesTickerIndicator
-            name="D.Y."
-            :value="
-              parseFloat(fundamentusData.key_statistics.dividend_yield).toFixed(
-                1
-              ) + '%'
-            "
-            help-text="Dividend Yield é a relação entre o dividendo pago por ação e o preço da ação."
-          />
-          <MoleculesTickerIndicator
-            name="ROE"
-            :value="
-              (
-                parseFloat(fundamentusData.financial_data.return_on_equity) *
-                100
-              ).toFixed(1) + '%'
-            "
-            help-text="Return on Equity - rentabilidade sobre o patrimônio líquido."
-          />
-          <MoleculesTickerIndicator
-            name="ROA"
-            :value="
-              (
-                parseFloat(fundamentusData.financial_data.return_on_assets) *
-                100
-              ).toFixed(1) + '%'
-            "
-            help-text="Return on Assets - rentabilidade sobre os ativos totais."
-          />
-          <MoleculesTickerIndicator
-            name="Margem Líquida"
-            :value="
-              (
-                parseFloat(fundamentusData.financial_data.profit_margins) * 100
-              ).toFixed(1) + '%'
-            "
-            help-text="Percentual do lucro líquido em relação à receita total."
-          />
-        </template>
-        <template v-else>
-          <div class="col-span-full text-center text-gray-500">
-            Dados fundamentalistas indisponíveis
-          </div>
-        </template>
-      </div>
-      <button
-        class="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-black/10 hover:dark:bg-white/10"
-        @click="seeSmartIndicators = !seeSmartIndicators"
-      >
-        <UIcon
-          name="ic-round-arrow-forward-ios"
-          class="transition-transform"
-          :class="{
-            'rotate-90': seeSmartIndicators,
-          }"
+        <h2 class="mt-8 text-lg font-semibold text-white">
+          Indicadores inteligentes
+        </h2>
+
+        <div
+          class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+        >
+          <template v-if="isLoadingFundamentus">
+            <USkeleton
+              v-for="i in 4"
+              :key="`smart-loading-${i}`"
+              class="h-20 w-full rounded-xl"
+            />
+          </template>
+          <template v-else-if="intelligentIndicators">
+            <MoleculesTickerIndicator
+              name="Endividamento (D/E)"
+              :value="intelligentIndicators.debtToEquity.value + '%'"
+              help-text="Relação entre dívida total e patrimônio líquido. Valores baixos são melhores."
+              is-intelligent
+              :help-text-with-tooltip="false"
+            />
+            <MoleculesTickerIndicator
+              name="Liquidez Corrente"
+              :value="intelligentIndicators.currentRatio.value"
+              help-text="Capacidade de pagamento das obrigações de curto prazo."
+              is-intelligent
+              :help-text-with-tooltip="false"
+            />
+            <MoleculesTickerIndicator
+              name="Rentabilidade (ROE)"
+              :value="intelligentIndicators.roe.value"
+              help-text="Retorno sobre o patrimônio líquido dos acionistas."
+              is-intelligent
+              :help-text-with-tooltip="false"
+            />
+            <MoleculesTickerIndicator
+              name="Eficiência (ROA)"
+              :value="intelligentIndicators.roa.value"
+              help-text="Retorno sobre os ativos totais da empresa."
+              is-intelligent
+              :help-text-with-tooltip="false"
+            />
+            <MoleculesTickerIndicator
+              name="Margem de Lucro"
+              :value="intelligentIndicators.profitMargin.value"
+              help-text="Percentual de lucro líquido sobre a receita total."
+              is-intelligent
+              :help-text-with-tooltip="false"
+            />
+            <MoleculesTickerIndicator
+              name="Valuation P/VPA"
+              :value="intelligentIndicators.priceToBook.value"
+              help-text="Preço da ação dividido pelo valor patrimonial por ação."
+              is-intelligent
+              :help-text-with-tooltip="false"
+            />
+            <MoleculesTickerIndicator
+              name="Preço/Lucro Projetado"
+              :value="intelligentIndicators.forwardPE.value"
+              help-text="Projeção de P/L baseada nos lucros futuros estimados."
+              is-intelligent
+              :help-text-with-tooltip="false"
+            />
+            <MoleculesTickerIndicator
+              name="Dividend Yield"
+              :value="intelligentIndicators.dividendYield.value"
+              help-text="Relação entre dividendos pagos e preço atual da ação."
+              is-intelligent
+              :help-text-with-tooltip="false"
+            />
+          </template>
+          <template v-else>
+            <div
+              class="col-span-full rounded-xl border border-dashed border-white/10 p-6 text-center text-sm text-white/50"
+            >
+              Indicadores inteligentes indisponíveis.
+            </div>
+          </template>
+        </div>
+      </section>
+
+      <!-- Dividends Chart -->
+      <section>
+        <header class="mb-4 flex flex-col gap-2">
+          <h2 class="text-lg font-semibold text-white">Dividendos</h2>
+          <p class="text-sm text-white/60">
+            Histórico de pagamentos e projeção inteligente para os próximos
+            períodos.
+          </p>
+        </header>
+        <AtomsGraphDividends
+          :data="dividendsData"
+          :loading="isLoadingDividends"
         />
-        <h2 class="text-lg font-semibold">Indicadores inteligentes</h2>
-      </button>
-      <div
-        v-if="seeSmartIndicators"
-        class="flex w-full gap-6 px-6 max-md:flex-col md:flex-wrap"
-      >
-        <template v-if="isLoadingFundamentus">
-          <USkeleton v-for="i in 4" :key="i" class="h-20 w-48 rounded-lg" />
-        </template>
-        <template v-else-if="intelligentIndicators">
-          <MoleculesTickerIndicator
-            name="Endividamento (D/E)"
-            :value="intelligentIndicators.debtToEquity.value + '%'"
-            help-text="Relação entre dívida total e patrimônio líquido. Valores baixos são melhores."
-            is-intelligent
-            :help-text-with-tooltip="false"
-          />
-          <MoleculesTickerIndicator
-            name="Liquidez Corrente"
-            :value="intelligentIndicators.currentRatio.value"
-            help-text="Capacidade de pagamento das obrigações de curto prazo."
-            is-intelligent
-            :help-text-with-tooltip="false"
-          />
-          <MoleculesTickerIndicator
-            name="Rentabilidade (ROE)"
-            :value="intelligentIndicators.roe.value"
-            help-text="Retorno sobre o patrimônio líquido dos acionistas."
-            is-intelligent
-            :help-text-with-tooltip="false"
-          />
-          <MoleculesTickerIndicator
-            name="Eficiência (ROA)"
-            :value="intelligentIndicators.roa.value"
-            help-text="Retorno sobre os ativos totais da empresa."
-            is-intelligent
-            :help-text-with-tooltip="false"
-          />
-          <MoleculesTickerIndicator
-            name="Margem de Lucro"
-            :value="intelligentIndicators.profitMargin.value"
-            help-text="Percentual de lucro líquido sobre a receita total."
-            is-intelligent
-            :help-text-with-tooltip="false"
-          />
-          <MoleculesTickerIndicator
-            name="Valuation P/VPA"
-            :value="intelligentIndicators.priceToBook.value"
-            help-text="Preço da ação dividido pelo valor patrimonial por ação."
-            is-intelligent
-            :help-text-with-tooltip="false"
-          />
-        </template>
-        <template v-else>
-          <div class="col-span-full text-center text-gray-500">
-            Indicadores inteligentes indisponíveis
-          </div>
-        </template>
-      </div>
+      </section>
 
       <!-- Financial Statements -->
-      <div class="mt-6 space-y-6">
-        <h2 class="px-6 text-lg font-bold">Demonstrações Financeiras</h2>
+      <section>
+        <header class="mb-5 flex flex-col gap-2">
+          <h2 class="text-lg font-semibold text-white">
+            Demonstrações Financeiras
+          </h2>
+          <p class="text-sm text-white/60">
+            Visão rápida dos resultados, caixa e balanço mais recentes.
+          </p>
+        </header>
 
-        <!-- Cash Flow Section -->
-        <div class="px-6">
-          <h3
-            class="text-md mb-4 font-semibold text-gray-700 dark:text-gray-300"
-          >
-            Fluxo de Caixa
-          </h3>
-          <AtomsGraphCashFlowPro
-            :data="transformedFundamentusData"
+        <div
+          v-if="
+            cashFlowItems.length ||
+            balanceItems.length ||
+            incomeItems.length ||
+            isLoadingFundamentus
+          "
+          class="grid gap-4 lg:grid-cols-3"
+        >
+          <AtomsGraphFinancialSummary
+            title="Fluxo de Caixa"
+            :items="cashFlowItems"
+            :is-loading="isLoadingFundamentus"
+          />
+          <AtomsGraphFinancialSummary
+            title="Balanço Patrimonial"
+            :items="balanceItems"
+            :is-loading="isLoadingFundamentus"
+          />
+          <AtomsGraphFinancialSummary
+            title="Demonstração de Resultados"
+            :items="incomeItems"
             :is-loading="isLoadingFundamentus"
           />
         </div>
-
-        <!-- Balance Sheet Section -->
-        <div class="px-6">
-          <h3
-            class="text-md mb-4 font-semibold text-gray-700 dark:text-gray-300"
-          >
-            Balanço Patrimonial
-          </h3>
-          <AtomsGraphBalancePro
-            :data="transformedFundamentusData"
-            :is-loading="isLoadingFundamentus"
-          />
+        <div
+          v-else
+          class="rounded-xl border border-dashed border-white/10 p-6 text-center text-sm text-white/50"
+        >
+          Demonstrações financeiras indisponíveis para este ativo.
         </div>
+      </section>
 
-        <!-- Income Statement Section -->
-        <div class="px-6">
-          <h3
-            class="text-md mb-4 font-semibold text-gray-700 dark:text-gray-300"
-          >
-            Demonstração de Resultados (DRE)
-          </h3>
-          <AtomsGraphIncomePro
-            :data="transformedFundamentusData"
-            :is-loading="isLoadingFundamentus"
+      <!-- Asset Info -->
+      <section>
+        <header class="mb-4 flex items-center gap-4">
+          <USkeleton v-if="isLoadingAsset" class="h-16 w-16 rounded-2xl" />
+          <img
+            v-else-if="asset?.logo"
+            :src="asset.logo"
+            alt="Asset Logo"
+            class="h-16 w-16 rounded-2xl object-cover"
           />
-        </div>
-      </div>
-    </div>
-
-    <!-- Dividends Chart -->
-    <div class="flex flex-col gap-4 p-6">
-      <AtomsGraphDividends
-        :data="dividendsData"
-        :loading="isLoadingDividends"
-      />
-    </div>
-
-    <!-- Asset docs -->
-    <!-- <div class="flex flex-col gap-4 p-4">
-      <h2 class="text-lg font-bold">Documentos</h2>
-      <label
-        for="map-toggle"
-        class="hover:bg-secondary/10 mt-3 flex max-w-fit items-center justify-between gap-4 rounded-full border px-3 py-2"
-        :class="{
-          'bg-secondary/15 dark:bg-tertiary/60 !border-tertiary':
-            showRelevantDocs,
-        }"
-      >
-        <IconAi class="fill-secondary h-5" />
-        <h2 class="text-secondary select-none">Mostrar somente relevantes</h2>
-        <USwitch
-          id="map-toggle"
-          v-model="showRelevantDocs"
-          color="secondary"
-          checked-icon="lucide-check"
-          :ui="{
-            base: 'data-[state=checked]:border-secondary',
-          }"
-        />
-      </label>
-      <div
-        class="flex flex-col gap-2 rounded-[30px] border p-6"
-        :class="{
-          'bg-tertiary dark:bg-tertiary/40 !border-tertiary text-secondary':
-            showRelevantDocs,
-        }"
-      >
-        <div v-for="i in 10" :key="i" class="flex items-center justify-between">
-          <div class="flex flex-col">
-            <b class="text-[14px]"
-              >- Esclarecimentos sobre questionamentos da CVM/B3 - Comunicado ao
-              Mercado</b
-            >
-            <p class="text-[11px]">
-              Negociações atípicas de valores mobiliários
-            </p>
+          <div class="flex flex-col gap-1">
+            <USkeleton v-if="isLoadingAsset" class="h-4 w-32" />
+            <template v-else>
+              <span class="text-sm text-white/60">Resumo do ativo</span>
+              <h3 class="text-lg font-semibold text-white">
+                {{ asset?.ticker }} • {{ asset?.name }}
+              </h3>
+            </template>
           </div>
-          <AtomsButton> Ver </AtomsButton>
+        </header>
+        <div class="grid gap-2 text-sm text-white/70">
+          <USkeleton v-if="isLoadingAsset" class="h-4 w-40" />
+          <template v-else>
+            <p v-if="asset?.sector">
+              Setor: <span class="text-white/90">{{ asset.sector }}</span>
+            </p>
+            <p v-if="asset?.industry">
+              Indústria: <span class="text-white/90">{{ asset.industry }}</span>
+            </p>
+            <p v-if="asset?.website">
+              Site oficial:
+              <a
+                :href="asset.website"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-primary underline"
+              >
+                {{ asset.website }}
+              </a>
+            </p>
+            <p v-if="asset?.long_business_summary" class="text-white/60">
+              {{ asset.long_business_summary }}
+            </p>
+          </template>
         </div>
-      </div>
-    </div> -->
+      </section>
 
-    <!-- Asset Info -->
-    <div class="flex flex-col gap-4 p-4">
-      <USkeleton v-if="isLoadingAsset" class="h-[200px] w-[200px] rounded-lg" />
-      <img
-        v-else-if="asset?.logo"
-        :src="asset.logo"
-        alt="Asset Logo"
-        class="h-[200px] w-[200px] rounded-lg"
+      <MoleculesChat
+        class="w-full bg-black/10 dark:bg-white/10"
+        routePath="/ticker"
+        :ticker="ticker"
       />
-      <div class="grid gap-2">
-        <USkeleton v-if="isLoadingAsset" class="h-4 w-[250px]" />
-        <!-- <USkeleton v-if="isLoadingAsset" class="h-4 w-[200px]" />
-        <USkeleton v-if="isLoadingAsset" class="h-4 w-[180px]" />
-        <USkeleton v-if="isLoadingAsset" class="h-4 w-[160px]" />
-        <USkeleton v-if="isLoadingAsset" class="h-4 w-[120px]" />
-        <USkeleton v-if="isLoadingAsset" class="h-4 w-[100px]" /> -->
-        <template v-else>
-          <b class="text-lg">{{ asset?.ticker }} - {{ asset?.name }}</b>
-          <!-- <b class="text-lg"
-            >{{ asset?.city }}, {{ asset?.state }} - {{ asset?.country }}</b
-          >
-          <b class="text-lg">Setor: {{ asset?.sector }}</b>
-          <b class="text-lg">Funcionários: {{ asset?.employees }}</b>
-          <a
-            v-if="asset?.website"
-            :href="asset.website"
-            target="_blank"
-            class="text-primary underline"
-            >Site oficial</a
-          >
-          <p class="text-sm opacity-70">
-            {{ asset?.long_business_summary }}
-          </p> -->
-        </template>
-      </div>
     </div>
-
-    <MoleculesChat
-      class="w-full bg-black/10 dark:bg-white/10"
-      routePath="/ticker"
-      :ticker="ticker"
-    />
   </NuxtLayout>
 </template>
 
@@ -438,9 +391,6 @@ const isLoadingDividends = ref(false)
 const fundamentusData = ref<FundamentusApiResponse | null>(null)
 const isLoadingFundamentus = ref(false)
 const selectedTimeRange = ref<ChartTimeRange>('month')
-const showRelevantDocs = ref(true)
-const seeMyInsights = ref(true)
-const seeSmartIndicators = ref(true)
 const isLoadingChart = ref(true)
 
 interface ChartPoint {
@@ -564,6 +514,74 @@ const transformedFundamentusData = computed((): FundamentusData | undefined => {
         }
       : undefined,
   }
+})
+
+const cashFlowItems = computed(() => {
+  const cashFlow = transformedFundamentusData.value?.cashFlow
+  if (!cashFlow) return []
+  return [
+    { label: 'Operacional', value: cashFlow.operatingCashFlow },
+    { label: 'Investimento', value: cashFlow.investingCashFlow },
+    { label: 'Financiamento', value: cashFlow.financingCashFlow },
+    { label: 'Livre', value: cashFlow.freeCashFlow },
+  ].flatMap((item) => {
+    if (item.value === undefined || item.value === null) return []
+    const numeric = Number(item.value)
+    return Number.isFinite(numeric)
+      ? [{ label: item.label, value: numeric }]
+      : []
+  })
+})
+
+const balanceItems = computed(() => {
+  const balance = transformedFundamentusData.value?.balanceSheet
+  if (!balance) return []
+  return [
+    { label: 'Ativos', value: balance.totalAssets },
+    { label: 'Passivos', value: balance.totalLiabilities },
+    { label: 'Patrimônio', value: balance.totalEquity },
+    { label: 'Caixa', value: balance.cash },
+    { label: 'Dívida LP', value: balance.longTermDebt },
+  ].flatMap((item) => {
+    if (item.value === undefined || item.value === null) return []
+    const numeric = Number(item.value)
+    return Number.isFinite(numeric)
+      ? [{ label: item.label, value: numeric }]
+      : []
+  })
+})
+
+const incomeItems = computed(() => {
+  const income = transformedFundamentusData.value?.incomeStatement
+  if (!income) return []
+  const derivedOperatingExpenses =
+    income.operatingExpenses !== undefined && income.operatingExpenses !== null
+      ? Number(income.operatingExpenses)
+      : income.grossProfit !== undefined && income.operatingIncome !== undefined
+        ? Number(income.grossProfit) - Number(income.operatingIncome)
+        : undefined
+
+  return [
+    { label: 'Receita', value: income.totalRevenue },
+    { label: 'Lucro Bruto', value: income.grossProfit },
+    { label: 'Operacional', value: income.operatingIncome },
+    { label: 'Lucro Líquido', value: income.netIncome },
+    { label: 'EBITDA', value: income.ebitda },
+    {
+      label: 'Despesas',
+      value:
+        derivedOperatingExpenses !== undefined &&
+        Number.isFinite(derivedOperatingExpenses)
+          ? -Math.abs(derivedOperatingExpenses)
+          : undefined,
+    },
+  ].flatMap((item) => {
+    if (item.value === undefined || item.value === null) return []
+    const numeric = Number(item.value)
+    return Number.isFinite(numeric)
+      ? [{ label: item.label, value: numeric }]
+      : []
+  })
 })
 
 // Computeds para indicadores inteligentes
