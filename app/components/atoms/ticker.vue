@@ -1,7 +1,7 @@
 <template>
   <NuxtLink
     :to="`/asset/${stock?.ticker}`"
-    class="bg-white/10 flex items-center gap-4 p-2 hover:brightness-105"
+    class="flex items-center gap-4 bg-white/5 p-2 hover:brightness-105"
   >
     <img
       v-if="hasLogo"
@@ -11,7 +11,7 @@
       alt="Descrição da imagem"
     />
     <IconLogo v-else class="h-[40px] w-[40px] fill-black dark:fill-white" />
-    <div class="flex justify-between w-full">
+    <div class="flex w-full justify-between">
       <div class="flex flex-col">
         <span class="text-[14px] font-medium">{{
           normalizeText(stock?.name)

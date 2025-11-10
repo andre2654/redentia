@@ -70,10 +70,7 @@
         />
         <AtomsSidebarButton to="/ideal" text="Ideal" disabled is-sub-item />
         <AtomsSidebarButton to="/dividends" text="Proventos" disabled />
-        <AtomsSidebarButton
-          to="/calculadora"
-          text="Calculadora inteligente"
-        />
+        <AtomsSidebarButton to="/calculadora" text="Calculadora inteligente" />
       </div>
       <NuxtLink
         to="/help"
@@ -154,7 +151,7 @@
               </div>
             </div>
           </div>
-           <div class="flex items-center">
+          <div class="flex items-center">
             <UButton
               color="neutral"
               variant="link"
@@ -212,7 +209,7 @@
             </div>
           </NuxtLink>
         </div>
-        <AtomsSidebarMonthGoal v-if="false" />
+        <AtomsSidebarMonthGoal />
       </div>
     </div>
     <div

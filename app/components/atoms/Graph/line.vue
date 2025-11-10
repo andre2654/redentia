@@ -4,16 +4,23 @@
     @mouseleave="onRootMouseLeave"
   >
     <!-- Container do gráfico -->
-    <div :style="{ height: `${height}px` }" class="relative w-full overflow-hidden rounded-lg">
+    <div
+      :style="{ height: `${height}px` }"
+      class="relative w-full overflow-hidden rounded-lg"
+    >
       <!-- Estado de carregamento -->
       <Transition name="fade">
         <div
           v-if="loading"
-          class="absolute inset-0 z-20 flex items-center justify-center bg-white/50 dark:bg-black/50 backdrop-blur-sm"
+          class="absolute inset-0 z-20 flex items-center justify-center bg-white/50 backdrop-blur-sm dark:bg-black/50"
         >
           <div class="flex flex-col items-center gap-3">
-            <div class="h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600 dark:border-gray-700 dark:border-t-gray-400" />
-            <span class="text-sm text-gray-600 dark:text-gray-400">Carregando...</span>
+            <div
+              class="h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600 dark:border-gray-700 dark:border-t-gray-400"
+            />
+            <span class="text-sm text-gray-600 dark:text-gray-400"
+              >Carregando...</span
+            >
           </div>
         </div>
       </Transition>
@@ -37,9 +44,13 @@
           :style="tooltipStyle"
           :aria-hidden="!showTooltip"
         >
-          <div class="flex flex-col min-w-0">
-            <span class="truncate text-[15px] font-medium">{{ tooltipData.value }}</span>
-            <span class="truncate text-[13px] opacity-60">{{ tooltipData.label }}</span>
+          <div class="flex min-w-0 flex-col">
+            <span class="truncate text-[15px] font-medium">{{
+              tooltipData.value
+            }}</span>
+            <span class="truncate text-[13px] opacity-60">{{
+              tooltipData.label
+            }}</span>
           </div>
         </div>
       </Transition>
@@ -330,7 +341,20 @@ function formatXAxisLabel(rawLabel: string): string {
 function formatTooltipDate(rawDate: string): string {
   if (!rawDate) return rawDate
 
-  const monthNames = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez']
+  const monthNames = [
+    'jan',
+    'fev',
+    'mar',
+    'abr',
+    'mai',
+    'jun',
+    'jul',
+    'ago',
+    'set',
+    'out',
+    'nov',
+    'dez',
+  ]
 
   const tryParse = (value: string): Date | null => {
     const parsed = new Date(value)
@@ -462,7 +486,11 @@ const tooltipClasses = computed(() => {
 const dynamicColor = computed(() => {
   if (props.loading) return DEFAULTS.GRAY_COLOR
 
-  if (isDragging.value && dragState.startIndex !== null && dragState.endIndex !== null) {
+  if (
+    isDragging.value &&
+    dragState.startIndex !== null &&
+    dragState.endIndex !== null
+  ) {
     const startIdx = Math.min(dragState.startIndex, dragState.endIndex)
     const endIdx = Math.max(dragState.startIndex, dragState.endIndex)
 
@@ -484,8 +512,10 @@ const closingLineValue = computed<number | null>(() => {
     const overrideValue = parseNumericValue(props.referenceValue ?? null)
     if (overrideValue !== null) return overrideValue
 
-    const legendValue = props.legend?.find((item) =>
-      typeof item.label === 'string' && item.label.toLowerCase().includes('fechamento')
+    const legendValue = props.legend?.find(
+      (item) =>
+        typeof item.label === 'string' &&
+        item.label.toLowerCase().includes('fechamento')
     )?.value
 
     const parsedLegend = parseNumericValue(legendValue ?? null)
@@ -528,7 +558,9 @@ function fillRegionBetween(
   if (pointA.x === pointB.x && pointA.y === pointB.y) return
 
   const relevantY =
-    orientation === 'below' ? Math.max(pointA.y, pointB.y) : Math.min(pointA.y, pointB.y)
+    orientation === 'below'
+      ? Math.max(pointA.y, pointB.y)
+      : Math.min(pointA.y, pointB.y)
   if (relevantY === closingY) return
 
   ctx.beginPath()
@@ -569,7 +601,14 @@ function drawClosingFillSegment(
     const targetGradient =
       targetOrientation === 'below' ? gradients.negative : gradients.positive
 
-    fillRegionBetween(ctx, pointA, pointB, closingY, targetOrientation, targetGradient)
+    fillRegionBetween(
+      ctx,
+      pointA,
+      pointB,
+      closingY,
+      targetOrientation,
+      targetGradient
+    )
     return targetOrientation
   }
 
@@ -581,7 +620,13 @@ function drawClosingFillSegment(
 
   const clampedT = Math.max(0, Math.min(1, t))
   if (clampedT <= 0 || clampedT >= 1) {
-    fillRegionBetween(ctx, pointA, pointB, closingY, deltaA < 0 ? 'below' : 'above')
+    fillRegionBetween(
+      ctx,
+      pointA,
+      pointB,
+      closingY,
+      deltaA < 0 ? 'below' : 'above'
+    )
     return deltaA < 0 ? 'below' : 'above'
   }
 
@@ -591,12 +636,40 @@ function drawClosingFillSegment(
   }
 
   if (deltaA < 0) {
-    fillRegionBetween(ctx, pointA, intersectionPoint, closingY, 'below', gradients.negative)
-    fillRegionBetween(ctx, intersectionPoint, pointB, closingY, 'above', gradients.positive)
+    fillRegionBetween(
+      ctx,
+      pointA,
+      intersectionPoint,
+      closingY,
+      'below',
+      gradients.negative
+    )
+    fillRegionBetween(
+      ctx,
+      intersectionPoint,
+      pointB,
+      closingY,
+      'above',
+      gradients.positive
+    )
     return 'mixed'
   } else {
-    fillRegionBetween(ctx, pointA, intersectionPoint, closingY, 'above', gradients.positive)
-    fillRegionBetween(ctx, intersectionPoint, pointB, closingY, 'below', gradients.negative)
+    fillRegionBetween(
+      ctx,
+      pointA,
+      intersectionPoint,
+      closingY,
+      'above',
+      gradients.positive
+    )
+    fillRegionBetween(
+      ctx,
+      intersectionPoint,
+      pointB,
+      closingY,
+      'below',
+      gradients.negative
+    )
     return 'mixed'
   }
 }
@@ -610,6 +683,7 @@ let scrollDebounceTimer: NodeJS.Timeout | null = null
 function setupCanvasEvents(chart: ChartJS): () => void {
   const canvas = chart.canvas
 
+  // ========== Handlers de Mouse (Desktop) ==========
   const handleMouseDown = (e: MouseEvent): void => {
     if (props.loading || !isDataValid.value) return
 
@@ -636,11 +710,11 @@ function setupCanvasEvents(chart: ChartJS): () => void {
     const rect = canvas.getBoundingClientRect()
     const x = e.clientX - rect.left
     const y = e.clientY - rect.top
-    const insideCanvas =
-      x >= 0 && x <= canvas.width && y >= 0 && y <= canvas.height
+    const insideCanvas = x >= 0 && x <= rect.width && y >= 0 && y <= rect.height
 
     if (!insideCanvas) {
       isHovering.value = false
+      hoverState.index = null
       return
     }
 
@@ -649,11 +723,13 @@ function setupCanvasEvents(chart: ChartJS): () => void {
       hoverState.index = idx
     } else {
       isHovering.value = false
+      hoverState.index = null
     }
   }
 
   const handleMouseLeave = (): void => {
     isHovering.value = false
+    hoverState.index = null
     if (!isDragging.value) {
       dragState.startIndex = null
       dragState.endIndex = null
@@ -670,6 +746,97 @@ function setupCanvasEvents(chart: ChartJS): () => void {
     }, DEFAULTS.DRAG_END_DELAY)
   }
 
+  // ========== Handlers de Touch (Mobile) ==========
+  const handleTouchStart = (e: TouchEvent): void => {
+    if (props.loading || !isDataValid.value) return
+    if (e.touches.length !== 1) return // Apenas um dedo
+
+    const touch = e.touches[0]
+    const mouseEvent = new MouseEvent('mousedown', {
+      clientX: touch.clientX,
+      clientY: touch.clientY,
+      bubbles: true,
+      cancelable: true,
+    })
+
+    const idx = getIndexFromEvt(chart, mouseEvent as any)
+    if (idx === null) return
+
+    dragState.startIndex = idx
+    dragState.endIndex = idx
+    hoverState.position = { x: touch.clientX, y: touch.clientY }
+    hoverState.index = idx
+
+    e.preventDefault()
+  }
+
+  const handleTouchMove = (e: TouchEvent): void => {
+    if (props.loading || !isDataValid.value) return
+    if (e.touches.length !== 1) return
+
+    const touch = e.touches[0]
+    const mouseEvent = new MouseEvent('mousemove', {
+      clientX: touch.clientX,
+      clientY: touch.clientY,
+      bubbles: true,
+      cancelable: true,
+    })
+
+    hoverState.position = { x: touch.clientX, y: touch.clientY }
+
+    const rect = canvas.getBoundingClientRect()
+    const x = touch.clientX - rect.left
+    const y = touch.clientY - rect.top
+    const insideCanvas = x >= 0 && x <= rect.width && y >= 0 && y <= rect.height
+
+    if (!insideCanvas) {
+      isHovering.value = false
+      hoverState.index = null
+      if (isDragging.value) {
+        isDragging.value = false
+        dragState.startIndex = null
+        dragState.endIndex = null
+      }
+      return
+    }
+
+    const idx = getIndexFromEvt(chart, mouseEvent as any)
+
+    if (isDragging.value) {
+      if (idx !== null) dragState.endIndex = idx
+      e.preventDefault()
+      return
+    }
+
+    if (idx !== null) {
+      hoverState.index = idx
+    } else {
+      isHovering.value = false
+      hoverState.index = null
+    }
+
+    e.preventDefault()
+  }
+
+  const handleTouchEnd = (): void => {
+    if (!isDragging.value) return
+
+    setTimeout(() => {
+      isDragging.value = false
+      isHovering.value = false
+      hoverState.index = null
+    }, DEFAULTS.DRAG_END_DELAY)
+  }
+
+  const handleTouchCancel = (): void => {
+    isHovering.value = false
+    hoverState.index = null
+    isDragging.value = false
+    dragState.startIndex = null
+    dragState.endIndex = null
+  }
+
+  // ========== Scroll ==========
   const handleScroll = (): void => {
     if (scrollDebounceTimer) clearTimeout(scrollDebounceTimer)
 
@@ -681,17 +848,34 @@ function setupCanvasEvents(chart: ChartJS): () => void {
     }, DEFAULTS.SCROLL_DEBOUNCE)
   }
 
+  // ========== Registrar Eventos ==========
+  // Mouse events (desktop)
   canvas.addEventListener('mousedown', handleMouseDown)
   canvas.addEventListener('mouseleave', handleMouseLeave)
   document.addEventListener('mousemove', handleMouseMove)
   document.addEventListener('mouseup', handleMouseUp)
+
+  // Touch events (mobile)
+  canvas.addEventListener('touchstart', handleTouchStart, { passive: false })
+  canvas.addEventListener('touchmove', handleTouchMove, { passive: false })
+  canvas.addEventListener('touchend', handleTouchEnd)
+  canvas.addEventListener('touchcancel', handleTouchCancel)
+
+  // Scroll
   window.addEventListener('scroll', handleScroll, { passive: true })
 
+  // ========== Cleanup ==========
   return () => {
     canvas.removeEventListener('mousedown', handleMouseDown)
     canvas.removeEventListener('mouseleave', handleMouseLeave)
     document.removeEventListener('mousemove', handleMouseMove)
     document.removeEventListener('mouseup', handleMouseUp)
+
+    canvas.removeEventListener('touchstart', handleTouchStart)
+    canvas.removeEventListener('touchmove', handleTouchMove)
+    canvas.removeEventListener('touchend', handleTouchEnd)
+    canvas.removeEventListener('touchcancel', handleTouchCancel)
+
     window.removeEventListener('scroll', handleScroll)
     if (scrollDebounceTimer) clearTimeout(scrollDebounceTimer)
   }
@@ -699,7 +883,9 @@ function setupCanvasEvents(chart: ChartJS): () => void {
 
 /* ========== Plugin do hover line ========== */
 function getSegmentOrientation(index: number): 'above' | 'below' | 'mixed' {
-  const orientations: ('above' | 'below' | 'mixed')[] | undefined = (chartInstance.value as any)?._segmentOrientations
+  const orientations: ('above' | 'below' | 'mixed')[] | undefined = (
+    chartInstance.value as any
+  )?._segmentOrientations
   if (!orientations || orientations.length === 0) return 'mixed'
 
   const segmentIndex = Math.min(Math.max(index - 1, 0), orientations.length - 1)
@@ -719,7 +905,13 @@ const hoverLinePlugin: Plugin<'line'> = {
     try {
       const { ctx, chartArea, scales } = chart
 
-      if (!ctx || !chartArea || !scales?.x || !scales?.y || !isDataValid.value) {
+      if (
+        !ctx ||
+        !chartArea ||
+        !scales?.x ||
+        !scales?.y ||
+        !isDataValid.value
+      ) {
         return
       }
 
@@ -731,7 +923,11 @@ const hoverLinePlugin: Plugin<'line'> = {
       const segmentOrientations: ('above' | 'below' | 'mixed')[] =
         (chart as any)._segmentOrientations ?? []
 
-      if (!props.loading && props.data.length > 0 && props.showReferenceIndicator) {
+      if (
+        !props.loading &&
+        props.data.length > 0 &&
+        props.showReferenceIndicator
+      ) {
         const currentValue = props.data[props.data.length - 1].value
         const yPosition = yScale.getPixelForValue(currentValue)
 
@@ -777,13 +973,33 @@ const hoverLinePlugin: Plugin<'line'> = {
             ctx.beginPath()
             ctx.moveTo(boxLeft + cornerRadius, boxTop)
             ctx.lineTo(boxRight - cornerRadius, boxTop)
-            ctx.quadraticCurveTo(boxRight, boxTop, boxRight, boxTop + cornerRadius)
+            ctx.quadraticCurveTo(
+              boxRight,
+              boxTop,
+              boxRight,
+              boxTop + cornerRadius
+            )
             ctx.lineTo(boxRight, boxBottom - cornerRadius)
-            ctx.quadraticCurveTo(boxRight, boxBottom, boxRight - cornerRadius, boxBottom)
+            ctx.quadraticCurveTo(
+              boxRight,
+              boxBottom,
+              boxRight - cornerRadius,
+              boxBottom
+            )
             ctx.lineTo(boxLeft + cornerRadius, boxBottom)
-            ctx.quadraticCurveTo(boxLeft, boxBottom, boxLeft, boxBottom - cornerRadius)
+            ctx.quadraticCurveTo(
+              boxLeft,
+              boxBottom,
+              boxLeft,
+              boxBottom - cornerRadius
+            )
             ctx.lineTo(boxLeft, boxTop + cornerRadius)
-            ctx.quadraticCurveTo(boxLeft, boxTop, boxLeft + cornerRadius, boxTop)
+            ctx.quadraticCurveTo(
+              boxLeft,
+              boxTop,
+              boxLeft + cornerRadius,
+              boxTop
+            )
             ctx.closePath()
             ctx.fill()
             ctx.stroke()
@@ -815,14 +1031,20 @@ const hoverLinePlugin: Plugin<'line'> = {
       }
 
       // Seleção por drag
-      if (isDragging.value && dragState.startIndex !== null && dragState.endIndex !== null) {
+      if (
+        isDragging.value &&
+        dragState.startIndex !== null &&
+        dragState.endIndex !== null
+      ) {
         const startIdx = Math.min(dragState.startIndex, dragState.endIndex)
         const endIdx = Math.max(dragState.startIndex, dragState.endIndex)
 
         const startX = xScale.getPixelForValue(startIdx)
         const endX = xScale.getPixelForValue(endIdx)
 
-        if ([startX, endX].some((v) => typeof v !== 'number' || Number.isNaN(v))) {
+        if (
+          [startX, endX].some((v) => typeof v !== 'number' || Number.isNaN(v))
+        ) {
           return
         }
 
@@ -881,15 +1103,28 @@ const closingDeltaFillPlugin: Plugin<'line'> = {
       const ctx = chart.ctx
       ctx.save()
       ctx.beginPath()
-      ctx.rect(chartArea.left, chartArea.top, chartArea.right - chartArea.left, chartArea.bottom - chartArea.top)
+      ctx.rect(
+        chartArea.left,
+        chartArea.top,
+        chartArea.right - chartArea.left,
+        chartArea.bottom - chartArea.top
+      )
       ctx.clip()
 
       const chartTop = chartArea.top
       const chartBottom = chartArea.bottom
       const chartHeight = Math.max(1, chartBottom - chartTop)
-      const closingRatio = Math.min(1, Math.max(0, (closingY - chartTop) / chartHeight))
+      const closingRatio = Math.min(
+        1,
+        Math.max(0, (closingY - chartTop) / chartHeight)
+      )
 
-      const positiveGradient = ctx.createLinearGradient(0, chartTop, 0, chartBottom)
+      const positiveGradient = ctx.createLinearGradient(
+        0,
+        chartTop,
+        0,
+        chartBottom
+      )
       positiveGradient.addColorStop(0, 'rgba(34, 197, 94, 0)')
       positiveGradient.addColorStop(
         Math.max(0, closingRatio - 0.25),
@@ -899,12 +1134,23 @@ const closingDeltaFillPlugin: Plugin<'line'> = {
         Math.max(0, closingRatio - 0.1),
         'rgba(34, 197, 94, 0.18)'
       )
-      positiveGradient.addColorStop(Math.max(0, closingRatio), 'rgba(34, 197, 94, 0.32)')
+      positiveGradient.addColorStop(
+        Math.max(0, closingRatio),
+        'rgba(34, 197, 94, 0.32)'
+      )
       positiveGradient.addColorStop(1, 'rgba(34, 197, 94, 0)')
 
-      const negativeGradient = ctx.createLinearGradient(0, chartTop, 0, chartBottom)
+      const negativeGradient = ctx.createLinearGradient(
+        0,
+        chartTop,
+        0,
+        chartBottom
+      )
       negativeGradient.addColorStop(0, 'rgba(239, 68, 68, 0.32)')
-      negativeGradient.addColorStop(Math.min(1, closingRatio), 'rgba(239, 68, 68, 0.32)')
+      negativeGradient.addColorStop(
+        Math.min(1, closingRatio),
+        'rgba(239, 68, 68, 0.32)'
+      )
       negativeGradient.addColorStop(
         Math.min(1, closingRatio + 0.12),
         'rgba(239, 68, 68, 0.18)'
@@ -927,7 +1173,11 @@ const closingDeltaFillPlugin: Plugin<'line'> = {
         const previousValue = dataSource[i - 1]?.value
         const currentValue = dataSource[i]?.value
 
-        if (typeof previousValue !== 'number' || typeof currentValue !== 'number') continue
+        if (
+          typeof previousValue !== 'number' ||
+          typeof currentValue !== 'number'
+        )
+          continue
 
         const segmentOrientation = drawClosingFillSegment(
           ctx,
@@ -963,30 +1213,35 @@ const overlayLabelsPlugin: Plugin<'line'> = {
 
       if (!ctx || !chartArea || !xScale || !yScale) return
 
-      const pluginOptions =
-        ((chart.options.plugins ?? {}) as Record<string, unknown>).overlayLabels as
-          | {
-              fontFamily?: string
-              fontSize?: number
-              xLabelColor?: string
-              yLabelColor?: string
-              xLabelOffset?: number
-              yLabelOffset?: number
-              drawYAxisLine?: boolean
-              axisLineColor?: string
-              axisLineWidth?: number
-              maxXLabels?: number
-              xLabelRotation?: number
-            }
-          | undefined
+      const pluginOptions = (
+        (chart.options.plugins ?? {}) as Record<string, unknown>
+      ).overlayLabels as
+        | {
+            fontFamily?: string
+            fontSize?: number
+            xLabelColor?: string
+            yLabelColor?: string
+            xLabelOffset?: number
+            yLabelOffset?: number
+            drawYAxisLine?: boolean
+            axisLineColor?: string
+            axisLineWidth?: number
+            maxXLabels?: number
+            xLabelRotation?: number
+          }
+        | undefined
 
-      const fontFamily = pluginOptions?.fontFamily ?? 'Inter, system-ui, sans-serif'
+      const fontFamily =
+        pluginOptions?.fontFamily ?? 'Inter, system-ui, sans-serif'
       const fontSize = pluginOptions?.fontSize ?? 11
-      const xLabelColor = pluginOptions?.xLabelColor ?? 'rgba(127, 140, 175, 0.85)'
-      const yLabelColor = pluginOptions?.yLabelColor ?? 'rgba(127, 140, 175, 0.8)'
+      const xLabelColor =
+        pluginOptions?.xLabelColor ?? 'rgba(127, 140, 175, 0.85)'
+      const yLabelColor =
+        pluginOptions?.yLabelColor ?? 'rgba(127, 140, 175, 0.8)'
       const xLabelOffset = pluginOptions?.xLabelOffset ?? 24
       const yLabelOffset = pluginOptions?.yLabelOffset ?? 0
-      const axisLineColor = pluginOptions?.axisLineColor ?? 'rgba(127, 140, 175, 0.2)'
+      const axisLineColor =
+        pluginOptions?.axisLineColor ?? 'rgba(127, 140, 175, 0.2)'
       const axisLineWidth = pluginOptions?.axisLineWidth ?? 1
       const drawYAxisLine = pluginOptions?.drawYAxisLine ?? true
       const maxXLabels = pluginOptions?.maxXLabels ?? 6
@@ -1011,10 +1266,14 @@ const overlayLabelsPlugin: Plugin<'line'> = {
       ctx.textAlign = 'center'
       ctx.textBaseline = rotationRadians < 0 ? 'bottom' : 'top'
 
-      const labelsArray = Array.isArray(chart.data.labels) ? chart.data.labels : []
+      const labelsArray = Array.isArray(chart.data.labels)
+        ? chart.data.labels
+        : []
       const totalLabels = labelsArray.length
       const step =
-        totalLabels > 0 && maxXLabels > 0 ? Math.max(1, Math.ceil(totalLabels / maxXLabels)) : 1
+        totalLabels > 0 && maxXLabels > 0
+          ? Math.max(1, Math.ceil(totalLabels / maxXLabels))
+          : 1
 
       const xTicks = xScale?.ticks ?? []
 
@@ -1022,7 +1281,9 @@ const overlayLabelsPlugin: Plugin<'line'> = {
         if (tickIndex === 0 || tickIndex === xTicks.length - 1) return
 
         const rawValue = typeof tick.value === 'number' ? tick.value : tickIndex
-        const dataIndex = Number.isFinite(rawValue) ? Math.round(rawValue) : tickIndex
+        const dataIndex = Number.isFinite(rawValue)
+          ? Math.round(rawValue)
+          : tickIndex
 
         if (totalLabels > 0) {
           const isEdge = dataIndex === 0 || dataIndex === totalLabels - 1
@@ -1034,7 +1295,7 @@ const overlayLabelsPlugin: Plugin<'line'> = {
         const rawLabel =
           typeof tick.label === 'string'
             ? tick.label
-            : labelsArray[dataIndex] ?? labelsArray[tickIndex] ?? ''
+            : (labelsArray[dataIndex] ?? labelsArray[tickIndex] ?? '')
 
         const formattedLabel = formatXAxisLabel(String(rawLabel))
         if (!formattedLabel) return
@@ -1080,15 +1341,23 @@ const overlayLabelsPlugin: Plugin<'line'> = {
 }
 
 /* ========== Registro do Chart.js ========== */
-if (!((ChartCore as any)._adapters?._customRegisteredOnce)) {
-  ChartCore.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Filler)
+if (!(ChartCore as any)._adapters?._customRegisteredOnce) {
+  ChartCore.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Filler
+  )
   ;(ChartCore as any)._adapters = { _customRegisteredOnce: true }
 }
 
 /* ========== Chart data/options ========== */
 const chartData = computed(() => {
   const hasRealData = isDataValid.value
-  const dataToUse = props.loading && !hasRealData ? loadingData.value : props.data
+  const dataToUse =
+    props.loading && !hasRealData ? loadingData.value : props.data
 
   return {
     labels: dataToUse.map((d) => d.date),
@@ -1103,10 +1372,8 @@ const chartData = computed(() => {
         borderWidth: 1.5,
         fill: false,
         clip: false,
-        borderColor: (ctx: any) => dynamicLineColor(
-          ctx.p1DataIndex ?? ctx.p0DataIndex ?? 0,
-          true
-        ),
+        borderColor: (ctx: any) =>
+          dynamicLineColor(ctx.p1DataIndex ?? ctx.p0DataIndex ?? 0, true),
         pointHitRadius: props.loading ? 0 : 10,
         pointRadius: 0,
         pointHoverRadius: 0,
@@ -1199,7 +1466,11 @@ const chartOptions = computed(() => ({
   },
 }))
 
-const localPlugins = [closingDeltaFillPlugin, hoverLinePlugin, overlayLabelsPlugin]
+const localPlugins = [
+  closingDeltaFillPlugin,
+  hoverLinePlugin,
+  overlayLabelsPlugin,
+]
 
 /* ========== Lifecycle ========== */
 onMounted(async () => {
@@ -1305,7 +1576,9 @@ const onRootMouseLeave = (): void => {
 
 .tooltip-enter-active,
 .tooltip-leave-active {
-  transition: opacity 0.15s ease, transform 0.15s ease;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
 }
 
 .tooltip-enter-from,

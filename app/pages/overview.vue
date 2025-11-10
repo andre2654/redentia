@@ -156,13 +156,11 @@
       </div>
       <template v-else>
         <div
-          class="grid grid-cols-4 gap-2 max-[1550px]:grid-cols-3 max-[900px]:grid-cols-2 max-[600px]:grid-cols-1"
+          class="grid grid-cols-4 gap-4 max-[1550px]:grid-cols-3 max-[900px]:grid-cols-2 max-[600px]:grid-cols-1"
         >
-          <div
-            class="flex flex-col gap-3 rounded-[30px]  p-6"
-          >
+          <div class="flex flex-col gap-3 rounded-[30px] py-6">
             <h2 class="text-[18px] font-bold">Ações</h2>
-            <div class="flex flex-col divide-y border rounded-lg">
+            <div class="flex flex-col gap-1 overflow-hidden rounded-lg">
               <AtomsTicker
                 v-for="stock in topAssets.top.stocks"
                 :key="stock?.ticker"
@@ -177,10 +175,10 @@
             </NuxtLink>
           </div>
           <div
-            class="flex flex-col gap-3 rounded-[30px]  p-6 max-[600px]:hidden"
+            class="flex flex-col gap-3 rounded-[30px] py-6 max-[600px]:hidden"
           >
             <h2 class="text-[18px] font-bold">ETFs</h2>
-            <div class="flex flex-col divide-y border rounded-lg">
+            <div class="flex flex-col gap-1 overflow-hidden rounded-lg">
               <AtomsTicker
                 v-for="stock in topAssets.top.etfs"
                 :key="stock?.ticker"
@@ -195,10 +193,10 @@
             </NuxtLink>
           </div>
           <div
-            class="flex flex-col gap-3 rounded-[30px]  p-6 max-[900px]:hidden"
+            class="flex flex-col gap-3 rounded-[30px] py-6 max-[900px]:hidden"
           >
             <h2 class="text-[18px] font-bold">Reits</h2>
-            <div class="flex flex-col divide-y border rounded-lg">
+            <div class="flex flex-col gap-1 overflow-hidden rounded-lg">
               <AtomsTicker
                 v-for="stock in topAssets.top.reits"
                 :key="stock?.ticker"
@@ -213,10 +211,10 @@
             </NuxtLink>
           </div>
           <div
-            class="flex flex-col gap-3 rounded-[30px]  p-6 max-[1550px]:hidden"
+            class="flex flex-col gap-3 rounded-[30px] py-6 max-[1550px]:hidden"
           >
             <h2 class="text-[18px] font-bold">BDRs</h2>
-            <div class="flex flex-col divide-y border rounded-lg">
+            <div class="flex flex-col gap-1 overflow-hidden rounded-lg">
               <AtomsTicker
                 v-for="stock in topAssets.top.bdrs"
                 :key="stock?.ticker"
@@ -235,11 +233,9 @@
         <div
           class="grid grid-cols-4 gap-2 max-[1550px]:grid-cols-3 max-[900px]:grid-cols-2 max-[600px]:grid-cols-1"
         >
-          <div
-            class="flex flex-col gap-3 rounded-[30px]  p-6"
-          >
+          <div class="flex flex-col gap-3 rounded-[30px] py-6">
             <h2 class="text-[18px] font-bold">Ações</h2>
-            <div class="flex flex-col divide-y border rounded-lg">
+            <div class="flex flex-col gap-1 overflow-hidden rounded-lg">
               <AtomsTicker
                 v-for="stock in topAssets.bottom.stocks"
                 :key="stock?.ticker"
@@ -254,10 +250,10 @@
             </NuxtLink>
           </div>
           <div
-            class="flex flex-col gap-3 rounded-[30px]  p-6 max-[600px]:hidden"
+            class="flex flex-col gap-3 rounded-[30px] py-6 max-[600px]:hidden"
           >
             <h2 class="text-[18px] font-bold">ETFs</h2>
-            <div class="flex flex-col divide-y border rounded-lg">
+            <div class="flex flex-col gap-1 overflow-hidden rounded-lg">
               <AtomsTicker
                 v-for="stock in topAssets.bottom.etfs"
                 :key="stock?.ticker"
@@ -272,10 +268,10 @@
             </NuxtLink>
           </div>
           <div
-            class="flex flex-col gap-3 rounded-[30px]  p-6 max-[900px]:hidden"
+            class="flex flex-col gap-3 rounded-[30px] py-6 max-[900px]:hidden"
           >
             <h2 class="text-[18px] font-bold">Reits</h2>
-            <div class="flex flex-col divide-y border rounded-lg">
+            <div class="flex flex-col gap-1 overflow-hidden rounded-lg">
               <AtomsTicker
                 v-for="stock in topAssets.bottom.reits"
                 :key="stock?.ticker"
@@ -290,10 +286,10 @@
             </NuxtLink>
           </div>
           <div
-            class="flex flex-col gap-3 rounded-[30px]  p-6 max-[1550px]:hidden"
+            class="flex flex-col gap-3 rounded-[30px] py-6 max-[1550px]:hidden"
           >
             <h2 class="text-[18px] font-bold">BDRs</h2>
-            <div class="flex flex-col divide-y border rounded-lg">
+            <div class="flex flex-col gap-1 overflow-hidden rounded-lg">
               <AtomsTicker
                 v-for="stock in topAssets.bottom.bdrs"
                 :key="stock?.ticker"

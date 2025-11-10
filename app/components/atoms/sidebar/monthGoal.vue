@@ -47,12 +47,12 @@
     <span class="max-w-[80%] text-center">
       Você ainda não definiu uma meta mensal
     </span>
-    <NuxtLink
-      to="/settings"
+    <button
+      disabled
       class="mt-4 max-w-fit rounded-full border border-black px-3 text-[10px]"
     >
-      Configurar
-    </NuxtLink>
+      Configurar (em breve)
+    </button>
   </div>
 </template>
 
