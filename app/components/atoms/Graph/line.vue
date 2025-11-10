@@ -749,83 +749,142 @@ function setupCanvasEvents(chart: ChartJS): () => void {
   // ========== Handlers de Touch (Mobile) ==========
   const handleTouchStart = (e: TouchEvent): void => {
     if (props.loading || !isDataValid.value) return
-    if (e.touches.length !== 1) return // Apenas um dedo
 
-    const touch = e.touches[0]
-    const mouseEvent = new MouseEvent('mousedown', {
-      clientX: touch.clientX,
-      clientY: touch.clientY,
-      bubbles: true,
-      cancelable: true,
-    })
+    // Se há 2 dedos, preparar para drag
+    if (e.touches.length === 2) {
+      const touch = e.touches[0]
+      const idx = getIndexFromEvt(chart, {
+        clientX: touch.clientX,
+        clientY: touch.clientY,
+      } as any)
 
-    const idx = getIndexFromEvt(chart, mouseEvent as any)
-    if (idx === null) return
+      if (idx === null) return
 
-    dragState.startIndex = idx
-    dragState.endIndex = idx
-    hoverState.position = { x: touch.clientX, y: touch.clientY }
-    hoverState.index = idx
-
-    e.preventDefault()
-  }
-
-  const handleTouchMove = (e: TouchEvent): void => {
-    if (props.loading || !isDataValid.value) return
-    if (e.touches.length !== 1) return
-
-    const touch = e.touches[0]
-    const mouseEvent = new MouseEvent('mousemove', {
-      clientX: touch.clientX,
-      clientY: touch.clientY,
-      bubbles: true,
-      cancelable: true,
-    })
-
-    hoverState.position = { x: touch.clientX, y: touch.clientY }
-
-    const rect = canvas.getBoundingClientRect()
-    const x = touch.clientX - rect.left
-    const y = touch.clientY - rect.top
-    const insideCanvas = x >= 0 && x <= rect.width && y >= 0 && y <= rect.height
-
-    if (!insideCanvas) {
-      isHovering.value = false
-      hoverState.index = null
-      if (isDragging.value) {
-        isDragging.value = false
-        dragState.startIndex = null
-        dragState.endIndex = null
-      }
-      return
-    }
-
-    const idx = getIndexFromEvt(chart, mouseEvent as any)
-
-    if (isDragging.value) {
-      if (idx !== null) dragState.endIndex = idx
+      dragState.startIndex = idx
+      dragState.endIndex = idx
+      hoverState.position = { x: touch.clientX, y: touch.clientY }
       e.preventDefault()
       return
     }
 
-    if (idx !== null) {
-      hoverState.index = idx
-    } else {
-      isHovering.value = false
-      hoverState.index = null
-    }
+    // Se há apenas 1 dedo, mostrar tooltip simples
+    if (e.touches.length === 1) {
+      const touch = e.touches[0]
+      hoverState.position = { x: touch.clientX, y: touch.clientY }
 
-    e.preventDefault()
+      const idx = getIndexFromEvt(chart, {
+        clientX: touch.clientX,
+        clientY: touch.clientY,
+      } as any)
+
+      if (idx !== null) {
+        hoverState.index = idx
+      }
+
+      // NÃO previne o scroll aqui
+      return
+    }
   }
 
-  const handleTouchEnd = (): void => {
-    if (!isDragging.value) return
+  const handleTouchMove = (e: TouchEvent): void => {
+    if (props.loading || !isDataValid.value) return
 
-    setTimeout(() => {
-      isDragging.value = false
+    // Drag com 2 dedos
+    if (e.touches.length === 2) {
+      const touch = e.touches[0]
+      hoverState.position = { x: touch.clientX, y: touch.clientY }
+
+      const rect = canvas.getBoundingClientRect()
+      const x = touch.clientX - rect.left
+      const y = touch.clientY - rect.top
+      const insideCanvas =
+        x >= 0 && x <= rect.width && y >= 0 && y <= rect.height
+
+      if (!insideCanvas) {
+        isDragging.value = false
+        dragState.startIndex = null
+        dragState.endIndex = null
+        return
+      }
+
+      const idx = getIndexFromEvt(chart, {
+        clientX: touch.clientX,
+        clientY: touch.clientY,
+      } as any)
+
+      if (isDragging.value) {
+        if (idx !== null) dragState.endIndex = idx
+      }
+
+      e.preventDefault()
+      return
+    }
+
+    // Tooltip simples com 1 dedo
+    if (e.touches.length === 1) {
+      const touch = e.touches[0]
+      hoverState.position = { x: touch.clientX, y: touch.clientY }
+
+      const rect = canvas.getBoundingClientRect()
+      const x = touch.clientX - rect.left
+      const y = touch.clientY - rect.top
+      const insideCanvas =
+        x >= 0 && x <= rect.width && y >= 0 && y <= rect.height
+
+      if (!insideCanvas) {
+        isHovering.value = false
+        hoverState.index = null
+        return
+      }
+
+      const idx = getIndexFromEvt(chart, {
+        clientX: touch.clientX,
+        clientY: touch.clientY,
+      } as any)
+
+      if (idx !== null) {
+        hoverState.index = idx
+      } else {
+        isHovering.value = false
+        hoverState.index = null
+      }
+
+      // NÃO previne o scroll aqui
+      return
+    }
+
+    // Se há mais de 2 dedos, cancelar tudo
+    if (e.touches.length > 2) {
       isHovering.value = false
       hoverState.index = null
-    }, DEFAULTS.DRAG_END_DELAY)
+      isDragging.value = false
+      dragState.startIndex = null
+      dragState.endIndex = null
+    }
+  }
+
+  const handleTouchEnd = (e: TouchEvent): void => {
+    // Se ainda há dedos no canvas, continuar
+    if (e.touches.length > 0) return
+
+    if (!isDragging.value && hoverState.index !== null) {
+      // Se era apenas tooltip, manter por um tempo
+      setTimeout(() => {
+        if (e.touches.length === 0) {
+          isHovering.value = false
+          hoverState.index = null
+        }
+      }, 300)
+      return
+    }
+
+    if (isDragging.value) {
+      setTimeout(() => {
+        isDragging.value = false
+        isHovering.value = false
+        hoverState.index = null
+      }, DEFAULTS.DRAG_END_DELAY)
+    }
   }
 
   const handleTouchCancel = (): void => {
@@ -855,11 +914,11 @@ function setupCanvasEvents(chart: ChartJS): () => void {
   document.addEventListener('mousemove', handleMouseMove)
   document.addEventListener('mouseup', handleMouseUp)
 
-  // Touch events (mobile)
-  canvas.addEventListener('touchstart', handleTouchStart, { passive: false })
-  canvas.addEventListener('touchmove', handleTouchMove, { passive: false })
-  canvas.addEventListener('touchend', handleTouchEnd)
-  canvas.addEventListener('touchcancel', handleTouchCancel)
+  // Touch events (mobile) - COM passive: true para não bloquear scroll
+  canvas.addEventListener('touchstart', handleTouchStart, { passive: true })
+  canvas.addEventListener('touchmove', handleTouchMove, { passive: true })
+  canvas.addEventListener('touchend', handleTouchEnd, { passive: true })
+  canvas.addEventListener('touchcancel', handleTouchCancel, { passive: true })
 
   // Scroll
   window.addEventListener('scroll', handleScroll, { passive: true })

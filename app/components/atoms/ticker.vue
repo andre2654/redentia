@@ -1,7 +1,7 @@
 <template>
   <NuxtLink
     :to="`/asset/${stock?.ticker}`"
-    class="flex items-center gap-4 bg-white/5 p-2 hover:brightness-105"
+    class="flex items-center gap-4 bg-white/5 px-4 py-2 hover:brightness-105"
   >
     <img
       v-if="hasLogo"
