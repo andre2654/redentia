@@ -122,8 +122,8 @@
           />
         </label>
       </div>
-      <div v-if="showMap" class="mb-6 flex flex-col px-6">
-        <UButtonGroup orientation="horizontal" variant="soft" class="ml-auto">
+      <div v-if="showMap" class="mb-6 flex flex-col max-md:px-6">
+        <UButtonGroup orientation="horizontal" variant="soft" class="mx-auto">
           <UButton
             color="neutral"
             :variant="treemapFilter === 'all' ? 'soft' : 'link'"
