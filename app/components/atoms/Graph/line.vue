@@ -752,17 +752,28 @@ function setupCanvasEvents(chart: ChartJS): () => void {
 
     // Se há 2 dedos, preparar para drag
     if (e.touches.length === 2) {
-      const touch = e.touches[0]
-      const idx = getIndexFromEvt(chart, {
-        clientX: touch.clientX,
-        clientY: touch.clientY,
+      // Ordenar os dedos por posição X (esquerda para direita)
+      const touches = Array.from(e.touches)
+      touches.sort((a, b) => a.clientX - b.clientX)
+
+      const leftTouch = touches[0]
+      const rightTouch = touches[1]
+
+      const leftIdx = getIndexFromEvt(chart, {
+        clientX: leftTouch.clientX,
+        clientY: leftTouch.clientY,
       } as any)
 
-      if (idx === null) return
+      const rightIdx = getIndexFromEvt(chart, {
+        clientX: rightTouch.clientX,
+        clientY: rightTouch.clientY,
+      } as any)
 
-      dragState.startIndex = idx
-      dragState.endIndex = idx
-      hoverState.position = { x: touch.clientX, y: touch.clientY }
+      if (leftIdx === null || rightIdx === null) return
+
+      dragState.startIndex = leftIdx
+      dragState.endIndex = rightIdx
+      hoverState.position = { x: leftTouch.clientX, y: leftTouch.clientY }
       e.preventDefault()
       return
     }
@@ -791,14 +802,30 @@ function setupCanvasEvents(chart: ChartJS): () => void {
 
     // Drag com 2 dedos
     if (e.touches.length === 2) {
-      const touch = e.touches[0]
-      hoverState.position = { x: touch.clientX, y: touch.clientY }
+      // Ordenar os dedos por posição X (esquerda para direita)
+      const touches = Array.from(e.touches)
+      touches.sort((a, b) => a.clientX - b.clientX)
+
+      const leftTouch = touches[0]
+      const rightTouch = touches[1]
+
+      hoverState.position = { x: leftTouch.clientX, y: leftTouch.clientY }
 
       const rect = canvas.getBoundingClientRect()
-      const x = touch.clientX - rect.left
-      const y = touch.clientY - rect.top
+      const xLeft = leftTouch.clientX - rect.left
+      const yLeft = leftTouch.clientY - rect.top
+      const xRight = rightTouch.clientX - rect.left
+      const yRight = rightTouch.clientY - rect.top
+
       const insideCanvas =
-        x >= 0 && x <= rect.width && y >= 0 && y <= rect.height
+        xLeft >= 0 &&
+        xLeft <= rect.width &&
+        yLeft >= 0 &&
+        yLeft <= rect.height &&
+        xRight >= 0 &&
+        xRight <= rect.width &&
+        yRight >= 0 &&
+        yRight <= rect.height
 
       if (!insideCanvas) {
         isDragging.value = false
@@ -807,13 +834,19 @@ function setupCanvasEvents(chart: ChartJS): () => void {
         return
       }
 
-      const idx = getIndexFromEvt(chart, {
-        clientX: touch.clientX,
-        clientY: touch.clientY,
+      const leftIdx = getIndexFromEvt(chart, {
+        clientX: leftTouch.clientX,
+        clientY: leftTouch.clientY,
+      } as any)
+
+      const rightIdx = getIndexFromEvt(chart, {
+        clientX: rightTouch.clientX,
+        clientY: rightTouch.clientY,
       } as any)
 
       if (isDragging.value) {
-        if (idx !== null) dragState.endIndex = idx
+        if (leftIdx !== null) dragState.startIndex = leftIdx
+        if (rightIdx !== null) dragState.endIndex = rightIdx
       }
 
       e.preventDefault()
@@ -914,7 +947,7 @@ function setupCanvasEvents(chart: ChartJS): () => void {
   document.addEventListener('mousemove', handleMouseMove)
   document.addEventListener('mouseup', handleMouseUp)
 
-  // Touch events (mobile) - COM passive: true para não bloquear scroll
+  // Touch events (mobile)
   canvas.addEventListener('touchstart', handleTouchStart, { passive: true })
   canvas.addEventListener('touchmove', handleTouchMove, { passive: true })
   canvas.addEventListener('touchend', handleTouchEnd, { passive: true })
