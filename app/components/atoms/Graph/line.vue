@@ -130,8 +130,6 @@ interface Props {
   loading?: boolean
   locale?: string
   currency?: string
-  referenceValue?: number | string | null
-  showReferenceIndicator?: boolean
 }
 
 /* ========== Configurações padrão ========== */
@@ -156,8 +154,6 @@ const props = withDefaults(defineProps<Props>(), {
   loading: false,
   locale: 'pt-BR',
   currency: 'R$',
-  referenceValue: null,
-  showReferenceIndicator: true,
 })
 
 /* ========== Validação de dados ========== */
@@ -391,6 +387,33 @@ function formatTooltipDate(rawDate: string): string {
   return `${day} de ${month} de ${year}`
 }
 
+function evaluateVariation(
+  reference: number,
+  data: IChartDataPoint[] | undefined | null
+): { hasAbove: boolean; hasBelow: boolean } {
+  const result = { hasAbove: false, hasBelow: false }
+
+  if (!Number.isFinite(reference) || !Array.isArray(data) || data.length === 0) {
+    return result
+  }
+
+  for (const point of data) {
+    if (!point || typeof point.value !== 'number' || Number.isNaN(point.value)) {
+      continue
+    }
+
+    if (point.value > reference) {
+      result.hasAbove = true
+    } else if (point.value < reference) {
+      result.hasBelow = true
+    }
+
+    if (result.hasAbove && result.hasBelow) break
+  }
+
+  return result
+}
+
 function getIndexFromEvt(chart: ChartJS, e: MouseEvent): number | null {
   try {
     const pos = getRelativePosition(e, chart)
@@ -507,24 +530,49 @@ const dynamicColor = computed(() => {
   return props.colors[0] || DEFAULTS.COLORS[0]
 })
 
-const parsedReferenceValue = computed<number | null>(() => {
-  try {
-    return parseNumericValue(props.referenceValue ?? null)
-  } catch {
+const datasetStats = computed<{
+  min: number
+  max: number
+  first: number
+  last: number
+} | null>(() => {
+  if (!isDataValid.value || !Array.isArray(props.data) || props.data.length === 0)
+    return null
+
+  let min = Number.POSITIVE_INFINITY
+  let max = Number.NEGATIVE_INFINITY
+  let first: number | null = null
+  let last: number | null = null
+
+  for (const point of props.data) {
+    if (!point || typeof point.value !== 'number' || Number.isNaN(point.value))
+      continue
+
+    if (first === null) first = point.value
+    last = point.value
+
+    if (point.value < min) min = point.value
+    if (point.value > max) max = point.value
+  }
+
+  if (
+    first === null ||
+    last === null ||
+    !Number.isFinite(min) ||
+    !Number.isFinite(max)
+  ) {
     return null
   }
+
+  return { min, max, first, last }
 })
 
 const closingLineValue = computed<number | null>(() => {
   try {
-    const overrideValue = parsedReferenceValue.value
-    if (overrideValue !== null) return overrideValue
+    if (!isDataValid.value) return null
 
-    const lastDataPoint = props.data?.[props.data.length - 1]
-
-    if (!hasReferenceVariation.value) {
-      return lastDataPoint.market_price
-    }
+    const stats = datasetStats.value
+    if (!stats) return null
 
     const legendValue = props.legend?.find(
       (item) =>
@@ -535,8 +583,19 @@ const closingLineValue = computed<number | null>(() => {
     const parsedLegend = parseNumericValue(legendValue ?? null)
     if (parsedLegend !== null) return parsedLegend
 
-    const lastDataPoint = props.data?.[props.data.length - 1]
-    return typeof lastDataPoint?.value === 'number' ? lastDataPoint.value : null
+    const referenceCandidate = stats.last
+    if (!Number.isFinite(referenceCandidate)) return null
+
+    const variation = evaluateVariation(referenceCandidate, props.data)
+    if (variation.hasAbove && variation.hasBelow) {
+      return referenceCandidate
+    }
+
+    if (stats.last >= stats.first) {
+      return stats.min - 1
+    }
+
+    return stats.max + 1
   } catch {
     return null
   }
@@ -548,29 +607,8 @@ const hasReferenceVariation = computed<boolean>(() => {
   const reference = closingLineValue.value
   if (reference === null) return false
 
-  let hasAbove = false
-  let hasBelow = false
-
-  for (const point of props.data) {
-    if (!point || typeof point.value !== 'number' || Number.isNaN(point.value))
-      continue
-
-    if (point.value > reference) {
-      hasAbove = true
-    } else if (point.value < reference) {
-      hasBelow = true
-    }
-
-    if (hasAbove && hasBelow) return true
-  }
-
-  return false
-})
-
-const shouldShowReferenceIndicator = computed<boolean>(() => {
-  if (!props.showReferenceIndicator) return false
-  if (parsedReferenceValue.value !== null) return true
-  return hasReferenceVariation.value
+  const variation = evaluateVariation(reference, props.data)
+  return variation.hasAbove && variation.hasBelow
 })
 
 const displayedData = computed(() => {
@@ -1063,7 +1101,8 @@ const hoverLinePlugin: Plugin<'line'> = {
       if (
         !props.loading &&
         props.data.length > 0 &&
-        shouldShowReferenceIndicator.value
+        hasReferenceVariation.value
+
       ) {
         const currentValue = props.data[props.data.length - 1].value
         const yPosition = yScale.getPixelForValue(currentValue)

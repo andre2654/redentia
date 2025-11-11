@@ -83,7 +83,7 @@
 
       <!-- Asset Indicators -->
       <section
-        class="rounded-3xl md:border border-white/5 bg-white/[0.02] p-6 backdrop-blur-sm"
+        class="rounded-3xl bg-white/5 p-6 backdrop-blur-sm"
       >
         <header class="mb-4 flex flex-col gap-2">
           <h2 class="text-lg font-semibold text-white">Indicadores</h2>
@@ -274,7 +274,7 @@
             incomeItems.length ||
             isLoadingFundamentus
           "
-          class="grid gap-4 lg:grid-cols-3"
+          class="grid gap-2 lg:grid-cols-3"
         >
           <AtomsGraphFinancialSummary
             title="Fluxo de Caixa"
