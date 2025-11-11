@@ -155,155 +155,61 @@
         />
       </div>
       <template v-else>
-        <div
-          class="grid grid-cols-4 gap-4 max-[1550px]:grid-cols-3 max-[900px]:grid-cols-2 max-[600px]:grid-cols-1"
+        <UCarousel
+          v-slot="{ item }"
+          class="w-full"
+          loop
+          :items="assetCategories"
+          :ui="{ item: 'basis-1/1 md:basis-1/2 lg:basis-1/3 xl:basis-1/4' }"
         >
-          <div class="flex flex-col gap-3 rounded-[30px] py-6">
-            <h2 class="text-[18px] font-bold">Ações</h2>
-            <div class="flex flex-col gap-1 overflow-hidden rounded-lg">
-              <AtomsTicker
-                v-for="stock in topAssets.top.stocks"
-                :key="stock?.ticker"
-                :stock="stock"
-              />
-            </div>
-            <NuxtLink
-              :to="{ path: '/search', query: rankingLinkQueries.top.stocks }"
-              class="hover:underline"
-            >
-              Ver todos
-            </NuxtLink>
-          </div>
           <div
-            class="flex flex-col gap-3 rounded-[30px] py-6 max-[600px]:hidden"
+            class="flex w-full flex-col gap-3 rounded-[30px] py-6"
           >
-            <h2 class="text-[18px] font-bold">ETFs</h2>
+            <h2 class="text-[25px] md:text-[18px] font-bold max-md:text-center">{{ item.label }}</h2>
+            <p class="mb-5 text-[16px] opacity-70 md:hidden mx-auto">Maiores altas</p>
             <div class="flex flex-col gap-1 overflow-hidden rounded-lg">
               <AtomsTicker
-                v-for="stock in topAssets.top.etfs"
+                v-for="stock in topAssets.top[item.key]"
                 :key="stock?.ticker"
                 :stock="stock"
               />
             </div>
             <NuxtLink
-              :to="{ path: '/search', query: rankingLinkQueries.top.etfs }"
-              class="hover:underline"
+              :to="{ path: '/search', query: rankingLinkQueries.top[item.key] }"
+              class="hover:underline text-[20px] md:text-[15px] max-md:text-center"
             >
               Ver todos
             </NuxtLink>
           </div>
-          <div
-            class="flex flex-col gap-3 rounded-[30px] py-6 max-[900px]:hidden"
-          >
-            <h2 class="text-[18px] font-bold">Reits</h2>
-            <div class="flex flex-col gap-1 overflow-hidden rounded-lg">
-              <AtomsTicker
-                v-for="stock in topAssets.top.reits"
-                :key="stock?.ticker"
-                :stock="stock"
-              />
-            </div>
-            <NuxtLink
-              :to="{ path: '/search', query: rankingLinkQueries.top.reits }"
-              class="hover:underline"
-            >
-              Ver todos
-            </NuxtLink>
-          </div>
-          <div
-            class="flex flex-col gap-3 rounded-[30px] py-6 max-[1550px]:hidden"
-          >
-            <h2 class="text-[18px] font-bold">BDRs</h2>
-            <div class="flex flex-col gap-1 overflow-hidden rounded-lg">
-              <AtomsTicker
-                v-for="stock in topAssets.top.bdrs"
-                :key="stock?.ticker"
-                :stock="stock"
-              />
-            </div>
-            <NuxtLink
-              :to="{ path: '/search', query: rankingLinkQueries.top.bdrs }"
-              class="hover:underline"
-            >
-              Ver todos
-            </NuxtLink>
-          </div>
-        </div>
+        </UCarousel>
 
-        <div
-          class="grid grid-cols-4 gap-2 max-[1550px]:grid-cols-3 max-[900px]:grid-cols-2 max-[600px]:grid-cols-1"
+        <UCarousel
+          v-slot="{ item }"
+          class="w-full"
+          loop
+          :items="assetCategories"
+          :ui="{ item: 'basis-1/1 md:basis-1/2 lg:basis-1/3 xl:basis-1/4' }"
         >
-          <div class="flex flex-col gap-3 rounded-[30px] py-6">
-            <h2 class="text-[18px] font-bold">Ações</h2>
-            <div class="flex flex-col gap-1 overflow-hidden rounded-lg">
-              <AtomsTicker
-                v-for="stock in topAssets.bottom.stocks"
-                :key="stock?.ticker"
-                :stock="stock"
-              />
-            </div>
-            <NuxtLink
-              :to="{ path: '/search', query: rankingLinkQueries.bottom.stocks }"
-              class="hover:underline"
-            >
-              Ver todos
-            </NuxtLink>
-          </div>
           <div
-            class="flex flex-col gap-3 rounded-[30px] py-6 max-[600px]:hidden"
+            class="flex w-full flex-col gap-3 rounded-[30px] py-6"
           >
-            <h2 class="text-[18px] font-bold">ETFs</h2>
+            <h2 class="text-[25px] md:text-[18px] font-bold max-md:text-center">{{ item.label }}</h2>
+             <p class="mb-5 text-[16px] opacity-70 md:hidden mx-auto">Maiores baixas</p>
             <div class="flex flex-col gap-1 overflow-hidden rounded-lg">
               <AtomsTicker
-                v-for="stock in topAssets.bottom.etfs"
+                v-for="stock in topAssets.bottom[item.key]"
                 :key="stock?.ticker"
                 :stock="stock"
               />
             </div>
             <NuxtLink
-              :to="{ path: '/search', query: rankingLinkQueries.bottom.etfs }"
-              class="hover:underline"
+              :to="{ path: '/search', query: rankingLinkQueries.bottom[item.key] }"
+              class="hover:underline text-[20px] md:text-[15px] max-md:text-center"
             >
               Ver todos
             </NuxtLink>
           </div>
-          <div
-            class="flex flex-col gap-3 rounded-[30px] py-6 max-[900px]:hidden"
-          >
-            <h2 class="text-[18px] font-bold">Reits</h2>
-            <div class="flex flex-col gap-1 overflow-hidden rounded-lg">
-              <AtomsTicker
-                v-for="stock in topAssets.bottom.reits"
-                :key="stock?.ticker"
-                :stock="stock"
-              />
-            </div>
-            <NuxtLink
-              :to="{ path: '/search', query: rankingLinkQueries.bottom.reits }"
-              class="hover:underline"
-            >
-              Ver todos
-            </NuxtLink>
-          </div>
-          <div
-            class="flex flex-col gap-3 rounded-[30px] py-6 max-[1550px]:hidden"
-          >
-            <h2 class="text-[18px] font-bold">BDRs</h2>
-            <div class="flex flex-col gap-1 overflow-hidden rounded-lg">
-              <AtomsTicker
-                v-for="stock in topAssets.bottom.bdrs"
-                :key="stock?.ticker"
-                :stock="stock"
-              />
-            </div>
-            <NuxtLink
-              :to="{ path: '/search', query: rankingLinkQueries.bottom.bdrs }"
-              class="hover:underline"
-            >
-              Ver todos
-            </NuxtLink>
-          </div>
-        </div>
+        </UCarousel>
       </template>
 
       <div
@@ -393,6 +299,13 @@ const rankingLinkQueries = {
     bdrs: { ch_max: 0, group: 'bdrs', stock: 0, reit: 0 },
   },
 } as const
+
+const assetCategories = [
+  { key: 'stocks', label: 'Ações' },
+  { key: 'etfs', label: 'ETFs' },
+  { key: 'reits', label: 'Reits' },
+  { key: 'bdrs', label: 'BDRs' },
+] as const
 
 // Dados mock para o treemap - separados por categorias
 const stocksData = ref([])
