@@ -515,45 +515,16 @@ const parsedReferenceValue = computed<number | null>(() => {
   }
 })
 
-const datasetStats = computed<{
-  min: number
-  max: number
-} | null>(() => {
-  if (!isDataValid.value || !Array.isArray(props.data) || props.data.length === 0)
-    return null
-
-  let min = Number.POSITIVE_INFINITY
-  let max = Number.NEGATIVE_INFINITY
-
-  for (const point of props.data) {
-    if (!point || typeof point.value !== 'number' || Number.isNaN(point.value))
-      continue
-
-    if (point.value < min) min = point.value
-    if (point.value > max) max = point.value
-  }
-
-  if (!Number.isFinite(min) || !Number.isFinite(max)) return null
-
-  return { min, max }
-})
-
-const defaultReferenceValue = computed<number | null>(() => {
-  const stats = datasetStats.value
-  if (!stats) return null
-
-  const { min, max } = stats
-
-  if (min >= 0) return 0
-  if (max <= 0) return max
-
-  return 0
-})
-
 const closingLineValue = computed<number | null>(() => {
   try {
     const overrideValue = parsedReferenceValue.value
     if (overrideValue !== null) return overrideValue
+
+    const lastDataPoint = props.data?.[props.data.length - 1]
+
+    if (!hasReferenceVariation.value) {
+      return lastDataPoint.market_price
+    }
 
     const legendValue = props.legend?.find(
       (item) =>
@@ -563,9 +534,6 @@ const closingLineValue = computed<number | null>(() => {
 
     const parsedLegend = parseNumericValue(legendValue ?? null)
     if (parsedLegend !== null) return parsedLegend
-
-    const fallbackReference = defaultReferenceValue.value
-    if (fallbackReference !== null) return fallbackReference
 
     const lastDataPoint = props.data?.[props.data.length - 1]
     return typeof lastDataPoint?.value === 'number' ? lastDataPoint.value : null
