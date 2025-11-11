@@ -1484,10 +1484,10 @@ const chartOptions = computed(() => ({
   maintainAspectRatio: false,
   layout: {
     padding: {
-      top: 12,
-      right: 16,
-      bottom: 52,
-      left: 16,
+      top: 10,
+      right: 0,
+      bottom: 46,
+      left: 0,
     },
   },
   interaction: { intersect: false, mode: 'index' as const },

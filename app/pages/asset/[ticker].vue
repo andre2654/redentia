@@ -1,5 +1,5 @@
 <template>
-  <NuxtLayout>
+  <NuxtLayout container-class="md:px-0">
     <template #header>
       <div class="flex w-full items-center justify-between">
         <div class="flex items-center gap-3">
@@ -40,11 +40,11 @@
       </div>
     </template>
 
-    <div class="flex flex-col gap-8 pt-6 md:px-6">
+    <div class="flex flex-col gap-8 pt-6">
       <!-- Graph -->
       <section>
         <header
-          class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between max-md:px-4"
+          class="mb-4 flex max-md:px-4 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
         >
           <h2 class="text-lg font-semibold text-white">
             Cotação <span class="hidden sm:inline">({{ ticker }})</span>
