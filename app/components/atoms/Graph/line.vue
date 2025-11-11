@@ -618,6 +618,43 @@ const displayedData = computed(() => {
   return props.data
 })
 
+const yAxisExtents = computed<{
+  min: number
+  max: number
+} | null>(() => {
+  const dataSource = displayedData.value
+  if (!Array.isArray(dataSource) || dataSource.length === 0) return null
+
+  let min = Number.POSITIVE_INFINITY
+  let max = Number.NEGATIVE_INFINITY
+
+  for (const point of dataSource) {
+    if (!point || typeof point.value !== 'number' || Number.isNaN(point.value))
+      continue
+
+    if (point.value < min) min = point.value
+    if (point.value > max) max = point.value
+  }
+
+  const referenceValue = closingLineValue.value
+  if (Number.isFinite(referenceValue)) {
+    min = Math.min(min, referenceValue!)
+    max = Math.max(max, referenceValue!)
+  }
+
+  if (!Number.isFinite(min) || !Number.isFinite(max)) return null
+
+  if (min === max) {
+    const padding = Math.max(1, Math.abs(min) * 0.01)
+    return {
+      min: min - padding,
+      max: max + padding,
+    }
+  }
+
+  return { min, max }
+})
+
 function fillRegionBetween(
   ctx: CanvasRenderingContext2D,
   pointA: ChartPointLike,
@@ -1400,6 +1437,15 @@ const overlayLabelsPlugin: Plugin<'line'> = {
             xLabelOffset?: number
             yLabelOffset?: number
             drawYAxisLine?: boolean
+            drawXAxisOverlay?: boolean
+            xOverlayBackgroundColor?: string
+            xOverlayTextColor?: string
+            xOverlayBorderColor?: string
+            xOverlayBorderWidth?: number
+            xOverlayPaddingX?: number
+            xOverlayPaddingY?: number
+            xOverlayCornerRadius?: number
+            xOverlayOffsetY?: number
             axisLineColor?: string
             axisLineWidth?: number
             maxXLabels?: number
@@ -1420,6 +1466,15 @@ const overlayLabelsPlugin: Plugin<'line'> = {
         pluginOptions?.axisLineColor ?? 'rgba(127, 140, 175, 0.2)'
       const axisLineWidth = pluginOptions?.axisLineWidth ?? 1
       const drawYAxisLine = pluginOptions?.drawYAxisLine ?? true
+      const drawXAxisOverlay = pluginOptions?.drawXAxisOverlay ?? true
+      const xOverlayTextColor =
+        pluginOptions?.xOverlayTextColor ?? 'rgba(226, 232, 240, 0.92)'
+      const xOverlayBorderWidth = pluginOptions?.xOverlayBorderWidth ?? 0
+      const xOverlayPaddingX = pluginOptions?.xOverlayPaddingX ?? 10
+      const xOverlayPaddingY = pluginOptions?.xOverlayPaddingY ?? 4
+      const xOverlayCornerRadius =
+        pluginOptions?.xOverlayCornerRadius ?? 10
+      const xOverlayOffsetY = pluginOptions?.xOverlayOffsetY ?? 16
       const maxXLabels = pluginOptions?.maxXLabels ?? 6
       const xLabelRotation = pluginOptions?.xLabelRotation ?? -32
       const rotationRadians = (xLabelRotation * Math.PI) / 180
@@ -1482,10 +1537,61 @@ const overlayLabelsPlugin: Plugin<'line'> = {
             : xScale.getPixelForValue.bind(xScale, rawValue)
 
         const x = pixelGetter()
-        const y = chartArea.bottom + xLabelOffset
+        if (typeof x !== 'number' || Number.isNaN(x)) return
+
+        if (!drawXAxisOverlay) {
+          const y = chartArea.bottom + xLabelOffset
+
+          ctx.save()
+          ctx.fillStyle = xLabelColor
+          ctx.textAlign = 'center'
+          ctx.textBaseline = rotationRadians < 0 ? 'bottom' : 'top'
+          ctx.translate(x, y)
+          if (rotationRadians !== 0) ctx.rotate(rotationRadians)
+          ctx.fillText(formattedLabel, 0, 0)
+          ctx.restore()
+          return
+        }
+
+        const targetY = chartArea.bottom - xOverlayOffsetY
 
         ctx.save()
-        ctx.translate(x, y)
+        ctx.font = `${fontSize}px ${fontFamily}`
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+
+        const textMetrics = ctx.measureText(formattedLabel)
+        const textWidth = textMetrics.width
+        const textHeight =
+          fontSize + (textMetrics.actualBoundingBoxDescent ?? 0)
+
+        const minLeft = chartArea.left + 4
+        const maxRight = chartArea.right - 4
+        const halfBoxWidth = Math.max(0, textWidth / 2 + xOverlayPaddingX)
+        const boxHeight = textHeight + xOverlayPaddingY * 2
+
+        let centerX = x
+        let boxLeft = centerX - halfBoxWidth
+        let boxRight = centerX + halfBoxWidth
+
+        if (boxLeft < minLeft) {
+          const delta = minLeft - boxLeft
+          centerX += delta
+          boxLeft += delta
+          boxRight += delta
+        } else if (boxRight > maxRight) {
+          const delta = boxRight - maxRight
+          centerX -= delta
+          boxLeft -= delta
+          boxRight -= delta
+        }
+
+        const boxTop = targetY - boxHeight / 2
+        const boxBottom = targetY + boxHeight / 2
+        const radius = Math.max(0, Math.min(xOverlayCornerRadius, boxHeight / 2))
+
+        ctx.fillStyle = xOverlayTextColor
+        ctx.translate(centerX, targetY)
         if (rotationRadians !== 0) ctx.rotate(rotationRadians)
         ctx.fillText(formattedLabel, 0, 0)
         ctx.restore()
@@ -1497,16 +1603,16 @@ const overlayLabelsPlugin: Plugin<'line'> = {
       if (!isHovering.value) {
         ctx.fillStyle = yLabelColor
 
-        const yTicks = yScale?.ticks ?? []
+      const yTicks = yScale?.ticks ?? []
 
         yTicks.forEach((tick: any, tickIndex: number) => {
           if (tickIndex === 0 || tickIndex === yTicks.length - 1) return
           if (typeof tick.value !== 'number') return
 
-          const y = yScale.getPixelForValue(tick.value) + yLabelOffset
-          const label = formatAxisCurrency(tick.value)
-          ctx.fillText(label, chartArea.left + 6, y)
-        })
+        const y = yScale.getPixelForValue(tick.value) + yLabelOffset
+        const label = formatAxisCurrency(tick.value)
+        ctx.fillText(label, chartArea.left + 6, y)
+      })
       }
 
       ctx.restore()
@@ -1563,84 +1669,98 @@ const chartData = computed(() => {
   }
 })
 
-const chartOptions = computed(() => ({
-  responsive: true,
-  maintainAspectRatio: false,
-  layout: {
-    padding: {
-      top: 10,
-      right: 0,
-      bottom: 46,
-      left: 0,
-    },
-  },
-  interaction: { intersect: false, mode: 'index' as const },
-  scales: {
-    x: {
-      offset: false,
-      bounds: 'data',
-      display: false,
-      grid: {
-        display: true,
-        color: 'rgba(255, 255, 255, 0.3)',
-        drawBorder: false,
-        drawTicks: false,
-        lineWidth: 0.5,
-        tickLength: 0,
-        tickWidth: 0,
+const chartOptions = computed(() => {
+  const extents = yAxisExtents.value
+  const yLimits =
+    extents &&
+    Number.isFinite(extents.min) &&
+    Number.isFinite(extents.max)
+      ? {
+          min: extents.min,
+          max: extents.max,
+        }
+      : {}
+
+  return {
+    responsive: true,
+    maintainAspectRatio: false,
+    layout: {
+      padding: {
+        top: 10,
+        right: 0,
+        bottom: 0,
+        left: 0,
       },
-      ticks: {
+    },
+    interaction: { intersect: false, mode: 'index' as const },
+    scales: {
+      x: {
+        offset: false,
+        bounds: 'data',
         display: false,
-        autoSkip: true,
-        autoSkipPadding: 8,
-        maxRotation: 45,
-        minRotation: 0,
-        font: { size: 13 },
-        maxTicksLimit: 15,
-        padding: 20,
+        grid: {
+          display: true,
+          color: 'rgba(255, 255, 255, 0.3)',
+          drawBorder: false,
+          drawTicks: false,
+          lineWidth: 0.5,
+          tickLength: 0,
+          tickWidth: 0,
+        },
+        ticks: {
+          display: false,
+          autoSkip: true,
+          autoSkipPadding: 8,
+          maxRotation: 45,
+          minRotation: 0,
+          font: { size: 13 },
+          maxTicksLimit: 15,
+          padding: 20,
+        },
       },
-    },
-    y: {
-      display: true,
-      reverse: false,
-      grid: {
+      y: {
         display: true,
-        color: 'rgba(255, 255, 255, 0.2)',
-        drawBorder: false,
-        drawTicks: false,
-        lineWidth: 0.5,
-        tickLength: 0,
-        tickWidth: 0,
-      },
-      ticks: {
-        display: false,
-        maxTicksLimit: 5,
-        font: { size: 13 },
-        callback: (v: string | number) =>
-          `${props.currency} ${Number(v).toLocaleString(props.locale, {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
-          })}`,
+        reverse: false,
+        grid: {
+          display: true,
+          color: 'rgba(255, 255, 255, 0.2)',
+          drawBorder: false,
+          drawTicks: false,
+          lineWidth: 0.5,
+          tickLength: 0,
+          tickWidth: 0,
+        },
+        ticks: {
+          display: false,
+          maxTicksLimit: 5,
+          font: { size: 13 },
+          callback: (v: string | number) =>
+            `${props.currency} ${Number(v).toLocaleString(props.locale, {
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 0,
+            })}`,
+        },
+        ...yLimits,
       },
     },
-  },
-  plugins: {
-    legend: { display: false },
-    tooltip: { enabled: false },
-    colors: { forceOverride: true },
-    overlayLabels: {
-      fontFamily: 'Inter, system-ui, sans-serif',
-      fontSize: 13,
-      xLabelColor: 'rgba(255, 255, 255, 0.7)',
-      yLabelColor: 'rgba(255, 255, 255, 0.7)',
-      xLabelOffset: 5,
-      yLabelOffset: 0,
-      drawYAxisLine: false,
-      maxXLabels: 6,
-      xLabelRotation: 0,
+    plugins: {
+      legend: { display: false },
+      tooltip: { enabled: false },
+      colors: { forceOverride: true },
+      overlayLabels: {
+        fontFamily: 'Inter, system-ui, sans-serif',
+        fontSize: 13,
+        xLabelColor: 'rgba(255, 255, 255, 0.7)',
+        yLabelColor: 'rgba(255, 255, 255, 0.7)',
+        xLabelOffset: 5,
+        yLabelOffset: 0,
+        drawYAxisLine: false,
+        maxXLabels: 6,
+        xLabelRotation: 0,
+      },
     },
-  },
-}))
+  }
+})
 
 const localPlugins = [
   closingDeltaFillPlugin,
