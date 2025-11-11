@@ -51,42 +51,23 @@
           :loading="loadingIndicators"
         />
       </div>
-      <div class="w-full p-4">
-        <div class="flex flex-col gap-4">
-          <div class="flex items-center justify-between">
-            <h2 class="mb-4 text-lg font-semibold">
-              Cotação <span class="max-md:hidden">do IBOV</span>
+        <div class="w-full flex flex-col">
+          <div class="w-full flex justify-between items-center p-6 pb-0">
+          <div class="flex gap-4 flex-col">
+            <h2 class="text-[30px] font-semibold">
+{{ new Intl.NumberFormat('pt-BR', {
+  style: 'currency',
+  currency: 'BRL',
+}).format(ibovLastPrice)}}
             </h2>
-            <UButtonGroup orientation="horizontal" variant="soft">
-              <UButton
-                color="neutral"
-                :variant="selectedTimeRange === 'month' ? 'soft' : 'link'"
-                label="Mês"
-                :disabled="loading"
-                @click="selectedTimeRange = 'month'"
-              />
-              <UButton
-                color="neutral"
-                :variant="selectedTimeRange === 'year' ? 'soft' : 'link'"
-                label="Ano"
-                :disabled="loading"
-                @click="selectedTimeRange = 'year'"
-              />
-              <UButton
-                color="neutral"
-                :variant="selectedTimeRange === '3years' ? 'soft' : 'link'"
-                label="3 anos"
-                :disabled="loading"
-                @click="selectedTimeRange = '3years'"
-              />
-              <UButton
-                color="neutral"
-                :variant="selectedTimeRange === 'full' ? 'soft' : 'link'"
-                label="Tudo"
-                :disabled="loading"
-                @click="selectedTimeRange = 'full'"
-              />
-            </UButtonGroup>
+            <p class="mb-4 opacity-70">
+              Cotação do IBOV
+            </p>
+          </div>
+            <MoleculesPeriodSelector
+              v-model="selectedTimeRange"
+              :loading="loading"
+            />
           </div>
           <AtomsGraphLine
             :data="ibovChartData"
@@ -94,7 +75,6 @@
             :height="350"
             :loading="loading"
           />
-        </div>
       </div>
       <div class="flex flex-col px-6">
         <h2 class="text-[18px] font-bold">Rankings</h2>
@@ -340,6 +320,7 @@ interface IndiceData {
 
 const ibovChartData = ref<ChartPoint[]>([])
 const ibovIndicator = ref('+0,00%')
+const ibovLastPrice = ref(0)
 const ifixIndicator = ref('+0,00%')
 
 const ibovChartLabel = computed(() => [
@@ -385,6 +366,7 @@ async function fetchIndicatorsData() {
     // Calcular variação do IBOV (última cotação vs penúltima)
     if (Array.isArray(ibovData) && ibovData.length > 1) {
       const lastPrice = ibovData[ibovData.length - 1].market_price
+      ibovLastPrice.value = lastPrice
       const previousPrice = ibovData[ibovData.length - 2].market_price
       const variation = ((lastPrice - previousPrice) / previousPrice) * 100
       ibovIndicator.value = `${variation >= 0 ? '+' : ''}${variation.toFixed(2)}%`
