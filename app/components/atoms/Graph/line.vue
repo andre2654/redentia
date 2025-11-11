@@ -520,6 +520,10 @@ const closingLineValue = computed<number | null>(() => {
     const overrideValue = parsedReferenceValue.value
     if (overrideValue !== null) return overrideValue
 
+    if (!hasReferenceVariation.value) {
+      return 0
+    }
+
     const legendValue = props.legend?.find(
       (item) =>
         typeof item.label === 'string' &&
