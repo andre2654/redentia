@@ -520,8 +520,10 @@ const closingLineValue = computed<number | null>(() => {
     const overrideValue = parsedReferenceValue.value
     if (overrideValue !== null) return overrideValue
 
+    const lastDataPoint = props.data?.[props.data.length - 1]
+
     if (!hasReferenceVariation.value) {
-      return 0
+      return lastDataPoint.market_price
     }
 
     const legendValue = props.legend?.find(
