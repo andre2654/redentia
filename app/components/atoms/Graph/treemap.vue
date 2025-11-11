@@ -5,7 +5,7 @@
   >
     <!-- Layout responsivo para grupos -->
     <div
-      class="flex h-full w-full flex-col gap-2 lg:flex-row"
+      class="flex h-full w-full flex-col gap-5 lg:flex-row"
       :style="{ minHeight: `${responsiveHeight}px` }"
     >
       <!-- Grupo Ações -->
@@ -13,7 +13,7 @@
         v-if="groupedData.acoes.length > 0"
         class="group-container flex flex-1 flex-col gap-2"
       >
-        <h3 class="px-6 text-[12px] font-medium text-white/80">Ações</h3>
+        <h3 class="px-6 text-[16px] font-bold mb-3">AÇÕES</h3>
         <div class="canvas-container relative min-h-[200px] flex-1">
           <canvas ref="canvasAcoesRef" class="h-full w-full" />
         </div>
@@ -24,7 +24,7 @@
         v-if="groupedData.fiis.length > 0"
         class="group-container flex flex-1 flex-col gap-2"
       >
-        <h3 class="px-6 text-[12px] font-medium text-white/80">FIIs</h3>
+        <h3 class="px-6 text-[16px] font-bold mb-3">FII</h3>
         <div class="canvas-container relative min-h-[200px] flex-1">
           <canvas ref="canvasFiisRef" class="h-full w-full" />
         </div>
