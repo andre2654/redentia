@@ -90,42 +90,45 @@
 
   <!-- Menu mobile -->
   <div
-    class="bg-tertiary/90 border-t-tertiary fixed bottom-0 z-10 flex w-full items-center justify-between gap-8 border-t px-3 py-3 text-white backdrop-blur xl:hidden"
+    class="fixed bottom-4 left-0 right-0 z-10 mx-auto flex w-full max-w-md items-center justify-between gap-6 rounded-t-3xl border-t border-white/10 bg-gradient-to-tr from-black via-neutral-950 to-neutral-900 px-5 py-4 text-white shadow-[0_-18px_40px_rgba(0,0,0,0.55)] backdrop-blur-2xl xl:hidden"
   >
     <UAvatar
       :alt="authStore.me?.name || 'Usuário'"
       size="sm"
-      class="ring-tertiary rounded-full ring-2"
+      class="cursor-pointer rounded-full ring-2 ring-white/15 shadow-[0_10px_25px_rgba(0,0,0,0.45)] transition-transform duration-200 hover:scale-105"
       @click="menuMobileActive = true"
     />
 
     <NuxtLink
       to="/wallet"
-      active-class="bg-white/20"
-      class="pointer-events-none flex flex-col items-center rounded-full p-2 opacity-70"
+      active-class="bg-white/15 text-white shadow-[0_10px_30px_rgba(255,255,255,0.12)]"
+      class="pointer-events-none group flex flex-col items-center rounded-2xl bg-white/5 p-2 text-white/50 transition-all duration-200"
     >
-      <UIcon name="i-solar-wallet-bold" class="size-6" />
+      <UIcon name="i-solar-wallet-bold" class="size-5 text-white/80" />
     </NuxtLink>
     <NuxtLink
       to="/overview"
-      active-class="bg-white/20"
-      class="flex flex-col items-center rounded-full p-2"
+      active-class="bg-white/15 text-white shadow-[0_10px_30px_rgba(255,255,255,0.12)]"
+      class="group flex flex-col items-center rounded-2xl bg-white/10 p-3 text-white transition-all duration-200 hover:bg-white/15 hover:text-white"
     >
-      <UIcon name="i-si-dashboard-vert-fill" class="size-6" />
+      <UIcon
+        name="i-si-dashboard-vert-fill"
+        class="size-5 text-white transition-transform duration-200 group-hover:scale-110"
+      />
     </NuxtLink>
     <NuxtLink
       to="/dividends"
-      active-class="bg-white/20"
-      class="pointer-events-none flex flex-col items-center rounded-full p-2 opacity-70"
+      active-class="bg-white/15 text-white shadow-[0_10px_30px_rgba(255,255,255,0.12)]"
+      class="pointer-events-none group flex flex-col items-center rounded-2xl bg-white/5 p-2 text-white/50 transition-all duration-200"
     >
-      <UIcon name="i-mingcute-pig-money-fill" class="size-6" />
+      <UIcon name="i-mingcute-pig-money-fill" class="size-5 text-white/80" />
     </NuxtLink>
     <NuxtLink
       to="/download"
-      class="flex items-center gap-2 rounded-full bg-white/10 px-4 py-1 text-white"
+      class="group flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-white transition-all duration-200 hover:bg-white/15"
     >
-      <IconLogo class="h-4 fill-white" />
-      <span class="text-[12px] font-medium">Baixar</span>
+      <IconLogo class="h-4 fill-white drop-shadow-[0_4px_10px_rgba(255,255,255,0.2)] transition-transform duration-200 group-hover:scale-110" />
+      <span class="text-[12px] font-semibold tracking-wide">Baixar</span>
     </NuxtLink>
   </div>
 
