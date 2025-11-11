@@ -40,11 +40,11 @@
       </div>
     </template>
 
-    <div class="flex flex-col gap-8 px-4 pb-10 pt-6 md:px-6">
+    <div class="flex flex-col gap-8 pt-6 md:px-6">
       <!-- Graph -->
       <section>
         <header
-          class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+          class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between max-md:px-4"
         >
           <h2 class="text-lg font-semibold text-white">
             Cotação <span class="hidden sm:inline">({{ ticker }})</span>
@@ -83,7 +83,7 @@
 
       <!-- Asset Indicators -->
       <section
-        class="rounded-3xl border border-white/5 bg-white/[0.02] p-6 backdrop-blur-sm"
+        class="rounded-3xl md:border border-white/5 bg-white/[0.02] p-6 backdrop-blur-sm"
       >
         <header class="mb-4 flex flex-col gap-2">
           <h2 class="text-lg font-semibold text-white">Indicadores</h2>
@@ -249,14 +249,7 @@
       </section>
 
       <!-- Dividends Chart -->
-      <section>
-        <header class="mb-4 flex flex-col gap-2">
-          <h2 class="text-lg font-semibold text-white">Dividendos</h2>
-          <p class="text-sm text-white/60">
-            Histórico de pagamentos e projeção inteligente para os próximos
-            períodos.
-          </p>
-        </header>
+      <section class="max-md:px-4">
         <AtomsGraphDividends
           :data="dividendsData"
           :loading="isLoadingDividends"
@@ -264,7 +257,7 @@
       </section>
 
       <!-- Financial Statements -->
-      <section>
+      <section class="max-md:px-4">
         <header class="mb-5 flex flex-col gap-2">
           <h2 class="text-lg font-semibold text-white">
             Demonstrações Financeiras
@@ -308,7 +301,7 @@
       </section>
 
       <!-- Asset Info -->
-      <section>
+      <section class="max-md:px-4">
         <header class="mb-4 flex items-center gap-4">
           <USkeleton v-if="isLoadingAsset" class="h-16 w-16 rounded-2xl" />
           <img
