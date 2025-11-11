@@ -90,7 +90,7 @@
 
   <!-- Menu mobile -->
   <div
-    class="fixed bottom-4 left-0 right-0 z-10 mx-auto flex w-full max-w-md items-center justify-between gap-6 rounded-t-3xl border-t border-white/10 bg-gradient-to-tr from-black via-neutral-950 to-neutral-900 px-5 py-4 text-white shadow-[0_-18px_40px_rgba(0,0,0,0.55)] backdrop-blur-2xl xl:hidden"
+    class="fixed bottom-0 left-0 right-0 z-10 mx-auto flex w-full max-w-md items-center justify-between gap-6 rounded-t-3xl border-t border-white/10 bg-gradient-to-tr from-black via-neutral-950 to-neutral-900 px-5 py-4 text-white shadow-[0_-18px_40px_rgba(0,0,0,0.55)] backdrop-blur-2xl xl:hidden"
   >
     <UAvatar
       :alt="authStore.me?.name || 'Usuário'"
