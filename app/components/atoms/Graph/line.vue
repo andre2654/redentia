@@ -507,9 +507,17 @@ const dynamicColor = computed(() => {
   return props.colors[0] || DEFAULTS.COLORS[0]
 })
 
+const parsedReferenceValue = computed<number | null>(() => {
+  try {
+    return parseNumericValue(props.referenceValue ?? null)
+  } catch {
+    return null
+  }
+})
+
 const closingLineValue = computed<number | null>(() => {
   try {
-    const overrideValue = parseNumericValue(props.referenceValue ?? null)
+    const overrideValue = parsedReferenceValue.value
     if (overrideValue !== null) return overrideValue
 
     const legendValue = props.legend?.find(
@@ -526,6 +534,37 @@ const closingLineValue = computed<number | null>(() => {
   } catch {
     return null
   }
+})
+
+const hasReferenceVariation = computed<boolean>(() => {
+  if (!isDataValid.value) return false
+
+  const reference = closingLineValue.value
+  if (reference === null) return false
+
+  let hasAbove = false
+  let hasBelow = false
+
+  for (const point of props.data) {
+    if (!point || typeof point.value !== 'number' || Number.isNaN(point.value))
+      continue
+
+    if (point.value > reference) {
+      hasAbove = true
+    } else if (point.value < reference) {
+      hasBelow = true
+    }
+
+    if (hasAbove && hasBelow) return true
+  }
+
+  return false
+})
+
+const shouldShowReferenceIndicator = computed<boolean>(() => {
+  if (!props.showReferenceIndicator) return false
+  if (parsedReferenceValue.value !== null) return true
+  return hasReferenceVariation.value
 })
 
 const displayedData = computed(() => {
@@ -1018,7 +1057,7 @@ const hoverLinePlugin: Plugin<'line'> = {
       if (
         !props.loading &&
         props.data.length > 0 &&
-        props.showReferenceIndicator
+        shouldShowReferenceIndicator.value
       ) {
         const currentValue = props.data[props.data.length - 1].value
         const yPosition = yScale.getPixelForValue(currentValue)
