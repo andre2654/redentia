@@ -73,25 +73,12 @@
             />
           </UButtonGroup>
         </header>
-        <div class="relative max-md:px-4">
-          <label
-            class="absolute right-4 top-4 z-10 flex cursor-pointer items-center gap-2 text-xs text-white/70"
-          >
-            <input
-              v-model="showBazinPrice"
-              type="checkbox"
-              class="h-4 w-4 rounded border-white/30 bg-transparent text-secondary focus:ring-secondary"
-            />
-            <span>Mostrar preço teto Bazin</span>
-          </label>
-          <AtomsGraphLine
-            :data="chartData"
-            :legend="chartLabel"
-            :height="320"
-            :loading="isLoadingChart"
-            :markers="chartMarkers"
-          />
-        </div>
+        <AtomsGraphLine
+          :data="chartData"
+          :legend="chartLabel"
+          :height="320"
+          :loading="isLoadingChart"
+        />
       </section>
 
       <!-- Asset Indicators -->
@@ -132,7 +119,11 @@
             />
             <MoleculesTickerIndicator
               name="Dividend Yield"
-              :value="dividendYieldDisplay"
+              :value="
+                parseFloat(
+                  fundamentusData.key_statistics.dividend_yield
+                ).toFixed(1) + '%'
+              "
               help-text="Dividend Yield é a relação entre o dividendo pago por ação e o preço da ação."
             />
             <MoleculesTickerIndicator
@@ -241,7 +232,7 @@
             />
             <MoleculesTickerIndicator
               name="Dividend Yield"
-              :value="dividendYieldDisplay"
+              :value="intelligentIndicators.dividendYield.value"
               help-text="Relação entre dividendos pagos e preço atual da ação."
               is-intelligent
               :help-text-with-tooltip="false"
@@ -567,7 +558,6 @@ const fundamentusData = ref<FundamentusApiResponse | null>(null)
 const isLoadingFundamentus = ref(false)
 const selectedTimeRange = ref<ChartTimeRange>('month')
 const isLoadingChart = ref(true)
-const showBazinPrice = ref(true)
 
 interface ChartPoint {
   date: string
@@ -793,11 +783,7 @@ const intelligentIndicators = computed(() => {
   const profitMargin = parseFloat(financial.profit_margins) * 100 || 0
   const priceToBook = parseFloat(stats.price_to_book) || 0
   const forwardPE = parseFloat(stats.forward_pe) || 0
-  const dividendYield =
-    dividendYieldPercent.value ??
-    (Number.isFinite(parseFloat(stats.dividend_yield))
-      ? parseFloat(stats.dividend_yield)
-      : 0)
+  const dividendYield = parseFloat(stats.dividend_yield) || 0
 
   // Classificações baseadas em benchmarks do mercado
   const getDebtRating = (ratio: number) => {
@@ -924,81 +910,6 @@ const aggregatedMdiEntries = computed<AssetMdiEntry[]>(() => {
 
   return []
 })
-
-const dividendSumLastTwelveMonths = computed<number | null>(() => {
-  if (!Array.isArray(dividendsData.value) || dividendsData.value.length === 0) {
-    return null
-  }
-
-  const now = new Date()
-  const cutoff = new Date(now)
-  cutoff.setFullYear(cutoff.getFullYear() - 1)
-
-  let total = 0
-
-  for (const record of dividendsData.value) {
-    const rate = safeNumber(record?.rate)
-    if (!Number.isFinite(rate) || rate === null || rate <= 0) continue
-
-    const paymentDate = record?.payment_date ? new Date(record.payment_date) : null
-    if (!paymentDate || Number.isNaN(paymentDate.getTime())) continue
-
-    if (paymentDate < cutoff || paymentDate > now) continue
-
-    total += rate
-  }
-
-  return total > 0 ? total : null
-})
-
-const dividendYieldLastTwelveMonths = computed<number | null>(() => {
-  const totalDividends = dividendSumLastTwelveMonths.value
-  if (!Number.isFinite(totalDividends) || totalDividends === null) return null
-
-  const marketPrice =
-    safeNumber((asset.value as { market_price?: unknown } | undefined)?.market_price) ??
-    safeNumber((asset.value as { close?: unknown } | undefined)?.close)
-
-  if (!Number.isFinite(marketPrice) || marketPrice === null || marketPrice <= 0) {
-    return null
-  }
-
-  return totalDividends / marketPrice
-})
-
-const dividendYieldPercent = computed<number | null>(() => {
-  const ratio = dividendYieldLastTwelveMonths.value
-  if (!Number.isFinite(ratio) || ratio === null) return null
-  return ratio * 100
-})
-
-const dividendYieldDisplay = computed(() => {
-  const percentage = dividendYieldPercent.value
-  if (percentage === null || Number.isNaN(percentage)) return '0.00%'
-  return `${percentage.toFixed(2)}%`
-})
-
-const bazinPrice = computed<number | null>(() => {
-  const dividendsTtm = dividendSumLastTwelveMonths.value
-  if (!Number.isFinite(dividendsTtm) || dividendsTtm === null || dividendsTtm <= 0) {
-    return null
-  }
-
-  const ceilingPrice = dividendsTtm * 16
-  return Number.isFinite(ceilingPrice) ? ceilingPrice : null
-})
-
-const chartMarkers = computed(() =>
-  showBazinPrice.value && bazinPrice.value !== null
-    ? [
-        {
-          name: 'Preço teto Bazin',
-          value: bazinPrice.value,
-          color: '#a7d6ff',
-        },
-      ]
-    : []
-)
 
 const monthlyDividendProbability = computed(() => {
   const baseMonths = monthLabels.map((label) => ({
@@ -1251,7 +1162,11 @@ const buyAndHoldChecklist = computed<ChecklistItem[]>(() => {
     }
   }
 
-  const dividendYieldValue = dividendYieldPercent.value
+  const dividendYieldRaw = safeNumber(
+    fundamentusData.value.key_statistics?.dividend_yield
+  )
+  const dividendYieldValue =
+    dividendYieldRaw !== null ? dividendYieldRaw : null
   const dividendYieldAboveFive =
     dividendYieldValue !== null ? dividendYieldValue >= 5 : null
 
@@ -1366,7 +1281,7 @@ const buyAndHoldChecklist = computed<ChecklistItem[]>(() => {
     status: toStatus(dividendYieldAboveFive),
     detail:
       dividendYieldValue !== null
-        ? `Yield atual: ${dividendYieldValue.toFixed(2)}%`
+        ? `Yield atual: ${dividendYieldValue.toFixed(1)}%`
         : null,
     tooltip: 'Usa o Dividend Yield informado pelo Fundamentus.',
   })

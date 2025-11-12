@@ -103,12 +103,6 @@ interface ITooltipData {
   color: string
 }
 
-interface IChartMarker {
-  name: string
-  value: number
-  color: string
-}
-
 interface IDragState {
   startIndex: number | null
   endIndex: number | null
@@ -136,7 +130,6 @@ interface Props {
   loading?: boolean
   locale?: string
   currency?: string
-  markers?: IChartMarker[]
 }
 
 /* ========== Configurações padrão ========== */
@@ -161,7 +154,6 @@ const props = withDefaults(defineProps<Props>(), {
   loading: false,
   locale: 'pt-BR',
   currency: 'R$',
-  markers: () => [],
 })
 
 /* ========== Validação de dados ========== */
@@ -626,31 +618,6 @@ const displayedData = computed(() => {
   return props.data
 })
 
-const normalizedMarkers = computed<IChartMarker[]>(() => {
-  if (!Array.isArray(props.markers)) return []
-  return props.markers
-    .map((marker) => {
-      if (!marker || typeof marker !== 'object') return null
-      const { name, value, color } = marker
-      const hasValidName = typeof name === 'string' && name.trim().length > 0
-      const numericValue =
-        typeof value === 'number' && Number.isFinite(value) ? value : null
-      const colorValue =
-        typeof color === 'string' && color.trim().length > 0 ? color : null
-
-      if (!hasValidName || numericValue === null || colorValue === null) {
-        return null
-      }
-
-      return {
-        name: name.trim(),
-        value: numericValue,
-        color: colorValue.trim(),
-      }
-    })
-    .filter((marker): marker is IChartMarker => marker !== null)
-})
-
 const yAxisExtents = computed<{
   min: number
   max: number
@@ -675,20 +642,9 @@ const yAxisExtents = computed<{
     max = Math.max(max, referenceValue!)
   }
 
-  const markers = normalizedMarkers.value
-  if (Array.isArray(markers) && markers.length > 0) {
-    for (const marker of markers) {
-      if (typeof marker?.value === 'number' && Number.isFinite(marker.value)) {
-        min = Math.min(min, marker.value)
-        max = Math.max(max, marker.value)
-      }
-    }
-  }
-
   if (!Number.isFinite(min) || !Number.isFinite(max)) return null
 
-  const range = max - min
-  if (range === 0) {
+  if (min === max) {
     const padding = Math.max(1, Math.abs(min) * 0.01)
     return {
       min: min - padding,
@@ -696,12 +652,7 @@ const yAxisExtents = computed<{
     }
   }
 
-  const padding = Math.max(Math.abs(range) * 0.05, 0.5)
-
-  return {
-    min: min - padding,
-    max: max + padding,
-  }
+  return { min, max }
 })
 
 function fillRegionBetween(
@@ -1671,81 +1622,6 @@ const overlayLabelsPlugin: Plugin<'line'> = {
   },
 }
 
-const markerLinesPlugin: Plugin<'line'> = {
-  id: 'markerLinesPlugin',
-  afterDraw: (chart) => {
-    try {
-      if (
-        props.loading ||
-        !isDataValid.value ||
-        normalizedMarkers.value.length === 0
-      ) {
-        return
-      }
-
-      const { ctx, chartArea } = chart
-      const yScale = chart.scales?.y
-
-      if (!ctx || !chartArea || !yScale) return
-
-      normalizedMarkers.value.forEach((marker) => {
-        const y = yScale.getPixelForValue(marker.value)
-        if (typeof y !== 'number' || Number.isNaN(y)) return
-
-        ctx.save()
-
-        // Horizontal line
-        ctx.beginPath()
-        ctx.setLineDash([6, 4])
-        ctx.lineWidth = 1.5
-        ctx.strokeStyle = marker.color
-        ctx.moveTo(chartArea.left, y)
-        ctx.lineTo(chartArea.right, y)
-        ctx.stroke()
-        ctx.closePath()
-        ctx.setLineDash([])
-
-        // Label
-        const fontFamily = 'Inter, system-ui, sans-serif'
-        const fontSize = 12
-        const paddingX = 12
-        const paddingY = 8
-        const title = marker.name
-        const valueText = formatCurrency(marker.value)
-        const prefix = `${title}: `
-        const lineSpacing = 10
-
-        ctx.font = `${fontSize}px ${fontFamily}`
-        const prefixMetrics = ctx.measureText(prefix)
-        const valueMetrics = ctx.measureText(valueText)
-
-        const contentWidth = prefixMetrics.width + valueMetrics.width
-        const boxWidth = contentWidth + paddingX * 2
-        const boxHeight = paddingY * 2 + fontSize
-
-        const labelY = Math.max(chartArea.top + paddingY + lineSpacing, y)
-        const boxLeft = chartArea.left + 50
-
-        ctx.textAlign = 'left'
-        ctx.textBaseline = 'top'
-
-        ctx.font = `${fontSize}px ${fontFamily}`
-        ctx.fillStyle = marker.color
-        ctx.fillText(prefix, boxLeft + paddingX, labelY)
-
-        const valueX = boxLeft + paddingX + prefixMetrics.width
-        ctx.font = `600 ${fontSize}px ${fontFamily}`
-        ctx.fillStyle = marker.color
-        ctx.fillText(valueText, valueX, labelY)
-
-        ctx.restore()
-      })
-    } catch (error) {
-      console.error('[markerLinesPlugin] Error:', error)
-    }
-  },
-}
-
 /* ========== Registro do Chart.js ========== */
 if (!(ChartCore as any)._adapters?._customRegisteredOnce) {
   ChartCore.register(
@@ -1890,7 +1766,6 @@ const localPlugins = [
   closingDeltaFillPlugin,
   hoverLinePlugin,
   overlayLabelsPlugin,
-  markerLinesPlugin,
 ]
 
 /* ========== Lifecycle ========== */
