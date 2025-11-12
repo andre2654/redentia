@@ -259,10 +259,10 @@
               Carregando...
             </span>
             <span
-              v-else-if="monthlyDividendProbability.totalCount"
+              v-else-if="monthlyDividendProbability.referenceLabel"
               class="text-xs text-white/50"
             >
-              (Baseado em {{ monthlyDividendProbability.totalCount }} pagamentos)
+              {{ monthlyDividendProbability.referenceLabel }}
             </span>
             <span v-else class="text-xs text-white/40">
               (Sem histórico recente)
@@ -363,6 +363,111 @@
         </div>
       </section>
 
+      <!-- Buy & Hold Checklist -->
+      <section class="max-md:px-4">
+        <div class="rounded-3xl bg-white/5 p-6 backdrop-blur-sm">
+          <header
+            class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+          >
+            <div class="flex items-center gap-2">
+              <IconAi class="fill-secondary h-6 w-6" />
+              <h2 class="text-lg font-semibold text-white">
+                Checklist Buy & Hold
+              </h2>
+            </div>
+            <span class="text-xs text-white/50">
+              Dados analisados via Fundamentus e volume recente
+            </span>
+          </header>
+
+          <div v-if="isLoadingFundamentus" class="grid gap-3 md:grid-cols-2">
+            <USkeleton
+              v-for="index in 6"
+              :key="`checklist-skeleton-${index}`"
+              class="h-24 rounded-2xl"
+            />
+          </div>
+          <template v-else>
+            <div
+              v-if="buyAndHoldChecklist.length"
+              class="grid gap-3 md:grid-cols-2"
+            >
+              <div
+                v-for="item in buyAndHoldChecklist"
+                :key="item.id"
+                :class="[
+                  'flex items-start gap-3 rounded-2xl border px-4 py-3 backdrop-blur-sm transition-colors',
+                  item.status === 'pass'
+                    ? 'border-secondary/60 bg-secondary/10'
+                    : item.status === 'fail'
+                      ? 'border-red-500/40 bg-red-500/5'
+                      : 'border-white/10 bg-white/5',
+                ]"
+              >
+                <div
+                  :class="[
+                    'flex h-9 w-9 items-center justify-center rounded-xl border',
+                    item.status === 'pass'
+                      ? 'border-secondary/60 bg-secondary/10 text-secondary'
+                      : item.status === 'fail'
+                        ? 'border-red-500/40 bg-red-500/10 text-red-300'
+                        : 'border-white/10 bg-white/10 text-white/60',
+                  ]"
+                >
+                  <UIcon
+                    :name="
+                      item.status === 'pass'
+                        ? 'i-lucide-check'
+                        : item.status === 'fail'
+                          ? 'i-lucide-x'
+                          : 'i-lucide-help-circle'
+                    "
+                    class="size-4"
+                  />
+                </div>
+                <div class="flex flex-1 flex-col gap-2">
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm font-medium text-white">
+                      {{ item.label }}
+                    </span>
+                    <UTooltip
+                      v-if="item.tooltip"
+                      :text="item.tooltip"
+                      :delay-duration="0"
+                    >
+                      <button
+                        type="button"
+                        class="text-white/40 transition-colors hover:text-white/80"
+                      >
+                        <UIcon name="i-lucide-info" class="size-4" />
+                      </button>
+                    </UTooltip>
+                  </div>
+                  <p
+                    v-if="item.detail"
+                    class="text-xs text-white/60"
+                  >
+                    {{ item.detail }}
+                  </p>
+                  <p
+                    v-else-if="item.status === 'unknown'"
+                    class="text-xs text-white/40"
+                  >
+                    Dados insuficientes para avaliar
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div
+              v-else
+              class="rounded-2xl border border-dashed border-white/10 p-6 text-center text-sm text-white/50"
+            >
+              Checklist indisponível no momento.
+            </div>
+          </template>
+        </div>
+      </section>
+
       <!-- Asset Info -->
       <section class="max-md:px-4">
         <header class="mb-4 flex items-center gap-4">
@@ -421,7 +526,11 @@
 
 <script setup lang="ts">
 import type { ChartTimeRange } from '~/types/chart'
-import type { FundamentusApiResponse, FundamentusData } from '~/types/asset'
+import type {
+  AssetMdiEntry,
+  FundamentusApiResponse,
+  FundamentusData,
+} from '~/types/asset'
 import { generateChartConfig } from '~/helpers/utils'
 
 const route = useRoute()
@@ -436,7 +545,8 @@ interface DividendData {
   ticker: string
   payment_date: string
   rate: string
-  label: string
+  label?: string
+  mdi?: AssetMdiEntry[]
 }
 
 const ticker = route.params.ticker as string
@@ -765,6 +875,42 @@ function extractMonthIndex(dateString: string | undefined) {
 
 const highlightedMonthsCount = 3
 
+function selectLatestRecord<T extends { period_end_date?: string }>(
+  ...sources: Array<T[] | null | undefined>
+): T | null {
+  const withDates = sources
+    .flatMap((items) => items ?? [])
+    .map((item) => {
+      const date = item?.period_end_date ? new Date(item.period_end_date) : null
+      if (!date || Number.isNaN(date.getTime())) return null
+      return { item, timestamp: date.getTime() }
+    })
+    .filter(
+      (entry): entry is { item: T; timestamp: number } => entry !== null
+    )
+
+  if (!withDates.length) return null
+
+  withDates.sort((a, b) => b.timestamp - a.timestamp)
+  return withDates[0].item
+}
+
+const aggregatedMdiEntries = computed<AssetMdiEntry[]>(() => {
+  const fromDividends = dividendsData.value.find(
+    (entry) => Array.isArray(entry.mdi) && entry.mdi.length
+  )
+
+  if (fromDividends?.mdi?.length) {
+    return fromDividends.mdi
+  }
+
+  if (Array.isArray(asset.value?.mdi) && asset.value?.mdi.length) {
+    return asset.value.mdi
+  }
+
+  return []
+})
+
 const monthlyDividendProbability = computed(() => {
   const baseMonths = monthLabels.map((label) => ({
     label,
@@ -773,11 +919,69 @@ const monthlyDividendProbability = computed(() => {
     highlight: false,
   }))
 
+  const aggregated = aggregatedMdiEntries.value
+  if (aggregated.length) {
+    const totalYears = safeNumber(aggregated[0]?.total_years) ?? null
+    const monthsWithPercentages = baseMonths.map((month, index) => {
+      const stats = aggregated.find((item) => item.month === index + 1)
+      const occurrences = stats ? Number(stats.occurrences ?? 0) : 0
+      const divisor =
+        safeNumber(stats?.total_years) ??
+        totalYears ??
+        (occurrences > 0 ? occurrences : 0)
+      const percentage =
+        divisor && divisor > 0 ? (occurrences / divisor) * 100 : 0
+      const formattedPercentage =
+        percentage === 0
+          ? '0%'
+          : percentage < 10
+            ? `${percentage.toFixed(1)}%`
+            : `${Math.round(percentage)}%`
+
+      return {
+        ...month,
+        percentage,
+        formattedPercentage,
+      }
+    })
+
+    const topMonths = monthsWithPercentages
+      .filter((item) => item.percentage > 0)
+      .sort((a, b) => b.percentage - a.percentage)
+      .slice(0, highlightedMonthsCount)
+      .map((item) => item.label)
+
+    const highlightSet = new Set(topMonths)
+
+    const finalMonths = monthsWithPercentages.map((item) => ({
+      ...item,
+      highlight: highlightSet.has(item.label),
+    }))
+
+    const totalOccurrences = aggregated.reduce(
+      (acc, item) => acc + Number(item.occurrences ?? 0),
+      0
+    )
+
+    return {
+      months: finalMonths,
+      totalCount: totalYears ?? totalOccurrences,
+      totalYears: totalYears ?? null,
+      referenceLabel: totalYears
+        ? `(Histórico de ${totalYears} anos)`
+        : totalOccurrences
+          ? `(Baseado em ${totalOccurrences} pagamentos)`
+          : null,
+    }
+  }
+
   const records = dividendsData.value ?? []
   if (!records.length) {
     return {
       months: baseMonths,
       totalCount: 0,
+      totalYears: null,
+      referenceLabel: null,
     }
   }
 
@@ -796,6 +1000,8 @@ const monthlyDividendProbability = computed(() => {
     return {
       months: baseMonths,
       totalCount,
+      totalYears: null,
+      referenceLabel: null,
     }
   }
 
@@ -832,8 +1038,332 @@ const monthlyDividendProbability = computed(() => {
   return {
     months: finalMonths,
     totalCount,
+    totalYears: null,
+    referenceLabel:
+      totalCount > 0 ? `(Baseado em ${totalCount} pagamentos)` : null,
   }
 })
+
+function safeNumber(value: unknown): number | null {
+  if (value === null || value === undefined) return null
+  if (typeof value === 'number') return Number.isFinite(value) ? value : null
+
+  const trimmed = String(value).trim()
+  if (!trimmed) return null
+
+  const lastComma = trimmed.lastIndexOf(',')
+  const lastDot = trimmed.lastIndexOf('.')
+  const hasComma = lastComma !== -1
+  const hasDot = lastDot !== -1
+
+  let decimalSeparator: ',' | '.' | null = null
+  if (hasComma && hasDot) {
+    decimalSeparator = lastComma > lastDot ? ',' : '.'
+  } else if (hasComma) {
+    decimalSeparator = ','
+  } else if (hasDot) {
+    decimalSeparator = '.'
+  }
+
+  let standardized = trimmed
+  if (decimalSeparator) {
+    const thousandsSeparator = decimalSeparator === ',' ? '.' : ','
+    const parts = standardized.split(thousandsSeparator)
+    standardized = parts.join('')
+    if (decimalSeparator === ',') {
+      standardized = standardized.replace(',', '.')
+    }
+  }
+
+  const parsed = Number.parseFloat(standardized)
+  return Number.isFinite(parsed) ? parsed : null
+}
+
+interface AnnualRecord {
+  date: Date
+  revenue: number | null
+  netIncome: number | null
+}
+
+const annualIncomeRecords = computed<AnnualRecord[]>(() => {
+  const annual = fundamentusData.value?.income?.annual ?? []
+
+  return annual
+    .map((item) => {
+      const date = item.period_end_date ? new Date(item.period_end_date) : null
+      if (!date || Number.isNaN(date.getTime())) return null
+
+      return {
+        date,
+        revenue: safeNumber(item.total_revenue),
+        netIncome: safeNumber(item.net_income),
+      }
+    })
+    .filter((item): item is AnnualRecord => item !== null)
+    .sort((a, b) => b.date.getTime() - a.date.getTime())
+})
+
+const latestBalanceSnapshot = computed(() =>
+  selectLatestRecord(
+    fundamentusData.value?.balance?.quarterly,
+    fundamentusData.value?.balance?.annual
+  )
+)
+
+type ChecklistStatus = 'pass' | 'fail' | 'unknown'
+
+interface ChecklistItem {
+  id: string
+  label: string
+  status: ChecklistStatus
+  detail?: string | null
+  tooltip?: string
+}
+
+const buyAndHoldChecklist = computed<ChecklistItem[]>(() => {
+  const items: ChecklistItem[] = []
+
+  if (!fundamentusData.value) return items
+
+  const annual = annualIncomeRecords.value
+  const today = new Date()
+  const mdiEntries = aggregatedMdiEntries.value
+  const totalYearsHistory = mdiEntries.length
+    ? safeNumber(mdiEntries[0]?.total_years) ?? null
+    : null
+
+  const oldestAnnual = annual.at(-1)
+  const firstAnnualDate = oldestAnnual?.date ?? null
+  const availableYearsFromAnnual =
+    firstAnnualDate !== null
+      ? today.getFullYear() - firstAnnualDate.getFullYear() + 1
+      : null
+  const hasFiveYearsHistory =
+    totalYearsHistory !== null
+      ? totalYearsHistory >= 5
+      : availableYearsFromAnnual !== null
+        ? availableYearsFromAnnual >= 5
+        : null
+  const historyDetail =
+    totalYearsHistory !== null
+      ? `Histórico de ${totalYearsHistory} anos`
+      : firstAnnualDate
+        ? `Dados desde ${firstAnnualDate.getFullYear()}`
+        : null
+
+  let annualNeverNegative: boolean | null = null
+  if (annual.length > 0) {
+    if (annual.some((item) => item.netIncome === null)) {
+      annualNeverNegative = null
+    } else {
+      annualNeverNegative = annual.every(
+        (item) => (item.netIncome ?? 0) >= 0
+      )
+    }
+  }
+
+  const dividendYieldRaw = safeNumber(
+    fundamentusData.value.key_statistics?.dividend_yield
+  )
+  const dividendYieldValue =
+    dividendYieldRaw !== null ? dividendYieldRaw : null
+  const dividendYieldAboveFive =
+    dividendYieldValue !== null ? dividendYieldValue >= 5 : null
+
+  const roeRaw = safeNumber(fundamentusData.value.financial_data?.return_on_equity)
+  const roeValue = roeRaw !== null ? roeRaw * 100 : null
+  const roeAboveTen = roeValue !== null ? roeValue >= 10 : null
+
+  const roaRaw = safeNumber(
+    fundamentusData.value.financial_data?.return_on_assets
+  )
+  const roaValue = roaRaw !== null ? roaRaw * 100 : null
+  const roaAboveFive = roaValue !== null ? roaValue >= 5 : null
+
+  const balanceSnapshot = latestBalanceSnapshot.value
+  const totalEquity = safeNumber(balanceSnapshot?.equity)
+  const totalDebt = safeNumber(
+    fundamentusData.value?.financial_data?.total_debt
+  )
+  const totalLiabilities = safeNumber(balanceSnapshot?.total_liab)
+  const debtComparisonSource =
+    totalDebt !== null ? totalDebt : totalLiabilities
+  const debtBelowEquity =
+    debtComparisonSource !== null && totalEquity !== null
+      ? debtComparisonSource <= totalEquity
+      : null
+
+  const netMarginRaw = safeNumber(
+    fundamentusData.value.financial_data?.profit_margins
+  )
+  const netMarginValue = netMarginRaw !== null ? netMarginRaw * 100 : null
+  const netMarginPositive =
+    netMarginValue !== null ? netMarginValue > 0 : null
+
+  const freeCashFlowRaw = safeNumber(
+    fundamentusData.value.financial_data?.free_cashflow
+  )
+  const freeCashFlowPositive =
+    freeCashFlowRaw !== null ? freeCashFlowRaw > 0 : null
+
+  const marketCapValue = safeNumber(
+    (asset.value as { market_cap?: unknown } | undefined)?.market_cap
+  )
+  const marketCapAboveOneB =
+    marketCapValue !== null ? marketCapValue >= 1_000_000_000 : null
+
+  const recentDividendYears = new Set<number>()
+  const dividendDataAvailable = dividendsData.value.length > 0
+  const currentYear = today.getFullYear()
+  const targetYears = Array.from({ length: 5 }, (_, index) => currentYear - index)
+
+  dividendsData.value.forEach((record) => {
+    const date = record.payment_date ? new Date(record.payment_date) : null
+    if (!date || Number.isNaN(date.getTime())) return
+    const year = date.getFullYear()
+    if (targetYears.includes(year)) {
+      recentDividendYears.add(year)
+    }
+  })
+
+  const paidDividendsLastFiveYears =
+    targetYears.length > 0
+      ? targetYears.every((year) => recentDividendYears.has(year))
+      : null
+  const sortedRecentDividendYears = Array.from(recentDividendYears).sort(
+    (a, b) => a - b
+  )
+
+  const toStatus = (value: boolean | null | undefined): ChecklistStatus => {
+    if (value === true) return 'pass'
+    if (value === false) return 'fail'
+    return 'unknown'
+  }
+
+  items.push({
+    id: 'history',
+    label: 'Mais de 5 anos de histórico',
+    status: toStatus(hasFiveYearsHistory),
+    detail: historyDetail,
+    tooltip: 'Verifica se há demonstrações anuais disponíveis há pelo menos 5 anos.',
+  })
+
+  items.push({
+    id: 'dividends-five-years',
+    label: 'Pagou dividendos nos últimos 5 anos',
+    status: toStatus(
+      dividendDataAvailable ? paidDividendsLastFiveYears : null
+    ),
+    detail:
+      dividendDataAvailable && sortedRecentDividendYears.length > 0
+        ? `Pagamentos em: ${sortedRecentDividendYears.join(', ')} (${sortedRecentDividendYears.length}/5)`
+        : dividendDataAvailable
+          ? 'Sem pagamentos registrados no intervalo'
+          : 'Histórico de dividendos indisponível',
+    tooltip:
+      'Verifica se houve pelo menos um pagamento de dividendos em cada um dos últimos 5 anos.',
+  })
+
+  items.push({
+    id: 'annual-loss',
+    label: 'Sem prejuízo em exercícios anuais recentes',
+    status: toStatus(annualNeverNegative),
+    detail:
+      annualNeverNegative === false
+        ? 'Há registros de prejuízo anual'
+        : null,
+    tooltip: 'Analisa os resultados fiscais anuais disponíveis.',
+  })
+
+  items.push({
+    id: 'dividend-yield',
+    label: 'Dividend Yield acima de 5%',
+    status: toStatus(dividendYieldAboveFive),
+    detail:
+      dividendYieldValue !== null
+        ? `Yield atual: ${dividendYieldValue.toFixed(1)}%`
+        : null,
+    tooltip: 'Usa o Dividend Yield informado pelo Fundamentus.',
+  })
+
+  items.push({
+    id: 'roe',
+    label: 'ROE acima de 10%',
+    status: toStatus(roeAboveTen),
+    detail:
+      roeValue !== null ? `ROE atual: ${roeValue.toFixed(1)}%` : null,
+    tooltip: 'Retorno sobre o patrimônio líquido da empresa.',
+  })
+
+  items.push({
+    id: 'debt-equity',
+    label: 'Dívida menor ou igual ao patrimônio',
+    status: toStatus(debtBelowEquity),
+    detail:
+      debtComparisonSource !== null && totalEquity !== null
+        ? `Dívida: R$ ${formatNumberToShort(debtComparisonSource)} • Patrimônio: R$ ${formatNumberToShort(totalEquity)}`
+        : null,
+    tooltip: 'Compara dívida total e patrimônio líquido mais recentes.',
+  })
+
+  items.push({
+    id: 'market-cap',
+    label: 'Market Cap maior que R$ 1B',
+    status: toStatus(marketCapAboveOneB),
+    detail:
+      marketCapValue !== null
+        ? `Market Cap: R$ ${formatNumberToShort(marketCapValue)}`
+        : 'Market Cap indisponível',
+    tooltip: 'Compara o valor de mercado atual com o patamar mínimo desejado.',
+  })
+
+  items.push({
+    id: 'roa',
+    label: 'ROA acima de 5%',
+    status: toStatus(roaAboveFive),
+    detail:
+      roaValue !== null ? `ROA atual: ${roaValue.toFixed(1)}%` : null,
+    tooltip: 'Retorno sobre os ativos totais da empresa.',
+  })
+
+  items.push({
+    id: 'net-margin',
+    label: 'Margem líquida positiva',
+    status: toStatus(netMarginPositive),
+    detail:
+      netMarginValue !== null
+        ? `Margem: ${netMarginValue.toFixed(1)}%`
+        : null,
+    tooltip: 'Verifica se a margem líquida consolidada está positiva.',
+  })
+
+  items.push({
+    id: 'free-cashflow',
+    label: 'Fluxo de caixa livre positivo',
+    status: toStatus(freeCashFlowPositive),
+    detail:
+      freeCashFlowRaw !== null
+        ? `FCF: R$ ${formatNumberToShort(freeCashFlowRaw)}`
+        : 'Fluxo de caixa livre indisponível',
+    tooltip: 'Verifica se a empresa gera caixa excedente após investimentos.',
+  })
+
+  return items
+})
+
+function formatNumberToShort(value: number): string {
+  const absValue = Math.abs(value)
+  if (absValue >= 1_000_000_000) {
+    return `${(value / 1_000_000_000).toFixed(1)}B`
+  }
+  if (absValue >= 1_000_000) {
+    return `${(value / 1_000_000).toFixed(1)}M`
+  }
+  if (absValue >= 1_000) {
+    return `${(value / 1_000).toFixed(1)}K`
+  }
+  return value.toFixed(0)
+}
 
 // Busca inicial
 onMounted(async () => {
