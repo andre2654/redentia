@@ -500,24 +500,9 @@ const showTooltip = computed(() => {
 const tooltipStyle = computed(() => {
   if (!showTooltip.value) return {}
 
-  const offset = 10
-  const top = Math.max(0, hoverState.position.y - 60)
-  let left = hoverState.position.x + offset
-
-  if (typeof window !== 'undefined') {
-    const viewportWidth = window.innerWidth
-    const tooltipWidth = 180
-    const expectedRightEdge = left + tooltipWidth
-    const threshold = viewportWidth - 12
-
-    if (expectedRightEdge > threshold) {
-      left = Math.max(12, hoverState.position.x - tooltipWidth - offset)
-    }
-  }
-
   return {
-    left: `${left}px`,
-    top: `${top}px`,
+    left: `${hoverState.position.x + 10}px`,
+    top: `${hoverState.position.y - 60}px`,
   }
 })
 
