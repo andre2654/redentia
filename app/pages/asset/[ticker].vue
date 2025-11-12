@@ -75,7 +75,8 @@
         </header>
         <div class="relative max-md:px-4">
           <label
-            class="absolute right-4 top-4 z-10 flex cursor-pointer items-center gap-2 text-xs text-white/70"
+            v-if="bazinPrice"
+            class="absolute right-4 top-2 z-10 flex cursor-pointer items-center gap-2 text-xs text-white/70 bg-black p-2 rounded"
           >
             <input
               v-model="showBazinPrice"

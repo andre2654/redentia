@@ -1723,7 +1723,7 @@ const markerLinesPlugin: Plugin<'line'> = {
         const boxWidth = contentWidth + paddingX * 2
         const boxHeight = paddingY * 2 + fontSize
 
-        const labelY = Math.max(chartArea.top + paddingY + lineSpacing, y)
+        const labelY = Math.max(chartArea.top + paddingY, y + lineSpacing)
         const boxLeft = chartArea.left + 50
 
         ctx.textAlign = 'left'
