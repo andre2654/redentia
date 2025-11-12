@@ -250,6 +250,69 @@
 
       <!-- Dividends Chart -->
       <section class="max-md:px-4">
+        <div class="mb-6 rounded-3xl bg-white/5 p-4 backdrop-blur-sm">
+          <div class="mb-3 flex items-center gap-2">
+            <h3 class="text-sm font-semibold text-white">
+              MDI
+            </h3>
+            <span v-if="isLoadingDividends" class="text-xs text-white/40">
+              Carregando...
+            </span>
+            <span
+              v-else-if="monthlyDividendProbability.totalCount"
+              class="text-xs text-white/50"
+            >
+              (Baseado em {{ monthlyDividendProbability.totalCount }} pagamentos)
+            </span>
+            <span v-else class="text-xs text-white/40">
+              (Sem histórico recente)
+            </span>
+          </div>
+          <div
+            v-if="isLoadingDividends"
+            class="flex gap-2 overflow-x-auto pb-1"
+          >
+            <USkeleton
+              v-for="month in 12"
+              :key="`dividend-month-skeleton-${month}`"
+              class="h-16 min-w-[72px] rounded-2xl"
+            />
+          </div>
+          <div
+            v-else
+            class="flex flex-wrap gap-1 overflow-x-auto"
+          >
+            <div
+              v-for="item in monthlyDividendProbability.months"
+              :key="item.label"
+              :class="[
+                'flex min-w-[72px] flex-col items-center gap-1 rounded-2xl border px-2 py-1 text-center backdrop-blur-sm transition-colors',
+                item.highlight
+                  ? 'border-secondary bg-secondary/10'
+                  : 'border-white/10 bg-white/5',
+              ]"
+            >
+              <div
+                :class="[
+                  'flex items-center gap-1 text-xs font-medium uppercase tracking-wide',
+                  item.highlight ? 'text-secondary' : 'text-white/70',
+                ]"
+              >
+                <span>{{ item.label }}</span>
+                <IconAi v-if="item.highlight" class="fill-secondary h-5" />
+              </div>
+              <span
+                :class="[
+                  'text-base font-semibold',
+                  item.highlight ? 'text-secondary' : 'text-white',
+                ]"
+              >
+                {{ item.formattedPercentage }}
+              </span>
+              <span class="text-[10px] text-white/40">prob.</span>
+            </div>
+          </div>
+        </div>
         <AtomsGraphDividends
           :data="dividendsData"
           :loading="isLoadingDividends"
@@ -392,6 +455,21 @@ interface ChartPoint {
   timestamp: number
 }
 const chartData = ref<ChartPoint[]>([])
+
+const monthLabels = [
+  'Jan',
+  'Fev',
+  'Mar',
+  'Abr',
+  'Mai',
+  'Jun',
+  'Jul',
+  'Ago',
+  'Set',
+  'Out',
+  'Nov',
+  'Dez',
+]
 
 // Mantém apenas o label do chartConfig
 const chartLabel = computed(
@@ -658,6 +736,102 @@ const intelligentIndicators = computed(() => {
           ? { label: 'Alto', color: 'text-green-400' }
           : { label: 'Baixo', color: 'text-red-400' },
     },
+  }
+})
+
+function extractMonthIndex(dateString: string | undefined) {
+  if (!dateString) return null
+
+  const parsedDate = new Date(dateString)
+  if (!Number.isNaN(parsedDate.getTime())) {
+    return parsedDate.getUTCMonth()
+  }
+
+  const normalized = dateString.trim()
+  const parts = normalized.includes('-')
+    ? normalized.split('-')
+    : normalized.split('/')
+
+  if (parts.length >= 2) {
+    const monthPart = parts[1]
+    const monthIndex = Number.parseInt(monthPart, 10) - 1
+    if (Number.isInteger(monthIndex) && monthIndex >= 0 && monthIndex < 12) {
+      return monthIndex
+    }
+  }
+
+  return null
+}
+
+const highlightedMonthsCount = 3
+
+const monthlyDividendProbability = computed(() => {
+  const baseMonths = monthLabels.map((label) => ({
+    label,
+    percentage: 0,
+    formattedPercentage: '0%',
+    highlight: false,
+  }))
+
+  const records = dividendsData.value ?? []
+  if (!records.length) {
+    return {
+      months: baseMonths,
+      totalCount: 0,
+    }
+  }
+
+  const counts = Array.from({ length: 12 }, () => 0)
+
+  records.forEach((item) => {
+    const monthIndex = extractMonthIndex(item.payment_date)
+    if (monthIndex !== null) {
+      counts[monthIndex] += 1
+    }
+  })
+
+  const totalCount = counts.reduce((acc, value) => acc + value, 0)
+
+  if (!totalCount) {
+    return {
+      months: baseMonths,
+      totalCount,
+    }
+  }
+
+  const monthsWithPercentages = baseMonths.map((month, index) => {
+    const count = counts[index]
+    const percentage = totalCount ? (count / totalCount) * 100 : 0
+    const formattedPercentage =
+      percentage === 0
+        ? '0%'
+        : percentage < 10
+          ? `${percentage.toFixed(1)}%`
+          : `${Math.round(percentage)}%`
+
+    return {
+      ...month,
+      percentage,
+      formattedPercentage,
+    }
+  })
+
+  const topMonths = monthsWithPercentages
+    .filter((item) => item.percentage > 0)
+    .sort((a, b) => b.percentage - a.percentage)
+    .slice(0, highlightedMonthsCount)
+    .map((item) => item.label)
+
+  const highlightSet = new Set(topMonths)
+
+  const finalMonths = monthsWithPercentages.map((item) => ({
+    ...item,
+    highlight: highlightSet.has(item.label),
+  }))
+
+  return {
+    months: finalMonths,
+    totalCount,
   }
 })
 
