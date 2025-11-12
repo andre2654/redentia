@@ -231,9 +231,9 @@
               :help-text-with-tooltip="false"
             />
             <MoleculesTickerIndicator
-              name="Dividend Yield"
-              :value="intelligentIndicators.dividendYield.value"
-              help-text="Relação entre dividendos pagos e preço atual da ação."
+              name="Preço teto Bazin"
+              :value="intelligentIndicators.bazinPrice.value"
+              help-text="Preço máximo sugerido pelo método de Bazin (dividendos dos últimos 12 meses × 16)."
               is-intelligent
               :help-text-with-tooltip="false"
             />
@@ -280,7 +280,7 @@
           </div>
           <div
             v-else
-            class="flex flex-wrap gap-1 overflow-x-auto"
+            class="flex gap-2 grid grid-cols-3 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-12"
           >
             <div
               v-for="item in monthlyDividendProbability.months"
@@ -783,7 +783,7 @@ const intelligentIndicators = computed(() => {
   const profitMargin = parseFloat(financial.profit_margins) * 100 || 0
   const priceToBook = parseFloat(stats.price_to_book) || 0
   const forwardPE = parseFloat(stats.forward_pe) || 0
-  const dividendYield = parseFloat(stats.dividend_yield) || 0
+  const bazinIndicatorPrice = bazinPrice.value
 
   // Classificações baseadas em benchmarks do mercado
   const getDebtRating = (ratio: number) => {
@@ -839,12 +839,15 @@ const intelligentIndicators = computed(() => {
           : { label: 'Caro', color: 'text-red-400' },
     },
     forwardPE: { value: forwardPE.toFixed(1), rating: getPERating(forwardPE) },
-    dividendYield: {
-      value: dividendYield.toFixed(2) + '%',
+    bazinPrice: {
+      value: bazinPriceDisplay.value,
       rating:
-        dividendYield > 5
-          ? { label: 'Alto', color: 'text-green-400' }
-          : { label: 'Baixo', color: 'text-red-400' },
+        bazinIndicatorPrice !== null
+          ? {
+              label: 'Referência Bazin',
+              color: 'text-sky-400',
+            }
+          : undefined,
     },
   }
 })
@@ -909,6 +912,45 @@ const aggregatedMdiEntries = computed<AssetMdiEntry[]>(() => {
   }
 
   return []
+})
+
+const bazinPrice = computed<number | null>(() => {
+  if (!Array.isArray(dividendsData.value) || dividendsData.value.length === 0) {
+    return null
+  }
+
+  const now = new Date()
+  const cutoff = new Date(now)
+  cutoff.setFullYear(cutoff.getFullYear() - 1)
+
+  let total = 0
+
+  for (const record of dividendsData.value) {
+    const rate = safeNumber(record?.rate)
+    if (!Number.isFinite(rate) || rate === null || rate <= 0) continue
+
+    const paymentDate = record?.payment_date ? new Date(record.payment_date) : null
+    if (!paymentDate || Number.isNaN(paymentDate.getTime())) continue
+
+    if (paymentDate < cutoff || paymentDate > now) continue
+
+    total += rate
+  }
+
+  if (total <= 0) return null
+
+  const ceilingPrice = total * 16
+  return Number.isFinite(ceilingPrice) ? ceilingPrice : null
+})
+
+const bazinPriceDisplay = computed(() => {
+  const price = bazinPrice.value
+  if (!Number.isFinite(price) || price === null) return '—'
+
+  return `R$ ${price.toLocaleString('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`
 })
 
 const monthlyDividendProbability = computed(() => {
