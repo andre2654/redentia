@@ -56,42 +56,22 @@
 
           <template v-if="isAuthenticated">
             <div class="flex flex-col gap-2">
-              <AtomsSidebarButton
+              <NuxtLink
                 to="/overview"
-                text="Visão Geral"
+                class="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm font-medium text-white transition hover:border-white/20 hover:bg-white/10"
                 @click="closeMenu"
-              />
-              <AtomsSidebarButton
-                to="/wallet"
-                text="Sua carteira"
-                disabled
-                @click="closeMenu"
-              />
-              <AtomsSidebarButton
-                to="/planejador"
-                text="Planejador de aportes"
-                disabled
-                is-sub-item
-                @click="closeMenu"
-              />
-              <AtomsSidebarButton
-                to="/ideal"
-                text="Ideal"
-                disabled
-                is-sub-item
-                @click="closeMenu"
-              />
-              <AtomsSidebarButton
-                to="/dividends"
-                text="Proventos"
-                disabled
-                @click="closeMenu"
-              />
-              <AtomsSidebarButton
+              >
+                <UIcon name="i-si-dashboard-vert-fill" class="size-5 text-secondary" />
+                Visão Geral
+              </NuxtLink>
+              <NuxtLink
                 to="/calculadora"
-                text="Calculadora inteligente"
+                class="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm font-medium text-white transition hover:border-white/20 hover:bg-white/10"
                 @click="closeMenu"
-              />
+              >
+                <UIcon name="i-lucide-calculator" class="size-5 text-secondary" />
+                Calculadora inteligente
+              </NuxtLink>
             </div>
 
             <NuxtLink
@@ -116,15 +96,14 @@
               />
             </NuxtLink>
 
-            <UButton
-              color="neutral"
-              variant="ghost"
-              icon="i-lucide-log-out"
-              class="justify-start text-white"
+            <button
+              type="button"
+              class="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm font-medium text-white transition hover:border-white/20 hover:bg-white/10"
               @click="handleLogout"
             >
+              <UIcon name="i-lucide-log-out" class="size-5 text-secondary" />
               Sair
-            </UButton>
+            </button>
           </template>
 
           <template v-else>
