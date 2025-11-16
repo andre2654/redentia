@@ -1,22 +1,22 @@
 <template>
   <UModal v-model:open="open">
-    <UButton
-      label="Buscar Ativos..."
-      color="neutral"
-      variant="link"
-      icon="i-lucide-search"
-      :ui="{
-        base: 'text-[16px] px-6 py-3',
-        label: 'mr-auto',
-      }"
-    >
-      <template #trailing>
-        <div class="flex items-center gap-2 max-lg:hidden">
-          <UKbd value="meta" variant="link" color="neutral" />
-          <UKbd value="K" variant="link" color="neutral" />
-        </div>
-      </template>
-    </UButton>
+    <slot name="trigger">
+      <UButton
+        :label="compact ? undefined : 'Buscar Ativos...'"
+        color="neutral"
+        variant="link"
+        icon="i-lucide-search"
+        :ui="triggerUi"
+        @click="open = true"
+      >
+        <template v-if="!compact" #trailing>
+          <div class="flex items-center gap-2 max-lg:hidden">
+            <UKbd value="meta" variant="link" color="neutral" />
+            <UKbd value="K" variant="link" color="neutral" />
+          </div>
+        </template>
+      </UButton>
+    </slot>
 
     <template #content>
       <UCommandPalette
@@ -42,7 +42,6 @@
             >
               Acessar busca avançada
             </UButton>
-            <!-- <AtomsTickerCarousel class="w-full" no-control /> -->
           </div>
         </template>
       </UCommandPalette>
@@ -56,6 +55,25 @@ import type { IAsset } from '~/types/asset'
 const searchTerm = ref('')
 const { getAssets } = useAssetsService()
 const open = ref(false)
+
+const props = defineProps<{
+  compact?: boolean
+}>()
+
+const triggerUi = computed(() => {
+  if (props.compact) {
+    return {
+      base: 'h-12 w-12 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 flex items-center justify-center',
+      icon: 'size-5 text-secondary',
+      label: 'hidden',
+    }
+  }
+
+  return {
+    base: 'text-[16px] px-6 py-3',
+    label: 'mr-auto',
+  }
+})
 
 defineShortcuts({
   meta_k: () => {

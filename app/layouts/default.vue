@@ -3,45 +3,40 @@
 
   <!-- Menu mobile -->
   <div
-    class="fixed bottom-0 left-0 right-0 z-10 mx-auto flex w-full items-center justify-between gap-6 border-t border-white/10 bg-gradient-to-tr from-black via-neutral-950 to-neutral-900 px-5 py-4 text-white shadow-[0_-18px_40px_rgba(0,0,0,0.55)] backdrop-blur-2xl xl:hidden"
+    class="fixed bottom-0 left-0 right-0 z-10 mx-auto flex w-full items-center justify-center gap-3 border-t border-white/10 bg-gradient-to-tr from-black via-neutral-950 to-neutral-900 px-4 py-4 text-white shadow-[0_-18px_40px_rgba(0,0,0,0.55)] backdrop-blur-2xl xl:hidden"
   >
-    <UAvatar
-      :alt="authStore.me?.name || 'Usuário'"
-      size="sm"
-      class="cursor-pointer rounded-full ring-2 ring-white/15 shadow-[0_10px_25px_rgba(0,0,0,0.45)] transition-transform duration-200 hover:scale-105"
+    <button
+      type="button"
+      class="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition hover:border-white/20 hover:bg-white/10"
       @click="menuMobileActive = true"
-    />
-
-    <NuxtLink
-      to="/wallet"
-      active-class="bg-white/15 text-white shadow-[0_10px_30px_rgba(255,255,255,0.12)]"
-      class="pointer-events-none group flex flex-col items-center rounded-2xl bg-white/5 p-2 text-white/50 transition-all duration-200"
     >
-      <UIcon name="i-solar-wallet-bold" class="size-5 text-white/80" />
-    </NuxtLink>
+      <UIcon name="i-lucide-menu" class="size-5 text-secondary" />
+    </button>
     <NuxtLink
       to="/overview"
-      active-class="bg-white/15 text-white shadow-[0_10px_30px_rgba(255,255,255,0.12)]"
-      class="group flex flex-col items-center rounded-2xl bg-white/10 p-3 text-white transition-all duration-200 hover:bg-white/15 hover:text-white"
+      active-class="border-secondary/60 bg-secondary/10 text-white"
+      class="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition hover:border-white/20 hover:bg-white/10"
     >
-      <UIcon
-        name="i-si-dashboard-vert-fill"
-        class="size-5 text-white transition-transform duration-200 group-hover:scale-110"
-      />
+      <UIcon name="i-si-dashboard-vert-fill" class="size-5 text-secondary" />
     </NuxtLink>
-    <NuxtLink
-      to="/dividends"
-      active-class="bg-white/15 text-white shadow-[0_10px_30px_rgba(255,255,255,0.12)]"
-      class="pointer-events-none group flex flex-col items-center rounded-2xl bg-white/5 p-2 text-white/50 transition-all duration-200"
-    >
-      <UIcon name="i-mingcute-pig-money-fill" class="size-5 text-white/80" />
-    </NuxtLink>
+    <MoleculesSearchAssets compact>
+      <template #trigger>
+        <button
+          type="button"
+          class="flex h-12 min-w-12 px-6 gap-2 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-white transition hover:border-white/20 hover:bg-white/10"
+        >
+          Buscar ativos
+          <UIcon name="i-lucide-search" class="size-5 text-secondary" />
+        </button>
+      </template>
+    </MoleculesSearchAssets>
     <NuxtLink
       to="/download"
-      class="group flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-white transition-all duration-200 hover:bg-white/15"
+      active-class="border-secondary/60 bg-secondary/10 text-white"
+      class="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-white transition hover:border-white/20 hover:bg-white/10"
     >
-      <IconLogo class="h-4 fill-white drop-shadow-[0_4px_10px_rgba(255,255,255,0.2)] transition-transform duration-200 group-hover:scale-110" />
-      <span class="text-[12px] font-semibold tracking-wide">Baixar</span>
+      <IconLogo class="h-5 fill-white drop-shadow-[0_4px_10px_rgba(255,255,255,0.2)]" />
+      Baixar app
     </NuxtLink>
   </div>
 
