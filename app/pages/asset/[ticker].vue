@@ -566,6 +566,70 @@ interface ChartPoint {
 }
 const chartData = ref<ChartPoint[]>([])
 
+const runtimeConfig = useRuntimeConfig()
+const baseSiteUrl = computed(() => {
+  const url = runtimeConfig.public?.siteUrl || 'https://www.redentia.com.br'
+  return url.endsWith('/') ? url.slice(0, -1) : url
+})
+
+const tickerUpper = computed(() => ticker.toUpperCase())
+const assetName = computed(() => {
+  const resolvedName = asset.value?.name
+  return resolvedName ? String(resolvedName) : tickerUpper.value
+})
+
+const pageTitle = computed(
+  () => `${tickerUpper.value} - ${assetName.value}: cotação e indicadores`,
+)
+
+const pageDescription = computed(
+  () =>
+    `${tickerUpper.value} - ${assetName.value}, veja seus indicadores fundamentalistas, variação, índices relacionados e mais! Tudo que o investidor precisa para tomar a melhor decisão.`,
+)
+
+const canonicalUrl = computed(
+  () => `${baseSiteUrl.value}/asset/${ticker.toLowerCase()}`,
+)
+
+const shareImage = computed(() => {
+  const logo = asset.value?.logo
+  if (typeof logo === 'string' && logo.length > 0) {
+    if (logo.startsWith('http')) {
+      return logo
+    }
+    return `${baseSiteUrl.value}${logo.startsWith('/') ? logo : `/${logo}`}`
+  }
+  return `${baseSiteUrl.value}/512x512.png`
+})
+
+useHead(() => {
+  const title = pageTitle.value
+  const description = pageDescription.value
+  const url = canonicalUrl.value
+  const image = shareImage.value
+
+  return {
+    title,
+    link: [
+      {
+        rel: 'canonical',
+        href: url,
+      },
+    ],
+    meta: [
+      { name: 'description', content: description },
+      { property: 'og:title', itemprop: 'name', content: title },
+      { property: 'og:headline', itemprop: 'headline', content: title },
+      { property: 'og:description', itemprop: 'description', content: description },
+      { property: 'og:url', itemprop: 'url', content: url },
+      { property: 'og:type', content: 'website' },
+      { property: 'og:image', itemprop: 'image', content: image },
+      { property: 'og:locale', content: 'pt_BR' },
+      { name: 'theme-color', content: '#000' },
+    ],
+  }
+})
+
 const monthLabels = [
   'Jan',
   'Fev',
