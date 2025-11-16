@@ -13,12 +13,11 @@
         >
           <UIcon name="i-lucide-menu" class="size-5" />
         </button>
-        <h1
-          v-if="title"
-          class="text-xl font-semibold text-white md:text-2xl"
-        >
-          {{ title }}
-        </h1>
+        <NuxtLink to="/">
+        <IconLogoFull
+          class="mx-auto h-auto w-[150px] fill-black dark:fill-white"
+        />
+      </NuxtLink>
       </div>
 
       <div class="hidden items-center gap-3 md:flex">

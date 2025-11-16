@@ -9,9 +9,10 @@
         class="flex max-w-full items-center whitespace-nowrap will-change-transform"
         :style="{ transform: `translateX(${position}px)` }"
       >
-        <div
+        <NuxtLink
           v-for="(item, index) in repeatedItems"
           :key="index"
+           :to="`/asset/${item?.ticker}`"
           :class="[
             'flex items-center gap-2',
             big ? 'px-8 py-3' : 'px-6 py-2'
@@ -20,7 +21,7 @@
           <img
             :src="item.logo"
             :class="[
-              'pointer-events-none select-none rounded object-cover',
+              'select-none rounded object-cover',
               big ? 'h-10 w-10' : 'h-6 w-6'
             ]"
           />
@@ -40,7 +41,7 @@
           >{{
             item.change
           }}</span>
-        </div>
+        </NuxtLink>
       </div>
     </div>
 
@@ -130,5 +131,6 @@ onUnmounted(() => {
   width: 100%;
   height: 100%;
   position: absolute;
+  pointer-events: none;
 }
 </style>

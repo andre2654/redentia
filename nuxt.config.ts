@@ -85,7 +85,6 @@ export default defineNuxtConfig({
       '/auth/register',
       
       // Áreas privadas
-      '/overview',
       '/wallet',
       '/settings',
       '/search',

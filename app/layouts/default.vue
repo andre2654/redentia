@@ -13,23 +13,13 @@
       <UIcon name="i-lucide-menu" class="size-5 text-secondary" />
     </button>
     <NuxtLink
-      to="/overview"
+      to="/"
       active-class="border-secondary/60 bg-secondary/10 text-white"
       class="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition hover:border-white/20 hover:bg-white/10"
     >
       <UIcon name="i-si-dashboard-vert-fill" class="size-5 text-secondary" />
     </NuxtLink>
-    <MoleculesSearchAssets compact>
-      <template #trigger>
-        <button
-          type="button"
-          class="flex h-12 min-w-12 px-6 gap-2 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-white transition hover:border-white/20 hover:bg-white/10"
-        >
-          Buscar ativos
-          <UIcon name="i-lucide-search" class="size-5 text-secondary" />
-        </button>
-      </template>
-    </MoleculesSearchAssets>
+    <MoleculesSearchAssets compact />
     <NuxtLink
       to="/download"
       active-class="border-secondary/60 bg-secondary/10 text-white"
@@ -93,7 +83,7 @@
         <div class="flex flex-col gap-8">
           <div class="flex flex-col gap-3">
             <MoleculesSearchAssets v-if="!hideSearchBar" />
-            <AtomsSidebarButton to="/overview" text="Visão Geral" />
+            <AtomsSidebarButton to="/" text="Visão Geral" />
             <AtomsSidebarButton to="/wallet" text="Sua carteira" disabled />
             <AtomsSidebarButton
               to="/planejador"

@@ -1,5 +1,5 @@
 <template>
-  <NuxtLayout container-class="md:px-0">
+  <NuxtLayout :name="layoutName" container-class="md:px-0">
     <template #header>
       <div class="flex w-full items-center justify-between">
         <div class="flex items-center gap-3">
@@ -515,7 +515,106 @@
         </div>
       </section>
 
+       <section v-if="!authStore.isAuthenticated" class="mt-20">
+      <div class="w-full">
+        <div class="mb-8 text-center md:mb-12">
+          <div class="mb-3 flex items-center justify-center gap-2 md:mb-4">
+            <IconAi class="h-8 fill-secondary md:h-12" />
+          </div>
+          <h2 class="mb-2 text-2xl font-bold leading-tight text-white sm:text-3xl md:mb-4 md:text-4xl">
+            Assessoria com Inteligência Artificial
+          </h2>
+          <p class="text-sm text-gray-400 sm:text-base md:text-lg">
+            Tire dúvidas, compare ativos e receba análises personalizadas
+          </p>
+        </div>
+
+        <div
+            
+        class="relative w-full">
+          <div
+            v-if="blockChat"
+            @click="redirectToLogin('chat')"
+            class="absolute inset-0 z-10 flex cursor-pointer items-center justify-center rounded-2xl bg-black/60 p-4 transition-all hover:bg-black/70 backdrop-blur-md md:rounded-3xl"
+          >
+            <div  class="max-w-md transform text-center transition-all hover:scale-105">
+              <div class="relative mb-4 md:mb-6">
+                <div class="absolute inset-0 animate-ping opacity-20">
+                  <IconAi class="mx-auto h-12 fill-secondary md:h-16" />
+                </div>
+                <IconAi class="relative mx-auto h-12 fill-secondary md:h-16" />
+              </div>
+              <h3 class="mb-2 text-xl font-bold leading-tight text-white sm:text-2xl md:text-3xl">
+                Converse com nossa IA
+              </h3>
+              <p class="mb-4 px-2 text-sm leading-relaxed text-gray-300 sm:text-base md:mb-6">
+                Faça login e tenha acesso ilimitado à assessoria inteligente
+              </p>
+              <UButton
+                to="/auth/login"
+                color="secondary"
+                size="xl"
+                icon="i-lucide-message-circle"
+                class="w-full px-6 transition-all hover:scale-110 hover:shadow-2xl hover:shadow-secondary/50 sm:w-auto sm:px-8"
+              >
+                Acessar Assessoria
+              </UButton>
+              <p class="mt-3 text-xs text-gray-400 md:mt-4 md:text-sm">
+                Respostas instantâneas • Análises personalizadas
+              </p>
+            </div>
+          </div>
+
+          <div
+            class="rounded-3xl bg-gradient-to-br from-white/10 via-white/5 to-transparent p-6 backdrop-blur-xl md:p-8"
+            @click="handleChatCardClick"
+          >
+            <div class="mb-6 flex flex-col items-center gap-4">
+              <h3 class="text-center text-2xl text-white">Faça alguma pergunta</h3>
+              <p class="text-center text-[13px] font-light text-gray-400">
+                Tire dúvidas sobre investimentos, compare ativos e peça análises em linguagem simples.
+              </p>
+            </div>
+
+            <div class="mb-8 grid grid-cols-2 gap-3 md:grid-cols-3">
+              <button
+                v-for="(suggestion, idx) in chatSuggestions"
+                :key="idx"
+                class="flex h-[120px] items-center justify-center rounded-xl bg-gradient-to-br from-white/10 to-white/5 p-3 text-[13px] font-medium opacity-70 transition-all hover:opacity-100 hover:from-white/20"
+                disabled
+              >
+                {{ suggestion }}
+              </button>
+            </div>
+
+            <div class="space-y-4 opacity-60">
+              <div class="flex items-start gap-3">
+                <IconLogo class="mt-1 w-6 flex-shrink-0 fill-white" />
+                <div class="flex-1 rounded-lg bg-white/5 p-4 backdrop-blur">
+                  <p class="text-sm text-white">
+                    Olá! Sou a assistente virtual da Redentia. Como posso ajudar você hoje?
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-6 w-full rounded-lg bg-black/20 p-4 backdrop-blur">
+              <UTextarea
+                placeholder="Faça qualquer pergunta..."
+                size="md"
+                rows="2"
+                disabled
+                class="w-full"
+                :ui="{ base: 'text-[14px] bg-transparent ring-0 placeholder:text-white/40' }"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
       <MoleculesChat
+       v-else
         class="w-full bg-black/10 dark:bg-white/10"
         routePath="/ticker"
         :ticker="ticker"
@@ -533,6 +632,7 @@ import type {
 } from '~/types/asset'
 import { generateChartConfig } from '~/helpers/utils'
 
+const authStore = useAuthStore()
 const route = useRoute()
 const {
   assetHistoricPrices,
@@ -551,13 +651,21 @@ interface DividendData {
 
 const ticker = route.params.ticker as string
 const asset = ref()
+const blockChat = ref(false)
 const isLoadingAsset = ref(true)
+const layoutName = computed(() =>
+  authStore.isAuthenticated ? 'default' : 'unauthenticated',
+)
 const dividendsData = ref<DividendData[]>([])
 const isLoadingDividends = ref(false)
 const fundamentusData = ref<FundamentusApiResponse | null>(null)
 const isLoadingFundamentus = ref(false)
 const selectedTimeRange = ref<ChartTimeRange>('month')
 const isLoadingChart = ref(true)
+
+function handleChatCardClick() {
+  blockChat.value = true
+}
 
 interface ChartPoint {
   date: string
@@ -1484,5 +1592,12 @@ onMounted(async () => {
 // Atualiza ao trocar o período
 watch(selectedTimeRange, () => {
   fetchChartData()
+})
+
+definePageMeta({
+  isPublicRoute: true,
+  layoutTransition: {
+    name: 'slide-in',
+  },
 })
 </script>

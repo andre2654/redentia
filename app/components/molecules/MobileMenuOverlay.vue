@@ -57,7 +57,7 @@
           <template v-if="isAuthenticated">
             <div class="flex flex-col gap-2">
               <NuxtLink
-                to="/overview"
+                to="/"
                 class="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm font-medium text-white transition hover:border-white/20 hover:bg-white/10"
                 @click="closeMenu"
               >

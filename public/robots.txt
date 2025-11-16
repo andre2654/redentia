@@ -18,7 +18,6 @@ Disallow: /auth/login
 Disallow: /auth/register
 
 # Bloquear áreas privadas/autenticadas
-Disallow: /overview
 Disallow: /wallet
 Disallow: /settings
 Disallow: /search
