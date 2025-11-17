@@ -17,13 +17,16 @@
           >
             Crie sua conta gratuitamente e tenha acesso a todas as ferramentas
           </p>
-          <div class="flex items-center gap-2">
+          <div class="flex items-center justify-center gap-2">
             <UButton
               to="/auth/register"
               color="secondary"
               size="xl"
               icon="i-lucide-user-plus"
-              class="hover:shadow-secondary/50 w-full px-6 transition-all hover:scale-110 hover:shadow-2xl sm:w-auto sm:px-8"
+              class="hover:shadow-secondary/50 w-full px-4 text-sm transition-all hover:scale-110 hover:shadow-2xl sm:w-auto sm:px-6"
+              :ui="{
+                leadingIcon: 'max-md:hidden',
+              }"
             >
               Criar Conta Grátis
             </UButton>
@@ -33,7 +36,10 @@
               variant="outline"
               size="xl"
               icon="i-lucide-log-in"
-              class="w-full px-6 transition-all hover:scale-105 sm:w-auto sm:px-8"
+              class="hover:shadow-secondary/50 w-full px-4 text-sm transition-all hover:scale-110 hover:shadow-2xl sm:w-auto sm:px-6"
+              :ui="{
+                leadingIcon: 'max-md:hidden',
+              }"
             >
               Já tenho conta
             </UButton>

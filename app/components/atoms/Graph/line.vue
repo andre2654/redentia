@@ -594,12 +594,25 @@ const datasetStats = computed<{
   return { min, max, first, last }
 })
 
+const averageDataValue = computed<number | null>(() => {
+  if (!isDataValid.value || !Array.isArray(props.data) || !props.data.length) {
+    return null
+  }
+
+  const sum = props.data.reduce((acc, item) => {
+    if (!item || typeof item.value !== 'number' || Number.isNaN(item.value)) {
+      return acc
+    }
+    return acc + item.value
+  }, 0)
+
+  const average = sum / props.data.length
+  return Number.isFinite(average) ? average : null
+})
+
 const closingLineValue = computed<number | null>(() => {
   try {
     if (!isDataValid.value) return null
-
-    const stats = datasetStats.value
-    if (!stats) return null
 
     const legendValue = props.legend?.find(
       (item) =>
@@ -610,19 +623,13 @@ const closingLineValue = computed<number | null>(() => {
     const parsedLegend = parseNumericValue(legendValue ?? null)
     if (parsedLegend !== null) return parsedLegend
 
-    const referenceCandidate = stats.last
-    if (!Number.isFinite(referenceCandidate)) return null
+    const average = averageDataValue.value
+    if (average !== null) return average
 
-    const variation = evaluateVariation(referenceCandidate, props.data)
-    if (variation.hasAbove && variation.hasBelow) {
-      return referenceCandidate
-    }
+    const stats = datasetStats.value
+    if (!stats) return null
 
-    if (stats.last >= stats.first) {
-      return stats.min - 1
-    }
-
-    return stats.max + 1
+    return stats.last
   } catch {
     return null
   }
@@ -1177,7 +1184,8 @@ const hoverLinePlugin: Plugin<'line'> = {
         props.data.length > 0 &&
         hasReferenceVariation.value
       ) {
-        const currentValue = props.data[props.data.length - 1].value
+        const currentValue = averageDataValue.value
+        if (currentValue === null) return
         const yPosition = yScale.getPixelForValue(currentValue)
 
         if (typeof yPosition === 'number' && !Number.isNaN(yPosition)) {
@@ -1196,65 +1204,13 @@ const hoverLinePlugin: Plugin<'line'> = {
 
           if (!isHovering.value) {
             const formattedValue = formatCurrency(currentValue)
-            const text = `Atual: ${formattedValue}`
+            const text = `Média: ${formattedValue}`
 
             ctx.font = '12px sans-serif'
             ctx.textAlign = 'right'
             ctx.textBaseline = 'middle'
-
-            const textMetrics = ctx.measureText(text)
-            const textWidth = textMetrics.width
-            const textHeight = 20
-            const horizontalPadding = 10
-            const verticalPadding = 6
-            const cornerRadius = 12
-            const boxHeight = textHeight + verticalPadding * 2
-
-            const boxRight = right - 12
-            const boxLeft = boxRight - textWidth - horizontalPadding * 2
-            const boxTop = yPosition - boxHeight / 2
-            const boxBottom = boxTop + boxHeight
-
-            ctx.fillStyle = 'rgba(17, 24, 39, 0.65)'
-            ctx.strokeStyle = 'rgba(148, 163, 184, 0.35)'
-            ctx.lineWidth = 1
-
-            ctx.beginPath()
-            ctx.moveTo(boxLeft + cornerRadius, boxTop)
-            ctx.lineTo(boxRight - cornerRadius, boxTop)
-            ctx.quadraticCurveTo(
-              boxRight,
-              boxTop,
-              boxRight,
-              boxTop + cornerRadius
-            )
-            ctx.lineTo(boxRight, boxBottom - cornerRadius)
-            ctx.quadraticCurveTo(
-              boxRight,
-              boxBottom,
-              boxRight - cornerRadius,
-              boxBottom
-            )
-            ctx.lineTo(boxLeft + cornerRadius, boxBottom)
-            ctx.quadraticCurveTo(
-              boxLeft,
-              boxBottom,
-              boxLeft,
-              boxBottom - cornerRadius
-            )
-            ctx.lineTo(boxLeft, boxTop + cornerRadius)
-            ctx.quadraticCurveTo(
-              boxLeft,
-              boxTop,
-              boxLeft + cornerRadius,
-              boxTop
-            )
-            ctx.closePath()
-            ctx.fill()
-            ctx.stroke()
-
             ctx.fillStyle = 'rgba(148, 163, 184, 1)'
-            ctx.fillText(text, boxRight - horizontalPadding, yPosition)
+            ctx.fillText(text, right - 12, yPosition)
           }
 
           ctx.restore()
