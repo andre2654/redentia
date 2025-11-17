@@ -3,12 +3,12 @@
     <!-- CTA Section -->
     <section v-if="!authStore.isAuthenticated">
       <div
-        class="from-secondary/20 relative overflow-hidden rounded-3xl bg-gradient-to-br to-transparent px-6 py-14 text-center text-white shadow-[0_40px_120px_rgba(4,47,84,0.5)]"
+        class="from-secondary/20 relative overflow-hidden bg-gradient-to-br to-transparent px-6 py-14 text-center text-white md:rounded-3xl"
       >
         <div class="relative">
-          <IconLogoFull class="mx-auto mb-4 h-10 fill-white md:mb-6 md:h-12" />
+          <IconLogoFull class="mx-auto mb-10 h-9 fill-white md:h-12" />
           <h2
-            class="mb-3 text-2xl font-bold leading-tight text-white sm:text-3xl md:mb-4 md:text-4xl"
+            class="mb-3 text-xl font-semibold leading-tight text-white sm:text-3xl md:mb-4 md:text-4xl"
           >
             Pronto para começar a investir melhor?
           </h2>
@@ -17,9 +17,7 @@
           >
             Crie sua conta gratuitamente e tenha acesso a todas as ferramentas
           </p>
-          <div
-            class="flex w-full flex-col items-center justify-center gap-3 px-2 sm:flex-row sm:gap-4"
-          >
+          <div class="flex items-center gap-2">
             <UButton
               to="/auth/register"
               color="secondary"
@@ -47,11 +45,12 @@
       </div>
     </section>
 
-    <AtomsTickerCarousel class="mt-5 w-full" big />
+    <AtomsTickerCarousel class="mt-5 w-full max-md:hidden" big no-control />
+    <AtomsTickerCarousel class="mt-5 w-full md:hidden" no-control />
 
     <div class="flex h-full flex-col gap-4 pt-6">
-      <div v-if="!authStore.isAuthenticated" class="flex flex-col">
-        <div class="mb-12 text-center md:mb-16">
+      <div class="flex flex-col gap-8">
+        <div v-if="!authStore.isAuthenticated" class="text-center">
           <h2
             class="mb-3 text-2xl font-bold leading-tight text-white sm:text-3xl md:mb-4 md:text-4xl"
           >
@@ -62,94 +61,47 @@
           </p>
         </div>
 
-        <div class="mb-8 grid gap-6 md:mb-12 md:grid-cols-2 md:gap-8">
-          <div
-            class="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-green-500/10 via-green-500/5 to-transparent p-6 backdrop-blur-xl transition-all hover:scale-[1.02] hover:shadow-2xl hover:shadow-green-500/20 md:p-8"
-          >
-            <div
-              class="absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100"
+        <div class="flex flex-col gap-4 px-6">
+          <div class="flex items-center gap-2">
+            <span
+              class="h-2 w-2 animate-pulse rounded-full bg-green-400 shadow-lg shadow-blue-500/50 md:h-3 md:w-3"
+            />
+            <span
+              class="text-xs font-medium uppercase tracking-wider text-green-400 md:text-sm"
+              >Ao Vivo</span
             >
-              <div
-                class="absolute inset-0 translate-x-[-100%] bg-gradient-to-r from-transparent via-white/10 to-transparent transition-transform duration-1000 group-hover:translate-x-[100%]"
-              />
-            </div>
-            <div class="relative flex flex-col gap-4">
-              <div class="mb-2 flex items-center gap-2">
-                <span
-                  class="h-2 w-2 animate-pulse rounded-full bg-green-500 shadow-lg shadow-green-500/50 md:h-3 md:w-3"
-                />
-                <span
-                  class="text-xs font-medium uppercase tracking-wider text-green-400 md:text-sm"
-                  >Ao Vivo</span
-                >
-              </div>
+          </div>
+          <div class="flex gap-4">
+            <div class="flex flex-col gap-2">
               <h3
-                class="mb-1 flex items-center gap-2 text-xl font-bold text-white md:mb-2 md:text-2xl"
+                class="font-regular mb-1 flex items-center gap-2 text-xl text-white md:mb-2 md:text-2xl"
               >
                 IBOVESPA
-                <UIcon
-                  name="i-lucide-trending-up"
-                  class="animate-bounce-subtle size-5 text-green-400 md:size-6"
-                />
               </h3>
               <p
-                class="mb-1 text-3xl font-bold tabular-nums text-green-400 sm:text-4xl md:text-5xl"
+                class="mb-1 text-3xl font-semibold tabular-nums text-white sm:text-4xl md:text-5xl"
               >
                 {{ ibovIndicator }}
               </p>
-              <p
-                class="text-xs leading-tight text-gray-400 md:text-sm md:leading-normal"
-              >
-                Índice Bovespa - principal indicador de desempenho das ações
-              </p>
             </div>
-          </div>
 
-          <div
-            class="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-500/10 via-blue-500/5 to-transparent p-6 backdrop-blur-xl transition-all hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/20 md:p-8"
-          >
-            <div
-              class="absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100"
-            >
-              <div
-                class="absolute inset-0 translate-x-[-100%] bg-gradient-to-r from-transparent via-white/10 to-transparent transition-transform duration-1000 group-hover:translate-x-[100%]"
-              />
-            </div>
-            <div class="relative flex flex-col gap-4">
-              <div class="mb-2 flex items-center gap-2">
-                <span
-                  class="h-2 w-2 animate-pulse rounded-full bg-blue-500 shadow-lg shadow-blue-500/50 md:h-3 md:w-3"
-                />
-                <span
-                  class="text-xs font-medium uppercase tracking-wider text-blue-400 md:text-sm"
-                  >Ao Vivo</span
-                >
-              </div>
+            <div class="flex flex-col gap-2">
               <h3
-                class="mb-1 flex items-center gap-2 text-xl font-bold text-white md:mb-2 md:text-2xl"
+                class="font-regular mb-1 flex items-center gap-2 text-xl text-white md:mb-2 md:text-2xl"
               >
                 IFIX
-                <UIcon
-                  name="i-lucide-trending-up"
-                  class="animate-bounce-subtle size-5 text-blue-400 md:size-6"
-                />
               </h3>
               <p
-                class="mb-1 text-3xl font-bold tabular-nums text-blue-400 sm:text-4xl md:text-5xl"
+                class="mb-1 text-3xl font-semibold tabular-nums text-white sm:text-4xl md:text-5xl"
               >
                 {{ ifixIndicator }}
-              </p>
-              <p
-                class="text-xs leading-tight text-gray-400 md:text-sm md:leading-normal"
-              >
-                Índice de Fundos Imobiliários - desempenho dos FIIs
               </p>
             </div>
           </div>
         </div>
 
         <MoleculesSearchAssets
-          class="w-full rounded-full py-4 md:bg-white/10"
+          class="w-full bg-white/10 py-4 md:rounded-full"
         />
       </div>
 
@@ -377,12 +329,11 @@
 
         <div class="relative w-full">
           <div
+            v-if="blockChat"
             @click="redirectToLogin('chat')"
-            class="absolute inset-0 z-10 flex cursor-pointer items-center justify-center rounded-2xl bg-black/60 p-4 backdrop-blur-md transition-all hover:bg-black/70 md:rounded-3xl"
+            class="absolute inset-0 left-0 top-0 z-10 flex h-full w-full cursor-pointer items-center justify-center overflow-hidden rounded-2xl bg-black/60 p-4 backdrop-blur-md transition-all hover:bg-black/70 md:rounded-3xl"
           >
-            <div
-              class="max-w-md transform text-center transition-all hover:scale-105"
-            >
+            <div class="transform text-center transition-all hover:scale-105">
               <div class="relative mb-4 md:mb-6">
                 <div class="absolute inset-0 animate-ping opacity-20">
                   <IconAi class="fill-secondary mx-auto h-12 md:h-16" />
@@ -415,7 +366,7 @@
           </div>
 
           <div
-            class="rounded-3xl bg-gradient-to-br from-white/10 via-white/5 to-transparent p-6 backdrop-blur-xl md:p-8"
+            class="bg-gradient-to-br from-white/10 via-white/5 to-transparent p-6 backdrop-blur-xl md:rounded-3xl md:p-8"
             @click="handleChatCardClick"
           >
             <div class="mb-6 flex flex-col items-center gap-4">
@@ -429,14 +380,13 @@
             </div>
 
             <div class="mb-8 grid grid-cols-2 gap-3 md:grid-cols-3">
-              <button
+              <div
                 v-for="(suggestion, idx) in chatSuggestions"
                 :key="idx"
                 class="flex h-[120px] items-center justify-center rounded-xl bg-gradient-to-br from-white/10 to-white/5 p-3 text-[13px] font-medium opacity-70 transition-all hover:from-white/20 hover:opacity-100"
-                disabled
               >
                 {{ suggestion }}
-              </button>
+              </div>
             </div>
 
             <div class="space-y-4 opacity-60">
@@ -490,6 +440,7 @@ const selectedTimeRange = ref<ChartTimeRange>('month')
 const showMap = ref(false)
 const loading = ref(true)
 const loadingIndicators = ref(true)
+const blockChat = ref(false)
 const treemapFilter = ref<'all' | 'positive' | 'negative'>('all')
 
 const rankingLinkQueries = {
@@ -557,6 +508,10 @@ const chatSuggestions = [
   'Como escolher boas ações?',
   'Vale a pena investir em ETFs?',
 ]
+
+function handleChatCardClick() {
+  blockChat.value = true
+}
 
 const ibovChartLabel = computed(() => [
   {

@@ -1,54 +1,39 @@
 <template>
   <NuxtLayout :name="layoutName" container-class="md:px-0">
-    <template #header>
-      <div class="flex w-full items-center justify-between">
-        <div class="flex items-center gap-3">
-          <USkeleton v-if="isLoadingAsset" class="h-6 w-6 rounded-full" />
-          <img
-            v-else-if="asset?.logo"
-            :src="asset.logo"
-            alt="Asset Logo"
-            class="h-6 w-6 rounded-full"
-          />
-          <h1 class="min-w-max font-medium max-md:text-[20px]">
-            <span>{{ ticker }}</span>
-          </h1>
-          <div class="flex items-center gap-2 text-sm">
-            <USkeleton v-if="isLoadingAsset" class="h-4 w-[80px]" />
-            <template v-else>
-              <span>R$ {{ asset?.market_price }}</span>
-              <span
-                :class="[
-                  asset?.change_percent > 0 ? 'text-green-400' : 'text-red-400',
-                ]"
-                >({{ asset?.change_percent }}% hoje)</span
-              >
-            </template>
-          </div>
-        </div>
-        <!-- <UButton
-          color="neutral"
-          variant="link"
-          icon="i-lucide-plus"
-          :ui="{
-            leadingIcon: 'size-5',
-            base: 'text-[13px] gap-2',
-          }"
-        >
-          <span class="max-md:hidden">Adicione à carteira</span>
-        </UButton> -->
-      </div>
-    </template>
-
     <div class="flex flex-col gap-8 pt-6">
       <!-- Graph -->
       <section>
         <header
-          class="mb-4 flex flex-col gap-3 max-md:px-4 sm:flex-row sm:items-center sm:justify-between"
+          class="mb-4 mt-3 flex flex-col gap-8 max-md:px-4 sm:flex-row sm:items-center sm:justify-between"
         >
-          <h2 class="text-lg font-semibold text-white">
-            Cotação <span class="hidden sm:inline">({{ ticker }})</span>
-          </h2>
+          <div class="flex w-full items-center justify-between">
+            <div class="flex items-center gap-3">
+              <USkeleton v-if="isLoadingAsset" class="h-6 w-6 rounded-full" />
+              <img
+                v-else-if="asset?.logo"
+                :src="asset.logo"
+                alt="Asset Logo"
+                class="h-6 w-6 rounded-full"
+              />
+              <h1 class="min-w-max font-medium max-md:text-[20px]">
+                <span>{{ ticker }}</span>
+              </h1>
+              <div class="flex items-center gap-2 text-sm">
+                <USkeleton v-if="isLoadingAsset" class="h-4 w-[80px]" />
+                <template v-else>
+                  <span>R$ {{ asset?.market_price }}</span>
+                  <span
+                    :class="[
+                      asset?.change_percent > 0
+                        ? 'text-green-400'
+                        : 'text-red-400',
+                    ]"
+                    >({{ asset?.change_percent }}% hoje)</span
+                  >
+                </template>
+              </div>
+            </div>
+          </div>
           <UButtonGroup orientation="horizontal" variant="soft">
             <UButton
               color="neutral"
@@ -528,11 +513,9 @@
             <div
               v-if="blockChat"
               @click="redirectToLogin('chat')"
-              class="absolute inset-0 z-10 flex cursor-pointer items-center justify-center rounded-2xl bg-black/60 p-4 backdrop-blur-md transition-all hover:bg-black/70 md:rounded-3xl"
+              class="absolute inset-0 left-0 top-0 z-10 flex h-full w-full cursor-pointer items-center justify-center overflow-hidden rounded-2xl bg-black/60 p-4 backdrop-blur-md transition-all hover:bg-black/70 md:rounded-3xl"
             >
-              <div
-                class="max-w-md transform text-center transition-all hover:scale-105"
-              >
+              <div class="transform text-center transition-all hover:scale-105">
                 <div class="relative mb-4 md:mb-6">
                   <div class="absolute inset-0 animate-ping opacity-20">
                     <IconAi class="fill-secondary mx-auto h-12 md:h-16" />
@@ -567,7 +550,7 @@
             </div>
 
             <div
-              class="rounded-3xl bg-gradient-to-br from-white/10 via-white/5 to-transparent p-6 backdrop-blur-xl md:p-8"
+              class="bg-gradient-to-br from-white/10 via-white/5 to-transparent p-6 backdrop-blur-xl md:rounded-3xl md:p-8"
               @click="handleChatCardClick"
             >
               <div class="mb-6 flex flex-col items-center gap-4">
@@ -581,14 +564,13 @@
               </div>
 
               <div class="mb-8 grid grid-cols-2 gap-3 md:grid-cols-3">
-                <button
+                <div
                   v-for="(suggestion, idx) in chatSuggestions"
                   :key="idx"
                   class="flex h-[120px] items-center justify-center rounded-xl bg-gradient-to-br from-white/10 to-white/5 p-3 text-[13px] font-medium opacity-70 transition-all hover:from-white/20 hover:opacity-100"
-                  disabled
                 >
                   {{ suggestion }}
-                </button>
+                </div>
               </div>
 
               <div class="space-y-4 opacity-60">
@@ -801,6 +783,12 @@ async function fetchDividendsData() {
     dividendsData.value = []
   }
   isLoadingDividends.value = false
+}
+
+function redirectToLogin(source: string) {
+  navigateTo(
+    `/auth/login?redirect=/${source === 'calculadora' ? 'calculadora' : 'help'}`
+  )
 }
 
 async function fetchFundamentusData() {

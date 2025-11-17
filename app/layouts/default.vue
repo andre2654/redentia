@@ -121,14 +121,24 @@
       <header
         v-bind="headerProps"
         ref="header"
-        class="z-10 flex h-[60px] w-full items-center justify-between gap-4 bg-white/5 px-6 py-4 md:rounded-[25px]"
+        class="z-10 flex min-h-[60px] w-full items-center justify-between gap-4 bg-white/5 px-6 py-4 md:rounded-[25px]"
       >
         <slot name="header">
-          <h1
-            class="select-none text-[20px] font-bold text-white max-md:text-[24px]"
-          >
-            {{ title }}
-          </h1>
+          <div class="flex items-center gap-5">
+            <IconLogo class="h-9 w-9 fill-white" />
+            <div class="flex flex-col">
+              <span
+                class="text-[14px] uppercase tracking-[0.25em] text-white/50"
+              >
+                Redentia
+              </span>
+              <span
+                class="-mt-2 text-[14px] font-semibold tracking-[0.05em] text-white"
+              >
+                Investir com IA
+              </span>
+            </div>
+          </div>
         </slot>
       </header>
       <div v-bind="containerProps" class="flex-1">

@@ -1,10 +1,10 @@
 <template>
   <div
-    class="flex min-h-screen flex-col bg-gradient-to-b from-black via-neutral-950 to-black p-4"
+    class="flex min-h-screen flex-col bg-gradient-to-b from-black via-neutral-950 to-black md:p-4"
   >
     <MoleculesMobileMenuOverlay v-model:open="menuMobileActive" mode="public" />
     <header
-      class="flex items-center justify-between gap-4 rounded-[20px] bg-white/5 px-5 py-3"
+      class="sticky top-0 z-10 flex items-center justify-between gap-4 bg-[#181818] px-5 py-3 backdrop-blur-3xl md:rounded-[20px]"
     >
       <div class="flex items-center gap-3">
         <button
@@ -62,7 +62,7 @@
       </div>
     </header>
 
-    <main class="py-4">
+    <main class="md:py-4">
       <slot />
     </main>
   </div>
