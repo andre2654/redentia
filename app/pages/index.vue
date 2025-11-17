@@ -101,7 +101,7 @@
         </div>
 
         <MoleculesSearchAssets
-          class="w-full bg-white/10 py-4 md:rounded-full"
+          class="w-full rounded-none bg-white/10 py-4 md:rounded-full"
         />
       </div>
 
