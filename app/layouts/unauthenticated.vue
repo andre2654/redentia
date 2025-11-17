@@ -36,9 +36,10 @@
         </NuxtLink>
         <NuxtLink
           to="/help"
-          class="group flex items-center justify-center rounded-full bg-white/5 px-4 py-2 text-sm text-white transition hover:bg-white/10"
+          class="group flex items-center justify-center rounded-full bg-white/5 px-4 py-2 text-sm text-secondary transition hover:bg-white/10 min-w-max"
         >
-          Assessoria
+          <IconAi class="fill-secondary w-8" />
+          Assessoria com IA
         </NuxtLink>
         <UButton
           to="/auth/login"

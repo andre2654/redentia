@@ -58,7 +58,7 @@
       <div class="flex flex-col gap-8">
         <div v-if="!authStore.isAuthenticated" class="text-center">
           <h2
-            class="mb-3 text-2xl font-bold leading-tight text-white sm:text-3xl md:mb-4 md:text-4xl"
+            class="my-8 text-2xl font-bold leading-tight text-white sm:text-3xl md:mb-4 md:text-4xl"
           >
             Acompanhe o Mercado em Tempo Real
           </h2>

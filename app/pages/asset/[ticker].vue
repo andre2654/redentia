@@ -803,10 +803,12 @@ const chartLabel = computed(
 
 async function fetchChartData() {
   isLoadingChart.value = true
-  let period: '1mo' | 'ytd' | '12mo' = '1mo'
+  let period: '1mo' | 'ytd' | '3mo' | '12mo' | '3y' | '4y' | '5y' | 'full' =
+    '1mo'
   if (selectedTimeRange.value === 'month') period = '1mo'
   else if (selectedTimeRange.value === 'year') period = '12mo'
-  else if (selectedTimeRange.value === 'ytd') period = 'ytd'
+  else if (selectedTimeRange.value === '3years') period = '3y'
+  else if (selectedTimeRange.value === 'full') period = 'full'
   const data = await assetHistoricPrices(ticker, period)
   // Transforma para o formato aceito pelo gráfico
   chartData.value = Array.isArray(data)
