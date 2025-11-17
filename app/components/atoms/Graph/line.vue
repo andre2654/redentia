@@ -865,6 +865,16 @@ function setupCanvasEvents(chart: ChartJS): () => void {
       return
     }
 
+    // Verifica se o elemento sob o mouse é o canvas ou está dentro dele
+    const elementUnderMouse = document.elementFromPoint(e.clientX, e.clientY)
+    const isCanvasOrChild = elementUnderMouse === canvas || canvas.contains(elementUnderMouse as Node)
+    
+    if (!isCanvasOrChild) {
+      isHovering.value = false
+      hoverState.index = null
+      return
+    }
+
     const idx = getIndexFromEvt(chart, e)
     if (idx !== null) {
       hoverState.index = idx
