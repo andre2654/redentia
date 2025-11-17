@@ -668,15 +668,66 @@ const assetName = computed(() => {
   const resolvedName = asset.value?.name
   return resolvedName ? String(resolvedName) : tickerUpper.value
 })
+const assetCurrentPrice = computed(() => {
+  const price =
+    safeNumber(asset.value?.market_price) ?? safeNumber(asset.value?.close)
+  return price
+})
+const formattedAssetPrice = computed(() => {
+  if (assetCurrentPrice.value === null) return null
+  return `R$ ${assetCurrentPrice.value.toLocaleString('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`
+})
+const dailyChangePercent = computed(() => safeNumber(asset.value?.change_percent))
+const dailyChangeSentence = computed(() => {
+  if (dailyChangePercent.value === null) return null
+  const absolute = Math.abs(dailyChangePercent.value).toFixed(2)
+  const trend = dailyChangePercent.value >= 0 ? 'alta' : 'queda'
+  return `${trend} de ${absolute}% hoje`
+})
+const yearChangeRaw = computed(() => {
+  const fundamentusChange = safeNumber(
+    fundamentusData.value?.key_statistics?.fifty_two_week_change
+  )
+  const tickerChange = safeNumber(
+    (asset.value as { year_change_percent?: unknown } | undefined)
+      ?.year_change_percent
+  )
+  return fundamentusChange ?? tickerChange
+})
+const yearChangePercent = computed(() => {
+  if (yearChangeRaw.value === null) return null
+  const normalized =
+    Math.abs(yearChangeRaw.value) <= 1
+      ? yearChangeRaw.value * 100
+      : yearChangeRaw.value
+  return normalized
+})
+const yearChangeSentence = computed(() => {
+  if (yearChangePercent.value === null) return null
+  const absolute = Math.abs(yearChangePercent.value).toFixed(2)
+  const trend = yearChangePercent.value >= 0 ? 'alta' : 'queda'
+  return `Nos últimos 12 meses, ${assetName.value} acumula ${trend} de ${absolute}%.`
+})
 
 const pageTitle = computed(
-  () => `${tickerUpper.value} - ${assetName.value}: cotação e indicadores`
+  () => `${tickerUpper.value} - ${assetName.value} - Cotação e Dividendos`
 )
 
-const pageDescription = computed(
-  () =>
-    `${tickerUpper.value} - ${assetName.value}, veja seus indicadores fundamentalistas, variação, índices relacionados e mais! Tudo que o investidor precisa para tomar a melhor decisão.`
-)
+const pageDescription = computed(() => {
+  const baseSentence = formattedAssetPrice.value
+    ? `A cotação de ${assetName.value} (${tickerUpper.value}) hoje está em ${formattedAssetPrice.value}`
+    : `Acompanhe a cotação de ${assetName.value} (${tickerUpper.value}) em tempo real`
+  const intradaySegment = dailyChangeSentence.value
+    ? `, com ${dailyChangeSentence.value}`
+    : ''
+  const yearSegment = yearChangeSentence.value
+    ? `${yearChangeSentence.value} `
+    : ''
+  return `${baseSentence}${intradaySegment}. ${yearSegment}Explore dividendos, indicadores fundamentalistas e análises com IA na Redentia.`
+})
 
 const canonicalUrl = computed(
   () => `${baseSiteUrl.value}/asset/${ticker.toLowerCase()}`
@@ -693,11 +744,26 @@ const shareImage = computed(() => {
   return `${baseSiteUrl.value}/512x512.png`
 })
 
+useSeoMeta({
+  title: () => pageTitle.value,
+  ogTitle: () => pageTitle.value,
+  twitterTitle: () => pageTitle.value,
+  description: () => pageDescription.value,
+  ogDescription: () => pageDescription.value,
+  twitterDescription: () => pageDescription.value,
+  ogUrl: () => canonicalUrl.value,
+  ogImage: () => shareImage.value,
+  twitterImage: () => shareImage.value,
+  ogType: 'website',
+  ogSiteName: 'Redentia',
+  ogLocale: 'pt_BR',
+  twitterCard: 'summary_large_image',
+  robots: 'index,follow',
+})
+
 useHead(() => {
   const title = pageTitle.value
-  const description = pageDescription.value
   const url = canonicalUrl.value
-  const image = shareImage.value
 
   return {
     title,
@@ -706,21 +772,6 @@ useHead(() => {
         rel: 'canonical',
         href: url,
       },
-    ],
-    meta: [
-      { name: 'description', content: description },
-      { property: 'og:title', itemprop: 'name', content: title },
-      { property: 'og:headline', itemprop: 'headline', content: title },
-      {
-        property: 'og:description',
-        itemprop: 'description',
-        content: description,
-      },
-      { property: 'og:url', itemprop: 'url', content: url },
-      { property: 'og:type', content: 'website' },
-      { property: 'og:image', itemprop: 'image', content: image },
-      { property: 'og:locale', content: 'pt_BR' },
-      { name: 'theme-color', content: '#000' },
     ],
   }
 })

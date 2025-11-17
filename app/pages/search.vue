@@ -210,8 +210,20 @@ import type { AssetMdiEntry, IAsset } from '~/types/asset'
 import { getPaginationRowModel } from '@tanstack/vue-table'
 import { resolveComponent } from 'vue'
 
+definePageMeta({
+  isPublicRoute: true,
+  layoutTransition: {
+    name: 'slide-in',
+  },
+})
+
 const { getAssets } = useAssetsService()
 const router = useRouter()
+const runtimeConfig = useRuntimeConfig()
+const siteUrl = computed(() => {
+  const url = runtimeConfig.public?.siteUrl || 'https://www.redentia.com.br'
+  return url.endsWith('/') ? url.slice(0, -1) : url
+})
 
 const allAssets = ref<IAsset[]>([])
 const data = ref<IAsset[]>([])
@@ -452,6 +464,60 @@ const showReit = ref(true)
 const showBdr = ref(true)
 type GroupFilter = 'stocks' | 'etfs' | 'reits' | 'bdrs'
 const groupFilter = ref<GroupFilter | null>(null)
+const canonicalUrl = computed(() => {
+  const groupParam =
+    typeof route.query.group === 'string'
+      ? route.query.group.toLowerCase()
+      : null
+  if (groupParam === 'stocks' || groupParam === 'reits') {
+    return `${siteUrl.value}/search?group=${groupParam}`
+  }
+  return `${siteUrl.value}/search`
+})
+const metaTitle = computed(() => {
+  if (groupFilter.value === 'reits') {
+    return 'Todos os FIIs listados na B3 | Redentia'
+  }
+  if (groupFilter.value === 'stocks') {
+    return 'Todas as ações da B3 | Redentia'
+  }
+  return 'Busca avançada de ações, FIIs e BDRs | Redentia'
+})
+const metaDescription = computed(() => {
+  if (groupFilter.value === 'reits') {
+    return 'Explore todos os fundos imobiliários listados na B3, filtre por preço, dividendos e encontre oportunidades com a ajuda da Redentia.'
+  }
+  if (groupFilter.value === 'stocks') {
+    return 'Veja todas as ações negociadas na B3, acompanhe preços, market cap e variações diárias com filtros inteligentes da Redentia.'
+  }
+  return 'Busque investimentos na B3 com filtros avançados da Redentia: encontre ações, FIIs, ETFs e BDRs com dados em tempo real.'
+})
+
+useSeoMeta({
+  title: () => metaTitle.value,
+  ogTitle: () => metaTitle.value,
+  twitterTitle: () => metaTitle.value,
+  description: () => metaDescription.value,
+  ogDescription: () => metaDescription.value,
+  twitterDescription: () => metaDescription.value,
+  ogUrl: () => canonicalUrl.value,
+  ogImage: () => `${siteUrl.value}/512x512.png`,
+  twitterImage: () => `${siteUrl.value}/512x512.png`,
+  ogType: 'website',
+  ogSiteName: 'Redentia',
+  ogLocale: 'pt_BR',
+  twitterCard: 'summary_large_image',
+  robots: 'index,follow',
+})
+
+useHead({
+  link: [
+    {
+      rel: 'canonical',
+      href: canonicalUrl.value,
+    },
+  ],
+})
 
 function normalizeBool(v: unknown, def = true) {
   if (v === undefined) return def
@@ -623,6 +689,14 @@ onMounted(async () => {
     assetsLoading.value = false
   }
 })
+
+watch(
+  () => route.query,
+  () => {
+    readFiltersFromUrl()
+  },
+  { deep: true }
+)
 
 function getHeader(column: any, label: string) {
   const isSorted = column.getIsSorted()

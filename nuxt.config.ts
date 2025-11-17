@@ -91,9 +91,6 @@ export default defineNuxtConfig({
       // Áreas privadas
       '/wallet',
       '/settings',
-      '/search',
-      '/help',
-      '/calculadora',
       '/step-by-step',
       '/planejador',
       '/dividends',
@@ -138,9 +135,9 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      title: 'Redentia',
+      title: 'Redentia: invista em ações e fundos imobiliários com IA',
       htmlAttrs: {
-        lang: 'en',
+        lang: 'pt-BR',
         class: 'dark',
       },
       viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
@@ -150,7 +147,61 @@ export default defineNuxtConfig({
           rel: 'stylesheet',
           href: 'https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap',
         },
-        { rel: 'icon', type: 'image/png', href: '/favicon.png' },
+        {
+          rel: 'icon',
+          type: 'image/png',
+          href: 'https://www.redentia.com.br/favicon.png',
+        },
+        {
+          rel: 'shortcut icon',
+          type: 'image/png',
+          href: 'https://www.redentia.com.br/favicon.png',
+        },
+        {
+          rel: 'apple-touch-icon',
+          sizes: '180x180',
+          href: 'https://www.redentia.com.br/192x192.png',
+        },
+      ],
+      meta: [
+        {
+          name: 'description',
+          content:
+            'Redentia: invista em ações e fundos imobiliários com apoio de inteligência artificial, análises em tempo real e ferramentas exclusivas.',
+        },
+        { name: 'application-name', content: 'Redentia' },
+        { name: 'theme-color', content: '#000000' },
+        { name: 'robots', content: 'index,follow' },
+        {
+          property: 'og:title',
+          content: 'Redentia: invista em ações e fundos imobiliários com IA',
+        },
+        {
+          property: 'og:description',
+          content:
+            'Use a Redentia para acompanhar cotações, dividendos e análises inteligentes com IA para ações e FIIs.',
+        },
+        {
+          property: 'og:image',
+          content: 'https://www.redentia.com.br/512x512.png',
+        },
+        { property: 'og:type', content: 'website' },
+        { property: 'og:site_name', content: 'Redentia' },
+        { property: 'og:locale', content: 'pt_BR' },
+        { name: 'twitter:card', content: 'summary_large_image' },
+        {
+          name: 'twitter:title',
+          content: 'Redentia: invista em ações e fundos imobiliários com IA',
+        },
+        {
+          name: 'twitter:description',
+          content:
+            'Ferramentas, análises com IA e acompanhamento completo das suas ações e FIIs na Redentia.',
+        },
+        {
+          name: 'twitter:image',
+          content: 'https://www.redentia.com.br/512x512.png',
+        },
       ],
     },
   },

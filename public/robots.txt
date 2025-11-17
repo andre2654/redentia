@@ -20,9 +20,9 @@ Disallow: /auth/register
 # Bloquear áreas privadas/autenticadas
 Disallow: /wallet
 Disallow: /settings
-Disallow: /search
-Disallow: /help
-Disallow: /calculadora
+Allow: /search
+Allow: /help
+Allow: /calculadora
 Disallow: /step-by-step
 Disallow: /planejador
 Disallow: /dividends
