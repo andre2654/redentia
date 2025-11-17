@@ -6,7 +6,11 @@ export function usePrevents() {
   ) => {
     const { cacheTempInSeconds } = useRuntimeConfig().public
 
-    const cachedString = localStorage.getItem(key)
+    if (typeof window === 'undefined') {
+      return next()
+    }
+
+    const cachedString = sessionStorage.getItem(key)
 
     try {
       const now = Date.now()
@@ -18,13 +22,13 @@ export function usePrevents() {
         if (now - cacheTime < (timeToExpire || cacheTempInSeconds) * 1000) {
           return cachedData.data
         } else {
-          localStorage.removeItem(key)
+          sessionStorage.removeItem(key)
         }
       }
 
       const resp = await next()
 
-      localStorage.setItem(
+      sessionStorage.setItem(
         key,
         JSON.stringify({
           data: resp,
