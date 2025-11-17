@@ -4,7 +4,8 @@
       <div class="flex flex-col gap-1">
         <h1 class="text-xl font-semibold">Complete o seu cadastro</h1>
         <p class="text-sm font-thin">
-          Leva menos de 2 minutos. Assim personalizamos sua experiência e liberamos recursos avançados.
+          Leva menos de 2 minutos. Assim personalizamos sua experiência e
+          liberamos recursos avançados.
         </p>
       </div>
       <div class="flex flex-col">

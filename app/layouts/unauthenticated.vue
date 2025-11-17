@@ -1,5 +1,7 @@
 <template>
-  <div class="flex min-h-screen flex-col bg-gradient-to-b from-black via-neutral-950 to-black p-4">
+  <div
+    class="flex min-h-screen flex-col bg-gradient-to-b from-black via-neutral-950 to-black p-4"
+  >
     <MoleculesMobileMenuOverlay v-model:open="menuMobileActive" mode="public" />
     <header
       class="flex items-center justify-between gap-4 rounded-[20px] bg-white/5 px-5 py-3"
@@ -14,10 +16,10 @@
           <UIcon name="i-lucide-menu" class="size-5" />
         </button>
         <NuxtLink to="/">
-        <IconLogoFull
-          class="mx-auto h-auto w-[150px] fill-black dark:fill-white"
-        />
-      </NuxtLink>
+          <IconLogoFull
+            class="mx-auto h-auto w-[150px] fill-black dark:fill-white"
+          />
+        </NuxtLink>
       </div>
 
       <div class="hidden items-center gap-3 md:flex">

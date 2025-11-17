@@ -4,7 +4,7 @@
       v-if="open"
       class="fixed inset-0 z-40 flex flex-col bg-gradient-to-br from-black via-neutral-950 to-black text-white"
     >
-      <div class="flex items-center justify-between px-6 pt-10 pb-6">
+      <div class="flex items-center justify-between px-6 pb-6 pt-10">
         <div class="flex items-center gap-3">
           <template v-if="isAuthenticated">
             <UAvatar :alt="userName" size="lg" />
@@ -61,7 +61,10 @@
                 class="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm font-medium text-white transition hover:border-white/20 hover:bg-white/10"
                 @click="closeMenu"
               >
-                <UIcon name="i-si-dashboard-vert-fill" class="size-5 text-secondary" />
+                <UIcon
+                  name="i-si-dashboard-vert-fill"
+                  class="text-secondary size-5"
+                />
                 Visão Geral
               </NuxtLink>
               <NuxtLink
@@ -69,7 +72,10 @@
                 class="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm font-medium text-white transition hover:border-white/20 hover:bg-white/10"
                 @click="closeMenu"
               >
-                <UIcon name="i-lucide-calculator" class="size-5 text-secondary" />
+                <UIcon
+                  name="i-lucide-calculator"
+                  class="text-secondary size-5"
+                />
                 Calculadora inteligente
               </NuxtLink>
             </div>
@@ -80,9 +86,11 @@
               @click="closeMenu"
             >
               <div class="flex items-center gap-4">
-                <IconAi class="h-6 w-6 fill-secondary" />
+                <IconAi class="fill-secondary h-6 w-6" />
                 <div class="flex flex-col">
-                  <span class="text-xs text-secondary/80 uppercase tracking-wider">
+                  <span
+                    class="text-secondary/80 text-xs uppercase tracking-wider"
+                  >
                     Assessoria IA
                   </span>
                   <span class="text-base font-semibold text-white">
@@ -92,7 +100,7 @@
               </div>
               <UIcon
                 name="i-lucide-arrow-up-right"
-                class="size-5 text-secondary/80"
+                class="text-secondary/80 size-5"
               />
             </NuxtLink>
 
@@ -101,7 +109,7 @@
               class="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm font-medium text-white transition hover:border-white/20 hover:bg-white/10"
               @click="handleLogout"
             >
-              <UIcon name="i-lucide-log-out" class="size-5 text-secondary" />
+              <UIcon name="i-lucide-log-out" class="text-secondary size-5" />
               Sair
             </button>
           </template>
@@ -115,39 +123,44 @@
                 class="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm font-medium transition hover:border-white/20 hover:bg-white/10"
                 @click="closeMenu"
               >
-                <UIcon :name="link.icon" class="size-5 text-secondary" />
+                <UIcon :name="link.icon" class="text-secondary size-5" />
                 {{ link.label }}
               </NuxtLink>
             </div>
-            <div class="rounded-2xl border border-white/10 bg-white/5 p-5 text-sm text-white/70">
+            <div
+              class="rounded-2xl border border-white/10 bg-white/5 p-5 text-sm text-white/70"
+            >
               <div class="mb-4 flex items-center justify-between">
                 <div>
-                  <p class="font-medium text-white">
-                    Assessoria IA bloqueada
-                  </p>
-                  <p class="mt-1 text-xs uppercase tracking-widest text-white/40">
+                  <p class="font-medium text-white">Assessoria IA bloqueada</p>
+                  <p
+                    class="mt-1 text-xs uppercase tracking-widest text-white/40"
+                  >
                     Faça login para acessar
                   </p>
                 </div>
-                <UIcon name="i-lucide-lock" class="size-6 text-secondary" />
+                <UIcon name="i-lucide-lock" class="text-secondary size-6" />
               </div>
-              <div class="flex items-center gap-3 rounded-xl border border-secondary/20 bg-secondary/10 px-4 py-3 text-sm text-white/80">
-                <IconAi class="h-6 w-6 fill-secondary" />
+              <div
+                class="border-secondary/20 bg-secondary/10 flex items-center gap-3 rounded-xl border px-4 py-3 text-sm text-white/80"
+              >
+                <IconAi class="fill-secondary h-6 w-6" />
                 <div class="flex-1">
                   <p class="font-semibold text-white">
                     Assessoria com Inteligência Artificial
                   </p>
                   <p class="text-xs text-white/60">
-                    Entre na plataforma para conversar com a IA e receber recomendações.
+                    Entre na plataforma para conversar com a IA e receber
+                    recomendações.
                   </p>
                 </div>
-                 <UButton
-                    to="/auth/login"
-                    color="secondary"
-                    size="sm"
-                    class="rounded-full"
+                <UButton
+                  to="/auth/login"
+                  color="secondary"
+                  size="sm"
+                  class="rounded-full"
                 >
-                    Entrar
+                  Entrar
                 </UButton>
               </div>
             </div>
@@ -221,4 +234,3 @@ async function handleLogout() {
   opacity: 0;
 }
 </style>
-

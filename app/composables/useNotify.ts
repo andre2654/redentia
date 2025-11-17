@@ -1,10 +1,14 @@
-function showNotification(type: 'success' | 'error' | 'info', title: string, description: string) {
+function showNotification(
+  type: 'success' | 'error' | 'info',
+  title: string,
+  description: string
+) {
   const toast = useToast()
 
   const icon = {
     success: 'i-heroicons-check-circle-solid',
     error: 'i-heroicons-x-circle-solid',
-    info: 'i-heroicons-information-circle-solid'
+    info: 'i-heroicons-information-circle-solid',
   }
 
   toast.add({
@@ -18,7 +22,7 @@ function showNotification(type: 'success' | 'error' | 'info', title: string, des
       root: `bg-black border border-${type}`,
       title: 'text-[15px] font-semibold text-white !py-0',
       description: 'text-[12px] font-regular text-white/80',
-    }
+    },
   })
 }
 

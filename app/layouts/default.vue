@@ -10,14 +10,14 @@
       class="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition hover:border-white/20 hover:bg-white/10"
       @click="menuMobileActive = true"
     >
-      <UIcon name="i-lucide-menu" class="size-5 text-secondary" />
+      <UIcon name="i-lucide-menu" class="text-secondary size-5" />
     </button>
     <NuxtLink
       to="/"
       active-class="border-secondary/60 bg-secondary/10 text-white"
       class="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition hover:border-white/20 hover:bg-white/10"
     >
-      <UIcon name="i-si-dashboard-vert-fill" class="size-5 text-secondary" />
+      <UIcon name="i-si-dashboard-vert-fill" class="text-secondary size-5" />
     </NuxtLink>
     <MoleculesSearchAssets compact />
     <NuxtLink
@@ -25,7 +25,9 @@
       active-class="border-secondary/60 bg-secondary/10 text-white"
       class="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-white transition hover:border-white/20 hover:bg-white/10"
     >
-      <IconLogo class="h-5 fill-white drop-shadow-[0_4px_10px_rgba(255,255,255,0.2)]" />
+      <IconLogo
+        class="h-5 fill-white drop-shadow-[0_4px_10px_rgba(255,255,255,0.2)]"
+      />
       Baixar app
     </NuxtLink>
   </div>

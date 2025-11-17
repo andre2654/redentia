@@ -2,22 +2,30 @@
   <NuxtLayout :name="layoutName" title="Visão geral">
     <!-- CTA Section -->
     <section v-if="!authStore.isAuthenticated">
-      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-secondary/20 to-transparent px-6 py-14 text-center text-white shadow-[0_40px_120px_rgba(4,47,84,0.5)]">
+      <div
+        class="from-secondary/20 relative overflow-hidden rounded-3xl bg-gradient-to-br to-transparent px-6 py-14 text-center text-white shadow-[0_40px_120px_rgba(4,47,84,0.5)]"
+      >
         <div class="relative">
           <IconLogoFull class="mx-auto mb-4 h-10 fill-white md:mb-6 md:h-12" />
-          <h2 class="mb-3 text-2xl font-bold leading-tight text-white sm:text-3xl md:mb-4 md:text-4xl">
+          <h2
+            class="mb-3 text-2xl font-bold leading-tight text-white sm:text-3xl md:mb-4 md:text-4xl"
+          >
             Pronto para começar a investir melhor?
           </h2>
-          <p class="mb-6 px-2 text-base leading-relaxed text-gray-300 sm:text-lg md:mb-8 md:text-xl">
+          <p
+            class="mb-6 px-2 text-base leading-relaxed text-gray-300 sm:text-lg md:mb-8 md:text-xl"
+          >
             Crie sua conta gratuitamente e tenha acesso a todas as ferramentas
           </p>
-          <div class="flex w-full flex-col items-center justify-center gap-3 px-2 sm:flex-row sm:gap-4">
+          <div
+            class="flex w-full flex-col items-center justify-center gap-3 px-2 sm:flex-row sm:gap-4"
+          >
             <UButton
               to="/auth/register"
               color="secondary"
               size="xl"
               icon="i-lucide-user-plus"
-              class="w-full px-6 transition-all hover:scale-110 hover:shadow-2xl hover:shadow-secondary/50 sm:w-auto sm:px-8"
+              class="hover:shadow-secondary/50 w-full px-6 transition-all hover:scale-110 hover:shadow-2xl sm:w-auto sm:px-8"
             >
               Criar Conta Grátis
             </UButton>
@@ -44,7 +52,9 @@
     <div class="flex h-full flex-col gap-4 pt-6">
       <div v-if="!authStore.isAuthenticated" class="flex flex-col">
         <div class="mb-12 text-center md:mb-16">
-          <h2 class="mb-3 text-2xl font-bold leading-tight text-white sm:text-3xl md:mb-4 md:text-4xl">
+          <h2
+            class="mb-3 text-2xl font-bold leading-tight text-white sm:text-3xl md:mb-4 md:text-4xl"
+          >
             Acompanhe o Mercado em Tempo Real
           </h2>
           <p class="text-sm text-gray-400 sm:text-base md:text-lg">
@@ -53,52 +63,94 @@
         </div>
 
         <div class="mb-8 grid gap-6 md:mb-12 md:grid-cols-2 md:gap-8">
-          <div class="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-green-500/10 via-green-500/5 to-transparent p-6 backdrop-blur-xl transition-all hover:scale-[1.02] hover:shadow-2xl hover:shadow-green-500/20 md:p-8">
-            <div class="absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100">
-              <div class="absolute inset-0 translate-x-[-100%] bg-gradient-to-r from-transparent via-white/10 to-transparent transition-transform duration-1000 group-hover:translate-x-[100%]" />
+          <div
+            class="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-green-500/10 via-green-500/5 to-transparent p-6 backdrop-blur-xl transition-all hover:scale-[1.02] hover:shadow-2xl hover:shadow-green-500/20 md:p-8"
+          >
+            <div
+              class="absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100"
+            >
+              <div
+                class="absolute inset-0 translate-x-[-100%] bg-gradient-to-r from-transparent via-white/10 to-transparent transition-transform duration-1000 group-hover:translate-x-[100%]"
+              />
             </div>
             <div class="relative flex flex-col gap-4">
               <div class="mb-2 flex items-center gap-2">
-                <span class="h-2 w-2 animate-pulse rounded-full bg-green-500 shadow-lg shadow-green-500/50 md:h-3 md:w-3" />
-                <span class="text-xs font-medium uppercase tracking-wider text-green-400 md:text-sm">Ao Vivo</span>
+                <span
+                  class="h-2 w-2 animate-pulse rounded-full bg-green-500 shadow-lg shadow-green-500/50 md:h-3 md:w-3"
+                />
+                <span
+                  class="text-xs font-medium uppercase tracking-wider text-green-400 md:text-sm"
+                  >Ao Vivo</span
+                >
               </div>
-              <h3 class="mb-1 flex items-center gap-2 text-xl font-bold text-white md:mb-2 md:text-2xl">
+              <h3
+                class="mb-1 flex items-center gap-2 text-xl font-bold text-white md:mb-2 md:text-2xl"
+              >
                 IBOVESPA
-                <UIcon name="i-lucide-trending-up" class="size-5 text-green-400 animate-bounce-subtle md:size-6" />
+                <UIcon
+                  name="i-lucide-trending-up"
+                  class="animate-bounce-subtle size-5 text-green-400 md:size-6"
+                />
               </h3>
-              <p class="mb-1 text-3xl font-bold text-green-400 tabular-nums sm:text-4xl md:text-5xl">
+              <p
+                class="mb-1 text-3xl font-bold tabular-nums text-green-400 sm:text-4xl md:text-5xl"
+              >
                 {{ ibovIndicator }}
               </p>
-              <p class="text-xs leading-tight text-gray-400 md:text-sm md:leading-normal">
+              <p
+                class="text-xs leading-tight text-gray-400 md:text-sm md:leading-normal"
+              >
                 Índice Bovespa - principal indicador de desempenho das ações
               </p>
             </div>
           </div>
 
-          <div class="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-500/10 via-blue-500/5 to-transparent p-6 backdrop-blur-xl transition-all hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/20 md:p-8">
-            <div class="absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100">
-              <div class="absolute inset-0 translate-x-[-100%] bg-gradient-to-r from-transparent via-white/10 to-transparent transition-transform duration-1000 group-hover:translate-x-[100%]" />
+          <div
+            class="group relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-500/10 via-blue-500/5 to-transparent p-6 backdrop-blur-xl transition-all hover:scale-[1.02] hover:shadow-2xl hover:shadow-blue-500/20 md:p-8"
+          >
+            <div
+              class="absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100"
+            >
+              <div
+                class="absolute inset-0 translate-x-[-100%] bg-gradient-to-r from-transparent via-white/10 to-transparent transition-transform duration-1000 group-hover:translate-x-[100%]"
+              />
             </div>
             <div class="relative flex flex-col gap-4">
               <div class="mb-2 flex items-center gap-2">
-                <span class="h-2 w-2 animate-pulse rounded-full bg-blue-500 shadow-lg shadow-blue-500/50 md:h-3 md:w-3" />
-                <span class="text-xs font-medium uppercase tracking-wider text-blue-400 md:text-sm">Ao Vivo</span>
+                <span
+                  class="h-2 w-2 animate-pulse rounded-full bg-blue-500 shadow-lg shadow-blue-500/50 md:h-3 md:w-3"
+                />
+                <span
+                  class="text-xs font-medium uppercase tracking-wider text-blue-400 md:text-sm"
+                  >Ao Vivo</span
+                >
               </div>
-              <h3 class="mb-1 flex items-center gap-2 text-xl font-bold text-white md:mb-2 md:text-2xl">
+              <h3
+                class="mb-1 flex items-center gap-2 text-xl font-bold text-white md:mb-2 md:text-2xl"
+              >
                 IFIX
-                <UIcon name="i-lucide-trending-up" class="size-5 text-blue-400 animate-bounce-subtle md:size-6" />
+                <UIcon
+                  name="i-lucide-trending-up"
+                  class="animate-bounce-subtle size-5 text-blue-400 md:size-6"
+                />
               </h3>
-              <p class="mb-1 text-3xl font-bold text-blue-400 tabular-nums sm:text-4xl md:text-5xl">
+              <p
+                class="mb-1 text-3xl font-bold tabular-nums text-blue-400 sm:text-4xl md:text-5xl"
+              >
                 {{ ifixIndicator }}
               </p>
-              <p class="text-xs leading-tight text-gray-400 md:text-sm md:leading-normal">
+              <p
+                class="text-xs leading-tight text-gray-400 md:text-sm md:leading-normal"
+              >
                 Índice de Fundos Imobiliários - desempenho dos FIIs
               </p>
             </div>
           </div>
         </div>
 
-        <MoleculesSearchAssets class="w-full rounded-full py-4 md:bg-white/10" />
+        <MoleculesSearchAssets
+          class="w-full rounded-full py-4 md:bg-white/10"
+        />
       </div>
 
       <div class="flex w-full flex-col">
@@ -130,17 +182,18 @@
       <div class="flex flex-col px-6">
         <h2 class="text-[18px] font-bold">Rankings</h2>
         <p class="text-[13px] font-extralight">
-          Veja os destaques de altas e baixas do dia. Ative o mapa para visualizar o desempenho por setor.
+          Veja os destaques de altas e baixas do dia. Ative o mapa para
+          visualizar o desempenho por setor.
         </p>
         <label
           for="map-toggle"
-          class="mt-3 flex max-w-fit items-center justify-between gap-4 rounded-full border px-3 py-2 transition hover:bg-secondary/10"
+          class="hover:bg-secondary/10 mt-3 flex max-w-fit items-center justify-between gap-4 rounded-full border px-3 py-2 transition"
           :class="{
             'bg-secondary/15 !border-tertiary dark:bg-tertiary/60': showMap,
           }"
         >
-          <IconAi class="h-5 fill-secondary" />
-          <h2 class="select-none text-secondary">Mostrar mapa</h2>
+          <IconAi class="fill-secondary h-5" />
+          <h2 class="text-secondary select-none">Mostrar mapa</h2>
           <USwitch
             id="map-toggle"
             v-model="showMap"
@@ -152,7 +205,11 @@
       </div>
 
       <div v-if="showMap" class="mb-6 flex flex-col">
-        <UButtonGroup orientation="horizontal" variant="soft" class="mx-auto mb-5 mt-6 max-md:px-6">
+        <UButtonGroup
+          orientation="horizontal"
+          variant="soft"
+          class="mx-auto mb-5 mt-6 max-md:px-6"
+        >
           <UButton
             color="neutral"
             :variant="treemapFilter === 'all' ? 'soft' : 'link'"
@@ -175,8 +232,12 @@
         <AtomsGraphTreemap
           :data="stocksData"
           :height="550"
-          :show-positive="treemapFilter === 'all' || treemapFilter === 'positive'"
-          :show-negative="treemapFilter === 'all' || treemapFilter === 'negative'"
+          :show-positive="
+            treemapFilter === 'all' || treemapFilter === 'positive'
+          "
+          :show-negative="
+            treemapFilter === 'all' || treemapFilter === 'negative'
+          "
         />
       </div>
       <template v-else>
@@ -188,8 +249,12 @@
           :ui="{ item: 'basis-1/1 md:basis-1/2 lg:basis-1/3 xl:basis-1/4' }"
         >
           <div class="flex w-full flex-col gap-3 rounded-[30px] py-6">
-            <h2 class="text-[25px] font-bold md:text-[18px] max-md:text-center">{{ item.label }}</h2>
-            <p class="mb-5 text-[16px] opacity-70 md:hidden mx-auto">Maiores altas</p>
+            <h2 class="text-[25px] font-bold max-md:text-center md:text-[18px]">
+              {{ item.label }}
+            </h2>
+            <p class="mx-auto mb-5 text-[16px] opacity-70 md:hidden">
+              Maiores altas
+            </p>
             <div class="flex flex-col gap-1 overflow-hidden rounded-lg">
               <AtomsTicker
                 v-for="stock in topAssets.top[item.key]"
@@ -199,7 +264,7 @@
             </div>
             <NuxtLink
               :to="{ path: '/search', query: rankingLinkQueries.top[item.key] }"
-              class="text-[20px] transition hover:underline md:text-[15px] max-md:text-center"
+              class="text-[20px] transition hover:underline max-md:text-center md:text-[15px]"
             >
               Ver todos
             </NuxtLink>
@@ -214,8 +279,12 @@
           :ui="{ item: 'basis-1/1 md:basis-1/2 lg:basis-1/3 xl:basis-1/4' }"
         >
           <div class="flex w-full flex-col gap-3 rounded-[30px] py-6">
-            <h2 class="text-[25px] font-bold md:text-[18px] max-md:text-center">{{ item.label }}</h2>
-            <p class="mb-5 text-[16px] opacity-70 md:hidden mx-auto">Maiores baixas</p>
+            <h2 class="text-[25px] font-bold max-md:text-center md:text-[18px]">
+              {{ item.label }}
+            </h2>
+            <p class="mx-auto mb-5 text-[16px] opacity-70 md:hidden">
+              Maiores baixas
+            </p>
             <div class="flex flex-col gap-1 overflow-hidden rounded-lg">
               <AtomsTicker
                 v-for="stock in topAssets.bottom[item.key]"
@@ -224,8 +293,11 @@
               />
             </div>
             <NuxtLink
-              :to="{ path: '/search', query: rankingLinkQueries.bottom[item.key] }"
-              class="text-[20px] transition hover:underline md:text-[15px] max-md:text-center"
+              :to="{
+                path: '/search',
+                query: rankingLinkQueries.bottom[item.key],
+              }"
+              class="text-[20px] transition hover:underline max-md:text-center md:text-[15px]"
             >
               Ver todos
             </NuxtLink>
@@ -233,31 +305,54 @@
         </UCarousel>
       </template>
 
-      <div class="flex w-full flex-col gap-3 bg-black/5 px-6 py-4 text-secondary md:rounded-[30px] dark:bg-tertiary/40">
+      <div
+        class="text-secondary dark:bg-tertiary/40 flex w-full flex-col gap-3 bg-black/5 px-6 py-4 md:rounded-[30px]"
+      >
         <div class="flex items-center gap-2 px-3 py-2">
-          <IconAi class="h-5 fill-secondary" />
+          <IconAi class="fill-secondary h-5" />
           <h2 class="text-lg font-semibold">Filtros inteligentes</h2>
         </div>
         <div class="flex w-full flex-wrap gap-3 px-6 max-md:flex-col">
-          <NuxtLink :to="{ path: '/search', query: { p_max: 20 } }" class="hover:underline">
+          <NuxtLink
+            :to="{ path: '/search', query: { p_max: 20 } }"
+            class="hover:underline"
+          >
             Preço até R$ 20
           </NuxtLink>
-          <NuxtLink :to="{ path: '/search', query: { mc_max: 2000000000 } }" class="hover:underline">
+          <NuxtLink
+            :to="{ path: '/search', query: { mc_max: 2000000000 } }"
+            class="hover:underline"
+          >
             Small Caps (MC ≤ R$ 2 bi)
           </NuxtLink>
-          <NuxtLink :to="{ path: '/search', query: { ch_min: 0 } }" class="hover:underline">
+          <NuxtLink
+            :to="{ path: '/search', query: { ch_min: 0 } }"
+            class="hover:underline"
+          >
             Alta no dia (> 0%)
           </NuxtLink>
-          <NuxtLink :to="{ path: '/search', query: { ch_max: 0 } }" class="hover:underline">
+          <NuxtLink
+            :to="{ path: '/search', query: { ch_max: 0 } }"
+            class="hover:underline"
+          >
             Queda no dia (< 0%)
           </NuxtLink>
-          <NuxtLink :to="{ path: '/search', query: { stock: 0, bdr: 0 } }" class="hover:underline">
+          <NuxtLink
+            :to="{ path: '/search', query: { stock: 0, bdr: 0 } }"
+            class="hover:underline"
+          >
             Somente FIIs
           </NuxtLink>
-          <NuxtLink :to="{ path: '/search', query: { stock: 0, reit: 0 } }" class="hover:underline">
+          <NuxtLink
+            :to="{ path: '/search', query: { stock: 0, reit: 0 } }"
+            class="hover:underline"
+          >
             Somente BDRs
           </NuxtLink>
-          <NuxtLink :to="{ path: '/search', query: { p_min: 10, p_max: 50 } }" class="hover:underline">
+          <NuxtLink
+            :to="{ path: '/search', query: { p_min: 10, p_max: 50 } }"
+            class="hover:underline"
+          >
             Preço entre R$ 10 e R$ 50
           </NuxtLink>
         </div>
@@ -268,9 +363,11 @@
       <div class="w-full">
         <div class="mb-8 text-center md:mb-12">
           <div class="mb-3 flex items-center justify-center gap-2 md:mb-4">
-            <IconAi class="h-8 fill-secondary md:h-12" />
+            <IconAi class="fill-secondary h-8 md:h-12" />
           </div>
-          <h2 class="mb-2 text-2xl font-bold leading-tight text-white sm:text-3xl md:mb-4 md:text-4xl">
+          <h2
+            class="mb-2 text-2xl font-bold leading-tight text-white sm:text-3xl md:mb-4 md:text-4xl"
+          >
             Assessoria com Inteligência Artificial
           </h2>
           <p class="text-sm text-gray-400 sm:text-base md:text-lg">
@@ -278,24 +375,28 @@
           </p>
         </div>
 
-        <div
-            
-        class="relative w-full">
+        <div class="relative w-full">
           <div
             @click="redirectToLogin('chat')"
-            class="absolute inset-0 z-10 flex cursor-pointer items-center justify-center rounded-2xl bg-black/60 p-4 transition-all hover:bg-black/70 backdrop-blur-md md:rounded-3xl"
+            class="absolute inset-0 z-10 flex cursor-pointer items-center justify-center rounded-2xl bg-black/60 p-4 backdrop-blur-md transition-all hover:bg-black/70 md:rounded-3xl"
           >
-            <div class="max-w-md transform text-center transition-all hover:scale-105">
+            <div
+              class="max-w-md transform text-center transition-all hover:scale-105"
+            >
               <div class="relative mb-4 md:mb-6">
                 <div class="absolute inset-0 animate-ping opacity-20">
-                  <IconAi class="mx-auto h-12 fill-secondary md:h-16" />
+                  <IconAi class="fill-secondary mx-auto h-12 md:h-16" />
                 </div>
-                <IconAi class="relative mx-auto h-12 fill-secondary md:h-16" />
+                <IconAi class="fill-secondary relative mx-auto h-12 md:h-16" />
               </div>
-              <h3 class="mb-2 text-xl font-bold leading-tight text-white sm:text-2xl md:text-3xl">
+              <h3
+                class="mb-2 text-xl font-bold leading-tight text-white sm:text-2xl md:text-3xl"
+              >
                 Converse com nossa IA
               </h3>
-              <p class="mb-4 px-2 text-sm leading-relaxed text-gray-300 sm:text-base md:mb-6">
+              <p
+                class="mb-4 px-2 text-sm leading-relaxed text-gray-300 sm:text-base md:mb-6"
+              >
                 Faça login e tenha acesso ilimitado à assessoria inteligente
               </p>
               <UButton
@@ -303,7 +404,7 @@
                 color="secondary"
                 size="xl"
                 icon="i-lucide-message-circle"
-                class="w-full px-6 transition-all hover:scale-110 hover:shadow-2xl hover:shadow-secondary/50 sm:w-auto sm:px-8"
+                class="hover:shadow-secondary/50 w-full px-6 transition-all hover:scale-110 hover:shadow-2xl sm:w-auto sm:px-8"
               >
                 Acessar Assessoria
               </UButton>
@@ -318,9 +419,12 @@
             @click="handleChatCardClick"
           >
             <div class="mb-6 flex flex-col items-center gap-4">
-              <h3 class="text-center text-2xl text-white">Faça alguma pergunta</h3>
+              <h3 class="text-center text-2xl text-white">
+                Faça alguma pergunta
+              </h3>
               <p class="text-center text-[13px] font-light text-gray-400">
-                Tire dúvidas sobre investimentos, compare ativos e peça análises em linguagem simples.
+                Tire dúvidas sobre investimentos, compare ativos e peça análises
+                em linguagem simples.
               </p>
             </div>
 
@@ -328,7 +432,7 @@
               <button
                 v-for="(suggestion, idx) in chatSuggestions"
                 :key="idx"
-                class="flex h-[120px] items-center justify-center rounded-xl bg-gradient-to-br from-white/10 to-white/5 p-3 text-[13px] font-medium opacity-70 transition-all hover:opacity-100 hover:from-white/20"
+                class="flex h-[120px] items-center justify-center rounded-xl bg-gradient-to-br from-white/10 to-white/5 p-3 text-[13px] font-medium opacity-70 transition-all hover:from-white/20 hover:opacity-100"
                 disabled
               >
                 {{ suggestion }}
@@ -340,7 +444,8 @@
                 <IconLogo class="mt-1 w-6 flex-shrink-0 fill-white" />
                 <div class="flex-1 rounded-lg bg-white/5 p-4 backdrop-blur">
                   <p class="text-sm text-white">
-                    Olá! Sou a assistente virtual da Redentia. Como posso ajudar você hoje?
+                    Olá! Sou a assistente virtual da Redentia. Como posso ajudar
+                    você hoje?
                   </p>
                 </div>
               </div>
@@ -353,7 +458,9 @@
                 rows="2"
                 disabled
                 class="w-full"
-                :ui="{ base: 'text-[14px] bg-transparent ring-0 placeholder:text-white/40' }"
+                :ui="{
+                  base: 'text-[14px] bg-transparent ring-0 placeholder:text-white/40',
+                }"
               />
             </div>
           </div>
@@ -368,7 +475,7 @@ import type { ChartTimeRange } from '~/types/chart'
 
 const authStore = useAuthStore()
 const layoutName = computed(() =>
-  authStore.isAuthenticated ? 'default' : 'unauthenticated',
+  authStore.isAuthenticated ? 'default' : 'unauthenticated'
 )
 
 const {
@@ -512,7 +619,9 @@ async function fetchIndicatorsData() {
 }
 
 function redirectToLogin(source: string) {
-  navigateTo(`/auth/login?redirect=/${source === 'calculadora' ? 'calculadora' : 'help'}`)
+  navigateTo(
+    `/auth/login?redirect=/${source === 'calculadora' ? 'calculadora' : 'help'}`
+  )
 }
 
 onMounted(async () => {
@@ -605,4 +714,3 @@ definePageMeta({
   box-shadow: 0px 0px 80px 0px rgba(55, 77, 60, 0.6);
 }
 </style>
-

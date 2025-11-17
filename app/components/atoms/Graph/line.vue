@@ -393,12 +393,20 @@ function evaluateVariation(
 ): { hasAbove: boolean; hasBelow: boolean } {
   const result = { hasAbove: false, hasBelow: false }
 
-  if (!Number.isFinite(reference) || !Array.isArray(data) || data.length === 0) {
+  if (
+    !Number.isFinite(reference) ||
+    !Array.isArray(data) ||
+    data.length === 0
+  ) {
     return result
   }
 
   for (const point of data) {
-    if (!point || typeof point.value !== 'number' || Number.isNaN(point.value)) {
+    if (
+      !point ||
+      typeof point.value !== 'number' ||
+      Number.isNaN(point.value)
+    ) {
       continue
     }
 
@@ -551,7 +559,11 @@ const datasetStats = computed<{
   first: number
   last: number
 } | null>(() => {
-  if (!isDataValid.value || !Array.isArray(props.data) || props.data.length === 0)
+  if (
+    !isDataValid.value ||
+    !Array.isArray(props.data) ||
+    props.data.length === 0
+  )
     return null
 
   let min = Number.POSITIVE_INFINITY
@@ -1154,7 +1166,6 @@ const hoverLinePlugin: Plugin<'line'> = {
         !props.loading &&
         props.data.length > 0 &&
         hasReferenceVariation.value
-
       ) {
         const currentValue = props.data[props.data.length - 1].value
         const yPosition = yScale.getPixelForValue(currentValue)
@@ -1487,8 +1498,7 @@ const overlayLabelsPlugin: Plugin<'line'> = {
       const xOverlayBorderWidth = pluginOptions?.xOverlayBorderWidth ?? 0
       const xOverlayPaddingX = pluginOptions?.xOverlayPaddingX ?? 10
       const xOverlayPaddingY = pluginOptions?.xOverlayPaddingY ?? 4
-      const xOverlayCornerRadius =
-        pluginOptions?.xOverlayCornerRadius ?? 10
+      const xOverlayCornerRadius = pluginOptions?.xOverlayCornerRadius ?? 10
       const xOverlayOffsetY = pluginOptions?.xOverlayOffsetY ?? 16
       const maxXLabels = pluginOptions?.maxXLabels ?? 6
       const xLabelRotation = pluginOptions?.xLabelRotation ?? -32
@@ -1603,7 +1613,10 @@ const overlayLabelsPlugin: Plugin<'line'> = {
 
         const boxTop = targetY - boxHeight / 2
         const boxBottom = targetY + boxHeight / 2
-        const radius = Math.max(0, Math.min(xOverlayCornerRadius, boxHeight / 2))
+        const radius = Math.max(
+          0,
+          Math.min(xOverlayCornerRadius, boxHeight / 2)
+        )
 
         ctx.fillStyle = xOverlayTextColor
         ctx.translate(centerX, targetY)
@@ -1618,16 +1631,16 @@ const overlayLabelsPlugin: Plugin<'line'> = {
       if (!isHovering.value) {
         ctx.fillStyle = yLabelColor
 
-      const yTicks = yScale?.ticks ?? []
+        const yTicks = yScale?.ticks ?? []
 
         yTicks.forEach((tick: any, tickIndex: number) => {
           if (tickIndex === 0 || tickIndex === yTicks.length - 1) return
           if (typeof tick.value !== 'number') return
 
-        const y = yScale.getPixelForValue(tick.value) + yLabelOffset
-        const label = formatAxisCurrency(tick.value)
-        ctx.fillText(label, chartArea.left + 6, y)
-      })
+          const y = yScale.getPixelForValue(tick.value) + yLabelOffset
+          const label = formatAxisCurrency(tick.value)
+          ctx.fillText(label, chartArea.left + 6, y)
+        })
       }
 
       ctx.restore()
@@ -1687,9 +1700,7 @@ const chartData = computed(() => {
 const chartOptions = computed(() => {
   const extents = yAxisExtents.value
   const yLimits =
-    extents &&
-    Number.isFinite(extents.min) &&
-    Number.isFinite(extents.max)
+    extents && Number.isFinite(extents.min) && Number.isFinite(extents.max)
       ? {
           min: extents.min,
           max: extents.max,

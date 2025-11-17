@@ -4,7 +4,8 @@
       <div class="flex flex-col px-6">
         <h2 class="text-[18px] font-bold">Configurações</h2>
         <p class="text-[13px] font-extralight">
-          Gerencie dados da sua conta, preferências de tema e sincronização da carteira.
+          Gerencie dados da sua conta, preferências de tema e sincronização da
+          carteira.
         </p>
       </div>
       <div class="flex flex-col gap-6">

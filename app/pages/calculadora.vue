@@ -4,7 +4,8 @@
       <div class="flex flex-col">
         <h2 class="text-[18px] font-bold">Planejamento financeiro</h2>
         <p class="text-[13px] font-extralight">
-          Simule investimentos com juros compostos ou analise o histórico real de ações e FIIs.
+          Simule investimentos com juros compostos ou analise o histórico real
+          de ações e FIIs.
         </p>
       </div>
 
@@ -38,10 +39,7 @@
         :assets="assets"
         :assets-loading="assetsLoading"
       />
-      <CalculatorPlanning
-        v-else
-        :assets="assets"
-      />
+      <CalculatorPlanning v-else :assets="assets" />
     </div>
   </NuxtLayout>
 </template>
@@ -58,7 +56,7 @@ const { data: assetsData, pending: assetsPending } = await useAsyncData(
 
 const authStore = useAuthStore()
 const layoutName = computed(() =>
-  authStore.isAuthenticated ? 'default' : 'unauthenticated',
+  authStore.isAuthenticated ? 'default' : 'unauthenticated'
 )
 
 const selectedCalculator = ref<'compound' | 'stock' | 'planning'>('compound')
@@ -73,4 +71,3 @@ definePageMeta({
   },
 })
 </script>
-

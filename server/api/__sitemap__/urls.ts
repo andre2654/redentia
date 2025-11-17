@@ -3,25 +3,32 @@ export default defineSitemapEventHandler(async (e) => {
 
   try {
     console.log('[Sitemap] Buscando ativos da API...')
-    
-    // Buscar todos os ativos da API com timeout maior
-    const response = await $fetch<any>('https://redentia-api.saraivada.com/api/tickers-full', {
-      method: 'GET',
-      timeout: 30000, // 30 segundos de timeout
-    })
 
-    console.log('[Sitemap] Resposta recebida:', typeof response, Array.isArray(response))
+    // Buscar todos os ativos da API com timeout maior
+    const response = await $fetch<any>(
+      'https://redentia-api.saraivada.com/api/tickers-full',
+      {
+        method: 'GET',
+        timeout: 30000, // 30 segundos de timeout
+      }
+    )
+
+    console.log(
+      '[Sitemap] Resposta recebida:',
+      typeof response,
+      Array.isArray(response)
+    )
 
     // A resposta pode vir diretamente como array ou dentro de .data
     let assets = Array.isArray(response) ? response : response?.data || []
-    
+
     console.log('[Sitemap] Total de ativos encontrados:', assets.length)
 
     // Adicionar rotas dinâmicas de ativos
     if (Array.isArray(assets) && assets.length > 0) {
       // Limitar a 500 ativos mais relevantes para não sobrecarregar o sitemap
       const limitedAssets = assets.slice(0, 500)
-      
+
       for (const asset of limitedAssets) {
         if (asset.ticker) {
           urls.push({
@@ -32,7 +39,7 @@ export default defineSitemapEventHandler(async (e) => {
           })
         }
       }
-      
+
       console.log('[Sitemap] URLs de ativos adicionadas:', urls.length)
     } else {
       console.warn('[Sitemap] Nenhum ativo encontrado ou formato inválido')
@@ -40,7 +47,16 @@ export default defineSitemapEventHandler(async (e) => {
   } catch (error) {
     console.error('[Sitemap] Erro ao buscar ativos:', error)
     // Em caso de erro, adicionar alguns ativos importantes manualmente como fallback
-    const fallbackTickers = ['PETR4', 'VALE3', 'ITUB4', 'BBDC4', 'MGLU3', 'ABEV3', 'B3SA3', 'WEGE3']
+    const fallbackTickers = [
+      'PETR4',
+      'VALE3',
+      'ITUB4',
+      'BBDC4',
+      'MGLU3',
+      'ABEV3',
+      'B3SA3',
+      'WEGE3',
+    ]
     for (const ticker of fallbackTickers) {
       urls.push({
         loc: `/asset/${ticker}`,
@@ -54,4 +70,3 @@ export default defineSitemapEventHandler(async (e) => {
 
   return urls
 })
-

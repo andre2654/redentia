@@ -12,35 +12,30 @@
         <NuxtLink
           v-for="(item, index) in repeatedItems"
           :key="index"
-           :to="`/asset/${item?.ticker}`"
-          :class="[
-            'flex items-center gap-2',
-            big ? 'px-8 py-3' : 'px-6 py-2'
-          ]"
+          :to="`/asset/${item?.ticker}`"
+          :class="['flex items-center gap-2', big ? 'px-8 py-3' : 'px-6 py-2']"
         >
           <img
             :src="item.logo"
             :class="[
               'select-none rounded object-cover',
-              big ? 'h-10 w-10' : 'h-6 w-6'
+              big ? 'h-10 w-10' : 'h-6 w-6',
             ]"
           />
-          <span 
+          <span
             :class="[
               'select-none font-medium',
-              big ? 'text-[20px]' : 'text-[14px]'
+              big ? 'text-[20px]' : 'text-[14px]',
             ]"
-          >{{
-            item.ticker
-          }}</span>
-          <span 
+            >{{ item.ticker }}</span
+          >
+          <span
             :class="[
               'font-regular text-primary select-none',
-              big ? 'text-[16px]' : 'text-[12px]'
+              big ? 'text-[16px]' : 'text-[12px]',
             ]"
-          >{{
-            item.change
-          }}</span>
+            >{{ item.change }}</span
+          >
         </NuxtLink>
       </div>
     </div>
@@ -50,7 +45,10 @@
       class="hover:opacity-100"
       @click="isPaused = !isPaused"
     >
-      <IconPlay v-if="isPaused" :class="[big ? 'h-6 w-6' : 'h-4 w-4', 'fill-white']" />
+      <IconPlay
+        v-if="isPaused"
+        :class="[big ? 'h-6 w-6' : 'h-4 w-4', 'fill-white']"
+      />
       <IconPause v-else :class="[big ? 'h-6 w-6' : 'h-4 w-4', 'fill-white']" />
     </button>
   </div>

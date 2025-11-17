@@ -1,11 +1,11 @@
 <template>
   <div class="space-y-6">
-    <div class="flex flex-col gap-6 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6">
+    <div
+      class="flex flex-col gap-6 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6"
+    >
       <div class="flex items-center gap-3">
         <UIcon name="i-lucide-chart-line" class="text-secondary size-6" />
-        <h2 class="text-xl font-bold text-white">
-          Análise de Histórico Real
-        </h2>
+        <h2 class="text-xl font-bold text-white">Análise de Histórico Real</h2>
       </div>
 
       <div class="space-y-4">
@@ -50,8 +50,9 @@
                         :src="item.asset.avatar?.src"
                         :alt="item.asset.label"
                         :class="[
-                          'shrink-0 ring-1 ring-white/10 transition group-hover:ring-secondary/70',
-                          !item.asset.avatar?.src && 'bg-secondary/20 text-secondary',
+                          'group-hover:ring-secondary/70 shrink-0 ring-1 ring-white/10 transition',
+                          !item.asset.avatar?.src &&
+                            'bg-secondary/20 text-secondary',
                         ]"
                       >
                         {{ item.asset.label.slice(0, 2) }}
@@ -63,7 +64,7 @@
                         </span>
                         <span
                           v-if="item.asset.suffix"
-                          class="text-xs text-gray-400 line-clamp-1"
+                          class="line-clamp-1 text-xs text-gray-400"
                         >
                           {{ item.asset.suffix }}
                         </span>
@@ -71,7 +72,7 @@
 
                       <UIcon
                         name="i-lucide-plus"
-                        class="text-secondary/80 transition group-hover:text-secondary"
+                        class="text-secondary/80 group-hover:text-secondary transition"
                       />
                     </button>
                   </div>
@@ -85,17 +86,17 @@
                   v-if="assetsLoading"
                   class="absolute inset-0 flex items-center justify-center bg-black/20 backdrop-blur-sm"
                 >
-                  <UIcon name="i-lucide-loader-2" class="size-5 animate-spin text-white" />
+                  <UIcon
+                    name="i-lucide-loader-2"
+                    class="size-5 animate-spin text-white"
+                  />
                 </div>
               </div>
             </ClientOnly>
           </div>
         </UFormField>
 
-        <div
-          v-if="portfolioAssets.length"
-          class="flex flex-wrap gap-2"
-        >
+        <div v-if="portfolioAssets.length" class="flex flex-wrap gap-2">
           <div
             v-for="asset in portfolioAssets"
             :key="asset.id"
@@ -200,7 +201,8 @@
         icon="i-lucide-refresh-cw"
         title="Resultados desatualizados"
       >
-        Clique em "Calcular Histórico" para atualizar as projeções após as alterações.
+        Clique em "Calcular Histórico" para atualizar as projeções após as
+        alterações.
       </UAlert>
     </div>
 
@@ -209,13 +211,8 @@
       class="flex flex-col gap-6 rounded-[30px] p-6"
     >
       <div class="flex items-center gap-3">
-        <UIcon
-          name="i-lucide-bar-chart-3"
-          class="text-secondary size-6"
-        />
-        <h3 class="text-xl font-bold text-white">
-          Resumo do Portfólio
-        </h3>
+        <UIcon name="i-lucide-bar-chart-3" class="text-secondary size-6" />
+        <h3 class="text-xl font-bold text-white">Resumo do Portfólio</h3>
       </div>
 
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -233,9 +230,7 @@
           </p>
         </div>
         <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-          <p class="text-[13px] font-extralight text-gray-400">
-            Valor Final
-          </p>
+          <p class="text-[13px] font-extralight text-gray-400">Valor Final</p>
           <p class="text-secondary text-xl font-bold">
             {{
               new Intl.NumberFormat('pt-BR', {
@@ -246,14 +241,15 @@
           </p>
         </div>
         <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-          <p class="text-[13px] font-extralight text-gray-400">
-            Rentabilidade
-          </p>
+          <p class="text-[13px] font-extralight text-gray-400">Rentabilidade</p>
           <p
             class="text-xl font-bold"
-            :class="aggregatedSummary.return >= 0 ? 'text-green-400' : 'text-red-400'"
+            :class="
+              aggregatedSummary.return >= 0 ? 'text-green-400' : 'text-red-400'
+            "
           >
-            {{ aggregatedSummary.return >= 0 ? '+' : '' }}{{ aggregatedSummary.return.toFixed(2) }}%
+            {{ aggregatedSummary.return >= 0 ? '+' : ''
+            }}{{ aggregatedSummary.return.toFixed(2) }}%
           </p>
         </div>
         <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
@@ -271,11 +267,9 @@
         </div>
       </div>
 
-      <p
-        v-if="aggregatedSummary.assetCount > 1"
-        class="text-xs text-gray-400"
-      >
-        Aportes iniciais e mensais foram distribuídos igualmente entre os ativos selecionados.
+      <p v-if="aggregatedSummary.assetCount > 1" class="text-xs text-gray-400">
+        Aportes iniciais e mensais foram distribuídos igualmente entre os ativos
+        selecionados.
       </p>
     </div>
 
@@ -285,138 +279,57 @@
         :key="result.ticker"
         class="flex flex-col gap-6 rounded-[30px] p-6"
       >
-      <div class="flex items-center gap-3">
-        <UIcon
-          name="i-lucide-bar-chart-3"
-          class="text-secondary size-6"
-        />
-        <div>
-          <h3 class="text-xl font-bold text-white">
-            Resultados – {{ result.ticker }}
-          </h3>
-          <p v-if="result.name" class="text-xs text-gray-400">
-            {{ result.name }}
-          </p>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-          <p class="text-[13px] font-extralight text-gray-400">
-            Total Investido
-          </p>
-          <p class="text-xl font-bold text-white">
-            {{
-              new Intl.NumberFormat('pt-BR', {
-                style: 'currency',
-                currency: 'BRL',
-              }).format(result.totalInvested)
-            }}
-          </p>
-        </div>
-        <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-          <p class="text-[13px] font-extralight text-gray-400">
-            Valor Final
-          </p>
-          <p class="text-secondary text-xl font-bold">
-            {{
-              new Intl.NumberFormat('pt-BR', {
-                style: 'currency',
-                currency: 'BRL',
-              }).format(result.finalValue)
-            }}
-          </p>
-        </div>
-        <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-          <p class="text-[13px] font-extralight text-gray-400">
-            Rentabilidade
-          </p>
-          <p
-            class="text-xl font-bold"
-            :class="result.return >= 0 ? 'text-green-400' : 'text-red-400'"
-          >
-            {{ result.return >= 0 ? '+' : '' }}{{ result.return.toFixed(2) }}%
-          </p>
-        </div>
-        <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-          <p class="text-[13px] font-extralight text-gray-400">
-            Total de Proventos
-          </p>
-          <p class="text-xl font-bold text-green-400">
-            {{
-              new Intl.NumberFormat('pt-BR', {
-                style: 'currency',
-                currency: 'BRL',
-              }).format(result.totalDividends)
-            }}
-          </p>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-          <p class="text-[13px] font-extralight text-gray-400">
-            Preço Médio de Compra
-          </p>
-          <p class="text-lg font-semibold text-white">
-            {{
-              new Intl.NumberFormat('pt-BR', {
-                style: 'currency',
-                currency: 'BRL',
-              }).format(result.averagePrice)
-            }}
-          </p>
-        </div>
-        <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-          <p class="text-[13px] font-extralight text-gray-400">
-            Quantidade de Ações
-          </p>
-          <p class="text-lg font-semibold text-white">
-            {{ result.totalShares.toFixed(2) }}
-          </p>
-        </div>
-      </div>
-
-      <div class="flex flex-col gap-2">
-        <h4 class="text-[16px] font-semibold">
-          Evolução do Investimento
-        </h4>
-        <div class="h-[350px]">
-          <AtomsGraphLine
-            :data="result.chartData"
-            :height="350"
-            :legend="[{ label: 'Investimento', color: '#00D9A5' }]"
-            :colors="['#00D9A5']"
-          />
-        </div>
-      </div>
-
-      <div
-        v-if="stockForm.reinvestDividends && result.dividendsHistory && result.dividendsHistory.length > 0"
-        class="flex flex-col gap-4"
-      >
         <div class="flex items-center gap-3">
-          <UIcon
-            name="i-lucide-table"
-            class="text-secondary size-6"
-          />
-          <h3 class="text-xl font-bold text-white">
-            Histórico de Proventos
-          </h3>
+          <UIcon name="i-lucide-bar-chart-3" class="text-secondary size-6" />
+          <div>
+            <h3 class="text-xl font-bold text-white">
+              Resultados – {{ result.ticker }}
+            </h3>
+            <p v-if="result.name" class="text-xs text-gray-400">
+              {{ result.name }}
+            </p>
+          </div>
         </div>
 
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
             <p class="text-[13px] font-extralight text-gray-400">
-              Total de Pagamentos
+              Total Investido
             </p>
             <p class="text-xl font-bold text-white">
-              {{ result.dividendsHistory.length }}
+              {{
+                new Intl.NumberFormat('pt-BR', {
+                  style: 'currency',
+                  currency: 'BRL',
+                }).format(result.totalInvested)
+              }}
+            </p>
+          </div>
+          <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
+            <p class="text-[13px] font-extralight text-gray-400">Valor Final</p>
+            <p class="text-secondary text-xl font-bold">
+              {{
+                new Intl.NumberFormat('pt-BR', {
+                  style: 'currency',
+                  currency: 'BRL',
+                }).format(result.finalValue)
+              }}
             </p>
           </div>
           <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
             <p class="text-[13px] font-extralight text-gray-400">
-              Total Recebido
+              Rentabilidade
+            </p>
+            <p
+              class="text-xl font-bold"
+              :class="result.return >= 0 ? 'text-green-400' : 'text-red-400'"
+            >
+              {{ result.return >= 0 ? '+' : '' }}{{ result.return.toFixed(2) }}%
+            </p>
+          </div>
+          <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
+            <p class="text-[13px] font-extralight text-gray-400">
+              Total de Proventos
             </p>
             <p class="text-xl font-bold text-green-400">
               {{
@@ -427,96 +340,185 @@
               }}
             </p>
           </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
             <p class="text-[13px] font-extralight text-gray-400">
-              Média por Pagamento
+              Preço Médio de Compra
             </p>
-            <p class="text-xl font-bold text-white">
+            <p class="text-lg font-semibold text-white">
               {{
                 new Intl.NumberFormat('pt-BR', {
                   style: 'currency',
                   currency: 'BRL',
-                }).format(result.totalDividends / result.dividendsHistory.length)
+                }).format(result.averagePrice)
               }}
+            </p>
+          </div>
+          <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
+            <p class="text-[13px] font-extralight text-gray-400">
+              Quantidade de Ações
+            </p>
+            <p class="text-lg font-semibold text-white">
+              {{ result.totalShares.toFixed(2) }}
             </p>
           </div>
         </div>
 
-        <div class="max-h-[500px] overflow-y-auto rounded-lg border border-gray-700 bg-gray-800/30">
-          <table class="w-full">
-            <thead class="sticky top-0 z-10 bg-gray-800">
-              <tr class="border-b border-gray-700">
-                <th class="px-4 py-3 text-left text-sm font-semibold">
-                  Data de Pagamento
-                </th>
-                <th class="px-4 py-3 text-left text-sm font-semibold">
-                  Valor por Ação
-                </th>
-                <th class="px-4 py-3 text-left text-sm font-semibold">
-                  Qtd. Ações
-                </th>
-                <th class="px-4 py-3 text-left text-sm font-semibold">
-                  Total Recebido
-                </th>
-                <th class="px-4 py-3 text-left text-sm font-semibold">
-                  Tipo
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="(dividend, index) in result.dividendsHistory"
-                :key="`${result.ticker}-${index}`"
-                class="border-b border-gray-700/50 hover:bg-white/5"
-              >
-                <td class="px-4 py-3 text-sm">
-                  {{ new Date(dividend.payment_date).toLocaleDateString('pt-BR') }}
-                </td>
-                <td class="px-4 py-3 text-sm font-medium text-gray-300">
-                  {{
-                    new Intl.NumberFormat('pt-BR', {
-                      style: 'currency',
-                      currency: 'BRL',
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 4,
-                          }).format(parseFloat(dividend.rate))
-                  }}
-                </td>
-                <td class="px-4 py-3 text-sm text-gray-400">
-                  {{ (dividend.sharesAtTime || 0).toFixed(2) }}
-                </td>
-                <td class="px-4 py-3 text-sm font-bold text-green-400">
-                  {{
-                    new Intl.NumberFormat('pt-BR', {
-                      style: 'currency',
-                      currency: 'BRL',
-                    }).format(dividend.totalReceived || 0)
-                  }}
-                </td>
-                <td class="px-4 py-3">
-                  <span
-                    class="rounded-full px-2 py-1 text-xs font-medium"
-                    :class="
-                      dividend.label === 'JCP'
-                        ? 'bg-blue-500/20 text-blue-400'
-                        : 'bg-green-500/20 text-green-400'
-                    "
-                  >
-                    {{ dividend.label }}
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="flex flex-col gap-2">
+          <h4 class="text-[16px] font-semibold">Evolução do Investimento</h4>
+          <div class="h-[350px]">
+            <AtomsGraphLine
+              :data="result.chartData"
+              :height="350"
+              :legend="[{ label: 'Investimento', color: '#00D9A5' }]"
+              :colors="['#00D9A5']"
+            />
+          </div>
         </div>
-      </div>
+
+        <div
+          v-if="
+            stockForm.reinvestDividends &&
+            result.dividendsHistory &&
+            result.dividendsHistory.length > 0
+          "
+          class="flex flex-col gap-4"
+        >
+          <div class="flex items-center gap-3">
+            <UIcon name="i-lucide-table" class="text-secondary size-6" />
+            <h3 class="text-xl font-bold text-white">Histórico de Proventos</h3>
+          </div>
+
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
+              <p class="text-[13px] font-extralight text-gray-400">
+                Total de Pagamentos
+              </p>
+              <p class="text-xl font-bold text-white">
+                {{ result.dividendsHistory.length }}
+              </p>
+            </div>
+            <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
+              <p class="text-[13px] font-extralight text-gray-400">
+                Total Recebido
+              </p>
+              <p class="text-xl font-bold text-green-400">
+                {{
+                  new Intl.NumberFormat('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL',
+                  }).format(result.totalDividends)
+                }}
+              </p>
+            </div>
+            <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
+              <p class="text-[13px] font-extralight text-gray-400">
+                Média por Pagamento
+              </p>
+              <p class="text-xl font-bold text-white">
+                {{
+                  new Intl.NumberFormat('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL',
+                  }).format(
+                    result.totalDividends / result.dividendsHistory.length
+                  )
+                }}
+              </p>
+            </div>
+          </div>
+
+          <div
+            class="max-h-[500px] overflow-y-auto rounded-lg border border-gray-700 bg-gray-800/30"
+          >
+            <table class="w-full">
+              <thead class="sticky top-0 z-10 bg-gray-800">
+                <tr class="border-b border-gray-700">
+                  <th class="px-4 py-3 text-left text-sm font-semibold">
+                    Data de Pagamento
+                  </th>
+                  <th class="px-4 py-3 text-left text-sm font-semibold">
+                    Valor por Ação
+                  </th>
+                  <th class="px-4 py-3 text-left text-sm font-semibold">
+                    Qtd. Ações
+                  </th>
+                  <th class="px-4 py-3 text-left text-sm font-semibold">
+                    Total Recebido
+                  </th>
+                  <th class="px-4 py-3 text-left text-sm font-semibold">
+                    Tipo
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(dividend, index) in result.dividendsHistory"
+                  :key="`${result.ticker}-${index}`"
+                  class="border-b border-gray-700/50 hover:bg-white/5"
+                >
+                  <td class="px-4 py-3 text-sm">
+                    {{
+                      new Date(dividend.payment_date).toLocaleDateString(
+                        'pt-BR'
+                      )
+                    }}
+                  </td>
+                  <td class="px-4 py-3 text-sm font-medium text-gray-300">
+                    {{
+                      new Intl.NumberFormat('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL',
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 4,
+                      }).format(parseFloat(dividend.rate))
+                    }}
+                  </td>
+                  <td class="px-4 py-3 text-sm text-gray-400">
+                    {{ (dividend.sharesAtTime || 0).toFixed(2) }}
+                  </td>
+                  <td class="px-4 py-3 text-sm font-bold text-green-400">
+                    {{
+                      new Intl.NumberFormat('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL',
+                      }).format(dividend.totalReceived || 0)
+                    }}
+                  </td>
+                  <td class="px-4 py-3">
+                    <span
+                      class="rounded-full px-2 py-1 text-xs font-medium"
+                      :class="
+                        dividend.label === 'JCP'
+                          ? 'bg-blue-500/20 text-blue-400'
+                          : 'bg-green-500/20 text-green-400'
+                      "
+                    >
+                      {{ dividend.label }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch, withDefaults } from 'vue'
+import {
+  computed,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  watch,
+  withDefaults,
+} from 'vue'
 import type { IAsset } from '~/types/asset'
 import type { IChartDataPoint } from '~/types/chart'
 
@@ -602,9 +604,13 @@ const normalizedAssets = computed<AssetSelectItem[]>(() => {
 
 const filteredAssets = computed(() => {
   const term = searchTerm.value.trim().toLowerCase()
-  const selectedTickers = new Set(portfolioAssets.value.map((asset) => asset.id))
+  const selectedTickers = new Set(
+    portfolioAssets.value.map((asset) => asset.id)
+  )
   if (!term) {
-    return normalizedAssets.value.filter((asset) => !selectedTickers.has(asset.id))
+    return normalizedAssets.value.filter(
+      (asset) => !selectedTickers.has(asset.id)
+    )
   }
 
   return normalizedAssets.value.filter((asset) => {
@@ -637,7 +643,7 @@ const visibleCount = computed(() => {
 const endIndex = computed(() => {
   return Math.min(
     filteredAssets.value.length,
-    startIndex.value + visibleCount.value,
+    startIndex.value + visibleCount.value
   )
 })
 
@@ -675,7 +681,7 @@ function removeAsset(ticker: string) {
   if (index !== -1) {
     portfolioAssets.value.splice(index, 1)
     stockResults.value = stockResults.value.filter(
-      (result) => result.ticker !== ticker,
+      (result) => result.ticker !== ticker
     )
     markResultsStale()
   }
@@ -695,12 +701,13 @@ const aggregatedSummary = computed(() => {
       totalInvested: 0,
       finalValue: 0,
       totalDividends: 0,
-    },
+    }
   )
 
   const totalReturn =
     totals.totalInvested > 0
-      ? ((totals.finalValue - totals.totalInvested) / totals.totalInvested) * 100
+      ? ((totals.finalValue - totals.totalInvested) / totals.totalInvested) *
+        100
       : 0
 
   return {
@@ -719,14 +726,14 @@ watch(
   ],
   () => {
     markResultsStale()
-  },
+  }
 )
 
 watch(
   () => portfolioAssets.value.map((asset) => asset.id).join(','),
   () => {
     markResultsStale()
-  },
+  }
 )
 
 watch(searchTerm, () => {
@@ -741,7 +748,8 @@ watch(searchTerm, () => {
 watch(filteredAssets, () => {
   nextTick(() => {
     if (listContainer.value) {
-      containerHeight.value = listContainer.value.clientHeight || containerHeight.value
+      containerHeight.value =
+        listContainer.value.clientHeight || containerHeight.value
     }
   })
 })
@@ -758,7 +766,8 @@ onMounted(() => {
 
   nextTick(() => {
     if (listContainer.value) {
-      containerHeight.value = listContainer.value.clientHeight || containerHeight.value
+      containerHeight.value =
+        listContainer.value.clientHeight || containerHeight.value
       scrollTop.value = listContainer.value.scrollTop || 0
 
       resizeObserver = new ResizeObserver((entries) => {
@@ -788,8 +797,10 @@ async function calculateStockHistory() {
 
   try {
     const tickerCount = portfolioAssets.value.length
-    const totalInitialInvestment = Number(stockForm.value.initialInvestment) || 0
-    const totalMonthlyInvestment = Number(stockForm.value.monthlyInvestment) || 0
+    const totalInitialInvestment =
+      Number(stockForm.value.initialInvestment) || 0
+    const totalMonthlyInvestment =
+      Number(stockForm.value.monthlyInvestment) || 0
     const periodYears = Number(stockForm.value.periodYears) || 0
 
     if (!Number.isFinite(periodYears) || periodYears <= 0) {
@@ -812,7 +823,7 @@ async function calculateStockHistory() {
           perInitialInvestment,
           perMonthlyInvestment,
           periodYears,
-          reinvestDividends,
+          reinvestDividends
         )
 
         if (!result) {
@@ -820,11 +831,11 @@ async function calculateStockHistory() {
         }
 
         return result
-      }),
+      })
     )
 
     const validSimulations = simulations.filter(
-      (result): result is StockSimulationResult => Boolean(result),
+      (result): result is StockSimulationResult => Boolean(result)
     )
 
     if (!validSimulations.length) {
@@ -853,7 +864,7 @@ async function simulateAsset(
   initialInvestment: number,
   monthlyInvestment: number,
   periodYears: number,
-  reinvestDividends: boolean,
+  reinvestDividends: boolean
 ): Promise<StockSimulationResult | null> {
   try {
     const ticker = asset.id
@@ -886,7 +897,7 @@ async function simulateAsset(
         (price) =>
           Number.isFinite(price.market_price) &&
           price.market_price > 0 &&
-          Number.isFinite(price.priceDate.getTime()),
+          Number.isFinite(price.priceDate.getTime())
       )
       .sort((a, b) => a.priceDate.getTime() - b.priceDate.getTime())
 
@@ -900,7 +911,7 @@ async function simulateAsset(
     startDate.setFullYear(startDate.getFullYear() - periodYears)
 
     const relevantPrices = normalizedPrices.filter(
-      (price) => price.priceDate >= startDate,
+      (price) => price.priceDate >= startDate
     )
 
     if (!relevantPrices.length) {
@@ -920,7 +931,7 @@ async function simulateAsset(
           dividend.rate > 0 &&
           dividend.date.getTime() &&
           dividend.date >= startDate &&
-          dividend.date <= endDate,
+          dividend.date <= endDate
       )
       .sort((a, b) => a.date.getTime() - b.date.getTime())
 
@@ -965,7 +976,8 @@ async function simulateAsset(
 
       if (
         monthlyInvestment > 0 &&
-        (currentMonth !== lastMonthProcessed || currentYear !== lastYearProcessed)
+        (currentMonth !== lastMonthProcessed ||
+          currentYear !== lastYearProcessed)
       ) {
         const newShares = monthlyInvestment / priceValue
         totalShares += newShares
@@ -978,7 +990,7 @@ async function simulateAsset(
         const previousDate = new Date(relevantPrices[priceIndex - 1].price_at)
         const relevantDividends = processedDividends.filter(
           (dividend) =>
-            dividend.date > previousDate && dividend.date <= priceDate,
+            dividend.date > previousDate && dividend.date <= priceDate
         )
 
         for (const dividend of relevantDividends) {
@@ -1020,12 +1032,14 @@ async function simulateAsset(
     const finalPrice = lastPrice.market_price
     const finalValue = totalShares * finalPrice
     const returnPercentage =
-      totalInvested > 0 ? ((finalValue - totalInvested) / totalInvested) * 100 : 0
+      totalInvested > 0
+        ? ((finalValue - totalInvested) / totalInvested) * 100
+        : 0
     const averagePrice = totalShares > 0 ? totalInvested / totalShares : 0
 
     const sortedDividendsHistory = dividendsHistory.sort(
       (a, b) =>
-        new Date(a.payment_date).getTime() - new Date(b.payment_date).getTime(),
+        new Date(a.payment_date).getTime() - new Date(b.payment_date).getTime()
     )
 
     return {

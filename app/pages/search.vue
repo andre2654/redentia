@@ -4,52 +4,98 @@
       <div class="flex flex-col px-6">
         <h2 class="text-[18px] font-bold">Filtros avançados</h2>
         <p class="text-[13px] font-extralight">
-          Refine sua busca por preço, valor de mercado, variação no dia e tipo de ativo. Combine filtros para encontrar oportunidades alinhadas ao seu perfil.
+          Refine sua busca por preço, valor de mercado, variação no dia e tipo
+          de ativo. Combine filtros para encontrar oportunidades alinhadas ao
+          seu perfil.
         </p>
       </div>
-      <div class="px-6 py-2 mt-4">
+      <div class="mt-4 px-6 py-2">
         <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
-          <div class="rounded-[12px] flex flex-col gap-2">
-            <div class="flex items-center justify-between text-[15px] font-semibold">
+          <div class="flex flex-col gap-2 rounded-[12px]">
+            <div
+              class="flex items-center justify-between text-[15px] font-semibold"
+            >
               <span>Market Cap (R$)</span>
             </div>
-            <span class="text-[11px] font-normal opacity-70">{{ formatCurrencyBRL(marketCapRange[0]) }} - {{ formatCurrencyBRL(marketCapRange[1]) }}</span>
-            <USlider v-model="marketCapRange" :min="minMax.mcMin" :max="minMax.mcMax" :step="minMax.mcStep" />
+            <span class="text-[11px] font-normal opacity-70"
+              >{{ formatCurrencyBRL(marketCapRange[0]) }} -
+              {{ formatCurrencyBRL(marketCapRange[1]) }}</span
+            >
+            <USlider
+              v-model="marketCapRange"
+              :min="minMax.mcMin"
+              :max="minMax.mcMax"
+              :step="minMax.mcStep"
+            />
           </div>
 
-          <div class="rounded-[12px] flex flex-col gap-2">
-            <div class="flex items-center justify-between text-[15px] font-semibold">
+          <div class="flex flex-col gap-2 rounded-[12px]">
+            <div
+              class="flex items-center justify-between text-[15px] font-semibold"
+            >
               <span>Preço (R$)</span>
             </div>
             <span class="text-[11px] font-normal opacity-70">
-              <template v-if="!assetsLoading">{{ formatCurrencyBRL(priceRange[0]) }} - {{ formatCurrencyBRL(priceRange[1]) }}</template>
+              <template v-if="!assetsLoading"
+                >{{ formatCurrencyBRL(priceRange[0]) }} -
+                {{ formatCurrencyBRL(priceRange[1]) }}</template
+              >
               <template v-else>...</template>
             </span>
-            <USlider v-model="priceRange" :min="minMax.priceMin" :max="minMax.priceMax" :step="0.01" :disabled="assetsLoading" />
+            <USlider
+              v-model="priceRange"
+              :min="minMax.priceMin"
+              :max="minMax.priceMax"
+              :step="0.01"
+              :disabled="assetsLoading"
+            />
           </div>
 
-          <div class="rounded-[12px] flex flex-col gap-2">
-            <div class="flex items-center justify-between text-[15px] font-semibold">
+          <div class="flex flex-col gap-2 rounded-[12px]">
+            <div
+              class="flex items-center justify-between text-[15px] font-semibold"
+            >
               <span>Variação (%)</span>
             </div>
             <span class="text-[11px] font-normal opacity-70">
-              <template v-if="!assetsLoading">{{ formatPercent(changeRange[0]) }} - {{ formatPercent(changeRange[1]) }}</template>
+              <template v-if="!assetsLoading"
+                >{{ formatPercent(changeRange[0]) }} -
+                {{ formatPercent(changeRange[1]) }}</template
+              >
               <template v-else>...</template>
             </span>
-            <USlider v-model="changeRange" :min="minMax.changeMin" :max="minMax.changeMax" :step="0.1" :disabled="assetsLoading" />
+            <USlider
+              v-model="changeRange"
+              :min="minMax.changeMin"
+              :max="minMax.changeMax"
+              :step="0.1"
+              :disabled="assetsLoading"
+            />
           </div>
 
-          <div class="rounded-[12px] flex flex-col gap-8">
+          <div class="flex flex-col gap-8 rounded-[12px]">
             <div class="text-[15px] font-semibold">Grupo</div>
             <div class="flex flex-wrap items-center gap-3">
-              <UCheckbox v-model="showStock" label="Ação" :disabled="assetsLoading" />
-              <UCheckbox v-model="showReit" label="REIT" :disabled="assetsLoading" />
-              <UCheckbox v-model="showBdr" label="BDR" :disabled="assetsLoading" />
+              <UCheckbox
+                v-model="showStock"
+                label="Ação"
+                :disabled="assetsLoading"
+              />
+              <UCheckbox
+                v-model="showReit"
+                label="REIT"
+                :disabled="assetsLoading"
+              />
+              <UCheckbox
+                v-model="showBdr"
+                label="BDR"
+                :disabled="assetsLoading"
+              />
             </div>
           </div>
         </div>
       </div>
-        <div class="mt-4 rounded-none border-y py-4">
+      <div class="mt-4 rounded-none border-y py-4">
         <AtomsFormInput
           id="global-search-input"
           v-model="globalFilter"
@@ -62,12 +108,12 @@
             base: 'bg-black border-none',
           }"
         >
-        <template #trailing>
-          <div class="flex items-center gap-2 max-lg:hidden">
-            <UKbd value="meta" variant="link" color="neutral" />
-            <UKbd value="K" variant="link" color="neutral" />
-          </div>
-        </template>
+          <template #trailing>
+            <div class="flex items-center gap-2 max-lg:hidden">
+              <UKbd value="meta" variant="link" color="neutral" />
+              <UKbd value="K" variant="link" color="neutral" />
+            </div>
+          </template>
         </AtomsFormInput>
       </div>
       <UTable
@@ -198,11 +244,26 @@ defineShortcuts({
 })
 
 function focusGlobalSearch() {
-  const el = document.getElementById('global-search-input') as HTMLInputElement | null
+  const el = document.getElementById(
+    'global-search-input'
+  ) as HTMLInputElement | null
   el?.focus()
 }
 
-const monthShortNames = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'] as const
+const monthShortNames = [
+  'JAN',
+  'FEV',
+  'MAR',
+  'ABR',
+  'MAI',
+  'JUN',
+  'JUL',
+  'AGO',
+  'SET',
+  'OUT',
+  'NOV',
+  'DEZ',
+] as const
 const currentMonthNumber = new Date().getMonth() + 1
 
 function toFiniteNumber(value: unknown) {
@@ -211,7 +272,7 @@ function toFiniteNumber(value: unknown) {
 }
 
 function getMonthLabel(monthNumber: number) {
-  const monthIndex = ((monthNumber - 1) % 12 + 12) % 12
+  const monthIndex = (((monthNumber - 1) % 12) + 12) % 12
   return monthShortNames[monthIndex] ?? `M${monthNumber}`
 }
 
@@ -265,7 +326,8 @@ function getMdiHighlights(entries?: AssetMdiEntry[] | null) {
     const occurrences = toFiniteNumber(entry.occurrences) ?? 0
     const totalYears = toFiniteNumber(entry.total_years) ?? 0
     if (occurrences > 0) {
-      const percentage = totalYears > 0 ? (occurrences / totalYears) * 100 : null
+      const percentage =
+        totalYears > 0 ? (occurrences / totalYears) * 100 : null
       occurrence = {
         month,
         monthLabel: getMonthLabel(month),
@@ -280,7 +342,9 @@ function getMdiHighlights(entries?: AssetMdiEntry[] | null) {
     .filter((value): value is number => value !== null)
 
   const averageSumRate =
-    sumRates.length > 0 ? sumRates.reduce((acc, value) => acc + value, 0) / sumRates.length : null
+    sumRates.length > 0
+      ? sumRates.reduce((acc, value) => acc + value, 0) / sumRates.length
+      : null
 
   let star: StarHighlight | null = null
   const getStarForMonth = (month: number): StarHighlight | null => {
@@ -289,7 +353,11 @@ function getMdiHighlights(entries?: AssetMdiEntry[] | null) {
       return null
     }
     const sumRate = toFiniteNumber(entry.sum_rate)
-    if (averageSumRate === null || sumRate === null || sumRate < averageSumRate) {
+    if (
+      averageSumRate === null ||
+      sumRate === null ||
+      sumRate < averageSumRate
+    ) {
       return null
     }
     return {
@@ -357,7 +425,6 @@ function getMdiLabels(entries?: AssetMdiEntry[] | null): MdiLabelSegments {
     starLabel: star ? `${star.monthLabel} (maior chance)` : null,
   }
 }
-
 
 // Paginação usando TanStack Table
 const pagination = ref({
@@ -529,7 +596,11 @@ const filteredData = computed(() => {
 })
 
 function formatCurrencyBRL(n: number) {
-  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(n || 0)
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    maximumFractionDigits: 0,
+  }).format(n || 0)
 }
 function formatPercent(n: number) {
   const num = Number(n || 0)
@@ -633,13 +704,21 @@ const columns = ref([
       return getHeader(column, 'Ticker')
     },
     cell: ({ row }) => {
-      return h('div', { class: 'flex items-center gap-2 cursor-pointer', onClick: () => goToAsset(row.original.ticker) }, [
-        h('img', {
-          src: row.original.logo,
-          class: 'pointer-events-none h-6 w-6 select-none rounded object-cover',
-        }),
-        h('span', { class: 'text-[14px] font-medium' }, row.original.ticker),
-      ])
+      return h(
+        'div',
+        {
+          class: 'flex items-center gap-2 cursor-pointer',
+          onClick: () => goToAsset(row.original.ticker),
+        },
+        [
+          h('img', {
+            src: row.original.logo,
+            class:
+              'pointer-events-none h-6 w-6 select-none rounded object-cover',
+          }),
+          h('span', { class: 'text-[14px] font-medium' }, row.original.ticker),
+        ]
+      )
     },
   },
   {
@@ -648,7 +727,14 @@ const columns = ref([
       return getHeader(column, 'Nome')
     },
     cell: ({ row }) => {
-      return h('span', { class: 'text-[12px] opacity-70 cursor-pointer', onClick: () => goToAsset(row.original.ticker) }, row.original.name)
+      return h(
+        'span',
+        {
+          class: 'text-[12px] opacity-70 cursor-pointer',
+          onClick: () => goToAsset(row.original.ticker),
+        },
+        row.original.name
+      )
     },
   },
   {
@@ -659,7 +745,10 @@ const columns = ref([
     cell: ({ row }) => {
       return h(
         'span',
-        { class: 'text-[14px] cursor-pointer', onClick: () => goToAsset(row.original.ticker) },
+        {
+          class: 'text-[14px] cursor-pointer',
+          onClick: () => goToAsset(row.original.ticker),
+        },
         new Intl.NumberFormat('pt-BR', {
           style: 'currency',
           currency: 'BRL',
@@ -676,7 +765,10 @@ const columns = ref([
     cell: ({ row }) => {
       return h(
         'span',
-        { class: 'text-[14px] cursor-pointer', onClick: () => goToAsset(row.original.ticker) },
+        {
+          class: 'text-[14px] cursor-pointer',
+          onClick: () => goToAsset(row.original.ticker),
+        },
         new Intl.NumberFormat('pt-BR', {
           style: 'currency',
           currency: 'BRL',
@@ -691,18 +783,25 @@ const columns = ref([
     },
     cell: ({ row }) => {
       const change_percent = row.original.change_percent
-      return h('div', { class: 'flex items-center gap-2 cursor-pointer', onClick: () => goToAsset(row.original.ticker) }, [
-        h(IconArrowFinanceUp, {
-          class: `w-4 ${change_percent >= 0 ? 'fill-primary' : 'fill-red-500 rotate-180'}`,
-        }),
-        h(
-          'span',
-          {
-            class: `text-[14px] font-medium ${change_percent >= 0 ? 'text-primary' : 'text-red-500'}`,
-          },
-          `${change_percent >= 0 ? '+' : ''}${change_percent?.toFixed(2)}% hoje`
-        ),
-      ])
+      return h(
+        'div',
+        {
+          class: 'flex items-center gap-2 cursor-pointer',
+          onClick: () => goToAsset(row.original.ticker),
+        },
+        [
+          h(IconArrowFinanceUp, {
+            class: `w-4 ${change_percent >= 0 ? 'fill-primary' : 'fill-red-500 rotate-180'}`,
+          }),
+          h(
+            'span',
+            {
+              class: `text-[14px] font-medium ${change_percent >= 0 ? 'text-primary' : 'text-red-500'}`,
+            },
+            `${change_percent >= 0 ? '+' : ''}${change_percent?.toFixed(2)}% hoje`
+          ),
+        ]
+      )
     },
   },
   {
@@ -776,12 +875,16 @@ const columns = ref([
         }
       }
 
-      return h('div', {
-        class: 'flex items-center gap-2 cursor-pointer',
-        onClick: () => {
-          goToAsset(asset?.ticker || asset?.stock || '')
+      return h(
+        'div',
+        {
+          class: 'flex items-center gap-2 cursor-pointer',
+          onClick: () => {
+            goToAsset(asset?.ticker || asset?.stock || '')
+          },
         },
-      }, contents)
+        contents
+      )
     },
   },
 ])

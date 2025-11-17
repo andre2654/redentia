@@ -13,7 +13,7 @@
         <button
           v-for="(suggestion, idx) in suggestions"
           :key="idx"
-          class="glass flex h-[130px] items-center justify-center rounded-lg bg-gradient-to-t from-white/10 to-transparent p-3 text-[13px] font-medium hover:from-white/20 transition-colors"
+          class="glass flex h-[130px] items-center justify-center rounded-lg bg-gradient-to-t from-white/10 to-transparent p-3 text-[13px] font-medium transition-colors hover:from-white/20"
           @click="sendSuggestion(suggestion)"
         >
           {{ suggestion }}
@@ -39,7 +39,9 @@
           <IconLogo class="w-6 fill-white" />
           <span class="text-[17px] font-semibold">ASSESSORIA REDENTIA:</span>
         </div>
-        <div class="rounded-lg border border-white/20 bg-white/10 py-3 pl-4 pr-7">
+        <div
+          class="rounded-lg border border-white/20 bg-white/10 py-3 pl-4 pr-7"
+        >
           <span class="inline-flex items-center gap-1">
             <span class="dot" />
             <span class="dot" />
@@ -183,7 +185,7 @@ function loadMessages(): void {
       console.warn('Failed to load cached messages:', error)
     }
   }
-  
+
   internalMessages.value = props.messages || []
 }
 
@@ -256,7 +258,7 @@ function handleAction(text: string): void {
  */
 async function sendMessage(): Promise<void> {
   const text = inputValue.value.trim()
-  
+
   if (!canSend.value) return
 
   // Create user message (display original text without context)
@@ -266,13 +268,13 @@ async function sendMessage(): Promise<void> {
     type: 'user',
     timestamp: new Date(),
   }
-  
+
   addMessage(userMessage)
   inputValue.value = ''
 
   // Build contextual prompt for API
   const contextualPrompt = buildContextualPrompt(text)
-  
+
   await streamBotResponse(contextualPrompt)
 }
 
@@ -296,9 +298,9 @@ async function streamBotResponse(prompt: string): Promise<void> {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ 
-        message: prompt, 
-        route: props.routePath 
+      body: JSON.stringify({
+        message: prompt,
+        route: props.routePath,
       }),
       signal: controller.signal,
     })
@@ -314,7 +316,9 @@ async function streamBotResponse(prompt: string): Promise<void> {
     await processStream(response.body, botMessageId)
 
     // Ensure message has content
-    const finalMessage = internalMessages.value.find((m) => m.id === botMessageId)
+    const finalMessage = internalMessages.value.find(
+      (m) => m.id === botMessageId
+    )
     if (!finalMessage) {
       // Message was never created (no content received)
       const botMessage: IChatMessage = {
@@ -354,7 +358,7 @@ async function processStream(
   try {
     while (true) {
       const { value, done } = await reader.read()
-      
+
       if (done) break
 
       buffer += decoder.decode(value, { stream: true })
@@ -365,7 +369,7 @@ async function processStream(
       for (const event of events) {
         if (event.type === 'item' && typeof event.content === 'string') {
           accumulatedContent += event.content
-          
+
           // Create message on first content received
           if (!messageCreated && pendingBotMessageId.value === botMessageId) {
             const botMessage: IChatMessage = {
@@ -378,9 +382,12 @@ async function processStream(
             messageCreated = true
             isLoading.value = false
             await nextTick()
-          } 
+          }
           // Update UI progressively - only if this is still the pending message
-          else if (messageCreated && pendingBotMessageId.value === botMessageId) {
+          else if (
+            messageCreated &&
+            pendingBotMessageId.value === botMessageId
+          ) {
             updateMessage(botMessageId, { content: accumulatedContent })
             await nextTick()
           }
@@ -402,9 +409,9 @@ async function processStream(
 /**
  * Parse n8n stream events from buffer
  */
-function parseN8nEvents(input: string): { 
+function parseN8nEvents(input: string): {
   events: N8nStreamEvent[]
-  remaining: string 
+  remaining: string
 } {
   const events: N8nStreamEvent[] = []
   let depth = 0
@@ -457,7 +464,7 @@ function parseN8nEvents(input: string): {
 
   // Return parsed events and remaining incomplete JSON
   const remaining = startIndex !== -1 ? input.slice(startIndex) : ''
-  
+
   return { events, remaining }
 }
 
@@ -480,7 +487,9 @@ function handleStreamError(error: unknown, botMessageId: string): void {
   }
 
   // Check if message exists before updating
-  const existingMessage = internalMessages.value.find((m) => m.id === botMessageId)
+  const existingMessage = internalMessages.value.find(
+    (m) => m.id === botMessageId
+  )
   if (existingMessage) {
     updateMessage(botMessageId, { content: errorMessage })
   } else {

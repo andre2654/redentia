@@ -1,8 +1,7 @@
-
 export const useInterfaceStore = defineStore('interface', {
   state: (): {
-    revealAmount: boolean,
-    hideInstallBanner: boolean,
+    revealAmount: boolean
+    hideInstallBanner: boolean
   } => {
     return {
       revealAmount: false,
@@ -20,7 +19,7 @@ export const useInterfaceStore = defineStore('interface', {
   persist: [
     {
       paths: ['revealAmount', 'hideInstallBanner'],
-      storage: persistedState.localStorage
+      storage: persistedState.localStorage,
     },
   ],
 })

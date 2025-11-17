@@ -44,7 +44,7 @@
       <!-- Graph -->
       <section>
         <header
-          class="mb-4 flex max-md:px-4 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+          class="mb-4 flex flex-col gap-3 max-md:px-4 sm:flex-row sm:items-center sm:justify-between"
         >
           <h2 class="text-lg font-semibold text-white">
             Cotação <span class="hidden sm:inline">({{ ticker }})</span>
@@ -82,9 +82,7 @@
       </section>
 
       <!-- Asset Indicators -->
-      <section
-        class="rounded-3xl bg-white/5 p-6 backdrop-blur-sm"
-      >
+      <section class="rounded-3xl bg-white/5 p-6 backdrop-blur-sm">
         <header class="mb-4 flex flex-col gap-2">
           <h2 class="text-lg font-semibold text-white">Indicadores</h2>
           <p class="text-sm text-white/60">
@@ -252,9 +250,7 @@
       <section class="max-md:px-4">
         <div class="mb-6 rounded-3xl bg-white/5 p-4 backdrop-blur-sm">
           <div class="mb-3 flex items-center gap-2">
-            <h3 class="text-sm font-semibold text-white">
-              MDI
-            </h3>
+            <h3 class="text-sm font-semibold text-white">MDI</h3>
             <span v-if="isLoadingDividends" class="text-xs text-white/40">
               Carregando...
             </span>
@@ -280,7 +276,7 @@
           </div>
           <div
             v-else
-            class="flex gap-2 grid grid-cols-3 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-12"
+            class="flex grid grid-cols-3 gap-2 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-12"
           >
             <div
               v-for="item in monthlyDividendProbability.months"
@@ -443,10 +439,7 @@
                       </button>
                     </UTooltip>
                   </div>
-                  <p
-                    v-if="item.detail"
-                    class="text-xs text-white/60"
-                  >
+                  <p v-if="item.detail" class="text-xs text-white/60">
                     {{ item.detail }}
                   </p>
                   <p
@@ -515,106 +508,120 @@
         </div>
       </section>
 
-       <section v-if="!authStore.isAuthenticated" class="mt-20">
-      <div class="w-full">
-        <div class="mb-8 text-center md:mb-12">
-          <div class="mb-3 flex items-center justify-center gap-2 md:mb-4">
-            <IconAi class="h-8 fill-secondary md:h-12" />
-          </div>
-          <h2 class="mb-2 text-2xl font-bold leading-tight text-white sm:text-3xl md:mb-4 md:text-4xl">
-            Assessoria com Inteligência Artificial
-          </h2>
-          <p class="text-sm text-gray-400 sm:text-base md:text-lg">
-            Tire dúvidas, compare ativos e receba análises personalizadas
-          </p>
-        </div>
-
-        <div
-            
-        class="relative w-full">
-          <div
-            v-if="blockChat"
-            @click="redirectToLogin('chat')"
-            class="absolute inset-0 z-10 flex cursor-pointer items-center justify-center rounded-2xl bg-black/60 p-4 transition-all hover:bg-black/70 backdrop-blur-md md:rounded-3xl"
-          >
-            <div  class="max-w-md transform text-center transition-all hover:scale-105">
-              <div class="relative mb-4 md:mb-6">
-                <div class="absolute inset-0 animate-ping opacity-20">
-                  <IconAi class="mx-auto h-12 fill-secondary md:h-16" />
-                </div>
-                <IconAi class="relative mx-auto h-12 fill-secondary md:h-16" />
-              </div>
-              <h3 class="mb-2 text-xl font-bold leading-tight text-white sm:text-2xl md:text-3xl">
-                Converse com nossa IA
-              </h3>
-              <p class="mb-4 px-2 text-sm leading-relaxed text-gray-300 sm:text-base md:mb-6">
-                Faça login e tenha acesso ilimitado à assessoria inteligente
-              </p>
-              <UButton
-                to="/auth/login"
-                color="secondary"
-                size="xl"
-                icon="i-lucide-message-circle"
-                class="w-full px-6 transition-all hover:scale-110 hover:shadow-2xl hover:shadow-secondary/50 sm:w-auto sm:px-8"
-              >
-                Acessar Assessoria
-              </UButton>
-              <p class="mt-3 text-xs text-gray-400 md:mt-4 md:text-sm">
-                Respostas instantâneas • Análises personalizadas
-              </p>
+      <section v-if="!authStore.isAuthenticated" class="mt-20">
+        <div class="w-full">
+          <div class="mb-8 text-center md:mb-12">
+            <div class="mb-3 flex items-center justify-center gap-2 md:mb-4">
+              <IconAi class="fill-secondary h-8 md:h-12" />
             </div>
+            <h2
+              class="mb-2 text-2xl font-bold leading-tight text-white sm:text-3xl md:mb-4 md:text-4xl"
+            >
+              Assessoria com Inteligência Artificial
+            </h2>
+            <p class="text-sm text-gray-400 sm:text-base md:text-lg">
+              Tire dúvidas, compare ativos e receba análises personalizadas
+            </p>
           </div>
 
-          <div
-            class="rounded-3xl bg-gradient-to-br from-white/10 via-white/5 to-transparent p-6 backdrop-blur-xl md:p-8"
-            @click="handleChatCardClick"
-          >
-            <div class="mb-6 flex flex-col items-center gap-4">
-              <h3 class="text-center text-2xl text-white">Faça alguma pergunta</h3>
-              <p class="text-center text-[13px] font-light text-gray-400">
-                Tire dúvidas sobre investimentos, compare ativos e peça análises em linguagem simples.
-              </p>
-            </div>
-
-            <div class="mb-8 grid grid-cols-2 gap-3 md:grid-cols-3">
-              <button
-                v-for="(suggestion, idx) in chatSuggestions"
-                :key="idx"
-                class="flex h-[120px] items-center justify-center rounded-xl bg-gradient-to-br from-white/10 to-white/5 p-3 text-[13px] font-medium opacity-70 transition-all hover:opacity-100 hover:from-white/20"
-                disabled
+          <div class="relative w-full">
+            <div
+              v-if="blockChat"
+              @click="redirectToLogin('chat')"
+              class="absolute inset-0 z-10 flex cursor-pointer items-center justify-center rounded-2xl bg-black/60 p-4 backdrop-blur-md transition-all hover:bg-black/70 md:rounded-3xl"
+            >
+              <div
+                class="max-w-md transform text-center transition-all hover:scale-105"
               >
-                {{ suggestion }}
-              </button>
-            </div>
-
-            <div class="space-y-4 opacity-60">
-              <div class="flex items-start gap-3">
-                <IconLogo class="mt-1 w-6 flex-shrink-0 fill-white" />
-                <div class="flex-1 rounded-lg bg-white/5 p-4 backdrop-blur">
-                  <p class="text-sm text-white">
-                    Olá! Sou a assistente virtual da Redentia. Como posso ajudar você hoje?
-                  </p>
+                <div class="relative mb-4 md:mb-6">
+                  <div class="absolute inset-0 animate-ping opacity-20">
+                    <IconAi class="fill-secondary mx-auto h-12 md:h-16" />
+                  </div>
+                  <IconAi
+                    class="fill-secondary relative mx-auto h-12 md:h-16"
+                  />
                 </div>
+                <h3
+                  class="mb-2 text-xl font-bold leading-tight text-white sm:text-2xl md:text-3xl"
+                >
+                  Converse com nossa IA
+                </h3>
+                <p
+                  class="mb-4 px-2 text-sm leading-relaxed text-gray-300 sm:text-base md:mb-6"
+                >
+                  Faça login e tenha acesso ilimitado à assessoria inteligente
+                </p>
+                <UButton
+                  to="/auth/login"
+                  color="secondary"
+                  size="xl"
+                  icon="i-lucide-message-circle"
+                  class="hover:shadow-secondary/50 w-full px-6 transition-all hover:scale-110 hover:shadow-2xl sm:w-auto sm:px-8"
+                >
+                  Acessar Assessoria
+                </UButton>
+                <p class="mt-3 text-xs text-gray-400 md:mt-4 md:text-sm">
+                  Respostas instantâneas • Análises personalizadas
+                </p>
               </div>
             </div>
 
-            <div class="mt-6 w-full rounded-lg bg-black/20 p-4 backdrop-blur">
-              <UTextarea
-                placeholder="Faça qualquer pergunta..."
-                size="md"
-                rows="2"
-                disabled
-                class="w-full"
-                :ui="{ base: 'text-[14px] bg-transparent ring-0 placeholder:text-white/40' }"
-              />
+            <div
+              class="rounded-3xl bg-gradient-to-br from-white/10 via-white/5 to-transparent p-6 backdrop-blur-xl md:p-8"
+              @click="handleChatCardClick"
+            >
+              <div class="mb-6 flex flex-col items-center gap-4">
+                <h3 class="text-center text-2xl text-white">
+                  Faça alguma pergunta
+                </h3>
+                <p class="text-center text-[13px] font-light text-gray-400">
+                  Tire dúvidas sobre investimentos, compare ativos e peça
+                  análises em linguagem simples.
+                </p>
+              </div>
+
+              <div class="mb-8 grid grid-cols-2 gap-3 md:grid-cols-3">
+                <button
+                  v-for="(suggestion, idx) in chatSuggestions"
+                  :key="idx"
+                  class="flex h-[120px] items-center justify-center rounded-xl bg-gradient-to-br from-white/10 to-white/5 p-3 text-[13px] font-medium opacity-70 transition-all hover:from-white/20 hover:opacity-100"
+                  disabled
+                >
+                  {{ suggestion }}
+                </button>
+              </div>
+
+              <div class="space-y-4 opacity-60">
+                <div class="flex items-start gap-3">
+                  <IconLogo class="mt-1 w-6 flex-shrink-0 fill-white" />
+                  <div class="flex-1 rounded-lg bg-white/5 p-4 backdrop-blur">
+                    <p class="text-sm text-white">
+                      Olá! Sou a assistente virtual da Redentia. Como posso
+                      ajudar você hoje?
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-6 w-full rounded-lg bg-black/20 p-4 backdrop-blur">
+                <UTextarea
+                  placeholder="Faça qualquer pergunta..."
+                  size="md"
+                  rows="2"
+                  disabled
+                  class="w-full"
+                  :ui="{
+                    base: 'text-[14px] bg-transparent ring-0 placeholder:text-white/40',
+                  }"
+                />
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
       <MoleculesChat
-       v-else
+        v-else
         class="w-full bg-black/10 dark:bg-white/10"
         routePath="/ticker"
         :ticker="ticker"
@@ -654,7 +661,7 @@ const asset = ref()
 const blockChat = ref(false)
 const isLoadingAsset = ref(true)
 const layoutName = computed(() =>
-  authStore.isAuthenticated ? 'default' : 'unauthenticated',
+  authStore.isAuthenticated ? 'default' : 'unauthenticated'
 )
 const dividendsData = ref<DividendData[]>([])
 const isLoadingDividends = ref(false)
@@ -687,16 +694,16 @@ const assetName = computed(() => {
 })
 
 const pageTitle = computed(
-  () => `${tickerUpper.value} - ${assetName.value}: cotação e indicadores`,
+  () => `${tickerUpper.value} - ${assetName.value}: cotação e indicadores`
 )
 
 const pageDescription = computed(
   () =>
-    `${tickerUpper.value} - ${assetName.value}, veja seus indicadores fundamentalistas, variação, índices relacionados e mais! Tudo que o investidor precisa para tomar a melhor decisão.`,
+    `${tickerUpper.value} - ${assetName.value}, veja seus indicadores fundamentalistas, variação, índices relacionados e mais! Tudo que o investidor precisa para tomar a melhor decisão.`
 )
 
 const canonicalUrl = computed(
-  () => `${baseSiteUrl.value}/asset/${ticker.toLowerCase()}`,
+  () => `${baseSiteUrl.value}/asset/${ticker.toLowerCase()}`
 )
 
 const shareImage = computed(() => {
@@ -728,7 +735,11 @@ useHead(() => {
       { name: 'description', content: description },
       { property: 'og:title', itemprop: 'name', content: title },
       { property: 'og:headline', itemprop: 'headline', content: title },
-      { property: 'og:description', itemprop: 'description', content: description },
+      {
+        property: 'og:description',
+        itemprop: 'description',
+        content: description,
+      },
       { property: 'og:url', itemprop: 'url', content: url },
       { property: 'og:type', content: 'website' },
       { property: 'og:image', itemprop: 'image', content: image },
@@ -1060,9 +1071,7 @@ function selectLatestRecord<T extends { period_end_date?: string }>(
       if (!date || Number.isNaN(date.getTime())) return null
       return { item, timestamp: date.getTime() }
     })
-    .filter(
-      (entry): entry is { item: T; timestamp: number } => entry !== null
-    )
+    .filter((entry): entry is { item: T; timestamp: number } => entry !== null)
 
   if (!withDates.length) return null
 
@@ -1101,7 +1110,9 @@ const bazinPrice = computed<number | null>(() => {
     const rate = safeNumber(record?.rate)
     if (!Number.isFinite(rate) || rate === null || rate <= 0) continue
 
-    const paymentDate = record?.payment_date ? new Date(record.payment_date) : null
+    const paymentDate = record?.payment_date
+      ? new Date(record.payment_date)
+      : null
     if (!paymentDate || Number.isNaN(paymentDate.getTime())) continue
 
     if (paymentDate < cutoff || paymentDate > now) continue
@@ -1343,7 +1354,7 @@ const buyAndHoldChecklist = computed<ChecklistItem[]>(() => {
   const today = new Date()
   const mdiEntries = aggregatedMdiEntries.value
   const totalYearsHistory = mdiEntries.length
-    ? safeNumber(mdiEntries[0]?.total_years) ?? null
+    ? (safeNumber(mdiEntries[0]?.total_years) ?? null)
     : null
 
   const oldestAnnual = annual.at(-1)
@@ -1370,21 +1381,20 @@ const buyAndHoldChecklist = computed<ChecklistItem[]>(() => {
     if (annual.some((item) => item.netIncome === null)) {
       annualNeverNegative = null
     } else {
-      annualNeverNegative = annual.every(
-        (item) => (item.netIncome ?? 0) >= 0
-      )
+      annualNeverNegative = annual.every((item) => (item.netIncome ?? 0) >= 0)
     }
   }
 
   const dividendYieldRaw = safeNumber(
     fundamentusData.value.key_statistics?.dividend_yield
   )
-  const dividendYieldValue =
-    dividendYieldRaw !== null ? dividendYieldRaw : null
+  const dividendYieldValue = dividendYieldRaw !== null ? dividendYieldRaw : null
   const dividendYieldAboveFive =
     dividendYieldValue !== null ? dividendYieldValue >= 5 : null
 
-  const roeRaw = safeNumber(fundamentusData.value.financial_data?.return_on_equity)
+  const roeRaw = safeNumber(
+    fundamentusData.value.financial_data?.return_on_equity
+  )
   const roeValue = roeRaw !== null ? roeRaw * 100 : null
   const roeAboveTen = roeValue !== null ? roeValue >= 10 : null
 
@@ -1400,8 +1410,7 @@ const buyAndHoldChecklist = computed<ChecklistItem[]>(() => {
     fundamentusData.value?.financial_data?.total_debt
   )
   const totalLiabilities = safeNumber(balanceSnapshot?.total_liab)
-  const debtComparisonSource =
-    totalDebt !== null ? totalDebt : totalLiabilities
+  const debtComparisonSource = totalDebt !== null ? totalDebt : totalLiabilities
   const debtBelowEquity =
     debtComparisonSource !== null && totalEquity !== null
       ? debtComparisonSource <= totalEquity
@@ -1411,8 +1420,7 @@ const buyAndHoldChecklist = computed<ChecklistItem[]>(() => {
     fundamentusData.value.financial_data?.profit_margins
   )
   const netMarginValue = netMarginRaw !== null ? netMarginRaw * 100 : null
-  const netMarginPositive =
-    netMarginValue !== null ? netMarginValue > 0 : null
+  const netMarginPositive = netMarginValue !== null ? netMarginValue > 0 : null
 
   const freeCashFlowRaw = safeNumber(
     fundamentusData.value.financial_data?.free_cashflow
@@ -1429,7 +1437,10 @@ const buyAndHoldChecklist = computed<ChecklistItem[]>(() => {
   const recentDividendYears = new Set<number>()
   const dividendDataAvailable = dividendsData.value.length > 0
   const currentYear = today.getFullYear()
-  const targetYears = Array.from({ length: 5 }, (_, index) => currentYear - index)
+  const targetYears = Array.from(
+    { length: 5 },
+    (_, index) => currentYear - index
+  )
 
   dividendsData.value.forEach((record) => {
     const date = record.payment_date ? new Date(record.payment_date) : null
@@ -1459,15 +1470,14 @@ const buyAndHoldChecklist = computed<ChecklistItem[]>(() => {
     label: 'Mais de 5 anos de histórico',
     status: toStatus(hasFiveYearsHistory),
     detail: historyDetail,
-    tooltip: 'Verifica se há demonstrações anuais disponíveis há pelo menos 5 anos.',
+    tooltip:
+      'Verifica se há demonstrações anuais disponíveis há pelo menos 5 anos.',
   })
 
   items.push({
     id: 'dividends-five-years',
     label: 'Pagou dividendos nos últimos 5 anos',
-    status: toStatus(
-      dividendDataAvailable ? paidDividendsLastFiveYears : null
-    ),
+    status: toStatus(dividendDataAvailable ? paidDividendsLastFiveYears : null),
     detail:
       dividendDataAvailable && sortedRecentDividendYears.length > 0
         ? `Pagamentos em: ${sortedRecentDividendYears.join(', ')} (${sortedRecentDividendYears.length}/5)`
@@ -1483,9 +1493,7 @@ const buyAndHoldChecklist = computed<ChecklistItem[]>(() => {
     label: 'Sem prejuízo em exercícios anuais recentes',
     status: toStatus(annualNeverNegative),
     detail:
-      annualNeverNegative === false
-        ? 'Há registros de prejuízo anual'
-        : null,
+      annualNeverNegative === false ? 'Há registros de prejuízo anual' : null,
     tooltip: 'Analisa os resultados fiscais anuais disponíveis.',
   })
 
@@ -1504,8 +1512,7 @@ const buyAndHoldChecklist = computed<ChecklistItem[]>(() => {
     id: 'roe',
     label: 'ROE acima de 10%',
     status: toStatus(roeAboveTen),
-    detail:
-      roeValue !== null ? `ROE atual: ${roeValue.toFixed(1)}%` : null,
+    detail: roeValue !== null ? `ROE atual: ${roeValue.toFixed(1)}%` : null,
     tooltip: 'Retorno sobre o patrimônio líquido da empresa.',
   })
 
@@ -1535,8 +1542,7 @@ const buyAndHoldChecklist = computed<ChecklistItem[]>(() => {
     id: 'roa',
     label: 'ROA acima de 5%',
     status: toStatus(roaAboveFive),
-    detail:
-      roaValue !== null ? `ROA atual: ${roaValue.toFixed(1)}%` : null,
+    detail: roaValue !== null ? `ROA atual: ${roaValue.toFixed(1)}%` : null,
     tooltip: 'Retorno sobre os ativos totais da empresa.',
   })
 
@@ -1545,9 +1551,7 @@ const buyAndHoldChecklist = computed<ChecklistItem[]>(() => {
     label: 'Margem líquida positiva',
     status: toStatus(netMarginPositive),
     detail:
-      netMarginValue !== null
-        ? `Margem: ${netMarginValue.toFixed(1)}%`
-        : null,
+      netMarginValue !== null ? `Margem: ${netMarginValue.toFixed(1)}%` : null,
     tooltip: 'Verifica se a margem líquida consolidada está positiva.',
   })
 

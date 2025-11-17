@@ -16,7 +16,7 @@ const props = withDefaults(
     ],
     disabled: false,
     loading: false,
-  },
+  }
 )
 
 const modelValue = defineModel<string>({ required: true, default: 'month' })
@@ -50,7 +50,7 @@ const isDisabled = computed(() => props.disabled || isLoading.value)
     <USelectMenu
       v-model="modelValue"
       :items="options"
-      class="md:hidden max-w-fit"
+      class="max-w-fit md:hidden"
       :disabled="isDisabled"
       :loading="isLoading"
       labelKey="label"
@@ -58,4 +58,3 @@ const isDisabled = computed(() => props.disabled || isLoading.value)
     />
   </div>
 </template>
-

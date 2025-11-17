@@ -1,11 +1,11 @@
 <template>
   <div class="space-y-6">
-    <div class="flex flex-col gap-6 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6">
+    <div
+      class="flex flex-col gap-6 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6"
+    >
       <div class="flex items-center gap-3">
         <UIcon name="i-lucide-target" class="text-secondary size-6" />
-        <h2 class="text-xl font-bold text-white">
-          Planejamento de Patrimônio
-        </h2>
+        <h2 class="text-xl font-bold text-white">Planejamento de Patrimônio</h2>
       </div>
 
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -43,7 +43,9 @@
         <div class="flex gap-3 max-sm:flex-col">
           <UButton
             color="secondary"
-            :variant="planningForm.strategy === 'rentabilidade' ? 'soft' : 'link'"
+            :variant="
+              planningForm.strategy === 'rentabilidade' ? 'soft' : 'link'
+            "
             class="flex-1 justify-start"
             icon="i-lucide-rocket"
             @click="planningForm.strategy = 'rentabilidade'"
@@ -62,8 +64,8 @@
         </div>
         <p class="text-xs text-gray-400">
           Escolha entre maximizar ganhos com ativos de alta performance ou
-          priorizar estabilidade com setores defensivos, FIIs consolidados e
-          10% de renda fixa.
+          priorizar estabilidade com setores defensivos, FIIs consolidados e 10%
+          de renda fixa.
         </p>
       </div>
 
@@ -87,18 +89,10 @@
       />
     </div>
 
-    <div
-      v-if="planningResult"
-      class="flex flex-col gap-6 rounded-[30px] p-6"
-    >
+    <div v-if="planningResult" class="flex flex-col gap-6 rounded-[30px] p-6">
       <div class="flex items-center gap-3">
-        <UIcon
-          name="i-lucide-timer"
-          class="text-secondary size-6"
-        />
-        <h3 class="text-xl font-bold text-white">
-          Plano recomendado
-        </h3>
+        <UIcon name="i-lucide-timer" class="text-secondary size-6" />
+        <h3 class="text-xl font-bold text-white">Plano recomendado</h3>
       </div>
 
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -139,7 +133,8 @@
             }}
           </p>
           <p class="text-xs text-green-400">
-            Ganho estimado de {{
+            Ganho estimado de
+            {{
               new Intl.NumberFormat('pt-BR', {
                 style: 'currency',
                 currency: 'BRL',
@@ -157,10 +152,13 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-1 gap-4 md:grid-cols-2 rounded-2xl bg-white/5 p-4">
+      <div
+        class="grid grid-cols-1 gap-4 rounded-2xl bg-white/5 p-4 md:grid-cols-2"
+      >
         <div class="flex flex-col gap-2">
           <p class="text-sm font-semibold text-white">
-            Se tivesse investido nos últimos {{ planningResult.historicalYears.toFixed(1) }} anos
+            Se tivesse investido nos últimos
+            {{ planningResult.historicalYears.toFixed(1) }} anos
           </p>
           <p class="text-xs text-gray-400">
             Considerando o mesmo aporte mensal e a carteira recomendada.
@@ -179,7 +177,7 @@
             </div>
             <div class="flex items-center justify-between">
               <span class="text-sm text-gray-400">Valor final</span>
-              <span class="text-sm font-semibold text-secondary">
+              <span class="text-secondary text-sm font-semibold">
                 {{
                   new Intl.NumberFormat('pt-BR', {
                     style: 'currency',
@@ -202,9 +200,7 @@
           </div>
         </div>
         <div class="flex flex-col gap-2">
-          <p class="text-sm font-semibold text-white">
-            Projeção de patrimônio
-          </p>
+          <p class="text-sm font-semibold text-white">Projeção de patrimônio</p>
           <div class="h-[240px]">
             <AtomsGraphLine
               :data="planningResult.chartData"
@@ -247,17 +243,21 @@
             </div>
             <div class="text-right">
               <p class="text-xs text-gray-400">Peso</p>
-              <p class="text-2xl font-bold text-secondary">
+              <p class="text-secondary text-2xl font-bold">
                 {{ (asset.weight * 100).toFixed(0) }}%
               </p>
             </div>
           </div>
           <div class="grid grid-cols-2 gap-3 text-sm">
             <div>
-              <p class="text-gray-400">Retorno {{ planningResult.historicalYears.toFixed(0) }} anos</p>
+              <p class="text-gray-400">
+                Retorno {{ planningResult.historicalYears.toFixed(0) }} anos
+              </p>
               <p
                 class="font-semibold"
-                :class="asset.totalReturn >= 0 ? 'text-green-400' : 'text-red-400'"
+                :class="
+                  asset.totalReturn >= 0 ? 'text-green-400' : 'text-red-400'
+                "
               >
                 {{ (asset.totalReturn * 100).toFixed(1) }}%
               </p>
@@ -275,9 +275,7 @@
               </p>
             </div>
             <div>
-              <p class="text-gray-400">
-                Dividendos reinvestidos
-              </p>
+              <p class="text-gray-400">Dividendos reinvestidos</p>
               <p class="font-semibold text-green-400">
                 {{
                   new Intl.NumberFormat('pt-BR', {
@@ -292,9 +290,9 @@
       </div>
 
       <div class="rounded-2xl bg-emerald-500/10 p-4 text-sm text-emerald-200">
-        Recomendação baseada em dados históricos. Rentabilidades passadas
-        não garantem resultados futuros. Ajuste sempre sua carteira conforme
-        o seu perfil de risco.
+        Recomendação baseada em dados históricos. Rentabilidades passadas não
+        garantem resultados futuros. Ajuste sempre sua carteira conforme o seu
+        perfil de risco.
       </div>
     </div>
   </div>
@@ -305,12 +303,8 @@ import { computed, withDefaults } from 'vue'
 import type { IAsset } from '~/types/asset'
 import type { IChartDataPoint } from '~/types/chart'
 
-const {
-  assetHistoricPrices,
-  getTickerDividends,
-  getTopStocks,
-  getTopReits,
-} = useAssetsService()
+const { assetHistoricPrices, getTickerDividends, getTopStocks, getTopReits } =
+  useAssetsService()
 
 const props = withDefaults(
   defineProps<{
@@ -488,16 +482,14 @@ function formatTimeLabel(months: number) {
     parts.push(`${years} ${years === 1 ? 'ano' : 'anos'}`)
   }
   if (remainingMonths > 0) {
-    parts.push(
-      `${remainingMonths} ${remainingMonths === 1 ? 'mês' : 'meses'}`,
-    )
+    parts.push(`${remainingMonths} ${remainingMonths === 1 ? 'mês' : 'meses'}`)
   }
   return parts.join(' e ')
 }
 
 function buildFallbackPerformance(
   ticker: string,
-  categoryLabel?: string,
+  categoryLabel?: string
 ): PlanningAssetPerformance | null {
   const normalized = normalizeTicker(ticker)
   const fallback = fallbackPerformanceMetrics[normalized]
@@ -544,7 +536,7 @@ function buildFallbackPerformance(
 function buildProjectionChart(
   months: number,
   monthlyContribution: number,
-  monthlyRate: number,
+  monthlyRate: number
 ) {
   const points: IChartDataPoint[] = []
   const startDate = new Date()
@@ -580,13 +572,13 @@ function buildProjectionChart(
 function computeProjectionTotals(
   monthlyContribution: number,
   months: number,
-  monthlyRate: number,
+  monthlyRate: number
 ) {
   const totalInvested = monthlyContribution * months
   let finalValue = totalInvested
   if (monthlyRate > 0) {
     finalValue =
-      monthlyContribution * ((1 + monthlyRate) ** months - 1) / monthlyRate
+      (monthlyContribution * ((1 + monthlyRate) ** months - 1)) / monthlyRate
   }
 
   return {
@@ -598,7 +590,7 @@ function computeProjectionTotals(
 function computeMonthsToGoal(
   goalValue: number,
   monthlyContribution: number,
-  monthlyRate: number,
+  monthlyRate: number
 ) {
   if (goalValue <= 0 || monthlyContribution <= 0) return 0
   if (monthlyRate <= 0) {
@@ -629,7 +621,10 @@ async function getPriceHistory(ticker: string) {
     priceHistoryCache.set(normalized, history || [])
     return history || []
   } catch (error) {
-    console.warn(`Falha ao obter histórico de preços para ${normalized}:`, error)
+    console.warn(
+      `Falha ao obter histórico de preços para ${normalized}:`,
+      error
+    )
     priceHistoryCache.set(normalized, [])
     return []
   }
@@ -660,7 +655,7 @@ async function simulateAssetPerformance(
   }: {
     reinvestDividends?: boolean
     categoryLabel?: string
-  } = {},
+  } = {}
 ): Promise<PlanningAssetPerformance | null> {
   const normalizedTicker = normalizeTicker(ticker)
   if (!normalizedTicker) return null
@@ -684,7 +679,9 @@ async function simulateAssetPerformance(
     return null
   }
 
-  const dividendsRaw = reinvestDividends ? await getDividends(normalizedTicker) : []
+  const dividendsRaw = reinvestDividends
+    ? await getDividends(normalizedTicker)
+    : []
   const dividends = (dividendsRaw || [])
     .map((dividend: any) => ({
       date: new Date(dividend.payment_date),
@@ -703,7 +700,8 @@ async function simulateAssetPerformance(
 
   if (dividends.length) {
     for (const dividend of dividends) {
-      if (dividend.date < initialEntry.date || dividend.date > finalEntry.date) continue
+      if (dividend.date < initialEntry.date || dividend.date > finalEntry.date)
+        continue
       const matchingPrice =
         priceHistory.find((price) => price.date >= dividend.date) ?? finalEntry
       if (!matchingPrice || matchingPrice.price <= 0) continue
@@ -751,7 +749,8 @@ async function simulateAssetPerformance(
 
 async function calculatePlanningStrategy() {
   const goalValue = Number(planningForm.value.goalValue) || 0
-  const monthlyContribution = Number(planningForm.value.monthlyContribution) || 0
+  const monthlyContribution =
+    Number(planningForm.value.monthlyContribution) || 0
 
   if (goalValue <= 0) {
     planningError.value = 'Informe uma meta financeira válida.'
@@ -779,13 +778,19 @@ async function calculatePlanningStrategy() {
       try {
         topStocks = await getTopStocks('top', 12)
       } catch (error) {
-        console.warn('Não foi possível carregar top stocks, usando fallback.', error)
+        console.warn(
+          'Não foi possível carregar top stocks, usando fallback.',
+          error
+        )
       }
 
       try {
         topReits = await getTopReits('top', 10)
       } catch (error) {
-        console.warn('Não foi possível carregar top FIIs, usando fallback.', error)
+        console.warn(
+          'Não foi possível carregar top FIIs, usando fallback.',
+          error
+        )
       }
 
       const candidateMap = new Map<
@@ -796,7 +801,10 @@ async function calculatePlanningStrategy() {
         }
       >()
 
-      const addCandidate = (rawTicker: string | undefined | null, categoryLabel: string) => {
+      const addCandidate = (
+        rawTicker: string | undefined | null,
+        categoryLabel: string
+      ) => {
         const normalized = normalizeTicker(rawTicker || '')
         if (!normalized) return
         if (!candidateMap.has(normalized)) {
@@ -808,21 +816,23 @@ async function calculatePlanningStrategy() {
       }
 
       planningUniverse.rentabilidade.priorityTickers.forEach((ticker) =>
-        addCandidate(ticker, 'Ação'),
+        addCandidate(ticker, 'Ação')
       )
 
       topStocks.forEach((asset) =>
-        addCandidate(asset.ticker || asset.stock, 'Ação'),
+        addCandidate(asset.ticker || asset.stock, 'Ação')
       )
 
       planningUniverse.rentabilidade.fallbackStocks.forEach((ticker) =>
-        addCandidate(ticker, 'Ação'),
+        addCandidate(ticker, 'Ação')
       )
 
-      topReits.forEach((asset) => addCandidate(asset.ticker || asset.stock, 'FII'))
+      topReits.forEach((asset) =>
+        addCandidate(asset.ticker || asset.stock, 'FII')
+      )
 
       planningUniverse.rentabilidade.fallbackFiis.forEach((ticker) =>
-        addCandidate(ticker, 'FII'),
+        addCandidate(ticker, 'FII')
       )
 
       const candidates = Array.from(candidateMap.values())
@@ -833,14 +843,14 @@ async function calculatePlanningStrategy() {
             simulateAssetPerformance(candidate.ticker, {
               reinvestDividends: true,
               categoryLabel: candidate.categoryLabel,
-            }),
-          ),
+            })
+          )
         )
       ).filter((asset): asset is PlanningAssetPerformance => Boolean(asset))
 
       if (performances.length < planningUniverse.rentabilidade.minimumAssets) {
         throw new Error(
-          'Não encontramos dados históricos suficientes para montar a carteira de maior rentabilidade.',
+          'Não encontramos dados históricos suficientes para montar a carteira de maior rentabilidade.'
         )
       }
 
@@ -849,13 +859,13 @@ async function calculatePlanningStrategy() {
         0,
         Math.max(
           planningUniverse.rentabilidade.minimumAssets,
-          Math.min(5, performances.length),
-        ),
+          Math.min(5, performances.length)
+        )
       )
 
       const positiveReturnSum = selectedAssets.reduce(
         (sum, asset) => sum + Math.max(asset.totalReturn, 0),
-        0,
+        0
       )
 
       if (positiveReturnSum > 0) {
@@ -864,7 +874,8 @@ async function calculatePlanningStrategy() {
           weight: Math.max(asset.totalReturn, 0) / positiveReturnSum,
         }))
       } else {
-        const equalWeight = selectedAssets.length > 0 ? 1 / selectedAssets.length : 0
+        const equalWeight =
+          selectedAssets.length > 0 ? 1 / selectedAssets.length : 0
         recommendedAssets = selectedAssets.map((asset) => ({
           ...asset,
           weight: equalWeight,
@@ -873,17 +884,21 @@ async function calculatePlanningStrategy() {
 
       analysisYears = selectedAssets.reduce(
         (min, asset) => Math.min(min, asset.periodYears),
-        selectedAssets[0]?.periodYears ?? analysisYears,
+        selectedAssets[0]?.periodYears ?? analysisYears
       )
 
       monthlyReturnRate = recommendedAssets.reduce(
         (sum, asset) => sum + asset.weight * asset.monthlyRate,
-        0,
+        0
       )
     } else {
       const selectedCategoryAssets: PlanningAssetPerformance[] = []
-      const { categories, categoryLabels, fixedIncomeAnnualRate, fixedIncomeWeight } =
-        planningUniverse.seguranca
+      const {
+        categories,
+        categoryLabels,
+        fixedIncomeAnnualRate,
+        fixedIncomeWeight,
+      } = planningUniverse.seguranca
 
       for (const [categoryKey, tickers] of Object.entries(categories)) {
         const performances = (
@@ -892,11 +907,10 @@ async function calculatePlanningStrategy() {
               simulateAssetPerformance(ticker, {
                 reinvestDividends: true,
                 categoryLabel:
-                  categoryLabels[
-                    categoryKey as keyof typeof categoryLabels
-                  ] || categoryKey,
-              }),
-            ),
+                  categoryLabels[categoryKey as keyof typeof categoryLabels] ||
+                  categoryKey,
+              })
+            )
           )
         ).filter((asset): asset is PlanningAssetPerformance => Boolean(asset))
 
@@ -907,13 +921,13 @@ async function calculatePlanningStrategy() {
 
       if (selectedCategoryAssets.length === 0) {
         throw new Error(
-          'Não encontramos dados históricos suficientes para montar a carteira defensiva.',
+          'Não encontramos dados históricos suficientes para montar a carteira defensiva.'
         )
       }
 
       analysisYears = selectedCategoryAssets.reduce(
         (min, asset) => Math.min(min, asset.periodYears),
-        selectedCategoryAssets[0]?.periodYears ?? analysisYears,
+        selectedCategoryAssets[0]?.periodYears ?? analysisYears
       )
 
       const variableWeight = 1 - fixedIncomeWeight
@@ -927,10 +941,11 @@ async function calculatePlanningStrategy() {
         weight: weightPerAsset,
       }))
 
-      const fixedIncomeMonthlyRate = Math.pow(1 + fixedIncomeAnnualRate, 1 / 12) - 1
+      const fixedIncomeMonthlyRate =
+        Math.pow(1 + fixedIncomeAnnualRate, 1 / 12) - 1
       const fixedIncomeGrowthFactor = Math.pow(
         1 + fixedIncomeMonthlyRate,
-        Math.max(Math.round(analysisYears * 12), 1),
+        Math.max(Math.round(analysisYears * 12), 1)
       )
 
       const fixedIncomeAsset: PlanningRecommendedAsset = {
@@ -951,7 +966,7 @@ async function calculatePlanningStrategy() {
 
       monthlyReturnRate = recommendedAssets.reduce(
         (sum, asset) => sum + asset.weight * asset.monthlyRate,
-        0,
+        0
       )
     }
 
@@ -959,7 +974,10 @@ async function calculatePlanningStrategy() {
       analysisYears = 5
     }
 
-    const totalWeight = recommendedAssets.reduce((sum, asset) => sum + asset.weight, 0)
+    const totalWeight = recommendedAssets.reduce(
+      (sum, asset) => sum + asset.weight,
+      0
+    )
     if (totalWeight > 0 && Math.abs(totalWeight - 1) > 0.001) {
       recommendedAssets = recommendedAssets.map((asset) => ({
         ...asset,
@@ -971,17 +989,17 @@ async function calculatePlanningStrategy() {
     const monthsToGoal = computeMonthsToGoal(
       goalValue,
       monthlyContribution,
-      monthlyReturnRate,
+      monthlyReturnRate
     )
     const totals = computeProjectionTotals(
       monthlyContribution,
       monthsToGoal,
-      monthlyReturnRate,
+      monthlyReturnRate
     )
     const historicalTotals = computeProjectionTotals(
       monthlyContribution,
       periodMonths,
-      monthlyReturnRate,
+      monthlyReturnRate
     )
 
     const targetDate = new Date()
@@ -1003,22 +1021,23 @@ async function calculatePlanningStrategy() {
       monthlyReturnRate,
       historicalFinalValue: historicalTotals.finalValue,
       historicalInvested: historicalTotals.totalInvested,
-      historicalProfit: historicalTotals.finalValue - historicalTotals.totalInvested,
+      historicalProfit:
+        historicalTotals.finalValue - historicalTotals.totalInvested,
       historicalYears: analysisYears,
       recommendedAssets,
       chartData: buildProjectionChart(
         monthsToGoal,
         monthlyContribution,
-        monthlyReturnRate,
+        monthlyReturnRate
       ),
     }
   } catch (error: any) {
     console.error('Erro ao calcular planejamento:', error)
     planningError.value =
-      error?.message || 'Não foi possível calcular o planejamento. Tente novamente.'
+      error?.message ||
+      'Não foi possível calcular o planejamento. Tente novamente.'
   } finally {
     planningLoading.value = false
   }
 }
 </script>
-

@@ -1,5 +1,9 @@
 export function usePrevents() {
-  const preventWithCache = async (key: string, next: () => Promise<any>, timeToExpire?: number) => {
+  const preventWithCache = async (
+    key: string,
+    next: () => Promise<any>,
+    timeToExpire?: number
+  ) => {
     const { cacheTempInSeconds } = useRuntimeConfig().public
 
     const cachedString = localStorage.getItem(key)
@@ -11,7 +15,7 @@ export function usePrevents() {
         const cachedData = JSON.parse(cachedString)
         const cacheTime = cachedData.timestamp || 0
 
-        if ((now - cacheTime) < (timeToExpire || cacheTempInSeconds) * 1000) {
+        if (now - cacheTime < (timeToExpire || cacheTempInSeconds) * 1000) {
           return cachedData.data
         } else {
           localStorage.removeItem(key)
@@ -20,13 +24,15 @@ export function usePrevents() {
 
       const resp = await next()
 
-      localStorage.setItem(key, JSON.stringify({
-        data: resp,
-        timestamp: now
-      }))
+      localStorage.setItem(
+        key,
+        JSON.stringify({
+          data: resp,
+          timestamp: now,
+        })
+      )
 
       return resp
-
     } catch (error) {
       console.error('Error handling cached data:', error)
       return next()
@@ -34,6 +40,6 @@ export function usePrevents() {
   }
 
   return {
-    preventWithCache
+    preventWithCache,
   }
 }

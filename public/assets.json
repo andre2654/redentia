@@ -26601,9 +26601,5 @@
     "Health Technology",
     "Consumer Durables"
   ],
-  "availableStockTypes": [
-    "stock",
-    "fund",
-    "bdr"
-  ]
+  "availableStockTypes": ["stock", "fund", "bdr"]
 }

@@ -31,19 +31,29 @@ export function generateChartConfig({
 }
 
 // Gera dados mock para gráficos de linha
-export function generateMockChartData(timeRange: ChartTimeRange, basePrice = 1000): IChartDataPoint[] {
+export function generateMockChartData(
+  timeRange: ChartTimeRange,
+  basePrice = 1000
+): IChartDataPoint[] {
   const getDaysFromRange = (range: ChartTimeRange): number => {
     switch (range) {
-      case 'month': return 30
-      case '3months': return 90
-      case '6months': return 180
-      case 'year': return 365
+      case 'month':
+        return 30
+      case '3months':
+        return 90
+      case '6months':
+        return 180
+      case 'year':
+        return 365
       case 'ytd': {
         const now = new Date()
         const startOfYear = new Date(now.getFullYear(), 0, 1)
-        return Math.ceil((now.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24))
+        return Math.ceil(
+          (now.getTime() - startOfYear.getTime()) / (1000 * 60 * 60 * 24)
+        )
       }
-      default: return 30
+      default:
+        return 30
     }
   }
   const days = getDaysFromRange(timeRange)

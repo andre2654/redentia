@@ -1,9 +1,9 @@
-import type { IProfile } from "~/types/profile"
+import type { IProfile } from '~/types/profile'
 
 export const useAuthStore = defineStore('auth', {
   state: (): {
-    me: IProfile | null,
-    token: string | null,
+    me: IProfile | null
+    token: string | null
   } => {
     return {
       me: null,
@@ -20,7 +20,11 @@ export const useAuthStore = defineStore('auth', {
       const { me } = useAuthService()
 
       // API returns: { me: { user: {...} }, token: string }
-      const response = await me() as unknown as { data?: any, me?: { user: IProfile }, token?: string }
+      const response = (await me()) as unknown as {
+        data?: any
+        me?: { user: IProfile }
+        token?: string
+      }
       const apiPayload = (response as any)?.data ?? response
       const user = apiPayload?.me?.user ?? apiPayload?.user ?? apiPayload
       const token = apiPayload?.token
@@ -41,7 +45,7 @@ export const useAuthStore = defineStore('auth', {
     async logout() {
       try {
         const { logout } = useAuthService()
-  
+
         await logout()
       } catch (error) {
         console.error(error)

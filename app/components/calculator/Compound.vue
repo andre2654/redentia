@@ -1,11 +1,11 @@
 <template>
   <div class="space-y-6">
-    <div class="flex flex-col gap-6 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6">
+    <div
+      class="flex flex-col gap-6 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6"
+    >
       <div class="flex items-center gap-3">
         <UIcon name="i-lucide-trending-up" class="text-secondary size-6" />
-        <h2 class="text-xl font-bold text-white">
-          Simulação de Investimento
-        </h2>
+        <h2 class="text-xl font-bold text-white">Simulação de Investimento</h2>
       </div>
 
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -96,18 +96,10 @@
       </UButton>
     </div>
 
-    <div
-      v-if="compoundResult"
-      class="flex flex-col gap-6 rounded-[30px] p-6"
-    >
+    <div v-if="compoundResult" class="flex flex-col gap-6 rounded-[30px] p-6">
       <div class="flex items-center gap-3">
-        <UIcon
-          name="i-lucide-bar-chart-3"
-          class="text-secondary size-6"
-        />
-        <h3 class="text-xl font-bold text-white">
-          Resultados da Simulação
-        </h3>
+        <UIcon name="i-lucide-bar-chart-3" class="text-secondary size-6" />
+        <h3 class="text-xl font-bold text-white">Resultados da Simulação</h3>
       </div>
 
       <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -138,9 +130,7 @@
           </p>
         </div>
         <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-          <p class="text-[13px] font-extralight text-gray-400">
-            Valor Final
-          </p>
+          <p class="text-[13px] font-extralight text-gray-400">Valor Final</p>
           <p class="text-secondary text-2xl font-bold">
             {{
               new Intl.NumberFormat('pt-BR', {
@@ -242,4 +232,3 @@ function calculateCompoundInterest() {
   }
 }
 </script>
-

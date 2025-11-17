@@ -108,7 +108,9 @@ const palette = [
 
 const labels = computed(() => props.items.map((item) => item.label))
 const values = computed(() =>
-  props.items.map((item) => Number.isFinite(item.value) ? Number(item.value) : 0)
+  props.items.map((item) =>
+    Number.isFinite(item.value) ? Number(item.value) : 0
+  )
 )
 
 function transparentize(color: string, opacity = 0.3) {
@@ -131,7 +133,10 @@ const chartData = computed(() => {
       {
         data: values.value,
         backgroundColor: (context: {
-          chart: { canvas: HTMLCanvasElement; chartArea?: { top: number; bottom: number } }
+          chart: {
+            canvas: HTMLCanvasElement
+            chartArea?: { top: number; bottom: number }
+          }
           dataIndex?: number
         }) => {
           const index = context.dataIndex ?? 0
@@ -151,7 +156,9 @@ const chartData = computed(() => {
           gradient.addColorStop(1, transparentize(color, 0.85))
           return gradient
         },
-        borderColor: values.value.map((_, index) => palette[index % palette.length]),
+        borderColor: values.value.map(
+          (_, index) => palette[index % palette.length]
+        ),
         borderWidth: 1.2,
         borderRadius: 12,
         borderSkipped: false,
@@ -195,7 +202,8 @@ const chartOptions = computed(() => ({
   onHover: (event: ChartEvent, elements: ActiveElement[]) => {
     try {
       const native = (event as unknown as { native?: MouseEvent })?.native
-      if (native) tooltipPosition.value = { x: native.clientX, y: native.clientY }
+      if (native)
+        tooltipPosition.value = { x: native.clientX, y: native.clientY }
     } catch {
       // noop
     }
@@ -280,7 +288,3 @@ watch(
   width: 100% !important;
 }
 </style>
-
-
-
-

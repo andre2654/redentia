@@ -6,15 +6,15 @@
     ]"
   >
     <!-- Bot Header + Content (grouped) -->
-    <div v-if="message.type === 'bot'" class="flex flex-col gap-2 max-w-[70%]">
+    <div v-if="message.type === 'bot'" class="flex max-w-[70%] flex-col gap-2">
       <!-- Bot Avatar + Title -->
       <div class="flex items-center gap-2">
-        <IconLogo class="w-6 fill-white flex-shrink-0" />
+        <IconLogo class="w-6 flex-shrink-0 fill-white" />
         <span class="text-[17px] font-semibold">ASSESSORIA REDENTIA:</span>
       </div>
 
       <!-- Message Content -->
-      <div class="rounded-lg border border-white/20 bg-white/10 py-3 px-4">
+      <div class="rounded-lg border border-white/20 bg-white/10 px-4 py-3">
         <div
           class="prose prose-sm dark:prose-invert max-w-none"
           v-html="renderedContent"
@@ -28,15 +28,15 @@
     </div>
 
     <!-- User Message -->
-    <div v-else class="flex flex-col gap-2 max-w-[70%]">
-      <div class="rounded-lg bg-primary-500 text-white py-3 px-4">
+    <div v-else class="flex max-w-[70%] flex-col gap-2">
+      <div class="bg-primary-500 rounded-lg px-4 py-3 text-white">
         <p class="text-[14px]">
           {{ message.content }}
         </p>
       </div>
 
       <!-- Timestamp -->
-      <small class="text-xs text-white/60 text-right">
+      <small class="text-right text-xs text-white/60">
         {{ formattedTime }}
       </small>
     </div>
@@ -77,12 +77,31 @@ const renderedContent = computed(() => {
       // Sanitize HTML to prevent XSS
       return DOMPurify.sanitize(rawHtml, {
         ALLOWED_TAGS: [
-          'p', 'br', 'strong', 'em', 'u', 's', 'code', 'pre',
-          'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-          'ul', 'ol', 'li',
+          'p',
+          'br',
+          'strong',
+          'em',
+          'u',
+          's',
+          'code',
+          'pre',
+          'h1',
+          'h2',
+          'h3',
+          'h4',
+          'h5',
+          'h6',
+          'ul',
+          'ol',
+          'li',
           'blockquote',
           'a',
-          'table', 'thead', 'tbody', 'tr', 'th', 'td',
+          'table',
+          'thead',
+          'tbody',
+          'tr',
+          'th',
+          'td',
         ],
         ALLOWED_ATTR: ['href', 'target', 'rel', 'class'],
       })
@@ -154,18 +173,32 @@ const formattedTime = computed(() => {
   padding: 0;
 }
 
-.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4,
+.prose h5,
+.prose h6 {
   margin: 1em 0 0.5em;
   font-weight: 600;
   line-height: 1.3;
 }
 
-.prose h1 { font-size: 1.5em; }
-.prose h2 { font-size: 1.3em; }
-.prose h3 { font-size: 1.15em; }
-.prose h4 { font-size: 1em; }
+.prose h1 {
+  font-size: 1.5em;
+}
+.prose h2 {
+  font-size: 1.3em;
+}
+.prose h3 {
+  font-size: 1.15em;
+}
+.prose h4 {
+  font-size: 1em;
+}
 
-.prose ul, .prose ol {
+.prose ul,
+.prose ol {
   margin: 0.75em 0;
   padding-left: 1.5em;
 }
@@ -197,7 +230,8 @@ const formattedTime = computed(() => {
   margin: 0.75em 0;
 }
 
-.prose th, .prose td {
+.prose th,
+.prose td {
   border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 0.5em;
   text-align: left;

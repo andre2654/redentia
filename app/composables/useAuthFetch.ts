@@ -1,6 +1,5 @@
 type CustomResponse<T> = T extends T ? { data: T } : never
 
-
 export const useCustomFetch = () => {
   const store = useAuthStore()
   const router = useRouter()
