@@ -5,7 +5,7 @@
         <!-- Graph -->
         <section>
           <header
-            class="mb-4 mt-3 flex justify-between gap-8 max-md:px-4 sm:items-center"
+            class="mb-4 mt-3 flex items-center justify-between gap-8 max-md:px-4"
           >
             <div class="flex w-full items-center justify-between">
               <div class="flex items-center gap-3">
@@ -20,7 +20,9 @@
                   <h1 class="font-regular min-w-max max-md:text-[20px]">
                     <span>{{ ticker }}</span>
                   </h1>
-                  <div class="flex items-center gap-2 text-sm">
+                  <div
+                    class="flex items-center gap-2 text-sm max-[400px]:flex-col max-[400px]:items-start"
+                  >
                     <USkeleton v-if="isLoadingAsset" class="h-4 w-[80px]" />
                     <template v-else>
                       <span class="text-[25px] font-medium"
