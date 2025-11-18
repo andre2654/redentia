@@ -1,214 +1,481 @@
 <template>
-  <NuxtLayout title="Busca" hide-search-bar>
-    <div class="flex h-full flex-col pb-8 pt-6">
-      <div class="flex flex-col px-6">
-        <h2 class="text-[18px] font-bold">Filtros avançados</h2>
-        <p class="text-[13px] font-extralight">
-          Refine sua busca por preço, valor de mercado, variação no dia e tipo
-          de ativo. Combine filtros para encontrar oportunidades alinhadas ao
-          seu perfil.
-        </p>
-      </div>
-      <div class="mt-4 px-6 py-2">
-        <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
-          <div class="flex flex-col gap-2 rounded-[12px]">
-            <div
-              class="flex items-center justify-between text-[15px] font-semibold"
-            >
-              <span>Market Cap (R$)</span>
-            </div>
-            <span class="text-[11px] font-normal opacity-70"
-              >{{ formatCurrencyBRL(marketCapRange[0]) }} -
-              {{ formatCurrencyBRL(marketCapRange[1]) }}</span
-            >
-            <USlider
-              v-model="marketCapRange"
-              :min="minMax.mcMin"
-              :max="minMax.mcMax"
-              :step="minMax.mcStep"
-            />
-          </div>
+  <NuxtLayout
+    :name="layoutName"
+    :title="authStore.isAuthenticated ? 'Busca avançada' : false"
+    :hide-search-bar="authStore.isAuthenticated"
+  >
+    <div class="flex flex-col gap-12 pb-16 pt-6">
 
-          <div class="flex flex-col gap-2 rounded-[12px]">
-            <div
-              class="flex items-center justify-between text-[15px] font-semibold"
-            >
-              <span>Preço (R$)</span>
-            </div>
-            <span class="text-[11px] font-normal opacity-70">
-              <template v-if="!assetsLoading"
-                >{{ formatCurrencyBRL(priceRange[0]) }} -
-                {{ formatCurrencyBRL(priceRange[1]) }}</template
-              >
-              <template v-else>...</template>
+      <section class="max-md:px-4">
+        <div class="mx-auto flex w-full  flex-col gap-6">
+          <div class="flex flex-col gap-2">
+            <span class="text-xs font-medium uppercase tracking-[0.3em] text-secondary/70">
+              Busca
             </span>
-            <USlider
-              v-model="priceRange"
-              :min="minMax.priceMin"
-              :max="minMax.priceMax"
-              :step="0.01"
-              :disabled="assetsLoading"
-            />
+            <h1 class="text-3xl font-semibold text-white md:text-4xl">
+              Encontre ativos com precisão
+            </h1>
+            <p class="text-sm text-white/70 md:text-base">
+              Combine indicadores técnicos e fundamentais para identificar
+              oportunidades em ações, FIIs, BDRs e ETFs.
+            </p>
           </div>
-
-          <div class="flex flex-col gap-2 rounded-[12px]">
+          <div class="grid gap-4 md:grid-cols-3">
             <div
-              class="flex items-center justify-between text-[15px] font-semibold"
+              class="rounded-3xl border border-white/10 bg-white/5 p-5 text-white/80 backdrop-blur"
             >
-              <span>Variação (%)</span>
-            </div>
-            <span class="text-[11px] font-normal opacity-70">
-              <template v-if="!assetsLoading"
-                >{{ formatPercent(changeRange[0]) }} -
-                {{ formatPercent(changeRange[1]) }}</template
+              <span class="text-xs uppercase tracking-[0.3em] text-secondary/70"
+                >Resultados</span
               >
-              <template v-else>...</template>
-            </span>
-            <USlider
-              v-model="changeRange"
-              :min="minMax.changeMin"
-              :max="minMax.changeMax"
-              :step="0.1"
-              :disabled="assetsLoading"
-            />
+              <p class="mt-2 text-3xl font-semibold text-white md:text-4xl">
+                {{ resultsCount }}
+              </p>
+              <p class="text-xs text-white/60">Ativos batendo com os filtros atuais.</p>
+            </div>
+            <div
+              class="rounded-3xl border border-white/10 bg-white/5 p-5 text-white/80 backdrop-blur"
+            >
+              <span class="text-xs uppercase tracking-[0.3em] text-secondary/70"
+                >Filtros ativos</span
+              >
+              <p class="mt-2 text-3xl font-semibold text-white md:text-4xl">
+                {{ activeFiltersCount }}
+              </p>
+              <p class="text-xs text-white/60">Intervalos ou grupos modificados.</p>
+            </div>
+            <div
+              class="rounded-3xl border border-white/10 bg-white/5 p-5 text-white/80 backdrop-blur"
+            >
+              <span class="text-xs uppercase tracking-[0.3em] text-secondary/70"
+                >Atualização</span
+              >
+              <p class="mt-2 text-3xl font-semibold text-white md:text-4xl">
+                {{ lastUpdatedLabel }}
+              </p>
+              <p class="text-xs text-white/60">Sincronizado com a API Redentia.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="max-md:px-4">
+        <AtomsTickerCarousel
+          class="mx-auto hidden w-full  rounded-full bg-white/5 px-6 py-3 md:flex"
+          big
+          no-control
+        />
+        <AtomsTickerCarousel
+          class="mx-auto w-full  rounded-full bg-white/5 px-3 py-2 md:hidden"
+          no-control
+        />
+      </section>
+
+      <section class="max-md:px-4">
+        <div class="mx-auto flex w-full  flex-col gap-8">
+          <div
+            class="rounded-[32px] border border-white/10 bg-white/5 p-6 shadow-[0_25px_60px_-15px_rgba(15,23,42,0.45)] backdrop-blur"
+          >
+            <div class="flex flex-col gap-6 text-white">
+              <div class="flex flex-col gap-2">
+                <span class="text-xs font-medium uppercase tracking-[0.3em] text-secondary/70">
+                  Filtros avançados
+                </span>
+                <h2 class="text-2xl font-semibold">Personalize sua análise</h2>
+                <p class="text-sm text-white/70">
+                  Ajuste ranges numéricos, selecione grupos de ativos e combine com buscas
+                  rápidas.
+                </p>
+              </div>
+
+              <AtomsFormInput
+                id="global-search-input"
+                v-model="globalFilter"
+                placeholder="Buscar por nome ou ticker..."
+                size="lg"
+                variant="soft"
+                icon="i-lucide-search"
+                class="w-full"
+                :ui="{
+                  base: 'bg-black/50 border border-white/10 text-white placeholder:text-white/40',
+                }"
+              >
+                <template #trailing>
+                  <div class="flex items-center gap-2 max-lg:hidden">
+                    <UKbd value="meta" variant="link" color="neutral" />
+                    <UKbd value="K" variant="link" color="neutral" />
+                  </div>
+                </template>
+              </AtomsFormInput>
+
+              <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
+                <div
+                  class="flex flex-col gap-3 rounded-2xl border border-white/10 bg-black/40 p-4"
+                >
+                  <div class="flex items-center justify-between text-sm font-semibold">
+                    <span>Market Cap (R$)</span>
+                  </div>
+                  <span class="text-xs font-light text-white/60">
+                    {{ formatCurrencyBRL(marketCapRange[0]) }} -
+                    {{ formatCurrencyBRL(marketCapRange[1]) }}
+                  </span>
+                  <USlider
+                    v-model="marketCapRange"
+                    :min="minMax.mcMin"
+                    :max="minMax.mcMax"
+                    :step="minMax.mcStep"
+                  />
+                </div>
+
+                <div
+                  class="flex flex-col gap-3 rounded-2xl border border-white/10 bg-black/40 p-4"
+                >
+                  <div class="flex items-center justify-between text-sm font-semibold">
+                    <span>Preço (R$)</span>
+                  </div>
+                  <span class="text-xs font-light text-white/60">
+                    <template v-if="!assetsLoading">
+                      {{ formatCurrencyBRL(priceRange[0]) }} -
+                      {{ formatCurrencyBRL(priceRange[1]) }}
+                    </template>
+                    <template v-else>...</template>
+                  </span>
+                  <USlider
+                    v-model="priceRange"
+                    :min="minMax.priceMin"
+                    :max="minMax.priceMax"
+                    :step="0.01"
+                    :disabled="assetsLoading"
+                  />
+                </div>
+
+                <div
+                  class="flex flex-col gap-3 rounded-2xl border border-white/10 bg-black/40 p-4"
+                >
+                  <div class="flex items-center justify-between text-sm font-semibold">
+                    <span>Variação (%)</span>
+                  </div>
+                  <span class="text-xs font-light text-white/60">
+                    <template v-if="!assetsLoading">
+                      {{ formatPercent(changeRange[0]) }} -
+                      {{ formatPercent(changeRange[1]) }}
+                    </template>
+                    <template v-else>...</template>
+                  </span>
+                  <USlider
+                    v-model="changeRange"
+                    :min="minMax.changeMin"
+                    :max="minMax.changeMax"
+                    :step="0.1"
+                    :disabled="assetsLoading"
+                  />
+                </div>
+
+                <div
+                  class="flex flex-col gap-4 rounded-2xl border border-white/10 bg-black/40 p-4"
+                >
+                  <div class="text-sm font-semibold">Grupo</div>
+                  <div class="flex flex-wrap items-center gap-3">
+                    <UCheckbox
+                      v-model="showStock"
+                      label="Ação"
+                      :disabled="assetsLoading"
+                    />
+                    <UCheckbox
+                      v-model="showReit"
+                      label="REIT"
+                      :disabled="assetsLoading"
+                    />
+                    <UCheckbox
+                      v-model="showBdr"
+                      label="BDR"
+                      :disabled="assetsLoading"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
+                <div
+                  class="flex flex-col gap-4 rounded-2xl border border-white/10 bg-black/40 p-4"
+                >
+                  <div class="flex flex-col gap-1">
+                    <span class="text-sm font-semibold text-white">
+                      MDI — Ocorrência principal
+                    </span>
+                    <p class="text-xs text-white/60">
+                      Mostra ativos cujo mês com maior recorrência de dividendos coincide
+                      com o selecionado.
+                    </p>
+                  </div>
+                  <UButtonGroup
+                    orientation="horizontal"
+                    variant="soft"
+                    class="hidden flex-wrap gap-2 md:flex"
+                  >
+                    <UButton
+                      v-for="option in mdiMonthOptions"
+                      :key="`mdi-occ-${option.value}`"
+                      color="neutral"
+                      :variant="
+                        mdiOccurrenceFilter === option.value ? 'soft' : 'link'
+                      "
+                      :label="option.label"
+                      class="min-w-[72px]"
+                      @click="mdiOccurrenceFilter = option.value"
+                    />
+                  </UButtonGroup>
+                  <USelectMenu
+                    v-model="mdiOccurrenceFilter"
+                    :items="mdiMonthOptions"
+                    label-key="label"
+                    value-key="value"
+                    class="md:hidden"
+                  />
+                </div>
+
+                <div
+                  class="flex flex-col gap-4 rounded-2xl border border-white/10 bg-black/40 p-4"
+                >
+                  <div class="flex flex-col gap-1">
+                    <span class="text-sm font-semibold text-white">
+                      MDI — Maior probabilidade
+                    </span>
+                    <p class="text-xs text-white/60">
+                      Filtra conforme o mês com maior indicação de pagamento (estrela).
+                    </p>
+                  </div>
+                  <UButtonGroup
+                    orientation="horizontal"
+                    variant="soft"
+                    class="hidden flex-wrap gap-2 md:flex"
+                  >
+                    <UButton
+                      v-for="option in mdiMonthOptions"
+                      :key="`mdi-star-${option.value}`"
+                      color="neutral"
+                      :variant="mdiStarFilter === option.value ? 'soft' : 'link'"
+                      :label="option.label"
+                      class="min-w-[72px]"
+                      @click="mdiStarFilter = option.value"
+                    />
+                  </UButtonGroup>
+                  <USelectMenu
+                    v-model="mdiStarFilter"
+                    :items="mdiMonthOptions"
+                    label-key="label"
+                    value-key="value"
+                    class="md:hidden"
+                  />
+                </div>
+
+                <div
+                  class="flex flex-col justify-between gap-4 rounded-2xl border border-white/10 bg-black/40 p-4"
+                >
+                  <div class="flex flex-col gap-1">
+                    <span class="text-sm font-semibold text-white">
+                      Dados MDI
+                    </span>
+                    <p class="text-xs text-white/60">
+                      Garanta que apenas ativos com histórico MDI sejam exibidos.
+                    </p>
+                  </div>
+                  <UCheckbox
+                    v-model="onlyWithMdi"
+                    label="Somente com informações MDI"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div class="flex flex-col gap-8 rounded-[12px]">
-            <div class="text-[15px] font-semibold">Grupo</div>
-            <div class="flex flex-wrap items-center gap-3">
-              <UCheckbox
-                v-model="showStock"
-                label="Ação"
-                :disabled="assetsLoading"
-              />
-              <UCheckbox
-                v-model="showReit"
-                label="REIT"
-                :disabled="assetsLoading"
-              />
-              <UCheckbox
-                v-model="showBdr"
-                label="BDR"
-                :disabled="assetsLoading"
+          <div
+            class="rounded-[32px] border border-white/10 bg-black/40 p-4 shadow-[0_25px_60px_-15px_rgba(15,23,42,0.45)] backdrop-blur"
+          >
+            <div class="flex flex-col gap-4 text-white">
+              <div class="flex flex-col gap-2">
+                <span class="text-xs font-medium uppercase tracking-[0.3em] text-secondary/70">
+                  Resultados
+                </span>
+                <h2 class="text-2xl font-semibold">Ativos encontrados</h2>
+                <p class="text-sm text-white/60">
+                  Visualize os dados essenciais de cada ativo e abra o card para ver
+                  detalhes completos.
+                </p>
+              </div>
+
+              <div
+                v-if="assetsLoading"
+                class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3"
+              >
+                <USkeleton
+                  v-for="i in 6"
+                  :key="`asset-skeleton-${i}`"
+                  class="h-56 w-full rounded-[28px]"
+                />
+              </div>
+
+              <template v-else>
+                <div
+                  v-if="paginatedData.length"
+                  class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3"
+                >
+                  <div
+                    v-for="asset in paginatedData"
+                    :key="asset.ticker || asset.stock"
+                    class="group flex h-full flex-col gap-5 rounded-[28px] border border-white/10 bg-black/30 p-6 transition hover:-translate-y-1 hover:border-secondary/50 hover:bg-black/20"
+                    @click="goToAsset(asset.ticker || asset.stock)"
+                  >
+                    <div class="flex items-start justify-between gap-3">
+                      <div class="flex items-center gap-3">
+                        <img
+                          v-if="getAssetLogo(asset)"
+                          :src="getAssetLogo(asset) || ''"
+                          :alt="asset.ticker || asset.stock"
+                          class="h-12 w-12 rounded-2xl border border-white/10 bg-white/10 object-cover"
+                        />
+                        <IconLogo
+                          v-else
+                          class="h-12 w-12 rounded-2xl border border-white/10 bg-white/10 p-2 text-white/70"
+                        />
+                        <div class="flex flex-col">
+                          <span class="text-xs uppercase tracking-[0.3em] text-secondary/70">
+                            {{ asset.ticker || asset.stock }}
+                          </span>
+                          <span class="text-sm text-white/70 line-clamp-2">
+                            {{ asset.name }}
+                          </span>
+                        </div>
+                      </div>
+                      <span
+                        class="rounded-full bg-white/10 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-white/60"
+                      >
+                        {{ getAssetTypeLabel(asset.type) }}
+                      </span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 text-sm text-white/80">
+                      <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+                        <p class="text-xs uppercase tracking-[0.2em] text-white/50">
+                          Market Cap
+                        </p>
+                        <p class="mt-1 text-base font-semibold text-white">
+                          {{ formatCurrencyBRL(asset.market_cap) }}
+                        </p>
+                      </div>
+                      <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+                        <p class="text-xs uppercase tracking-[0.2em] text-white/50">
+                          Preço
+                        </p>
+                        <p class="mt-1 text-base font-semibold text-white">
+                          {{ formatCurrencyBRL(getAssetPrice(asset)) }}
+                        </p>
+                      </div>
+                      <div class="col-span-2 rounded-2xl border border-white/10 bg-white/5 p-4">
+                        <p class="text-xs uppercase tracking-[0.2em] text-white/50">
+                          Variação
+                        </p>
+                        <div class="mt-2 flex items-center gap-2">
+                          <IconArrowFinanceUp
+                            :class="[
+                              'h-5 w-5 transition',
+                              getAssetChange(asset) >= 0
+                                ? 'fill-primary'
+                                : 'fill-red-500 rotate-180',
+                            ]"
+                          />
+                          <span
+                            :class="[
+                              'text-base font-semibold',
+                              getAssetChange(asset) >= 0
+                                ? 'text-primary'
+                                : 'text-red-400',
+                            ]"
+                          >
+                            {{ getAssetChange(asset) >= 0 ? '+' : ''
+                            }}{{ getAssetChange(asset).toFixed(2) }}% hoje
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div
+                      v-if="
+                        getMdiLabels(asset.mdi).occurrenceLabel ||
+                        getMdiLabels(asset.mdi).starLabel
+                      "
+                      class="rounded-2xl border border-white/10 bg-secondary/10 p-4"
+                    >
+                      <p class="text-xs uppercase tracking-[0.2em] text-secondary/80">
+                        MDI
+                      </p>
+                      <div class="mt-2 flex flex-wrap items-center gap-3 text-sm">
+                        <span
+                          v-if="getMdiLabels(asset.mdi).occurrenceLabel"
+                          class="rounded-full bg-white/10 px-3 py-1 text-white/80"
+                        >
+                          {{ getMdiLabels(asset.mdi).occurrenceLabel }}
+                        </span>
+                        <span
+                          v-if="getMdiLabels(asset.mdi).starLabel"
+                          class="inline-flex items-center gap-2 text-secondary"
+                        >
+                          <IconAi class="h-5 w-5 fill-secondary" />
+                          {{ getMdiLabels(asset.mdi).starLabel }}
+                        </span>
+                      </div>
+                    </div>
+                    <div
+                      v-else
+                      class="rounded-2xl border border-dashed border-white/10 bg-white/5 p-4 text-sm text-white/50"
+                    >
+                      Sem informações MDI disponíveis.
+                    </div>
+
+                    <div class="flex items-center justify-between pt-2 text-xs text-white/50">
+                      <span>Atualizado às {{ lastUpdatedLabel }}</span>
+                      <UButton
+                        color="secondary"
+                        size="sm"
+                        variant="soft"
+                        class="rounded-full"
+                        :to="`/asset/${asset.ticker || asset.stock}`"
+                        @click.stop
+                      >
+                        Ver ativo
+                      </UButton>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  v-else
+                  class="rounded-[28px] border border-white/10 bg-black/30 p-10 text-center text-white/60"
+                >
+                  Nenhum ativo encontrado com os filtros atuais.
+                </div>
+              </template>
+            </div>
+
+            <div
+              v-if="!assetsLoading && resultsCount > itemsPerPage"
+              class="mt-6 flex justify-center border-t border-white/10 pt-4"
+            >
+              <UPagination
+                :page="currentPage"
+                :items-per-page="itemsPerPage"
+                :total="resultsCount"
+                @update:page="(page) => (currentPage = page)"
               />
             </div>
           </div>
         </div>
-      </div>
-      <div class="mt-4 rounded-none border-y py-4">
-        <AtomsFormInput
-          id="global-search-input"
-          v-model="globalFilter"
-          placeholder="Buscar ativos..."
-          size="lg"
-          variant="soft"
-          icon="i-lucide-search"
-          class="w-full"
-          :ui="{
-            base: 'bg-black border-none',
-          }"
-        >
-          <template #trailing>
-            <div class="flex items-center gap-2 max-lg:hidden">
-              <UKbd value="meta" variant="link" color="neutral" />
-              <UKbd value="K" variant="link" color="neutral" />
-            </div>
-          </template>
-        </AtomsFormInput>
-      </div>
-      <UTable
-        ref="table"
-        v-model:sorting="sorting"
-        v-model:column-visibility="columnVisibility"
-        v-model:expanded="expanded"
-        v-model:global-filter="globalFilter"
-        v-model:pagination="pagination"
-        :data="filteredData"
-        :columns="columns"
-        :pagination-options="{
-          getPaginationRowModel: getPaginationRowModel(),
-        }"
-        :ui="{
-          root: 'max-h-full no-scrollbar',
-          td: 'py-3',
-          separator: 'bg-transparent',
-          tbody: 'divide-none ',
-          thead: 'bg-transparent',
-          tfoot: 'bg-transparent',
-          th: 'whitespace-nowrap min-w-max bg-black/5 dark:bg-white/5',
-        }"
-        sticky
-        v-if="!assetsLoading"
-      >
-        <template #expanded="{ row }">
-          <pre>{{ row.original }}</pre>
-        </template>
-        <template #expand-header>
-          <div>
-            <UDropdownMenu
-              :items="
-                table?.tableApi
-                  ?.getAllColumns()
-                  .filter((column) => column.getCanHide())
-                  .map((column) => ({
-                    label: column.id,
-                    type: 'checkbox' as const,
-                    checked: column.getIsVisible(),
-                    onUpdateChecked(checked: boolean) {
-                      table?.tableApi
-                        ?.getColumn(column.id)
-                        ?.toggleVisibility(!!checked)
-                    },
-                    onSelect(e?: Event) {
-                      e?.preventDefault()
-                    },
-                  }))
-              "
-              :content="{ align: 'end' }"
-            >
-              <UButton
-                color="neutral"
-                variant="link"
-                trailing-icon="i-lucide-ellipsis-vertical"
-              />
-            </UDropdownMenu>
-            <UButton
-              color="neutral"
-              variant="link"
-              trailing-icon="i-lucide-search"
-              @click="focusGlobalSearch"
-            />
-          </div>
-        </template>
-      </UTable>
-
-      <!-- Skeleton enquanto carrega -->
-      <div v-else class="mt-4 space-y-2 px-6">
-        <USkeleton v-for="i in 6" :key="i" class="h-8 w-full rounded-md" />
-      </div>
-
-      <!-- Paginação -->
-      <div
-        v-if="!assetsLoading && data.length > 0"
-        class="border-default mt-6 flex justify-center border-t pt-4"
-      >
-        <UPagination
-          :default-page="
-            (table?.tableApi?.getState().pagination.pageIndex || 0) + 1
-          "
-          :items-per-page="table?.tableApi?.getState().pagination.pageSize"
-          :total="table?.tableApi?.getFilteredRowModel().rows.length"
-          @update:page="(p) => table?.tableApi?.setPageIndex(p - 1)"
-        />
-      </div>
+      </section>
     </div>
   </NuxtLayout>
 </template>
 
 <script setup lang="ts">
 import type { AssetMdiEntry, IAsset } from '~/types/asset'
-import { getPaginationRowModel } from '@tanstack/vue-table'
-import { resolveComponent } from 'vue'
 
 definePageMeta({
   isPublicRoute: true,
@@ -218,6 +485,7 @@ definePageMeta({
 })
 
 const { getAssets } = useAssetsService()
+const authStore = useAuthStore()
 const router = useRouter()
 const runtimeConfig = useRuntimeConfig()
 const siteUrl = computed(() => {
@@ -225,25 +493,16 @@ const siteUrl = computed(() => {
   return url.endsWith('/') ? url.slice(0, -1) : url
 })
 
+const layoutName = computed(() =>
+  authStore.isAuthenticated ? 'default' : 'unauthenticated'
+)
+
 const allAssets = ref<IAsset[]>([])
 const data = ref<IAsset[]>([])
 const assetsLoading = ref(true)
-
-const IconArrowFinanceUp = resolveComponent('IconArrowFinanceUp')
-const IconAI = resolveComponent('IconAi')
-const UButton = resolveComponent('UButton')
-const UDropdownMenu = resolveComponent('UDropdownMenu')
+const lastUpdatedAt = ref<Date | null>(null)
 
 const globalFilter = ref('')
-const table = useTemplateRef('table')
-const sorting = ref([
-  {
-    id: 'ticker',
-    desc: false,
-  },
-])
-const columnVisibility = ref({})
-const expanded = ref({})
 
 function goToAsset(ticker: string) {
   router.push(`/asset/${ticker}`)
@@ -277,6 +536,14 @@ const monthShortNames = [
   'DEZ',
 ] as const
 const currentMonthNumber = new Date().getMonth() + 1
+
+const mdiMonthOptions = computed(() => [
+  { label: 'Todos os meses', value: 'any' as const },
+  ...monthShortNames.map((label, index) => ({
+    label,
+    value: String(index + 1) as `${number}`,
+  })),
+])
 
 function toFiniteNumber(value: unknown) {
   const num = Number(value)
@@ -438,12 +705,6 @@ function getMdiLabels(entries?: AssetMdiEntry[] | null): MdiLabelSegments {
   }
 }
 
-// Paginação usando TanStack Table
-const pagination = ref({
-  pageIndex: 0,
-  pageSize: 10,
-})
-
 // Filtros avançados controlados por URL
 const route = useRoute()
 // Sliders (ranges)
@@ -464,6 +725,9 @@ const showReit = ref(true)
 const showBdr = ref(true)
 type GroupFilter = 'stocks' | 'etfs' | 'reits' | 'bdrs'
 const groupFilter = ref<GroupFilter | null>(null)
+const mdiOccurrenceFilter = ref<'any' | `${number}`>('any')
+const mdiStarFilter = ref<'any' | `${number}`>('any')
+const onlyWithMdi = ref(false)
 const canonicalUrl = computed(() => {
   const groupParam =
     typeof route.query.group === 'string'
@@ -532,6 +796,13 @@ function readFiltersFromUrl() {
     const n = typeof v === 'string' || typeof v === 'number' ? Number(v) : NaN
     return Number.isFinite(n) ? n : fallback
   }
+  const parseMonthFilter = (v: unknown): 'any' | `${number}` => {
+    const n = typeof v === 'string' || typeof v === 'number' ? Number(v) : NaN
+    if (Number.isFinite(n) && n >= 1 && n <= 12) {
+      return String(n) as `${number}`
+    }
+    return 'any'
+  }
   marketCapRange.value = [
     toNum(q.mc_min, minMax.mcMin),
     toNum(q.mc_max, minMax.mcMax),
@@ -547,6 +818,9 @@ function readFiltersFromUrl() {
   showStock.value = normalizeBool(q.stock, true)
   showReit.value = normalizeBool(q.reit, true)
   showBdr.value = normalizeBool(q.bdr, true)
+  mdiOccurrenceFilter.value = parseMonthFilter(q.mdi_occurrence)
+  mdiStarFilter.value = parseMonthFilter(q.mdi_star)
+  onlyWithMdi.value = normalizeBool(q.mdi_only, false)
 
   const groupParam =
     typeof q.group === 'string' ? (q.group as string).toLowerCase() : null
@@ -601,6 +875,15 @@ function buildQueryFromFilters() {
   if (!showStock.value) q.stock = '0'
   if (!showReit.value) q.reit = '0'
   if (!showBdr.value) q.bdr = '0'
+  if (mdiOccurrenceFilter.value !== 'any') {
+    q.mdi_occurrence = Number(mdiOccurrenceFilter.value)
+  }
+  if (mdiStarFilter.value !== 'any') {
+    q.mdi_star = Number(mdiStarFilter.value)
+  }
+  if (onlyWithMdi.value) {
+    q.mdi_only = '1'
+  }
   return q
 }
 
@@ -635,6 +918,12 @@ const filteredData = computed(() => {
   const prMax = priceRange.value?.[1]
   const chMin = changeRange.value?.[0]
   const chMax = changeRange.value?.[1]
+  const occurrenceFilter =
+    mdiOccurrenceFilter.value === 'any'
+      ? null
+      : Number(mdiOccurrenceFilter.value)
+  const starFilter =
+    mdiStarFilter.value === 'any' ? null : Number(mdiStarFilter.value)
 
   return data.value.filter((it) => {
     // tipo
@@ -657,8 +946,97 @@ const filteredData = computed(() => {
     const change = it.change_percent ?? it.change
     if (chMin !== undefined && change < chMin) return false
     if (chMax !== undefined && change > chMax) return false
+    const highlights = getMdiHighlights(it.mdi)
+    if (onlyWithMdi.value && !(Array.isArray(it.mdi) && it.mdi.length > 0)) {
+      return false
+    }
+    if (
+      occurrenceFilter !== null &&
+      highlights.occurrence?.month !== occurrenceFilter
+    ) {
+      return false
+    }
+    if (starFilter !== null && highlights.star?.month !== starFilter) {
+      return false
+    }
     return true
   })
+})
+
+const resultsCount = computed(() => filteredData.value.length)
+
+const itemsPerPage = ref(12)
+const currentPage = ref(1)
+
+const paginatedData = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value
+  return filteredData.value.slice(start, start + itemsPerPage.value)
+})
+
+const totalPages = computed(() =>
+  Math.max(1, Math.ceil(resultsCount.value / itemsPerPage.value || 1))
+)
+
+const activeFiltersCount = computed(() => {
+  let count = 0
+  if (
+    marketCapRange.value?.[0] > minMax.mcMin ||
+    marketCapRange.value?.[1] < minMax.mcMax
+  ) {
+    count++
+  }
+  if (
+    priceRange.value?.[0] > minMax.priceMin ||
+    priceRange.value?.[1] < minMax.priceMax
+  ) {
+    count++
+  }
+  if (
+    changeRange.value?.[0] > minMax.changeMin ||
+    changeRange.value?.[1] < minMax.changeMax
+  ) {
+    count++
+  }
+  if (!showStock.value || !showReit.value || !showBdr.value) {
+    count++
+  }
+  if (groupFilter.value) {
+    count++
+  }
+  if (globalFilter.value?.trim()) {
+    count++
+  }
+  if (onlyWithMdi.value) {
+    count++
+  }
+  if (mdiOccurrenceFilter.value !== 'any') {
+    count++
+  }
+  if (mdiStarFilter.value !== 'any') {
+    count++
+  }
+  return count
+})
+
+const lastUpdatedLabel = computed(() => {
+  if (!lastUpdatedAt.value) return '--:--'
+  return new Intl.DateTimeFormat('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(lastUpdatedAt.value)
+})
+
+watch(filteredData, () => {
+  currentPage.value = 1
+})
+
+watch(totalPages, (value) => {
+  if (currentPage.value > value) {
+    currentPage.value = value
+  }
+  if (currentPage.value < 1) {
+    currentPage.value = 1
+  }
 })
 
 function formatCurrencyBRL(n: number) {
@@ -677,12 +1055,11 @@ onMounted(async () => {
   try {
     allAssets.value = await getAssets()
     data.value = allAssets.value
+    lastUpdatedAt.value = new Date()
 
-    // Força uma atualização da paginação após carregar os dados
     await nextTick()
-    if (table.value?.tableApi) {
-      table.value.tableApi.setPageIndex(0)
-    }
+    currentPage.value = 1
+
     // Lê filtros da URL ao montar
     readFiltersFromUrl()
   } finally {
@@ -698,268 +1075,44 @@ watch(
   { deep: true }
 )
 
-function getHeader(column: any, label: string) {
-  const isSorted = column.getIsSorted()
-
-  return h(
-    UDropdownMenu,
-    {
-      content: {
-        align: 'start',
-      },
-      'aria-label': 'Actions dropdown',
-      items: [
-        {
-          label: 'Asc',
-          type: 'checkbox',
-          icon: 'i-lucide-arrow-up-narrow-wide',
-          checked: isSorted === 'asc',
-          onSelect: () => {
-            if (isSorted === 'asc') {
-              column.clearSorting()
-            } else {
-              column.toggleSorting(false)
-            }
-          },
-        },
-        {
-          label: 'Desc',
-          icon: 'i-lucide-arrow-down-wide-narrow',
-          type: 'checkbox',
-          checked: isSorted === 'desc',
-          onSelect: () => {
-            if (isSorted === 'desc') {
-              column.clearSorting()
-            } else {
-              column.toggleSorting(true)
-            }
-          },
-        },
-      ],
-    },
-    () =>
-      h(UButton, {
-        color: 'neutral',
-        variant: 'ghost',
-        label,
-        icon: isSorted
-          ? isSorted === 'asc'
-            ? 'i-lucide-arrow-up-narrow-wide'
-            : 'i-lucide-arrow-down-wide-narrow'
-          : 'i-lucide-arrow-up-down',
-        class: '-mx-2.5 data-[state=open]:bg-elevated',
-        'aria-label': `Sort by ${isSorted === 'asc' ? 'descending' : 'ascending'}`,
-      })
-  )
+function getAssetTypeLabel(type?: string | null) {
+  const normalized = (type || '').toString().toUpperCase()
+  switch (normalized) {
+    case 'STOCK':
+      return 'Ação'
+    case 'ETF':
+      return 'ETF'
+    case 'REIT':
+      return 'REIT'
+    case 'FUND':
+      return 'FII'
+    case 'BDR':
+      return 'BDR'
+    default:
+      return 'Ativo'
+  }
 }
 
-const columns = ref([
-  {
-    id: 'expand',
-    cell: ({ row }) =>
-      h(UButton, {
-        color: 'neutral',
-        variant: 'ghost',
-        icon: 'i-lucide-chevron-down',
-        square: true,
-        'aria-label': 'Expand',
-        ui: {
-          leadingIcon: [
-            'transition-transform',
-            row.getIsExpanded() ? 'duration-200 rotate-180' : '',
-          ],
-        },
-        onClick: () => row.toggleExpanded(),
-      }),
-  },
-  {
-    accessorKey: 'ticker',
-    header: ({ column }) => {
-      return getHeader(column, 'Ticker')
-    },
-    cell: ({ row }) => {
-      return h(
-        'div',
-        {
-          class: 'flex items-center gap-2 cursor-pointer',
-          onClick: () => goToAsset(row.original.ticker),
-        },
-        [
-          h('img', {
-            src: row.original.logo,
-            class:
-              'pointer-events-none h-6 w-6 select-none rounded object-cover',
-          }),
-          h('span', { class: 'text-[14px] font-medium' }, row.original.ticker),
-        ]
-      )
-    },
-  },
-  {
-    accessorKey: 'name',
-    header: ({ column }) => {
-      return getHeader(column, 'Nome')
-    },
-    cell: ({ row }) => {
-      return h(
-        'span',
-        {
-          class: 'text-[12px] opacity-70 cursor-pointer',
-          onClick: () => goToAsset(row.original.ticker),
-        },
-        row.original.name
-      )
-    },
-  },
-  {
-    accessorKey: 'market_cap',
-    header: ({ column }) => {
-      return getHeader(column, 'Market Cap')
-    },
-    cell: ({ row }) => {
-      return h(
-        'span',
-        {
-          class: 'text-[14px] cursor-pointer',
-          onClick: () => goToAsset(row.original.ticker),
-        },
-        new Intl.NumberFormat('pt-BR', {
-          style: 'currency',
-          currency: 'BRL',
-          maximumFractionDigits: 0,
-        }).format(row.original.market_cap)
-      )
-    },
-  },
-  {
-    accessorKey: 'market_price',
-    header: ({ column }) => {
-      return getHeader(column, 'Preço')
-    },
-    cell: ({ row }) => {
-      return h(
-        'span',
-        {
-          class: 'text-[14px] cursor-pointer',
-          onClick: () => goToAsset(row.original.ticker),
-        },
-        new Intl.NumberFormat('pt-BR', {
-          style: 'currency',
-          currency: 'BRL',
-        }).format(row.original.market_price)
-      )
-    },
-  },
-  {
-    accessorKey: 'change_percent',
-    header: ({ column }) => {
-      return getHeader(column, 'Variação')
-    },
-    cell: ({ row }) => {
-      const change_percent = row.original.change_percent
-      return h(
-        'div',
-        {
-          class: 'flex items-center gap-2 cursor-pointer',
-          onClick: () => goToAsset(row.original.ticker),
-        },
-        [
-          h(IconArrowFinanceUp, {
-            class: `w-4 ${change_percent >= 0 ? 'fill-primary' : 'fill-red-500 rotate-180'}`,
-          }),
-          h(
-            'span',
-            {
-              class: `text-[14px] font-medium ${change_percent >= 0 ? 'text-primary' : 'text-red-500'}`,
-            },
-            `${change_percent >= 0 ? '+' : ''}${change_percent?.toFixed(2)}% hoje`
-          ),
-        ]
-      )
-    },
-  },
-  {
-    accessorKey: 'mdi',
-    header: 'MDI',
-    cell: ({ row }) => {
-      const asset = row.original as IAsset
-      const { occurrenceLabel, starLabel } = getMdiLabels(asset?.mdi)
-      const hasOccurrence = !!occurrenceLabel
-      const hasStar = !!starLabel
-      const hasAny = hasOccurrence || hasStar
+function getAssetPrice(asset: IAsset) {
+  if (typeof asset.market_price === 'number') return asset.market_price
+  if (typeof asset.close === 'number') return asset.close
+  return 0
+}
 
-      const contents: any[] = []
+function getAssetChange(asset: IAsset) {
+  if (typeof asset.change_percent === 'number') return asset.change_percent
+  if (typeof asset.change === 'number') return asset.change
+  return 0
+}
 
-      if (!hasAny) {
-        contents.push(
-          h(
-            'span',
-            {
-              class: 'text-[13px] opacity-60',
-            },
-            'N/A'
-          )
-        )
-      } else {
-        if (hasOccurrence) {
-          contents.push(
-            h(
-              'span',
-              {
-                class: 'text-[13px]',
-              },
-              occurrenceLabel
-            )
-          )
-        }
+function getAssetLogo(asset: IAsset) {
+  if (
+    asset.logo &&
+    asset.logo !== 'https://icons.brapi.dev/icons/BRAPI.svg'
+  ) {
+    return asset.logo
+  }
+  return null
+}
 
-        if (hasOccurrence && hasStar) {
-          contents.push(
-            h(
-              'span',
-              {
-                class: 'text-[13px] opacity-60',
-              },
-              ' - '
-            )
-          )
-        }
-
-        if (hasStar) {
-          contents.push(
-            h(
-              'span',
-              {
-                class: 'flex items-center gap-1 text-[13px]',
-              },
-              [
-                h(IconAI, {
-                  class: 'w-[16px] fill-secondary',
-                }),
-                h(
-                  'span',
-                  {
-                    class: 'ml-1 text-secondary',
-                  },
-                  starLabel
-                ),
-              ]
-            )
-          )
-        }
-      }
-
-      return h(
-        'div',
-        {
-          class: 'flex items-center gap-2 cursor-pointer',
-          onClick: () => {
-            goToAsset(asset?.ticker || asset?.stock || '')
-          },
-        },
-        contents
-      )
-    },
-  },
-])
 </script>
