@@ -1,130 +1,160 @@
 <template>
   <NuxtLayout name="static" :title="false" :showLogo="false">
-    <AtomsAuthHeader class="mt-16" />
-    <UForm
-      :schema="schema"
-      :state="state"
-      class="mx-auto mb-8 flex w-[335px] flex-col gap-2"
-      @submit="onSubmit"
-    >
-      <h1 class="text-[13px] font-bold text-white/80">Registro</h1>
-
-      <!-- Name -->
-      <UFormField name="name">
-        <AtomsFormInput
-          v-model="state.name"
-          type="text"
-          placeholder="Nome"
-          size="lg"
-          class="w-full"
-        />
-      </UFormField>
-
-      <!-- Login -->
-      <UFormField name="login">
-        <AtomsFormInput
-          v-model="state.login"
-          type="text"
-          placeholder="Usuário"
-          size="lg"
-          class="w-full"
-        />
-      </UFormField>
-
-      <!-- Celular -->
-      <UFormField name="celular">
-        <AtomsFormInput
-          v-model="state.celular"
-          v-maska="'+55 (##) # ####-####'"
-          type="text"
-          placeholder="Celular"
-          size="lg"
-          class="w-full"
-        />
-      </UFormField>
-
-      <!-- Email -->
-      <UFormField name="email">
-        <AtomsFormInput
-          v-model="state.email"
-          type="email"
-          placeholder="Email"
-          size="lg"
-          class="w-full"
-        />
-      </UFormField>
-
-      <!-- Password -->
-      <UFormField name="password">
-        <AtomsFormInputPassword
-          v-model="state.password"
-          :aria-invalid="score < 4"
-          class="w-full"
-        />
-      </UFormField>
-
-      <!-- Password Confirmation -->
-      <UFormField name="password_confirmation" class="mb-4">
-        <AtomsFormInputPassword
-          v-model="state.password_confirmation"
-          placeholder="Confirme a senha"
-          class="w-full"
-        />
-      </UFormField>
-
-      <!-- Password Strength -->
-      <div class="flex flex-col gap-4">
-        <UProgress
-          :model-value="score"
-          :max="requirements.length"
-          :color="color"
-          :indicator="text"
-          size="sm"
-        />
-
+    <section class="px-4 pb-16 pt-12">
+      <div
+        class="mx-auto flex max-w-5xl flex-col items-center gap-14 md:flex-row md:items-start md:gap-20"
+      >
         <div
-          id="password-strength"
-          class="flex flex-col gap-3 text-sm font-medium"
+          class="flex flex-1 flex-col items-center gap-8 text-center md:items-start md:text-left"
         >
-          <span class="mx-auto text-center text-[13px] font-light">{{
-            text
-          }}</span>
-          <span class="text-[13px] font-extralight text-white/80">
-            Sua senha precisa ter:
-          </span>
+          <AtomsAuthHeader class="mt-0 w-full max-w-sm" />
+          <p class="text-sm leading-relaxed text-white/70 md:max-w-sm">
+            Crie sua conta para acessar carteiras inteligentes, simuladores de
+            investimentos e recursos personalizados que aceleram seus resultados.
+          </p>
         </div>
 
-        <ul class="space-y-1" aria-label="Password requirements">
-          <li
-            v-for="req in requirements"
-            :key="req.text"
-            class="flex items-center gap-2"
-            :class="req.met ? 'text-primary' : 'text-white/80'"
-          >
-            <UIcon
-              :name="req.met ? 'i-lucide-circle-check' : 'i-lucide-circle-x'"
-              class="size-4 shrink-0"
-            />
-            <span class="text-xs font-medium">{{ req.text }}</span>
-          </li>
-        </ul>
-      </div>
+        <UForm
+          :schema="schema"
+          :state="state"
+          class="flex w-full max-w-md flex-col gap-5 rounded-[32px] border border-white/10 bg-white/5 px-8 py-10 shadow-[0_25px_60px_-15px_rgba(15,23,42,0.5)] backdrop-blur-2xl"
+          @submit="onSubmit"
+        >
+          <div class="space-y-2 text-center md:text-left">
+            <span class="text-xs font-medium uppercase tracking-[0.2em] text-secondary/80">
+              Cadastro
+            </span>
+            <h1 class="text-2xl font-semibold text-white">Criar conta</h1>
+            <p class="text-sm text-white/70">
+              Complete as informações abaixo para começar a usar o Redentia.
+            </p>
+          </div>
 
-      <AtomsButton type="submit" color="tertiary" class="mt-3 w-full">
-        Cadastrar
-      </AtomsButton>
-      <NuxtLink
-        to="/auth/login"
-        class="hover:text-secondary my-2 text-left text-[12px] text-white/80"
-      >
-        Já tem uma conta? Faça login
-      </NuxtLink>
-      <p class="text-center text-[10px] text-white/70">
-        Ao fazer login e usar o Redentia, você concorda com nossos Termos de
-        Serviço e Política de privacidade e confirma que tem pelo menos 18 anos
-        de idade
-      </p>
-    </UForm>
+          <!-- Name -->
+          <UFormField name="name">
+            <AtomsFormInput
+              v-model="state.name"
+              type="text"
+              placeholder="Nome completo"
+              size="lg"
+              class="w-full"
+            />
+          </UFormField>
+
+          <!-- Login -->
+          <UFormField name="login">
+            <AtomsFormInput
+              v-model="state.login"
+              type="text"
+              placeholder="Usuário"
+              size="lg"
+              class="w-full"
+            />
+          </UFormField>
+
+          <!-- Celular -->
+          <UFormField name="celular">
+            <AtomsFormInput
+              v-model="state.celular"
+              v-maska="'+55 (##) # ####-####'"
+              type="text"
+              placeholder="Celular"
+              size="lg"
+              class="w-full"
+            />
+          </UFormField>
+
+          <!-- Email -->
+          <UFormField name="email">
+            <AtomsFormInput
+              v-model="state.email"
+              type="email"
+              placeholder="E-mail"
+              size="lg"
+              class="w-full"
+            />
+          </UFormField>
+
+          <!-- Password -->
+          <UFormField name="password">
+            <AtomsFormInputPassword
+              v-model="state.password"
+              :aria-invalid="score < 4"
+              class="w-full"
+            />
+          </UFormField>
+
+          <!-- Password Confirmation -->
+          <UFormField name="password_confirmation">
+            <AtomsFormInputPassword
+              v-model="state.password_confirmation"
+              placeholder="Confirme a senha"
+              class="w-full"
+            />
+          </UFormField>
+
+          <!-- Password Strength -->
+          <div class="rounded-2xl border border-white/10 bg-white/5 p-5">
+            <UProgress
+              :model-value="score"
+              :max="requirements.length"
+              :color="color"
+              :indicator="text"
+              size="sm"
+            />
+
+            <div
+              id="password-strength"
+              class="mt-4 flex flex-col gap-3 text-sm font-medium"
+            >
+              <span class="text-center text-[13px] font-light text-white/80">{{
+                text
+              }}</span>
+              <span class="text-[13px] font-extralight text-white/70">
+                Sua senha precisa ter:
+              </span>
+            </div>
+
+            <ul class="mt-2 space-y-2" aria-label="Password requirements">
+              <li
+                v-for="req in requirements"
+                :key="req.text"
+                class="flex items-center gap-2"
+                :class="req.met ? 'text-secondary' : 'text-white/70'"
+              >
+                <UIcon
+                  :name="req.met ? 'i-lucide-circle-check' : 'i-lucide-circle-x'"
+                  class="size-4 shrink-0"
+                />
+                <span class="text-xs font-medium">{{ req.text }}</span>
+              </li>
+            </ul>
+          </div>
+
+          <AtomsButton
+            type="submit"
+            color="secondary"
+            size="lg"
+            class="w-full justify-center"
+          >
+            Cadastrar
+          </AtomsButton>
+
+          <div class="flex flex-col gap-2 text-center md:text-left">
+            <NuxtLink
+              to="/auth/login"
+              class="text-sm font-medium text-secondary transition hover:text-secondary/80"
+            >
+              Já tem uma conta? Faça login
+            </NuxtLink>
+            <p class="text-[11px] leading-relaxed text-white/60">
+              Ao criar sua conta no Redentia, você concorda com nossos Termos de
+              Serviço e Política de privacidade e declara ter pelo menos 18 anos.
+            </p>
+          </div>
+        </UForm>
+      </div>
+    </section>
   </NuxtLayout>
 </template>
 

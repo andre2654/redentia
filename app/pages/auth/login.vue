@@ -1,45 +1,77 @@
 <template>
   <NuxtLayout name="static" :title="false" :showLogo="false">
-    <AtomsAuthHeader class="mt-16" />
-    <UForm
-      :schema="schema"
-      :state="state"
-      class="mx-auto mb-8 flex w-[335px] flex-col gap-2"
-      @submit="onSubmit"
-    >
-      <h1 class="text-[13px] font-bold text-white/80">Usuário</h1>
-
-      <!-- Login -->
-      <UFormField name="login" class="mb-4">
-        <AtomsFormInput
-          v-model="state.login"
-          type="text"
-          placeholder="Usuário"
-          size="lg"
-          class="w-full"
-        />
-      </UFormField>
-
-      <!-- Password -->
-      <UFormField name="password" class="mb-2">
-        <AtomsFormInputPassword v-model="state.password" class="w-full" />
-      </UFormField>
-
-      <AtomsButton type="submit" color="tertiary" class="mt-3 w-full">
-        Entrar
-      </AtomsButton>
-      <NuxtLink
-        to="/auth/register"
-        class="hover:text-secondary my-2 text-left text-[12px] text-white/80"
+    <section class="px-4 pb-16 pt-12">
+      <div
+        class="mx-auto flex max-w-5xl flex-col items-center gap-14 md:flex-row md:items-start md:gap-20"
       >
-        Cadastre-se
-      </NuxtLink>
-      <p class="text-center text-[10px] text-white/70">
-        Ao fazer login e usar o Redentia, você concorda com nossos Termos de
-        Serviço e Política de privacidade e confirma que tem pelo menos 18 anos
-        de idade
-      </p>
-    </UForm>
+        <div
+          class="flex flex-1 flex-col items-center gap-8 text-center md:items-start md:text-left"
+        >
+          <AtomsAuthHeader class="mt-0 w-full max-w-sm" />
+          <p class="text-sm leading-relaxed text-white/70 md:max-w-sm">
+            Faça login para acessar seus dashboards em tempo real, acompanhar
+            ativos favoritos e receber insights personalizados sobre sua
+            carteira.
+          </p>
+        </div>
+
+        <UForm
+          :schema="schema"
+          :state="state"
+          class="flex w-full max-w-md flex-col gap-5 rounded-[32px] border border-white/10 bg-white/5 px-8 py-10 shadow-[0_25px_60px_-15px_rgba(15,23,42,0.5)] backdrop-blur-2xl"
+          @submit="onSubmit"
+        >
+          <div class="space-y-2 text-center md:text-left">
+            <span class="text-xs font-medium uppercase tracking-[0.2em] text-secondary/80">
+              Acesso
+            </span>
+            <h1 class="text-2xl font-semibold text-white">Entrar no Redentia</h1>
+            <p class="text-sm text-white/70">
+              Preencha seus dados para continuar sua jornada de investimentos.
+            </p>
+          </div>
+
+          <!-- Login -->
+          <UFormField name="login">
+            <AtomsFormInput
+              v-model="state.login"
+              type="text"
+              placeholder="Usuário"
+              size="lg"
+              class="w-full"
+            />
+          </UFormField>
+
+          <!-- Password -->
+          <UFormField name="password">
+            <AtomsFormInputPassword v-model="state.password" class="w-full" />
+          </UFormField>
+
+          <AtomsButton
+            type="submit"
+            color="secondary"
+            size="lg"
+            class="mt-2 w-full justify-center"
+          >
+            Entrar
+          </AtomsButton>
+
+          <div class="flex flex-col gap-2 text-center md:text-left">
+            <NuxtLink
+              to="/auth/register"
+              class="text-sm font-medium text-secondary transition hover:text-secondary/80"
+            >
+              Ainda não tem conta? Cadastre-se agora
+            </NuxtLink>
+            <p class="text-[11px] leading-relaxed text-white/60">
+              Ao fazer login e usar o Redentia, você concorda com nossos Termos
+              de Serviço e Política de privacidade, confirmando que tem pelo
+              menos 18 anos de idade.
+            </p>
+          </div>
+        </UForm>
+      </div>
+    </section>
   </NuxtLayout>
 </template>
 
