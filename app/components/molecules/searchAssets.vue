@@ -81,14 +81,27 @@ defineShortcuts({
   },
 })
 
-const { data: ativos, status } = await useAsyncData(
+const { data: ativos, status, execute } = await useAsyncData<IAsset[]>(
   'assets',
   () => getAssets(),
   {
-    immediate: true,
+    server: false,
+    immediate: false,
     default: () => [],
   }
 )
+
+const ensureAssetsLoaded = async () => {
+  if (status.value === 'idle') {
+    await execute()
+  }
+}
+
+watch(open, (isOpen) => {
+  if (isOpen) {
+    ensureAssetsLoaded()
+  }
+})
 
 function onSelect() {
   searchTerm.value = ''
