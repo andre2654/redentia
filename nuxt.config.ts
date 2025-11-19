@@ -13,7 +13,7 @@ export default defineNuxtConfig({
     '@vite-pwa/nuxt',
     '@nuxtjs/sitemap',
   ],
-  ssr: false,
+  ssr: true,
   vite: {
     plugins: [svgLoader()],
   },
