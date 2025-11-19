@@ -45,7 +45,7 @@
 
 <script setup lang="ts">
 import { marked } from 'marked'
-import DOMPurify from 'isomorphic-dompurify'
+import { computed, ref, watch } from 'vue'
 import type { IChatMessage } from '~/types/ai'
 
 // ==================== PROPS ====================
@@ -62,56 +62,97 @@ const emit = defineEmits<{
 
 // ==================== COMPUTED ====================
 
-const renderedContent = computed(() => {
-  if (props.message.type === 'bot') {
-    try {
-      // Configure marked for better markdown rendering
-      marked.setOptions({
-        breaks: true,
-        gfm: true,
-      })
+const renderedContent = ref(props.message.content)
 
-      // Convert markdown to HTML
-      const rawHtml = marked.parse(props.message.content)
+const ALLOWED_TAGS = [
+  'p',
+  'br',
+  'strong',
+  'em',
+  'u',
+  's',
+  'code',
+  'pre',
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'h5',
+  'h6',
+  'ul',
+  'ol',
+  'li',
+  'blockquote',
+  'a',
+  'table',
+  'thead',
+  'tbody',
+  'tr',
+  'th',
+  'td',
+]
 
-      // Sanitize HTML to prevent XSS
-      return DOMPurify.sanitize(rawHtml, {
-        ALLOWED_TAGS: [
-          'p',
-          'br',
-          'strong',
-          'em',
-          'u',
-          's',
-          'code',
-          'pre',
-          'h1',
-          'h2',
-          'h3',
-          'h4',
-          'h5',
-          'h6',
-          'ul',
-          'ol',
-          'li',
-          'blockquote',
-          'a',
-          'table',
-          'thead',
-          'tbody',
-          'tr',
-          'th',
-          'td',
-        ],
-        ALLOWED_ATTR: ['href', 'target', 'rel', 'class'],
-      })
-    } catch (error) {
-      console.error('Failed to render markdown:', error)
-      return props.message.content
-    }
+const ALLOWED_ATTR = ['href', 'target', 'rel', 'class']
+
+function escapeHtml(input: string) {
+  return input
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/\n/g, '<br />')
+}
+
+let domPurifyInstance: any = null
+
+async function getDomPurify() {
+  if (!process.client) return null
+  if (domPurifyInstance) return domPurifyInstance
+  const module = await import('isomorphic-dompurify')
+  domPurifyInstance = module.default || module
+  return domPurifyInstance
+}
+
+async function updateRenderedContent() {
+  if (props.message.type !== 'bot') {
+    renderedContent.value = escapeHtml(props.message.content)
+    return
   }
-  return props.message.content
-})
+
+  try {
+    marked.setOptions({
+      breaks: true,
+      gfm: true,
+    })
+
+    const rawHtml = marked.parse(props.message.content)
+
+    if (!process.client) {
+      renderedContent.value = escapeHtml(props.message.content)
+      return
+    }
+
+    const purifier = await getDomPurify()
+    renderedContent.value = purifier
+      ? purifier.sanitize(rawHtml, {
+          ALLOWED_TAGS,
+          ALLOWED_ATTR,
+        })
+      : escapeHtml(props.message.content)
+  } catch (error) {
+    console.error('Failed to render markdown:', error)
+    renderedContent.value = escapeHtml(props.message.content)
+  }
+}
+
+watch(
+  () => [props.message.type, props.message.content],
+  () => {
+    updateRenderedContent()
+  },
+  { immediate: true }
+)
 
 const formattedTime = computed(() => {
   try {
