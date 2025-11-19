@@ -1620,15 +1620,13 @@ function formatNumberToShort(value: number): string {
   return value.toFixed(0)
 }
 
-// Busca inicial
-onMounted(async () => {
-  isLoadingAsset.value = true
-  asset.value = await getTickerDetails(ticker)
-  isLoadingAsset.value = false
-  fetchChartData()
-  fetchDividendsData()
-  fetchFundamentusData()
-})
+asset.value = await getTickerDetails(ticker)
+isLoadingAsset.value = false
+await Promise.all([
+  fetchChartData(),
+  fetchDividendsData(),
+  fetchFundamentusData(),
+])
 
 // Atualiza ao trocar o período
 watch(selectedTimeRange, () => {
