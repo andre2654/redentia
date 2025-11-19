@@ -4,17 +4,17 @@ specifiers:
   '@kurkle/color': 0.4.0
   '@nuxt/eslint': 0.5.1
   '@nuxt/ui': 3.3.0
-  '@nuxtjs/sitemap': ^7.4.7
+  '@nuxtjs/sitemap': 7.4.7
   '@pinia-plugin-persistedstate/nuxt': 1.2.1
   '@pinia/nuxt': 0.5.3
-  '@vercel/analytics': ^1.5.0
+  '@vercel/analytics': 1.5.0
   '@vite-pwa/nuxt': 1.0.4
   chart.js: 4.5.0
   chartjs-chart-treemap: 3.1.0
   eslint: 9.9.0
-  isomorphic-dompurify: ^2.31.0
-  marked: ^17.0.0
-  maska: ^3.2.0
+  isomorphic-dompurify: 2.31.0
+  marked: 17.0.0
+  maska: 3.2.0
   nuxt: 4.0.1
   pinia: 2.2.1
   prettier: 3.3.3
