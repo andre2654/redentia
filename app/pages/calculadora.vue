@@ -64,41 +64,23 @@ const selectedCalculator = ref<'compound' | 'stock' | 'planning'>('compound')
 const assets = computed(() => assetsData.value ?? [])
 const assetsLoading = computed(() => assetsPending.value)
 
-const runtimeConfig = useRuntimeConfig()
-const siteUrl = computed(() => {
-  const url = runtimeConfig.public?.siteUrl || 'https://www.redentia.com.br'
-  return url.endsWith('/') ? url.slice(0, -1) : url
-})
-const canonicalUrl = computed(() => `${siteUrl.value}/calculadora`)
-const pageTitle = 'Calculadora de juros compostos e simuladores de investimentos | Redentia'
-const metaDescription =
-  'Simule juros compostos, planeje aportes e analise o histórico de ações e FIIs com a calculadora inteligente da Redentia.'
+const siteUrl = useSiteConfig().url
 
 useSeoMeta({
-  title: pageTitle,
-  ogTitle: pageTitle,
-  twitterTitle: pageTitle,
-  description: metaDescription,
-  ogDescription: metaDescription,
-  twitterDescription: metaDescription,
-  ogUrl: () => canonicalUrl.value,
-  ogImage: () => `${siteUrl.value}/512x512.png`,
-  twitterImage: () => `${siteUrl.value}/512x512.png`,
-  ogType: 'website',
-  ogSiteName: 'Redentia',
-  ogLocale: 'pt_BR',
+  title: 'Calculadora de juros compostos e simuladores de investimentos | Redentia',
+  description:
+    'Simule juros compostos, planeje aportes e analise o histórico de ações e FIIs com a calculadora inteligente da Redentia.',
+  ogImage: `${siteUrl}/512x512.png`,
   twitterCard: 'summary_large_image',
-  robots: 'index,follow',
 })
 
-useHead({
-  link: [
-    {
-      rel: 'canonical',
-      href: canonicalUrl.value,
-    },
-  ],
-})
+useSchemaOrg([
+  defineWebPage({
+    name: 'Calculadora de Investimentos',
+    description:
+      'Simule juros compostos, planeje aportes e analise o histórico de ações e FIIs com a calculadora inteligente da Redentia.',
+  }),
+])
 
 definePageMeta({
   isPublicRoute: true,

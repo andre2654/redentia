@@ -70,41 +70,23 @@ const layoutName = computed(() =>
   authStore.isAuthenticated ? 'default' : 'unauthenticated'
 )
 
-const runtimeConfig = useRuntimeConfig()
-const siteUrl = computed(() => {
-  const url = runtimeConfig.public?.siteUrl || 'https://www.redentia.com.br'
-  return url.endsWith('/') ? url.slice(0, -1) : url
-})
-const canonicalUrl = computed(() => `${siteUrl.value}/help`)
-const pageTitle = 'Assessoria com IA | Redentia'
-const metaDescription =
-  'Converse com a assistente inteligente da Redentia, tire dúvidas sobre investimentos e receba recomendações personalizadas com tecnologia de IA.'
+const siteUrl = useSiteConfig().url
 
 useSeoMeta({
-  title: pageTitle,
-  ogTitle: pageTitle,
-  twitterTitle: pageTitle,
-  description: metaDescription,
-  ogDescription: metaDescription,
-  twitterDescription: metaDescription,
-  ogUrl: () => canonicalUrl.value,
-  ogImage: () => `${siteUrl.value}/512x512.png`,
-  twitterImage: () => `${siteUrl.value}/512x512.png`,
-  ogType: 'website',
-  ogSiteName: 'Redentia',
-  ogLocale: 'pt_BR',
+  title: 'Assessoria com IA | Redentia',
+  description:
+    'Converse com a assistente inteligente da Redentia, tire dúvidas sobre investimentos e receba recomendações personalizadas com tecnologia de IA.',
+  ogImage: `${siteUrl}/512x512.png`,
   twitterCard: 'summary_large_image',
-  robots: 'index,follow',
 })
 
-useHead({
-  link: [
-    {
-      rel: 'canonical',
-      href: canonicalUrl.value,
-    },
-  ],
-})
+useSchemaOrg([
+  defineWebPage({
+    name: 'Assessoria com IA',
+    description:
+      'Converse com a assistente inteligente da Redentia, tire dúvidas sobre investimentos e receba recomendações personalizadas com tecnologia de IA.',
+  }),
+])
 
 function redirectToLogin() {
   navigateTo('/auth/login?redirect=/help')
