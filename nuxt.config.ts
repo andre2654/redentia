@@ -12,7 +12,6 @@ export default defineNuxtConfig({
     '@pinia-plugin-persistedstate/nuxt',
     '@vite-pwa/nuxt',
     '@nuxtjs/sitemap',
-    '@nuxtjs/sitemap'
   ],
   ssr: true,
   vite: {
@@ -101,7 +100,13 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       cacheTempInSeconds: 60,
+      siteUrl:
+        process.env.NUXT_PUBLIC_SITE_URL || 'https://www.redentia.com.br',
     },
+  },
+  routeRules: {
+    '/redentia/**': { prerender: true },
+    '/download': { prerender: true },
   },
   components: [
     {

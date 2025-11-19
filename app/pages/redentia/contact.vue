@@ -308,4 +308,15 @@ definePageMeta({
   isPublicRoute: true,
   hideInstallAppBanner: true,
 })
+
+usePageSeo({
+  title: 'Fale com a Redentia | Atendimento e suporte',
+  description:
+    'Entre em contato com a equipe Redentia para tirar dúvidas, enviar sugestões ou falar sobre parcerias. Respondemos rapidamente.',
+  path: '/redentia/contact',
+  breadcrumbs: [
+    { name: 'Início', path: '/' },
+    { name: 'Contato', path: '/redentia/contact' },
+  ],
+})
 </script>

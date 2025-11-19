@@ -640,4 +640,15 @@ definePageMeta({
   isPublicRoute: true,
   hideInstallAppBanner: true,
 })
+
+usePageSeo({
+  title: 'Termos de Uso | Redentia',
+  description:
+    'Conheça os direitos e deveres ao utilizar a plataforma Redentia, incluindo regras de serviço e proteção de dados.',
+  path: '/redentia/terms',
+  breadcrumbs: [
+    { name: 'Início', path: '/' },
+    { name: 'Termos de uso', path: '/redentia/terms' },
+  ],
+})
 </script>

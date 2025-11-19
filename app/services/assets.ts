@@ -3,6 +3,25 @@ import type { IAsset, FundamentusApiResponse } from '~/types/asset'
 export const useAssetsService = () => {
   const { preventWithCache } = usePrevents()
 
+  function hasDataField<T>(payload: any): payload is { data: T } {
+    return !!payload && typeof payload === 'object' && 'data' in payload
+  }
+
+  function unwrapArray<T>(payload: any): T[] {
+    if (Array.isArray(payload)) return payload
+    if (hasDataField<T[]>(payload) && Array.isArray(payload.data)) {
+      return payload.data
+    }
+    return []
+  }
+
+  function unwrapValue<T>(payload: any): T {
+    if (hasDataField<T>(payload)) {
+      return payload.data
+    }
+    return payload as T
+  }
+
   async function getAssets(): Promise<IAsset[]> {
     const url = 'https://redentia-api.saraivada.com/api/tickers-full'
     const response = await preventWithCache(
@@ -12,7 +31,7 @@ export const useAssetsService = () => {
           method: 'GET',
         })
     )
-    return response.data
+    return unwrapArray<IAsset>(response)
   }
 
   async function getTopStocks(
@@ -28,7 +47,7 @@ export const useAssetsService = () => {
       url,
       async () => await $fetch<IAsset[]>(url, { method: 'GET' })
     )
-    return resp.data
+    return unwrapArray<IAsset>(resp)
   }
 
   async function getTopETFs(
@@ -44,7 +63,7 @@ export const useAssetsService = () => {
       url,
       async () => await $fetch<IAsset[]>(url, { method: 'GET' })
     )
-    return resp.data
+    return unwrapArray<IAsset>(resp)
   }
 
   async function getTopReits(
@@ -60,7 +79,7 @@ export const useAssetsService = () => {
       url,
       async () => await $fetch<IAsset[]>(url, { method: 'GET' })
     )
-    return resp.data
+    return unwrapArray<IAsset>(resp)
   }
 
   async function getTopBDRs(
@@ -76,7 +95,7 @@ export const useAssetsService = () => {
       url,
       async () => await $fetch<IAsset[]>(url, { method: 'GET' })
     )
-    return resp.data
+    return unwrapArray<IAsset>(resp)
   }
 
   async function assetHistoricPrices(
@@ -88,7 +107,7 @@ export const useAssetsService = () => {
       url,
       async () => await $fetch(url, { method: 'GET' })
     )
-    return resp.data
+    return unwrapValue(resp)
   }
 
   async function getIndiceHistoricPrices(
@@ -100,7 +119,7 @@ export const useAssetsService = () => {
       url,
       async () => await $fetch(url, { method: 'GET' })
     )
-    return resp.data
+    return unwrapValue(resp)
   }
 
   async function getTickerDetails(ticker: string) {
@@ -109,7 +128,7 @@ export const useAssetsService = () => {
       url,
       async () => await $fetch(url, { method: 'GET' })
     )
-    return resp.data
+    return unwrapValue(resp)
   }
 
   async function getTickerDividends(ticker: string) {
@@ -118,7 +137,7 @@ export const useAssetsService = () => {
       url,
       async () => await $fetch(url, { method: 'GET' })
     )
-    return resp.data
+    return unwrapValue(resp)
   }
 
   async function getTickerFundamentus(
@@ -129,7 +148,7 @@ export const useAssetsService = () => {
       url,
       async () => await $fetch<FundamentusApiResponse>(url, { method: 'GET' })
     )
-    return resp.data
+    return unwrapValue<FundamentusApiResponse>(resp)
   }
 
   return {

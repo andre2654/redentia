@@ -51,8 +51,17 @@
       </div>
     </section>
 
-    <AtomsTickerCarousel class="mt-5 w-full max-md:hidden" big no-control />
-    <AtomsTickerCarousel class="mt-5 w-full md:hidden" no-control />
+    <AtomsTickerCarousel
+      class="mt-5 w-full max-md:hidden"
+      big
+      no-control
+      :items="tickerCarouselItems"
+    />
+    <AtomsTickerCarousel
+      class="mt-5 w-full md:hidden"
+      no-control
+      :items="tickerCarouselItems"
+    />
 
     <div class="flex h-full flex-col gap-4 pt-6">
       <div class="flex flex-col gap-8">
@@ -427,6 +436,7 @@
 </template>
 
 <script setup lang="ts">
+import type { IAsset } from '~/types/asset'
 import type { ChartTimeRange } from '~/types/chart'
 
 const authStore = useAuthStore()
@@ -549,7 +559,6 @@ const {
 const selectedTimeRange = ref<ChartTimeRange>('month')
 const showMap = ref(false)
 const loading = ref(true)
-const loadingIndicators = ref(true)
 const blockChat = ref(false)
 const treemapFilter = ref<'all' | 'positive' | 'negative'>('all')
 
@@ -575,10 +584,43 @@ const assetCategories = [
   { key: 'bdrs', label: 'BDRs' },
 ] as const
 
-const stocksData = ref([])
+interface ChartPoint {
+  date: string
+  value: number
+  timestamp: number
+}
 
-const topAssets = ref({
-  loading: false,
+interface TreemapEntry {
+  symbol: string
+  name: string
+  price: number
+  change: number
+  category: 'acoes' | 'fiis'
+}
+
+interface RankingBucket {
+  stocks: IAsset[]
+  etfs: IAsset[]
+  reits: IAsset[]
+  bdrs: IAsset[]
+}
+
+interface HomeMarketData {
+  rankings: {
+    top: RankingBucket
+    bottom: RankingBucket
+  }
+  treemap: TreemapEntry[]
+  ibovSeries: IndiceData[]
+  ifixSeries: IndiceData[]
+}
+
+const stocksData = ref<TreemapEntry[]>([])
+
+const topAssets = ref<{
+  top: RankingBucket
+  bottom: RankingBucket
+}>({
   top: {
     stocks: [],
     etfs: [],
@@ -593,11 +635,64 @@ const topAssets = ref({
   },
 })
 
-interface ChartPoint {
-  date: string
-  value: number
-  timestamp: number
-}
+const RANKING_LIMIT = 8
+const TREEMAP_LIMIT = 200
+
+const { data: homeMarketData } = await useAsyncData<HomeMarketData>(
+  'home-market-data',
+  async () => {
+    const [
+      [topStocks, bottomStocks],
+      [topETFs, bottomETFs],
+      [topReits, bottomReits],
+      [topBDRs, bottomBDRs],
+      ibovSeries,
+      ifixSeries,
+    ] = await Promise.all([
+      Promise.all([
+        getTopStocks('top', 1000000),
+        getTopStocks('bottom', 1000000),
+      ]),
+      Promise.all([
+        getTopETFs('top', 1000000),
+        getTopETFs('bottom', 1000000),
+      ]),
+      Promise.all([
+        getTopReits('top', 1000000),
+        getTopReits('bottom', 1000000),
+      ]),
+      Promise.all([
+        getTopBDRs('top', 1000000),
+        getTopBDRs('bottom', 1000000),
+      ]),
+      getIndiceHistoricPrices('ibov', '1mo'),
+      getIndiceHistoricPrices('ifix', '1mo'),
+    ])
+
+    const clamp = (items: IAsset[] = []) =>
+      Array.isArray(items) ? items.slice(0, RANKING_LIMIT) : []
+
+    return {
+      rankings: {
+        top: {
+          stocks: clamp(topStocks),
+          etfs: clamp(topETFs),
+          reits: clamp(topReits),
+          bdrs: clamp(topBDRs),
+        },
+        bottom: {
+          stocks: clamp(bottomStocks),
+          etfs: clamp(bottomETFs),
+          reits: clamp(bottomReits),
+          bdrs: clamp(bottomBDRs),
+        },
+      },
+      treemap: buildTreemapDataset(topStocks, bottomStocks, topReits, bottomReits),
+      ibovSeries: Array.isArray(ibovSeries) ? ibovSeries : [],
+      ifixSeries: Array.isArray(ifixSeries) ? ifixSeries : [],
+    }
+  }
+)
 
 interface IndiceData {
   name: string
@@ -619,68 +714,135 @@ const chatSuggestions = [
   'Vale a pena investir em ETFs?',
 ]
 
+const tickerCarouselItems = computed(() =>
+  topAssets.value.top.stocks.slice(0, 40).map((asset) => ({
+    logo: asset.logo || '/default-logo.png',
+    ticker: asset.ticker,
+    change: `${coerceNumber(asset.change_percent ?? asset.change).toFixed(2)}%`,
+  }))
+)
+
+watchEffect(() => {
+  const payload = homeMarketData.value
+  if (!payload) return
+
+  topAssets.value = payload.rankings
+  stocksData.value = payload.treemap
+
+  updateIndicatorsFromSeries(payload.ibovSeries, payload.ifixSeries)
+
+  if (!ibovChartData.value.length && payload.ibovSeries.length) {
+    ibovChartData.value = mapIndiceSeries(payload.ibovSeries)
+    loading.value = false
+  }
+})
+
+function coerceNumber(value: unknown): number {
+  if (typeof value === 'number' && Number.isFinite(value)) return value
+  const parsed = Number(value)
+  return Number.isFinite(parsed) ? parsed : 0
+}
+
+function mapIndiceSeries(data: IndiceData[]): ChartPoint[] {
+  return data.map((item) => ({
+    date: item.price_at,
+    value: coerceNumber(item.market_price),
+    timestamp: new Date(item.price_at).getTime(),
+  }))
+}
+
+function calculateSeriesStats(series?: IndiceData[]) {
+  if (!Array.isArray(series) || series.length < 2) return null
+  const lastPrice = coerceNumber(series[series.length - 1].market_price)
+  const previousPrice = coerceNumber(series[series.length - 2].market_price)
+  if (previousPrice === 0) return null
+  const variation = ((lastPrice - previousPrice) / previousPrice) * 100
+  return { lastPrice, variation }
+}
+
+function formatVariation(value: number) {
+  return `${value >= 0 ? '+' : ''}${value.toFixed(2)}%`
+}
+
+function updateIndicatorsFromSeries(
+  ibovSeries: IndiceData[],
+  ifixSeries: IndiceData[]
+) {
+  const ibovStats = calculateSeriesStats(ibovSeries)
+  if (ibovStats) {
+    ibovLastPrice.value = ibovStats.lastPrice
+    ibovIndicator.value = formatVariation(ibovStats.variation)
+  }
+
+  const ifixStats = calculateSeriesStats(ifixSeries)
+  if (ifixStats) {
+    ifixIndicator.value = formatVariation(ifixStats.variation)
+  }
+}
+
+function buildTreemapDataset(
+  topStocks: IAsset[] = [],
+  bottomStocks: IAsset[] = [],
+  topReits: IAsset[] = [],
+  bottomReits: IAsset[] = []
+): TreemapEntry[] {
+  const limitPerGroup = Math.max(1, Math.floor(TREEMAP_LIMIT / 4))
+  const dataset: TreemapEntry[] = []
+
+  const pushAssets = (items: IAsset[], category: 'acoes' | 'fiis') => {
+    if (!Array.isArray(items)) return
+    items.slice(0, limitPerGroup).forEach((asset) => {
+      if (!asset?.ticker) return
+      dataset.push({
+        symbol: asset.ticker,
+        name: asset.name,
+        price: coerceNumber(asset.market_price ?? asset.close),
+        change: coerceNumber(asset.change_percent ?? asset.change),
+        category,
+      })
+    })
+  }
+
+  pushAssets(topStocks, 'acoes')
+  pushAssets(bottomStocks, 'acoes')
+  pushAssets(topReits, 'fiis')
+  pushAssets(bottomReits, 'fiis')
+
+  return dataset
+}
+
 function handleChatCardClick() {
   blockChat.value = true
 }
 
-const ibovChartLabel = computed(() => [
-  {
-    label: 'IBOV',
-    color: '#10b981',
-    value:
-      ibovChartData.value.length > 0
-        ? ibovChartData.value[ibovChartData.value.length - 1].value.toFixed(2)
-        : '0',
-  },
-])
+const ibovChartLabel = computed(() => {
+  const lastPoint =
+    ibovChartData.value.length > 0
+      ? ibovChartData.value[ibovChartData.value.length - 1]
+      : null
 
-async function fetchIbovChartData() {
+  return [
+    {
+      label: 'IBOV',
+      color: '#10b981',
+      value: lastPoint ? lastPoint.value.toFixed(2) : '0',
+    },
+  ]
+})
+
+async function fetchIbovChartData(
+  range: ChartTimeRange = selectedTimeRange.value
+) {
   loading.value = true
   let period: '1mo' | 'ytd' | '3mo' | '12mo' | '3y' | '4y' | '5y' | 'full' =
     '1mo'
-  if (selectedTimeRange.value === 'month') period = '1mo'
-  else if (selectedTimeRange.value === 'year') period = '12mo'
-  else if (selectedTimeRange.value === '3years') period = '3y'
-  else if (selectedTimeRange.value === 'full') period = 'full'
+  if (range === 'year') period = '12mo'
+  else if (range === '3years') period = '3y'
+  else if (range === 'full') period = 'full'
 
   const data = await getIndiceHistoricPrices('ibov', period)
-
-  ibovChartData.value = Array.isArray(data)
-    ? data.map((item: IndiceData) => ({
-        date: item.price_at,
-        value: item.market_price,
-        timestamp: new Date(item.price_at).getTime(),
-      }))
-    : []
+  ibovChartData.value = mapIndiceSeries(Array.isArray(data) ? data : [])
   loading.value = false
-}
-
-async function fetchIndicatorsData() {
-  loadingIndicators.value = true
-  try {
-    const [ibovData, ifixData] = await Promise.all([
-      getIndiceHistoricPrices('ibov', '1mo'),
-      getIndiceHistoricPrices('ifix', '1mo'),
-    ])
-
-    if (Array.isArray(ibovData) && ibovData.length > 1) {
-      const lastPrice = ibovData[ibovData.length - 1].market_price
-      ibovLastPrice.value = lastPrice
-      const previousPrice = ibovData[ibovData.length - 2].market_price
-      const variation = ((lastPrice - previousPrice) / previousPrice) * 100
-      ibovIndicator.value = `${variation >= 0 ? '+' : ''}${variation.toFixed(2)}%`
-    }
-
-    if (Array.isArray(ifixData) && ifixData.length > 1) {
-      const lastPrice = ifixData[ifixData.length - 1].market_price
-      const previousPrice = ifixData[ifixData.length - 2].market_price
-      const variation = ((lastPrice - previousPrice) / previousPrice) * 100
-      ifixIndicator.value = `${variation >= 0 ? '+' : ''}${variation.toFixed(2)}%`
-    }
-  } catch (error) {
-    console.error('Erro ao buscar dados dos indicadores:', error)
-  }
-  loadingIndicators.value = false
 }
 
 function redirectToLogin(source: string) {
@@ -689,81 +851,15 @@ function redirectToLogin(source: string) {
   )
 }
 
-onMounted(async () => {
-  fetchIbovChartData()
-  fetchIndicatorsData()
 
-  const [
-    [topStocks, bottomStocks],
-    [topETFs, bottomETFs],
-    [topReits, bottomReits],
-    [topBDRs, bottomBDRs],
-  ] = await Promise.all([
-    Promise.all([
-      getTopStocks('top', 1000000),
-      getTopStocks('bottom', 1000000),
-    ]),
-    Promise.all([getTopETFs('top', 1000000), getTopETFs('bottom', 1000000)]),
-    Promise.all([getTopReits('top', 1000000), getTopReits('bottom', 1000000)]),
-    Promise.all([getTopBDRs('top', 1000000), getTopBDRs('bottom', 1000000)]),
-  ])
+watch(selectedTimeRange, (range) => {
+  if (range === 'month' && homeMarketData.value?.ibovSeries?.length) {
+    ibovChartData.value = mapIndiceSeries(homeMarketData.value.ibovSeries)
+    loading.value = false
+    return
+  }
 
-  topAssets.value.top.stocks = topStocks
-  topAssets.value.top.etfs = topETFs
-  topAssets.value.top.reits = topReits
-  topAssets.value.top.bdrs = topBDRs
-
-  topAssets.value.bottom.stocks = bottomStocks
-  topAssets.value.bottom.etfs = bottomETFs
-  topAssets.value.bottom.reits = bottomReits
-  topAssets.value.bottom.bdrs = bottomBDRs
-
-  const newTreeMapData = []
-  topStocks.forEach((stock) => {
-    newTreeMapData.push({
-      symbol: stock.ticker,
-      name: stock.name,
-      price: stock.market_price,
-      change: stock.change_percent,
-      category: 'acoes' as const,
-    })
-  })
-
-  bottomStocks.forEach((stock) => {
-    newTreeMapData.push({
-      symbol: stock.ticker,
-      name: stock.name,
-      price: stock.market_price,
-      change: stock.change_percent,
-      category: 'acoes' as const,
-    })
-  })
-
-  topReits.forEach((stock) => {
-    newTreeMapData.push({
-      symbol: stock.ticker,
-      name: stock.name,
-      price: stock.market_price,
-      change: stock.change_percent,
-      category: 'fiis' as const,
-    })
-  })
-
-  bottomReits.forEach((stock) => {
-    newTreeMapData.push({
-      symbol: stock.ticker,
-      name: stock.name,
-      price: stock.market_price,
-      change: stock.change_percent,
-      category: 'fiis' as const,
-    })
-  })
-
-  stocksData.value = newTreeMapData
-})
-
-watch(selectedTimeRange, () => {
-  fetchIbovChartData()
+  fetchIbovChartData(range)
 })
 
 definePageMeta({

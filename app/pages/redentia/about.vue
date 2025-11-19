@@ -37,4 +37,15 @@ definePageMeta({
   isPublicRoute: true,
   hideInstallAppBanner: true,
 })
+
+usePageSeo({
+  title: 'Sobre a Redentia | Plataforma inteligente de investimentos',
+  description:
+    'Entenda a missão da Redentia e como combinamos consolidação de carteira e inteligência artificial para simplificar a vida do investidor brasileiro.',
+  path: '/redentia/about',
+  breadcrumbs: [
+    { name: 'Início', path: '/' },
+    { name: 'Sobre', path: '/redentia/about' },
+  ],
+})
 </script>

@@ -299,4 +299,15 @@ definePageMeta({
   isPublicRoute: true,
   hideInstallAppBanner: true,
 })
+
+usePageSeo({
+  title: 'Política de Privacidade | Redentia',
+  description:
+    'Saiba como a Redentia coleta, utiliza e protege seus dados pessoais e financeiros de acordo com a LGPD.',
+  path: '/redentia/privacy',
+  breadcrumbs: [
+    { name: 'Início', path: '/' },
+    { name: 'Privacidade', path: '/redentia/privacy' },
+  ],
+})
 </script>

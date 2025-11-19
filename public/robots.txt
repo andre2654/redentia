@@ -59,4 +59,4 @@ Disallow: /
 # ========================================
 # Sitemap
 # ========================================
-Sitemap: https://www.redentia.com/sitemap.xml
+Sitemap: https://www.redentia.com.br/sitemap.xml

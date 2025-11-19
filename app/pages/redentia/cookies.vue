@@ -350,4 +350,15 @@ definePageMeta({
   isPublicRoute: true,
   hideInstallAppBanner: true,
 })
+
+usePageSeo({
+  title: 'Política de Cookies | Redentia',
+  description:
+    'Entenda quais cookies utilizamos, por que eles são importantes e como personalizar suas preferências na plataforma Redentia.',
+  path: '/redentia/cookies',
+  breadcrumbs: [
+    { name: 'Início', path: '/' },
+    { name: 'Cookies', path: '/redentia/cookies' },
+  ],
+})
 </script>

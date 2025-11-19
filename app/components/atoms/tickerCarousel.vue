@@ -54,25 +54,84 @@
   </div>
 </template>
 
-<script setup>
-import { ref, computed } from 'vue'
+<script setup lang="ts">
+import { ref, computed, watch } from 'vue'
 
-const { getTopStocks, getTopETFs, getTopReits, getTopBDRs } = useAssetsService()
+interface CarouselItem {
+  logo: string
+  ticker: string
+  change: string
+}
 
-defineProps({
-  noControl: {
-    type: Boolean,
-    default: false,
-  },
-  big: {
-    type: Boolean,
-    default: false,
-  },
-})
+const props = withDefaults(
+  defineProps<{
+    noControl?: boolean
+    big?: boolean
+    items?: CarouselItem[]
+  }>(),
+  {
+    noControl: false,
+    big: false,
+    items: () => [],
+  }
+)
+
+const { getTopStocks } = useAssetsService()
+
+const fetchedItems = !props.items.length
+  ? await useAsyncData<CarouselItem[]>(
+      'ticker-carousel-items',
+      async () => {
+        const data = await getTopStocks('top', 100000)
+        return (Array.isArray(data) ? data : []).slice(0, 40).map((asset) => {
+          const variation =
+            typeof asset.change_percent === 'number'
+              ? asset.change_percent
+              : typeof asset.change === 'number'
+                ? asset.change
+                : Number(asset.change_percent ?? asset.change ?? 0) || 0
+
+          return {
+            logo: asset.logo || '/default-logo.png',
+            ticker: asset.ticker,
+            change: `${variation.toFixed(2)}%`,
+          }
+        })
+      }
+    )
+  : null
 
 const isPaused = ref(false)
 
-const items = ref([])
+const items = ref<CarouselItem[]>(props.items.length ? props.items : [])
+
+if (!items.value.length && fetchedItems?.data.value?.length) {
+  items.value = fetchedItems.data.value
+}
+
+if (fetchedItems?.data) {
+  watch(
+    fetchedItems.data,
+    (newItems) => {
+      if (!props.items.length && newItems?.length) {
+        items.value = newItems
+      }
+    },
+    { immediate: true }
+  )
+}
+
+watch(
+  () => props.items,
+  (newItems) => {
+    if (newItems?.length) {
+      items.value = newItems
+    } else if (fetchedItems?.data.value?.length) {
+      items.value = fetchedItems.data.value
+    }
+  },
+  { deep: true }
+)
 
 const repeatedItems = computed(() => [...items.value])
 
@@ -87,25 +146,21 @@ const loop = () => {
 
     const carouselEl = carousel.value
     if (carouselEl) {
-      const firstItem = carouselEl.children[0]
-      const firstItemWidth = firstItem.offsetWidth
+      const firstItem = carouselEl.children[0] as HTMLElement | undefined
+      if (firstItem) {
+        const firstItemWidth = firstItem.offsetWidth
 
-      if (Math.abs(position.value) >= firstItemWidth) {
-        position.value += firstItemWidth
-        carouselEl.appendChild(firstItem)
+        if (Math.abs(position.value) >= firstItemWidth) {
+          position.value += firstItemWidth
+          carouselEl.appendChild(firstItem)
+        }
       }
     }
   }
   animationFrame = requestAnimationFrame(loop)
 }
 
-onMounted(async () => {
-  const data = await getTopStocks('top', 100000)
-  items.value = data.map((asset) => ({
-    logo: asset.logo || '/default-logo.png',
-    ticker: asset.ticker,
-    change: `${asset.change_percent.toFixed(2)}%`,
-  }))
+onMounted(() => {
   animationFrame = requestAnimationFrame(loop)
 })
 

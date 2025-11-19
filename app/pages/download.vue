@@ -162,4 +162,15 @@ definePageMeta({
   isPublicRoute: true,
   hideInstallAppBanner: true,
 })
+
+usePageSeo({
+  title: 'Baixe o app Redentia | Investimentos com IA no seu celular',
+  description:
+    'Instale o aplicativo Redentia para gerenciar ações, FIIs e carteiras com inteligência artificial e notificações em tempo real.',
+  path: '/download',
+  breadcrumbs: [
+    { name: 'Início', path: '/' },
+    { name: 'Download', path: '/download' },
+  ],
+})
 </script>

@@ -235,4 +235,15 @@ definePageMeta({
   isPublicRoute: true,
   hideInstallAppBanner: true,
 })
+
+usePageSeo({
+  title: 'Como funciona a Redentia | Consolide e analise seus investimentos',
+  description:
+    'Veja passo a passo como a plataforma Redentia conecta corretoras, usa IA para gerar insights e entrega dashboards completos para seus investimentos.',
+  path: '/redentia/how-works',
+  breadcrumbs: [
+    { name: 'Início', path: '/' },
+    { name: 'Como funciona', path: '/redentia/how-works' },
+  ],
+})
 </script>

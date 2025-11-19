@@ -497,9 +497,19 @@ const layoutName = computed(() =>
   authStore.isAuthenticated ? 'default' : 'unauthenticated'
 )
 
+const { data: assetsDataset, pending: assetsPending } =
+  await useAsyncData<IAsset[]>('search-assets', async () => {
+    const response = await getAssets()
+    if (Array.isArray(response)) {
+      return response
+    }
+    const nested = (response as { data?: IAsset[] } | undefined)?.data
+    return Array.isArray(nested) ? nested : []
+  })
+
 const allAssets = ref<IAsset[]>([])
 const data = ref<IAsset[]>([])
-const assetsLoading = ref(true)
+const assetsLoading = computed(() => assetsPending.value)
 const lastUpdatedAt = ref<Date | null>(null)
 
 const globalFilter = ref('')
@@ -977,6 +987,19 @@ const totalPages = computed(() =>
   Math.max(1, Math.ceil(resultsCount.value / itemsPerPage.value || 1))
 )
 
+watch(
+  assetsDataset,
+  (newAssets) => {
+    if (!Array.isArray(newAssets)) return
+    allAssets.value = newAssets
+    data.value = newAssets
+    lastUpdatedAt.value = new Date()
+    currentPage.value = 1
+    readFiltersFromUrl()
+  },
+  { immediate: true }
+)
+
 const activeFiltersCount = computed(() => {
   let count = 0
   if (
@@ -1050,23 +1073,6 @@ function formatPercent(n: number) {
   const num = Number(n || 0)
   return `${num.toFixed(1)}%`
 }
-onMounted(async () => {
-  assetsLoading.value = true
-  try {
-    allAssets.value = await getAssets()
-    data.value = allAssets.value
-    lastUpdatedAt.value = new Date()
-
-    await nextTick()
-    currentPage.value = 1
-
-    // Lê filtros da URL ao montar
-    readFiltersFromUrl()
-  } finally {
-    assetsLoading.value = false
-  }
-})
-
 watch(
   () => route.query,
   () => {
