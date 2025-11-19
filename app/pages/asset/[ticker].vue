@@ -583,7 +583,7 @@
                 <UTextarea
                   placeholder="Faça qualquer pergunta..."
                   size="md"
-                  rows="2"
+                  :rows="2"
                   disabled
                   class="w-full"
                   :ui="{
@@ -680,7 +680,9 @@ const formattedAssetPrice = computed(() => {
     maximumFractionDigits: 2,
   })}`
 })
-const dailyChangePercent = computed(() => safeNumber(asset.value?.change_percent))
+const dailyChangePercent = computed(() =>
+  safeNumber(asset.value?.change_percent)
+)
 const dailyChangeSentence = computed(() => {
   if (dailyChangePercent.value === null) return null
   const absolute = Math.abs(dailyChangePercent.value).toFixed(2)

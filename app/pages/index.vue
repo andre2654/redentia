@@ -411,7 +411,7 @@
               <UTextarea
                 placeholder="Faça qualquer pergunta..."
                 size="md"
-                rows="2"
+                :rows="2"
                 disabled
                 class="w-full"
                 :ui="{

@@ -67,7 +67,7 @@
         v-model="inputValue"
         placeholder="Faça qualquer pesquisa..."
         size="md"
-        rows="4"
+        :rows="4"
         autoresize
         :ui="{
           base: 'text-[14px] max-h-[200px] bg-transparent ring-0 placeholder:text-black/40 dark:placeholder:text-white/40',
