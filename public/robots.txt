@@ -1,0 +1,65 @@
+# Robots.txt para Redentia - Plataforma de Investimentos
+# https://www.redentia.com.br
+
+# ========================================
+# Regras para todos os bots
+# ========================================
+User-agent: *
+
+# Permitir páginas públicas importantes
+Allow: /$
+Allow: /download$
+Allow: /redentia/
+Allow: /asset/
+
+# Bloquear páginas de autenticação (não queremos indexar login/registro)
+Disallow: /auth/
+Disallow: /auth/login
+Disallow: /auth/register
+
+# Bloquear áreas privadas/autenticadas
+Disallow: /wallet
+Disallow: /settings
+Allow: /search
+Allow: /help
+Allow: /calculadora
+Disallow: /step-by-step
+Disallow: /planejador
+Disallow: /dividends
+Disallow: /ideal
+
+# Bloquear arquivos técnicos
+Disallow: /_nuxt/
+Disallow: /screenshots/
+
+# Permitir APIs públicas e assets (sitemap, imagens e JSON utilizados por crawlers)
+Allow: /sitemap.xml
+Allow: /api/__sitemap__/
+Allow: /assets/
+Allow: /*.json$
+
+# Bloquear arquivos de manifesto e service worker
+Disallow: /sw.js
+Disallow: /workbox-*.js
+Disallow: /manifest.json
+
+# ========================================
+# Regras específicas para bots de imagens
+# ========================================
+User-agent: Googlebot-Image
+Allow: /assets/images/
+Disallow: /assets/icons/
+
+# ========================================
+# Regras para bots mal-intencionados
+# ========================================
+User-agent: AhrefsBot
+User-agent: SemrushBot
+User-agent: DotBot
+User-agent: MJ12bot
+Disallow: /
+
+# ========================================
+# Sitemap
+# ========================================
+Sitemap: https://www.redentia.com.br/sitemap.xml

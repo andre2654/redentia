@@ -11,10 +11,7 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@pinia-plugin-persistedstate/nuxt',
     '@vite-pwa/nuxt',
-    // SEO ecosystem modules
-    '@nuxtjs/sitemap', // needed for defineSitemapEventHandler
-    '@nuxtjs/robots', // enable robots.txt generation
-    '@nuxtjs/seo', // aggregator (kept for site config + composables)
+    '@nuxtjs/seo',
   ],
   ssr: true,
   vite: {
@@ -36,7 +33,9 @@ export default defineNuxtConfig({
   schemaOrg: {
     enabled: true,
   },
-  // Robots module basic enable
+  sitemap: {
+    enabled: true,
+  },
   robots: {
     enabled: true,
   },
@@ -46,7 +45,6 @@ export default defineNuxtConfig({
   linkChecker: {
     enabled: false,
   },
-  // Detailed sitemap configuration
   sitemap: {
     xslColumns: [
       { label: 'URL', width: '50%' },

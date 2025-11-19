@@ -583,7 +583,7 @@
                 <UTextarea
                   placeholder="Faça qualquer pergunta..."
                   size="md"
-                  :rows="2"
+                  rows="2"
                   disabled
                   class="w-full"
                   :ui="{
@@ -676,9 +676,7 @@ const formattedAssetPrice = computed(() => {
     maximumFractionDigits: 2,
   })}`
 })
-const dailyChangePercent = computed(() =>
-  safeNumber(asset.value?.change_percent)
-)
+const dailyChangePercent = computed(() => safeNumber(asset.value?.change_percent))
 const dailyChangeSentence = computed(() => {
   if (dailyChangePercent.value === null) return null
   const absolute = Math.abs(dailyChangePercent.value).toFixed(2)
@@ -727,6 +725,10 @@ const pageDescription = computed(() => {
   return `${baseSentence}${intradaySegment}. ${yearSegment}Explore dividendos, indicadores fundamentalistas e análises com IA na Redentia.`
 })
 
+const canonicalUrl = computed(
+  () => `${baseSiteUrl}/asset/${ticker.toLowerCase()}`
+)
+
 const shareImage = computed(() => {
   const logo = asset.value?.logo
   if (typeof logo === 'string' && logo.length > 0) {
@@ -737,6 +739,20 @@ const shareImage = computed(() => {
   }
   return `${baseSiteUrl}/512x512.png`
 })
+
+useSeoMeta({
+  title: () => pageTitle.value,
+  description: () => pageDescription.value,
+  ogImage: () => shareImage.value,
+  twitterCard: 'summary_large_image',
+})
+
+useSchemaOrg([
+  defineWebPage({
+    name: () => pageTitle.value,
+    description: () => pageDescription.value,
+  }),
+])
 
 const monthLabels = [
   'Jan',
@@ -1607,19 +1623,10 @@ watch(selectedTimeRange, () => {
   fetchChartData()
 })
 
-// Página pública com transição; SEO tratado via useSeoMeta para evitar macro evaluation issues
 definePageMeta({
   isPublicRoute: true,
   layoutTransition: {
     name: 'slide-in',
   },
-})
-
-// SEO simplificado com nuxtseo
-useSeoMeta({
-  title: () => pageTitle.value,
-  description: () => pageDescription.value,
-  ogImage: () => shareImage.value,
-  twitterCard: 'summary_large_image',
 })
 </script>

@@ -411,7 +411,7 @@
               <UTextarea
                 placeholder="Faça qualquer pergunta..."
                 size="md"
-                :rows="2"
+                rows="2"
                 disabled
                 class="w-full"
                 :ui="{
@@ -433,6 +433,29 @@ const authStore = useAuthStore()
 const layoutName = computed(() =>
   authStore.isAuthenticated ? 'default' : 'unauthenticated'
 )
+
+const siteUrl = useSiteConfig().url
+
+useSeoMeta({
+  title: 'Redentia: invista em ações e fundos imobiliários com IA',
+  description:
+    'Use a Redentia para investir com inteligência: acompanhe ações, FIIs e índices em tempo real, receba análises com IA e utilize calculadoras avançadas.',
+  ogImage: `${siteUrl}/512x512.png`,
+  twitterCard: 'summary_large_image',
+})
+
+useSchemaOrg([
+  defineWebSite({
+    name: 'Redentia',
+    description:
+      'Use a Redentia para investir com inteligência: acompanhe ações, FIIs e índices em tempo real, receba análises com IA e utilize calculadoras avançadas.',
+  }),
+  defineWebPage(),
+  defineOrganization({
+    name: 'Redentia',
+    logo: `${siteUrl}/512x512.png`,
+  }),
+])
 
 const {
   getTopStocks,
@@ -667,7 +690,6 @@ definePageMeta({
   layoutTransition: {
     name: 'slide-in',
   },
-  title: 'Redentia: invista em ações e fundos imobiliários com IA',
 })
 </script>
 
