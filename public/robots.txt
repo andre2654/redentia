@@ -28,12 +28,15 @@ Disallow: /planejador
 Disallow: /dividends
 Disallow: /ideal
 
-# Bloquear arquivos técnicos e assets
+# Bloquear arquivos técnicos
 Disallow: /_nuxt/
-Disallow: /api/
-Disallow: /*.json$
-Disallow: /assets/
 Disallow: /screenshots/
+
+# Permitir APIs públicas e assets (sitemap, imagens e JSON utilizados por crawlers)
+Allow: /sitemap.xml
+Allow: /api/__sitemap__/
+Allow: /assets/
+Allow: /*.json$
 
 # Bloquear arquivos de manifesto e service worker
 Disallow: /sw.js
@@ -59,4 +62,4 @@ Disallow: /
 # ========================================
 # Sitemap
 # ========================================
-Sitemap: https://www.redentia.com/sitemap.xml
+Sitemap: https://www.redentia.com.br/sitemap.xml
