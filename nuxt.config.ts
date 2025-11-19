@@ -12,6 +12,7 @@ export default defineNuxtConfig({
     '@pinia-plugin-persistedstate/nuxt',
     '@vite-pwa/nuxt',
     '@nuxtjs/sitemap',
+    '@nuxtjs/sitemap'
   ],
   ssr: true,
   vite: {
@@ -116,6 +117,17 @@ export default defineNuxtConfig({
   imports: {
     dirs: ['services'],
   },
+  colorMode: {
+    preference: 'system', // default value of $colorMode.preference
+    fallback: 'dark', // fallback value if not system preference found
+    globalName: '__NUXT_COLOR_MODE__',
+    componentName: 'ColorScheme',
+    classPrefix: '',
+    classSuffix: '',
+    storage: 'localStorage', // or 'sessionStorage' or 'cookie'
+    storageKey: 'nuxt-color-mode-force'
+
+  },
   ui: {
     theme: {
       colors: [
@@ -138,7 +150,6 @@ export default defineNuxtConfig({
       title: 'Redentia: invista em ações e fundos imobiliários com IA',
       htmlAttrs: {
         lang: 'pt-BR',
-        class: 'dark',
       },
       viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
       charset: 'utf-8',
