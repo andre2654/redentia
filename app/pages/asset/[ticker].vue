@@ -657,7 +657,11 @@ interface ChartPoint {
 }
 const chartData = ref<ChartPoint[]>([])
 
-const baseSiteUrl = useSiteConfig().url
+const runtimeConfig = useRuntimeConfig()
+const baseSiteUrl = computed(() => {
+  const url = runtimeConfig.public?.siteUrl || 'https://www.redentia.com.br'
+  return url.endsWith('/') ? url.slice(0, -1) : url
+})
 
 const tickerUpper = computed(() => ticker.toUpperCase())
 const assetName = computed(() => {
@@ -726,7 +730,7 @@ const pageDescription = computed(() => {
 })
 
 const canonicalUrl = computed(
-  () => `${baseSiteUrl}/asset/${ticker.toLowerCase()}`
+  () => `${baseSiteUrl.value}/asset/${ticker.toLowerCase()}`
 )
 
 const shareImage = computed(() => {
@@ -735,24 +739,42 @@ const shareImage = computed(() => {
     if (logo.startsWith('http')) {
       return logo
     }
-    return `${baseSiteUrl}${logo.startsWith('/') ? logo : `/${logo}`}`
+    return `${baseSiteUrl.value}${logo.startsWith('/') ? logo : `/${logo}`}`
   }
-  return `${baseSiteUrl}/512x512.png`
+  return `${baseSiteUrl.value}/512x512.png`
 })
 
 useSeoMeta({
   title: () => pageTitle.value,
+  ogTitle: () => pageTitle.value,
+  twitterTitle: () => pageTitle.value,
   description: () => pageDescription.value,
+  ogDescription: () => pageDescription.value,
+  twitterDescription: () => pageDescription.value,
+  ogUrl: () => canonicalUrl.value,
   ogImage: () => shareImage.value,
+  twitterImage: () => shareImage.value,
+  ogType: 'website',
+  ogSiteName: 'Redentia',
+  ogLocale: 'pt_BR',
   twitterCard: 'summary_large_image',
+  robots: 'index,follow',
 })
 
-useSchemaOrg([
-  defineWebPage({
-    name: () => pageTitle.value,
-    description: () => pageDescription.value,
-  }),
-])
+useHead(() => {
+  const title = pageTitle.value
+  const url = canonicalUrl.value
+
+  return {
+    title,
+    link: [
+      {
+        rel: 'canonical',
+        href: url,
+      },
+    ],
+  }
+})
 
 const monthLabels = [
   'Jan',

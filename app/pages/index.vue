@@ -434,28 +434,109 @@ const layoutName = computed(() =>
   authStore.isAuthenticated ? 'default' : 'unauthenticated'
 )
 
-const siteUrl = useSiteConfig().url
+const runtimeConfig = useRuntimeConfig()
+const siteUrl = computed(() => {
+  const url = runtimeConfig.public?.siteUrl || 'https://www.redentia.com.br'
+  return url.endsWith('/') ? url.slice(0, -1) : url
+})
+const canonicalUrl = computed(() => `${siteUrl.value}/`)
+const metaDescription =
+  'Use a Redentia para investir com inteligência: acompanhe ações, FIIs e índices em tempo real, receba análises com IA e utilize calculadoras avançadas.'
+const navigationLinks = computed(() => [
+  {
+    name: 'Assessoria com IA',
+    url: `${siteUrl.value}/help`,
+  },
+  {
+    name: 'Calculadora de juros compostos',
+    url: `${siteUrl.value}/calculadora`,
+  },
+  {
+    name: 'Todas as ações',
+    url: `${siteUrl.value}/search?group=stocks`,
+  },
+  {
+    name: 'Todos os FIIs',
+    url: `${siteUrl.value}/search?group=reits`,
+  },
+  {
+    name: 'PETR4',
+    url: `${siteUrl.value}/asset/petr4`,
+  },
+  {
+    name: 'BBAS3',
+    url: `${siteUrl.value}/asset/bbas3`,
+  },
+])
 
 useSeoMeta({
   title: 'Redentia: invista em ações e fundos imobiliários com IA',
-  description:
-    'Use a Redentia para investir com inteligência: acompanhe ações, FIIs e índices em tempo real, receba análises com IA e utilize calculadoras avançadas.',
-  ogImage: `${siteUrl}/512x512.png`,
+  ogTitle: 'Redentia: invista em ações e fundos imobiliários com IA',
+  twitterTitle: 'Redentia: invista em ações e fundos imobiliários com IA',
+  description: metaDescription,
+  ogDescription: metaDescription,
+  twitterDescription: metaDescription,
+  ogUrl: () => canonicalUrl.value,
+  ogImage: () => `${siteUrl.value}/512x512.png`,
+  twitterImage: () => `${siteUrl.value}/512x512.png`,
+  ogType: 'website',
+  ogSiteName: 'Redentia',
+  ogLocale: 'pt_BR',
   twitterCard: 'summary_large_image',
+  robots: 'index,follow',
 })
 
-useSchemaOrg([
-  defineWebSite({
-    name: 'Redentia',
-    description:
-      'Use a Redentia para investir com inteligência: acompanhe ações, FIIs e índices em tempo real, receba análises com IA e utilize calculadoras avançadas.',
-  }),
-  defineWebPage(),
-  defineOrganization({
-    name: 'Redentia',
-    logo: `${siteUrl}/512x512.png`,
-  }),
-])
+useHead({
+  link: [
+    {
+      rel: 'canonical',
+      href: canonicalUrl.value,
+    },
+  ],
+  script: [
+    {
+      key: 'ld-website',
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: 'Redentia',
+        url: siteUrl.value,
+        description: metaDescription,
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: `${siteUrl.value}/search?globalFilter={search_term_string}`,
+          'query-input': 'required name=search_term_string',
+        },
+        publisher: {
+          '@type': 'Organization',
+          name: 'Redentia',
+          url: siteUrl.value,
+          logo: {
+            '@type': 'ImageObject',
+            url: `${siteUrl.value}/512x512.png`,
+          },
+        },
+      }),
+    },
+    {
+      key: 'ld-navigation',
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'ItemList',
+        name: 'Navegação principal da Redentia',
+        itemListElement: navigationLinks.value.map((item, index) => ({
+          '@type': 'SiteNavigationElement',
+          position: index + 1,
+          name: item.name,
+          url: item.url,
+        })),
+      }),
+    },
+  ],
+  __dangerouslyDisableSanitizers: ['script'],
+})
 
 const {
   getTopStocks,

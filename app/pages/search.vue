@@ -487,7 +487,11 @@ definePageMeta({
 const { getAssets } = useAssetsService()
 const authStore = useAuthStore()
 const router = useRouter()
-const siteUrl = useSiteConfig().url
+const runtimeConfig = useRuntimeConfig()
+const siteUrl = computed(() => {
+  const url = runtimeConfig.public?.siteUrl || 'https://www.redentia.com.br'
+  return url.endsWith('/') ? url.slice(0, -1) : url
+})
 
 const layoutName = computed(() =>
   authStore.isAuthenticated ? 'default' : 'unauthenticated'
@@ -730,9 +734,9 @@ const canonicalUrl = computed(() => {
       ? route.query.group.toLowerCase()
       : null
   if (groupParam === 'stocks' || groupParam === 'reits') {
-    return `${siteUrl}/search?group=${groupParam}`
+    return `${siteUrl.value}/search?group=${groupParam}`
   }
-  return `${siteUrl}/search`
+  return `${siteUrl.value}/search`
 })
 const metaTitle = computed(() => {
   if (groupFilter.value === 'reits') {
@@ -755,17 +759,29 @@ const metaDescription = computed(() => {
 
 useSeoMeta({
   title: () => metaTitle.value,
+  ogTitle: () => metaTitle.value,
+  twitterTitle: () => metaTitle.value,
   description: () => metaDescription.value,
-  ogImage: `${siteUrl}/512x512.png`,
+  ogDescription: () => metaDescription.value,
+  twitterDescription: () => metaDescription.value,
+  ogUrl: () => canonicalUrl.value,
+  ogImage: () => `${siteUrl.value}/512x512.png`,
+  twitterImage: () => `${siteUrl.value}/512x512.png`,
+  ogType: 'website',
+  ogSiteName: 'Redentia',
+  ogLocale: 'pt_BR',
   twitterCard: 'summary_large_image',
+  robots: 'index,follow',
 })
 
-useSchemaOrg([
-  defineWebPage({
-    name: () => metaTitle.value,
-    description: () => metaDescription.value,
-  }),
-])
+useHead({
+  link: [
+    {
+      rel: 'canonical',
+      href: canonicalUrl.value,
+    },
+  ],
+})
 
 function normalizeBool(v: unknown, def = true) {
   if (v === undefined) return def
