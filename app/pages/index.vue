@@ -479,73 +479,51 @@ const navigationLinks = computed(() => [
   },
 ])
 
-useSeoMeta({
+usePageSeo({
   title: 'Redentia: invista em ações e fundos imobiliários com IA',
-  ogTitle: 'Redentia: invista em ações e fundos imobiliários com IA',
-  twitterTitle: 'Redentia: invista em ações e fundos imobiliários com IA',
   description: metaDescription,
-  ogDescription: metaDescription,
-  twitterDescription: metaDescription,
-  ogUrl: () => canonicalUrl.value,
-  ogImage: () => `${siteUrl.value}/512x512.png`,
-  twitterImage: () => `${siteUrl.value}/512x512.png`,
-  ogType: 'website',
-  ogSiteName: 'Redentia',
-  ogLocale: 'pt_BR',
-  twitterCard: 'summary_large_image',
-  robots: 'index,follow',
-})
-
-useHead({
-  link: [
+  path: '/',
+  structuredData: [
     {
-      rel: 'canonical',
-      href: canonicalUrl.value,
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: 'Redentia',
+      url: siteUrl.value,
+      logo: `${siteUrl.value}/512x512.png`,
+      sameAs: [
+        'https://www.instagram.com/redentia.app',
+        'https://twitter.com/redentia_app',
+      ],
+      contactPoint: {
+        '@type': 'ContactPoint',
+        contactType: 'customer support',
+        email: 'contato@redentia.com.br',
+      },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: 'Redentia',
+      url: siteUrl.value,
+      description: metaDescription,
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: `${siteUrl.value}/search?globalFilter={search_term_string}`,
+        'query-input': 'required name=search_term_string',
+      },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: 'Navegação principal da Redentia',
+      itemListElement: navigationLinks.value.map((item, index) => ({
+        '@type': 'SiteNavigationElement',
+        position: index + 1,
+        name: item.name,
+        url: item.url,
+      })),
     },
   ],
-  script: [
-    {
-      key: 'ld-website',
-      type: 'application/ld+json',
-      innerHTML: JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'WebSite',
-        name: 'Redentia',
-        url: siteUrl.value,
-        description: metaDescription,
-        potentialAction: {
-          '@type': 'SearchAction',
-          target: `${siteUrl.value}/search?globalFilter={search_term_string}`,
-          'query-input': 'required name=search_term_string',
-        },
-        publisher: {
-          '@type': 'Organization',
-          name: 'Redentia',
-          url: siteUrl.value,
-          logo: {
-            '@type': 'ImageObject',
-            url: `${siteUrl.value}/512x512.png`,
-          },
-        },
-      }),
-    },
-    {
-      key: 'ld-navigation',
-      type: 'application/ld+json',
-      innerHTML: JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'ItemList',
-        name: 'Navegação principal da Redentia',
-        itemListElement: navigationLinks.value.map((item, index) => ({
-          '@type': 'SiteNavigationElement',
-          position: index + 1,
-          name: item.name,
-          url: item.url,
-        })),
-      }),
-    },
-  ],
-  __dangerouslyDisableSanitizers: ['script'],
 })
 
 const {

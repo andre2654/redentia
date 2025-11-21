@@ -32,6 +32,8 @@ Disallow: /ideal
 Disallow: /_nuxt/
 Disallow: /api/
 Disallow: /*.json$
+# Permitir imagens públicas
+Allow: /assets/images/
 Disallow: /assets/
 Disallow: /screenshots/
 

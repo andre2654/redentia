@@ -767,30 +767,10 @@ const metaDescription = computed(() => {
   return 'Busque investimentos na B3 com filtros avançados da Redentia: encontre ações, FIIs, ETFs e BDRs com dados em tempo real.'
 })
 
-useSeoMeta({
+usePageSeo({
   title: () => metaTitle.value,
-  ogTitle: () => metaTitle.value,
-  twitterTitle: () => metaTitle.value,
   description: () => metaDescription.value,
-  ogDescription: () => metaDescription.value,
-  twitterDescription: () => metaDescription.value,
-  ogUrl: () => canonicalUrl.value,
-  ogImage: () => `${siteUrl.value}/512x512.png`,
-  twitterImage: () => `${siteUrl.value}/512x512.png`,
-  ogType: 'website',
-  ogSiteName: 'Redentia',
-  ogLocale: 'pt_BR',
-  twitterCard: 'summary_large_image',
-  robots: 'index,follow',
-})
-
-useHead({
-  link: [
-    {
-      rel: 'canonical',
-      href: canonicalUrl.value,
-    },
-  ],
+  path: '/search',
 })
 
 function normalizeBool(v: unknown, def = true) {

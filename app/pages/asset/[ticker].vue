@@ -746,36 +746,11 @@ const shareImage = computed(() => {
   return `${baseSiteUrl.value}/512x512.png`
 })
 
-useSeoMeta({
+usePageSeo({
   title: () => pageTitle.value,
-  ogTitle: () => pageTitle.value,
-  twitterTitle: () => pageTitle.value,
   description: () => pageDescription.value,
-  ogDescription: () => pageDescription.value,
-  twitterDescription: () => pageDescription.value,
-  ogUrl: () => canonicalUrl.value,
-  ogImage: () => shareImage.value,
-  twitterImage: () => shareImage.value,
-  ogType: 'website',
-  ogSiteName: 'Redentia',
-  ogLocale: 'pt_BR',
-  twitterCard: 'summary_large_image',
-  robots: 'index,follow',
-})
-
-useHead(() => {
-  const title = pageTitle.value
-  const url = canonicalUrl.value
-
-  return {
-    title,
-    link: [
-      {
-        rel: 'canonical',
-        href: url,
-      },
-    ],
-  }
+  path: `/asset/${ticker.toLowerCase()}`,
+  image: () => shareImage.value,
 })
 
 const monthLabels = [

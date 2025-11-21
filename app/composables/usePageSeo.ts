@@ -4,14 +4,15 @@ interface PageSeoBreadcrumb {
 }
 
 interface UsePageSeoOptions {
-  title: string
-  description: string
+  title: string | (() => string)
+  description: string | (() => string)
   path: string
-  image?: string
+  image?: string | (() => string)
   type?: string
   robots?: string
   breadcrumbs?: PageSeoBreadcrumb[]
   structuredData?: Record<string, any> | Array<Record<string, any>>
+  alternates?: Array<{ hreflang: string; href: string }>
 }
 
 function resolveUrl(base: string, path: string) {
@@ -31,9 +32,13 @@ export function usePageSeo(options: UsePageSeoOptions) {
     ? options.path
     : `/${options.path}`
   const canonicalUrl = `${siteUrl}${normalizedPath}`
-  const resolvedImage = options.image
-    ? resolveUrl(siteUrl, options.image)
-    : `${siteUrl}/512x512.png`
+  
+  const resolveImage = (img?: string | (() => string)) => {
+    const val = typeof img === 'function' ? img() : img
+    return val ? resolveUrl(siteUrl, val) : `${siteUrl}/512x512.png`
+  }
+
+  const resolvedImage = computed(() => resolveImage(options.image))
 
   useSeoMeta({
     title: options.title,
@@ -44,6 +49,8 @@ export function usePageSeo(options: UsePageSeoOptions) {
     twitterDescription: options.description,
     ogUrl: canonicalUrl,
     ogImage: resolvedImage,
+    ogImageWidth: 512,
+    ogImageHeight: 512,
     twitterImage: resolvedImage,
     ogType: options.type || 'website',
     ogSiteName: 'Redentia',
@@ -53,6 +60,26 @@ export function usePageSeo(options: UsePageSeoOptions) {
   })
 
   const scripts: Array<Record<string, any>> = []
+  const links: Array<Record<string, any>> = [
+    { rel: 'canonical', href: canonicalUrl },
+  ]
+
+  if (options.alternates) {
+    options.alternates.forEach((alt) => {
+      links.push({
+        rel: 'alternate',
+        hreflang: alt.hreflang,
+        href: resolveUrl(siteUrl, alt.href),
+      })
+    })
+  } else {
+    // Default self-referencing hreflang for pt-BR
+    links.push({
+      rel: 'alternate',
+      hreflang: 'pt-BR',
+      href: canonicalUrl,
+    })
+  }
 
   if (options.structuredData) {
     const entries = Array.isArray(options.structuredData)
@@ -88,7 +115,7 @@ export function usePageSeo(options: UsePageSeoOptions) {
   }
 
   useHead({
-    link: [{ rel: 'canonical', href: canonicalUrl }],
+    link: links,
     ...(scripts.length
       ? {
           script: scripts,

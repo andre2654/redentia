@@ -156,7 +156,7 @@ export default defineNuxtConfig({
       htmlAttrs: {
         lang: 'pt-BR',
       },
-      viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
+      viewport: 'width=device-width, initial-scale=1',
       charset: 'utf-8',
       link: [
         {
@@ -164,19 +164,26 @@ export default defineNuxtConfig({
           href: 'https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap',
         },
         {
-          rel: 'icon',
-          type: 'image/png',
-          href: 'https://www.redentia.com.br/favicon.png',
+          rel: 'alternate',
+          hreflang: 'pt-BR',
+          href: 'https://www.redentia.com.br',
         },
         {
-          rel: 'shortcut icon',
+          rel: 'icon',
           type: 'image/png',
-          href: 'https://www.redentia.com.br/favicon.png',
+          sizes: '32x32',
+          href: '/favicon.png',
+        },
+        {
+          rel: 'icon',
+          type: 'image/png',
+          sizes: '192x192',
+          href: '/192x192.png',
         },
         {
           rel: 'apple-touch-icon',
           sizes: '180x180',
-          href: 'https://www.redentia.com.br/192x192.png',
+          href: '/192x192.png',
         },
       ],
       meta: [
