@@ -177,13 +177,28 @@ export default defineNuxtConfig({
         {
           rel: 'icon',
           type: 'image/png',
+          sizes: '48x48',
+          href: '/favicon.png',
+        },
+        {
+          rel: 'icon',
+          type: 'image/png',
           sizes: '192x192',
           href: '/192x192.png',
+        },
+        {
+          rel: 'shortcut icon',
+          href: '/favicon.ico',
         },
         {
           rel: 'apple-touch-icon',
           sizes: '180x180',
           href: '/192x192.png',
+        },
+        {
+          rel: 'mask-icon',
+          href: '/favicon.svg',
+          color: '#000000',
         },
       ],
       meta: [

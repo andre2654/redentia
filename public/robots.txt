@@ -40,7 +40,6 @@ Disallow: /screenshots/
 # Bloquear arquivos de manifesto e service worker
 Disallow: /sw.js
 Disallow: /workbox-*.js
-Disallow: /manifest.json
 
 # ========================================
 # Regras específicas para bots de imagens
