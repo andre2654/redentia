@@ -780,22 +780,28 @@ const chartLabel = computed(
 
 async function fetchChartData() {
   isLoadingChart.value = true
-  let period: '1mo' | 'ytd' | '3mo' | '12mo' | '3y' | '4y' | '5y' | 'full' =
-    '1mo'
-  if (selectedTimeRange.value === 'month') period = '1mo'
-  else if (selectedTimeRange.value === 'year') period = '12mo'
-  else if (selectedTimeRange.value === '3years') period = '3y'
-  else if (selectedTimeRange.value === 'full') period = 'full'
-  const data = await assetHistoricPrices(ticker, period)
-  // Transforma para o formato aceito pelo gráfico
-  chartData.value = Array.isArray(data)
-    ? data.map((item) => ({
-        date: item.price_at,
-        value: item.market_price,
-        timestamp: new Date(item.price_at).getTime(),
-      }))
-    : []
-  isLoadingChart.value = false
+  try {
+    let period: '1mo' | 'ytd' | '3mo' | '12mo' | '3y' | '4y' | '5y' | 'full' =
+      '1mo'
+    if (selectedTimeRange.value === 'month') period = '1mo'
+    else if (selectedTimeRange.value === 'year') period = '12mo'
+    else if (selectedTimeRange.value === '3years') period = '3y'
+    else if (selectedTimeRange.value === 'full') period = 'full'
+    const data = await assetHistoricPrices(ticker, period)
+    // Transforma para o formato aceito pelo gráfico
+    chartData.value = Array.isArray(data)
+      ? data.map((item) => ({
+          date: item.price_at,
+          value: item.market_price,
+          timestamp: new Date(item.price_at).getTime(),
+        }))
+      : []
+  } catch (error) {
+    console.error('Error fetching chart data:', error)
+    chartData.value = []
+  } finally {
+    isLoadingChart.value = false
+  }
 }
 
 async function fetchDividendsData() {
@@ -1595,7 +1601,24 @@ function formatNumberToShort(value: number): string {
   return value.toFixed(0)
 }
 
-asset.value = await getTickerDetails(ticker)
+try {
+  asset.value = await getTickerDetails(ticker)
+} catch (error) {
+  throw createError({
+    statusCode: 404,
+    statusMessage: 'Asset not found',
+    fatal: true,
+  })
+}
+
+if (!asset.value) {
+  throw createError({
+    statusCode: 404,
+    statusMessage: 'Asset not found',
+    fatal: true,
+  })
+}
+
 isLoadingAsset.value = false
 await Promise.all([
   fetchChartData(),

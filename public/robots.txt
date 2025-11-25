@@ -29,9 +29,9 @@ Disallow: /dividends
 Disallow: /ideal
 
 # Bloquear arquivos técnicos e assets
-Disallow: /_nuxt/
+# Disallow: /_nuxt/ (Permitir para que o Google renderize o JS corretamente)
 Disallow: /api/
-Disallow: /*.json$
+# Disallow: /*.json$ (Permitir payloads de hidratação do Nuxt)
 # Permitir imagens públicas
 Allow: /assets/images/
 Disallow: /assets/
