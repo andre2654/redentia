@@ -272,28 +272,6 @@
         </UCarousel>
       </template>
 
-      <div class="flex flex-col gap-4 px-6">
-        <h2 class="text-[18px] font-bold">Acesso Rápido</h2>
-        <div class="flex flex-col gap-3">
-          <NuxtLink
-            v-for="item in quickAccessItems"
-            :key="item.url"
-            :to="item.url"
-            class="hover:bg-white/10 flex flex-col gap-1 rounded-xl border border-white/5 bg-white/5 p-4 transition-colors"
-          >
-            <div class="flex items-center justify-between">
-              <h3 class="text-secondary text-lg font-semibold">
-                {{ item.label }}
-              </h3>
-              <UIcon :name="item.icon" class="h-5 w-5 text-gray-400" />
-            </div>
-            <p class="line-clamp-1 text-sm text-gray-400">
-              {{ item.description }}
-            </p>
-          </NuxtLink>
-        </div>
-      </div>
-
       <div
         class="text-secondary dark:bg-tertiary/40 flex w-full flex-col gap-3 bg-black/5 px-6 py-4 md:rounded-[30px]"
       >
@@ -498,10 +476,6 @@ const navigationLinks = computed(() => [
   {
     name: 'BBAS3',
     url: `${siteUrl.value}/asset/bbas3`,
-  },
-  {
-    name: 'MXRF11',
-    url: `${siteUrl.value}/asset/mxrf11`,
   },
 ])
 
@@ -708,34 +682,6 @@ const ibovChartData = ref<ChartPoint[]>([])
 const ibovIndicator = ref('+0,00%')
 const ibovLastPrice = ref(0)
 const ifixIndicator = ref('+0,00%')
-
-const quickAccessItems = [
-  {
-    label: 'BBAS3 - BANCO BRASIL ON',
-    url: '/asset/BBAS3',
-    icon: 'i-lucide-history',
-    description:
-      'BBAS3 - BANCO BRASIL • Valor atual • Min. 52 semanas • Máx ...',
-  },
-  {
-    label: 'Ações',
-    url: '/search?group=stocks',
-    icon: 'i-lucide-chevron-right',
-    description: 'LIQUIDEZ MÉDIA DIÁRIA • PETR4 PETROBRAS • VALE3 VALE ...',
-  },
-  {
-    label: 'Fundos Imobiliários',
-    url: '/search?group=reits',
-    icon: 'i-lucide-chevron-right',
-    description: 'PERCENTUAL EM CAIXA • OULG11 FDO INV IMOB ...',
-  },
-  {
-    label: 'MXRF11 - Maxi Renda',
-    url: '/asset/MXRF11',
-    icon: 'i-lucide-chevron-right',
-    description: 'COTAÇÃO DO MXRF11 • Volatilidade histórica do ...',
-  },
-]
 
 const chatSuggestions = [
   'Qual a diferença entre ações e FIIs?',
