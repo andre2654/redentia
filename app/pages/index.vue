@@ -631,18 +631,12 @@ const { data: homeMarketData } = await useAsyncData<HomeMarketData>(
         getTopStocks('top', 1000000),
         getTopStocks('bottom', 1000000),
       ]),
-      Promise.all([
-        getTopETFs('top', 1000000),
-        getTopETFs('bottom', 1000000),
-      ]),
+      Promise.all([getTopETFs('top', 1000000), getTopETFs('bottom', 1000000)]),
       Promise.all([
         getTopReits('top', 1000000),
         getTopReits('bottom', 1000000),
       ]),
-      Promise.all([
-        getTopBDRs('top', 1000000),
-        getTopBDRs('bottom', 1000000),
-      ]),
+      Promise.all([getTopBDRs('top', 1000000), getTopBDRs('bottom', 1000000)]),
       getIndiceHistoricPrices('ibov', '1mo'),
       getIndiceHistoricPrices('ifix', '1mo'),
     ])
@@ -665,7 +659,12 @@ const { data: homeMarketData } = await useAsyncData<HomeMarketData>(
           bdrs: clamp(bottomBDRs),
         },
       },
-      treemap: buildTreemapDataset(topStocks, bottomStocks, topReits, bottomReits),
+      treemap: buildTreemapDataset(
+        topStocks,
+        bottomStocks,
+        topReits,
+        bottomReits
+      ),
       ibovSeries: Array.isArray(ibovSeries) ? ibovSeries : [],
       ifixSeries: Array.isArray(ifixSeries) ? ifixSeries : [],
     }
@@ -828,7 +827,6 @@ function redirectToLogin(source: string) {
     `/auth/login?redirect=/${source === 'calculadora' ? 'calculadora' : 'help'}`
   )
 }
-
 
 watch(selectedTimeRange, (range) => {
   if (range === 'month' && homeMarketData.value?.ibovSeries?.length) {
