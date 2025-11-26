@@ -27,7 +27,7 @@
         </slot>
       </div>
 
-      <div class="hidden items-center gap-3 md:flex">
+      <div class="hidden items-center gap-3 lg:flex">
         <div class="w-full max-w-xs">
           <MoleculesSearchAssets
             class="w-full rounded-full bg-white/5 py-2 text-white transition hover:bg-white/10"
@@ -56,7 +56,7 @@
         </UButton>
       </div>
 
-      <div class="flex items-center gap-2 md:hidden">
+      <div class="flex items-center gap-2 max-sm:hidden lg:hidden">
         <UButton
           to="/auth/login"
           color="secondary"
