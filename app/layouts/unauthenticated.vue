@@ -4,7 +4,7 @@
   >
     <MoleculesMobileMenuOverlay v-model:open="menuMobileActive" mode="public" />
     <header
-      class="sticky top-0 z-20 flex items-center justify-between gap-4 bg-[#181818]/80 px-5 py-3 backdrop-blur-3xl xl:rounded-[20px]"
+      class="sticky top-0 z-20 flex items-center justify-between gap-4 bg-[#181818]/80 px-5 py-3 backdrop-blur-3xl xl:top-4 xl:rounded-[20px]"
       :style="{
         background: headerBg,
       }"

@@ -3,7 +3,7 @@
 
   <!-- Menu mobile -->
   <div
-    class="fixed bottom-0 left-0 right-0 z-10 mx-auto flex w-full items-center justify-center gap-3 border-t border-white/10 bg-gradient-to-tr from-black via-neutral-950 to-neutral-900 px-4 py-4 text-white shadow-[0_-18px_40px_rgba(0,0,0,0.55)] backdrop-blur-2xl xl:hidden"
+    class="fixed bottom-0 left-0 right-0 z-20 mx-auto flex w-full items-center justify-center gap-3 border-t border-white/10 bg-gradient-to-tr from-black via-neutral-950 to-neutral-900 px-4 py-4 text-white shadow-[0_-18px_40px_rgba(0,0,0,0.55)] backdrop-blur-2xl xl:hidden"
   >
     <button
       type="button"
@@ -116,12 +116,12 @@
       </div>
     </div>
     <div
-      class="relative flex w-full flex-col overflow-hidden bg-white md:px-4 md:py-4 dark:bg-black"
+      class="relative flex w-full flex-col bg-white xl:px-4 xl:py-4 dark:bg-black"
     >
       <header
         v-bind="headerProps"
         ref="header"
-        class="z-10 flex min-h-[60px] w-full items-center justify-between gap-4 bg-white/5 px-6 py-4 md:rounded-[25px]"
+        class="sticky top-0 z-20 flex min-h-[60px] w-full items-center justify-between gap-4 bg-white/5 px-6 py-4 backdrop-blur-xl xl:top-4 xl:rounded-[25px]"
         :style="{ background: headerBg }"
       >
         <slot name="header-branding">
