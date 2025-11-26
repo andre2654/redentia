@@ -1,6 +1,36 @@
 <template>
-  <NuxtLayout :name="layoutName" container-class="md:px-0">
-    <div class="flex flex-col gap-8 pt-6">
+  <NuxtLayout
+    :name="layoutName"
+    container-class="md:px-0"
+    :header-bg="!isPriceVisible ? pageGradient : ''"
+  >
+    <template #header-branding v-if="!isPriceVisible">
+      <div class="flex items-center gap-3">
+        <img
+          v-if="asset?.logo"
+          :src="asset.logo"
+          alt="Asset Logo"
+          class="h-9 w-9 rounded-lg object-cover"
+        />
+        <div class="flex flex-col">
+          <span class="text-sm font-bold leading-tight text-white">{{
+            tickerUpper
+          }}</span>
+          <div class="flex items-center gap-2 text-xs leading-tight">
+            <span class="text-white/90">{{ formattedAssetPrice }}</span>
+            <span
+              v-if="dailyChangePercent !== null"
+              :class="[
+                dailyChangePercent >= 0 ? 'text-green-400' : 'text-red-400',
+              ]"
+            >
+              {{ dailyChangePercent }}%
+            </span>
+          </div>
+        </div>
+      </div>
+    </template>
+    <div class="relative z-10 flex flex-col gap-8 pt-4">
       <div class="flex flex-col md:gap-8">
         <!-- Graph -->
         <section>
@@ -9,7 +39,10 @@
           >
             <div class="flex w-full items-center justify-between">
               <div class="flex items-center gap-3">
-                <USkeleton v-if="isLoadingAsset" class="h-6 w-6 rounded-full" />
+                <USkeleton
+                  v-if="isLoadingAsset"
+                  class="h-[50px] w-[50px] rounded-full"
+                />
                 <img
                   v-else-if="asset?.logo"
                   :src="asset.logo"
@@ -21,7 +54,8 @@
                     <span>{{ ticker }}</span>
                   </h1>
                   <div
-                    class="flex items-center gap-2 text-sm max-[400px]:flex-col max-[400px]:items-start"
+                    ref="priceElement"
+                    class="flex items-center gap-2 text-sm max-sm:flex-col max-sm:items-start"
                   >
                     <USkeleton v-if="isLoadingAsset" class="h-4 w-[80px]" />
                     <template v-else>
@@ -627,6 +661,8 @@ import type {
   FundamentusData,
 } from '~/types/asset'
 import { generateChartConfig } from '~/helpers/utils'
+import { FastAverageColor } from 'fast-average-color'
+import colorLib from '@kurkle/color'
 
 const authStore = useAuthStore()
 const route = useRoute()
@@ -658,6 +694,28 @@ const fundamentusData = ref<FundamentusApiResponse | null>(null)
 const isLoadingFundamentus = ref(false)
 const selectedTimeRange = ref<ChartTimeRange>('month')
 const isLoadingChart = ref(true)
+const pageGradient = ref('')
+const priceElement = ref<HTMLElement | null>(null)
+const isPriceVisible = ref(true)
+
+onMounted(() => {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      const entry = entries[0]
+      if (entry) {
+        isPriceVisible.value = entry.isIntersecting
+      }
+    },
+    { threshold: 0 }
+  )
+  if (priceElement.value) {
+    observer.observe(priceElement.value)
+  }
+
+  onUnmounted(() => {
+    observer.disconnect()
+  })
+})
 
 const chatSuggestions = [
   'Qual a diferença entre ações e FIIs?',
@@ -792,6 +850,34 @@ const shareImage = computed(() => {
   }
   return `${baseSiteUrl.value}/512x512.png`
 })
+
+async function updatePageGradient() {
+  if (!asset.value?.logo) return
+
+  try {
+    const fac = new FastAverageColor()
+    const logoUrl = asset.value.logo.startsWith('http')
+      ? asset.value.logo
+      : `${baseSiteUrl.value}${asset.value.logo.startsWith('/') ? asset.value.logo : `/${asset.value.logo}`}`
+
+    const color = await fac.getColorAsync(logoUrl, {
+      algorithm: 'dominant',
+      ignoredColor: [
+        [255, 255, 255, 255], // white
+        [0, 0, 0, 255], // black
+      ],
+    })
+
+    // Darken the color significantly to start the gradient
+    const darkColor = colorLib(color.hex).darken(0.8).rgbString()
+
+    // Diagonal gradient: Dark Color -> Black
+    pageGradient.value = darkColor
+  } catch (e) {
+    console.error('Error extracting color', e)
+    pageGradient.value = ''
+  }
+}
 
 usePageSeo({
   title: () => pageTitle.value,
@@ -1672,6 +1758,14 @@ await Promise.all([
   fetchDividendsData(),
   fetchFundamentusData(),
 ])
+
+watch(
+  () => asset.value?.logo,
+  () => {
+    updatePageGradient()
+  },
+  { immediate: true }
+)
 
 // Atualiza ao trocar o período
 watch(selectedTimeRange, () => {

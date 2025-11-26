@@ -122,8 +122,9 @@
         v-bind="headerProps"
         ref="header"
         class="z-10 flex min-h-[60px] w-full items-center justify-between gap-4 bg-white/5 px-6 py-4 md:rounded-[25px]"
+        :style="{ background: headerBg }"
       >
-        <slot name="header">
+        <slot name="header-branding">
           <div class="flex items-center gap-5">
             <IconLogo class="h-9 w-9 fill-white" />
             <div class="flex flex-col">
@@ -159,6 +160,10 @@ defineProps({
   hideSearchBar: {
     type: Boolean,
     default: false,
+  },
+  headerBg: {
+    type: String,
+    default: '',
   },
 })
 
