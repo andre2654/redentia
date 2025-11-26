@@ -12,14 +12,15 @@
           alt="Asset Logo"
           class="h-9 w-9 rounded-lg object-cover"
         />
-        <div class="flex flex-col">
-          <span class="text-sm font-bold leading-tight text-white">{{
+        <div class="flex items-center gap-2">
+          <span class="text-[25px] font-bold leading-tight text-white">{{
             tickerUpper
           }}</span>
-          <div class="flex items-center gap-2 text-xs leading-tight">
+          <div class="flex items-center gap-2 text-[20px] leading-tight">
             <span class="text-white/90">{{ formattedAssetPrice }}</span>
             <span
               v-if="dailyChangePercent !== null"
+              class="text-[18px]"
               :class="[
                 dailyChangePercent >= 0 ? 'text-green-400' : 'text-red-400',
               ]"
@@ -869,7 +870,7 @@ async function updatePageGradient() {
     })
 
     // Darken the color significantly to start the gradient
-    const darkColor = colorLib(color.hex).darken(0.8).rgbString()
+    const darkColor = colorLib(color.hex).darken(0.9).rgbString()
 
     // Diagonal gradient: Dark Color -> Black
     pageGradient.value = darkColor
