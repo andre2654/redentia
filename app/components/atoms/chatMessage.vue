@@ -303,6 +303,145 @@
               </NuxtLink>
             </div>
           </div>
+
+          <!-- Tool Results & Visualizations -->
+          <div
+            v-if="message.structuredData.toolsUsed?.length"
+            class="mt-4 flex flex-col gap-4 border-t border-white/10 pt-4"
+          >
+            <div
+              v-for="(tool, index) in message.structuredData.toolsUsed"
+              :key="index"
+              class="flex flex-col gap-4 rounded-xl border border-white/10 bg-white/5 p-4"
+            >
+              <!-- Tool Header -->
+              <div class="flex items-center gap-2 border-b border-white/10 pb-3">
+                <div
+                  class="flex h-8 w-8 items-center justify-center rounded-full bg-secondary/20"
+                >
+                  <UIcon
+                    name="i-lucide-calculator"
+                    class="text-secondary size-5"
+                  />
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-sm font-bold">{{
+                    getToolLabel(tool.name)
+                  }}</span>
+                  <span class="text-xs opacity-60">Resultado da simulação</span>
+                </div>
+              </div>
+
+              <!-- Stock Return / Compound Interest Result -->
+              <div
+                v-if="
+                  [
+                    'calculate_stock_return',
+                    'calculate_compound_interest',
+                  ].includes(tool.name) && tool.result
+                "
+                class="flex flex-col gap-4"
+              >
+                <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                  <div class="rounded-lg bg-white/5 p-3">
+                    <div class="text-xs opacity-60">Total Investido</div>
+                    <div class="font-mono text-lg font-bold">
+                      {{
+                        new Intl.NumberFormat('pt-BR', {
+                          style: 'currency',
+                          currency: 'BRL',
+                        }).format(tool.result.totalInvested)
+                      }}
+                    </div>
+                  </div>
+                  <div class="rounded-lg bg-white/5 p-3">
+                    <div class="text-xs opacity-60">Valor Final</div>
+                    <div class="font-mono text-lg font-bold text-secondary">
+                      {{
+                        new Intl.NumberFormat('pt-BR', {
+                          style: 'currency',
+                          currency: 'BRL',
+                        }).format(tool.result.finalValue)
+                      }}
+                    </div>
+                  </div>
+                  <div
+                    v-if="tool.result.returnPercentage !== undefined"
+                    class="rounded-lg bg-white/5 p-3"
+                  >
+                    <div class="text-xs opacity-60">Rentabilidade</div>
+                    <div
+                      class="font-mono text-lg font-bold"
+                      :class="
+                        tool.result.returnPercentage >= 0
+                          ? 'text-green-400'
+                          : 'text-red-400'
+                      "
+                    >
+                      {{
+                        tool.result.returnPercentage > 0 ? '+' : ''
+                      }}{{ tool.result.returnPercentage.toFixed(2) }}%
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  v-if="tool.result.chartData?.length"
+                  class="mt-2 h-[200px] w-full"
+                >
+                  <AtomsGraphLine
+                    :data="tool.result.chartData"
+                    :height="200"
+                    :colors="['#00D9A5']"
+                    :show-legend="false"
+                  />
+                </div>
+              </div>
+
+              <!-- Planning Result -->
+              <div
+                v-else-if="
+                  tool.name === 'calculate_planning' && tool.result
+                "
+                class="flex flex-col gap-4"
+              >
+                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div class="rounded-lg bg-white/5 p-3">
+                    <div class="text-xs opacity-60">Meta</div>
+                    <div class="font-mono text-lg font-bold">
+                      {{
+                        new Intl.NumberFormat('pt-BR', {
+                          style: 'currency',
+                          currency: 'BRL',
+                        }).format(tool.result.goalValue)
+                      }}
+                    </div>
+                  </div>
+                  <div class="rounded-lg bg-white/5 p-3">
+                    <div class="text-xs opacity-60">Tempo Estimado</div>
+                    <div class="font-mono text-lg font-bold text-secondary">
+                      {{ Math.ceil(tool.result.monthsToGoal / 12) }} anos
+                    </div>
+                    <div class="text-xs opacity-50">
+                      {{ tool.result.targetDateLabel }}
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  v-if="tool.result.chartData?.length"
+                  class="mt-2 h-[200px] w-full"
+                >
+                  <AtomsGraphLine
+                    :data="tool.result.chartData"
+                    :height="200"
+                    :colors="['#00D9A5']"
+                    :show-legend="false"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -480,6 +619,19 @@ async function updateRenderedContent() {
   } catch (error) {
     console.error('Failed to render markdown:', error)
     renderedContent.value = escapeHtml(props.message.content)
+  }
+}
+
+function getToolLabel(name: string) {
+  switch (name) {
+    case 'calculate_compound_interest':
+      return 'Calculadora de Juros Compostos'
+    case 'calculate_planning':
+      return 'Planejamento Financeiro'
+    case 'calculate_stock_return':
+      return 'Simulação de Rentabilidade'
+    default:
+      return 'Calculadora'
   }
 }
 

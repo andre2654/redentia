@@ -176,59 +176,30 @@ const compoundResult = ref<{
   chartData: IChartDataPoint[]
 } | null>(null)
 
-function calculateCompoundInterest() {
+async function calculateCompoundInterest() {
   const initial = Number(compoundForm.value.initialValue) || 0
   const monthly = Number(compoundForm.value.monthlyValue) || 0
-  let rate = parseFloat(compoundForm.value.interestRate) || 0
-  let months =
-    compoundForm.value.periodType.value === 'years'
-      ? parseInt(compoundForm.value.period) * 12
-      : parseInt(compoundForm.value.period)
+  const rate = parseFloat(compoundForm.value.interestRate) || 0
+  const period = parseInt(compoundForm.value.period) || 0
 
-  if (compoundForm.value.interestPeriod.value === 'year') {
-    rate = Math.pow(1 + rate / 100, 1 / 12) - 1
-  } else {
-    rate = rate / 100
-  }
-
-  let balance = initial
-  const chartData: IChartDataPoint[] = []
-  let totalInvested = initial
-
-  const startDate = new Date()
-  chartData.push({
-    date: startDate.toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-    }),
-    value: balance,
-    timestamp: startDate.getTime(),
-  })
-
-  for (let i = 1; i <= months; i++) {
-    balance = balance * (1 + rate) + monthly
-    totalInvested += monthly
-
-    const date = new Date()
-    date.setMonth(date.getMonth() + i)
-    chartData.push({
-      date: date.toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: '2-digit',
-      }),
-      value: balance,
-      timestamp: date.getTime(),
+  try {
+    const result = await $fetch('/api/calculate', {
+      method: 'POST',
+      body: {
+        type: 'compound',
+        params: {
+          initialValue: initial,
+          monthlyValue: monthly,
+          interestRate: rate,
+          period: period,
+          periodType: compoundForm.value.periodType.value,
+          interestPeriod: compoundForm.value.interestPeriod.value,
+        },
+      },
     })
-  }
-
-  const finalValue = balance
-  const totalInterest = finalValue - totalInvested
-
-  compoundResult.value = {
-    totalInvested,
-    totalInterest,
-    finalValue,
-    chartData,
+    compoundResult.value = result as any
+  } catch (e) {
+    console.error(e)
   }
 }
 </script>

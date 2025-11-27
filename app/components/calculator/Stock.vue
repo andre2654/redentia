@@ -867,192 +867,36 @@ async function simulateAsset(
   reinvestDividends: boolean
 ): Promise<StockSimulationResult | null> {
   try {
-    const ticker = asset.id
-    const priceHistory = await assetHistoricPrices(ticker, 'full')
-
-    if (!priceHistory || priceHistory.length === 0) {
-      return null
-    }
-
-    let dividendsRaw: any[] = []
-    if (reinvestDividends) {
-      try {
-        const dividendsData = await getTickerDividends(ticker)
-        dividendsRaw = dividendsData || []
-      } catch (error) {
-        console.warn('Não foi possível obter dividendos:', error)
-      }
-    }
-
-    const normalizedPrices = (priceHistory || [])
-      .map((price: any) => {
-        const priceDate = new Date(price.price_at)
-        return {
-          price_at: price.price_at,
-          market_price: Number(price.market_price),
-          priceDate,
-        }
-      })
-      .filter(
-        (price) =>
-          Number.isFinite(price.market_price) &&
-          price.market_price > 0 &&
-          Number.isFinite(price.priceDate.getTime())
-      )
-      .sort((a, b) => a.priceDate.getTime() - b.priceDate.getTime())
-
-    if (!normalizedPrices.length) {
-      return null
-    }
-
-    const latestEntry = normalizedPrices[normalizedPrices.length - 1]
-    const endDate = new Date(latestEntry.priceDate)
-    const startDate = new Date(endDate)
-    startDate.setFullYear(startDate.getFullYear() - periodYears)
-
-    const relevantPrices = normalizedPrices.filter(
-      (price) => price.priceDate >= startDate
-    )
-
-    if (!relevantPrices.length) {
-      return null
-    }
-
-    const processedDividends = (dividendsRaw || [])
-      .map((dividend: any) => ({
-        payment_date: dividend.payment_date,
-        rate: parseFloat(dividend.rate) || 0,
-        label: (dividend['label '] || dividend.label || 'Dividendo').trim(),
-        date: new Date(dividend.payment_date),
-      }))
-      .filter(
-        (dividend) =>
-          Number.isFinite(dividend.rate) &&
-          dividend.rate > 0 &&
-          dividend.date.getTime() &&
-          dividend.date >= startDate &&
-          dividend.date <= endDate
-      )
-      .sort((a, b) => a.date.getTime() - b.date.getTime())
-
-    let totalShares = 0
-    let totalInvested = 0
-    let totalDividends = 0
-    const chartData: IChartDataPoint[] = []
-    const dividendsHistory: DividendHistoryItem[] = []
-
-    const firstPrice = relevantPrices[0]
-    const initialPrice = firstPrice.market_price
-    if (!Number.isFinite(initialPrice) || initialPrice <= 0) {
-      return null
-    }
-
-    const initialShares =
-      initialInvestment > 0 ? initialInvestment / initialPrice : 0
-    totalShares = initialShares
-    totalInvested = initialInvestment
-    const initialPortfolioValue = totalShares * initialPrice
-
-    const firstDate = new Date(firstPrice.price_at)
-    chartData.push({
-      date: firstDate.toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: '2-digit',
-      }),
-      value: initialPortfolioValue,
-      timestamp: firstDate.getTime(),
+    const result = await $fetch('/api/calculate', {
+      method: 'POST',
+      body: {
+        type: 'stock',
+        params: {
+          ticker: asset.id,
+          initialInvestment,
+          monthlyInvestment,
+          periodYears,
+          reinvestDividends,
+        },
+      },
     })
 
-    const calculationStartDate = new Date(firstPrice.price_at)
-    let lastMonthProcessed = calculationStartDate.getMonth()
-    let lastYearProcessed = calculationStartDate.getFullYear()
+    if (!result) return null
 
-    for (let priceIndex = 1; priceIndex < relevantPrices.length; priceIndex++) {
-      const currentPrice = relevantPrices[priceIndex]
-      const priceDate = new Date(currentPrice.price_at)
-      const priceValue = currentPrice.market_price
-      const currentMonth = priceDate.getMonth()
-      const currentYear = priceDate.getFullYear()
-
-      if (
-        monthlyInvestment > 0 &&
-        (currentMonth !== lastMonthProcessed ||
-          currentYear !== lastYearProcessed)
-      ) {
-        const newShares = monthlyInvestment / priceValue
-        totalShares += newShares
-        totalInvested += monthlyInvestment
-        lastMonthProcessed = currentMonth
-        lastYearProcessed = currentYear
-      }
-
-      if (reinvestDividends && processedDividends.length > 0) {
-        const previousDate = new Date(relevantPrices[priceIndex - 1].price_at)
-        const relevantDividends = processedDividends.filter(
-          (dividend) =>
-            dividend.date > previousDate && dividend.date <= priceDate
-        )
-
-        for (const dividend of relevantDividends) {
-          const dividendValue = totalShares * dividend.rate
-          totalDividends += dividendValue
-
-          dividendsHistory.push({
-            ticker,
-            payment_date: dividend.payment_date,
-            rate: dividend.rate.toString(),
-            label: dividend.label,
-            totalReceived: dividendValue,
-            sharesAtTime: totalShares,
-          })
-
-          const dividendPrice = priceValue || initialPrice
-          if (reinvestDividends && dividendPrice > 0) {
-            const newShares = dividendValue / dividendPrice
-            totalShares += newShares
-          }
-        }
-      }
-
-      const portfolioValue = totalShares * priceValue
-
-      if (priceIndex % 7 === 0 || priceIndex === relevantPrices.length - 1) {
-        chartData.push({
-          date: priceDate.toLocaleDateString('pt-BR', {
-            day: '2-digit',
-            month: '2-digit',
-          }),
-          value: portfolioValue,
-          timestamp: priceDate.getTime(),
-        })
-      }
-    }
-
-    const lastPrice = relevantPrices[relevantPrices.length - 1]
-    const finalPrice = lastPrice.market_price
-    const finalValue = totalShares * finalPrice
-    const returnPercentage =
-      totalInvested > 0
-        ? ((finalValue - totalInvested) / totalInvested) * 100
-        : 0
-    const averagePrice = totalShares > 0 ? totalInvested / totalShares : 0
-
-    const sortedDividendsHistory = dividendsHistory.sort(
-      (a, b) =>
-        new Date(a.payment_date).getTime() - new Date(b.payment_date).getTime()
-    )
+    const data = result as any
 
     return {
-      ticker,
+      ticker: data.ticker,
       name: asset.suffix,
-      totalInvested,
-      finalValue,
-      return: returnPercentage,
-      totalDividends,
-      totalShares,
-      averagePrice,
-      chartData,
-      dividendsHistory: sortedDividendsHistory,
+      totalInvested: data.totalInvested,
+      finalValue: data.finalValue,
+      return: data.returnPercentage,
+      totalDividends: data.totalDividends,
+      totalShares: data.totalShares,
+      averagePrice:
+        data.totalShares > 0 ? data.totalInvested / data.totalShares : 0,
+      chartData: data.chartData,
+      dividendsHistory: data.dividendsHistory || [],
     }
   } catch (error) {
     console.warn('Falha ao simular ativo:', asset.id, error)

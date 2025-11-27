@@ -319,6 +319,25 @@ async function fetchBotResponse(prompt: string): Promise<void> {
                 relatedTickers: event.content,
               },
             })
+          } else if (event.type === 'tool-used') {
+            ensureMessage()
+            const currentMsg = internalMessages.value.find(
+              (m) => m.id === botMessageId
+            )
+            const currentStructuredData = currentMsg?.structuredData || {
+              status: 'success',
+              type: 'text',
+            }
+
+            const toolsUsed = currentStructuredData.toolsUsed || []
+            toolsUsed.push(event.content)
+
+            updateMessage(botMessageId, {
+              structuredData: {
+                ...currentStructuredData,
+                toolsUsed,
+              },
+            })
           } else if (event.type === 'error') {
             ensureMessage()
             updateMessage(botMessageId, { content: event.content })

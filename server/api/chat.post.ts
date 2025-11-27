@@ -1,66 +1,95 @@
 import { getMarketData } from '../utils/market'
-import {
-  streamAgentResponse,
-  identifyTicker,
-  identifyIntent,
-} from '../utils/agent'
+import { streamAgentResponse } from '../utils/agent'
+import { routeRequest } from '../utils/router'
 import { formatMarketData } from '../utils/formatter'
+import {
+  calculateCompoundInterest,
+  calculatePlanning,
+  calculateStockReturn,
+} from '../utils/calculators'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   const { message, route, ticker: contextTicker } = body
 
-  // 1. Determine Intent & Ticker
+  // 1. Route Request (Router Agent)
+  // The router decides if this is a tool execution, a data view, or a simple chat
+  const action = await routeRequest(message, contextTicker)
+
   let type = 'text'
   let ticker = contextTicker || null
+  let toolResult = null
+  let toolName = ''
 
-  const lowerMsg = message.toLowerCase()
+  // Handle Router Action
+  if (action.type === 'tool') {
+    toolName = action.name
+    console.log(`[Router] Executing tool: ${toolName}`)
+    
+    try {
+      if (toolName === 'calculate_compound_interest') {
+        const {
+          initialValue,
+          monthlyValue,
+          interestRate,
+          period,
+          periodType,
+          interestPeriod,
+        } = action.args
+        toolResult = calculateCompoundInterest(
+          initialValue,
+          monthlyValue,
+          interestRate,
+          period,
+          periodType,
+          interestPeriod
+        )
+      } else if (toolName === 'calculate_planning') {
+        const { goalValue, monthlyContribution, strategy } = action.args
+        toolResult = await calculatePlanning(
+          goalValue,
+          monthlyContribution,
+          strategy
+        )
+      } else if (toolName === 'calculate_stock_return') {
+        const {
+          tickers,
+          ticker: singleTicker,
+          initialInvestment,
+          monthlyInvestment,
+          periodYears,
+          reinvestDividends,
+        } = action.args
+        
+        // Handle both single 'ticker' (legacy/fallback) and 'tickers' array
+        const targetTickers = tickers || (singleTicker ? [singleTicker] : [])
+        
+        // Update context ticker if provided (use first one)
+        if (targetTickers.length > 0) ticker = targetTickers[0]
 
-  const tickerMatch = message.match(/[A-Z]{4}[0-9]{1,2}/i)
-  if (tickerMatch) {
-    ticker = tickerMatch[0].toUpperCase()
-  } else if (!ticker) {
-    // Try to identify ticker via AI if not found by regex and not in context
-    ticker = await identifyTicker(message)
-  }
-
-  // Identify intent using AI
-  type = await identifyIntent(message)
-
-  // Keyword overrides (Hybrid approach: AI + Deterministic)
-  // This ensures explicit requests like "relatório completo" or "gráfico" always work, even with typos or AI misses
-  if (
-    lowerMsg.includes('relatório') ||
-    lowerMsg.includes('relatorio') ||
-    lowerMsg.includes('completo') ||
-    lowerMsg.includes('completa') ||
-    lowerMsg.includes('resumo') ||
-    lowerMsg.includes('tudo sobre')
-  ) {
-    type = 'report'
-  } else if (
-    lowerMsg.includes('gráfico') ||
-    lowerMsg.includes('grafico') ||
-    lowerMsg.includes('histórico') ||
-    lowerMsg.includes('historico')
-  ) {
-    type = 'chart'
-  } else if (lowerMsg.includes('dividendo') || lowerMsg.includes('provento')) {
-    type = 'dividends'
-  }
-
-  // Fallback: if AI returns 'text' but we have a ticker, default to analysis (lighter than report)
-  // unless the message is very short (likely just the ticker), then show report
-  if (type === 'text' && ticker) {
-    if (message.split(' ').length <= 2) {
-      type = 'report'
-    } else {
-      type = 'analysis'
+        toolResult = await calculateStockReturn(
+          targetTickers,
+          initialInvestment,
+          monthlyInvestment,
+          periodYears || 1, // Default to 1 year if not specified
+          reinvestDividends
+        )
+      }
+    } catch (e) {
+      console.error('Tool execution failed', e)
     }
+
+  } else if (action.type === 'data') {
+    console.log(`[Router] View Data: ${action.view} for ${action.ticker}`)
+    type = action.view
+    ticker = action.ticker
+  } else if (action.type === 'chat') {
+    console.log(`[Router] Chat mode`)
+    type = 'text'
+    if (action.ticker) ticker = action.ticker
   }
 
   // Safety check: If we have an asset-specific type but NO ticker, revert to text
-  // This prevents showing empty charts/reports for general questions like "Como está o mercado?"
   if (
     ['price', 'chart', 'dividends', 'analysis', 'report'].includes(type) &&
     !ticker
@@ -68,7 +97,7 @@ export default defineEventHandler(async (event) => {
     type = 'text'
   }
 
-  // 2. Fetch Data
+  // 2. Fetch Data (if needed)
   let rawData = null
   if (ticker && type !== 'text') {
     try {
@@ -100,7 +129,15 @@ export default defineEventHandler(async (event) => {
   )
 
   // Stream AI response
-  await streamAgentResponse(event, ticker, type, rawData, message)
+  await streamAgentResponse(
+    event,
+    ticker,
+    type,
+    rawData,
+    message,
+    toolResult,
+    toolName
+  )
 
   event.node.res.end()
 })

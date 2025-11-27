@@ -23,5 +23,9 @@ export interface IAgentResponse {
     logo: string
     change: string
   }>
+  toolsUsed?: Array<{
+    name: string
+    result: any
+  }>
   message?: string // for error or simple text
 }

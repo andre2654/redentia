@@ -72,99 +72,14 @@ function sanitizeContext(type: string, rawData: any) {
   return rawData
 }
 
-export const identifyTicker = async (
-  userMessage: string
-): Promise<string | null> => {
-  const config = useRuntimeConfig()
-  if (!config.openaiApiKey) return null
-
-  const openai = new OpenAI({ apiKey: config.openaiApiKey })
-
-  try {
-    const response = await openai.chat.completions.create({
-      messages: [
-        {
-          role: 'system',
-          content: `Identifique o código do ativo (ticker) na mensagem do usuário.
-                    - Retorne APENAS o ticker (ex: PETR4, VALE3, AAPL).
-                    - Se o usuário falar o nome da empresa, converta para o ticker mais comum na B3 (Brasil).
-                    - Se não houver menção a empresa ou ativo, retorne "NULL".
-                    - Não explique nada, apenas o código.`,
-        },
-        { role: 'user', content: userMessage },
-      ],
-      model: 'gpt-4o-mini', // Use a cheaper/faster model for this simple task
-      temperature: 0,
-    })
-
-    const content = response.choices[0]?.message?.content?.trim()
-    if (!content || content === 'NULL') return null
-
-    // Basic validation to ensure it looks like a ticker
-    if (content.length < 3 || content.length > 10) return null
-
-    return content.toUpperCase()
-  } catch (error) {
-    console.error('Error identifying ticker:', error)
-    return null
-  }
-}
-
-export const identifyIntent = async (userMessage: string): Promise<string> => {
-  const config = useRuntimeConfig()
-  if (!config.openaiApiKey) return 'text'
-
-  const openai = new OpenAI({ apiKey: config.openaiApiKey })
-
-  try {
-    const response = await openai.chat.completions.create({
-      messages: [
-        {
-          role: 'system',
-          content: `Classifique a intenção do usuário em relação a dados financeiros.
-                    Categorias:
-                    - 'price': Preço atual, cotação, quanto custa.
-                    - 'chart': Gráfico de PREÇO, histórico de cotação, evolução do valor, tendência (subindo/caindo), performance.
-                    - 'dividends': Dividendos, proventos, rendimentos, gráfico de dividendos, data com.
-                    - 'analysis': Análise fundamentalista, P/L, indicadores, vale a pena, recomendação, qualidade da empresa.
-                    - 'report': Relatório completo, resumo geral, tudo sobre o ativo, análise completa, "fale sobre X", "me fale do banco do brasil".
-                    - 'text': Conversa geral, sem pedido específico de dados visuais.
-
-                    Retorne APENAS o nome da categoria.
-                    Se houver erros de digitação (ex: "realtorio"), tente inferir a intenção correta.`,
-        },
-        { role: 'user', content: userMessage },
-      ],
-      model: 'gpt-4o-mini',
-      temperature: 0,
-    })
-
-    const content = response.choices[0]?.message?.content?.trim().toLowerCase()
-    const validTypes = [
-      'price',
-      'chart',
-      'dividends',
-      'analysis',
-      'report',
-      'text',
-    ]
-
-    if (content && validTypes.includes(content)) {
-      return content
-    }
-    return 'text'
-  } catch (error) {
-    console.error('Error identifying intent:', error)
-    return 'text'
-  }
-}
-
 export const streamAgentResponse = async (
   event: H3Event,
   ticker: string,
   type: string,
   rawData: any,
-  userMessage: string
+  userMessage: string,
+  toolResult: any = null,
+  toolName: string = ''
 ) => {
   const config = useRuntimeConfig()
 
@@ -185,19 +100,25 @@ export const streamAgentResponse = async (
     Contexto:
     - Ticker identificado: ${ticker || 'Nenhum (Pergunta Geral)'}
     - Tipo de solicitação: ${type}
+    ${
+      toolResult
+        ? `- Resultado da Ferramenta (${toolName}): ${JSON.stringify(toolResult)}`
+        : ''
+    }
     
     Seus objetivos:
-    1. Se um ticker foi identificado, analise os dados fornecidos (${type}).
-    2. Se NÃO houver ticker, responda como um especialista de mercado financeiro sobre o tema perguntado (tendências, conceitos, economia), usando seu conhecimento geral. NÃO diga "não há informações sobre o ativo" se a pergunta for genérica.
-    3. Responder a pergunta do usuário de forma direta e explicativa.
-    4. Se houver dados suficientes do ativo, forneça uma recomendação de investimento (Compra, Manter ou Venda) no início.
-    5. Se o tipo for "report" ou "analysis" E houver um ativo, cite os números principais (Preço atual, P/L, Dividend Yield, Setor, Valor de Mercado) QUE ESTIVEREM DISPONÍVEIS.
-    6. Use os dados brutos fornecidos para embasar sua análise. Não invente números.
-    7. IMPORTANTE: Mesmo que faltem dados fundamentais, faça a melhor análise possível com o preço e histórico disponíveis.
-    8. IMPORTANTE: Se o usuário perguntar sobre "melhores ações", "oportunidades" ou "recomendações" de forma genérica, CITE EXEMPLOS CONCRETOS de ativos (Tickers como BBAS3, VALE3, WEGE3, etc.) que costumam ser citados pelo mercado para esse fim (ex: Dividendos -> BBAS3, TAEE11). Isso é crucial para o sistema exibir os cards dos ativos.
+    1. PRIORIDADE MÁXIMA: Se uma ferramenta de cálculo foi usada (veja Contexto), sua resposta DEVE ser focada em explicar os resultados dessa simulação. Use os números retornados pela ferramenta.
+    2. Se um ticker foi identificado e NENHUMA ferramenta foi usada, analise os dados fornecidos (${type}).
+    3. Se NÃO houver ticker e NENHUMA ferramenta, responda como um especialista de mercado financeiro.
+    4. Responder a pergunta do usuário de forma direta e explicativa.
+    5. Se houver dados suficientes do ativo, forneça uma recomendação de investimento (Compra, Manter ou Venda) no início.
+    6. Se o tipo for "report" ou "analysis" E houver um ativo, cite os números principais.
+    7. Use os dados brutos fornecidos para embasar sua análise. Não invente números.
+    8. IMPORTANTE: Mesmo que faltem dados fundamentais, faça a melhor análise possível com o preço e histórico disponíveis.
+    9. IMPORTANTE: Se o usuário perguntar sobre "melhores ações", "oportunidades" ou "recomendações" de forma genérica, CITE EXEMPLOS CONCRETOS de ativos.
 
     Formato de saída OBRIGATÓRIO:
-    - Primeira linha: "REC: [BUY|HOLD|SELL|NULL]" (apenas se fizer sentido dar recomendação para um ativo específico)
+    - Primeira linha: "REC: [BUY|HOLD|SELL|NULL]" (apenas se fizer sentido dar recomendação para um ativo específico e NENHUMA ferramenta de cálculo foi usada)
     - Linhas seguintes: O texto da sua resposta/análise. Use Markdown para formatar (negrito, listas).
 
     NÃO retorne JSON. Retorne texto puro streamado.
@@ -213,10 +134,20 @@ export const streamAgentResponse = async (
       ticker,
       type,
       data: contextData,
+      toolResult,
     },
   })
 
   try {
+    if (toolResult) {
+      event.node.res.write(
+        JSON.stringify({
+          type: 'tool-used',
+          content: { name: toolName, result: toolResult },
+        }) + '\n'
+      )
+    }
+
     const stream = await openai.chat.completions.create({
       messages: [
         { role: 'system', content: systemPrompt },
