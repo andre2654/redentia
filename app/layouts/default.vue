@@ -116,7 +116,7 @@
       </div>
     </div>
     <div
-      class="relative flex w-full flex-col bg-white xl:px-4 xl:py-4 dark:bg-black"
+      class="relative flex w-full flex-col overflow-hidden bg-white xl:px-4 xl:py-4 dark:bg-black"
     >
       <header
         v-bind="headerProps"
