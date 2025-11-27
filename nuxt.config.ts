@@ -287,9 +287,6 @@ export default defineNuxtConfig({
       installPrompt: true,
       periodicSyncForUpdates: 3600,
     },
-    workbox: {
-      importScripts: ['/push-sw.js'],
-    },
     devOptions: {
       enabled: false,
       suppressWarnings: true,
