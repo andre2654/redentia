@@ -98,6 +98,7 @@ export default defineNuxtConfig({
     ],
   },
   runtimeConfig: {
+    openaiApiKey: process.env.NUXT_OPENAI_API_KEY,
     public: {
       cacheTempInSeconds: 60,
       siteUrl:

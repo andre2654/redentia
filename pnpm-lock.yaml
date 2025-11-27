@@ -17,6 +17,7 @@ specifiers:
   marked: 17.0.0
   maska: 3.2.0
   nuxt: 4.0.1
+  openai: ^6.9.1
   pinia: 2.2.1
   prettier: 3.3.3
   prettier-plugin-tailwindcss: 0.6.6
@@ -40,6 +41,7 @@ dependencies:
   marked: 17.0.0
   maska: 3.2.0
   nuxt: 4.0.1_eslint@9.9.0
+  openai: 6.9.1_zod@4.0.14
   pinia: 2.2.1_vue@3.5.17
   vue: 3.5.17
   vue-chartjs: 5.3.2_chart.js@4.5.0+vue@3.5.17
@@ -8544,6 +8546,21 @@ packages:
       define-lazy-prop: 2.0.0
       is-docker: 2.2.1
       is-wsl: 2.2.0
+    dev: false
+
+  /openai/6.9.1_zod@4.0.14:
+    resolution: {integrity: sha512-vQ5Rlt0ZgB3/BNmTa7bIijYFhz3YBceAA3Z4JuoMSBftBF9YqFHIEhZakSs+O/Ad7EaoEimZvHxD5ylRjN11Lg==}
+    hasBin: true
+    peerDependencies:
+      ws: ^8.18.0
+      zod: ^3.25 || ^4.0
+    peerDependenciesMeta:
+      ws:
+        optional: true
+      zod:
+        optional: true
+    dependencies:
+      zod: 4.0.14
     dev: false
 
   /optionator/0.9.4:

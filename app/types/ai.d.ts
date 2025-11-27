@@ -4,4 +4,18 @@ export interface IChatMessage {
   type: 'user' | 'bot'
   timestamp: Date
   actions?: string[]
+  // New fields for structured response
+  structuredData?: IAgentResponse
+}
+
+export interface IAgentResponse {
+  status: 'success' | 'error'
+  ticker?: string
+  type: 'price' | 'chart' | 'dividends' | 'analysis' | 'text' | 'report'
+  data?: any
+  meta?: {
+    summary?: string
+    recommendation?: 'buy' | 'hold' | 'sell' | null
+  }
+  message?: string // for error or simple text
 }

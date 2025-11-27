@@ -1,7 +1,7 @@
 <template>
   <div class="graph flex w-full flex-col gap-4">
     <!-- Controles de período -->
-    <div class="flex items-center justify-between">
+    <div v-if="showControls" class="flex items-center justify-between">
       <h2 class="text-lg font-semibold text-white">Dividendos</h2>
       <UButtonGroup orientation="horizontal" variant="soft">
         <UButton
@@ -116,6 +116,7 @@
 
       <!-- Checkbox para agrupar por ano -->
       <label
+        v-if="showControls"
         for="map-toggle"
         class="hover:bg-secondary/10 mt-3 flex max-w-fit items-center justify-between gap-4 rounded-full border px-3 py-2"
         :class="{
@@ -137,7 +138,7 @@
     </div>
 
     <!-- Resumo dos dividendos -->
-    <div class="flex items-center justify-between gap-8">
+    <div v-if="showControls" class="flex items-center justify-between gap-8">
       <MoleculesTickerIndicator
         name="Total no período"
         :value="
@@ -210,11 +211,13 @@ interface ApiDividendData {
 interface Props {
   data?: ApiDividendData[]
   loading?: boolean
+  showControls?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   data: () => [],
   loading: false,
+  showControls: true,
 })
 
 const selectedTimeRange = ref<'year' | '3years' | '5years' | 'max'>('5years')

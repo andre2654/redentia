@@ -97,11 +97,6 @@ import type { IChatMessage } from '~/types/ai'
 
 // ==================== TYPES ====================
 
-interface N8nStreamEvent {
-  type: 'item' | 'end' | string
-  content?: string
-}
-
 type RoutePath = '/help' | '/ticker'
 
 // ==================== PROPS ====================
@@ -116,7 +111,6 @@ const props = defineProps<{
 // ==================== CONSTANTS ====================
 
 const CHAT_STORAGE_KEY = 'redentia_chat_help'
-const WEBHOOK_URL = 'https://n8n.saraivada.com/webhook/redentia-assessor'
 const REQUEST_TIMEOUT = 600000 // 10 minutes
 const ERROR_MESSAGES = {
   timeout: 'A requisição excedeu o tempo limite. Tente novamente.',
@@ -131,7 +125,6 @@ const ERROR_MESSAGES = {
 const inputValue = ref('')
 const isLoading = ref(false)
 const internalMessages = ref<IChatMessage[]>([])
-const pendingBotMessageId = ref<string | null>(null) // Track pending message
 
 // ==================== COMPUTED ====================
 
@@ -275,204 +268,91 @@ async function sendMessage(): Promise<void> {
   // Build contextual prompt for API
   const contextualPrompt = buildContextualPrompt(text)
 
-  await streamBotResponse(contextualPrompt)
+  await fetchBotResponse(contextualPrompt)
 }
 
 /**
- * Stream bot response from n8n webhook
+ * Fetch bot response from internal API with streaming
  */
-async function streamBotResponse(prompt: string): Promise<void> {
+async function fetchBotResponse(prompt: string): Promise<void> {
   isLoading.value = true
-
   const botMessageId = generateId()
-  pendingBotMessageId.value = botMessageId
 
-  // DON'T create bot message yet - wait for first content
-
-  const controller = new AbortController()
-  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT)
+  // Create placeholder message
+  const botMessage: IChatMessage = {
+    id: botMessageId,
+    content: '',
+    type: 'bot',
+    timestamp: new Date(),
+  }
+  addMessage(botMessage)
 
   try {
-    const response = await fetch(WEBHOOK_URL, {
+    const response = await fetch('/api/chat', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         message: prompt,
         route: props.routePath,
+        ticker: props.ticker,
       }),
-      signal: controller.signal,
     })
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`)
-    }
+    if (!response.body) throw new Error('No response body')
 
-    if (!response.body) {
-      throw new Error('Response body is null')
-    }
+    const reader = response.body.getReader()
+    const decoder = new TextDecoder()
+    let buffer = ''
 
-    await processStream(response.body, botMessageId)
+    while (true) {
+      const { value, done } = await reader.read()
+      if (done) break
 
-    // Ensure message has content
-    const finalMessage = internalMessages.value.find(
-      (m) => m.id === botMessageId
-    )
-    if (!finalMessage) {
-      // Message was never created (no content received)
-      const botMessage: IChatMessage = {
-        id: botMessageId,
-        content: ERROR_MESSAGES.noResponse,
-        type: 'bot',
-        timestamp: new Date(),
+      buffer += decoder.decode(value, { stream: true })
+      const lines = buffer.split('\n')
+      buffer = lines.pop() || ''
+
+      for (const line of lines) {
+        if (!line.trim()) continue
+        try {
+          const event = JSON.parse(line)
+
+          if (event.type === 'data') {
+            // Update structured data
+            // Ensure we are passing the content object which matches IAgentResponse
+            updateMessage(botMessageId, { structuredData: event.content })
+          } else if (event.type === 'content') {
+            // Append text content
+            const currentMsg = internalMessages.value.find(
+              (m) => m.id === botMessageId
+            )
+            const newContent = (currentMsg?.content || '') + event.content
+
+            // Check for recommendation tag in content
+            // Simple check: if content starts with REC: ...
+            // We might want to strip it from display or keep it
+
+            updateMessage(botMessageId, { content: newContent })
+          } else if (event.type === 'error') {
+            updateMessage(botMessageId, { content: event.content })
+          }
+        } catch (e) {
+          console.warn('Error parsing stream line', e)
+        }
       }
-      addMessage(botMessage)
-    } else if (!finalMessage?.content?.trim()) {
-      // Message exists but has no content
-      updateMessage(botMessageId, { content: ERROR_MESSAGES.noResponse })
     }
   } catch (error) {
     handleStreamError(error, botMessageId)
   } finally {
-    clearTimeout(timeoutId)
     isLoading.value = false
-    pendingBotMessageId.value = null // Clear pending reference
   }
-}
-
-/**
- * Process the stream from n8n
- */
-async function processStream(
-  body: ReadableStream<Uint8Array>,
-  botMessageId: string
-): Promise<void> {
-  const reader = body.getReader()
-  const decoder = new TextDecoder()
-
-  let buffer = ''
-  let accumulatedContent = ''
-  let messageCreated = false
-
-  try {
-    while (true) {
-      const { value, done } = await reader.read()
-
-      if (done) break
-
-      buffer += decoder.decode(value, { stream: true })
-
-      const { events, remaining } = parseN8nEvents(buffer)
-      buffer = remaining
-
-      for (const event of events) {
-        if (event.type === 'item' && typeof event.content === 'string') {
-          accumulatedContent += event.content
-
-          // Create message on first content received
-          if (!messageCreated && pendingBotMessageId.value === botMessageId) {
-            const botMessage: IChatMessage = {
-              id: botMessageId,
-              content: accumulatedContent,
-              type: 'bot',
-              timestamp: new Date(),
-            }
-            addMessage(botMessage)
-            messageCreated = true
-            isLoading.value = false
-            await nextTick()
-          }
-          // Update UI progressively - only if this is still the pending message
-          else if (
-            messageCreated &&
-            pendingBotMessageId.value === botMessageId
-          ) {
-            updateMessage(botMessageId, { content: accumulatedContent })
-            await nextTick()
-          }
-        }
-
-        if (event.type === 'end') {
-          if (accumulatedContent.trim()) {
-            updateMessage(botMessageId, { content: accumulatedContent.trim() })
-          }
-          return
-        }
-      }
-    }
-  } finally {
-    reader.releaseLock()
-  }
-}
-
-/**
- * Parse n8n stream events from buffer
- */
-function parseN8nEvents(input: string): {
-  events: N8nStreamEvent[]
-  remaining: string
-} {
-  const events: N8nStreamEvent[] = []
-  let depth = 0
-  let startIndex = -1
-  let inString = false
-  let escaped = false
-
-  for (let i = 0; i < input.length; i++) {
-    const char = input[i]
-
-    // Handle escape sequences
-    if (escaped) {
-      escaped = false
-      continue
-    }
-
-    // Track string boundaries
-    if (inString) {
-      if (char === '\\') {
-        escaped = true
-      } else if (char === '"') {
-        inString = false
-      }
-      continue
-    }
-
-    if (char === '"') {
-      inString = true
-      continue
-    }
-
-    // Track JSON object boundaries
-    if (char === '{') {
-      if (depth === 0) startIndex = i
-      depth++
-    } else if (char === '}') {
-      depth--
-      if (depth === 0 && startIndex !== -1) {
-        const jsonString = input.slice(startIndex, i + 1)
-        try {
-          const event = JSON.parse(jsonString) as N8nStreamEvent
-          events.push(event)
-        } catch (error) {
-          console.warn('Failed to parse n8n event:', jsonString, error)
-        }
-        startIndex = -1
-      }
-    }
-  }
-
-  // Return parsed events and remaining incomplete JSON
-  const remaining = startIndex !== -1 ? input.slice(startIndex) : ''
-
-  return { events, remaining }
 }
 
 /**
  * Handle streaming errors
  */
 function handleStreamError(error: unknown, botMessageId: string): void {
-  console.error('Stream error:', error)
+  console.error('Request error:', error)
 
   let errorMessage = ERROR_MESSAGES.generic
 
@@ -486,22 +366,13 @@ function handleStreamError(error: unknown, botMessageId: string): void {
     }
   }
 
-  // Check if message exists before updating
-  const existingMessage = internalMessages.value.find(
-    (m) => m.id === botMessageId
-  )
-  if (existingMessage) {
-    updateMessage(botMessageId, { content: errorMessage })
-  } else {
-    // Create error message if it doesn't exist
-    const botMessage: IChatMessage = {
-      id: botMessageId,
-      content: errorMessage,
-      type: 'bot',
-      timestamp: new Date(),
-    }
-    addMessage(botMessage)
+  const botMessage: IChatMessage = {
+    id: botMessageId,
+    content: errorMessage,
+    type: 'bot',
+    timestamp: new Date(),
   }
+  addMessage(botMessage)
 }
 </script>
 
