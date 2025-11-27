@@ -272,6 +272,37 @@
               v-html="renderedContent"
             />
           </div>
+
+          <!-- Related Tickers -->
+          <div
+            v-if="message.structuredData.relatedTickers?.length"
+            class="mt-2 flex flex-col gap-2 border-t border-white/10 pt-3"
+          >
+            <div class="text-xs font-medium opacity-70">
+              Ativos mencionados:
+            </div>
+            <div class="flex flex-wrap gap-3">
+              <NuxtLink
+                v-for="(item, index) in message.structuredData.relatedTickers"
+                :key="index"
+                :to="`/asset/${item.ticker}`"
+                class="flex items-center gap-2 rounded bg-white/5 px-3 py-2 transition-colors hover:bg-white/10"
+              >
+                <img :src="item.logo" class="h-6 w-6 rounded object-cover" />
+                <span class="text-sm font-medium">{{ item.ticker }}</span>
+                <span
+                  class="text-xs font-medium"
+                  :class="
+                    item.change.includes('-')
+                      ? 'text-red-400'
+                      : 'text-green-400'
+                  "
+                >
+                  {{ item.change }}
+                </span>
+              </NuxtLink>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -428,10 +459,14 @@ async function updateRenderedContent() {
       gfm: true,
     })
 
-    const rawHtml = marked.parse(props.message.content)
+    const cleanContent = props.message.content
+      .replace(/^REC:\s*(NULL|BUY|SELL|HOLD)(\n|$)/im, '')
+      .trim()
+
+    const rawHtml = marked.parse(cleanContent)
 
     if (!import.meta.client) {
-      renderedContent.value = escapeHtml(props.message.content)
+      renderedContent.value = escapeHtml(cleanContent)
       return
     }
 
@@ -441,7 +476,7 @@ async function updateRenderedContent() {
           ALLOWED_TAGS,
           ALLOWED_ATTR,
         })
-      : escapeHtml(props.message.content)
+      : escapeHtml(cleanContent)
   } catch (error) {
     console.error('Failed to render markdown:', error)
     renderedContent.value = escapeHtml(props.message.content)

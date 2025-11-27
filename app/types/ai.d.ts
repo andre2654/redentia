@@ -17,5 +17,11 @@ export interface IAgentResponse {
     summary?: string
     recommendation?: 'buy' | 'hold' | 'sell' | null
   }
+  relatedTickers?: Array<{
+    ticker: string
+    name: string
+    logo: string
+    change: string
+  }>
   message?: string // for error or simple text
 }

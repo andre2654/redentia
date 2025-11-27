@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-col items-center justify-between gap-[100px] overflow-hidden md:rounded-[30px]"
+    class="flex flex-col items-center justify-between gap-[100px] overflow-hidden xl:rounded-[30px]"
   >
     <!-- Suggestions Section -->
     <div class="flex flex-col items-center justify-center gap-4 px-3 pt-[70px]">
@@ -110,7 +110,6 @@ const props = defineProps<{
 
 // ==================== CONSTANTS ====================
 
-const CHAT_STORAGE_KEY = 'redentia_chat_help'
 const REQUEST_TIMEOUT = 600000 // 10 minutes
 const ERROR_MESSAGES = {
   timeout: 'A requisição excedeu o tempo limite. Tente novamente.',
@@ -147,50 +146,13 @@ onMounted(() => {
   loadMessages()
 })
 
-watch(
-  internalMessages,
-  (messages) => {
-    if (props.routePath === '/help') {
-      saveMessages(messages)
-    }
-  },
-  { deep: true }
-)
-
 // ==================== METHODS ====================
 
 /**
- * Load messages from localStorage (only for /help route)
+ * Load messages from props
  */
 function loadMessages(): void {
-  if (props.routePath === '/help') {
-    try {
-      const cached = localStorage.getItem(CHAT_STORAGE_KEY)
-      if (cached) {
-        const parsed = JSON.parse(cached)
-        internalMessages.value = parsed.map((msg: any) => ({
-          ...msg,
-          timestamp: new Date(msg.timestamp),
-        }))
-        return
-      }
-    } catch (error) {
-      console.warn('Failed to load cached messages:', error)
-    }
-  }
-
   internalMessages.value = props.messages || []
-}
-
-/**
- * Save messages to localStorage
- */
-function saveMessages(messages: IChatMessage[]): void {
-  try {
-    localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(messages))
-  } catch (error) {
-    console.warn('Failed to save messages to localStorage:', error)
-  }
 }
 
 /**
@@ -277,15 +239,21 @@ async function sendMessage(): Promise<void> {
 async function fetchBotResponse(prompt: string): Promise<void> {
   isLoading.value = true
   const botMessageId = generateId()
+  let messageAdded = false
 
-  // Create placeholder message
-  const botMessage: IChatMessage = {
-    id: botMessageId,
-    content: '',
-    type: 'bot',
-    timestamp: new Date(),
+  const ensureMessage = () => {
+    if (!messageAdded) {
+      const botMessage: IChatMessage = {
+        id: botMessageId,
+        content: '',
+        type: 'bot',
+        timestamp: new Date(),
+      }
+      addMessage(botMessage)
+      messageAdded = true
+      isLoading.value = false
+    }
   }
-  addMessage(botMessage)
 
   try {
     const response = await fetch('/api/chat', {
@@ -318,10 +286,12 @@ async function fetchBotResponse(prompt: string): Promise<void> {
           const event = JSON.parse(line)
 
           if (event.type === 'data') {
+            ensureMessage()
             // Update structured data
             // Ensure we are passing the content object which matches IAgentResponse
             updateMessage(botMessageId, { structuredData: event.content })
           } else if (event.type === 'content') {
+            ensureMessage()
             // Append text content
             const currentMsg = internalMessages.value.find(
               (m) => m.id === botMessageId
@@ -333,7 +303,24 @@ async function fetchBotResponse(prompt: string): Promise<void> {
             // We might want to strip it from display or keep it
 
             updateMessage(botMessageId, { content: newContent })
+          } else if (event.type === 'related-tickers') {
+            ensureMessage()
+            const currentMsg = internalMessages.value.find(
+              (m) => m.id === botMessageId
+            )
+            const currentStructuredData = currentMsg?.structuredData || {
+              status: 'success',
+              type: 'text',
+            }
+
+            updateMessage(botMessageId, {
+              structuredData: {
+                ...currentStructuredData,
+                relatedTickers: event.content,
+              },
+            })
           } else if (event.type === 'error') {
+            ensureMessage()
             updateMessage(botMessageId, { content: event.content })
           }
         } catch (e) {
@@ -366,13 +353,20 @@ function handleStreamError(error: unknown, botMessageId: string): void {
     }
   }
 
-  const botMessage: IChatMessage = {
-    id: botMessageId,
-    content: errorMessage,
-    type: 'bot',
-    timestamp: new Date(),
+  const existing = internalMessages.value.find((m) => m.id === botMessageId)
+  if (existing) {
+    updateMessage(botMessageId, {
+      content: existing.content + '\n\n' + errorMessage,
+    })
+  } else {
+    const botMessage: IChatMessage = {
+      id: botMessageId,
+      content: errorMessage,
+      type: 'bot',
+      timestamp: new Date(),
+    }
+    addMessage(botMessage)
   }
-  addMessage(botMessage)
 }
 </script>
 

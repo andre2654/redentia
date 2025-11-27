@@ -1,12 +1,16 @@
 <template>
-  <NuxtLayout :name="layoutName" title="Assessoria" header-class="!text-white !bg-tertiary/50">
-    <div class="flex h-full w-full">
+  <NuxtLayout
+    :name="layoutName"
+    title="Assessoria"
+    header-class="!text-white !bg-tertiary/50"
+  >
+    <div class="mt-4 flex h-full w-full pb-4">
       <div
         v-if="!authStore.isAuthenticated"
         class="flex h-full w-full items-center justify-center"
       >
         <div
-          class="flex w-full h-full min-h-screen flex-col items-center gap-5 rounded-3xl bg-gradient-to-br from-white/10 via-white/5 to-transparent p-8 text-center text-white backdrop-blur-xl justify-center"
+          class="flex h-full min-h-screen w-full flex-col items-center justify-center gap-5 rounded-3xl bg-gradient-to-br from-white/10 via-white/5 to-transparent p-8 text-center text-white backdrop-blur-xl"
         >
           <div class="flex flex-col items-center gap-4">
             <IconAi class="fill-secondary h-12" />
@@ -36,9 +40,9 @@
         v-else
         class="h-full w-full bg-gradient-to-b from-[#042f54] to-[#0b3f6d] text-white"
         :suggestions="[
-          'Analise meus investimentos e me fale onde posso melhorar',
+          'Me dê um relatório completo sobre a Petrobras',
           'Tenho R$ 100,00 para investir, qual ação comprar?',
-          'Rebalance minha carteira para focar em dividendos',
+          'Como está o mercado hoje?',
         ]"
         textarea-container-class="bg-gray-200"
         :messages="messages"

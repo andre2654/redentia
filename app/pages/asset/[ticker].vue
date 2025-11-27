@@ -647,6 +647,14 @@
       <MoleculesChat
         v-else
         class="w-full bg-black/10 dark:bg-white/10"
+        :suggestions="[
+          'Me dê um relatório completo sobre a ação',
+          'Por que devo investir neste ativo?',
+          // caindo ou subindo, dependendo da variacao
+          `Porque está ${ticker} ${
+            dailyChangePercent && dailyChangePercent >= 0 ? 'subindo' : 'caindo'
+          }`,
+        ]"
         routePath="/ticker"
         :ticker="ticker"
       />

@@ -1,5 +1,6 @@
 import OpenAI from 'openai'
 import type { H3Event } from 'h3'
+import { getMarketData } from './market'
 
 // Helper to reduce token usage by summarizing large datasets
 function sanitizeContext(type: string, rawData: any) {
@@ -180,6 +181,7 @@ export const streamAgentResponse = async (
     5. Se o tipo for "report" ou "analysis" E houver um ativo, cite os números principais (Preço atual, P/L, Dividend Yield, Setor, Valor de Mercado) QUE ESTIVEREM DISPONÍVEIS.
     6. Use os dados brutos fornecidos para embasar sua análise. Não invente números.
     7. IMPORTANTE: Mesmo que faltem dados fundamentais, faça a melhor análise possível com o preço e histórico disponíveis.
+    8. IMPORTANTE: Se o usuário perguntar sobre "melhores ações", "oportunidades" ou "recomendações" de forma genérica, CITE EXEMPLOS CONCRETOS de ativos (Tickers como BBAS3, VALE3, WEGE3, etc.) que costumam ser citados pelo mercado para esse fim (ex: Dividendos -> BBAS3, TAEE11). Isso é crucial para o sistema exibir os cards dos ativos.
 
     Formato de saída OBRIGATÓRIO:
     - Primeira linha: "REC: [BUY|HOLD|SELL|NULL]" (apenas se fizer sentido dar recomendação para um ativo específico)
@@ -211,10 +213,46 @@ export const streamAgentResponse = async (
             stream: true,
         })
 
+        let fullContent = ''
+
         for await (const chunk of stream) {
             const content = chunk.choices[0]?.delta?.content || ''
             if (content) {
+                fullContent += content
                 event.node.res.write(JSON.stringify({ type: 'content', content }) + '\n')
+            }
+        }
+
+        // Extract tickers from fullContent
+        const tickerRegex = /[A-Z]{4}[0-9]{1,2}/g
+        const matches = fullContent.match(tickerRegex)
+
+        if (matches) {
+            // Filter unique tickers and exclude the main ticker if present
+            const uniqueTickers = [...new Set(matches)].filter(t => t !== ticker)
+
+            if (uniqueTickers.length > 0) {
+                // Fetch data for these tickers
+                const relatedTickers = await Promise.all(uniqueTickers.map(async (t) => {
+                    try {
+                        const data = await getMarketData(t, 'price') as any
+                        if (!data) return null
+                        return {
+                            ticker: t,
+                            name: data.name || t,
+                            logo: data.logo || '',
+                            change: data.change ? `${Number(data.change).toFixed(2)}%` : '0.00%'
+                        }
+                    } catch {
+                        return null
+                    }
+                }))
+
+                const validTickers = relatedTickers.filter(t => t !== null)
+
+                if (validTickers.length > 0) {
+                    event.node.res.write(JSON.stringify({ type: 'related-tickers', content: validTickers }) + '\n')
+                }
             }
         }
 
