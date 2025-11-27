@@ -81,15 +81,15 @@ defineShortcuts({
   },
 })
 
-const { data: ativos, status, execute } = await useAsyncData<IAsset[]>(
-  'assets',
-  () => getAssets(),
-  {
-    server: false,
-    immediate: false,
-    default: () => [],
-  }
-)
+const {
+  data: ativos,
+  status,
+  execute,
+} = await useAsyncData<IAsset[]>('assets', () => getAssets(), {
+  server: false,
+  immediate: false,
+  default: () => [],
+})
 
 const ensureAssetsLoaded = async () => {
   if (status.value === 'idle') {

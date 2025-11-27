@@ -22,10 +22,14 @@
           @submit="onSubmit"
         >
           <div class="space-y-2 text-center md:text-left">
-            <span class="text-xs font-medium uppercase tracking-[0.2em] text-secondary/80">
+            <span
+              class="text-secondary/80 text-xs font-medium uppercase tracking-[0.2em]"
+            >
               Acesso
             </span>
-            <h1 class="text-2xl font-semibold text-white">Entrar no Redentia</h1>
+            <h1 class="text-2xl font-semibold text-white">
+              Entrar no Redentia
+            </h1>
             <p class="text-sm text-white/70">
               Preencha seus dados para continuar sua jornada de investimentos.
             </p>
@@ -59,7 +63,7 @@
           <div class="flex flex-col gap-2 text-center md:text-left">
             <NuxtLink
               to="/auth/register"
-              class="text-sm font-medium text-secondary transition hover:text-secondary/80"
+              class="text-secondary hover:text-secondary/80 text-sm font-medium transition"
             >
               Ainda não tem conta? Cadastre-se agora
             </NuxtLink>

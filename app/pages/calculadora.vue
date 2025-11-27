@@ -65,7 +65,8 @@ const assets = computed(() => assetsData.value ?? [])
 const assetsLoading = computed(() => assetsPending.value)
 
 usePageSeo({
-  title: 'Calculadora de juros compostos e simuladores de investimentos | Redentia',
+  title:
+    'Calculadora de juros compostos e simuladores de investimentos | Redentia',
   description:
     'Simule juros compostos, planeje aportes e analise o histórico de ações e FIIs com a calculadora inteligente da Redentia.',
   path: '/calculadora',

@@ -10,7 +10,8 @@
           <AtomsAuthHeader class="mt-0 w-full max-w-sm" />
           <p class="text-sm leading-relaxed text-white/70 md:max-w-sm">
             Crie sua conta para acessar carteiras inteligentes, simuladores de
-            investimentos e recursos personalizados que aceleram seus resultados.
+            investimentos e recursos personalizados que aceleram seus
+            resultados.
           </p>
         </div>
 
@@ -21,7 +22,9 @@
           @submit="onSubmit"
         >
           <div class="space-y-2 text-center md:text-left">
-            <span class="text-xs font-medium uppercase tracking-[0.2em] text-secondary/80">
+            <span
+              class="text-secondary/80 text-xs font-medium uppercase tracking-[0.2em]"
+            >
               Cadastro
             </span>
             <h1 class="text-2xl font-semibold text-white">Criar conta</h1>
@@ -123,7 +126,9 @@
                 :class="req.met ? 'text-secondary' : 'text-white/70'"
               >
                 <UIcon
-                  :name="req.met ? 'i-lucide-circle-check' : 'i-lucide-circle-x'"
+                  :name="
+                    req.met ? 'i-lucide-circle-check' : 'i-lucide-circle-x'
+                  "
                   class="size-4 shrink-0"
                 />
                 <span class="text-xs font-medium">{{ req.text }}</span>
@@ -143,13 +148,14 @@
           <div class="flex flex-col gap-2 text-center md:text-left">
             <NuxtLink
               to="/auth/login"
-              class="text-sm font-medium text-secondary transition hover:text-secondary/80"
+              class="text-secondary hover:text-secondary/80 text-sm font-medium transition"
             >
               Já tem uma conta? Faça login
             </NuxtLink>
             <p class="text-[11px] leading-relaxed text-white/60">
               Ao criar sua conta no Redentia, você concorda com nossos Termos de
-              Serviço e Política de privacidade e declara ter pelo menos 18 anos.
+              Serviço e Política de privacidade e declara ter pelo menos 18
+              anos.
             </p>
           </div>
         </UForm>

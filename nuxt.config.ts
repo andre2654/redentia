@@ -131,8 +131,7 @@ export default defineNuxtConfig({
     classPrefix: '',
     classSuffix: '',
     storage: 'localStorage', // or 'sessionStorage' or 'cookie'
-    storageKey: 'nuxt-color-mode-force'
-
+    storageKey: 'nuxt-color-mode-force',
   },
   ui: {
     theme: {

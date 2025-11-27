@@ -79,26 +79,23 @@ const props = withDefaults(
 const { getTopStocks } = useAssetsService()
 
 const fetchedItems = !props.items.length
-  ? await useAsyncData<CarouselItem[]>(
-      'ticker-carousel-items',
-      async () => {
-        const data = await getTopStocks('top', 100000)
-        return (Array.isArray(data) ? data : []).slice(0, 40).map((asset) => {
-          const variation =
-            typeof asset.change_percent === 'number'
-              ? asset.change_percent
-              : typeof asset.change === 'number'
-                ? asset.change
-                : Number(asset.change_percent ?? asset.change ?? 0) || 0
+  ? await useAsyncData<CarouselItem[]>('ticker-carousel-items', async () => {
+      const data = await getTopStocks('top', 100000)
+      return (Array.isArray(data) ? data : []).slice(0, 40).map((asset) => {
+        const variation =
+          typeof asset.change_percent === 'number'
+            ? asset.change_percent
+            : typeof asset.change === 'number'
+              ? asset.change
+              : Number(asset.change_percent ?? asset.change ?? 0) || 0
 
-          return {
-            logo: asset.logo || '/default-logo.png',
-            ticker: asset.ticker,
-            change: `${variation.toFixed(2)}%`,
-          }
-        })
-      }
-    )
+        return {
+          logo: asset.logo || '/default-logo.png',
+          ticker: asset.ticker,
+          change: `${variation.toFixed(2)}%`,
+        }
+      })
+    })
   : null
 
 const isPaused = ref(false)

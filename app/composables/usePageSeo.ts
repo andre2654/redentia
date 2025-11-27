@@ -32,7 +32,7 @@ export function usePageSeo(options: UsePageSeoOptions) {
     ? options.path
     : `/${options.path}`
   const canonicalUrl = `${siteUrl}${normalizedPath}`
-  
+
   const resolveImage = (img?: string | (() => string)) => {
     const val = typeof img === 'function' ? img() : img
     return val ? resolveUrl(siteUrl, val) : `${siteUrl}/512x512.png`
