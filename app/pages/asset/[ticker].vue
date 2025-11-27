@@ -490,17 +490,17 @@
       <!-- Asset Info -->
       <section class="max-md:px-4">
         <header class="mb-4 flex items-center gap-4">
-          <USkeleton v-if="isLoadingAsset" class="h-16 w-16 rounded-2xl" />
+          <USkeleton v-if="isLoadingAsset" class="h-20 w-20 rounded-2xl" />
           <img
             v-else-if="asset?.logo"
             :src="asset.logo"
             alt="Asset Logo"
-            class="h-16 w-16 rounded-2xl object-cover"
+            class="h-20 w-20 rounded-2xl object-cover"
           />
           <div class="flex flex-col gap-1">
             <USkeleton v-if="isLoadingAsset" class="h-4 w-32" />
             <template v-else>
-              <span class="text-sm text-white/60">Resumo do ativo</span>
+              <span class="text-sm text-white/60">Ativo:</span>
               <h3 class="text-lg font-semibold text-white">
                 {{ asset?.ticker }} • {{ asset?.name }}
               </h3>
@@ -528,9 +528,9 @@
                 {{ asset.website }}
               </a>
             </p>
-            <p v-if="asset?.long_business_summary" class="text-white/60">
+            <!-- <p v-if="asset?.long_business_summary" class="text-white/60">
               {{ asset.long_business_summary }}
-            </p>
+            </p> -->
           </template>
         </div>
       </section>
