@@ -18,14 +18,12 @@ const uAppConfig = {
 
 const interfaceStore = useInterfaceStore()
 const route = useRoute()
-const { startDailyCheck } = useDailyNotification()
 
 const showBanner = computed(() => {
   return !route.meta.hideInstallAppBanner && !interfaceStore.hideInstallBanner
 })
 
 onMounted(() => {
-  startDailyCheck()
   watchEffect(() => {
     document.body.classList.toggle('hide-amount', !interfaceStore.revealAmount)
   })
