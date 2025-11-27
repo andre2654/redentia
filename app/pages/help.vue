@@ -4,7 +4,7 @@
     title="Assessoria"
     header-class="!text-white !bg-tertiary/50"
   >
-    <div class="mt-4 flex h-full w-full pb-4">
+    <div class="flex h-full w-full pb-4 xl:mt-4">
       <div
         v-if="!authStore.isAuthenticated"
         class="flex h-full w-full items-center justify-center"
