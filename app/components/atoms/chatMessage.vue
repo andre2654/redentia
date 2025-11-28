@@ -14,8 +14,20 @@
         <span class="text-[17px] font-semibold">ASSESSORIA REDENTIA:</span>
       </div>
 
+      <!-- Status Indicator (Generative UI) -->
+      <div
+        v-if="message.status && !message.content && !message.structuredData"
+        class="flex items-center gap-2 text-sm text-white/70"
+      >
+        <UIcon name="i-lucide-loader-2" class="h-4 w-4 animate-spin" />
+        {{ message.status }}
+      </div>
+
       <!-- Message Content -->
-      <div class="rounded-lg border border-white/20 bg-white/10 px-4 py-3">
+      <div
+        v-if="message.content || message.structuredData"
+        class="rounded-lg border border-white/20 bg-white/10 px-4 py-3"
+      >
         <div
           v-if="!message.structuredData"
           class="prose prose-sm dark:prose-invert max-w-none"
@@ -262,6 +274,180 @@
             </div>
           </div>
 
+          <!-- Tool Results & Visualizations (Moved to top) -->
+          <!-- Tool Results & Visualizations -->
+          <div
+            v-if="message.structuredData.toolsUsed?.length"
+            class="mt-4 flex flex-col gap-4 border-t border-white/10 pt-4"
+          >
+            <div
+              v-for="(tool, index) in message.structuredData.toolsUsed"
+              :key="index"
+              class="flex flex-col gap-4 rounded-xl border border-white/10 bg-white/5 p-4"
+            >
+              <!-- Tool Header -->
+              <div
+                class="flex items-center gap-2 border-b border-white/10 pb-3"
+              >
+                <div
+                  class="bg-secondary/20 flex h-8 w-8 items-center justify-center rounded-full"
+                >
+                  <UIcon
+                    name="i-lucide-calculator"
+                    class="text-secondary size-5"
+                  />
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-sm font-bold">{{
+                    getToolLabel(tool.name)
+                  }}</span>
+                  <span class="text-xs opacity-60">Resultado da simulação</span>
+                </div>
+              </div>
+
+              <!-- Stock Return / Compound Interest Result -->
+              <div
+                v-if="
+                  [
+                    'calculate_stock_return',
+                    'calculate_compound_interest',
+                  ].includes(tool.name) && tool.result
+                "
+                class="flex flex-col gap-4"
+              >
+                <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                  <div class="rounded-lg bg-white/5 p-3">
+                    <div class="text-xs opacity-60">Total Investido</div>
+                    <div class="font-mono text-lg font-bold">
+                      {{
+                        new Intl.NumberFormat('pt-BR', {
+                          style: 'currency',
+                          currency: 'BRL',
+                        }).format(tool.result.totalInvested)
+                      }}
+                    </div>
+                  </div>
+                  <div class="rounded-lg bg-white/5 p-3">
+                    <div class="text-xs opacity-60">Valor Final</div>
+                    <div class="text-secondary font-mono text-lg font-bold">
+                      {{
+                        new Intl.NumberFormat('pt-BR', {
+                          style: 'currency',
+                          currency: 'BRL',
+                        }).format(tool.result.finalValue)
+                      }}
+                    </div>
+                  </div>
+                  <div
+                    v-if="tool.result.returnPercentage !== undefined"
+                    class="rounded-lg bg-white/5 p-3"
+                  >
+                    <div class="text-xs opacity-60">Rentabilidade</div>
+                    <div
+                      class="font-mono text-lg font-bold"
+                      :class="
+                        tool.result.returnPercentage >= 0
+                          ? 'text-green-400'
+                          : 'text-red-400'
+                      "
+                    >
+                      {{ tool.result.returnPercentage > 0 ? '+' : ''
+                      }}{{ tool.result.returnPercentage.toFixed(2) }}%
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  v-if="tool.result.chartData?.length"
+                  class="mt-2 h-[200px] w-full"
+                >
+                  <AtomsGraphLine
+                    :data="tool.result.chartData"
+                    :height="200"
+                    :colors="['#00D9A5']"
+                    :show-legend="false"
+                  />
+                </div>
+              </div>
+
+              <!-- Planning Result -->
+              <div
+                v-else-if="tool.name === 'calculate_planning' && tool.result"
+                class="flex flex-col gap-4"
+              >
+                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div class="rounded-lg bg-white/5 p-3">
+                    <div class="text-xs opacity-60">Meta</div>
+                    <div class="font-mono text-lg font-bold">
+                      {{
+                        new Intl.NumberFormat('pt-BR', {
+                          style: 'currency',
+                          currency: 'BRL',
+                        }).format(tool.result.goalValue)
+                      }}
+                    </div>
+                  </div>
+                  <div class="rounded-lg bg-white/5 p-3">
+                    <div class="text-xs opacity-60">Tempo Estimado</div>
+                    <div class="text-secondary font-mono text-lg font-bold">
+                      {{ Math.ceil(tool.result.monthsToGoal / 12) }} anos
+                    </div>
+                    <div class="text-xs opacity-50">
+                      {{ tool.result.targetDateLabel }}
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  v-if="tool.result.chartData?.length"
+                  class="mt-2 h-[200px] w-full"
+                >
+                  <AtomsGraphLine
+                    :data="tool.result.chartData"
+                    :height="200"
+                    :colors="['#00D9A5']"
+                    :show-legend="false"
+                  />
+                </div>
+
+                <!-- Recommended Assets -->
+                <div
+                  v-if="tool.result.recommendedAssets?.length"
+                  class="flex flex-col gap-2 border-t border-white/10 pt-3"
+                >
+                  <div class="text-xs font-medium opacity-70">
+                    Carteira Sugerida ({{
+                      tool.result.strategy === 'seguranca'
+                        ? 'Conservadora'
+                        : 'Arrojada'
+                    }})
+                  </div>
+                  <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    <div
+                      v-for="(asset, idx) in tool.result.recommendedAssets"
+                      :key="idx"
+                      class="flex items-center justify-between rounded bg-white/5 p-2 px-3"
+                    >
+                      <div class="flex flex-col">
+                        <span class="text-sm font-bold">{{
+                          asset.ticker
+                        }}</span>
+                        <span class="text-[10px] opacity-60">{{
+                          asset.category
+                        }}</span>
+                      </div>
+                      <div class="text-right">
+                        <div class="font-mono text-xs">
+                          {{ (asset.weight * 100).toFixed(0) }}%
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Summary Text -->
           <div
             v-if="message.content"
@@ -303,146 +489,22 @@
               </NuxtLink>
             </div>
           </div>
-
-          <!-- Tool Results & Visualizations -->
-          <div
-            v-if="message.structuredData.toolsUsed?.length"
-            class="mt-4 flex flex-col gap-4 border-t border-white/10 pt-4"
-          >
-            <div
-              v-for="(tool, index) in message.structuredData.toolsUsed"
-              :key="index"
-              class="flex flex-col gap-4 rounded-xl border border-white/10 bg-white/5 p-4"
-            >
-              <!-- Tool Header -->
-              <div class="flex items-center gap-2 border-b border-white/10 pb-3">
-                <div
-                  class="flex h-8 w-8 items-center justify-center rounded-full bg-secondary/20"
-                >
-                  <UIcon
-                    name="i-lucide-calculator"
-                    class="text-secondary size-5"
-                  />
-                </div>
-                <div class="flex flex-col">
-                  <span class="text-sm font-bold">{{
-                    getToolLabel(tool.name)
-                  }}</span>
-                  <span class="text-xs opacity-60">Resultado da simulação</span>
-                </div>
-              </div>
-
-              <!-- Stock Return / Compound Interest Result -->
-              <div
-                v-if="
-                  [
-                    'calculate_stock_return',
-                    'calculate_compound_interest',
-                  ].includes(tool.name) && tool.result
-                "
-                class="flex flex-col gap-4"
-              >
-                <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                  <div class="rounded-lg bg-white/5 p-3">
-                    <div class="text-xs opacity-60">Total Investido</div>
-                    <div class="font-mono text-lg font-bold">
-                      {{
-                        new Intl.NumberFormat('pt-BR', {
-                          style: 'currency',
-                          currency: 'BRL',
-                        }).format(tool.result.totalInvested)
-                      }}
-                    </div>
-                  </div>
-                  <div class="rounded-lg bg-white/5 p-3">
-                    <div class="text-xs opacity-60">Valor Final</div>
-                    <div class="font-mono text-lg font-bold text-secondary">
-                      {{
-                        new Intl.NumberFormat('pt-BR', {
-                          style: 'currency',
-                          currency: 'BRL',
-                        }).format(tool.result.finalValue)
-                      }}
-                    </div>
-                  </div>
-                  <div
-                    v-if="tool.result.returnPercentage !== undefined"
-                    class="rounded-lg bg-white/5 p-3"
-                  >
-                    <div class="text-xs opacity-60">Rentabilidade</div>
-                    <div
-                      class="font-mono text-lg font-bold"
-                      :class="
-                        tool.result.returnPercentage >= 0
-                          ? 'text-green-400'
-                          : 'text-red-400'
-                      "
-                    >
-                      {{
-                        tool.result.returnPercentage > 0 ? '+' : ''
-                      }}{{ tool.result.returnPercentage.toFixed(2) }}%
-                    </div>
-                  </div>
-                </div>
-
-                <div
-                  v-if="tool.result.chartData?.length"
-                  class="mt-2 h-[200px] w-full"
-                >
-                  <AtomsGraphLine
-                    :data="tool.result.chartData"
-                    :height="200"
-                    :colors="['#00D9A5']"
-                    :show-legend="false"
-                  />
-                </div>
-              </div>
-
-              <!-- Planning Result -->
-              <div
-                v-else-if="
-                  tool.name === 'calculate_planning' && tool.result
-                "
-                class="flex flex-col gap-4"
-              >
-                <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <div class="rounded-lg bg-white/5 p-3">
-                    <div class="text-xs opacity-60">Meta</div>
-                    <div class="font-mono text-lg font-bold">
-                      {{
-                        new Intl.NumberFormat('pt-BR', {
-                          style: 'currency',
-                          currency: 'BRL',
-                        }).format(tool.result.goalValue)
-                      }}
-                    </div>
-                  </div>
-                  <div class="rounded-lg bg-white/5 p-3">
-                    <div class="text-xs opacity-60">Tempo Estimado</div>
-                    <div class="font-mono text-lg font-bold text-secondary">
-                      {{ Math.ceil(tool.result.monthsToGoal / 12) }} anos
-                    </div>
-                    <div class="text-xs opacity-50">
-                      {{ tool.result.targetDateLabel }}
-                    </div>
-                  </div>
-                </div>
-
-                <div
-                  v-if="tool.result.chartData?.length"
-                  class="mt-2 h-[200px] w-full"
-                >
-                  <AtomsGraphLine
-                    :data="tool.result.chartData"
-                    :height="200"
-                    :colors="['#00D9A5']"
-                    :show-legend="false"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
+      </div>
+
+      <!-- Suggestions (Follow-up Chips) -->
+      <div
+        v-if="message.suggestions && message.suggestions.length > 0"
+        class="mt-1 flex flex-wrap gap-2"
+      >
+        <button
+          v-for="suggestion in message.suggestions"
+          :key="suggestion"
+          class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white/80 transition-colors hover:bg-white/10 hover:text-white"
+          @click="$emit('action', suggestion)"
+        >
+          {{ suggestion }}
+        </button>
       </div>
 
       <!-- Timestamp -->

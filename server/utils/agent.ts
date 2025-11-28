@@ -100,10 +100,9 @@ export const streamAgentResponse = async (
     Contexto:
     - Ticker identificado: ${ticker || 'Nenhum (Pergunta Geral)'}
     - Tipo de solicitação: ${type}
-    ${
-      toolResult
-        ? `- Resultado da Ferramenta (${toolName}): ${JSON.stringify(toolResult)}`
-        : ''
+    ${toolResult
+      ? `- Resultado da Ferramenta (${toolName}): ${JSON.stringify(toolResult)}`
+      : ''
     }
     
     Seus objetivos:
@@ -203,7 +202,7 @@ export const streamAgentResponse = async (
         if (validTickers.length > 0) {
           event.node.res.write(
             JSON.stringify({ type: 'related-tickers', content: validTickers }) +
-              '\n'
+            '\n'
           )
         }
       }

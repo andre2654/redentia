@@ -177,115 +177,115 @@ export const calculateCompoundInterest = (
 }
 
 export const calculateStockReturn = async (
-  tickersInput: string | string[],
-  initialInvestmentInput: number,
-  monthlyInvestmentInput: number,
-  periodYears: number,
-  reinvestDividends: boolean = true
+    tickersInput: string | string[],
+    initialInvestmentInput: number,
+    monthlyInvestmentInput: number,
+    periodYears: number,
+    reinvestDividends: boolean = true
 ) => {
-  try {
-    const tickers = Array.isArray(tickersInput) ? tickersInput : [tickersInput]
-    
-    // Ensure inputs are numbers (handle undefined/null)
-    let initialInvestment = Number(initialInvestmentInput)
-    let monthlyInvestment = Number(monthlyInvestmentInput)
+    try {
+        const tickers = Array.isArray(tickersInput) ? tickersInput : [tickersInput]
 
-    if (isNaN(initialInvestment)) initialInvestment = 0
-    if (isNaN(monthlyInvestment)) monthlyInvestment = 0
+        // Ensure inputs are numbers (handle undefined/null)
+        let initialInvestment = Number(initialInvestmentInput)
+        let monthlyInvestment = Number(monthlyInvestmentInput)
 
-    // Fallback: If user didn't specify any value (both are 0), default to R$ 1000 initial
-    if (initialInvestment === 0 && monthlyInvestment === 0) {
-      initialInvestment = 1000
-    }
+        if (isNaN(initialInvestment)) initialInvestment = 0
+        if (isNaN(monthlyInvestment)) monthlyInvestment = 0
 
-    // If multiple tickers, split investment equally
-    const investmentPerTicker = initialInvestment / tickers.length
-    const monthlyPerTicker = monthlyInvestment / tickers.length
-
-    const results = await Promise.all(tickers.map(async (ticker) => {
-      return await calculateSingleStockReturn(
-        ticker,
-        investmentPerTicker,
-        monthlyPerTicker,
-        periodYears,
-        reinvestDividends
-      )
-    }))
-
-    const validResults = results.filter(r => r !== null)
-    if (validResults.length === 0) return null
-
-    // Aggregate results
-    const totalInvested = validResults.reduce((sum, r) => sum + r.totalInvested, 0)
-    const finalValue = validResults.reduce((sum, r) => sum + r.finalValue, 0)
-    const totalDividends = validResults.reduce((sum, r) => sum + r.totalDividends, 0)
-    
-    // Merge chart data
-    // We need to align dates. We'll use the dates from the first valid result and sum values if dates match
-    // Or better: create a map of date -> value
-    const dateMap = new Map<number, { date: string, value: number, timestamp: number }>()
-    
-    validResults.forEach(res => {
-      res.chartData.forEach((point: any) => {
-        const existing = dateMap.get(point.timestamp)
-        if (existing) {
-          existing.value += point.value
-        } else {
-          dateMap.set(point.timestamp, { ...point })
+        // Fallback: If user didn't specify any value (both are 0), default to R$ 1000 initial
+        if (initialInvestment === 0 && monthlyInvestment === 0) {
+            initialInvestment = 1000
         }
-      })
-    })
 
-    const chartData = Array.from(dateMap.values()).sort((a, b) => a.timestamp - b.timestamp)
-    
-    const returnPercentage = totalInvested > 0 ? ((finalValue - totalInvested) / totalInvested) * 100 : 0
+        // If multiple tickers, split investment equally
+        const investmentPerTicker = initialInvestment / tickers.length
+        const monthlyPerTicker = monthlyInvestment / tickers.length
 
-    // For single ticker, we can preserve shares and avg price
-    let totalShares = 0
-    let averagePrice = 0
-    
-    if (validResults.length === 1 && validResults[0]) {
-        totalShares = validResults[0].totalShares
-        averagePrice = validResults[0].averagePrice
+        const results = await Promise.all(tickers.map(async (ticker) => {
+            return await calculateSingleStockReturn(
+                ticker,
+                investmentPerTicker,
+                monthlyPerTicker,
+                periodYears,
+                reinvestDividends
+            )
+        }))
+
+        const validResults = results.filter(r => r !== null)
+        if (validResults.length === 0) return null
+
+        // Aggregate results
+        const totalInvested = validResults.reduce((sum, r) => sum + r.totalInvested, 0)
+        const finalValue = validResults.reduce((sum, r) => sum + r.finalValue, 0)
+        const totalDividends = validResults.reduce((sum, r) => sum + r.totalDividends, 0)
+
+        // Merge chart data
+        // We need to align dates. We'll use the dates from the first valid result and sum values if dates match
+        // Or better: create a map of date -> value
+        const dateMap = new Map<number, { date: string, value: number, timestamp: number }>()
+
+        validResults.forEach(res => {
+            res.chartData.forEach((point: any) => {
+                const existing = dateMap.get(point.timestamp)
+                if (existing) {
+                    existing.value += point.value
+                } else {
+                    dateMap.set(point.timestamp, { ...point })
+                }
+            })
+        })
+
+        const chartData = Array.from(dateMap.values()).sort((a, b) => a.timestamp - b.timestamp)
+
+        const returnPercentage = totalInvested > 0 ? ((finalValue - totalInvested) / totalInvested) * 100 : 0
+
+        // For single ticker, we can preserve shares and avg price
+        let totalShares = 0
+        let averagePrice = 0
+
+        if (validResults.length === 1 && validResults[0]) {
+            totalShares = validResults[0].totalShares
+            averagePrice = validResults[0].averagePrice
+        }
+
+        return {
+            ticker: tickers.join(' + '),
+            totalInvested,
+            finalValue,
+            returnPercentage,
+            totalDividends,
+            totalShares,
+            averagePrice,
+            chartData,
+            periodYears,
+            dividendsHistory: validResults.flatMap(r => r.dividendsHistory).sort((a: any, b: any) => new Date(a.payment_date).getTime() - new Date(b.payment_date).getTime())
+        }
+
+    } catch (error) {
+        console.error('Error calculating portfolio return:', error)
+        return null
     }
-
-    return {
-      ticker: tickers.join(' + '),
-      totalInvested,
-      finalValue,
-      returnPercentage,
-      totalDividends,
-      totalShares,
-      averagePrice,
-      chartData,
-      periodYears,
-      dividendsHistory: validResults.flatMap(r => r.dividendsHistory).sort((a: any, b: any) => new Date(a.payment_date).getTime() - new Date(b.payment_date).getTime())
-    }
-
-  } catch (error) {
-    console.error('Error calculating portfolio return:', error)
-    return null
-  }
 }
 
 const calculateSingleStockReturn = async (
-  ticker: string,
-  initialInvestment: number,
-  monthlyInvestment: number,
-  periodYears: number,
-  reinvestDividends: boolean
+    ticker: string,
+    initialInvestment: number,
+    monthlyInvestment: number,
+    periodYears: number,
+    reinvestDividends: boolean
 ) => {
-  try {
-    // Fetch price history
-    const priceData = await getMarketData(ticker, 'chart', { period: 'full' })
-    const priceHistory = Array.isArray(priceData) ? priceData : (priceData as any)?.data || []
+    try {
+        // Fetch price history
+        const priceData = await getMarketData(ticker, 'chart', { period: 'full' })
+        const priceHistory = Array.isArray(priceData) ? priceData : (priceData as any)?.data || []
 
-    if (!priceHistory || priceHistory.length === 0) {
-      return null
-    }
+        if (!priceHistory || priceHistory.length === 0) {
+            return null
+        }
 
-    // Fetch dividends
-    let dividendsRaw: any[] = []
+        // Fetch dividends
+        let dividendsRaw: any[] = []
         if (reinvestDividends) {
             try {
                 const divData = await getMarketData(ticker, 'dividends')
@@ -464,12 +464,12 @@ async function simulateAssetPerformance(ticker: string, options: { reinvestDivid
 
         const finalValue = result.finalValue
         const initialValue = result.totalInvested
-        
+
         // Calculate CAGR
         // FV = PV * (1 + r)^n  =>  r = (FV/PV)^(1/n) - 1
         const years = 5
         const cagr = Math.pow(finalValue / initialValue, 1 / years) - 1
-        
+
         // Monthly rate
         const monthlyRate = Math.pow(1 + cagr, 1 / 12) - 1
 
@@ -504,14 +504,10 @@ export const calculatePlanning = async (
         let analysisYears = 5
 
         if (strategy === 'rentabilidade') {
-            // Rule: At least 3 stocks
-            const candidates = [
-                ...planningUniverse.rentabilidade.priorityTickers
-            ]
-            
-            // Pick 3 random unique stocks
-            const selectedTickers = getRandomAssets(candidates, 3)
-            
+            // Rule: Use fixed high-performance assets for consistency
+            // We select 3 distinct sectors: Oil (PRIO3), Mining (VALE3), Industry (WEGE3)
+            const selectedTickers = ['PRIO3', 'VALE3', 'WEGE3']
+
             const performances = await Promise.all(
                 selectedTickers.map(t => simulateAssetPerformance(t, { reinvestDividends: true, categoryLabel: 'Ação' }))
             )
@@ -529,19 +525,11 @@ export const calculatePlanning = async (
 
         } else {
             // Strategy: Seguranca
-            // Rule: 2 Stocks + 2 FIIs + 1 Fixed Income
-            
-            // 1. Pick 2 Stocks (from safe categories: energy, sanitation, banks)
-            const safeStockCandidates = [
-                ...planningUniverse.seguranca.categories.energy,
-                ...planningUniverse.seguranca.categories.sanitation,
-                ...planningUniverse.seguranca.categories.banks
-            ]
-            const selectedStocks = getRandomAssets(safeStockCandidates, 2)
+            // Rule: Fixed Safe Portfolio for consistency
+            // 1 Energy (TAEE11), 1 Bank (ITUB4), 2 FIIs (HGLG11, VISC11) + Fixed Income
 
-            // 2. Pick 2 FIIs
-            const fiiCandidates = planningUniverse.seguranca.categories.fiis
-            const selectedFiis = getRandomAssets(fiiCandidates, 2)
+            const selectedStocks = ['TAEE11', 'ITUB4']
+            const selectedFiis = ['HGLG11', 'VISC11']
 
             // 3. Fixed Income (Synthetic)
             const fixedIncomeRate = planningUniverse.seguranca.fixedIncomeAnnualRate
@@ -569,25 +557,21 @@ export const calculatePlanning = async (
             const validFiis = fiiPerformances.filter(p => p !== null)
 
             // Combine all assets
-            // We aim for 5 assets total. If some simulations fail, we adjust weights.
             const allAssets = [...validStocks, ...validFiis]
-            
+
             // Calculate average rate including Fixed Income
-            // Weighting: Fixed Income is 1 part. Real assets are remaining parts.
-            // If we have 2 stocks + 2 FIIs + 1 RF = 5 parts.
-            
             const totalParts = allAssets.length + 1 // +1 for Fixed Income
-            
+
             let sumRates = fixedIncomeMonthly // Start with RF rate
             allAssets.forEach(a => sumRates += (a?.monthlyRate || 0))
-            
+
             monthlyReturnRate = sumRates / totalParts
 
             recommendedAssets = [
                 fixedIncomeAsset,
                 ...allAssets.map(a => ({ ...a, weight: 1 / totalParts }))
             ]
-            
+
             // Adjust RF weight in the list
             recommendedAssets[0].weight = 1 / totalParts
         }

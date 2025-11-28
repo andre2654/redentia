@@ -4,6 +4,8 @@ export interface IChatMessage {
   type: 'user' | 'bot'
   timestamp: Date
   actions?: string[]
+  status?: string
+  suggestions?: string[]
   // New fields for structured response
   structuredData?: IAgentResponse
 }

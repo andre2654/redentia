@@ -290,6 +290,12 @@ async function fetchBotResponse(prompt: string): Promise<void> {
             // Update structured data
             // Ensure we are passing the content object which matches IAgentResponse
             updateMessage(botMessageId, { structuredData: event.content })
+          } else if (event.type === 'status') {
+            ensureMessage()
+            updateMessage(botMessageId, { status: event.content })
+          } else if (event.type === 'suggestions') {
+            ensureMessage()
+            updateMessage(botMessageId, { suggestions: event.content })
           } else if (event.type === 'content') {
             ensureMessage()
             // Append text content
