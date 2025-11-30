@@ -1,160 +1,348 @@
 <template>
-  <div
-    class="mx-auto flex max-w-[1400px] flex-col bg-white min-[1400px]:border-x dark:bg-black"
-  >
-    <div class="py-5">
-      <NuxtLink to="/">
-        <IconLogoFull
-          class="mx-auto h-auto w-[200px] fill-black dark:fill-white"
-        />
+  <div class="min-h-screen bg-white dark:bg-black">
+    <!-- Header / Nav -->
+    <header class="flex items-center justify-center py-6 md:py-8">
+      <NuxtLink to="/" class="transition-transform hover:scale-105">
+        <IconLogoFull class="h-8 w-auto fill-black md:h-10 dark:fill-white" />
       </NuxtLink>
-    </div>
-    <img src="/assets/images/mockup-app.png" class="w-full" />
+    </header>
+
+    <!-- Mockup Image -->
+    <img
+      src="/assets/images/mockup-app.png"
+      alt="App Redentia Mockup"
+      class="mt-10 w-full"
+    />
     <div
-      class="flex flex-col items-center gap-4 bg-white py-[60px] max-sm:px-4 dark:bg-black"
+      class="mx-auto max-w-[1400px] min-[1400px]:border-x min-[1400px]:border-gray-100 dark:min-[1400px]:border-white/10"
     >
-      <h1 class="text-center text-4xl font-bold">Baixe nosso aplicativo!</h1>
-      <p class="max-w-[600px] text-center text-lg">
-        A única plataforma de finanças realmente inteligente, com tudo que você
-        precisa para gerenciar seus investimentos e finanças pessoais de forma
-        rápida e fácil.
-      </p>
-      <div class="mx-auto mt-6 flex w-full max-w-[900px] gap-4 max-md:flex-col">
+      <!-- Hero Section -->
+      <section class="relative overflow-hidden px-4 pb-12 pt-6 md:pt-12">
         <div
-          class="bg-tertiary flex w-full flex-col items-center justify-center rounded-lg p-6 text-center text-lg leading-[30px] text-white"
-        >
-          <span> Experiência completa, rápida e segura! </span>
-          <b> No seu celular, com redentia.com! </b>
-        </div>
+          class="from-secondary/10 absolute inset-0 bg-gradient-to-b to-transparent dark:from-white/5"
+        />
+
         <div
-          class="bg-tertiary flex w-full flex-col items-start justify-center gap-4 rounded-lg p-6 text-white"
+          class="relative z-10 mx-auto flex max-w-5xl flex-col items-center text-center"
         >
-          <b class="w-full text-center text-2xl">
-            Por que baixar o aplicativo Redentia?
-          </b>
-          <div class="flex items-center gap-3 text-[17px]">
-            <IconChecked class="inline-block w-[20px] min-w-[20px]" />
-            Acesso rápido e fácil aos seus investimentos
-          </div>
-          <div class="flex items-center gap-3 text-[17px]">
-            <IconChecked class="inline-block w-[20px] min-w-[20px]" />
-            Experiência completamente integrada com inteligencia artificial
-          </div>
-          <div class="flex items-center gap-3 text-[17px]">
-            <IconChecked class="inline-block w-[20px] min-w-[20px]" />
-            Notificações em tempo real sobre ações e eventos do mercado
+          <h1
+            class="mb-6 text-4xl font-bold tracking-tight text-white md:text-6xl"
+          >
+            Seus investimentos, agora no seu bolso
+          </h1>
+
+          <p
+            class="mb-10 max-w-2xl text-lg text-gray-600 md:text-xl dark:text-gray-300"
+          >
+            A única plataforma de finanças realmente inteligente. Gerencie
+            ações, FIIs e sua carteira com IA, onde quer que você esteja.
+          </p>
+
+          <div class="flex flex-col gap-4 sm:flex-row sm:gap-6">
+            <UButton
+              size="xl"
+              color="black"
+              class="dark:bg-white dark:text-black dark:hover:bg-gray-200"
+              icon="i-lucide-smartphone"
+              @click="scrollToInstall('android')"
+            >
+              Baixar para Android
+            </UButton>
+            <UButton
+              size="xl"
+              color="white"
+              variant="outline"
+              icon="i-lucide-apple"
+              @click="scrollToInstall('ios')"
+            >
+              Baixar para iOS
+            </UButton>
           </div>
         </div>
-      </div>
-    </div>
-    <div class="flex py-[60px] max-sm:px-4">
-      <div
-        class="mx-auto flex w-full max-w-[900px] justify-center gap-5 max-md:flex-col"
-      >
-        <div class="flex w-full flex-col gap-5">
-          <h2 class="text-center text-2xl">Como baixar para Android?</h2>
-          <div
-            class="bg-tertiary rounded-lg py-3 text-center font-bold text-white"
-          >
-            Siga os passos abaixo
-            <IconArrowDown class="inline-block w-6 fill-white" />
+      </section>
+
+      <!-- Features Section -->
+      <section class="bg-gray-50 px-4 py-20 dark:bg-white/5">
+        <div class="mx-auto max-w-6xl">
+          <div class="mb-16 text-center">
+            <h2
+              class="text-3xl font-bold text-gray-900 md:text-4xl dark:text-white"
+            >
+              Por que usar o App Redentia?
+            </h2>
+            <p class="mt-4 text-gray-600 dark:text-gray-400">
+              Uma experiência completa, rápida e segura no seu celular.
+            </p>
           </div>
-          <ul class="space-y-2">
-            <li
-              class="border-secondary rounded-lg border px-4 py-3 text-center text-[15px]"
+
+          <div class="grid gap-8 md:grid-cols-3">
+            <div
+              class="group rounded-3xl bg-white p-8 shadow-sm transition-all hover:shadow-xl dark:bg-white/5"
             >
-              Toque em 'Baixar aplicativo Android'
-            </li>
-            <li
-              class="border-secondary rounded-lg border px-4 py-3 text-center text-[15px]"
+              <div
+                class="mb-6 flex h-12 w-12 items-center justify-center rounded-2xl bg-green-100 text-green-600 dark:bg-green-500/20 dark:text-green-400"
+              >
+                <IconChecked class="h-6 w-6" />
+              </div>
+              <h3 class="mb-3 text-xl font-bold text-gray-900 dark:text-white">
+                Acesso Rápido
+              </h3>
+              <p class="text-gray-600 dark:text-gray-400">
+                Acesse seus investimentos e acompanhe sua carteira em segundos,
+                com login biométrico e interface otimizada.
+              </p>
+            </div>
+
+            <div
+              class="group rounded-3xl bg-white p-8 shadow-sm transition-all hover:shadow-xl dark:bg-white/5"
             >
-              Vá até Arquivos/File e encontre o app
-            </li>
-            <li
-              class="border-secondary rounded-lg border px-4 py-3 text-center text-[15px]"
+              <div
+                class="mb-6 flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-100 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400"
+              >
+                <IconChecked class="h-6 w-6" />
+              </div>
+              <h3 class="mb-3 text-xl font-bold text-gray-900 dark:text-white">
+                IA Integrada
+              </h3>
+              <p class="text-gray-600 dark:text-gray-400">
+                Converse com nossa Inteligência Artificial para tirar dúvidas e
+                receber insights sobre seus ativos.
+              </p>
+            </div>
+
+            <div
+              class="group rounded-3xl bg-white p-8 shadow-sm transition-all hover:shadow-xl dark:bg-white/5"
             >
-              Clique em: Configurações > Permitir desta fonte > Instalar
-            </li>
-            <li
-              class="border-secondary rounded-lg border px-4 py-3 text-center text-[15px]"
-            >
-              Pronto! O app vai aparecer no seu menu de aplicativos
-            </li>
-            <li
-              class="border-secondary rounded-lg border px-4 py-3 text-center text-[15px]"
-            >
-              Agora é só aproveitar o aplicativo
-            </li>
-          </ul>
-          <button
-            id="download-android-btn"
-            class="to-secondary from-primary flex items-center justify-center gap-2 rounded-full bg-gradient-to-r px-3 py-2 font-bold text-black hover:opacity-80"
-            @click="installApp"
-          >
-            <IconLogo class="h-4 fill-black" />
-            Instalar para Android
-          </button>
-        </div>
-        <div class="flex w-full flex-col gap-5">
-          <h2 class="text-center text-2xl">Como baixar para iOS?</h2>
-          <div
-            class="bg-tertiary rounded-lg py-3 text-center font-bold text-white"
-          >
-            Siga os passos abaixo
-            <IconArrowDown class="inline-block w-6 fill-white" />
+              <div
+                class="mb-6 flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-100 text-purple-600 dark:bg-purple-500/20 dark:text-purple-400"
+              >
+                <IconChecked class="h-6 w-6" />
+              </div>
+              <h3 class="mb-3 text-xl font-bold text-gray-900 dark:text-white">
+                Alertas em Tempo Real
+              </h3>
+              <p class="text-gray-600 dark:text-gray-400">
+                Receba notificações sobre dividendos, fatos relevantes e
+                oscilações importantes do mercado.
+              </p>
+            </div>
           </div>
-          <ul class="space-y-2">
-            <li
-              class="border-secondary rounded-lg border px-4 py-3 text-center text-[15px]"
-            >
-              Toque em 'Baixar aplicativo iOS'
-            </li>
-            <li
-              class="border-secondary rounded-lg border px-4 py-3 text-center text-[15px]"
-            >
-              Vá até Arquivos/File e encontre o app
-            </li>
-            <li
-              class="border-secondary rounded-lg border px-4 py-3 text-center text-[15px]"
-            >
-              Clique em: Configurações > Permitir desta fonte > Instalar
-            </li>
-            <li
-              class="border-secondary rounded-lg border px-4 py-3 text-center text-[15px]"
-            >
-              Pronto! O app vai aparecer no seu menu de aplicativos
-            </li>
-            <li
-              class="border-secondary rounded-lg border px-4 py-3 text-center text-[15px]"
-            >
-              Agora é só aproveitar o aplicativo
-            </li>
-          </ul>
-          <button
-            id="download-android-btn"
-            class="to-secondary from-primary flex items-center justify-center gap-2 rounded-full bg-gradient-to-r px-3 py-2 font-bold text-black hover:opacity-80"
-            @click="installApp"
-          >
-            <IconLogo class="h-4 fill-black" />
-            Instalar para IOS
-          </button>
         </div>
-      </div>
+      </section>
+
+      <!-- Installation Guide -->
+      <section class="px-4 py-20">
+        <div class="mx-auto max-w-5xl">
+          <h2
+            class="mb-16 text-center text-3xl font-bold text-gray-900 md:text-4xl dark:text-white"
+          >
+            Como instalar
+          </h2>
+
+          <div class="grid gap-12 md:grid-cols-2">
+            <!-- Android -->
+            <div
+              id="install-android"
+              class="rounded-3xl border border-gray-100 bg-white p-8 shadow-lg dark:border-white/10 dark:bg-white/5"
+            >
+              <div class="mb-8 flex items-center gap-4">
+                <div
+                  class="flex h-12 w-12 items-center justify-center rounded-full bg-green-100 text-green-600 dark:bg-green-500/20 dark:text-green-400"
+                >
+                  <UIcon name="i-lucide-smartphone" class="h-6 w-6" />
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 dark:text-white">
+                  Android
+                </h3>
+              </div>
+
+              <ol
+                class="relative ml-3 border-l border-gray-200 dark:border-gray-700"
+              >
+                <li class="mb-8 ml-6">
+                  <span
+                    class="absolute -left-3 flex h-6 w-6 items-center justify-center rounded-full bg-green-100 ring-8 ring-white dark:bg-green-900 dark:ring-gray-900"
+                  >
+                    <span
+                      class="text-xs font-bold text-green-600 dark:text-green-400"
+                      >1</span
+                    >
+                  </span>
+                  <h4 class="mb-1 font-semibold text-gray-900 dark:text-white">
+                    Toque no botão abaixo
+                  </h4>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                    Clique em "Instalar App" para iniciar.
+                  </p>
+                </li>
+                <li class="mb-8 ml-6">
+                  <span
+                    class="absolute -left-3 flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 ring-8 ring-white dark:bg-gray-800 dark:ring-gray-900"
+                  >
+                    <span
+                      class="text-xs font-bold text-gray-600 dark:text-gray-400"
+                      >2</span
+                    >
+                  </span>
+                  <h4 class="mb-1 font-semibold text-gray-900 dark:text-white">
+                    Confirme a instalação
+                  </h4>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                    Se o navegador perguntar, permita a instalação de fontes
+                    desconhecidas ou confirme o download.
+                  </p>
+                </li>
+                <li class="ml-6">
+                  <span
+                    class="absolute -left-3 flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 ring-8 ring-white dark:bg-gray-800 dark:ring-gray-900"
+                  >
+                    <span
+                      class="text-xs font-bold text-gray-600 dark:text-gray-400"
+                      >3</span
+                    >
+                  </span>
+                  <h4 class="mb-1 font-semibold text-gray-900 dark:text-white">
+                    Pronto!
+                  </h4>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                    O ícone do Redentia aparecerá na sua tela inicial.
+                  </p>
+                </li>
+              </ol>
+
+              <UButton
+                block
+                size="lg"
+                color="primary"
+                class="mt-8"
+                icon="i-lucide-download"
+                @click="installApp"
+              >
+                Instalar App Android
+              </UButton>
+            </div>
+
+            <!-- iOS -->
+            <div
+              id="install-ios"
+              class="rounded-3xl border border-gray-100 bg-white p-8 shadow-lg dark:border-white/10 dark:bg-white/5"
+            >
+              <div class="mb-8 flex items-center gap-4">
+                <div
+                  class="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-900 dark:bg-white/20 dark:text-white"
+                >
+                  <UIcon name="i-lucide-apple" class="h-6 w-6" />
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 dark:text-white">
+                  iOS (iPhone)
+                </h3>
+              </div>
+
+              <ol
+                class="relative ml-3 border-l border-gray-200 dark:border-gray-700"
+              >
+                <li class="mb-8 ml-6">
+                  <span
+                    class="absolute -left-3 flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 ring-8 ring-white dark:bg-gray-800 dark:ring-gray-900"
+                  >
+                    <span
+                      class="text-xs font-bold text-gray-600 dark:text-gray-400"
+                      >1</span
+                    >
+                  </span>
+                  <h4 class="mb-1 font-semibold text-gray-900 dark:text-white">
+                    Toque em Compartilhar
+                  </h4>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                    No Safari, toque no ícone de compartilhamento na barra
+                    inferior.
+                  </p>
+                </li>
+                <li class="mb-8 ml-6">
+                  <span
+                    class="absolute -left-3 flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 ring-8 ring-white dark:bg-gray-800 dark:ring-gray-900"
+                  >
+                    <span
+                      class="text-xs font-bold text-gray-600 dark:text-gray-400"
+                      >2</span
+                    >
+                  </span>
+                  <h4 class="mb-1 font-semibold text-gray-900 dark:text-white">
+                    Adicionar à Tela de Início
+                  </h4>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                    Role para baixo e selecione "Adicionar à Tela de Início".
+                  </p>
+                </li>
+                <li class="ml-6">
+                  <span
+                    class="absolute -left-3 flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 ring-8 ring-white dark:bg-gray-800 dark:ring-gray-900"
+                  >
+                    <span
+                      class="text-xs font-bold text-gray-600 dark:text-gray-400"
+                      >3</span
+                    >
+                  </span>
+                  <h4 class="mb-1 font-semibold text-gray-900 dark:text-white">
+                    Confirmar
+                  </h4>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">
+                    Toque em "Adicionar" no canto superior direito.
+                  </p>
+                </li>
+              </ol>
+
+              <UButton
+                block
+                size="lg"
+                color="primary"
+                class="mt-8"
+                icon="i-lucide-download"
+                @click="installApp"
+              >
+                Instalar App IOS
+              </UButton>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <Footer />
     </div>
   </div>
-  <Footer />
 </template>
 
 <script setup lang="ts">
 const installApp = () => {
   const pwa = usePWA()
 
-  if (!pwa) return
+  // Detect if user is on iOS
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
+  
+  if (isIOS) {
+    alert('No iPhone/iPad, use o botão "Compartilhar" do Safari e selecione "Adicionar à Tela de Início".')
+    scrollToInstall('ios')
+    return
+  }
+
+  if (!pwa) {
+    alert(
+      'Seu navegador não suporta instalação automática. Siga as instruções manuais.'
+    )
+    return
+  }
 
   if (!pwa.isPWAInstalled) {
     pwa.install()
   } else {
     navigateTo('/')
+  }
+}
+
+const scrollToInstall = (platform: 'android' | 'ios') => {
+  const el = document.getElementById(`install-${platform}`)
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' })
   }
 }
 
