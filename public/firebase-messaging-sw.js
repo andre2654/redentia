@@ -25,9 +25,15 @@ messaging.onBackgroundMessage((payload) => {
     payload
   )
 
-  const notificationTitle = payload.notification.title
+  // If the payload has a notification property, the browser will automatically show a notification.
+  // We only need to manually show one if it's a data-only message.
+  if (payload.notification) {
+    return
+  }
+
+  const notificationTitle = payload.data.title
   const notificationOptions = {
-    body: payload.notification.body,
+    body: payload.data.body,
     icon: '/192x192.png', // Customize icon
     data: payload.data, // Pass data to the click handler
   }
