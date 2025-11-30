@@ -10,7 +10,7 @@
       :src="stock?.logo"
       alt="Descrição da imagem"
     />
-    <IconLogo v-else class="h-[40px] w-[40px] fill-black dark:fill-white" />
+    <IconLogo v-else class="h-[40px] w-[40px] fill-white" />
     <div class="flex w-full justify-between">
       <div class="flex flex-col">
         <span class="text-[14px] font-medium">{{

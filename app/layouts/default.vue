@@ -105,8 +105,8 @@
             active-class="bg-secondary/20 "
             class="bg-secondary/5 hover:bg-secondary/20 flex items-center justify-center gap-4 rounded-full px-6 py-2"
           >
-            <IconAi class="fill-tertiary dark:fill-secondary h-5 w-5" />
-            <div class="text-tertiary dark:text-secondary flex flex-col">
+            <IconAi class="fill-secondary h-5 w-5" />
+            <div class="text-secondary flex flex-col">
               <span class="text-[10px]">Acesse de graça</span>
               <span class="text-[16px] font-bold">Assessoria</span>
             </div>
@@ -116,7 +116,7 @@
       </div>
     </div>
     <div
-      class="relative flex w-full flex-col overflow-hidden bg-white xl:px-4 xl:py-4 dark:bg-black"
+      class="relative flex w-full flex-col overflow-hidden bg-black xl:px-4 xl:py-4"
     >
       <header
         v-bind="headerProps"

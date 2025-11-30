@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-tertiary flex w-full flex-col text-white dark:bg-white/5">
+  <div class="flex w-full flex-col text-white bg-white/5">
     <div class="w-full bg-white/5 py-5">
       <div
         class="mx-auto flex max-w-[1400px] items-center justify-between px-4 text-[15px] max-lg:flex-col max-lg:gap-[40px]"
@@ -37,41 +37,9 @@
           </NuxtLink>
         </div>
       </div>
-      <!-- <ClientOnly>
-        <UDropdownMenu :items="themeOptions" :ui="{ width: 'w-48' }">
-          <UButton
-            class="max-w-fit"
-            :icon="colorTheme.icon"
-            color="primary"
-            variant="outline"
-            :label="colorTheme.label"
-          />
-        </UDropdownMenu>
-      </ClientOnly> -->
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { EColorTheme } from '~/enums/general'
-
-const { colorIcons, colorLabels, colorTheme } = useInterface()
-
-const themeOptions = [
-  {
-    label: colorLabels[EColorTheme.Light],
-    icon: colorIcons[EColorTheme.Light],
-    onSelect: () => (colorTheme.value = EColorTheme.Light),
-  },
-  {
-    label: colorLabels[EColorTheme.Dark],
-    icon: colorIcons[EColorTheme.Dark],
-    onSelect: () => (colorTheme.value = EColorTheme.Dark),
-  },
-  {
-    label: colorLabels[EColorTheme.System],
-    icon: colorIcons[EColorTheme.System],
-    onSelect: () => (colorTheme.value = EColorTheme.System),
-  },
-]
 </script>

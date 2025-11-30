@@ -1,8 +1,8 @@
 <template>
   <div class="flex flex-col">
     <button
-      class="flex w-full items-center gap-6 rounded-md px-6 hover:bg-black/5 max-md:py-3 md:h-[55px] hover:dark:bg-white/5"
-      :class="{ 'rounded-b-none bg-black/5 dark:bg-white/5': opened }"
+      class="flex w-full items-center gap-6 rounded-md px-6 hover:bg-white/5 max-md:py-3 md:h-[55px]"
+      :class="{ 'rounded-b-none bg-white/5': opened }"
       @click="opened = !opened"
     >
       <UIcon
@@ -40,7 +40,7 @@
         tbody: 'divide-none ',
         thead: 'bg-transparent',
         tfoot: 'bg-transparent',
-        th: 'whitespace-nowrap min-w-max bg-black/5 dark:bg-white/5',
+        th: 'whitespace-nowrap min-w-max bg-white/5',
       }"
       sticky
     >

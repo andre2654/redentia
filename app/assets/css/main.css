@@ -2,14 +2,6 @@
 @import '@nuxt/ui';
 
 :root {
-  --ui-color-background: #fff;
-  --ui-color-text: #000;
-  --ui-primary: #85c18e;
-  --ui-secondary: #5b96c9;
-  --ui-tertiary: #042f54;
-}
-
-.dark {
   --ui-color-background: black;
   --ui-color-text: white;
   --ui-primary: #b9ecc1;
@@ -18,11 +10,8 @@
 }
 
 body {
-  background: #fff;
-}
-
-.dark body {
   background: black;
+  color: white;
 }
 
 * {
@@ -40,14 +29,9 @@ textarea:focus {
 }
 
 @layer utilities {
-  .dark *,
-  .dark hr {
-    border-color: #363636;
-  }
-
   *,
   hr {
-    border-color: #d1d5db;
+    border-color: #363636;
   }
 
   .no-scrollbar::-webkit-scrollbar {

@@ -44,7 +44,7 @@
     <!-- Tooltip dinâmico responsivo -->
     <div
       v-if="tooltipData"
-      class="pointer-events-none fixed z-10 rounded-lg px-3 py-2 backdrop-blur-md transition-all duration-150 dark:bg-black/30"
+      class="pointer-events-none fixed z-10 rounded-lg px-3 py-2 backdrop-blur-md transition-all duration-150 bg-black/30"
       :style="{
         left: `${tooltipPosition.x + 10}px`,
         top: `${tooltipPosition.y - 10}px`,

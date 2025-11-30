@@ -51,7 +51,7 @@
       <!-- Tooltip dinâmico -->
       <div
         v-if="hoveredIndex !== null && tooltipData"
-        class="pointer-events-none fixed z-10 rounded-lg px-3 py-2 backdrop-blur-md transition-all duration-150 dark:bg-black/30"
+        class="pointer-events-none fixed z-10 rounded-lg px-3 py-2 backdrop-blur-md transition-all duration-150 bg-black/30"
         :style="{
           left: `${tooltipPosition.x + 10}px`,
           top: `${tooltipPosition.y - 60}px`,
@@ -120,7 +120,7 @@
         for="map-toggle"
         class="hover:bg-secondary/10 mt-3 flex max-w-fit items-center justify-between gap-4 rounded-full border px-3 py-2"
         :class="{
-          'bg-secondary/15 dark:bg-tertiary/60 !border-tertiary': groupByYear,
+          'bg-tertiary/60 !border-tertiary': groupByYear,
         }"
       >
         <IconAi class="fill-secondary h-5" />
@@ -187,8 +187,6 @@ import {
   type ActiveElement,
 } from 'chart.js'
 import { Bar } from 'vue-chartjs'
-
-const _colorMode = useColorMode()
 
 function transparentize(value: string, opacity: number) {
   const alpha = opacity === undefined ? 0.5 : 1 - opacity

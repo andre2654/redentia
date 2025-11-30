@@ -1,6 +1,6 @@
 <template>
   <section
-    class="financial-card flex h-full flex-col gap-3 transition hover:border-white/20 dark:border-white/5 dark:bg-white/[0.03]"
+    class="financial-card flex h-full flex-col gap-3 transition hover:border-white/20 border-white/5 bg-white/[0.03]"
   >
     <header class="flex items-center justify-between">
       <h3 class="text-sm font-semibold text-white/80">

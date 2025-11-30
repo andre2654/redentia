@@ -168,7 +168,7 @@
           for="map-toggle"
           class="hover:bg-secondary/10 mt-3 flex max-w-fit items-center justify-between gap-4 rounded-full border px-3 py-2 transition"
           :class="{
-            'bg-secondary/15 !border-tertiary dark:bg-tertiary/60': showMap,
+            'bg-tertiary/60 !border-tertiary': showMap,
           }"
         >
           <IconAi class="fill-secondary h-5" />
@@ -285,7 +285,7 @@
       </template>
 
       <div
-        class="text-secondary dark:bg-tertiary/40 flex w-full flex-col gap-3 bg-black/5 px-6 py-4 md:rounded-[30px]"
+        class="text-secondary bg-tertiary/40 flex w-full flex-col gap-3 px-6 py-4 md:rounded-[30px]"
       >
         <div class="flex items-center gap-2 px-3 py-2">
           <IconAi class="fill-secondary h-5" />

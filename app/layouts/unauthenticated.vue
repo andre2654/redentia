@@ -21,7 +21,7 @@
         <slot name="header-branding">
           <NuxtLink to="/">
             <IconLogoFull
-              class="mx-auto h-auto w-[150px] fill-black dark:fill-white"
+              class="mx-auto h-auto w-[150px] fill-white"
             />
           </NuxtLink>
         </slot>

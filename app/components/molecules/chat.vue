@@ -54,7 +54,7 @@
 
     <!-- Input Area -->
     <div
-      class="flex w-full flex-col gap-3 bg-black/10 p-3 pb-6 backdrop-blur-[99px] dark:bg-white/10"
+      class="flex w-full flex-col gap-3 p-3 pb-6 backdrop-blur-[99px] bg-white/10"
       v-bind="textareaContainerProps"
     >
       <div
@@ -70,7 +70,7 @@
         :rows="4"
         autoresize
         :ui="{
-          base: 'text-[14px] max-h-[200px] bg-transparent ring-0 placeholder:text-black/40 dark:placeholder:text-white/40',
+          base: 'text-[14px] max-h-[200px] bg-transparent ring-0 placeholder:text-white/40',
         }"
         @keydown.enter.prevent="sendMessage"
       />

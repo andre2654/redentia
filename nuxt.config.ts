@@ -131,13 +131,13 @@ export default defineNuxtConfig({
     dirs: ['services'],
   },
   colorMode: {
-    preference: 'system', // default value of $colorMode.preference
-    fallback: 'dark', // fallback value if not system preference found
+    preference: 'dark',
+    fallback: 'dark',
     globalName: '__NUXT_COLOR_MODE__',
     componentName: 'ColorScheme',
     classPrefix: '',
     classSuffix: '',
-    storage: 'localStorage', // or 'sessionStorage' or 'cookie'
+    storage: 'localStorage',
     storageKey: 'nuxt-color-mode-force',
   },
   ui: {

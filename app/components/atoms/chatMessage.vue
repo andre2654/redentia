@@ -30,7 +30,7 @@
       >
         <div
           v-if="!message.structuredData"
-          class="prose prose-sm dark:prose-invert max-w-none"
+          class="prose prose-sm prose-invert max-w-none"
           v-html="renderedContent"
         />
 
@@ -454,7 +454,7 @@
             class="mt-2 text-sm leading-relaxed opacity-90"
           >
             <div
-              class="prose prose-sm dark:prose-invert max-w-none"
+              class="prose prose-sm prose-invert max-w-none"
               v-html="renderedContent"
             />
           </div>

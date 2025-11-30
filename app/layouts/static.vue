@@ -1,11 +1,11 @@
 <template>
   <div
-    class="light:border-x-gray-200 mx-auto flex max-w-[1400px] flex-col min-[1400px]:border-x"
+    class="mx-auto flex max-w-[1400px] flex-col min-[1400px]:border-x"
   >
     <div v-if="showLogo" class="py-5">
       <NuxtLink to="/">
         <IconLogoFull
-          class="mx-auto h-auto w-[200px] fill-black dark:fill-white"
+          class="mx-auto h-auto w-[200px] fill-white"
         />
       </NuxtLink>
     </div>
