@@ -214,3 +214,51 @@ export const streamAgentResponse = async (
     )
   }
 }
+
+export const generateMarketAlertMessage = async (
+  ticker: string,
+  data: any
+) => {
+  const config = useRuntimeConfig()
+  
+  if (!config.openaiApiKey) {
+    console.error('OpenAI API Key missing')
+    return `O ativo ${ticker} teve uma movimentação relevante hoje.`
+  }
+
+  const openai = new OpenAI({
+    apiKey: config.openaiApiKey,
+  })
+
+  const systemPrompt = `
+    Você é um analista financeiro sênior da Redentia.
+    Seu objetivo é criar uma notificação curta e impactante (máximo 150 caracteres) sobre um movimento relevante de mercado.
+    
+    Dados do ativo (${ticker}):
+    ${JSON.stringify(sanitizeContext('report', data))}
+
+    A mensagem deve seguir este formato:
+    "A [TICKER] [caiu/subiu] [X]% hoje. [Comentário curto sobre dividendo ou oportunidade]."
+
+    Exemplo: "A PETR4 caiu 20% hoje, nesses preços o dividendo estimado é de 15% ao ano."
+    
+    Seja direto. Use emojis se apropriado (📉, 📈).
+    Responda apenas com o texto da notificação.
+  `
+
+  try {
+    const response = await openai.chat.completions.create({
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: `Gere uma notificação para ${ticker}.` },
+      ],
+      model: 'gpt-4o',
+    })
+
+    return response.choices[0]?.message?.content || `Movimentação relevante em ${ticker}`
+  } catch (error) {
+    console.error('OpenAI Error:', error)
+    return `Movimentação relevante em ${ticker}`
+  }
+}
+

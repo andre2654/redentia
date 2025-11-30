@@ -3,6 +3,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const tokenCookie = useCookie<string | null>('auth:token')
   const token = tokenCookie.value
 
+  if (to.path.startsWith('/api/')) {
+    return
+  }
+
   // If route is protected and no token, redirect to login
   if (!isPublic && !token) {
     return navigateTo('/auth/login')

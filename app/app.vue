@@ -1,7 +1,7 @@
 <template>
   <Analytics />
   <NuxtPwaManifest />
-  <UApp :toaster="uAppConfig.toaster">
+  <UApp :toaster="uAppConfig?.toaster">
     <AtomsInstallAppBanner v-if="showBanner" />
     <NuxtPage />
   </UApp>
@@ -23,7 +23,12 @@ const showBanner = computed(() => {
   return !route.meta.hideInstallAppBanner && !interfaceStore.hideInstallBanner
 })
 
+const { requestPermission, listen } = useFirebaseNotifications()
+
 onMounted(() => {
+  requestPermission()
+  listen()
+
   watchEffect(() => {
     document.body.classList.toggle('hide-amount', !interfaceStore.revealAmount)
   })

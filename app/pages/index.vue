@@ -77,14 +77,26 @@
         </div>
 
         <div class="flex flex-col gap-4 px-6">
-          <div class="flex items-center gap-2">
-            <span
-              class="h-2 w-2 animate-pulse rounded-full bg-green-400 shadow-lg shadow-blue-500/50 md:h-3 md:w-3"
-            />
-            <span
-              class="text-xs font-medium uppercase tracking-wider text-green-400 md:text-sm"
-              >Ao Vivo</span
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span
+                class="h-2 w-2 animate-pulse rounded-full bg-green-400 shadow-lg shadow-blue-500/50 md:h-3 md:w-3"
+              />
+              <span
+                class="text-xs font-medium uppercase tracking-wider text-green-400 md:text-sm"
+                >Ao Vivo</span
+              >
+            </div>
+            <UButton
+              size="xs"
+              color="primary"
+              variant="soft"
+              icon="i-lucide-bell"
+              :loading="alertLoading"
+              @click="handleTestAlert"
             >
+              Testar Alerta
+            </UButton>
           </div>
           <div class="flex gap-4">
             <div class="flex flex-col gap-2">
@@ -594,6 +606,33 @@ interface HomeMarketData {
 }
 
 const stocksData = ref<TreemapEntry[]>([])
+const alertLoading = ref(false)
+const { requestPermission, token: fcmToken } = useFirebaseNotifications()
+
+async function handleTestAlert() {
+  if (!fcmToken.value) {
+    await requestPermission()
+  }
+  
+  if (!fcmToken.value) {
+    alert('Não foi possível obter o token de notificação. Permita as notificações no navegador.')
+    return
+  }
+
+  alertLoading.value = true
+  try {
+    await $fetch('/api/notifications/market-alert', {
+      method: 'POST',
+      body: { token: fcmToken.value }
+    })
+    alert('Alerta enviado! Verifique suas notificações.')
+  } catch (e) {
+    console.error(e)
+    alert('Erro ao enviar alerta.')
+  } finally {
+    alertLoading.value = false
+  }
+}
 
 const topAssets = ref<{
   top: RankingBucket
