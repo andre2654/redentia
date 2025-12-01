@@ -26,11 +26,11 @@ export const triggerMarketAlert = async (token?: string) => {
       .map((item) => ({ ...item, absChange: Math.abs(item.change_percent || 0) }))
       .sort((a, b) => b.absChange - a.absChange)
 
-    // Filter candidates with at least 10% change
-    const candidates = allCandidates.filter((c) => c.absChange >= 10)
+    // Filter candidates with at least 5% change
+    const candidates = allCandidates.filter((c) => c.absChange >= 5)
 
     if (candidates.length === 0) {
-      console.log('No candidates with > 10% change.')
+      console.log('No candidates with > 5% change.')
       return { success: false, message: 'No significant movements' }
     }
 
@@ -57,9 +57,9 @@ export const triggerMarketAlert = async (token?: string) => {
       if (!data || !data.price) continue
 
       const marketCap = data.price.market_cap || data.fundamentals?.market_cap || 0
-      // Threshold logic: Small Cap (< 1B) needs 30%, others need 10%
+      // Threshold logic: Small Cap (< 1B) needs 10%, others need 5%
       const isSmallCap = marketCap < 1000000000
-      const threshold = isSmallCap ? 30 : 10
+      const threshold = isSmallCap ? 10 : 5
 
       if (candidate.absChange >= threshold) {
         targetTicker = candidate.ticker
