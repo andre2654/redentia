@@ -30,10 +30,18 @@
         </p>
         <div class="flex items-center gap-3">
           <NuxtLink to="/download" class="transition-opacity hover:opacity-80">
-            <img src="/assets/icons/app-store.svg" alt="Download on the App Store" class="h-[38px] w-auto" />
+            <img
+              src="/assets/icons/app-store.svg"
+              alt="Download on the App Store"
+              class="h-[38px] w-auto"
+            />
           </NuxtLink>
           <NuxtLink to="/download" class="transition-opacity hover:opacity-80">
-            <img src="/assets/icons/google-play.svg" alt="Get it on Google Play" class="h-[38px] w-auto" />
+            <img
+              src="/assets/icons/google-play.svg"
+              alt="Get it on Google Play"
+              class="h-[38px] w-auto"
+            />
           </NuxtLink>
         </div>
       </div>

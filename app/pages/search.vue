@@ -6,9 +6,13 @@
   >
     <div class="relative flex flex-col gap-12 pb-16 pt-6">
       <!-- Background Effects -->
-      <div class="absolute inset-0 overflow-hidden pointer-events-none">
-        <div class="absolute -top-[20%] left-1/2 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-primary/10 blur-[120px]" />
-        <div class="absolute top-[20%] right-[10%] h-[300px] w-[300px] rounded-full bg-secondary/5 blur-[100px]" />
+      <div class="pointer-events-none absolute inset-0 overflow-hidden">
+        <div
+          class="bg-primary/10 absolute -top-[20%] left-1/2 h-[600px] w-[600px] -translate-x-1/2 rounded-full blur-[120px]"
+        />
+        <div
+          class="bg-secondary/5 absolute right-[10%] top-[20%] h-[300px] w-[300px] rounded-full blur-[100px]"
+        />
       </div>
 
       <section class="relative z-10 max-md:px-4">
@@ -19,8 +23,12 @@
             >
               Busca
             </span>
-            <h1 class="text-3xl font-bold tracking-tight text-white md:text-5xl">
-              <span class="bg-linear-to-b from-white to-white/60 bg-clip-text text-transparent">
+            <h1
+              class="text-3xl font-bold tracking-tight text-white md:text-5xl"
+            >
+              <span
+                class="bg-linear-to-b from-white to-white/60 bg-clip-text text-transparent"
+              >
                 Encontre ativos com precisão
               </span>
             </h1>
@@ -351,10 +359,12 @@
                   <div
                     v-for="asset in paginatedData"
                     :key="asset.ticker || asset.stock"
-                    class="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 transition-all hover:border-white/20 hover:shadow-2xl hover:shadow-primary/5"
+                    class="hover:shadow-primary/5 group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 transition-all hover:border-white/20 hover:shadow-2xl"
                     @click="goToAsset(asset.ticker || asset.stock)"
                   >
-                    <div class="absolute inset-0 bg-linear-to-br from-white/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+                    <div
+                      class="bg-linear-to-br absolute inset-0 from-white/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100"
+                    />
                     <div class="relative z-10 flex h-full flex-col gap-5">
                       <div class="flex items-start justify-between gap-3">
                         <div class="flex items-center gap-3">

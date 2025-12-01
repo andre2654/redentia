@@ -58,7 +58,7 @@ export const triggerMarketAlert = async (token?: string) => {
 
       const marketCap = data.price.market_cap || data.fundamentals?.market_cap || 0
       // Threshold logic: Small Cap (< 1B) needs 30%, others need 10%
-      const isSmallCap = marketCap < 1000000000 
+      const isSmallCap = marketCap < 1000000000
       const threshold = isSmallCap ? 30 : 10
 
       if (candidate.absChange >= threshold) {
@@ -99,10 +99,10 @@ export const triggerMarketAlert = async (token?: string) => {
 
     // 5. Save to History (only if not a test/manual trigger, or maybe always? Let's save always to prevent spam)
     if (!token) {
-        await alertsRef.set({
+      await alertsRef.set({
         tickers: [...alertedTickers, targetTicker],
         updatedAt: new Date()
-        }, { merge: true })
+      }, { merge: true })
     }
 
     return { success: true, messageId: response, ticker: targetTicker, message }
