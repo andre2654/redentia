@@ -19,24 +19,24 @@ firebase.initializeApp(firebaseConfig)
 
 const messaging = firebase.messaging()
 
-messaging.onBackgroundMessage((payload) => {
-  console.log(
-    '[firebase-messaging-sw.js] Received background message ',
-    payload
-  )
+// messaging.onBackgroundMessage((payload) => {
+//   console.log(
+//     '[firebase-messaging-sw.js] Received background message ',
+//     payload
+//   )
 
-  // If the payload has a notification property, the browser will automatically show a notification.
-  // We only need to manually show one if it's a data-only message.
-  if (payload.notification) {
-    return
-  }
+//   // If the payload has a notification property, the browser will automatically show a notification.
+//   // We only need to manually show one if it's a data-only message.
+//   if (payload.notification) {
+//     return
+//   }
 
-  const notificationTitle = payload.data.title
-  const notificationOptions = {
-    body: payload.data.body,
-    icon: '/192x192.png', // Customize icon
-    data: payload.data, // Pass data to the click handler
-  }
+//   const notificationTitle = payload.data.title
+//   const notificationOptions = {
+//     body: payload.data.body,
+//     icon: '/192x192.png', // Customize icon
+//     data: payload.data, // Pass data to the click handler
+//   }
 
-  self.registration.showNotification(notificationTitle, notificationOptions)
-})
+//   self.registration.showNotification(notificationTitle, notificationOptions)
+// })
