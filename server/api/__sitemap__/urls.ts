@@ -26,13 +26,14 @@ export default defineSitemapEventHandler(async (e) => {
 
     // Adicionar rotas dinâmicas de ativos
     if (Array.isArray(assets) && assets.length > 0) {
-      // Limitar a 500 ativos mais relevantes para não sobrecarregar o sitemap
-      const limitedAssets = assets.slice(0, 500)
+      // Aumentar o limite para incluir todos os ativos relevantes (B3 tem ~400-500, mas com BDRs/ETFs pode passar de 1000)
+      // Vamos definir um limite seguro de 5000 para garantir que PETR4 e outros não fiquem de fora
+      const limitedAssets = assets.slice(0, 5000)
 
       for (const asset of limitedAssets) {
         if (asset.ticker) {
           urls.push({
-            loc: `/asset/${asset.ticker}`,
+            loc: `/asset/${asset.ticker.toLowerCase()}`, // Normalizar para lowercase para bater com o canonical
             lastmod: new Date().toISOString(),
             changefreq: 'daily',
             priority: 0.7,
@@ -59,7 +60,7 @@ export default defineSitemapEventHandler(async (e) => {
     ]
     for (const ticker of fallbackTickers) {
       urls.push({
-        loc: `/asset/${ticker}`,
+        loc: `/asset/${ticker.toLowerCase()}`,
         lastmod: new Date().toISOString(),
         changefreq: 'daily',
         priority: 0.7,
