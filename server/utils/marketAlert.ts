@@ -4,43 +4,79 @@ import { useFirebaseAdmin } from './firebaseAdmin'
 
 export const triggerMarketAlert = async (token?: string) => {
   try {
-    // 1. Fetch Top Movers
+    // 1. Time Check (11:00 - 17:00 Brasilia)
+    const now = new Date()
+    const brazilTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }))
+    const hour = brazilTime.getHours()
+
+    // Allow manual trigger (token provided) to bypass time check, otherwise enforce it
+    if (!token && (hour < 11 || hour >= 17)) {
+      console.log('Market alert skipped: Outside of operating hours (11h-17h).')
+      return { success: false, message: 'Outside of operating hours' }
+    }
+
+    // 2. Fetch Top Movers
     const [losers, gainers] = await Promise.all([
       $fetch<any[]>('https://redentia-api.saraivada.com/api/top-stocks?side=bottom&volume=1000000'),
       $fetch<any[]>('https://redentia-api.saraivada.com/api/top-stocks?side=top&volume=1000000')
     ])
 
-    const topLoser = losers?.[0]
-    const topGainer = gainers?.[0]
+    // Combine and sort by absolute change
+    const allCandidates = [...(losers || []), ...(gainers || [])]
+      .map((item) => ({ ...item, absChange: Math.abs(item.change_percent || 0) }))
+      .sort((a, b) => b.absChange - a.absChange)
+
+    // Filter candidates with at least 10% change
+    const candidates = allCandidates.filter((c) => c.absChange >= 10)
+
+    if (candidates.length === 0) {
+      console.log('No candidates with > 10% change.')
+      return { success: false, message: 'No significant movements' }
+    }
+
+    const { messaging, firestore } = useFirebaseAdmin()
+    if (!messaging || !firestore) {
+      throw createError({ statusCode: 500, statusMessage: 'Firebase Admin not configured' })
+    }
+
+    const today = brazilTime.toISOString().split('T')[0] // YYYY-MM-DD
+    const alertsRef = firestore.collection('market_alerts_history').doc(today)
+    const docSnap = await alertsRef.get()
+    const alertedTickers: string[] = docSnap.exists ? (docSnap.data()?.tickers || []) : []
 
     let targetTicker = ''
-    
-    const loserChange = Math.abs(topLoser?.change_percent || 0)
-    const gainerChange = Math.abs(topGainer?.change_percent || 0)
+    let marketData = null
 
-    // Prefer drops if they are significant, or just the biggest move
-    if (loserChange > gainerChange) {
-      targetTicker = topLoser?.ticker
-    } else {
-      targetTicker = topGainer?.ticker
+    for (const candidate of candidates) {
+      if (alertedTickers.includes(candidate.ticker)) {
+        continue
+      }
+
+      // Fetch full data to check Market Cap
+      const data = await getMarketData(candidate.ticker, 'report')
+      if (!data || !data.price) continue
+
+      const marketCap = data.price.market_cap || data.fundamentals?.market_cap || 0
+      // Threshold logic: Small Cap (< 1B) needs 30%, others need 10%
+      const isSmallCap = marketCap < 1000000000 
+      const threshold = isSmallCap ? 30 : 10
+
+      if (candidate.absChange >= threshold) {
+        targetTicker = candidate.ticker
+        marketData = data
+        break // Found our winner
+      }
     }
 
-    if (!targetTicker) {
-       targetTicker = 'PETR4' 
+    if (!targetTicker || !marketData) {
+      console.log('No valid candidates after filtering by threshold and history.')
+      return { success: false, message: 'No valid candidates' }
     }
-
-    // 2. Fetch Full Data for the ticker
-    const marketData = await getMarketData(targetTicker, 'report')
 
     // 3. Generate Message
     const message = await generateMarketAlertMessage(targetTicker, marketData)
 
     // 4. Send Notification
-    const { messaging } = useFirebaseAdmin()
-    if (!messaging) {
-        throw createError({ statusCode: 500, statusMessage: 'Firebase Admin not configured' })
-    }
-
     const messagePayload: any = {
       notification: {
         title: `Alerta de Mercado: ${targetTicker}`,
@@ -59,6 +95,14 @@ export const triggerMarketAlert = async (token?: string) => {
     } else {
       messagePayload.topic = 'market_alerts'
       response = await messaging.send(messagePayload)
+    }
+
+    // 5. Save to History (only if not a test/manual trigger, or maybe always? Let's save always to prevent spam)
+    if (!token) {
+        await alertsRef.set({
+        tickers: [...alertedTickers, targetTicker],
+        updatedAt: new Date()
+        }, { merge: true })
     }
 
     return { success: true, messageId: response, ticker: targetTicker, message }

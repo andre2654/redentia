@@ -220,7 +220,7 @@ export const generateMarketAlertMessage = async (
   data: any
 ) => {
   const config = useRuntimeConfig()
-  
+
   if (!config.openaiApiKey) {
     console.error('OpenAI API Key missing')
     return `O ativo ${ticker} teve uma movimentação relevante hoje.`
@@ -242,7 +242,7 @@ export const generateMarketAlertMessage = async (
 
     Exemplo: "A PETR4 caiu 20% hoje, nesses preços o dividendo estimado é de 15% ao ano."
     
-    Seja direto. Use emojis se apropriado (📉, 📈).
+    Seja direto. Não use emojis.
     Responda apenas com o texto da notificação.
   `
 

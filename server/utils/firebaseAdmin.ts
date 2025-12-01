@@ -1,5 +1,6 @@
 import { initializeApp, cert, getApps } from 'firebase-admin/app'
 import { getMessaging } from 'firebase-admin/messaging'
+import { getFirestore } from 'firebase-admin/firestore'
 
 export const useFirebaseAdmin = () => {
   const config = useRuntimeConfig()
@@ -8,7 +9,7 @@ export const useFirebaseAdmin = () => {
     // Ensure we have the required credentials
     if (!process.env.FIREBASE_CLIENT_EMAIL || !process.env.FIREBASE_PRIVATE_KEY) {
       console.warn('Firebase Admin credentials not found in environment variables.')
-      return { messaging: null }
+      return { messaging: null, firestore: null }
     }
 
     const serviceAccount = {
@@ -22,5 +23,5 @@ export const useFirebaseAdmin = () => {
     })
   }
 
-  return { messaging: getMessaging() }
+  return { messaging: getMessaging(), firestore: getFirestore() }
 }
