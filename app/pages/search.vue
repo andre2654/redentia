@@ -4,8 +4,14 @@
     :title="authStore.isAuthenticated ? 'Busca avançada' : false"
     :hide-search-bar="authStore.isAuthenticated"
   >
-    <div class="flex flex-col gap-12 pb-16 pt-6">
-      <section class="max-md:px-4">
+    <div class="relative flex flex-col gap-12 pb-16 pt-6">
+      <!-- Background Effects -->
+      <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute -top-[20%] left-1/2 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-primary/10 blur-[120px]" />
+        <div class="absolute top-[20%] right-[10%] h-[300px] w-[300px] rounded-full bg-secondary/5 blur-[100px]" />
+      </div>
+
+      <section class="relative z-10 max-md:px-4">
         <div class="mx-auto flex w-full flex-col gap-6">
           <div class="flex flex-col gap-2">
             <span
@@ -13,8 +19,10 @@
             >
               Busca
             </span>
-            <h1 class="text-3xl font-semibold text-white md:text-4xl">
-              Encontre ativos com precisão
+            <h1 class="text-3xl font-bold tracking-tight text-white md:text-5xl">
+              <span class="bg-linear-to-b from-white to-white/60 bg-clip-text text-transparent">
+                Encontre ativos com precisão
+              </span>
             </h1>
             <p class="text-sm text-white/70 md:text-base">
               Combine indicadores técnicos e fundamentais para identificar
@@ -23,7 +31,7 @@
           </div>
           <div class="grid gap-4 md:grid-cols-3">
             <div
-              class="rounded-3xl border border-white/10 bg-white/5 p-5 text-white/80 backdrop-blur"
+              class="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-md transition-all hover:bg-white/10"
             >
               <span class="text-secondary/70 text-xs uppercase tracking-[0.3em]"
                 >Resultados</span
@@ -36,7 +44,7 @@
               </p>
             </div>
             <div
-              class="rounded-3xl border border-white/10 bg-white/5 p-5 text-white/80 backdrop-blur"
+              class="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-md transition-all hover:bg-white/10"
             >
               <span class="text-secondary/70 text-xs uppercase tracking-[0.3em]"
                 >Filtros ativos</span
@@ -49,7 +57,7 @@
               </p>
             </div>
             <div
-              class="rounded-3xl border border-white/10 bg-white/5 p-5 text-white/80 backdrop-blur"
+              class="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-md transition-all hover:bg-white/10"
             >
               <span class="text-secondary/70 text-xs uppercase tracking-[0.3em]"
                 >Atualização</span
@@ -65,7 +73,7 @@
         </div>
       </section>
 
-      <section class="max-md:px-4">
+      <section class="relative z-10 max-md:px-4">
         <AtomsTickerCarousel
           class="mx-auto hidden w-full rounded-full bg-white/5 px-6 py-3 md:flex"
           big
@@ -77,10 +85,10 @@
         />
       </section>
 
-      <section class="max-md:px-4">
+      <section class="relative z-10 max-md:px-4">
         <div class="mx-auto flex w-full flex-col gap-8">
           <div
-            class="rounded-[32px] border border-white/10 bg-white/5 p-6 shadow-[0_25px_60px_-15px_rgba(15,23,42,0.45)] backdrop-blur"
+            class="rounded-4xl border border-white/10 bg-white/5 p-6 shadow-[0_25px_60px_-15px_rgba(15,23,42,0.45)] backdrop-blur-md"
           >
             <div class="flex flex-col gap-6 text-white">
               <div class="flex flex-col gap-2">
@@ -308,7 +316,7 @@
           </div>
 
           <div
-            class="rounded-[32px] border border-white/10 bg-black/40 p-4 shadow-[0_25px_60px_-15px_rgba(15,23,42,0.45)] backdrop-blur"
+            class="rounded-4xl border border-white/10 bg-white/5 p-6 shadow-[0_25px_60px_-15px_rgba(15,23,42,0.45)] backdrop-blur-md"
           >
             <div class="flex flex-col gap-4 text-white">
               <div class="flex flex-col gap-2">
@@ -343,147 +351,150 @@
                   <div
                     v-for="asset in paginatedData"
                     :key="asset.ticker || asset.stock"
-                    class="hover:border-secondary/50 group flex h-full flex-col gap-5 rounded-[28px] border border-white/10 bg-black/30 p-6 transition hover:-translate-y-1 hover:bg-black/20"
+                    class="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 transition-all hover:border-white/20 hover:shadow-2xl hover:shadow-primary/5"
                     @click="goToAsset(asset.ticker || asset.stock)"
                   >
-                    <div class="flex items-start justify-between gap-3">
-                      <div class="flex items-center gap-3">
-                        <img
-                          v-if="getAssetLogo(asset)"
-                          :src="getAssetLogo(asset) || ''"
-                          :alt="asset.ticker || asset.stock"
-                          class="h-12 w-12 rounded-2xl border border-white/10 bg-white/10 object-cover"
-                        />
-                        <IconLogo
-                          v-else
-                          class="h-12 w-12 rounded-2xl border border-white/10 bg-white/10 p-2 text-white/70"
-                        />
-                        <div class="flex flex-col">
-                          <span
-                            class="text-secondary/70 text-xs uppercase tracking-[0.3em]"
-                          >
-                            {{ asset.ticker || asset.stock }}
-                          </span>
-                          <span class="line-clamp-2 text-sm text-white/70">
-                            {{ asset.name }}
-                          </span>
-                        </div>
-                      </div>
-                      <span
-                        class="rounded-full bg-white/10 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-white/60"
-                      >
-                        {{ getAssetTypeLabel(asset.type) }}
-                      </span>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3 text-sm text-white/80">
-                      <div
-                        class="rounded-2xl border border-white/10 bg-white/5 p-4"
-                      >
-                        <p
-                          class="text-xs uppercase tracking-[0.2em] text-white/50"
-                        >
-                          Market Cap
-                        </p>
-                        <p class="mt-1 text-base font-semibold text-white">
-                          {{ formatCurrencyBRL(asset.market_cap) }}
-                        </p>
-                      </div>
-                      <div
-                        class="rounded-2xl border border-white/10 bg-white/5 p-4"
-                      >
-                        <p
-                          class="text-xs uppercase tracking-[0.2em] text-white/50"
-                        >
-                          Preço
-                        </p>
-                        <p class="mt-1 text-base font-semibold text-white">
-                          {{ formatCurrencyBRL(getAssetPrice(asset)) }}
-                        </p>
-                      </div>
-                      <div
-                        class="col-span-2 rounded-2xl border border-white/10 bg-white/5 p-4"
-                      >
-                        <p
-                          class="text-xs uppercase tracking-[0.2em] text-white/50"
-                        >
-                          Variação
-                        </p>
-                        <div class="mt-2 flex items-center gap-2">
-                          <IconArrowFinanceUp
-                            :class="[
-                              'h-5 w-5 transition',
-                              getAssetChange(asset) >= 0
-                                ? 'fill-primary'
-                                : 'rotate-180 fill-red-500',
-                            ]"
+                    <div class="absolute inset-0 bg-linear-to-br from-white/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+                    <div class="relative z-10 flex h-full flex-col gap-5">
+                      <div class="flex items-start justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                          <img
+                            v-if="getAssetLogo(asset)"
+                            :src="getAssetLogo(asset) || ''"
+                            :alt="asset.ticker || asset.stock"
+                            class="h-12 w-12 rounded-2xl border border-white/10 bg-white/10 object-cover"
                           />
-                          <span
-                            :class="[
-                              'text-base font-semibold',
-                              getAssetChange(asset) >= 0
-                                ? 'text-primary'
-                                : 'text-red-400',
-                            ]"
+                          <IconLogo
+                            v-else
+                            class="h-12 w-12 rounded-2xl border border-white/10 bg-white/10 p-2 text-white/70"
+                          />
+                          <div class="flex flex-col">
+                            <span
+                              class="text-secondary/70 text-xs uppercase tracking-[0.3em]"
+                            >
+                              {{ asset.ticker || asset.stock }}
+                            </span>
+                            <span class="line-clamp-2 text-sm text-white/70">
+                              {{ asset.name }}
+                            </span>
+                          </div>
+                        </div>
+                        <span
+                          class="rounded-full bg-white/10 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-white/60"
+                        >
+                          {{ getAssetTypeLabel(asset.type) }}
+                        </span>
+                      </div>
+
+                      <div class="grid grid-cols-2 gap-3 text-sm text-white/80">
+                        <div
+                          class="rounded-2xl border border-white/10 bg-white/5 p-4"
+                        >
+                          <p
+                            class="text-xs uppercase tracking-[0.2em] text-white/50"
                           >
-                            {{ getAssetChange(asset) >= 0 ? '+' : ''
-                            }}{{ getAssetChange(asset).toFixed(2) }}% hoje
+                            Market Cap
+                          </p>
+                          <p class="mt-1 text-base font-semibold text-white">
+                            {{ formatCurrencyBRL(asset.market_cap) }}
+                          </p>
+                        </div>
+                        <div
+                          class="rounded-2xl border border-white/10 bg-white/5 p-4"
+                        >
+                          <p
+                            class="text-xs uppercase tracking-[0.2em] text-white/50"
+                          >
+                            Preço
+                          </p>
+                          <p class="mt-1 text-base font-semibold text-white">
+                            {{ formatCurrencyBRL(getAssetPrice(asset)) }}
+                          </p>
+                        </div>
+                        <div
+                          class="col-span-2 rounded-2xl border border-white/10 bg-white/5 p-4"
+                        >
+                          <p
+                            class="text-xs uppercase tracking-[0.2em] text-white/50"
+                          >
+                            Variação
+                          </p>
+                          <div class="mt-2 flex items-center gap-2">
+                            <IconArrowFinanceUp
+                              :class="[
+                                'h-5 w-5 transition',
+                                getAssetChange(asset) >= 0
+                                  ? 'fill-primary'
+                                  : 'rotate-180 fill-red-500',
+                              ]"
+                            />
+                            <span
+                              :class="[
+                                'text-base font-semibold',
+                                getAssetChange(asset) >= 0
+                                  ? 'text-primary'
+                                  : 'text-red-400',
+                              ]"
+                            >
+                              {{ getAssetChange(asset) >= 0 ? '+' : ''
+                              }}{{ getAssetChange(asset).toFixed(2) }}% hoje
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div
+                        v-if="
+                          getMdiLabels(asset.mdi).occurrenceLabel ||
+                          getMdiLabels(asset.mdi).starLabel
+                        "
+                        class="bg-secondary/10 rounded-2xl border border-white/10 p-4"
+                      >
+                        <p
+                          class="text-secondary/80 text-xs uppercase tracking-[0.2em]"
+                        >
+                          MDI
+                        </p>
+                        <div
+                          class="mt-2 flex flex-wrap items-center gap-3 text-sm"
+                        >
+                          <span
+                            v-if="getMdiLabels(asset.mdi).occurrenceLabel"
+                            class="rounded-full bg-white/10 px-3 py-1 text-white/80"
+                          >
+                            {{ getMdiLabels(asset.mdi).occurrenceLabel }}
+                          </span>
+                          <span
+                            v-if="getMdiLabels(asset.mdi).starLabel"
+                            class="text-secondary inline-flex items-center gap-2"
+                          >
+                            <IconAi class="fill-secondary h-5 w-5" />
+                            {{ getMdiLabels(asset.mdi).starLabel }}
                           </span>
                         </div>
                       </div>
-                    </div>
-
-                    <div
-                      v-if="
-                        getMdiLabels(asset.mdi).occurrenceLabel ||
-                        getMdiLabels(asset.mdi).starLabel
-                      "
-                      class="bg-secondary/10 rounded-2xl border border-white/10 p-4"
-                    >
-                      <p
-                        class="text-secondary/80 text-xs uppercase tracking-[0.2em]"
-                      >
-                        MDI
-                      </p>
                       <div
-                        class="mt-2 flex flex-wrap items-center gap-3 text-sm"
+                        v-else
+                        class="rounded-2xl border border-dashed border-white/10 bg-white/5 p-4 text-sm text-white/50"
                       >
-                        <span
-                          v-if="getMdiLabels(asset.mdi).occurrenceLabel"
-                          class="rounded-full bg-white/10 px-3 py-1 text-white/80"
-                        >
-                          {{ getMdiLabels(asset.mdi).occurrenceLabel }}
-                        </span>
-                        <span
-                          v-if="getMdiLabels(asset.mdi).starLabel"
-                          class="text-secondary inline-flex items-center gap-2"
-                        >
-                          <IconAi class="fill-secondary h-5 w-5" />
-                          {{ getMdiLabels(asset.mdi).starLabel }}
-                        </span>
+                        Sem informações MDI disponíveis.
                       </div>
-                    </div>
-                    <div
-                      v-else
-                      class="rounded-2xl border border-dashed border-white/10 bg-white/5 p-4 text-sm text-white/50"
-                    >
-                      Sem informações MDI disponíveis.
-                    </div>
 
-                    <div
-                      class="flex items-center justify-between pt-2 text-xs text-white/50"
-                    >
-                      <span>Atualizado às {{ lastUpdatedLabel }}</span>
-                      <UButton
-                        color="secondary"
-                        size="sm"
-                        variant="soft"
-                        class="rounded-full"
-                        :to="`/asset/${asset.ticker || asset.stock}`"
-                        @click.stop
+                      <div
+                        class="flex items-center justify-between pt-2 text-xs text-white/50"
                       >
-                        Ver ativo
-                      </UButton>
+                        <span>Atualizado às {{ lastUpdatedLabel }}</span>
+                        <UButton
+                          color="secondary"
+                          size="sm"
+                          variant="soft"
+                          class="rounded-full"
+                          :to="`/asset/${asset.ticker || asset.stock}`"
+                          @click.stop
+                        >
+                          Ver ativo
+                        </UButton>
+                      </div>
                     </div>
                   </div>
                 </div>
