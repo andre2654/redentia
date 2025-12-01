@@ -51,7 +51,7 @@
       <!-- Tooltip dinâmico -->
       <div
         v-if="hoveredIndex !== null && tooltipData"
-        class="pointer-events-none fixed z-10 rounded-lg px-3 py-2 backdrop-blur-md transition-all duration-150 bg-black/30"
+        class="pointer-events-none fixed z-10 rounded-lg bg-black/30 px-3 py-2 backdrop-blur-md transition-all duration-150"
         :style="{
           left: `${tooltipPosition.x + 10}px`,
           top: `${tooltipPosition.y - 60}px`,

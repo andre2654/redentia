@@ -20,9 +20,7 @@
         </button>
         <slot name="header-branding">
           <NuxtLink to="/">
-            <IconLogoFull
-              class="mx-auto h-auto w-[150px] fill-white"
-            />
+            <IconLogoFull class="mx-auto h-auto w-[150px] fill-white" />
           </NuxtLink>
         </slot>
       </div>

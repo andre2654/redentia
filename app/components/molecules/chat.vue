@@ -54,7 +54,7 @@
 
     <!-- Input Area -->
     <div
-      class="flex w-full flex-col gap-3 p-3 pb-6 backdrop-blur-[99px] bg-white/10"
+      class="flex w-full flex-col gap-3 bg-white/10 p-3 pb-6 backdrop-blur-[99px]"
       v-bind="textareaContainerProps"
     >
       <div

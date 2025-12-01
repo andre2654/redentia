@@ -1,5 +1,5 @@
 <template>
-  <div class="flex w-full flex-col text-white bg-white/5">
+  <div class="flex w-full flex-col bg-white/5 text-white">
     <div class="w-full bg-white/5 py-5">
       <div
         class="mx-auto flex max-w-[1400px] items-center justify-between px-4 text-[15px] max-lg:flex-col max-lg:gap-[40px]"
@@ -29,11 +29,11 @@
           AV. PAULISTA 1106 SALA 01 ANDAR, Bela Vista, São Paulo, SP
         </p>
         <div class="flex items-center gap-3">
-          <NuxtLink to="/download">
-            <IconDownloadAppAppStore />
+          <NuxtLink to="/download" class="transition-opacity hover:opacity-80">
+            <img src="/assets/icons/app-store.svg" alt="Download on the App Store" class="h-[38px] w-auto" />
           </NuxtLink>
-          <NuxtLink to="/download">
-            <IconDownloadAppGooglePlay />
+          <NuxtLink to="/download" class="transition-opacity hover:opacity-80">
+            <img src="/assets/icons/google-play.svg" alt="Get it on Google Play" class="h-[38px] w-auto" />
           </NuxtLink>
         </div>
       </div>
@@ -41,5 +41,4 @@
   </div>
 </template>
 
-<script setup lang="ts">
-</script>
+<script setup lang="ts"></script>

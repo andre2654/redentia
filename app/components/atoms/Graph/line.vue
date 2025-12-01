@@ -18,9 +18,7 @@
             <div
               class="h-8 w-8 animate-spin rounded-full border-2 border-gray-700 border-t-gray-400"
             />
-            <span class="text-sm text-gray-400"
-              >Carregando...</span
-            >
+            <span class="text-sm text-gray-400">Carregando...</span>
           </div>
         </div>
       </Transition>

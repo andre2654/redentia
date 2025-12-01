@@ -1,10 +1,10 @@
 <template>
   <div
-    class="flex items-center justify-between px-7 py-3 xl:mx-4 xl:mt-4 xl:rounded-[20px] bg-white/10"
+    class="flex items-center justify-between bg-white/10 px-7 py-3 xl:mx-4 xl:mt-4 xl:rounded-[20px]"
   >
     <div class="flex items-center gap-2">
       <IconLogo
-        class="to-secondary from-primary h-7 w-7 rounded-full p-1 bg-gradient-to-r fill-black"
+        class="to-secondary from-primary h-7 w-7 rounded-full bg-gradient-to-r fill-black p-1"
       />
       <div class="flex flex-col text-white">
         <span class="text-[13px] font-semibold">Redentia</span>
@@ -14,12 +14,10 @@
     <div class="flex items-center gap-2">
       <NuxtLink
         to="/download"
-        class="to-secondary from-primary flex items-center gap-2 rounded-full px-3 py-1 hover:opacity-80 bg-gradient-to-r"
+        class="to-secondary from-primary flex items-center gap-2 rounded-full bg-gradient-to-r px-3 py-1 hover:opacity-80"
       >
         <IconLogo class="h-4 fill-black" />
-        <span class="text-[12px] font-medium text-black"
-          >Baixar</span
-        >
+        <span class="text-[12px] font-medium text-black">Baixar</span>
       </NuxtLink>
       <button
         @click="closeBanner"
