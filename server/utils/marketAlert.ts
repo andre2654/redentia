@@ -61,7 +61,10 @@ export const triggerMarketAlert = async (token?: string) => {
       const isSmallCap = marketCap < 1000000000
       const threshold = isSmallCap ? 10 : 5
 
-      if (candidate.absChange >= threshold) {
+      // Double check: Use the REAL change from the detailed data, not the one from the list
+      const realAbsChange = Math.abs(data.price.change || 0)
+
+      if (realAbsChange >= threshold) {
         targetTicker = candidate.ticker
         marketData = data
         break // Found our winner
