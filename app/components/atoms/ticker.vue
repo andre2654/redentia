@@ -13,9 +13,10 @@
     <IconLogo v-else class="h-[40px] w-[40px] fill-white" />
     <div class="flex w-full justify-between">
       <div class="flex flex-col">
-        <span class="text-[14px] font-medium">{{
-          normalizeText(stock?.name)
-        }}</span>
+        <span
+          class="max-w-[10ch] overflow-hidden text-ellipsis whitespace-nowrap text-[14px] font-medium"
+          >{{ normalizeText(stock?.name) }}</span
+        >
         <span class="text-[15px] text-white/70">{{ stock?.ticker }}</span>
       </div>
       <div class="flex flex-col items-end">
