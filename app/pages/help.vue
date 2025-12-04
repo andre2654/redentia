@@ -46,7 +46,7 @@
         ]"
         textarea-container-class="bg-gray-200"
         :messages="messages"
-        routePath="/help"
+        route-path="/help"
       />
     </div>
   </NuxtLayout>
@@ -65,9 +65,6 @@ const messages = ref<IChatMessage[]>([
 
 definePageMeta({
   isPublicRoute: true,
-  layoutTransition: {
-    name: 'slide-in',
-  },
 })
 
 const layoutName = computed(() =>

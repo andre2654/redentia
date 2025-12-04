@@ -74,8 +74,5 @@ usePageSeo({
 
 definePageMeta({
   isPublicRoute: true,
-  layoutTransition: {
-    name: 'slide-in',
-  },
 })
 </script>

@@ -347,8 +347,8 @@
         <div class="relative w-full">
           <div
             v-if="blockChat"
-            @click="redirectToLogin('chat')"
             class="absolute inset-0 left-0 top-0 z-10 flex h-full w-full cursor-pointer items-center justify-center overflow-hidden rounded-2xl bg-black/60 p-4 backdrop-blur-md transition-all hover:bg-black/70 md:rounded-3xl"
+            @click="redirectToLogin('chat')"
           >
             <div class="transform text-center transition-all hover:scale-105">
               <div class="relative mb-4 md:mb-6">
@@ -843,9 +843,6 @@ watch(selectedTimeRange, (range) => {
 
 definePageMeta({
   isPublicRoute: true,
-  layoutTransition: {
-    name: 'slide-in',
-  },
 })
 </script>
 

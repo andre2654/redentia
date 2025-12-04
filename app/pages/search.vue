@@ -541,9 +541,6 @@ import type { AssetMdiEntry, IAsset } from '~/types/asset'
 
 definePageMeta({
   isPublicRoute: true,
-  layoutTransition: {
-    name: 'slide-in',
-  },
 })
 
 const { getAssets } = useAssetsService()
