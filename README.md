@@ -72,4 +72,30 @@ yarn preview
 bun run preview
 ```
 
+## Deploy na Vercel com Bun
+
+Para fazer o deploy na Vercel utilizando Bun:
+
+1. **Gere o arquivo de lock do Bun**:
+   Execute o comando abaixo para instalar as dependências e gerar o arquivo `bun.lockb`:
+   ```bash
+   bun install
+   ```
+
+2. **Remova lockfiles conflitantes** (Importante):
+   A Vercel pode priorizar o `pnpm` ou `npm` se encontrar seus arquivos de lock. Para garantir que o Bun seja usado, remova-os:
+   ```bash
+   rm pnpm-lock.yaml package-lock.json yarn.lock
+   ```
+
+3. **Commit as alterações**:
+   Certifique-se de commitar o `bun.lockb` e a remoção dos outros lockfiles.
+
+4. **Configuração na Vercel**:
+   A Vercel deve detectar automaticamente o Bun pela presença do `bun.lockb`.
+   Caso precise configurar manualmente:
+   - Vá em **Settings** > **Build & Development**.
+   - **Install Command**: `bun install`
+   - **Build Command**: `bun run build` (ou `nuxt build`)
+
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
