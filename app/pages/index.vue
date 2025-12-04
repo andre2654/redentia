@@ -619,7 +619,8 @@ const topAssets = ref<{
 const RANKING_LIMIT = 8
 const TREEMAP_LIMIT = 200
 
-const { data: homeMarketData } = await useAsyncData<HomeMarketData>(
+// Removido o await - agora carrega de forma não-bloqueante
+const { data: homeMarketData } = useAsyncData<HomeMarketData>(
   'home-market-data',
   async () => {
     const [
