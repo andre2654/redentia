@@ -17,15 +17,15 @@ export default defineAppConfig({
       },
       variants: {
         variant: {
-          soft: 'bg-[#05070b] border border-gray-800 hover:bg-[#070b12] focus:bg-[#070b12] focus:border-secondary/70',
-          outline: 'bg-[#05070b] border border-gray-800 hover:bg-[#070b12] focus:bg-[#070b12] focus:border-secondary/70',
-          subtle: 'bg-[#05070b] ring ring-inset ring-gray-800 focus:ring-secondary/70',
-          ghost: 'bg-transparent border border-gray-800 hover:bg-[#070b12] focus:bg-[#070b12] focus:border-secondary/70',
+          soft: 'text-white bg-[#05070b] border border-gray-800 hover:bg-[#070b12] focus:bg-[#070b12] focus:border-secondary/70',
+          outline: 'text-white bg-[#05070b] border border-gray-800 hover:bg-[#070b12] focus:bg-[#070b12] focus:border-secondary/70',
+          subtle: 'text-white bg-[#05070b] ring ring-inset ring-gray-800 focus:ring-secondary/70',
+          ghost: 'text-white bg-transparent border border-gray-800 hover:bg-[#070b12] focus:bg-[#070b12] focus:border-secondary/70',
         },
       },
       defaultVariants: {
         variant: 'soft',
-        color: 'secondary',
+        color: 'neutral',
       },
     },
     inputNumber: {
@@ -34,13 +34,13 @@ export default defineAppConfig({
       },
       variants: {
         variant: {
-          soft: 'bg-[#05070b] border border-gray-800 hover:bg-[#070b12] focus:bg-[#070b12] focus:border-secondary/70',
-          outline: 'bg-[#05070b] border border-gray-800 hover:bg-[#070b12] focus:bg-[#070b12] focus:border-secondary/70',
+          soft: 'text-white bg-[#05070b] border border-gray-800 hover:bg-[#070b12] focus:bg-[#070b12] focus:border-secondary/70',
+          outline: 'text-white bg-[#05070b] border border-gray-800 hover:bg-[#070b12] focus:bg-[#070b12] focus:border-secondary/70',
         },
       },
       defaultVariants: {
         variant: 'soft',
-        color: 'secondary',
+        color: 'neutral',
       },
     },
   },
