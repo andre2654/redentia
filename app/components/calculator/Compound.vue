@@ -10,39 +10,31 @@
 
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
         <UFormField label="Valor Inicial (R$)" name="initialValue">
-          <UInputNumber
+          <AtomsFormCurrencyInput
             v-model="compoundForm.initialValue"
-            placeholder="10000"
+            placeholder="1.000,00 R$"
             size="lg"
             variant="soft"
             class="w-full"
-            :format-options="{
-              style: 'currency',
-              currency: 'BRL',
-            }"
           />
         </UFormField>
 
         <UFormField label="Aporte Mensal (R$)" name="monthlyValue">
-          <UInputNumber
+          <AtomsFormCurrencyInput
             v-model="compoundForm.monthlyValue"
             placeholder="500"
             size="lg"
             variant="soft"
             class="w-full"
-            :format-options="{
-              style: 'currency',
-              currency: 'BRL',
-            }"
           />
         </UFormField>
 
         <UFormField label="Taxa de Juros (%)" name="interestRate">
           <div class="flex gap-2">
-            <UInput
+            <UInputNumber
               v-model="compoundForm.interestRate"
               type="number"
-              step="0.01"
+              :step="0.01"
               variant="soft"
               placeholder="10.5"
               size="lg"
@@ -159,22 +151,25 @@
 
 <script setup lang="ts">
 import type { IChartDataPoint } from '~/types/chart'
+import { showErrorNotification } from '~/composables/useNotify'
+
+type CompoundResult = {
+  totalInvested: number
+  totalInterest: number
+  finalValue: number
+  chartData: IChartDataPoint[]
+}
 
 const compoundForm = ref({
   initialValue: 10000,
   monthlyValue: 500,
-  interestRate: '10.5',
+  interestRate: 10.5,
   interestPeriod: { label: 'Ao ano', value: 'year' },
   period: '10',
   periodType: { label: 'Anos', value: 'years' },
 })
 
-const compoundResult = ref<{
-  totalInvested: number
-  totalInterest: number
-  finalValue: number
-  chartData: IChartDataPoint[]
-} | null>(null)
+const compoundResult = ref<CompoundResult | null>(null)
 
 async function calculateCompoundInterest() {
   const initial = Number(compoundForm.value.initialValue) || 0
@@ -183,7 +178,7 @@ async function calculateCompoundInterest() {
   const period = parseInt(compoundForm.value.period) || 0
 
   try {
-    const result = await $fetch('/api/calculate', {
+    const result = await $fetch<CompoundResult>('/api/calculate', {
       method: 'POST',
       body: {
         type: 'compound',
@@ -197,9 +192,13 @@ async function calculateCompoundInterest() {
         },
       },
     })
-    compoundResult.value = result as any
-  } catch (e) {
-    console.error(e)
+    compoundResult.value = result
+  } catch {
+    compoundResult.value = null
+    showErrorNotification(
+      'Erro ao calcular',
+      'Não foi possível simular o investimento. Tente novamente.'
+    )
   }
 }
 </script>

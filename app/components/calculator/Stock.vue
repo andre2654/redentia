@@ -125,28 +125,20 @@
             label="Valor Inicial de Aporte (R$)"
             name="initialInvestment"
           >
-            <UInputNumber
+            <AtomsFormCurrencyInput
               v-model="stockForm.initialInvestment"
               placeholder="10000"
               size="lg"
-              :format-options="{
-                style: 'currency',
-                currency: 'BRL',
-              }"
               class="w-full"
               variant="soft"
             />
           </UFormField>
 
           <UFormField label="Aporte Mensal (R$)" name="monthlyInvestment">
-            <UInputNumber
+            <AtomsFormCurrencyInput
               v-model="stockForm.monthlyInvestment"
               placeholder="500"
               size="lg"
-              :format-options="{
-                style: 'currency',
-                currency: 'BRL',
-              }"
               variant="soft"
               class="w-full"
             />
@@ -519,10 +511,9 @@ import {
   watch,
   withDefaults,
 } from 'vue'
+import { showErrorNotification } from '~/composables/useNotify'
 import type { IAsset } from '~/types/asset'
 import type { IChartDataPoint } from '~/types/chart'
-
-const { assetHistoricPrices, getTickerDividends } = useAssetsService()
 
 const props = withDefaults(
   defineProps<{
@@ -562,6 +553,17 @@ interface StockSimulationResult {
   averagePrice: number
   chartData: IChartDataPoint[]
   dividendsHistory: DividendHistoryItem[]
+}
+
+interface StockSimulationApiResponse {
+  ticker: string
+  totalInvested: number
+  finalValue: number
+  returnPercentage: number
+  totalDividends: number
+  totalShares: number
+  chartData: IChartDataPoint[]
+  dividendsHistory?: DividendHistoryItem[]
 }
 
 const stockForm = ref({
@@ -762,7 +764,7 @@ function onScroll() {
 let resizeObserver: ResizeObserver | null = null
 
 onMounted(() => {
-  if (!process.client) return
+  if (!import.meta.client) return
 
   nextTick(() => {
     if (listContainer.value) {
@@ -851,9 +853,12 @@ async function calculateStockHistory() {
     } else {
       stockError.value = ''
     }
-  } catch (error: any) {
-    console.error('Erro ao calcular histórico:', error)
-    stockError.value = error?.message || 'Erro ao calcular. Tente novamente.'
+  } catch (error) {
+    const fallbackMessage = 'Erro ao calcular. Tente novamente.'
+    const message =
+      error instanceof Error && error.message ? error.message : fallbackMessage
+    stockError.value = message
+    showErrorNotification('Erro ao calcular histórico', message)
   } finally {
     calculatingStock.value = false
   }
@@ -867,7 +872,7 @@ async function simulateAsset(
   reinvestDividends: boolean
 ): Promise<StockSimulationResult | null> {
   try {
-    const result = await $fetch('/api/calculate', {
+    const result = await $fetch<StockSimulationApiResponse>('/api/calculate', {
       method: 'POST',
       body: {
         type: 'stock',
@@ -883,23 +888,20 @@ async function simulateAsset(
 
     if (!result) return null
 
-    const data = result as any
-
     return {
-      ticker: data.ticker,
+      ticker: result.ticker,
       name: asset.suffix,
-      totalInvested: data.totalInvested,
-      finalValue: data.finalValue,
-      return: data.returnPercentage,
-      totalDividends: data.totalDividends,
-      totalShares: data.totalShares,
+      totalInvested: result.totalInvested,
+      finalValue: result.finalValue,
+      return: result.returnPercentage,
+      totalDividends: result.totalDividends,
+      totalShares: result.totalShares,
       averagePrice:
-        data.totalShares > 0 ? data.totalInvested / data.totalShares : 0,
-      chartData: data.chartData,
-      dividendsHistory: data.dividendsHistory || [],
+        result.totalShares > 0 ? result.totalInvested / result.totalShares : 0,
+      chartData: result.chartData,
+      dividendsHistory: result.dividendsHistory ?? [],
     }
-  } catch (error) {
-    console.warn('Falha ao simular ativo:', asset.id, error)
+  } catch {
     return null
   }
 }

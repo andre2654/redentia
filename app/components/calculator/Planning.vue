@@ -10,30 +10,22 @@
 
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
         <UFormField label="Meta financeira (R$)" name="goalValue">
-          <UInputNumber
+          <AtomsFormCurrencyInput
             v-model="planningForm.goalValue"
             placeholder="500000"
             size="lg"
             variant="soft"
             class="w-full"
-            :format-options="{
-              style: 'currency',
-              currency: 'BRL',
-            }"
           />
         </UFormField>
 
         <UFormField label="Aporte mensal (R$)" name="monthlyContribution">
-          <UInputNumber
+          <AtomsFormCurrencyInput
             v-model="planningForm.monthlyContribution"
             placeholder="1500"
             size="lg"
             variant="soft"
             class="w-full"
-            :format-options="{
-              style: 'currency',
-              currency: 'BRL',
-            }"
           />
         </UFormField>
       </div>
@@ -299,21 +291,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, withDefaults } from 'vue'
-import type { IAsset } from '~/types/asset'
+import { showErrorNotification } from '~/composables/useNotify'
 import type { IChartDataPoint } from '~/types/chart'
-
-const { assetHistoricPrices, getTickerDividends, getTopStocks, getTopReits } =
-  useAssetsService()
-
-const props = withDefaults(
-  defineProps<{
-    assets?: IAsset[]
-  }>(),
-  {
-    assets: () => [],
-  }
-)
 
 type PlanningStrategy = 'rentabilidade' | 'seguranca'
 
@@ -363,116 +342,6 @@ const planningLoading = ref(false)
 const planningError = ref('')
 const planningResult = ref<PlanningResult | null>(null)
 
-const normalizeTicker = (ticker: string) => (ticker || '').toUpperCase().trim()
-
-const priceHistoryCache = new Map<string, any[]>()
-const dividendsCache = new Map<string, any[] | null>()
-
-const planningUniverse = {
-  rentabilidade: {
-    fallbackStocks: ['PETR4', 'VALE3', 'PRIO3', 'WEGE3', 'LREN3', 'ITUB4'],
-    fallbackFiis: ['HGLG11', 'KNRI11', 'XPML11', 'VISC11', 'BCFF11'],
-    minimumAssets: 3,
-    priorityTickers: [
-      'PETR4',
-      'VALE3',
-      'PRIO3',
-      'WEGE3',
-      'ITUB4',
-      'BBAS3',
-      'ABEV3',
-      'SUZB3',
-    ],
-  },
-  seguranca: {
-    categories: {
-      energy: ['TAEE11', 'EQTL3', 'ENBR3', 'NEOE3'],
-      sanitation: ['SBSP3', 'CSMG3', 'SAPR11'],
-      banks: ['ITUB4', 'BBAS3', 'BBDC4', 'SANB11'],
-      fiis: ['HGLG11', 'KNRI11', 'BCFF11', 'VISC11'],
-    },
-    categoryLabels: {
-      energy: 'Energia',
-      sanitation: 'Saneamento',
-      banks: 'Bancos',
-      fiis: 'FII consolidado',
-    },
-    fixedIncomeWeight: 0.1,
-    fixedIncomeAnnualRate: 0.1,
-  },
-}
-
-const fallbackPerformanceMetrics: Record<
-  string,
-  {
-    cagr: number
-    dividendYield?: number
-    periodYears?: number
-  }
-> = {
-  PETR4: { cagr: 0.18, dividendYield: 0.08, periodYears: 5 },
-  VALE3: { cagr: 0.15, dividendYield: 0.07, periodYears: 5 },
-  PRIO3: { cagr: 0.28, dividendYield: 0.03, periodYears: 5 },
-  WEGE3: { cagr: 0.2, dividendYield: 0.015, periodYears: 5 },
-  LREN3: { cagr: 0.11, dividendYield: 0.022, periodYears: 5 },
-  ITUB4: { cagr: 0.09, dividendYield: 0.05, periodYears: 5 },
-  BBAS3: { cagr: 0.1, dividendYield: 0.06, periodYears: 5 },
-  ABEV3: { cagr: 0.07, dividendYield: 0.025, periodYears: 5 },
-  SUZB3: { cagr: 0.13, dividendYield: 0.015, periodYears: 5 },
-  HGLG11: { cagr: 0.095, dividendYield: 0.1, periodYears: 5 },
-  KNRI11: { cagr: 0.085, dividendYield: 0.095, periodYears: 5 },
-  XPML11: { cagr: 0.088, dividendYield: 0.09, periodYears: 5 },
-  VISC11: { cagr: 0.082, dividendYield: 0.092, periodYears: 5 },
-  BCFF11: { cagr: 0.078, dividendYield: 0.1, periodYears: 5 },
-  TAEE11: { cagr: 0.12, dividendYield: 0.09, periodYears: 5 },
-  EQTL3: { cagr: 0.13, dividendYield: 0.035, periodYears: 5 },
-  ENBR3: { cagr: 0.1, dividendYield: 0.045, periodYears: 5 },
-  NEOE3: { cagr: 0.095, dividendYield: 0.05, periodYears: 5 },
-  SBSP3: { cagr: 0.085, dividendYield: 0.03, periodYears: 5 },
-  CSMG3: { cagr: 0.08, dividendYield: 0.035, periodYears: 5 },
-  SAPR11: { cagr: 0.075, dividendYield: 0.04, periodYears: 5 },
-  BBDC4: { cagr: 0.082, dividendYield: 0.057, periodYears: 5 },
-  SANB11: { cagr: 0.078, dividendYield: 0.05, periodYears: 5 },
-}
-
-const assetsByTicker = computed(() => {
-  const map = new Map<string, IAsset>()
-  const assets = props.assets ?? []
-  if (!assets.length) return map
-
-  for (const asset of assets) {
-    const key = normalizeTicker(asset.ticker || asset.stock || '')
-    if (!key) continue
-    if (!map.has(key)) {
-      map.set(key, asset)
-    }
-  }
-
-  return map
-})
-
-function resolveAssetCategory(asset?: IAsset | null) {
-  if (!asset) return 'Ativo'
-  const type = (asset.type || '').toString().toUpperCase()
-  if (type.includes('REIT') || type === 'FUND') return 'FII'
-  if (type.includes('STOCK')) return 'Ação'
-  if (type.includes('ETF')) return 'ETF'
-  if (type.includes('BDR')) return 'BDR'
-  return 'Ativo'
-}
-
-function getAssetInfo(ticker: string) {
-  const normalized = normalizeTicker(ticker)
-  const asset = assetsByTicker.value.get(normalized)
-  const displayName = asset?.name || asset?.stock || asset?.ticker || normalized
-  const category = resolveAssetCategory(asset)
-  return {
-    name: displayName,
-    category,
-    type: category,
-  }
-}
-
 function formatTimeLabel(months: number) {
   if (months <= 0) return 'menos de 1 mês'
   const years = Math.floor(months / 12)
@@ -485,266 +354,6 @@ function formatTimeLabel(months: number) {
     parts.push(`${remainingMonths} ${remainingMonths === 1 ? 'mês' : 'meses'}`)
   }
   return parts.join(' e ')
-}
-
-function buildFallbackPerformance(
-  ticker: string,
-  categoryLabel?: string
-): PlanningAssetPerformance | null {
-  const normalized = normalizeTicker(ticker)
-  const fallback = fallbackPerformanceMetrics[normalized]
-  if (!fallback || !Number.isFinite(fallback.cagr)) {
-    return null
-  }
-
-  const periodYears =
-    fallback.periodYears && fallback.periodYears > 0 ? fallback.periodYears : 5
-  const cagr = fallback.cagr
-
-  if (!Number.isFinite(cagr) || cagr <= -1) {
-    return null
-  }
-
-  const growthFactor = Math.pow(1 + cagr, periodYears)
-  if (!Number.isFinite(growthFactor) || growthFactor <= 0) {
-    return null
-  }
-
-  const monthlyRate = Math.pow(1 + cagr, 1 / 12) - 1
-  const totalReturn = growthFactor - 1
-  const estimatedDividends =
-    fallback.dividendYield && fallback.dividendYield > 0
-      ? fallback.dividendYield * periodYears * 100
-      : 0
-
-  const assetInfo = getAssetInfo(normalized)
-
-  return {
-    ticker: normalized,
-    name: assetInfo.name,
-    category: categoryLabel || assetInfo.category,
-    type: assetInfo.type,
-    totalReturn,
-    cagr,
-    monthlyRate,
-    growthFactor,
-    totalDividends: estimatedDividends,
-    periodYears,
-  }
-}
-
-function buildProjectionChart(
-  months: number,
-  monthlyContribution: number,
-  monthlyRate: number
-) {
-  const points: IChartDataPoint[] = []
-  const startDate = new Date()
-  let balance = 0
-  const step = Math.max(1, Math.ceil(months / 120))
-
-  for (let month = 0; month <= months; month++) {
-    if (month > 0) {
-      if (monthlyRate > 0) {
-        balance = balance * (1 + monthlyRate) + monthlyContribution
-      } else {
-        balance += monthlyContribution
-      }
-    }
-
-    if (month === 0 || month === months || month % step === 0) {
-      const currentDate = new Date(startDate)
-      currentDate.setMonth(currentDate.getMonth() + month)
-      points.push({
-        date: currentDate.toLocaleDateString('pt-BR', {
-          month: '2-digit',
-          year: 'numeric',
-        }),
-        value: balance,
-        timestamp: currentDate.getTime(),
-      })
-    }
-  }
-
-  return points
-}
-
-function computeProjectionTotals(
-  monthlyContribution: number,
-  months: number,
-  monthlyRate: number
-) {
-  const totalInvested = monthlyContribution * months
-  let finalValue = totalInvested
-  if (monthlyRate > 0) {
-    finalValue =
-      (monthlyContribution * ((1 + monthlyRate) ** months - 1)) / monthlyRate
-  }
-
-  return {
-    totalInvested,
-    finalValue,
-  }
-}
-
-function computeMonthsToGoal(
-  goalValue: number,
-  monthlyContribution: number,
-  monthlyRate: number
-) {
-  if (goalValue <= 0 || monthlyContribution <= 0) return 0
-  if (monthlyRate <= 0) {
-    return Math.ceil(goalValue / monthlyContribution)
-  }
-
-  const ratio = (goalValue * monthlyRate) / monthlyContribution + 1
-  if (ratio <= 1) {
-    return Math.ceil(goalValue / monthlyContribution)
-  }
-
-  const months = Math.log(ratio) / Math.log(1 + monthlyRate)
-  if (!Number.isFinite(months) || months <= 0) {
-    return Math.ceil(goalValue / monthlyContribution)
-  }
-
-  return Math.ceil(months)
-}
-
-async function getPriceHistory(ticker: string) {
-  const normalized = normalizeTicker(ticker)
-  if (priceHistoryCache.has(normalized)) {
-    return priceHistoryCache.get(normalized) || []
-  }
-
-  try {
-    const history = await assetHistoricPrices(normalized, '5y')
-    priceHistoryCache.set(normalized, history || [])
-    return history || []
-  } catch (error) {
-    console.warn(
-      `Falha ao obter histórico de preços para ${normalized}:`,
-      error
-    )
-    priceHistoryCache.set(normalized, [])
-    return []
-  }
-}
-
-async function getDividends(ticker: string) {
-  const normalized = normalizeTicker(ticker)
-  if (dividendsCache.has(normalized)) {
-    return dividendsCache.get(normalized) || []
-  }
-
-  try {
-    const data = await getTickerDividends(normalized)
-    dividendsCache.set(normalized, data || [])
-    return data || []
-  } catch (error) {
-    console.warn(`Falha ao obter dividendos para ${normalized}:`, error)
-    dividendsCache.set(normalized, null)
-    return []
-  }
-}
-
-async function simulateAssetPerformance(
-  ticker: string,
-  {
-    reinvestDividends = true,
-    categoryLabel,
-  }: {
-    reinvestDividends?: boolean
-    categoryLabel?: string
-  } = {}
-): Promise<PlanningAssetPerformance | null> {
-  const normalizedTicker = normalizeTicker(ticker)
-  if (!normalizedTicker) return null
-
-  const priceHistoryRaw = await getPriceHistory(normalizedTicker)
-  if (!priceHistoryRaw || priceHistoryRaw.length < 2) {
-    return buildFallbackPerformance(normalizedTicker, categoryLabel)
-  }
-
-  const priceHistory = priceHistoryRaw
-    .map((item: any) => ({
-      date: new Date(item.price_at),
-      price: Number(item.market_price),
-    }))
-    .filter((entry) => Number.isFinite(entry.price) && entry.price > 0)
-    .sort((a, b) => a.date.getTime() - b.date.getTime())
-
-  if (priceHistory.length < 2) {
-    const fallback = buildFallbackPerformance(normalizedTicker, categoryLabel)
-    if (fallback) return fallback
-    return null
-  }
-
-  const dividendsRaw = reinvestDividends
-    ? await getDividends(normalizedTicker)
-    : []
-  const dividends = (dividendsRaw || [])
-    .map((dividend: any) => ({
-      date: new Date(dividend.payment_date),
-      rate: parseFloat(dividend.rate) || 0,
-    }))
-    .filter((dividend) => Number.isFinite(dividend.rate) && dividend.rate > 0)
-    .sort((a, b) => a.date.getTime() - b.date.getTime())
-
-  const initialEntry = priceHistory[0]
-  const finalEntry = priceHistory[priceHistory.length - 1]
-  const initialPrice = initialEntry.price
-  const finalPrice = finalEntry.price
-
-  let shares = 1
-  let totalDividends = 0
-
-  if (dividends.length) {
-    for (const dividend of dividends) {
-      if (dividend.date < initialEntry.date || dividend.date > finalEntry.date)
-        continue
-      const matchingPrice =
-        priceHistory.find((price) => price.date >= dividend.date) ?? finalEntry
-      if (!matchingPrice || matchingPrice.price <= 0) continue
-      const dividendValue = shares * dividend.rate
-      totalDividends += dividendValue
-      if (reinvestDividends) {
-        const newShares = dividendValue / matchingPrice.price
-        shares += newShares
-      }
-    }
-  }
-
-  const finalValue = shares * finalPrice
-  if (!Number.isFinite(finalValue) || finalValue <= 0 || initialPrice <= 0) {
-    const fallback = buildFallbackPerformance(normalizedTicker, categoryLabel)
-    if (fallback) return fallback
-    return null
-  }
-
-  const growthFactor = finalValue / initialPrice
-  const periodYears =
-    (finalEntry.date.getTime() - initialEntry.date.getTime()) /
-    (365.25 * 24 * 60 * 60 * 1000)
-
-  const safePeriodYears =
-    Number.isFinite(periodYears) && periodYears > 0 ? periodYears : 5
-  const cagr = Math.pow(growthFactor, 1 / safePeriodYears) - 1
-  const monthlyRate = Math.pow(1 + cagr, 1 / 12) - 1
-
-  const assetInfo = getAssetInfo(normalizedTicker)
-
-  return {
-    ticker: normalizedTicker,
-    name: assetInfo.name,
-    category: categoryLabel || assetInfo.category,
-    type: assetInfo.type,
-    totalReturn: growthFactor - 1,
-    cagr,
-    monthlyRate,
-    growthFactor,
-    totalDividends,
-    periodYears: safePeriodYears,
-  }
 }
 
 async function calculatePlanningStrategy() {
@@ -767,7 +376,7 @@ async function calculatePlanningStrategy() {
   planningResult.value = null
 
   try {
-    const result = await $fetch('/api/calculate', {
+    const result = await $fetch<PlanningResult>('/api/calculate', {
       method: 'POST',
       body: {
         type: 'planning',
@@ -779,17 +388,17 @@ async function calculatePlanningStrategy() {
       },
     })
 
-    const data = result as any
-
     planningResult.value = {
-      ...data,
-      timeToGoalLabel: formatTimeLabel(data.monthsToGoal),
+      ...result,
+      timeToGoalLabel: formatTimeLabel(result.monthsToGoal),
     }
-  } catch (error: any) {
-    console.error('Erro ao calcular planejamento:', error)
-    planningError.value =
-      error?.message ||
+  } catch (error) {
+    const fallbackMessage =
       'Não foi possível calcular o planejamento. Tente novamente.'
+    const message =
+      error instanceof Error && error.message ? error.message : fallbackMessage
+    planningError.value = message
+    showErrorNotification('Erro ao calcular planejamento', message)
   } finally {
     planningLoading.value = false
   }
