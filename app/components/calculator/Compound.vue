@@ -31,13 +31,13 @@
 
         <UFormField label="Taxa de Juros (%)" name="interestRate">
           <div class="flex gap-2">
-            <UInputNumber
+            <AtomsFormPercentageInput
               v-model="compoundForm.interestRate"
-              type="number"
-              :step="0.01"
-              variant="soft"
-              placeholder="10.5"
+              :min="0"
+              placeholder="10,50"
               size="lg"
+              :max="100"
+              variant="soft"
               class="flex-1"
             />
             <USelectMenu
@@ -160,22 +160,31 @@ type CompoundResult = {
   chartData: IChartDataPoint[]
 }
 
-const compoundForm = ref({
+type CompoundForm = {
+  initialValue: number
+  monthlyValue: number
+  interestRate: number | null
+  interestPeriod: { label: string; value: 'year' | 'month' }
+  period: number | null
+  periodType: { label: string; value: 'years' | 'months' }
+}
+
+const compoundForm = ref<CompoundForm>({
   initialValue: 10000,
   monthlyValue: 500,
   interestRate: 10.5,
   interestPeriod: { label: 'Ao ano', value: 'year' },
-  period: '10',
+  period: 10,
   periodType: { label: 'Anos', value: 'years' },
 })
 
 const compoundResult = ref<CompoundResult | null>(null)
 
 async function calculateCompoundInterest() {
-  const initial = Number(compoundForm.value.initialValue) || 0
-  const monthly = Number(compoundForm.value.monthlyValue) || 0
-  const rate = parseFloat(compoundForm.value.interestRate) || 0
-  const period = parseInt(compoundForm.value.period) || 0
+  const initial = compoundForm.value.initialValue || 0
+  const monthly = compoundForm.value.monthlyValue || 0
+  const rate = compoundForm.value.interestRate ?? 0
+  const period = compoundForm.value.period ?? 0
 
   try {
     const result = await $fetch<CompoundResult>('/api/calculate', {
