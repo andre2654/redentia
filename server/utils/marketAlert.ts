@@ -16,10 +16,23 @@ export const triggerMarketAlert = async (token?: string) => {
     }
 
     // 2. Fetch Top Movers
-    const [losers, gainers] = await Promise.all([
-      $fetch<any[]>('https://redentia-api.saraivada.com/api/top-stocks?side=bottom&volume=1000000'),
-      $fetch<any[]>('https://redentia-api.saraivada.com/api/top-stocks?side=top&volume=1000000')
+    const [losersRaw, gainersRaw] = await Promise.all([
+      $fetch<any>('https://redentia-api.saraivada.com/api/top-stocks?side=bottom&volume=1000000').catch(() => []),
+      $fetch<any>('https://redentia-api.saraivada.com/api/top-stocks?side=top&volume=1000000').catch(() => [])
     ])
+
+    const coerceArray = (v: any) => {
+      if (Array.isArray(v)) return v
+      if (v && typeof v === 'object') {
+        if (Array.isArray((v as any).data)) return (v as any).data
+        if (Array.isArray((v as any).results)) return (v as any).results
+        if (Array.isArray((v as any).items)) return (v as any).items
+      }
+      return []
+    }
+
+    const losers = coerceArray(losersRaw)
+    const gainers = coerceArray(gainersRaw)
 
     // Combine and sort by absolute change
     const allCandidates = [...(losers || []), ...(gainers || [])]
@@ -35,26 +48,50 @@ export const triggerMarketAlert = async (token?: string) => {
     }
 
     const { messaging, firestore } = useFirebaseAdmin()
-    if (!messaging || !firestore) {
+    if (!messaging) {
       throw createError({ statusCode: 500, statusMessage: 'Firebase Admin not configured' })
     }
 
+    // Firestore is used only for anti-spam history. If it is disabled/misconfigured,
+    // we still send the notification.
     const today = brazilTime.toISOString().split('T')[0] // YYYY-MM-DD
-    const alertsRef = firestore.collection('market_alerts_history').doc(today)
-    const docSnap = await alertsRef.get()
-    const alertedTickers: string[] = docSnap.exists ? (docSnap.data()?.tickers || []) : []
+    const alertsRef = firestore
+      ? firestore.collection('market_alerts_history').doc(today)
+      : null
+
+    let alertedTickers: string[] = []
+    if (alertsRef) {
+      try {
+        const docSnap = await alertsRef.get()
+        alertedTickers = docSnap.exists ? (docSnap.data()?.tickers || []) : []
+      } catch (e) {
+        alertedTickers = []
+      }
+    }
 
     let targetTicker = ''
     let marketData = null
+    let selectedThreshold: number | null = null
+    let selectedRealAbsChange: number | null = null
+    let selectedMarketCap: any = null
+    let scanned = 0
+    let skippedHistory = 0
+    let skippedNoData = 0
+    let skippedBelowThreshold = 0
 
     for (const candidate of candidates) {
+      scanned += 1
       if (alertedTickers.includes(candidate.ticker)) {
+        skippedHistory += 1
         continue
       }
 
       // Fetch full data to check Market Cap
       const data = await getMarketData(candidate.ticker, 'report')
-      if (!data || !data.price) continue
+      if (!data || !data.price) {
+        skippedNoData += 1
+        continue
+      }
 
       const marketCap = data.price.market_cap || data.fundamentals?.market_cap || 0
       // Threshold logic: Small Cap (< 1B) needs 10%, others need 5%
@@ -67,8 +104,12 @@ export const triggerMarketAlert = async (token?: string) => {
       if (realAbsChange >= threshold) {
         targetTicker = candidate.ticker
         marketData = data
+        selectedThreshold = threshold
+        selectedRealAbsChange = realAbsChange
+        selectedMarketCap = marketCap
         break // Found our winner
       }
+      skippedBelowThreshold += 1
     }
 
     if (!targetTicker || !marketData) {
@@ -101,11 +142,15 @@ export const triggerMarketAlert = async (token?: string) => {
     }
 
     // 5. Save to History (only if not a test/manual trigger, or maybe always? Let's save always to prevent spam)
-    if (!token) {
-      await alertsRef.set({
-        tickers: [...alertedTickers, targetTicker],
-        updatedAt: new Date()
-      }, { merge: true })
+    if (!token && alertsRef) {
+      try {
+        await alertsRef.set({
+          tickers: [...alertedTickers, targetTicker],
+          updatedAt: new Date()
+        }, { merge: true })
+      } catch {
+        // Ignore history persistence failures
+      }
     }
 
     return { success: true, messageId: response, ticker: targetTicker, message }

@@ -23,7 +23,10 @@
     </NuxtLink>
     <!-- NOTE: MoleculesSearchAssets does not inherit attrs on its root (inheritAttrs: false),
          so we wrap it to make the flex item grow when the app is installed. -->
-    <div :class="isAppInstalled ? 'flex-1' : ''">
+    <div
+      ref="mobileSearchWrapper"
+      :class="isAppInstalled ? 'flex-1' : ''"
+    >
       <MoleculesSearchAssets
         :compact="!isAppInstalled"
         aria-label="Buscar ativos"
@@ -193,6 +196,7 @@ const router = useRouter()
 
 const menuMobileActive = ref(false)
 const pwa = import.meta.client ? usePWA() : null
+const mobileSearchWrapper = ref<HTMLElement | null>(null)
 
 const isAppInstalled = computed(() => {
   if (!import.meta.client) return false
