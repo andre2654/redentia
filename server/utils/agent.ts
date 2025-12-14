@@ -72,6 +72,65 @@ function sanitizeContext(type: string, rawData: any) {
   return rawData
 }
 
+// Helper to reduce token usage for large tool results
+function sanitizeToolResult(toolName: string, toolResult: any) {
+  if (!toolResult) return null
+
+  // Generic helpers
+  const sampleChart = (chartData: any, maxPoints = 20) => {
+    if (!Array.isArray(chartData)) return []
+    if (chartData.length <= maxPoints) return chartData
+    const step = Math.ceil(chartData.length / maxPoints)
+    return chartData.filter((_: any, i: number) => i % step === 0)
+  }
+
+  const safeSlice = (arr: any, n: number) =>
+    Array.isArray(arr) ? arr.slice(0, n) : []
+
+  if (toolName === 'calculate_stock_return') {
+    return {
+      ticker: toolResult.ticker,
+      periodYears: toolResult.periodYears,
+      totalInvested: toolResult.totalInvested,
+      finalValue: toolResult.finalValue,
+      returnPercentage: toolResult.returnPercentage,
+      totalDividends: toolResult.totalDividends,
+      totalShares: toolResult.totalShares,
+      averagePrice: toolResult.averagePrice,
+      chartDataSample: sampleChart(toolResult.chartData, 20),
+      dividendsSample: safeSlice(toolResult.dividendsHistory, 12),
+    }
+  }
+
+  if (toolName === 'calculate_compound_interest') {
+    return {
+      totalInvested: toolResult.totalInvested,
+      totalInterest: toolResult.totalInterest,
+      finalValue: toolResult.finalValue,
+      periodMonths: toolResult.periodMonths,
+      chartDataSample: sampleChart(toolResult.chartData, 20),
+    }
+  }
+
+  if (toolName === 'calculate_planning') {
+    return {
+      strategy: toolResult.strategy,
+      goalValue: toolResult.goalValue,
+      monthlyContribution: toolResult.monthlyContribution,
+      monthsToGoal: toolResult.monthsToGoal,
+      targetDateLabel: toolResult.targetDateLabel,
+      monthlyReturnRate: toolResult.monthlyReturnRate,
+      estimatedFinalValue: toolResult.estimatedFinalValue,
+      estimatedProfit: toolResult.estimatedProfit,
+      recommendedAssets: safeSlice(toolResult.recommendedAssets, 8),
+      chartDataSample: sampleChart(toolResult.chartData, 20),
+    }
+  }
+
+  // Default: return as-is for unknown tools (already server-generated)
+  return toolResult
+}
+
 export const streamAgentResponse = async (
   event: H3Event,
   ticker: string,
@@ -79,7 +138,8 @@ export const streamAgentResponse = async (
   rawData: any,
   userMessage: string,
   toolResult: any = null,
-  toolName: string = ''
+  toolName: string = '',
+  requestId: string = ''
 ) => {
   const config = useRuntimeConfig()
 
@@ -90,9 +150,13 @@ export const streamAgentResponse = async (
     return
   }
 
+  const OPENAI_STREAM_TIMEOUT_MS = 120_000
+
   const openai = new OpenAI({
     apiKey: config.openaiApiKey,
+    timeout: OPENAI_STREAM_TIMEOUT_MS,
   })
+  const chatModel = (config as any).openaiChatModel || 'gpt-4o'
 
   const systemPrompt = `
     Você é o agente financeiro da Redentia.
@@ -100,10 +164,6 @@ export const streamAgentResponse = async (
     Contexto:
     - Ticker identificado: ${ticker || 'Nenhum (Pergunta Geral)'}
     - Tipo de solicitação: ${type}
-    ${toolResult
-      ? `- Resultado da Ferramenta (${toolName}): ${JSON.stringify(toolResult)}`
-      : ''
-    }
     
     Seus objetivos:
     1. PRIORIDADE MÁXIMA: Se uma ferramenta de cálculo foi usada (veja Contexto), sua resposta DEVE ser focada em explicar os resultados dessa simulação. Use os números retornados pela ferramenta.
@@ -126,18 +186,26 @@ export const streamAgentResponse = async (
 
   // Sanitize context to avoid Token Limit errors
   const contextData = sanitizeContext(type, rawData)
+  const sanitizedToolResult = sanitizeToolResult(toolName, toolResult)
 
-  const userPrompt = JSON.stringify({
-    userMessage,
-    context: {
-      ticker,
-      type,
-      data: contextData,
-      toolResult,
-    },
-  })
+  // Keep user prompt compact to reduce tokens and improve comprehension.
+  // Avoid duplicating large payloads (e.g. toolResult) in both system and user messages.
+  const userPrompt = [
+    `Pergunta do usuário: ${userMessage}`,
+    '',
+    'Contexto (sistema):',
+    `- ticker: ${ticker || 'null'}`,
+    `- type: ${type}`,
+    sanitizedToolResult
+      ? `- toolResult (${toolName || 'tool'}): ${JSON.stringify(sanitizedToolResult)}`
+      : '',
+    contextData ? `- data: ${JSON.stringify(contextData)}` : '',
+  ]
+    .filter(Boolean)
+    .join('\n')
 
   try {
+    const startedAt = Date.now()
     if (toolResult) {
       event.node.res.write(
         JSON.stringify({
@@ -147,36 +215,97 @@ export const streamAgentResponse = async (
       )
     }
 
-    const stream = await openai.chat.completions.create({
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt },
-      ],
-      model: 'gpt-4o',
-      stream: true,
-    })
-
     let fullContent = ''
+    let usage: any = null
+    // Abort OpenAI stream on client disconnect or timeout
+    const abortController = new AbortController()
+    const timeoutId = setTimeout(
+      () => abortController.abort(),
+      OPENAI_STREAM_TIMEOUT_MS
+    )
+    const onClose = () => abortController.abort()
+    event.node.req.on('close', onClose)
+    event.node.res.on('close', onClose)
 
-    for await (const chunk of stream) {
-      const content = chunk.choices[0]?.delta?.content || ''
-      if (content) {
-        fullContent += content
-        event.node.res.write(
-          JSON.stringify({ type: 'content', content }) + '\n'
-        )
+    try {
+      const stream = await openai.chat.completions.create({
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt },
+        ],
+        model: chatModel,
+        stream: true,
+        stream_options: { include_usage: true },
+      }, { signal: abortController.signal } as any)
+
+      for await (const chunk of stream) {
+        if (event.node.res.writableEnded) break
+        if ((chunk as any)?.usage) usage = (chunk as any).usage
+        const content = chunk.choices[0]?.delta?.content || ''
+        if (content) {
+          fullContent += content
+          event.node.res.write(
+            JSON.stringify({ type: 'content', content }) + '\n'
+          )
+        }
       }
+    } finally {
+      clearTimeout(timeoutId)
+      event.node.req.off('close', onClose)
+      event.node.res.off('close', onClose)
+    }
+
+    const durationMs = Date.now() - startedAt
+    if (requestId) {
+      const usageStr =
+        usage && usage.total_tokens
+          ? ` prompt=${usage.prompt_tokens} completion=${usage.completion_tokens} total=${usage.total_tokens}`
+          : ''
+      console.log(
+        `[chat:${requestId}] agent_stream_done model=${chatModel} durationMs=${durationMs}${usageStr}`
+      )
+    }
+
+    // Extract recommendation from the streamed content (REC: BUY|HOLD|SELL|NULL)
+    // and send it as structured meta for the UI.
+    const recMatch = fullContent
+      .trimStart()
+      .match(/^REC:\s*(BUY|HOLD|SELL|NULL)\b/i)
+
+    if (recMatch) {
+      const recValue = recMatch[1].toUpperCase()
+      const recommendation =
+        recValue === 'BUY'
+          ? 'buy'
+          : recValue === 'HOLD'
+            ? 'hold'
+            : recValue === 'SELL'
+              ? 'sell'
+              : null
+
+      event.node.res.write(
+        JSON.stringify({
+          type: 'meta',
+          content: { recommendation },
+        }) + '\n'
+      )
     }
 
     // Extract tickers from fullContent
-    const tickerRegex = /[A-Z]{4}[0-9]{1,2}/g
+    const MAX_RELATED_TICKERS = 5
+    const tickerRegex = /\b[A-Z]{4}[0-9]{1,2}\b/g
     const matches = fullContent.match(tickerRegex)
 
     if (matches) {
       // Filter unique tickers and exclude the main ticker if present
-      const uniqueTickers = [...new Set(matches)].filter((t) => t !== ticker)
+      const isValidTicker = (t: string) => /^[A-Z]{4}[0-9]{1,2}$/.test(t)
+      const uniqueTickers = [...new Set(matches)]
+        .map((t) => t.toUpperCase())
+        .filter((t) => isValidTicker(t) && t !== ticker)
+        .slice(0, MAX_RELATED_TICKERS)
 
       if (uniqueTickers.length > 0) {
+        if (event.node.res.writableEnded) return
         // Fetch data for these tickers
         const relatedTickers = await Promise.all(
           uniqueTickers.map(async (t) => {
@@ -208,6 +337,24 @@ export const streamAgentResponse = async (
       }
     }
   } catch (error) {
+    const isConnectionClosed =
+      event.node.res.writableEnded ||
+      (event.node.res as any).destroyed ||
+      (event.node.req as any).aborted
+
+    if (isConnectionClosed) return
+
+    const isAbort =
+      (error as any)?.name === 'AbortError' ||
+      (error as any)?.code === 'ABORT_ERR'
+
+    if (isAbort) {
+      event.node.res.write(
+        JSON.stringify({ type: 'error', content: 'Tempo limite na IA' }) + '\n'
+      )
+      return
+    }
+
     console.error('OpenAI Stream Error:', error)
     event.node.res.write(
       JSON.stringify({ type: 'error', content: 'Erro na IA' }) + '\n'
@@ -228,7 +375,10 @@ export const generateMarketAlertMessage = async (
 
   const openai = new OpenAI({
     apiKey: config.openaiApiKey,
+    timeout: 15_000,
   })
+  const alertModel =
+    (config as any).openaiAlertModel || (config as any).openaiChatModel || 'gpt-4o'
 
   const systemPrompt = `
     Você é um analista financeiro sênior da Redentia.
@@ -252,7 +402,7 @@ export const generateMarketAlertMessage = async (
         { role: 'system', content: systemPrompt },
         { role: 'user', content: `Gere uma notificação para ${ticker}.` },
       ],
-      model: 'gpt-4o',
+      model: alertModel,
     })
 
     return response.choices[0]?.message?.content || `Movimentação relevante em ${ticker}`

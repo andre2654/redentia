@@ -1,5 +1,7 @@
 const unwrap = (res: any) => (res && res.data ? res.data : res)
 
+const MARKET_FETCH_TIMEOUT_MS = 15_000
+
 function cleanPrice(data: any) {
   const d = unwrap(data)
   if (!d) return null
@@ -90,38 +92,50 @@ export const getMarketData = async (
 
   try {
     if (type === 'price') {
-      const response = await $fetch(`${BASE_URL}/tickers/${ticker}`)
+      const response = await $fetch(`${BASE_URL}/tickers/${ticker}`, {
+        timeout: MARKET_FETCH_TIMEOUT_MS,
+      })
       return cleanPrice(response)
     }
 
     if (type === 'chart') {
       const period = params.period || '1mo'
       const response = await $fetch(
-        `${BASE_URL}/tickers/${ticker}/prices?mode=${period}`
+        `${BASE_URL}/tickers/${ticker}/prices?mode=${period}`,
+        { timeout: MARKET_FETCH_TIMEOUT_MS }
       )
       return cleanChart(response)
     }
 
     if (type === 'dividends') {
-      const response = await $fetch(`${BASE_URL}/dividends/${ticker}`)
+      const response = await $fetch(`${BASE_URL}/dividends/${ticker}`, {
+        timeout: MARKET_FETCH_TIMEOUT_MS,
+      })
       return cleanDividends(response)
     }
 
     if (type === 'analysis') {
       const response = await $fetch(
-        `${BASE_URL}/fundamentals/${ticker}/overview`
+        `${BASE_URL}/fundamentals/${ticker}/overview`,
+        { timeout: MARKET_FETCH_TIMEOUT_MS }
       )
       return cleanFundamentals(response)
     }
 
     if (type === 'report') {
       const [price, chart, dividends, fundamentals] = await Promise.all([
-        $fetch(`${BASE_URL}/tickers/${ticker}`).catch(() => null),
-        $fetch(`${BASE_URL}/tickers/${ticker}/prices?mode=12mo`).catch(
-          () => null
-        ),
-        $fetch(`${BASE_URL}/dividends/${ticker}`).catch(() => null),
-        $fetch(`${BASE_URL}/fundamentals/${ticker}/overview`).catch(() => null),
+        $fetch(`${BASE_URL}/tickers/${ticker}`, {
+          timeout: MARKET_FETCH_TIMEOUT_MS,
+        }).catch(() => null),
+        $fetch(`${BASE_URL}/tickers/${ticker}/prices?mode=12mo`, {
+          timeout: MARKET_FETCH_TIMEOUT_MS,
+        }).catch(() => null),
+        $fetch(`${BASE_URL}/dividends/${ticker}`, {
+          timeout: MARKET_FETCH_TIMEOUT_MS,
+        }).catch(() => null),
+        $fetch(`${BASE_URL}/fundamentals/${ticker}/overview`, {
+          timeout: MARKET_FETCH_TIMEOUT_MS,
+        }).catch(() => null),
       ])
 
       return {
@@ -132,7 +146,9 @@ export const getMarketData = async (
       }
     }
 
-    const response = await $fetch(`${BASE_URL}/tickers/${ticker}`)
+    const response = await $fetch(`${BASE_URL}/tickers/${ticker}`, {
+      timeout: MARKET_FETCH_TIMEOUT_MS,
+    })
     return cleanPrice(response)
   } catch (error) {
     console.error(`Error fetching market data for ${ticker} (${type}):`, error)

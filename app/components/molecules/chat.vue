@@ -240,6 +240,8 @@ async function fetchBotResponse(prompt: string): Promise<void> {
   isLoading.value = true
   const botMessageId = generateId()
   let messageAdded = false
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT)
 
   const ensureMessage = () => {
     if (!messageAdded) {
@@ -264,6 +266,7 @@ async function fetchBotResponse(prompt: string): Promise<void> {
         route: props.routePath,
         ticker: props.ticker,
       }),
+      signal: controller.signal,
     })
 
     if (!response.body) throw new Error('No response body')
@@ -344,6 +347,26 @@ async function fetchBotResponse(prompt: string): Promise<void> {
                 toolsUsed,
               },
             })
+          } else if (event.type === 'meta') {
+            ensureMessage()
+            const currentMsg = internalMessages.value.find(
+              (m) => m.id === botMessageId
+            )
+
+            // Prefer attaching meta to structuredData when available.
+            // For pure text answers, the UI can still infer REC from message.content.
+            if (currentMsg?.structuredData) {
+              const currentStructuredData = currentMsg.structuredData
+              updateMessage(botMessageId, {
+                structuredData: {
+                  ...currentStructuredData,
+                  meta: {
+                    ...(currentStructuredData.meta || {}),
+                    ...(event.content || {}),
+                  },
+                },
+              })
+            }
           } else if (event.type === 'error') {
             ensureMessage()
             updateMessage(botMessageId, { content: event.content })
@@ -356,6 +379,7 @@ async function fetchBotResponse(prompt: string): Promise<void> {
   } catch (error) {
     handleStreamError(error, botMessageId)
   } finally {
+    clearTimeout(timeoutId)
     isLoading.value = false
   }
 }

@@ -9,7 +9,8 @@ export const routeRequest = async (userMessage: string, contextTicker?: string |
     const config = useRuntimeConfig()
     if (!config.openaiApiKey) return { type: 'chat', ticker: contextTicker }
 
-    const openai = new OpenAI({ apiKey: config.openaiApiKey })
+    const openai = new OpenAI({ apiKey: config.openaiApiKey, timeout: 15_000 })
+    const routerModel = (config as any).openaiRouterModel || 'gpt-4o'
 
     const tools = [
         // Calculators
@@ -114,7 +115,7 @@ export const routeRequest = async (userMessage: string, contextTicker?: string |
                 },
                 { role: 'user', content: userMessage },
             ],
-            model: 'gpt-4o', // Using a stronger model for routing to ensure accuracy
+            model: routerModel,
             tools: tools as any,
             tool_choice: 'auto',
             temperature: 0

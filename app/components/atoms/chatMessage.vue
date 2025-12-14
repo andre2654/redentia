@@ -28,6 +28,27 @@
         v-if="message.content || message.structuredData"
         class="rounded-lg border border-white/20 bg-white/10 px-4 py-3"
       >
+        <!-- Recommendation (from structured meta or REC: line) -->
+        <div
+          v-if="effectiveRecommendation"
+          class="mb-2 flex items-center gap-2"
+        >
+          <span class="text-xs opacity-70">Recomendação:</span>
+          <span
+            class="rounded px-2 py-0.5 text-xs font-bold uppercase"
+            :class="{
+              'bg-green-500/20 text-green-400':
+                effectiveRecommendation === 'buy',
+              'bg-yellow-500/20 text-yellow-400':
+                effectiveRecommendation === 'hold',
+              'bg-red-500/20 text-red-400':
+                effectiveRecommendation === 'sell',
+            }"
+          >
+            {{ recommendationLabel }}
+          </span>
+        </div>
+
         <div
           v-if="!message.structuredData"
           class="prose prose-sm prose-invert max-w-none"
@@ -144,26 +165,6 @@
                   {{ message.structuredData.data.marketCap ?? '-' }}
                 </div>
               </div>
-            </div>
-
-            <div
-              v-if="message.structuredData.meta?.recommendation"
-              class="mt-1 flex items-center gap-2"
-            >
-              <span class="text-sm opacity-70">Recomendação:</span>
-              <span
-                class="rounded px-2 py-0.5 text-xs font-bold uppercase"
-                :class="{
-                  'bg-green-500/20 text-green-400':
-                    message.structuredData.meta.recommendation === 'buy',
-                  'bg-yellow-500/20 text-yellow-400':
-                    message.structuredData.meta.recommendation === 'hold',
-                  'bg-red-500/20 text-red-400':
-                    message.structuredData.meta.recommendation === 'sell',
-                }"
-              >
-                {{ message.structuredData.meta.recommendation }}
-              </span>
             </div>
           </div>
 
@@ -601,6 +602,38 @@ const chartData = computed(() => {
     value: point.y,
     timestamp: new Date(point.x).getTime(),
   }))
+})
+
+function parseRecommendationFromContent(content: string): 'buy' | 'hold' | 'sell' | null {
+  if (!content) return null
+  const match = content.trimStart().match(/^REC:\s*(BUY|HOLD|SELL|NULL)\b/i)
+  if (!match) return null
+
+  const value = match[1].toUpperCase()
+  if (value === 'BUY') return 'buy'
+  if (value === 'HOLD') return 'hold'
+  if (value === 'SELL') return 'sell'
+  return null
+}
+
+const effectiveRecommendation = computed(() => {
+  return (
+    props.message.structuredData?.meta?.recommendation ??
+    parseRecommendationFromContent(props.message.content)
+  )
+})
+
+const recommendationLabel = computed(() => {
+  switch (effectiveRecommendation.value) {
+    case 'buy':
+      return 'Compra'
+    case 'hold':
+      return 'Manter'
+    case 'sell':
+      return 'Venda'
+    default:
+      return ''
+  }
 })
 
 const ALLOWED_TAGS = [

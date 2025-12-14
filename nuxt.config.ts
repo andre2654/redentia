@@ -103,6 +103,9 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     openaiApiKey: process.env.NUXT_OPENAI_API_KEY,
+    openaiChatModel: process.env.NUXT_OPENAI_CHAT_MODEL,
+    openaiRouterModel: process.env.NUXT_OPENAI_ROUTER_MODEL,
+    openaiAlertModel: process.env.NUXT_OPENAI_ALERT_MODEL,
     public: {
       cacheTempInSeconds: 60,
       siteUrl:
