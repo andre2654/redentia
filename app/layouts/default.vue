@@ -21,33 +21,36 @@
     >
       <UIcon name="i-si-dashboard-vert-fill" class="text-secondary size-5" />
     </NuxtLink>
-    <!-- NOTE: MoleculesSearchAssets does not inherit attrs on its root (inheritAttrs: false),
-         so we wrap it to make the flex item grow when the app is installed. -->
-    <div
-      ref="mobileSearchWrapper"
-      :class="isAppInstalled ? 'flex-1' : ''"
-    >
+    <template v-if="isAppInstalled">
+      <!-- NOTE: MoleculesSearchAssets does not inherit attrs on its root (inheritAttrs: false),
+           so we wrap it to make the flex item grow. -->
+      <div
+        class="flex-1 min-w-0"
+      >
+        <MoleculesSearchAssets
+          :compact="false"
+          aria-label="Buscar ativos"
+          class="w-full h-12 rounded-2xl border border-white/10 bg-white/5 text-white transition hover:border-white/20 hover:bg-white/10"
+        />
+      </div>
+    </template>
+    <template v-else>
       <MoleculesSearchAssets
-        :compact="!isAppInstalled"
+        :compact="true"
         aria-label="Buscar ativos"
-        :class="
-          isAppInstalled
-            ? 'w-full h-12 rounded-2xl border border-white/10 bg-white/5 text-white transition hover:border-white/20 hover:bg-white/10'
-            : 'h-12 w-12 rounded-full border border-white/10 bg-white/5 text-white transition hover:border-white/20 hover:bg-white/10'
-        "
+        class="h-12 w-12 rounded-full border border-white/10 bg-white/5 text-white transition hover:border-white/20 hover:bg-white/10"
       />
-    </div>
-    <NuxtLink
-      v-if="!isAppInstalled"
-      to="/download"
-      active-class="border-secondary/60 bg-secondary/10 text-white"
-      class="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-white transition hover:border-white/20 hover:bg-white/10"
-    >
-      <IconLogo
-        class="h-5 fill-white drop-shadow-[0_4px_10px_rgba(255,255,255,0.2)]"
-      />
-      Baixar app
-    </NuxtLink>
+      <NuxtLink
+        to="/download"
+        active-class="border-secondary/60 bg-secondary/10 text-white"
+        class="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-white transition hover:border-white/20 hover:bg-white/10"
+      >
+        <IconLogo
+          class="h-5 fill-white drop-shadow-[0_4px_10px_rgba(255,255,255,0.2)]"
+        />
+        Baixar app
+      </NuxtLink>
+    </template>
   </div>
 
   <!-- Layout -->
@@ -193,18 +196,44 @@ const allAttrs = useAttrs()
 const interfaceStore = useInterfaceStore()
 const authStore = useAuthStore()
 const router = useRouter()
+const route = useRoute()
 
 const menuMobileActive = ref(false)
 const pwa = import.meta.client ? usePWA() : null
-const mobileSearchWrapper = ref<HTMLElement | null>(null)
 
-const isAppInstalled = computed(() => {
+const isAppInstalledReal = computed(() => {
   if (!import.meta.client) return false
   const standalone =
     window.matchMedia?.('(display-mode: standalone)')?.matches ?? false
   const iosStandalone = (window.navigator as any).standalone === true
   const pwaInstalled = !!(pwa && (pwa as any).isPWAInstalled)
   return pwaInstalled || standalone || iosStandalone
+})
+
+const isAppInstalled = computed(() => {
+  if (!import.meta.client) return false
+
+  // Dev-only simulation (helps testing layout without installing PWA)
+  const q: Record<string, any> = route.query as any
+  const qVal = Array.isArray(q.simulateInstalled)
+    ? q.simulateInstalled[0]
+    : q.simulateInstalled
+
+  // Handle common forms:
+  // - ?simulateInstalled=1
+  // - ?simulateInstalled (empty value)
+  // - accidental encoded form: ?simulateInstalled%3D1  -> key becomes "simulateInstalled=1"
+  const simulateFromQuery =
+    qVal === '1' ||
+    qVal === 'true' ||
+    qVal === '' ||
+    Object.prototype.hasOwnProperty.call(q, 'simulateInstalled=1')
+  const simulateFromStorage =
+    import.meta.dev &&
+    window.localStorage?.getItem?.('redentia:simulateInstalled') === '1'
+  const simulated = import.meta.dev && (simulateFromQuery || simulateFromStorage)
+
+  return simulated || isAppInstalledReal.value
 })
 
 const containerProps = Object.fromEntries(
