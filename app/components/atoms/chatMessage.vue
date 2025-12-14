@@ -471,10 +471,14 @@
               <NuxtLink
                 v-for="(item, index) in message.structuredData.relatedTickers"
                 :key="index"
-                :to="`/asset/${item.ticker}`"
+                :to="`/asset/${item.ticker?.toLowerCase?.() || item.ticker || ''}`"
                 class="flex items-center gap-2 rounded bg-white/5 px-3 py-2 transition-colors hover:bg-white/10"
               >
-                <img :src="item.logo" class="h-6 w-6 rounded object-cover" />
+                <img
+                  :src="item.logo"
+                  :alt="item?.ticker ? `Logo do ativo ${item.ticker}` : 'Logo do ativo'"
+                  class="h-6 w-6 rounded object-cover"
+                />
                 <span class="text-sm font-medium">{{ item.ticker }}</span>
                 <span
                   class="text-xs font-medium"

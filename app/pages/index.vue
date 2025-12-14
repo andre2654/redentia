@@ -1,5 +1,8 @@
 <template>
   <NuxtLayout :name="layoutName" title="Visão geral">
+    <h1 class="sr-only">
+      Redentia: invista em ações e fundos imobiliários com IA
+    </h1>
     <!-- CTA Section -->
     <section v-if="!authStore.isAuthenticated">
       <div

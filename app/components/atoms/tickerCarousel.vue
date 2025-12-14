@@ -12,11 +12,12 @@
         <NuxtLink
           v-for="(item, index) in repeatedItems"
           :key="index"
-          :to="`/asset/${item?.ticker}`"
+          :to="`/asset/${item?.ticker?.toLowerCase?.() || item?.ticker || ''}`"
           :class="['flex items-center gap-2', big ? 'px-8 py-3' : 'px-6 py-2']"
         >
           <img
             :src="item.logo"
+            :alt="item?.ticker ? `Logo do ativo ${item.ticker}` : 'Logo do ativo'"
             :class="[
               'select-none rounded object-cover',
               big ? 'h-10 w-10' : 'h-6 w-6',

@@ -1,5 +1,6 @@
 <template>
   <NuxtLayout :name="layoutName" title="Calculadora Inteligente">
+    <h1 class="sr-only">Calculadora inteligente | Redentia</h1>
     <div class="flex h-full flex-col gap-6 px-6 pb-8 pt-6">
       <div class="flex flex-col">
         <h2 class="text-[18px] font-bold">Planejamento financeiro</h2>

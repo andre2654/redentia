@@ -157,7 +157,7 @@ const groups = computed(() => {
         id: item.ticker,
         label: item.ticker,
         suffix: item.name,
-        to: `/asset/${item.ticker}`,
+        to: `/asset/${item.ticker.toLowerCase()}`,
         avatar: { src: item.logo },
       })) || []
 
@@ -168,7 +168,7 @@ const groups = computed(() => {
         id: item.ticker,
         label: item.ticker,
         suffix: item.name,
-        to: `/asset/${item.ticker}`,
+        to: `/asset/${item.ticker.toLowerCase()}`,
         avatar: { src: item.logo },
       })) || []
 
@@ -179,7 +179,7 @@ const groups = computed(() => {
         id: item.ticker,
         label: item.ticker,
         suffix: item.name,
-        to: `/asset/${item.ticker}`,
+        to: `/asset/${item.ticker.toLowerCase()}`,
         avatar: { src: item.logo },
       })) || []
 
@@ -190,7 +190,7 @@ const groups = computed(() => {
         id: item.ticker,
         label: item.ticker,
         suffix: item.name,
-        to: `/asset/${item.ticker}`,
+        to: `/asset/${item.ticker.toLowerCase()}`,
         avatar: { src: item.logo },
       })) || []
 

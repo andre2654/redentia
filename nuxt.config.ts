@@ -38,6 +38,9 @@ export default defineNuxtConfig({
         // Páginas principais
         { loc: '/', priority: 1.0, changefreq: 'daily' },
         { loc: '/download', priority: 0.8, changefreq: 'weekly' },
+        { loc: '/search', priority: 0.7, changefreq: 'weekly' },
+        { loc: '/help', priority: 0.7, changefreq: 'weekly' },
+        { loc: '/calculadora', priority: 0.7, changefreq: 'weekly' },
 
         // Páginas institucionais
         { loc: '/redentia/about', priority: 0.6, changefreq: 'monthly' },
@@ -48,39 +51,8 @@ export default defineNuxtConfig({
         { loc: '/redentia/cookies', priority: 0.4, changefreq: 'monthly' },
       ]
 
-      // Tentar buscar ativos da API para incluir no sitemap
-      try {
-        const controller = new AbortController()
-        const timeoutId = setTimeout(() => controller.abort(), 20000)
-
-        const response = await fetch(
-          'https://redentia-api.saraivada.com/api/tickers-full',
-          {
-            signal: controller.signal,
-          }
-        )
-        clearTimeout(timeoutId)
-
-        const data = await response.json()
-        const assets = Array.isArray(data) ? data : data?.data || []
-
-        console.log(`[Sitemap] Carregados ${assets.length} ativos da API`)
-
-        // Limitar a 500 ativos mais relevantes
-        const assetUrls = assets.slice(0, 500).map((asset: any) => ({
-          loc: `/asset/${asset.ticker}`,
-          lastmod: new Date().toISOString(),
-          changefreq: 'daily',
-          priority: 0.7,
-        }))
-
-        return [...staticUrls, ...assetUrls]
-      } catch (error) {
-        console.warn(
-          '[Sitemap] Erro ao buscar ativos da API, usando apenas URLs estáticas'
-        )
-        return staticUrls
-      }
+      // Rotas dinâmicas (assets) são fornecidas exclusivamente via /api/__sitemap__/urls
+      return staticUrls
     },
     exclude: [
       // Páginas de autenticação
@@ -169,11 +141,6 @@ export default defineNuxtConfig({
         {
           rel: 'stylesheet',
           href: 'https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap',
-        },
-        {
-          rel: 'alternate',
-          hreflang: 'pt-BR',
-          href: 'https://www.redentia.com.br',
         },
         {
           rel: 'icon',

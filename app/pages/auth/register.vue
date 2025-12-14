@@ -270,4 +270,12 @@ definePageMeta({
   isPublicRoute: true,
   hideInstallAppBanner: true,
 })
+
+usePageSeo({
+  title: 'Criar conta | Redentia',
+  description:
+    'Crie sua conta na Redentia para acompanhar ações, FIIs e receber análises e insights com inteligência artificial.',
+  path: '/auth/register',
+  robots: 'noindex,nofollow',
+})
 </script>

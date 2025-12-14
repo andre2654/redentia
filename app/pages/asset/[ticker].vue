@@ -9,7 +9,7 @@
         <img
           v-if="asset?.logo"
           :src="asset.logo"
-          alt="Asset Logo"
+          :alt="`Logo de ${assetName}`"
           class="h-9 w-9 rounded-lg object-cover"
         />
         <div class="flex items-center gap-2">
@@ -47,7 +47,7 @@
                 <img
                   v-else-if="asset?.logo"
                   :src="asset.logo"
-                  alt="Asset Logo"
+                  :alt="`Logo de ${assetName}`"
                   class="h-[50px] w-[50px] rounded-lg"
                 />
                 <div class="flex flex-col gap-2">
@@ -494,7 +494,7 @@
           <img
             v-else-if="asset?.logo"
             :src="asset.logo"
-            alt="Asset Logo"
+            :alt="`Logo de ${assetName}`"
             class="h-20 w-20 rounded-2xl object-cover"
           />
           <div class="flex flex-col gap-1">
@@ -691,16 +691,31 @@ interface DividendData {
 }
 
 const ticker = route.params.ticker as string
-const asset = ref()
+const {
+  data: asset,
+  pending: assetPending,
+  error: assetError,
+} = await useAsyncData(`asset-details-${ticker.toLowerCase()}`, () =>
+  getTickerDetails(ticker)
+)
+
+if (assetError.value || !asset.value) {
+  throw createError({
+    statusCode: 404,
+    statusMessage: 'Asset not found',
+    fatal: true,
+  })
+}
+
 const blockChat = ref(false)
-const isLoadingAsset = ref(true)
+const isLoadingAsset = computed(() => assetPending.value)
 const layoutName = computed(() =>
   authStore.isAuthenticated ? 'default' : 'unauthenticated'
 )
 const dividendsData = ref<DividendData[]>([])
-const isLoadingDividends = ref(false)
+const isLoadingDividends = ref(true)
 const fundamentusData = ref<FundamentusApiResponse | null>(null)
-const isLoadingFundamentus = ref(false)
+const isLoadingFundamentus = ref(true)
 const selectedTimeRange = ref<ChartTimeRange>('month')
 const isLoadingChart = ref(true)
 const pageGradient = ref('')
@@ -724,6 +739,11 @@ onMounted(() => {
   onUnmounted(() => {
     observer.disconnect()
   })
+
+  // Dados pesados (gráficos/dividendos/fundamentos) no client: reduz TTFB e custo de crawl do SSR
+  fetchChartData()
+  fetchDividendsData()
+  fetchFundamentusData()
 })
 
 const chatSuggestions = [
@@ -861,6 +881,7 @@ const shareImage = computed(() => {
 })
 
 async function updatePageGradient() {
+  if (import.meta.server) return
   if (!asset.value?.logo) return
 
   try {
@@ -1743,31 +1764,6 @@ function formatNumberToShort(value: number): string {
   return value.toFixed(0)
 }
 
-try {
-  asset.value = await getTickerDetails(ticker)
-} catch (error) {
-  throw createError({
-    statusCode: 404,
-    statusMessage: 'Asset not found',
-    fatal: true,
-  })
-}
-
-if (!asset.value) {
-  throw createError({
-    statusCode: 404,
-    statusMessage: 'Asset not found',
-    fatal: true,
-  })
-}
-
-isLoadingAsset.value = false
-await Promise.all([
-  fetchChartData(),
-  fetchDividendsData(),
-  fetchFundamentusData(),
-])
-
 watch(
   () => asset.value?.logo,
   () => {
@@ -1783,5 +1779,16 @@ watch(selectedTimeRange, () => {
 
 definePageMeta({
   isPublicRoute: true,
+  middleware: (to) => {
+    const raw =
+      typeof to.params.ticker === 'string' ? to.params.ticker : String(to.params.ticker || '')
+    const normalized = raw.toLowerCase()
+    if (raw && raw !== normalized) {
+      return navigateTo(
+        `/asset/${normalized}`,
+        import.meta.server ? { redirectCode: 301 } : { replace: true }
+      )
+    }
+  },
 })
 </script>

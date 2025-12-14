@@ -1,6 +1,6 @@
 <template>
   <NuxtLink
-    :to="`/asset/${stock?.ticker}`"
+    :to="`/asset/${stock?.ticker?.toLowerCase?.() || stock?.ticker || ''}`"
     class="flex items-center gap-4 bg-white/5 px-4 py-2 hover:brightness-105"
   >
     <img
@@ -8,7 +8,7 @@
       width="40"
       class="rounded-full"
       :src="stock?.logo"
-      alt="Descrição da imagem"
+      :alt="stock?.name ? `Logo de ${normalizeText(stock.name)}` : `Logo do ativo ${stock?.ticker || ''}`"
     />
     <IconLogo v-else class="h-[40px] w-[40px] fill-white" />
     <div class="flex w-full justify-between">

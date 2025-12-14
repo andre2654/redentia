@@ -9,7 +9,7 @@ interface UsePageSeoOptions {
   path: string
   image?: string | (() => string)
   type?: string
-  robots?: string
+  robots?: string | (() => string)
   breadcrumbs?: PageSeoBreadcrumb[]
   structuredData?: Record<string, any> | Array<Record<string, any>>
   alternates?: Array<{ hreflang: string; href: string }>

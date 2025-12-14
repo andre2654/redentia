@@ -371,7 +371,11 @@
                           <img
                             v-if="getAssetLogo(asset)"
                             :src="getAssetLogo(asset) || ''"
-                            :alt="asset.ticker || asset.stock"
+                            :alt="
+                              asset.name
+                                ? `Logo de ${asset.name} (${asset.ticker || asset.stock})`
+                                : `Logo do ativo ${asset.ticker || asset.stock}`
+                            "
                             class="h-12 w-12 rounded-2xl border border-white/10 bg-white/10 object-cover"
                           />
                           <IconLogo
@@ -499,7 +503,7 @@
                           size="sm"
                           variant="soft"
                           class="rounded-full"
-                          :to="`/asset/${asset.ticker || asset.stock}`"
+                          :to="`/asset/${String(asset.ticker || asset.stock || '').toLowerCase()}`"
                           @click.stop
                         >
                           Ver ativo
@@ -575,7 +579,7 @@ const lastUpdatedAt = ref<Date | null>(null)
 const globalFilter = ref('')
 
 function goToAsset(ticker: string) {
-  router.push(`/asset/${ticker}`)
+  router.push(`/asset/${ticker.toLowerCase()}`)
 }
 
 defineShortcuts({
@@ -831,6 +835,8 @@ usePageSeo({
   title: () => metaTitle.value,
   description: () => metaDescription.value,
   path: '/search',
+  robots: () =>
+    Object.keys(route.query || {}).length > 0 ? 'noindex,follow' : 'index,follow',
 })
 
 function normalizeBool(v: unknown, def = true) {

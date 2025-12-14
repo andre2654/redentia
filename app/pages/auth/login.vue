@@ -120,4 +120,12 @@ definePageMeta({
   isPublicRoute: true,
   hideInstallAppBanner: true,
 })
+
+usePageSeo({
+  title: 'Entrar | Redentia',
+  description:
+    'Faça login na Redentia para acessar dashboards em tempo real, acompanhar ativos e receber insights personalizados com IA.',
+  path: '/auth/login',
+  robots: 'noindex,nofollow',
+})
 </script>

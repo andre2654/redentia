@@ -4,6 +4,7 @@
     title="Assessoria"
     header-class="!text-white !bg-tertiary/50"
   >
+    <h1 class="sr-only">Assessoria com IA | Redentia</h1>
     <div class="flex h-full w-full pb-4 xl:mt-4">
       <div
         v-if="!authStore.isAuthenticated"
