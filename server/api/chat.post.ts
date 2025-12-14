@@ -1,12 +1,4 @@
-import { getMarketData } from '../utils/market'
-import { streamAgentResponse } from '../utils/agent'
-import { routeRequest } from '../utils/router'
-import { formatMarketData } from '../utils/formatter'
-import {
-    calculateCompoundInterest,
-    calculatePlanning,
-    calculateStockReturn,
-} from '../utils/calculators'
+import { streamChatWithTools } from '../utils/agent'
 
 type RateLimitEntry = { count: number; resetAt: number }
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000 // 10 minutes
@@ -15,7 +7,7 @@ const rateLimitByIp = new Map<string, RateLimitEntry>()
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event)
-    const { message, route, ticker: contextTicker } = body
+    const { message, route, ticker: contextTicker, history } = body
 
     const initNdjsonStream = (statusCode: number = 200) => {
         event.node.res.statusCode = statusCode
@@ -38,6 +30,8 @@ export default defineEventHandler(async (event) => {
     // Input validation (hardening)
     // --------------------
     const MAX_MESSAGE_CHARS = 2500
+    const HISTORY_LIMIT = 6
+    const HISTORY_MAX_CHARS = 800
     const rawMessage = typeof message === 'string' ? message : ''
     const trimmedMessage = rawMessage.trim()
 
@@ -70,6 +64,20 @@ export default defineEventHandler(async (event) => {
         )
         return
     }
+
+    // Validate and sanitize history (optional)
+    const safeHistory = Array.isArray(history)
+        ? history
+            .slice(-HISTORY_LIMIT)
+            .map((h: any) => ({
+                role: h?.role === 'assistant' ? 'assistant' : 'user',
+                content:
+                    typeof h?.content === 'string'
+                        ? h.content.trim().slice(0, HISTORY_MAX_CHARS)
+                        : '',
+            }))
+            .filter((h: any) => h.content.length > 0)
+        : []
 
     // --------------------
     // Basic rate limiting (per instance / per IP)
@@ -120,245 +128,18 @@ export default defineEventHandler(async (event) => {
 
     // Send initial status
     writeNdjson({ type: 'status', content: '🔍 Analisando intenção...' })
-
-    // 1. Route Request (Router Agent)
-    // The router decides if this is a tool execution, a data view, or a simple chat
-    const routeStartedAt = Date.now()
-    const action = await routeRequest(trimmedMessage, safeContextTicker)
-    console.log(
-        `[chat:${requestId}] routed type=${action.type} durationMs=${Date.now() - routeStartedAt}`
-    )
-
-    let type = 'text'
-    let ticker = safeContextTicker || null
-    let toolResult = null
-    let toolName = ''
-
-    // Handle Router Action
-    if (action.type === 'tool') {
-        toolName = action.name
-        console.log(`[Router] Executing tool: ${toolName}`)
-        
-        // Send tool status
-        const toolLabel = toolName === 'calculate_planning' ? 'Planejamento Financeiro' : 
-                          toolName === 'calculate_stock_return' ? 'Simulação de Rentabilidade' : 
-                          'Calculadora'
-        writeNdjson({ type: 'status', content: `🧮 Executando: ${toolLabel}...` })
-
-        try {
-            const ALLOWED_TOOLS = new Set([
-                'calculate_compound_interest',
-                'calculate_planning',
-                'calculate_stock_return',
-            ])
-
-            if (!ALLOWED_TOOLS.has(toolName)) {
-                throw new Error('Tool not allowed')
-            }
-
-            if (toolName === 'calculate_compound_interest') {
-                const {
-                    initialValue,
-                    monthlyValue,
-                    interestRate,
-                    period,
-                    periodType,
-                    interestPeriod,
-                } = action.args
-
-                const toNumber = (v: any) => Number(v)
-                const iv = toNumber(initialValue)
-                const mv = toNumber(monthlyValue)
-                const ir = toNumber(interestRate)
-                const p = toNumber(period)
-
-                if (
-                    !Number.isFinite(iv) ||
-                    !Number.isFinite(mv) ||
-                    !Number.isFinite(ir) ||
-                    !Number.isFinite(p) ||
-                    p <= 0
-                ) {
-                    throw new Error('Parâmetros inválidos para a simulação.')
-                }
-
-                toolResult = calculateCompoundInterest(
-                    iv,
-                    mv,
-                    ir,
-                    p,
-                    periodType,
-                    interestPeriod
-                )
-            } else if (toolName === 'calculate_planning') {
-                const { goalValue, monthlyContribution, strategy } = action.args
-                const gv = Number(goalValue)
-                const mc = Number(monthlyContribution)
-                const strat =
-                    strategy === 'rentabilidade' || strategy === 'seguranca'
-                        ? strategy
-                        : 'seguranca'
-
-                if (!Number.isFinite(gv) || !Number.isFinite(mc) || gv <= 0 || mc <= 0) {
-                    throw new Error('Parâmetros inválidos para o planejamento.')
-                }
-
-                toolResult = await calculatePlanning(
-                    gv,
-                    mc,
-                    strat
-                )
-            } else if (toolName === 'calculate_stock_return') {
-                const {
-                    tickers,
-                    ticker: singleTicker,
-                    initialInvestment,
-                    monthlyInvestment,
-                    periodYears,
-                    reinvestDividends,
-                } = action.args
-
-                // Handle both single 'ticker' (legacy/fallback) and 'tickers' array
-                const rawTickers = tickers || (singleTicker ? [singleTicker] : [])
-                const targetTickers = (Array.isArray(rawTickers) ? rawTickers : [])
-                    .map((t: any) => normalizeTicker(t))
-                    .filter((t: any) => typeof t === 'string' && isValidTicker(t))
-
-                // Update context ticker if provided (use first one)
-                if (targetTickers.length > 0) ticker = targetTickers[0]
-
-                const ii = Number(initialInvestment)
-                const mi = Number(monthlyInvestment)
-                const py = Number(periodYears || 1)
-
-                if (targetTickers.length === 0 || !Number.isFinite(py) || py <= 0) {
-                    throw new Error('Parâmetros inválidos para a simulação de rentabilidade.')
-                }
-
-                toolResult = await calculateStockReturn(
-                    targetTickers,
-                    Number.isFinite(ii) ? ii : 0,
-                    Number.isFinite(mi) ? mi : 0,
-                    py, // Default to 1 year if not specified
-                    reinvestDividends
-                )
-            }
-        } catch (e) {
-            console.error('Tool execution failed', e)
-            writeNdjson({
-                type: 'status',
-                content: '⚠️ Não consegui executar a simulação. Vou responder no modo chat.',
-            })
-            toolResult = null
-            toolName = ''
-        }
-
-    } else if (action.type === 'data') {
-        console.log(`[Router] View Data: ${action.view} for ${action.ticker}`)
-        const view = action.view
-        const nextTicker = normalizeTicker(action.ticker)
-        if (
-            nextTicker &&
-            isValidTicker(nextTicker) &&
-            ['report', 'chart', 'dividends', 'analysis', 'price'].includes(view)
-        ) {
-            type = view
-            ticker = nextTicker
-        } else {
-            type = 'text'
-            ticker = safeContextTicker || null
-        }
-    } else if (action.type === 'chat') {
-        console.log(`[Router] Chat mode`)
-        type = 'text'
-        const nextTicker = normalizeTicker(action.ticker)
-        if (nextTicker && isValidTicker(nextTicker)) ticker = nextTicker
-    }
-
-    // Safety check: If we have an asset-specific type but NO ticker, revert to text
-    if (
-        ['price', 'chart', 'dividends', 'analysis', 'report'].includes(type) &&
-        !ticker
-    ) {
-        type = 'text'
-    }
-
-    // 2. Fetch Data (if needed)
-    let rawData = null
-    if (ticker && type !== 'text') {
-        writeNdjson({ type: 'status', content: `📊 Buscando dados de ${ticker}...` })
-        try {
-            const fetchStartedAt = Date.now()
-            rawData = await getMarketData(ticker, type)
-            console.log(
-                `[chat:${requestId}] market_data type=${type} ok=${!!rawData} durationMs=${Date.now() - fetchStartedAt}`
-            )
-        } catch (e) {
-            console.error('Error fetching market data', e)
-        }
-    }
-
-    // Send Structured Data for Views (Report, Chart, etc.)
-    if (rawData && type !== 'text') {
-        const structuredData = {
-            ticker,
-            type,
-            data: formatMarketData(type, rawData),
-            meta: {
-                summary: '',
-                recommendation: null,
-            },
-        }
-        writeNdjson({ type: 'data', content: structuredData })
-    }
-
-    // Generate Suggestions
-    const suggestions = generateSuggestions(action, ticker, toolName)
-    if (suggestions.length > 0) {
-        writeNdjson({ type: 'suggestions', content: suggestions })
-    }
-
-    // 3. Stream Response (Agent)
-    writeNdjson({ type: 'status', content: '✅ Gerando resposta...' })
-    await streamAgentResponse(
+    await streamChatWithTools(
         event,
-        ticker,
-        type,
-        rawData,
         trimmedMessage,
-        toolResult,
-        toolName,
+        route,
+        safeContextTicker,
+        safeHistory,
         requestId
     )
 
     event.node.res.end()
     console.log(
-        `[chat:${requestId}] done durationMs=${Date.now() - startedAt} type=${type} ticker=${ticker || '-'} tool=${toolName || '-'}`
+        `[chat:${requestId}] done durationMs=${Date.now() - startedAt}`
     )
 
-function generateSuggestions(action: any, ticker: string | null, toolName: string) {
-    const suggestions: string[] = []
-
-    if (ticker) {
-        suggestions.push(`Ver dividendos de ${ticker}`)
-        suggestions.push(`Análise técnica de ${ticker}`)
-        suggestions.push(`Comparar ${ticker} com concorrentes`)
-    }
-
-    if (toolName === 'calculate_planning') {
-        suggestions.push('Refazer com estratégia de segurança')
-        suggestions.push('Aumentar aporte mensal')
-    } else if (toolName === 'calculate_stock_return') {
-        suggestions.push('Ver gráfico de dividendos')
-        suggestions.push('Simular com reinvestimento')
-    }
-
-    if (action.type === 'chat' && !ticker) {
-        suggestions.push('Simular rentabilidade de ações')
-        suggestions.push('Planejamento de aposentadoria')
-        suggestions.push('Cotação do Dólar')
-    }
-
-    return suggestions.slice(0, 3)
-}
 })

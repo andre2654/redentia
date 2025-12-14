@@ -111,6 +111,8 @@ const props = defineProps<{
 // ==================== CONSTANTS ====================
 
 const REQUEST_TIMEOUT = 600000 // 10 minutes
+const HISTORY_LIMIT = 6
+const HISTORY_MAX_CHARS = 800
 const ERROR_MESSAGES = {
   timeout: 'A requisição excedeu o tempo limite. Tente novamente.',
   network: 'Erro de conexão. Verifique sua internet e tente novamente.',
@@ -243,6 +245,20 @@ async function fetchBotResponse(prompt: string): Promise<void> {
   const controller = new AbortController()
   const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT)
 
+  const buildHistory = () => {
+    // internalMessages already contains the current user message at the end.
+    // We must NOT duplicate it; we only send the previous messages.
+    const prior = internalMessages.value.slice(0, -1)
+    const last = prior.slice(-HISTORY_LIMIT)
+
+    return last
+      .filter((m) => typeof m.content === 'string' && m.content.trim().length > 0)
+      .map((m) => ({
+        role: m.type === 'user' ? 'user' : 'assistant',
+        content: m.content.trim().slice(0, HISTORY_MAX_CHARS),
+      }))
+  }
+
   const ensureMessage = () => {
     if (!messageAdded) {
       const botMessage: IChatMessage = {
@@ -265,6 +281,7 @@ async function fetchBotResponse(prompt: string): Promise<void> {
         message: prompt,
         route: props.routePath,
         ticker: props.ticker,
+        history: buildHistory(),
       }),
       signal: controller.signal,
     })

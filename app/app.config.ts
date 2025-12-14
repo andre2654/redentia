@@ -13,14 +13,31 @@ export default defineAppConfig({
     },
     input: {
       slots: {
-        base: 'w-full rounded border border-transparent bg-[#05070b] text-white placeholder:text-gray-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60 disabled:cursor-not-allowed disabled:opacity-60 transition-colors',
+        base: 'w-full rounded border border-transparent bg-[#05070b] text-white placeholder:text-gray-500 focus:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-60 transition-colors',
       },
       variants: {
         variant: {
-          soft: 'text-white bg-[#05070b] border border-gray-800 hover:bg-[#070b12] focus:bg-[#070b12] focus:border-secondary/70',
-          outline: 'text-white bg-[#05070b] border border-gray-800 hover:bg-[#070b12] focus:bg-[#070b12] focus:border-secondary/70',
-          subtle: 'text-white bg-[#05070b] ring ring-inset ring-gray-800 focus:ring-secondary/70',
-          ghost: 'text-white bg-transparent border border-gray-800 hover:bg-[#070b12] focus:bg-[#070b12] focus:border-secondary/70',
+          soft: 'text-white bg-[#05070b] border border-gray-800 hover:bg-[#070b12] focus:bg-[#070b12]',
+          outline: 'text-white bg-[#05070b] border border-gray-800 hover:bg-[#070b12] focus:bg-[#070b12]',
+          subtle: 'text-white bg-[#05070b] ring ring-inset ring-gray-800',
+          ghost: 'text-white bg-transparent border border-gray-800 hover:bg-[#070b12] focus:bg-[#070b12]',
+        },
+      },
+      defaultVariants: {
+        variant: 'soft',
+        color: 'neutral',
+      },
+    },
+    textarea: {
+      slots: {
+        base: 'w-full rounded border border-transparent bg-[#05070b] text-white placeholder:text-gray-500 focus:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-60 transition-colors',
+      },
+      variants: {
+        variant: {
+          soft: 'text-white bg-[#05070b] border border-gray-800 hover:bg-[#070b12] focus:bg-[#070b12]',
+          outline: 'text-white bg-[#05070b] border border-gray-800 hover:bg-[#070b12] focus:bg-[#070b12]',
+          subtle: 'text-white bg-[#05070b] ring ring-inset ring-gray-800',
+          ghost: 'text-white bg-transparent border border-gray-800 hover:bg-[#070b12] focus:bg-[#070b12]',
         },
       },
       defaultVariants: {
@@ -30,12 +47,12 @@ export default defineAppConfig({
     },
     inputNumber: {
       slots: {
-        base: 'w-full rounded border border-transparent bg-[#05070b] text-white placeholder:text-gray-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60 disabled:cursor-not-allowed disabled:opacity-60 transition-colors',
+        base: 'w-full rounded border border-transparent bg-[#05070b] text-white placeholder:text-gray-500 focus:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-60 transition-colors',
       },
       variants: {
         variant: {
-          soft: 'text-white bg-[#05070b] border border-gray-800 hover:bg-[#070b12] focus:bg-[#070b12] focus:border-secondary/70',
-          outline: 'text-white bg-[#05070b] border border-gray-800 hover:bg-[#070b12] focus:bg-[#070b12] focus:border-secondary/70',
+          soft: 'text-white bg-[#05070b] border border-gray-800 hover:bg-[#070b12] focus:bg-[#070b12]',
+          outline: 'text-white bg-[#05070b] border border-gray-800 hover:bg-[#070b12] focus:bg-[#070b12]',
         },
       },
       defaultVariants: {

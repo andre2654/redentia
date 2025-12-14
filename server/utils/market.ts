@@ -115,11 +115,21 @@ export const getMarketData = async (
     }
 
     if (type === 'analysis') {
-      const response = await $fetch(
-        `${BASE_URL}/fundamentals/${ticker}/overview`,
-        { timeout: MARKET_FETCH_TIMEOUT_MS }
-      )
-      return cleanFundamentals(response)
+      // Some tickers may miss sector/market cap in fundamentals.
+      // Fetch price too and merge to enrich analysis cards.
+      const [fundamentalsRaw, priceRaw] = await Promise.all([
+        $fetch(`${BASE_URL}/fundamentals/${ticker}/overview`, {
+          timeout: MARKET_FETCH_TIMEOUT_MS,
+        }).catch(() => null),
+        $fetch(`${BASE_URL}/tickers/${ticker}`, {
+          timeout: MARKET_FETCH_TIMEOUT_MS,
+        }).catch(() => null),
+      ])
+
+      const fundamentals = cleanFundamentals(fundamentalsRaw)
+      const price = cleanPrice(priceRaw)
+      const cleaned = { ...(fundamentals || {}), ...(price || {}) }
+      return cleaned
     }
 
     if (type === 'report') {

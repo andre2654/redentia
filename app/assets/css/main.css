@@ -20,8 +20,26 @@ body {
   box-sizing: border-box;
 }
 
-/* NOTE: avoid globally removing box-shadow on focus; it breaks Tailwind/Nuxt UI focus rings.
-   Focus styling is handled via :focus-visible rules and component styles. */
+/* Remove focus outlines/rings for form controls (design choice). */
+@layer base {
+  input:focus,
+  input:focus-visible,
+  textarea:focus,
+  textarea:focus-visible,
+  select:focus,
+  select:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+    --tw-ring-offset-shadow: 0 0 #0000 !important;
+    --tw-ring-shadow: 0 0 #0000 !important;
+  }
+
+  /* Also disable Tailwind ring on wrappers (e.g. focus-within rings). */
+  *:focus-within {
+    --tw-ring-offset-shadow: 0 0 #0000 !important;
+    --tw-ring-shadow: 0 0 #0000 !important;
+  }
+}
 
 .hide-amount .redentia-amount {
   @apply blur-xs;

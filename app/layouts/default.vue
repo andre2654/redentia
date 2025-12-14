@@ -22,11 +22,16 @@
       <UIcon name="i-si-dashboard-vert-fill" class="text-secondary size-5" />
     </NuxtLink>
     <MoleculesSearchAssets
-      compact
+      :compact="!isAppInstalled"
       aria-label="Buscar ativos"
-      class="h-12 w-12 rounded-full border border-white/10 bg-white/5 text-white transition hover:border-white/20 hover:bg-white/10"
+      :class="
+        isAppInstalled
+          ? 'flex-1 h-12 rounded-2xl border border-white/10 bg-white/5 text-white transition hover:border-white/20 hover:bg-white/10'
+          : 'h-12 w-12 rounded-full border border-white/10 bg-white/5 text-white transition hover:border-white/20 hover:bg-white/10'
+      "
     />
     <NuxtLink
+      v-if="!isAppInstalled"
       to="/download"
       active-class="border-secondary/60 bg-secondary/10 text-white"
       class="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-white transition hover:border-white/20 hover:bg-white/10"
@@ -183,6 +188,16 @@ const authStore = useAuthStore()
 const router = useRouter()
 
 const menuMobileActive = ref(false)
+const pwa = import.meta.client ? usePWA() : null
+
+const isAppInstalled = computed(() => {
+  if (!import.meta.client) return false
+  const standalone =
+    window.matchMedia?.('(display-mode: standalone)')?.matches ?? false
+  const iosStandalone = (window.navigator as any).standalone === true
+  const pwaInstalled = !!(pwa && (pwa as any).isPWAInstalled)
+  return pwaInstalled || standalone || iosStandalone
+})
 
 const containerProps = Object.fromEntries(
   Object.entries(allAttrs)

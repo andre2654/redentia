@@ -98,12 +98,14 @@ export const formatMarketData = (type: string, rawData: any) => {
       return n.toFixed(0)
     }
 
-    return {
+    const formatted = {
       pe: formatVal(pe),
       dy: formatVal(dy),
       sector: sector || '-',
       marketCap: formatCap(marketCap),
     }
+
+    return formatted
   }
 
   if (type === 'report') {
