@@ -13,7 +13,7 @@ export default defineAppConfig({
     },
     input: {
       slots: {
-        base: 'w-full rounded border border-transparent bg-[#05070b] text-white placeholder:text-gray-500 focus:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-60 transition-colors',
+        base: 'w-full rounded border border-transparent bg-[#05070b] text-white placeholder:text-gray-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60 disabled:cursor-not-allowed disabled:opacity-60 transition-colors',
       },
       variants: {
         variant: {
@@ -30,7 +30,7 @@ export default defineAppConfig({
     },
     inputNumber: {
       slots: {
-        base: 'w-full rounded border border-transparent bg-[#05070b] text-white placeholder:text-gray-500 focus:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-60 transition-colors',
+        base: 'w-full rounded border border-transparent bg-[#05070b] text-white placeholder:text-gray-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-secondary/60 disabled:cursor-not-allowed disabled:opacity-60 transition-colors',
       },
       variants: {
         variant: {

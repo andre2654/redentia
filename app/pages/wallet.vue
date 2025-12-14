@@ -1,7 +1,7 @@
 <template>
   <NuxtLayout title="Sua carteira">
     <div class="flex h-full flex-col justify-between">
-      <div class="flex flex-col gap-[20px] border-b p-6">
+      <div class="flex flex-col gap-5 border-b p-6">
         <h2 class="text-[18px] font-bold">Por tipo</h2>
         <div class="flex flex-col space-y-4">
           <MoleculesWalletAssetAccordion />
@@ -9,7 +9,7 @@
           <MoleculesWalletAssetAccordion />
         </div>
       </div>
-      <div class="flex flex-col gap-[30px] border-b p-6">
+      <div class="flex flex-col gap-8 border-b p-6">
         <h2 class="text-[18px] font-bold">Composição</h2>
         <div class="flex items-center justify-center gap-7 max-lg:flex-col">
           <AtomsGraphBar class="max-sm:max-w-[300px]" />
@@ -17,7 +17,7 @@
           <AtomsGraphBar class="max-sm:max-w-[300px]" />
         </div>
       </div>
-      <div class="mt-[50px] flex flex-col items-center gap-[50px]">
+      <div class="mt-12 flex flex-col items-center gap-12">
         <AtomsAiInsight />
         <MoleculesChat class="w-full bg-white/10" />
       </div>

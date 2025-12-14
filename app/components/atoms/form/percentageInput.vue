@@ -33,7 +33,7 @@ const props = withDefaults(
 const modelValue = defineModel<number | null>({ default: null })
 
 const baseOptions: CurrencyInputOptions = {
-  locale: 'pt-PT',
+  locale: 'pt-BR',
   currency: 'BRL',
   currencyDisplay: 'hidden',
   hideCurrencySymbolOnFocus: true,

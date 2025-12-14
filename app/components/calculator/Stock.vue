@@ -364,8 +364,8 @@
             <AtomsGraphLine
               :data="result.chartData"
               :height="350"
-              :legend="[{ label: 'Investimento', color: '#00D9A5' }]"
-              :colors="['#00D9A5']"
+              :legend="[{ label: 'Investimento', color: ChartColors.positive }]"
+              :colors="[ChartColors.positive]"
             />
           </div>
         </div>
@@ -514,6 +514,7 @@ import {
 import { showErrorNotification } from '~/composables/useNotify'
 import type { IAsset } from '~/types/asset'
 import type { IChartDataPoint } from '~/types/chart'
+import { ChartColors } from '~/design/chartColors'
 
 const props = withDefaults(
   defineProps<{

@@ -140,8 +140,8 @@
           <AtomsGraphLine
             :data="compoundResult.chartData"
             :height="350"
-            :legend="[{ label: 'Patrimônio', color: '#00D9A5' }]"
-            :colors="['#00D9A5']"
+            :legend="[{ label: 'Patrimônio', color: ChartColors.positive }]"
+            :colors="[ChartColors.positive]"
           />
         </div>
       </div>
@@ -152,6 +152,7 @@
 <script setup lang="ts">
 import type { IChartDataPoint } from '~/types/chart'
 import { showErrorNotification } from '~/composables/useNotify'
+import { ChartColors } from '~/design/chartColors'
 
 type CompoundResult = {
   totalInvested: number

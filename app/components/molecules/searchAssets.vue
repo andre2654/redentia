@@ -11,6 +11,7 @@
   >
     <slot name="trigger">
       <UButton
+        v-bind="attrs"
         :label="compact ? undefined : 'Buscar Ativos...'"
         color="neutral"
         variant="ghost"
@@ -92,9 +93,12 @@
 <script setup lang="ts">
 import type { IAsset } from '~/types/asset'
 
+defineOptions({ inheritAttrs: false })
+
 const searchTerm = ref('')
 const { getAssets } = useAssetsService()
 const open = ref(false)
+const attrs = useAttrs()
 
 const props = defineProps<{
   compact?: boolean

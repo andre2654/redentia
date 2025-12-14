@@ -187,6 +187,7 @@ import {
   type ActiveElement,
 } from 'chart.js'
 import { Bar } from 'vue-chartjs'
+import { ChartColors } from '~/design/chartColors'
 
 function transparentize(value: string, opacity: number) {
   const alpha = opacity === undefined ? 0.5 : 1 - opacity
@@ -637,8 +638,8 @@ const chartData = computed(() => {
   })
 
   // Define cores base
-  const primaryColor = '#b9ecc1'
-  const secondaryColor = '#a7d6ff'
+  const primaryColor = ChartColors.positive
+  const secondaryColor = ChartColors.secondary
 
   // Função para criar gradiente de barras
   const createBarGradient = (

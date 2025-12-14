@@ -7,6 +7,7 @@
   >
     <button
       type="button"
+      aria-label="Abrir menu"
       class="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition hover:border-white/20 hover:bg-white/10"
       @click="menuMobileActive = true"
     >
@@ -14,12 +15,17 @@
     </button>
     <NuxtLink
       to="/"
+      aria-label="Visão geral"
       active-class="border-secondary/60 bg-secondary/10 text-white"
       class="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition hover:border-white/20 hover:bg-white/10"
     >
       <UIcon name="i-si-dashboard-vert-fill" class="text-secondary size-5" />
     </NuxtLink>
-    <MoleculesSearchAssets compact />
+    <MoleculesSearchAssets
+      compact
+      aria-label="Buscar ativos"
+      class="h-12 w-12 rounded-full border border-white/10 bg-white/5 text-white transition hover:border-white/20 hover:bg-white/10"
+    />
     <NuxtLink
       to="/download"
       active-class="border-secondary/60 bg-secondary/10 text-white"
@@ -38,7 +44,7 @@
       class="sticky top-0 h-screen min-h-fit w-[380px] min-w-[380px] p-4 max-xl:hidden"
     >
       <div
-        class="flex flex-col justify-between gap-[50px] rounded-[30px] bg-white/5 p-4 py-8"
+        class="flex flex-col justify-between gap-12 rounded-[30px] bg-white/5 p-4 py-8"
       >
         <div class="flex flex-col gap-3 px-6">
           <div class="flex items-center">
@@ -63,6 +69,10 @@
                   ? 'i-lucide-eye-off'
                   : 'i-lucide-eye'
               "
+              :aria-label="
+                interfaceStore.revealAmount ? 'Ocultar valores' : 'Mostrar valores'
+              "
+              :aria-pressed="interfaceStore.revealAmount"
               @click="interfaceStore.toggleRevealAmount"
             />
             <!-- <UButton
@@ -84,7 +94,7 @@
 
         <div class="flex flex-col gap-8">
           <div class="flex flex-col gap-3">
-            <MoleculesSearchAssets v-if="!hideSearchBar" />
+            <MoleculesSearchAssets v-if="!hideSearchBar" class="px-6 py-3" />
             <AtomsSidebarButton to="/" text="Visão Geral" />
             <AtomsSidebarButton to="/wallet" text="Sua carteira" disabled />
             <AtomsSidebarButton

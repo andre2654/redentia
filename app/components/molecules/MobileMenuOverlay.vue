@@ -34,12 +34,17 @@
               interfaceStore.revealAmount ? 'i-lucide-eye-off' : 'i-lucide-eye'
             "
             :ui="{ trailingIcon: 'size-6' }"
+            :aria-label="
+              interfaceStore.revealAmount ? 'Ocultar valores' : 'Mostrar valores'
+            "
+            :aria-pressed="interfaceStore.revealAmount"
             @click="interfaceStore.toggleRevealAmount"
           />
           <UButton
             color="neutral"
             variant="ghost"
             icon="i-lucide-x"
+            aria-label="Fechar menu"
             class="text-white"
             :ui="{ base: 'rounded-full' }"
             @click="closeMenu"

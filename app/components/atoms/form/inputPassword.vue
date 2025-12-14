@@ -1,6 +1,6 @@
 <template>
   <AtomsFormInput
-    placeholder="Password"
+    placeholder="Senha"
     aria-describedby="password-strength"
     size="lg"
     :type="show ? 'text' : 'password'"
@@ -11,7 +11,7 @@
         variant="link"
         size="sm"
         :icon="show ? 'i-lucide-eye-off' : 'i-lucide-eye'"
-        :aria-label="show ? 'Hide password' : 'Show password'"
+        :aria-label="show ? 'Ocultar senha' : 'Mostrar senha'"
         :aria-pressed="show"
         @click="show = !show"
       />

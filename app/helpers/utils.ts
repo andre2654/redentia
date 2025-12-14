@@ -1,5 +1,6 @@
 // Gera configuração de gráfico (data, cores, legend) para uso em AtomsGraphLine
 import type { ChartTimeRange, IChartDataPoint } from '../types/chart'
+import { ChartColors } from '../design/chartColors'
 export function generateChartConfig({
   timeRange,
   label = 'IBOV',
@@ -13,7 +14,7 @@ export function generateChartConfig({
   const currentPrice = data[data.length - 1]?.value || 0
   const previousPrice = data[data.length - 2]?.value || currentPrice
   const change = currentPrice - previousPrice
-  const color = change >= 0 ? '#b9ecc1' : '#8E3939'
+  const color = change >= 0 ? ChartColors.positive : ChartColors.negative
   return {
     data,
     colors: [color],

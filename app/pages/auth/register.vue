@@ -118,7 +118,7 @@
               </span>
             </div>
 
-            <ul class="mt-2 space-y-2" aria-label="Password requirements">
+            <ul class="mt-2 space-y-2" aria-label="Requisitos da senha">
               <li
                 v-for="req in requirements"
                 :key="req.text"

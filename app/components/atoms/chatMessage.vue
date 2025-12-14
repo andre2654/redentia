@@ -364,7 +364,7 @@
                   <AtomsGraphLine
                     :data="tool.result.chartData"
                     :height="200"
-                    :colors="['#00D9A5']"
+                    :colors="[ChartColors.positive]"
                     :show-legend="false"
                   />
                 </div>
@@ -405,7 +405,7 @@
                   <AtomsGraphLine
                     :data="tool.result.chartData"
                     :height="200"
-                    :colors="['#00D9A5']"
+                    :colors="[ChartColors.positive]"
                     :show-legend="false"
                   />
                 </div>
@@ -539,6 +539,7 @@ import { computed, ref, watch } from 'vue'
 import type { IChatMessage } from '~/types/ai'
 import AtomsGraphLine from '~/components/atoms/Graph/line.vue'
 import AtomsGraphDividends from '~/components/atoms/Graph/dividends.vue'
+import { ChartColors } from '~/design/chartColors'
 
 // ==================== PROPS ====================
 

@@ -32,7 +32,7 @@
         accept="application/pdf"
         icon="i-lucide-upload-cloud"
         label="Coloque aqui o arquivo da sua carteira"
-        description="PDF (max. 2MB)"
+        description="PDF (máx. 2MB)"
         class="h-[220px] w-full"
       />
       <AtomsButton type="submit" color="tertiary" class="ml-auto w-fit">

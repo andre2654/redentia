@@ -85,7 +85,7 @@
             <template #content>
               <AtomsFormInput
                 v-model="globalFilter"
-                placeholder="Search..."
+                placeholder="Buscar..."
                 class="w-[200px]"
               />
             </template>

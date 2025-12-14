@@ -4,8 +4,8 @@
     <UFileUpload
       accept="image/*"
       icon="i-lucide-image"
-      label="Drop your image here"
-      description="PNG, JPG or JPEG (max. 2MB)"
+      label="Arraste sua imagem aqui"
+      description="PNG, JPG ou JPEG (máx. 2MB)"
       class="h-[180px] w-[300px]"
     />
 
@@ -32,7 +32,7 @@
           <AtomsFormInput
             v-model="state.email"
             type="email"
-            placeholder="Email"
+            placeholder="E-mail"
             size="lg"
             class="w-full"
           />
@@ -42,7 +42,6 @@
         <UFormField name="password">
           <AtomsFormInputPassword
             v-model="state.password"
-            :aria-invalid="score < 4"
             class="w-full"
           />
         </UFormField>
@@ -59,12 +58,10 @@
 import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
 
-const router = useRouter()
-
 const schema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  email: z.string().email('Invalid email'),
-  password: z.string().min(8, 'Password must be at least 8 characters long'),
+  name: z.string().min(1, 'Nome obrigatório'),
+  email: z.string().email('E-mail inválido'),
+  password: z.string().min(8, 'A senha deve ter no mínimo 8 caracteres'),
 })
 
 type Schema = z.infer<typeof schema>
@@ -76,7 +73,7 @@ const state = reactive({
 })
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-  showSuccessNotification('Login successful', 'Welcome back!')
+  showSuccessNotification('Perfil salvo', 'Suas informações foram atualizadas.')
   console.log(event.data)
 }
 </script>

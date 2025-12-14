@@ -36,19 +36,51 @@ export default defineNuxtConfig({
     urls: async () => {
       const staticUrls = [
         // Páginas principais
-        { loc: '/', priority: 1.0, changefreq: 'daily' },
-        { loc: '/download', priority: 0.8, changefreq: 'weekly' },
-        { loc: '/search', priority: 0.7, changefreq: 'weekly' },
-        { loc: '/help', priority: 0.7, changefreq: 'weekly' },
-        { loc: '/calculadora', priority: 0.7, changefreq: 'weekly' },
+        { loc: '/', priority: 1.0 as const, changefreq: 'daily' as const },
+        {
+          loc: '/download',
+          priority: 0.8 as const,
+          changefreq: 'weekly' as const,
+        },
+        { loc: '/search', priority: 0.7 as const, changefreq: 'weekly' as const },
+        { loc: '/help', priority: 0.7 as const, changefreq: 'weekly' as const },
+        {
+          loc: '/calculadora',
+          priority: 0.7 as const,
+          changefreq: 'weekly' as const,
+        },
 
         // Páginas institucionais
-        { loc: '/redentia/about', priority: 0.6, changefreq: 'monthly' },
-        { loc: '/redentia/contact', priority: 0.6, changefreq: 'monthly' },
-        { loc: '/redentia/how-works', priority: 0.7, changefreq: 'monthly' },
-        { loc: '/redentia/privacy', priority: 0.5, changefreq: 'monthly' },
-        { loc: '/redentia/terms', priority: 0.5, changefreq: 'monthly' },
-        { loc: '/redentia/cookies', priority: 0.4, changefreq: 'monthly' },
+        {
+          loc: '/redentia/about',
+          priority: 0.6 as const,
+          changefreq: 'monthly' as const,
+        },
+        {
+          loc: '/redentia/contact',
+          priority: 0.6 as const,
+          changefreq: 'monthly' as const,
+        },
+        {
+          loc: '/redentia/how-works',
+          priority: 0.7 as const,
+          changefreq: 'monthly' as const,
+        },
+        {
+          loc: '/redentia/privacy',
+          priority: 0.5 as const,
+          changefreq: 'monthly' as const,
+        },
+        {
+          loc: '/redentia/terms',
+          priority: 0.5 as const,
+          changefreq: 'monthly' as const,
+        },
+        {
+          loc: '/redentia/cookies',
+          priority: 0.4 as const,
+          changefreq: 'monthly' as const,
+        },
       ]
 
       // Rotas dinâmicas (assets) são fornecidas exclusivamente via /api/__sitemap__/urls

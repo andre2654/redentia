@@ -78,6 +78,7 @@
 
 <script setup lang="ts">
 import { computed, ref, onMounted, nextTick, watch, onUnmounted } from 'vue'
+import { ChartColors, rgba } from '~/design/chartColors'
 
 interface TreemapItem {
   symbol: string
@@ -248,24 +249,24 @@ const groupedData = computed(() => {
 // Função para calcular a cor baseada na mudança percentual
 const getColor = (change: number): string => {
   if (change >= 0) {
-    // Verde para positivos - mesma cor do gráfico de linha
+    // Verde para positivos
     const intensity = Math.min(Math.abs(change) / 15, 1) // Normaliza até 15%
     const alpha = 0.05 + intensity * 0.3 // De 20% a 60% de opacidade para o fundo
-    return `rgba(4, 206, 0, ${alpha})` // #b9ecc1 com transparência
+    return rgba(ChartColors.positive, alpha)
   } else {
-    // Vermelho para negativos - mesma cor do gráfico de linha
+    // Vermelho para negativos
     const intensity = Math.min(Math.abs(change) / 15, 1) // Normaliza até 15%
     const alpha = 0.05 + intensity * 0.3 // De 20% a 60% de opacidade para o fundo
-    return `rgba(255, 71, 87, ${alpha})` // #8E3939 com transparência
+    return rgba(ChartColors.negative, alpha)
   }
 }
 
 // Função para obter a cor da borda (sem transparência)
 const getBorderColor = (change: number): string => {
   if (change >= 0) {
-    return '#b9ecc1' // Verde sólido
+    return ChartColors.positive
   } else {
-    return '#8E3939' // Vermelho sólido
+    return ChartColors.negative
   }
 }
 

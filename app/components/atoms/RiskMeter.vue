@@ -36,6 +36,8 @@
 </template>
 
 <script setup lang="ts">
+import { ChartColors } from '~/design/chartColors'
+
 const props = defineProps<{
   risk: number // 0 to 100
   period?: string
@@ -56,9 +58,9 @@ const riskLabel = computed(() => {
 })
 
 const COLORS = {
-  LOW: '#05df72', // Green from line.vue
+  LOW: ChartColors.positive,
   MEDIUM: '#fde047', // Pastel Yellow
-  HIGH: '#df0505', // Red from line.vue
+  HIGH: ChartColors.negative,
 }
 
 function interpolateColor(color1: string, color2: string, factor: number) {

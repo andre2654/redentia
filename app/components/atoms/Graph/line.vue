@@ -8,18 +8,18 @@
       :style="{ height: `${height}px` }"
       class="relative w-full overflow-hidden rounded-lg"
     >
-      <!-- Estado de carregamento -->
+      <!-- Estado de carregamento (não-invasivo) -->
       <Transition name="fade">
         <div
           v-if="loading"
-          class="absolute inset-0 z-20 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+          class="pointer-events-none absolute right-3 top-3 z-10 inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-white/70 backdrop-blur"
+          role="status"
+          aria-live="polite"
         >
-          <div class="flex flex-col items-center gap-3">
-            <div
-              class="h-8 w-8 animate-spin rounded-full border-2 border-gray-700 border-t-gray-400"
-            />
-            <span class="text-sm text-gray-400">Carregando...</span>
-          </div>
+          <span
+            class="h-3 w-3 animate-spin rounded-full border border-white/30 border-t-white/70"
+          />
+          <span>Carregando…</span>
         </div>
       </Transition>
 
@@ -81,6 +81,7 @@ import {
 } from 'chart.js'
 import { Line } from 'vue-chartjs'
 import { getRelativePosition } from 'chart.js/helpers'
+import { ChartColors } from '~/design/chartColors'
 
 /* ========== Tipos ========== */
 interface IChartDataPoint {
@@ -132,20 +133,20 @@ interface Props {
 
 /* ========== Configurações padrão ========== */
 const DEFAULTS = {
-  COLORS: ['#22c55e'],
+  COLORS: [ChartColors.positive],
   HEIGHT: 300,
   LOCALE: 'pt-BR',
   CURRENCY: 'R$',
   LOADING_ANIMATION_INTERVAL: 800,
   DRAG_END_DELAY: 150,
   SCROLL_DEBOUNCE: 100,
-  POSITIVE_COLOR: '#05df72',
-  NEGATIVE_COLOR: '#df0505',
-  GRAY_COLOR: '#6B7280',
+  POSITIVE_COLOR: ChartColors.positive,
+  NEGATIVE_COLOR: ChartColors.negative,
+  GRAY_COLOR: ChartColors.neutral,
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  colors: () => ['#22c55e'],
+  colors: () => [ChartColors.positive],
   legend: () => [],
   height: 300,
   showLegend: true,
