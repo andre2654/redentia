@@ -17,6 +17,9 @@ Disallow: /auth/
 Disallow: /auth/login
 Disallow: /auth/register
 
+# Bloquear rotas internas (render/automação)
+Disallow: /n8n/
+
 # Bloquear áreas privadas/autenticadas
 Disallow: /wallet
 Disallow: /settings

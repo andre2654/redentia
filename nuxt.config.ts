@@ -99,6 +99,9 @@ export default defineNuxtConfig({
       '/planejador',
       '/dividends',
       '/ideal',
+
+      // Rotas internas (render/automação)
+      '/n8n/**',
     ],
   },
   runtimeConfig: {
@@ -106,6 +109,7 @@ export default defineNuxtConfig({
     openaiChatModel: process.env.NUXT_OPENAI_CHAT_MODEL,
     openaiRouterModel: process.env.NUXT_OPENAI_ROUTER_MODEL,
     openaiAlertModel: process.env.NUXT_OPENAI_ALERT_MODEL,
+    n8nRenderKey: process.env.NUXT_N8N_RENDER_KEY,
     public: {
       cacheTempInSeconds: 60,
       siteUrl:
