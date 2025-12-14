@@ -2,6 +2,7 @@
 @import '@nuxt/ui';
 
 :root {
+  color-scheme: dark;
   --ui-color-background: black;
   --ui-color-text: white;
   --ui-primary: #b9ecc1;
@@ -19,10 +20,8 @@ body {
   box-sizing: border-box;
 }
 
-input:focus,
-textarea:focus {
-  box-shadow: none;
-}
+/* NOTE: avoid globally removing box-shadow on focus; it breaks Tailwind/Nuxt UI focus rings.
+   Focus styling is handled via :focus-visible rules and component styles. */
 
 .hide-amount .redentia-amount {
   @apply blur-xs;

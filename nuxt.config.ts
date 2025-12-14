@@ -6,7 +6,6 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
   css: ['~/assets/css/main.css'],
   modules: [
-    '@nuxtjs/color-mode',
     '@nuxt/ui',
     '@nuxt/eslint',
     '@pinia/nuxt',
@@ -102,19 +101,6 @@ export default defineNuxtConfig({
   ],
   imports: {
     dirs: ['services'],
-  },
-  colorMode: {
-    preference: 'dark',
-    fallback: 'dark',
-    globalName: '__NUXT_COLOR_MODE__',
-    componentName: 'ColorScheme',
-    classPrefix: '',
-    classSuffix: '',
-    storage: 'localStorage',
-    storageKey: 'nuxt-color-mode-force',
-    // Force dark mode deterministically (ignore system theme + any stale storage like 'system'/'light')
-    script:
-      '"use strict";(function(){try{var d=document.documentElement;d.classList.add("dark");d.classList.remove("light");try{window.localStorage&&window.localStorage.setItem("nuxt-color-mode-force","dark")}catch(e){}var g="__NUXT_COLOR_MODE__";function add(c){d.classList.add(c)}function rem(c){d.classList.remove(c)}window[g]={preference:"dark",value:"dark",getColorScheme:function(){return"dark"},addColorScheme:function(c){add(c)},removeColorScheme:function(c){rem(c)}}}catch(e){}})();',
   },
   ui: {
     theme: {
