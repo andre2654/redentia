@@ -6,6 +6,7 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
   css: ['~/assets/css/main.css'],
   modules: [
+    '@nuxtjs/color-mode',
     '@nuxt/ui',
     '@nuxt/eslint',
     '@pinia/nuxt',
@@ -134,6 +135,7 @@ export default defineNuxtConfig({
       title: 'Redentia: invista em ações e fundos imobiliários com IA',
       htmlAttrs: {
         lang: 'pt-BR',
+        class: 'dark',
       },
       viewport: 'width=device-width, initial-scale=1',
       charset: 'utf-8',
