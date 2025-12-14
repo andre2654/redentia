@@ -70,7 +70,7 @@
         :rows="4"
         autoresize
         :ui="{
-          base: 'text-[14px] max-h-[200px] bg-transparent ring-0 placeholder:text-white/40',
+          base: 'text-[14px] max-h-[200px] bg-transparent hover:!bg-transparent focus:!bg-transparent focus-visible:!bg-transparent ring-0 !border-0 !shadow-none placeholder:text-white/40',
         }"
         @keydown.enter.prevent="sendMessage"
       />

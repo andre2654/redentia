@@ -21,15 +21,19 @@
     >
       <UIcon name="i-si-dashboard-vert-fill" class="text-secondary size-5" />
     </NuxtLink>
-    <MoleculesSearchAssets
-      :compact="!isAppInstalled"
-      aria-label="Buscar ativos"
-      :class="
-        isAppInstalled
-          ? 'flex-1 h-12 rounded-2xl border border-white/10 bg-white/5 text-white transition hover:border-white/20 hover:bg-white/10'
-          : 'h-12 w-12 rounded-full border border-white/10 bg-white/5 text-white transition hover:border-white/20 hover:bg-white/10'
-      "
-    />
+    <!-- NOTE: MoleculesSearchAssets does not inherit attrs on its root (inheritAttrs: false),
+         so we wrap it to make the flex item grow when the app is installed. -->
+    <div :class="isAppInstalled ? 'flex-1' : ''">
+      <MoleculesSearchAssets
+        :compact="!isAppInstalled"
+        aria-label="Buscar ativos"
+        :class="
+          isAppInstalled
+            ? 'w-full h-12 rounded-2xl border border-white/10 bg-white/5 text-white transition hover:border-white/20 hover:bg-white/10'
+            : 'h-12 w-12 rounded-full border border-white/10 bg-white/5 text-white transition hover:border-white/20 hover:bg-white/10'
+        "
+      />
+    </div>
     <NuxtLink
       v-if="!isAppInstalled"
       to="/download"
