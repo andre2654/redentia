@@ -1,7 +1,7 @@
 <template>
   <NuxtLink
     :to="`/asset/${ticker.toLowerCase()}`"
-    class="group inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-2 py-1 transition-all hover:border-secondary/30 hover:bg-secondary/10"
+    class="group inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-2 py-2 transition-all hover:border-secondary/30 hover:bg-secondary/10"
     :class="sizeClasses"
   >
     <!-- Logo -->
@@ -92,22 +92,22 @@ function handleImageError() {
 const sizeClasses = computed(() => {
   switch (props.size) {
     case 'sm':
-      return 'h-6 text-xs'
+      return 'text-[13px]'
     case 'lg':
-      return 'h-9 text-base'
+      return 'text-[16px]'
     default:
-      return 'h-7 text-sm'
+      return 'text-[15px]'
   }
 })
 
 const logoSizeClasses = computed(() => {
   switch (props.size) {
     case 'sm':
-      return 'h-4 w-4'
-    case 'lg':
-      return 'h-6 w-6'
-    default:
       return 'h-5 w-5'
+    case 'lg':
+      return 'h-7 w-7'
+    default:
+      return 'h-6 w-6'
   }
 })
 
