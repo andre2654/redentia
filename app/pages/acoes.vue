@@ -230,6 +230,56 @@
         </ol>
       </div>
 
+      <!-- Destaque para Simulador de Ações -->
+      <div class="rounded-[30px] border border-secondary/30 bg-gradient-to-br from-secondary/10 to-secondary/5 p-8">
+        <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+          <div class="flex-1">
+            <div class="mb-3 flex items-center gap-2">
+              <UIcon name="i-lucide-chart-line" class="text-secondary h-8 w-8" />
+              <h2 class="text-2xl font-bold">Simule Investimentos em Ações Reais</h2>
+            </div>
+            <p class="mb-4 text-gray-300">
+              Descubra quanto você teria ganho investindo em ações da B3. Use dados históricos reais, incluindo dividendos reinvestidos e performance de múltiplos ativos.
+            </p>
+            <ul class="space-y-2 text-sm text-gray-400">
+              <li class="flex items-center gap-2">
+                <UIcon name="i-lucide-check" class="text-secondary size-4" />
+                Dados históricos reais da B3
+              </li>
+              <li class="flex items-center gap-2">
+                <UIcon name="i-lucide-check" class="text-secondary size-4" />
+                Reinvestimento automático de dividendos
+              </li>
+              <li class="flex items-center gap-2">
+                <UIcon name="i-lucide-check" class="text-secondary size-4" />
+                Comparação de múltiplos ativos
+              </li>
+            </ul>
+          </div>
+          <div class="flex flex-col gap-3 md:w-auto">
+            <UButton
+              to="/calculadora/acoes"
+              color="secondary"
+              size="xl"
+              icon="i-lucide-calculator"
+              class="w-full md:w-auto"
+            >
+              Usar Simulador
+            </UButton>
+            <UButton
+              to="/calculadora"
+              color="white"
+              variant="outline"
+              size="lg"
+              icon="i-lucide-trending-up"
+              class="w-full md:w-auto"
+            >
+              Outras Calculadoras
+            </UButton>
+          </div>
+        </div>
+      </div>
+
       <!-- CTA para Ferramentas -->
       <MoleculesCtaSection
         title="Use as Ferramentas da Redentia"
@@ -265,14 +315,13 @@
       <!-- FAQ Section para SEO -->
       <div class="space-y-4">
         <h2 class="text-2xl font-bold">Perguntas Frequentes sobre Ações</h2>
-        <div class="space-y-3">
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+        <div class="space-y-4">
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Quanto preciso para começar a investir em ações?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               É possível começar com menos de R$ 100. Muitas ações custam entre
               R$ 10-50, e você pode comprar no mercado fracionário (menos de
               100 ações). O importante é começar e ir aumentando conforme
@@ -280,13 +329,12 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Qual a diferença entre ações ON e PN?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               ON (Ordinárias, final 3) dão direito a voto. PN (Preferenciais,
               final 4) têm preferência em dividendos mas geralmente não têm
               voto. Para pequenos investidores, PN costuma ser mais indicada
@@ -294,26 +342,24 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Como recebo dividendos?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               Os dividendos caem automaticamente na sua conta da corretora nas
               datas definidas pela empresa. Você não precisa fazer nada - basta
               ter as ações na data "com" (último dia para ter direito).
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Ações são seguras?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               Ações têm risco de oscilação e perda. No curto prazo podem cair
               muito. Mas no longo prazo (10+ anos), historicamente superam
               inflação e renda fixa. A segurança vem da diversificação e prazo
@@ -321,13 +367,12 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Posso perder mais dinheiro do que investi?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               Não em ações normais. O máximo que você pode perder é 100% do que
               investiu (se empresa quebrar). Diferente de alavancagem ou
               derivativos, onde pode perder mais.

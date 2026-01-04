@@ -264,58 +264,53 @@
       <!-- FAQ Section para SEO -->
       <div class="space-y-4">
         <h2 class="text-2xl font-bold">Perguntas Frequentes sobre FIIs</h2>
-        <div class="space-y-3">
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+        <div class="space-y-4">
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Qual o melhor FII para iniciantes?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               Para iniciantes, Fundos de Fundos (FOFs) como KNCR11 e RBRF11 são ideais, pois oferecem diversificação automática. Galpões logísticos também são boas opções pela previsibilidade.
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               FIIs pagam dividendos todo mês?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               Sim, por lei os FIIs devem distribuir no mínimo 95% dos lucros semestralmente. Na prática, a maioria paga mensalmente. Os valores caem automaticamente na sua conta da corretora.
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Quanto rende R$ 1.000 em FIIs por mês?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               Com dividend yield médio de 0,8% ao mês, R$ 1.000 renderia aproximadamente R$ 8 mensais. Para viver de renda de R$ 3.000/mês, seria necessário investir cerca de R$ 375.000 em FIIs.
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               FIIs são melhores que ações?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               Não existe "melhor", são complementares. FIIs são ideais para renda passiva mensal, enquanto ações têm maior potencial de valorização. O ideal é ter ambos na carteira.
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Posso perder dinheiro com FIIs?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               Sim. As cotas podem se desvalorizar e os dividendos podem cair se aumentar a vacância ou inadimplência. Por isso é fundamental diversificar e investir em FIIs de qualidade.
             </p>
           </details>

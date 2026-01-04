@@ -228,6 +228,56 @@
         </div>
       </div>
 
+      <!-- Destaque para Planejamento com Dividendos -->
+      <div class="rounded-[30px] border border-secondary/30 bg-gradient-to-br from-secondary/10 to-secondary/5 p-8">
+        <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+          <div class="flex-1">
+            <div class="mb-3 flex items-center gap-2">
+              <UIcon name="i-lucide-target" class="text-secondary h-8 w-8" />
+              <h2 class="text-2xl font-bold">Planeje sua Renda com Dividendos</h2>
+            </div>
+            <p class="mb-4 text-gray-300">
+              Calcule quanto você precisa investir para atingir sua meta de renda passiva. Receba uma carteira recomendada com foco em dividendos consistentes.
+            </p>
+            <ul class="space-y-2 text-sm text-gray-400">
+              <li class="flex items-center gap-2">
+                <UIcon name="i-lucide-check" class="text-secondary size-4" />
+                Projeção realista baseada em dados reais
+              </li>
+              <li class="flex items-center gap-2">
+                <UIcon name="i-lucide-check" class="text-secondary size-4" />
+                Carteira personalizada para seu perfil
+              </li>
+              <li class="flex items-center gap-2">
+                <UIcon name="i-lucide-check" class="text-secondary size-4" />
+                Estratégia de rentabilidade ou segurança
+              </li>
+            </ul>
+          </div>
+          <div class="flex flex-col gap-3 md:w-auto">
+            <UButton
+              to="/calculadora/planejamento"
+              color="secondary"
+              size="xl"
+              icon="i-lucide-target"
+              class="w-full md:w-auto"
+            >
+              Fazer Planejamento
+            </UButton>
+            <UButton
+              to="/calculadora/acoes"
+              color="white"
+              variant="outline"
+              size="lg"
+              icon="i-lucide-chart-line"
+              class="w-full md:w-auto"
+            >
+              Simular Ações
+            </UButton>
+          </div>
+        </div>
+      </div>
+
       <!-- CTA -->
       <MoleculesCtaSection
         title="Encontre os Melhores Pagadores de Dividendos"
@@ -283,40 +333,37 @@
         <h2 class="text-2xl font-bold">
           Perguntas Frequentes sobre Dividendos
         </h2>
-        <div class="space-y-3">
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+        <div class="space-y-4">
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Quanto preciso investir para receber R$ 1.000/mês em dividendos?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               Com dividend yield médio de 8% ao ano (FIIs), você precisaria de
               aproximadamente R$ 150.000 investidos (150.000 × 8% = 12.000/ano
               = 1.000/mês). Com ações (DY ~6%), precisaria de ~R$ 200.000.
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Dividendos pagam Imposto de Renda?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               NÃO! Dividendos de ações e rendimentos de FIIs são 100% isentos de
               Imposto de Renda para pessoas físicas. JCP (Juros sobre Capital
               Próprio) tem retenção de 15% na fonte.
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               É melhor dividendos de ações ou FIIs?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               FIIs geralmente pagam mais (8-12% vs 4-8% de ações) e com maior
               frequência (mensal). Ações têm potencial de valorização maior. O
               ideal é ter ambos: FIIs para renda mensal e ações para
@@ -324,39 +371,36 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Quando os dividendos caem na conta?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               Cada empresa define suas datas. Geralmente 30-60 dias após a data
               COM. Os dividendos caem automaticamente na sua conta da corretora,
               você não precisa fazer nada.
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Devo reinvestir dividendos?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               Se você ainda está acumulando patrimônio: SIM! Reinvestir acelera
               muito o crescimento (juros compostos). Quando atingir seu objetivo
               de patrimônio, aí você usa os dividendos como renda.
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Quais setores pagam melhores dividendos?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               Bancos, energia elétrica, seguradoras e saneamento são
               tradicionais pagadores. Empresas maduras com receita previsível
               tendem a pagar mais. Empresas em crescimento (tech, varejo)

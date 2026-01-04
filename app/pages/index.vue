@@ -560,6 +560,86 @@
             :tempo-leitura="9"
           />
 
+          <MoleculesBlogCard
+            titulo="Calculadora de Juros Compostos"
+            descricao="Simule quanto seus investimentos renderão com juros compostos. Ferramenta gratuita com gráficos e projeções detalhadas."
+            to="/calculadora/juros-compostos"
+            icon="i-lucide-trending-up"
+            categoria="Ferramentas"
+            data="4 Jan 2026"
+            :tempo-leitura="5"
+          />
+
+          <MoleculesBlogCard
+            titulo="Simulador de Ações"
+            descricao="Descubra quanto você teria ganho investindo em ações da B3. Dados históricos reais com dividendos reinvestidos."
+            to="/calculadora/acoes"
+            icon="i-lucide-chart-line"
+            categoria="Ferramentas"
+            data="4 Jan 2026"
+            :tempo-leitura="5"
+          />
+
+          <MoleculesBlogCard
+            titulo="Planejamento Patrimonial"
+            descricao="Calcule quanto investir para atingir suas metas financeiras. Receba carteira recomendada personalizada."
+            to="/calculadora/planejamento"
+            icon="i-lucide-target"
+            categoria="Ferramentas"
+            data="4 Jan 2026"
+            :tempo-leitura="5"
+          />
+
+          <MoleculesBlogCard
+            titulo="Preço Teto: Graham e Bazin"
+            descricao="Descubra se uma ação está barata ou cara usando as fórmulas de Benjamin Graham e Décio Bazin."
+            to="/calculadora/preco-teto"
+            icon="i-lucide-target"
+            categoria="Ferramentas"
+            data="4 Jan 2026"
+            :tempo-leitura="5"
+          />
+
+          <MoleculesBlogCard
+            titulo="Calculadora de Aposentadoria"
+            descricao="Planeje sua aposentadoria ou FIRE. Calcule quanto precisa investir considerando INSS e inflação."
+            to="/calculadora/aposentadoria"
+            icon="i-lucide-piggy-bank"
+            categoria="Ferramentas"
+            data="4 Jan 2026"
+            :tempo-leitura="5"
+          />
+
+          <MoleculesBlogCard
+            titulo="Dividend Yield"
+            descricao="Calcule DY atual, projetado e on cost. Encontre as melhores ações e FIIs pagadores de dividendos."
+            to="/calculadora/dividend-yield"
+            icon="i-lucide-coins"
+            categoria="Ferramentas"
+            data="4 Jan 2026"
+            :tempo-leitura="4"
+          />
+
+          <MoleculesBlogCard
+            titulo="Quanto Investir por Mês"
+            descricao="Descubra quanto você precisa investir mensalmente para atingir qualquer meta financeira."
+            to="/calculadora/quanto-investir"
+            icon="i-lucide-wallet"
+            categoria="Ferramentas"
+            data="4 Jan 2026"
+            :tempo-leitura="4"
+          />
+
+          <MoleculesBlogCard
+            titulo="Imposto de Renda sobre Ações"
+            descricao="Calcule IR de swing trade e day trade. Gere DARF e compense prejuízos corretamente."
+            to="/calculadora/imposto-renda"
+            icon="i-lucide-receipt-text"
+            categoria="Ferramentas"
+            data="4 Jan 2026"
+            :tempo-leitura="4"
+          />
+
           <!-- Card CTA para ver todos -->
           <NuxtLink
             to="/guias"

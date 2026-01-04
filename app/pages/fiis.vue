@@ -256,6 +256,56 @@
         </ul>
       </div>
 
+      <!-- Destaque para Planejamento com FIIs -->
+      <div class="rounded-[30px] border border-secondary/30 bg-gradient-to-br from-secondary/10 to-secondary/5 p-8">
+        <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+          <div class="flex-1">
+            <div class="mb-3 flex items-center gap-2">
+              <UIcon name="i-lucide-target" class="text-secondary h-8 w-8" />
+              <h2 class="text-2xl font-bold">Monte sua Carteira de FIIs</h2>
+            </div>
+            <p class="mb-4 text-gray-300">
+              Use nossas ferramentas para simular investimentos em FIIs e planejar sua renda passiva mensal com fundos imobiliários.
+            </p>
+            <ul class="space-y-2 text-sm text-gray-400">
+              <li class="flex items-center gap-2">
+                <UIcon name="i-lucide-check" class="text-secondary size-4" />
+                Simulação com dados históricos reais
+              </li>
+              <li class="flex items-center gap-2">
+                <UIcon name="i-lucide-check" class="text-secondary size-4" />
+                Projeção de dividendos mensais
+              </li>
+              <li class="flex items-center gap-2">
+                <UIcon name="i-lucide-check" class="text-secondary size-4" />
+                Diversificação automática por segmento
+              </li>
+            </ul>
+          </div>
+          <div class="flex flex-col gap-3 md:w-auto">
+            <UButton
+              to="/calculadora/planejamento"
+              color="secondary"
+              size="xl"
+              icon="i-lucide-target"
+              class="w-full md:w-auto"
+            >
+              Planejar Investimentos
+            </UButton>
+            <UButton
+              to="/calculadora/acoes"
+              color="white"
+              variant="outline"
+              size="lg"
+              icon="i-lucide-chart-line"
+              class="w-full md:w-auto"
+            >
+              Simular FIIs
+            </UButton>
+          </div>
+        </div>
+      </div>
+
       <!-- CTA -->
       <MoleculesCtaSection
         title="Encontre os Melhores FIIs na Redentia"
@@ -292,79 +342,73 @@
         <h2 class="text-2xl font-bold">
           Perguntas Frequentes sobre FIIs
         </h2>
-        <div class="space-y-3">
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+        <div class="space-y-4">
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               FIIs pagam dividendos todo mês?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               A maioria dos FIIs paga dividendos mensalmente, mas por lei são
               obrigados a distribuir apenas semestralmente. Consulte o
               histórico de cada FII para verificar a frequência de pagamentos.
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Qual o melhor FII para iniciantes?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               Para iniciantes, recomenda-se fundos de fundos (FOFs) como HFOF11,
               XPML11 ou KFOF11, que já vêm diversificados. Também FIIs grandes
               e líquidos como HGLG11 (logística) ou MXRF11 (lajes corporativas).
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               É melhor tijolo ou papel?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               Depende do momento e objetivo. Fundos de tijolo são mais estáveis
               e tangíveis. Fundos de papel geralmente pagam mais mas são mais
               sensíveis a juros. O ideal é ter os dois tipos na carteira.
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Quanto preciso para começar a investir em FIIs?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               Muitos FIIs custam entre R$ 80-150 por cota. Você pode começar com
               R$ 100-200 comprando 1-2 cotas. O importante é ir aumentando
               gradualmente e diversificando.
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               FIIs são seguros?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               FIIs têm riscos (vacância, inadimplência, desvalorização), mas são
               menos voláteis que ações. A chave é diversificar e escolher fundos
               com boa gestão, bons inquilinos e imóveis em boas localizações.
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Qual o dividend yield ideal de um FII?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               Um bom FII costuma ter dividend yield entre 8-12% ao ano (0,67-1%
               ao mês). Dividend yields muito altos (> 15%) podem indicar que o
               preço caiu por algum problema. Sempre analise a sustentabilidade.

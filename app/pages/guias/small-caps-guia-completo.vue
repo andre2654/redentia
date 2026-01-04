@@ -314,58 +314,53 @@
       <!-- FAQ Section para SEO -->
       <div class="space-y-4">
         <h2 class="text-2xl font-bold">Perguntas Frequentes sobre Small Caps</h2>
-        <div class="space-y-3">
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+        <div class="space-y-4">
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               O que são small caps?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               Small caps são ações de empresas com baixo valor de mercado, geralmente abaixo de R$ 2 bilhões no Brasil. São empresas menores com maior potencial de crescimento, mas também maior risco.
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Quanto da carteira devo alocar em small caps?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               Para carteiras conservadoras: máximo 10-20%. Para agressivas: até 30%. Nunca coloque todo seu dinheiro em small caps devido ao risco elevado.
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Small caps rendem mais que large caps?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               Historicamente sim, no longo prazo. Mas com muito mais volatilidade. Algumas small caps podem multiplicar 10x, mas outras podem ir a zero. A chave é diversificação.
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Como identificar uma boa small cap?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               Busque crescimento de receita consistente, lucratividade ou proximidade do lucro, baixo endividamento, gestão competente e setor em crescimento. Valuation atrativo também é importante.
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Iniciantes devem investir em small caps?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               Não é recomendado. Iniciantes devem começar com large caps mais estáveis para aprender. Small caps exigem experiência, capacidade de análise e tolerância a grandes oscilações.
             </p>
           </details>

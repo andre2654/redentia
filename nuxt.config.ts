@@ -46,8 +46,48 @@ export default defineNuxtConfig({
         { loc: '/help', priority: 0.7 as const, changefreq: 'weekly' as const },
         {
           loc: '/calculadora',
-          priority: 0.7 as const,
+          priority: 0.8 as const,
           changefreq: 'weekly' as const,
+        },
+        {
+          loc: '/calculadora/juros-compostos',
+          priority: 0.8 as const,
+          changefreq: 'weekly' as const,
+        },
+        {
+          loc: '/calculadora/acoes',
+          priority: 0.8 as const,
+          changefreq: 'weekly' as const,
+        },
+        {
+          loc: '/calculadora/planejamento',
+          priority: 0.8 as const,
+          changefreq: 'weekly' as const,
+        },
+        {
+          loc: '/calculadora/preco-teto',
+          priority: 0.9 as const,
+          changefreq: 'weekly' as const,
+        },
+        {
+          loc: '/calculadora/aposentadoria',
+          priority: 0.9 as const,
+          changefreq: 'weekly' as const,
+        },
+        {
+          loc: '/calculadora/dividend-yield',
+          priority: 0.8 as const,
+          changefreq: 'weekly' as const,
+        },
+        {
+          loc: '/calculadora/quanto-investir',
+          priority: 0.8 as const,
+          changefreq: 'weekly' as const,
+        },
+        {
+          loc: '/calculadora/imposto-renda',
+          priority: 0.8 as const,
+          changefreq: 'monthly' as const,
         },
 
         // Glossário
@@ -209,6 +249,8 @@ export default defineNuxtConfig({
     '/dividendos': { prerender: true },
     '/guias': { prerender: true },
     '/guias/**': { prerender: true },
+    '/calculadora': { prerender: true },
+    '/calculadora/**': { prerender: true },
   },
   components: [
     {

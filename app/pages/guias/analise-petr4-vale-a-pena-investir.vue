@@ -265,58 +265,53 @@
       <!-- FAQ Section para SEO -->
       <div class="space-y-4">
         <h2 class="text-2xl font-bold">Perguntas Frequentes sobre PETR4</h2>
-        <div class="space-y-3">
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+        <div class="space-y-4">
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               PETR4 paga bons dividendos?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               Sim, PETR4 é conhecida por pagar dividendos elevados. Em anos de petróleo alto, o Dividend Yield pode superar 15% ao ano. Porém, os valores variam conforme o preço do petróleo e decisões políticas.
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Qual a diferença entre PETR3 e PETR4?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               PETR3 são ações ordinárias (ON) com direito a voto. PETR4 são preferenciais (PN), sem voto mas com preferência em dividendos. PETR4 é mais líquida e preferida por pequenos investidores.
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               PETR4 é um bom investimento para longo prazo?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               Pode ser, desde que você aceite a volatilidade e os riscos políticos. A empresa tem fundamentos operacionais sólidos e gera muito caixa. Ideal como parte (5-15%) de uma carteira diversificada.
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               O governo pode mudar a política de dividendos da Petrobras?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               Sim, como empresa de economia mista controlada pelo governo, mudanças na administração ou prioridades políticas podem impactar a distribuição de dividendos. Este é um dos principais riscos.
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Quanto da minha carteira devo alocar em PETR4?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               Recomenda-se não concentrar mais de 10-15% da carteira total em uma única ação. Para PETR4, considerando os riscos específicos, 5-10% é uma alocação razoável para a maioria dos investidores.
             </p>
           </details>

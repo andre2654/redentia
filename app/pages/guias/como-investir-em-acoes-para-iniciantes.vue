@@ -225,58 +225,53 @@
       <!-- FAQ Section para SEO -->
       <div class="space-y-4">
         <h2 class="text-2xl font-bold">Perguntas Frequentes</h2>
-        <div class="space-y-3">
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+        <div class="space-y-4">
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Quanto dinheiro preciso para começar a investir em ações?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               Você pode começar com menos de R$ 100. No mercado fracionário, é possível comprar qualquer quantidade de ações, mesmo que custe R$ 10 ou R$ 20. O importante é começar e ir aumentando gradualmente conforme aprende.
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Qual a melhor corretora para iniciantes?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               Para iniciantes, corretoras com plataforma intuitiva e conteúdo educacional são ideais. XP, Rico, Inter e Nubank (Nu Invest) são boas opções. Compare taxas de corretagem (muitas são zero) e escolha a que melhor se adapta ao seu perfil.
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               É seguro investir em ações?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               Ações têm risco de volatilidade e perdas no curto prazo. No entanto, no longo prazo (10+ anos) e com diversificação, historicamente oferecem bons retornos. Nunca invista dinheiro que você precisa no curto prazo ou sua reserva de emergência.
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Quando vou receber dividendos?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               Os dividendos são pagos conforme a política de cada empresa. Algumas pagam mensalmente, outras trimestralmente ou semestralmente. O importante é estar com as ações na "data com" para ter direito ao recebimento.
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5">
-            <summary
-              class="cursor-pointer p-5 font-semibold hover:text-secondary"
-            >
+          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Quantas ações devo ter na minha carteira?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="px-5 pb-5 text-gray-300">
+            <p class="mt-3 text-sm text-gray-300">
               Para iniciantes, começar com 5-8 ações já oferece boa diversificação. Conforme o patrimônio cresce, você pode aumentar para 10-15 ações. Mais que 20 ações pode dificultar o acompanhamento.
             </p>
           </details>
