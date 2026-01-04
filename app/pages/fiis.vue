@@ -257,38 +257,14 @@
       </div>
 
       <!-- CTA -->
-      <div
-        class="from-secondary/20 flex flex-col gap-6 rounded-3xl bg-gradient-to-br to-transparent p-8"
-      >
-        <div class="text-center">
-          <h2 class="mb-3 text-2xl font-bold">
-            Encontre os Melhores FIIs na Redentia
-          </h2>
-          <p class="text-gray-300">
-            Compare dividend yield, vacância, P/VP e outros indicadores de todos
-            os FIIs
-          </p>
-        </div>
-        <div class="flex flex-wrap items-center justify-center gap-4">
-          <UButton
-            to="/search?group=reits"
-            color="secondary"
-            size="xl"
-            icon="i-lucide-search"
-          >
-            Ver Todos os FIIs
-          </UButton>
-          <UButton
-            to="/glossario/fii"
-            color="white"
-            variant="outline"
-            size="xl"
-            icon="i-lucide-book-open"
-          >
-            Saber Mais sobre FIIs
-          </UButton>
-        </div>
-      </div>
+      <MoleculesCtaSection
+        title="Encontre os Melhores FIIs na Redentia"
+        description="Compare dividend yield, vacância, P/VP e outros indicadores de todos os FIIs"
+        :buttons="[
+          { label: 'Ver Todos os FIIs', to: '/search?group=reits', icon: 'i-lucide-search', variant: 'primary' },
+          { label: 'Saber Mais sobre FIIs', to: '/glossario/fii', icon: 'i-lucide-book-open', variant: 'outline' },
+        ]"
+      />
 
       <!-- Link Destacado para Ver Todas -->
       <div class="border-t border-white/10 pt-8">

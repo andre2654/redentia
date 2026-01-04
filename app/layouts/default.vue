@@ -124,6 +124,10 @@
               to="/calculadora"
               text="Calculadora inteligente"
             />
+            <AtomsSidebarButton
+              to="/guias"
+              text="Guias de investimento"
+            />
           </div>
           <NuxtLink
             to="/help"

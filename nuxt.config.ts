@@ -84,6 +84,38 @@ export default defineNuxtConfig({
           changefreq: 'weekly' as const,
         },
 
+        // Guias educacionais
+        {
+          loc: '/guias',
+          priority: 0.9 as const,
+          changefreq: 'weekly' as const,
+        },
+        {
+          loc: '/guias/como-investir-em-acoes-para-iniciantes',
+          priority: 0.8 as const,
+          changefreq: 'monthly' as const,
+        },
+        {
+          loc: '/guias/melhores-fiis-para-investir-em-2026',
+          priority: 0.8 as const,
+          changefreq: 'monthly' as const,
+        },
+        {
+          loc: '/guias/calculadora-de-dividendos',
+          priority: 0.8 as const,
+          changefreq: 'monthly' as const,
+        },
+        {
+          loc: '/guias/analise-petr4-vale-a-pena-investir',
+          priority: 0.8 as const,
+          changefreq: 'monthly' as const,
+        },
+        {
+          loc: '/guias/small-caps-guia-completo',
+          priority: 0.8 as const,
+          changefreq: 'monthly' as const,
+        },
+
         // Páginas institucionais
         {
           loc: '/redentia/about',
@@ -175,6 +207,8 @@ export default defineNuxtConfig({
     '/etfs': { prerender: true },
     '/small-caps': { prerender: true },
     '/dividendos': { prerender: true },
+    '/guias': { prerender: true },
+    '/guias/**': { prerender: true },
   },
   components: [
     {

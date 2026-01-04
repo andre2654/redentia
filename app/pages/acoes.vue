@@ -231,47 +231,15 @@
       </div>
 
       <!-- CTA para Ferramentas -->
-      <div
-        class="from-secondary/20 flex flex-col gap-6 rounded-3xl bg-gradient-to-br to-transparent p-8"
-      >
-        <div class="text-center">
-          <h2 class="mb-3 text-2xl font-bold">
-            Use as Ferramentas da Redentia
-          </h2>
-          <p class="text-gray-300">
-            Encontre as melhores ações, compare indicadores e tome decisões
-            informadas
-          </p>
-        </div>
-        <div class="flex flex-wrap items-center justify-center gap-4">
-          <UButton
-            to="/search?group=stocks"
-            color="secondary"
-            size="xl"
-            icon="i-lucide-search"
-          >
-            Buscar Ações
-          </UButton>
-          <UButton
-            to="/calculadora"
-            color="white"
-            variant="outline"
-            size="xl"
-            icon="i-lucide-calculator"
-          >
-            Calculadoras
-          </UButton>
-          <UButton
-            to="/glossario"
-            color="white"
-            variant="ghost"
-            size="xl"
-            icon="i-lucide-book-open"
-          >
-            Glossário
-          </UButton>
-        </div>
-      </div>
+      <MoleculesCtaSection
+        title="Use as Ferramentas da Redentia"
+        description="Encontre as melhores ações, compare indicadores e tome decisões informadas"
+        :buttons="[
+          { label: 'Buscar Ações', to: '/search?group=stocks', icon: 'i-lucide-search', variant: 'primary' },
+          { label: 'Calculadoras', to: '/calculadora', icon: 'i-lucide-calculator', variant: 'outline' },
+          { label: 'Glossário', to: '/glossario', icon: 'i-lucide-book-open', variant: 'ghost' },
+        ]"
+      />
 
       <!-- Link Destacado para Ver Todas -->
       <div class="border-t border-white/10 pt-8">

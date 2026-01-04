@@ -494,6 +494,100 @@
       </div>
     </section>
 
+    <!-- Seção Blog / Guias Educacionais -->
+    <section class="mt-12 px-6">
+      <div class="flex flex-col gap-8">
+        <div class="text-center">
+          <div class="mb-3 flex items-center justify-center gap-2">
+            <UIcon name="i-lucide-newspaper" class="text-secondary h-6 w-6" />
+          </div>
+          <h2 class="mb-2 text-2xl font-bold md:text-3xl">
+            Aprenda a investir
+          </h2>
+          <p class="text-sm text-gray-400 md:text-base">
+            Guias completos, tutoriais práticos e análises para dominar o mercado financeiro
+          </p>
+        </div>
+
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <MoleculesBlogCard
+            titulo="Como Investir em Ações"
+            descricao="Guia completo para iniciantes começarem a investir na bolsa de valores. Aprenda desde a abertura de conta até estratégias avançadas de investimento."
+            to="/guias/como-investir-em-acoes-para-iniciantes"
+            icon="i-lucide-trending-up"
+            categoria="Ações"
+            data="4 Jan 2026"
+            :tempo-leitura="8"
+          />
+
+          <MoleculesBlogCard
+            titulo="Melhores FIIs 2026"
+            descricao="Fundos imobiliários mais promissores para este ano. Análise completa de segmentos, indicadores e estratégias para construir sua carteira ideal."
+            to="/guias/melhores-fiis-para-investir-em-2026"
+            icon="i-lucide-building-2"
+            categoria="FIIs"
+            data="4 Jan 2026"
+            :tempo-leitura="10"
+          />
+
+          <MoleculesBlogCard
+            titulo="Calculadora de Dividendos"
+            descricao="Aprenda a calcular quanto investir para atingir sua meta de renda passiva. Fórmulas, exemplos práticos e estratégias de reinvestimento."
+            to="/guias/calculadora-de-dividendos"
+            icon="i-lucide-coins"
+            categoria="Dividendos"
+            data="4 Jan 2026"
+            :tempo-leitura="7"
+          />
+
+          <MoleculesBlogCard
+            titulo="Análise PETR4"
+            descricao="Vale a pena investir em Petrobras? Análise fundamentalista completa com riscos, oportunidades e perspectivas para 2026."
+            to="/guias/analise-petr4-vale-a-pena-investir"
+            icon="i-lucide-chart-line"
+            categoria="Análises"
+            data="4 Jan 2026"
+            :tempo-leitura="12"
+          />
+
+          <MoleculesBlogCard
+            titulo="Small Caps: Guia Completo"
+            descricao="Tudo sobre ações de pequenas empresas: como escolher, riscos envolvidos e estratégias para maximizar retornos com small caps."
+            to="/guias/small-caps-guia-completo"
+            icon="i-lucide-rocket"
+            categoria="Ações"
+            data="4 Jan 2026"
+            :tempo-leitura="9"
+          />
+
+          <!-- Card CTA para ver todos -->
+          <NuxtLink
+            to="/guias"
+            class="group flex flex-col items-center justify-center gap-4 rounded-2xl border border-secondary/30 bg-gradient-to-br from-secondary/10 to-secondary/5 p-8 transition-all hover:border-secondary/50 hover:from-secondary/20"
+          >
+            <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-secondary/30">
+              <UIcon name="i-lucide-book-open" class="text-secondary h-7 w-7" />
+            </div>
+            <div class="text-center">
+              <h3 class="mb-2 text-xl font-bold group-hover:text-secondary">
+                Ver todos os guias
+              </h3>
+              <p class="text-sm text-gray-400">
+                Mais conteúdo educacional sobre investimentos
+              </p>
+            </div>
+            <div class="flex items-center gap-2 text-secondary text-sm font-medium">
+              <span>Explorar</span>
+              <UIcon
+                name="i-lucide-arrow-right"
+                class="h-4 w-4 transition-transform group-hover:translate-x-2"
+              />
+            </div>
+          </NuxtLink>
+        </div>
+      </div>
+    </section>
+
     <section v-if="!authStore.isAuthenticated" class="mt-20">
       <div class="w-full">
         <div class="mb-8 text-center md:mb-12">

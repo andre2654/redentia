@@ -214,38 +214,14 @@
       </div>
 
       <!-- CTA -->
-      <div
-        class="from-secondary/20 flex flex-col gap-6 rounded-3xl bg-gradient-to-br to-transparent p-8"
-      >
-        <div class="text-center">
-          <h2 class="mb-3 text-2xl font-bold">
-            Encontre Small Caps Promissoras
-          </h2>
-          <p class="text-gray-300">
-            Use filtros avançados para descobrir empresas com potencial de
-            crescimento
-          </p>
-        </div>
-        <div class="flex flex-wrap items-center justify-center gap-4">
-          <UButton
-            to="/search?mc_max=2000000000"
-            color="secondary"
-            size="xl"
-            icon="i-lucide-search"
-          >
-            Buscar Small Caps
-          </UButton>
-          <UButton
-            to="/glossario/small-caps"
-            color="white"
-            variant="outline"
-            size="xl"
-            icon="i-lucide-book-open"
-          >
-            Saber Mais
-          </UButton>
-        </div>
-      </div>
+      <MoleculesCtaSection
+        title="Encontre Small Caps Promissoras"
+        description="Use filtros avançados para descobrir empresas com potencial de crescimento"
+        :buttons="[
+          { label: 'Buscar Small Caps', to: '/search?mc_max=2000000000', icon: 'i-lucide-search', variant: 'primary' },
+          { label: 'Saber Mais', to: '/glossario/small-caps', icon: 'i-lucide-book-open', variant: 'outline' },
+        ]"
+      />
 
       <!-- Link Destacado para Ver Todas -->
       <div class="border-t border-white/10 pt-8">

@@ -108,7 +108,7 @@ defineProps({
   @apply pl-2;
 }
 
-.static-content a {
+.static-content a:not(.normal-static-link) {
   @apply text-primary hover:text-primary/80 transition-colors hover:underline;
 }
 </style>

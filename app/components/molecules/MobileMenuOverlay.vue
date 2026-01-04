@@ -83,6 +83,17 @@
                 />
                 Calculadora inteligente
               </NuxtLink>
+              <NuxtLink
+                to="/guias"
+                class="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm font-medium text-white transition hover:border-white/20 hover:bg-white/10"
+                @click="closeMenu"
+              >
+                <UIcon
+                  name="i-lucide-book-open"
+                  class="text-secondary size-5"
+                />
+                Guias de investimento
+              </NuxtLink>
             </div>
 
             <NuxtLink
@@ -207,6 +218,7 @@ const userName = computed(() => authStore.me?.name ?? 'Usuário')
 const publicLinks = [
   { to: '/', label: 'Início', icon: 'i-lucide-home' },
   { to: '/calculadora', label: 'Calculadoras', icon: 'i-lucide-calculator' },
+  { to: '/guias', label: 'Guias de Investimento', icon: 'i-lucide-book-open' },
 ]
 
 function closeMenu() {

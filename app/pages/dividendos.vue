@@ -229,46 +229,15 @@
       </div>
 
       <!-- CTA -->
-      <div
-        class="from-secondary/20 flex flex-col gap-6 rounded-3xl bg-gradient-to-br to-transparent p-8"
-      >
-        <div class="text-center">
-          <h2 class="mb-3 text-2xl font-bold">
-            Encontre os Melhores Pagadores de Dividendos
-          </h2>
-          <p class="text-gray-300">
-            Compare dividend yield, histórico de pagamentos e consistência
-          </p>
-        </div>
-        <div class="flex flex-wrap items-center justify-center gap-4">
-          <UButton
-            to="/search"
-            color="secondary"
-            size="xl"
-            icon="i-lucide-search"
-          >
-            Buscar Ativos
-          </UButton>
-          <UButton
-            to="/calculadora"
-            color="white"
-            variant="outline"
-            size="xl"
-            icon="i-lucide-calculator"
-          >
-            Calcular Renda Passiva
-          </UButton>
-          <UButton
-            to="/glossario/dividendos"
-            color="white"
-            variant="ghost"
-            size="xl"
-            icon="i-lucide-book-open"
-          >
-            Glossário
-          </UButton>
-        </div>
-      </div>
+      <MoleculesCtaSection
+        title="Encontre os Melhores Pagadores de Dividendos"
+        description="Compare dividend yield, histórico de pagamentos e consistência"
+        :buttons="[
+          { label: 'Buscar Ativos', to: '/search', icon: 'i-lucide-search', variant: 'primary' },
+          { label: 'Calcular Renda Passiva', to: '/calculadora', icon: 'i-lucide-calculator', variant: 'outline' },
+          { label: 'Glossário', to: '/glossario/dividendos', icon: 'i-lucide-book-open', variant: 'ghost' },
+        ]"
+      />
 
       <!-- Links Destacados -->
       <div class="space-y-4 border-t border-white/10 pt-8">

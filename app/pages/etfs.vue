@@ -211,37 +211,14 @@
       </div>
 
       <!-- CTA -->
-      <div
-        class="from-secondary/20 flex flex-col gap-6 rounded-3xl bg-gradient-to-br to-transparent p-8"
-      >
-        <div class="text-center">
-          <h2 class="mb-3 text-2xl font-bold">
-            Compare Todos os ETFs da B3
-          </h2>
-          <p class="text-gray-300">
-            Veja rentabilidade, taxas e composição de cada ETF disponível
-          </p>
-        </div>
-        <div class="flex flex-wrap items-center justify-center gap-4">
-          <UButton
-            to="/search?group=etfs"
-            color="secondary"
-            size="xl"
-            icon="i-lucide-search"
-          >
-            Ver Todos os ETFs
-          </UButton>
-          <UButton
-            to="/glossario/etf"
-            color="white"
-            variant="outline"
-            size="xl"
-            icon="i-lucide-book-open"
-          >
-            O que é ETF?
-          </UButton>
-        </div>
-      </div>
+      <MoleculesCtaSection
+        title="Compare Todos os ETFs da B3"
+        description="Veja rentabilidade, taxas e composição de cada ETF disponível"
+        :buttons="[
+          { label: 'Ver Todos os ETFs', to: '/search?group=etfs', icon: 'i-lucide-search', variant: 'primary' },
+          { label: 'O que é ETF?', to: '/glossario/etf', icon: 'i-lucide-book-open', variant: 'outline' },
+        ]"
+      />
 
       <!-- Link Destacado para Ver Todas -->
       <div class="border-t border-white/10 pt-8">

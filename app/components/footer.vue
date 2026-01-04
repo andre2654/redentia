@@ -35,6 +35,7 @@
         <NuxtLink to="/redentia/how-works"> Como funciona </NuxtLink>
         <NuxtLink to="/redentia/contact"> Contato </NuxtLink>
         <NuxtLink to="/glossario"> Glossário </NuxtLink>
+        <NuxtLink to="/guias"> Guias </NuxtLink>
         <NuxtLink to="/redentia/privacy"> Privacidade </NuxtLink>
         <NuxtLink to="/redentia/terms"> Termos e políticas </NuxtLink>
         <NuxtLink to="/redentia/cookies">
