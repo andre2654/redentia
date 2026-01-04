@@ -57,6 +57,33 @@ export default defineNuxtConfig({
           changefreq: 'weekly' as const,
         },
 
+        // Páginas de categorias (SEO)
+        {
+          loc: '/acoes',
+          priority: 0.9 as const,
+          changefreq: 'weekly' as const,
+        },
+        {
+          loc: '/fiis',
+          priority: 0.9 as const,
+          changefreq: 'weekly' as const,
+        },
+        {
+          loc: '/etfs',
+          priority: 0.8 as const,
+          changefreq: 'weekly' as const,
+        },
+        {
+          loc: '/small-caps',
+          priority: 0.8 as const,
+          changefreq: 'weekly' as const,
+        },
+        {
+          loc: '/dividendos',
+          priority: 0.9 as const,
+          changefreq: 'weekly' as const,
+        },
+
         // Páginas institucionais
         {
           loc: '/redentia/about',
@@ -143,6 +170,11 @@ export default defineNuxtConfig({
     '/download': { prerender: true },
     '/glossario': { prerender: true },
     '/glossario/**': { prerender: true },
+    '/acoes': { prerender: true },
+    '/fiis': { prerender: true },
+    '/etfs': { prerender: true },
+    '/small-caps': { prerender: true },
+    '/dividendos': { prerender: true },
   },
   components: [
     {

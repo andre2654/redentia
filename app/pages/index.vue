@@ -331,6 +331,169 @@
       </div>
     </div>
 
+    <!-- Seção Invista por Categoria -->
+    <section class="mt-12 px-6">
+      <div class="flex flex-col gap-6">
+        <div class="text-center">
+          <h2 class="mb-2 text-2xl font-bold md:text-3xl">
+            Invista agora
+          </h2>
+          <p class="text-sm text-gray-400 md:text-base">
+            Guias completos, estratégias e análises para cada tipo de ativo
+          </p>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <!-- Ações -->
+          <NuxtLink
+            to="/acoes"
+            class="group flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-6 transition-all hover:border-secondary/50 hover:bg-secondary/10"
+          >
+            <div class="flex items-center gap-3">
+              <div class="rounded-full bg-secondary/20 p-3">
+                <UIcon name="i-lucide-trending-up" class="text-secondary h-6 w-6" />
+              </div>
+              <h3 class="text-xl font-bold group-hover:text-secondary">Ações</h3>
+            </div>
+            <p class="text-sm text-gray-400">
+              Invista nas maiores empresas do Brasil. Potencial de crescimento e
+              dividendos.
+            </p>
+            <div class="flex items-center gap-2 text-secondary text-sm font-medium">
+              <span>Explorar ações</span>
+              <UIcon
+                name="i-lucide-arrow-right"
+                class="h-4 w-4 transition-transform group-hover:translate-x-1"
+              />
+            </div>
+          </NuxtLink>
+
+          <!-- FIIs -->
+          <NuxtLink
+            to="/fiis"
+            class="group flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-6 transition-all hover:border-secondary/50 hover:bg-secondary/10"
+          >
+            <div class="flex items-center gap-3">
+              <div class="rounded-full bg-secondary/20 p-3">
+                <UIcon name="i-lucide-building-2" class="text-secondary h-6 w-6" />
+              </div>
+              <h3 class="text-xl font-bold group-hover:text-secondary">FIIs</h3>
+            </div>
+            <p class="text-sm text-gray-400">
+              Renda passiva mensal com fundos imobiliários. Dividendos isentos de
+              IR.
+            </p>
+            <div class="flex items-center gap-2 text-secondary text-sm font-medium">
+              <span>Explorar FIIs</span>
+              <UIcon
+                name="i-lucide-arrow-right"
+                class="h-4 w-4 transition-transform group-hover:translate-x-1"
+              />
+            </div>
+          </NuxtLink>
+
+          <!-- ETFs -->
+          <NuxtLink
+            to="/etfs"
+            class="group flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-6 transition-all hover:border-secondary/50 hover:bg-secondary/10"
+          >
+            <div class="flex items-center gap-3">
+              <div class="rounded-full bg-secondary/20 p-3">
+                <UIcon name="i-lucide-bar-chart-3" class="text-secondary h-6 w-6" />
+              </div>
+              <h3 class="text-xl font-bold group-hover:text-secondary">ETFs</h3>
+            </div>
+            <p class="text-sm text-gray-400">
+              Diversificação instantânea. Invista no Ibovespa e S&P 500 com um
+              clique.
+            </p>
+            <div class="flex items-center gap-2 text-secondary text-sm font-medium">
+              <span>Explorar ETFs</span>
+              <UIcon
+                name="i-lucide-arrow-right"
+                class="h-4 w-4 transition-transform group-hover:translate-x-1"
+              />
+            </div>
+          </NuxtLink>
+
+          <!-- Small Caps -->
+          <NuxtLink
+            to="/small-caps"
+            class="group flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-6 transition-all hover:border-secondary/50 hover:bg-secondary/10"
+          >
+            <div class="flex items-center gap-3">
+              <div class="rounded-full bg-secondary/20 p-3">
+                <UIcon name="i-lucide-rocket" class="text-secondary h-6 w-6" />
+              </div>
+              <h3 class="text-xl font-bold group-hover:text-secondary">
+                Small Caps
+              </h3>
+            </div>
+            <p class="text-sm text-gray-400">
+              Empresas pequenas com alto potencial de crescimento. Risco maior,
+              retorno maior.
+            </p>
+            <div class="flex items-center gap-2 text-secondary text-sm font-medium">
+              <span>Explorar small caps</span>
+              <UIcon
+                name="i-lucide-arrow-right"
+                class="h-4 w-4 transition-transform group-hover:translate-x-1"
+              />
+            </div>
+          </NuxtLink>
+
+          <!-- Dividendos -->
+          <NuxtLink
+            to="/dividendos"
+            class="group flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-6 transition-all hover:border-secondary/50 hover:bg-secondary/10"
+          >
+            <div class="flex items-center gap-3">
+              <div class="rounded-full bg-secondary/20 p-3">
+                <UIcon name="i-lucide-coins" class="text-secondary h-6 w-6" />
+              </div>
+              <h3 class="text-xl font-bold group-hover:text-secondary">
+                Dividendos
+              </h3>
+            </div>
+            <p class="text-sm text-gray-400">
+              Construa renda passiva mensal. Descubra os melhores pagadores de
+              dividendos.
+            </p>
+            <div class="flex items-center gap-2 text-secondary text-sm font-medium">
+              <span>Explorar dividendos</span>
+              <UIcon
+                name="i-lucide-arrow-right"
+                class="h-4 w-4 transition-transform group-hover:translate-x-1"
+              />
+            </div>
+          </NuxtLink>
+
+          <!-- BDRs -->
+          <NuxtLink
+            to="/search?group=bdrs"
+            class="group flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-6 transition-all hover:border-secondary/50 hover:bg-secondary/10"
+          >
+            <div class="flex items-center gap-3">
+              <div class="rounded-full bg-secondary/20 p-3">
+                <UIcon name="i-lucide-globe" class="text-secondary h-6 w-6" />
+              </div>
+              <h3 class="text-xl font-bold group-hover:text-secondary">BDRs</h3>
+            </div>
+            <p class="text-sm text-gray-400">
+              Invista em empresas estrangeiras (Apple, Google, Amazon) em reais.
+            </p>
+            <div class="flex items-center gap-2 text-secondary text-sm font-medium">
+              <span>Explorar BDRs</span>
+              <UIcon
+                name="i-lucide-arrow-right"
+                class="h-4 w-4 transition-transform group-hover:translate-x-1"
+              />
+            </div>
+          </NuxtLink>
+        </div>
+      </div>
+    </section>
+
     <section v-if="!authStore.isAuthenticated" class="mt-20">
       <div class="w-full">
         <div class="mb-8 text-center md:mb-12">

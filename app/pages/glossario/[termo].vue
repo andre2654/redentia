@@ -167,38 +167,6 @@
         </div>
       </section>
 
-      <!-- CTA -->
-      <section
-        class="from-secondary/20 flex flex-col gap-4 rounded-3xl bg-gradient-to-br to-transparent p-8 text-center"
-      >
-        <h2 class="text-2xl font-bold">
-          Encontre os melhores ativos com a Redentia
-        </h2>
-        <p class="text-gray-300">
-          Use filtros avançados, indicadores em tempo real e análises com IA
-          para tomar decisões de investimento.
-        </p>
-        <div class="flex flex-wrap items-center justify-center gap-3">
-          <UButton
-            to="/search"
-            color="secondary"
-            size="lg"
-            icon="i-lucide-search"
-          >
-            Buscar Ativos
-          </UButton>
-          <UButton
-            to="/calculadora"
-            color="white"
-            variant="outline"
-            size="lg"
-            icon="i-lucide-calculator"
-          >
-            Calculadoras
-          </UButton>
-        </div>
-      </section>
-
       <!-- Navegação (Anterior/Próximo) -->
       <section class="flex items-center justify-between border-t border-white/10 pt-6">
         <NuxtLink
