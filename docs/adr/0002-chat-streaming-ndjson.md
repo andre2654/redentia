@@ -23,3 +23,4 @@ Eventos principais:
 - Recomendação de hardening: headers (`application/x-ndjson`, `no-store`) e rate limit.
 
 
+

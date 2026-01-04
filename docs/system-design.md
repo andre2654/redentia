@@ -260,3 +260,4 @@ Vercel (SSR + serverless). Cron configurado em `vercel.json`.
 - Jobs/queues para tarefas pesadas (alertas/relatórios).
 
 
+

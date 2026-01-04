@@ -17,3 +17,4 @@ Adotar **dark-only** no produto web:
 - Se houver necessidade futura de light-mode, precisaremos reintroduzir um mecanismo único e tokens compatíveis.
 
 
+

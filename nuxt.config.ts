@@ -50,6 +50,13 @@ export default defineNuxtConfig({
           changefreq: 'weekly' as const,
         },
 
+        // Glossário
+        {
+          loc: '/glossario',
+          priority: 0.8 as const,
+          changefreq: 'weekly' as const,
+        },
+
         // Páginas institucionais
         {
           loc: '/redentia/about',
@@ -83,8 +90,16 @@ export default defineNuxtConfig({
         },
       ]
 
+      // Termos do glossário
+      const { termos } = await import('./app/data/glossario/termos')
+      const glossarioUrls = termos.map((termo) => ({
+        loc: `/glossario/${termo.slug}`,
+        priority: 0.7 as const,
+        changefreq: 'monthly' as const,
+      }))
+
       // Rotas dinâmicas (assets) são fornecidas exclusivamente via /api/__sitemap__/urls
-      return staticUrls
+      return [...staticUrls, ...glossarioUrls]
     },
     exclude: [
       // Páginas de autenticação
@@ -126,6 +141,8 @@ export default defineNuxtConfig({
   routeRules: {
     '/redentia/**': { prerender: true },
     '/download': { prerender: true },
+    '/glossario': { prerender: true },
+    '/glossario/**': { prerender: true },
   },
   components: [
     {
