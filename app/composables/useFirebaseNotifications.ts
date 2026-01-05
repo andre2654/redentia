@@ -12,9 +12,7 @@ export const useFirebaseNotifications = () => {
       const { getToken } = await import('firebase/messaging')
 
       // Get the service worker registration from PWA
-      console.log('Waiting for service worker registration...')
       const registration = await navigator.serviceWorker.ready
-      console.log('Service worker ready:', registration)
 
       const currentToken = await getToken(messaging, {
         serviceWorkerRegistration: registration,
@@ -22,7 +20,6 @@ export const useFirebaseNotifications = () => {
       })
 
       if (currentToken) {
-        console.log('FCM Token:', currentToken)
         token.value = currentToken
 
         // Subscribe to market_alerts topic
@@ -31,15 +28,12 @@ export const useFirebaseNotifications = () => {
             method: 'POST',
             body: { token: currentToken, topic: 'market_alerts' },
           })
-          console.log('Subscribed to market_alerts')
         } catch (e) {
           console.error('Failed to subscribe to market_alerts', e)
         }
-      } else {
-        console.log('No registration token available.')
       }
     } catch (err) {
-      console.log('An error occurred while retrieving token. ', err)
+      console.error('Error retrieving FCM token:', err)
     }
   }
 
@@ -61,13 +55,10 @@ export const useFirebaseNotifications = () => {
       permissionStatus.value = permission
 
       if (permission === 'granted') {
-        console.log('Notification permission granted.')
         await getTokenAndSubscribe()
-      } else {
-        console.log('Unable to get permission to notify.')
       }
     } catch (err) {
-      console.log('An error occurred while requesting permission. ', err)
+      console.error('Error requesting notification permission:', err)
     }
   }
 
@@ -76,7 +67,6 @@ export const useFirebaseNotifications = () => {
 
     const { onMessage } = await import('firebase/messaging')
     onMessage(messaging, (payload) => {
-      console.log('Message received. ', payload)
       const { title, body } = payload.notification || {}
 
       if (title && body) {

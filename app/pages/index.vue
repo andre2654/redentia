@@ -66,7 +66,7 @@
       :items="tickerCarouselItems"
     />
 
-    <div class="flex h-full flex-col gap-4 pt-6">
+    <div class="flex h-auto flex-col gap-4 pt-6">
       <div class="flex flex-col gap-8">
         <div v-if="!authStore.isAuthenticated" class="text-center">
           <h2
@@ -228,7 +228,7 @@
               Maiores altas
             </p>
             <div class="flex flex-col gap-1 overflow-hidden rounded-lg">
-              <AtomsTicker
+              <AtomsTickerListItem
                 v-for="stock in topAssets.top[item.key]"
                 :key="stock?.ticker"
                 :stock="stock"
@@ -258,7 +258,7 @@
               Maiores baixas
             </p>
             <div class="flex flex-col gap-1 overflow-hidden rounded-lg">
-              <AtomsTicker
+              <AtomsTickerListItem
                 v-for="stock in topAssets.bottom[item.key]"
                 :key="stock?.ticker"
                 :stock="stock"

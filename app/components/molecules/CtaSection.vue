@@ -10,13 +10,13 @@
         {{ description }}
       </p>
     </div>
-    <div class="flex flex-wrap items-center justify-center gap-4">
+    <div class="flex flex-wrap items-center justify-center gap-4 text-white">
       <UButton
       class="normal-static-link"
         v-for="(button, index) in buttons"
         :key="index"
         :to="button.to"
-        :color="button.variant === 'primary' ? 'secondary' : 'white'"
+        :color="button.variant === 'primary' ? 'tertiary' : 'white'"
         :variant="button.variant === 'outline' ? 'outline' : button.variant === 'ghost' ? 'solid' : undefined"
         size="xl"
         :icon="button.icon"

@@ -8,6 +8,9 @@
   --ui-primary: #b9ecc1;
   --ui-secondary: #a7d6ff;
   --ui-tertiary: #042f54;
+  --ui-positive: #22c55e;
+  --ui-negative: #ef4444;
+  --ui-neutral: #6b7280;
 }
 
 body {
@@ -20,7 +23,7 @@ body {
   box-sizing: border-box;
 }
 
-/* Remove focus outlines/rings for form controls (design choice). */
+/* Accessible focus states - WCAG 2.1 compliant */
 @layer base {
   input:focus,
   input:focus-visible,
@@ -28,16 +31,13 @@ body {
   textarea:focus-visible,
   select:focus,
   select:focus-visible {
-    outline: none !important;
-    box-shadow: none !important;
-    --tw-ring-offset-shadow: 0 0 #0000 !important;
-    --tw-ring-shadow: 0 0 #0000 !important;
+    outline: 2px solid var(--ui-primary);
+    outline-offset: 2px;
   }
 
-  /* Also disable Tailwind ring on wrappers (e.g. focus-within rings). */
+  /* Subtle focus-within for containers */
   *:focus-within {
-    --tw-ring-offset-shadow: 0 0 #0000 !important;
-    --tw-ring-shadow: 0 0 #0000 !important;
+    --tw-ring-color: rgba(185, 236, 193, 0.3);
   }
 }
 

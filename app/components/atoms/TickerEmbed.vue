@@ -158,17 +158,6 @@ onMounted(async () => {
     
     if (data && typeof data === 'object') {
       assetData.value = data as IAsset
-      
-      // Debug log (remover em produção)
-      if (import.meta.dev) {
-        console.log(`[TickerEmbed] Dados carregados para ${tickerUpper}:`, {
-          logo: assetData.value.logo,
-          change: assetData.value.change,
-          change_percent: assetData.value.change_percent,
-        })
-      }
-    } else {
-      console.warn(`[TickerEmbed] Nenhum dado retornado para ${tickerUpper}`)
     }
   } catch (error) {
     console.error(`[TickerEmbed] Erro ao buscar dados do ticker ${props.ticker}:`, error)

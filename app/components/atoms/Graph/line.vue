@@ -1275,8 +1275,8 @@ const hoverLinePlugin: Plugin<'line'> = {
 
         ctx.restore()
       }
-    } catch (error) {
-      console.error('[hoverLinePlugin] Error:', error)
+    } catch {
+      // Silently handle chart rendering errors
     }
   },
 }
@@ -1399,8 +1399,8 @@ const closingDeltaFillPlugin: Plugin<'line'> = {
       }
 
       ctx.restore()
-    } catch (error) {
-      console.error('[closingDeltaFillPlugin] Error:', error)
+    } catch {
+      // Silently handle chart rendering errors
     } finally {
       ;(chart as any)._segmentOrientations = segmentColors
       chartInstance.value = chart
@@ -1610,8 +1610,8 @@ const overlayLabelsPlugin: Plugin<'line'> = {
       }
 
       ctx.restore()
-    } catch (error) {
-      console.error('[overlayLabelsPlugin] Error:', error)
+    } catch {
+      // Silently handle chart rendering errors
     }
   },
 }
@@ -1765,10 +1765,7 @@ onMounted(async () => {
   await nextTick()
   const chart = chartRef.value?.chart
 
-  if (!chart) {
-    console.warn('[Chart] Chart instance not available')
-    return
-  }
+  if (!chart) return
 
   chartInstance.value = chart
   removeCanvasEvents = setupCanvasEvents(chart)

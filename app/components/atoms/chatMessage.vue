@@ -716,8 +716,7 @@ async function updateRenderedContent() {
           ALLOWED_ATTR,
         })
       : escapeHtml(cleanContent)
-  } catch (error) {
-    console.error('Failed to render markdown:', error)
+  } catch {
     renderedContent.value = escapeHtml(props.message.content)
   }
 }

@@ -4,6 +4,9 @@ export default defineAppConfig({
       primary: '#b9ecc1',
       secondary: '#a7d6ff',
       tertiary: '#042f54',
+      positive: '#22c55e', // green-500 para variações positivas
+      negative: '#ef4444', // red-500 para variações negativas
+      neutral: '#6b7280', // gray-500
     },
     avatar: {
       slots: {
