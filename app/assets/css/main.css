@@ -71,3 +71,28 @@ button:disabled {
     inset 0px 1px 2px 0px rgba(255, 255, 255, 0.6),
     inset -2px -2px 2px 0px rgba(255, 255, 255, 0.2);
 }
+
+/* Fix toast/notification background */
+[data-sonner-toast],
+[data-sonner-toaster] [data-toast] {
+  background: rgb(23 23 23 / 0.95) !important;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-sonner-toast][data-type='info'] {
+  background: rgb(23 23 23 / 0.95) !important;
+}
+
+[data-sonner-toast] [data-title] {
+  color: white !important;
+}
+
+[data-sonner-toast] [data-description] {
+  color: rgb(156 163 175) !important;
+}
+
+[data-sonner-toast] [data-button] {
+  background: var(--ui-primary) !important;
+  color: black !important;
+}
