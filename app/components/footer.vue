@@ -1,5 +1,36 @@
 <template>
   <div class="flex w-full flex-col bg-white/5 text-white">
+    <!-- CTA de Notificações (apenas no app e se não liberou) -->
+    <div
+      v-if="showNotificationCta"
+      class="w-full border-b border-white/10 bg-gradient-to-br from-secondary/10 to-secondary/5 py-6"
+    >
+      <div class="mx-auto flex max-w-[1400px] items-center justify-between gap-4 px-6 max-md:flex-col">
+        <div class="flex items-center gap-4">
+          <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-secondary/20">
+            <UIcon name="i-lucide-bell" class="text-secondary h-6 w-6" />
+          </div>
+          <div class="flex flex-col">
+            <h3 class="text-base font-semibold text-white">
+              Ativar notificações
+            </h3>
+            <p class="text-sm text-gray-400">
+              Receba alertas de mercado e dividendos em tempo real
+            </p>
+          </div>
+        </div>
+        <UButton
+          color="secondary"
+          size="lg"
+          icon="i-lucide-bell-ring"
+          class="hover:shadow-secondary/50 max-md:w-full transition-all hover:scale-105 hover:shadow-xl"
+          @click="handleRequestPermission"
+        >
+          Ativar agora
+        </UButton>
+      </div>
+    </div>
+
     <!-- Seção Termos do Mercado -->
     <div class="w-full py-12">
       <div class="mx-auto max-w-[1400px] px-4">
@@ -81,5 +112,39 @@
 
 <script setup lang="ts">
 const alfabeto = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+
+const route = useRoute()
+const { checkPermission, requestPermission, permissionStatus } =
+  useFirebaseNotifications()
+
+// Verificar se está no app instalado
+const isAppInstalled = computed(() => {
+  if (!import.meta.client) return false
+  
+  const standalone =
+    window.matchMedia?.('(display-mode: standalone)')?.matches ?? false
+  const iosStandalone = (window.navigator as any).standalone === true
+  
+  return standalone || iosStandalone
+})
+
+// Mostrar CTA apenas se está no app E permissão não foi concedida
+const showNotificationCta = computed(() => {
+  return (
+    import.meta.client &&
+    isAppInstalled.value &&
+    permissionStatus.value === 'default'
+  )
+})
+
+async function handleRequestPermission() {
+  await requestPermission()
+}
+
+onMounted(() => {
+  if (import.meta.client) {
+    checkPermission()
+  }
+})
 </script>
 

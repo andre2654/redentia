@@ -23,28 +23,11 @@ const showBanner = computed(() => {
   return !route.meta.hideInstallAppBanner && !interfaceStore.hideInstallBanner
 })
 
-const { checkPermission, requestPermission, listen, permissionStatus } =
-  useFirebaseNotifications()
-const toast = useToast()
+const { checkPermission, listen } = useFirebaseNotifications()
 
 onMounted(() => {
   checkPermission()
   listen()
-
-  if (permissionStatus.value === 'default') {
-    toast.add({
-      title: 'Ativar notificações',
-      description: 'Receba alertas de mercado e dividendos em tempo real.',
-      icon: 'i-heroicons-bell',
-      timeout: 0,
-      actions: [
-        {
-          label: 'Ativar',
-          click: () => requestPermission(),
-        },
-      ],
-    })
-  }
 
   watchEffect(() => {
     document.body.classList.toggle('hide-amount', !interfaceStore.revealAmount)
