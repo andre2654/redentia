@@ -256,5 +256,6 @@ usePageSeo({
 
 definePageMeta({
   isPublicRoute: true,
+  hideInstallAppBanner: true,
 })
 </script>

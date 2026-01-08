@@ -14,6 +14,31 @@ export default defineAppConfig({
         fallback: 'text-black',
       },
     },
+    button: {
+      compoundVariants: [
+        {
+          color: 'primary',
+          variant: 'solid',
+          class: {
+            base: 'bg-primary text-black hover:bg-primary/75 active:bg-primary/75 disabled:bg-primary aria-disabled:bg-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary'
+          }
+        },
+        {
+          color: 'secondary',
+          variant: 'solid',
+          class: {
+            base: 'bg-secondary text-black hover:bg-secondary/75 active:bg-secondary/75 disabled:bg-secondary aria-disabled:bg-secondary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary'
+          }
+        },
+        {
+          color: 'tertiary',
+          variant: 'solid',
+          class: {
+            base: 'bg-tertiary text-white hover:bg-tertiary/75 active:bg-tertiary/75 disabled:bg-tertiary aria-disabled:bg-tertiary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-tertiary'
+          }
+        }
+      ]
+    },
     input: {
       slots: {
         base: 'w-full rounded border border-transparent bg-[#05070b] text-white placeholder:text-gray-500 focus:outline-none focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-60 transition-colors',
