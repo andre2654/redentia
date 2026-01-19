@@ -2,7 +2,8 @@
   <Transition name="fade">
     <div
       v-if="open"
-      class="fixed inset-0 z-40 flex flex-col bg-gradient-to-br from-black via-neutral-950 to-black text-white"
+      class="fixed inset-0 z-50 flex flex-col bg-black text-white"
+      style="background: #000000"
     >
       <div class="flex items-center justify-between px-6 pb-6 pt-10">
         <div class="flex items-center gap-3">
