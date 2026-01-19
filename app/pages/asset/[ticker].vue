@@ -31,55 +31,70 @@
         </div>
       </div>
     </template>
-    <div class="relative z-10 flex flex-col gap-8 pt-4">
-      <div class="flex flex-col md:gap-8">
-        <!-- Graph -->
-        <section>
+    <div class="relative z-10 flex flex-col pt-4">
+      <div class="flex flex-col">
+        <!-- Hero Section do Ativo -->
+        <section class="border-b border-white/10 pb-6">
           <header
-            class="mb-4 mt-3 flex items-center justify-between gap-8 max-md:px-4"
+            class="mb-6 flex flex-col gap-4 max-md:px-4 md:flex-row md:items-center md:justify-between"
           >
-            <div class="flex w-full items-center justify-between">
-              <div class="flex items-center gap-3">
-                <USkeleton
-                  v-if="isLoadingAsset"
-                  class="h-[50px] w-[50px] rounded-full"
-                />
-                <img
-                  v-else-if="asset?.logo"
-                  :src="asset.logo"
-                  :alt="`Logo de ${assetName}`"
-                  class="h-[50px] w-[50px] rounded-lg"
-                />
-                <div class="flex flex-col gap-2">
-                  <h1 class="font-regular min-w-max max-md:text-[20px]">
-                    <span>{{ ticker }}</span>
+            <div class="flex items-center gap-4">
+              <USkeleton
+                v-if="isLoadingAsset"
+                class="h-14 w-14 rounded-2xl"
+              />
+              <img
+                v-else-if="asset?.logo"
+                :src="asset.logo"
+                :alt="`Logo de ${assetName}`"
+                class="h-14 w-14 rounded-2xl object-cover shadow-lg"
+              />
+              <div class="flex flex-col gap-1">
+                <div class="flex items-center gap-3">
+                  <h1 class="text-2xl font-bold text-white md:text-3xl">
+                    {{ tickerUpper }}
                   </h1>
-                  <div
-                    ref="priceElement"
-                    class="flex items-center gap-2 text-sm max-sm:flex-col max-sm:items-start"
-                  >
-                    <USkeleton v-if="isLoadingAsset" class="h-4 w-[80px]" />
-                    <template v-else>
-                      <span class="text-[25px] font-medium"
-                        >R$ {{ asset?.market_price }}</span
-                      >
-                      <span
-                        class="text-[18px]"
-                        :class="[
-                          asset?.change_percent > 0
-                            ? 'text-green-400'
-                            : 'text-red-400',
-                        ]"
-                        >({{ asset?.change_percent }}% hoje)</span
-                      >
-                    </template>
+                  <!-- Badges de info rápida -->
+                  <div v-if="!isLoadingAsset" class="flex items-center gap-2">
+                    <span
+                      v-if="asset?.sector"
+                      class="rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-white/70"
+                    >
+                      {{ asset.sector }}
+                    </span>
                   </div>
+                </div>
+                <div
+                  ref="priceElement"
+                  class="flex items-center gap-3 max-sm:flex-col max-sm:items-start"
+                >
+                  <USkeleton v-if="isLoadingAsset" class="h-6 w-[120px]" />
+                  <template v-else>
+                    <span class="text-3xl font-semibold tabular-nums text-white md:text-4xl">
+                      R$ {{ asset?.market_price }}
+                    </span>
+                    <span
+                      class="flex items-center gap-1 rounded-full px-3 py-1 text-sm font-medium"
+                      :class="[
+                        asset?.change_percent >= 0
+                          ? 'bg-green-500/20 text-green-400'
+                          : 'bg-red-500/20 text-red-400',
+                      ]"
+                    >
+                      <UIcon
+                        :name="asset?.change_percent >= 0 ? 'i-lucide-trending-up' : 'i-lucide-trending-down'"
+                        class="h-4 w-4"
+                      />
+                      {{ asset?.change_percent >= 0 ? '+' : '' }}{{ asset?.change_percent }}% hoje
+                    </span>
+                  </template>
                 </div>
               </div>
             </div>
             <MoleculesPeriodSelector
               v-model="selectedTimeRange"
               :loading="isLoadingChart"
+              class="max-md:w-full"
             />
           </header>
           <AtomsGraphLine
@@ -90,21 +105,30 @@
           />
         </section>
 
-        <div v-if="!isLoadingAsset" class="p-4">
-          <AtomsRiskMeter
-            :risk="volatilityRisk"
-            :period="volatilityPeriodLabel"
-          />
-        </div>
+        <!-- Volatilidade -->
+        <section v-if="!isLoadingAsset" class="border-b border-white/10 py-6 max-md:px-4">
+          <div class="rounded-2xl bg-white/5 p-5 backdrop-blur-sm">
+            <header class="mb-4 flex items-center gap-2">
+              <UIcon name="i-lucide-activity" class="h-5 w-5 text-white/60" />
+              <h3 class="text-sm font-semibold text-white">Volatilidade do Ativo</h3>
+            </header>
+            <AtomsRiskMeter
+              :risk="volatilityRisk"
+              :period="volatilityPeriodLabel"
+            />
+          </div>
+        </section>
 
-        <div class="grid gap-2 text-sm text-white/70">
-          <!-- Asset Indicators -->
-          <section class="bg-white/5 p-6 backdrop-blur-sm md:rounded-3xl">
-            <header class="mb-4 flex flex-col gap-2">
-              <h2 class="text-lg font-semibold text-white">Indicadores</h2>
+        <!-- Asset Indicators -->
+        <section class="border-b border-white/10 py-8">
+          <div class="bg-white/5 p-6 backdrop-blur-sm md:rounded-3xl">
+            <header class="mb-6 flex flex-col gap-2">
+              <div class="flex items-center gap-2">
+                <UIcon name="i-lucide-bar-chart-3" class="h-5 w-5 text-secondary" />
+                <h2 class="text-lg font-semibold text-white">Indicadores Fundamentalistas</h2>
+              </div>
               <p class="text-sm text-white/60">
-                Principais métricas fundamentalistas e inteligência automatizada
-                para {{ ticker }}.
+                Métricas essenciais para análise de {{ tickerUpper }}.
               </p>
             </header>
             <div
@@ -117,65 +141,35 @@
                   class="h-20 w-full rounded-xl"
                 />
               </template>
-              <template v-else-if="fundamentusData">
+              <template v-else-if="basicIndicators">
                 <MoleculesTickerIndicator
                   name="P/L"
-                  :value="
-                    parseFloat(
-                      fundamentusData.key_statistics.forward_pe
-                    ).toFixed(1)
-                  "
+                  :value="basicIndicators.pl"
                   help-text="Preço sobre Lucro - indica quantos anos seriam necessários para recuperar o investimento."
                 />
                 <MoleculesTickerIndicator
                   name="P/VPA"
-                  :value="
-                    parseFloat(
-                      fundamentusData.key_statistics.price_to_book
-                    ).toFixed(2)
-                  "
+                  :value="basicIndicators.pvpa"
                   help-text="Preço sobre Valor Patrimonial por Ação - compara o preço da ação com seu valor contábil."
                 />
                 <MoleculesTickerIndicator
                   name="Dividend Yield"
-                  :value="
-                    parseFloat(
-                      fundamentusData.key_statistics.dividend_yield
-                    ).toFixed(1) + '%'
-                  "
+                  :value="basicIndicators.dividendYield"
                   help-text="Dividend Yield é a relação entre o dividendo pago por ação e o preço da ação."
                 />
                 <MoleculesTickerIndicator
                   name="ROE"
-                  :value="
-                    (
-                      parseFloat(
-                        fundamentusData.financial_data.return_on_equity
-                      ) * 100
-                    ).toFixed(1) + '%'
-                  "
+                  :value="basicIndicators.roe"
                   help-text="Return on Equity - rentabilidade sobre o patrimônio líquido."
                 />
                 <MoleculesTickerIndicator
                   name="ROA"
-                  :value="
-                    (
-                      parseFloat(
-                        fundamentusData.financial_data.return_on_assets
-                      ) * 100
-                    ).toFixed(1) + '%'
-                  "
+                  :value="basicIndicators.roa"
                   help-text="Return on Assets - rentabilidade sobre os ativos totais."
                 />
                 <MoleculesTickerIndicator
                   name="Margem Líquida"
-                  :value="
-                    (
-                      parseFloat(
-                        fundamentusData.financial_data.profit_margins
-                      ) * 100
-                    ).toFixed(1) + '%'
-                  "
+                  :value="basicIndicators.netMargin"
                   help-text="Percentual do lucro líquido em relação à receita total."
                 />
               </template>
@@ -188,12 +182,18 @@
               </template>
             </div>
 
-            <h2 class="mt-8 text-lg font-semibold text-white">
-              Indicadores inteligentes
-            </h2>
+            <div class="mb-6 mt-10 flex flex-col gap-2">
+              <div class="flex items-center gap-2">
+                <IconAi class="fill-secondary h-5 w-5" />
+                <h2 class="text-lg font-semibold text-white">Análise Inteligente</h2>
+              </div>
+              <p class="text-sm text-white/60">
+                Indicadores calculados e interpretados pela nossa IA.
+              </p>
+            </div>
 
             <div
-              class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+              class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
             >
               <template v-if="isLoadingFundamentus">
                 <USkeleton
@@ -268,73 +268,86 @@
                 </div>
               </template>
             </div>
-          </section>
-        </div>
+          </div>
+        </section>
       </div>
 
       <!-- Dividends Chart -->
-      <section class="max-md:px-4">
-        <div class="mb-6 rounded-3xl bg-white/5 p-4 backdrop-blur-sm">
-          <div class="mb-3 flex items-center gap-2">
-            <h3 class="text-sm font-semibold text-white">MDI</h3>
+      <section class="border-b border-white/10 py-8 max-md:px-4">
+        <!-- Header da seção -->
+        <header class="mb-6 flex flex-col gap-2">
+          <div class="flex items-center gap-2">
+            <UIcon name="i-lucide-calendar-days" class="h-5 w-5 text-secondary" />
+            <h2 class="text-lg font-semibold text-white">Dividendos</h2>
+          </div>
+          <p class="text-sm text-white/60">
+            Histórico de pagamentos e probabilidade mensal de dividendos.
+          </p>
+        </header>
+
+        <!-- MDI Card -->
+        <div class="mb-6 rounded-2xl bg-white/5 p-5 backdrop-blur-sm">
+          <div class="mb-4 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <IconAi class="fill-secondary h-5 w-5" />
+              <h3 class="text-sm font-semibold text-white">Mapa de Dividendos Inteligente</h3>
+            </div>
             <span v-if="isLoadingDividends" class="text-xs text-white/40">
               Carregando...
             </span>
             <span
               v-else-if="monthlyDividendProbability.referenceLabel"
-              class="text-xs text-white/50"
+              class="rounded-full bg-white/10 px-3 py-1 text-xs text-white/60"
             >
               {{ monthlyDividendProbability.referenceLabel }}
-            </span>
-            <span v-else class="text-xs text-white/40">
-              (Sem histórico recente)
             </span>
           </div>
           <div
             v-if="isLoadingDividends"
-            class="flex gap-2 overflow-x-auto pb-1"
+            class="grid grid-cols-4 gap-2 md:grid-cols-6 lg:grid-cols-12"
           >
             <USkeleton
               v-for="month in 12"
               :key="`dividend-month-skeleton-${month}`"
-              class="h-16 min-w-[72px] rounded-2xl"
+              class="h-20 rounded-xl"
             />
           </div>
           <div
             v-else
-            class="flex grid grid-cols-3 gap-2 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-12"
+            class="grid grid-cols-4 gap-2 md:grid-cols-6 lg:grid-cols-12"
           >
             <div
               v-for="item in monthlyDividendProbability.months"
               :key="item.label"
               :class="[
-                'flex min-w-[72px] flex-col items-center gap-1 rounded-2xl border px-2 py-1 text-center backdrop-blur-sm transition-colors',
+                'flex flex-col items-center justify-center gap-1 rounded-xl border p-3 text-center transition-all duration-200',
                 item.highlight
-                  ? 'border-secondary bg-secondary/10'
-                  : 'border-white/10 bg-white/5',
+                  ? 'border-secondary/50 bg-secondary/10 shadow-lg shadow-secondary/10'
+                  : 'border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10',
               ]"
             >
               <div
                 :class="[
-                  'flex items-center gap-1 text-xs font-medium uppercase tracking-wide',
-                  item.highlight ? 'text-secondary' : 'text-white/70',
+                  'flex items-center gap-1 text-xs font-bold uppercase tracking-wide',
+                  item.highlight ? 'text-secondary' : 'text-white/60',
                 ]"
               >
                 <span>{{ item.label }}</span>
-                <IconAi v-if="item.highlight" class="fill-secondary h-5" />
               </div>
               <span
                 :class="[
-                  'text-base font-semibold',
+                  'text-lg font-bold tabular-nums',
                   item.highlight ? 'text-secondary' : 'text-white',
                 ]"
               >
                 {{ item.formattedPercentage }}
               </span>
-              <span class="text-[10px] text-white/40">prob.</span>
+              <IconAi v-if="item.highlight" class="fill-secondary h-4 w-4" />
             </div>
           </div>
         </div>
+
+        <!-- Gráfico de Dividendos -->
         <AtomsGraphDividends
           :data="dividendsData"
           :loading="isLoadingDividends"
@@ -342,13 +355,14 @@
       </section>
 
       <!-- Financial Statements -->
-      <section class="max-md:px-4">
-        <header class="mb-5 flex flex-col gap-2">
-          <h2 class="text-lg font-semibold text-white">
-            Demonstrações Financeiras
-          </h2>
+      <section class="border-b border-white/10 py-8 max-md:px-4">
+        <header class="mb-6 flex flex-col gap-2">
+          <div class="flex items-center gap-2">
+            <UIcon name="i-lucide-file-text" class="h-5 w-5 text-secondary" />
+            <h2 class="text-lg font-semibold text-white">Demonstrações Financeiras</h2>
+          </div>
           <p class="text-sm text-white/60">
-            Visão rápida dos resultados, caixa e balanço mais recentes.
+            Resultados, caixa e balanço do último trimestre.
           </p>
         </header>
 
@@ -386,20 +400,23 @@
       </section>
 
       <!-- Buy & Hold Checklist -->
-      <section class="max-md:px-4">
+      <section class="border-b border-white/10 py-8 max-md:px-4">
         <div class="rounded-3xl bg-white/5 p-6 backdrop-blur-sm">
-          <header
-            class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
-          >
-            <div class="flex items-center gap-2">
-              <IconAi class="fill-secondary h-6 w-6" />
-              <h2 class="text-lg font-semibold text-white">
-                Checklist Buy & Hold
-              </h2>
+          <header class="mb-6 flex flex-col gap-4">
+            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <div class="flex items-center gap-2">
+                <IconAi class="fill-secondary h-6 w-6" />
+                <h2 class="text-lg font-semibold text-white">
+                  Checklist Buy & Hold
+                </h2>
+              </div>
+              <span class="rounded-full bg-white/10 px-3 py-1 text-xs text-white/60">
+                Fundamentus + Volume recente
+              </span>
             </div>
-            <span class="text-xs text-white/50">
-              Dados analisados via Fundamentus e volume recente
-            </span>
+            <p class="text-sm text-white/60">
+              Critérios essenciais para investidores de longo prazo.
+            </p>
           </header>
 
           <div v-if="isLoadingFundamentus" class="grid gap-3 md:grid-cols-2">
@@ -488,158 +505,140 @@
       </section>
 
       <!-- Asset Info -->
-      <section class="max-md:px-4">
-        <header class="mb-4 flex items-center gap-4">
-          <USkeleton v-if="isLoadingAsset" class="h-20 w-20 rounded-2xl" />
-          <img
-            v-else-if="asset?.logo"
-            :src="asset.logo"
-            :alt="`Logo de ${assetName}`"
-            class="h-20 w-20 rounded-2xl object-cover"
-          />
-          <div class="flex flex-col gap-1">
-            <USkeleton v-if="isLoadingAsset" class="h-4 w-32" />
-            <template v-else>
-              <span class="text-sm text-white/60">Ativo:</span>
-              <h3 class="text-lg font-semibold text-white">
-                {{ asset?.ticker }} • {{ asset?.name }}
-              </h3>
-            </template>
-          </div>
+      <section class="border-b border-white/10 py-8 max-md:px-4">
+        <header class="mb-6 flex items-center gap-2">
+          <UIcon name="i-lucide-building-2" class="h-5 w-5 text-white/60" />
+          <h2 class="text-lg font-semibold text-white">Sobre a Empresa</h2>
         </header>
 
-        <div class="grid gap-2 text-sm text-white/70">
-          <USkeleton v-if="isLoadingAsset" class="h-4 w-40" />
-          <template v-else>
-            <p v-if="asset?.sector">
-              Setor: <span class="text-white/90">{{ asset.sector }}</span>
-            </p>
-            <p v-if="asset?.industry">
-              Indústria: <span class="text-white/90">{{ asset.industry }}</span>
-            </p>
-            <p v-if="asset?.website">
-              Site oficial:
-              <a
-                :href="asset.website"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="text-primary underline"
-              >
-                {{ asset.website }}
-              </a>
-            </p>
-            <!-- <p v-if="asset?.long_business_summary" class="text-white/60">
-              {{ asset.long_business_summary }}
-            </p> -->
-          </template>
+        <div class="rounded-2xl bg-white/5 p-6 backdrop-blur-sm">
+          <div class="flex items-start gap-5">
+            <USkeleton v-if="isLoadingAsset" class="h-16 w-16 flex-shrink-0 rounded-2xl" />
+            <img
+              v-else-if="asset?.logo"
+              :src="asset.logo"
+              :alt="`Logo de ${assetName}`"
+              class="h-16 w-16 flex-shrink-0 rounded-2xl object-cover shadow-lg"
+            />
+            <div class="flex flex-1 flex-col gap-3">
+              <USkeleton v-if="isLoadingAsset" class="h-6 w-48" />
+              <template v-else>
+                <h3 class="text-xl font-bold text-white">
+                  {{ asset?.name }}
+                </h3>
+                <span class="text-sm text-white/60">{{ tickerUpper }}</span>
+              </template>
+            </div>
+          </div>
+
+          <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <USkeleton v-if="isLoadingAsset" class="h-12 rounded-xl" />
+            <template v-else>
+              <div v-if="asset?.sector" class="flex items-center gap-3 rounded-xl bg-white/5 p-4">
+                <UIcon name="i-lucide-layers" class="h-5 w-5 text-secondary" />
+                <div class="flex flex-col">
+                  <span class="text-xs text-white/50">Setor</span>
+                  <span class="text-sm font-medium text-white">{{ asset.sector }}</span>
+                </div>
+              </div>
+              <div v-if="asset?.industry" class="flex items-center gap-3 rounded-xl bg-white/5 p-4">
+                <UIcon name="i-lucide-factory" class="h-5 w-5 text-secondary" />
+                <div class="flex flex-col">
+                  <span class="text-xs text-white/50">Indústria</span>
+                  <span class="text-sm font-medium text-white">{{ asset.industry }}</span>
+                </div>
+              </div>
+              <div v-if="asset?.website" class="flex items-center gap-3 rounded-xl bg-white/5 p-4">
+                <UIcon name="i-lucide-globe" class="h-5 w-5 text-secondary" />
+                <div class="flex flex-col">
+                  <span class="text-xs text-white/50">Site</span>
+                  <a
+                    :href="asset.website"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-sm font-medium text-secondary hover:underline"
+                  >
+                    Visitar site
+                  </a>
+                </div>
+              </div>
+            </template>
+          </div>
         </div>
       </section>
 
-      <section v-if="!authStore.isAuthenticated" class="mt-20">
-        <div class="w-full">
-          <div class="mb-8 text-center md:mb-12">
-            <div class="mb-3 flex items-center justify-center gap-2 md:mb-4">
-              <IconAi class="fill-secondary h-8 md:h-12" />
+      <!-- Seção de IA para não autenticados -->
+      <section v-if="!authStore.isAuthenticated" class="border-t border-white/10 py-12 max-md:px-4">
+        <div class="mx-auto max-w-4xl">
+          <!-- Header -->
+          <div class="mb-8 text-center">
+            <div class="mb-4 inline-flex items-center gap-2 rounded-full bg-secondary/10 px-4 py-2">
+              <IconAi class="fill-secondary h-4 w-4" />
+              <span class="text-sm font-medium text-secondary">Assessoria Inteligente</span>
             </div>
-            <h2
-              class="mb-2 text-2xl font-bold leading-tight text-white sm:text-3xl md:mb-4 md:text-4xl"
-            >
-              Assessoria com Inteligência Artificial
+            <h2 class="mb-3 text-2xl font-bold text-white md:text-3xl lg:text-4xl">
+              Dúvidas sobre {{ tickerUpper }}?
             </h2>
-            <p class="text-sm text-gray-400 sm:text-base md:text-lg">
-              Tire dúvidas, compare ativos e receba análises personalizadas
+            <p class="text-white/60">
+              Pergunte qualquer coisa. Nossa IA responde em segundos.
             </p>
           </div>
 
-          <div class="relative w-full">
-            <div
-              v-if="blockChat"
-              class="absolute inset-0 left-0 top-0 z-10 flex h-full w-full cursor-pointer items-center justify-center overflow-hidden rounded-2xl bg-black/60 p-4 backdrop-blur-md transition-all hover:bg-black/70 md:rounded-3xl"
-              @click="redirectToLogin('chat')"
+          <!-- Cards de sugestões clicáveis -->
+          <div class="mb-8 grid gap-3 sm:grid-cols-3">
+            <NuxtLink
+              v-for="(item, idx) in [
+                { icon: 'i-lucide-target', text: `Vale investir em ${tickerUpper}?`, desc: 'Análise de viabilidade' },
+                { icon: 'i-lucide-calculator', text: 'Qual o preço teto?', desc: 'Método Bazin' },
+                { icon: 'i-lucide-file-text', text: 'Relatório completo', desc: 'Análise fundamentalista' },
+              ]"
+              :key="idx"
+              to="/auth/login"
+              class="group flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-5 transition-all duration-200 hover:border-secondary/30 hover:bg-secondary/5"
             >
-              <div class="transform text-center transition-all hover:scale-105">
-                <div class="relative mb-4 md:mb-6">
-                  <div class="absolute inset-0 animate-ping opacity-20">
-                    <IconAi class="fill-secondary mx-auto h-12 md:h-16" />
-                  </div>
-                  <IconAi
-                    class="fill-secondary relative mx-auto h-12 md:h-16"
-                  />
-                </div>
-                <h3
-                  class="mb-2 text-xl font-bold leading-tight text-white sm:text-2xl md:text-3xl"
-                >
-                  Converse com nossa IA
-                </h3>
-                <p
-                  class="mb-4 px-2 text-sm leading-relaxed text-gray-300 sm:text-base md:mb-6"
-                >
-                  Faça login e tenha acesso ilimitado à assessoria inteligente
-                </p>
-                <UButton
-                  to="/auth/login"
-                  color="secondary"
-                  size="xl"
-                  icon="i-lucide-message-circle"
-                  class="hover:shadow-secondary/50 w-full px-6 transition-all hover:scale-110 hover:shadow-2xl sm:w-auto sm:px-8"
-                >
-                  Acessar Assessoria
-                </UButton>
-                <p class="mt-3 text-xs text-gray-400 md:mt-4 md:text-sm">
-                  Respostas instantâneas • Análises personalizadas
-                </p>
+              <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 transition-colors group-hover:bg-secondary/20">
+                <UIcon :name="item.icon" class="h-5 w-5 text-white/60 transition-colors group-hover:text-secondary" />
               </div>
-            </div>
+              <div>
+                <p class="font-medium text-white">{{ item.text }}</p>
+                <p class="text-sm text-white/50">{{ item.desc }}</p>
+              </div>
+              <div class="mt-auto flex items-center gap-1 text-sm text-white/40 transition-colors group-hover:text-secondary">
+                <span>Perguntar</span>
+                <UIcon name="i-lucide-arrow-right" class="h-4 w-4" />
+              </div>
+            </NuxtLink>
+          </div>
 
-            <div
-              class="bg-gradient-to-br from-white/10 via-white/5 to-transparent p-6 backdrop-blur-xl md:rounded-3xl md:p-8"
-              @click="handleChatCardClick"
+          <!-- CTA -->
+          <div class="flex flex-col items-center gap-4 rounded-2xl border border-white/10 bg-gradient-to-br from-secondary/10 to-transparent p-6 text-center md:p-8">
+            <div class="flex items-center gap-3">
+              <div class="flex -space-x-2">
+                <div class="flex h-8 w-8 items-center justify-center rounded-full bg-green-500/20 ring-2 ring-black">
+                  <UIcon name="i-lucide-check" class="h-4 w-4 text-green-400" />
+                </div>
+                <div class="flex h-8 w-8 items-center justify-center rounded-full bg-secondary/20 ring-2 ring-black">
+                  <UIcon name="i-lucide-zap" class="h-4 w-4 text-secondary" />
+                </div>
+                <div class="flex h-8 w-8 items-center justify-center rounded-full bg-purple-500/20 ring-2 ring-black">
+                  <UIcon name="i-lucide-sparkles" class="h-4 w-4 text-purple-400" />
+                </div>
+              </div>
+              <span class="text-sm text-white/60">Mais de 10.000 análises realizadas</span>
+            </div>
+            <UButton
+              to="/auth/login"
+              color="secondary"
+              size="xl"
+              icon="i-lucide-message-circle"
+              class="hover:shadow-secondary/50 w-full transition-all hover:scale-[1.02] hover:shadow-xl sm:w-auto"
             >
-              <div class="mb-6 flex flex-col items-center gap-4">
-                <h3 class="text-center text-2xl text-white">
-                  Faça alguma pergunta
-                </h3>
-                <p class="text-center text-[13px] font-light text-gray-400">
-                  Tire dúvidas sobre investimentos, compare ativos e peça
-                  análises em linguagem simples.
-                </p>
-              </div>
-
-              <div class="mb-8 grid grid-cols-2 gap-3 md:grid-cols-3">
-                <div
-                  v-for="(suggestion, idx) in chatSuggestions"
-                  :key="idx"
-                  class="flex h-[120px] items-center justify-center rounded-xl bg-gradient-to-br from-white/10 to-white/5 p-3 text-[13px] font-medium opacity-70 transition-all hover:from-white/20 hover:opacity-100"
-                >
-                  {{ suggestion }}
-                </div>
-              </div>
-
-              <div class="space-y-4 opacity-60">
-                <div class="flex items-start gap-3">
-                  <IconLogo class="mt-1 w-6 flex-shrink-0 fill-white" />
-                  <div class="flex-1 rounded-lg bg-white/5 p-4 backdrop-blur">
-                    <p class="text-sm text-white">
-                      Olá! Sou a assistente virtual da Redentia. Como posso
-                      ajudar você hoje?
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="mt-6 w-full rounded-lg bg-black/20 p-4 backdrop-blur">
-                <UTextarea
-                  placeholder="Faça qualquer pergunta..."
-                  size="md"
-                  :rows="2"
-                  disabled
-                  class="w-full"
-                  :ui="{
-                    base: 'text-[14px] bg-transparent hover:!bg-transparent focus:!bg-transparent focus-visible:!bg-transparent ring-0 !border-0 !shadow-none placeholder:text-white/40',
-                  }"
-                />
-              </div>
-            </div>
+              Começar a Perguntar
+            </UButton>
+            <p class="flex items-center gap-2 text-xs text-white/40">
+              <UIcon name="i-lucide-shield-check" class="h-3 w-3" />
+              Gratuito • Sem cadastro de cartão
+            </p>
           </div>
         </div>
       </section>
@@ -1137,16 +1136,32 @@ const intelligentIndicators = computed(() => {
   const stats = data.key_statistics
   const financial = data.financial_data
 
-  // Cálculos de indicadores inteligentes
-  const debtToEquityRatio = parseFloat(financial.debt_to_equity) || 0
-  const currentRatio =
-    parseFloat(financial.total_cash) /
-      (financial.total_debt ? parseFloat(financial.total_debt) : 1) || 0
-  const roe = parseFloat(financial.return_on_equity) * 100 || 0
-  const roa = parseFloat(financial.return_on_assets) * 100 || 0
-  const profitMargin = parseFloat(financial.profit_margins) * 100 || 0
-  const priceToBook = parseFloat(stats.price_to_book) || 0
-  const forwardPE = parseFloat(stats.forward_pe) || 0
+  // Cálculos de indicadores inteligentes com safeguards
+  const debtToEquityRaw = safeNumber(financial?.debt_to_equity)
+  const debtToEquityRatio = debtToEquityRaw ?? 0
+
+  const totalCash = safeNumber(financial?.total_cash)
+  const totalDebt = safeNumber(financial?.total_debt)
+  const currentRatioRaw = totalCash !== null && totalDebt !== null && totalDebt !== 0
+    ? totalCash / totalDebt
+    : null
+  const currentRatio = currentRatioRaw ?? 0
+
+  const roeRaw = safeNumber(financial?.return_on_equity)
+  const roe = roeRaw !== null ? roeRaw * 100 : 0
+
+  const roaRaw = safeNumber(financial?.return_on_assets)
+  const roa = roaRaw !== null ? roaRaw * 100 : 0
+
+  const profitMarginRaw = safeNumber(financial?.profit_margins)
+  const profitMargin = profitMarginRaw !== null ? profitMarginRaw * 100 : 0
+
+  const priceToBookRaw = safeNumber(stats?.price_to_book)
+  const priceToBook = priceToBookRaw ?? 0
+
+  const forwardPERaw = safeNumber(stats?.forward_pe)
+  const forwardPE = forwardPERaw ?? 0
+
   const bazinIndicatorPrice = bazinPrice.value
 
   // Classificações baseadas em benchmarks do mercado
@@ -1156,9 +1171,9 @@ const intelligentIndicators = computed(() => {
     return { label: 'Alto', color: 'text-red-400' }
   }
 
-  const getROERating = (roe: number) => {
-    if (roe > 15) return { label: 'Excelente', color: 'text-green-400' }
-    if (roe > 10) return { label: 'Bom', color: 'text-yellow-400' }
+  const getROERating = (roeVal: number) => {
+    if (roeVal > 15) return { label: 'Excelente', color: 'text-green-400' }
+    if (roeVal > 10) return { label: 'Bom', color: 'text-yellow-400' }
     return { label: 'Baixo', color: 'text-red-400' }
   }
 
@@ -1170,39 +1185,45 @@ const intelligentIndicators = computed(() => {
 
   return {
     debtToEquity: {
-      value: debtToEquityRatio.toFixed(1),
+      value: debtToEquityRaw !== null ? formatIndicator(debtToEquityRaw, { decimals: 1 }) : '—',
       rating: getDebtRating(debtToEquityRatio),
     },
     currentRatio: {
-      value: currentRatio.toFixed(2),
+      value: currentRatioRaw !== null ? formatIndicator(currentRatioRaw, { decimals: 2 }) : '—',
       rating:
         currentRatio > 1
           ? { label: 'Saudável', color: 'text-green-400' }
           : { label: 'Preocupante', color: 'text-red-400' },
     },
-    roe: { value: roe.toFixed(1) + '%', rating: getROERating(roe) },
+    roe: {
+      value: roeRaw !== null ? formatIndicator(roeRaw, { decimals: 1, multiplier: 100, suffix: '%' }) : '—',
+      rating: getROERating(roe),
+    },
     roa: {
-      value: roa.toFixed(1) + '%',
+      value: roaRaw !== null ? formatIndicator(roaRaw, { decimals: 1, multiplier: 100, suffix: '%' }) : '—',
       rating:
         roa > 5
           ? { label: 'Bom', color: 'text-green-400' }
           : { label: 'Baixo', color: 'text-red-400' },
     },
     profitMargin: {
-      value: profitMargin.toFixed(1) + '%',
+      value: profitMarginRaw !== null ? formatIndicator(profitMarginRaw, { decimals: 1, multiplier: 100, suffix: '%' }) : '—',
       rating:
         profitMargin > 10
           ? { label: 'Alta', color: 'text-green-400' }
           : { label: 'Baixa', color: 'text-red-400' },
     },
     priceToBook: {
-      value: priceToBook.toFixed(2),
+      value: priceToBookRaw !== null ? formatIndicator(priceToBookRaw, { decimals: 2 }) : '—',
       rating:
         priceToBook < 1.5
           ? { label: 'Barato', color: 'text-green-400' }
           : { label: 'Caro', color: 'text-red-400' },
     },
-    forwardPE: { value: forwardPE.toFixed(1), rating: getPERating(forwardPE) },
+    forwardPE: {
+      value: forwardPERaw !== null ? formatIndicator(forwardPERaw, { decimals: 1 }) : '—',
+      rating: getPERating(forwardPE),
+    },
     bazinPrice: {
       value: bazinPriceDisplay.value,
       rating:
@@ -1484,6 +1505,40 @@ function safeNumber(value: unknown): number | null {
   const parsed = Number.parseFloat(standardized)
   return Number.isFinite(parsed) ? parsed : null
 }
+
+// Helper para formatar indicadores de forma segura (nunca retorna NaN)
+function formatIndicator(
+  value: unknown,
+  options: {
+    decimals?: number
+    multiplier?: number
+    suffix?: string
+    fallback?: string
+  } = {}
+): string {
+  const { decimals = 1, multiplier = 1, suffix = '', fallback = '—' } = options
+  const num = safeNumber(value)
+  if (num === null) return fallback
+  const result = num * multiplier
+  if (!Number.isFinite(result)) return fallback
+  return `${result.toFixed(decimals)}${suffix}`
+}
+
+// Computed para indicadores básicos com safeguards
+const basicIndicators = computed(() => {
+  if (!fundamentusData.value) return null
+  const stats = fundamentusData.value.key_statistics
+  const financial = fundamentusData.value.financial_data
+
+  return {
+    pl: formatIndicator(stats?.forward_pe, { decimals: 1 }),
+    pvpa: formatIndicator(stats?.price_to_book, { decimals: 2 }),
+    dividendYield: formatIndicator(stats?.dividend_yield, { decimals: 1, suffix: '%' }),
+    roe: formatIndicator(financial?.return_on_equity, { decimals: 1, multiplier: 100, suffix: '%' }),
+    roa: formatIndicator(financial?.return_on_assets, { decimals: 1, multiplier: 100, suffix: '%' }),
+    netMargin: formatIndicator(financial?.profit_margins, { decimals: 1, multiplier: 100, suffix: '%' }),
+  }
+})
 
 interface AnnualRecord {
   date: Date

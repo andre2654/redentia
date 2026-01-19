@@ -88,5 +88,23 @@ export default defineAppConfig({
         color: 'neutral',
       },
     },
+    switch: {
+      slots: {
+        root: 'relative inline-flex h-5 w-9 shrink-0 items-center rounded-full border-2 border-transparent cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+        thumb: 'pointer-events-none block h-4 w-4 rounded-full bg-white shadow-lg ring-0 transition-transform',
+      },
+      variants: {
+        checked: {
+          true: {
+            root: 'bg-secondary',
+            thumb: 'translate-x-4',
+          },
+          false: {
+            root: 'bg-gray-600',
+            thumb: 'translate-x-0',
+          },
+        },
+      },
+    },
   },
 })

@@ -57,38 +57,145 @@
       </div>
     </div>
 
-    <!-- Links Institucionais -->
-    <div class="w-full bg-white/5 py-5">
-      <div
-        class="mx-auto flex max-w-[1400px] items-center justify-between px-4 text-[15px] max-lg:flex-col max-lg:gap-[40px]"
-      >
-        <NuxtLink to="/redentia/about"> Sobre </NuxtLink>
-        <NuxtLink to="/redentia/how-works"> Como funciona </NuxtLink>
-        <NuxtLink to="/redentia/contact"> Contato </NuxtLink>
-        <NuxtLink to="/glossario"> Glossário </NuxtLink>
-        <NuxtLink to="/guias"> Guias </NuxtLink>
-        <NuxtLink to="/redentia/privacy"> Privacidade </NuxtLink>
-        <NuxtLink to="/redentia/terms"> Termos e políticas </NuxtLink>
-        <NuxtLink to="/redentia/cookies">
-          Política de cookies e privacidade
-        </NuxtLink>
+    <!-- Links Categorizados (estilo Zapier) -->
+    <div class="w-full border-t border-white/10 py-12">
+      <div class="mx-auto flex max-w-[1400px] flex-wrap justify-center gap-x-16 gap-y-10 px-6 text-center md:justify-between md:text-left lg:gap-x-24">
+        <!-- Ferramentas -->
+        <div class="flex flex-col items-center md:items-start">
+          <h3 class="mb-5 text-sm font-semibold uppercase tracking-wider text-white">
+            Ferramentas
+          </h3>
+          <ul class="flex flex-col items-center gap-3 md:items-start">
+            <li>
+              <NuxtLink to="/calculadora" class="text-sm text-gray-400 transition-colors hover:text-secondary">
+                Calculadoras
+              </NuxtLink>
+            </li>
+            <li>
+              <NuxtLink to="/calculadora/juros-compostos" class="text-sm text-gray-400 transition-colors hover:text-secondary">
+                Juros Compostos
+              </NuxtLink>
+            </li>
+            <li>
+              <NuxtLink to="/calculadora/preco-teto" class="text-sm text-gray-400 transition-colors hover:text-secondary">
+                Preço Teto
+              </NuxtLink>
+            </li>
+            <li>
+              <NuxtLink to="/calculadora/dividend-yield" class="text-sm text-gray-400 transition-colors hover:text-secondary">
+                Dividend Yield
+              </NuxtLink>
+            </li>
+            <li>
+              <NuxtLink to="/help" class="text-sm text-gray-400 transition-colors hover:text-secondary">
+                Assessoria IA
+              </NuxtLink>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Recursos -->
+        <div class="flex flex-col items-center md:items-start">
+          <h3 class="mb-5 text-sm font-semibold uppercase tracking-wider text-white">
+            Recursos
+          </h3>
+          <ul class="flex flex-col items-center gap-3 md:items-start">
+            <li>
+              <NuxtLink to="/guias" class="text-sm text-gray-400 transition-colors hover:text-secondary">
+                Guias de Investimento
+              </NuxtLink>
+            </li>
+            <li>
+              <NuxtLink to="/glossario" class="text-sm text-gray-400 transition-colors hover:text-secondary">
+                Glossário
+              </NuxtLink>
+            </li>
+            <li>
+              <NuxtLink to="/acoes" class="text-sm text-gray-400 transition-colors hover:text-secondary">
+                Ações
+              </NuxtLink>
+            </li>
+            <li>
+              <NuxtLink to="/fiis" class="text-sm text-gray-400 transition-colors hover:text-secondary">
+                FIIs
+              </NuxtLink>
+            </li>
+            <li>
+              <NuxtLink to="/dividendos" class="text-sm text-gray-400 transition-colors hover:text-secondary">
+                Dividendos
+              </NuxtLink>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Empresa -->
+        <div class="flex flex-col items-center md:items-start">
+          <h3 class="mb-5 text-sm font-semibold uppercase tracking-wider text-white">
+            Empresa
+          </h3>
+          <ul class="flex flex-col items-center gap-3 md:items-start">
+            <li>
+              <NuxtLink to="/redentia/about" class="text-sm text-gray-400 transition-colors hover:text-secondary">
+                Sobre
+              </NuxtLink>
+            </li>
+            <li>
+              <NuxtLink to="/redentia/how-works" class="text-sm text-gray-400 transition-colors hover:text-secondary">
+                Como funciona
+              </NuxtLink>
+            </li>
+            <li>
+              <NuxtLink to="/redentia/contact" class="text-sm text-gray-400 transition-colors hover:text-secondary">
+                Contato
+              </NuxtLink>
+            </li>
+            <li>
+              <NuxtLink to="/download" class="text-sm text-gray-400 transition-colors hover:text-secondary">
+                Download
+              </NuxtLink>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Legal -->
+        <div class="flex flex-col items-center md:items-start">
+          <h3 class="mb-5 text-sm font-semibold uppercase tracking-wider text-white">
+            Legal
+          </h3>
+          <ul class="flex flex-col items-center gap-3 md:items-start">
+            <li>
+              <NuxtLink to="/redentia/terms" class="text-sm text-gray-400 transition-colors hover:text-secondary">
+                Termos de Uso
+              </NuxtLink>
+            </li>
+            <li>
+              <NuxtLink to="/redentia/privacy" class="text-sm text-gray-400 transition-colors hover:text-secondary">
+                Privacidade
+              </NuxtLink>
+            </li>
+            <li>
+              <NuxtLink to="/redentia/cookies" class="text-sm text-gray-400 transition-colors hover:text-secondary">
+                Cookies
+              </NuxtLink>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
     <!-- Logo e Copyright -->
     <div
-      class="mx-auto flex w-full max-w-[1400px] flex-col gap-6 px-2 pb-[105px] pt-[50px] max-lg:items-center"
+      class="mx-auto flex w-full max-w-[1400px] flex-col gap-6 border-t border-white/10 px-6 pb-[105px] pt-8 max-lg:items-center"
     >
-      <NuxtLink to="/">
-        <IconLogoFull class="w-[150px] fill-white" />
-      </NuxtLink>
-      <div
-        class="flex w-full items-center max-lg:flex-col max-lg:gap-6 lg:items-end lg:justify-between"
-      >
-        <p class="text-[12px] text-white/80 max-lg:text-center">
-          @2025 Redentia. Todos os direitos reservados.
-          <br />
-          AV. PAULISTA 1106 SALA 01 ANDAR, Bela Vista, São Paulo, SP
-        </p>
+      <div class="flex w-full items-start justify-between max-lg:flex-col max-lg:items-center max-lg:gap-6">
+        <div class="flex flex-col gap-4 max-lg:items-center">
+          <NuxtLink to="/">
+            <IconLogoFull class="w-[150px] fill-white" />
+          </NuxtLink>
+          <p class="text-[12px] text-white/60 max-lg:text-center">
+            Invista com inteligência. Resultados reais.
+          </p>
+        </div>
+        
         <div class="flex items-center gap-3">
           <NuxtLink to="/download" class="transition-opacity hover:opacity-80">
             <img
@@ -105,6 +212,15 @@
             />
           </NuxtLink>
         </div>
+      </div>
+      
+      <div class="flex w-full items-center justify-between border-t border-white/10 pt-6 max-lg:flex-col max-lg:gap-4">
+        <p class="text-[12px] text-white/50 max-lg:text-center">
+          © 2026 Redentia. Todos os direitos reservados.
+        </p>
+        <p class="text-[11px] text-white/40 max-lg:text-center">
+          AV. PAULISTA 1106 SALA 01 ANDAR, Bela Vista, São Paulo, SP
+        </p>
       </div>
     </div>
   </div>

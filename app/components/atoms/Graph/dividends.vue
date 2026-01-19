@@ -114,58 +114,70 @@
         </div>
       </div>
 
-      <!-- Checkbox para agrupar por ano -->
-      <label
+      <!-- Toggle para agrupar por ano -->
+      <button
         v-if="showControls"
-        for="map-toggle"
-        class="hover:bg-secondary/10 mt-3 flex max-w-fit items-center justify-between gap-4 rounded-full border px-3 py-2"
-        :class="{
-          'bg-tertiary/60 !border-tertiary': groupByYear,
-        }"
+        type="button"
+        class="mt-4 flex max-w-fit cursor-pointer items-center gap-3 rounded-full border px-4 py-2.5 transition-all duration-200"
+        :class="[
+          groupByYear
+            ? 'border-secondary/50 bg-secondary/10 hover:bg-secondary/20'
+            : 'border-white/10 bg-white/5 hover:bg-white/10',
+        ]"
+        @click="groupByYear = !groupByYear"
       >
-        <IconAi class="fill-secondary h-5" />
-        <h2 class="text-secondary select-none">Agrupar por ano</h2>
-        <USwitch
-          id="map-toggle"
-          v-model="groupByYear"
-          color="secondary"
-          checked-icon="lucide-check"
-          :ui="{
-            base: 'data-[state=checked]:border-secondary',
-          }"
+        <UIcon
+          name="i-lucide-layers"
+          class="h-4 w-4"
+          :class="groupByYear ? 'text-secondary' : 'text-white/60'"
         />
-      </label>
+        <span
+          class="select-none text-sm font-medium"
+          :class="groupByYear ? 'text-secondary' : 'text-white/70'"
+        >
+          Agrupar por ano
+        </span>
+        <div
+          class="relative h-5 w-9 rounded-full transition-colors duration-200"
+          :class="groupByYear ? 'bg-secondary' : 'bg-gray-600'"
+        >
+          <div
+            class="absolute top-0.5 h-4 w-4 rounded-full bg-white shadow-md transition-transform duration-200"
+            :class="groupByYear ? 'translate-x-4' : 'translate-x-0.5'"
+          />
+        </div>
+      </button>
     </div>
 
     <!-- Resumo dos dividendos -->
-    <div v-if="showControls" class="flex items-center justify-between gap-8">
-      <MoleculesTickerIndicator
-        name="Total no período"
-        :value="
-          totalDividends.toLocaleString('pt-BR', { minimumFractionDigits: 2 })
-        "
-        help-text="Total de dividendos pagos no período."
-        is-intelligent
-        :help-text-with-tooltip="false"
-      />
-      <MoleculesTickerIndicator
-        name="Maior pagamento"
-        :value="
-          maxDividend.toLocaleString('pt-BR', { minimumFractionDigits: 2 })
-        "
-        help-text="Maior pagamento de dividendos no período."
-        is-intelligent
-        :help-text-with-tooltip="false"
-      />
-      <MoleculesTickerIndicator
-        name="Média"
-        :value="
-          averageDividend.toLocaleString('pt-BR', { minimumFractionDigits: 2 })
-        "
-        help-text="Média de dividendos pagos no período."
-        is-intelligent
-        :help-text-with-tooltip="false"
-      />
+    <div v-if="showControls" class="grid gap-3 sm:grid-cols-3">
+      <div class="flex flex-col gap-2 rounded-xl border border-white/10 bg-white/5 p-4">
+        <div class="flex items-center gap-2">
+          <UIcon name="i-lucide-coins" class="h-4 w-4 text-secondary" />
+          <span class="text-sm text-white/60">Total no período</span>
+        </div>
+        <span class="text-2xl font-bold tabular-nums text-white">
+          R$ {{ totalDividends.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}
+        </span>
+      </div>
+      <div class="flex flex-col gap-2 rounded-xl border border-white/10 bg-white/5 p-4">
+        <div class="flex items-center gap-2">
+          <UIcon name="i-lucide-trophy" class="h-4 w-4 text-secondary" />
+          <span class="text-sm text-white/60">Maior pagamento</span>
+        </div>
+        <span class="text-2xl font-bold tabular-nums text-white">
+          R$ {{ maxDividend.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}
+        </span>
+      </div>
+      <div class="flex flex-col gap-2 rounded-xl border border-white/10 bg-white/5 p-4">
+        <div class="flex items-center gap-2">
+          <UIcon name="i-lucide-calculator" class="h-4 w-4 text-secondary" />
+          <span class="text-sm text-white/60">Média por pagamento</span>
+        </div>
+        <span class="text-2xl font-bold tabular-nums text-white">
+          R$ {{ averageDividend.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}
+        </span>
+      </div>
     </div>
   </div>
 </template>

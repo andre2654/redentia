@@ -11,14 +11,14 @@
         <div class="relative">
           <IconLogoFull class="mx-auto mb-10 h-9 fill-white md:h-12" />
           <h2
-            class="mb-3 text-xl font-semibold leading-tight text-white sm:text-3xl md:mb-4 md:text-4xl"
+            class="mb-3 text-2xl font-bold leading-tight text-white sm:text-4xl md:mb-4 md:text-5xl"
           >
-            Pronto para começar a investir melhor?
+            Invista com inteligência.<br class="hidden sm:block" /> Resultados reais.
           </h2>
           <p
             class="mb-6 px-2 text-base leading-relaxed text-gray-300 sm:text-lg md:mb-8 md:text-xl"
           >
-            Crie sua conta gratuitamente e tenha acesso a todas as ferramentas
+            Análises, calculadoras e IA. Tudo grátis.
           </p>
           <div class="flex items-center justify-center gap-2">
             <UButton
@@ -47,48 +47,44 @@
               Já tenho conta
             </UButton>
           </div>
-          <p class="mt-4 text-xs text-gray-400 md:mt-6 md:text-sm">
-            Sem taxa de inscrição • Cancele quando quiser • Suporte 24/7
-          </p>
+          <!-- Trust badges estilo Zapier -->
+          <div class="mt-6 flex flex-wrap items-center justify-center gap-4 text-xs text-gray-400 md:mt-8 md:gap-6 md:text-sm">
+            <span class="flex items-center gap-2">
+              <UIcon name="i-lucide-shield-check" class="h-4 w-4 text-green-500" />
+              Dados criptografados
+            </span>
+            <span class="flex items-center gap-2">
+              <UIcon name="i-lucide-check-circle" class="h-4 w-4 text-green-500" />
+              100% gratuito
+            </span>
+            <span class="flex items-center gap-2">
+              <UIcon name="i-lucide-credit-card" class="h-4 w-4 text-green-500" />
+              Sem cartão
+            </span>
+          </div>
         </div>
       </div>
     </section>
 
-    <AtomsTickerCarousel
-      class="mt-5 w-full max-md:hidden"
-      big
-      no-control
-      :items="tickerCarouselItems"
-    />
-    <AtomsTickerCarousel
-      class="mt-5 w-full md:hidden"
-      no-control
-      :items="tickerCarouselItems"
-    />
+    <!-- Social Proof - Logos de corretoras -->
+    <MoleculesTrustedBy v-if="!authStore.isAuthenticated" class="mt-8" />
 
+    <!-- Seção de Mercado ao Vivo (Prioridade) -->
     <div class="flex h-auto flex-col gap-4 pt-6">
       <div class="flex flex-col gap-8">
-        <div v-if="!authStore.isAuthenticated" class="text-center">
-          <h2
-            class="my-8 text-2xl font-bold leading-tight text-white sm:text-3xl md:mb-4 md:text-4xl"
-          >
-            Acompanhe o Mercado em Tempo Real
-          </h2>
-          <p class="text-sm text-gray-400 sm:text-base md:text-lg">
-            Dados atualizados de ações, FIIs e muito mais
-          </p>
-        </div>
-
         <div class="flex flex-col gap-4 px-6">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <span
-                class="h-2 w-2 animate-pulse rounded-full bg-green-400 shadow-lg shadow-blue-500/50 md:h-3 md:w-3"
+                class="h-2 w-2 animate-pulse rounded-full bg-green-400 shadow-lg shadow-green-500/50 md:h-3 md:w-3"
               />
               <span
                 class="text-xs font-medium uppercase tracking-wider text-green-400 md:text-sm"
                 >Ao Vivo</span
               >
+              <span class="text-xs text-gray-500">
+                • Atualizado agora
+              </span>
             </div>
           </div>
           <div class="flex gap-4">
@@ -151,29 +147,57 @@
         />
       </div>
 
+      <!-- Ticker Carousel com bordas sutis -->
+      <div class="border-y border-white/10 py-4">
+        <AtomsTickerCarousel
+          class="w-full max-md:hidden"
+          big
+          no-control
+          :items="tickerCarouselItems"
+        />
+        <AtomsTickerCarousel
+          class="w-full md:hidden"
+          no-control
+          :items="tickerCarouselItems"
+        />
+      </div>
+
       <div class="flex flex-col px-6">
-        <h2 class="text-[18px] font-bold">Rankings</h2>
+        <h2 class="text-[18px] font-bold">O mercado em tempo real</h2>
         <p class="text-[13px] font-extralight">
-          Veja os destaques de altas e baixas do dia. Ative o mapa para
-          visualizar o desempenho por setor.
+          Altas, baixas e oportunidades. Atualização instantânea.
         </p>
-        <label
-          for="map-toggle"
-          class="hover:bg-secondary/10 mt-3 flex max-w-fit items-center justify-between gap-4 rounded-full border px-3 py-2 transition"
-          :class="{
-            'bg-tertiary/60 !border-tertiary': showMap,
-          }"
+        <button
+          type="button"
+          class="mt-3 flex max-w-fit cursor-pointer items-center gap-3 rounded-full border px-4 py-2.5 transition-all duration-200"
+          :class="[
+            showMap
+              ? 'border-secondary/50 bg-secondary/10 hover:bg-secondary/20'
+              : 'border-white/10 bg-white/5 hover:bg-white/10',
+          ]"
+          @click="showMap = !showMap"
         >
-          <IconAi class="fill-secondary h-5" />
-          <h2 class="text-secondary select-none">Mostrar mapa</h2>
-          <USwitch
-            id="map-toggle"
-            v-model="showMap"
-            color="secondary"
-            checked-icon="lucide-check"
-            :ui="{ base: 'data-[state=checked]:border-secondary' }"
+          <UIcon
+            name="i-lucide-map"
+            class="h-4 w-4"
+            :class="showMap ? 'text-secondary' : 'text-white/60'"
           />
-        </label>
+          <span
+            class="select-none text-sm font-medium"
+            :class="showMap ? 'text-secondary' : 'text-white/70'"
+          >
+            Mostrar mapa
+          </span>
+          <div
+            class="relative h-5 w-9 rounded-full transition-colors duration-200"
+            :class="showMap ? 'bg-secondary' : 'bg-gray-600'"
+          >
+            <div
+              class="absolute top-0.5 h-4 w-4 rounded-full bg-white shadow-md transition-transform duration-200"
+              :class="showMap ? 'translate-x-4' : 'translate-x-0.5'"
+            />
+          </div>
+        </button>
       </div>
 
       <div v-if="showMap" class="mb-6 flex flex-col">
@@ -331,15 +355,30 @@
       </div>
     </div>
 
+    <!-- Features Grid 2x2 estilo Zapier -->
+    <MoleculesFeaturesGrid v-if="!authStore.isAuthenticated" class="mt-8" />
+
+    <!-- Metrics Section com contador gigante -->
+    <MoleculesMetricsSection v-if="!authStore.isAuthenticated" />
+
+    <!-- Feature Tabs por perfil -->
+    <MoleculesFeatureTabs v-if="!authStore.isAuthenticated" class="mt-8" />
+
+    <!-- Marquee de Tags em movimento -->
+    <AtomsMarqueeFeatures v-if="!authStore.isAuthenticated" />
+
     <!-- Seção Invista por Categoria -->
-    <section class="mt-12 px-6">
+    <section class="mt-12 border-t border-white/10 px-6 pt-12">
       <div class="flex flex-col gap-6">
         <div class="text-center">
+          <p class="mb-2 text-xs uppercase tracking-[0.2em] text-gray-500">
+            Explore por categoria
+          </p>
           <h2 class="mb-2 text-2xl font-bold md:text-3xl">
-            Invista agora
+            Encontre seu próximo investimento
           </h2>
           <p class="text-sm text-gray-400 md:text-base">
-            Guias completos, estratégias e análises para cada tipo de ativo
+            Tudo que você precisa. Nada que você não precisa.
           </p>
         </div>
 
@@ -495,17 +534,17 @@
     </section>
 
     <!-- Seção Blog / Guias Educacionais -->
-    <section class="mt-12 px-6">
+    <section class="mt-12 border-t border-white/10 px-6 pt-12">
       <div class="flex flex-col gap-8">
         <div class="text-center">
           <div class="mb-3 flex items-center justify-center gap-2">
             <UIcon name="i-lucide-newspaper" class="text-secondary h-6 w-6" />
           </div>
           <h2 class="mb-2 text-2xl font-bold md:text-3xl">
-            Aprenda a investir
+            Conhecimento que gera resultados
           </h2>
           <p class="text-sm text-gray-400 md:text-base">
-            Guias completos, tutoriais práticos e análises para dominar o mercado financeiro
+            Guias práticos, análises e estratégias. Aprenda em minutos.
           </p>
         </div>
 
@@ -668,19 +707,25 @@
       </div>
     </section>
 
-    <section v-if="!authStore.isAuthenticated" class="mt-20">
+    <!-- Testimonials Section -->
+    <MoleculesTestimonialsSection v-if="!authStore.isAuthenticated" class="mt-12" />
+
+    <section v-if="!authStore.isAuthenticated" class="mt-12 border-t border-white/10 pt-16">
       <div class="w-full">
         <div class="mb-8 text-center md:mb-12">
           <div class="mb-3 flex items-center justify-center gap-2 md:mb-4">
             <IconAi class="fill-secondary h-8 md:h-12" />
           </div>
+          <p class="mb-2 text-xs uppercase tracking-[0.2em] text-gray-500">
+            Inteligência artificial
+          </p>
           <h2
             class="mb-2 text-2xl font-bold leading-tight text-white sm:text-3xl md:mb-4 md:text-4xl"
           >
-            Assessoria com Inteligência Artificial
+            IA que trabalha enquanto você dorme
           </h2>
           <p class="text-sm text-gray-400 sm:text-base md:text-lg">
-            Tire dúvidas, compare ativos e receba análises personalizadas
+            Pergunte qualquer coisa. Resposta em segundos.
           </p>
         </div>
 
@@ -700,12 +745,12 @@
               <h3
                 class="mb-2 text-xl font-bold leading-tight text-white sm:text-2xl md:text-3xl"
               >
-                Converse com nossa IA
+                Sua assessoria pessoal. Grátis.
               </h3>
               <p
                 class="mb-4 px-2 text-sm leading-relaxed text-gray-300 sm:text-base md:mb-6"
               >
-                Faça login e tenha acesso ilimitado à assessoria inteligente
+                Faça login e comece a usar em 30 segundos
               </p>
               <UButton
                 to="/auth/login"
@@ -714,10 +759,10 @@
                 icon="i-lucide-message-circle"
                 class="hover:shadow-secondary/50 w-full px-6 transition-all hover:scale-110 hover:shadow-2xl sm:w-auto sm:px-8"
               >
-                Acessar Assessoria
+                Começar agora
               </UButton>
               <p class="mt-3 text-xs text-gray-400 md:mt-4 md:text-sm">
-                Respostas instantâneas • Análises personalizadas
+                Resposta em ~3s • Análises personalizadas
               </p>
             </div>
           </div>
@@ -727,12 +772,11 @@
             @click="handleChatCardClick"
           >
             <div class="mb-6 flex flex-col items-center gap-4">
-              <h3 class="text-center text-2xl text-white">
-                Faça alguma pergunta
+              <h3 class="text-center text-2xl font-bold text-white">
+                Da dúvida à decisão em segundos
               </h3>
               <p class="text-center text-[13px] font-light text-gray-400">
-                Tire dúvidas sobre investimentos, compare ativos e peça análises
-                em linguagem simples.
+                Pergunte qualquer coisa. A IA faz o trabalho difícil por você.
               </p>
             </div>
 
