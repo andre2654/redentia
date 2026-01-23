@@ -264,6 +264,7 @@
         />
       </div>
       <template v-else>
+        <!-- Maiores Altas -->
         <UCarousel
           v-slot="{ item }"
           class="w-full"
@@ -271,29 +272,36 @@
           :items="assetCategories"
           :ui="{ item: 'basis-1/1 md:basis-1/2 lg:basis-1/3 xl:basis-1/4' }"
         >
-          <div class="flex w-full flex-col gap-3 rounded-[30px] py-6">
-            <h2 class="text-[25px] font-bold max-md:text-center md:text-[18px]">
-              {{ item.label }}
-            </h2>
-            <p class="mx-auto mb-5 text-[16px] opacity-70 md:hidden">
-              Maiores altas
-            </p>
-            <div class="flex flex-col gap-1 overflow-hidden rounded-lg">
+          <div class="flex w-full flex-col gap-2 px-2 py-4">
+            <!-- Header -->
+            <div class="mb-2 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <UIcon name="i-lucide-trending-up" class="h-5 w-5 text-emerald-400" />
+                <div>
+                  <h2 class="text-base font-bold text-white">{{ item.label }}</h2>
+                  <p class="text-xs text-white/50">Maiores altas</p>
+                </div>
+              </div>
+              <NuxtLink
+                :to="{ path: '/search', query: rankingLinkQueries.top[item.key] }"
+                class="flex items-center gap-1 text-sm text-white/60 transition-colors hover:text-white"
+              >
+                Ver todos
+                <UIcon name="i-lucide-arrow-right" class="h-4 w-4" />
+              </NuxtLink>
+            </div>
+            <!-- Lista -->
+            <div class="flex flex-col divide-y divide-white/5">
               <AtomsTickerListItem
                 v-for="stock in topAssets.top[item.key]"
                 :key="stock?.ticker"
                 :stock="stock"
               />
             </div>
-            <NuxtLink
-              :to="{ path: '/search', query: rankingLinkQueries.top[item.key] }"
-              class="text-[20px] transition hover:underline max-md:text-center md:text-[15px]"
-            >
-              Ver todos
-            </NuxtLink>
           </div>
         </UCarousel>
 
+        <!-- Maiores Baixas -->
         <UCarousel
           v-slot="{ item }"
           class="w-full"
@@ -301,82 +309,105 @@
           :items="assetCategories"
           :ui="{ item: 'basis-1/1 md:basis-1/2 lg:basis-1/3 xl:basis-1/4' }"
         >
-          <div class="flex w-full flex-col gap-3 rounded-[30px] py-6">
-            <h2 class="text-[25px] font-bold max-md:text-center md:text-[18px]">
-              {{ item.label }}
-            </h2>
-            <p class="mx-auto mb-5 text-[16px] opacity-70 md:hidden">
-              Maiores baixas
-            </p>
-            <div class="flex flex-col gap-1 overflow-hidden rounded-lg">
+          <div class="flex w-full flex-col gap-2 px-2 py-4">
+            <!-- Header -->
+            <div class="mb-2 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <UIcon name="i-lucide-trending-down" class="h-5 w-5 text-red-400" />
+                <div>
+                  <h2 class="text-base font-bold text-white">{{ item.label }}</h2>
+                  <p class="text-xs text-white/50">Maiores baixas</p>
+                </div>
+              </div>
+              <NuxtLink
+                :to="{ path: '/search', query: rankingLinkQueries.bottom[item.key] }"
+                class="flex items-center gap-1 text-sm text-white/60 transition-colors hover:text-white"
+              >
+                Ver todos
+                <UIcon name="i-lucide-arrow-right" class="h-4 w-4" />
+              </NuxtLink>
+            </div>
+            <!-- Lista -->
+            <div class="flex flex-col divide-y divide-white/5">
               <AtomsTickerListItem
                 v-for="stock in topAssets.bottom[item.key]"
                 :key="stock?.ticker"
                 :stock="stock"
               />
             </div>
-            <NuxtLink
-              :to="{
-                path: '/search',
-                query: rankingLinkQueries.bottom[item.key],
-              }"
-              class="text-[20px] transition hover:underline max-md:text-center md:text-[15px]"
-            >
-              Ver todos
-            </NuxtLink>
           </div>
         </UCarousel>
       </template>
 
-      <div
-        class="text-secondary bg-tertiary/40 flex w-full flex-col gap-3 px-6 py-4 md:rounded-[30px]"
-      >
-        <div class="flex items-center gap-2 px-3 py-2">
-          <IconAi class="fill-secondary h-5" />
-          <h2 class="text-lg font-semibold">Filtros inteligentes</h2>
+      <!-- Filtros Inteligentes -->
+      <div class="flex flex-col gap-4 px-6 py-6">
+        <div class="flex items-center gap-3">
+          <UIcon name="i-lucide-sparkles" class="h-5 w-5 text-emerald-400" />
+          <h2 class="text-lg font-semibold text-white">Filtros inteligentes</h2>
         </div>
-        <div class="flex w-full flex-wrap gap-3 px-6 max-md:flex-col">
+        <div class="flex flex-wrap gap-2">
           <NuxtLink
             :to="{ path: '/search', query: { p_max: 20 } }"
-            class="hover:underline"
+            class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/80 transition-all hover:border-emerald-500/50 hover:bg-emerald-500/10 hover:text-white"
           >
             Preço até R$ 20
           </NuxtLink>
           <NuxtLink
             :to="{ path: '/search', query: { mc_max: 2000000000 } }"
-            class="hover:underline"
+            class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/80 transition-all hover:border-emerald-500/50 hover:bg-emerald-500/10 hover:text-white"
           >
             Small Caps (MC ≤ R$ 2 bi)
           </NuxtLink>
           <NuxtLink
             :to="{ path: '/search', query: { ch_min: 0 } }"
-            class="hover:underline"
+            class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/80 transition-all hover:border-emerald-500/50 hover:bg-emerald-500/10 hover:text-white"
           >
-            Alta no dia (> 0%)
+            <span class="flex items-center gap-1.5">
+              <UIcon name="i-lucide-trending-up" class="h-3.5 w-3.5 text-emerald-400" />
+              Alta no dia
+            </span>
           </NuxtLink>
           <NuxtLink
             :to="{ path: '/search', query: { ch_max: 0 } }"
-            class="hover:underline"
+            class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/80 transition-all hover:border-red-500/50 hover:bg-red-500/10 hover:text-white"
           >
-            Queda no dia (< 0%)
+            <span class="flex items-center gap-1.5">
+              <UIcon name="i-lucide-trending-down" class="h-3.5 w-3.5 text-red-400" />
+              Queda no dia
+            </span>
           </NuxtLink>
           <NuxtLink
             :to="{ path: '/search', query: { stock: 0, bdr: 0 } }"
-            class="hover:underline"
+            class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/80 transition-all hover:border-blue-500/50 hover:bg-blue-500/10 hover:text-white"
           >
-            Somente FIIs
+            <span class="flex items-center gap-1.5">
+              <UIcon name="i-lucide-building-2" class="h-3.5 w-3.5 text-blue-400" />
+              Somente FIIs
+            </span>
           </NuxtLink>
           <NuxtLink
             :to="{ path: '/search', query: { stock: 0, reit: 0 } }"
-            class="hover:underline"
+            class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/80 transition-all hover:border-purple-500/50 hover:bg-purple-500/10 hover:text-white"
           >
-            Somente BDRs
+            <span class="flex items-center gap-1.5">
+              <UIcon name="i-lucide-globe" class="h-3.5 w-3.5 text-purple-400" />
+              Somente BDRs
+            </span>
           </NuxtLink>
           <NuxtLink
             :to="{ path: '/search', query: { p_min: 10, p_max: 50 } }"
-            class="hover:underline"
+            class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/80 transition-all hover:border-emerald-500/50 hover:bg-emerald-500/10 hover:text-white"
           >
-            Preço entre R$ 10 e R$ 50
+            Preço R$ 10 - R$ 50
+          </NuxtLink>
+          <NuxtLink
+            :to="{ path: '/search', query: { dy_min: 6 } }"
+            class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/80 transition-all hover:border-yellow-500/50 hover:bg-yellow-500/10 hover:text-white"
+          >
+            <span class="flex items-center gap-1.5">
+              <UIcon name="i-lucide-coins" class="h-3.5 w-3.5 text-yellow-400" />
+              DY acima de 6%
+            </span>
           </NuxtLink>
         </div>
       </div>
