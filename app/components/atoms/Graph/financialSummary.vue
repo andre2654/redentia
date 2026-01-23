@@ -1,47 +1,73 @@
 <template>
   <section
-    class="financial-card flex h-full flex-col gap-3 border-white/5 bg-white/[0.03] transition hover:border-white/20"
+    class="financial-card flex h-full flex-col overflow-hidden rounded-xl border border-white/10 bg-white/[0.02] transition-all hover:border-white/20 hover:bg-white/[0.04]"
   >
-    <header class="flex items-center justify-between">
-      <h3 class="text-sm font-semibold text-white/80">
-        {{ props.title }}
-      </h3>
+    <!-- Header -->
+    <header class="flex items-center justify-between border-b border-white/5 px-4 py-3">
+      <div class="flex items-center gap-2">
+        <UIcon v-if="props.icon" :name="props.icon" class="h-4 w-4 text-white/40" />
+        <h3 class="text-sm font-medium text-white">
+          {{ props.title }}
+        </h3>
+      </div>
       <slot name="meta" />
     </header>
 
-    <div class="relative h-[220px]" @mouseleave="hoveredIndex = null">
+    <!-- Chart Area -->
+    <div class="relative flex-1 p-4" @mouseleave="hoveredIndex = null">
+      <!-- Loading State -->
       <div
         v-if="props.isLoading"
-        class="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-black/30 text-xs text-white/70"
+        class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2"
       >
-        Carregando dados...
+        <UIcon name="i-lucide-loader-2" class="h-5 w-5 animate-spin text-white/30" />
+        <span class="text-xs text-white/30">Carregando...</span>
       </div>
 
-      <Bar
-        ref="chartRef"
-        :data="chartData as any"
-        :options="chartOptions as any"
-      />
+      <!-- Chart -->
+      <div class="h-[200px]">
+        <Bar
+          ref="chartRef"
+          :data="chartData as any"
+          :options="chartOptions as any"
+        />
+      </div>
     </div>
 
+    <!-- Legend -->
+    <div v-if="!props.isLoading && props.items.length" class="flex flex-wrap gap-3 border-t border-white/5 px-4 py-3">
+      <div
+        v-for="(item, index) in props.items"
+        :key="item.label"
+        class="flex items-center gap-1.5"
+      >
+        <div
+          class="h-2 w-2 rounded-full"
+          :style="{ backgroundColor: palette[index % palette.length] }"
+        />
+        <span class="text-[10px] text-white/50">{{ item.label }}</span>
+      </div>
+    </div>
+
+    <!-- Tooltip -->
     <div
       v-if="hoveredIndex !== null && tooltipData"
-      class="pointer-events-none fixed z-20 rounded-lg border border-white/10 bg-black/70 px-3 py-2 shadow-lg backdrop-blur-md transition-all duration-150"
+      class="pointer-events-none fixed z-50 rounded-lg border border-white/10 bg-black/90 px-3 py-2 shadow-xl backdrop-blur-sm"
       :style="{
         left: `${tooltipPosition.x + 12}px`,
         top: `${tooltipPosition.y - 56}px`,
       }"
     >
-      <div class="flex items-start gap-2">
+      <div class="flex items-center gap-2">
         <div
-          class="mt-1 h-2.5 w-2.5 rounded-full"
+          class="h-2 w-2 rounded-full"
           :style="{ backgroundColor: tooltipData.color }"
         />
         <div class="flex flex-col">
-          <span class="text-[12px] font-medium text-white/80">
+          <span class="text-[10px] text-white/50">
             {{ tooltipData.label }}
           </span>
-          <span class="text-[12px] font-semibold text-white">
+          <span class="text-sm font-semibold text-white">
             {{ tooltipData.value }}
           </span>
         </div>
@@ -82,11 +108,13 @@ interface FinancialChartItem {
 
 interface Props {
   title: string
+  icon?: string
   items: FinancialChartItem[]
   isLoading?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  icon: '',
   items: () => [],
   isLoading: false,
 })
@@ -97,13 +125,12 @@ const tooltipPosition = ref({ x: 0, y: 0 })
 const cleanupEvents: Ref<(() => void) | null> = ref(null)
 
 const palette = [
-  '#b9ecc1',
-  '#a7d6ff',
-  '#c4b5fd',
-  '#fcd34d',
-  '#f97316',
-  '#38bdf8',
-  '#f472b6',
+  '#6ee7b7', // green
+  '#93c5fd', // blue
+  '#a5b4fc', // indigo
+  '#fcd34d', // yellow
+  '#fdba74', // orange
+  '#67e8f9', // cyan
 ]
 
 const labels = computed(() => props.items.map((item) => item.label))
@@ -126,43 +153,38 @@ function formatCurrency(value: number) {
   })
 }
 
+function formatCompactCurrency(value: number) {
+  const absValue = Math.abs(value)
+  if (absValue >= 1e12) return `R$ ${(value / 1e12).toFixed(1)}T`
+  if (absValue >= 1e9) return `R$ ${(value / 1e9).toFixed(1)}B`
+  if (absValue >= 1e6) return `R$ ${(value / 1e6).toFixed(1)}M`
+  if (absValue >= 1e3) return `R$ ${(value / 1e3).toFixed(0)}K`
+  return `R$ ${value.toFixed(0)}`
+}
+
 const chartData = computed(() => {
   return {
     labels: labels.value,
     datasets: [
       {
         data: values.value,
-        backgroundColor: (context: {
-          chart: {
-            canvas: HTMLCanvasElement
-            chartArea?: { top: number; bottom: number }
-          }
-          dataIndex?: number
-        }) => {
-          const index = context.dataIndex ?? 0
+        backgroundColor: values.value.map((_, index) => {
           const color = palette[index % palette.length]
-          const { chart } = context
-          const chartArea = chart.chartArea
-          if (!chartArea) return color
-          const ctx = chart.canvas.getContext('2d')
-          if (!ctx) return color
-          const gradient = ctx.createLinearGradient(
-            0,
-            chartArea.top,
-            0,
-            chartArea.bottom
-          )
-          gradient.addColorStop(0, transparentize(color, 0.2))
-          gradient.addColorStop(1, transparentize(color, 0.85))
-          return gradient
-        },
+          return transparentize(color, 0.6)
+        }),
         borderColor: values.value.map(
           (_, index) => palette[index % palette.length]
         ),
-        borderWidth: 1.2,
-        borderRadius: 12,
+        borderWidth: 1.5,
+        borderRadius: 8,
         borderSkipped: false,
+        hoverBackgroundColor: values.value.map((_, index) => {
+          const color = palette[index % palette.length]
+          return transparentize(color, 0.4)
+        }),
         hoverBorderWidth: 2,
+        barPercentage: 0.7,
+        categoryPercentage: 0.8,
       },
     ],
   }
@@ -171,30 +193,24 @@ const chartData = computed(() => {
 const chartOptions = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
-  animation: { duration: 300 },
-  layout: { padding: { top: 8, right: 12, bottom: 0, left: 4 } },
+  animation: { duration: 400, easing: 'easeOutQuart' },
+  layout: { padding: { top: 8, right: 8, bottom: 0, left: 0 } },
   plugins: {
     legend: { display: false },
     tooltip: { enabled: false },
   },
   scales: {
     x: {
-      grid: { display: false },
-      ticks: {
-        color: 'rgba(255,255,255,0.65)',
-        font: { size: 11, weight: '500' },
-        maxRotation: 45,
-        minRotation: 45,
-      },
-      border: { display: false },
+      display: false,
     },
     y: {
-      grid: { color: 'rgba(255,255,255,0.08)', drawTicks: false },
+      grid: { color: 'rgba(255,255,255,0.04)', drawTicks: false },
       ticks: {
-        color: 'rgba(255,255,255,0.45)',
-        font: { size: 11 },
-        padding: 6,
-        callback: (value: number) => formatCurrency(Number(value)),
+        color: 'rgba(255,255,255,0.3)',
+        font: { size: 10 },
+        padding: 8,
+        maxTicksLimit: 5,
+        callback: (value: number) => formatCompactCurrency(Number(value)),
       },
       border: { display: false },
     },
@@ -281,7 +297,7 @@ watch(
 
 <style scoped>
 .financial-card {
-  min-height: 280px;
+  min-height: 320px;
 }
 
 .financial-card :deep(canvas) {

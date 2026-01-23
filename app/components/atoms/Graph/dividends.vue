@@ -1,182 +1,172 @@
 <template>
-  <div class="graph flex w-full flex-col gap-4">
-    <!-- Controles de período -->
-    <div v-if="showControls" class="flex items-center justify-between">
-      <h2 class="text-lg font-semibold text-white">Dividendos</h2>
-      <UButtonGroup orientation="horizontal" variant="soft">
-        <UButton
-          color="neutral"
-          :variant="selectedTimeRange === 'year' ? 'soft' : 'link'"
-          label="1A"
-          @click="selectedTimeRange = 'year'"
-        />
-        <UButton
-          color="neutral"
-          :variant="selectedTimeRange === '3years' ? 'soft' : 'link'"
-          label="3A"
-          @click="selectedTimeRange = '3years'"
-        />
-        <UButton
-          color="neutral"
-          :variant="selectedTimeRange === '5years' ? 'soft' : 'link'"
-          label="5A"
-          @click="selectedTimeRange = '5years'"
-        />
-        <UButton
-          color="neutral"
-          :variant="selectedTimeRange === 'max' ? 'soft' : 'link'"
-          label="Máx"
-          @click="selectedTimeRange = 'max'"
-        />
-      </UButtonGroup>
-    </div>
-
-    <!-- Gráfico de barras para dividendos -->
-    <div class="relative" @mouseleave="hoveredIndex = null">
-      <div class="relative h-[350px] w-full">
-        <div
-          v-if="props.loading"
-          class="absolute inset-0 flex items-center justify-center rounded-lg bg-black/20"
-        >
-          <span class="text-white">Carregando dividendos...</span>
+  <div class="graph flex w-full flex-col gap-6">
+    <!-- Header com controles -->
+    <div v-if="showControls" class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div class="flex items-center gap-3">
+        <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10">
+          <UIcon name="i-lucide-bar-chart-2" class="h-5 w-5 text-white/60" />
         </div>
-        <Bar
-          ref="chartRef"
-          :data="chartData as any"
-          :options="chartOptions as any"
-          :plugins="[predictionLabelPlugin]"
-        />
+        <div>
+          <h2 class="text-lg font-semibold text-white">Histórico de Dividendos</h2>
+          <p class="text-xs text-white/40">Pagamentos e dividend yield</p>
+        </div>
       </div>
 
-      <!-- Tooltip dinâmico -->
-      <div
-        v-if="hoveredIndex !== null && tooltipData"
-        class="pointer-events-none fixed z-10 rounded-lg bg-black/30 px-3 py-2 backdrop-blur-md transition-all duration-150"
-        :style="{
-          left: `${tooltipPosition.x + 10}px`,
-          top: `${tooltipPosition.y - 60}px`,
-        }"
-      >
-        <div class="flex gap-3">
+      <!-- Period selector -->
+      <div class="flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 p-1">
+        <button
+          v-for="period in [
+            { key: 'year', label: '1A' },
+            { key: '3years', label: '3A' },
+            { key: '5years', label: '5A' },
+            { key: 'max', label: 'Máx' },
+          ]"
+          :key="period.key"
+          class="rounded-md px-3 py-1.5 text-xs font-medium transition-all"
+          :class="selectedTimeRange === period.key
+            ? 'bg-white/10 text-white'
+            : 'text-white/50 hover:text-white/80'"
+          @click="selectedTimeRange = period.key as any"
+        >
+          {{ period.label }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Chart container -->
+    <div class="overflow-hidden rounded-xl border border-white/10 bg-white/[0.02]">
+      <!-- Chart area -->
+      <div class="relative p-4" @mouseleave="hoveredIndex = null">
+        <div class="relative h-[300px] w-full">
+          <!-- Loading state -->
+          <div
+            v-if="props.loading"
+            class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 rounded-lg bg-black/40"
+          >
+            <UIcon name="i-lucide-loader-2" class="h-6 w-6 animate-spin text-white/40" />
+            <span class="text-sm text-white/40">Carregando...</span>
+          </div>
+
+          <Bar
+            ref="chartRef"
+            :data="chartData as any"
+            :options="chartOptions as any"
+            :plugins="[predictionLabelPlugin]"
+          />
+        </div>
+
+        <!-- Tooltip -->
+        <div
+          v-if="hoveredIndex !== null && tooltipData"
+          class="pointer-events-none fixed z-50 rounded-xl border border-white/10 bg-black/90 p-3 shadow-xl backdrop-blur-sm"
+          :style="{
+            left: `${tooltipPosition.x + 12}px`,
+            top: `${tooltipPosition.y - 80}px`,
+          }"
+        >
           <div class="flex flex-col gap-2">
-            <!-- Indicador de dividendo -->
-            <div class="flex items-center gap-2">
-              <div
-                class="h-3 w-3 rounded-full"
-                :style="{
-                  backgroundColor: tooltipData.isPrediction
-                    ? '#a7d6ff'
-                    : '#b9ecc1',
-                }"
-              />
-              <div class="flex flex-col">
-                <span class="text-[13px] font-medium">
-                  {{ tooltipData.label }}
-                  <span
-                    v-if="tooltipData.isPrediction"
-                    class="ml-1 text-[11px] text-[#a7d6ff]"
-                  >
-                    (previsão)
-                  </span>
-                </span>
-                <span
-                  class="text-[13px]"
-                  :style="{
-                    color: tooltipData.isPrediction ? '#a7d6ff' : '#b9ecc1',
-                  }"
-                >
-                  R$
-                  {{
-                    tooltipData.value.toLocaleString('pt-BR', {
-                      minimumFractionDigits: 2,
-                    })
-                  }}
-                </span>
-              </div>
+            <div class="flex items-center gap-2 border-b border-white/10 pb-2">
+              <span class="text-xs font-medium text-white">
+                {{ tooltipData.label }}
+              </span>
+              <span
+                v-if="tooltipData.isPrediction"
+                class="rounded bg-blue-500/20 px-1.5 py-0.5 text-[10px] text-blue-400"
+              >
+                Previsão
+              </span>
             </div>
-            <!-- Indicador de yield -->
-            <div class="flex items-center gap-2">
-              <div class="h-3 w-3 rounded-full bg-[#a7d6ff]" />
-              <div class="flex flex-col">
-                <span class="text-[11px] text-[#a7d6ff]"> Dividend Yield </span>
-                <span class="text-[13px] font-medium text-[#a7d6ff]">
-                  {{ tooltipData.dividendYield.toFixed(2) }}%
-                  <span
-                    v-if="tooltipData.isPrediction"
-                    class="text-[10px] opacity-70"
-                  >
-                    (est.)
-                  </span>
-                </span>
+            <div class="flex items-center justify-between gap-4">
+              <div class="flex items-center gap-1.5">
+                <div class="h-2 w-2 rounded-full bg-emerald-400" />
+                <span class="text-[10px] text-white/50">Dividendo</span>
               </div>
+              <span class="text-sm font-semibold text-emerald-400">
+                R$ {{ tooltipData.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}
+              </span>
+            </div>
+            <div class="flex items-center justify-between gap-4">
+              <div class="flex items-center gap-1.5">
+                <div class="h-2 w-2 rounded-full bg-blue-400" />
+                <span class="text-[10px] text-white/50">Yield</span>
+              </div>
+              <span class="text-sm font-semibold text-blue-400">
+                {{ tooltipData.dividendYield.toFixed(2) }}%
+              </span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Toggle para agrupar por ano -->
-      <button
-        v-if="showControls"
-        type="button"
-        class="mt-4 flex max-w-fit cursor-pointer items-center gap-3 rounded-full border px-4 py-2.5 transition-all duration-200"
-        :class="[
-          groupByYear
-            ? 'border-secondary/50 bg-secondary/10 hover:bg-secondary/20'
-            : 'border-white/10 bg-white/5 hover:bg-white/10',
-        ]"
-        @click="groupByYear = !groupByYear"
-      >
-        <UIcon
-          name="i-lucide-layers"
-          class="h-4 w-4"
-          :class="groupByYear ? 'text-secondary' : 'text-white/60'"
-        />
-        <span
-          class="select-none text-sm font-medium"
-          :class="groupByYear ? 'text-secondary' : 'text-white/70'"
-        >
-          Agrupar por ano
-        </span>
-        <div
-          class="relative h-5 w-9 rounded-full transition-colors duration-200"
-          :class="groupByYear ? 'bg-secondary' : 'bg-gray-600'"
+      <!-- Footer with toggle and legend -->
+      <div v-if="showControls" class="flex items-center justify-between border-t border-white/5 px-4 py-3">
+        <!-- Toggle -->
+        <button
+          type="button"
+          class="flex items-center gap-2 text-xs transition-colors"
+          :class="groupByYear ? 'text-white' : 'text-white/50'"
+          @click="groupByYear = !groupByYear"
         >
           <div
-            class="absolute top-0.5 h-4 w-4 rounded-full bg-white shadow-md transition-transform duration-200"
-            :class="groupByYear ? 'translate-x-4' : 'translate-x-0.5'"
-          />
+            class="flex h-4 w-7 items-center rounded-full p-0.5 transition-colors"
+            :class="groupByYear ? 'bg-emerald-500' : 'bg-white/20'"
+          >
+            <div
+              class="h-3 w-3 rounded-full bg-white shadow transition-transform"
+              :class="groupByYear ? 'translate-x-3' : 'translate-x-0'"
+            />
+          </div>
+          <span>Agrupar por ano</span>
+        </button>
+
+        <!-- Legend -->
+        <div class="flex items-center gap-4">
+          <div class="flex items-center gap-1.5">
+            <div class="h-2 w-2 rounded-full bg-emerald-400" />
+            <span class="text-[10px] text-white/40">Dividendos</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <div class="h-2 w-2 rounded-full bg-blue-400" />
+            <span class="text-[10px] text-white/40">Yield</span>
+          </div>
         </div>
-      </button>
+      </div>
     </div>
 
-    <!-- Resumo dos dividendos -->
+    <!-- Stats cards -->
     <div v-if="showControls" class="grid gap-3 sm:grid-cols-3">
-      <div class="flex flex-col gap-2 rounded-xl border border-white/10 bg-white/5 p-4">
-        <div class="flex items-center gap-2">
-          <UIcon name="i-lucide-coins" class="h-4 w-4 text-secondary" />
-          <span class="text-sm text-white/60">Total no período</span>
+      <div class="flex items-center gap-4 rounded-xl border border-white/10 bg-white/[0.02] p-4">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-white/5">
+          <UIcon name="i-lucide-coins" class="h-5 w-5 text-white/40" />
         </div>
-        <span class="text-2xl font-bold tabular-nums text-white">
-          R$ {{ totalDividends.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}
-        </span>
+        <div class="flex flex-col">
+          <span class="text-xs text-white/40">Total no período</span>
+          <span class="text-lg font-semibold tabular-nums text-white">
+            R$ {{ totalDividends.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+          </span>
+        </div>
       </div>
-      <div class="flex flex-col gap-2 rounded-xl border border-white/10 bg-white/5 p-4">
-        <div class="flex items-center gap-2">
-          <UIcon name="i-lucide-trophy" class="h-4 w-4 text-secondary" />
-          <span class="text-sm text-white/60">Maior pagamento</span>
+      <div class="flex items-center gap-4 rounded-xl border border-white/10 bg-white/[0.02] p-4">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-white/5">
+          <UIcon name="i-lucide-trophy" class="h-5 w-5 text-white/40" />
         </div>
-        <span class="text-2xl font-bold tabular-nums text-white">
-          R$ {{ maxDividend.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}
-        </span>
+        <div class="flex flex-col">
+          <span class="text-xs text-white/40">Maior pagamento</span>
+          <span class="text-lg font-semibold tabular-nums text-white">
+            R$ {{ maxDividend.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+          </span>
+        </div>
       </div>
-      <div class="flex flex-col gap-2 rounded-xl border border-white/10 bg-white/5 p-4">
-        <div class="flex items-center gap-2">
-          <UIcon name="i-lucide-calculator" class="h-4 w-4 text-secondary" />
-          <span class="text-sm text-white/60">Média por pagamento</span>
+      <div class="flex items-center gap-4 rounded-xl border border-white/10 bg-white/[0.02] p-4">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-white/5">
+          <UIcon name="i-lucide-calculator" class="h-5 w-5 text-white/40" />
         </div>
-        <span class="text-2xl font-bold tabular-nums text-white">
-          R$ {{ averageDividend.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}
-        </span>
+        <div class="flex flex-col">
+          <span class="text-xs text-white/40">Média por pagamento</span>
+          <span class="text-lg font-semibold tabular-nums text-white">
+            R$ {{ averageDividend.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+          </span>
+        </div>
       </div>
     </div>
   </div>
@@ -767,69 +757,36 @@ const chartData = computed(() => {
 const chartOptions = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
+  animation: { duration: 400, easing: 'easeOutQuart' },
   interaction: {
     mode: 'index' as const,
     intersect: false,
   },
+  layout: { padding: { top: 8, right: 8, bottom: 0, left: 0 } },
   plugins: {
-    legend: {
-      display: false,
-      position: 'top' as const,
-      align: 'center' as const,
-      labels: {
-        color: 'rgba(255, 255, 255, 0.7)',
-        font: {
-          size: 12,
-        },
-        usePointStyle: true,
-        pointStyle: 'circle',
-        padding: 5,
-      },
-    },
-    tooltip: {
-      enabled: false, // Usamos tooltip customizado
-    },
-    colors: {
-      forceOverride: true,
-    },
+    legend: { display: false },
+    tooltip: { enabled: false },
   },
   scales: {
     x: {
-      grid: {
-        display: false,
-      },
-      ticks: {
-        font: {
-          size: 12,
-        },
-        maxRotation: 45,
-        minRotation: 45,
-      },
+      display: false,
     },
     y: {
       type: 'linear' as const,
       display: true,
       position: 'left' as const,
       grid: {
-        color: 'rgba(255, 255, 255, 0.1)',
+        color: 'rgba(255, 255, 255, 0.04)',
+        drawTicks: false,
       },
+      border: { display: false },
       ticks: {
-        font: {
-          size: 12,
-        },
-        callback: function (value: number) {
-          return `R$ ${Number(value).toLocaleString('pt-BR', {
-            minimumFractionDigits: 2,
-          })}`
-        },
+        color: 'rgba(255, 255, 255, 0.3)',
+        font: { size: 10 },
+        padding: 8,
         maxTicksLimit: 5,
-      },
-      title: {
-        display: true,
-        text: 'Dividendos (R$)',
-        color: 'rgba(255, 255, 255, 0.7)',
-        font: {
-          size: 11,
+        callback: function (value: number) {
+          return `R$ ${Number(value).toFixed(2)}`
         },
       },
     },
@@ -837,24 +794,15 @@ const chartOptions = computed(() => ({
       type: 'linear' as const,
       display: true,
       position: 'right' as const,
-      grid: {
-        drawOnChartArea: false,
-      },
+      grid: { drawOnChartArea: false },
+      border: { display: false },
       ticks: {
-        color: '#a7d6ff', // amber-500 com opacidade
-        font: {
-          size: 12,
-        },
+        color: 'rgba(147, 197, 253, 0.5)',
+        font: { size: 10 },
+        padding: 8,
+        maxTicksLimit: 5,
         callback: function (value: number) {
           return `${Number(value).toFixed(1)}%`
-        },
-      },
-      title: {
-        display: true,
-        text: 'Dividend Yield (%)',
-        color: '#a7d6ff',
-        font: {
-          size: 11,
         },
       },
     },
@@ -932,12 +880,7 @@ const averageDividend = computed(() => {
 </script>
 
 <style scoped>
-/* Animação suave para as barras */
-.transition-all {
-  transition: height 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.graph:deep(canvas) {
+.graph :deep(canvas) {
   width: 100% !important;
 }
 </style>

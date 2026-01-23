@@ -120,152 +120,133 @@
         </section>
 
         <!-- Asset Indicators -->
-        <section class="border-b border-white/10 py-8">
-          <div class="bg-white/5 p-6 backdrop-blur-sm md:rounded-3xl">
-            <header class="mb-6 flex flex-col gap-2">
-              <div class="flex items-center gap-2">
-                <UIcon name="i-lucide-bar-chart-3" class="h-5 w-5 text-secondary" />
-                <h2 class="text-lg font-semibold text-white">Indicadores Fundamentalistas</h2>
+        <!-- Indicadores Fundamentalistas -->
+        <section class="border-b border-white/10 py-8 max-md:px-4">
+          <header class="mb-6 flex items-center gap-3">
+            <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10">
+              <UIcon name="i-lucide-bar-chart-3" class="h-5 w-5 text-white/60" />
+            </div>
+            <div>
+              <h2 class="text-lg font-semibold text-white">Indicadores</h2>
+              <p class="text-xs text-white/40">Métricas fundamentalistas de {{ tickerUpper }}</p>
+            </div>
+          </header>
+
+          <!-- Basic Indicators Grid -->
+          <div class="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
+            <template v-if="isLoadingFundamentus">
+              <USkeleton
+                v-for="i in 6"
+                :key="`basic-loading-${i}`"
+                class="h-24 w-full rounded-xl"
+              />
+            </template>
+            <template v-else-if="basicIndicators">
+              <MoleculesTickerIndicator
+                name="P/L"
+                :value="basicIndicators.pl"
+                help-text="Preço sobre Lucro - indica quantos anos seriam necessários para recuperar o investimento."
+              />
+              <MoleculesTickerIndicator
+                name="P/VPA"
+                :value="basicIndicators.pvpa"
+                help-text="Preço sobre Valor Patrimonial por Ação - compara o preço da ação com seu valor contábil."
+              />
+              <MoleculesTickerIndicator
+                name="DY"
+                :value="basicIndicators.dividendYield"
+                help-text="Dividend Yield é a relação entre o dividendo pago por ação e o preço da ação."
+              />
+              <MoleculesTickerIndicator
+                name="ROE"
+                :value="basicIndicators.roe"
+                help-text="Return on Equity - rentabilidade sobre o patrimônio líquido."
+              />
+              <MoleculesTickerIndicator
+                name="ROA"
+                :value="basicIndicators.roa"
+                help-text="Return on Assets - rentabilidade sobre os ativos totais."
+              />
+              <MoleculesTickerIndicator
+                name="Margem"
+                :value="basicIndicators.netMargin"
+                help-text="Percentual do lucro líquido em relação à receita total."
+              />
+            </template>
+            <template v-else>
+              <div
+                class="col-span-full flex flex-col items-center justify-center rounded-xl border border-dashed border-white/10 py-8 text-center"
+              >
+                <UIcon name="i-lucide-bar-chart-3" class="mb-2 h-6 w-6 text-white/20" />
+                <p class="text-sm text-white/40">Dados indisponíveis</p>
               </div>
-              <p class="text-sm text-white/60">
-                Métricas essenciais para análise de {{ tickerUpper }}.
-              </p>
-            </header>
-            <div
-              class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
-            >
-              <template v-if="isLoadingFundamentus">
-                <USkeleton
-                  v-for="i in 6"
-                  :key="`basic-loading-${i}`"
-                  class="h-20 w-full rounded-xl"
-                />
-              </template>
-              <template v-else-if="basicIndicators">
-                <MoleculesTickerIndicator
-                  name="P/L"
-                  :value="basicIndicators.pl"
-                  help-text="Preço sobre Lucro - indica quantos anos seriam necessários para recuperar o investimento."
-                />
-                <MoleculesTickerIndicator
-                  name="P/VPA"
-                  :value="basicIndicators.pvpa"
-                  help-text="Preço sobre Valor Patrimonial por Ação - compara o preço da ação com seu valor contábil."
-                />
-                <MoleculesTickerIndicator
-                  name="Dividend Yield"
-                  :value="basicIndicators.dividendYield"
-                  help-text="Dividend Yield é a relação entre o dividendo pago por ação e o preço da ação."
-                />
-                <MoleculesTickerIndicator
-                  name="ROE"
-                  :value="basicIndicators.roe"
-                  help-text="Return on Equity - rentabilidade sobre o patrimônio líquido."
-                />
-                <MoleculesTickerIndicator
-                  name="ROA"
-                  :value="basicIndicators.roa"
-                  help-text="Return on Assets - rentabilidade sobre os ativos totais."
-                />
-                <MoleculesTickerIndicator
-                  name="Margem Líquida"
-                  :value="basicIndicators.netMargin"
-                  help-text="Percentual do lucro líquido em relação à receita total."
-                />
-              </template>
-              <template v-else>
-                <div
-                  class="col-span-full rounded-xl border border-dashed border-white/10 p-6 text-center text-sm text-white/50"
-                >
-                  Dados fundamentalistas indisponíveis no momento.
-                </div>
-              </template>
+            </template>
+          </div>
+
+          <!-- Smart Indicators -->
+          <div v-if="intelligentIndicators || isLoadingFundamentus" class="mt-8">
+            <div class="mb-4 flex items-center gap-2">
+              <IconAi class="fill-secondary h-4 w-4" />
+              <span class="text-sm font-medium text-white/60">Análise por IA</span>
             </div>
 
-            <div class="mb-6 mt-10 flex flex-col gap-2">
-              <div class="flex items-center gap-2">
-                <IconAi class="fill-secondary h-5 w-5" />
-                <h2 class="text-lg font-semibold text-white">Análise Inteligente</h2>
-              </div>
-              <p class="text-sm text-white/60">
-                Indicadores calculados e interpretados pela nossa IA.
-              </p>
-            </div>
-
-            <div
-              class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-            >
+            <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <template v-if="isLoadingFundamentus">
                 <USkeleton
-                  v-for="i in 4"
+                  v-for="i in 8"
                   :key="`smart-loading-${i}`"
-                  class="h-20 w-full rounded-xl"
+                  class="h-28 w-full rounded-xl"
                 />
               </template>
               <template v-else-if="intelligentIndicators">
                 <MoleculesTickerIndicator
                   name="Endividamento (D/E)"
                   :value="intelligentIndicators.debtToEquity.value + '%'"
-                  help-text="Relação entre dívida total e patrimônio líquido. Valores baixos são melhores."
-                  is-intelligent
+                  help-text="Relação entre dívida total e patrimônio líquido."
                   :help-text-with-tooltip="false"
                 />
                 <MoleculesTickerIndicator
                   name="Liquidez Corrente"
                   :value="intelligentIndicators.currentRatio.value"
-                  help-text="Capacidade de pagamento das obrigações de curto prazo."
-                  is-intelligent
+                  help-text="Capacidade de pagamento de curto prazo."
                   :help-text-with-tooltip="false"
                 />
                 <MoleculesTickerIndicator
                   name="Rentabilidade (ROE)"
                   :value="intelligentIndicators.roe.value"
-                  help-text="Retorno sobre o patrimônio líquido dos acionistas."
-                  is-intelligent
+                  help-text="Retorno sobre o patrimônio líquido."
                   :help-text-with-tooltip="false"
                 />
                 <MoleculesTickerIndicator
                   name="Eficiência (ROA)"
                   :value="intelligentIndicators.roa.value"
-                  help-text="Retorno sobre os ativos totais da empresa."
-                  is-intelligent
+                  help-text="Retorno sobre os ativos totais."
                   :help-text-with-tooltip="false"
                 />
                 <MoleculesTickerIndicator
                   name="Margem de Lucro"
                   :value="intelligentIndicators.profitMargin.value"
-                  help-text="Percentual de lucro líquido sobre a receita total."
-                  is-intelligent
+                  help-text="Lucro líquido sobre receita total."
                   :help-text-with-tooltip="false"
                 />
                 <MoleculesTickerIndicator
-                  name="Valuation P/VPA"
+                  name="P/VPA"
                   :value="intelligentIndicators.priceToBook.value"
-                  help-text="Preço da ação dividido pelo valor patrimonial por ação."
-                  is-intelligent
+                  help-text="Preço dividido pelo valor patrimonial."
                   :help-text-with-tooltip="false"
                 />
                 <MoleculesTickerIndicator
-                  name="Preço/Lucro Projetado"
+                  name="P/L Projetado"
                   :value="intelligentIndicators.forwardPE.value"
-                  help-text="Projeção de P/L baseada nos lucros futuros estimados."
-                  is-intelligent
+                  help-text="P/L baseado em lucros estimados."
                   :help-text-with-tooltip="false"
                 />
                 <MoleculesTickerIndicator
-                  name="Preço teto Bazin"
+                  name="Preço Teto (Bazin)"
                   :value="intelligentIndicators.bazinPrice.value"
-                  help-text="Preço máximo sugerido pelo método de Bazin (dividendos dos últimos 12 meses × 16)."
-                  is-intelligent
+                  help-text="Preço máximo pelo método Bazin."
                   :help-text-with-tooltip="false"
                 />
-              </template>
-              <template v-else>
-                <div
-                  class="col-span-full rounded-xl border border-dashed border-white/10 p-6 text-center text-sm text-white/50"
-                >
-                  Indicadores inteligentes indisponíveis.
-                </div>
               </template>
             </div>
           </div>
@@ -417,14 +398,16 @@
 
       <!-- Financial Statements -->
       <section class="border-b border-white/10 py-8 max-md:px-4">
-        <header class="mb-6 flex flex-col gap-2">
-          <div class="flex items-center gap-2">
-            <UIcon name="i-lucide-file-text" class="h-5 w-5 text-secondary" />
-            <h2 class="text-lg font-semibold text-white">Demonstrações Financeiras</h2>
+        <header class="mb-6 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10">
+              <UIcon name="i-lucide-bar-chart-3" class="h-5 w-5 text-white/60" />
+            </div>
+            <div>
+              <h2 class="text-lg font-semibold text-white">Demonstrações Financeiras</h2>
+              <p class="text-xs text-white/40">Último trimestre disponível</p>
+            </div>
           </div>
-          <p class="text-sm text-white/60">
-            Resultados, caixa e balanço do último trimestre.
-          </p>
         </header>
 
         <div
@@ -434,29 +417,33 @@
             incomeItems.length ||
             isLoadingFundamentus
           "
-          class="grid gap-2 lg:grid-cols-3"
+          class="grid gap-4 lg:grid-cols-3"
         >
           <AtomsGraphFinancialSummary
             title="Fluxo de Caixa"
+            icon="i-lucide-arrow-right-left"
             :items="cashFlowItems"
             :is-loading="isLoadingFundamentus"
           />
           <AtomsGraphFinancialSummary
             title="Balanço Patrimonial"
+            icon="i-lucide-scale"
             :items="balanceItems"
             :is-loading="isLoadingFundamentus"
           />
           <AtomsGraphFinancialSummary
-            title="Demonstração de Resultados"
+            title="DRE"
+            icon="i-lucide-trending-up"
             :items="incomeItems"
             :is-loading="isLoadingFundamentus"
           />
         </div>
         <div
           v-else
-          class="rounded-xl border border-dashed border-white/10 p-6 text-center text-sm text-white/50"
+          class="flex flex-col items-center justify-center rounded-xl border border-dashed border-white/10 py-12 text-center"
         >
-          Demonstrações financeiras indisponíveis para este ativo.
+          <UIcon name="i-lucide-file-x" class="mb-3 h-8 w-8 text-white/20" />
+          <p class="text-sm text-white/40">Demonstrações indisponíveis</p>
         </div>
       </section>
 
