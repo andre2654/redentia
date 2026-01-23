@@ -3,64 +3,91 @@
     <h1 class="sr-only">
       Redentia: invista em ações e fundos imobiliários com IA
     </h1>
-    <!-- CTA Section -->
-    <section v-if="!authStore.isAuthenticated">
-      <div
-        class="from-secondary/20 relative overflow-hidden bg-gradient-to-br to-transparent px-6 py-14 text-center text-white md:rounded-3xl"
-      >
-        <div class="relative">
-          <IconLogoFull class="mx-auto mb-10 h-9 fill-white md:h-12" />
-          <h2
-            class="mb-3 text-2xl font-bold leading-tight text-white sm:text-4xl md:mb-4 md:text-5xl"
+    <!-- Hero Section -->
+    <section v-if="!authStore.isAuthenticated" class="relative overflow-hidden">
+      <!-- Background effects -->
+      <div class="pointer-events-none absolute inset-0">
+        <div class="from-secondary/30 absolute left-1/2 top-0 h-[500px] w-[800px] -translate-x-1/2 rounded-full bg-gradient-to-b to-transparent blur-3xl" />
+        <div class="bg-secondary/20 absolute left-1/4 top-20 h-64 w-64 rounded-full blur-3xl" />
+        <div class="absolute right-1/4 top-32 h-48 w-48 rounded-full bg-purple-500/10 blur-3xl" />
+      </div>
+
+      <div class="relative px-6 py-16 text-center md:py-20">
+        <!-- Announcement badge -->
+        <div class="mb-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 backdrop-blur-sm">
+          <span class="flex h-2 w-2">
+            <span class="absolute inline-flex h-2 w-2 animate-ping rounded-full bg-green-400 opacity-75" />
+            <span class="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
+          </span>
+          <span class="text-sm text-white/80">Novo: Assessoria com IA agora disponível</span>
+          <UIcon name="i-lucide-arrow-right" class="h-3 w-3 text-white/50" />
+        </div>
+
+        <!-- Logo -->
+        <IconLogoFull class="mx-auto mb-8 h-10 fill-white md:h-14" />
+
+        <!-- Headline -->
+        <h2 class="mx-auto mb-4 max-w-3xl text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl">
+          Invista com inteligência.
+          <span class="bg-gradient-to-r from-secondary to-blue-400 bg-clip-text text-transparent">
+            Resultados reais.
+          </span>
+        </h2>
+
+        <!-- Subtitle -->
+        <p class="mx-auto mb-10 max-w-xl text-base text-white/60 md:text-lg">
+          Análises fundamentalistas, calculadoras financeiras e assessoria com IA.
+          <span class="font-medium text-white/80">Tudo 100% gratuito.</span>
+        </p>
+
+        <!-- CTAs -->
+        <div class="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+          <UButton
+            to="/auth/register"
+            color="secondary"
+            size="xl"
+            icon="i-lucide-sparkles"
+            class="group w-full px-8 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-secondary/25 sm:w-auto"
           >
-            Invista com inteligência.<br class="hidden sm:block" /> Resultados reais.
-          </h2>
-          <p
-            class="mb-6 px-2 text-base leading-relaxed text-gray-300 sm:text-lg md:mb-8 md:text-xl"
+            Começar Agora
+            <template #trailing>
+              <UIcon name="i-lucide-arrow-right" class="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </template>
+          </UButton>
+          <UButton
+            to="/auth/login"
+            color="white"
+            variant="ghost"
+            size="xl"
+            class="w-full text-white/70 transition-all hover:bg-white/10 hover:text-white sm:w-auto"
           >
-            Análises, calculadoras e IA. Tudo grátis.
-          </p>
-          <div class="flex items-center justify-center gap-2">
-            <UButton
-              to="/auth/register"
-              color="secondary"
-              size="xl"
-              icon="i-lucide-user-plus"
-              class="hover:shadow-secondary/50 w-full px-4 text-sm transition-all hover:scale-110 hover:shadow-2xl sm:w-auto sm:px-6"
-              :ui="{
-                leadingIcon: 'max-md:hidden',
-              }"
-            >
-              Criar Conta Grátis
-            </UButton>
-            <UButton
-              to="/auth/login"
-              color="white"
-              variant="outline"
-              size="xl"
-              icon="i-lucide-log-in"
-              class="hover:shadow-secondary/50 w-full px-4 text-sm transition-all hover:scale-110 hover:shadow-2xl sm:w-auto sm:px-6"
-              :ui="{
-                leadingIcon: 'max-md:hidden',
-              }"
-            >
-              Já tenho conta
-            </UButton>
-          </div>
-          <!-- Trust badges estilo Zapier -->
-          <div class="mt-6 flex flex-wrap items-center justify-center gap-4 text-xs text-gray-400 md:mt-8 md:gap-6 md:text-sm">
-            <span class="flex items-center gap-2">
-              <UIcon name="i-lucide-shield-check" class="h-4 w-4 text-green-500" />
-              Dados criptografados
-            </span>
-            <span class="flex items-center gap-2">
-              <UIcon name="i-lucide-check-circle" class="h-4 w-4 text-green-500" />
-              100% gratuito
-            </span>
-            <span class="flex items-center gap-2">
-              <UIcon name="i-lucide-credit-card" class="h-4 w-4 text-green-500" />
-              Sem cartão
-            </span>
+            Já tenho conta
+          </UButton>
+        </div>
+
+        <!-- Trust indicators -->
+        <div class="mt-12 flex flex-col items-center gap-6">
+          <div class="flex items-center gap-8 text-sm text-white/50">
+            <div class="flex items-center gap-2">
+              <div class="flex h-5 w-5 items-center justify-center rounded-full bg-green-500/20">
+                <UIcon name="i-lucide-shield-check" class="h-3 w-3 text-green-400" />
+              </div>
+              <span>Criptografado</span>
+            </div>
+            <div class="hidden h-4 w-px bg-white/20 sm:block" />
+            <div class="flex items-center gap-2">
+              <div class="flex h-5 w-5 items-center justify-center rounded-full bg-secondary/20">
+                <UIcon name="i-lucide-zap" class="h-3 w-3 text-secondary" />
+              </div>
+              <span>Sempre grátis</span>
+            </div>
+            <div class="hidden h-4 w-px bg-white/20 sm:block" />
+            <div class="flex items-center gap-2">
+              <div class="flex h-5 w-5 items-center justify-center rounded-full bg-purple-500/20">
+                <UIcon name="i-lucide-credit-card" class="h-3 w-3 text-purple-400" />
+              </div>
+              <span>Sem cartão</span>
+            </div>
           </div>
         </div>
       </div>
@@ -710,110 +737,112 @@
     <!-- Testimonials Section -->
     <MoleculesTestimonialsSection v-if="!authStore.isAuthenticated" class="mt-12" />
 
-    <section v-if="!authStore.isAuthenticated" class="mt-12 border-t border-white/10 pt-16">
-      <div class="w-full">
-        <div class="mb-8 text-center md:mb-12">
-          <div class="mb-3 flex items-center justify-center gap-2 md:mb-4">
-            <IconAi class="fill-secondary h-8 md:h-12" />
+    <!-- Seção de IA -->
+    <section v-if="!authStore.isAuthenticated" class="mt-12 border-t border-white/10 px-4 pt-16 md:px-6">
+      <div class="mx-auto max-w-5xl">
+        <!-- Header -->
+        <div class="mb-10 text-center">
+          <div class="mb-4 inline-flex items-center gap-2 rounded-full bg-secondary/10 px-4 py-2">
+            <IconAi class="fill-secondary h-4 w-4" />
+            <span class="text-sm font-medium text-secondary">Assessoria com IA</span>
           </div>
-          <p class="mb-2 text-xs uppercase tracking-[0.2em] text-gray-500">
-            Inteligência artificial
-          </p>
-          <h2
-            class="mb-2 text-2xl font-bold leading-tight text-white sm:text-3xl md:mb-4 md:text-4xl"
-          >
-            IA que trabalha enquanto você dorme
+          <h2 class="mb-3 text-2xl font-bold text-white md:text-3xl lg:text-4xl">
+            Tire suas dúvidas em segundos
           </h2>
-          <p class="text-sm text-gray-400 sm:text-base md:text-lg">
-            Pergunte qualquer coisa. Resposta em segundos.
+          <p class="mx-auto max-w-xl text-white/60">
+            Pergunte qualquer coisa sobre investimentos. Nossa IA responde instantaneamente.
           </p>
         </div>
 
-        <div class="relative w-full">
-          <div
-            v-if="blockChat"
-            class="absolute inset-0 left-0 top-0 z-10 flex h-full w-full cursor-pointer items-center justify-center overflow-hidden rounded-2xl bg-black/60 p-4 backdrop-blur-md transition-all hover:bg-black/70 md:rounded-3xl"
-            @click="redirectToLogin('chat')"
+        <!-- Grid de sugestões clicáveis -->
+        <div class="mb-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <NuxtLink
+            v-for="(item, idx) in [
+              { icon: 'i-lucide-scale', question: 'Qual a diferença entre ações e FIIs?', category: 'Conceitos' },
+              { icon: 'i-lucide-coins', question: 'Como funcionam os dividendos?', category: 'Renda Passiva' },
+              { icon: 'i-lucide-pie-chart', question: 'O que é diversificação?', category: 'Estratégia' },
+              { icon: 'i-lucide-wallet', question: 'Quanto devo investir por mês?', category: 'Planejamento' },
+              { icon: 'i-lucide-search', question: 'Como escolher boas ações?', category: 'Análise' },
+              { icon: 'i-lucide-trending-up', question: 'Vale a pena investir em ETFs?', category: 'Produtos' },
+            ]"
+            :key="idx"
+            to="/auth/login"
+            class="group flex flex-col gap-4 rounded-2xl border border-white/10 bg-white/5 p-5 transition-all duration-200 hover:border-secondary/30 hover:bg-secondary/5"
           >
-            <div class="transform text-center transition-all hover:scale-105">
-              <div class="relative mb-4 md:mb-6">
-                <div class="absolute inset-0 animate-ping opacity-20">
-                  <IconAi class="fill-secondary mx-auto h-12 md:h-16" />
-                </div>
-                <IconAi class="fill-secondary relative mx-auto h-12 md:h-16" />
+            <div class="flex items-center justify-between">
+              <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 transition-colors group-hover:bg-secondary/20">
+                <UIcon :name="item.icon" class="h-5 w-5 text-white/60 transition-colors group-hover:text-secondary" />
               </div>
-              <h3
-                class="mb-2 text-xl font-bold leading-tight text-white sm:text-2xl md:text-3xl"
-              >
-                Sua assessoria pessoal. Grátis.
-              </h3>
-              <p
-                class="mb-4 px-2 text-sm leading-relaxed text-gray-300 sm:text-base md:mb-6"
-              >
-                Faça login e comece a usar em 30 segundos
-              </p>
-              <UButton
-                to="/auth/login"
-                color="secondary"
-                size="xl"
-                icon="i-lucide-message-circle"
-                class="hover:shadow-secondary/50 w-full px-6 transition-all hover:scale-110 hover:shadow-2xl sm:w-auto sm:px-8"
-              >
-                Começar agora
-              </UButton>
-              <p class="mt-3 text-xs text-gray-400 md:mt-4 md:text-sm">
-                Resposta em ~3s • Análises personalizadas
-              </p>
+              <span class="rounded-full bg-white/5 px-2 py-1 text-xs text-white/40 transition-colors group-hover:bg-secondary/10 group-hover:text-secondary/80">
+                {{ item.category }}
+              </span>
             </div>
-          </div>
-
-          <div
-            class="bg-gradient-to-br from-white/10 via-white/5 to-transparent p-6 backdrop-blur-xl md:rounded-3xl md:p-8"
-            @click="handleChatCardClick"
-          >
-            <div class="mb-6 flex flex-col items-center gap-4">
-              <h3 class="text-center text-2xl font-bold text-white">
-                Da dúvida à decisão em segundos
-              </h3>
-              <p class="text-center text-[13px] font-light text-gray-400">
-                Pergunte qualquer coisa. A IA faz o trabalho difícil por você.
-              </p>
+            <p class="font-medium text-white">{{ item.question }}</p>
+            <div class="mt-auto flex items-center gap-1 text-sm text-white/40 transition-colors group-hover:text-secondary">
+              <span>Perguntar</span>
+              <UIcon name="i-lucide-arrow-right" class="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </div>
+          </NuxtLink>
+        </div>
 
-            <div class="mb-8 grid grid-cols-2 gap-3 md:grid-cols-3">
-              <div
-                v-for="(suggestion, idx) in chatSuggestions"
-                :key="idx"
-                class="flex h-[120px] items-center justify-center rounded-xl bg-gradient-to-br from-white/10 to-white/5 p-3 text-[13px] font-medium opacity-70 transition-all hover:from-white/20 hover:opacity-100"
-              >
-                {{ suggestion }}
-              </div>
-            </div>
+        <!-- CTA Box -->
+        <div class="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-secondary/10 via-secondary/5 to-transparent p-6 md:p-8">
+          <!-- Background glow -->
+          <div class="pointer-events-none absolute -right-20 -top-20 h-40 w-40 rounded-full bg-secondary/20 blur-3xl" />
+          <div class="pointer-events-none absolute -bottom-20 -left-20 h-40 w-40 rounded-full bg-purple-500/10 blur-3xl" />
 
-            <div class="space-y-4 opacity-60">
+          <div class="relative flex flex-col items-center gap-6 text-center">
+            <!-- Mock chat preview -->
+            <div class="w-full max-w-md rounded-xl border border-white/10 bg-black/30 p-4">
               <div class="flex items-start gap-3">
-                <IconLogo class="mt-1 w-6 flex-shrink-0 fill-white" />
-                <div class="flex-1 rounded-lg bg-white/5 p-4 backdrop-blur">
-                  <p class="text-sm text-white">
-                    Olá! Sou a assistente virtual da Redentia. Como posso ajudar
-                    você hoje?
+                <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-secondary/20">
+                  <IconAi class="fill-secondary h-4 w-4" />
+                </div>
+                <div class="flex-1 text-left">
+                  <p class="text-sm text-white/80">
+                    Olá! Sou sua assessora de investimentos. Posso ajudar com análises, tirar dúvidas e dar recomendações personalizadas.
                   </p>
                 </div>
               </div>
             </div>
 
-            <div class="mt-6 w-full rounded-lg bg-black/20 p-4 backdrop-blur">
-              <UTextarea
-                placeholder="Faça qualquer pergunta..."
-                size="md"
-                :rows="2"
-                disabled
-                class="w-full"
-                :ui="{
-                  base: 'text-[14px] bg-transparent hover:!bg-transparent focus:!bg-transparent focus-visible:!bg-transparent ring-0 !border-0 !shadow-none placeholder:text-white/40',
-                }"
-              />
+            <!-- Stats -->
+            <div class="flex items-center gap-6 text-sm text-white/50">
+              <div class="flex items-center gap-2">
+                <UIcon name="i-lucide-zap" class="h-4 w-4 text-yellow-400" />
+                <span>Resposta em ~3s</span>
+              </div>
+              <div class="h-4 w-px bg-white/20" />
+              <div class="flex items-center gap-2">
+                <UIcon name="i-lucide-brain" class="h-4 w-4 text-purple-400" />
+                <span>IA Treinada</span>
+              </div>
+              <div class="hidden h-4 w-px bg-white/20 sm:block" />
+              <div class="hidden items-center gap-2 sm:flex">
+                <UIcon name="i-lucide-infinity" class="h-4 w-4 text-secondary" />
+                <span>Ilimitado</span>
+              </div>
             </div>
+
+            <!-- CTA Button -->
+            <UButton
+              to="/auth/login"
+              color="secondary"
+              size="xl"
+              icon="i-lucide-message-circle"
+              class="group w-full transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-secondary/25 sm:w-auto"
+            >
+              Começar a Perguntar
+              <template #trailing>
+                <UIcon name="i-lucide-arrow-right" class="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </template>
+            </UButton>
+
+            <!-- Trust -->
+            <p class="flex items-center gap-2 text-xs text-white/40">
+              <UIcon name="i-lucide-shield-check" class="h-3 w-3" />
+              100% gratuito • Sem cadastro de cartão
+            </p>
           </div>
         </div>
       </div>
