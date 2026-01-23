@@ -286,63 +286,124 @@
         </header>
 
         <!-- MDI Card -->
-        <div class="mb-6 rounded-2xl bg-white/5 p-5 backdrop-blur-sm">
-          <div class="mb-4 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <IconAi class="fill-secondary h-5 w-5" />
-              <h3 class="text-sm font-semibold text-white">Mapa de Dividendos Inteligente</h3>
+        <div class="mb-6 overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent">
+          <!-- Header -->
+          <div class="flex items-center justify-between border-b border-white/10 px-5 py-4">
+            <div class="flex items-center gap-3">
+              <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-secondary/20">
+                <IconAi class="fill-secondary h-5 w-5" />
+              </div>
+              <div>
+                <h3 class="text-sm font-semibold text-white">Mapa de Dividendos</h3>
+                <p class="text-xs text-white/40">Probabilidade de pagamento por mês</p>
+              </div>
             </div>
-            <span v-if="isLoadingDividends" class="text-xs text-white/40">
-              Carregando...
-            </span>
-            <span
-              v-else-if="monthlyDividendProbability.referenceLabel"
-              class="rounded-full bg-white/10 px-3 py-1 text-xs text-white/60"
-            >
-              {{ monthlyDividendProbability.referenceLabel }}
-            </span>
-          </div>
-          <div
-            v-if="isLoadingDividends"
-            class="grid grid-cols-4 gap-2 md:grid-cols-6 lg:grid-cols-12"
-          >
-            <USkeleton
-              v-for="month in 12"
-              :key="`dividend-month-skeleton-${month}`"
-              class="h-20 rounded-xl"
-            />
-          </div>
-          <div
-            v-else
-            class="grid grid-cols-4 gap-2 md:grid-cols-6 lg:grid-cols-12"
-          >
+            <div v-if="isLoadingDividends" class="flex items-center gap-2 text-xs text-white/40">
+              <UIcon name="i-lucide-loader-2" class="h-4 w-4 animate-spin" />
+              Analisando...
+            </div>
             <div
-              v-for="item in monthlyDividendProbability.months"
-              :key="item.label"
-              :class="[
-                'flex flex-col items-center justify-center gap-1 rounded-xl border p-3 text-center transition-all duration-200',
-                item.highlight
-                  ? 'border-secondary/50 bg-secondary/10 shadow-lg shadow-secondary/10'
-                  : 'border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10',
-              ]"
+              v-else-if="monthlyDividendProbability.referenceLabel"
+              class="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white/60"
+            >
+              <UIcon name="i-lucide-calendar" class="h-3.5 w-3.5" />
+              {{ monthlyDividendProbability.referenceLabel }}
+            </div>
+          </div>
+
+          <!-- Grid -->
+          <div class="p-4">
+            <div
+              v-if="isLoadingDividends"
+              class="grid grid-cols-4 gap-2 md:grid-cols-6 lg:grid-cols-12"
+            >
+              <USkeleton
+                v-for="month in 12"
+                :key="`dividend-month-skeleton-${month}`"
+                class="h-24 rounded-xl"
+              />
+            </div>
+            <div
+              v-else
+              class="grid grid-cols-4 gap-2 md:grid-cols-6 lg:grid-cols-12"
             >
               <div
+                v-for="item in monthlyDividendProbability.months"
+                :key="item.label"
                 :class="[
-                  'flex items-center gap-1 text-xs font-bold uppercase tracking-wide',
-                  item.highlight ? 'text-secondary' : 'text-white/60',
+                  'group relative flex flex-col items-center justify-center gap-2 rounded-xl border p-4 text-center transition-all duration-300',
+                  item.highlight
+                    ? 'border-secondary bg-gradient-to-br from-secondary/20 to-secondary/5 shadow-lg shadow-secondary/20'
+                    : item.percentage > 50
+                      ? 'border-green-500/30 bg-gradient-to-br from-green-500/10 to-transparent hover:border-green-500/50'
+                      : item.percentage > 0
+                        ? 'border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10'
+                        : 'border-white/5 bg-white/[0.02] opacity-60',
                 ]"
               >
-                <span>{{ item.label }}</span>
+                <!-- Month label -->
+                <span
+                  :class="[
+                    'text-[11px] font-semibold uppercase tracking-wider',
+                    item.highlight ? 'text-secondary' : 'text-white/50',
+                  ]"
+                >
+                  {{ item.label }}
+                </span>
+
+                <!-- Percentage -->
+                <span
+                  :class="[
+                    'text-xl font-bold tabular-nums',
+                    item.highlight
+                      ? 'text-secondary'
+                      : item.percentage > 50
+                        ? 'text-green-400'
+                        : item.percentage > 0
+                          ? 'text-white'
+                          : 'text-white/30',
+                  ]"
+                >
+                  {{ item.formattedPercentage }}
+                </span>
+
+                <!-- Indicator -->
+                <div
+                  v-if="item.highlight"
+                  class="flex items-center gap-1 rounded-full bg-secondary/20 px-2 py-0.5"
+                >
+                  <UIcon name="i-lucide-sparkles" class="h-3 w-3 text-secondary" />
+                  <span class="text-[10px] font-medium text-secondary">Provável</span>
+                </div>
+                <div
+                  v-else-if="item.percentage >= 80"
+                  class="h-1 w-6 rounded-full bg-green-500/50"
+                />
+                <div
+                  v-else-if="item.percentage >= 50"
+                  class="h-1 w-4 rounded-full bg-green-500/30"
+                />
+                <div
+                  v-else
+                  class="h-1 w-2 rounded-full bg-white/10"
+                />
               </div>
-              <span
-                :class="[
-                  'text-lg font-bold tabular-nums',
-                  item.highlight ? 'text-secondary' : 'text-white',
-                ]"
-              >
-                {{ item.formattedPercentage }}
-              </span>
-              <IconAi v-if="item.highlight" class="fill-secondary h-4 w-4" />
+            </div>
+
+            <!-- Legend -->
+            <div class="mt-4 flex flex-wrap items-center justify-center gap-4 text-[10px] text-white/40">
+              <div class="flex items-center gap-1.5">
+                <div class="h-2 w-2 rounded-full bg-secondary" />
+                <span>Mês atual</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <div class="h-2 w-2 rounded-full bg-green-500" />
+                <span>Alta probabilidade</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <div class="h-2 w-2 rounded-full bg-white/30" />
+                <span>Baixa probabilidade</span>
+              </div>
             </div>
           </div>
         </div>
@@ -402,55 +463,54 @@
       <!-- Buy & Hold Checklist -->
       <section class="border-b border-white/10 py-8 max-md:px-4">
         <div class="rounded-3xl bg-white/5 p-6 backdrop-blur-sm">
-          <header class="mb-6 flex flex-col gap-4">
-            <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <div class="flex items-center gap-2">
-                <IconAi class="fill-secondary h-6 w-6" />
-                <h2 class="text-lg font-semibold text-white">
-                  Checklist Buy & Hold
-                </h2>
+          <!-- Header com score -->
+          <header class="mb-6">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div class="flex items-center gap-3">
+                <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10">
+                  <UIcon name="i-lucide-clipboard-check" class="h-5 w-5 text-white/60" />
+                </div>
+                <div>
+                  <h2 class="text-lg font-semibold text-white">Checklist Buy & Hold</h2>
+                  <p class="text-xs text-white/40">Critérios para investidores de longo prazo</p>
+                </div>
               </div>
-              <span class="rounded-full bg-white/10 px-3 py-1 text-xs text-white/60">
-                Fundamentus + Volume recente
-              </span>
+
+              <!-- Score -->
+              <div v-if="!isLoadingFundamentus && buyAndHoldChecklist.length" class="flex items-center gap-2 text-sm text-white/50">
+                <span class="font-medium text-white">{{ buyAndHoldChecklist.filter(i => i.status === 'pass').length }}</span>
+                <span>de</span>
+                <span>{{ buyAndHoldChecklist.length }} critérios</span>
+              </div>
             </div>
-            <p class="text-sm text-white/60">
-              Critérios essenciais para investidores de longo prazo.
-            </p>
           </header>
 
-          <div v-if="isLoadingFundamentus" class="grid gap-3 md:grid-cols-2">
+          <div v-if="isLoadingFundamentus" class="grid gap-2 md:grid-cols-2">
             <USkeleton
               v-for="index in 6"
               :key="`checklist-skeleton-${index}`"
-              class="h-24 rounded-2xl"
+              class="h-16 rounded-xl"
             />
           </div>
           <template v-else>
             <div
               v-if="buyAndHoldChecklist.length"
-              class="grid gap-3 md:grid-cols-2"
+              class="grid gap-2 md:grid-cols-2"
             >
               <div
                 v-for="item in buyAndHoldChecklist"
                 :key="item.id"
-                :class="[
-                  'flex items-start gap-3 rounded-2xl border px-4 py-3 backdrop-blur-sm transition-colors',
-                  item.status === 'pass'
-                    ? 'border-secondary/60 bg-secondary/10'
-                    : item.status === 'fail'
-                      ? 'border-red-500/40 bg-red-500/5'
-                      : 'border-white/10 bg-white/5',
-                ]"
+                class="group flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.02] p-3 transition-all hover:bg-white/5"
               >
+                <!-- Status Icon -->
                 <div
                   :class="[
-                    'flex h-9 w-9 items-center justify-center rounded-xl border',
+                    'flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg',
                     item.status === 'pass'
-                      ? 'border-secondary/60 bg-secondary/10 text-secondary'
+                      ? 'bg-green-500/10 text-green-500'
                       : item.status === 'fail'
-                        ? 'border-red-500/40 bg-red-500/10 text-red-300'
-                        : 'border-white/10 bg-white/10 text-white/60',
+                        ? 'bg-red-500/10 text-red-500'
+                        : 'bg-white/5 text-white/30',
                   ]"
                 >
                   <UIcon
@@ -459,14 +519,16 @@
                         ? 'i-lucide-check'
                         : item.status === 'fail'
                           ? 'i-lucide-x'
-                          : 'i-lucide-help-circle'
+                          : 'i-lucide-minus'
                     "
-                    class="size-4"
+                    class="h-4 w-4"
                   />
                 </div>
-                <div class="flex flex-1 flex-col gap-2">
-                  <div class="flex items-center gap-2">
-                    <span class="text-sm font-medium text-white">
+
+                <!-- Content -->
+                <div class="flex min-w-0 flex-1 flex-col">
+                  <div class="flex items-center gap-1.5">
+                    <span class="text-sm text-white/80">
                       {{ item.label }}
                     </span>
                     <UTooltip
@@ -476,29 +538,36 @@
                     >
                       <button
                         type="button"
-                        class="text-white/40 transition-colors hover:text-white/80"
+                        class="text-white/20 transition-colors hover:text-white/50"
                       >
-                        <UIcon name="i-lucide-info" class="size-4" />
+                        <UIcon name="i-lucide-info" class="h-3 w-3" />
                       </button>
                     </UTooltip>
                   </div>
-                  <p v-if="item.detail" class="text-xs text-white/60">
+                  <p
+                    v-if="item.detail"
+                    class="truncate text-xs text-white/40"
+                  >
                     {{ item.detail }}
                   </p>
                   <p
                     v-else-if="item.status === 'unknown'"
-                    class="text-xs text-white/40"
+                    class="text-xs text-white/30"
                   >
-                    Dados insuficientes para avaliar
+                    Dados indisponíveis
                   </p>
                 </div>
               </div>
             </div>
+
+            <!-- Empty state -->
             <div
               v-else
-              class="rounded-2xl border border-dashed border-white/10 p-6 text-center text-sm text-white/50"
+              class="flex flex-col items-center justify-center rounded-xl border border-dashed border-white/10 py-12 text-center"
             >
-              Checklist indisponível no momento.
+              <UIcon name="i-lucide-clipboard-list" class="mb-3 h-8 w-8 text-white/20" />
+              <p class="text-sm text-white/40">Checklist indisponível</p>
+              <p class="text-xs text-white/20">Dados insuficientes para análise</p>
             </div>
           </template>
         </div>

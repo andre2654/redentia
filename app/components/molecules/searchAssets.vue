@@ -3,10 +3,10 @@
     v-model:open="open"
     :ui="{
       content:
-        'bg-[#09090b] border border-white/10 ring-0 sm:rounded-[20px] shadow-2xl shadow-primary/5 overflow-hidden',
-      overlay: 'backdrop-blur-xl bg-black/80',
-      width: 'sm:max-w-2xl',
-      height: 'h-[600px]',
+        'bg-[#0a0a0b] border border-white/10 ring-0 sm:rounded-2xl shadow-2xl shadow-black/50 overflow-hidden',
+      overlay: 'backdrop-blur-md bg-black/70',
+      width: 'sm:max-w-xl',
+      height: 'h-[70vh] max-h-[600px]',
     }"
   >
     <slot name="trigger">
@@ -20,16 +20,16 @@
         @click="open = true"
       >
         <template v-if="!compact" #trailing>
-          <div class="flex items-center gap-2 max-lg:hidden">
+          <div class="flex items-center gap-1 max-lg:hidden">
             <UKbd
               value="meta"
               variant="subtle"
-              class="border-white/10 bg-white/10 text-white/60"
+              class="border-white/10 bg-white/5 text-white/40"
             />
             <UKbd
               value="K"
               variant="subtle"
-              class="border-white/10 bg-white/10 text-white/60"
+              class="border-white/10 bg-white/5 text-white/40"
             />
           </div>
         </template>
@@ -37,54 +37,112 @@
     </slot>
 
     <template #content>
-      <div class="relative flex h-full flex-col overflow-hidden">
-        <!-- Background Effects -->
-        <div
-          class="bg-primary/10 pointer-events-none absolute -top-20 left-1/2 h-[300px] w-[400px] -translate-x-1/2 rounded-full blur-[100px]"
-        />
-
-        <UCommandPalette
-          v-model:search-term="searchTerm"
-          :loading="status === 'pending'"
-          :groups="groups"
-          placeholder="Digite o nome ou ticker do ativo..."
-          class="flex-1 bg-transparent"
-          :ui="{
-            root: 'flex flex-col h-full',
-            input:
-              'bg-transparent border-b border-white/10 h-16 text-lg text-white placeholder:text-white/30 focus:ring-0 px-6',
-            group: 'p-2',
-            label:
-              'text-xs font-medium text-secondary/70 uppercase tracking-widest px-3 py-2',
-            item: 'group flex items-center gap-3 px-3 py-3 rounded-2xl text-sm text-white/80 aria-selected:bg-white/10 aria-selected:text-white transition-colors cursor-pointer',
-            container:
-              'divide-y divide-white/5 scroll-py-2 flex-1 overflow-y-auto',
-            empty: 'py-14 text-center text-sm text-white/40',
-            icon: 'text-white/40 group-aria-selected:text-white',
-          }"
-          @update:model-value="onSelect"
-        >
-          <template #footer>
-            <div
-              class="rounded-b-[16px] border-t border-white/10 bg-white/5 p-4 backdrop-blur-md"
-            >
-              <UButton
-                to="/search"
-                color="secondary"
-                variant="soft"
-                block
-                size="xl"
-                class="rounded-2xl font-semibold"
-                @click="open = false"
+      <div class="flex h-full flex-col overflow-hidden">
+        <!-- Header / Search Input -->
+        <div class="flex-shrink-0 border-b border-white/10 p-4">
+          <div class="flex items-center gap-2">
+            <!-- Search Input -->
+            <div class="flex flex-1 items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3">
+              <UIcon name="i-lucide-search" class="h-5 w-5 flex-shrink-0 text-white/40" />
+              <input
+                v-model="searchTerm"
+                type="text"
+                placeholder="Buscar por nome ou ticker..."
+                class="min-w-0 flex-1 bg-transparent text-white placeholder:text-white/30 focus:outline-none"
               >
-                <div class="flex items-center gap-3">
-                  <span class="i-lucide-search size-5" />
-                  <span>Acessar busca avançada</span>
-                </div>
-              </UButton>
+              <div v-if="status === 'pending'" class="flex-shrink-0">
+                <UIcon name="i-lucide-loader-2" class="h-4 w-4 animate-spin text-secondary" />
+              </div>
+              <button
+                v-else-if="searchTerm"
+                class="flex-shrink-0 rounded-md p-1 text-white/40 transition hover:bg-white/10 hover:text-white"
+                @click="searchTerm = ''"
+              >
+                <UIcon name="i-lucide-x" class="h-4 w-4" />
+              </button>
+            </div>
+
+            <!-- Advanced Search Button -->
+            <NuxtLink
+              to="/search"
+              class="flex h-[50px] w-[50px] flex-shrink-0 items-center justify-center rounded-xl border border-secondary/20 bg-secondary/10 text-secondary transition-all hover:border-secondary/40 hover:bg-secondary/20"
+              title="Busca avançada"
+              @click="open = false"
+            >
+              <UIcon name="i-lucide-sliders-horizontal" class="h-5 w-5" />
+            </NuxtLink>
+          </div>
+        </div>
+
+        <!-- Results -->
+        <div class="min-h-0 flex-1 overflow-y-auto p-2">
+          <template v-for="group in filteredGroups" :key="group.id">
+            <div v-if="group.items.length > 0" class="mb-4">
+              <!-- Group Label -->
+              <div class="sticky top-0 z-10 mb-2 flex items-center gap-2 bg-[#0a0a0b] px-3 py-2">
+                <span class="text-[10px] font-semibold uppercase tracking-widest text-white/30">
+                  {{ group.label }}
+                </span>
+                <span class="rounded-full bg-white/5 px-2 py-0.5 text-[10px] text-white/40">
+                  {{ group.items.length }}
+                </span>
+              </div>
+
+              <!-- Items -->
+              <div class="space-y-0.5">
+                <NuxtLink
+                  v-for="item in group.items"
+                  :key="item.id"
+                  :to="item.to"
+                  class="group flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all hover:bg-white/5"
+                  @click="onSelect"
+                >
+                  <!-- Logo -->
+                  <div class="flex h-9 w-9 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-white/5">
+                    <img
+                      v-if="item.avatar?.src"
+                      :src="item.avatar.src"
+                      :alt="item.label"
+                      class="h-full w-full object-cover"
+                    >
+                    <span v-else class="text-xs font-bold text-white/40">
+                      {{ item.label.slice(0, 2) }}
+                    </span>
+                  </div>
+
+                  <!-- Info -->
+                  <div class="flex min-w-0 flex-1 flex-col">
+                    <span class="text-sm font-semibold text-white">{{ item.label }}</span>
+                    <span class="truncate text-xs text-white/40">{{ item.suffix }}</span>
+                  </div>
+
+                  <!-- Arrow -->
+                  <UIcon
+                    name="i-lucide-chevron-right"
+                    class="h-4 w-4 flex-shrink-0 text-white/20 transition-all group-hover:translate-x-0.5 group-hover:text-white/40"
+                  />
+                </NuxtLink>
+              </div>
             </div>
           </template>
-        </UCommandPalette>
+
+          <!-- Empty State -->
+          <div v-if="hasNoResults" class="flex flex-col items-center justify-center py-16 text-center">
+            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/5">
+              <UIcon name="i-lucide-search-x" class="h-7 w-7 text-white/30" />
+            </div>
+            <p class="text-sm text-white/40">Nenhum ativo encontrado</p>
+            <p class="mt-1 text-xs text-white/20">Tente buscar por outro nome ou ticker</p>
+            <NuxtLink
+              to="/search"
+              class="mt-4 flex items-center gap-2 text-sm text-secondary transition hover:underline"
+              @click="open = false"
+            >
+              <UIcon name="i-lucide-sliders-horizontal" class="h-4 w-4" />
+              Usar busca avançada
+            </NuxtLink>
+          </div>
+        </div>
       </div>
     </template>
   </UModal>
@@ -220,5 +278,26 @@ const groups = computed(() => {
       items: etfItems,
     },
   ]
+})
+
+// Filter groups based on search term
+const filteredGroups = computed(() => {
+  const term = searchTerm.value.toLowerCase().trim()
+  if (!term) return groups.value
+
+  return groups.value.map((group) => ({
+    ...group,
+    items: group.items.filter(
+      (item) =>
+        item.label.toLowerCase().includes(term) ||
+        item.suffix.toLowerCase().includes(term)
+    ),
+  }))
+})
+
+// Check if there are no results
+const hasNoResults = computed(() => {
+  if (!searchTerm.value.trim()) return false
+  return filteredGroups.value.every((group) => group.items.length === 0)
 })
 </script>
