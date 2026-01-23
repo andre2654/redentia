@@ -55,95 +55,85 @@
 
   <!-- Layout -->
   <div class="flex min-h-screen w-full">
-    <div
-      class="sticky top-0 h-screen min-h-fit w-[380px] min-w-[380px] p-4 max-xl:hidden"
+    <!-- Sidebar Desktop -->
+    <aside
+      class="sticky top-0 flex h-screen w-[320px] min-w-[320px] flex-col gap-6 p-4 max-xl:hidden"
     >
-      <div
-        class="flex flex-col justify-between gap-12 rounded-[30px] bg-white/5 p-4 py-8"
-      >
-        <div class="flex flex-col gap-3 px-6">
-          <div class="flex items-center">
-            <div class="flex items-center gap-3">
-              <UAvatar :alt="authStore.me?.name || 'Usuário'" size="xl" />
-              <div class="flex flex-col">
-                <div class="text-[15px]">
-                  {{ authStore.me?.name || 'Usuário' }}
-                </div>
-                <span class="-mt-1 text-[12px] text-gray-400"
-                  >Plano gratuito</span
-                >
-              </div>
-            </div>
+      <!-- User Profile Card -->
+      <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+        <div class="flex items-center gap-3">
+          <div class="relative">
+            <UAvatar :alt="authStore.me?.name || 'Usuário'" size="lg" class="ring-2 ring-secondary/30" />
+            <div class="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-black bg-green-500" />
           </div>
-          <div class="flex items-center">
-            <UButton
-              color="neutral"
-              variant="link"
-              :trailing-icon="
-                interfaceStore.revealAmount
-                  ? 'i-lucide-eye-off'
-                  : 'i-lucide-eye'
-              "
-              :aria-label="
-                interfaceStore.revealAmount ? 'Ocultar valores' : 'Mostrar valores'
-              "
-              :aria-pressed="interfaceStore.revealAmount"
-              @click="interfaceStore.toggleRevealAmount"
-            />
-            <!-- <UButton
-              to="/settings"
-              color="neutral"
-              variant="link"
-              label="Configurações"
-              trailing-icon="i-lucide-cog"
-            /> -->
-            <UButton
-              color="neutral"
-              variant="link"
-              label="sair"
-              icon="i-lucide-log-out"
-              @click="makeLogout"
-            />
+          <div class="flex flex-1 flex-col">
+            <span class="font-medium text-white">
+              {{ authStore.me?.name || 'Usuário' }}
+            </span>
+            <span class="flex items-center gap-1 text-xs text-white/50">
+              <UIcon name="i-lucide-sparkles" class="h-3 w-3 text-secondary" />
+              Plano gratuito
+            </span>
           </div>
         </div>
-
-        <div class="flex flex-col gap-8">
-          <div class="flex flex-col gap-3">
-            <MoleculesSearchAssets v-if="!hideSearchBar" class="px-6 py-3" />
-            <AtomsSidebarButton to="/" text="Visão Geral" />
-            <AtomsSidebarButton to="/wallet" text="Sua carteira" disabled />
-            <AtomsSidebarButton
-              to="/planejador"
-              text="Planejador de aportes"
-              disabled
-              is-sub-item
-            />
-            <AtomsSidebarButton to="/ideal" text="Ideal" disabled is-sub-item />
-            <AtomsSidebarButton to="/dividends" text="Proventos" disabled />
-            <AtomsSidebarButton
-              to="/calculadora"
-              text="Calculadora inteligente"
-            />
-            <AtomsSidebarButton
-              to="/guias"
-              text="Guias de investimento"
-            />
-          </div>
-          <NuxtLink
-            to="/help"
-            active-class="bg-secondary/20 "
-            class="bg-secondary/5 hover:bg-secondary/20 flex items-center justify-center gap-4 rounded-full px-6 py-2"
+        <div class="mt-4 flex items-center gap-2 border-t border-white/10 pt-4">
+          <button
+            class="flex flex-1 items-center justify-center gap-2 rounded-lg bg-white/5 px-3 py-2 text-xs text-white/60 transition hover:bg-white/10 hover:text-white"
+            @click="interfaceStore.toggleRevealAmount"
           >
-            <IconAi class="fill-secondary h-5 w-5" />
-            <div class="text-secondary flex flex-col">
-              <span class="text-[10px]">Acesse de graça</span>
-              <span class="text-[16px] font-bold">Assessoria</span>
-            </div>
-          </NuxtLink>
+            <UIcon
+              :name="interfaceStore.revealAmount ? 'i-lucide-eye-off' : 'i-lucide-eye'"
+              class="h-4 w-4"
+            />
+            {{ interfaceStore.revealAmount ? 'Ocultar' : 'Mostrar' }}
+          </button>
+          <button
+            class="flex flex-1 items-center justify-center gap-2 rounded-lg bg-white/5 px-3 py-2 text-xs text-white/60 transition hover:bg-red-500/10 hover:text-red-400"
+            @click="makeLogout"
+          >
+            <UIcon name="i-lucide-log-out" class="h-4 w-4" />
+            Sair
+          </button>
         </div>
-        <AtomsSidebarMonthGoal />
       </div>
-    </div>
+
+      <!-- Search -->
+      <MoleculesSearchAssets
+        v-if="!hideSearchBar"
+        class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 transition hover:border-white/20"
+      />
+
+      <!-- Navigation -->
+      <nav class="flex flex-1 flex-col gap-1">
+        <span class="mb-2 px-4 text-[10px] font-medium uppercase tracking-wider text-white/30">Menu</span>
+        <AtomsSidebarButton to="/" text="Visão Geral" icon="i-lucide-layout-dashboard" />
+        <AtomsSidebarButton to="/wallet" text="Sua carteira" icon="i-lucide-wallet" disabled />
+
+        <div class="my-2" />
+        <span class="mb-2 px-4 text-[10px] font-medium uppercase tracking-wider text-white/30">Ferramentas</span>
+        <AtomsSidebarButton to="/calculadora" text="Calculadoras" icon="i-lucide-calculator" />
+        <AtomsSidebarButton to="/guias" text="Guias" icon="i-lucide-book-open" />
+        <AtomsSidebarButton to="/dividends" text="Proventos" icon="i-lucide-coins" disabled />
+      </nav>
+
+      <!-- AI CTA -->
+      <NuxtLink
+        to="/help"
+        class="group relative overflow-hidden rounded-2xl border border-secondary/20 bg-gradient-to-br from-secondary/10 to-transparent p-4 transition-all hover:border-secondary/40 hover:from-secondary/20"
+      >
+        <div class="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-secondary/20 blur-2xl transition-all group-hover:bg-secondary/30" />
+        <div class="relative flex items-center gap-3">
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-secondary/20">
+            <IconAi class="fill-secondary h-5 w-5" />
+          </div>
+          <div class="flex flex-col">
+            <span class="text-sm font-semibold text-secondary">Assessoria com IA</span>
+            <span class="text-xs text-white/50">Tire suas dúvidas grátis</span>
+          </div>
+          <UIcon name="i-lucide-arrow-right" class="ml-auto h-4 w-4 text-secondary/60 transition-transform group-hover:translate-x-1" />
+        </div>
+      </NuxtLink>
+    </aside>
     <div
       class="relative flex w-full flex-col overflow-hidden bg-black xl:px-4 xl:py-4"
     >
