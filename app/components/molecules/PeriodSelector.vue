@@ -29,24 +29,34 @@ const isDisabled = computed(() => props.disabled || isLoading.value)
 
 <template>
   <div class="flex flex-col gap-2">
-    <UButtonGroup
+    <!-- Desktop: botões estilizados -->
+    <div
       v-if="options.length"
-      orientation="horizontal"
-      variant="soft"
-      class="max-md:hidden"
+      class="flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 p-1 max-md:hidden"
     >
-      <UButton
+      <button
         v-for="option in options"
         :key="option.value"
-        color="neutral"
-        :variant="modelValue === option.value ? 'soft' : 'link'"
-        :label="option.label"
+        type="button"
+        class="rounded-md px-3 py-1.5 text-xs font-medium transition-all"
+        :class="[
+          modelValue === option.value
+            ? 'bg-white/10 text-white'
+            : 'text-white/50 hover:text-white/80',
+          isDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
+        ]"
         :disabled="isDisabled"
-        :loading="isLoading && modelValue === option.value"
         @click="modelValue = option.value"
-      />
-    </UButtonGroup>
+      >
+        <span v-if="isLoading && modelValue === option.value" class="flex items-center gap-1">
+          <UIcon name="i-lucide-loader-2" class="h-3 w-3 animate-spin" />
+          {{ option.label }}
+        </span>
+        <span v-else>{{ option.label }}</span>
+      </button>
+    </div>
 
+    <!-- Mobile: select menu -->
     <USelectMenu
       v-model="modelValue"
       :items="options"

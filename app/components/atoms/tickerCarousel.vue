@@ -1,5 +1,9 @@
 <template>
   <div class="relative flex min-w-0 items-center gap-3 overflow-hidden">
+    <!-- Fade gradient left -->
+    <div class="pointer-events-none absolute left-0 top-0 z-10 h-full w-16 bg-gradient-to-r from-[#0a0a0a] to-transparent" />
+    <!-- Fade gradient right -->
+    <div class="pointer-events-none absolute right-0 top-0 z-10 h-full w-16 bg-gradient-to-l from-[#0a0a0a] to-transparent" />
     <div
       id="carousel-tickercarousel"
       class="relative min-w-0 flex-1 overflow-hidden"

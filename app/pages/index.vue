@@ -270,7 +270,7 @@
           class="w-full"
           loop
           :items="assetCategories"
-          :ui="{ item: 'basis-1/1 md:basis-1/2 lg:basis-1/3 xl:basis-1/4' }"
+          :ui="{ item: 'basis-1/1 md:basis-1/2 lg:basis-1/3 xl:basis-1/4', container: 'bg-transparent' }"
         >
           <div class="flex w-full flex-col gap-2 px-2 py-4">
             <!-- Header -->
@@ -307,7 +307,7 @@
           class="w-full"
           loop
           :items="assetCategories"
-          :ui="{ item: 'basis-1/1 md:basis-1/2 lg:basis-1/3 xl:basis-1/4' }"
+          :ui="{ item: 'basis-1/1 md:basis-1/2 lg:basis-1/3 xl:basis-1/4', container: 'bg-transparent' }"
         >
           <div class="flex w-full flex-col gap-2 px-2 py-4">
             <!-- Header -->
@@ -982,7 +982,7 @@ const {
 
 const selectedTimeRange = ref<ChartTimeRange>('month')
 const showMap = ref(false)
-const loading = ref(true)
+const loading = ref(false)
 const blockChat = ref(false)
 const treemapFilter = ref<'all' | 'positive' | 'negative'>('all')
 
@@ -1158,6 +1158,10 @@ watchEffect(() => {
 
   if (!ibovChartData.value.length && payload.ibovSeries.length) {
     ibovChartData.value = mapIndiceSeries(payload.ibovSeries)
+  }
+  
+  // Desbloqueia os botões assim que os dados forem carregados
+  if (loading.value) {
     loading.value = false
   }
 })
