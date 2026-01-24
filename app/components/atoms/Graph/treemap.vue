@@ -5,15 +5,18 @@
   >
     <!-- Layout responsivo para grupos -->
     <div
-      class="flex h-full w-full flex-col gap-5 lg:flex-row"
+      class="flex h-full w-full flex-col gap-6 lg:flex-row lg:gap-8"
       :style="{ minHeight: `${responsiveHeight}px` }"
     >
       <!-- Grupo Ações -->
       <div
         v-if="groupedData.acoes.length > 0"
-        class="group-container flex flex-1 flex-col gap-2"
+        class="group-container flex flex-1 flex-col gap-3"
       >
-        <h3 class="mb-3 px-6 text-[16px] font-bold">AÇÕES</h3>
+        <div class="flex items-center gap-2 px-6">
+          <div class="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+          <h3 class="text-sm font-medium tracking-wide text-white/70">AÇÕES</h3>
+        </div>
         <div class="canvas-container relative min-h-[200px] flex-1">
           <canvas ref="canvasAcoesRef" class="h-full w-full" />
         </div>
@@ -22,9 +25,12 @@
       <!-- Grupo FIIs -->
       <div
         v-if="groupedData.fiis.length > 0"
-        class="group-container flex flex-1 flex-col gap-2"
+        class="group-container flex flex-1 flex-col gap-3"
       >
-        <h3 class="mb-3 px-6 text-[16px] font-bold">FII</h3>
+        <div class="flex items-center gap-2 px-6">
+          <div class="h-1.5 w-1.5 rounded-full bg-blue-400" />
+          <h3 class="text-sm font-medium tracking-wide text-white/70">FIIs</h3>
+        </div>
         <div class="canvas-container relative min-h-[200px] flex-1">
           <canvas ref="canvasFiisRef" class="h-full w-full" />
         </div>
@@ -33,7 +39,7 @@
       <!-- Fallback para dados sem categoria -->
       <div
         v-if="groupedData.outros.length > 0"
-        class="group-container flex flex-1 flex-col gap-2"
+        class="group-container flex flex-1 flex-col gap-3"
       >
         <div class="canvas-container relative min-h-[350px] flex-1">
           <canvas ref="canvasOutrosRef" class="h-full w-full" />
@@ -249,14 +255,14 @@ const groupedData = computed(() => {
 // Função para calcular a cor baseada na mudança percentual
 const getColor = (change: number): string => {
   if (change >= 0) {
-    // Verde para positivos
-    const intensity = Math.min(Math.abs(change) / 15, 1) // Normaliza até 15%
-    const alpha = 0.05 + intensity * 0.3 // De 20% a 60% de opacidade para o fundo
+    // Verde para positivos - cores mais vibrantes e modernas
+    const intensity = Math.min(Math.abs(change) / 12, 1) // Normaliza até 12%
+    const alpha = 0.15 + intensity * 0.45 // De 15% a 60% de opacidade
     return rgba(ChartColors.positive, alpha)
   } else {
     // Vermelho para negativos
-    const intensity = Math.min(Math.abs(change) / 15, 1) // Normaliza até 15%
-    const alpha = 0.05 + intensity * 0.3 // De 20% a 60% de opacidade para o fundo
+    const intensity = Math.min(Math.abs(change) / 12, 1) // Normaliza até 12%
+    const alpha = 0.15 + intensity * 0.45 // De 15% a 60% de opacidade
     return rgba(ChartColors.negative, alpha)
   }
 }
@@ -413,6 +419,10 @@ const easeOutCubic = (t: number): number => {
   return 1 - Math.pow(1 - t, 3)
 }
 
+// Gap entre os retângulos para visual moderno
+const CELL_GAP = 3
+const BORDER_RADIUS = 8
+
 // Função para animar os retângulos
 const animateRectangles = (
   ctx: CanvasRenderingContext2D,
@@ -424,7 +434,7 @@ const animateRectangles = (
 ) => {
   rects.forEach((rectItem, index) => {
     // Delay escalonado para cada retângulo
-    const delay = index * 0.05
+    const delay = index * 0.03
     const adjustedProgress = Math.max(
       0,
       Math.min(1, (progress - delay) / (1 - delay))
@@ -439,15 +449,22 @@ const animateRectangles = (
 
     // Aplica efeito de hover - reduz opacidade se outro retângulo está sendo hovered
     if (hoveredRectangle.value && hoveredRectangle.value !== rectItem) {
-      opacity *= 0.3 // Reduz para 30% da opacidade normal
+      opacity *= 0.4 // Reduz para 40% da opacidade normal
     }
 
-    if (rectItem.width > 0 && rectItem.height > 0) {
+    // Aplica gap para visual moderno
+    const gap = CELL_GAP
+    const drawX = rectItem.x + gap / 2
+    const drawY = rectItem.y + gap / 2
+    const drawWidth = Math.max(0, rectItem.width - gap)
+    const drawHeight = Math.max(0, rectItem.height - gap)
+
+    if (drawWidth > 0 && drawHeight > 0) {
       // Salva o estado do contexto
       ctx.save()
 
-      // Desenha o retângulo mantendo a posição original
-      const borderRadius = 0
+      // Border radius adaptativo baseado no tamanho
+      const borderRadius = Math.min(BORDER_RADIUS, drawWidth / 4, drawHeight / 4)
 
       // Preenche com a cor de fundo (com transparência animada)
       const originalColor = rectItem.color
@@ -469,104 +486,79 @@ const animateRectangles = (
       }
 
       // Aplica transformação de escala no centro do retângulo
-      const centerX = rectItem.x + rectItem.width / 2
-      const centerY = rectItem.y + rectItem.height / 2
+      const centerX = drawX + drawWidth / 2
+      const centerY = drawY + drawHeight / 2
 
       ctx.translate(centerX, centerY)
       ctx.scale(scaleProgress, scaleProgress)
       ctx.translate(-centerX, -centerY)
 
       ctx.beginPath()
-      ctx.roundRect(
-        rectItem.x,
-        rectItem.y,
-        rectItem.width,
-        rectItem.height,
-        borderRadius
-      )
+      ctx.roundRect(drawX, drawY, drawWidth, drawHeight, borderRadius)
       ctx.fill()
 
-      // Desenha a borda com cor sólida
+      // Borda sutil e elegante
       const borderColor = getBorderColor(rectItem.item.change)
       ctx.strokeStyle = borderColor
-      ctx.globalAlpha = opacity
+      ctx.lineWidth = 1
+      ctx.globalAlpha = opacity * 0.3
       ctx.stroke()
 
-      // Renderiza texto sempre (sem animação de opacidade)
-      // Calcula o tamanho da fonte baseado na área do retângulo
-      const area = rectItem.width * rectItem.height
+      // Renderiza texto
+      const area = drawWidth * drawHeight
       const areaFactor = Math.sqrt(area) / 100
 
       const symbolFontSize = Math.max(
-        10,
-        Math.min(32, areaFactor * 8 * fontScale)
+        11,
+        Math.min(28, areaFactor * 7 * fontScale)
       )
-      const changeFontSize = Math.max(8, symbolFontSize * 0.75)
-      const priceFontSize = Math.max(7, symbolFontSize * 0.6)
+      const changeFontSize = Math.max(9, symbolFontSize * 0.7)
+      const priceFontSize = Math.max(8, symbolFontSize * 0.55)
 
-      const minWidth = 35
-      const minHeight = 20
-      const minAreaForPrice = 4000
-      const minAreaForSymbol = 1000
+      const minWidth = 40
+      const minHeight = 25
+      const minAreaForPrice = 5000
+      const minAreaForSymbol = 1200
 
-      const textCenterX = rectItem.x + rectItem.width / 2
-      const textCenterY = rectItem.y + rectItem.height / 2
+      const textCenterX = drawX + drawWidth / 2
+      const textCenterY = drawY + drawHeight / 2
 
       // Mostra texto apenas se o retângulo for grande o suficiente
       if (
-        rectItem.width > minWidth &&
-        rectItem.height > minHeight &&
+        drawWidth > minWidth &&
+        drawHeight > minHeight &&
         area > minAreaForSymbol
       ) {
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
-
-        // Sombra do texto para melhor legibilidade (com opacidade ajustada pelo hover)
-        ctx.globalAlpha = 0.5 * opacity
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'
-
-        // Symbol com sombra
-        ctx.font = `bold ${symbolFontSize}px Inter, -apple-system, sans-serif`
-        ctx.fillText(
-          rectItem.item.symbol,
-          textCenterX + 1,
-          textCenterY - changeFontSize / 2 + 1
-        )
-
-        // Change percentage com sombra
-        ctx.font = `600 ${changeFontSize}px Inter, -apple-system, sans-serif`
-        const changeText = `${rectItem.item.change >= 0 ? '+' : ''}${rectItem.item.change.toFixed(1)}%`
-        ctx.fillText(
-          changeText,
-          textCenterX + 1,
-          textCenterY + symbolFontSize / 2 + 1
-        )
 
         // Texto principal branco (com opacidade ajustada pelo hover)
         ctx.globalAlpha = opacity
         ctx.fillStyle = 'white'
 
         // Symbol (texto principal maior)
-        ctx.font = `bold ${symbolFontSize}px Inter, -apple-system, sans-serif`
+        ctx.font = `700 ${symbolFontSize}px Inter, -apple-system, sans-serif`
         ctx.fillText(
           rectItem.item.symbol,
           textCenterX,
-          textCenterY - changeFontSize / 2
+          textCenterY - changeFontSize * 0.6
         )
 
-        // Change percentage
+        // Change percentage com cor contextual
         ctx.font = `600 ${changeFontSize}px Inter, -apple-system, sans-serif`
-        ctx.fillText(changeText, textCenterX, textCenterY + symbolFontSize / 2)
+        const changeText = `${rectItem.item.change >= 0 ? '+' : ''}${rectItem.item.change.toFixed(1)}%`
+        ctx.globalAlpha = opacity * 0.9
+        ctx.fillText(changeText, textCenterX, textCenterY + symbolFontSize * 0.5)
 
-        // Preço apenas em retângulos maiores (com opacidade ajustada pelo hover)
-        if (area > minAreaForPrice && rectItem.height > 60) {
+        // Preço apenas em retângulos maiores
+        if (area > minAreaForPrice && drawHeight > 70) {
           ctx.font = `500 ${priceFontSize}px Inter, -apple-system, sans-serif`
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.8)'
-          ctx.globalAlpha = 0.8 * opacity
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.6)'
+          ctx.globalAlpha = opacity * 0.7
           ctx.fillText(
             `R$ ${rectItem.item.price.toFixed(2)}`,
             textCenterX,
-            textCenterY + symbolFontSize / 2 + changeFontSize + 4
+            textCenterY + symbolFontSize * 0.5 + changeFontSize + 6
           )
         }
       }
@@ -1122,13 +1114,13 @@ defineExpose({
 
 /* Animações de entrada */
 .canvas-container {
-  animation: fadeInUp 0.5s ease-out;
+  animation: fadeInUp 0.4s ease-out;
 }
 
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;

@@ -189,69 +189,62 @@
         />
       </div>
 
-      <div class="flex flex-col px-6">
-        <h2 class="text-[18px] font-bold">O mercado em tempo real</h2>
-        <p class="text-[13px] font-extralight">
-          Altas, baixas e oportunidades. Atualização instantânea.
-        </p>
-        <button
-          type="button"
-          class="mt-3 flex max-w-fit cursor-pointer items-center gap-3 rounded-full border px-4 py-2.5 transition-all duration-200"
-          :class="[
-            showMap
-              ? 'border-secondary/50 bg-secondary/10 hover:bg-secondary/20'
-              : 'border-white/10 bg-white/5 hover:bg-white/10',
-          ]"
-          @click="showMap = !showMap"
-        >
-          <UIcon
-            name="i-lucide-map"
-            class="h-4 w-4"
-            :class="showMap ? 'text-secondary' : 'text-white/60'"
-          />
-          <span
-            class="select-none text-sm font-medium"
-            :class="showMap ? 'text-secondary' : 'text-white/70'"
+      <div class="flex items-center justify-between gap-4 px-6">
+        <div class="flex flex-col">
+          <h2 class="text-[18px] font-bold">O mercado em tempo real</h2>
+          <p class="text-[13px] font-extralight">
+            Altas, baixas e oportunidades. Atualização instantânea.
+          </p>
+        </div>
+        <div class="flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 p-1">
+          <button
+            type="button"
+            class="flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all"
+            :class="!showMap ? 'bg-white/10 text-white' : 'text-white/50 hover:text-white/80'"
+            @click="showMap = false"
           >
-            Mostrar mapa
-          </span>
-          <div
-            class="relative h-5 w-9 rounded-full transition-colors duration-200"
-            :class="showMap ? 'bg-secondary' : 'bg-gray-600'"
+            <UIcon name="i-lucide-list" class="h-3.5 w-3.5" />
+            <span class="max-sm:hidden">Lista</span>
+          </button>
+          <button
+            type="button"
+            class="flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all"
+            :class="showMap ? 'bg-white/10 text-white' : 'text-white/50 hover:text-white/80'"
+            @click="showMap = true"
           >
-            <div
-              class="absolute top-0.5 h-4 w-4 rounded-full bg-white shadow-md transition-transform duration-200"
-              :class="showMap ? 'translate-x-4' : 'translate-x-0.5'"
-            />
-          </div>
-        </button>
+            <UIcon name="i-lucide-grid-2x2" class="h-3.5 w-3.5" />
+            <span class="max-sm:hidden">Mapa</span>
+          </button>
+        </div>
       </div>
 
       <div v-if="showMap" class="mb-6 flex flex-col">
-        <UButtonGroup
-          orientation="horizontal"
-          variant="soft"
-          class="mx-auto mb-5 mt-6 max-md:px-6"
-        >
-          <UButton
-            color="neutral"
-            :variant="treemapFilter === 'all' ? 'soft' : 'link'"
-            label="Todos"
+        <div class="mx-auto mb-5 mt-6 flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 p-1 max-md:mx-6">
+          <button
+            type="button"
+            class="cursor-pointer rounded-md px-3 py-1.5 text-xs font-medium transition-all"
+            :class="treemapFilter === 'all' ? 'bg-white/10 text-white' : 'text-white/50 hover:text-white/80'"
             @click="treemapFilter = 'all'"
-          />
-          <UButton
-            color="neutral"
-            :variant="treemapFilter === 'positive' ? 'soft' : 'link'"
-            label="Altas"
+          >
+            Todos
+          </button>
+          <button
+            type="button"
+            class="cursor-pointer rounded-md px-3 py-1.5 text-xs font-medium transition-all"
+            :class="treemapFilter === 'positive' ? 'bg-white/10 text-white' : 'text-white/50 hover:text-white/80'"
             @click="treemapFilter = 'positive'"
-          />
-          <UButton
-            color="neutral"
-            :variant="treemapFilter === 'negative' ? 'soft' : 'link'"
-            label="Baixas"
+          >
+            Altas
+          </button>
+          <button
+            type="button"
+            class="cursor-pointer rounded-md px-3 py-1.5 text-xs font-medium transition-all"
+            :class="treemapFilter === 'negative' ? 'bg-white/10 text-white' : 'text-white/50 hover:text-white/80'"
             @click="treemapFilter = 'negative'"
-          />
-        </UButtonGroup>
+          >
+            Baixas
+          </button>
+        </div>
         <AtomsGraphTreemap
           :data="stocksData"
           :height="550"
