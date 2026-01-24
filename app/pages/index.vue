@@ -413,8 +413,6 @@
       </div>
     </div>
 
-    <!-- Features Grid 2x2 estilo Zapier -->
-    <MoleculesFeaturesGrid v-if="!authStore.isAuthenticated" class="mt-8" />
 
     <!-- Metrics Section com contador gigante -->
     <MoleculesMetricsSection v-if="!authStore.isAuthenticated" />
