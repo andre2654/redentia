@@ -107,7 +107,9 @@
       <nav class="flex flex-1 flex-col gap-1">
         <span class="mb-2 px-4 text-[10px] font-medium uppercase tracking-wider text-white/30">Menu</span>
         <AtomsSidebarButton to="/" text="Visão Geral" icon="i-lucide-layout-dashboard" />
-        <AtomsSidebarButton to="/wallet" text="Sua carteira" icon="i-lucide-wallet" disabled />
+        <AtomsSidebarButton to="/wallet" text="Sua carteira" icon="i-lucide-wallet" />
+        <AtomsSidebarButton to="/help" text="Chat" icon="i-lucide-message-circle" />
+        <AtomsSidebarButton v-if="authStore.me?.role === 'advisor'" to="/advisor" text="Área do assessor" icon="i-lucide-users" />
         <AtomsSidebarButton to="/settings" text="Configurações" icon="i-lucide-settings" />
 
         <div class="my-2" />
@@ -117,8 +119,9 @@
         <AtomsSidebarButton to="/dividends" text="Proventos" icon="i-lucide-coins" disabled />
       </nav>
 
-      <!-- AI CTA -->
+      <!-- AI CTA (oculto para assessor; assessor usa o item Chat no menu) -->
       <NuxtLink
+        v-if="authStore.me?.role !== 'advisor'"
         to="/help"
         class="group relative overflow-hidden rounded-2xl border border-secondary/20 bg-gradient-to-br from-secondary/10 to-transparent p-4 transition-all hover:border-secondary/40 hover:from-secondary/20"
       >
@@ -162,6 +165,22 @@
           </div>
         </slot>
       </header>
+      <!-- Banner status assessor (investidor): só pendente ou recusado -->
+      <div
+        v-if="authStore.me?.role === 'investor' && (authStore.me?.approval_status === 'pending' || authStore.me?.approval_status === 'rejected')"
+        class="mx-4 mt-5 rounded-xl border px-4 py-3 text-sm xl:mt-6"
+        :class="{
+          'border-amber-500/40 bg-amber-500/10 text-amber-200': authStore.me.approval_status === 'pending',
+          'border-red-500/30 bg-red-500/10 text-red-200': authStore.me.approval_status === 'rejected',
+        }"
+      >
+        <template v-if="authStore.me.approval_status === 'pending'">
+          Aguardando aprovação do seu assessor. Você poderá falar com ele pela assessoria quando for aprovado.
+        </template>
+        <template v-else-if="authStore.me.approval_status === 'rejected'">
+          Seu vínculo com o assessor foi recusado. Você pode falar com a assessoria com IA normalmente.
+        </template>
+      </div>
       <div v-bind="containerProps" class="flex-1">
         <slot />
       </div>

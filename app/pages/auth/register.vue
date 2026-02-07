@@ -96,6 +96,20 @@
             />
           </UFormField>
 
+          <!-- Código do assessor (opcional) -->
+          <UFormField name="advisor_code" label="Código do assessor (opcional)">
+            <AtomsFormInput
+              v-model="state.advisor_code"
+              type="text"
+              placeholder="Ex: ABC123"
+              size="lg"
+              class="w-full"
+            />
+            <p class="mt-1 text-xs text-white/50">
+              Se você tem um código do seu assessor, informe para vincular sua conta.
+            </p>
+          </UFormField>
+
           <!-- Password Strength -->
           <div class="rounded-2xl border border-white/10 bg-white/5 p-5">
             <UProgress
@@ -194,6 +208,7 @@ const schema = z
         }
       ),
     password_confirmation: z.string(),
+    advisor_code: z.string().optional(),
   })
   .refine((data) => data.password === data.password_confirmation, {
     message: 'As senhas devem ser iguais',
@@ -209,6 +224,7 @@ const state = reactive({
   celular: '',
   password: '',
   password_confirmation: '',
+  advisor_code: '',
 })
 
 const requirements = computed(() =>
@@ -236,19 +252,21 @@ const router = useRouter()
 
 async function onSubmit(_: FormSubmitEvent<Schema>) {
   try {
-    const resp = await register({
+    const payload: Parameters<typeof register>[0] = {
       name: state.name,
       login: state.login,
       email: state.email,
       celular: '+' + state.celular.replace(/\D/g, ''),
       password: state.password,
       password_confirmation: state.password_confirmation,
-    })
-    if (resp?.token) {
-      const cookie = useCookie<string | null>('auth:token', {
-        maxAge: 3600 * 24 * 30,
-      })
-      cookie.value = resp.token
+    }
+    if (state.advisor_code?.trim()) {
+      payload.advisor_code = state.advisor_code.trim()
+    }
+    const resp = await register(payload) as { access_token?: string; token?: string; user?: unknown }
+    const token = resp?.access_token ?? resp?.token
+    if (token) {
+      authStore.addToken(token)
       await authStore.fetchProfile()
       showSuccessNotification('Cadastro concluído', 'Bem-vindo!')
       router.push('/')
@@ -259,9 +277,8 @@ async function onSubmit(_: FormSubmitEvent<Schema>) {
       )
       router.push('/auth/login')
     }
-  } catch (e) {
-    const message =
-      e instanceof Error ? e.message : 'Verifique os dados informados'
+  } catch (e: any) {
+    const message = e?.data?.message ?? (e instanceof Error ? e.message : 'Verifique os dados informados')
     showErrorNotification('Falha no cadastro', message)
   }
 }

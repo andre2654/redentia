@@ -1,7 +1,18 @@
 import type { IProfile } from '~/types/profile'
 
 /** Formato do user vindo da API (me, updateProfile, etc.) */
-type ApiUser = { id?: string | number; name?: string; email?: string; login?: string; celular?: string }
+type ApiUser = {
+  id?: string | number
+  name?: string
+  email?: string
+  login?: string
+  celular?: string
+  role?: 'investor' | 'advisor'
+  approval_status?: 'pending' | 'approved' | 'rejected' | null
+  advisor_code?: string | null
+  advisor_id?: number | null
+  advisor?: { id: number; name: string } | null
+}
 
 function toProfile(user: ApiUser | null | undefined): IProfile | null {
   if (!user || !user.name) return null
@@ -9,6 +20,11 @@ function toProfile(user: ApiUser | null | undefined): IProfile | null {
     id: String(user.id ?? ''),
     name: user.name,
     email: user.email ?? '',
+    role: user.role ?? 'investor',
+    approval_status: user.approval_status ?? null,
+    advisor_code: user.advisor_code ?? null,
+    advisor_id: user.advisor_id ?? null,
+    advisor: user.advisor ?? null,
   }
 }
 

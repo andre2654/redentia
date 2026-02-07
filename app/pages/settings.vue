@@ -9,10 +9,14 @@
       </div>
       <div class="flex flex-col gap-6">
         <MoleculesSettingsProfile class="rounded-[30px] bg-white/10" />
+        <MoleculesSettingsAttachAdvisor v-if="authStore.me?.role !== 'advisor'" class="rounded-[30px] bg-white/10" />
+        <MoleculesSettingsBecomeAdvisor class="rounded-[30px] bg-white/10" />
         <MoleculesSettingsSyncWallet v-if="false" class="rounded-[30px] bg-white/10" />
       </div>
     </div>
   </NuxtLayout>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const authStore = useAuthStore()
+</script>

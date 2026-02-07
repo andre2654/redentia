@@ -76,14 +76,14 @@
       />
 
       <AtomsButton
-        class="ml-auto h-[30px] w-[30px] rounded-full"
+        class="ml-auto flex h-[30px] w-[30px] items-center justify-center rounded-full p-0"
         size="md"
         color="neutral"
         variant="soft"
         :disabled="!canSend"
         :ui="{
-          base: 'bg-[#E9E6E6]',
-          leadingIcon: 'text-[#999595] w-6 h-6 -ml-2',
+          base: '!flex !items-center !justify-center bg-[#E9E6E6] !p-0',
+          leadingIcon: 'text-[#999595] m-0 w-5 h-5 shrink-0',
         }"
         icon="i-heroicons-outline-arrow-sm-right"
         @click="sendMessage"

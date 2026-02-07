@@ -1,9 +1,9 @@
 <template>
   <div class="flex flex-col gap-6">
     <span class="text-[16px]">Setores</span>
-    <AtomsDraggableContainer class="no-scrollbar gap-2">
+    <AtomsDraggableContainer v-if="chartData.length" class="no-scrollbar gap-2">
       <div
-        v-for="item in portfolioData"
+        v-for="item in chartData"
         :key="item.label"
         class="flex flex-col gap-2"
       >
@@ -24,32 +24,41 @@
         <span class="label -ml-1 max-w-fit text-[14px]">{{ item.label }}</span>
       </div>
     </AtomsDraggableContainer>
+    <p v-else class="text-[14px] text-white/50">
+      Nenhum setor disponível.
+    </p>
   </div>
 </template>
 
 <script setup lang="ts">
-const portfolioData = [
-  { label: 'Bancos', actual: 5, ideal: 10, color: '#60A5FA' },
-  { label: 'Serviços', actual: 5, ideal: 15, color: '#60A5FA' },
-  { label: 'Bancos', actual: 10, ideal: 5, color: '#60A5FA' },
-  { label: 'Serviços', actual: 3, ideal: 25, color: '#60A5FA' },
-  { label: 'Bancos', actual: 2, ideal: 5, color: '#60A5FA' },
-  { label: 'Bancos', actual: 5, ideal: 10, color: '#60A5FA' },
-  { label: 'Serviços', actual: 5, ideal: 15, color: '#60A5FA' },
-  { label: 'Bancos', actual: 10, ideal: 5, color: '#60A5FA' },
-  { label: 'Serviços', actual: 3, ideal: 25, color: '#60A5FA' },
-  { label: 'Bancos', actual: 2, ideal: 5, color: '#60A5FA' },
-  { label: 'Bancos', actual: 5, ideal: 10, color: '#60A5FA' },
-  { label: 'Serviços', actual: 5, ideal: 15, color: '#60A5FA' },
-  { label: 'Bancos', actual: 10, ideal: 5, color: '#60A5FA' },
-  { label: 'Serviços', actual: 3, ideal: 25, color: '#60A5FA' },
-  { label: 'Bancos', actual: 2, ideal: 5, color: '#60A5FA' },
-]
+interface BarItem {
+  label: string
+  actual: number
+  ideal: number
+}
+
+const props = withDefaults(
+  defineProps<{
+    /** Lista de setores com percentual atual e ideal (0–100). Se vazio, usa dados estáticos de exemplo. */
+    portfolioData?: BarItem[]
+  }>(),
+  { portfolioData: () => [] }
+)
+
+const chartData = computed(() => {
+  if (props.portfolioData?.length) {
+    return props.portfolioData.map((s) => ({
+      label: s.label,
+      actual: s.actual,
+      ideal: s.ideal,
+    }))
+  }
+  return []
+})
 
 function percentageHeight(actual: number, ideal: number): number {
   if (ideal === 0) return 0
   if (actual > ideal) return 100
-
   return Math.round((actual / ideal) * 100)
 }
 </script>

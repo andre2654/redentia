@@ -5,6 +5,7 @@ export interface RegisterPayload {
   celular: string
   password: string
   password_confirmation: string
+  advisor_code?: string
 }
 
 export interface LoginPayload {
@@ -86,5 +87,12 @@ export const useAuthService = () => {
     return resp
   }
 
-  return { register, login, me, logout, updateProfile, changePassword }
+  async function becomeAdvisor() {
+    const resp = await authFetch(`${baseURL}/become-advisor`, {
+      method: 'POST',
+    })
+    return resp
+  }
+
+  return { register, login, me, logout, updateProfile, changePassword, becomeAdvisor }
 }
