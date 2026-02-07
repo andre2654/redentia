@@ -17,8 +17,8 @@ export const triggerMarketAlert = async (token?: string) => {
 
     // 2. Fetch Top Movers
     const [losersRaw, gainersRaw] = await Promise.all([
-      $fetch<any>('https://redentia-api.saraivada.com/api/top-stocks?side=bottom&volume=1000000').catch(() => []),
-      $fetch<any>('https://redentia-api.saraivada.com/api/top-stocks?side=top&volume=1000000').catch(() => [])
+      $fetch<any>(`${process.env.NUXT_PUBLIC_API_BASE_URL || 'https://redentia-api.saraivada.com/api'}/top-stocks?side=bottom&volume=1000000`).catch(() => []),
+      $fetch<any>(`${process.env.NUXT_PUBLIC_API_BASE_URL || 'https://redentia-api.saraivada.com/api'}/top-stocks?side=top&volume=1000000`).catch(() => [])
     ])
 
     const coerceArray = (v: any) => {

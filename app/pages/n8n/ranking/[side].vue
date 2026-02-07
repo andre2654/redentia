@@ -162,8 +162,9 @@ const { data: stocks, pending, error } = await useAsyncData<RankingStock[]>(
       volume: String(volume.value),
     })
 
+    const apiBase = runtimeConfig.public.apiBaseUrl as string
     const resp = await $fetch(
-      `https://redentia-api.saraivada.com/api/top-stocks?${qs.toString()}`,
+      `${apiBase}/top-stocks?${qs.toString()}`,
       { method: 'GET' }
     )
 

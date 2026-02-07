@@ -88,7 +88,7 @@ export const getMarketData = async (
   type: string,
   params: any = {}
 ) => {
-  const BASE_URL = 'https://redentia-api.saraivada.com/api'
+  const BASE_URL = process.env.NUXT_PUBLIC_API_BASE_URL || 'https://redentia-api.saraivada.com/api'
 
   try {
     if (type === 'price') {

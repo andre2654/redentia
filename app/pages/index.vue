@@ -1054,8 +1054,8 @@ const topAssets = ref<{
 const RANKING_LIMIT = 8
 const TREEMAP_LIMIT = 200
 
-// Removido o await - agora carrega de forma não-bloqueante
-const { data: homeMarketData } = useAsyncData<HomeMarketData>(
+// Aguarda os dados para SSR correto (evita hydration mismatch)
+const { data: homeMarketData } = await useAsyncData<HomeMarketData>(
   'home-market-data',
   async () => {
     const [
@@ -1116,10 +1116,43 @@ interface IndiceData {
   price_at: string
 }
 
+// Helper functions (declaradas antes das computed properties)
+function coerceNumber(value: unknown): number {
+  if (typeof value === 'number' && Number.isFinite(value)) return value
+  const parsed = Number(value)
+  return Number.isFinite(parsed) ? parsed : 0
+}
+
+function calculateSeriesStats(series?: IndiceData[]) {
+  if (!Array.isArray(series) || series.length < 2) return null
+  const lastPrice = coerceNumber(series[series.length - 1].market_price)
+  const previousPrice = coerceNumber(series[series.length - 2].market_price)
+  if (previousPrice === 0) return null
+  const variation = ((lastPrice - previousPrice) / previousPrice) * 100
+  return { lastPrice, variation }
+}
+
+function formatVariation(value: number) {
+  return `${value >= 0 ? '+' : ''}${value.toFixed(2)}%`
+}
+
 const ibovChartData = ref<ChartPoint[]>([])
-const ibovIndicator = ref('+0,00%')
-const ibovLastPrice = ref(0)
-const ifixIndicator = ref('+0,00%')
+
+// Computed properties para SSR correto (evita hydration mismatch)
+const ibovIndicator = computed(() => {
+  const stats = calculateSeriesStats(homeMarketData.value?.ibovSeries)
+  return stats ? formatVariation(stats.variation) : '+0,00%'
+})
+
+const ibovLastPrice = computed(() => {
+  const stats = calculateSeriesStats(homeMarketData.value?.ibovSeries)
+  return stats?.lastPrice ?? 0
+})
+
+const ifixIndicator = computed(() => {
+  const stats = calculateSeriesStats(homeMarketData.value?.ifixSeries)
+  return stats ? formatVariation(stats.variation) : '+0,00%'
+})
 
 const chatSuggestions = [
   'Qual a diferença entre ações e FIIs?',
@@ -1145,8 +1178,6 @@ watchEffect(() => {
   topAssets.value = payload.rankings
   stocksData.value = payload.treemap
 
-  updateIndicatorsFromSeries(payload.ibovSeries, payload.ifixSeries)
-
   if (!ibovChartData.value.length && payload.ibovSeries.length) {
     ibovChartData.value = mapIndiceSeries(payload.ibovSeries)
   }
@@ -1157,47 +1188,12 @@ watchEffect(() => {
   }
 })
 
-function coerceNumber(value: unknown): number {
-  if (typeof value === 'number' && Number.isFinite(value)) return value
-  const parsed = Number(value)
-  return Number.isFinite(parsed) ? parsed : 0
-}
-
 function mapIndiceSeries(data: IndiceData[]): ChartPoint[] {
   return data.map((item) => ({
     date: item.price_at,
     value: coerceNumber(item.market_price),
     timestamp: new Date(item.price_at).getTime(),
   }))
-}
-
-function calculateSeriesStats(series?: IndiceData[]) {
-  if (!Array.isArray(series) || series.length < 2) return null
-  const lastPrice = coerceNumber(series[series.length - 1].market_price)
-  const previousPrice = coerceNumber(series[series.length - 2].market_price)
-  if (previousPrice === 0) return null
-  const variation = ((lastPrice - previousPrice) / previousPrice) * 100
-  return { lastPrice, variation }
-}
-
-function formatVariation(value: number) {
-  return `${value >= 0 ? '+' : ''}${value.toFixed(2)}%`
-}
-
-function updateIndicatorsFromSeries(
-  ibovSeries: IndiceData[],
-  ifixSeries: IndiceData[]
-) {
-  const ibovStats = calculateSeriesStats(ibovSeries)
-  if (ibovStats) {
-    ibovLastPrice.value = ibovStats.lastPrice
-    ibovIndicator.value = formatVariation(ibovStats.variation)
-  }
-
-  const ifixStats = calculateSeriesStats(ifixSeries)
-  if (ifixStats) {
-    ifixIndicator.value = formatVariation(ifixStats.variation)
-  }
 }
 
 function buildTreemapDataset(

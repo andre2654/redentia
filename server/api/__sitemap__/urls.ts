@@ -5,8 +5,9 @@ export default defineSitemapEventHandler(async (e) => {
     console.log('[Sitemap] Buscando ativos da API...')
 
     // Buscar todos os ativos da API com timeout maior
+    const apiBase = process.env.NUXT_PUBLIC_API_BASE_URL || 'https://redentia-api.saraivada.com/api'
     const response = await $fetch<any>(
-      'https://redentia-api.saraivada.com/api/tickers-full',
+      `${apiBase}/tickers-full`,
       {
         method: 'GET',
         timeout: 30000, // 30 segundos de timeout

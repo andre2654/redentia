@@ -31,7 +31,8 @@ export interface AuthResponse {
 
 export const useAuthService = () => {
   const { authFetch } = useCustomFetch()
-  const baseURL = 'https://redentia-api.saraivada.com/api/auth'
+  const config = useRuntimeConfig()
+  const baseURL = `${config.public.apiBaseUrl}/auth`
 
   async function register(body: RegisterPayload): Promise<AuthResponse> {
     const resp = await $fetch<AuthResponse>(`${baseURL}/register`, {
@@ -65,5 +66,25 @@ export const useAuthService = () => {
     return resp
   }
 
-  return { register, login, me, logout }
+  async function updateProfile(body: { name: string }) {
+    const resp = await authFetch(`${baseURL}/profile`, {
+      method: 'PUT',
+      body,
+    })
+    return resp
+  }
+
+  async function changePassword(body: {
+    current_password: string
+    password: string
+    password_confirmation: string
+  }) {
+    const resp = await authFetch(`${baseURL}/password`, {
+      method: 'PUT',
+      body,
+    })
+    return resp
+  }
+
+  return { register, login, me, logout, updateProfile, changePassword }
 }

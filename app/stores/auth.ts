@@ -1,5 +1,17 @@
 import type { IProfile } from '~/types/profile'
 
+/** Formato do user vindo da API (me, updateProfile, etc.) */
+type ApiUser = { id?: string | number; name?: string; email?: string; login?: string; celular?: string }
+
+function toProfile(user: ApiUser | null | undefined): IProfile | null {
+  if (!user || !user.name) return null
+  return {
+    id: String(user.id ?? ''),
+    name: user.name,
+    email: user.email ?? '',
+  }
+}
+
 export const useAuthStore = defineStore('auth', {
   state: (): {
     me: IProfile | null
@@ -16,26 +28,30 @@ export const useAuthStore = defineStore('auth', {
     },
   },
   actions: {
+    /**
+     * Atualiza `me` a partir do objeto user retornado pela API.
+     * Use após updateProfile, ou quando tiver o user em mãos, para manter toda a UI reativa.
+     */
+    setMeFromUser(user: ApiUser | null | undefined) {
+      const profile = toProfile(user)
+      if (profile) this.me = profile
+    },
+
     async fetchProfile() {
       const { me } = useAuthService()
 
-      // API returns: { me: { user: {...} }, token: string }
+      // API returns: { user: {...} } or { data: { user: {...} } }
       const response = (await me()) as unknown as {
         data?: any
-        me?: { user: IProfile }
+        me?: { user: ApiUser }
+        user?: ApiUser
         token?: string
       }
       const apiPayload = (response as any)?.data ?? response
       const user = apiPayload?.me?.user ?? apiPayload?.user ?? apiPayload
       const token = apiPayload?.token
 
-      if (user && user.name) {
-        this.me = {
-          id: String((user as any).id ?? ''),
-          name: (user as any).name,
-          email: (user as any).email ?? '',
-        }
-      }
+      this.setMeFromUser(user)
 
       if (token) {
         this.addToken(token)

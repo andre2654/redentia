@@ -225,6 +225,9 @@ export default defineNuxtConfig({
     openaiAlertModel: process.env.NUXT_OPENAI_ALERT_MODEL,
     n8nRenderKey: process.env.NUXT_N8N_RENDER_KEY,
     public: {
+      apiBaseUrl:
+        process.env.NUXT_PUBLIC_API_BASE_URL ||
+        'https://redentia-api.saraivada.com/api',
       cacheTempInSeconds: 60,
       siteUrl:
         process.env.NUXT_PUBLIC_SITE_URL || 'https://www.redentia.com.br',

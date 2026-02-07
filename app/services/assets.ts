@@ -2,6 +2,8 @@ import type { IAsset, FundamentusApiResponse } from '~/types/asset'
 
 export const useAssetsService = () => {
   const { preventWithCache } = usePrevents()
+  const config = useRuntimeConfig()
+  const API = config.public.apiBaseUrl as string
 
   function hasDataField<T>(payload: any): payload is { data: T } {
     return !!payload && typeof payload === 'object' && 'data' in payload
@@ -23,7 +25,7 @@ export const useAssetsService = () => {
   }
 
   async function getAssets(): Promise<IAsset[]> {
-    const url = 'https://redentia-api.saraivada.com/api/tickers-full'
+    const url = `${API}/tickers-full`
     const response = await preventWithCache(
       url,
       async () =>
@@ -42,7 +44,7 @@ export const useAssetsService = () => {
       side === 'top'
         ? `?side=top&volume=${volume}`
         : `?side=bottom&volume=${volume}`
-    const url = `https://redentia-api.saraivada.com/api/top-stocks${query}`
+    const url = `${API}/top-stocks${query}`
     const resp = await preventWithCache(
       url,
       async () => await $fetch<IAsset[]>(url, { method: 'GET' })
@@ -58,7 +60,7 @@ export const useAssetsService = () => {
       side === 'top'
         ? `?side=top&volume=${volume}`
         : `?side=bottom&volume=${volume}`
-    const url = `https://redentia-api.saraivada.com/api/top-etfs${query}`
+    const url = `${API}/top-etfs${query}`
     const resp = await preventWithCache(
       url,
       async () => await $fetch<IAsset[]>(url, { method: 'GET' })
@@ -74,7 +76,7 @@ export const useAssetsService = () => {
       side === 'top'
         ? `?side=top&volume=${volume}`
         : `?side=bottom&volume=${volume}`
-    const url = `https://redentia-api.saraivada.com/api/top-reits${query}`
+    const url = `${API}/top-reits${query}`
     const resp = await preventWithCache(
       url,
       async () => await $fetch<IAsset[]>(url, { method: 'GET' })
@@ -90,7 +92,7 @@ export const useAssetsService = () => {
       side === 'top'
         ? `?side=top&volume=${volume}`
         : `?side=bottom&volume=${volume}`
-    const url = `https://redentia-api.saraivada.com/api/top-bdrs${query}`
+    const url = `${API}/top-bdrs${query}`
     const resp = await preventWithCache(
       url,
       async () => await $fetch<IAsset[]>(url, { method: 'GET' })
@@ -102,7 +104,7 @@ export const useAssetsService = () => {
     ticker: string,
     period: '1mo' | 'ytd' | '3mo' | '12mo' | '3y' | '4y' | '5y' | 'full'
   ) {
-    const url = `https://redentia-api.saraivada.com/api/tickers/${ticker}/prices?mode=${period}`
+    const url = `${API}/tickers/${ticker}/prices?mode=${period}`
     const resp = await preventWithCache(
       url,
       async () => await $fetch(url, { method: 'GET' })
@@ -114,7 +116,7 @@ export const useAssetsService = () => {
     indice: 'ibov' | 'ifix',
     period: '1mo' | 'ytd' | '3mo' | '12mo' | '3y' | '4y' | '5y' | 'full'
   ) {
-    const url = `https://redentia-api.saraivada.com/api/indices/${indice}/prices?mode=${period}`
+    const url = `${API}/indices/${indice}/prices?mode=${period}`
     const resp = await preventWithCache(
       url,
       async () => await $fetch(url, { method: 'GET' })
@@ -123,7 +125,7 @@ export const useAssetsService = () => {
   }
 
   async function getTickerDetails(ticker: string) {
-    const url = `https://redentia-api.saraivada.com/api/tickers/${ticker}`
+    const url = `${API}/tickers/${ticker}`
     const resp = await preventWithCache(
       url,
       async () => await $fetch(url, { method: 'GET' })
@@ -132,7 +134,7 @@ export const useAssetsService = () => {
   }
 
   async function getTickerDividends(ticker: string) {
-    const url = `https://redentia-api.saraivada.com/api/dividends/${ticker}`
+    const url = `${API}/dividends/${ticker}`
     const resp = await preventWithCache(
       url,
       async () => await $fetch(url, { method: 'GET' })
@@ -143,7 +145,7 @@ export const useAssetsService = () => {
   async function getTickerFundamentus(
     ticker: string
   ): Promise<FundamentusApiResponse> {
-    const url = `https://redentia-api.saraivada.com/api/fundamentals/${ticker}/overview`
+    const url = `${API}/fundamentals/${ticker}/overview`
     const resp = await preventWithCache(
       url,
       async () => await $fetch<FundamentusApiResponse>(url, { method: 'GET' })

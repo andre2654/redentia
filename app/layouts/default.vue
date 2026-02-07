@@ -108,6 +108,7 @@
         <span class="mb-2 px-4 text-[10px] font-medium uppercase tracking-wider text-white/30">Menu</span>
         <AtomsSidebarButton to="/" text="Visão Geral" icon="i-lucide-layout-dashboard" />
         <AtomsSidebarButton to="/wallet" text="Sua carteira" icon="i-lucide-wallet" disabled />
+        <AtomsSidebarButton to="/settings" text="Configurações" icon="i-lucide-settings" />
 
         <div class="my-2" />
         <span class="mb-2 px-4 text-[10px] font-medium uppercase tracking-wider text-white/30">Ferramentas</span>
