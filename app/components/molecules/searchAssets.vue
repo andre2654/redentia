@@ -116,11 +116,30 @@
                     <span class="truncate text-xs text-white/40">{{ item.suffix }}</span>
                   </div>
 
-                  <!-- Arrow -->
-                  <UIcon
-                    name="i-lucide-chevron-right"
-                    class="h-4 w-4 flex-shrink-0 text-white/20 transition-all group-hover:translate-x-0.5 group-hover:text-white/40"
-                  />
+                  <!-- Preço + Variação + Arrow -->
+                  <div class="flex shrink-0 items-center gap-2">
+                    <div class="text-right">
+                      <span
+                        v-if="item.price > 0"
+                        class="block text-xs font-medium text-white tabular-nums"
+                      >
+                        {{ formatCurrencyBRL(item.price) }}
+                      </span>
+                      <span
+                        v-if="item.changePercent != null"
+                        :class="[
+                          'block text-xs font-medium tabular-nums',
+                          item.changePercent >= 0 ? 'text-primary' : 'text-red-400',
+                        ]"
+                      >
+                        {{ item.changePercent >= 0 ? '+' : '' }}{{ item.changePercent.toFixed(2) }}%
+                      </span>
+                    </div>
+                    <UIcon
+                      name="i-lucide-chevron-right"
+                      class="h-4 w-4 flex-shrink-0 text-white/20 transition-all group-hover:translate-x-0.5 group-hover:text-white/40"
+                    />
+                  </div>
                 </NuxtLink>
               </div>
             </div>
@@ -212,49 +231,39 @@ function onSelect() {
 }
 
 const groups = computed(() => {
+  const ticker = (a: IAsset) => a.ticker ?? a.stock
+  const price = (a: IAsset) => a.market_price ?? a.close ?? 0
+  const changePercent = (a: IAsset) => a.change_percent ?? a.change ?? null
+
+  const toItem = (item: IAsset) => ({
+    id: ticker(item),
+    label: ticker(item),
+    suffix: item.name,
+    to: `/asset/${ticker(item).toLowerCase()}`,
+    avatar: { src: item.logo },
+    price: price(item),
+    changePercent: changePercent(item),
+  })
+
   const acaoItems =
     ativos.value
       ?.filter((item) => item.type === 'STOCK')
-      .map((item) => ({
-        id: item.ticker,
-        label: item.ticker,
-        suffix: item.name,
-        to: `/asset/${item.ticker.toLowerCase()}`,
-        avatar: { src: item.logo },
-      })) || []
+      .map(toItem) ?? []
 
   const fiiItems =
     ativos.value
       ?.filter((item) => item.type === 'REIT')
-      .map((item) => ({
-        id: item.ticker,
-        label: item.ticker,
-        suffix: item.name,
-        to: `/asset/${item.ticker.toLowerCase()}`,
-        avatar: { src: item.logo },
-      })) || []
+      .map(toItem) ?? []
 
   const bdrItems =
     ativos.value
       ?.filter((item) => item.type === 'BDR')
-      .map((item) => ({
-        id: item.ticker,
-        label: item.ticker,
-        suffix: item.name,
-        to: `/asset/${item.ticker.toLowerCase()}`,
-        avatar: { src: item.logo },
-      })) || []
+      .map(toItem) ?? []
 
   const etfItems =
     ativos.value
       ?.filter((item) => item.type === 'ETF')
-      .map((item) => ({
-        id: item.ticker,
-        label: item.ticker,
-        suffix: item.name,
-        to: `/asset/${item.ticker.toLowerCase()}`,
-        avatar: { src: item.logo },
-      })) || []
+      .map(toItem) ?? []
 
   return [
     {
@@ -300,4 +309,14 @@ const hasNoResults = computed(() => {
   if (!searchTerm.value.trim()) return false
   return filteredGroups.value.every((group) => group.items.length === 0)
 })
+
+function formatCurrencyBRL(n: number) {
+  if (!Number.isFinite(n) || n < 0) return 'R$ —'
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(n)
+}
 </script>

@@ -37,45 +37,33 @@
               oportunidades em ações, FIIs, BDRs e ETFs.
             </p>
           </div>
-          <div class="grid gap-4 md:grid-cols-3">
+          <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <div
-              class="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-md transition-all hover:bg-white/10"
+              class="rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-md transition-colors hover:bg-white/10 sm:rounded-2xl sm:p-5"
             >
-              <span class="text-secondary/70 text-xs uppercase tracking-[0.3em]"
-                >Resultados</span
-              >
-              <p class="mt-2 text-3xl font-semibold text-white md:text-4xl">
+              <span class="text-secondary/70 text-[10px] font-medium uppercase tracking-wider sm:text-xs">Resultados</span>
+              <p class="mt-1 text-2xl font-semibold text-white sm:text-3xl">
                 {{ resultsCount }}
               </p>
-              <p class="text-xs text-white/60">
-                Ativos batendo com os filtros atuais.
-              </p>
+              <p class="text-[11px] text-white/60 sm:text-xs">Ativos nos filtros.</p>
             </div>
             <div
-              class="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-md transition-all hover:bg-white/10"
+              class="rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-md transition-colors hover:bg-white/10 sm:rounded-2xl sm:p-5"
             >
-              <span class="text-secondary/70 text-xs uppercase tracking-[0.3em]"
-                >Filtros ativos</span
-              >
-              <p class="mt-2 text-3xl font-semibold text-white md:text-4xl">
+              <span class="text-secondary/70 text-[10px] font-medium uppercase tracking-wider sm:text-xs">Filtros ativos</span>
+              <p class="mt-1 text-2xl font-semibold text-white sm:text-3xl">
                 {{ activeFiltersCount }}
               </p>
-              <p class="text-xs text-white/60">
-                Intervalos ou grupos modificados.
-              </p>
+              <p class="text-[11px] text-white/60 sm:text-xs">Modificados.</p>
             </div>
             <div
-              class="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-md transition-all hover:bg-white/10"
+              class="rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-md transition-colors hover:bg-white/10 sm:rounded-2xl sm:p-5"
             >
-              <span class="text-secondary/70 text-xs uppercase tracking-[0.3em]"
-                >Atualização</span
-              >
-              <p class="mt-2 text-3xl font-semibold text-white md:text-4xl">
+              <span class="text-secondary/70 text-[10px] font-medium uppercase tracking-wider sm:text-xs">Atualização</span>
+              <p class="mt-1 text-2xl font-semibold text-white sm:text-3xl">
                 {{ lastUpdatedLabel }}
               </p>
-              <p class="text-xs text-white/60">
-                Sincronizado com a API Redentia.
-              </p>
+              <p class="text-[11px] text-white/60 sm:text-xs">API Redentia.</p>
             </div>
           </div>
         </div>
@@ -324,198 +312,122 @@
           </div>
 
           <div
-            class="rounded-4xl border border-white/10 bg-white/5 p-6 shadow-[0_25px_60px_-15px_rgba(15,23,42,0.45)] backdrop-blur-md"
+            class="rounded-2xl border border-white/10 bg-white/5 p-4 shadow-lg backdrop-blur-md sm:rounded-3xl sm:p-6"
           >
             <div class="flex flex-col gap-4 text-white">
-              <div class="flex flex-col gap-2">
+              <div class="flex flex-col gap-1">
                 <span
-                  class="text-secondary/70 text-xs font-medium uppercase tracking-[0.3em]"
+                  class="text-secondary/70 text-[10px] font-medium uppercase tracking-wider sm:text-xs"
                 >
                   Resultados
                 </span>
-                <h2 class="text-2xl font-semibold">Ativos encontrados</h2>
-                <p class="text-sm text-white/60">
-                  Visualize os dados essenciais de cada ativo e abra o card para
-                  ver detalhes completos.
+                <h2 class="flex items-center gap-2 text-xl font-semibold sm:text-2xl">
+                  Ativos encontrados
+                  <IconAi class="fill-secondary h-5 w-5 shrink-0 sm:h-6 sm:w-6" aria-hidden="true" />
+                </h2>
+                <p class="text-xs text-white/60 sm:text-sm">
+                  Toque no card para ver detalhes.
                 </p>
               </div>
 
               <div
                 v-if="assetsLoading"
-                class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3"
+                class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
               >
                 <USkeleton
                   v-for="i in 6"
                   :key="`asset-skeleton-${i}`"
-                  class="h-56 w-full rounded-[28px]"
+                  class="h-36 w-full rounded-xl sm:h-40"
                 />
               </div>
 
               <template v-else>
                 <div
                   v-if="paginatedData.length"
-                  class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3"
+                  class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
                 >
-                  <div
+                  <NuxtLink
                     v-for="asset in paginatedData"
                     :key="asset.ticker || asset.stock"
-                    class="hover:shadow-primary/5 group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 transition-all hover:border-white/20 hover:shadow-2xl"
-                    @click="goToAsset(asset.ticker || asset.stock)"
+                    :to="`/asset/${String(asset.ticker || asset.stock || '').toLowerCase()}`"
+                    class="group flex flex-col gap-3 rounded-xl border border-white/10 bg-white/5 p-4 transition-all hover:border-white/20 hover:bg-white/[0.08] active:scale-[0.99] sm:rounded-2xl sm:gap-4 sm:p-5"
                   >
-                    <div
-                      class="bg-linear-to-br absolute inset-0 from-white/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100"
-                    />
-                    <div class="relative z-10 flex h-full flex-col gap-5">
-                      <div class="flex items-start justify-between gap-3">
-                        <div class="flex items-center gap-3">
-                          <img
-                            v-if="getAssetLogo(asset)"
-                            :src="getAssetLogo(asset) || ''"
-                            :alt="
-                              asset.name
-                                ? `Logo de ${asset.name} (${asset.ticker || asset.stock})`
-                                : `Logo do ativo ${asset.ticker || asset.stock}`
-                            "
-                            class="h-12 w-12 rounded-2xl border border-white/10 bg-white/10 object-cover"
-                          />
-                          <IconLogo
-                            v-else
-                            class="h-12 w-12 rounded-2xl border border-white/10 bg-white/10 p-2 text-white/70"
-                          />
-                          <div class="flex flex-col">
-                            <span
-                              class="text-secondary/70 text-xs uppercase tracking-[0.3em]"
-                            >
-                              {{ asset.ticker || asset.stock }}
-                            </span>
-                            <span class="line-clamp-2 text-sm text-white/70">
-                              {{ asset.name }}
-                            </span>
-                          </div>
-                        </div>
-                        <span
-                          class="rounded-full bg-white/10 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-white/60"
-                        >
-                          {{ getAssetTypeLabel(asset.type) }}
-                        </span>
-                      </div>
-
-                      <div class="grid grid-cols-2 gap-3 text-sm text-white/80">
-                        <div
-                          class="rounded-2xl border border-white/10 bg-white/5 p-4"
-                        >
-                          <p
-                            class="text-xs uppercase tracking-[0.2em] text-white/50"
-                          >
-                            Market Cap
+                    <div class="flex items-center justify-between gap-2">
+                      <div class="flex min-w-0 flex-1 items-center gap-3">
+                        <img
+                          v-if="getAssetLogo(asset)"
+                          :src="getAssetLogo(asset) || ''"
+                          :alt="asset.ticker || asset.stock"
+                          class="h-10 w-10 shrink-0 rounded-xl border border-white/10 bg-white/10 object-cover sm:h-11 sm:w-11"
+                        />
+                        <IconLogo
+                          v-else
+                          class="h-10 w-10 shrink-0 rounded-xl border border-white/10 bg-white/10 p-2 text-white/50 sm:h-11 sm:w-11"
+                        />
+                        <div class="min-w-0 flex-1">
+                          <p class="truncate font-semibold text-white">
+                            {{ asset.ticker || asset.stock }}
                           </p>
-                          <p class="mt-1 text-base font-semibold text-white">
-                            {{ formatCurrencyBRL(asset.market_cap) }}
+                          <p class="truncate text-xs text-white/60 sm:text-sm">
+                            {{ asset.name }}
                           </p>
-                        </div>
-                        <div
-                          class="rounded-2xl border border-white/10 bg-white/5 p-4"
-                        >
-                          <p
-                            class="text-xs uppercase tracking-[0.2em] text-white/50"
-                          >
-                            Preço
-                          </p>
-                          <p class="mt-1 text-base font-semibold text-white">
-                            {{ formatCurrencyBRL(getAssetPrice(asset)) }}
-                          </p>
-                        </div>
-                        <div
-                          class="col-span-2 rounded-2xl border border-white/10 bg-white/5 p-4"
-                        >
-                          <p
-                            class="text-xs uppercase tracking-[0.2em] text-white/50"
-                          >
-                            Variação
-                          </p>
-                          <div class="mt-2 flex items-center gap-2">
-                            <IconArrowFinanceUp
-                              :class="[
-                                'h-5 w-5 transition',
-                                getAssetChange(asset) >= 0
-                                  ? 'fill-primary'
-                                  : 'rotate-180 fill-red-500',
-                              ]"
-                            />
-                            <span
-                              :class="[
-                                'text-base font-semibold',
-                                getAssetChange(asset) >= 0
-                                  ? 'text-primary'
-                                  : 'text-red-400',
-                              ]"
-                            >
-                              {{ getAssetChange(asset) >= 0 ? '+' : ''
-                              }}{{ getAssetChange(asset).toFixed(2) }}% hoje
-                            </span>
-                          </div>
                         </div>
                       </div>
-
-                      <div
-                        v-if="
-                          getMdiLabels(asset.mdi).occurrenceLabel ||
-                          getMdiLabels(asset.mdi).starLabel
-                        "
-                        class="bg-secondary/10 rounded-2xl border border-white/10 p-4"
+                      <span
+                        class="shrink-0 rounded-md bg-white/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-white/70 sm:text-xs"
                       >
-                        <p
-                          class="text-secondary/80 text-xs uppercase tracking-[0.2em]"
-                        >
-                          MDI
-                        </p>
-                        <div
-                          class="mt-2 flex flex-wrap items-center gap-3 text-sm"
-                        >
-                          <span
-                            v-if="getMdiLabels(asset.mdi).occurrenceLabel"
-                            class="rounded-full bg-white/10 px-3 py-1 text-white/80"
-                          >
-                            {{ getMdiLabels(asset.mdi).occurrenceLabel }}
-                          </span>
-                          <span
-                            v-if="getMdiLabels(asset.mdi).starLabel"
-                            class="text-secondary inline-flex items-center gap-2"
-                          >
-                            <IconAi class="fill-secondary h-5 w-5" />
-                            {{ getMdiLabels(asset.mdi).starLabel }}
-                          </span>
-                        </div>
-                      </div>
-                      <div
-                        v-else
-                        class="rounded-2xl border border-dashed border-white/10 bg-white/5 p-4 text-sm text-white/50"
-                      >
-                        Sem informações MDI disponíveis.
-                      </div>
-
-                      <div
-                        class="flex items-center justify-between pt-2 text-xs text-white/50"
-                      >
-                        <span>Atualizado às {{ lastUpdatedLabel }}</span>
-                        <UButton
-                          color="secondary"
-                          size="sm"
-                          variant="soft"
-                          class="rounded-full"
-                          :to="`/asset/${String(asset.ticker || asset.stock || '').toLowerCase()}`"
-                          @click.stop
-                        >
-                          Ver ativo
-                        </UButton>
-                      </div>
+                        {{ getAssetTypeLabel(asset.type) }}
+                      </span>
                     </div>
-                  </div>
+
+                    <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 text-sm">
+                      <span class="font-medium text-white">
+                        {{ formatCurrencyBRL(getAssetPrice(asset)) }}
+                      </span>
+                      <span
+                        :class="[
+                          'inline-flex items-center gap-1 font-medium',
+                          getAssetChange(asset) >= 0 ? 'text-primary' : 'text-red-400',
+                        ]"
+                      >
+                        <IconArrowFinanceUp
+                          :class="[
+                            'h-4 w-4 sm:h-5 sm:w-5',
+                            getAssetChange(asset) >= 0 ? 'fill-primary' : 'rotate-180 fill-red-500',
+                          ]"
+                        />
+                        {{ getAssetChange(asset) >= 0 ? '+' : '' }}{{ getAssetChange(asset).toFixed(2) }}%
+                      </span>
+                    </div>
+
+                    <div
+                      v-if="getMdiLabels(asset.mdi).occurrenceLabel || getMdiLabels(asset.mdi).starLabel"
+                      class="flex flex-wrap gap-2"
+                    >
+                      <span
+                        v-if="getMdiLabels(asset.mdi).occurrenceLabel"
+                        class="rounded-md bg-white/10 px-2 py-1 text-[10px] text-white/80 sm:text-xs"
+                      >
+                        {{ getMdiLabels(asset.mdi).occurrenceLabel }}
+                      </span>
+                      <span
+                        v-if="getMdiLabels(asset.mdi).starLabel"
+                        class="text-secondary inline-flex items-center gap-1 rounded-md bg-secondary/10 px-2 py-1 text-[10px] sm:text-xs"
+                      >
+                        <IconAi class="fill-secondary h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" aria-hidden="true" />
+                        {{ getMdiLabels(asset.mdi).starLabel }}
+                      </span>
+                    </div>
+
+                    <p class="mt-auto text-[10px] text-white/40 sm:text-xs">
+                      MC {{ formatCurrencyBRL(asset.market_cap) }}
+                    </p>
+                  </NuxtLink>
                 </div>
 
                 <div
                   v-else
-                  class="rounded-[28px] border border-white/10 bg-black/30 p-10 text-center text-white/60"
+                  class="rounded-xl border border-white/10 bg-white/5 py-12 text-center text-sm text-white/60 sm:rounded-2xl sm:py-16"
                 >
                   Nenhum ativo encontrado com os filtros atuais.
                 </div>
