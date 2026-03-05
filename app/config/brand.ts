@@ -503,8 +503,8 @@ const primoRico: BrandConfig = {
   privacyEmail: 'privacidade@primorico.com.br',
 
   colors: {
-    primary: '#FACC15',
-    secondary: '#EAB308',
+    primary: '#FF5900',
+    secondary: '#E55000',
     tertiary: '#0A0A0A',
     positive: '#4ADE80',
     negative: '#EF4444',
@@ -518,7 +518,7 @@ const primoRico: BrandConfig = {
     inputBg: '#05070b',
     inputBgHover: '#070b12',
     inputBorder: '#1f2937',
-    gradient: { from: '#FACC15', via: '#EAB308', to: '#CA8A04' },
+    gradient: { from: '#FF5900', via: '#E55000', to: '#CC4700' },
   },
 
   font: {
@@ -624,7 +624,7 @@ const primoRico: BrandConfig = {
   chartColors: {
     positive: '#4ADE80',
     negative: '#8E3939',
-    secondary: '#FACC15',
+    secondary: '#FF5900',
     neutral: '#6B7280',
   },
 
