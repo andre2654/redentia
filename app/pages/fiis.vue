@@ -308,7 +308,7 @@
 
       <!-- CTA -->
       <MoleculesCtaSection
-        title="Encontre os Melhores FIIs na Redentia"
+        :title="`Encontre os Melhores FIIs na ${brand.name}`"
         description="Compare dividend yield, vacância, P/VP e outros indicadores de todos os FIIs"
         :buttons="[
           { label: 'Ver Todos os FIIs', to: '/search?group=reits', icon: 'i-lucide-search', variant: 'primary' },
@@ -421,6 +421,8 @@
 </template>
 
 <script setup lang="ts">
+const brand = useBrand()
+
 definePageMeta({
   isPublicRoute: true,
   hideInstallAppBanner: true,
@@ -428,7 +430,7 @@ definePageMeta({
 
 usePageSeo({
   title:
-    'Fundos Imobiliários (FIIs): Guia Completo para Iniciantes | Redentia',
+    `Fundos Imobiliários (FIIs): Guia Completo para Iniciantes | ${brand.name}`,
   description:
     'Aprenda a investir em FIIs e receba renda passiva mensal com isenção de IR. Compare dividend yield, vacância e indicadores de +300 fundos imobiliários da B3.',
   path: '/fiis',
@@ -471,13 +473,13 @@ usePageSeo({
           '@type': 'ListItem',
           position: 1,
           name: 'Home',
-          item: 'https://www.redentia.com.br',
+          item: brand.url,
         },
         {
           '@type': 'ListItem',
           position: 2,
           name: 'Fundos Imobiliários',
-          item: 'https://www.redentia.com.br/fiis',
+          item: `${brand.url}/fiis`,
         },
       ],
     },

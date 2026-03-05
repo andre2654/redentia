@@ -189,6 +189,7 @@
 import { computed } from 'vue'
 import { useAssetsService } from '~/services/assets'
 
+const brand = useBrand()
 const { getAssets } = useAssetsService()
 const { data: assetsData, pending: assetsPending } = await useAsyncData(
   'assets-calculator-dividend-yield',
@@ -199,7 +200,7 @@ const assets = computed(() => assetsData.value ?? [])
 const assetsLoading = computed(() => assetsPending.value)
 
 usePageSeo({
-  title: 'Calculadora de Dividend Yield: DY Atual, Projetado e On Cost | Redentia',
+  title: `Calculadora de Dividend Yield: DY Atual, Projetado e On Cost | ${brand.name}`,
   description:
     'Calcule o dividend yield de ações e FIIs. Veja DY histórico, projeções futuras e DY on cost. Compare ativos e encontre os melhores pagadores de dividendos.',
   path: '/calculadora/dividend-yield',
@@ -212,7 +213,7 @@ usePageSeo({
     {
       '@context': 'https://schema.org',
       '@type': 'SoftwareApplication',
-      name: 'Calculadora de Dividend Yield Redentia',
+      name: `Calculadora de Dividend Yield ${brand.name}`,
       applicationCategory: 'FinanceApplication',
       offers: {
         '@type': 'Offer',

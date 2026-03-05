@@ -2,8 +2,8 @@
   <div class="flex flex-col gap-2">
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-2">
-        <UIcon name="i-lucide-activity" class="h-5 w-5 text-gray-400" />
-        <span class="text-sm font-medium text-gray-400">
+        <UIcon name="i-lucide-activity" class="h-5 w-5" :style="{ color: brand.colors.textMuted }" />
+        <span class="text-sm font-medium" :style="{ color: brand.colors.textMuted }">
           Volatilidade {{ period ? `(${period})` : '(Risco)' }}
         </span>
       </div>
@@ -26,7 +26,8 @@
     </div>
 
     <div
-      class="flex justify-between text-[10px] font-medium uppercase tracking-wider text-gray-500"
+      class="flex justify-between text-[10px] font-medium uppercase tracking-wider"
+      :style="{ color: brand.colors.textMuted }"
     >
       <span>Baixo</span>
       <span>Médio</span>
@@ -36,7 +37,10 @@
 </template>
 
 <script setup lang="ts">
-import { ChartColors } from '~/design/chartColors'
+import { useChartColors } from '~/design/chartColors'
+
+const brand = useBrand()
+const cc = useChartColors()
 
 const props = defineProps<{
   risk: number // 0 to 100
@@ -57,11 +61,11 @@ const riskLabel = computed(() => {
   return 'Extremo'
 })
 
-const COLORS = {
-  LOW: ChartColors.positive,
-  MEDIUM: '#fde047', // Pastel Yellow
-  HIGH: ChartColors.negative,
-}
+const COLORS = computed(() => ({
+  LOW: cc.positive,
+  MEDIUM: '#fde047',
+  HIGH: cc.negative,
+}))
 
 function interpolateColor(color1: string, color2: string, factor: number) {
   const r1 = parseInt(color1.substring(1, 3), 16)
@@ -80,10 +84,11 @@ function interpolateColor(color1: string, color2: string, factor: number) {
 }
 
 function getGradientColor(percentage: number) {
+  const c = COLORS.value
   if (percentage <= 0.5) {
-    return interpolateColor(COLORS.LOW, COLORS.MEDIUM, percentage * 2)
+    return interpolateColor(c.LOW, c.MEDIUM, percentage * 2)
   }
-  return interpolateColor(COLORS.MEDIUM, COLORS.HIGH, (percentage - 0.5) * 2)
+  return interpolateColor(c.MEDIUM, c.HIGH, (percentage - 0.5) * 2)
 }
 
 const riskColor = computed(() => {

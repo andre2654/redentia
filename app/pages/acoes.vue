@@ -214,7 +214,7 @@
             <strong>Transfira dinheiro:</strong> TED/PIX da sua conta bancária
           </li>
           <li>
-            <strong>Estude as empresas:</strong> Use a Redentia para analisar
+            <strong>Estude as empresas:</strong> Use a {{ brand.name }} para analisar
             indicadores
           </li>
           <li>
@@ -282,7 +282,7 @@
 
       <!-- CTA para Ferramentas -->
       <MoleculesCtaSection
-        title="Use as Ferramentas da Redentia"
+        :title="`Use as Ferramentas da ${brand.name}`"
         description="Encontre as melhores ações, compare indicadores e tome decisões informadas"
         :buttons="[
           { label: 'Buscar Ações', to: '/search?group=stocks', icon: 'i-lucide-search', variant: 'primary' },
@@ -385,6 +385,8 @@
 </template>
 
 <script setup lang="ts">
+const brand = useBrand()
+
 definePageMeta({
   isPublicRoute: true,
   hideInstallAppBanner: true,
@@ -392,7 +394,7 @@ definePageMeta({
 
 usePageSeo({
   title:
-    'Ações: Guia Completo para Investir na Bolsa de Valores | Redentia',
+    `Ações: Guia Completo para Investir na Bolsa de Valores | ${brand.name}`,
   description:
     'Descubra como investir em ações da B3. Guia completo com estratégias, indicadores fundamentalistas, melhores ações para iniciantes e análise de dividendos. Compare +500 ações.',
   path: '/acoes',
@@ -435,13 +437,13 @@ usePageSeo({
           '@type': 'ListItem',
           position: 1,
           name: 'Home',
-          item: 'https://www.redentia.com.br',
+          item: brand.url,
         },
         {
           '@type': 'ListItem',
           position: 2,
           name: 'Ações',
-          item: 'https://www.redentia.com.br/acoes',
+          item: `${brand.url}/acoes`,
         },
       ],
     },

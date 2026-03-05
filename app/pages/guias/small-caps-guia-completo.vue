@@ -302,7 +302,7 @@
 
       <!-- CTA para Ferramentas -->
       <MoleculesCtaSection
-        title="Encontre Small Caps na Redentia"
+        :title="`Encontre Small Caps na ${brand.name}`"
         description="Use nossos filtros para descobrir ações de pequenas empresas com potencial"
         :buttons="[
           { label: 'Ver Small Caps', to: '/small-caps', icon: 'i-lucide-rocket', variant: 'primary' },
@@ -401,6 +401,8 @@
 </template>
 
 <script setup lang="ts">
+const brand = useBrand()
+
 definePageMeta({
   isPublicRoute: true,
   hideInstallAppBanner: true,
@@ -408,7 +410,7 @@ definePageMeta({
 
 usePageSeo({
   title:
-    'Small Caps: Guia Completo para Investir em Pequenas Empresas | Redentia',
+    `Small Caps: Guia Completo para Investir em Pequenas Empresas | ${brand.name}`,
   description:
     'Tudo sobre small caps: o que são, como escolher, riscos, estratégias e melhores setores. Guia completo para investir em ações de pequenas empresas com alto potencial.',
   path: '/guias/small-caps-guia-completo',
@@ -421,14 +423,14 @@ usePageSeo({
         'Guia completo sobre investimento em small caps - ações de pequenas empresas',
       author: {
         '@type': 'Organization',
-        name: 'Redentia',
+        name: brand.name,
       },
       publisher: {
         '@type': 'Organization',
-        name: 'Redentia',
+        name: brand.name,
         logo: {
           '@type': 'ImageObject',
-          url: 'https://www.redentia.com.br/512x512.png',
+          url: `${brand.url}/512x512.png`,
         },
       },
       datePublished: '2026-01-04',
@@ -472,19 +474,19 @@ usePageSeo({
           '@type': 'ListItem',
           position: 1,
           name: 'Home',
-          item: 'https://www.redentia.com.br',
+          item: brand.url,
         },
         {
           '@type': 'ListItem',
           position: 2,
           name: 'Guias',
-          item: 'https://www.redentia.com.br/guias',
+          item: `${brand.url}/guias`,
         },
         {
           '@type': 'ListItem',
           position: 3,
           name: 'Small Caps',
-          item: 'https://www.redentia.com.br/guias/small-caps-guia-completo',
+          item: `${brand.url}/guias/small-caps-guia-completo`,
         },
       ],
     },

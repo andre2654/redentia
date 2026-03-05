@@ -63,7 +63,7 @@
               <p class="mt-1 text-2xl font-semibold text-white sm:text-3xl">
                 {{ lastUpdatedLabel }}
               </p>
-              <p class="text-[11px] text-white/60 sm:text-xs">API Redentia.</p>
+              <p class="text-[11px] text-white/60 sm:text-xs">API {{ brand.name }}.</p>
             </div>
           </div>
         </div>
@@ -360,9 +360,10 @@
                           :alt="asset.ticker || asset.stock"
                           class="h-10 w-10 shrink-0 rounded-xl border border-white/10 bg-white/10 object-cover sm:h-11 sm:w-11"
                         />
-                        <IconLogo
+                        <BrandLogo
                           v-else
-                          class="h-10 w-10 shrink-0 rounded-xl border border-white/10 bg-white/10 p-2 text-white/50 sm:h-11 sm:w-11"
+                          variant="icon"
+                          class="h-10 w-10 shrink-0 rounded-xl border border-white/10 bg-white/10 p-2 sm:h-11 sm:w-11"
                         />
                         <div class="min-w-0 flex-1">
                           <p class="truncate font-semibold text-white">
@@ -459,12 +460,13 @@ definePageMeta({
   isPublicRoute: true,
 })
 
+const brand = useBrand()
 const { getAssets } = useAssetsService()
 const authStore = useAuthStore()
 const router = useRouter()
 const runtimeConfig = useRuntimeConfig()
 const siteUrl = computed(() => {
-  const url = runtimeConfig.public?.siteUrl || 'https://www.redentia.com.br'
+  const url = runtimeConfig.public?.siteUrl || brand.url
   return url.endsWith('/') ? url.slice(0, -1) : url
 })
 
@@ -726,21 +728,21 @@ const canonicalUrl = computed(() => {
 })
 const metaTitle = computed(() => {
   if (groupFilter.value === 'reits') {
-    return 'Todos os FIIs listados na B3 | Redentia'
+    return `Todos os FIIs listados na B3 | ${brand.name}`
   }
   if (groupFilter.value === 'stocks') {
-    return 'Todas as ações da B3 | Redentia'
+    return `Todas as ações da B3 | ${brand.name}`
   }
-  return 'Busca avançada de ações, FIIs e BDRs | Redentia'
+  return `Busca avançada de ações, FIIs e BDRs | ${brand.name}`
 })
 const metaDescription = computed(() => {
   if (groupFilter.value === 'reits') {
-    return 'Explore todos os fundos imobiliários listados na B3, filtre por preço, dividendos e encontre oportunidades com a ajuda da Redentia.'
+    return `Explore todos os fundos imobiliários listados na B3, filtre por preço, dividendos e encontre oportunidades com a ajuda da ${brand.name}.`
   }
   if (groupFilter.value === 'stocks') {
-    return 'Veja todas as ações negociadas na B3, acompanhe preços, market cap e variações diárias com filtros inteligentes da Redentia.'
+    return `Veja todas as ações negociadas na B3, acompanhe preços, market cap e variações diárias com filtros inteligentes da ${brand.name}.`
   }
-  return 'Busque investimentos na B3 com filtros avançados da Redentia: encontre ações, FIIs, ETFs e BDRs com dados em tempo real.'
+  return `Busque investimentos na B3 com filtros avançados da ${brand.name}: encontre ações, FIIs, ETFs e BDRs com dados em tempo real.`
 })
 
 usePageSeo({

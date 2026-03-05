@@ -27,9 +27,9 @@
             >
               Cadastro
             </span>
-            <h1 class="text-2xl font-semibold text-white">Criar conta</h1>
+            <h1 class="text-2xl font-semibold text-white">{{ brand.auth.registerTitle }}</h1>
             <p class="text-sm text-white/70">
-              Complete as informações abaixo para começar a usar o Redentia.
+              {{ brand.auth.registerSubtitle }}
             </p>
           </div>
 
@@ -156,7 +156,7 @@
             size="lg"
             class="w-full justify-center"
           >
-            Cadastrar
+            {{ brand.nav.register }}
           </AtomsButton>
 
           <div class="flex flex-col gap-2 text-center md:text-left">
@@ -167,9 +167,7 @@
               Já tem uma conta? Faça login
             </NuxtLink>
             <p class="text-[11px] leading-relaxed text-white/60">
-              Ao criar sua conta no Redentia, você concorda com nossos Termos de
-              Serviço e Política de privacidade e declara ter pelo menos 18
-              anos.
+              {{ brand.auth.termsText }}
             </p>
           </div>
         </UForm>
@@ -183,6 +181,7 @@ import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
 import { vMaska } from 'maska/vue'
 
+const brand = useBrand()
 const { register } = useAuthService()
 const authStore = useAuthStore()
 
@@ -289,9 +288,9 @@ definePageMeta({
 })
 
 usePageSeo({
-  title: 'Criar conta | Redentia',
+  title: `Criar conta | ${brand.name}`,
   description:
-    'Crie sua conta na Redentia para acompanhar ações, FIIs e receber análises e insights com inteligência artificial.',
+    `Crie sua conta na ${brand.name} para acompanhar ações, FIIs e receber análises e insights com inteligência artificial.`,
   path: '/auth/register',
   robots: 'noindex,nofollow',
 })

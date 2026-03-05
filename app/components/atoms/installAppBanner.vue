@@ -1,14 +1,16 @@
 <template>
   <div
-    class="flex items-center justify-between bg-white/10 px-7 py-3 xl:mx-4 xl:mt-4 xl:rounded-[20px]"
+    class="flex items-center justify-between px-7 py-3 xl:mx-4 xl:mt-4 xl:rounded-[20px]"
+    :style="{ backgroundColor: brand.colors.surface }"
   >
     <div class="flex items-center gap-2">
-      <IconLogo
-        class="to-secondary from-primary h-7 w-7 rounded-full bg-gradient-to-r fill-black p-1"
+      <BrandLogo
+        variant="icon"
+        class="to-secondary from-primary h-7 w-7 rounded-full bg-gradient-to-r p-1"
       />
-      <div class="flex flex-col text-white">
-        <span class="text-[13px] font-semibold">Redentia</span>
-        <span class="-mt-1 text-[11px]">Instalação do aplicativo</span>
+      <div class="flex flex-col">
+        <span class="text-[13px] font-semibold" :style="{ color: brand.colors.text }">{{ brand.name }}</span>
+        <span class="-mt-1 text-[11px]" :style="{ color: brand.colors.textMuted }">Instalação do aplicativo</span>
       </div>
     </div>
     <div class="flex items-center gap-2">
@@ -16,17 +18,18 @@
         to="/download"
         class="to-secondary from-primary flex items-center gap-2 rounded-full bg-gradient-to-r px-3 py-1 hover:opacity-80"
       >
-        <IconLogo class="h-4 fill-black" />
-        <span class="text-[12px] font-medium text-black">Baixar</span>
+        <BrandLogo variant="icon" class="h-4" />
+        <span class="text-[12px] font-medium" :style="{ color: brand.colors.background }">Baixar</span>
       </NuxtLink>
       <button
-        @click="closeBanner"
-        class="group flex items-center justify-center rounded-full p-1 hover:bg-white/10"
+        class="group flex items-center justify-center rounded-full p-1 transition-colors"
+        :style="{ color: brand.colors.textMuted }"
         aria-label="Fechar banner"
+        @click="closeBanner"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          class="h-5 w-5 text-white/70 transition-colors group-hover:text-white"
+          class="h-5 w-5 transition-colors"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -43,6 +46,7 @@
 </template>
 
 <script setup lang="ts">
+const brand = useBrand()
 const interfaceStore = useInterfaceStore()
 
 const closeBanner = () => {

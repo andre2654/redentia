@@ -1,92 +1,177 @@
 <template>
   <NuxtLayout :name="layoutName" title="Visão geral">
     <h1 class="sr-only">
-      Redentia: invista em ações e fundos imobiliários com IA
+      {{ brand.seo.title }}
     </h1>
-    <!-- Hero Section -->
-    <section v-if="!authStore.isAuthenticated" class="relative overflow-hidden">
-      <!-- Background effects -->
+    <div class="flex flex-col">
+    <!-- ========== HERO: CENTERED (Primo Rico — premium, espacoso, aspiracional) ========== -->
+    <section v-if="showSection('hero') && !authStore.isAuthenticated && brand.hero.variant === 'centered'" :style="{ order: sectionOrder('hero') }" class="relative overflow-hidden">
+      <!-- Background: gradient sutil, premium -->
       <div class="pointer-events-none absolute inset-0">
-        <div class="from-secondary/30 absolute left-1/2 top-0 h-[500px] w-[800px] -translate-x-1/2 rounded-full bg-gradient-to-b to-transparent blur-3xl" />
-        <div class="bg-secondary/20 absolute left-1/4 top-20 h-64 w-64 rounded-full blur-3xl" />
-        <div class="absolute right-1/4 top-32 h-48 w-48 rounded-full bg-purple-500/10 blur-3xl" />
+        <div class="absolute left-1/2 top-0 h-[500px] w-[800px] -translate-x-1/2 rounded-full blur-3xl" :style="{ background: `radial-gradient(ellipse at center top, ${brand.colors.secondary}4D, transparent)` }" />
+        <div class="absolute left-1/4 top-20 h-64 w-64 rounded-full blur-3xl" :style="{ backgroundColor: `${brand.colors.secondary}33` }" />
       </div>
 
-      <div class="relative px-6 py-16 text-center md:py-20">
-        <!-- Announcement badge -->
-        <div class="mb-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 backdrop-blur-sm">
+      <div class="relative px-6 py-20 text-center md:py-28">
+        <!-- Badge -->
+        <div class="mb-8 inline-flex items-center gap-2 rounded-full border px-4 py-2 backdrop-blur-sm" :style="{ borderColor: `${brand.colors.text}15`, backgroundColor: `${brand.colors.text}08` }">
           <span class="flex h-2 w-2">
-            <span class="absolute inline-flex h-2 w-2 animate-ping rounded-full bg-green-400 opacity-75" />
-            <span class="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
+            <span class="absolute inline-flex h-2 w-2 animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.primary }" />
+            <span class="relative inline-flex h-2 w-2 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
           </span>
-          <span class="text-sm text-white/80">Novo: Assessoria com IA agora disponível</span>
-          <UIcon name="i-lucide-arrow-right" class="h-3 w-3 text-white/50" />
+          <span class="text-sm" :style="{ color: `${brand.colors.text}CC` }">{{ brand.hero.badge }}</span>
         </div>
 
-        <!-- Logo -->
-        <IconLogoFull class="mx-auto mb-8 h-10 fill-white md:h-14" />
+        <BrandLogo variant="full" class="mx-auto mb-10 h-10 md:h-14" />
 
-        <!-- Headline -->
-        <h2 class="mx-auto mb-4 max-w-3xl text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl">
-          Invista com inteligência.
-          <span class="bg-gradient-to-r from-secondary to-blue-400 bg-clip-text text-transparent">
-            Resultados reais.
-          </span>
+        <h2 class="mx-auto mb-6 max-w-3xl text-3xl leading-tight sm:text-4xl md:text-5xl lg:text-6xl" :class="[brand.font.headingWeight, brand.font.headingStyle]" :style="{ color: brand.colors.text }">
+          <template v-for="(line, idx) in brand.hero.title.split('\n')" :key="idx">
+            <br v-if="idx > 0" />{{ line }}
+          </template>
         </h2>
 
-        <!-- Subtitle -->
-        <p class="mx-auto mb-10 max-w-xl text-base text-white/60 md:text-lg">
-          Análises fundamentalistas, calculadoras financeiras e assessoria com IA.
-          <span class="font-medium text-white/80">Tudo 100% gratuito.</span>
+        <p class="mx-auto mb-10 max-w-xl text-base md:text-lg" :style="{ color: brand.colors.textMuted }">
+          {{ brand.hero.subtitle }}
         </p>
 
         <!-- CTAs -->
         <div class="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
-          <UButton
-            to="/auth/register"
-            color="secondary"
-            size="xl"
-            icon="i-lucide-sparkles"
-            class="group w-full px-8 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-secondary/25 sm:w-auto"
-          >
-            Começar Agora
+          <UButton to="/auth/register" color="secondary" size="xl" :icon="brand.hero.ctaIcon" class="group w-full px-8 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-secondary/25 sm:w-auto">
+            {{ brand.hero.ctaLabel }}
             <template #trailing>
               <UIcon name="i-lucide-arrow-right" class="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </template>
           </UButton>
-          <UButton
-            to="/auth/login"
-            color="white"
-            variant="ghost"
-            size="xl"
-            class="w-full text-white/70 transition-all hover:bg-white/10 hover:text-white sm:w-auto"
-          >
-            Já tenho conta
+          <UButton to="/auth/login" variant="ghost" size="xl" class="w-full transition-all sm:w-auto" :style="{ color: brand.colors.textMuted }">
+            {{ brand.hero.ctaSecondaryLabel }}
           </UButton>
         </div>
 
+        <!-- Founder quote -->
+        <div class="mt-14 flex flex-col items-center gap-3">
+          <p class="text-sm italic" :style="{ color: `${brand.colors.text}4D` }">"{{ brand.hero.founderQuote }}"</p>
+          <span class="text-xs" :style="{ color: `${brand.colors.text}33` }">— {{ brand.founder.name }}</span>
+        </div>
+
         <!-- Trust indicators -->
-        <div class="mt-12 flex flex-col items-center gap-6">
-          <div class="flex items-center gap-8 text-sm text-white/50">
+        <div class="mt-8 flex items-center justify-center gap-8 text-sm" :style="{ color: `${brand.colors.text}66` }">
+          <template v-for="(indicator, idx) in brand.hero.trustIndicators" :key="idx">
+            <div v-if="idx > 0" class="hidden h-4 w-px sm:block" :style="{ backgroundColor: `${brand.colors.text}15` }" />
             <div class="flex items-center gap-2">
-              <div class="flex h-5 w-5 items-center justify-center rounded-full bg-green-500/20">
-                <UIcon name="i-lucide-shield-check" class="h-3 w-3 text-green-400" />
-              </div>
-              <span>Criptografado</span>
+              <UIcon :name="trustIndicatorStyles[idx % trustIndicatorStyles.length].icon" class="h-3 w-3" :class="trustIndicatorStyles[idx % trustIndicatorStyles.length].text" />
+              <span>{{ indicator }}</span>
             </div>
-            <div class="hidden h-4 w-px bg-white/20 sm:block" />
-            <div class="flex items-center gap-2">
-              <div class="flex h-5 w-5 items-center justify-center rounded-full bg-secondary/20">
-                <UIcon name="i-lucide-zap" class="h-3 w-3 text-secondary" />
-              </div>
-              <span>Sempre grátis</span>
+          </template>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== HERO: SPLIT (Me Poupe — energetico, personalidade, pop) ========== -->
+    <section v-if="showSection('hero') && !authStore.isAuthenticated && brand.hero.variant === 'split'" :style="{ order: sectionOrder('hero') }" class="relative overflow-hidden">
+      <!-- Background: dots + color splashes -->
+      <div class="pointer-events-none absolute inset-0">
+        <div class="absolute right-0 top-0 h-[400px] w-[400px] rounded-full blur-3xl" :style="{ backgroundColor: `${brand.colors.primary}26` }" />
+        <div class="absolute -left-20 bottom-0 h-[300px] w-[300px] rounded-full blur-3xl" :style="{ backgroundColor: `${brand.colors.secondary}1A` }" />
+      </div>
+
+      <div class="relative px-6 py-12 md:py-16">
+        <div class="mx-auto flex max-w-6xl flex-col items-center gap-10 md:flex-row md:gap-16">
+          <!-- Left: text content -->
+          <div class="flex flex-1 flex-col items-center text-center md:items-start md:text-left">
+            <!-- Badge energetico -->
+            <div class="mb-6 inline-flex items-center gap-2 px-4 py-2 brand-card-sm" :style="{ backgroundColor: `${brand.colors.primary}1A`, border: `1px solid ${brand.colors.primary}33` }">
+              <span class="text-sm font-semibold" :style="{ color: brand.colors.primary }">{{ brand.hero.badge }}</span>
             </div>
-            <div class="hidden h-4 w-px bg-white/20 sm:block" />
-            <div class="flex items-center gap-2">
-              <div class="flex h-5 w-5 items-center justify-center rounded-full bg-purple-500/20">
-                <UIcon name="i-lucide-credit-card" class="h-3 w-3 text-purple-400" />
+
+            <h2 class="mb-4 text-4xl leading-[1.1] sm:text-5xl md:text-6xl" :class="[brand.font.headingWeight, brand.font.headingStyle]" :style="{ color: brand.colors.text }">
+              <template v-for="(line, idx) in brand.hero.title.split('\n')" :key="idx">
+                <br v-if="idx > 0" />{{ line }}
+              </template>
+            </h2>
+
+            <p class="mb-8 max-w-md text-base md:text-lg" :style="{ color: brand.colors.textMuted }">
+              {{ brand.hero.subtitle }}
+            </p>
+
+            <!-- CTAs lado a lado, pill shape -->
+            <div class="flex flex-col gap-3 sm:flex-row sm:gap-4">
+              <UButton to="/auth/register" color="secondary" size="xl" :icon="brand.hero.ctaIcon" class="group px-8 transition-all duration-200 hover:scale-105">
+                {{ brand.hero.ctaLabel }}
+              </UButton>
+              <UButton to="/auth/login" variant="ghost" size="xl" :style="{ color: brand.colors.textMuted }">
+                {{ brand.hero.ctaSecondaryLabel }}
+              </UButton>
+            </div>
+
+            <!-- Trust inline -->
+            <div class="mt-8 flex flex-wrap items-center gap-4 text-xs" :style="{ color: `${brand.colors.text}66` }">
+              <div v-for="(indicator, idx) in brand.hero.trustIndicators" :key="idx" class="flex items-center gap-1.5">
+                <UIcon name="i-lucide-check-circle" class="h-3 w-3" :style="{ color: brand.colors.secondary }" />
+                <span>{{ indicator }}</span>
               </div>
-              <span>Sem cartão</span>
+            </div>
+          </div>
+
+          <!-- Right: founder quote card + personality -->
+          <div class="flex flex-1 flex-col items-center gap-4">
+            <div class="w-full max-w-sm border p-6 backdrop-blur-sm brand-card" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+              <div class="mb-4 flex items-center gap-3">
+                <div class="flex h-12 w-12 items-center justify-center rounded-full" :style="{ backgroundColor: `${brand.colors.primary}26` }">
+                  <BrandLogo variant="icon" class="h-7 w-7" />
+                </div>
+                <div>
+                  <p class="text-sm font-semibold" :style="{ color: brand.colors.text }">{{ brand.founder.name }}</p>
+                  <p class="text-xs" :style="{ color: brand.colors.textMuted }">{{ brand.founder.role }}</p>
+                </div>
+              </div>
+              <p class="text-base italic leading-relaxed" :style="{ color: `${brand.colors.text}B3` }">"{{ brand.hero.founderQuote }}"</p>
+            </div>
+            <BrandLogo variant="full" class="h-8 opacity-40" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== HERO: MINIMAL (Sardinha — compacto, data-first, sem firula) ========== -->
+    <section v-if="showSection('hero') && !authStore.isAuthenticated && brand.hero.variant === 'minimal'" :style="{ order: sectionOrder('hero'), borderColor: brand.colors.border }" class="relative overflow-hidden border-b">
+      <div class="relative px-6 py-10 md:py-14">
+        <div class="mx-auto max-w-5xl">
+          <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between md:gap-12">
+            <!-- Left: brand + headline compact -->
+            <div class="flex-1">
+              <BrandLogo variant="full" class="mb-4 h-8 md:h-10" />
+              <h2 class="mb-3 text-2xl leading-tight sm:text-3xl md:text-4xl" :class="[brand.font.headingWeight, brand.font.headingStyle]" :style="{ color: brand.colors.text }">
+                <template v-for="(line, idx) in brand.hero.title.split('\n')" :key="idx">
+                  <br v-if="idx > 0" />{{ line }}
+                </template>
+              </h2>
+              <p class="mb-6 max-w-lg text-sm md:text-base" :style="{ color: brand.colors.textMuted }">
+                {{ brand.hero.subtitle }}
+              </p>
+              <div class="flex items-center gap-3">
+                <UButton to="/auth/register" color="secondary" size="lg" :icon="brand.hero.ctaIcon" class="transition-all hover:scale-[1.02]">
+                  {{ brand.hero.ctaLabel }}
+                </UButton>
+                <UButton to="/auth/login" variant="ghost" size="lg" :style="{ color: brand.colors.textMuted }">
+                  {{ brand.hero.ctaSecondaryLabel }}
+                </UButton>
+              </div>
+            </div>
+
+            <!-- Right: key metrics preview -->
+            <div class="flex flex-col gap-3">
+              <div class="flex items-center gap-2 border-l-2 pl-4 brand-card-sm" :style="{ borderColor: brand.colors.primary }">
+                <div>
+                  <p class="text-xs" :style="{ color: brand.colors.textMuted }">{{ brand.founder.name }}</p>
+                  <p class="text-sm italic" :style="{ color: `${brand.colors.text}99` }">"{{ brand.hero.founderQuote }}"</p>
+                </div>
+              </div>
+              <div class="flex flex-wrap gap-4 text-xs" :style="{ color: brand.colors.textMuted }">
+                <div v-for="(indicator, idx) in brand.hero.trustIndicators" :key="idx" class="flex items-center gap-1">
+                  <span class="h-1.5 w-1.5 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
+                  <span>{{ indicator }}</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -94,22 +179,24 @@
     </section>
 
     <!-- Social Proof - Logos de corretoras -->
-    <MoleculesTrustedBy v-if="!authStore.isAuthenticated" class="mt-8" />
+    <MoleculesTrustedBy v-if="showSection('trustBar') && !authStore.isAuthenticated" :style="{ order: sectionOrder('trustBar') }" class="mt-8" />
 
     <!-- Seção de Mercado ao Vivo (Prioridade) -->
-    <div class="flex h-auto flex-col gap-4 pt-6">
+    <div v-if="showSection('market')" :style="{ order: sectionOrder('market') }" class="flex h-auto flex-col gap-4 pt-6">
       <div class="flex flex-col gap-8">
         <div class="flex flex-col gap-4 px-6">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <span
-                class="h-2 w-2 animate-pulse rounded-full bg-green-400 shadow-lg shadow-green-500/50 md:h-3 md:w-3"
+                class="h-2 w-2 animate-pulse rounded-full md:h-3 md:w-3"
+                :style="{ backgroundColor: brand.colors.primary, boxShadow: `0 0 12px ${brand.colors.primary}80` }"
               />
               <span
-                class="text-xs font-medium uppercase tracking-wider text-green-400 md:text-sm"
+                class="text-xs font-medium uppercase tracking-wider md:text-sm"
+                :style="{ color: brand.colors.primary }"
                 >Ao Vivo</span
               >
-              <span class="text-xs text-gray-500">
+              <span class="text-xs" :style="{ color: brand.colors.textMuted }">
                 • Atualizado agora
               </span>
             </div>
@@ -117,12 +204,14 @@
           <div class="flex gap-4">
             <div class="flex flex-col gap-2">
               <h3
-                class="font-regular mb-1 flex items-center gap-2 text-xl text-white md:mb-2 md:text-2xl"
+                class="font-regular mb-1 flex items-center gap-2 text-xl md:mb-2 md:text-2xl"
+                :style="{ color: brand.colors.text }"
               >
                 IBOVESPA
               </h3>
               <p
-                class="mb-1 text-3xl font-semibold tabular-nums text-white sm:text-4xl md:text-5xl"
+                class="mb-1 text-3xl font-semibold tabular-nums sm:text-4xl md:text-5xl"
+                :style="{ color: brand.colors.text }"
               >
                 {{ ibovIndicator }}
               </p>
@@ -130,12 +219,14 @@
 
             <div class="flex flex-col gap-2">
               <h3
-                class="font-regular mb-1 flex items-center gap-2 text-xl text-white md:mb-2 md:text-2xl"
+                class="font-regular mb-1 flex items-center gap-2 text-xl md:mb-2 md:text-2xl"
+                :style="{ color: brand.colors.text }"
               >
                 IFIX
               </h3>
               <p
-                class="mb-1 text-3xl font-semibold tabular-nums text-white sm:text-4xl md:text-5xl"
+                class="mb-1 text-3xl font-semibold tabular-nums sm:text-4xl md:text-5xl"
+                :style="{ color: brand.colors.text }"
               >
                 {{ ifixIndicator }}
               </p>
@@ -144,14 +235,15 @@
         </div>
 
         <MoleculesSearchAssets
-          class="w-full rounded-none bg-white/10 py-4 md:rounded-full"
+          class="w-full rounded-none py-4 md:rounded-full"
+          :style="{ backgroundColor: `${brand.colors.text}10` }"
         />
       </div>
 
       <div class="flex w-full flex-col">
         <div class="flex w-full items-center justify-between p-6 pb-0">
           <div class="flex flex-col gap-4">
-            <h2 class="text-[30px] font-semibold">
+            <h2 class="text-[30px] font-semibold" :style="{ color: brand.colors.text }">
               {{
                 new Intl.NumberFormat('pt-BR', {
                   style: 'currency',
@@ -159,7 +251,7 @@
                 }).format(ibovLastPrice)
               }}
             </h2>
-            <p class="mb-4 opacity-70">Cotação do IBOV</p>
+            <p class="mb-4" :style="{ color: brand.colors.textMuted }">Cotação do IBOV</p>
           </div>
           <MoleculesPeriodSelector
             v-model="selectedTimeRange"
@@ -175,7 +267,7 @@
       </div>
 
       <!-- Ticker Carousel com bordas sutis -->
-      <div class="border-y border-white/10 py-4">
+      <div class="border-y py-4" :style="{ borderColor: brand.colors.border }">
         <AtomsTickerCarousel
           class="w-full max-md:hidden"
           big
@@ -191,16 +283,16 @@
 
       <div class="flex items-center justify-between gap-4 px-6">
         <div class="flex flex-col">
-          <h2 class="text-[18px] font-bold">O mercado em tempo real</h2>
-          <p class="text-[13px] font-extralight">
-            Altas, baixas e oportunidades. Atualização instantânea.
+          <h2 class="text-[18px]" :class="brand.font.headingWeight" :style="{ color: brand.colors.text }">{{ brand.homeTexts.marketTitle }}</h2>
+          <p class="text-[13px] font-extralight" :style="{ color: brand.colors.textMuted }">
+            {{ brand.homeTexts.marketSubtitle }}
           </p>
         </div>
-        <div class="flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 p-1">
+        <div class="flex items-center gap-1 rounded-lg p-1" :style="{ borderColor: brand.colors.border, border: `1px solid ${brand.colors.border}`, backgroundColor: `${brand.colors.text}05` }">
           <button
             type="button"
             class="flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all"
-            :class="!showMap ? 'bg-white/10 text-white' : 'text-white/50 hover:text-white/80'"
+            :style="!showMap ? { backgroundColor: `${brand.colors.text}15`, color: brand.colors.text } : { color: brand.colors.textMuted }"
             @click="showMap = false"
           >
             <UIcon name="i-lucide-list" class="h-3.5 w-3.5" />
@@ -209,7 +301,7 @@
           <button
             type="button"
             class="flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all"
-            :class="showMap ? 'bg-white/10 text-white' : 'text-white/50 hover:text-white/80'"
+            :style="showMap ? { backgroundColor: `${brand.colors.text}15`, color: brand.colors.text } : { color: brand.colors.textMuted }"
             @click="showMap = true"
           >
             <UIcon name="i-lucide-grid-2x2" class="h-3.5 w-3.5" />
@@ -219,11 +311,11 @@
       </div>
 
       <div v-if="showMap" class="mb-6 flex flex-col">
-        <div class="mx-auto mb-5 mt-6 flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 p-1 max-md:mx-6">
+        <div class="mx-auto mb-5 mt-6 flex items-center gap-1 rounded-lg p-1 max-md:mx-6" :style="{ borderColor: brand.colors.border, border: `1px solid ${brand.colors.border}`, backgroundColor: `${brand.colors.text}05` }">
           <button
             type="button"
             class="cursor-pointer rounded-md px-3 py-1.5 text-xs font-medium transition-all"
-            :class="treemapFilter === 'all' ? 'bg-white/10 text-white' : 'text-white/50 hover:text-white/80'"
+            :style="treemapFilter === 'all' ? { backgroundColor: `${brand.colors.text}15`, color: brand.colors.text } : { color: brand.colors.textMuted }"
             @click="treemapFilter = 'all'"
           >
             Todos
@@ -231,7 +323,7 @@
           <button
             type="button"
             class="cursor-pointer rounded-md px-3 py-1.5 text-xs font-medium transition-all"
-            :class="treemapFilter === 'positive' ? 'bg-white/10 text-white' : 'text-white/50 hover:text-white/80'"
+            :style="treemapFilter === 'positive' ? { backgroundColor: `${brand.colors.text}15`, color: brand.colors.text } : { color: brand.colors.textMuted }"
             @click="treemapFilter = 'positive'"
           >
             Altas
@@ -239,7 +331,7 @@
           <button
             type="button"
             class="cursor-pointer rounded-md px-3 py-1.5 text-xs font-medium transition-all"
-            :class="treemapFilter === 'negative' ? 'bg-white/10 text-white' : 'text-white/50 hover:text-white/80'"
+            :style="treemapFilter === 'negative' ? { backgroundColor: `${brand.colors.text}15`, color: brand.colors.text } : { color: brand.colors.textMuted }"
             @click="treemapFilter = 'negative'"
           >
             Baixas
@@ -265,30 +357,46 @@
           :items="assetCategories"
           :ui="{ item: 'basis-1/1 md:basis-1/2 lg:basis-1/3 xl:basis-1/4', container: 'bg-transparent' }"
         >
-          <div class="flex w-full flex-col gap-2 px-2 py-4">
+          <div
+            class="flex w-full flex-col gap-2 px-2 py-4"
+            :class="brand.hero.variant === 'split' ? 'mx-2 brand-card-md border p-4' : brand.hero.variant === 'minimal' ? 'mx-1 border-l-2 pl-4' : ''"
+            :style="{
+              borderColor: brand.hero.variant === 'split' ? brand.colors.border : brand.hero.variant === 'minimal' ? brand.colors.positive : undefined,
+              backgroundColor: brand.hero.variant === 'split' ? brand.colors.surface : undefined,
+            }"
+          >
             <!-- Header -->
             <div class="mb-2 flex items-center justify-between">
               <div class="flex items-center gap-2">
-                <UIcon name="i-lucide-trending-up" class="h-5 w-5 text-emerald-400" />
+                <div
+                  class="flex items-center justify-center"
+                  :class="brand.hero.variant === 'split' ? 'h-8 w-8 brand-pill' : ''"
+                  :style="brand.hero.variant === 'split' ? { backgroundColor: `${brand.colors.positive}20` } : {}"
+                >
+                  <UIcon name="i-lucide-trending-up" class="h-5 w-5" :style="{ color: brand.colors.positive }" />
+                </div>
                 <div>
-                  <h2 class="text-base font-bold text-white">{{ item.label }}</h2>
-                  <p class="text-xs text-white/50">Maiores altas</p>
+                  <h2 class="text-base" :class="brand.font.headingWeight" :style="{ color: brand.colors.text }">{{ item.label }}</h2>
+                  <p class="text-xs" :style="{ color: brand.colors.textMuted }">Maiores altas</p>
                 </div>
               </div>
               <NuxtLink
                 :to="{ path: '/search', query: rankingLinkQueries.top[item.key] }"
-                class="flex items-center gap-1 text-sm text-white/60 transition-colors hover:text-white"
+                class="flex items-center gap-1 text-sm transition-colors"
+                :style="{ color: brand.colors.textMuted }"
               >
                 Ver todos
                 <UIcon name="i-lucide-arrow-right" class="h-4 w-4" />
               </NuxtLink>
             </div>
             <!-- Lista -->
-            <div class="flex flex-col divide-y divide-white/5">
+            <div class="flex flex-col" :style="{ '--tw-divide-opacity': 1 }">
               <AtomsTickerListItem
                 v-for="stock in topAssets.top[item.key]"
                 :key="stock?.ticker"
                 :stock="stock"
+                class="border-b"
+                :style="{ borderColor: `${brand.colors.border}` }"
               />
             </div>
           </div>
@@ -302,30 +410,46 @@
           :items="assetCategories"
           :ui="{ item: 'basis-1/1 md:basis-1/2 lg:basis-1/3 xl:basis-1/4', container: 'bg-transparent' }"
         >
-          <div class="flex w-full flex-col gap-2 px-2 py-4">
+          <div
+            class="flex w-full flex-col gap-2 px-2 py-4"
+            :class="brand.hero.variant === 'split' ? 'mx-2 brand-card-md border p-4' : brand.hero.variant === 'minimal' ? 'mx-1 border-l-2 pl-4' : ''"
+            :style="{
+              borderColor: brand.hero.variant === 'split' ? brand.colors.border : brand.hero.variant === 'minimal' ? brand.colors.negative : undefined,
+              backgroundColor: brand.hero.variant === 'split' ? brand.colors.surface : undefined,
+            }"
+          >
             <!-- Header -->
             <div class="mb-2 flex items-center justify-between">
               <div class="flex items-center gap-2">
-                <UIcon name="i-lucide-trending-down" class="h-5 w-5 text-red-400" />
+                <div
+                  class="flex items-center justify-center"
+                  :class="brand.hero.variant === 'split' ? 'h-8 w-8 brand-pill' : ''"
+                  :style="brand.hero.variant === 'split' ? { backgroundColor: `${brand.colors.negative}20` } : {}"
+                >
+                  <UIcon name="i-lucide-trending-down" class="h-5 w-5" :style="{ color: brand.colors.negative }" />
+                </div>
                 <div>
-                  <h2 class="text-base font-bold text-white">{{ item.label }}</h2>
-                  <p class="text-xs text-white/50">Maiores baixas</p>
+                  <h2 class="text-base" :class="brand.font.headingWeight" :style="{ color: brand.colors.text }">{{ item.label }}</h2>
+                  <p class="text-xs" :style="{ color: brand.colors.textMuted }">Maiores baixas</p>
                 </div>
               </div>
               <NuxtLink
                 :to="{ path: '/search', query: rankingLinkQueries.bottom[item.key] }"
-                class="flex items-center gap-1 text-sm text-white/60 transition-colors hover:text-white"
+                class="flex items-center gap-1 text-sm transition-colors"
+                :style="{ color: brand.colors.textMuted }"
               >
                 Ver todos
                 <UIcon name="i-lucide-arrow-right" class="h-4 w-4" />
               </NuxtLink>
             </div>
             <!-- Lista -->
-            <div class="flex flex-col divide-y divide-white/5">
+            <div class="flex flex-col">
               <AtomsTickerListItem
                 v-for="stock in topAssets.bottom[item.key]"
                 :key="stock?.ticker"
                 :stock="stock"
+                class="border-b"
+                :style="{ borderColor: `${brand.colors.border}` }"
               />
             </div>
           </div>
@@ -335,70 +459,78 @@
       <!-- Filtros Inteligentes -->
       <div class="flex flex-col gap-4 px-6 py-6">
         <div class="flex items-center gap-3">
-          <UIcon name="i-lucide-sparkles" class="h-5 w-5 text-emerald-400" />
-          <h2 class="text-lg font-semibold text-white">Filtros inteligentes</h2>
+          <UIcon name="i-lucide-sparkles" class="h-5 w-5" :style="{ color: brand.colors.primary }" />
+          <h2 class="text-lg font-semibold" :style="{ color: brand.colors.text }">{{ brand.homeTexts.filtersTitle }}</h2>
         </div>
         <div class="flex flex-wrap gap-2">
           <NuxtLink
             :to="{ path: '/search', query: { p_max: 20 } }"
-            class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/80 transition-all hover:border-emerald-500/50 hover:bg-emerald-500/10 hover:text-white"
+            class="brand-pill border px-4 py-2 text-sm transition-all"
+            :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.text}08`, color: brand.colors.textMuted }"
           >
             Preço até R$ 20
           </NuxtLink>
           <NuxtLink
             :to="{ path: '/search', query: { mc_max: 2000000000 } }"
-            class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/80 transition-all hover:border-emerald-500/50 hover:bg-emerald-500/10 hover:text-white"
+            class="brand-pill border px-4 py-2 text-sm transition-all"
+            :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.text}08`, color: brand.colors.textMuted }"
           >
             Small Caps (MC ≤ R$ 2 bi)
           </NuxtLink>
           <NuxtLink
             :to="{ path: '/search', query: { ch_min: 0 } }"
-            class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/80 transition-all hover:border-emerald-500/50 hover:bg-emerald-500/10 hover:text-white"
+            class="brand-pill border px-4 py-2 text-sm transition-all"
+            :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.text}08`, color: brand.colors.textMuted }"
           >
             <span class="flex items-center gap-1.5">
-              <UIcon name="i-lucide-trending-up" class="h-3.5 w-3.5 text-emerald-400" />
+              <UIcon name="i-lucide-trending-up" class="h-3.5 w-3.5" :style="{ color: brand.colors.positive }" />
               Alta no dia
             </span>
           </NuxtLink>
           <NuxtLink
             :to="{ path: '/search', query: { ch_max: 0 } }"
-            class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/80 transition-all hover:border-red-500/50 hover:bg-red-500/10 hover:text-white"
+            class="brand-pill border px-4 py-2 text-sm transition-all"
+            :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.text}08`, color: brand.colors.textMuted }"
           >
             <span class="flex items-center gap-1.5">
-              <UIcon name="i-lucide-trending-down" class="h-3.5 w-3.5 text-red-400" />
+              <UIcon name="i-lucide-trending-down" class="h-3.5 w-3.5" :style="{ color: brand.colors.negative }" />
               Queda no dia
             </span>
           </NuxtLink>
           <NuxtLink
             :to="{ path: '/search', query: { stock: 0, bdr: 0 } }"
-            class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/80 transition-all hover:border-blue-500/50 hover:bg-blue-500/10 hover:text-white"
+            class="brand-pill border px-4 py-2 text-sm transition-all"
+            :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.text}08`, color: brand.colors.textMuted }"
           >
             <span class="flex items-center gap-1.5">
-              <UIcon name="i-lucide-building-2" class="h-3.5 w-3.5 text-blue-400" />
+              <UIcon name="i-lucide-building-2" class="h-3.5 w-3.5" :style="{ color: brand.colors.secondary }" />
               Somente FIIs
             </span>
           </NuxtLink>
           <NuxtLink
             :to="{ path: '/search', query: { stock: 0, reit: 0 } }"
-            class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/80 transition-all hover:border-purple-500/50 hover:bg-purple-500/10 hover:text-white"
+            class="brand-pill border px-4 py-2 text-sm transition-all"
+            :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.text}08`, color: brand.colors.textMuted }"
           >
             <span class="flex items-center gap-1.5">
-              <UIcon name="i-lucide-globe" class="h-3.5 w-3.5 text-purple-400" />
+              <UIcon name="i-lucide-globe" class="h-3.5 w-3.5" :style="{ color: brand.colors.secondary }" />
               Somente BDRs
             </span>
           </NuxtLink>
           <NuxtLink
             :to="{ path: '/search', query: { p_min: 10, p_max: 50 } }"
-            class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/80 transition-all hover:border-emerald-500/50 hover:bg-emerald-500/10 hover:text-white"
+            class="brand-pill border px-4 py-2 text-sm transition-all"
+            :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.text}08`, color: brand.colors.textMuted }"
           >
             Preço R$ 10 - R$ 50
           </NuxtLink>
           <NuxtLink
             :to="{ path: '/search', query: { dy_min: 6 } }"
-            class="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/80 transition-all hover:border-yellow-500/50 hover:bg-yellow-500/10 hover:text-white"
+            class="brand-pill border px-4 py-2 text-sm transition-all"
+            :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.text}08`, color: brand.colors.textMuted }"
           >
             <span class="flex items-center gap-1.5">
-              <UIcon name="i-lucide-coins" class="h-3.5 w-3.5 text-yellow-400" />
+              <UIcon name="i-lucide-coins" class="h-3.5 w-3.5" :style="{ color: brand.colors.primary }" />
               DY acima de 6%
             </span>
           </NuxtLink>
@@ -408,26 +540,32 @@
 
 
     <!-- Metrics Section com contador gigante -->
-    <MoleculesMetricsSection v-if="!authStore.isAuthenticated" />
+    <MoleculesMetricsSection v-if="showSection('metrics') && !authStore.isAuthenticated" :style="{ order: sectionOrder('metrics') }" />
 
     <!-- Feature Tabs por perfil -->
-    <MoleculesFeatureTabs v-if="!authStore.isAuthenticated" class="mt-8" />
+    <MoleculesFeatureTabs v-if="showSection('featureTabs') && !authStore.isAuthenticated" :style="{ order: sectionOrder('featureTabs') }" class="mt-8" />
 
     <!-- Marquee de Tags em movimento -->
-    <AtomsMarqueeFeatures v-if="!authStore.isAuthenticated" />
+    <AtomsMarqueeFeatures v-if="showSection('marquee') && !authStore.isAuthenticated" :style="{ order: sectionOrder('marquee') }" />
+
+    <!-- Conteudo Educacional -->
+    <MoleculesEducationalContent v-if="showSection('educational')" :style="{ order: sectionOrder('educational') }" class="mt-12" />
+
+    <!-- Produtos e Cursos (Netflix-style) -->
+    <MoleculesProductsCarousel v-if="showSection('products')" :style="{ order: sectionOrder('products') }" class="mt-12" />
 
     <!-- Seção Invista por Categoria -->
-    <section class="mt-12 border-t border-white/10 px-6 pt-12">
+    <section v-if="showSection('categories')" :style="{ order: sectionOrder('categories'), borderColor: brand.colors.border }" class="mt-12 border-t px-6 pt-12">
       <div class="flex flex-col gap-6">
         <div class="text-center">
-          <p class="mb-2 text-xs uppercase tracking-[0.2em] text-gray-500">
-            Explore por categoria
+          <p class="mb-2 text-xs uppercase tracking-[0.2em]" :style="{ color: brand.colors.textMuted }">
+            {{ brand.homeTexts.categoriesEyebrow }}
           </p>
-          <h2 class="mb-2 text-2xl font-bold md:text-3xl">
-            Encontre seu próximo investimento
+          <h2 class="mb-2 text-2xl md:text-3xl" :class="[brand.font.headingWeight, brand.font.headingStyle]" :style="{ color: brand.colors.text }">
+            {{ brand.homeTexts.categoriesTitle }}
           </h2>
-          <p class="text-sm text-gray-400 md:text-base">
-            Tudo que você precisa. Nada que você não precisa.
+          <p class="text-sm md:text-base" :style="{ color: brand.colors.textMuted }">
+            {{ brand.homeTexts.categoriesSubtitle }}
           </p>
         </div>
 
@@ -435,15 +573,16 @@
           <!-- Ações -->
           <NuxtLink
             to="/acoes"
-            class="group flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-6 transition-all hover:border-secondary/50 hover:bg-secondary/10"
+            class="group flex flex-col gap-3 border p-6 transition-all brand-card"
+            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
           >
             <div class="flex items-center gap-3">
-              <div class="rounded-full bg-secondary/20 p-3">
+              <div class="bg-secondary/20 p-3 brand-pill">
                 <UIcon name="i-lucide-trending-up" class="text-secondary h-6 w-6" />
               </div>
               <h3 class="text-xl font-bold group-hover:text-secondary">Ações</h3>
             </div>
-            <p class="text-sm text-gray-400">
+            <p class="text-sm" :style="{ color: brand.colors.textMuted }">
               Invista nas maiores empresas do Brasil. Potencial de crescimento e
               dividendos.
             </p>
@@ -459,15 +598,16 @@
           <!-- FIIs -->
           <NuxtLink
             to="/fiis"
-            class="group flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-6 transition-all hover:border-secondary/50 hover:bg-secondary/10"
+            class="group flex flex-col gap-3 border p-6 transition-all brand-card"
+            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
           >
             <div class="flex items-center gap-3">
-              <div class="rounded-full bg-secondary/20 p-3">
+              <div class="bg-secondary/20 p-3 brand-pill">
                 <UIcon name="i-lucide-building-2" class="text-secondary h-6 w-6" />
               </div>
               <h3 class="text-xl font-bold group-hover:text-secondary">FIIs</h3>
             </div>
-            <p class="text-sm text-gray-400">
+            <p class="text-sm" :style="{ color: brand.colors.textMuted }">
               Renda passiva mensal com fundos imobiliários. Dividendos isentos de
               IR.
             </p>
@@ -483,15 +623,16 @@
           <!-- ETFs -->
           <NuxtLink
             to="/etfs"
-            class="group flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-6 transition-all hover:border-secondary/50 hover:bg-secondary/10"
+            class="group flex flex-col gap-3 border p-6 transition-all brand-card"
+            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
           >
             <div class="flex items-center gap-3">
-              <div class="rounded-full bg-secondary/20 p-3">
+              <div class="bg-secondary/20 p-3 brand-pill">
                 <UIcon name="i-lucide-bar-chart-3" class="text-secondary h-6 w-6" />
               </div>
               <h3 class="text-xl font-bold group-hover:text-secondary">ETFs</h3>
             </div>
-            <p class="text-sm text-gray-400">
+            <p class="text-sm" :style="{ color: brand.colors.textMuted }">
               Diversificação instantânea. Invista no Ibovespa e S&P 500 com um
               clique.
             </p>
@@ -507,17 +648,18 @@
           <!-- Small Caps -->
           <NuxtLink
             to="/small-caps"
-            class="group flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-6 transition-all hover:border-secondary/50 hover:bg-secondary/10"
+            class="group flex flex-col gap-3 border p-6 transition-all brand-card"
+            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
           >
             <div class="flex items-center gap-3">
-              <div class="rounded-full bg-secondary/20 p-3">
+              <div class="bg-secondary/20 p-3 brand-pill">
                 <UIcon name="i-lucide-rocket" class="text-secondary h-6 w-6" />
               </div>
               <h3 class="text-xl font-bold group-hover:text-secondary">
                 Small Caps
               </h3>
             </div>
-            <p class="text-sm text-gray-400">
+            <p class="text-sm" :style="{ color: brand.colors.textMuted }">
               Empresas pequenas com alto potencial de crescimento. Risco maior,
               retorno maior.
             </p>
@@ -533,17 +675,18 @@
           <!-- Dividendos -->
           <NuxtLink
             to="/dividendos"
-            class="group flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-6 transition-all hover:border-secondary/50 hover:bg-secondary/10"
+            class="group flex flex-col gap-3 border p-6 transition-all brand-card"
+            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
           >
             <div class="flex items-center gap-3">
-              <div class="rounded-full bg-secondary/20 p-3">
+              <div class="bg-secondary/20 p-3 brand-pill">
                 <UIcon name="i-lucide-coins" class="text-secondary h-6 w-6" />
               </div>
               <h3 class="text-xl font-bold group-hover:text-secondary">
                 Dividendos
               </h3>
             </div>
-            <p class="text-sm text-gray-400">
+            <p class="text-sm" :style="{ color: brand.colors.textMuted }">
               Construa renda passiva mensal. Descubra os melhores pagadores de
               dividendos.
             </p>
@@ -559,15 +702,16 @@
           <!-- BDRs -->
           <NuxtLink
             to="/search?group=bdrs"
-            class="group flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-6 transition-all hover:border-secondary/50 hover:bg-secondary/10"
+            class="group flex flex-col gap-3 border p-6 transition-all brand-card"
+            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
           >
             <div class="flex items-center gap-3">
-              <div class="rounded-full bg-secondary/20 p-3">
+              <div class="bg-secondary/20 p-3 brand-pill">
                 <UIcon name="i-lucide-globe" class="text-secondary h-6 w-6" />
               </div>
               <h3 class="text-xl font-bold group-hover:text-secondary">BDRs</h3>
             </div>
-            <p class="text-sm text-gray-400">
+            <p class="text-sm" :style="{ color: brand.colors.textMuted }">
               Invista em empresas estrangeiras (Apple, Google, Amazon) em reais.
             </p>
             <div class="flex items-center gap-2 text-secondary text-sm font-medium">
@@ -583,17 +727,17 @@
     </section>
 
     <!-- Seção Blog / Guias Educacionais -->
-    <section class="mt-12 border-t border-white/10 px-6 pt-12">
+    <section v-if="showSection('guides')" :style="{ order: sectionOrder('guides'), borderColor: brand.colors.border }" class="mt-12 border-t px-6 pt-12">
       <div class="flex flex-col gap-8">
         <div class="text-center">
           <div class="mb-3 flex items-center justify-center gap-2">
             <UIcon name="i-lucide-newspaper" class="text-secondary h-6 w-6" />
           </div>
-          <h2 class="mb-2 text-2xl font-bold md:text-3xl">
-            Conhecimento que gera resultados
+          <h2 class="mb-2 text-2xl md:text-3xl" :class="[brand.font.headingWeight, brand.font.headingStyle]" :style="{ color: brand.colors.text }">
+            {{ brand.homeTexts.guidesTitle }}
           </h2>
-          <p class="text-sm text-gray-400 md:text-base">
-            Guias práticos, análises e estratégias. Aprenda em minutos.
+          <p class="text-sm md:text-base" :style="{ color: brand.colors.textMuted }">
+            {{ brand.homeTexts.guidesSubtitle }}
           </p>
         </div>
 
@@ -731,7 +875,7 @@
           <!-- Card CTA para ver todos -->
           <NuxtLink
             to="/guias"
-            class="group flex flex-col items-center justify-center gap-4 rounded-2xl border border-secondary/30 bg-gradient-to-br from-secondary/10 to-secondary/5 p-8 transition-all hover:border-secondary/50 hover:from-secondary/20"
+            class="group flex flex-col items-center justify-center gap-4 border border-secondary/30 bg-gradient-to-br from-secondary/10 to-secondary/5 p-8 transition-all hover:border-secondary/50 hover:from-secondary/20 brand-card"
           >
             <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-secondary/30">
               <UIcon name="i-lucide-book-open" class="text-secondary h-7 w-7" />
@@ -740,7 +884,7 @@
               <h3 class="mb-2 text-xl font-bold group-hover:text-secondary">
                 Ver todos os guias
               </h3>
-              <p class="text-sm text-gray-400">
+              <p class="text-sm" :style="{ color: brand.colors.textMuted }">
                 Mais conteúdo educacional sobre investimentos
               </p>
             </div>
@@ -757,50 +901,44 @@
     </section>
 
     <!-- Testimonials Section -->
-    <MoleculesTestimonialsSection v-if="!authStore.isAuthenticated" class="mt-12" />
+    <MoleculesTestimonialsSection v-if="showSection('testimonials') && !authStore.isAuthenticated" :style="{ order: sectionOrder('testimonials') }" class="mt-12" />
 
     <!-- Seção de IA -->
-    <section v-if="!authStore.isAuthenticated" class="mt-12 border-t border-white/10 px-4 pt-16 md:px-6">
+    <section v-if="showSection('aiCta') && !authStore.isAuthenticated" :style="{ order: sectionOrder('aiCta'), borderColor: brand.colors.border }" class="mt-12 border-t px-4 pt-16 md:px-6">
       <div class="mx-auto max-w-5xl">
         <!-- Header -->
         <div class="mb-10 text-center">
-          <div class="mb-4 inline-flex items-center gap-2 rounded-full bg-secondary/10 px-4 py-2">
+          <div class="mb-4 inline-flex items-center gap-2 bg-secondary/10 px-4 py-2 brand-pill">
             <IconAi class="fill-secondary h-4 w-4" />
-            <span class="text-sm font-medium text-secondary">Assessoria com IA</span>
+            <span class="text-sm font-medium text-secondary">{{ brand.homeTexts.aiCtaEyebrow }}</span>
           </div>
-          <h2 class="mb-3 text-2xl font-bold text-white md:text-3xl lg:text-4xl">
-            Tire suas dúvidas em segundos
+          <h2 class="mb-3 text-2xl md:text-3xl lg:text-4xl" :class="[brand.font.headingWeight, brand.font.headingStyle]" :style="{ color: brand.colors.text }">
+            {{ brand.homeTexts.aiCtaTitle }}
           </h2>
-          <p class="mx-auto max-w-xl text-white/60">
-            Pergunte qualquer coisa sobre investimentos. Nossa IA responde instantaneamente.
+          <p class="mx-auto max-w-xl" :style="{ color: brand.colors.textMuted }">
+            {{ brand.homeTexts.aiCtaSubtitle }}
           </p>
         </div>
 
         <!-- Grid de sugestões clicáveis -->
         <div class="mb-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <NuxtLink
-            v-for="(item, idx) in [
-              { icon: 'i-lucide-scale', question: 'Qual a diferença entre ações e FIIs?', category: 'Conceitos' },
-              { icon: 'i-lucide-coins', question: 'Como funcionam os dividendos?', category: 'Renda Passiva' },
-              { icon: 'i-lucide-pie-chart', question: 'O que é diversificação?', category: 'Estratégia' },
-              { icon: 'i-lucide-wallet', question: 'Quanto devo investir por mês?', category: 'Planejamento' },
-              { icon: 'i-lucide-search', question: 'Como escolher boas ações?', category: 'Análise' },
-              { icon: 'i-lucide-trending-up', question: 'Vale a pena investir em ETFs?', category: 'Produtos' },
-            ]"
+            v-for="(item, idx) in brand.homeTexts.aiCtaQuestions"
             :key="idx"
             to="/auth/login"
-            class="group flex flex-col gap-4 rounded-2xl border border-white/10 bg-white/5 p-5 transition-all duration-200 hover:border-secondary/30 hover:bg-secondary/5"
+            class="group flex flex-col gap-4 border p-5 transition-all duration-200 brand-card"
+            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
           >
             <div class="flex items-center justify-between">
-              <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 transition-colors group-hover:bg-secondary/20">
-                <UIcon :name="item.icon" class="h-5 w-5 text-white/60 transition-colors group-hover:text-secondary" />
+              <div class="flex h-10 w-10 items-center justify-center transition-colors group-hover:bg-secondary/20 brand-card-sm" :style="{ backgroundColor: `${brand.colors.text}10` }">
+                <UIcon :name="item.icon" class="h-5 w-5 transition-colors group-hover:text-secondary" :style="{ color: brand.colors.textMuted }" />
               </div>
-              <span class="rounded-full bg-white/5 px-2 py-1 text-xs text-white/40 transition-colors group-hover:bg-secondary/10 group-hover:text-secondary/80">
+              <span class="px-2 py-1 text-xs brand-pill transition-colors group-hover:bg-secondary/10 group-hover:text-secondary/80" :style="{ backgroundColor: `${brand.colors.text}08`, color: brand.colors.textMuted }">
                 {{ item.category }}
               </span>
             </div>
-            <p class="font-medium text-white">{{ item.question }}</p>
-            <div class="mt-auto flex items-center gap-1 text-sm text-white/40 transition-colors group-hover:text-secondary">
+            <p class="font-medium" :style="{ color: brand.colors.text }">{{ item.question }}</p>
+            <div class="mt-auto flex items-center gap-1 text-sm transition-colors group-hover:text-secondary" :style="{ color: brand.colors.textMuted }">
               <span>Perguntar</span>
               <UIcon name="i-lucide-arrow-right" class="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </div>
@@ -808,42 +946,35 @@
         </div>
 
         <!-- CTA Box -->
-        <div class="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-secondary/10 via-secondary/5 to-transparent p-6 md:p-8">
+        <div class="relative overflow-hidden border bg-gradient-to-br from-secondary/10 via-secondary/5 to-transparent p-6 md:p-8 brand-card" :style="{ borderColor: brand.colors.border }">
           <!-- Background glow -->
           <div class="pointer-events-none absolute -right-20 -top-20 h-40 w-40 rounded-full bg-secondary/20 blur-3xl" />
-          <div class="pointer-events-none absolute -bottom-20 -left-20 h-40 w-40 rounded-full bg-purple-500/10 blur-3xl" />
+          <div class="pointer-events-none absolute -bottom-20 -left-20 h-40 w-40 rounded-full blur-3xl" :style="{ backgroundColor: `${brand.colors.primary}1A` }" />
 
           <div class="relative flex flex-col items-center gap-6 text-center">
             <!-- Mock chat preview -->
-            <div class="w-full max-w-md rounded-xl border border-white/10 bg-black/30 p-4">
+            <div class="w-full max-w-md rounded-xl border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.background}80` }">
               <div class="flex items-start gap-3">
                 <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-secondary/20">
                   <IconAi class="fill-secondary h-4 w-4" />
                 </div>
                 <div class="flex-1 text-left">
-                  <p class="text-sm text-white/80">
-                    Olá! Sou sua assessora de investimentos. Posso ajudar com análises, tirar dúvidas e dar recomendações personalizadas.
+                  <p class="text-sm" :style="{ color: `${brand.colors.text}CC` }">
+                    {{ brand.ai.ctaGreeting }}
                   </p>
                 </div>
               </div>
             </div>
 
             <!-- Stats -->
-            <div class="flex items-center gap-6 text-sm text-white/50">
-              <div class="flex items-center gap-2">
-                <UIcon name="i-lucide-zap" class="h-4 w-4 text-yellow-400" />
-                <span>Resposta em ~3s</span>
-              </div>
-              <div class="h-4 w-px bg-white/20" />
-              <div class="flex items-center gap-2">
-                <UIcon name="i-lucide-brain" class="h-4 w-4 text-purple-400" />
-                <span>IA Treinada</span>
-              </div>
-              <div class="hidden h-4 w-px bg-white/20 sm:block" />
-              <div class="hidden items-center gap-2 sm:flex">
-                <UIcon name="i-lucide-infinity" class="h-4 w-4 text-secondary" />
-                <span>Ilimitado</span>
-              </div>
+            <div class="flex items-center gap-6 text-sm" :style="{ color: brand.colors.textMuted }">
+              <template v-for="(feature, fIdx) in brand.ai.ctaFeatures" :key="fIdx">
+                <div v-if="fIdx > 0" class="h-4 w-px" :style="{ backgroundColor: `${brand.colors.text}20` }" :class="{ 'hidden sm:block': fIdx >= 2 }" />
+                <div class="flex items-center gap-2" :class="{ 'hidden sm:flex': fIdx >= 2 }">
+                  <UIcon :name="['i-lucide-zap', 'i-lucide-brain', 'i-lucide-infinity'][fIdx] || 'i-lucide-sparkles'" class="h-4 w-4 text-primary" />
+                  <span>{{ feature }}</span>
+                </div>
+              </template>
             </div>
 
             <!-- CTA Button -->
@@ -854,7 +985,7 @@
               icon="i-lucide-message-circle"
               class="group w-full transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-secondary/25 sm:w-auto"
             >
-              Começar a Perguntar
+              {{ brand.ai.ctaButton }}
               <template #trailing>
                 <UIcon name="i-lucide-arrow-right" class="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </template>
@@ -869,6 +1000,7 @@
         </div>
       </div>
     </section>
+    </div>
   </NuxtLayout>
 </template>
 
@@ -876,19 +1008,34 @@
 import type { IAsset } from '~/types/asset'
 import type { ChartTimeRange } from '~/types/chart'
 
+const brand = useBrand()
 const authStore = useAuthStore()
+
+type HomeSectionId = typeof brand.homeSections[number]['id']
+const sectionIndexMap = computed(() => new Map(brand.homeSections.map((s, i) => [s.id, i])))
+function showSection(id: HomeSectionId) {
+  return brand.homeSections.find(s => s.id === id)?.visible ?? true
+}
+function sectionOrder(id: HomeSectionId) {
+  return sectionIndexMap.value.get(id) ?? 99
+}
+
+const trustIndicatorStyles = [
+  { bg: 'bg-secondary/20', text: 'text-secondary', icon: 'i-lucide-shield-check' },
+  { bg: 'bg-primary/20', text: 'text-primary', icon: 'i-lucide-zap' },
+  { bg: 'bg-secondary/20', text: 'text-secondary', icon: 'i-lucide-credit-card' },
+]
 const layoutName = computed(() =>
   authStore.isAuthenticated ? 'default' : 'unauthenticated'
 )
 
 const runtimeConfig = useRuntimeConfig()
 const siteUrl = computed(() => {
-  const url = runtimeConfig.public?.siteUrl || 'https://www.redentia.com.br'
+  const url = runtimeConfig.public?.siteUrl || brand.url
   return url.endsWith('/') ? url.slice(0, -1) : url
 })
 const canonicalUrl = computed(() => `${siteUrl.value}/`)
-const metaDescription =
-  'Use a Redentia para investir com inteligência: acompanhe ações, FIIs e índices em tempo real, receba análises com IA e utilize calculadoras avançadas.'
+const metaDescription = brand.seo.description
 const navigationLinks = computed(() => [
   {
     name: 'Assessoria com IA',
@@ -917,30 +1064,27 @@ const navigationLinks = computed(() => [
 ])
 
 usePageSeo({
-  title: 'Redentia: invista em ações e fundos imobiliários com IA',
+  title: brand.seo.title,
   description: metaDescription,
   path: '/',
   structuredData: [
     {
       '@context': 'https://schema.org',
       '@type': 'Organization',
-      name: 'Redentia',
+      name: brand.name,
       url: siteUrl.value,
-      logo: `${siteUrl.value}/512x512.png`,
-      sameAs: [
-        'https://www.instagram.com/redentia.app',
-        'https://twitter.com/redentia_app',
-      ],
+      logo: `${siteUrl.value}${brand.logo.icon512}`,
+      sameAs: Object.values(brand.social).filter(Boolean),
       contactPoint: {
         '@type': 'ContactPoint',
         contactType: 'customer support',
-        email: 'contato@redentia.com.br',
+        email: brand.email,
       },
     },
     {
       '@context': 'https://schema.org',
       '@type': 'WebSite',
-      name: 'Redentia',
+      name: brand.name,
       url: siteUrl.value,
       description: metaDescription,
       potentialAction: {
@@ -952,7 +1096,7 @@ usePageSeo({
     {
       '@context': 'https://schema.org',
       '@type': 'ItemList',
-      name: 'Navegação principal da Redentia',
+      name: `Navegação principal da ${brand.name}`,
       itemListElement: navigationLinks.value.map((item, index) => ({
         '@type': 'SiteNavigationElement',
         position: index + 1,
@@ -1240,7 +1384,7 @@ const ibovChartLabel = computed(() => {
   return [
     {
       label: 'IBOV',
-      color: '#10b981',
+      color: brand.chartColors.positive,
       value: lastPoint ? lastPoint.value.toFixed(2) : '0',
     },
   ]

@@ -1,11 +1,9 @@
 <template>
-  <NuxtLayout name="static" title="Entre em contato">
+  <NuxtLayout name="static" :title="brand.contact.title">
     <section class="flex flex-col items-center gap-8 px-10 py-8">
       <div class="max-w-2xl text-center">
         <p class="text-lg opacity-90">
-          Tem alguma dúvida, sugestão ou precisa de ajuda? Nossa equipe está
-          pronta para atendê-lo. Envie sua mensagem e retornaremos o mais breve
-          possível.
+          {{ brand.contact.subtitle }}
         </p>
       </div>
 
@@ -119,14 +117,14 @@
               Ao enviar esta mensagem, você concorda com nossos
               <NuxtLink
                 to="/redentia/terms"
-                class="text-blue-400 underline hover:text-blue-300"
+                class="text-secondary underline hover:text-secondary/80"
               >
                 Termos de Serviço
               </NuxtLink>
               e
               <NuxtLink
                 to="/redentia/privacy"
-                class="text-blue-400 underline hover:text-blue-300"
+                class="text-secondary underline hover:text-secondary/80"
               >
                 Política de Privacidade
               </NuxtLink>
@@ -152,36 +150,23 @@
           Outras formas de contato
         </h3>
         <div class="grid gap-4 md:grid-cols-3">
-          <div class="rounded-lg bg-white/5 p-4 text-center">
-            <div class="mb-2 text-blue-400">
-              <UIcon name="i-lucide-mail" class="mx-auto h-6 w-6" />
+          <div
+            v-for="(channel, index) in brand.contact.channels"
+            :key="index"
+            class="rounded-lg bg-white/5 p-4 text-center"
+          >
+            <div class="mb-2 text-secondary">
+              <UIcon :name="channel.icon" class="mx-auto h-6 w-6" />
             </div>
-            <h4 class="mb-1 font-medium">Email</h4>
+            <h4 class="mb-1 font-medium">{{ channel.label }}</h4>
             <a
-              href="mailto:contato@redentia.com.br"
-              class="text-sm opacity-70 hover:text-blue-400"
+              v-if="channel.href"
+              :href="channel.href"
+              class="text-sm opacity-70 hover:text-secondary"
             >
-              contato@redentia.com.br
+              {{ channel.value }}
             </a>
-          </div>
-
-          <div class="rounded-lg bg-white/5 p-4 text-center">
-            <div class="mb-2 text-blue-400">
-              <UIcon name="i-lucide-message-circle" class="mx-auto h-6 w-6" />
-            </div>
-            <h4 class="mb-1 font-medium">Chat Online</h4>
-            <p class="text-sm opacity-70">Disponível na plataforma</p>
-          </div>
-
-          <div class="rounded-lg bg-white/5 p-4 text-center">
-            <div class="mb-2 text-blue-400">
-              <UIcon name="i-lucide-clock" class="mx-auto h-6 w-6" />
-            </div>
-            <h4 class="mb-1 font-medium">Horário de Atendimento</h4>
-            <p class="text-sm opacity-70">
-              Segunda a Sexta<br />
-              9h às 18h
-            </p>
+            <p v-else class="text-sm opacity-70">{{ channel.value }}</p>
           </div>
         </div>
       </div>
@@ -194,7 +179,7 @@
         <div class="space-y-3">
           <details class="rounded-lg bg-white/5 p-4">
             <summary
-              class="opacity-hover:text-blue-400 cursor-pointer font-medium"
+              class="opacity-hover:text-secondary cursor-pointer font-medium"
             >
               Como posso conectar minha corretora?
             </summary>
@@ -207,7 +192,7 @@
 
           <details class="rounded-lg bg-white/5 p-4">
             <summary
-              class="opacity-hover:text-blue-400 cursor-pointer font-medium"
+              class="opacity-hover:text-secondary cursor-pointer font-medium"
             >
               Meus dados estão seguros?
             </summary>
@@ -220,7 +205,7 @@
 
           <details class="rounded-lg bg-white/5 p-4">
             <summary
-              class="opacity-hover:text-blue-400 cursor-pointer font-medium"
+              class="opacity-hover:text-secondary cursor-pointer font-medium"
             >
               Posso cancelar minha assinatura a qualquer momento?
             </summary>
@@ -238,6 +223,8 @@
 <script setup lang="ts">
 import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
+
+const brand = useBrand()
 
 const schema = z.object({
   name: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
@@ -310,9 +297,9 @@ definePageMeta({
 })
 
 usePageSeo({
-  title: 'Fale com a Redentia | Atendimento e suporte',
+  title: `Fale com a ${brand.name} | Atendimento e suporte`,
   description:
-    'Entre em contato com a equipe Redentia para tirar dúvidas, enviar sugestões ou falar sobre parcerias. Respondemos rapidamente.',
+    `Entre em contato com a equipe ${brand.name} para tirar dúvidas, enviar sugestões ou falar sobre parcerias. Respondemos rapidamente.`,
   path: '/redentia/contact',
   breadcrumbs: [
     { name: 'Início', path: '/' },

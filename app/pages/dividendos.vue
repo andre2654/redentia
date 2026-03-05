@@ -451,6 +451,8 @@
 </template>
 
 <script setup lang="ts">
+const brand = useBrand()
+
 definePageMeta({
   isPublicRoute: true,
   hideInstallAppBanner: true,
@@ -458,7 +460,7 @@ definePageMeta({
 
 usePageSeo({
   title:
-    'Dividendos: Guia Completo para Viver de Renda Passiva | Redentia',
+    `Dividendos: Guia Completo para Viver de Renda Passiva | ${brand.name}`,
   description:
     'Aprenda a construir carteira de dividendos e viver de renda passiva. Melhores ações e FIIs pagadores, estratégias, cálculos e dividend yield. Isenção de IR. Guia 2026.',
   path: '/dividendos',
@@ -528,13 +530,13 @@ usePageSeo({
           '@type': 'ListItem',
           position: 1,
           name: 'Home',
-          item: 'https://www.redentia.com.br',
+          item: brand.url,
         },
         {
           '@type': 'ListItem',
           position: 2,
           name: 'Dividendos',
-          item: 'https://www.redentia.com.br/dividendos',
+          item: `${brand.url}/dividendos`,
         },
       ],
     },

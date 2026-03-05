@@ -1,4 +1,5 @@
 import svgLoader from 'vite-svg-loader'
+import { brand } from './app/config/brand'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -18,11 +19,10 @@ export default defineNuxtConfig({
     plugins: [svgLoader()],
   },
   site: {
-    url: 'https://www.redentia.com.br',
-    name: 'Redentia',
-    description:
-      'A única plataforma de finanças realmente inteligente, com tudo para gerenciar seus investimentos de forma rápida e fácil.',
-    defaultLocale: 'pt-BR',
+    url: brand.url,
+    name: brand.name,
+    description: brand.description,
+    defaultLocale: brand.seo.lang,
   },
   sitemap: {
     xslColumns: [
@@ -230,7 +230,7 @@ export default defineNuxtConfig({
         'https://redentia-api.saraivada.com/api',
       cacheTempInSeconds: 60,
       siteUrl:
-        process.env.NUXT_PUBLIC_SITE_URL || 'https://www.redentia.com.br',
+        process.env.NUXT_PUBLIC_SITE_URL || brand.url,
       firebaseApiKey: process.env.NUXT_PUBLIC_FIREBASE_API_KEY,
       firebaseAuthDomain: process.env.NUXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
       firebaseProjectId: process.env.NUXT_PUBLIC_FIREBASE_PROJECT_ID,
@@ -288,9 +288,9 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      title: 'Redentia: invista em ações e fundos imobiliários com IA',
+      title: brand.seo.title,
       htmlAttrs: {
-        lang: 'pt-BR',
+        lang: brand.seo.lang,
         class: 'dark',
       },
       viewport: 'width=device-width, initial-scale=1',
@@ -298,79 +298,76 @@ export default defineNuxtConfig({
       link: [
         {
           rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap',
+          href: `https://fonts.googleapis.com/css2?family=${brand.font.google}&display=swap`,
         },
         {
           rel: 'icon',
           type: 'image/png',
           sizes: '32x32',
-          href: '/favicon.png',
+          href: brand.logo.favicon,
         },
         {
           rel: 'icon',
           type: 'image/png',
           sizes: '48x48',
-          href: '/favicon.png',
+          href: brand.logo.favicon,
         },
         {
           rel: 'icon',
           type: 'image/png',
           sizes: '192x192',
-          href: '/192x192.png',
+          href: brand.logo.icon192,
         },
         {
           rel: 'shortcut icon',
-          href: '/favicon.ico',
+          href: brand.logo.faviconIco,
         },
         {
           rel: 'apple-touch-icon',
           sizes: '180x180',
-          href: '/192x192.png',
+          href: brand.logo.appleTouchIcon,
         },
         {
           rel: 'mask-icon',
-          href: '/favicon.svg',
-          color: '#000000',
+          href: brand.logo.faviconSvg,
+          color: brand.seo.themeColor,
         },
       ],
       meta: [
         {
           name: 'description',
-          content:
-            'Redentia: invista em ações e fundos imobiliários com apoio de inteligência artificial, análises em tempo real e ferramentas exclusivas.',
+          content: brand.seo.description,
         },
-        { name: 'application-name', content: 'Redentia' },
-        { name: 'theme-color', content: '#000000' },
+        { name: 'application-name', content: brand.name },
+        { name: 'theme-color', content: brand.seo.themeColor },
         { name: 'robots', content: 'index,follow' },
         {
           property: 'og:title',
-          content: 'Redentia: invista em ações e fundos imobiliários com IA',
+          content: brand.seo.title,
         },
         {
           property: 'og:description',
-          content:
-            'Use a Redentia para acompanhar cotações, dividendos e análises inteligentes com IA para ações e FIIs.',
+          content: brand.seo.description,
         },
         {
           property: 'og:image',
-          content: 'https://www.redentia.com.br/512x512.png',
+          content: `${brand.url}${brand.logo.og}`,
         },
         { property: 'og:type', content: 'website' },
-        { property: 'og:site_name', content: 'Redentia' },
-        { property: 'og:locale', content: 'pt_BR' },
+        { property: 'og:site_name', content: brand.name },
+        { property: 'og:locale', content: brand.seo.locale },
         { name: 'twitter:card', content: 'summary_large_image' },
         {
           name: 'twitter:title',
-          content: 'Redentia: invista em ações e fundos imobiliários com IA',
+          content: brand.seo.title,
         },
         {
           name: 'twitter:description',
-          content:
-            'Ferramentas, análises com IA e acompanhamento completo das suas ações e FIIs na Redentia.',
+          content: brand.seo.description,
         },
         {
           name: 'twitter:image',
-          content: 'https://www.redentia.com.br/512x512.png',
+          content: `${brand.url}${brand.logo.og}`,
         },
       ],
     },
@@ -378,23 +375,22 @@ export default defineNuxtConfig({
   pwa: {
     registerType: 'autoUpdate',
     manifest: {
-      name: 'Redentia',
-      short_name: 'Redentia',
-      description:
-        ' A única plataforma de finanças realmente inteligente, com tudo para gerenciar seus investimentos de forma rápida e fácil.',
-      theme_color: '#000',
+      name: brand.name,
+      short_name: brand.shortName,
+      description: brand.description,
+      theme_color: brand.seo.themeColor,
       start_url: '/',
       launch_handler: { client_mode: ['focus-existing', 'navigate-existing'] },
       display: 'standalone',
       orientation: 'portrait',
       icons: [
         {
-          src: '/192x192.png',
+          src: brand.logo.icon192,
           sizes: '192x192',
           type: 'image/png',
         },
         {
-          src: '/512x512.png',
+          src: brand.logo.icon512,
           sizes: '512x512',
           type: 'image/png',
         },

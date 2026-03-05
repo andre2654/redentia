@@ -6,6 +6,7 @@ definePageMeta({
 
 type Format = 'square' | 'feed' | 'story'
 
+const brand = useBrand()
 const route = useRoute()
 const runtimeConfig = useRuntimeConfig()
 
@@ -104,7 +105,7 @@ const cardOpacity = computed(() => {
 })
 
 useHead(() => ({
-  title: 'Redentia - Market updates (n8n)',
+  title: `${brand.name} - Market updates (n8n)`,
   htmlAttrs: {
     style: `--w:${frame.value.w}px; --h:${frame.value.h}px; --accent:${accent.value}; --cardOpacity:${cardOpacity.value};`,
   },

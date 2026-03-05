@@ -4,7 +4,7 @@
       <h1><strong>Política de Cookies e Privacidade</strong></h1>
       <p>
         Esta Política de Cookies complementa nossa Política de Privacidade e
-        explica como a <strong>Redentia</strong> utiliza cookies e tecnologias
+        explica como a <strong>{{ brand.name }}</strong> utiliza cookies e tecnologias
         similares em nossa plataforma para melhorar sua experiência de usuário,
         personalizar conteúdo e garantir o funcionamento adequado de nossos
         serviços.
@@ -320,8 +320,8 @@
       <ul class="list-decimal">
         <li>
           Entre em contato conosco pelo e-mail:
-          <a href="mailto:privacidade@redentia.com.br"
-            >privacidade@redentia.com.br</a
+          <a :href="`mailto:${brand.privacyEmail}`"
+            >{{ brand.privacyEmail }}</a
           >
         </li>
         <li>Use o chat de suporte disponível em nossa plataforma</li>
@@ -346,15 +346,17 @@
 </template>
 
 <script lang="ts" setup>
+const brand = useBrand()
+
 definePageMeta({
   isPublicRoute: true,
   hideInstallAppBanner: true,
 })
 
 usePageSeo({
-  title: 'Política de Cookies | Redentia',
+  title: `Política de Cookies | ${brand.name}`,
   description:
-    'Entenda quais cookies utilizamos, por que eles são importantes e como personalizar suas preferências na plataforma Redentia.',
+    `Entenda quais cookies utilizamos, por que eles são importantes e como personalizar suas preferências na plataforma ${brand.name}.`,
   path: '/redentia/cookies',
   breadcrumbs: [
     { name: 'Início', path: '/' },

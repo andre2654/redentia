@@ -459,7 +459,7 @@
 
       <!-- CTA -->
       <MoleculesCtaSection
-        title="Analise Ações na Redentia"
+        :title="`Analise Ações na ${brand.name}`"
         description="Acesse dados fundamentalistas em tempo real, compare indicadores e receba análises com IA."
         primary-button-text="Criar conta grátis"
         primary-button-link="/auth/register"
@@ -474,6 +474,7 @@
 import { computed } from 'vue'
 import { useAssetsService } from '~/services/assets'
 
+const brand = useBrand()
 const { getAssets } = useAssetsService()
 const { data: assetsData, pending: assetsPending } = await useAsyncData(
   'assets-calculator-preco-teto',
@@ -484,7 +485,7 @@ const assets = computed(() => assetsData.value ?? [])
 const assetsLoading = computed(() => assetsPending.value)
 
 usePageSeo({
-  title: 'Calculadora de Preço Teto: Graham, Bazin, P/L e VPA | Redentia',
+  title: `Calculadora de Preço Teto: Graham, Bazin, P/L e VPA | ${brand.name}`,
   description:
     'Calcule o preço justo de ações usando as metodologias de Benjamin Graham, Décio Bazin, P/L setorial e valor patrimonial. Descubra se uma ação está barata ou cara antes de investir.',
   path: '/calculadora/preco-teto',
@@ -497,7 +498,7 @@ usePageSeo({
     {
       '@context': 'https://schema.org',
       '@type': 'SoftwareApplication',
-      name: 'Calculadora de Preço Teto Redentia',
+      name: `Calculadora de Preço Teto ${brand.name}`,
       applicationCategory: 'FinanceApplication',
       offers: {
         '@type': 'Offer',

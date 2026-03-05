@@ -4,7 +4,7 @@
     title="Assessoria"
     header-class="!text-white !bg-tertiary/50"
   >
-    <h1 class="sr-only">Assessoria com IA | Redentia</h1>
+    <h1 class="sr-only">Assessoria com IA | {{ brand.name }}</h1>
     <div class="flex h-full w-full flex-col gap-4 pb-4 pt-4 xl:pt-5">
       <div
         v-if="!authStore.isAuthenticated"
@@ -16,11 +16,10 @@
           <div class="flex flex-col items-center gap-4">
             <IconAi class="fill-secondary h-12" />
             <h2 class="text-2xl font-semibold sm:text-3xl">
-              Converse com nossa IA
+              {{ brand.ai.welcomeTitle }}
             </h2>
             <p class="max-w-xl text-sm text-white/70 sm:text-base">
-              Faça login para liberar o chat inteligente, tirar dúvidas,
-              comparar ativos e receber análises personalizadas.
+              {{ brand.ai.welcomeSubtitle }}
             </p>
           </div>
           <UButton
@@ -30,10 +29,10 @@
             class="hover:shadow-secondary/50 px-6 transition-all hover:scale-105 hover:shadow-2xl"
             @click="redirectToLogin"
           >
-            Acessar Assessoria
+            {{ brand.voice.ctaPrimary }}
           </UButton>
           <p class="text-xs text-white/50 sm:text-sm">
-            Respostas instantâneas • Análises personalizadas com IA
+            {{ brand.ai.ctaFeatures.join(' • ') }}
           </p>
         </div>
       </div>
@@ -78,10 +77,10 @@
                   </div>
                   <div class="min-w-0 flex-1">
                     <p class="truncate text-sm font-medium">
-                      Assessor inteligente
+                      {{ brand.ai.name }}
                     </p>
                     <p class="truncate text-xs text-white/50">
-                      Assistente com IA
+                      {{ brand.nav.mobileAiLabel }}
                     </p>
                   </div>
                 </button>
@@ -242,6 +241,7 @@
 </template>
 
 <script setup lang="ts">
+const brand = useBrand()
 const authStore = useAuthStore()
 const { getInvestors } = useAdvisorService()
 
@@ -311,9 +311,9 @@ const layoutName = computed(() =>
 )
 
 usePageSeo({
-  title: 'Assessoria com IA | Redentia',
+  title: `Assessoria com IA | ${brand.name}`,
   description:
-    'Converse com a assistente inteligente da Redentia, tire dúvidas sobre investimentos e receba recomendações personalizadas com tecnologia de IA.',
+    `Converse com a assistente inteligente da ${brand.name}, tire dúvidas sobre investimentos e receba recomendações personalizadas com tecnologia de IA.`,
   path: '/help',
 })
 

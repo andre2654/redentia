@@ -474,7 +474,7 @@
       <!-- CTA -->
       <MoleculesCtaSection
         title="Quer acompanhar seus investimentos reais?"
-        description="Cadastre-se na Redentia e monitore sua carteira com análises em tempo real e IA."
+        :description="`Cadastre-se na ${brand.name} e monitore sua carteira com análises em tempo real e IA.`"
         primary-button-text="Criar conta grátis"
         primary-button-link="/auth/register"
         secondary-button-text="Ver mais guias"
@@ -485,8 +485,10 @@
 </template>
 
 <script setup lang="ts">
+const brand = useBrand()
+
 usePageSeo({
-  title: 'Calculadora de Juros Compostos: Simule Seu Investimento | Redentia',
+  title: `Calculadora de Juros Compostos: Simule Seu Investimento | ${brand.name}`,
   description:
     'Calcule quanto seus investimentos vão render com juros compostos. Simule aportes mensais, taxas de retorno e veja a evolução do seu patrimônio em gráficos interativos. Gratuito!',
   path: '/calculadora/juros-compostos',
@@ -499,7 +501,7 @@ usePageSeo({
     {
       '@context': 'https://schema.org',
       '@type': 'SoftwareApplication',
-      name: 'Calculadora de Juros Compostos Redentia',
+      name: `Calculadora de Juros Compostos ${brand.name}`,
       applicationCategory: 'FinanceApplication',
       offers: {
         '@type': 'Offer',

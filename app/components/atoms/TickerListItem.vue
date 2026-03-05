@@ -1,7 +1,9 @@
 <template>
   <NuxtLink
     :to="`/asset/${stock?.ticker?.toLowerCase?.() || stock?.ticker || ''}`"
-    class="flex items-center gap-3 py-2.5 transition-colors hover:bg-white/5"
+    class="flex items-center gap-3 py-2.5 transition-colors"
+    @mouseenter="$event.currentTarget.style.backgroundColor = brand.colors.textMuted + '0D'"
+    @mouseleave="$event.currentTarget.style.backgroundColor = 'transparent'"
   >
     <!-- Logo -->
     <img
@@ -14,24 +16,25 @@
     />
     <div
       v-else
-      class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-white/10"
+      class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg"
+      :style="{ backgroundColor: brand.colors.textMuted + '1A' }"
     >
-      <span class="text-[10px] font-bold text-white/50">
+      <span class="text-[10px] font-bold" :style="{ color: brand.colors.textMuted }">
         {{ (stock?.ticker || '').substring(0, 2) }}
       </span>
     </div>
 
     <!-- Nome e Ticker -->
     <div class="flex min-w-0 flex-1 flex-col">
-      <span class="truncate text-sm font-medium text-white">
+      <span class="truncate text-sm font-medium" :style="{ color: brand.colors.text }">
         {{ normalizeText(stock?.name) }}
       </span>
-      <span class="text-xs text-white/50">{{ stock?.ticker }}</span>
+      <span class="text-xs" :style="{ color: brand.colors.textMuted }">{{ stock?.ticker }}</span>
     </div>
 
     <!-- Preço e Variação -->
     <div class="flex flex-shrink-0 flex-col items-end">
-      <span class="text-sm font-medium tabular-nums text-white">
+      <span class="text-sm font-medium tabular-nums" :style="{ color: brand.colors.text }">
         R$ {{ formatPrice(stock?.market_price) }}
       </span>
       <span
@@ -49,6 +52,8 @@
 </template>
 
 <script lang="ts" setup>
+const brand = useBrand()
+
 const props = defineProps<{
   stock?: any
 }>()

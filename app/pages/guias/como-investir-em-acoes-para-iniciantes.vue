@@ -213,7 +213,7 @@
 
       <!-- CTA para Ferramentas -->
       <MoleculesCtaSection
-        title="Comece a Investir com a Redentia"
+        :title="`Comece a Investir com a ${brand.name}`"
         description="Use nossas ferramentas para encontrar as melhores ações e acompanhar seus investimentos"
         :buttons="[
           { label: 'Ver Todas as Ações', to: '/acoes', icon: 'i-lucide-trending-up', variant: 'primary' },
@@ -312,6 +312,8 @@
 </template>
 
 <script setup lang="ts">
+const brand = useBrand()
+
 definePageMeta({
   isPublicRoute: true,
   hideInstallAppBanner: true,
@@ -319,7 +321,7 @@ definePageMeta({
 
 usePageSeo({
   title:
-    'Como Investir em Ações para Iniciantes: Guia Completo 2026 | Redentia',
+    `Como Investir em Ações para Iniciantes: Guia Completo 2026 | ${brand.name}`,
   description:
     'Aprenda passo a passo como começar a investir em ações. Guia completo desde abertura de conta até estratégias práticas. Indicadores, erros comuns e dicas para iniciantes.',
   path: '/guias/como-investir-em-acoes-para-iniciantes',
@@ -332,14 +334,14 @@ usePageSeo({
         'Guia passo a passo completo para iniciantes começarem a investir na bolsa de valores brasileira',
       author: {
         '@type': 'Organization',
-        name: 'Redentia',
+        name: brand.name,
       },
       publisher: {
         '@type': 'Organization',
-        name: 'Redentia',
+        name: brand.name,
         logo: {
           '@type': 'ImageObject',
-          url: 'https://www.redentia.com.br/512x512.png',
+          url: `${brand.url}/512x512.png`,
         },
       },
       datePublished: '2026-01-04',
@@ -383,19 +385,19 @@ usePageSeo({
           '@type': 'ListItem',
           position: 1,
           name: 'Home',
-          item: 'https://www.redentia.com.br',
+          item: brand.url,
         },
         {
           '@type': 'ListItem',
           position: 2,
           name: 'Guias',
-          item: 'https://www.redentia.com.br/guias',
+          item: `${brand.url}/guias`,
         },
         {
           '@type': 'ListItem',
           position: 3,
           name: 'Como Investir em Ações',
-          item: 'https://www.redentia.com.br/guias/como-investir-em-acoes-para-iniciantes',
+          item: `${brand.url}/guias/como-investir-em-acoes-para-iniciantes`,
         },
       ],
     },

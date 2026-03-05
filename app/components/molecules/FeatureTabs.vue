@@ -1,11 +1,11 @@
 <template>
-  <section class="border-y border-white/10 py-16">
+  <section class="border-y py-16" :style="{ borderColor: brand.colors.border }">
     <div class="mx-auto max-w-6xl px-6">
       <div class="mb-10 text-center">
-        <p class="mb-2 text-xs uppercase tracking-[0.2em] text-gray-500">
+        <p class="mb-2 text-xs uppercase tracking-[0.2em]" :style="{ color: brand.colors.textMuted }">
           Para cada perfil
         </p>
-        <h2 class="text-2xl font-bold text-white md:text-3xl">
+        <h2 class="text-2xl font-bold md:text-3xl" :style="{ color: brand.colors.text }">
           Ferramentas para todo tipo de investidor
         </h2>
       </div>
@@ -16,9 +16,10 @@
           v-for="tab in tabs"
           :key="tab.id"
           class="rounded-full px-4 py-2 text-sm font-medium transition-all md:px-6 md:text-base"
-          :class="activeTab === tab.id 
-            ? 'bg-secondary text-black' 
-            : 'border border-white/10 bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'"
+          :class="activeTab === tab.id
+            ? 'bg-secondary text-black'
+            : 'border'"
+          :style="activeTab !== tab.id ? { borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.textMuted } : {}"
           @click="activeTab = tab.id"
         >
           {{ tab.label }}
@@ -31,16 +32,17 @@
           v-for="feature in activeFeatures"
           :key="feature.title"
           :to="feature.to"
-          class="group flex flex-col gap-4 rounded-2xl border border-white/10 bg-white/5 p-6 transition-all hover:border-secondary/30 hover:bg-white/10"
+          class="group flex flex-col gap-4 rounded-2xl border p-6 transition-all hover:border-secondary/30"
+          :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
         >
           <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary/20">
             <UIcon :name="feature.icon" class="h-6 w-6 text-secondary" />
           </div>
           <div>
-            <h3 class="mb-2 text-lg font-bold text-white group-hover:text-secondary">
+            <h3 class="mb-2 text-lg font-bold group-hover:text-secondary" :style="{ color: brand.colors.text }">
               {{ feature.title }}
             </h3>
-            <p class="text-sm text-gray-400">
+            <p class="text-sm" :style="{ color: brand.colors.textMuted }">
               {{ feature.description }}
             </p>
           </div>
@@ -58,6 +60,8 @@
 </template>
 
 <script setup lang="ts">
+const brand = useBrand()
+
 interface Feature {
   title: string
   description: string

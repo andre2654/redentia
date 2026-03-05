@@ -12,12 +12,14 @@
       <Transition name="fade">
         <div
           v-if="loading"
-          class="pointer-events-none absolute right-3 top-3 z-10 inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/40 px-3 py-1.5 text-xs text-white/70 backdrop-blur"
+          class="pointer-events-none absolute right-3 top-3 z-10 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs backdrop-blur"
+          :style="{ borderColor: cc.border, backgroundColor: cc.loadingBg, color: cc.textMuted }"
           role="status"
           aria-live="polite"
         >
           <span
-            class="h-3 w-3 animate-spin rounded-full border border-white/30 border-t-white/70"
+            class="h-3 w-3 animate-spin rounded-full border"
+            :style="{ borderColor: cc.tickColorMuted, borderTopColor: cc.labelColor }"
           />
           <span>Carregando…</span>
         </div>
@@ -81,7 +83,9 @@ import {
 } from 'chart.js'
 import { Line } from 'vue-chartjs'
 import { getRelativePosition } from 'chart.js/helpers'
-import { ChartColors } from '~/design/chartColors'
+import { useChartColors } from '~/design/chartColors'
+
+const cc = useChartColors()
 
 /* ========== Tipos ========== */
 interface IChartDataPoint {
@@ -133,20 +137,20 @@ interface Props {
 
 /* ========== Configurações padrão ========== */
 const DEFAULTS = {
-  COLORS: [ChartColors.positive],
+  COLORS: [cc.positive],
   HEIGHT: 300,
   LOCALE: 'pt-BR',
   CURRENCY: 'R$',
   LOADING_ANIMATION_INTERVAL: 800,
   DRAG_END_DELAY: 150,
   SCROLL_DEBOUNCE: 100,
-  POSITIVE_COLOR: ChartColors.positive,
-  NEGATIVE_COLOR: ChartColors.negative,
-  GRAY_COLOR: ChartColors.neutral,
+  POSITIVE_COLOR: cc.positive,
+  NEGATIVE_COLOR: cc.negative,
+  GRAY_COLOR: cc.neutral,
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  colors: () => [ChartColors.positive],
+  colors: () => [],
   legend: () => [],
   height: 300,
   showLegend: true,
@@ -1195,7 +1199,7 @@ const hoverLinePlugin: Plugin<'line'> = {
           ctx.beginPath()
           ctx.setLineDash([5, 5])
           ctx.lineWidth = 1.5
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)'
+          ctx.strokeStyle = cc.crosshairColor
           ctx.moveTo(left, yPosition)
           ctx.lineTo(right, yPosition)
           ctx.stroke()
@@ -1261,7 +1265,7 @@ const hoverLinePlugin: Plugin<'line'> = {
         ctx.save()
 
         // Áreas escurecidas
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.6)'
+        ctx.fillStyle = cc.loadingBg
         if (startX > left) {
           ctx.fillRect(left, top, startX - left, bottom - top)
         }
@@ -1692,7 +1696,7 @@ const chartOptions = computed(() => {
         display: false,
         grid: {
           display: true,
-          color: 'rgba(255, 255, 255, 0.3)',
+          color: cc.gridColor,
           drawBorder: false,
           drawTicks: false,
           lineWidth: 0.5,
@@ -1715,7 +1719,7 @@ const chartOptions = computed(() => {
         reverse: false,
         grid: {
           display: true,
-          color: 'rgba(255, 255, 255, 0.2)',
+          color: cc.tickColorMuted,
           drawBorder: false,
           drawTicks: false,
           lineWidth: 0.5,
@@ -1742,8 +1746,8 @@ const chartOptions = computed(() => {
       overlayLabels: {
         fontFamily: 'Inter, system-ui, sans-serif',
         fontSize: 13,
-        xLabelColor: 'rgba(255, 255, 255, 0.7)',
-        yLabelColor: 'rgba(255, 255, 255, 0.7)',
+        xLabelColor: cc.labelColor,
+        yLabelColor: cc.labelColor,
         xLabelOffset: 5,
         yLabelOffset: 0,
         drawYAxisLine: false,

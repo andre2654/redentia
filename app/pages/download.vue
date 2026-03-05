@@ -13,8 +13,9 @@
           to="/"
           class="group flex items-center gap-2 transition-opacity hover:opacity-80"
         >
-          <IconLogoFull
-            class="h-8 w-auto fill-white transition-transform group-hover:scale-105 md:h-9"
+          <BrandLogo
+            variant="full"
+            class="h-8 w-auto transition-transform group-hover:scale-105 md:h-9"
           />
         </NuxtLink>
         <UButton
@@ -67,7 +68,7 @@
           >
             <span
               class="bg-linear-to-b from-white to-white/60 bg-clip-text text-transparent"
-              >Redentia</span
+              >{{ brand.name }}</span
             >
             <br />
             <span class="text-4xl text-gray-400 md:text-6xl lg:text-7xl"
@@ -255,7 +256,7 @@
                       Pronto!
                     </h4>
                     <p class="text-gray-400">
-                      O ícone do Redentia aparecerá na sua tela inicial.
+                      O ícone do {{ brand.name }} aparecerá na sua tela inicial.
                     </p>
                   </li>
                 </ol>
@@ -362,6 +363,8 @@
 </template>
 
 <script setup lang="ts">
+const brand = useBrand()
+
 const installApp = () => {
   const pwa = usePWA()
 
@@ -404,9 +407,9 @@ definePageMeta({
 })
 
 usePageSeo({
-  title: 'Baixe o app Redentia | Investimentos com IA no seu celular',
+  title: `Baixe o app ${brand.name} | Investimentos com IA no seu celular`,
   description:
-    'Instale o aplicativo Redentia para gerenciar ações, FIIs e carteiras com inteligência artificial e notificações em tempo real.',
+    `Instale o aplicativo ${brand.name} para gerenciar ações, FIIs e carteiras com inteligência artificial e notificações em tempo real.`,
   path: '/download',
   breadcrumbs: [
     { name: 'Início', path: '/' },

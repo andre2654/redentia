@@ -227,7 +227,7 @@
       </div>
 
       <MoleculesCtaSection
-        title="Controle seus investimentos na Redentia"
+        :title="`Controle seus investimentos na ${brand.name}`"
         description="Acompanhe sua carteira, receba alertas e tenha relatórios prontos para o IR."
         primary-button-text="Criar conta grátis"
         primary-button-link="/auth/register"
@@ -239,8 +239,10 @@
 </template>
 
 <script setup lang="ts">
+const brand = useBrand()
+
 usePageSeo({
-  title: 'Calculadora de IR sobre Ações: Day Trade e Swing Trade | Redentia',
+  title: `Calculadora de IR sobre Ações: Day Trade e Swing Trade | ${brand.name}`,
   description:
     'Calcule o imposto de renda sobre suas operações com ações. Gere DARF automaticamente, compense prejuízos e fique em dia com a Receita Federal. Códigos 6015 e 8523.',
   path: '/calculadora/imposto-renda',
@@ -253,7 +255,7 @@ usePageSeo({
     {
       '@context': 'https://schema.org',
       '@type': 'SoftwareApplication',
-      name: 'Calculadora de IR sobre Ações Redentia',
+      name: `Calculadora de IR sobre Ações ${brand.name}`,
       applicationCategory: 'FinanceApplication',
       offers: {
         '@type': 'Offer',

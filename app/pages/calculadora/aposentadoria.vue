@@ -145,8 +145,10 @@
 </template>
 
 <script setup lang="ts">
+const brand = useBrand()
+
 usePageSeo({
-  title: 'Calculadora de Aposentadoria: Quanto Preciso para Me Aposentar? | Redentia',
+  title: `Calculadora de Aposentadoria: Quanto Preciso para Me Aposentar? | ${brand.name}`,
   description:
     'Calcule quanto você precisa investir para se aposentar. Considere INSS, inflação, expectativa de vida e a regra dos 4%. Planeje seu FIRE e aposentadoria antecipada!',
   path: '/calculadora/aposentadoria',
@@ -159,7 +161,7 @@ usePageSeo({
     {
       '@context': 'https://schema.org',
       '@type': 'SoftwareApplication',
-      name: 'Calculadora de Aposentadoria Redentia',
+      name: `Calculadora de Aposentadoria ${brand.name}`,
       applicationCategory: 'FinanceApplication',
       offers: {
         '@type': 'Offer',

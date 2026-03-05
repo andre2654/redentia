@@ -4,10 +4,9 @@
   >
     <!-- Suggestions Section -->
     <div class="flex flex-col items-center justify-center gap-4 px-3 pt-[70px]">
-      <h2 class="text-center text-2xl">Faça alguma pergunta</h2>
+      <h2 class="text-center text-2xl">{{ brand.ai.chatTitle }}</h2>
       <p class="text-center text-[13px] font-light opacity-60">
-        Tire dúvidas sobre investimentos, compare ativos e peça análises em
-        linguagem simples.
+        {{ brand.ai.chatSubtitle }}
       </p>
       <div class="grid max-w-[800px] grid-cols-2 gap-3 md:grid-cols-3">
         <button
@@ -36,8 +35,8 @@
         class="mr-auto flex w-fit flex-col items-start gap-2 px-[30px]"
       >
         <div class="flex items-center gap-2">
-          <IconLogo class="w-6 fill-white" />
-          <span class="text-[17px] font-semibold">ASSESSORIA REDENTIA:</span>
+          <BrandLogo variant="icon" class="h-6 w-6" />
+          <span class="text-[17px] font-semibold">{{ brand.ai.typingLabel }}</span>
         </div>
         <div
           class="rounded-lg border border-white/20 bg-white/10 py-3 pl-4 pr-7"
@@ -65,7 +64,7 @@
       </div>
       <UTextarea
         v-model="inputValue"
-        placeholder="Faça qualquer pesquisa..."
+        :placeholder="brand.ai.placeholder"
         size="md"
         :rows="4"
         autoresize
@@ -94,6 +93,8 @@
 
 <script setup lang="ts">
 import type { IChatMessage } from '~/types/ai'
+
+const brand = useBrand()
 
 // ==================== TYPES ====================
 

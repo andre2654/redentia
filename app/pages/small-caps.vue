@@ -206,7 +206,7 @@
             Dica de Ouro
           </h3>
           <p class="text-gray-300">
-            Use a ferramenta de busca da Redentia para filtrar empresas com
+            Use a ferramenta de busca da {{ brand.name }} para filtrar empresas com
             valor de mercado < R$ 2 bilhões, ROE > 15%, crescimento de receita
             > 20% e baixo endividamento. Você encontrará as melhores candidatas.
           </p>
@@ -248,6 +248,8 @@
 </template>
 
 <script setup lang="ts">
+const brand = useBrand()
+
 definePageMeta({
   isPublicRoute: true,
   hideInstallAppBanner: true,
@@ -255,7 +257,7 @@ definePageMeta({
 
 usePageSeo({
   title:
-    'Small Caps: Como Investir em Ações de Empresas Pequenas | Redentia',
+    `Small Caps: Como Investir em Ações de Empresas Pequenas | ${brand.name}`,
   description:
     'Descubra small caps com potencial de crescimento explosivo. Estratégias, riscos e como identificar as futuras blue chips do mercado brasileiro. Análise de +200 small caps.',
   path: '/small-caps',
@@ -268,7 +270,7 @@ usePageSeo({
         'Aprenda a investir em small caps, identifique empresas com potencial e entenda os riscos.',
       author: {
         '@type': 'Organization',
-        name: 'Redentia',
+        name: brand.name,
       },
     },
     {
@@ -279,13 +281,13 @@ usePageSeo({
           '@type': 'ListItem',
           position: 1,
           name: 'Home',
-          item: 'https://www.redentia.com.br',
+          item: brand.url,
         },
         {
           '@type': 'ListItem',
           position: 2,
           name: 'Small Caps',
-          item: 'https://www.redentia.com.br/small-caps',
+          item: `${brand.url}/small-caps`,
         },
       ],
     },

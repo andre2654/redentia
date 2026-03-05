@@ -1,36 +1,37 @@
 <template>
   <section class="bg-gradient-to-b from-tertiary/30 via-tertiary/10 to-transparent py-20 md:py-28">
     <div class="mx-auto max-w-6xl px-6 text-center">
-      <p class="text-xs uppercase tracking-[0.25em] text-gray-500">
-        Investir ficou fácil
+      <p class="text-xs uppercase tracking-[0.25em]" :style="{ color: brand.colors.textMuted }">
+        {{ brand.metrics.sectionSubtitle }}
       </p>
-      <h2 class="mt-4 text-2xl font-bold text-white md:text-4xl lg:text-5xl">
-        Sem enrolação. Só resultados.
+      <h2 class="mt-4 text-2xl font-bold md:text-4xl lg:text-5xl" :style="{ color: brand.colors.text }">
+        {{ brand.metrics.sectionTitle }}
       </h2>
       
       <div ref="counterRef" class="mt-12 md:mt-20">
         <span 
-          class="block text-5xl font-black tabular-nums text-white sm:text-6xl md:text-8xl lg:text-[140px]"
+          class="block text-5xl font-black tabular-nums sm:text-6xl md:text-8xl lg:text-[140px]"
+          :style="{ color: brand.colors.text }"
           :class="{ 'animate-pulse': !isVisible }"
         >
           {{ formattedCount }}
         </span>
         <p class="mt-4 text-base text-secondary md:mt-6 md:text-xl">
-          Análises realizadas na Redentia (e contando)
+          {{ brand.metrics.counterLabel }}
         </p>
       </div>
 
       <!-- Stats secundárias -->
       <div class="mt-12 grid grid-cols-2 gap-6 md:mt-16 md:grid-cols-4">
         <div 
-          v-for="stat in stats" 
+          v-for="stat in brand.metrics.stats"
           :key="stat.label"
           class="flex flex-col items-center"
         >
-          <span class="text-2xl font-bold text-white md:text-3xl">
+          <span class="text-2xl font-bold md:text-3xl" :style="{ color: brand.colors.text }">
             {{ stat.value }}
           </span>
-          <span class="mt-1 text-xs text-gray-400 md:text-sm">
+          <span class="mt-1 text-xs md:text-sm" :style="{ color: brand.colors.textMuted }">
             {{ stat.label }}
           </span>
         </div>
@@ -42,17 +43,13 @@
 <script setup lang="ts">
 import { useIntersectionObserver } from '@vueuse/core'
 
+const brand = useBrand()
+
 const counterRef = ref<HTMLElement | null>(null)
 const isVisible = ref(false)
 const currentCount = ref(0)
 const targetCount = 156234 // Número base para animação
 
-const stats = [
-  { value: '12.500+', label: 'Ativos monitorados' },
-  { value: '50.000+', label: 'Simulações' },
-  { value: '24/7', label: 'Disponibilidade' },
-  { value: '~3s', label: 'Resposta da IA' },
-]
 
 const formattedCount = computed(() => {
   return new Intl.NumberFormat('pt-BR').format(currentCount.value)

@@ -7,6 +7,7 @@ definePageMeta({
 type ApiSide = 'top' | 'bottom'
 type Theme = 'positive' | 'negative'
 
+const brand = useBrand()
 const route = useRoute()
 const runtimeConfig = useRuntimeConfig()
 
@@ -238,7 +239,7 @@ function formatPercent(changePercent: number | null): string {
 
         <div class="brand-mark">
           <IconLogo class="logo" />
-          <div class="brand-text">redentia.com.br</div>
+          <div class="brand-text">{{ brand.domain }}</div>
         </div>
       </div>
     </div>

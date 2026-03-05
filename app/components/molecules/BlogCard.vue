@@ -1,10 +1,14 @@
 <template>
   <NuxtLink
     :to="to"
-    class="group flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent transition-all hover:border-secondary/30 hover:from-white/10"
+    class="group flex flex-col overflow-hidden rounded-2xl border transition-all hover:border-secondary/30"
+    :style="{
+      borderColor: brand.colors.border,
+      backgroundImage: `linear-gradient(to bottom right, ${brand.colors.surfaceHover}, transparent)`,
+    }"
   >
     <!-- Header com Ícone/Imagem -->
-    <div class="flex items-center gap-4 border-b border-white/10 p-6">
+    <div class="flex items-center gap-4 border-b p-6" :style="{ borderColor: brand.colors.border }">
       <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-secondary/20">
         <UIcon :name="icon" class="text-secondary h-7 w-7" />
       </div>
@@ -16,7 +20,7 @@
           size="xs"
           class="mb-2"
         />
-        <h3 class="text-xl font-bold leading-tight group-hover:text-secondary transition-colors">
+        <h3 class="text-xl font-bold leading-tight group-hover:text-secondary transition-colors" :style="{ color: brand.colors.text }">
           {{ titulo }}
         </h3>
       </div>
@@ -24,12 +28,12 @@
 
     <!-- Conteúdo -->
     <div class="flex flex-1 flex-col gap-4 p-6">
-      <p class="line-clamp-3 text-sm leading-relaxed text-gray-400">
+      <p class="line-clamp-3 text-sm leading-relaxed" :style="{ color: brand.colors.textMuted }">
         {{ descricao }}
       </p>
 
       <!-- Meta Info -->
-      <div class="mt-auto flex items-center justify-between border-t border-white/10 pt-4 text-xs text-gray-500">
+      <div class="mt-auto flex items-center justify-between border-t pt-4 text-xs" :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted }">
         <div class="flex items-center gap-4">
           <span class="flex items-center gap-1">
             <UIcon name="i-lucide-calendar" class="h-3 w-3" />
@@ -62,6 +66,8 @@ interface Props {
   data?: string
   tempoLeitura?: number
 }
+
+const brand = useBrand()
 
 const props = withDefaults(defineProps<Props>(), {
   data: '4 Jan 2026',

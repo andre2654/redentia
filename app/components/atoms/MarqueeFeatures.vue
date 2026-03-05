@@ -6,7 +6,14 @@
         <span 
           v-for="(tag, index) in [...row1Tags, ...row1Tags]" 
           :key="`row1-${index}`"
-          class="mx-2 inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-gray-300 transition-colors hover:bg-white/10 hover:text-white"
+          class="mx-2 inline-flex items-center rounded-full border px-4 py-2 text-sm transition-colors"
+          :style="{
+            color: brand.colors.textMuted,
+            borderColor: brand.colors.border,
+            backgroundColor: brand.colors.surface,
+          }"
+          @mouseenter="($event.currentTarget as HTMLElement).style.color = brand.colors.text; ($event.currentTarget as HTMLElement).style.backgroundColor = brand.colors.surfaceHover"
+          @mouseleave="($event.currentTarget as HTMLElement).style.color = brand.colors.textMuted; ($event.currentTarget as HTMLElement).style.backgroundColor = brand.colors.surface"
         >
           {{ tag }}
         </span>
@@ -19,7 +26,14 @@
         <span 
           v-for="(tag, index) in [...row2Tags, ...row2Tags]" 
           :key="`row2-${index}`"
-          class="mx-2 inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-gray-300 transition-colors hover:bg-white/10 hover:text-white"
+          class="mx-2 inline-flex items-center rounded-full border px-4 py-2 text-sm transition-colors"
+          :style="{
+            color: brand.colors.textMuted,
+            borderColor: brand.colors.border,
+            backgroundColor: brand.colors.surface,
+          }"
+          @mouseenter="($event.currentTarget as HTMLElement).style.color = brand.colors.text; ($event.currentTarget as HTMLElement).style.backgroundColor = brand.colors.surfaceHover"
+          @mouseleave="($event.currentTarget as HTMLElement).style.color = brand.colors.textMuted; ($event.currentTarget as HTMLElement).style.backgroundColor = brand.colors.surface"
         >
           {{ tag }}
         </span>
@@ -32,7 +46,14 @@
         <span 
           v-for="(tag, index) in [...row3Tags, ...row3Tags]" 
           :key="`row3-${index}`"
-          class="mx-2 inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-gray-300 transition-colors hover:bg-white/10 hover:text-white"
+          class="mx-2 inline-flex items-center rounded-full border px-4 py-2 text-sm transition-colors"
+          :style="{
+            color: brand.colors.textMuted,
+            borderColor: brand.colors.border,
+            backgroundColor: brand.colors.surface,
+          }"
+          @mouseenter="($event.currentTarget as HTMLElement).style.color = brand.colors.text; ($event.currentTarget as HTMLElement).style.backgroundColor = brand.colors.surfaceHover"
+          @mouseleave="($event.currentTarget as HTMLElement).style.color = brand.colors.textMuted; ($event.currentTarget as HTMLElement).style.backgroundColor = brand.colors.surface"
         >
           {{ tag }}
         </span>
@@ -42,6 +63,8 @@
 </template>
 
 <script setup lang="ts">
+const brand = useBrand()
+
 const row1Tags = [
   'Juros compostos',
   'Preço teto',

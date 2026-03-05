@@ -252,7 +252,7 @@
 
       <!-- CTA para Ferramentas -->
       <MoleculesCtaSection
-        title="Explore FIIs na Redentia"
+        :title="`Explore FIIs na ${brand.name}`"
         description="Compare indicadores, analise dividendos e construa sua carteira ideal de FIIs"
         :buttons="[
           { label: 'Ver Todos os FIIs', to: '/fiis', icon: 'i-lucide-building-2', variant: 'primary' },
@@ -351,6 +351,8 @@
 </template>
 
 <script setup lang="ts">
+const brand = useBrand()
+
 definePageMeta({
   isPublicRoute: true,
   hideInstallAppBanner: true,
@@ -358,7 +360,7 @@ definePageMeta({
 
 usePageSeo({
   title:
-    'Melhores FIIs para Investir em 2026: Guia Completo | Redentia',
+    `Melhores FIIs para Investir em 2026: Guia Completo | ${brand.name}`,
   description:
     'Descubra os fundos imobiliários mais promissores de 2026. Análise de segmentos, indicadores, estratégias e carteiras recomendadas para iniciantes e avançados.',
   path: '/guias/melhores-fiis-para-investir-em-2026',
@@ -371,14 +373,14 @@ usePageSeo({
         'Guia completo sobre os melhores fundos imobiliários para investir em 2026',
       author: {
         '@type': 'Organization',
-        name: 'Redentia',
+        name: brand.name,
       },
       publisher: {
         '@type': 'Organization',
-        name: 'Redentia',
+        name: brand.name,
         logo: {
           '@type': 'ImageObject',
-          url: 'https://www.redentia.com.br/512x512.png',
+          url: `${brand.url}/512x512.png`,
         },
       },
       datePublished: '2026-01-04',
@@ -422,19 +424,19 @@ usePageSeo({
           '@type': 'ListItem',
           position: 1,
           name: 'Home',
-          item: 'https://www.redentia.com.br',
+          item: brand.url,
         },
         {
           '@type': 'ListItem',
           position: 2,
           name: 'Guias',
-          item: 'https://www.redentia.com.br/guias',
+          item: `${brand.url}/guias`,
         },
         {
           '@type': 'ListItem',
           position: 3,
           name: 'Melhores FIIs 2026',
-          item: 'https://www.redentia.com.br/guias/melhores-fiis-para-investir-em-2026',
+          item: `${brand.url}/guias/melhores-fiis-para-investir-em-2026`,
         },
       ],
     },

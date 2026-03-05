@@ -114,7 +114,7 @@
       </div>
 
       <MoleculesCtaSection
-        title="Acompanhe suas metas na Redentia"
+        :title="`Acompanhe suas metas na ${brand.name}`"
         description="Monitore o progresso das suas metas financeiras com gráficos e análises."
         primary-button-text="Criar conta grátis"
         primary-button-link="/auth/register"
@@ -126,8 +126,10 @@
 </template>
 
 <script setup lang="ts">
+const brand = useBrand()
+
 usePageSeo({
-  title: 'Calculadora: Quanto Investir por Mês para Sua Meta | Redentia',
+  title: `Calculadora: Quanto Investir por Mês para Sua Meta | ${brand.name}`,
   description:
     'Descubra quanto você precisa investir mensalmente para atingir sua meta financeira. Calcule aportes necessários com base em prazo e rentabilidade esperada.',
   path: '/calculadora/quanto-investir',
@@ -140,7 +142,7 @@ usePageSeo({
     {
       '@context': 'https://schema.org',
       '@type': 'SoftwareApplication',
-      name: 'Calculadora de Aporte Mensal Redentia',
+      name: `Calculadora de Aporte Mensal ${brand.name}`,
       applicationCategory: 'FinanceApplication',
       offers: {
         '@type': 'Offer',

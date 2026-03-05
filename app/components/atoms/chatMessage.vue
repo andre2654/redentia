@@ -10,8 +10,8 @@
     <div v-if="message.type === 'bot'" class="flex w-full flex-col gap-2">
       <!-- Bot Avatar + Title -->
       <div class="flex items-center gap-2">
-        <IconLogo class="w-6 flex-shrink-0 fill-white" />
-        <span class="text-[17px] font-semibold">ASSESSORIA REDENTIA:</span>
+        <BrandLogo variant="icon" class="h-6 w-6 flex-shrink-0" />
+        <span class="text-[17px] font-semibold">{{ brand.ai.typingLabel }}</span>
       </div>
 
       <!-- Status Indicator (Generative UI) -->
@@ -542,6 +542,8 @@ import AtomsGraphLine from '~/components/atoms/Graph/line.vue'
 import AtomsGraphDividends from '~/components/atoms/Graph/dividends.vue'
 import { ChartColors } from '~/design/chartColors'
 
+const brand = useBrand()
+
 // ==================== PROPS ====================
 
 const props = defineProps<{
@@ -845,12 +847,12 @@ const formattedTime = computed(() => {
 }
 
 .prose a {
-  color: #60a5fa;
+  color: var(--ui-secondary, #60a5fa);
   text-decoration: underline;
 }
 
 .prose a:hover {
-  color: #93c5fd;
+  color: var(--ui-primary, #93c5fd);
 }
 
 .prose table {

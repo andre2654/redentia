@@ -118,7 +118,7 @@
 
         <h2 class="text-2xl font-bold">Indicadores Fundamentalistas (Referência)</h2>
         <p class="text-sm text-gray-400">
-          <em>Nota: Os valores abaixo são ilustrativos. Consulte dados atualizados na Redentia.</em>
+          <em>Nota: Os valores abaixo são ilustrativos. Consulte dados atualizados na {{ brand.name }}.</em>
         </p>
         <div class="grid gap-4 md:grid-cols-2">
           <div class="rounded-xl border border-white/10 bg-white/5 p-4">
@@ -253,7 +253,7 @@
 
       <!-- CTA para Ferramentas -->
       <MoleculesCtaSection
-        title="Analise PETR4 na Redentia"
+        :title="`Analise PETR4 na ${brand.name}`"
         description="Acompanhe cotação em tempo real, indicadores atualizados e histórico de dividendos"
         :buttons="[
           { label: 'Ver PETR4 Agora', to: '/asset/petr4', icon: 'i-lucide-chart-line', variant: 'primary' },
@@ -352,6 +352,8 @@
 </template>
 
 <script setup lang="ts">
+const brand = useBrand()
+
 definePageMeta({
   isPublicRoute: true,
   hideInstallAppBanner: true,
@@ -359,7 +361,7 @@ definePageMeta({
 
 usePageSeo({
   title:
-    'Análise PETR4: Vale a Pena Investir em 2026? | Redentia',
+    `Análise PETR4: Vale a Pena Investir em 2026? | ${brand.name}`,
   description:
     'Análise completa de PETR4 (Petrobras). Fundamentos, indicadores, riscos políticos, perspectivas para 2026, dividendos e estratégias de investimento. Guia definitivo.',
   path: '/guias/analise-petr4-vale-a-pena-investir',
@@ -372,14 +374,14 @@ usePageSeo({
         'Análise fundamentalista completa das ações da Petrobras (PETR4)',
       author: {
         '@type': 'Organization',
-        name: 'Redentia',
+        name: brand.name,
       },
       publisher: {
         '@type': 'Organization',
-        name: 'Redentia',
+        name: brand.name,
         logo: {
           '@type': 'ImageObject',
-          url: 'https://www.redentia.com.br/512x512.png',
+          url: `${brand.url}/512x512.png`,
         },
       },
       datePublished: '2026-01-04',
@@ -423,19 +425,19 @@ usePageSeo({
           '@type': 'ListItem',
           position: 1,
           name: 'Home',
-          item: 'https://www.redentia.com.br',
+          item: brand.url,
         },
         {
           '@type': 'ListItem',
           position: 2,
           name: 'Guias',
-          item: 'https://www.redentia.com.br/guias',
+          item: `${brand.url}/guias`,
         },
         {
           '@type': 'ListItem',
           position: 3,
           name: 'Análise PETR4',
-          item: 'https://www.redentia.com.br/guias/analise-petr4-vale-a-pena-investir',
+          item: `${brand.url}/guias/analise-petr4-vale-a-pena-investir`,
         },
       ],
     },

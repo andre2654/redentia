@@ -1,9 +1,9 @@
 <template>
-  <NuxtLayout title="Sua carteira">
+  <NuxtLayout :title="brand.nav.wallet">
     <div class="flex h-full flex-col justify-between">
       <div class="flex flex-col gap-5 border-b p-6">
         <div class="flex flex-wrap items-center justify-between gap-4">
-          <h2 class="text-[18px] font-bold">Sua carteira</h2>
+          <h2 class="text-[18px] font-bold">{{ brand.nav.wallet }}</h2>
           <div class="flex items-center gap-2">
             <input
               ref="fileInputRef"
@@ -105,6 +105,7 @@
 <script setup lang="ts">
 import type { PortfolioComposition } from '~/services/portfolio'
 
+const brand = useBrand()
 const { getPositions, getComposition, uploadPositions } = usePortfolioService()
 const positions = ref<Array<{ ticker: string; quantity: number; average_price: number }>>([])
 const loading = ref(true)

@@ -3,17 +3,17 @@
     <!-- Header com controles -->
     <div v-if="showControls" class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div class="flex items-center gap-3">
-        <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10">
-          <UIcon name="i-lucide-bar-chart-2" class="h-5 w-5 text-white/60" />
+        <div class="flex h-9 w-9 items-center justify-center rounded-lg" :style="{ backgroundColor: brand.colors.surface }">
+          <UIcon name="i-lucide-bar-chart-2" class="h-5 w-5" :style="{ color: brand.colors.textMuted }" />
         </div>
         <div>
-          <h2 class="text-lg font-semibold text-white">Histórico de Dividendos</h2>
-          <p class="text-xs text-white/40">Pagamentos e dividend yield</p>
+          <h2 class="text-lg font-semibold" :style="{ color: brand.colors.text }">Histórico de Dividendos</h2>
+          <p class="text-xs" :style="{ color: brand.colors.textMuted }">Pagamentos e dividend yield</p>
         </div>
       </div>
 
       <!-- Period selector -->
-      <div class="flex items-center gap-1 rounded-lg border border-white/10 bg-white/5 p-1">
+      <div class="flex items-center gap-1 rounded-lg border p-1" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
         <button
           v-for="period in [
             { key: 'year', label: '1A' },
@@ -23,9 +23,9 @@
           ]"
           :key="period.key"
           class="rounded-md px-3 py-1.5 text-xs font-medium transition-all"
-          :class="selectedTimeRange === period.key
-            ? 'bg-white/10 text-white'
-            : 'text-white/50 hover:text-white/80'"
+          :style="selectedTimeRange === period.key
+            ? { backgroundColor: brand.colors.surfaceHover, color: brand.colors.text }
+            : { color: brand.colors.textMuted }"
           @click="selectedTimeRange = period.key as any"
         >
           {{ period.label }}
@@ -34,17 +34,18 @@
     </div>
 
     <!-- Chart container -->
-    <div class="overflow-hidden rounded-xl border border-white/10 bg-white/[0.02]">
+    <div class="overflow-hidden rounded-xl border" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
       <!-- Chart area -->
       <div class="relative p-4" @mouseleave="hoveredIndex = null">
         <div class="relative h-[300px] w-full">
           <!-- Loading state -->
           <div
             v-if="props.loading"
-            class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 rounded-lg bg-black/40"
+            class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 rounded-lg"
+            :style="{ backgroundColor: cc.loadingBg }"
           >
-            <UIcon name="i-lucide-loader-2" class="h-6 w-6 animate-spin text-white/40" />
-            <span class="text-sm text-white/40">Carregando...</span>
+            <UIcon name="i-lucide-loader-2" class="h-6 w-6 animate-spin" :style="{ color: brand.colors.textMuted }" />
+            <span class="text-sm" :style="{ color: brand.colors.textMuted }">Carregando...</span>
           </div>
 
           <Bar
@@ -58,15 +59,17 @@
         <!-- Tooltip -->
         <div
           v-if="hoveredIndex !== null && tooltipData"
-          class="pointer-events-none fixed z-50 rounded-xl border border-white/10 bg-black/90 p-3 shadow-xl backdrop-blur-sm"
+          class="pointer-events-none fixed z-50 rounded-xl border p-3 shadow-xl backdrop-blur-sm"
           :style="{
+            borderColor: brand.colors.border,
+            backgroundColor: cc.tooltipBg,
             left: `${tooltipPosition.x + 12}px`,
             top: `${tooltipPosition.y - 80}px`,
           }"
         >
           <div class="flex flex-col gap-2">
-            <div class="flex items-center gap-2 border-b border-white/10 pb-2">
-              <span class="text-xs font-medium text-white">
+            <div class="flex items-center gap-2 border-b pb-2" :style="{ borderColor: brand.colors.border }">
+              <span class="text-xs font-medium" :style="{ color: brand.colors.text }">
                 {{ tooltipData.label }}
               </span>
               <span
@@ -79,7 +82,7 @@
             <div class="flex items-center justify-between gap-4">
               <div class="flex items-center gap-1.5">
                 <div class="h-2 w-2 rounded-full bg-emerald-400" />
-                <span class="text-[10px] text-white/50">Dividendo</span>
+                <span class="text-[10px]" :style="{ color: brand.colors.textMuted }">Dividendo</span>
               </div>
               <span class="text-sm font-semibold text-emerald-400">
                 R$ {{ tooltipData.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}
@@ -88,7 +91,7 @@
             <div class="flex items-center justify-between gap-4">
               <div class="flex items-center gap-1.5">
                 <div class="h-2 w-2 rounded-full bg-blue-400" />
-                <span class="text-[10px] text-white/50">Yield</span>
+                <span class="text-[10px]" :style="{ color: brand.colors.textMuted }">Yield</span>
               </div>
               <span class="text-sm font-semibold text-blue-400">
                 {{ tooltipData.dividendYield.toFixed(2) }}%
@@ -99,12 +102,12 @@
       </div>
 
       <!-- Footer with toggle and legend -->
-      <div v-if="showControls" class="flex items-center justify-between border-t border-white/5 px-4 py-3">
+      <div v-if="showControls" class="flex items-center justify-between border-t px-4 py-3" :style="{ borderColor: brand.colors.border }">
         <!-- Toggle -->
         <button
           type="button"
           class="flex items-center gap-2 text-xs transition-colors"
-          :class="groupByYear ? 'text-white' : 'text-white/50'"
+          :style="{ color: groupByYear ? brand.colors.text : brand.colors.textMuted }"
           @click="groupByYear = !groupByYear"
         >
           <div
@@ -123,11 +126,11 @@
         <div class="flex items-center gap-4">
           <div class="flex items-center gap-1.5">
             <div class="h-2 w-2 rounded-full bg-emerald-400" />
-            <span class="text-[10px] text-white/40">Dividendos</span>
+            <span class="text-[10px]" :style="{ color: brand.colors.textMuted }">Dividendos</span>
           </div>
           <div class="flex items-center gap-1.5">
             <div class="h-2 w-2 rounded-full bg-blue-400" />
-            <span class="text-[10px] text-white/40">Yield</span>
+            <span class="text-[10px]" :style="{ color: brand.colors.textMuted }">Yield</span>
           </div>
         </div>
       </div>
@@ -135,35 +138,35 @@
 
     <!-- Stats cards -->
     <div v-if="showControls" class="grid gap-3 sm:grid-cols-3">
-      <div class="flex items-center gap-4 rounded-xl border border-white/10 bg-white/[0.02] p-4">
-        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-white/5">
-          <UIcon name="i-lucide-coins" class="h-5 w-5 text-white/40" />
+      <div class="flex items-center gap-4 rounded-xl border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg" :style="{ backgroundColor: brand.colors.surfaceHover }">
+          <UIcon name="i-lucide-coins" class="h-5 w-5" :style="{ color: brand.colors.textMuted }" />
         </div>
         <div class="flex flex-col">
-          <span class="text-xs text-white/40">Total no período</span>
-          <span class="text-lg font-semibold tabular-nums text-white">
+          <span class="text-xs" :style="{ color: brand.colors.textMuted }">Total no período</span>
+          <span class="text-lg font-semibold tabular-nums" :style="{ color: brand.colors.text }">
             R$ {{ totalDividends.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
           </span>
         </div>
       </div>
-      <div class="flex items-center gap-4 rounded-xl border border-white/10 bg-white/[0.02] p-4">
-        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-white/5">
-          <UIcon name="i-lucide-trophy" class="h-5 w-5 text-white/40" />
+      <div class="flex items-center gap-4 rounded-xl border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg" :style="{ backgroundColor: brand.colors.surfaceHover }">
+          <UIcon name="i-lucide-trophy" class="h-5 w-5" :style="{ color: brand.colors.textMuted }" />
         </div>
         <div class="flex flex-col">
-          <span class="text-xs text-white/40">Maior pagamento</span>
-          <span class="text-lg font-semibold tabular-nums text-white">
+          <span class="text-xs" :style="{ color: brand.colors.textMuted }">Maior pagamento</span>
+          <span class="text-lg font-semibold tabular-nums" :style="{ color: brand.colors.text }">
             R$ {{ maxDividend.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
           </span>
         </div>
       </div>
-      <div class="flex items-center gap-4 rounded-xl border border-white/10 bg-white/[0.02] p-4">
-        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-white/5">
-          <UIcon name="i-lucide-calculator" class="h-5 w-5 text-white/40" />
+      <div class="flex items-center gap-4 rounded-xl border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg" :style="{ backgroundColor: brand.colors.surfaceHover }">
+          <UIcon name="i-lucide-calculator" class="h-5 w-5" :style="{ color: brand.colors.textMuted }" />
         </div>
         <div class="flex flex-col">
-          <span class="text-xs text-white/40">Média por pagamento</span>
-          <span class="text-lg font-semibold tabular-nums text-white">
+          <span class="text-xs" :style="{ color: brand.colors.textMuted }">Média por pagamento</span>
+          <span class="text-lg font-semibold tabular-nums" :style="{ color: brand.colors.text }">
             R$ {{ averageDividend.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
           </span>
         </div>
@@ -189,7 +192,10 @@ import {
   type ActiveElement,
 } from 'chart.js'
 import { Bar } from 'vue-chartjs'
-import { ChartColors } from '~/design/chartColors'
+import { useChartColors } from '~/design/chartColors'
+
+const cc = useChartColors()
+const brand = useBrand()
 
 function transparentize(value: string, opacity: number) {
   const alpha = opacity === undefined ? 0.5 : 1 - opacity
@@ -600,7 +606,7 @@ const predictionLabelPlugin = {
             ctx.save()
             ctx.translate(centerPoint.x, centerPoint.y + 40) // Move para baixo da barra
             ctx.font = 'bold 10px Arial'
-            ctx.fillStyle = '#a7d6ff'
+            ctx.fillStyle = cc.secondary
             ctx.textAlign = 'center'
             ctx.textBaseline = 'middle'
             ctx.rotate(-Math.PI / 2)
@@ -640,8 +646,8 @@ const chartData = computed(() => {
   })
 
   // Define cores base
-  const primaryColor = ChartColors.positive
-  const secondaryColor = ChartColors.secondary
+  const primaryColor = cc.positive
+  const secondaryColor = cc.secondary
 
   // Função para criar gradiente de barras
   const createBarGradient = (
@@ -732,11 +738,11 @@ const chartData = computed(() => {
       {
         label: 'Dividend Yield (%)',
         data: yieldData,
-        borderColor: '#a7d6ff',
+        borderColor: cc.secondary,
         borderWidth: 1,
         pointRadius: 0,
         pointHoverRadius: 5,
-        pointBackgroundColor: '#a7d6ff',
+        pointBackgroundColor: cc.secondary,
         type: 'line' as const,
         yAxisID: 'y1',
         tension: 0.6, // Suaviza a linha
@@ -776,12 +782,12 @@ const chartOptions = computed(() => ({
       display: true,
       position: 'left' as const,
       grid: {
-        color: 'rgba(255, 255, 255, 0.04)',
+        color: cc.gridColor,
         drawTicks: false,
       },
       border: { display: false },
       ticks: {
-        color: 'rgba(255, 255, 255, 0.3)',
+        color: cc.tickColor,
         font: { size: 10 },
         padding: 8,
         maxTicksLimit: 5,
@@ -797,7 +803,7 @@ const chartOptions = computed(() => ({
       grid: { drawOnChartArea: false },
       border: { display: false },
       ticks: {
-        color: 'rgba(147, 197, 253, 0.5)',
+        color: cc.tickColorMuted,
         font: { size: 10 },
         padding: 8,
         maxTicksLimit: 5,

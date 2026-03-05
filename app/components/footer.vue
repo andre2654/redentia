@@ -1,9 +1,10 @@
 <template>
-  <div class="flex w-full flex-col bg-white/5 text-white">
+  <div class="flex w-full flex-col" :style="{ backgroundColor: brand.colors.surface, color: brand.colors.text }">
     <!-- CTA de Notificações (apenas no app e se não liberou) -->
     <div
       v-if="showNotificationCta"
-      class="w-full border-b border-white/10 bg-gradient-to-br from-secondary/10 to-secondary/5 py-6"
+      class="w-full bg-gradient-to-br from-secondary/10 to-secondary/5 py-6"
+      :style="{ borderBottom: `1px solid ${brand.colors.border}` }"
     >
       <div class="mx-auto flex max-w-[1400px] items-center justify-between gap-4 px-6 max-md:flex-col">
         <div class="flex items-center gap-4">
@@ -11,11 +12,11 @@
             <UIcon name="i-lucide-bell" class="text-secondary h-6 w-6" />
           </div>
           <div class="flex flex-col">
-            <h3 class="text-base font-semibold text-white">
-              Ativar notificações
+            <h3 class="text-base font-semibold" :style="{ color: brand.colors.text }">
+              {{ brand.notifications.ctaTitle }}
             </h3>
-            <p class="text-sm text-gray-400">
-              Receba alertas de mercado e dividendos em tempo real
+            <p class="text-sm" :style="{ color: brand.colors.textMuted }">
+              {{ brand.notifications.ctaSubtitle }}
             </p>
           </div>
         </div>
@@ -26,7 +27,7 @@
           class="hover:shadow-secondary/50 max-md:w-full transition-all hover:scale-105 hover:shadow-xl"
           @click="handleRequestPermission"
         >
-          Ativar agora
+          {{ brand.notifications.ctaButton }}
         </UButton>
       </div>
     </div>
@@ -34,9 +35,8 @@
     <!-- Seção Termos do Mercado -->
     <div class="w-full py-12">
       <div class="mx-auto max-w-[1400px] px-4">
-        <h2 class="mb-6 text-center text-2xl font-bold uppercase tracking-wide md:text-3xl">
-          <span class="text-white">Termos</span>
-          <span class="text-secondary"> do Mercado</span>
+        <h2 class="mb-6 text-center text-2xl font-bold uppercase tracking-wide md:text-3xl" :style="{ color: brand.colors.text }">
+          {{ brand.nav.footerGlossaryTitle }}
         </h2>
         <div class="flex flex-wrap items-center justify-center gap-3 text-lg font-semibold md:gap-5 md:text-xl">
           <NuxtLink
@@ -58,37 +58,37 @@
     </div>
 
     <!-- Links Categorizados (estilo Zapier) -->
-    <div class="w-full border-t border-white/10 py-12">
+    <div class="w-full py-12" :style="{ borderTop: `1px solid ${brand.colors.border}` }">
       <div class="mx-auto flex max-w-[1400px] flex-wrap justify-center gap-x-16 gap-y-10 px-6 text-center md:justify-between md:text-left lg:gap-x-24">
         <!-- Ferramentas -->
         <div class="flex flex-col items-center md:items-start">
-          <h3 class="mb-5 text-sm font-semibold uppercase tracking-wider text-white">
-            Ferramentas
+          <h3 class="mb-5 text-sm font-semibold uppercase tracking-wider" :style="{ color: brand.colors.text }">
+            {{ brand.footer.sections.tools }}
           </h3>
           <ul class="flex flex-col items-center gap-3 md:items-start">
             <li>
-              <NuxtLink to="/calculadora" class="text-sm text-gray-400 transition-colors hover:text-secondary">
-                Calculadoras
+              <NuxtLink to="/calculadora" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
+                {{ brand.nav.footerCalc }}
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/calculadora/juros-compostos" class="text-sm text-gray-400 transition-colors hover:text-secondary">
-                Juros Compostos
+              <NuxtLink to="/calculadora/juros-compostos" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
+                {{ brand.nav.footerJuros }}
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/calculadora/preco-teto" class="text-sm text-gray-400 transition-colors hover:text-secondary">
-                Preço Teto
+              <NuxtLink to="/calculadora/preco-teto" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
+                {{ brand.nav.footerPrecoTeto }}
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/calculadora/dividend-yield" class="text-sm text-gray-400 transition-colors hover:text-secondary">
-                Dividend Yield
+              <NuxtLink to="/calculadora/dividend-yield" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
+                {{ brand.nav.footerDY }}
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/help" class="text-sm text-gray-400 transition-colors hover:text-secondary">
-                Assessoria IA
+              <NuxtLink to="/help" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
+                {{ brand.nav.footerAI }}
               </NuxtLink>
             </li>
           </ul>
@@ -96,33 +96,33 @@
 
         <!-- Recursos -->
         <div class="flex flex-col items-center md:items-start">
-          <h3 class="mb-5 text-sm font-semibold uppercase tracking-wider text-white">
-            Recursos
+          <h3 class="mb-5 text-sm font-semibold uppercase tracking-wider" :style="{ color: brand.colors.text }">
+            {{ brand.footer.sections.resources }}
           </h3>
           <ul class="flex flex-col items-center gap-3 md:items-start">
             <li>
-              <NuxtLink to="/guias" class="text-sm text-gray-400 transition-colors hover:text-secondary">
-                Guias de Investimento
+              <NuxtLink to="/guias" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
+                {{ brand.nav.footerGuides }}
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/glossario" class="text-sm text-gray-400 transition-colors hover:text-secondary">
-                Glossário
+              <NuxtLink to="/glossario" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
+                {{ brand.nav.footerGlossary }}
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/acoes" class="text-sm text-gray-400 transition-colors hover:text-secondary">
-                Ações
+              <NuxtLink to="/acoes" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
+                {{ brand.nav.footerStocks }}
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/fiis" class="text-sm text-gray-400 transition-colors hover:text-secondary">
-                FIIs
+              <NuxtLink to="/fiis" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
+                {{ brand.nav.footerFiis }}
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/dividendos" class="text-sm text-gray-400 transition-colors hover:text-secondary">
-                Dividendos
+              <NuxtLink to="/dividendos" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
+                {{ brand.nav.footerDividends }}
               </NuxtLink>
             </li>
           </ul>
@@ -130,28 +130,28 @@
 
         <!-- Empresa -->
         <div class="flex flex-col items-center md:items-start">
-          <h3 class="mb-5 text-sm font-semibold uppercase tracking-wider text-white">
-            Empresa
+          <h3 class="mb-5 text-sm font-semibold uppercase tracking-wider" :style="{ color: brand.colors.text }">
+            {{ brand.footer.sections.company }}
           </h3>
           <ul class="flex flex-col items-center gap-3 md:items-start">
             <li>
-              <NuxtLink to="/redentia/about" class="text-sm text-gray-400 transition-colors hover:text-secondary">
-                Sobre
+              <NuxtLink to="/redentia/about" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
+                {{ brand.nav.footerAbout }}
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/redentia/how-works" class="text-sm text-gray-400 transition-colors hover:text-secondary">
-                Como funciona
+              <NuxtLink to="/redentia/how-works" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
+                {{ brand.nav.footerHowWorks }}
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/redentia/contact" class="text-sm text-gray-400 transition-colors hover:text-secondary">
-                Contato
+              <NuxtLink to="/redentia/contact" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
+                {{ brand.nav.footerContact }}
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/download" class="text-sm text-gray-400 transition-colors hover:text-secondary">
-                Download
+              <NuxtLink to="/download" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
+                {{ brand.nav.footerDownload }}
               </NuxtLink>
             </li>
           </ul>
@@ -159,23 +159,23 @@
 
         <!-- Legal -->
         <div class="flex flex-col items-center md:items-start">
-          <h3 class="mb-5 text-sm font-semibold uppercase tracking-wider text-white">
-            Legal
+          <h3 class="mb-5 text-sm font-semibold uppercase tracking-wider" :style="{ color: brand.colors.text }">
+            {{ brand.footer.sections.legal }}
           </h3>
           <ul class="flex flex-col items-center gap-3 md:items-start">
             <li>
-              <NuxtLink to="/redentia/terms" class="text-sm text-gray-400 transition-colors hover:text-secondary">
-                Termos de Uso
+              <NuxtLink to="/redentia/terms" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
+                {{ brand.nav.footerTerms }}
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/redentia/privacy" class="text-sm text-gray-400 transition-colors hover:text-secondary">
-                Privacidade
+              <NuxtLink to="/redentia/privacy" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
+                {{ brand.nav.footerPrivacy }}
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/redentia/cookies" class="text-sm text-gray-400 transition-colors hover:text-secondary">
-                Cookies
+              <NuxtLink to="/redentia/cookies" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
+                {{ brand.nav.footerCookies }}
               </NuxtLink>
             </li>
           </ul>
@@ -184,15 +184,16 @@
     </div>
     <!-- Logo e Copyright -->
     <div
-      class="mx-auto flex w-full max-w-[1400px] flex-col gap-6 border-t border-white/10 px-6 pb-[105px] pt-8 max-lg:items-center"
+      class="mx-auto flex w-full max-w-[1400px] flex-col gap-6 px-6 pb-[105px] pt-8 max-lg:items-center"
+      :style="{ borderTop: `1px solid ${brand.colors.border}` }"
     >
       <div class="flex w-full items-start justify-between max-lg:flex-col max-lg:items-center max-lg:gap-6">
         <div class="flex flex-col gap-4 max-lg:items-center">
           <NuxtLink to="/">
-            <IconLogoFull class="w-[150px] fill-white" />
+            <BrandLogo variant="full" class="w-[150px]" />
           </NuxtLink>
-          <p class="text-[12px] text-white/60 max-lg:text-center">
-            Invista com inteligência. Resultados reais.
+          <p class="text-[12px] max-lg:text-center" :style="{ color: brand.colors.textMuted }">
+            {{ brand.tagline }}
           </p>
         </div>
         
@@ -214,12 +215,12 @@
         </div>
       </div>
       
-      <div class="flex w-full items-center justify-between border-t border-white/10 pt-6 max-lg:flex-col max-lg:gap-4">
-        <p class="text-[12px] text-white/50 max-lg:text-center">
-          © 2026 Redentia. Todos os direitos reservados.
+      <div class="flex w-full items-center justify-between pt-6 max-lg:flex-col max-lg:gap-4" :style="{ borderTop: `1px solid ${brand.colors.border}` }">
+        <p class="text-[12px] max-lg:text-center" :style="{ color: brand.colors.textMuted }">
+          © {{ new Date().getFullYear() }} {{ brand.name }}. {{ brand.nav.footerCopyright }}
         </p>
-        <p class="text-[11px] text-white/40 max-lg:text-center">
-          AV. PAULISTA 1106 SALA 01 ANDAR, Bela Vista, São Paulo, SP
+        <p v-if="brand.company.address" class="text-[11px] max-lg:text-center" :style="{ color: brand.colors.textMuted }">
+          {{ brand.company.address }}
         </p>
       </div>
     </div>
@@ -227,6 +228,7 @@
 </template>
 
 <script setup lang="ts">
+const brand = useBrand()
 const alfabeto = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
 
 const route = useRoute()

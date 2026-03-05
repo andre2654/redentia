@@ -14,8 +14,8 @@
         class="group-container flex flex-1 flex-col gap-3"
       >
         <div class="flex items-center gap-2 px-6">
-          <div class="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-          <h3 class="text-sm font-medium tracking-wide text-white/70">AÇÕES</h3>
+          <div class="h-1.5 w-1.5 rounded-full" :style="{ backgroundColor: cc.positive }" />
+          <h3 class="text-sm font-medium tracking-wide" :style="{ color: brand.colors.textMuted }">AÇÕES</h3>
         </div>
         <div class="canvas-container relative min-h-[200px] flex-1">
           <canvas ref="canvasAcoesRef" class="h-full w-full" />
@@ -28,8 +28,8 @@
         class="group-container flex flex-1 flex-col gap-3"
       >
         <div class="flex items-center gap-2 px-6">
-          <div class="h-1.5 w-1.5 rounded-full bg-blue-400" />
-          <h3 class="text-sm font-medium tracking-wide text-white/70">FIIs</h3>
+          <div class="h-1.5 w-1.5 rounded-full" :style="{ backgroundColor: cc.secondary }" />
+          <h3 class="text-sm font-medium tracking-wide" :style="{ color: brand.colors.textMuted }">FIIs</h3>
         </div>
         <div class="canvas-container relative min-h-[200px] flex-1">
           <canvas ref="canvasFiisRef" class="h-full w-full" />
@@ -50,13 +50,15 @@
     <!-- Tooltip dinâmico responsivo -->
     <div
       v-if="tooltipData"
-      class="pointer-events-none fixed z-10 rounded-lg bg-black/30 px-3 py-2 backdrop-blur-md transition-all duration-150"
+      class="pointer-events-none fixed z-10 rounded-lg px-3 py-2 backdrop-blur-md transition-all duration-150"
       :style="{
         left: `${tooltipPosition.x + 10}px`,
         top: `${tooltipPosition.y - 10}px`,
+        backgroundColor: cc.tooltipBg,
+        border: `1px solid ${cc.tooltipBorder}`,
       }"
     >
-      <div class="flex flex-col gap-1 text-xs sm:text-sm">
+      <div class="flex flex-col gap-1 text-xs sm:text-sm" :style="{ color: cc.tooltipText }">
         <div class="flex items-center gap-2">
           <div
             class="h-2 w-2 flex-shrink-0 rounded-sm sm:h-3 sm:w-3"
@@ -66,13 +68,13 @@
             tooltipData.symbol
           }}</span>
         </div>
-        <span class="truncate text-xs">{{ tooltipData.name }}</span>
+        <span class="truncate text-xs" :style="{ color: cc.tooltipTextMuted }">{{ tooltipData.name }}</span>
         <span class="text-sm font-semibold"
           >R$ {{ tooltipData.price.toFixed(2) }}</span
         >
         <span
           class="text-sm font-bold"
-          :class="tooltipData.change >= 0 ? 'text-primary' : 'text-red-400'"
+          :style="{ color: tooltipData.change >= 0 ? cc.positive : cc.negative }"
         >
           {{ tooltipData.change >= 0 ? '+' : ''
           }}{{ tooltipData.change.toFixed(2) }}%
@@ -84,7 +86,10 @@
 
 <script setup lang="ts">
 import { computed, ref, onMounted, nextTick, watch, onUnmounted } from 'vue'
-import { ChartColors, rgba } from '~/design/chartColors'
+import { useChartColors, rgba } from '~/design/chartColors'
+
+const brand = useBrand()
+const cc = useChartColors()
 
 interface TreemapItem {
   symbol: string
@@ -255,25 +260,19 @@ const groupedData = computed(() => {
 // Função para calcular a cor baseada na mudança percentual
 const getColor = (change: number): string => {
   if (change >= 0) {
-    // Verde para positivos - cores mais vibrantes e modernas
-    const intensity = Math.min(Math.abs(change) / 12, 1) // Normaliza até 12%
-    const alpha = 0.15 + intensity * 0.45 // De 15% a 60% de opacidade
-    return rgba(ChartColors.positive, alpha)
+    const intensity = Math.min(Math.abs(change) / 12, 1)
+    const alpha = 0.15 + intensity * 0.45
+    return rgba(cc.positive, alpha)
   } else {
-    // Vermelho para negativos
-    const intensity = Math.min(Math.abs(change) / 12, 1) // Normaliza até 12%
-    const alpha = 0.15 + intensity * 0.45 // De 15% a 60% de opacidade
-    return rgba(ChartColors.negative, alpha)
+    const intensity = Math.min(Math.abs(change) / 12, 1)
+    const alpha = 0.15 + intensity * 0.45
+    return rgba(cc.negative, alpha)
   }
 }
 
 // Função para obter a cor da borda (sem transparência)
 const getBorderColor = (change: number): string => {
-  if (change >= 0) {
-    return ChartColors.positive
-  } else {
-    return ChartColors.negative
-  }
+  return change >= 0 ? cc.positive : cc.negative
 }
 
 // Algoritmo de treemap squarified para layout organizado e responsivo
@@ -532,9 +531,8 @@ const animateRectangles = (
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
 
-        // Texto principal branco (com opacidade ajustada pelo hover)
         ctx.globalAlpha = opacity
-        ctx.fillStyle = 'white'
+        ctx.fillStyle = cc.tooltipText
 
         // Symbol (texto principal maior)
         ctx.font = `700 ${symbolFontSize}px Inter, -apple-system, sans-serif`
@@ -553,7 +551,7 @@ const animateRectangles = (
         // Preço apenas em retângulos maiores
         if (area > minAreaForPrice && drawHeight > 70) {
           ctx.font = `500 ${priceFontSize}px Inter, -apple-system, sans-serif`
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.6)'
+          ctx.fillStyle = cc.tooltipTextMuted
           ctx.globalAlpha = opacity * 0.7
           ctx.fillText(
             `R$ ${rectItem.item.price.toFixed(2)}`,

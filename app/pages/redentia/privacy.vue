@@ -5,7 +5,7 @@
       <p>
         Esta Política de Privacidade (“Política”), juntamente com os Termos de
         Uso, descreve as políticas e condições aplicáveis aos serviços prestados
-        pela <strong>Redentia</strong> por meio da Plataforma e seu aplicativo.
+        pela <strong>{{ brand.name }}</strong> por meio da Plataforma e seu aplicativo.
       </p>
       <p>
         Esta política descreve as formas como coletamos, armazenamos e
@@ -16,7 +16,7 @@
         comunicações da nossa Plataforma. Para tanto, basta clicar nos links
         “remover” ou “descadastramento”, contidos ao final de cada e-mail
         enviado aos Usuários ou enviar um e-mail para o nosso suporte
-        <a href="mailto:contato@redentia.com.br">contato@redentia.com.br</a>
+        <a :href="`mailto:${brand.email}`">{{ brand.email }}</a>
         indicando o seu desejo de não mais receber comunicações.
       </p>
 
@@ -39,13 +39,13 @@
         </li>
         <li>
           <strong>Política de Privacidade</strong> – a presente política de
-          privacidade da <strong>Redentia</strong>, disponível em seu Site.
+          privacidade da <strong>{{ brand.name }}</strong>, disponível em seu Site.
         </li>
         <li>
           <strong>Site</strong> – endereço da rede mundial de computadores
           denominado
-          <a href="https://redentia.com.br/" target="_blank"
-            >https://redentia.com.br/</a
+          <a :href="brand.url" target="_blank"
+            >{{ brand.url }}</a
           >.
         </li>
         <li>
@@ -163,7 +163,7 @@
         <li>Impedir atividades proibidas ou ilegais;</li>
         <li>Cumprir obrigações legais, regulatórias ou ordens judiciais;</li>
         <li>
-          Proteger interesses da <strong>Redentia</strong> e de seus clientes;
+          Proteger interesses da <strong>{{ brand.name }}</strong> e de seus clientes;
         </li>
         <li>Detectar e prevenir fraudes;</li>
         <li>
@@ -177,7 +177,7 @@
           Compartilhamos Dados Pessoais com:
           <ul class="list-decimal">
             <li>Provedores de serviços de sistemas e tecnologia;</li>
-            <li>Sociedades do grupo econômico da <strong>Redentia</strong>;</li>
+            <li>Sociedades do grupo econômico da <strong>{{ brand.name }}</strong>;</li>
             <li>
               Prestadores de serviços administrativos, financeiros, legais,
               entre outros;
@@ -196,7 +196,7 @@
       <ul class="list-decimal">
         <li>
           Nossa Plataforma pode conter links para sites de terceiros, sem
-          gerência da <strong>Redentia</strong>.
+          gerência da <strong>{{ brand.name }}</strong>.
         </li>
         <li>
           Recomendamos que o Usuário leia as políticas do novo site antes de
@@ -243,7 +243,7 @@
       <h2><strong>Divulgação de informações de mercado</strong></h2>
       <ul class="list-decimal">
         <li>
-          A <strong>Redentia</strong> pode utilizar dados de mercado fornecidos
+          A <strong>{{ brand.name }}</strong> pode utilizar dados de mercado fornecidos
           por terceiros, como a B3.
         </li>
         <li>
@@ -274,19 +274,19 @@
           O Usuário pode deixar de receber comunicações a qualquer momento
           clicando em “remover” ou “descadastro” nos e-mails, ou enviando e-mail
           para
-          <a href="mailto:privacidade@redentia.com.br"
-            >privacidade@redentia.com.br</a
+          <a :href="`mailto:${brand.privacyEmail}`"
+            >{{ brand.privacyEmail }}</a
           >.
         </li>
         <li>
           Para dúvidas ou solicitações sobre Dados Pessoais ou esta Política,
           entre em contato com nosso Encarregado pelo endereço
-          <a href="mailto:privacidade@redentia.com.br"
-            >privacidade@redentia.com.br</a
+          <a :href="`mailto:${brand.privacyEmail}`"
+            >{{ brand.privacyEmail }}</a
           >.
         </li>
         <li>
-          Todas as empresas do Grupo Redentia são controladoras e responsáveis
+          Todas as empresas do Grupo {{ brand.name }} são controladoras e responsáveis
           pelos Dados Pessoais dos Usuários.
         </li>
       </ul>
@@ -295,15 +295,17 @@
 </template>
 
 <script lang="ts" setup>
+const brand = useBrand()
+
 definePageMeta({
   isPublicRoute: true,
   hideInstallAppBanner: true,
 })
 
 usePageSeo({
-  title: 'Política de Privacidade | Redentia',
+  title: `Política de Privacidade | ${brand.name}`,
   description:
-    'Saiba como a Redentia coleta, utiliza e protege seus dados pessoais e financeiros de acordo com a LGPD.',
+    `Saiba como a ${brand.name} coleta, utiliza e protege seus dados pessoais e financeiros de acordo com a LGPD.`,
   path: '/redentia/privacy',
   breadcrumbs: [
     { name: 'Início', path: '/' },

@@ -2,41 +2,13 @@
   <NuxtLayout
     :name="layoutName"
     container-class="md:px-0"
-    :header-bg="!isPriceVisible ? pageGradient : ''"
   >
-    <template v-if="!isPriceVisible" #header-branding>
-      <div class="flex items-center gap-3">
-        <img
-          v-if="asset?.logo"
-          :src="asset.logo"
-          :alt="`Logo de ${assetName}`"
-          class="h-9 w-9 rounded-lg object-cover"
-        />
-        <div class="flex items-center gap-2">
-          <span class="text-[25px] font-bold leading-tight text-white">{{
-            tickerUpper
-          }}</span>
-          <div class="flex items-center gap-2 text-[20px] leading-tight">
-            <span class="text-white/90">{{ formattedAssetPrice }}</span>
-            <span
-              v-if="dailyChangePercent !== null"
-              class="text-[18px]"
-              :class="[
-                dailyChangePercent >= 0 ? 'text-green-400' : 'text-red-400',
-              ]"
-            >
-              {{ dailyChangePercent }}%
-            </span>
-          </div>
-        </div>
-      </div>
-    </template>
-    <div class="relative z-10 flex flex-col pt-4">
+    <div class="relative z-10 flex flex-col px-4 pt-4">
       <div class="flex flex-col">
         <!-- Hero Section do Ativo -->
-        <section class="border-b border-white/10 pb-6">
+        <section class="border-b pb-6" :style="{ borderColor: brand.colors.border }">
           <header
-            class="mb-6 flex flex-col gap-4 max-md:px-4 md:flex-row md:items-center md:justify-between"
+            class="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
           >
             <div class="flex items-center gap-4">
               <USkeleton
@@ -51,26 +23,26 @@
               />
               <div class="flex flex-col gap-1">
                 <div class="flex items-center gap-3">
-                  <h1 class="text-2xl font-bold text-white md:text-3xl">
+                  <h1 class="text-2xl font-bold md:text-3xl" :style="{ color: brand.colors.text }">
                     {{ tickerUpper }}
                   </h1>
                   <!-- Badges de info rápida -->
                   <div v-if="!isLoadingAsset" class="flex items-center gap-2">
                     <span
                       v-if="asset?.sector"
-                      class="rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-white/70"
+                      class="rounded-full px-3 py-1 text-xs font-medium"
+                      :style="{ backgroundColor: brand.colors.surface, color: brand.colors.textMuted }"
                     >
                       {{ asset.sector }}
                     </span>
                   </div>
                 </div>
                 <div
-                  ref="priceElement"
                   class="flex items-center gap-3 max-sm:flex-col max-sm:items-start"
                 >
                   <USkeleton v-if="isLoadingAsset" class="h-6 w-[120px]" />
                   <template v-else>
-                    <span class="text-3xl font-semibold tabular-nums text-white md:text-4xl">
+                    <span class="text-3xl font-semibold tabular-nums md:text-4xl" :style="{ color: brand.colors.text }">
                       R$ {{ asset?.market_price }}
                     </span>
                     <span
@@ -106,11 +78,11 @@
         </section>
 
         <!-- Volatilidade -->
-        <section v-if="!isLoadingAsset" class="border-b border-white/10 py-6 max-md:px-4">
-          <div class="rounded-2xl bg-white/5 p-5 backdrop-blur-sm">
+        <section v-if="!isLoadingAsset && brand.assetPage.showVolatility" class="border-b py-6" :style="{ borderColor: brand.colors.border }">
+          <div class="rounded-2xl p-5 backdrop-blur-sm" :style="{ backgroundColor: brand.colors.surface }">
             <header class="mb-4 flex items-center gap-2">
-              <UIcon name="i-lucide-activity" class="h-5 w-5 text-white/60" />
-              <h3 class="text-sm font-semibold text-white">Volatilidade do Ativo</h3>
+              <UIcon name="i-lucide-activity" class="h-5 w-5" :style="{ color: brand.colors.textMuted }" />
+              <h3 class="text-sm font-semibold" :style="{ color: brand.colors.text }">Volatilidade do Ativo</h3>
             </header>
             <AtomsRiskMeter
               :risk="volatilityRisk"
@@ -121,14 +93,14 @@
 
         <!-- Asset Indicators -->
         <!-- Indicadores Fundamentalistas -->
-        <section class="border-b border-white/10 py-8 max-md:px-4">
+        <section v-if="brand.assetPage.showIndicators" class="border-b py-8" :style="{ borderColor: brand.colors.border }">
           <header class="mb-6 flex items-center gap-3">
-            <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10">
-              <UIcon name="i-lucide-bar-chart-3" class="h-5 w-5 text-white/60" />
+            <div class="flex h-9 w-9 items-center justify-center rounded-lg" :style="{ backgroundColor: brand.colors.surface }">
+              <UIcon name="i-lucide-bar-chart-3" class="h-5 w-5" :style="{ color: brand.colors.textMuted }" />
             </div>
             <div>
-              <h2 class="text-lg font-semibold text-white">Indicadores</h2>
-              <p class="text-xs text-white/40">Métricas fundamentalistas de {{ tickerUpper }}</p>
+              <h2 class="text-lg font-semibold" :style="{ color: brand.colors.text }">Indicadores</h2>
+              <p class="text-xs" :style="{ color: brand.colors.textMuted }">Métricas fundamentalistas de {{ tickerUpper }}</p>
             </div>
           </header>
 
@@ -175,19 +147,20 @@
             </template>
             <template v-else>
               <div
-                class="col-span-full flex flex-col items-center justify-center rounded-xl border border-dashed border-white/10 py-8 text-center"
+                class="col-span-full flex flex-col items-center justify-center rounded-xl border border-dashed py-8 text-center"
+                :style="{ borderColor: brand.colors.border }"
               >
-                <UIcon name="i-lucide-bar-chart-3" class="mb-2 h-6 w-6 text-white/20" />
-                <p class="text-sm text-white/40">Dados indisponíveis</p>
+                <UIcon name="i-lucide-bar-chart-3" class="mb-2 h-6 w-6" :style="{ color: brand.colors.textMuted }" />
+                <p class="text-sm" :style="{ color: brand.colors.textMuted }">Dados indisponíveis</p>
               </div>
             </template>
           </div>
 
           <!-- Smart Indicators -->
-          <div v-if="intelligentIndicators || isLoadingFundamentus" class="mt-8">
+          <div v-if="brand.assetPage.showSmartIndicators && (intelligentIndicators || isLoadingFundamentus)" class="mt-8">
             <div class="mb-4 flex items-center gap-2">
               <IconAi class="fill-secondary h-4 w-4" />
-              <span class="text-sm font-medium text-white/60">Análise por IA</span>
+              <span class="text-sm font-medium" :style="{ color: brand.colors.textMuted }">Análise por IA</span>
             </div>
 
             <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -253,39 +226,40 @@
         </section>
       </div>
 
-      <!-- Dividends Chart -->
-      <section class="border-b border-white/10 py-8 max-md:px-4">
+      <!-- Dividends -->
+      <section v-if="brand.assetPage.showDividendMap || brand.assetPage.showDividendChart" class="border-b py-8" :style="{ borderColor: brand.colors.border }">
         <!-- Header da seção -->
         <header class="mb-6 flex flex-col gap-2">
           <div class="flex items-center gap-2">
             <UIcon name="i-lucide-calendar-days" class="h-5 w-5 text-secondary" />
-            <h2 class="text-lg font-semibold text-white">Dividendos</h2>
+            <h2 class="text-lg font-semibold" :style="{ color: brand.colors.text }">Dividendos</h2>
           </div>
-          <p class="text-sm text-white/60">
+          <p class="text-sm" :style="{ color: brand.colors.textMuted }">
             Histórico de pagamentos e probabilidade mensal de dividendos.
           </p>
         </header>
 
         <!-- MDI Card -->
-        <div class="mb-6 overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent">
+        <div v-if="brand.assetPage.showDividendMap" class="mb-6 overflow-hidden rounded-2xl border" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
           <!-- Header -->
-          <div class="flex items-center justify-between border-b border-white/10 px-5 py-4">
+          <div class="flex items-center justify-between border-b px-5 py-4" :style="{ borderColor: brand.colors.border }">
             <div class="flex items-center gap-3">
               <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-secondary/20">
                 <IconAi class="fill-secondary h-5 w-5" />
               </div>
               <div>
-                <h3 class="text-sm font-semibold text-white">Mapa de Dividendos</h3>
-                <p class="text-xs text-white/40">Probabilidade de pagamento por mês</p>
+                <h3 class="text-sm font-semibold" :style="{ color: brand.colors.text }">Mapa de Dividendos</h3>
+                <p class="text-xs" :style="{ color: brand.colors.textMuted }">Probabilidade de pagamento por mês</p>
               </div>
             </div>
-            <div v-if="isLoadingDividends" class="flex items-center gap-2 text-xs text-white/40">
+            <div v-if="isLoadingDividends" class="flex items-center gap-2 text-xs" :style="{ color: brand.colors.textMuted }">
               <UIcon name="i-lucide-loader-2" class="h-4 w-4 animate-spin" />
               Analisando...
             </div>
             <div
               v-else-if="monthlyDividendProbability.referenceLabel"
-              class="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white/60"
+              class="flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs"
+              :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.textMuted }"
             >
               <UIcon name="i-lucide-calendar" class="h-3.5 w-3.5" />
               {{ monthlyDividendProbability.referenceLabel }}
@@ -311,39 +285,36 @@
               <div
                 v-for="item in monthlyDividendProbability.months"
                 :key="item.label"
+                class="group relative flex flex-col items-center justify-center gap-2 rounded-xl border p-4 text-center transition-all duration-300"
                 :class="[
-                  'group relative flex flex-col items-center justify-center gap-2 rounded-xl border p-4 text-center transition-all duration-300',
                   item.highlight
                     ? 'border-secondary bg-gradient-to-br from-secondary/20 to-secondary/5 shadow-lg shadow-secondary/20'
                     : item.percentage > 50
                       ? 'border-green-500/30 bg-gradient-to-br from-green-500/10 to-transparent hover:border-green-500/50'
-                      : item.percentage > 0
-                        ? 'border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10'
-                        : 'border-white/5 bg-white/[0.02] opacity-60',
+                      : '',
                 ]"
+                :style="!item.highlight && item.percentage <= 50 ? { borderColor: brand.colors.border, backgroundColor: item.percentage > 0 ? brand.colors.surface : 'transparent', opacity: item.percentage > 0 ? 1 : 0.6 } : {}"
               >
                 <!-- Month label -->
                 <span
-                  :class="[
-                    'text-[11px] font-semibold uppercase tracking-wider',
-                    item.highlight ? 'text-secondary' : 'text-white/50',
-                  ]"
+                  class="text-[11px] font-semibold uppercase tracking-wider"
+                  :style="{ color: item.highlight ? undefined : brand.colors.textMuted }"
+                  :class="[item.highlight ? 'text-secondary' : '']"
                 >
                   {{ item.label }}
                 </span>
 
                 <!-- Percentage -->
                 <span
+                  class="text-xl font-bold tabular-nums"
                   :class="[
-                    'text-xl font-bold tabular-nums',
                     item.highlight
                       ? 'text-secondary'
                       : item.percentage > 50
                         ? 'text-green-400'
-                        : item.percentage > 0
-                          ? 'text-white'
-                          : 'text-white/30',
+                        : '',
                   ]"
+                  :style="!item.highlight && item.percentage <= 50 ? { color: item.percentage > 0 ? brand.colors.text : brand.colors.textMuted } : {}"
                 >
                   {{ item.formattedPercentage }}
                 </span>
@@ -366,13 +337,13 @@
                 />
                 <div
                   v-else
-                  class="h-1 w-2 rounded-full bg-white/10"
+                  class="h-1 w-2 rounded-full" :style="{ backgroundColor: brand.colors.border }"
                 />
               </div>
             </div>
 
             <!-- Legend -->
-            <div class="mt-4 flex flex-wrap items-center justify-center gap-4 text-[10px] text-white/40">
+            <div class="mt-4 flex flex-wrap items-center justify-center gap-4 text-[10px]" :style="{ color: brand.colors.textMuted }">
               <div class="flex items-center gap-1.5">
                 <div class="h-2 w-2 rounded-full bg-secondary" />
                 <span>Mês atual</span>
@@ -382,7 +353,7 @@
                 <span>Alta probabilidade</span>
               </div>
               <div class="flex items-center gap-1.5">
-                <div class="h-2 w-2 rounded-full bg-white/30" />
+                <div class="h-2 w-2 rounded-full" :style="{ backgroundColor: brand.colors.textMuted }" />
                 <span>Baixa probabilidade</span>
               </div>
             </div>
@@ -391,21 +362,22 @@
 
         <!-- Gráfico de Dividendos -->
         <AtomsGraphDividends
+          v-if="brand.assetPage.showDividendChart"
           :data="dividendsData"
           :loading="isLoadingDividends"
         />
       </section>
 
       <!-- Financial Statements -->
-      <section class="border-b border-white/10 py-8 max-md:px-4">
+      <section v-if="brand.assetPage.showFinancials" class="border-b py-8" :style="{ borderColor: brand.colors.border }">
         <header class="mb-6 flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10">
-              <UIcon name="i-lucide-bar-chart-3" class="h-5 w-5 text-white/60" />
+            <div class="flex h-9 w-9 items-center justify-center rounded-lg" :style="{ backgroundColor: brand.colors.surface }">
+              <UIcon name="i-lucide-bar-chart-3" class="h-5 w-5" :style="{ color: brand.colors.textMuted }" />
             </div>
             <div>
-              <h2 class="text-lg font-semibold text-white">Demonstrações Financeiras</h2>
-              <p class="text-xs text-white/40">Último trimestre disponível</p>
+              <h2 class="text-lg font-semibold" :style="{ color: brand.colors.text }">Demonstrações Financeiras</h2>
+              <p class="text-xs" :style="{ color: brand.colors.textMuted }">Último trimestre disponível</p>
             </div>
           </div>
         </header>
@@ -440,32 +412,33 @@
         </div>
         <div
           v-else
-          class="flex flex-col items-center justify-center rounded-xl border border-dashed border-white/10 py-12 text-center"
+          class="flex flex-col items-center justify-center rounded-xl border border-dashed py-12 text-center"
+          :style="{ borderColor: brand.colors.border }"
         >
-          <UIcon name="i-lucide-file-x" class="mb-3 h-8 w-8 text-white/20" />
-          <p class="text-sm text-white/40">Demonstrações indisponíveis</p>
+          <UIcon name="i-lucide-file-x" class="mb-3 h-8 w-8" :style="{ color: brand.colors.textMuted }" />
+          <p class="text-sm" :style="{ color: brand.colors.textMuted }">Demonstrações indisponíveis</p>
         </div>
       </section>
 
       <!-- Buy & Hold Checklist -->
-      <section class="border-b border-white/10 py-8 max-md:px-4">
-        <div class="rounded-3xl bg-white/5 p-6 backdrop-blur-sm">
+      <section v-if="brand.assetPage.showChecklist" class="border-b py-8" :style="{ borderColor: brand.colors.border }">
+        <div class="rounded-3xl p-6 backdrop-blur-sm" :style="{ backgroundColor: brand.colors.surface }">
           <!-- Header com score -->
           <header class="mb-6">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div class="flex items-center gap-3">
-                <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10">
-                  <UIcon name="i-lucide-clipboard-check" class="h-5 w-5 text-white/60" />
+                <div class="flex h-9 w-9 items-center justify-center rounded-lg" :style="{ backgroundColor: brand.colors.surfaceHover }">
+                  <UIcon name="i-lucide-clipboard-check" class="h-5 w-5" :style="{ color: brand.colors.textMuted }" />
                 </div>
                 <div>
-                  <h2 class="text-lg font-semibold text-white">Checklist Buy & Hold</h2>
-                  <p class="text-xs text-white/40">Critérios para investidores de longo prazo</p>
+                  <h2 class="text-lg font-semibold" :style="{ color: brand.colors.text }">Checklist Buy & Hold</h2>
+                  <p class="text-xs" :style="{ color: brand.colors.textMuted }">Critérios para investidores de longo prazo</p>
                 </div>
               </div>
 
               <!-- Score -->
-              <div v-if="!isLoadingFundamentus && buyAndHoldChecklist.length" class="flex items-center gap-2 text-sm text-white/50">
-                <span class="font-medium text-white">{{ buyAndHoldChecklist.filter(i => i.status === 'pass').length }}</span>
+              <div v-if="!isLoadingFundamentus && buyAndHoldChecklist.length" class="flex items-center gap-2 text-sm" :style="{ color: brand.colors.textMuted }">
+                <span class="font-medium" :style="{ color: brand.colors.text }">{{ buyAndHoldChecklist.filter(i => i.status === 'pass').length }}</span>
                 <span>de</span>
                 <span>{{ buyAndHoldChecklist.length }} critérios</span>
               </div>
@@ -487,18 +460,20 @@
               <div
                 v-for="item in buyAndHoldChecklist"
                 :key="item.id"
-                class="group flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.02] p-3 transition-all hover:bg-white/5"
+                class="group flex items-center gap-3 rounded-xl border p-3 transition-all"
+                :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
               >
                 <!-- Status Icon -->
                 <div
+                  class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg"
                   :class="[
-                    'flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg',
                     item.status === 'pass'
                       ? 'bg-green-500/10 text-green-500'
                       : item.status === 'fail'
                         ? 'bg-red-500/10 text-red-500'
-                        : 'bg-white/5 text-white/30',
+                        : '',
                   ]"
+                  :style="item.status === 'unknown' ? { backgroundColor: brand.colors.surface, color: brand.colors.textMuted } : {}"
                 >
                   <UIcon
                     :name="
@@ -515,7 +490,7 @@
                 <!-- Content -->
                 <div class="flex min-w-0 flex-1 flex-col">
                   <div class="flex items-center gap-1.5">
-                    <span class="text-sm text-white/80">
+                    <span class="text-sm" :style="{ color: brand.colors.text }">
                       {{ item.label }}
                     </span>
                     <UTooltip
@@ -525,7 +500,8 @@
                     >
                       <button
                         type="button"
-                        class="text-white/20 transition-colors hover:text-white/50"
+                        class="transition-colors"
+                        :style="{ color: brand.colors.textMuted }"
                       >
                         <UIcon name="i-lucide-info" class="h-3 w-3" />
                       </button>
@@ -533,13 +509,13 @@
                   </div>
                   <p
                     v-if="item.detail"
-                    class="truncate text-xs text-white/40"
+                    class="truncate text-xs" :style="{ color: brand.colors.textMuted }"
                   >
                     {{ item.detail }}
                   </p>
                   <p
                     v-else-if="item.status === 'unknown'"
-                    class="text-xs text-white/30"
+                    class="text-xs" :style="{ color: brand.colors.textMuted }"
                   >
                     Dados indisponíveis
                   </p>
@@ -550,24 +526,25 @@
             <!-- Empty state -->
             <div
               v-else
-              class="flex flex-col items-center justify-center rounded-xl border border-dashed border-white/10 py-12 text-center"
+              class="flex flex-col items-center justify-center rounded-xl border border-dashed py-12 text-center"
+              :style="{ borderColor: brand.colors.border }"
             >
-              <UIcon name="i-lucide-clipboard-list" class="mb-3 h-8 w-8 text-white/20" />
-              <p class="text-sm text-white/40">Checklist indisponível</p>
-              <p class="text-xs text-white/20">Dados insuficientes para análise</p>
+              <UIcon name="i-lucide-clipboard-list" class="mb-3 h-8 w-8" :style="{ color: brand.colors.textMuted }" />
+              <p class="text-sm" :style="{ color: brand.colors.textMuted }">Checklist indisponível</p>
+              <p class="text-xs" :style="{ color: brand.colors.textMuted }">Dados insuficientes para análise</p>
             </div>
           </template>
         </div>
       </section>
 
       <!-- Asset Info -->
-      <section class="border-b border-white/10 py-8 max-md:px-4">
+      <section v-if="brand.assetPage.showCompanyInfo" class="border-b py-8" :style="{ borderColor: brand.colors.border }">
         <header class="mb-6 flex items-center gap-2">
-          <UIcon name="i-lucide-building-2" class="h-5 w-5 text-white/60" />
-          <h2 class="text-lg font-semibold text-white">Sobre a Empresa</h2>
+          <UIcon name="i-lucide-building-2" class="h-5 w-5" :style="{ color: brand.colors.textMuted }" />
+          <h2 class="text-lg font-semibold" :style="{ color: brand.colors.text }">Sobre a Empresa</h2>
         </header>
 
-        <div class="rounded-2xl bg-white/5 p-6 backdrop-blur-sm">
+        <div class="rounded-2xl p-6 backdrop-blur-sm" :style="{ backgroundColor: brand.colors.surface }">
           <div class="flex items-start gap-5">
             <USkeleton v-if="isLoadingAsset" class="h-16 w-16 flex-shrink-0 rounded-2xl" />
             <img
@@ -579,10 +556,10 @@
             <div class="flex flex-1 flex-col gap-3">
               <USkeleton v-if="isLoadingAsset" class="h-6 w-48" />
               <template v-else>
-                <h3 class="text-xl font-bold text-white">
+                <h3 class="text-xl font-bold" :style="{ color: brand.colors.text }">
                   {{ asset?.name }}
                 </h3>
-                <span class="text-sm text-white/60">{{ tickerUpper }}</span>
+                <span class="text-sm" :style="{ color: brand.colors.textMuted }">{{ tickerUpper }}</span>
               </template>
             </div>
           </div>
@@ -590,24 +567,24 @@
           <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <USkeleton v-if="isLoadingAsset" class="h-12 rounded-xl" />
             <template v-else>
-              <div v-if="asset?.sector" class="flex items-center gap-3 rounded-xl bg-white/5 p-4">
+              <div v-if="asset?.sector" class="flex items-center gap-3 rounded-xl p-4" :style="{ backgroundColor: brand.colors.surfaceHover }">
                 <UIcon name="i-lucide-layers" class="h-5 w-5 text-secondary" />
                 <div class="flex flex-col">
-                  <span class="text-xs text-white/50">Setor</span>
-                  <span class="text-sm font-medium text-white">{{ asset.sector }}</span>
+                  <span class="text-xs" :style="{ color: brand.colors.textMuted }">Setor</span>
+                  <span class="text-sm font-medium" :style="{ color: brand.colors.text }">{{ asset.sector }}</span>
                 </div>
               </div>
-              <div v-if="asset?.industry" class="flex items-center gap-3 rounded-xl bg-white/5 p-4">
+              <div v-if="asset?.industry" class="flex items-center gap-3 rounded-xl p-4" :style="{ backgroundColor: brand.colors.surfaceHover }">
                 <UIcon name="i-lucide-factory" class="h-5 w-5 text-secondary" />
                 <div class="flex flex-col">
-                  <span class="text-xs text-white/50">Indústria</span>
-                  <span class="text-sm font-medium text-white">{{ asset.industry }}</span>
+                  <span class="text-xs" :style="{ color: brand.colors.textMuted }">Indústria</span>
+                  <span class="text-sm font-medium" :style="{ color: brand.colors.text }">{{ asset.industry }}</span>
                 </div>
               </div>
-              <div v-if="asset?.website" class="flex items-center gap-3 rounded-xl bg-white/5 p-4">
+              <div v-if="asset?.website" class="flex items-center gap-3 rounded-xl p-4" :style="{ backgroundColor: brand.colors.surfaceHover }">
                 <UIcon name="i-lucide-globe" class="h-5 w-5 text-secondary" />
                 <div class="flex flex-col">
-                  <span class="text-xs text-white/50">Site</span>
+                  <span class="text-xs" :style="{ color: brand.colors.textMuted }">Site</span>
                   <a
                     :href="asset.website"
                     target="_blank"
@@ -624,7 +601,7 @@
       </section>
 
       <!-- Seção de IA para não autenticados -->
-      <section v-if="!authStore.isAuthenticated" class="border-t border-white/10 py-12 max-md:px-4">
+      <section v-if="!authStore.isAuthenticated" class="border-t py-12" :style="{ borderColor: brand.colors.border }">
         <div class="mx-auto max-w-4xl">
           <!-- Header -->
           <div class="mb-8 text-center">
@@ -632,10 +609,10 @@
               <IconAi class="fill-secondary h-4 w-4" />
               <span class="text-sm font-medium text-secondary">Assessoria Inteligente</span>
             </div>
-            <h2 class="mb-3 text-2xl font-bold text-white md:text-3xl lg:text-4xl">
+            <h2 class="mb-3 text-2xl font-bold md:text-3xl lg:text-4xl" :style="{ color: brand.colors.text }">
               Dúvidas sobre {{ tickerUpper }}?
             </h2>
-            <p class="text-white/60">
+            <p :style="{ color: brand.colors.textMuted }">
               Pergunte qualquer coisa. Nossa IA responde em segundos.
             </p>
           </div>
@@ -650,16 +627,17 @@
               ]"
               :key="idx"
               to="/auth/login"
-              class="group flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-5 transition-all duration-200 hover:border-secondary/30 hover:bg-secondary/5"
+              class="group flex flex-col gap-3 rounded-2xl border p-5 transition-all duration-200 hover:border-secondary/30 hover:bg-secondary/5"
+              :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
             >
-              <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 transition-colors group-hover:bg-secondary/20">
-                <UIcon :name="item.icon" class="h-5 w-5 text-white/60 transition-colors group-hover:text-secondary" />
+              <div class="flex h-10 w-10 items-center justify-center rounded-xl transition-colors group-hover:bg-secondary/20" :style="{ backgroundColor: brand.colors.surfaceHover }">
+                <UIcon :name="item.icon" class="h-5 w-5 transition-colors group-hover:text-secondary" :style="{ color: brand.colors.textMuted }" />
               </div>
               <div>
-                <p class="font-medium text-white">{{ item.text }}</p>
-                <p class="text-sm text-white/50">{{ item.desc }}</p>
+                <p class="font-medium" :style="{ color: brand.colors.text }">{{ item.text }}</p>
+                <p class="text-sm" :style="{ color: brand.colors.textMuted }">{{ item.desc }}</p>
               </div>
-              <div class="mt-auto flex items-center gap-1 text-sm text-white/40 transition-colors group-hover:text-secondary">
+              <div class="mt-auto flex items-center gap-1 text-sm transition-colors group-hover:text-secondary" :style="{ color: brand.colors.textMuted }">
                 <span>Perguntar</span>
                 <UIcon name="i-lucide-arrow-right" class="h-4 w-4" />
               </div>
@@ -667,20 +645,20 @@
           </div>
 
           <!-- CTA -->
-          <div class="flex flex-col items-center gap-4 rounded-2xl border border-white/10 bg-gradient-to-br from-secondary/10 to-transparent p-6 text-center md:p-8">
+          <div class="flex flex-col items-center gap-4 rounded-2xl border bg-gradient-to-br from-secondary/10 to-transparent p-6 text-center md:p-8" :style="{ borderColor: brand.colors.border }">
             <div class="flex items-center gap-3">
               <div class="flex -space-x-2">
-                <div class="flex h-8 w-8 items-center justify-center rounded-full bg-green-500/20 ring-2 ring-black">
+                <div class="flex h-8 w-8 items-center justify-center rounded-full bg-green-500/20 ring-2" :style="{ '--tw-ring-color': brand.colors.background }">
                   <UIcon name="i-lucide-check" class="h-4 w-4 text-green-400" />
                 </div>
-                <div class="flex h-8 w-8 items-center justify-center rounded-full bg-secondary/20 ring-2 ring-black">
+                <div class="flex h-8 w-8 items-center justify-center rounded-full bg-secondary/20 ring-2" :style="{ '--tw-ring-color': brand.colors.background }">
                   <UIcon name="i-lucide-zap" class="h-4 w-4 text-secondary" />
                 </div>
-                <div class="flex h-8 w-8 items-center justify-center rounded-full bg-purple-500/20 ring-2 ring-black">
+                <div class="flex h-8 w-8 items-center justify-center rounded-full bg-purple-500/20 ring-2" :style="{ '--tw-ring-color': brand.colors.background }">
                   <UIcon name="i-lucide-sparkles" class="h-4 w-4 text-purple-400" />
                 </div>
               </div>
-              <span class="text-sm text-white/60">Mais de 10.000 análises realizadas</span>
+              <span class="text-sm" :style="{ color: brand.colors.textMuted }">Mais de 10.000 análises realizadas</span>
             </div>
             <UButton
               to="/auth/login"
@@ -689,9 +667,9 @@
               icon="i-lucide-message-circle"
               class="hover:shadow-secondary/50 w-full transition-all hover:scale-[1.02] hover:shadow-xl sm:w-auto"
             >
-              Começar a Perguntar
+              {{ brand.ai.ctaButton }}
             </UButton>
-            <p class="flex items-center gap-2 text-xs text-white/40">
+            <p class="flex items-center gap-2 text-xs" :style="{ color: brand.colors.textMuted }">
               <UIcon name="i-lucide-shield-check" class="h-3 w-3" />
               Gratuito • Sem cadastro de cartão
             </p>
@@ -701,7 +679,7 @@
 
       <MoleculesChat
         v-else
-        class="w-full bg-white/10"
+        class="w-full" :style="{ backgroundColor: brand.colors.surface }"
         :suggestions="[
           'Me dê um relatório completo sobre a ação',
           'Por que devo investir neste ativo?',
@@ -725,9 +703,8 @@ import type {
   FundamentusData,
 } from '~/types/asset'
 import { generateChartConfig } from '~/helpers/utils'
-import { FastAverageColor } from 'fast-average-color'
-import colorLib from '@kurkle/color'
 
+const brand = useBrand()
 const authStore = useAuthStore()
 const route = useRoute()
 const {
@@ -773,28 +750,8 @@ const fundamentusData = ref<FundamentusApiResponse | null>(null)
 const isLoadingFundamentus = ref(true)
 const selectedTimeRange = ref<ChartTimeRange>('month')
 const isLoadingChart = ref(true)
-const pageGradient = ref('')
-const priceElement = ref<HTMLElement | null>(null)
-const isPriceVisible = ref(true)
 
 onMounted(() => {
-  const observer = new IntersectionObserver(
-    (entries) => {
-      const entry = entries[0]
-      if (entry) {
-        isPriceVisible.value = entry.isIntersecting
-      }
-    },
-    { threshold: 0 }
-  )
-  if (priceElement.value) {
-    observer.observe(priceElement.value)
-  }
-
-  onUnmounted(() => {
-    observer.disconnect()
-  })
-
   // Dados pesados (gráficos/dividendos/fundamentos) no client: reduz TTFB e custo de crawl do SSR
   fetchChartData()
   fetchDividendsData()
@@ -848,7 +805,7 @@ const volatilityPeriodLabel = computed(() => {
 
 const runtimeConfig = useRuntimeConfig()
 const baseSiteUrl = computed(() => {
-  const url = runtimeConfig.public?.siteUrl || 'https://www.redentia.com.br'
+  const url = runtimeConfig.public?.siteUrl || brand.url
   return url.endsWith('/') ? url.slice(0, -1) : url
 })
 
@@ -917,7 +874,7 @@ const pageDescription = computed(() => {
   const yearSegment = yearChangeSentence.value
     ? `${yearChangeSentence.value} `
     : ''
-  return `${baseSentence}${intradaySegment}. ${yearSegment}Explore dividendos, indicadores fundamentalistas e análises com IA na Redentia.`
+  return `${baseSentence}${intradaySegment}. ${yearSegment}Explore dividendos, indicadores fundamentalistas e análises com IA na ${brand.name}.`
 })
 
 const canonicalUrl = computed(
@@ -934,35 +891,6 @@ const shareImage = computed(() => {
   }
   return `${baseSiteUrl.value}/512x512.png`
 })
-
-async function updatePageGradient() {
-  if (import.meta.server) return
-  if (!asset.value?.logo) return
-
-  try {
-    const fac = new FastAverageColor()
-    const logoUrl = asset.value.logo.startsWith('http')
-      ? asset.value.logo
-      : `${baseSiteUrl.value}${asset.value.logo.startsWith('/') ? asset.value.logo : `/${asset.value.logo}`}`
-
-    const color = await fac.getColorAsync(logoUrl, {
-      algorithm: 'dominant',
-      ignoredColor: [
-        [255, 255, 255, 255], // white
-        [0, 0, 0, 255], // black
-      ],
-    })
-
-    // Darken the color significantly to start the gradient
-    const darkColor = colorLib(color.hex).darken(0.9).rgbString()
-
-    // Diagonal gradient: Dark Color -> Black
-    pageGradient.value = darkColor
-  } catch (e) {
-    console.error('Error extracting color', e)
-    pageGradient.value = ''
-  }
-}
 
 usePageSeo({
   title: () => pageTitle.value,
@@ -1874,14 +1802,6 @@ function formatNumberToShort(value: number): string {
   }
   return value.toFixed(0)
 }
-
-watch(
-  () => asset.value?.logo,
-  () => {
-    updatePageGradient()
-  },
-  { immediate: true }
-)
 
 // Atualiza ao trocar o período
 watch(selectedTimeRange, () => {

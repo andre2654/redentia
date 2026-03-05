@@ -191,9 +191,11 @@
 import { termos, categorias, encontrarTermosPorCategoria } from '~/data/glossario/termos'
 import type { CategoriaGlossario } from '~/types/glossario'
 
+const brand = useBrand()
+
 // SEO
 usePageSeo({
-  title: 'Glossário de Investimentos: +200 Termos Explicados | Redentia',
+  title: `Glossário de Investimentos: +200 Termos Explicados | ${brand.name}`,
   description:
     'Aprenda termos essenciais sobre ações, FIIs, indicadores financeiros e mercado de capitais. Definições claras, exemplos práticos e fórmulas. Glossário completo de investimentos.',
   path: '/glossario',
@@ -223,13 +225,13 @@ usePageSeo({
             '@type': 'ListItem',
             position: 1,
             name: 'Home',
-            item: 'https://www.redentia.com.br',
+            item: brand.url,
           },
           {
             '@type': 'ListItem',
             position: 2,
             name: 'Glossário',
-            item: 'https://www.redentia.com.br/glossario',
+            item: `${brand.url}/glossario`,
           },
         ],
       },

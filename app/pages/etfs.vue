@@ -245,13 +245,15 @@
 </template>
 
 <script setup lang="ts">
+const brand = useBrand()
+
 definePageMeta({
   isPublicRoute: true,
   hideInstallAppBanner: true,
 })
 
 usePageSeo({
-  title: 'ETFs: Guia Completo de Fundos de Índice no Brasil | Redentia',
+  title: `ETFs: Guia Completo de Fundos de Índice no Brasil | ${brand.name}`,
   description:
     'Aprenda a investir em ETFs (BOVA11, IVVB11, SMAL11). Diversificação instantânea, taxas baixas e exposição a índices como Ibovespa e S&P 500. Compare todos os ETFs da B3.',
   path: '/etfs',
@@ -264,7 +266,7 @@ usePageSeo({
         'Aprenda o que são ETFs, como funcionam, principais ETFs brasileiros (BOVA11, IVVB11, SMAL11) e como investir.',
       author: {
         '@type': 'Organization',
-        name: 'Redentia',
+        name: brand.name,
       },
     },
     {
@@ -275,13 +277,13 @@ usePageSeo({
           '@type': 'ListItem',
           position: 1,
           name: 'Home',
-          item: 'https://www.redentia.com.br',
+          item: brand.url,
         },
         {
           '@type': 'ListItem',
           position: 2,
           name: 'ETFs',
-          item: 'https://www.redentia.com.br/etfs',
+          item: `${brand.url}/etfs`,
         },
       ],
     },

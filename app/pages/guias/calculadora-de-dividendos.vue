@@ -257,7 +257,7 @@
 
       <!-- CTA para Ferramentas -->
       <MoleculesCtaSection
-        title="Use a Calculadora da Redentia"
+        :title="`Use a Calculadora da ${brand.name}`"
         description="Simule seus investimentos e descubra quanto precisa para atingir suas metas"
         :buttons="[
           { label: 'Calculadora de Juros Compostos', to: '/calculadora', icon: 'i-lucide-calculator', variant: 'primary' },
@@ -356,6 +356,8 @@
 </template>
 
 <script setup lang="ts">
+const brand = useBrand()
+
 definePageMeta({
   isPublicRoute: true,
   hideInstallAppBanner: true,
@@ -363,7 +365,7 @@ definePageMeta({
 
 usePageSeo({
   title:
-    'Calculadora de Dividendos: Quanto Receber Mensalmente | Redentia',
+    `Calculadora de Dividendos: Quanto Receber Mensalmente | ${brand.name}`,
   description:
     'Aprenda a calcular dividendos e quanto investir para atingir sua meta de renda passiva. Fórmulas, exemplos práticos, melhores pagadores e estratégias de reinvestimento.',
   path: '/guias/calculadora-de-dividendos',
@@ -376,14 +378,14 @@ usePageSeo({
         'Guia completo sobre como calcular dividendos e planej ar renda passiva com investimentos',
       author: {
         '@type': 'Organization',
-        name: 'Redentia',
+        name: brand.name,
       },
       publisher: {
         '@type': 'Organization',
-        name: 'Redentia',
+        name: brand.name,
         logo: {
           '@type': 'ImageObject',
-          url: 'https://www.redentia.com.br/512x512.png',
+          url: `${brand.url}/512x512.png`,
         },
       },
       datePublished: '2026-01-04',
@@ -427,19 +429,19 @@ usePageSeo({
           '@type': 'ListItem',
           position: 1,
           name: 'Home',
-          item: 'https://www.redentia.com.br',
+          item: brand.url,
         },
         {
           '@type': 'ListItem',
           position: 2,
           name: 'Guias',
-          item: 'https://www.redentia.com.br/guias',
+          item: `${brand.url}/guias`,
         },
         {
           '@type': 'ListItem',
           position: 3,
           name: 'Calculadora de Dividendos',
-          item: 'https://www.redentia.com.br/guias/calculadora-de-dividendos',
+          item: `${brand.url}/guias/calculadora-de-dividendos`,
         },
       ],
     },

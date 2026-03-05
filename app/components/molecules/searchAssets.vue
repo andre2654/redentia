@@ -3,8 +3,8 @@
     v-model:open="open"
     :ui="{
       content:
-        'bg-[#0a0a0b] border border-white/10 ring-0 sm:rounded-2xl shadow-2xl shadow-black/50 overflow-hidden',
-      overlay: 'backdrop-blur-md bg-black/70',
+        'ring-0 sm:rounded-2xl shadow-2xl overflow-hidden',
+      overlay: 'backdrop-blur-md',
       width: 'sm:max-w-xl',
       height: 'h-[70vh] max-h-[600px]',
     }"
@@ -24,12 +24,12 @@
             <UKbd
               value="meta"
               variant="subtle"
-              class="border-white/10 bg-white/5 text-white/40"
+              :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.textMuted }"
             />
             <UKbd
               value="K"
               variant="subtle"
-              class="border-white/10 bg-white/5 text-white/40"
+              :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.textMuted }"
             />
           </div>
         </template>
@@ -37,25 +37,27 @@
     </slot>
 
     <template #content>
-      <div class="flex h-full flex-col overflow-hidden">
+      <div class="flex h-full flex-col overflow-hidden border" :style="{ backgroundColor: brand.colors.background, borderColor: brand.colors.border, color: brand.colors.text }">
         <!-- Header / Search Input -->
-        <div class="flex-shrink-0 border-b border-white/10 p-4">
+        <div class="flex-shrink-0 border-b p-4" :style="{ borderColor: brand.colors.border }">
           <div class="flex items-center gap-2">
             <!-- Search Input -->
-            <div class="flex flex-1 items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-3">
-              <UIcon name="i-lucide-search" class="h-5 w-5 flex-shrink-0 text-white/40" />
+            <div class="flex flex-1 items-center gap-3 rounded-xl border px-4 py-3" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+              <UIcon name="i-lucide-search" class="h-5 w-5 flex-shrink-0" :style="{ color: brand.colors.textMuted }" />
               <input
                 v-model="searchTerm"
                 type="text"
                 placeholder="Buscar por nome ou ticker..."
-                class="min-w-0 flex-1 bg-transparent text-white placeholder:text-white/30 focus:outline-none"
+                class="min-w-0 flex-1 bg-transparent focus:outline-none"
+                :style="{ color: brand.colors.text, '--placeholder-color': brand.colors.textMuted }"
               >
               <div v-if="status === 'pending'" class="flex-shrink-0">
                 <UIcon name="i-lucide-loader-2" class="h-4 w-4 animate-spin text-secondary" />
               </div>
               <button
                 v-else-if="searchTerm"
-                class="flex-shrink-0 rounded-md p-1 text-white/40 transition hover:bg-white/10 hover:text-white"
+                class="flex-shrink-0 rounded-md p-1 transition"
+                :style="{ color: brand.colors.textMuted }"
                 @click="searchTerm = ''"
               >
                 <UIcon name="i-lucide-x" class="h-4 w-4" />
@@ -79,11 +81,11 @@
           <template v-for="group in filteredGroups" :key="group.id">
             <div v-if="group.items.length > 0" class="mb-4">
               <!-- Group Label -->
-              <div class="sticky top-0 z-10 mb-2 flex items-center gap-2 bg-[#0a0a0b] px-3 py-2">
-                <span class="text-[10px] font-semibold uppercase tracking-widest text-white/30">
+              <div class="sticky top-0 z-10 mb-2 flex items-center gap-2 px-3 py-2" :style="{ backgroundColor: brand.colors.background }">
+                <span class="text-[10px] font-semibold uppercase tracking-widest" :style="{ color: brand.colors.textMuted }">
                   {{ group.label }}
                 </span>
-                <span class="rounded-full bg-white/5 px-2 py-0.5 text-[10px] text-white/40">
+                <span class="rounded-full px-2 py-0.5 text-[10px]" :style="{ backgroundColor: brand.colors.surface, color: brand.colors.textMuted }">
                   {{ group.items.length }}
                 </span>
               </div>
@@ -94,26 +96,26 @@
                   v-for="item in group.items"
                   :key="item.id"
                   :to="item.to"
-                  class="group flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all hover:bg-white/5"
+                  class="group flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all"
                   @click="onSelect"
                 >
                   <!-- Logo -->
-                  <div class="flex h-9 w-9 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-white/5">
+                  <div class="flex h-9 w-9 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
                     <img
                       v-if="item.avatar?.src"
                       :src="item.avatar.src"
                       :alt="item.label"
                       class="h-full w-full object-cover"
                     >
-                    <span v-else class="text-xs font-bold text-white/40">
+                    <span v-else class="text-xs font-bold" :style="{ color: brand.colors.textMuted }">
                       {{ item.label.slice(0, 2) }}
                     </span>
                   </div>
 
                   <!-- Info -->
                   <div class="flex min-w-0 flex-1 flex-col">
-                    <span class="text-sm font-semibold text-white">{{ item.label }}</span>
-                    <span class="truncate text-xs text-white/40">{{ item.suffix }}</span>
+                    <span class="text-sm font-semibold" :style="{ color: brand.colors.text }">{{ item.label }}</span>
+                    <span class="truncate text-xs" :style="{ color: brand.colors.textMuted }">{{ item.suffix }}</span>
                   </div>
 
                   <!-- Preço + Variação + Arrow -->
@@ -121,7 +123,8 @@
                     <div class="text-right">
                       <span
                         v-if="item.price > 0"
-                        class="block text-xs font-medium text-white tabular-nums"
+                        class="block text-xs font-medium tabular-nums"
+                        :style="{ color: brand.colors.text }"
                       >
                         {{ formatCurrencyBRL(item.price) }}
                       </span>
@@ -137,7 +140,8 @@
                     </div>
                     <UIcon
                       name="i-lucide-chevron-right"
-                      class="h-4 w-4 flex-shrink-0 text-white/20 transition-all group-hover:translate-x-0.5 group-hover:text-white/40"
+                      class="h-4 w-4 flex-shrink-0 transition-all group-hover:translate-x-0.5"
+                      :style="{ color: brand.colors.textMuted }"
                     />
                   </div>
                 </NuxtLink>
@@ -147,11 +151,11 @@
 
           <!-- Empty State -->
           <div v-if="hasNoResults" class="flex flex-col items-center justify-center py-16 text-center">
-            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/5">
-              <UIcon name="i-lucide-search-x" class="h-7 w-7 text-white/30" />
+            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl" :style="{ backgroundColor: brand.colors.surface }">
+              <UIcon name="i-lucide-search-x" class="h-7 w-7" :style="{ color: brand.colors.textMuted }" />
             </div>
-            <p class="text-sm text-white/40">Nenhum ativo encontrado</p>
-            <p class="mt-1 text-xs text-white/20">Tente buscar por outro nome ou ticker</p>
+            <p class="text-sm" :style="{ color: brand.colors.textMuted }">Nenhum ativo encontrado</p>
+            <p class="mt-1 text-xs" :style="{ color: brand.colors.textMuted }">Tente buscar por outro nome ou ticker</p>
             <NuxtLink
               to="/search"
               class="mt-4 flex items-center gap-2 text-sm text-secondary transition hover:underline"
@@ -172,6 +176,7 @@ import type { IAsset } from '~/types/asset'
 
 defineOptions({ inheritAttrs: false })
 
+const brand = useBrand()
 const searchTerm = ref('')
 const { getAssets } = useAssetsService()
 const open = ref(false)
@@ -182,18 +187,23 @@ const props = defineProps<{
 }>()
 
 const triggerUi = computed(() => {
+  const isLight = brand.theme.mode === 'light'
+  const surfaceBg = isLight ? 'bg-black/5 hover:bg-black/10' : 'bg-white/5 hover:bg-white/10'
+  const mutedText = isLight ? 'text-black/50' : 'text-white/50'
+  const iconColor = isLight ? 'text-black/40' : 'text-white/40'
+
   if (props.compact) {
     return {
-      base: 'rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center',
+      base: `rounded-full ${surfaceBg} flex items-center justify-center`,
       icon: 'size-5 text-secondary',
       label: 'hidden',
     }
   }
 
   return {
-    base: 'w-full text-left justify-start text-white/50 bg-white/5 hover:bg-white/10 rounded-2xl px-4 transition-all',
+    base: `w-full text-left justify-start ${mutedText} ${surfaceBg} rounded-2xl px-4 transition-all`,
     label: 'font-normal',
-    icon: 'text-white/40',
+    icon: iconColor,
   }
 })
 

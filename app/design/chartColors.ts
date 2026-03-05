@@ -1,9 +1,40 @@
+// Legacy static fallback — prefer useChartColors() composable for brand-aware colors
 export const ChartColors = {
   positive: '#b9ecc1',
   negative: '#8E3939',
   secondary: '#a7d6ff',
   neutral: '#6B7280',
 } as const
+
+/**
+ * Brand-aware chart colors. Use inside setup() or computed().
+ */
+export function useChartColors() {
+  const brand = useBrand()
+  return {
+    positive: brand.colors.positive,
+    negative: brand.colors.negative,
+    secondary: brand.colors.secondary,
+    neutral: brand.colors.neutral,
+    primary: brand.colors.primary,
+    text: brand.colors.text,
+    textMuted: brand.colors.textMuted,
+    border: brand.colors.border,
+    surface: brand.colors.surface,
+    background: brand.colors.background,
+    // Grid/tick helpers for light vs dark mode
+    gridColor: brand.theme.mode === 'light' ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.04)',
+    tickColor: brand.theme.mode === 'light' ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.3)',
+    tickColorMuted: brand.theme.mode === 'light' ? 'rgba(0, 0, 0, 0.25)' : 'rgba(255, 255, 255, 0.2)',
+    labelColor: brand.theme.mode === 'light' ? 'rgba(0, 0, 0, 0.6)' : 'rgba(255, 255, 255, 0.7)',
+    tooltipBg: brand.theme.mode === 'light' ? 'rgba(255, 255, 255, 0.95)' : 'rgba(0, 0, 0, 0.9)',
+    tooltipBorder: brand.colors.border,
+    tooltipText: brand.colors.text,
+    tooltipTextMuted: brand.colors.textMuted,
+    loadingBg: brand.theme.mode === 'light' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.4)',
+    crosshairColor: brand.theme.mode === 'light' ? 'rgba(0, 0, 0, 0.3)' : 'rgba(255, 255, 255, 0.3)',
+  }
+}
 
 function normalizeHex(hex: string): string {
   const value = hex.trim()

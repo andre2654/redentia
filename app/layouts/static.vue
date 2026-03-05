@@ -1,10 +1,12 @@
 <template>
   <div
-    class="selection:bg-primary min-h-screen bg-black font-sans text-white selection:text-black"
+    class="selection:bg-primary min-h-screen font-sans selection:text-black"
+    :style="{ backgroundColor: brand.colors.background, color: brand.colors.text }"
   >
     <!-- Header -->
     <header
-      class="fixed top-0 z-50 w-full border-b border-white/5 bg-black/50 backdrop-blur-xl"
+      class="fixed top-0 z-50 w-full border-b backdrop-blur-xl"
+      :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.background + '80' }"
     >
       <div
         class="mx-auto flex h-20 max-w-7xl items-center justify-between px-6"
@@ -13,8 +15,9 @@
           to="/"
           class="group flex items-center gap-2 transition-opacity hover:opacity-80"
         >
-          <IconLogoFull
-            class="h-8 w-auto fill-white transition-transform group-hover:scale-105 md:h-9"
+          <BrandLogo
+            variant="full"
+            class="h-8 w-auto transition-transform group-hover:scale-105 md:h-9"
           />
         </NuxtLink>
         <UButton
@@ -44,17 +47,19 @@
         <!-- Title -->
         <h1
           v-if="title"
-          class="mb-12 text-center text-4xl font-bold tracking-tight text-white md:text-6xl"
+          class="mb-12 text-center text-4xl font-bold tracking-tight md:text-6xl"
+          :style="{ color: brand.colors.text }"
         >
           <span
-            class="bg-linear-to-b from-white to-white/60 bg-clip-text text-transparent"
+            class="bg-linear-to-b bg-clip-text text-transparent"
+            :style="{ backgroundImage: `linear-gradient(to bottom, ${brand.colors.text}, ${brand.colors.textMuted})` }"
           >
             {{ title }}
           </span>
         </h1>
 
         <!-- Content -->
-        <div class="static-content text-lg text-gray-400">
+        <div class="static-content text-lg" :style="{ color: brand.colors.textMuted }">
           <slot />
         </div>
       </div>
@@ -65,6 +70,8 @@
 </template>
 
 <script lang="ts" setup>
+const brand = useBrand()
+
 defineProps({
   title: {
     type: String,
@@ -81,15 +88,18 @@ defineProps({
 @reference "../assets/css/main.css";
 
 .static-content h1 {
-  @apply mb-6 mt-10 hidden text-3xl font-bold text-white; /* Hide h1 inside content if it duplicates the title */
+  @apply mb-6 mt-10 hidden text-3xl font-bold; /* Hide h1 inside content if it duplicates the title */
+  color: var(--brand-text);
 }
 
 .static-content h2 {
-  @apply mb-4 mt-8 text-2xl font-bold text-white;
+  @apply mb-4 mt-8 text-2xl font-bold;
+  color: var(--brand-text);
 }
 
 .static-content h3 {
-  @apply mb-3 mt-6 text-xl font-bold text-white;
+  @apply mb-3 mt-6 text-xl font-bold;
+  color: var(--brand-text);
 }
 
 .static-content p {
@@ -97,7 +107,8 @@ defineProps({
 }
 
 .static-content strong {
-  @apply font-semibold text-white;
+  @apply font-semibold;
+  color: var(--brand-text);
 }
 
 .static-content ul {

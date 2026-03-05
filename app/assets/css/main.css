@@ -3,23 +3,23 @@
 
 :root {
   color-scheme: dark;
-  --ui-color-background: black;
-  --ui-color-text: white;
-  --ui-primary: #b9ecc1;
-  --ui-secondary: #a7d6ff;
-  --ui-tertiary: #042f54;
-  --ui-positive: #22c55e;
-  --ui-negative: #ef4444;
-  --ui-neutral: #6b7280;
+  --ui-color-background: var(--brand-background, black);
+  --ui-color-text: var(--brand-text, white);
+  --ui-primary: var(--brand-primary, #4ADE80);
+  --ui-secondary: var(--brand-secondary, #22C55E);
+  --ui-tertiary: var(--brand-tertiary, #0A0A0A);
+  --ui-positive: var(--brand-positive, #4ADE80);
+  --ui-negative: var(--brand-negative, #ef4444);
+  --ui-neutral: var(--brand-neutral, #6b7280);
 }
 
 body {
-  background: black;
-  color: white;
+  background: var(--brand-background, black);
+  color: var(--brand-text, white);
 }
 
 * {
-  font-family: 'Sora';
+  font-family: var(--brand-font, 'Inter');
   box-sizing: border-box;
 }
 
@@ -37,7 +37,7 @@ body {
 
   /* Subtle focus-within for containers */
   *:focus-within {
-    --tw-ring-color: rgba(185, 236, 193, 0.3);
+    --tw-ring-color: color-mix(in srgb, var(--brand-primary, #4ADE80) 30%, transparent);
   }
 }
 
@@ -48,7 +48,7 @@ body {
 @layer utilities {
   *,
   hr {
-    border-color: #363636;
+    border-color: var(--brand-border, #1F1F1F);
   }
 
   .no-scrollbar::-webkit-scrollbar {
@@ -58,10 +58,43 @@ body {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+  /* Brand-aware text colors */
+  .text-brand {
+    color: var(--brand-text);
+  }
+  .text-brand-muted {
+    color: var(--brand-text-muted);
+  }
+  .bg-brand-surface {
+    background-color: var(--brand-surface);
+  }
+  .bg-brand-surface-hover:hover {
+    background-color: var(--brand-surface-hover);
+  }
+  .border-brand {
+    border-color: var(--brand-border);
+  }
 }
 
 button:disabled {
   @apply cursor-not-allowed opacity-50;
+}
+
+.brand-card {
+  border-radius: var(--brand-radius-xl);
+}
+
+.brand-card-md {
+  border-radius: var(--brand-radius-lg);
+}
+
+.brand-card-sm {
+  border-radius: var(--brand-radius-md);
+}
+
+.brand-pill {
+  border-radius: var(--brand-radius-full);
 }
 
 .glass {

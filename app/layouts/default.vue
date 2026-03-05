@@ -3,12 +3,14 @@
 
   <!-- Menu mobile -->
   <div
-    class="fixed bottom-0 left-0 right-0 z-20 mx-auto flex w-full items-center justify-center gap-3 border-t border-white/10 bg-gradient-to-tr from-black via-neutral-950 to-neutral-900 px-4 py-4 text-white shadow-[0_-18px_40px_rgba(0,0,0,0.55)] backdrop-blur-2xl xl:hidden"
+    class="fixed bottom-0 left-0 right-0 z-20 mx-auto flex w-full items-center justify-center gap-3 border-t px-4 py-4 backdrop-blur-2xl xl:hidden"
+    :style="{ background: brand.colors.background, borderColor: brand.colors.border, color: brand.colors.text, boxShadow: brand.theme?.mode === 'dark' ? '0 -18px 40px rgba(0,0,0,0.55)' : 'none' }"
   >
     <button
       type="button"
       aria-label="Abrir menu"
-      class="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition hover:border-white/20 hover:bg-white/10"
+      class="flex h-12 w-12 items-center justify-center rounded-full border transition"
+      :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.text }"
       @click="menuMobileActive = true"
     >
       <UIcon name="i-lucide-menu" class="text-secondary size-5" />
@@ -16,8 +18,9 @@
     <NuxtLink
       to="/"
       aria-label="Visão geral"
-      active-class="border-secondary/60 bg-secondary/10 text-white"
-      class="flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition hover:border-white/20 hover:bg-white/10"
+      active-class="border-secondary/60 bg-secondary/10"
+      class="flex h-12 w-12 items-center justify-center rounded-full border transition"
+      :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.text }"
     >
       <UIcon name="i-si-dashboard-vert-fill" class="text-secondary size-5" />
     </NuxtLink>
@@ -30,7 +33,8 @@
         <MoleculesSearchAssets
           :compact="false"
           aria-label="Buscar ativos"
-          class="w-full h-12 rounded-2xl border border-white/10 bg-white/5 text-white transition hover:border-white/20 hover:bg-white/10"
+          class="w-full h-12 rounded-2xl border transition"
+          :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.text }"
         />
       </div>
     </template>
@@ -38,17 +42,20 @@
       <MoleculesSearchAssets
         :compact="true"
         aria-label="Buscar ativos"
-        class="h-12 w-12 rounded-full border border-white/10 bg-white/5 text-white transition hover:border-white/20 hover:bg-white/10"
+        class="h-12 w-12 rounded-full border transition"
+        :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.text }"
       />
       <NuxtLink
         to="/download"
-        active-class="border-secondary/60 bg-secondary/10 text-white"
-        class="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-white transition hover:border-white/20 hover:bg-white/10"
+        active-class="border-secondary/60 bg-secondary/10"
+        class="flex flex-1 items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm font-medium transition"
+        :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.text }"
       >
-        <IconLogo
-          class="h-5 fill-white drop-shadow-[0_4px_10px_rgba(255,255,255,0.2)]"
+        <BrandLogo
+          variant="icon"
+          class="h-5 drop-shadow-[0_4px_10px_rgba(255,255,255,0.2)]"
         />
-        Baixar app
+        {{ brand.nav.downloadApp }}
       </NuxtLink>
     </template>
   </div>
@@ -60,39 +67,41 @@
       class="sticky top-0 flex h-screen w-[320px] min-w-[320px] flex-col gap-6 p-4 max-xl:hidden"
     >
       <!-- User Profile Card -->
-      <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+      <div class="rounded-2xl border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
         <div class="flex items-center gap-3">
           <div class="relative">
             <UAvatar :alt="authStore.me?.name || 'Usuário'" size="lg" class="ring-2 ring-secondary/30" />
-            <div class="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-black bg-green-500" />
+            <div class="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 bg-green-500" :style="{ borderColor: brand.colors.background }" />
           </div>
           <div class="flex flex-1 flex-col">
-            <span class="font-medium text-white">
+            <span class="font-medium" :style="{ color: brand.colors.text }">
               {{ authStore.me?.name || 'Usuário' }}
             </span>
-            <span class="flex items-center gap-1 text-xs text-white/50">
+            <span class="flex items-center gap-1 text-xs" :style="{ color: brand.colors.textMuted }">
               <UIcon name="i-lucide-sparkles" class="h-3 w-3 text-secondary" />
-              Plano gratuito
+              {{ brand.sidebar.planLabel }}
             </span>
           </div>
         </div>
-        <div class="mt-4 flex items-center gap-2 border-t border-white/10 pt-4">
+        <div class="mt-4 flex items-center gap-2 border-t pt-4" :style="{ borderColor: brand.colors.border }">
           <button
-            class="flex flex-1 items-center justify-center gap-2 rounded-lg bg-white/5 px-3 py-2 text-xs text-white/60 transition hover:bg-white/10 hover:text-white"
+            class="flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs transition"
+            :style="{ backgroundColor: brand.colors.surface, color: brand.colors.textMuted }"
             @click="interfaceStore.toggleRevealAmount"
           >
             <UIcon
               :name="interfaceStore.revealAmount ? 'i-lucide-eye-off' : 'i-lucide-eye'"
               class="h-4 w-4"
             />
-            {{ interfaceStore.revealAmount ? 'Ocultar' : 'Mostrar' }}
+            {{ interfaceStore.revealAmount ? brand.nav.hide : brand.nav.show }}
           </button>
           <button
-            class="flex flex-1 items-center justify-center gap-2 rounded-lg bg-white/5 px-3 py-2 text-xs text-white/60 transition hover:bg-red-500/10 hover:text-red-400"
+            class="flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs transition hover:bg-red-500/10 hover:text-red-400"
+            :style="{ backgroundColor: brand.colors.surface, color: brand.colors.textMuted }"
             @click="makeLogout"
           >
             <UIcon name="i-lucide-log-out" class="h-4 w-4" />
-            Sair
+            {{ brand.nav.logout }}
           </button>
         </div>
       </div>
@@ -100,23 +109,24 @@
       <!-- Search -->
       <MoleculesSearchAssets
         v-if="!hideSearchBar"
-        class="rounded-xl border border-white/10 bg-white/5 px-4 py-3 transition hover:border-white/20"
+        class="rounded-xl border px-4 py-3 transition"
+        :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
       />
 
       <!-- Navigation -->
       <nav class="flex flex-1 flex-col gap-1">
-        <span class="mb-2 px-4 text-[10px] font-medium uppercase tracking-wider text-white/30">Menu</span>
-        <AtomsSidebarButton to="/" text="Visão Geral" icon="i-lucide-layout-dashboard" />
-        <AtomsSidebarButton to="/wallet" text="Sua carteira" icon="i-lucide-wallet" />
-        <AtomsSidebarButton to="/help" text="Chat" icon="i-lucide-message-circle" />
-        <AtomsSidebarButton v-if="authStore.me?.role === 'advisor'" to="/advisor" text="Área do assessor" icon="i-lucide-users" />
-        <AtomsSidebarButton to="/settings" text="Configurações" icon="i-lucide-settings" />
+        <span class="mb-2 px-4 text-[10px] font-medium uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">{{ brand.nav.menuLabel }}</span>
+        <AtomsSidebarButton to="/" :text="brand.nav.overview" icon="i-lucide-layout-dashboard" />
+        <AtomsSidebarButton to="/wallet" :text="brand.nav.wallet" icon="i-lucide-wallet" />
+        <AtomsSidebarButton to="/help" :text="brand.nav.chat" icon="i-lucide-message-circle" />
+        <AtomsSidebarButton v-if="authStore.me?.role === 'advisor'" to="/advisor" :text="brand.nav.advisorArea" icon="i-lucide-users" />
+        <AtomsSidebarButton to="/settings" :text="brand.nav.settings" icon="i-lucide-settings" />
 
         <div class="my-2" />
-        <span class="mb-2 px-4 text-[10px] font-medium uppercase tracking-wider text-white/30">Ferramentas</span>
-        <AtomsSidebarButton to="/calculadora" text="Calculadoras" icon="i-lucide-calculator" />
-        <AtomsSidebarButton to="/guias" text="Guias" icon="i-lucide-book-open" />
-        <AtomsSidebarButton to="/dividends" text="Proventos" icon="i-lucide-coins" disabled />
+        <span class="mb-2 px-4 text-[10px] font-medium uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">{{ brand.nav.toolsLabel }}</span>
+        <AtomsSidebarButton to="/calculadora" :text="brand.nav.calculators" icon="i-lucide-calculator" />
+        <AtomsSidebarButton to="/guias" :text="brand.nav.guides" icon="i-lucide-book-open" />
+        <AtomsSidebarButton to="/dividends" :text="brand.nav.dividends" icon="i-lucide-coins" disabled />
       </nav>
 
       <!-- AI CTA (oculto para assessor; assessor usa o item Chat no menu) -->
@@ -131,35 +141,38 @@
             <IconAi class="fill-secondary h-5 w-5" />
           </div>
           <div class="flex flex-col">
-            <span class="text-sm font-semibold text-secondary">Assessoria com IA</span>
-            <span class="text-xs text-white/50">Tire suas dúvidas grátis</span>
+            <span class="text-sm font-semibold text-secondary">{{ brand.sidebar.aiCtaTitle }}</span>
+            <span class="text-xs" :style="{ color: brand.colors.textMuted }">{{ brand.sidebar.aiCtaSubtitle }}</span>
           </div>
           <UIcon name="i-lucide-arrow-right" class="ml-auto h-4 w-4 text-secondary/60 transition-transform group-hover:translate-x-1" />
         </div>
       </NuxtLink>
     </aside>
     <div
-      class="relative flex w-full flex-col overflow-hidden bg-black xl:px-4 xl:py-4"
+      class="relative flex w-full flex-col overflow-hidden xl:px-4 xl:py-4"
+      :style="{ backgroundColor: brand.colors.background }"
     >
       <header
         v-bind="headerProps"
         ref="header"
-        class="sticky top-0 z-20 flex min-h-[60px] w-full items-center justify-between gap-4 bg-white/5 px-6 py-4 backdrop-blur-xl xl:top-4 xl:rounded-[25px]"
-        :style="{ background: headerBg }"
+        class="sticky top-0 z-20 flex min-h-[60px] w-full items-center justify-between gap-4 px-6 py-4 backdrop-blur-xl xl:top-4 xl:rounded-[25px]"
+        :style="{ background: headerBg || brand.colors.surface }"
       >
         <slot name="header-branding">
           <div class="flex items-center gap-5">
-            <IconLogo class="h-9 w-9 fill-white" />
+            <BrandLogo variant="icon" class="h-9 w-9" />
             <div class="flex flex-col">
               <span
-                class="text-[14px] uppercase tracking-[0.25em] text-white/50"
+                class="text-[14px] uppercase tracking-[0.25em]"
+                :style="{ color: brand.colors.textMuted }"
               >
-                Redentia
+                {{ brand.header.title }}
               </span>
               <span
-                class="-mt-2 text-[14px] font-semibold tracking-[0.05em] text-white"
+                class="-mt-2 text-[14px] font-semibold tracking-[0.05em]"
+                :style="{ color: brand.colors.text }"
               >
-                Investir com IA
+                {{ brand.header.subtitle }}
               </span>
             </div>
           </div>
@@ -205,6 +218,8 @@ defineProps({
     default: '',
   },
 })
+
+const brand = useBrand()
 
 const allAttrs = useAttrs()
 const interfaceStore = useInterfaceStore()

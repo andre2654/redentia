@@ -431,7 +431,7 @@
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
             <p class="mt-3 text-sm text-gray-300">
-              Analise: 1) Fundamentos: lucro consistente, baixo endividamento, boa geração de caixa, 2) Dividendos: histórico de pagamentos, payout sustentável, 3) Setor: preferir setores defensivos ou com boas perspectivas, 4) Preço: não pagar caro (P/L, P/VP razoáveis), 5) Gestão: empresa bem administrada, 6) Vantagem competitiva: diferenciação, marca forte. Use o simulador para ver como a ação performou no passado e ler análises na Redentia.
+              Analise: 1) Fundamentos: lucro consistente, baixo endividamento, boa geração de caixa, 2) Dividendos: histórico de pagamentos, payout sustentável, 3) Setor: preferir setores defensivos ou com boas perspectivas, 4) Preço: não pagar caro (P/L, P/VP razoáveis), 5) Gestão: empresa bem administrada, 6) Vantagem competitiva: diferenciação, marca forte. Use o simulador para ver como a ação performou no passado e ler análises na {{ brand.name }}.
             </p>
           </details>
 
@@ -539,7 +539,7 @@
       <!-- CTA -->
       <MoleculesCtaSection
         title="Descubra as melhores ações para investir"
-        description="Use a Redentia para analisar ações em tempo real, receber recomendações com IA e acompanhar sua carteira."
+        :description="`Use a ${brand.name} para analisar ações em tempo real, receber recomendações com IA e acompanhar sua carteira.`"
         primary-button-text="Criar conta grátis"
         primary-button-link="/auth/register"
         secondary-button-text="Ver ações em alta"
@@ -553,6 +553,7 @@
 import { computed } from 'vue'
 import { useAssetsService } from '~/services/assets'
 
+const brand = useBrand()
 const { getAssets } = useAssetsService()
 const { data: assetsData, pending: assetsPending } = await useAsyncData(
   'assets-calculator-acoes',
@@ -568,7 +569,7 @@ const assets = computed(() => assetsData.value ?? [])
 const assetsLoading = computed(() => assetsPending.value)
 
 usePageSeo({
-  title: 'Simulador de Investimento em Ações com Dividendos | Redentia',
+  title: `Simulador de Investimento em Ações com Dividendos | ${brand.name}`,
   description:
     'Simule quanto você teria ganho investindo em ações da B3. Análise com dados históricos reais, reinvestimento de dividendos e comparação de múltiplos ativos. Gratuito!',
   path: '/calculadora/acoes',
@@ -581,7 +582,7 @@ usePageSeo({
     {
       '@context': 'https://schema.org',
       '@type': 'SoftwareApplication',
-      name: 'Simulador de Investimento em Ações Redentia',
+      name: `Simulador de Investimento em Ações ${brand.name}`,
       applicationCategory: 'FinanceApplication',
       offers: {
         '@type': 'Offer',

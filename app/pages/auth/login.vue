@@ -28,10 +28,10 @@
               Acesso
             </span>
             <h1 class="text-2xl font-semibold text-white">
-              Entrar no Redentia
+              {{ brand.auth.loginTitle }}
             </h1>
             <p class="text-sm text-white/70">
-              Preencha seus dados para continuar sua jornada de investimentos.
+              {{ brand.auth.loginSubtitle }}
             </p>
           </div>
 
@@ -57,7 +57,7 @@
             size="lg"
             class="mt-2 w-full justify-center"
           >
-            Entrar
+            {{ brand.nav.login }}
           </AtomsButton>
 
           <div class="flex flex-col gap-2 text-center md:text-left">
@@ -65,12 +65,10 @@
               to="/auth/register"
               class="text-secondary hover:text-secondary/80 text-sm font-medium transition"
             >
-              Ainda não tem conta? Cadastre-se agora
+              Ainda nao tem conta? Cadastre-se agora
             </NuxtLink>
             <p class="text-[11px] leading-relaxed text-white/60">
-              Ao fazer login e usar o Redentia, você concorda com nossos Termos
-              de Serviço e Política de privacidade, confirmando que tem pelo
-              menos 18 anos de idade.
+              {{ brand.auth.termsText }}
             </p>
           </div>
         </UForm>
@@ -83,6 +81,7 @@
 import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
 
+const brand = useBrand()
 const router = useRouter()
 const { login } = useAuthService()
 const authStore = useAuthStore()
@@ -122,9 +121,9 @@ definePageMeta({
 })
 
 usePageSeo({
-  title: 'Entrar | Redentia',
+  title: `Entrar | ${brand.name}`,
   description:
-    'Faça login na Redentia para acessar dashboards em tempo real, acompanhar ativos e receber insights personalizados com IA.',
+    `Faça login na ${brand.name} para acessar dashboards em tempo real, acompanhar ativos e receber insights personalizados com IA.`,
   path: '/auth/login',
   robots: 'noindex,nofollow',
 })

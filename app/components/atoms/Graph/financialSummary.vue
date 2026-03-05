@@ -1,12 +1,13 @@
 <template>
   <section
-    class="financial-card flex h-full flex-col overflow-hidden rounded-xl border border-white/10 bg-white/[0.02] transition-all hover:border-white/20 hover:bg-white/[0.04]"
+    class="financial-card flex h-full flex-col overflow-hidden rounded-xl border transition-all"
+    :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
   >
     <!-- Header -->
-    <header class="flex items-center justify-between border-b border-white/5 px-4 py-3">
+    <header class="flex items-center justify-between border-b px-4 py-3" :style="{ borderColor: brand.colors.border }">
       <div class="flex items-center gap-2">
-        <UIcon v-if="props.icon" :name="props.icon" class="h-4 w-4 text-white/40" />
-        <h3 class="text-sm font-medium text-white">
+        <UIcon v-if="props.icon" :name="props.icon" class="h-4 w-4" :style="{ color: brand.colors.textMuted }" />
+        <h3 class="text-sm font-medium" :style="{ color: brand.colors.text }">
           {{ props.title }}
         </h3>
       </div>
@@ -20,8 +21,8 @@
         v-if="props.isLoading"
         class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2"
       >
-        <UIcon name="i-lucide-loader-2" class="h-5 w-5 animate-spin text-white/30" />
-        <span class="text-xs text-white/30">Carregando...</span>
+        <UIcon name="i-lucide-loader-2" class="h-5 w-5 animate-spin" :style="{ color: brand.colors.textMuted }" />
+        <span class="text-xs" :style="{ color: brand.colors.textMuted }">Carregando...</span>
       </div>
 
       <!-- Chart -->
@@ -35,7 +36,7 @@
     </div>
 
     <!-- Legend -->
-    <div v-if="!props.isLoading && props.items.length" class="flex flex-wrap gap-3 border-t border-white/5 px-4 py-3">
+    <div v-if="!props.isLoading && props.items.length" class="flex flex-wrap gap-3 border-t px-4 py-3" :style="{ borderColor: brand.colors.border }">
       <div
         v-for="(item, index) in props.items"
         :key="item.label"
@@ -45,17 +46,19 @@
           class="h-2 w-2 rounded-full"
           :style="{ backgroundColor: palette[index % palette.length] }"
         />
-        <span class="text-[10px] text-white/50">{{ item.label }}</span>
+        <span class="text-[10px]" :style="{ color: brand.colors.textMuted }">{{ item.label }}</span>
       </div>
     </div>
 
     <!-- Tooltip -->
     <div
       v-if="hoveredIndex !== null && tooltipData"
-      class="pointer-events-none fixed z-50 rounded-lg border border-white/10 bg-black/90 px-3 py-2 shadow-xl backdrop-blur-sm"
+      class="pointer-events-none fixed z-50 rounded-lg border px-3 py-2 shadow-xl backdrop-blur-sm"
       :style="{
         left: `${tooltipPosition.x + 12}px`,
         top: `${tooltipPosition.y - 56}px`,
+        borderColor: cc.tooltipBorder,
+        backgroundColor: cc.tooltipBg,
       }"
     >
       <div class="flex items-center gap-2">
@@ -64,10 +67,10 @@
           :style="{ backgroundColor: tooltipData.color }"
         />
         <div class="flex flex-col">
-          <span class="text-[10px] text-white/50">
+          <span class="text-[10px]" :style="{ color: cc.tooltipTextMuted }">
             {{ tooltipData.label }}
           </span>
-          <span class="text-sm font-semibold text-white">
+          <span class="text-sm font-semibold" :style="{ color: cc.tooltipText }">
             {{ tooltipData.value }}
           </span>
         </div>
@@ -98,8 +101,12 @@ import {
   type ChartEvent,
 } from 'chart.js'
 import colorLib from '@kurkle/color'
+import { useChartColors } from '~/design/chartColors'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend)
+
+const brand = useBrand()
+const cc = useChartColors()
 
 interface FinancialChartItem {
   label: string
@@ -204,9 +211,9 @@ const chartOptions = computed(() => ({
       display: false,
     },
     y: {
-      grid: { color: 'rgba(255,255,255,0.04)', drawTicks: false },
+      grid: { color: cc.gridColor, drawTicks: false },
       ticks: {
-        color: 'rgba(255,255,255,0.3)',
+        color: cc.tickColor,
         font: { size: 10 },
         padding: 8,
         maxTicksLimit: 5,

@@ -314,7 +314,7 @@
       <!-- CTA -->
       <MoleculesCtaSection
         title="Pronto para começar a investir?"
-        description="Cadastre-se na Redentia e tenha acesso a análises com IA, acompanhamento de carteira e muito mais."
+        :description="`Cadastre-se na ${brand.name} e tenha acesso a análises com IA, acompanhamento de carteira e muito mais.`"
         primary-button-text="Criar conta grátis"
         primary-button-link="/auth/register"
         secondary-button-text="Conhecer a plataforma"
@@ -325,8 +325,10 @@
 </template>
 
 <script setup lang="ts">
+const brand = useBrand()
+
 usePageSeo({
-  title: 'Calculadoras Financeiras Gratuitas - Juros, Ações, Planejamento | Redentia',
+  title: `Calculadoras Financeiras Gratuitas - Juros, Ações, Planejamento | ${brand.name}`,
   description:
     'Use nossas calculadoras financeiras gratuitas: simule juros compostos, analise investimentos em ações e planeje seu patrimônio. Ferramentas completas para investidores.',
   path: '/calculadora',

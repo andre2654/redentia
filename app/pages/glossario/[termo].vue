@@ -234,6 +234,7 @@
 <script setup lang="ts">
 import { termos, categorias, encontrarTermo } from '~/data/glossario/termos'
 
+const brand = useBrand()
 const route = useRoute()
 const termoSlug = route.params.termo as string
 
@@ -285,7 +286,7 @@ const termoProximo = computed(() => {
 // SEO
 usePageSeo({
   title: () =>
-    `O que é ${termo.value?.nome}${termo.value?.sigla ? ` (${termo.value.sigla})` : ''}? Definição e Como Usar | Redentia`,
+    `O que é ${termo.value?.nome}${termo.value?.sigla ? ` (${termo.value.sigla})` : ''}? Definição e Como Usar | ${brand.name}`,
   description: () => termo.value?.definicaoResumida || '',
   path: `/glossario/${termoSlug}`,
   structuredData: () => [
@@ -294,7 +295,7 @@ usePageSeo({
       '@type': 'DefinedTerm',
       name: termo.value?.nome,
       description: termo.value?.definicaoResumida,
-      inDefinedTermSet: 'https://www.redentia.com.br/glossario',
+      inDefinedTermSet: `${brand.url}/glossario`,
       ...(termo.value?.sigla && { termCode: termo.value.sigla }),
     },
     {
@@ -331,19 +332,19 @@ usePageSeo({
           '@type': 'ListItem',
           position: 1,
           name: 'Home',
-          item: 'https://www.redentia.com.br',
+          item: brand.url,
         },
         {
           '@type': 'ListItem',
           position: 2,
           name: 'Glossário',
-          item: 'https://www.redentia.com.br/glossario',
+          item: `${brand.url}/glossario`,
         },
         {
           '@type': 'ListItem',
           position: 3,
           name: termo.value?.nome,
-          item: `https://www.redentia.com.br/glossario/${termoSlug}`,
+          item: `${brand.url}/glossario/${termoSlug}`,
         },
       ],
     },

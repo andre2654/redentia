@@ -22,9 +22,10 @@ function resolveUrl(base: string, path: string) {
 }
 
 export function usePageSeo(options: UsePageSeoOptions) {
+  const brand = useBrand()
   const runtimeConfig = useRuntimeConfig()
   const rawSiteUrl: string =
-    runtimeConfig.public?.siteUrl || 'https://www.redentia.com.br'
+    runtimeConfig.public?.siteUrl || brand.url
   const siteUrl = rawSiteUrl.endsWith('/')
     ? rawSiteUrl.slice(0, -1)
     : rawSiteUrl
@@ -53,8 +54,8 @@ export function usePageSeo(options: UsePageSeoOptions) {
     ogImageHeight: 512,
     twitterImage: resolvedImage,
     ogType: options.type || 'website',
-    ogSiteName: 'Redentia',
-    ogLocale: 'pt_BR',
+    ogSiteName: brand.name,
+    ogLocale: brand.seo.locale,
     twitterCard: 'summary_large_image',
     robots: options.robots || 'index,follow',
   })

@@ -31,7 +31,7 @@ Para Ações brasileiras, um DY entre 4% e 8% ao ano é considerado bom. Para Fu
     atencao:
       'Um DY muito alto (acima de 15% em ações) pode ser um sinal de alerta. Geralmente indica que o preço da ação caiu muito, possivelmente por problemas na empresa. Sempre compare o DY com o histórico do ativo e a média do setor.',
     comoUsar:
-      'Use o DY para comparar empresas do mesmo setor, montar carteiras de dividendos e estimar sua renda passiva futura. Na Redentia, você encontra o DY atualizado de todas as ações e FIIs.',
+      'Use o DY para comparar empresas do mesmo setor, montar carteiras de dividendos e estimar sua renda passiva futura. Na plataforma, você encontra o DY atualizado de todas as ações e FIIs.',
     relacionados: [
       'dividendos',
       'proventos',
@@ -124,7 +124,7 @@ Warren Buffett, um dos maiores investidores do mundo, busca empresas com ROE con
     atencao:
       'Um ROE muito alto (acima de 40%) pode indicar alto endividamento (efeito alavancagem). Prefira empresas com ROE alto e dívida controlada. Analise a consistência do ROE ao longo de vários anos, não apenas um período.',
     comoUsar:
-      'Use o ROE para identificar empresas de qualidade, comparar concorrentes do mesmo setor e construir carteiras de longo prazo. Na Redentia, você encontra o ROE histórico de todas as ações.',
+      'Use o ROE para identificar empresas de qualidade, comparar concorrentes do mesmo setor e construir carteiras de longo prazo. Na plataforma, você encontra o ROE histórico de todas as ações.',
     relacionados: [
       'roa',
       'roic',
@@ -321,7 +321,7 @@ Você compra cotas na B3, torna-se cotista do fundo e recebe dividendos mensalme
     atencao:
       'FIIs têm risco de vacância (imóveis vazios), inadimplência de inquilinos e desvalorização. O valor da cota pode oscilar. Analise a qualidade dos imóveis, taxa de vacância, diversificação e histórico de pagamentos.',
     comoUsar:
-      'Use FIIs para gerar renda passiva mensal. Diversifique entre diferentes tipos (tijolo, papel, setores). Na Redentia, você encontra análises completas, dividend yield e indicadores de todos os FIIs.',
+      'Use FIIs para gerar renda passiva mensal. Diversifique entre diferentes tipos (tijolo, papel, setores). Na plataforma, você encontra análises completas, dividend yield e indicadores de todos os FIIs.',
     relacionados: [
       'dividend-yield',
       'vacancia',
@@ -660,7 +660,7 @@ Dividendos são **isentos de Imposto de Renda** para pessoas físicas no Brasil.
     atencao:
       'Dividendo alto não significa necessariamente boa empresa. Verifique se a empresa consegue sustentar esses pagamentos. Empresas em crescimento podem pagar menos dividendos porque reinvestem mais.',
     comoUsar:
-      'Use dividendos para gerar renda passiva. Reinvista para acelerar crescimento patrimonial. Na Redentia, acompanhe o histórico de dividendos e o dividend yield de todas as ações e FIIs.',
+      'Use dividendos para gerar renda passiva. Reinvista para acelerar crescimento patrimonial. Na plataforma, acompanhe o histórico de dividendos e o dividend yield de todas as ações e FIIs.',
     relacionados: [
       'dividend-yield',
       'jscp',

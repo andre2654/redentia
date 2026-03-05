@@ -5,7 +5,7 @@
       <section class="flex flex-col gap-4">
         <div class="flex items-center gap-2">
           <UIcon name="i-lucide-newspaper" class="text-secondary h-8 w-8" />
-          <h1 class="text-3xl font-bold md:text-4xl">Blog da Redentia</h1>
+          <h1 class="text-3xl font-bold md:text-4xl">Blog da {{ brand.name }}</h1>
         </div>
         <p class="text-base text-gray-400 md:text-lg">
           Guias completos, tutoriais práticos e análises detalhadas sobre investimentos. Aprenda desde o básico até estratégias avançadas para dominar o mercado financeiro.
@@ -141,6 +141,8 @@
 </template>
 
 <script setup lang="ts">
+const brand = useBrand()
+
 type CategoriaGuia = 'acoes' | 'fiis' | 'dividendos' | 'analises'
 
 interface Guia {
@@ -209,7 +211,7 @@ const guias: Guia[] = [
 
 // SEO
 usePageSeo({
-  title: 'Blog de Investimentos: Guias e Tutoriais Completos | Redentia',
+  title: `Blog de Investimentos: Guias e Tutoriais Completos | ${brand.name}`,
   description:
     'Artigos completos sobre ações, FIIs, dividendos e análises de ativos. Tutoriais práticos, guias passo a passo e estratégias para investidores de todos os níveis.',
   path: '/guias',
@@ -217,7 +219,7 @@ usePageSeo({
     {
       '@context': 'https://schema.org',
       '@type': 'Blog',
-      name: 'Blog da Redentia',
+      name: `Blog da ${brand.name}`,
       description:
         'Artigos educacionais sobre investimentos em ações, FIIs, dividendos e mercado financeiro',
       breadcrumb: {
@@ -227,13 +229,13 @@ usePageSeo({
             '@type': 'ListItem',
             position: 1,
             name: 'Home',
-            item: 'https://www.redentia.com.br',
+            item: brand.url,
           },
           {
             '@type': 'ListItem',
             position: 2,
             name: 'Blog',
-            item: 'https://www.redentia.com.br/guias',
+            item: `${brand.url}/guias`,
           },
         ],
       },

@@ -519,7 +519,7 @@
 
       <!-- CTA -->
       <MoleculesCtaSection
-        title="Acompanhe seu progresso na Redentia"
+        :title="`Acompanhe seu progresso na ${brand.name}`"
         description="Crie sua conta e monitore sua carteira real, receba alertas personalizados e análises com IA."
         primary-button-text="Criar conta grátis"
         primary-button-link="/auth/register"
@@ -534,6 +534,7 @@
 import { computed } from 'vue'
 import { useAssetsService } from '~/services/assets'
 
+const brand = useBrand()
 const { getAssets } = useAssetsService()
 const { data: assetsData, pending: assetsPending } = await useAsyncData(
   'assets-calculator-planejamento',
@@ -548,7 +549,7 @@ const layoutName = computed(() =>
 const assets = computed(() => assetsData.value ?? [])
 
 usePageSeo({
-  title: 'Calculadora de Planejamento Patrimonial: Alcance Suas Metas | Redentia',
+  title: `Calculadora de Planejamento Patrimonial: Alcance Suas Metas | ${brand.name}`,
   description:
     'Descubra quanto tempo e quanto investir para atingir suas metas financeiras. Receba carteira recomendada baseada em dados históricos reais da B3. Gratuito!',
   path: '/calculadora/planejamento',
@@ -561,7 +562,7 @@ usePageSeo({
     {
       '@context': 'https://schema.org',
       '@type': 'SoftwareApplication',
-      name: 'Calculadora de Planejamento Patrimonial Redentia',
+      name: `Calculadora de Planejamento Patrimonial ${brand.name}`,
       applicationCategory: 'FinanceApplication',
       offers: {
         '@type': 'Offer',

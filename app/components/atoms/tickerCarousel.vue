@@ -1,9 +1,9 @@
 <template>
   <div class="relative flex min-w-0 items-center gap-3 overflow-hidden">
     <!-- Fade gradient left -->
-    <div class="pointer-events-none absolute left-0 top-0 z-10 h-full w-16 bg-gradient-to-r from-[#0a0a0a] to-transparent" />
+    <div class="pointer-events-none absolute left-0 top-0 z-10 h-full w-16" :style="{ background: `linear-gradient(to right, ${brand.colors.background}, transparent)` }" />
     <!-- Fade gradient right -->
-    <div class="pointer-events-none absolute right-0 top-0 z-10 h-full w-16 bg-gradient-to-l from-[#0a0a0a] to-transparent" />
+    <div class="pointer-events-none absolute right-0 top-0 z-10 h-full w-16" :style="{ background: `linear-gradient(to left, ${brand.colors.background}, transparent)` }" />
     <div
       id="carousel-tickercarousel"
       class="relative min-w-0 flex-1 overflow-hidden"
@@ -32,6 +32,7 @@
               'select-none font-medium',
               big ? 'text-[20px]' : 'text-[14px]',
             ]"
+            :style="{ color: brand.colors.text }"
             >{{ item.ticker }}</span
           >
           <span
@@ -52,15 +53,18 @@
     >
       <IconPlay
         v-if="isPaused"
-        :class="[big ? 'h-6 w-6' : 'h-4 w-4', 'fill-white']"
+        :class="[big ? 'h-6 w-6' : 'h-4 w-4']"
+        :style="{ fill: brand.colors.text }"
       />
-      <IconPause v-else :class="[big ? 'h-6 w-6' : 'h-4 w-4', 'fill-white']" />
+      <IconPause v-else :class="[big ? 'h-6 w-6' : 'h-4 w-4']" :style="{ fill: brand.colors.text }" />
     </button>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
+
+const brand = useBrand()
 
 interface CarouselItem {
   logo: string
