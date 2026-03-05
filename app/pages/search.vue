@@ -24,7 +24,8 @@
               Busca
             </span>
             <h1
-              class="text-3xl font-bold tracking-tight md:text-5xl"
+              class="text-3xl tracking-tight md:text-5xl"
+              :class="[brand.font.headingWeight, brand.font.headingStyle]"
               :style="{ color: brand.colors.text }"
             >
                 Encontre ativos com precisão
@@ -36,7 +37,7 @@
           </div>
           <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <div
-              class="rounded-xl border p-4 backdrop-blur-md transition-colors sm:rounded-2xl sm:p-5"
+              class="brand-card border p-4 backdrop-blur-md transition-colors sm:p-5"
               :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
             >
               <span class="text-secondary/70 text-[10px] font-medium uppercase tracking-wider sm:text-xs">Resultados</span>
@@ -46,7 +47,7 @@
               <p class="text-[11px] sm:text-xs" :style="{ color: brand.colors.textMuted }">Ativos nos filtros.</p>
             </div>
             <div
-              class="rounded-xl border p-4 backdrop-blur-md transition-colors sm:rounded-2xl sm:p-5"
+              class="brand-card border p-4 backdrop-blur-md transition-colors sm:p-5"
               :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
             >
               <span class="text-secondary/70 text-[10px] font-medium uppercase tracking-wider sm:text-xs">Filtros ativos</span>
@@ -56,7 +57,7 @@
               <p class="text-[11px] sm:text-xs" :style="{ color: brand.colors.textMuted }">Modificados.</p>
             </div>
             <div
-              class="rounded-xl border p-4 backdrop-blur-md transition-colors sm:rounded-2xl sm:p-5"
+              class="brand-card border p-4 backdrop-blur-md transition-colors sm:p-5"
               :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
             >
               <span class="text-secondary/70 text-[10px] font-medium uppercase tracking-wider sm:text-xs">Atualização</span>
@@ -71,14 +72,14 @@
 
       <section class="relative z-10 max-md:px-4">
         <AtomsTickerCarousel
-          class="mx-auto hidden w-full rounded-full px-6 py-3 md:flex"
+          class="mx-auto hidden w-full brand-pill px-6 py-3 md:flex"
           :style="{ backgroundColor: brand.colors.surface }"
           :fade-color="brand.colors.surface"
           big
           no-control
         />
         <AtomsTickerCarousel
-          class="mx-auto w-full rounded-full px-3 py-2 md:hidden"
+          class="mx-auto w-full brand-pill px-3 py-2 md:hidden"
           :style="{ backgroundColor: brand.colors.surface }"
           :fade-color="brand.colors.surface"
           no-control
@@ -128,7 +129,7 @@
 
               <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
                 <div
-                  class="flex flex-col gap-3 rounded-2xl border p-4"
+                  class="flex flex-col gap-3 brand-card border p-4"
                   :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
                 >
                   <div
@@ -149,7 +150,7 @@
                 </div>
 
                 <div
-                  class="flex flex-col gap-3 rounded-2xl border p-4"
+                  class="flex flex-col gap-3 brand-card border p-4"
                   :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
                 >
                   <div
@@ -174,7 +175,7 @@
                 </div>
 
                 <div
-                  class="flex flex-col gap-3 rounded-2xl border p-4"
+                  class="flex flex-col gap-3 brand-card border p-4"
                   :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
                 >
                   <div
@@ -199,7 +200,7 @@
                 </div>
 
                 <div
-                  class="flex flex-col gap-4 rounded-2xl border p-4"
+                  class="flex flex-col gap-4 brand-card border p-4"
                   :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
                 >
                   <div class="text-sm font-semibold">Grupo</div>
@@ -225,7 +226,7 @@
 
               <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
                 <div
-                  class="flex flex-col gap-4 rounded-2xl border p-4"
+                  class="flex flex-col gap-4 brand-card border p-4"
                   :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
                 >
                   <div class="flex flex-col gap-1">
@@ -264,7 +265,7 @@
                 </div>
 
                 <div
-                  class="flex flex-col gap-4 rounded-2xl border p-4"
+                  class="flex flex-col gap-4 brand-card border p-4"
                   :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
                 >
                   <div class="flex flex-col gap-1">
@@ -303,7 +304,7 @@
                 </div>
 
                 <div
-                  class="flex flex-col justify-between gap-4 rounded-2xl border p-4"
+                  class="flex flex-col justify-between gap-4 brand-card border p-4"
                 :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
                 >
                   <div class="flex flex-col gap-1">
@@ -325,7 +326,7 @@
           </div>
 
           <div
-            class="rounded-2xl border p-4 shadow-lg backdrop-blur-md sm:rounded-3xl sm:p-6"
+            class="brand-card border p-4 shadow-lg backdrop-blur-md sm:p-6"
             :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
           >
             <div class="flex flex-col gap-4" :style="{ color: brand.colors.text }">
@@ -364,7 +365,7 @@
                     v-for="asset in paginatedData"
                     :key="asset.ticker || asset.stock"
                     :to="`/asset/${String(asset.ticker || asset.stock || '').toLowerCase()}`"
-                    class="group flex flex-col gap-3 rounded-xl border p-4 transition-all active:scale-[0.99] sm:rounded-2xl sm:gap-4 sm:p-5"
+                    class="group flex flex-col gap-3 brand-card border p-4 transition-all active:scale-[0.99] sm:gap-4 sm:p-5"
                     :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
                   >
                     <div class="flex items-center justify-between gap-2">
@@ -392,7 +393,7 @@
                         </div>
                       </div>
                       <span
-                        class="shrink-0 rounded-md px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide sm:text-xs"
+                        class="shrink-0 brand-card-sm px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide sm:text-xs"
                         :style="{ backgroundColor: brand.colors.border, color: brand.colors.textMuted }"
                       >
                         {{ getAssetTypeLabel(asset.type) }}
@@ -425,14 +426,14 @@
                     >
                       <span
                         v-if="getMdiLabels(asset.mdi).occurrenceLabel"
-                        class="rounded-md px-2 py-1 text-[10px] sm:text-xs"
+                        class="brand-card-sm px-2 py-1 text-[10px] sm:text-xs"
                         :style="{ backgroundColor: brand.colors.border, color: brand.colors.textMuted }"
                       >
                         {{ getMdiLabels(asset.mdi).occurrenceLabel }}
                       </span>
                       <span
                         v-if="getMdiLabels(asset.mdi).starLabel"
-                        class="text-secondary inline-flex items-center gap-1 rounded-md bg-secondary/10 px-2 py-1 text-[10px] sm:text-xs"
+                        class="text-secondary inline-flex items-center gap-1 brand-card-sm bg-secondary/10 px-2 py-1 text-[10px] sm:text-xs"
                       >
                         <IconAi class="fill-secondary h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" aria-hidden="true" />
                         {{ getMdiLabels(asset.mdi).starLabel }}
@@ -447,7 +448,7 @@
 
                 <div
                   v-else
-                  class="rounded-xl border py-12 text-center text-sm sm:rounded-2xl sm:py-16"
+                  class="brand-card border py-12 text-center text-sm sm:py-16"
                   :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.textMuted }"
                 >
                   Nenhum ativo encontrado com os filtros atuais.

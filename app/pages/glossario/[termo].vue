@@ -31,14 +31,14 @@
             size="lg"
           />
         </div>
-        <h1 class="text-3xl font-bold md:text-5xl">
+        <h1 class="text-3xl md:text-5xl" :class="[brand.font.headingWeight, brand.font.headingStyle]">
           O que é {{ termo.nome }}?
         </h1>
       </section>
 
       <!-- Definição Resumida (Featured Snippet) -->
       <section
-        class="from-secondary/10 to-secondary/5 rounded-3xl bg-gradient-to-br p-6 md:p-8"
+        class="from-secondary/10 to-secondary/5 brand-card bg-gradient-to-br p-6 md:p-8"
       >
         <div class="flex items-start gap-4">
           <div
@@ -65,7 +65,7 @@
       <!-- Fórmula -->
       <section
         v-if="termo.formula"
-        class="rounded-2xl border p-6"
+        class="brand-card border p-6"
         :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
       >
         <div class="flex items-start gap-4">
@@ -75,7 +75,7 @@
           <div class="flex flex-col gap-3">
             <h2 class="text-xl font-semibold">Como Calcular</h2>
             <div
-              class="bg-tertiary/10 rounded-xl border border-tertiary/20 p-4 font-mono text-lg"
+              class="bg-tertiary/10 brand-card-md border border-tertiary/20 p-4 font-mono text-lg"
             >
               {{ termo.formula }}
             </div>
@@ -86,7 +86,7 @@
       <!-- Exemplo Prático -->
       <section
         v-if="termo.exemplo"
-        class="rounded-2xl border p-6"
+        class="brand-card border p-6"
         :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
       >
         <div class="flex items-start gap-4">
@@ -103,7 +103,7 @@
       <!-- Como Usar -->
       <section
         v-if="termo.comoUsar"
-        class="rounded-2xl border p-6"
+        class="brand-card border p-6"
         :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
       >
         <div class="flex items-start gap-4">
@@ -120,7 +120,7 @@
       <!-- Atenção -->
       <section
         v-if="termo.atencao"
-        class="rounded-2xl border border-yellow-500/20 bg-yellow-500/10 p-6"
+        class="brand-card border border-yellow-500/20 bg-yellow-500/10 p-6"
       >
         <div class="flex items-start gap-4">
           <div class="rounded-full bg-yellow-500/20 p-3 max-md:hidden">
@@ -149,7 +149,7 @@
             v-for="relacionado in termosRelacionados"
             :key="relacionado.slug"
             :to="`/glossario/${relacionado.slug}`"
-            class="group flex items-center justify-between rounded-xl border p-4 transition-all hover:opacity-80"
+            class="group flex items-center justify-between brand-card-md border p-4 transition-all hover:opacity-80"
             :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
           >
             <div class="flex flex-col gap-1">

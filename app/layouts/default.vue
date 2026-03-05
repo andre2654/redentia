@@ -67,7 +67,7 @@
       class="sticky top-0 flex h-screen w-[320px] min-w-[320px] flex-col gap-6 p-4 max-xl:hidden"
     >
       <!-- User Profile Card -->
-      <div class="rounded-2xl border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+      <div class="brand-card border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
         <div class="flex items-center gap-3">
           <div class="relative">
             <UAvatar :alt="authStore.me?.name || 'Usuário'" size="lg" class="ring-2 ring-secondary/30" />
@@ -109,7 +109,7 @@
       <!-- Search -->
       <MoleculesSearchAssets
         v-if="!hideSearchBar"
-        class="rounded-xl border px-4 py-3 transition"
+        class="brand-card border px-4 py-3 transition"
         :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
       />
 
@@ -133,7 +133,7 @@
       <NuxtLink
         v-if="authStore.me?.role !== 'advisor'"
         to="/help"
-        class="group relative overflow-hidden rounded-2xl border border-secondary/20 bg-gradient-to-br from-secondary/10 to-transparent p-4 transition-all hover:border-secondary/40 hover:from-secondary/20"
+        class="group relative overflow-hidden brand-card border border-secondary/20 bg-gradient-to-br from-secondary/10 to-transparent p-4 transition-all hover:border-secondary/40 hover:from-secondary/20"
       >
         <div class="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-secondary/20 blur-2xl transition-all group-hover:bg-secondary/30" />
         <div class="relative flex items-center gap-3">
@@ -181,7 +181,7 @@
       <!-- Banner status assessor (investidor): só pendente ou recusado -->
       <div
         v-if="authStore.me?.role === 'investor' && (authStore.me?.approval_status === 'pending' || authStore.me?.approval_status === 'rejected')"
-        class="mx-4 mt-5 rounded-xl border px-4 py-3 text-sm xl:mt-6"
+        class="mx-4 mt-5 brand-card border px-4 py-3 text-sm xl:mt-6"
         :class="{
           'border-amber-500/40 bg-amber-500/10 text-amber-200': authStore.me.approval_status === 'pending',
           'border-red-500/30 bg-red-500/10 text-red-200': authStore.me.approval_status === 'rejected',

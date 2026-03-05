@@ -18,7 +18,7 @@
       <div class="flex flex-col gap-4">
         <div class="flex items-center gap-2">
           <UIcon name="i-lucide-target" class="text-secondary h-8 w-8" />
-          <h1 class="text-3xl font-bold md:text-4xl">
+          <h1 class="text-3xl md:text-4xl" :class="[brand.font.headingWeight, brand.font.headingStyle]">
             Calculadora de Planejamento Patrimonial: Alcance Suas Metas
           </h1>
         </div>
@@ -42,7 +42,7 @@
 
         <h3 class="text-xl font-semibold">Por que Fazer um Planejamento Patrimonial?</h3>
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">
               Clareza de Objetivos
             </h4>
@@ -50,7 +50,7 @@
               Transforme sonhos vagos em metas concretas. "Quero ficar rico" vira "Preciso de R$ 500 mil em 15 anos investindo R$ 1.500/mês".
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">
               Estratégia Realista
             </h4>
@@ -58,7 +58,7 @@
               Baseada em dados reais, não em otimismo exagerado. Você saberá se sua meta é viável ou se precisa ajustar aportes/prazos.
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">
               Carteira Personalizada
             </h4>
@@ -66,7 +66,7 @@
               Receba recomendações de ativos específicos, com pesos definidos, baseadas em performance histórica e seu perfil de risco.
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">
               Acompanhamento do Progresso
             </h4>
@@ -138,7 +138,7 @@
         <h2 class="text-2xl font-bold">Estratégias de Planejamento</h2>
 
         <h3 class="text-xl font-semibold">Maior Rentabilidade</h3>
-        <div class="rounded-xl border border-green-500/20 bg-green-500/10 p-5">
+        <div class="brand-card border border-green-500/20 bg-green-500/10 p-5">
           <h4 class="mb-3 font-semibold text-green-400">
             Para quem: Investidores com tolerância a risco e horizonte longo (10+ anos)
           </h4>
@@ -158,7 +158,7 @@
         </div>
 
         <h3 class="text-xl font-semibold">Maior Segurança</h3>
-        <div class="rounded-xl border border-blue-500/20 bg-blue-500/10 p-5">
+        <div class="brand-card border border-blue-500/20 bg-blue-500/10 p-5">
           <h4 class="mb-3 font-semibold text-blue-400">
             Para quem: Investidores conservadores ou próximos de usar o dinheiro (5-10 anos)
           </h4>
@@ -181,7 +181,7 @@
 
         <h3 class="text-xl font-semibold">Exemplo 1: Aposentadoria Antecipada</h3>
         <div class="space-y-3">
-          <div class="rounded-xl border border-white/10 bg-white/5 p-4">
+          <div class="brand-card border border-white/10 bg-white/5 p-4">
             <h4 class="mb-2 font-semibold">João, 30 anos - Meta: R$ 1 milhão</h4>
             <ul class="text-sm text-gray-300 mb-3">
               <li>Aporte mensal: R$ 2.000</li>
@@ -204,7 +204,7 @@
 
         <h3 class="text-xl font-semibold">Exemplo 2: Entrada de Imóvel</h3>
         <div class="space-y-3">
-          <div class="rounded-xl border border-white/10 bg-white/5 p-4">
+          <div class="brand-card border border-white/10 bg-white/5 p-4">
             <h4 class="mb-2 font-semibold">Maria, 25 anos - Meta: R$ 150.000</h4>
             <ul class="text-sm text-gray-300 mb-3">
               <li>Aporte mensal: R$ 1.500</li>
@@ -227,7 +227,7 @@
 
         <h3 class="text-xl font-semibold">Exemplo 3: Renda Passiva para Aposentadoria</h3>
         <div class="space-y-3">
-          <div class="rounded-xl border border-white/10 bg-white/5 p-4">
+          <div class="brand-card border border-white/10 bg-white/5 p-4">
             <h4 class="mb-2 font-semibold">Carlos, 45 anos - Meta: R$ 800.000</h4>
             <ul class="text-sm text-gray-300 mb-3">
               <li>Aporte mensal: R$ 3.000</li>
@@ -257,31 +257,31 @@
         </p>
 
         <div class="space-y-3">
-          <div class="rounded-xl border border-white/10 bg-white/5 p-4">
+          <div class="brand-card border border-white/10 bg-white/5 p-4">
             <h4 class="mb-1 font-semibold text-secondary">Ticker e Nome</h4>
             <p class="text-sm text-gray-300">
               O código da ação (ex: PETR4) e nome da empresa. Use esses códigos para comprar na sua corretora.
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-4">
+          <div class="brand-card border border-white/10 bg-white/5 p-4">
             <h4 class="mb-1 font-semibold text-secondary">Peso (%)  </h4>
             <p class="text-sm text-gray-300">
               Quanto do seu aporte deve ir para cada ativo. Ex: Se você investe R$ 1.000/mês e PETR4 tem peso de 20%, deve comprar R$ 200 em PETR4 por mês.
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-4">
+          <div class="brand-card border border-white/10 bg-white/5 p-4">
             <h4 class="mb-1 font-semibold text-secondary">Retorno Histórico</h4>
             <p class="text-sm text-gray-300">
               Quanto o ativo rendeu no período analisado. Passado não garante futuro, mas mostra o potencial.
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-4">
+          <div class="brand-card border border-white/10 bg-white/5 p-4">
             <h4 class="mb-1 font-semibold text-secondary">CAGR (Retorno Anual Composto)</h4>
             <p class="text-sm text-gray-300">
               A taxa média anual de crescimento. É mais precisa que retorno total para comparar ativos.
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-4">
+          <div class="brand-card border border-white/10 bg-white/5 p-4">
             <h4 class="mb-1 font-semibold text-secondary">Dividendos Totais</h4>
             <p class="text-sm text-gray-300">
               Quanto você teria recebido em proventos reinvestidos ao longo do período. Muitas vezes representa 30-50% do retorno total.
@@ -292,7 +292,7 @@
         <h2 class="text-2xl font-bold">Perguntas Frequentes</h2>
         
         <div class="space-y-4">
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               A carteira recomendada é garantida de funcionar?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -302,7 +302,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Devo seguir a carteira exatamente como recomendada?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -312,7 +312,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Com que frequência devo revisar meu planejamento?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -322,7 +322,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               O que fazer se eu não conseguir atingir minha meta no prazo desejado?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -332,7 +332,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Qual a diferença entre retorno total e CAGR?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -342,7 +342,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Posso usar o planejamento para aposentadoria?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -352,7 +352,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Como o planejamento considera crises e quedas de mercado?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -362,7 +362,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Preciso rebalancear a carteira periodicamente?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -372,7 +372,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Devo incluir imóveis no planejamento patrimonial?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -382,7 +382,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Quanto da minha renda devo investir mensalmente?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -395,7 +395,7 @@
 
         <h2 class="text-2xl font-bold">Dicas para Executar Seu Planejamento</h2>
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">
               1. Automatize Seus Aportes
             </h4>
@@ -403,7 +403,7 @@
               Configure transferências automáticas da sua conta para a corretora. Trate o investimento como uma conta que você DEVE pagar todo mês.
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">
               2. Comece Hoje
             </h4>
@@ -411,7 +411,7 @@
               Não espere "ter mais dinheiro" ou "estudar mais". Comece com o que você tem e aprenda fazendo. Cada mês que passa é um mês perdido de juros compostos.
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">
               3. Mantenha Reserva de Emergência
             </h4>
@@ -419,7 +419,7 @@
               Antes de investir pesado, tenha 6 meses de despesas em renda fixa líquida. Isso evita vender investimentos em emergências.
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">
               4. Celebre Marcos
             </h4>
@@ -427,7 +427,7 @@
               Ao atingir 25%, 50%, 75% da meta, celebre! Isso mantém a motivação para os próximos anos de disciplina.
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">
               5. Eduque-se Continuamente
             </h4>
@@ -435,7 +435,7 @@
               Leia sobre investimentos, acompanhe notícias econômicas, estude os ativos da sua carteira. Conhecimento reduz ansiedade e melhora decisões.
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">
               6. Ajuste Quando Necessário
             </h4>
@@ -447,31 +447,31 @@
 
         <h2 class="text-2xl font-bold">Erros Comuns a Evitar</h2>
         <div class="space-y-3">
-          <div class="rounded-xl border border-red-500/20 bg-red-500/10 p-4">
+          <div class="brand-card border border-red-500/20 bg-red-500/10 p-4">
             <h4 class="mb-1 font-semibold text-red-400">❌ Metas Irrealistas</h4>
             <p class="text-sm text-gray-300">
               Querer R$ 1 milhão em 5 anos investindo R$ 500/mês não é viável. Use a calculadora para definir metas realistas baseadas em dados reais.
             </p>
           </div>
-          <div class="rounded-xl border border-red-500/20 bg-red-500/10 p-4">
+          <div class="brand-card border border-red-500/20 bg-red-500/10 p-4">
             <h4 class="mb-1 font-semibold text-red-400">❌ Pular Aportes Mensais</h4>
             <p class="text-sm text-gray-300">
               Inconsistência destrói o planejamento. Se você investe 10 meses e pula 2, perde muito do efeito composto. Seja consistente.
             </p>
           </div>
-          <div class="rounded-xl border border-red-500/20 bg-red-500/10 p-4">
+          <div class="brand-card border border-red-500/20 bg-red-500/10 p-4">
             <h4 class="mb-1 font-semibold text-red-400">❌ Vender em Pânico</h4>
             <p class="text-sm text-gray-300">
               Crises acontecem. Quedas de 20-30% são normais em ações. Vender em pânico cristaliza prejuízos. Mantenha a estratégia de longo prazo.
             </p>
           </div>
-          <div class="rounded-xl border border-red-500/20 bg-red-500/10 p-4">
+          <div class="brand-card border border-red-500/20 bg-red-500/10 p-4">
             <h4 class="mb-1 font-semibold text-red-400">❌ Perseguir "Dicas Quentes"</h4>
             <p class="text-sm text-gray-300">
               Não abandone seu planejamento para investir na "ação da vez". Especulação geralmente resulta em perdas. Siga seu plano.
             </p>
           </div>
-          <div class="rounded-xl border border-red-500/20 bg-red-500/10 p-4">
+          <div class="brand-card border border-red-500/20 bg-red-500/10 p-4">
             <h4 class="mb-1 font-semibold text-red-400">❌ Ignorar Diversificação</h4>
             <p class="text-sm text-gray-300">
               Concentrar tudo em 1-2 ações é extremamente arriscado. Diversifique entre setores e tipos de ativos como recomendado.
@@ -486,7 +486,7 @@
         <div class="grid gap-4 md:grid-cols-2">
           <NuxtLink
             to="/calculadora/juros-compostos"
-            class="group flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-secondary/50"
+            class="group flex items-center gap-4 brand-card border border-white/10 bg-white/5 p-4 transition hover:border-secondary/50"
           >
             <UIcon
               name="i-lucide-trending-up"
@@ -501,7 +501,7 @@
           </NuxtLink>
           <NuxtLink
             to="/calculadora/acoes"
-            class="group flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-secondary/50"
+            class="group flex items-center gap-4 brand-card border border-white/10 bg-white/5 p-4 transition hover:border-secondary/50"
           >
             <UIcon
               name="i-lucide-chart-line"

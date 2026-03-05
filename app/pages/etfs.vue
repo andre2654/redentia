@@ -5,7 +5,7 @@
       <div class="flex flex-col gap-4">
         <div class="flex items-center gap-2">
           <UIcon name="i-lucide-bar-chart-3" class="text-secondary h-8 w-8" />
-          <h1 class="text-3xl font-bold md:text-4xl">
+          <h1 class="text-3xl md:text-4xl" :class="[brand.font.headingWeight, brand.font.headingStyle]">
             ETFs: Fundos de Índice
           </h1>
         </div>
@@ -27,7 +27,7 @@
         </p>
 
         <div
-          class="my-6 rounded-2xl border border-secondary/20 bg-secondary/10 p-6"
+          class="my-6 brand-card border border-secondary/20 bg-secondary/10 p-6"
         >
           <h3 class="mb-3 text-xl font-semibold text-secondary">
             Diversificação Instantânea
@@ -41,7 +41,7 @@
 
         <h3 class="text-xl font-semibold">Principais ETFs no Brasil</h3>
         <div class="space-y-4">
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <div class="mb-3 flex items-center justify-between">
               <h4 class="text-lg font-semibold text-secondary">
                 BOVA11 - Ibovespa
@@ -59,7 +59,7 @@
             </div>
           </div>
 
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-3 text-lg font-semibold text-secondary">
               SMAL11 - Small Caps
             </h4>
@@ -74,7 +74,7 @@
             </div>
           </div>
 
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-3 text-lg font-semibold text-secondary">
               IVVB11 - S&P 500 em Reais
             </h4>
@@ -89,7 +89,7 @@
             </div>
           </div>
 
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-3 text-lg font-semibold text-secondary">
               PIBB11 - IBrX-50
             </h4>
@@ -106,7 +106,7 @@
 
         <h3 class="text-xl font-semibold">Vantagens dos ETFs</h3>
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-trending-up" class="text-primary h-5 w-5" />
               <h4 class="font-semibold">Taxas Baixas</h4>
@@ -117,7 +117,7 @@
             </p>
           </div>
 
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-layers" class="text-primary h-5 w-5" />
               <h4 class="font-semibold">Diversificação Automática</h4>
@@ -128,7 +128,7 @@
             </p>
           </div>
 
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-zap" class="text-primary h-5 w-5" />
               <h4 class="font-semibold">Liquidez</h4>
@@ -139,7 +139,7 @@
             </p>
           </div>
 
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-eye" class="text-primary h-5 w-5" />
               <h4 class="font-semibold">Transparência Total</h4>
@@ -224,7 +224,7 @@
       <div class="border-t border-white/10 pt-8">
         <NuxtLink
           to="/search?group=etfs"
-          class="group mx-auto flex max-w-2xl items-center justify-between rounded-2xl border border-secondary/30 bg-secondary/10 p-6 transition-all hover:border-secondary/50 hover:bg-secondary/20"
+          class="group mx-auto flex max-w-2xl items-center justify-between brand-card border border-secondary/30 bg-secondary/10 p-6 transition-all hover:border-secondary/50 hover:bg-secondary/20"
         >
           <div class="flex flex-col gap-1">
             <h3 class="text-xl font-bold group-hover:text-secondary transition-colors">

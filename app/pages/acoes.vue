@@ -5,7 +5,7 @@
       <div class="flex flex-col gap-4">
         <div class="flex items-center gap-2">
           <UIcon name="i-lucide-trending-up" class="text-secondary h-8 w-8" />
-          <h1 class="text-3xl font-bold md:text-4xl">
+          <h1 class="text-3xl md:text-4xl" :class="[brand.font.headingWeight, brand.font.headingStyle]">
             Todas as Ações da B3
           </h1>
         </div>
@@ -47,7 +47,7 @@
           Por que Investir em Ações?
         </h3>
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">
               Potencial de Crescimento
             </h4>
@@ -56,7 +56,7 @@
               superando a inflação e renda fixa no longo prazo.
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">
               Renda Passiva
             </h4>
@@ -65,7 +65,7 @@
               passiva para os acionistas sem precisar vender as ações.
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">
               Proteção Contra Inflação
             </h4>
@@ -74,7 +74,7 @@
               poder de compra no longo prazo.
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">
               Participação nos Lucros
             </h4>
@@ -119,25 +119,25 @@
           Principais Setores da Bolsa Brasileira
         </h3>
         <div class="space-y-3">
-          <div class="rounded-xl border border-white/10 bg-white/5 p-4">
+          <div class="brand-card border border-white/10 bg-white/5 p-4">
             <h4 class="mb-1 font-semibold">Financeiro (Bancos)</h4>
             <p class="text-sm text-gray-400">
               ITUB4, BBDC4, BBAS3 - Alta liquidez, bons pagadores de dividendos
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-4">
+          <div class="brand-card border border-white/10 bg-white/5 p-4">
             <h4 class="mb-1 font-semibold">Commodities</h4>
             <p class="text-sm text-gray-400">
               VALE3, PETR4 - Expostas a preços internacionais, cíclicas
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-4">
+          <div class="brand-card border border-white/10 bg-white/5 p-4">
             <h4 class="mb-1 font-semibold">Varejo</h4>
             <p class="text-sm text-gray-400">
               MGLU3, AMER3, LREN3 - Dependem do consumo interno, crescimento
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-4">
+          <div class="brand-card border border-white/10 bg-white/5 p-4">
             <h4 class="mb-1 font-semibold">Utilities (Energia, Saneamento)</h4>
             <p class="text-sm text-gray-400">
               ELET3, TAEE11, SAPR11 - Previsíveis, bons dividendos
@@ -149,7 +149,7 @@
           Estratégias para Investir em Ações
         </h3>
         <div class="space-y-3">
-          <div class="rounded-xl border border-secondary/20 bg-secondary/10 p-5">
+          <div class="brand-card border border-secondary/20 bg-secondary/10 p-5">
             <h4 class="mb-2 font-semibold text-secondary">
               Buy and Hold (Longo Prazo)
             </h4>
@@ -159,14 +159,14 @@
               crescimento e dividendos consistentes.
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold">Carteira de Dividendos</h4>
             <p class="text-sm text-gray-300">
               Foco em empresas que pagam bons dividendos regularmente.
               Objetivo: renda passiva mensal ou trimestral.
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold">Diversificação Setorial</h4>
             <p class="text-sm text-gray-300">
               Distribua investimentos entre setores diferentes (bancos, varejo,
@@ -177,7 +177,7 @@
 
         <h3 class="text-xl font-semibold">Riscos de Investir em Ações</h3>
         <div
-          class="rounded-xl border border-yellow-500/20 bg-yellow-500/10 p-5"
+          class="brand-card border border-yellow-500/20 bg-yellow-500/10 p-5"
         >
           <ul class="list-disc space-y-2 pl-6 text-gray-300">
             <li>
@@ -316,7 +316,7 @@
       <div class="space-y-4">
         <h2 class="text-2xl font-bold">Perguntas Frequentes sobre Ações</h2>
         <div class="space-y-4">
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Quanto preciso para começar a investir em ações?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -329,7 +329,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Qual a diferença entre ações ON e PN?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -342,7 +342,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Como recebo dividendos?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -354,7 +354,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Ações são seguras?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -367,7 +367,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Posso perder mais dinheiro do que investi?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />

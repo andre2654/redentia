@@ -17,7 +17,7 @@
       <div class="flex flex-col gap-4">
         <div class="flex items-center gap-2">
           <UIcon name="i-lucide-wallet" class="text-secondary h-8 w-8" />
-          <h1 class="text-3xl font-bold md:text-4xl">
+          <h1 class="text-3xl md:text-4xl" :class="[brand.font.headingWeight, brand.font.headingStyle]">
             Calculadora: Quanto Investir por Mês para Sua Meta
           </h1>
         </div>
@@ -36,25 +36,25 @@
 
         <h3 class="text-xl font-semibold">Exemplos de Metas Comuns</h3>
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">R$ 100.000 em 5 anos</h4>
             <p class="text-sm text-gray-300">
               A 10% a.a., você precisa investir <strong>R$ 1.288/mês</strong>
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">R$ 500.000 em 10 anos</h4>
             <p class="text-sm text-gray-300">
               A 10% a.a., você precisa investir <strong>R$ 2.412/mês</strong>
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">R$ 1 milhão em 15 anos</h4>
             <p class="text-sm text-gray-300">
               A 10% a.a., você precisa investir <strong>R$ 2.404/mês</strong>
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">R$ 2 milhões em 20 anos</h4>
             <p class="text-sm text-gray-300">
               A 10% a.a., você precisa investir <strong>R$ 2.642/mês</strong>
@@ -65,7 +65,7 @@
         <h2 class="text-2xl font-bold">Perguntas Frequentes</h2>
         
         <div class="space-y-4">
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Quanto da minha renda devo investir?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -75,7 +75,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               E se eu não conseguir investir o valor calculado?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -92,7 +92,7 @@
         <div class="grid gap-4 md:grid-cols-2">
           <NuxtLink
             to="/calculadora/juros-compostos"
-            class="group flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-secondary/50"
+            class="group flex items-center gap-4 brand-card border border-white/10 bg-white/5 p-4 transition hover:border-secondary/50"
           >
             <UIcon name="i-lucide-trending-up" class="text-secondary size-8 shrink-0" />
             <div>
@@ -102,7 +102,7 @@
           </NuxtLink>
           <NuxtLink
             to="/calculadora/aposentadoria"
-            class="group flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-secondary/50"
+            class="group flex items-center gap-4 brand-card border border-white/10 bg-white/5 p-4 transition hover:border-secondary/50"
           >
             <UIcon name="i-lucide-piggy-bank" class="text-secondary size-8 shrink-0" />
             <div>

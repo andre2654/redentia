@@ -18,7 +18,7 @@
       <div class="flex flex-col gap-4">
         <div class="flex items-center gap-2">
           <UIcon name="i-lucide-target" class="text-secondary h-8 w-8" />
-          <h1 class="text-3xl font-bold md:text-4xl">
+          <h1 class="text-3xl md:text-4xl" :class="[brand.font.headingWeight, brand.font.headingStyle]">
             Calculadora de Preço Teto: Graham, Bazin e Mais
           </h1>
         </div>
@@ -43,7 +43,7 @@
         <h2 class="text-2xl font-bold">Metodologias de Cálculo</h2>
 
         <h3 class="text-xl font-semibold">1. Fórmula de Benjamin Graham</h3>
-        <div class="rounded-xl border border-secondary/20 bg-secondary/10 p-5">
+        <div class="brand-card border border-secondary/20 bg-secondary/10 p-5">
           <p class="text-center text-lg font-semibold">
             Preço Teto = √(22.5 × LPA × VPA)
           </p>
@@ -58,7 +58,7 @@
         </p>
 
         <h3 class="text-xl font-semibold">2. Método Bazin (Dividendos)</h3>
-        <div class="rounded-xl border border-secondary/20 bg-secondary/10 p-5">
+        <div class="brand-card border border-secondary/20 bg-secondary/10 p-5">
           <p class="text-center text-lg font-semibold">
             Preço Teto = Dividendo Anual ÷ 0.06
           </p>
@@ -72,7 +72,7 @@
         </p>
 
         <h3 class="text-xl font-semibold">3. P/L Setorial</h3>
-        <div class="rounded-xl border border-secondary/20 bg-secondary/10 p-5">
+        <div class="brand-card border border-secondary/20 bg-secondary/10 p-5">
           <p class="text-center text-lg font-semibold">
             Preço Teto = LPA × P/L Médio do Setor
           </p>
@@ -85,7 +85,7 @@
         </p>
 
         <h3 class="text-xl font-semibold">4. Valor Patrimonial (Graham Modificado)</h3>
-        <div class="rounded-xl border border-secondary/20 bg-secondary/10 p-5">
+        <div class="brand-card border border-secondary/20 bg-secondary/10 p-5">
           <p class="text-center text-lg font-semibold">
             Preço Teto = VPA × 1.5
           </p>
@@ -101,7 +101,7 @@
         <h2 class="text-2xl font-bold">Exemplos Práticos</h2>
 
         <h3 class="text-xl font-semibold">Exemplo 1: Itaú Unibanco (ITUB4)</h3>
-        <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+        <div class="brand-card border border-white/10 bg-white/5 p-5">
           <h4 class="mb-3 font-semibold">Dados (valores ilustrativos):</h4>
           <ul class="mb-4 space-y-1 text-sm text-gray-300">
             <li>Preço atual: R$ 28,00</li>
@@ -139,7 +139,7 @@
         </div>
 
         <h3 class="text-xl font-semibold">Exemplo 2: Petrobras (PETR4)</h3>
-        <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+        <div class="brand-card border border-white/10 bg-white/5 p-5">
           <h4 class="mb-3 font-semibold">Dados (valores ilustrativos):</h4>
           <ul class="mb-4 space-y-1 text-sm text-gray-300">
             <li>Preço atual: R$ 38,00</li>
@@ -237,25 +237,25 @@
 
         <h2 class="text-2xl font-bold">Limitações e Quando NÃO Usar</h2>
         <div class="space-y-3">
-          <div class="rounded-xl border border-red-500/20 bg-red-500/10 p-4">
+          <div class="brand-card border border-red-500/20 bg-red-500/10 p-4">
             <h4 class="mb-1 font-semibold text-red-400">❌ Empresas de Crescimento (Growth)</h4>
             <p class="text-sm text-gray-300">
               Empresas como Magazine Luiza, Mercado Livre, que crescem rápido mas têm lucro baixo ou prejuízo, não funcionam bem com essas fórmulas. Prefira análise de múltiplos de receita ou fluxo de caixa descontado.
             </p>
           </div>
-          <div class="rounded-xl border border-red-500/20 bg-red-500/10 p-4">
+          <div class="brand-card border border-red-500/20 bg-red-500/10 p-4">
             <h4 class="mb-1 font-semibold text-red-400">❌ Empresas com Prejuízo</h4>
             <p class="text-sm text-gray-300">
               Se o LPA é negativo, as fórmulas não funcionam. A empresa pode estar em reestruturação ou em setor cíclico no momento ruim.
             </p>
           </div>
-          <div class="rounded-xl border border-red-500/20 bg-red-500/10 p-4">
+          <div class="brand-card border border-red-500/20 bg-red-500/10 p-4">
             <h4 class="mb-1 font-semibold text-red-400">❌ Setores Muito Cíclicos</h4>
             <p class="text-sm text-gray-300">
               Commodities (mineração, siderurgia) têm lucros que variam muito. Use LPA médio de vários anos ou análise de ciclos.
             </p>
           </div>
-          <div class="rounded-xl border border-red-500/20 bg-red-500/10 p-4">
+          <div class="brand-card border border-red-500/20 bg-red-500/10 p-4">
             <h4 class="mb-1 font-semibold text-red-400">❌ Empresas com Dívida Altíssima</h4>
             <p class="text-sm text-gray-300">
               Se a empresa está super endividada, o valor patrimonial pode estar inflado. Verifique Dívida Líquida / EBITDA antes.
@@ -266,7 +266,7 @@
         <h2 class="text-2xl font-bold">Perguntas Frequentes</h2>
         
         <div class="space-y-4">
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Qual a melhor metodologia: Graham ou Bazin?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -276,7 +276,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Se a ação está abaixo do preço teto, é garantia de boa compra?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -286,7 +286,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Como calcular a margem de segurança?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -296,7 +296,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Vale usar preço teto para small caps?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -306,7 +306,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               E para empresas de crescimento como Magazine Luiza?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -316,7 +316,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Com que frequência devo recalcular o preço teto?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -326,7 +326,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Preço teto funciona para FIIs também?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -336,7 +336,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               O que fazer se as 4 metodologias derem resultados muito diferentes?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -346,7 +346,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Onde encontro o P/L médio do setor?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -356,7 +356,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Posso usar LPA projetado ao invés de histórico?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -369,7 +369,7 @@
 
         <h2 class="text-2xl font-bold">Dicas para Investir com Preço Teto</h2>
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">
               1. Use Como Filtro Inicial
             </h4>
@@ -377,7 +377,7 @@
               Calcule o preço teto de 10-20 ações que você gosta. Descarte as que estão muito acima do teto. Foque análise profunda nas que estão abaixo.
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">
               2. Combine com Outros Indicadores
             </h4>
@@ -385,7 +385,7 @@
               Não use apenas preço teto. Veja também: ROE > 15%, Dívida/EBITDA < 3, Crescimento de receita > 5% a.a., Payout sustentável.
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">
               3. Exija Margem de Segurança
             </h4>
@@ -393,7 +393,7 @@
               Nunca compre no preço teto ou acima. Espere pelo menos 20% de margem. Em momentos de crise, você pode conseguir 40-50% de desconto.
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">
               4. Reavalie Periodicamente
             </h4>
@@ -401,7 +401,7 @@
               Fundamentos mudam. Uma ação que estava barata pode ficar cara se o lucro cair. Recalcule após cada balanço trimestral.
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">
               5. Entenda o "Por Quê"
             </h4>
@@ -409,7 +409,7 @@
               Se uma ação está 50% abaixo do preço teto, investigue o porquê. Pode ser oportunidade ou problema real que o mercado já precificou.
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">
               6. Seja Paciente
             </h4>
@@ -426,7 +426,7 @@
         <div class="grid gap-4 md:grid-cols-2">
           <NuxtLink
             to="/calculadora/dividend-yield"
-            class="group flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-secondary/50"
+            class="group flex items-center gap-4 brand-card border border-white/10 bg-white/5 p-4 transition hover:border-secondary/50"
           >
             <UIcon
               name="i-lucide-coins"
@@ -441,7 +441,7 @@
           </NuxtLink>
           <NuxtLink
             to="/calculadora/acoes"
-            class="group flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-secondary/50"
+            class="group flex items-center gap-4 brand-card border border-white/10 bg-white/5 p-4 transition hover:border-secondary/50"
           >
             <UIcon
               name="i-lucide-chart-line"

@@ -86,6 +86,7 @@ import { getRelativePosition } from 'chart.js/helpers'
 import { useChartColors } from '~/design/chartColors'
 
 const cc = useChartColors()
+const brand = useBrand()
 
 /* ========== Tipos ========== */
 interface IChartDataPoint {
@@ -1450,7 +1451,7 @@ const overlayLabelsPlugin: Plugin<'line'> = {
         | undefined
 
       const fontFamily =
-        pluginOptions?.fontFamily ?? 'Inter, system-ui, sans-serif'
+        pluginOptions?.fontFamily ?? `${brand.font.family}, system-ui, sans-serif`
       const fontSize = pluginOptions?.fontSize ?? 11
       const xLabelColor =
         pluginOptions?.xLabelColor ?? 'rgba(127, 140, 175, 0.85)'
@@ -1744,7 +1745,7 @@ const chartOptions = computed(() => {
       tooltip: { enabled: false },
       colors: { forceOverride: true },
       overlayLabels: {
-        fontFamily: 'Inter, system-ui, sans-serif',
+        fontFamily: `${brand.font.family}, system-ui, sans-serif`,
         fontSize: 13,
         xLabelColor: cc.labelColor,
         yLabelColor: cc.labelColor,

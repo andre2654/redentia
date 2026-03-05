@@ -5,7 +5,7 @@
       <div class="flex flex-col gap-4">
         <div class="flex items-center gap-2">
           <UIcon name="i-lucide-building-2" class="text-secondary h-8 w-8" />
-          <h1 class="text-3xl font-bold md:text-4xl">
+          <h1 class="text-3xl md:text-4xl" :class="[brand.font.headingWeight, brand.font.headingStyle]">
             Fundos Imobiliários (FIIs)
           </h1>
         </div>
@@ -44,7 +44,7 @@
 
         <h3 class="text-xl font-semibold">Tipos de FIIs</h3>
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 flex items-center gap-2 font-semibold text-secondary">
               <UIcon name="i-lucide-building" class="h-5 w-5" />
               Fundos de Tijolo
@@ -61,7 +61,7 @@
             </ul>
           </div>
 
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 flex items-center gap-2 font-semibold text-secondary">
               <UIcon name="i-lucide-file-text" class="h-5 w-5" />
               Fundos de Papel
@@ -77,7 +77,7 @@
             </ul>
           </div>
 
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 flex items-center gap-2 font-semibold text-secondary">
               <UIcon name="i-lucide-layers" class="h-5 w-5" />
               Fundos de Fundos (FOFs)
@@ -88,7 +88,7 @@
             </p>
           </div>
 
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 flex items-center gap-2 font-semibold text-secondary">
               <UIcon name="i-lucide-combine" class="h-5 w-5" />
               Fundos Híbridos
@@ -137,7 +137,7 @@
           Vantagens de Investir em FIIs
         </h3>
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-coins" class="text-primary h-5 w-5" />
               <h4 class="font-semibold">Renda Passiva Mensal</h4>
@@ -148,7 +148,7 @@
             </p>
           </div>
 
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-shield-check" class="text-primary h-5 w-5" />
               <h4 class="font-semibold">Isenção de IR</h4>
@@ -159,7 +159,7 @@
             </p>
           </div>
 
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-zap" class="text-primary h-5 w-5" />
               <h4 class="font-semibold">Alta Liquidez</h4>
@@ -170,7 +170,7 @@
             </p>
           </div>
 
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-trending-up" class="text-primary h-5 w-5" />
               <h4 class="font-semibold">Acessibilidade</h4>
@@ -186,7 +186,7 @@
           Riscos de Investir em FIIs
         </h3>
         <div
-          class="rounded-xl border border-yellow-500/20 bg-yellow-500/10 p-5"
+          class="brand-card border border-yellow-500/20 bg-yellow-500/10 p-5"
         >
           <ul class="list-disc space-y-2 pl-6 text-gray-300">
             <li>
@@ -343,7 +343,7 @@
           Perguntas Frequentes sobre FIIs
         </h2>
         <div class="space-y-4">
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               FIIs pagam dividendos todo mês?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -355,7 +355,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Qual o melhor FII para iniciantes?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -367,7 +367,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               É melhor tijolo ou papel?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -379,7 +379,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Quanto preciso para começar a investir em FIIs?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -391,7 +391,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               FIIs são seguros?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -403,7 +403,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Qual o dividend yield ideal de um FII?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />

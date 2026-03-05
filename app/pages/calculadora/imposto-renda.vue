@@ -17,7 +17,7 @@
       <div class="flex flex-col gap-4">
         <div class="flex items-center gap-2">
           <UIcon name="i-lucide-receipt-text" class="text-secondary h-8 w-8" />
-          <h1 class="text-3xl font-bold md:text-4xl">
+          <h1 class="text-3xl md:text-4xl" :class="[brand.font.headingWeight, brand.font.headingStyle]">
             Calculadora de IR sobre Ações: Day Trade e Swing Trade
           </h1>
         </div>
@@ -36,7 +36,7 @@
 
         <h3 class="text-xl font-semibold">Regras Principais</h3>
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">Swing Trade (Normal)</h4>
             <ul class="space-y-2 text-sm text-gray-300">
               <li>• Alíquota: <strong>15%</strong> sobre o lucro</li>
@@ -46,7 +46,7 @@
               <li>• Dividendos são isentos</li>
             </ul>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">Day Trade</h4>
             <ul class="space-y-2 text-sm text-gray-300">
               <li>• Alíquota: <strong>20%</strong> sobre o lucro</li>
@@ -120,7 +120,7 @@
         <h2 class="text-2xl font-bold">Perguntas Frequentes</h2>
         
         <div class="space-y-4">
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               O que acontece se eu não pagar o IR?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -130,7 +130,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Como funciona a isenção de R$ 20.000?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -140,7 +140,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Posso compensar prejuízos de meses anteriores?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -150,7 +150,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Tenho que declarar operações isentas no IRPF?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -160,7 +160,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Corretagem e taxas podem ser deduzidas?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -173,25 +173,25 @@
 
         <h2 class="text-2xl font-bold">Evite Estes Erros</h2>
         <div class="space-y-3">
-          <div class="rounded-xl border border-red-500/20 bg-red-500/10 p-4">
+          <div class="brand-card border border-red-500/20 bg-red-500/10 p-4">
             <h4 class="mb-1 font-semibold text-red-400">❌ Não Controlar as Operações</h4>
             <p class="text-sm text-gray-300">
               Use planilha ou software. Não dá para confiar apenas na memória ou esperar a corretora fazer tudo.
             </p>
           </div>
-          <div class="rounded-xl border border-red-500/20 bg-red-500/10 p-4">
+          <div class="brand-card border border-red-500/20 bg-red-500/10 p-4">
             <h4 class="mb-1 font-semibold text-red-400">❌ Esquecer de Pagar o DARF</h4>
             <p class="text-sm text-gray-300">
               Multa de 0,33% ao dia. Configure lembretes! Último dia útil do mês seguinte.
             </p>
           </div>
-          <div class="rounded-xl border border-red-500/20 bg-red-500/10 p-4">
+          <div class="brand-card border border-red-500/20 bg-red-500/10 p-4">
             <h4 class="mb-1 font-semibold text-red-400">❌ Não Declarar Operações Isentas</h4>
             <p class="text-sm text-gray-300">
               Mesmo isento, você DEVE declarar no IRPF anual. Omissão gera malha fina.
             </p>
           </div>
-          <div class="rounded-xl border border-red-500/20 bg-red-500/10 p-4">
+          <div class="brand-card border border-red-500/20 bg-red-500/10 p-4">
             <h4 class="mb-1 font-semibold text-red-400">❌ Misturar Swing e Day Trade</h4>
             <p class="text-sm text-gray-300">
               São tratados separadamente. Prejuízo de um não compensa lucro do outro.
@@ -205,7 +205,7 @@
         <div class="grid gap-4 md:grid-cols-2">
           <NuxtLink
             to="/calculadora/acoes"
-            class="group flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-secondary/50"
+            class="group flex items-center gap-4 brand-card border border-white/10 bg-white/5 p-4 transition hover:border-secondary/50"
           >
             <UIcon name="i-lucide-chart-line" class="text-secondary size-8 shrink-0" />
             <div>
@@ -215,7 +215,7 @@
           </NuxtLink>
           <NuxtLink
             to="/calculadora/preco-teto"
-            class="group flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-secondary/50"
+            class="group flex items-center gap-4 brand-card border border-white/10 bg-white/5 p-4 transition hover:border-secondary/50"
           >
             <UIcon name="i-lucide-target" class="text-secondary size-8 shrink-0" />
             <div>

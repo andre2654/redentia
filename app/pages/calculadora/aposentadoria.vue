@@ -17,7 +17,7 @@
       <div class="flex flex-col gap-4">
         <div class="flex items-center gap-2">
           <UIcon name="i-lucide-piggy-bank" class="text-secondary h-8 w-8" />
-          <h1 class="text-3xl font-bold md:text-4xl">
+          <h1 class="text-3xl md:text-4xl" :class="[brand.font.headingWeight, brand.font.headingStyle]">
             Calculadora de Aposentadoria: Quanto Preciso para Me Aposentar?
           </h1>
         </div>
@@ -35,7 +35,7 @@
         </p>
 
         <h3 class="text-xl font-semibold">A Regra dos 4%</h3>
-        <div class="rounded-xl border border-secondary/20 bg-secondary/10 p-5">
+        <div class="brand-card border border-secondary/20 bg-secondary/10 p-5">
           <p class="text-center text-lg font-semibold">
             Você pode sacar 4% do patrimônio por ano mantendo o capital indefinidamente
           </p>
@@ -51,19 +51,19 @@
         </p>
 
         <div class="grid gap-4 md:grid-cols-3">
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">Lean FIRE</h4>
             <p class="text-sm text-gray-300">
               Aposentar com o mínimo necessário, estilo de vida frugal. Meta: R$ 500-750k.
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">Regular FIRE</h4>
             <p class="text-sm text-gray-300">
               Manter padrão de vida médio. Meta: R$ 1-2 milhões.
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">Fat FIRE</h4>
             <p class="text-sm text-gray-300">
               Aposentar com alto padrão de vida. Meta: R$ 3 milhões+.
@@ -74,7 +74,7 @@
         <h2 class="text-2xl font-bold">Perguntas Frequentes</h2>
         
         <div class="space-y-4">
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Quanto preciso para me aposentar?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -84,7 +84,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               É possível se aposentar aos 40 anos no Brasil?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -94,7 +94,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Devo contar com o INSS no planejamento?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -111,7 +111,7 @@
         <div class="grid gap-4 md:grid-cols-2">
           <NuxtLink
             to="/calculadora/quanto-investir"
-            class="group flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-secondary/50"
+            class="group flex items-center gap-4 brand-card border border-white/10 bg-white/5 p-4 transition hover:border-secondary/50"
           >
             <UIcon name="i-lucide-wallet" class="text-secondary size-8 shrink-0" />
             <div>
@@ -121,7 +121,7 @@
           </NuxtLink>
           <NuxtLink
             to="/calculadora/planejamento"
-            class="group flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-secondary/50"
+            class="group flex items-center gap-4 brand-card border border-white/10 bg-white/5 p-4 transition hover:border-secondary/50"
           >
             <UIcon name="i-lucide-target" class="text-secondary size-8 shrink-0" />
             <div>

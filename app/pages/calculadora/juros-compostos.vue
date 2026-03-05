@@ -18,7 +18,7 @@
       <div class="flex flex-col gap-4">
         <div class="flex items-center gap-2">
           <UIcon name="i-lucide-trending-up" class="text-secondary h-8 w-8" />
-          <h1 class="text-3xl font-bold md:text-4xl">
+          <h1 class="text-3xl md:text-4xl" :class="[brand.font.headingWeight, brand.font.headingStyle]">
             Calculadora de Juros Compostos: Simule Seu Investimento
           </h1>
         </div>
@@ -42,7 +42,7 @@
 
         <h3 class="text-xl font-semibold">Por que Investir com Juros Compostos?</h3>
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">
               Efeito Bola de Neve
             </h4>
@@ -50,7 +50,7 @@
               Quanto mais tempo seu dinheiro fica investido, maior é o efeito dos juros compostos. Os rendimentos geram novos rendimentos, criando um crescimento exponencial.
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">
               Vantagem do Tempo
             </h4>
@@ -58,7 +58,7 @@
               Começar cedo faz toda diferença. 10 anos a mais de investimento podem dobrar ou triplicar seu patrimônio final, mesmo com aportes menores.
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">
               Aportes Regulares
             </h4>
@@ -66,7 +66,7 @@
               Investir mensalmente acelera o crescimento. Cada novo aporte começa imediatamente a gerar juros compostos.
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">
               Proteção Contra Inflação
             </h4>
@@ -82,7 +82,7 @@
         <p class="leading-relaxed text-gray-300">
           A fórmula básica dos juros compostos é:
         </p>
-        <div class="rounded-xl border border-secondary/20 bg-secondary/10 p-5">
+        <div class="brand-card border border-secondary/20 bg-secondary/10 p-5">
           <p class="text-center text-lg font-semibold">
             M = C × (1 + i)ⁿ
           </p>
@@ -98,7 +98,7 @@
         <p class="leading-relaxed text-gray-300">
           Quando você faz aportes regulares, a fórmula se torna um pouco mais complexa:
         </p>
-        <div class="rounded-xl border border-secondary/20 bg-secondary/10 p-5">
+        <div class="brand-card border border-secondary/20 bg-secondary/10 p-5">
           <p class="text-center text-lg font-semibold">
             M = C × (1 + i)ⁿ + P × [((1 + i)ⁿ - 1) / i]
           </p>
@@ -112,7 +112,7 @@
 
         <h3 class="text-xl font-semibold">Exemplo 1: Investimento Inicial sem Aportes</h3>
         <div class="space-y-3">
-          <div class="rounded-xl border border-white/10 bg-white/5 p-4">
+          <div class="brand-card border border-white/10 bg-white/5 p-4">
             <h4 class="mb-2 font-semibold">Cenário</h4>
             <ul class="text-sm text-gray-300">
               <li>Investimento inicial: R$ 10.000</li>
@@ -133,7 +133,7 @@
 
         <h3 class="text-xl font-semibold">Exemplo 2: Com Aportes Mensais</h3>
         <div class="space-y-3">
-          <div class="rounded-xl border border-white/10 bg-white/5 p-4">
+          <div class="brand-card border border-white/10 bg-white/5 p-4">
             <h4 class="mb-2 font-semibold">Cenário</h4>
             <ul class="text-sm text-gray-300">
               <li>Investimento inicial: R$ 10.000</li>
@@ -154,7 +154,7 @@
 
         <h3 class="text-xl font-semibold">Exemplo 3: Começando Cedo</h3>
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="rounded-xl border border-white/10 bg-white/5 p-4">
+          <div class="brand-card border border-white/10 bg-white/5 p-4">
             <h4 class="mb-2 font-semibold text-secondary">João - Começou aos 25 anos</h4>
             <ul class="text-sm text-gray-300">
               <li>Aporte mensal: R$ 500</li>
@@ -166,7 +166,7 @@
               <p class="text-xs text-gray-400">Investido: R$ 240.000</p>
             </div>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-4">
+          <div class="brand-card border border-white/10 bg-white/5 p-4">
             <h4 class="mb-2 font-semibold text-red-400">Maria - Começou aos 35 anos</h4>
             <ul class="text-sm text-gray-300">
               <li>Aporte mensal: R$ 500</li>
@@ -280,7 +280,7 @@
         <h2 class="text-2xl font-bold">Perguntas Frequentes</h2>
         
         <div class="space-y-4">
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Qual a diferença entre juros simples e compostos?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -290,7 +290,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Qual é uma taxa de retorno realista para investimentos?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -300,7 +300,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               É melhor investir tudo no início ou fazer aportes mensais?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -310,7 +310,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Quanto tempo leva para dobrar meu dinheiro?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -320,7 +320,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Os impostos afetam os juros compostos?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -330,7 +330,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Devo considerar a inflação no cálculo?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -340,7 +340,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Posso usar esta calculadora para qualquer tipo de investimento?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -350,7 +350,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Qual o impacto de aumentar o aporte mensal em 20%?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -360,7 +360,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Com que frequência devo revisar meus investimentos?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -370,7 +370,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Qual a importância de começar a investir cedo?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -383,7 +383,7 @@
 
         <h2 class="text-2xl font-bold">Dicas para Maximizar Seus Juros Compostos</h2>
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">
               1. Comece Agora
             </h4>
@@ -391,7 +391,7 @@
               O melhor momento para começar a investir foi há 10 anos. O segundo melhor momento é agora. Mesmo com valores pequenos, comece hoje.
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">
               2. Seja Consistente
             </h4>
@@ -399,7 +399,7 @@
               Aportes mensais regulares, mesmo que pequenos, têm impacto maior que investimentos irregulares de valores maiores.
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">
               3. Reinvista os Rendimentos
             </h4>
@@ -407,7 +407,7 @@
               Nunca retire os rendimentos. Deixe-os reinvestidos para maximizar o efeito dos juros compostos.
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">
               4. Aumente os Aportes
             </h4>
@@ -415,7 +415,7 @@
               Sempre que receber um aumento ou bônus, aumente proporcionalmente seus aportes mensais.
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">
               5. Escolha Bons Investimentos
             </h4>
@@ -423,7 +423,7 @@
               Busque investimentos com boa rentabilidade, baixas taxas de administração e adequados ao seu perfil de risco.
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">
               6. Tenha Paciência
             </h4>
@@ -440,7 +440,7 @@
         <div class="grid gap-4 md:grid-cols-2">
           <NuxtLink
             to="/calculadora/acoes"
-            class="group flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-secondary/50"
+            class="group flex items-center gap-4 brand-card border border-white/10 bg-white/5 p-4 transition hover:border-secondary/50"
           >
             <UIcon
               name="i-lucide-chart-line"
@@ -455,7 +455,7 @@
           </NuxtLink>
           <NuxtLink
             to="/calculadora/planejamento"
-            class="group flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-secondary/50"
+            class="group flex items-center gap-4 brand-card border border-white/10 bg-white/5 p-4 transition hover:border-secondary/50"
           >
             <UIcon
               name="i-lucide-target"

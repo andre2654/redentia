@@ -48,7 +48,7 @@
           class="relative z-10 mx-auto flex max-w-5xl flex-col items-center text-center"
         >
           <div
-            class="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 backdrop-blur-md"
+            class="mb-6 inline-flex items-center gap-2 brand-pill border border-white/10 bg-white/5 px-4 py-1.5 backdrop-blur-md"
           >
             <span class="relative flex h-2 w-2">
               <span
@@ -123,7 +123,7 @@
 
           <div class="grid gap-8 md:grid-cols-3">
             <div
-              class="hover:shadow-primary/5 group relative overflow-hidden rounded-3xl border border-white/10 bg-black p-8 transition-all hover:border-white/20 hover:shadow-2xl"
+              class="hover:shadow-primary/5 group relative overflow-hidden brand-card border border-white/10 bg-black p-8 transition-all hover:border-white/20 hover:shadow-2xl"
             >
               <div
                 class="bg-linear-to-br absolute inset-0 from-white/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100"
@@ -144,7 +144,7 @@
             </div>
 
             <div
-              class="hover:shadow-secondary/5 group relative overflow-hidden rounded-3xl border border-white/10 bg-black p-8 transition-all hover:border-white/20 hover:shadow-2xl"
+              class="hover:shadow-secondary/5 group relative overflow-hidden brand-card border border-white/10 bg-black p-8 transition-all hover:border-white/20 hover:shadow-2xl"
             >
               <div
                 class="bg-linear-to-br absolute inset-0 from-white/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100"
@@ -164,7 +164,7 @@
             </div>
 
             <div
-              class="group relative overflow-hidden rounded-3xl border border-white/10 bg-black p-8 transition-all hover:border-white/20 hover:shadow-2xl hover:shadow-purple-500/5"
+              class="group relative overflow-hidden brand-card border border-white/10 bg-black p-8 transition-all hover:border-white/20 hover:shadow-2xl hover:shadow-purple-500/5"
             >
               <div
                 class="bg-linear-to-br absolute inset-0 from-white/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100"
@@ -201,7 +201,7 @@
             <!-- Android -->
             <div
               id="install-android"
-              class="bg-white/2 relative overflow-hidden rounded-[2.5rem] border border-white/10 p-8 md:p-12"
+              class="bg-white/2 relative overflow-hidden brand-card border border-white/10 p-8 md:p-12"
             >
               <div
                 class="absolute right-0 top-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-green-500/10 blur-3xl"
@@ -277,7 +277,7 @@
             <!-- iOS -->
             <div
               id="install-ios"
-              class="bg-white/2 relative overflow-hidden rounded-[2.5rem] border border-white/10 p-8 md:p-12"
+              class="bg-white/2 relative overflow-hidden brand-card border border-white/10 p-8 md:p-12"
             >
               <div
                 class="absolute right-0 top-0 -mr-16 -mt-16 h-64 w-64 rounded-full bg-blue-500/10 blur-3xl"
@@ -343,7 +343,7 @@
                 </ol>
 
                 <div
-                  class="mt-12 rounded-xl border border-white/5 bg-white/5 p-4 text-center text-sm text-gray-400"
+                  class="mt-12 brand-card-md border border-white/5 bg-white/5 p-4 text-center text-sm text-gray-400"
                 >
                   <UIcon
                     name="i-lucide-info"

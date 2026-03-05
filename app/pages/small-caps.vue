@@ -5,7 +5,7 @@
       <div class="flex flex-col gap-4">
         <div class="flex items-center gap-2">
           <UIcon name="i-lucide-rocket" class="text-secondary h-8 w-8" />
-          <h1 class="text-3xl font-bold md:text-4xl">
+          <h1 class="text-3xl md:text-4xl" :class="[brand.font.headingWeight, brand.font.headingStyle]">
             Small Caps: Ações de Empresas Pequenas
           </h1>
         </div>
@@ -27,7 +27,7 @@
 
         <h3 class="text-xl font-semibold">Classificação por Tamanho</h3>
         <div class="space-y-3">
-          <div class="rounded-xl border border-white/10 bg-white/5 p-4">
+          <div class="brand-card border border-white/10 bg-white/5 p-4">
             <h4 class="mb-1 font-semibold">
               Mega Caps (> R$ 100 bilhões)
             </h4>
@@ -35,20 +35,20 @@
               Vale, Petrobras, Itaú - Gigantes consolidadas
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-4">
+          <div class="brand-card border border-white/10 bg-white/5 p-4">
             <h4 class="mb-1 font-semibold">Large Caps (R$ 10-100 bi)</h4>
             <p class="text-sm text-gray-400">
               Weg, Localiza, Magazine Luiza - Grandes empresas
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-4">
+          <div class="brand-card border border-white/10 bg-white/5 p-4">
             <h4 class="mb-1 font-semibold">Mid Caps (R$ 2-10 bi)</h4>
             <p class="text-sm text-gray-400">
               Empresas médias em crescimento
             </p>
           </div>
           <div
-            class="rounded-xl border border-secondary/20 bg-secondary/10 p-4"
+            class="brand-card border border-secondary/20 bg-secondary/10 p-4"
           >
             <h4 class="mb-1 font-semibold text-secondary">
               Small Caps (< R$ 2 bi)
@@ -63,7 +63,7 @@
           Por que Investir em Small Caps?
         </h3>
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-trending-up" class="text-primary h-5 w-5" />
               <h4 class="font-semibold">Alto Potencial de Crescimento</h4>
@@ -74,7 +74,7 @@
             </p>
           </div>
 
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-target" class="text-primary h-5 w-5" />
               <h4 class="font-semibold">Pouca Cobertura de Analistas</h4>
@@ -85,7 +85,7 @@
             </p>
           </div>
 
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-award" class="text-primary h-5 w-5" />
               <h4 class="font-semibold">Futuras Blue Chips</h4>
@@ -96,7 +96,7 @@
             </p>
           </div>
 
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-shield" class="text-primary h-5 w-5" />
               <h4 class="font-semibold">Menor Competição</h4>
@@ -110,7 +110,7 @@
 
         <h3 class="text-xl font-semibold">Riscos das Small Caps</h3>
         <div
-          class="rounded-xl border border-yellow-500/20 bg-yellow-500/10 p-5"
+          class="brand-card border border-yellow-500/20 bg-yellow-500/10 p-5"
         >
           <ul class="list-disc space-y-2 pl-6 text-gray-300">
             <li>
@@ -200,7 +200,7 @@
         </ul>
 
         <div
-          class="my-6 rounded-2xl border border-secondary/20 bg-secondary/10 p-6"
+          class="my-6 brand-card border border-secondary/20 bg-secondary/10 p-6"
         >
           <h3 class="mb-3 text-xl font-semibold text-secondary">
             Dica de Ouro
@@ -227,7 +227,7 @@
       <div class="border-t border-white/10 pt-8">
         <NuxtLink
           to="/search?mc_max=2000000000&group=stocks"
-          class="group mx-auto flex max-w-2xl items-center justify-between rounded-2xl border border-secondary/30 bg-secondary/10 p-6 transition-all hover:border-secondary/50 hover:bg-secondary/20"
+          class="group mx-auto flex max-w-2xl items-center justify-between brand-card border border-secondary/30 bg-secondary/10 p-6 transition-all hover:border-secondary/50 hover:bg-secondary/20"
         >
           <div class="flex flex-col gap-1">
             <h3 class="text-xl font-bold group-hover:text-secondary transition-colors">

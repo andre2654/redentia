@@ -42,7 +42,7 @@
         <div class="flex-shrink-0 border-b p-4" :style="{ borderColor: brand.colors.border }">
           <div class="flex items-center gap-2">
             <!-- Search Input -->
-            <div class="flex flex-1 items-center gap-3 rounded-xl border px-4 py-3" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+            <div class="flex flex-1 items-center gap-3 brand-card-md border px-4 py-3" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
               <UIcon name="i-lucide-search" class="h-5 w-5 flex-shrink-0" :style="{ color: brand.colors.textMuted }" />
               <input
                 v-model="searchTerm"
@@ -67,7 +67,7 @@
             <!-- Advanced Search Button -->
             <NuxtLink
               to="/search"
-              class="flex h-[50px] w-[50px] flex-shrink-0 items-center justify-center rounded-xl border border-secondary/20 bg-secondary/10 text-secondary transition-all hover:border-secondary/40 hover:bg-secondary/20"
+              class="flex h-[50px] w-[50px] flex-shrink-0 items-center justify-center brand-card-md border border-secondary/20 bg-secondary/10 text-secondary transition-all hover:border-secondary/40 hover:bg-secondary/20"
               title="Busca avançada"
               @click="open = false"
             >
@@ -85,7 +85,7 @@
                 <span class="text-[10px] font-semibold uppercase tracking-widest" :style="{ color: brand.colors.textMuted }">
                   {{ group.label }}
                 </span>
-                <span class="rounded-full px-2 py-0.5 text-[10px]" :style="{ backgroundColor: brand.colors.surface, color: brand.colors.textMuted }">
+                <span class="brand-pill px-2 py-0.5 text-[10px]" :style="{ backgroundColor: brand.colors.surface, color: brand.colors.textMuted }">
                   {{ group.items.length }}
                 </span>
               </div>
@@ -96,7 +96,7 @@
                   v-for="item in group.items"
                   :key="item.id"
                   :to="item.to"
-                  class="group flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all"
+                  class="group flex items-center gap-3 brand-card-md px-3 py-2.5 transition-all"
                   @click="onSelect"
                 >
                   <!-- Logo -->
@@ -151,7 +151,7 @@
 
           <!-- Empty State -->
           <div v-if="hasNoResults" class="flex flex-col items-center justify-center py-16 text-center">
-            <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl" :style="{ backgroundColor: brand.colors.surface }">
+            <div class="mb-4 flex h-14 w-14 items-center justify-center brand-card" :style="{ backgroundColor: brand.colors.surface }">
               <UIcon name="i-lucide-search-x" class="h-7 w-7" :style="{ color: brand.colors.textMuted }" />
             </div>
             <p class="text-sm" :style="{ color: brand.colors.textMuted }">Nenhum ativo encontrado</p>

@@ -14,7 +14,7 @@
       <div class="flex flex-col gap-4">
         <div class="flex items-center gap-2">
           <UIcon name="i-lucide-calculator" class="text-secondary h-8 w-8" />
-          <h1 class="text-3xl font-bold md:text-4xl">
+          <h1 class="text-3xl md:text-4xl" :class="[brand.font.headingWeight, brand.font.headingStyle]">
             Calculadoras Financeiras Gratuitas para Investidores
           </h1>
         </div>
@@ -245,7 +245,7 @@
 
         <h3 class="text-xl font-semibold">Qual Calculadora Usar?</h3>
         <div class="space-y-4">
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">
               Use a Calculadora de Juros Compostos se:
             </h4>
@@ -257,7 +257,7 @@
             </ul>
           </div>
 
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">
               Use o Simulador de Ações se:
             </h4>
@@ -269,7 +269,7 @@
             </ul>
           </div>
 
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">
               Use o Planejamento Patrimonial se:
             </h4>
@@ -284,25 +284,25 @@
 
         <h2 class="text-2xl font-bold">Dicas para Melhores Resultados</h2>
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">Seja Realista</h4>
             <p class="text-sm text-gray-300">
               Use taxas de retorno realistas. O mercado brasileiro historicamente rende entre 10-15% ao ano em ações, mas com volatilidade.
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">Considere a Inflação</h4>
             <p class="text-sm text-gray-300">
               Lembre-se que a inflação corrói o poder de compra. Considere retornos reais (acima da inflação).
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">Diversifique</h4>
             <p class="text-sm text-gray-300">
               Use o simulador de ações para testar diferentes combinações de ativos e reduzir riscos.
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold text-secondary">Revise Regularmente</h4>
             <p class="text-sm text-gray-300">
               Refaça suas simulações periodicamente e ajuste sua estratégia conforme necessário.

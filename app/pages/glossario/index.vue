@@ -5,7 +5,7 @@
       <section class="flex flex-col gap-4">
         <div class="flex items-center gap-2">
           <UIcon name="i-lucide-book-open" class="text-secondary h-8 w-8" />
-          <h1 class="text-3xl font-bold md:text-4xl">Glossário Financeiro</h1>
+          <h1 class="text-3xl md:text-4xl" :class="[brand.font.headingWeight, brand.font.headingStyle]">Glossário Financeiro</h1>
         </div>
         <p class="text-base md:text-lg" :style="{ color: brand.colors.textMuted }">
           Aprenda mais de 200 termos essenciais sobre investimentos, ações, FIIs
@@ -16,7 +16,7 @@
       <!-- Termo do Dia -->
       <section
         v-if="termoDoDia"
-        class="bg-secondary/10 border-secondary rounded-3xl border p-6"
+        class="bg-secondary/10 border-secondary brand-card border p-6"
       >
         <div class="mb-3 flex items-center gap-2">
           <UIcon name="i-lucide-star" class="text-secondary h-5 w-5" />
@@ -119,7 +119,7 @@
             v-for="termo in termosFiltrados"
             :key="termo.slug"
             :to="`/glossario/${termo.slug}`"
-            class="group rounded-2xl border p-5 transition-all hover:opacity-80"
+            class="group brand-card border p-5 transition-all hover:opacity-80"
             :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
           >
             <div class="flex flex-col gap-3">
@@ -163,7 +163,7 @@
 
         <div
           v-else
-          class="flex flex-col items-center gap-4 rounded-2xl border p-12 text-center"
+          class="flex flex-col items-center gap-4 brand-card border p-12 text-center"
           :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
         >
           <UIcon name="i-lucide-search-x" class="h-12 w-12 text-gray-500" />

@@ -23,14 +23,14 @@
               />
               <div class="flex flex-col gap-1">
                 <div class="flex items-center gap-3">
-                  <h1 class="text-2xl font-bold md:text-3xl" :style="{ color: brand.colors.text }">
+                  <h1 class="text-2xl md:text-3xl" :class="[brand.font.headingWeight, brand.font.headingStyle]" :style="{ color: brand.colors.text }">
                     {{ tickerUpper }}
                   </h1>
                   <!-- Badges de info rápida -->
                   <div v-if="!isLoadingAsset" class="flex items-center gap-2">
                     <span
                       v-if="asset?.sector"
-                      class="rounded-full px-3 py-1 text-xs font-medium"
+                      class="brand-pill px-3 py-1 text-xs font-medium"
                       :style="{ backgroundColor: brand.colors.surface, color: brand.colors.textMuted }"
                     >
                       {{ asset.sector }}
@@ -46,7 +46,7 @@
                       R$ {{ asset?.market_price }}
                     </span>
                     <span
-                      class="flex items-center gap-1 rounded-full px-3 py-1 text-sm font-medium"
+                      class="flex items-center gap-1 brand-pill px-3 py-1 text-sm font-medium"
                       :class="[
                         asset?.change_percent >= 0
                           ? 'bg-green-500/20 text-green-400'
@@ -110,7 +110,7 @@
               <USkeleton
                 v-for="i in 6"
                 :key="`basic-loading-${i}`"
-                class="h-24 w-full rounded-xl"
+                class="h-24 w-full brand-card"
               />
             </template>
             <template v-else-if="basicIndicators">
@@ -147,7 +147,7 @@
             </template>
             <template v-else>
               <div
-                class="col-span-full flex flex-col items-center justify-center rounded-xl border border-dashed py-8 text-center"
+                class="col-span-full flex flex-col items-center justify-center brand-card border border-dashed py-8 text-center"
                 :style="{ borderColor: brand.colors.border }"
               >
                 <UIcon name="i-lucide-bar-chart-3" class="mb-2 h-6 w-6" :style="{ color: brand.colors.textMuted }" />
@@ -168,7 +168,7 @@
                 <USkeleton
                   v-for="i in 8"
                   :key="`smart-loading-${i}`"
-                  class="h-28 w-full rounded-xl"
+                  class="h-28 w-full brand-card"
                 />
               </template>
               <template v-else-if="intelligentIndicators">
@@ -244,7 +244,7 @@
           <!-- Header -->
           <div class="flex items-center justify-between border-b px-5 py-4" :style="{ borderColor: brand.colors.border }">
             <div class="flex items-center gap-3">
-              <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-secondary/20">
+              <div class="flex h-9 w-9 items-center justify-center brand-card bg-secondary/20">
                 <IconAi class="fill-secondary h-5 w-5" />
               </div>
               <div>
@@ -258,7 +258,7 @@
             </div>
             <div
               v-else-if="monthlyDividendProbability.referenceLabel"
-              class="flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs"
+              class="flex items-center gap-2 brand-pill border px-3 py-1.5 text-xs"
               :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.textMuted }"
             >
               <UIcon name="i-lucide-calendar" class="h-3.5 w-3.5" />
@@ -275,7 +275,7 @@
               <USkeleton
                 v-for="month in 12"
                 :key="`dividend-month-skeleton-${month}`"
-                class="h-24 rounded-xl"
+                class="h-24 brand-card"
               />
             </div>
             <div
@@ -285,7 +285,7 @@
               <div
                 v-for="item in monthlyDividendProbability.months"
                 :key="item.label"
-                class="group relative flex flex-col items-center justify-center gap-2 rounded-xl border p-4 text-center transition-all duration-300"
+                class="group relative flex flex-col items-center justify-center gap-2 brand-card border p-4 text-center transition-all duration-300"
                 :class="[
                   item.highlight
                     ? 'border-secondary bg-gradient-to-br from-secondary/20 to-secondary/5 shadow-lg shadow-secondary/20'
@@ -322,7 +322,7 @@
                 <!-- Indicator -->
                 <div
                   v-if="item.highlight"
-                  class="flex items-center gap-1 rounded-full bg-secondary/20 px-2 py-0.5"
+                  class="flex items-center gap-1 brand-pill bg-secondary/20 px-2 py-0.5"
                 >
                   <UIcon name="i-lucide-sparkles" class="h-3 w-3 text-secondary" />
                   <span class="text-[10px] font-medium text-secondary">Provável</span>
@@ -412,7 +412,7 @@
         </div>
         <div
           v-else
-          class="flex flex-col items-center justify-center rounded-xl border border-dashed py-12 text-center"
+          class="flex flex-col items-center justify-center brand-card border border-dashed py-12 text-center"
           :style="{ borderColor: brand.colors.border }"
         >
           <UIcon name="i-lucide-file-x" class="mb-3 h-8 w-8" :style="{ color: brand.colors.textMuted }" />
@@ -449,7 +449,7 @@
             <USkeleton
               v-for="index in 6"
               :key="`checklist-skeleton-${index}`"
-              class="h-16 rounded-xl"
+              class="h-16 brand-card"
             />
           </div>
           <template v-else>
@@ -460,7 +460,7 @@
               <div
                 v-for="item in buyAndHoldChecklist"
                 :key="item.id"
-                class="group flex items-center gap-3 rounded-xl border p-3 transition-all"
+                class="group flex items-center gap-3 brand-card border p-3 transition-all"
                 :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
               >
                 <!-- Status Icon -->
@@ -526,7 +526,7 @@
             <!-- Empty state -->
             <div
               v-else
-              class="flex flex-col items-center justify-center rounded-xl border border-dashed py-12 text-center"
+              class="flex flex-col items-center justify-center brand-card border border-dashed py-12 text-center"
               :style="{ borderColor: brand.colors.border }"
             >
               <UIcon name="i-lucide-clipboard-list" class="mb-3 h-8 w-8" :style="{ color: brand.colors.textMuted }" />
@@ -565,23 +565,23 @@
           </div>
 
           <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            <USkeleton v-if="isLoadingAsset" class="h-12 rounded-xl" />
+            <USkeleton v-if="isLoadingAsset" class="h-12 brand-card" />
             <template v-else>
-              <div v-if="asset?.sector" class="flex items-center gap-3 rounded-xl p-4" :style="{ backgroundColor: brand.colors.surfaceHover }">
+              <div v-if="asset?.sector" class="flex items-center gap-3 brand-card p-4" :style="{ backgroundColor: brand.colors.surfaceHover }">
                 <UIcon name="i-lucide-layers" class="h-5 w-5 text-secondary" />
                 <div class="flex flex-col">
                   <span class="text-xs" :style="{ color: brand.colors.textMuted }">Setor</span>
                   <span class="text-sm font-medium" :style="{ color: brand.colors.text }">{{ asset.sector }}</span>
                 </div>
               </div>
-              <div v-if="asset?.industry" class="flex items-center gap-3 rounded-xl p-4" :style="{ backgroundColor: brand.colors.surfaceHover }">
+              <div v-if="asset?.industry" class="flex items-center gap-3 brand-card p-4" :style="{ backgroundColor: brand.colors.surfaceHover }">
                 <UIcon name="i-lucide-factory" class="h-5 w-5 text-secondary" />
                 <div class="flex flex-col">
                   <span class="text-xs" :style="{ color: brand.colors.textMuted }">Indústria</span>
                   <span class="text-sm font-medium" :style="{ color: brand.colors.text }">{{ asset.industry }}</span>
                 </div>
               </div>
-              <div v-if="asset?.website" class="flex items-center gap-3 rounded-xl p-4" :style="{ backgroundColor: brand.colors.surfaceHover }">
+              <div v-if="asset?.website" class="flex items-center gap-3 brand-card p-4" :style="{ backgroundColor: brand.colors.surfaceHover }">
                 <UIcon name="i-lucide-globe" class="h-5 w-5 text-secondary" />
                 <div class="flex flex-col">
                   <span class="text-xs" :style="{ color: brand.colors.textMuted }">Site</span>
@@ -605,11 +605,11 @@
         <div class="mx-auto max-w-4xl">
           <!-- Header -->
           <div class="mb-8 text-center">
-            <div class="mb-4 inline-flex items-center gap-2 rounded-full bg-secondary/10 px-4 py-2">
+            <div class="mb-4 inline-flex items-center gap-2 brand-pill bg-secondary/10 px-4 py-2">
               <IconAi class="fill-secondary h-4 w-4" />
               <span class="text-sm font-medium text-secondary">Assessoria Inteligente</span>
             </div>
-            <h2 class="mb-3 text-2xl font-bold md:text-3xl lg:text-4xl" :style="{ color: brand.colors.text }">
+            <h2 class="mb-3 text-2xl md:text-3xl lg:text-4xl" :class="[brand.font.headingWeight, brand.font.headingStyle]" :style="{ color: brand.colors.text }">
               Dúvidas sobre {{ tickerUpper }}?
             </h2>
             <p :style="{ color: brand.colors.textMuted }">
@@ -630,7 +630,7 @@
               class="group flex flex-col gap-3 rounded-2xl border p-5 transition-all duration-200 hover:border-secondary/30 hover:bg-secondary/5"
               :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
             >
-              <div class="flex h-10 w-10 items-center justify-center rounded-xl transition-colors group-hover:bg-secondary/20" :style="{ backgroundColor: brand.colors.surfaceHover }">
+              <div class="flex h-10 w-10 items-center justify-center brand-card transition-colors group-hover:bg-secondary/20" :style="{ backgroundColor: brand.colors.surfaceHover }">
                 <UIcon :name="item.icon" class="h-5 w-5 transition-colors group-hover:text-secondary" :style="{ color: brand.colors.textMuted }" />
               </div>
               <div>

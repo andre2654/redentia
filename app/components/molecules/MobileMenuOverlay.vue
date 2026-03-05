@@ -65,7 +65,7 @@
             <div class="flex flex-col gap-2">
               <NuxtLink
                 to="/"
-                class="flex items-center gap-3 rounded-2xl border px-5 py-4 text-sm font-medium transition"
+                class="flex items-center gap-3 brand-card border px-5 py-4 text-sm font-medium transition"
                 :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.text }"
                 @click="closeMenu"
               >
@@ -77,7 +77,7 @@
               </NuxtLink>
               <NuxtLink
                 to="/calculadora"
-                class="flex items-center gap-3 rounded-2xl border px-5 py-4 text-sm font-medium transition"
+                class="flex items-center gap-3 brand-card border px-5 py-4 text-sm font-medium transition"
                 :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.text }"
                 @click="closeMenu"
               >
@@ -89,7 +89,7 @@
               </NuxtLink>
               <NuxtLink
                 to="/guias"
-                class="flex items-center gap-3 rounded-2xl border px-5 py-4 text-sm font-medium transition"
+                class="flex items-center gap-3 brand-card border px-5 py-4 text-sm font-medium transition"
                 :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.text }"
                 @click="closeMenu"
               >
@@ -101,7 +101,7 @@
               </NuxtLink>
               <NuxtLink
                 to="/settings"
-                class="flex items-center gap-3 rounded-2xl border px-5 py-4 text-sm font-medium transition"
+                class="flex items-center gap-3 brand-card border px-5 py-4 text-sm font-medium transition"
                 :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.text }"
                 @click="closeMenu"
               >
@@ -115,7 +115,7 @@
 
             <NuxtLink
               to="/help"
-              class="hover:bg-secondary/20 flex items-center justify-between gap-4 rounded-2xl border px-6 py-4"
+              class="hover:bg-secondary/20 flex items-center justify-between gap-4 brand-card border px-6 py-4"
               :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.background + '4D' }"
               @click="closeMenu"
             >
@@ -140,7 +140,7 @@
 
             <button
               type="button"
-              class="flex items-center gap-3 rounded-2xl border px-5 py-4 text-sm font-medium transition"
+              class="flex items-center gap-3 brand-card border px-5 py-4 text-sm font-medium transition"
               :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.text }"
               @click="handleLogout"
             >
@@ -155,7 +155,7 @@
                 v-for="link in publicLinks"
                 :key="link.to"
                 :to="link.to"
-                class="flex items-center gap-3 rounded-2xl border px-5 py-4 text-sm font-medium transition"
+                class="flex items-center gap-3 brand-card border px-5 py-4 text-sm font-medium transition"
                 :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
                 @click="closeMenu"
               >
@@ -164,7 +164,7 @@
               </NuxtLink>
             </div>
             <div
-              class="rounded-2xl border p-5 text-sm"
+              class="brand-card border p-5 text-sm"
               :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.textMuted }"
             >
               <div class="mb-4 flex items-center justify-between">
@@ -180,7 +180,7 @@
                 <UIcon name="i-lucide-lock" class="text-secondary size-6" />
               </div>
               <div
-                class="border-secondary/20 bg-secondary/10 flex items-center gap-3 rounded-xl border px-4 py-3 text-sm"
+                class="border-secondary/20 bg-secondary/10 flex items-center gap-3 brand-card-md border px-4 py-3 text-sm"
                 :style="{ color: brand.colors.textMuted }"
               >
                 <IconAi class="fill-secondary h-6 w-6" />

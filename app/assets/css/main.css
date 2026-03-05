@@ -81,6 +81,16 @@ button:disabled {
   @apply cursor-not-allowed opacity-50;
 }
 
+/* Brand-aware transitions: override Tailwind defaults with brand timing */
+.transition-all,
+.transition-colors,
+.transition-opacity,
+.transition-shadow,
+.transition-transform {
+  transition-duration: var(--brand-duration, 200ms);
+  transition-timing-function: var(--brand-ease, cubic-bezier(0.4, 0, 0.2, 1));
+}
+
 .brand-card {
   border-radius: var(--brand-radius-xl);
 }

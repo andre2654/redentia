@@ -5,7 +5,7 @@
       <div class="flex flex-col gap-4">
         <div class="flex items-center gap-2">
           <UIcon name="i-lucide-coins" class="text-secondary h-8 w-8" />
-          <h1 class="text-3xl font-bold md:text-4xl">
+          <h1 class="text-3xl md:text-4xl" :class="[brand.font.headingWeight, brand.font.headingStyle]">
             Dividendos: Renda Passiva com Ações e FIIs
           </h1>
         </div>
@@ -27,7 +27,7 @@
         </p>
 
         <div
-          class="my-6 rounded-2xl border border-secondary/20 bg-secondary/10 p-6"
+          class="my-6 brand-card border border-secondary/20 bg-secondary/10 p-6"
         >
           <h3 class="mb-3 text-xl font-semibold text-secondary">
             Isenção de Imposto de Renda
@@ -41,7 +41,7 @@
 
         <h3 class="text-xl font-semibold">Como Funcionam os Dividendos</h3>
         <div class="space-y-4">
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold">1. Empresa Anuncia Dividendos</h4>
             <p class="text-sm text-gray-300">
               Empresa decide distribuir parte dos lucros e anuncia valor por
@@ -49,7 +49,7 @@
             </p>
           </div>
 
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold">
               2. Data COM (Último Dia com Direito)
             </h4>
@@ -59,7 +59,7 @@
             </p>
           </div>
 
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold">
               3. Data EX (Primeiro Dia sem Direito)
             </h4>
@@ -69,7 +69,7 @@
             </p>
           </div>
 
-          <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+          <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 font-semibold">4. Data de Pagamento</h4>
             <p class="text-sm text-gray-300">
               Dividendo cai automaticamente na sua conta da corretora. Você não
@@ -106,7 +106,7 @@
           O Dividend Yield (DY) é o percentual que você recebe de dividendos em
           relação ao preço da ação.
         </p>
-        <div class="rounded-xl border border-white/10 bg-white/5 p-5">
+        <div class="brand-card border border-white/10 bg-white/5 p-5">
           <p class="mb-2 text-sm font-mono text-gray-300">
             DY = (Dividendos últimos 12 meses ÷ Preço atual) × 100
           </p>
@@ -127,23 +127,23 @@
           Setores conhecidos por bons dividendos:
         </p>
         <div class="grid gap-3 md:grid-cols-2">
-          <div class="rounded-xl border border-white/10 bg-white/5 p-4">
+          <div class="brand-card border border-white/10 bg-white/5 p-4">
             <h4 class="mb-1 font-semibold">Bancos</h4>
             <p class="text-sm text-gray-400">
               ITUB4, BBDC4, BBAS3, SANB11 - DY 6-10%
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-4">
+          <div class="brand-card border border-white/10 bg-white/5 p-4">
             <h4 class="mb-1 font-semibold">Energia Elétrica</h4>
             <p class="text-sm text-gray-400">
               TAEE11, ELET3, CPLE6 - DY 8-12%
             </p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-4">
+          <div class="brand-card border border-white/10 bg-white/5 p-4">
             <h4 class="mb-1 font-semibold">Seguradoras</h4>
             <p class="text-sm text-gray-400">BBSE3, PSSA3 - DY 5-8%</p>
           </div>
-          <div class="rounded-xl border border-white/10 bg-white/5 p-4">
+          <div class="brand-card border border-white/10 bg-white/5 p-4">
             <h4 class="mb-1 font-semibold">Saneamento</h4>
             <p class="text-sm text-gray-400">SAPR11, SBSP3 - DY 4-7%</p>
           </div>
@@ -183,7 +183,7 @@
         </ol>
 
         <div
-          class="my-6 rounded-2xl border border-secondary/20 bg-secondary/10 p-6"
+          class="my-6 brand-card border border-secondary/20 bg-secondary/10 p-6"
         >
           <h3 class="mb-3 text-xl font-semibold text-secondary">
             Exemplo Prático
@@ -205,7 +205,7 @@
 
         <h3 class="text-xl font-semibold">Cuidados com Dividendos</h3>
         <div
-          class="rounded-xl border border-yellow-500/20 bg-yellow-500/10 p-5"
+          class="brand-card border border-yellow-500/20 bg-yellow-500/10 p-5"
         >
           <ul class="list-disc space-y-2 pl-6 text-gray-300">
             <li>
@@ -293,7 +293,7 @@
       <div class="space-y-4 border-t border-white/10 pt-8">
         <NuxtLink
           to="/search?group=stocks"
-          class="group mx-auto flex max-w-2xl items-center justify-between rounded-2xl border border-secondary/30 bg-secondary/10 p-6 transition-all hover:border-secondary/50 hover:bg-secondary/20"
+          class="group mx-auto flex max-w-2xl items-center justify-between brand-card border border-secondary/30 bg-secondary/10 p-6 transition-all hover:border-secondary/50 hover:bg-secondary/20"
         >
           <div class="flex flex-col gap-1">
             <h3 class="text-xl font-bold group-hover:text-secondary transition-colors">
@@ -311,7 +311,7 @@
 
         <NuxtLink
           to="/search?group=reits"
-          class="group mx-auto flex max-w-2xl items-center justify-between rounded-2xl border border-secondary/30 bg-secondary/10 p-6 transition-all hover:border-secondary/50 hover:bg-secondary/20"
+          class="group mx-auto flex max-w-2xl items-center justify-between brand-card border border-secondary/30 bg-secondary/10 p-6 transition-all hover:border-secondary/50 hover:bg-secondary/20"
         >
           <div class="flex flex-col gap-1">
             <h3 class="text-xl font-bold group-hover:text-secondary transition-colors">
@@ -334,7 +334,7 @@
           Perguntas Frequentes sobre Dividendos
         </h2>
         <div class="space-y-4">
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Quanto preciso investir para receber R$ 1.000/mês em dividendos?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -346,7 +346,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Dividendos pagam Imposto de Renda?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -358,7 +358,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               É melhor dividendos de ações ou FIIs?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -371,7 +371,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Quando os dividendos caem na conta?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -383,7 +383,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Devo reinvestir dividendos?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -395,7 +395,7 @@
             </p>
           </details>
 
-          <details class="group rounded-xl border border-white/10 bg-white/5 p-4">
+          <details class="group brand-card border border-white/10 bg-white/5 p-4">
             <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
               Quais setores pagam melhores dividendos?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -411,7 +411,7 @@
       </div>
 
       <!-- Carteira de Dividendos -->
-      <div class="rounded-2xl border border-white/10 bg-white/5 p-6">
+      <div class="brand-card border border-white/10 bg-white/5 p-6">
         <h3 class="mb-4 text-xl font-semibold">
           Exemplo de Carteira de Dividendos
         </h3>

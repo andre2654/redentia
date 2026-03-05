@@ -535,7 +535,7 @@ const animateRectangles = (
         ctx.fillStyle = cc.tooltipText
 
         // Symbol (texto principal maior)
-        ctx.font = `700 ${symbolFontSize}px Inter, -apple-system, sans-serif`
+        ctx.font = `700 ${symbolFontSize}px ${brand.font.family}, -apple-system, sans-serif`
         ctx.fillText(
           rectItem.item.symbol,
           textCenterX,
@@ -543,14 +543,14 @@ const animateRectangles = (
         )
 
         // Change percentage com cor contextual
-        ctx.font = `600 ${changeFontSize}px Inter, -apple-system, sans-serif`
+        ctx.font = `600 ${changeFontSize}px ${brand.font.family}, -apple-system, sans-serif`
         const changeText = `${rectItem.item.change >= 0 ? '+' : ''}${rectItem.item.change.toFixed(1)}%`
         ctx.globalAlpha = opacity * 0.9
         ctx.fillText(changeText, textCenterX, textCenterY + symbolFontSize * 0.5)
 
         // Preço apenas em retângulos maiores
         if (area > minAreaForPrice && drawHeight > 70) {
-          ctx.font = `500 ${priceFontSize}px Inter, -apple-system, sans-serif`
+          ctx.font = `500 ${priceFontSize}px ${brand.font.family}, -apple-system, sans-serif`
           ctx.fillStyle = cc.tooltipTextMuted
           ctx.globalAlpha = opacity * 0.7
           ctx.fillText(
