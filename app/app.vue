@@ -1,9 +1,9 @@
 <template>
   <Analytics />
   <NuxtPwaManifest />
-  <AtomsBrandSwitcher v-if="isDev" />
+  <AtomsBrandSwitcher />
   <UApp :toaster="uAppConfig?.toaster">
-    <div :class="{ 'pt-10': isDev }">
+    <div class="pt-10">
       <AtomsInstallAppBanner v-if="showBanner" />
       <NuxtPage />
     </div>
@@ -19,7 +19,6 @@ const uAppConfig = {
   },
 }
 
-const isDev = import.meta.dev
 const interfaceStore = useInterfaceStore()
 const route = useRoute()
 

@@ -18,7 +18,6 @@
         to="/download"
         class="to-secondary from-primary flex items-center gap-2 rounded-full bg-gradient-to-r px-3 py-1 hover:opacity-80"
       >
-        <BrandLogo variant="icon" class="h-4" />
         <span class="text-[12px] font-medium" :style="{ color: brand.colors.background }">Baixar</span>
       </NuxtLink>
       <button
