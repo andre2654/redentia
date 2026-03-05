@@ -1,9 +1,9 @@
 <template>
   <div class="relative flex min-w-0 items-center gap-3 overflow-hidden">
     <!-- Fade gradient left -->
-    <div class="pointer-events-none absolute left-0 top-0 z-10 h-full w-16" :style="{ background: `linear-gradient(to right, ${brand.colors.background}, transparent)` }" />
+    <div class="pointer-events-none absolute left-0 top-0 z-10 h-full w-16" :style="{ background: `linear-gradient(to right, ${fadeBg}, transparent)` }" />
     <!-- Fade gradient right -->
-    <div class="pointer-events-none absolute right-0 top-0 z-10 h-full w-16" :style="{ background: `linear-gradient(to left, ${brand.colors.background}, transparent)` }" />
+    <div class="pointer-events-none absolute right-0 top-0 z-10 h-full w-16" :style="{ background: `linear-gradient(to left, ${fadeBg}, transparent)` }" />
     <div
       id="carousel-tickercarousel"
       class="relative min-w-0 flex-1 overflow-hidden"
@@ -77,13 +77,17 @@ const props = withDefaults(
     noControl?: boolean
     big?: boolean
     items?: CarouselItem[]
+    fadeColor?: string
   }>(),
   {
     noControl: false,
     big: false,
     items: () => [],
+    fadeColor: '',
   }
 )
+
+const fadeBg = computed(() => props.fadeColor || brand.colors.background)
 
 const { getTopStocks } = useAssetsService()
 

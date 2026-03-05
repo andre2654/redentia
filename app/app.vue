@@ -1,12 +1,9 @@
 <template>
   <Analytics />
   <NuxtPwaManifest />
-  <AtomsBrandSwitcher />
   <UApp :toaster="uAppConfig?.toaster">
-    <div class="pt-10">
-      <AtomsInstallAppBanner v-if="showBanner" />
-      <NuxtPage />
-    </div>
+    <AtomsInstallAppBanner v-if="showBanner" />
+    <NuxtPage />
   </UApp>
 </template>
 
@@ -18,6 +15,8 @@ const uAppConfig = {
     expand: false,
   },
 }
+
+initBrandFromRoute()
 
 const interfaceStore = useInterfaceStore()
 const route = useRoute()

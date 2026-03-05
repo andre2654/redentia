@@ -4,9 +4,10 @@
  * Este e o UNICO arquivo que precisa ser editado para personalizar
  * toda a plataforma para um novo cliente/influenciador.
  *
- * Marcas disponiveis: 'primo-rico' | 'me-poupe' | 'investidor-sardinha'
+ * Marcas disponiveis: 'redentia' | 'primo-rico' | 'me-poupe' | 'investidor-sardinha'
  *
- * Para trocar a marca, altere apenas a linha ACTIVE_BRAND abaixo.
+ * A marca padrao e definida por ACTIVE_BRAND abaixo ('redentia').
+ * Para trocar em runtime, passe ?brand=primo-rico na URL.
  * Toda a plataforma se adapta automaticamente: cores, fontes, logos,
  * textos, SEO, links sociais, feature flags, etc.
  *
@@ -23,12 +24,12 @@
 // ============================================================
 // TROQUE AQUI PARA MUDAR A MARCA
 // ============================================================
-const ACTIVE_BRAND: BrandSlug = 'primo-rico'
+const ACTIVE_BRAND: BrandSlug = 'redentia'
 
 // ============================================================
 // TYPES
 // ============================================================
-type BrandSlug = 'primo-rico' | 'me-poupe' | 'investidor-sardinha'
+type BrandSlug = 'redentia' | 'primo-rico' | 'me-poupe' | 'investidor-sardinha'
 
 interface BrandColors {
   primary: string
@@ -137,6 +138,34 @@ interface BrandConfig {
     showEcosystemLinks: boolean
     showGlossary: boolean
     showGuides: boolean
+  }
+
+  // === HOME PAGE ===
+  homePage: {
+    rankingCard: {
+      variant: 'flat' | 'card' | 'border-left'
+      showIcon: boolean
+      iconStyle: 'bare' | 'pill' | 'none'
+      itemsPerCategory: number
+    }
+    stockItem: {
+      variant: 'default' | 'compact' | 'detailed'
+      showLogo: boolean
+      logoSize: 'sm' | 'md' | 'lg'
+      showName: boolean
+      changeFormat: 'percent' | 'both' | 'text'
+    }
+    categoryCard: {
+      variant: 'icon-left' | 'icon-top' | 'minimal'
+      columns: 2 | 3
+    }
+    categories: Array<{
+      label: string
+      to: string
+      icon: string
+      description: string
+      cta: string
+    }>
   }
 
   // === ASSET PAGE SECTIONS ===
@@ -537,6 +566,34 @@ const primoRico: BrandConfig = {
     showEcosystemLinks: true,
     showGlossary: true,
     showGuides: true,
+  },
+
+  homePage: {
+    rankingCard: {
+      variant: 'flat',
+      showIcon: true,
+      iconStyle: 'bare',
+      itemsPerCategory: 5,
+    },
+    stockItem: {
+      variant: 'default',
+      showLogo: true,
+      logoSize: 'md',
+      showName: true,
+      changeFormat: 'percent',
+    },
+    categoryCard: {
+      variant: 'icon-left',
+      columns: 3,
+    },
+    categories: [
+      { label: 'Ações', to: '/acoes', icon: 'i-lucide-trending-up', description: 'Invista nas maiores empresas do Brasil. Potencial de crescimento e dividendos.', cta: 'Explorar ações' },
+      { label: 'FIIs', to: '/fiis', icon: 'i-lucide-building-2', description: 'Renda passiva mensal com fundos imobiliários. Dividendos isentos de IR.', cta: 'Explorar FIIs' },
+      { label: 'ETFs', to: '/etfs', icon: 'i-lucide-bar-chart-3', description: 'Diversificação instantânea. Invista no Ibovespa e S&P 500 com um clique.', cta: 'Explorar ETFs' },
+      { label: 'Small Caps', to: '/small-caps', icon: 'i-lucide-rocket', description: 'Empresas pequenas com alto potencial de crescimento. Risco maior, retorno maior.', cta: 'Explorar small caps' },
+      { label: 'Dividendos', to: '/dividendos', icon: 'i-lucide-coins', description: 'Construa renda passiva mensal. Descubra os melhores pagadores de dividendos.', cta: 'Explorar dividendos' },
+      { label: 'BDRs', to: '/search?group=bdrs', icon: 'i-lucide-globe', description: 'Acesse empresas globais direto da B3. Apple, Google, Amazon e mais.', cta: 'Explorar BDRs' },
+    ],
   },
 
   assetPage: {
@@ -1026,6 +1083,32 @@ const mePoupe: BrandConfig = {
     showCompanyInfo: true,
   },
 
+  homePage: {
+    rankingCard: {
+      variant: 'card',
+      showIcon: true,
+      iconStyle: 'pill',
+      itemsPerCategory: 3,
+    },
+    stockItem: {
+      variant: 'compact',
+      showLogo: true,
+      logoSize: 'lg',
+      showName: true,
+      changeFormat: 'text',
+    },
+    categoryCard: {
+      variant: 'icon-top',
+      columns: 2,
+    },
+    categories: [
+      { label: 'Ações', to: '/acoes', icon: 'i-lucide-trending-up', description: 'Quer ganhar dinheiro com empresas? Bora entender o basico!', cta: 'Bora ver!' },
+      { label: 'FIIs', to: '/fiis', icon: 'i-lucide-building-2', description: 'Ganhar aluguel sem ter imovel? Sim, existe e eu te explico!', cta: 'Bora ver!' },
+      { label: 'Dividendos', to: '/dividendos', icon: 'i-lucide-coins', description: 'Dinheiro pingando na conta todo mes. Descubra como!', cta: 'Bora ver!' },
+      { label: 'ETFs', to: '/etfs', icon: 'i-lucide-bar-chart-3', description: 'Diversificar sem complicacao? ETFs sao perfeitos pra isso!', cta: 'Bora ver!' },
+    ],
+  },
+
   social: {
     youtube: 'https://youtube.com/@mepoupe',
     instagram: 'https://instagram.com/nathaliaarcuri',
@@ -1502,6 +1585,34 @@ const investidorSardinha: BrandConfig = {
     showCompanyInfo: true,
   },
 
+  homePage: {
+    rankingCard: {
+      variant: 'border-left',
+      showIcon: false,
+      iconStyle: 'none',
+      itemsPerCategory: 7,
+    },
+    stockItem: {
+      variant: 'detailed',
+      showLogo: false,
+      logoSize: 'sm',
+      showName: false,
+      changeFormat: 'both',
+    },
+    categoryCard: {
+      variant: 'minimal',
+      columns: 3,
+    },
+    categories: [
+      { label: 'Ações', to: '/acoes', icon: 'i-lucide-trending-up', description: '', cta: 'Ver' },
+      { label: 'FIIs', to: '/fiis', icon: 'i-lucide-building-2', description: '', cta: 'Ver' },
+      { label: 'ETFs', to: '/etfs', icon: 'i-lucide-bar-chart-3', description: '', cta: 'Ver' },
+      { label: 'Small Caps', to: '/small-caps', icon: 'i-lucide-rocket', description: '', cta: 'Ver' },
+      { label: 'Dividendos', to: '/dividendos', icon: 'i-lucide-coins', description: '', cta: 'Ver' },
+      { label: 'BDRs', to: '/search?group=bdrs', icon: 'i-lucide-globe', description: '', cta: 'Ver' },
+    ],
+  },
+
   social: {
     youtube: 'https://youtube.com/@investidorsardinha',
     instagram: 'https://instagram.com/investidorsardinha',
@@ -1862,9 +1973,430 @@ const investidorSardinha: BrandConfig = {
 }
 
 // ============================================================
+// REDENTIA (Plataforma original)
+// ============================================================
+// Persona: A plataforma de origem — tecnologia financeira pura.
+// Profissional, confiavel, data-driven. Sem influenciador,
+// a marca e o produto. Estetica dark premium + azul tech.
+// Tipografia: Inter — neutra, moderna, profissional.
+// ============================================================
+const redentia: BrandConfig = {
+  name: 'Redentia',
+  shortName: 'Redentia',
+  slug: 'redentia',
+  tagline: 'Investir com inteligencia.',
+  subtitle: 'Plataforma de investimentos com IA',
+  description: 'Plataforma completa para acompanhar cotacoes, dividendos, analises fundamentalistas e simulacoes de investimentos com inteligencia artificial.',
+
+  founder: {
+    name: 'Redentia',
+    photo: '',
+    role: 'Plataforma de investimentos',
+    bio: 'Tecnologia financeira para investidores de todos os niveis. Dados em tempo real, analises com IA e ferramentas inteligentes.',
+    signaturePhrase: 'Investir com inteligencia.',
+  },
+
+  voice: {
+    style: 'premium',
+    greeting: 'Ola! Como posso ajudar?',
+    ctaPrimary: 'Comecar agora',
+    ctaSecondary: 'Ja tenho conta',
+    emptyState: 'Nenhum dado disponivel no momento.',
+    encouragement: 'Continue acompanhando seus investimentos.',
+    error: 'Algo deu errado. Tente novamente em instantes.',
+  },
+
+  domain: 'www.redentia.com.br',
+  url: 'https://www.redentia.com.br',
+  email: 'contato@redentia.com.br',
+  privacyEmail: 'privacidade@redentia.com.br',
+
+  colors: {
+    primary: '#60A5FA',
+    secondary: '#3B82F6',
+    tertiary: '#0A0A0A',
+    positive: '#4ADE80',
+    negative: '#EF4444',
+    neutral: '#6B7280',
+    background: '#000000',
+    surface: '#0A0A0A',
+    surfaceHover: '#131313',
+    border: '#1F1F1F',
+    text: '#FFFFFF',
+    textMuted: '#9CA3AF',
+    inputBg: '#05070b',
+    inputBgHover: '#070b12',
+    inputBorder: '#1f2937',
+    gradient: { from: '#60A5FA', via: '#3B82F6', to: '#2563EB' },
+  },
+
+  font: {
+    family: 'Inter',
+    google: 'Inter:wght@300..800',
+    headingWeight: 'font-bold',
+    headingStyle: 'normal-case',
+  },
+
+  logo: {
+    icon: '/brand/logo-icon.svg',
+    full: '/brand/logo-full.svg',
+    favicon: '/brand/favicon.png',
+    faviconIco: '/brand/favicon.ico',
+    faviconSvg: '/brand/favicon.svg',
+    appleTouchIcon: '/brand/apple-touch-icon.png',
+    icon192: '/brand/icon-192.png',
+    icon512: '/brand/icon-512.png',
+    og: '/brand/og-image.png',
+  },
+
+  seo: {
+    title: 'Redentia — Acoes, FIIs, dividendos e analises com IA',
+    description: 'Plataforma completa de investimentos com cotacoes em tempo real, analises fundamentalistas, calculadoras financeiras e assessoria com inteligencia artificial.',
+    locale: 'pt_BR',
+    lang: 'pt-BR',
+    themeColor: '#000000',
+    keywords: ['redentia', 'investimentos', 'acoes', 'fiis', 'dividendos', 'analise fundamentalista', 'inteligencia artificial'],
+  },
+
+  company: {
+    legalName: 'Redentia Tecnologia Ltda.',
+    address: '',
+    cnpj: '',
+  },
+
+  features: {
+    showAIAdvisor: true,
+    showAppStoreLinks: false,
+    showCalculators: true,
+    showDividends: true,
+    showNews: true,
+    showDownloadPage: false,
+    showFounderPhoto: false,
+    showEcosystemLinks: false,
+    showGlossary: true,
+    showGuides: true,
+  },
+
+  homePage: {
+    rankingCard: {
+      variant: 'flat',
+      showIcon: true,
+      iconStyle: 'bare',
+      itemsPerCategory: 5,
+    },
+    stockItem: {
+      variant: 'default',
+      showLogo: true,
+      logoSize: 'md',
+      showName: true,
+      changeFormat: 'percent',
+    },
+    categoryCard: {
+      variant: 'icon-left',
+      columns: 3,
+    },
+    categories: [
+      { label: 'Acoes', to: '/acoes', icon: 'i-lucide-trending-up', description: 'Acompanhe as maiores empresas do Brasil. Cotacoes, fundamentos e dividendos.', cta: 'Explorar acoes' },
+      { label: 'FIIs', to: '/fiis', icon: 'i-lucide-building-2', description: 'Fundos imobiliarios com renda passiva mensal. Analise de rendimentos e vacancia.', cta: 'Explorar FIIs' },
+      { label: 'ETFs', to: '/etfs', icon: 'i-lucide-bar-chart-3', description: 'Diversificacao instantanea com ETFs. Ibovespa, S&P 500 e indices globais.', cta: 'Explorar ETFs' },
+      { label: 'Small Caps', to: '/small-caps', icon: 'i-lucide-rocket', description: 'Empresas de menor capitalizacao com potencial de crescimento acima da media.', cta: 'Explorar small caps' },
+      { label: 'Dividendos', to: '/dividendos', icon: 'i-lucide-coins', description: 'Rankings de dividend yield, historico de pagamentos e projecoes de renda passiva.', cta: 'Explorar dividendos' },
+      { label: 'BDRs', to: '/search?group=bdrs', icon: 'i-lucide-globe', description: 'Acesso a empresas globais pela B3. Apple, Google, Amazon e mais.', cta: 'Explorar BDRs' },
+    ],
+  },
+
+  assetPage: {
+    showVolatility: true,
+    showIndicators: true,
+    showSmartIndicators: true,
+    showDividendMap: true,
+    showDividendChart: true,
+    showFinancials: true,
+    showChecklist: true,
+    showCompanyInfo: true,
+  },
+
+  social: {
+    youtube: '',
+    instagram: '',
+    twitter: '',
+    tiktok: '',
+    telegram: '',
+    podcast: '',
+  },
+
+  ecosystem: [],
+
+  chartColors: {
+    positive: '#4ADE80',
+    negative: '#8E3939',
+    secondary: '#3B82F6',
+    neutral: '#6B7280',
+  },
+
+  hero: {
+    variant: 'centered',
+    badge: 'Assessoria com IA • Novo',
+    title: 'Investir com\ninteligencia.',
+    subtitle: 'Cotacoes em tempo real, analises fundamentalistas, calculadoras e assessoria com IA. Tudo que voce precisa para investir melhor.',
+    founderQuote: '',
+    ctaLabel: 'Comecar agora',
+    ctaSecondaryLabel: 'Ja tenho conta',
+    ctaIcon: 'i-lucide-sparkles',
+    trustIndicators: ['Criptografado', 'Sempre gratis', 'Dados em tempo real'],
+  },
+
+  header: {
+    title: 'Redentia',
+    subtitle: 'Plataforma de investimentos',
+  },
+
+  sidebar: {
+    aiCtaTitle: 'Assessor com IA',
+    aiCtaSubtitle: 'Tire suas duvidas gratis',
+    planLabel: 'Plano gratuito',
+  },
+
+  calculators: {
+    pageTitle: 'Calculadoras Financeiras',
+    pageSubtitle: 'Ferramentas gratuitas para simular investimentos, analisar acoes e planejar seu patrimonio.',
+    labels: {
+      jurosCompostos: 'Simulador de Juros Compostos',
+      precoTeto: 'Calculadora de Preco Teto',
+      dividendYield: 'Calculadora de Dividend Yield',
+      aposentadoria: 'Simulador de Aposentadoria',
+      acoes: 'Simulador de Acoes',
+      quantoInvestir: 'Quanto Investir por Mes',
+      impostoRenda: 'Calculadora de Imposto de Renda',
+      planejamento: 'Planejamento Financeiro',
+    },
+  },
+
+  ai: {
+    name: 'Assessor Redentia',
+    avatar: '/brand/ai-avatar.svg',
+    chatTitle: 'Assessoria com IA',
+    chatSubtitle: 'Tire duvidas sobre investimentos, compare ativos e receba analises personalizadas.',
+    typingLabel: 'ASSESSOR:',
+    welcomeTitle: 'Converse com o Assessor Redentia',
+    welcomeSubtitle: 'Tire duvidas, compare ativos e receba analises personalizadas com inteligencia artificial.',
+    placeholder: 'Pergunte sobre acoes, FIIs, dividendos...',
+    suggestedQuestions: [
+      'Quais acoes pagam mais dividendos?',
+      'PETR4 esta cara ou barata agora?',
+      'Como montar uma carteira de FIIs?',
+      'Qual a diferenca entre P/L e P/VP?',
+      'Quanto preciso investir pra ter R$ 1 milhao?',
+    ],
+    systemPromptContext: 'Voce e o Assessor Redentia, assistente de IA da plataforma Redentia. Responda de forma profissional, objetiva e didatica. Foque em analise fundamentalista e educacao financeira.',
+    ctaGreeting: 'Ola! Sou o Assessor Redentia. Posso ajudar com analises, tirar duvidas e dar recomendacoes personalizadas para seus investimentos.',
+    ctaButton: 'Pergunte ao Assessor',
+    ctaFeatures: ['Resposta em ~3s', 'IA Treinada', 'Ilimitado'],
+  },
+
+  metrics: {
+    sectionTitle: 'Dados que fazem a diferenca.',
+    sectionSubtitle: 'Tudo que voce precisa em um so lugar',
+    counterLabel: 'Analises realizadas na Redentia (e contando)',
+    stats: [
+      { value: '12.500+', label: 'Ativos monitorados' },
+      { value: '50.000+', label: 'Simulacoes' },
+      { value: '24/7', label: 'Disponibilidade' },
+      { value: '~3s', label: 'Resposta da IA' },
+    ],
+  },
+
+  testimonials: {
+    sectionTitle: 'Para todos os perfis de investidor',
+    sectionSubtitle: 'Milhares de investidores ja usam a plataforma para tomar decisoes melhores',
+    items: [
+      {
+        quote: 'A calculadora de juros compostos me mostrou o poder de investir cedo. Comecei com R$ 500/mes e hoje ja tenho uma reserva significativa.',
+        name: 'Lucas M.',
+        role: 'Investidor iniciante, SP',
+        metrics: [{ value: '5h', label: 'economizadas/semana' }, { value: '+23%', label: 'em 1 ano' }],
+      },
+      {
+        quote: 'A IA me ajudou a entender indicadores que antes pareciam impossiveis. Hoje analiso FIIs com confianca.',
+        name: 'Carolina S.',
+        role: 'Analista de marketing, RJ',
+        metrics: [{ value: '12', label: 'FIIs na carteira' }, { value: 'R$ 850', label: 'dividendos/mes' }],
+      },
+      {
+        quote: 'Uso a plataforma todo dia antes de operar. Os dados em tempo real me dao seguranca nas decisoes.',
+        name: 'Roberto A.',
+        role: 'Investidor, MG',
+        metrics: [{ value: '~3s', label: 'resposta da IA' }, { value: '24/7', label: 'monitoramento' }],
+      },
+    ],
+  },
+
+  trustBar: {
+    text: 'Investidores que usam a Redentia operam em',
+    footnote: 'E muitas outras corretoras',
+    partners: ['XP', 'Rico', 'Clear', 'BTG', 'Inter', 'Nubank', 'Toro', 'Genial'],
+  },
+
+  footer: {
+    tagline: 'Investir com inteligencia.',
+    newsletterCta: 'Receba insights direto no seu email',
+    sections: { tools: 'Ferramentas', resources: 'Recursos', company: 'Empresa', legal: 'Legal' },
+  },
+
+  notifications: {
+    ctaTitle: 'Ativar notificacoes',
+    ctaSubtitle: 'Receba alertas de mercado e dividendos em tempo real',
+    ctaButton: 'Ativar agora',
+  },
+
+  auth: {
+    loginTitle: 'Entrar na Redentia',
+    loginSubtitle: 'Preencha seus dados para continuar.',
+    registerTitle: 'Crie sua conta gratuita',
+    registerSubtitle: 'Comece a acompanhar seus investimentos com inteligencia.',
+    termsText: 'Ao criar sua conta, voce concorda com os Termos de Uso e Politica de Privacidade.',
+  },
+
+  about: {
+    title: 'Sobre a Redentia',
+    paragraphs: [
+      'A Redentia e uma plataforma de investimentos que combina tecnologia de ponta com inteligencia artificial para democratizar o acesso a informacao financeira de qualidade.',
+      'Oferecemos cotacoes em tempo real, analises fundamentalistas, calculadoras financeiras e assessoria com IA — tudo em um unico lugar, gratuito e acessivel.',
+      'Nossa missao e empoderar investidores de todos os niveis com ferramentas profissionais e dados confiaveis para tomadas de decisao mais inteligentes.',
+      'Comprometidos com transparencia, seguranca e inovacao, transformamos a experiencia de investir no Brasil.',
+    ],
+  },
+
+  contact: {
+    title: 'Fale conosco',
+    subtitle: 'Duvidas, sugestoes ou parcerias? Estamos aqui.',
+    email: 'contato@redentia.com.br',
+    channels: [
+      { icon: 'i-lucide-mail', label: 'Email', value: 'contato@redentia.com.br', href: 'mailto:contato@redentia.com.br' },
+    ],
+  },
+
+  howWorks: {
+    title: 'Como funciona a Redentia',
+    steps: [
+      { icon: 'i-lucide-user-plus', title: 'Crie sua conta gratis', description: 'Cadastro rapido, sem cartao de credito. Comece em menos de 1 minuto.' },
+      { icon: 'i-lucide-search', title: 'Explore o mercado', description: 'Acompanhe cotacoes em tempo real, analise fundamentos e compare ativos.' },
+      { icon: 'i-lucide-calculator', title: 'Simule seus investimentos', description: 'Use as calculadoras para planejar aposentadoria, calcular preco teto e mais.' },
+      { icon: 'i-lucide-message-circle', title: 'Pergunte a IA', description: 'Tire duvidas com o Assessor Redentia — disponivel 24/7 com respostas em segundos.' },
+    ],
+  },
+
+  nav: {
+    menuLabel: 'Menu',
+    toolsLabel: 'Ferramentas',
+    overview: 'Visao Geral',
+    wallet: 'Sua carteira',
+    chat: 'Chat',
+    advisorArea: 'Area do assessor',
+    settings: 'Configuracoes',
+    calculators: 'Calculadoras',
+    guides: 'Guias',
+    dividends: 'Proventos',
+    downloadApp: 'Baixar app',
+    logout: 'Sair',
+    hide: 'Ocultar',
+    show: 'Mostrar',
+    login: 'Entrar',
+    register: 'Cadastrar',
+    mobileAiLabel: 'Assessoria IA',
+    mobileAiAccess: 'Acesse de graca',
+    mobileAiLocked: 'Assessoria IA bloqueada',
+    mobileAiLockedSub: 'Faca login para acessar',
+    mobileAiDescription: 'Assessoria com Inteligencia Artificial',
+    mobileAiDescriptionSub: 'Entre na plataforma para conversar com a IA e receber recomendacoes.',
+    mobileCalc: 'Calculadora inteligente',
+    mobileGuides: 'Guias de investimento',
+    mobileHome: 'Inicio',
+    footerGlossaryTitle: 'Termos do Mercado',
+    footerCalc: 'Calculadoras',
+    footerJuros: 'Juros Compostos',
+    footerPrecoTeto: 'Preco Teto',
+    footerDY: 'Dividend Yield',
+    footerAI: 'Assessoria IA',
+    footerGuides: 'Guias de Investimento',
+    footerGlossary: 'Glossario',
+    footerStocks: 'Acoes',
+    footerFiis: 'FIIs',
+    footerDividends: 'Dividendos',
+    footerAbout: 'Sobre',
+    footerHowWorks: 'Como funciona',
+    footerContact: 'Contato',
+    footerDownload: 'Download',
+    footerTerms: 'Termos de Uso',
+    footerPrivacy: 'Privacidade',
+    footerCookies: 'Cookies',
+    footerCopyright: 'Todos os direitos reservados.',
+    headerCalc: 'Calculadoras',
+    headerAI: 'Assessoria com IA',
+  },
+
+  homeTexts: {
+    marketTitle: 'O mercado em tempo real',
+    marketSubtitle: 'Altas, baixas e oportunidades. Atualizacao instantanea.',
+    filtersTitle: 'Filtros inteligentes',
+    categoriesEyebrow: 'Explore por categoria',
+    categoriesTitle: 'Encontre seu proximo investimento',
+    categoriesSubtitle: 'Acoes, FIIs, ETFs, BDRs e muito mais.',
+    guidesTitle: 'Conhecimento que gera resultados',
+    guidesSubtitle: 'Guias praticos, analises e estrategias.',
+    aiCtaEyebrow: 'Assessoria com IA',
+    aiCtaTitle: 'Tire suas duvidas em segundos',
+    aiCtaSubtitle: 'Pergunte qualquer coisa sobre investimentos. Nossa IA responde instantaneamente.',
+    aiCtaQuestions: [
+      { icon: 'i-lucide-scale', question: 'Qual a diferenca entre acoes e FIIs?', category: 'Conceitos' },
+      { icon: 'i-lucide-coins', question: 'Como funcionam os dividendos?', category: 'Renda Passiva' },
+      { icon: 'i-lucide-pie-chart', question: 'O que e diversificacao?', category: 'Estrategia' },
+      { icon: 'i-lucide-wallet', question: 'Quanto devo investir por mes?', category: 'Planejamento' },
+      { icon: 'i-lucide-search', question: 'Como escolher boas acoes?', category: 'Analise' },
+      { icon: 'i-lucide-trending-up', question: 'Vale a pena investir em ETFs?', category: 'Produtos' },
+    ],
+  },
+
+  theme: {
+    mode: 'dark',
+    borderRadius: 'rounded',
+    animation: 'smooth',
+    backgroundPattern: 'gradient',
+  },
+
+  homeSections: [
+    { id: 'hero', visible: true },
+    { id: 'trustBar', visible: true },
+    { id: 'market', visible: true },
+    { id: 'metrics', visible: true },
+    { id: 'featureTabs', visible: true },
+    { id: 'categories', visible: true },
+    { id: 'aiCta', visible: true },
+    { id: 'educational', visible: false },
+    { id: 'products', visible: false },
+    { id: 'guides', visible: true },
+    { id: 'testimonials', visible: true },
+    { id: 'marquee', visible: false },
+  ],
+
+  educational: {
+    sectionTitle: 'Aprenda a investir',
+    sectionSubtitle: 'Conteudos educacionais para todos os niveis',
+    items: [],
+  },
+
+  products: {
+    sectionTitle: 'Ferramentas',
+    sectionSubtitle: 'Tudo que voce precisa para investir melhor',
+    categories: [],
+  },
+}
+
+// ============================================================
 // REGISTRO DE MARCAS
 // ============================================================
 const brands: Record<BrandSlug, BrandConfig> = {
+  'redentia': redentia,
   'primo-rico': primoRico,
   'me-poupe': mePoupe,
   'investidor-sardinha': investidorSardinha,

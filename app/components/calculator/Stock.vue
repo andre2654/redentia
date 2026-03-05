@@ -1,11 +1,12 @@
 <template>
   <div class="space-y-6">
     <div
-      class="flex flex-col gap-6 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6"
+      class="flex flex-col gap-6 rounded-[30px] p-6"
+      :style="{ backgroundColor: brand.colors.surface }"
     >
       <div class="flex items-center gap-3">
         <UIcon name="i-lucide-chart-line" class="text-secondary size-6" />
-        <h2 class="text-xl font-bold text-white">Análise de Histórico Real</h2>
+        <h2 class="text-xl font-bold" :style="{ color: brand.colors.text }">Análise de Histórico Real</h2>
       </div>
 
       <div class="space-y-4">
@@ -23,7 +24,8 @@
             <ClientOnly>
               <div
                 ref="listContainer"
-                class="relative max-h-[320px] overflow-y-auto rounded-2xl border border-white/5 bg-white/5"
+                class="relative max-h-[320px] overflow-y-auto rounded-2xl border"
+                :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
                 @scroll="onScroll"
               >
                 <div
@@ -42,7 +44,7 @@
                   >
                     <button
                       type="button"
-                      class="group flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left transition hover:bg-white/10 focus-visible:bg-white/10"
+                      class="group flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left transition hover:bg-secondary/10 focus-visible:bg-secondary/10"
                       @click="addAsset(item.asset)"
                     >
                       <UAvatar
@@ -59,12 +61,12 @@
                       </UAvatar>
 
                       <div class="flex flex-1 flex-col">
-                        <span class="text-sm font-semibold text-white">
+                        <span class="text-sm font-semibold" :style="{ color: brand.colors.text }">
                           {{ item.asset.label }}
                         </span>
                         <span
                           v-if="item.asset.suffix"
-                          class="line-clamp-1 text-xs text-gray-400"
+                          class="line-clamp-1 text-xs" :style="{ color: brand.colors.textMuted }"
                         >
                           {{ item.asset.suffix }}
                         </span>
@@ -78,7 +80,7 @@
                   </div>
                 </div>
 
-                <div v-else class="px-4 py-6 text-sm text-gray-400">
+                <div v-else class="px-4 py-6 text-sm" :style="{ color: brand.colors.textMuted }">
                   Nenhum ativo encontrado.
                 </div>
 
@@ -100,10 +102,11 @@
           <div
             v-for="asset in portfolioAssets"
             :key="asset.id"
-            class="flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-sm"
+            class="flex items-center gap-2 rounded-full px-3 py-1 text-sm"
+            :style="{ backgroundColor: brand.colors.border }"
           >
-            <span class="font-medium text-white">{{ asset.label }}</span>
-            <span v-if="asset.suffix" class="text-xs text-gray-300">
+            <span class="font-medium" :style="{ color: brand.colors.text }">{{ asset.label }}</span>
+            <span v-if="asset.suffix" class="text-xs" :style="{ color: brand.colors.textMuted }">
               {{ asset.suffix }}
             </span>
             <UButton
@@ -116,7 +119,7 @@
             />
           </div>
         </div>
-        <p v-else class="text-xs text-gray-400">
+        <p v-else class="text-xs" :style="{ color: brand.colors.textMuted }">
           Adicione pelo menos um ativo para realizar o cálculo.
         </p>
 
@@ -204,15 +207,15 @@
     >
       <div class="flex items-center gap-3">
         <UIcon name="i-lucide-bar-chart-3" class="text-secondary size-6" />
-        <h3 class="text-xl font-bold text-white">Resumo do Portfólio</h3>
+        <h3 class="text-xl font-bold" :style="{ color: brand.colors.text }">Resumo do Portfólio</h3>
       </div>
 
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-          <p class="text-[13px] font-extralight text-gray-400">
+        <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+          <p class="text-[13px] font-extralight" :style="{ color: brand.colors.textMuted }">
             Total Investido
           </p>
-          <p class="text-xl font-bold text-white">
+          <p class="text-xl font-bold" :style="{ color: brand.colors.text }">
             {{
               new Intl.NumberFormat('pt-BR', {
                 style: 'currency',
@@ -221,8 +224,8 @@
             }}
           </p>
         </div>
-        <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-          <p class="text-[13px] font-extralight text-gray-400">Valor Final</p>
+        <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+          <p class="text-[13px] font-extralight" :style="{ color: brand.colors.textMuted }">Valor Final</p>
           <p class="text-secondary text-xl font-bold">
             {{
               new Intl.NumberFormat('pt-BR', {
@@ -232,8 +235,8 @@
             }}
           </p>
         </div>
-        <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-          <p class="text-[13px] font-extralight text-gray-400">Rentabilidade</p>
+        <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+          <p class="text-[13px] font-extralight" :style="{ color: brand.colors.textMuted }">Rentabilidade</p>
           <p
             class="text-xl font-bold"
             :class="
@@ -244,8 +247,8 @@
             }}{{ aggregatedSummary.return.toFixed(2) }}%
           </p>
         </div>
-        <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-          <p class="text-[13px] font-extralight text-gray-400">
+        <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+          <p class="text-[13px] font-extralight" :style="{ color: brand.colors.textMuted }">
             Total de Proventos
           </p>
           <p class="text-xl font-bold text-green-400">
@@ -259,7 +262,7 @@
         </div>
       </div>
 
-      <p v-if="aggregatedSummary.assetCount > 1" class="text-xs text-gray-400">
+      <p v-if="aggregatedSummary.assetCount > 1" class="text-xs" :style="{ color: brand.colors.textMuted }">
         Aportes iniciais e mensais foram distribuídos igualmente entre os ativos
         selecionados.
       </p>
@@ -274,21 +277,21 @@
         <div class="flex items-center gap-3">
           <UIcon name="i-lucide-bar-chart-3" class="text-secondary size-6" />
           <div>
-            <h3 class="text-xl font-bold text-white">
+            <h3 class="text-xl font-bold" :style="{ color: brand.colors.text }">
               Resultados – {{ result.ticker }}
             </h3>
-            <p v-if="result.name" class="text-xs text-gray-400">
+            <p v-if="result.name" class="text-xs" :style="{ color: brand.colors.textMuted }">
               {{ result.name }}
             </p>
           </div>
         </div>
 
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-            <p class="text-[13px] font-extralight text-gray-400">
+          <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+            <p class="text-[13px] font-extralight" :style="{ color: brand.colors.textMuted }">
               Total Investido
             </p>
-            <p class="text-xl font-bold text-white">
+            <p class="text-xl font-bold" :style="{ color: brand.colors.text }">
               {{
                 new Intl.NumberFormat('pt-BR', {
                   style: 'currency',
@@ -297,8 +300,8 @@
               }}
             </p>
           </div>
-          <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-            <p class="text-[13px] font-extralight text-gray-400">Valor Final</p>
+          <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+            <p class="text-[13px] font-extralight" :style="{ color: brand.colors.textMuted }">Valor Final</p>
             <p class="text-secondary text-xl font-bold">
               {{
                 new Intl.NumberFormat('pt-BR', {
@@ -308,8 +311,8 @@
               }}
             </p>
           </div>
-          <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-            <p class="text-[13px] font-extralight text-gray-400">
+          <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+            <p class="text-[13px] font-extralight" :style="{ color: brand.colors.textMuted }">
               Rentabilidade
             </p>
             <p
@@ -319,8 +322,8 @@
               {{ result.return >= 0 ? '+' : '' }}{{ result.return.toFixed(2) }}%
             </p>
           </div>
-          <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-            <p class="text-[13px] font-extralight text-gray-400">
+          <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+            <p class="text-[13px] font-extralight" :style="{ color: brand.colors.textMuted }">
               Total de Proventos
             </p>
             <p class="text-xl font-bold text-green-400">
@@ -335,11 +338,11 @@
         </div>
 
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-            <p class="text-[13px] font-extralight text-gray-400">
+          <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+            <p class="text-[13px] font-extralight" :style="{ color: brand.colors.textMuted }">
               Preço Médio de Compra
             </p>
-            <p class="text-lg font-semibold text-white">
+            <p class="text-lg font-semibold" :style="{ color: brand.colors.text }">
               {{
                 new Intl.NumberFormat('pt-BR', {
                   style: 'currency',
@@ -348,11 +351,11 @@
               }}
             </p>
           </div>
-          <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-            <p class="text-[13px] font-extralight text-gray-400">
+          <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+            <p class="text-[13px] font-extralight" :style="{ color: brand.colors.textMuted }">
               Quantidade de Ações
             </p>
-            <p class="text-lg font-semibold text-white">
+            <p class="text-lg font-semibold" :style="{ color: brand.colors.text }">
               {{ result.totalShares.toFixed(2) }}
             </p>
           </div>
@@ -380,20 +383,20 @@
         >
           <div class="flex items-center gap-3">
             <UIcon name="i-lucide-table" class="text-secondary size-6" />
-            <h3 class="text-xl font-bold text-white">Histórico de Proventos</h3>
+            <h3 class="text-xl font-bold" :style="{ color: brand.colors.text }">Histórico de Proventos</h3>
           </div>
 
           <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-              <p class="text-[13px] font-extralight text-gray-400">
+            <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+              <p class="text-[13px] font-extralight" :style="{ color: brand.colors.textMuted }">
                 Total de Pagamentos
               </p>
-              <p class="text-xl font-bold text-white">
+              <p class="text-xl font-bold" :style="{ color: brand.colors.text }">
                 {{ result.dividendsHistory.length }}
               </p>
             </div>
-            <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-              <p class="text-[13px] font-extralight text-gray-400">
+            <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+              <p class="text-[13px] font-extralight" :style="{ color: brand.colors.textMuted }">
                 Total Recebido
               </p>
               <p class="text-xl font-bold text-green-400">
@@ -405,11 +408,11 @@
                 }}
               </p>
             </div>
-            <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-              <p class="text-[13px] font-extralight text-gray-400">
+            <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+              <p class="text-[13px] font-extralight" :style="{ color: brand.colors.textMuted }">
                 Média por Pagamento
               </p>
-              <p class="text-xl font-bold text-white">
+              <p class="text-xl font-bold" :style="{ color: brand.colors.text }">
                 {{
                   new Intl.NumberFormat('pt-BR', {
                     style: 'currency',
@@ -423,11 +426,12 @@
           </div>
 
           <div
-            class="max-h-[500px] overflow-y-auto rounded-lg border border-gray-700 bg-gray-800/30"
+            class="max-h-[500px] overflow-y-auto rounded-lg border"
+            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
           >
             <table class="w-full">
-              <thead class="sticky top-0 z-10 bg-gray-800">
-                <tr class="border-b border-gray-700">
+              <thead class="sticky top-0 z-10" :style="{ backgroundColor: brand.colors.background }">
+                <tr class="border-b" :style="{ borderColor: brand.colors.border }">
                   <th class="px-4 py-3 text-left text-sm font-semibold">
                     Data de Pagamento
                   </th>
@@ -449,7 +453,8 @@
                 <tr
                   v-for="(dividend, index) in result.dividendsHistory"
                   :key="`${result.ticker}-${index}`"
-                  class="border-b border-gray-700/50 hover:bg-white/5"
+                  class="border-b hover:bg-secondary/5"
+                  :style="{ borderColor: brand.colors.border }"
                 >
                   <td class="px-4 py-3 text-sm">
                     {{
@@ -458,7 +463,7 @@
                       )
                     }}
                   </td>
-                  <td class="px-4 py-3 text-sm font-medium text-gray-300">
+                  <td class="px-4 py-3 text-sm font-medium" :style="{ color: brand.colors.textMuted }">
                     {{
                       new Intl.NumberFormat('pt-BR', {
                         style: 'currency',
@@ -468,7 +473,7 @@
                       }).format(parseFloat(dividend.rate))
                     }}
                   </td>
-                  <td class="px-4 py-3 text-sm text-gray-400">
+                  <td class="px-4 py-3 text-sm" :style="{ color: brand.colors.textMuted }">
                     {{ (dividend.sharesAtTime || 0).toFixed(2) }}
                   </td>
                   <td class="px-4 py-3 text-sm font-bold text-green-400">
@@ -515,6 +520,8 @@ import { showErrorNotification } from '~/composables/useNotify'
 import type { IAsset } from '~/types/asset'
 import type { IChartDataPoint } from '~/types/chart'
 import { ChartColors } from '~/design/chartColors'
+
+const brand = useBrand()
 
 const props = withDefaults(
   defineProps<{

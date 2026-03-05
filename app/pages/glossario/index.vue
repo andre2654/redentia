@@ -7,7 +7,7 @@
           <UIcon name="i-lucide-book-open" class="text-secondary h-8 w-8" />
           <h1 class="text-3xl font-bold md:text-4xl">Glossário Financeiro</h1>
         </div>
-        <p class="text-base text-gray-400 md:text-lg">
+        <p class="text-base md:text-lg" :style="{ color: brand.colors.textMuted }">
           Aprenda mais de 200 termos essenciais sobre investimentos, ações, FIIs
           e mercado financeiro. Definições claras e exemplos práticos.
         </p>
@@ -29,7 +29,7 @@
           <div class="flex items-center justify-between">
             <h3 class="text-2xl font-bold group-hover:text-secondary">
               {{ termoDoDia.nome }}
-              <span v-if="termoDoDia.sigla" class="text-gray-400">
+              <span v-if="termoDoDia.sigla" :style="{ color: brand.colors.textMuted }">
                 ({{ termoDoDia.sigla }})
               </span>
             </h3>
@@ -38,7 +38,7 @@
               class="h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
             />
           </div>
-          <p class="text-gray-300">{{ termoDoDia.definicaoResumida }}</p>
+          <p :style="{ color: brand.colors.textMuted }">{{ termoDoDia.definicaoResumida }}</p>
           <UButton
             color="secondary"
             variant="soft"
@@ -64,7 +64,7 @@
         <!-- Filtro por Categoria -->
         <div class="flex flex-wrap gap-2">
           <UButton
-            color="neutral"
+            color="secondary"
             :variant="filtroCategoria === 'todos' ? 'soft' : 'ghost'"
             size="sm"
             @click="filtroCategoria = 'todos'"
@@ -74,7 +74,7 @@
           <UButton
             v-for="cat in categorias"
             :key="cat.key"
-            color="neutral"
+            color="secondary"
             :variant="filtroCategoria === cat.key ? 'soft' : 'ghost'"
             size="sm"
             :icon="cat.icon"
@@ -90,7 +90,7 @@
         <UButton
           v-for="letra in alfabeto"
           :key="letra"
-          color="neutral"
+          color="secondary"
           :variant="filtroLetra === letra ? 'soft' : 'ghost'"
           size="sm"
           class="h-10 w-10"
@@ -119,7 +119,8 @@
             v-for="termo in termosFiltrados"
             :key="termo.slug"
             :to="`/glossario/${termo.slug}`"
-            class="group rounded-2xl border border-white/10 bg-white/5 p-5 transition-all hover:border-white/20 hover:bg-white/10"
+            class="group rounded-2xl border p-5 transition-all hover:opacity-80"
+            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
           >
             <div class="flex flex-col gap-3">
               <div class="flex items-start justify-between">
@@ -146,7 +147,7 @@
                   size="xs"
                 />
               </div>
-              <p class="line-clamp-3 text-sm text-gray-400">
+              <p class="line-clamp-3 text-sm" :style="{ color: brand.colors.textMuted }">
                 {{ termo.definicaoResumida }}
               </p>
               <div class="flex items-center gap-2 text-secondary text-sm">
@@ -162,14 +163,15 @@
 
         <div
           v-else
-          class="flex flex-col items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-12 text-center"
+          class="flex flex-col items-center gap-4 rounded-2xl border p-12 text-center"
+          :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
         >
           <UIcon name="i-lucide-search-x" class="h-12 w-12 text-gray-500" />
           <div>
-            <h3 class="text-lg font-semibold text-gray-300">
+            <h3 class="text-lg font-semibold" :style="{ color: brand.colors.text }">
               Nenhum termo encontrado
             </h3>
-            <p class="text-sm text-gray-400">
+            <p class="text-sm" :style="{ color: brand.colors.textMuted }">
               Tente ajustar os filtros ou usar outros termos de busca
             </p>
           </div>

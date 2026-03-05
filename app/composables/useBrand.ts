@@ -5,28 +5,16 @@ const activeBrand = reactive({ ...defaultBrand })
 
 export const useBrand = () => activeBrand
 
-export const useBrandSwitcher = () => {
-  const currentSlug = ref<BrandSlug>(activeBrand.slug)
+export function initBrandFromRoute() {
+  const route = useRoute()
 
-  function switchBrand(slug: BrandSlug) {
-    const newBrand = brands[slug]
-    if (!newBrand) return
-    currentSlug.value = slug
-    Object.assign(activeBrand, newBrand)
-
-    if (import.meta.client) {
-      localStorage.setItem('dev:brand', slug)
+  function applyBrandFromQuery() {
+    const slug = route.query.brand as BrandSlug | undefined
+    if (slug && brands[slug] && slug !== activeBrand.slug) {
+      Object.assign(activeBrand, brands[slug])
     }
   }
 
-  if (import.meta.client) {
-    const saved = localStorage.getItem('dev:brand') as BrandSlug | null
-    if (saved && brands[saved] && saved !== currentSlug.value) {
-      switchBrand(saved)
-    }
-  }
-
-  const allSlugs = Object.keys(brands) as BrandSlug[]
-
-  return { currentSlug, switchBrand, allSlugs }
+  applyBrandFromQuery()
+  watch(() => route.query.brand, applyBrandFromQuery)
 }

@@ -24,46 +24,46 @@
               Busca
             </span>
             <h1
-              class="text-3xl font-bold tracking-tight text-white md:text-5xl"
+              class="text-3xl font-bold tracking-tight md:text-5xl"
+              :style="{ color: brand.colors.text }"
             >
-              <span
-                class="bg-linear-to-b from-white to-white/60 bg-clip-text text-transparent"
-              >
                 Encontre ativos com precisão
-              </span>
             </h1>
-            <p class="text-sm text-white/70 md:text-base">
+            <p class="text-sm md:text-base" :style="{ color: brand.colors.textMuted }">
               Combine indicadores técnicos e fundamentais para identificar
               oportunidades em ações, FIIs, BDRs e ETFs.
             </p>
           </div>
           <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <div
-              class="rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-md transition-colors hover:bg-white/10 sm:rounded-2xl sm:p-5"
+              class="rounded-xl border p-4 backdrop-blur-md transition-colors sm:rounded-2xl sm:p-5"
+              :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
             >
               <span class="text-secondary/70 text-[10px] font-medium uppercase tracking-wider sm:text-xs">Resultados</span>
-              <p class="mt-1 text-2xl font-semibold text-white sm:text-3xl">
+              <p class="mt-1 text-2xl font-semibold sm:text-3xl" :style="{ color: brand.colors.text }">
                 {{ resultsCount }}
               </p>
-              <p class="text-[11px] text-white/60 sm:text-xs">Ativos nos filtros.</p>
+              <p class="text-[11px] sm:text-xs" :style="{ color: brand.colors.textMuted }">Ativos nos filtros.</p>
             </div>
             <div
-              class="rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-md transition-colors hover:bg-white/10 sm:rounded-2xl sm:p-5"
+              class="rounded-xl border p-4 backdrop-blur-md transition-colors sm:rounded-2xl sm:p-5"
+              :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
             >
               <span class="text-secondary/70 text-[10px] font-medium uppercase tracking-wider sm:text-xs">Filtros ativos</span>
-              <p class="mt-1 text-2xl font-semibold text-white sm:text-3xl">
+              <p class="mt-1 text-2xl font-semibold sm:text-3xl" :style="{ color: brand.colors.text }">
                 {{ activeFiltersCount }}
               </p>
-              <p class="text-[11px] text-white/60 sm:text-xs">Modificados.</p>
+              <p class="text-[11px] sm:text-xs" :style="{ color: brand.colors.textMuted }">Modificados.</p>
             </div>
             <div
-              class="rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-md transition-colors hover:bg-white/10 sm:rounded-2xl sm:p-5"
+              class="rounded-xl border p-4 backdrop-blur-md transition-colors sm:rounded-2xl sm:p-5"
+              :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
             >
               <span class="text-secondary/70 text-[10px] font-medium uppercase tracking-wider sm:text-xs">Atualização</span>
-              <p class="mt-1 text-2xl font-semibold text-white sm:text-3xl">
+              <p class="mt-1 text-2xl font-semibold sm:text-3xl" :style="{ color: brand.colors.text }">
                 {{ lastUpdatedLabel }}
               </p>
-              <p class="text-[11px] text-white/60 sm:text-xs">API {{ brand.name }}.</p>
+              <p class="text-[11px] sm:text-xs" :style="{ color: brand.colors.textMuted }">API {{ brand.name }}.</p>
             </div>
           </div>
         </div>
@@ -71,12 +71,16 @@
 
       <section class="relative z-10 max-md:px-4">
         <AtomsTickerCarousel
-          class="mx-auto hidden w-full rounded-full bg-white/5 px-6 py-3 md:flex"
+          class="mx-auto hidden w-full rounded-full px-6 py-3 md:flex"
+          :style="{ backgroundColor: brand.colors.surface }"
+          :fade-color="brand.colors.surface"
           big
           no-control
         />
         <AtomsTickerCarousel
-          class="mx-auto w-full rounded-full bg-white/5 px-3 py-2 md:hidden"
+          class="mx-auto w-full rounded-full px-3 py-2 md:hidden"
+          :style="{ backgroundColor: brand.colors.surface }"
+          :fade-color="brand.colors.surface"
           no-control
         />
       </section>
@@ -84,17 +88,18 @@
       <section class="relative z-10 max-md:px-4">
         <div class="mx-auto flex w-full flex-col gap-8">
           <div
-            class="rounded-4xl border border-white/10 bg-white/5 p-6 shadow-[0_25px_60px_-15px_rgba(15,23,42,0.45)] backdrop-blur-md"
+            class="rounded-4xl border p-6 shadow-lg backdrop-blur-md"
+            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
           >
-            <div class="flex flex-col gap-6 text-white">
+            <div class="flex flex-col gap-6" :style="{ color: brand.colors.text }">
               <div class="flex flex-col gap-2">
                 <span
                   class="text-secondary/70 text-xs font-medium uppercase tracking-[0.3em]"
                 >
                   Filtros avançados
                 </span>
-                <h2 class="text-2xl font-semibold">Personalize sua análise</h2>
-                <p class="text-sm text-white/70">
+                <h2 class="text-2xl font-semibold" :style="{ color: brand.colors.text }">Personalize sua análise</h2>
+                <p class="text-sm" :style="{ color: brand.colors.textMuted }">
                   Ajuste ranges numéricos, selecione grupos de ativos e combine
                   com buscas rápidas.
                 </p>
@@ -109,7 +114,8 @@
                 icon="i-lucide-search"
                 class="w-full"
                 :ui="{
-                  base: 'bg-black/50 border border-white/10 text-white placeholder:text-white/40',
+                  base: `border text-[${brand.colors.text}] placeholder:text-[${brand.colors.textMuted}]`,
+                  style: `border-color: ${brand.colors.border}; background-color: ${brand.colors.background}`,
                 }"
               >
                 <template #trailing>
@@ -122,14 +128,15 @@
 
               <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
                 <div
-                  class="flex flex-col gap-3 rounded-2xl border border-white/10 bg-black/40 p-4"
+                  class="flex flex-col gap-3 rounded-2xl border p-4"
+                  :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
                 >
                   <div
                     class="flex items-center justify-between text-sm font-semibold"
                   >
                     <span>Market Cap (R$)</span>
                   </div>
-                  <span class="text-xs font-light text-white/60">
+                  <span class="text-xs font-light" :style="{ color: brand.colors.textMuted }">
                     {{ formatCurrencyBRL(marketCapRange[0]) }} -
                     {{ formatCurrencyBRL(marketCapRange[1]) }}
                   </span>
@@ -142,14 +149,15 @@
                 </div>
 
                 <div
-                  class="flex flex-col gap-3 rounded-2xl border border-white/10 bg-black/40 p-4"
+                  class="flex flex-col gap-3 rounded-2xl border p-4"
+                  :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
                 >
                   <div
                     class="flex items-center justify-between text-sm font-semibold"
                   >
                     <span>Preço (R$)</span>
                   </div>
-                  <span class="text-xs font-light text-white/60">
+                  <span class="text-xs font-light" :style="{ color: brand.colors.textMuted }">
                     <template v-if="!assetsLoading">
                       {{ formatCurrencyBRL(priceRange[0]) }} -
                       {{ formatCurrencyBRL(priceRange[1]) }}
@@ -166,14 +174,15 @@
                 </div>
 
                 <div
-                  class="flex flex-col gap-3 rounded-2xl border border-white/10 bg-black/40 p-4"
+                  class="flex flex-col gap-3 rounded-2xl border p-4"
+                  :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
                 >
                   <div
                     class="flex items-center justify-between text-sm font-semibold"
                   >
                     <span>Variação (%)</span>
                   </div>
-                  <span class="text-xs font-light text-white/60">
+                  <span class="text-xs font-light" :style="{ color: brand.colors.textMuted }">
                     <template v-if="!assetsLoading">
                       {{ formatPercent(changeRange[0]) }} -
                       {{ formatPercent(changeRange[1]) }}
@@ -190,7 +199,8 @@
                 </div>
 
                 <div
-                  class="flex flex-col gap-4 rounded-2xl border border-white/10 bg-black/40 p-4"
+                  class="flex flex-col gap-4 rounded-2xl border p-4"
+                  :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
                 >
                   <div class="text-sm font-semibold">Grupo</div>
                   <div class="flex flex-wrap items-center gap-3">
@@ -215,13 +225,14 @@
 
               <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
                 <div
-                  class="flex flex-col gap-4 rounded-2xl border border-white/10 bg-black/40 p-4"
+                  class="flex flex-col gap-4 rounded-2xl border p-4"
+                  :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
                 >
                   <div class="flex flex-col gap-1">
-                    <span class="text-sm font-semibold text-white">
+                    <span class="text-sm font-semibold" :style="{ color: brand.colors.text }">
                       MDI — Ocorrência principal
                     </span>
-                    <p class="text-xs text-white/60">
+                    <p class="text-xs" :style="{ color: brand.colors.textMuted }">
                       Mostra ativos cujo mês com maior recorrência de dividendos
                       coincide com o selecionado.
                     </p>
@@ -253,13 +264,14 @@
                 </div>
 
                 <div
-                  class="flex flex-col gap-4 rounded-2xl border border-white/10 bg-black/40 p-4"
+                  class="flex flex-col gap-4 rounded-2xl border p-4"
+                  :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
                 >
                   <div class="flex flex-col gap-1">
-                    <span class="text-sm font-semibold text-white">
+                    <span class="text-sm font-semibold" :style="{ color: brand.colors.text }">
                       MDI — Maior probabilidade
                     </span>
-                    <p class="text-xs text-white/60">
+                    <p class="text-xs" :style="{ color: brand.colors.textMuted }">
                       Filtra conforme o mês com maior indicação de pagamento
                       (estrela).
                     </p>
@@ -291,13 +303,14 @@
                 </div>
 
                 <div
-                  class="flex flex-col justify-between gap-4 rounded-2xl border border-white/10 bg-black/40 p-4"
+                  class="flex flex-col justify-between gap-4 rounded-2xl border p-4"
+                :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
                 >
                   <div class="flex flex-col gap-1">
-                    <span class="text-sm font-semibold text-white">
+                    <span class="text-sm font-semibold" :style="{ color: brand.colors.text }">
                       Dados MDI
                     </span>
-                    <p class="text-xs text-white/60">
+                    <p class="text-xs" :style="{ color: brand.colors.textMuted }">
                       Garanta que apenas ativos com histórico MDI sejam
                       exibidos.
                     </p>
@@ -312,9 +325,10 @@
           </div>
 
           <div
-            class="rounded-2xl border border-white/10 bg-white/5 p-4 shadow-lg backdrop-blur-md sm:rounded-3xl sm:p-6"
+            class="rounded-2xl border p-4 shadow-lg backdrop-blur-md sm:rounded-3xl sm:p-6"
+            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
           >
-            <div class="flex flex-col gap-4 text-white">
+            <div class="flex flex-col gap-4" :style="{ color: brand.colors.text }">
               <div class="flex flex-col gap-1">
                 <span
                   class="text-secondary/70 text-[10px] font-medium uppercase tracking-wider sm:text-xs"
@@ -325,7 +339,7 @@
                   Ativos encontrados
                   <IconAi class="fill-secondary h-5 w-5 shrink-0 sm:h-6 sm:w-6" aria-hidden="true" />
                 </h2>
-                <p class="text-xs text-white/60 sm:text-sm">
+                <p class="text-xs sm:text-sm" :style="{ color: brand.colors.textMuted }">
                   Toque no card para ver detalhes.
                 </p>
               </div>
@@ -350,7 +364,8 @@
                     v-for="asset in paginatedData"
                     :key="asset.ticker || asset.stock"
                     :to="`/asset/${String(asset.ticker || asset.stock || '').toLowerCase()}`"
-                    class="group flex flex-col gap-3 rounded-xl border border-white/10 bg-white/5 p-4 transition-all hover:border-white/20 hover:bg-white/[0.08] active:scale-[0.99] sm:rounded-2xl sm:gap-4 sm:p-5"
+                    class="group flex flex-col gap-3 rounded-xl border p-4 transition-all active:scale-[0.99] sm:rounded-2xl sm:gap-4 sm:p-5"
+                    :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
                   >
                     <div class="flex items-center justify-between gap-2">
                       <div class="flex min-w-0 flex-1 items-center gap-3">
@@ -358,31 +373,34 @@
                           v-if="getAssetLogo(asset)"
                           :src="getAssetLogo(asset) || ''"
                           :alt="asset.ticker || asset.stock"
-                          class="h-10 w-10 shrink-0 rounded-xl border border-white/10 bg-white/10 object-cover sm:h-11 sm:w-11"
+                          class="h-10 w-10 shrink-0 rounded-xl border object-cover sm:h-11 sm:w-11"
+                          :style="{ borderColor: brand.colors.border }"
                         />
                         <BrandLogo
                           v-else
                           variant="icon"
-                          class="h-10 w-10 shrink-0 rounded-xl border border-white/10 bg-white/10 p-2 sm:h-11 sm:w-11"
+                          class="h-10 w-10 shrink-0 rounded-xl border p-2 sm:h-11 sm:w-11"
+                          :style="{ borderColor: brand.colors.border }"
                         />
                         <div class="min-w-0 flex-1">
-                          <p class="truncate font-semibold text-white">
+                          <p class="truncate font-semibold" :style="{ color: brand.colors.text }">
                             {{ asset.ticker || asset.stock }}
                           </p>
-                          <p class="truncate text-xs text-white/60 sm:text-sm">
+                          <p class="truncate text-xs sm:text-sm" :style="{ color: brand.colors.textMuted }">
                             {{ asset.name }}
                           </p>
                         </div>
                       </div>
                       <span
-                        class="shrink-0 rounded-md bg-white/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-white/70 sm:text-xs"
+                        class="shrink-0 rounded-md px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide sm:text-xs"
+                        :style="{ backgroundColor: brand.colors.border, color: brand.colors.textMuted }"
                       >
                         {{ getAssetTypeLabel(asset.type) }}
                       </span>
                     </div>
 
                     <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 text-sm">
-                      <span class="font-medium text-white">
+                      <span class="font-medium" :style="{ color: brand.colors.text }">
                         {{ formatCurrencyBRL(getAssetPrice(asset)) }}
                       </span>
                       <span
@@ -407,7 +425,8 @@
                     >
                       <span
                         v-if="getMdiLabels(asset.mdi).occurrenceLabel"
-                        class="rounded-md bg-white/10 px-2 py-1 text-[10px] text-white/80 sm:text-xs"
+                        class="rounded-md px-2 py-1 text-[10px] sm:text-xs"
+                        :style="{ backgroundColor: brand.colors.border, color: brand.colors.textMuted }"
                       >
                         {{ getMdiLabels(asset.mdi).occurrenceLabel }}
                       </span>
@@ -420,7 +439,7 @@
                       </span>
                     </div>
 
-                    <p class="mt-auto text-[10px] text-white/40 sm:text-xs">
+                    <p class="mt-auto text-[10px] sm:text-xs" :style="{ color: brand.colors.textMuted }">
                       MC {{ formatCurrencyBRL(asset.market_cap) }}
                     </p>
                   </NuxtLink>
@@ -428,7 +447,8 @@
 
                 <div
                   v-else
-                  class="rounded-xl border border-white/10 bg-white/5 py-12 text-center text-sm text-white/60 sm:rounded-2xl sm:py-16"
+                  class="rounded-xl border py-12 text-center text-sm sm:rounded-2xl sm:py-16"
+                  :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.textMuted }"
                 >
                   Nenhum ativo encontrado com os filtros atuais.
                 </div>
@@ -437,7 +457,8 @@
 
             <div
               v-if="!assetsLoading && resultsCount > itemsPerPage"
-              class="mt-6 flex justify-center border-t border-white/10 pt-4"
+              class="mt-6 flex justify-center border-t pt-4"
+              :style="{ borderColor: brand.colors.border }"
             >
               <UPagination
                 :page="currentPage"

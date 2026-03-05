@@ -11,14 +11,15 @@
         class="flex h-full w-full items-center justify-center"
       >
         <div
-          class="flex h-full min-h-screen w-full flex-col items-center justify-center gap-5 rounded-3xl bg-gradient-to-br from-white/10 via-white/5 to-transparent p-8 text-center text-white backdrop-blur-xl"
+          class="flex h-full min-h-screen w-full flex-col items-center justify-center gap-5 rounded-3xl p-8 text-center backdrop-blur-xl"
+          :style="{ backgroundColor: brand.colors.surface, color: brand.colors.text }"
         >
           <div class="flex flex-col items-center gap-4">
             <IconAi class="fill-secondary h-12" />
             <h2 class="text-2xl font-semibold sm:text-3xl">
               {{ brand.ai.welcomeTitle }}
             </h2>
-            <p class="max-w-xl text-sm text-white/70 sm:text-base">
+            <p class="max-w-xl text-sm sm:text-base" :style="{ color: brand.colors.textMuted }">
               {{ brand.ai.welcomeSubtitle }}
             </p>
           </div>
@@ -31,7 +32,7 @@
           >
             {{ brand.voice.ctaPrimary }}
           </UButton>
-          <p class="text-xs text-white/50 sm:text-sm">
+          <p class="text-xs sm:text-sm" :style="{ color: brand.colors.textMuted }">
             {{ brand.ai.ctaFeatures.join(' • ') }}
           </p>
         </div>
@@ -41,9 +42,9 @@
         <template v-if="isAdvisor">
           <div class="mt-5 flex min-h-0 flex-1 flex-col overflow-hidden md:flex-row xl:mt-6">
             <!-- Sidebar contatos (estilo alinhado à sidebar do layout) -->
-            <aside class="contacts-sidebar flex max-h-[45vh] w-full flex-col border-r border-white/10 bg-white/[0.02] md:max-h-none md:w-[320px] md:min-w-[280px] md:max-w-[360px]">
+            <aside class="contacts-sidebar flex max-h-[45vh] w-full flex-col border-r md:max-h-none md:w-[320px] md:min-w-[280px] md:max-w-[360px]" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
               <div class="shrink-0 px-3 pt-4 pb-3">
-                <span class="mb-2 block px-1 text-[10px] font-medium uppercase tracking-wider text-white/30">
+                <span class="mb-2 block px-1 text-[10px] font-medium uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">
                   Meus contatos
                 </span>
                 <div class="relative">
@@ -55,7 +56,8 @@
                     v-model="contactSearch"
                     type="text"
                     placeholder="Buscar por nome ou e-mail"
-                    class="w-full rounded-xl border border-white/10 bg-white/5 py-2.5 pl-9 pr-3 text-sm text-white placeholder:text-white/40 transition hover:border-white/20 focus:border-white/20 focus:outline-none focus:ring-0"
+                    class="w-full rounded-xl border py-2.5 pl-9 pr-3 text-sm transition focus:outline-none focus:ring-0"
+                    :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.text }"
                   />
                 </div>
               </div>
@@ -66,12 +68,13 @@
                   class="group flex w-full cursor-pointer items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-all duration-200"
                   :class="selectedContact === null
                     ? 'border-secondary/30 bg-secondary/10 text-secondary'
-                    : 'border-transparent text-white/70 hover:border-white/10 hover:bg-white/5 hover:text-white'"
+                    : 'border-transparent hover:bg-secondary/5'"
+                  :style="selectedContact === null ? {} : { color: brand.colors.textMuted }"
                   @click="selectedContact = null"
                 >
                   <div
                     class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
-                    :class="selectedContact === null ? 'bg-secondary/20' : 'bg-white/5 group-hover:bg-white/10'"
+                    :class="selectedContact === null ? 'bg-secondary/20' : 'bg-secondary/5 group-hover:bg-secondary/10'"
                   >
                     <IconAi class="h-5 w-5" :class="selectedContact === null ? 'fill-secondary' : 'fill-white/60 group-hover:fill-white/80'" />
                   </div>
@@ -97,12 +100,14 @@
                   class="group flex w-full cursor-pointer items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-all duration-200"
                   :class="selectedContact?.id === inv.id
                     ? 'border-secondary/30 bg-secondary/10 text-secondary'
-                    : 'border-transparent text-white/70 hover:border-white/10 hover:bg-white/5 hover:text-white'"
+                    : 'border-transparent hover:bg-secondary/5'"
+                  :style="selectedContact === null ? {} : { color: brand.colors.textMuted }"
                   @click="selectedContact = { id: inv.id, name: inv.name ?? 'Investidor', approval_status: inv.approval_status }"
                 >
                   <div
                     class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-sm font-medium"
-                    :class="selectedContact?.id === inv.id ? 'bg-secondary/20 text-secondary' : 'bg-white/5 text-white/70 group-hover:bg-white/10 group-hover:text-white'"
+                    :class="selectedContact?.id === inv.id ? 'bg-secondary/20 text-secondary' : 'bg-secondary/5 group-hover:bg-secondary/10'"
+                    :style="selectedContact?.id === inv.id ? {} : { color: brand.colors.textMuted }"
                   >
                     {{ (inv.name ?? '?').charAt(0).toUpperCase() }}
                   </div>
@@ -127,11 +132,12 @@
             <main class="min-h-0 flex-1">
               <div
                 v-if="selectedContact && selectedContact.approval_status === 'pending'"
-                class="flex h-full min-h-[300px] flex-col items-center justify-center gap-3 rounded-2xl bg-gradient-to-b from-[#042f54] to-[#0b3f6d] p-6 text-center text-white"
+                class="flex h-full min-h-[300px] flex-col items-center justify-center gap-3 rounded-2xl p-6 text-center"
+                :style="{ backgroundColor: brand.colors.surface, color: brand.colors.text }"
               >
                 <UIcon name="i-lucide-user-clock" class="h-12 w-12 text-amber-400/80" />
                 <p class="text-sm font-medium">Aprove este investidor para conversar</p>
-                <p class="max-w-xs text-[13px] text-white/60">
+                <p class="max-w-xs text-[13px]" :style="{ color: brand.colors.textMuted }">
                   O vínculo está pendente. Aprove em <NuxtLink to="/advisor" class="underline text-secondary">Área do assessor</NuxtLink> para trocar mensagens.
                 </p>
               </div>
@@ -145,7 +151,7 @@
               />
               <MoleculesChat
                 v-else
-                class="h-full w-full bg-gradient-to-b from-[#042f54] to-[#0b3f6d] text-white"
+                class="h-full w-full" :style="{ backgroundColor: brand.colors.surface, color: brand.colors.text }"
                 :suggestions="[
                   'Me dê um relatório completo sobre a Petrobras',
                   'Tenho R$ 100,00 para investir, qual ação comprar?',
@@ -167,12 +173,12 @@
               class="group flex w-full min-w-0 cursor-pointer items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-all duration-200 sm:w-auto"
               :class="activeTab === 'ia'
                 ? 'border-secondary/30 bg-secondary/10 text-secondary'
-                : 'border-white/10 bg-white/[0.04] text-white/70 hover:border-white/20 hover:bg-white/5 hover:text-white'"
+                : 'border-transparent hover:bg-secondary/5'"
               @click="activeTab = 'ia'"
             >
               <div
                 class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
-                :class="activeTab === 'ia' ? 'bg-secondary/20' : 'bg-white/5 group-hover:bg-white/10'"
+                :class="activeTab === 'ia' ? 'bg-secondary/20' : 'bg-secondary/5 group-hover:bg-secondary/10'"
               >
                 <IconAi class="h-5 w-5" :class="activeTab === 'ia' ? 'fill-secondary' : 'fill-white/60 group-hover:fill-white/80'" />
               </div>
@@ -190,12 +196,12 @@
               class="group flex w-full min-w-0 cursor-pointer items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-all duration-200 sm:w-auto"
               :class="activeTab === 'advisor'
                 ? 'border-secondary/30 bg-secondary/10 text-secondary'
-                : 'border-white/10 bg-white/[0.04] text-white/70 hover:border-white/20 hover:bg-white/5 hover:text-white'"
+                : 'border-transparent hover:bg-secondary/5'"
               @click="activeTab = 'advisor'"
             >
               <div
                 class="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-lg"
-                :class="activeTab === 'advisor' ? 'ring-2 ring-secondary/30' : 'bg-white/5 group-hover:bg-white/10'"
+                :class="activeTab === 'advisor' ? 'ring-2 ring-secondary/30' : 'bg-secondary/5 group-hover:bg-secondary/10'"
               >
                 <UAvatar
                   :alt="advisorName"
@@ -216,7 +222,7 @@
           <div class="min-h-0 flex-1" :class="{ 'mt-4': showAdvisorTab }">
             <MoleculesChat
               v-if="!showAdvisorTab || activeTab === 'ia'"
-              class="h-full w-full bg-gradient-to-b from-[#042f54] to-[#0b3f6d] text-white"
+              class="h-full w-full" :style="{ backgroundColor: brand.colors.surface, color: brand.colors.text }"
               :suggestions="[
                 'Me dê um relatório completo sobre a Petrobras',
                 'Tenho R$ 100,00 para investir, qual ação comprar?',
@@ -333,10 +339,10 @@ function redirectToLogin() {
   background: transparent;
 }
 .contacts-list::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--ui-border);
   border-radius: 3px;
 }
 .contacts-list::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--ui-text-muted);
 }
 </style>

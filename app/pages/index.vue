@@ -359,19 +359,17 @@
         >
           <div
             class="flex w-full flex-col gap-2 px-2 py-4"
-            :class="brand.hero.variant === 'split' ? 'mx-2 brand-card-md border p-4' : brand.hero.variant === 'minimal' ? 'mx-1 border-l-2 pl-4' : ''"
-            :style="{
-              borderColor: brand.hero.variant === 'split' ? brand.colors.border : brand.hero.variant === 'minimal' ? brand.colors.positive : undefined,
-              backgroundColor: brand.hero.variant === 'split' ? brand.colors.surface : undefined,
-            }"
+            :class="rankingCardClass"
+            :style="rankingCardStyle(brand.colors.positive)"
           >
             <!-- Header -->
             <div class="mb-2 flex items-center justify-between">
               <div class="flex items-center gap-2">
                 <div
+                  v-if="brand.homePage.rankingCard.showIcon"
                   class="flex items-center justify-center"
-                  :class="brand.hero.variant === 'split' ? 'h-8 w-8 brand-pill' : ''"
-                  :style="brand.hero.variant === 'split' ? { backgroundColor: `${brand.colors.positive}20` } : {}"
+                  :class="brand.homePage.rankingCard.iconStyle === 'pill' ? 'h-8 w-8 brand-pill' : ''"
+                  :style="brand.homePage.rankingCard.iconStyle === 'pill' ? { backgroundColor: `${brand.colors.positive}20` } : {}"
                 >
                   <UIcon name="i-lucide-trending-up" class="h-5 w-5" :style="{ color: brand.colors.positive }" />
                 </div>
@@ -390,13 +388,13 @@
               </NuxtLink>
             </div>
             <!-- Lista -->
-            <div class="flex flex-col" :style="{ '--tw-divide-opacity': 1 }">
+            <div class="flex flex-col">
               <AtomsTickerListItem
-                v-for="stock in topAssets.top[item.key]"
+                v-for="stock in sliceRanking(topAssets.top[item.key])"
                 :key="stock?.ticker"
                 :stock="stock"
                 class="border-b"
-                :style="{ borderColor: `${brand.colors.border}` }"
+                :style="{ borderColor: brand.colors.border }"
               />
             </div>
           </div>
@@ -412,19 +410,17 @@
         >
           <div
             class="flex w-full flex-col gap-2 px-2 py-4"
-            :class="brand.hero.variant === 'split' ? 'mx-2 brand-card-md border p-4' : brand.hero.variant === 'minimal' ? 'mx-1 border-l-2 pl-4' : ''"
-            :style="{
-              borderColor: brand.hero.variant === 'split' ? brand.colors.border : brand.hero.variant === 'minimal' ? brand.colors.negative : undefined,
-              backgroundColor: brand.hero.variant === 'split' ? brand.colors.surface : undefined,
-            }"
+            :class="rankingCardClass"
+            :style="rankingCardStyle(brand.colors.negative)"
           >
             <!-- Header -->
             <div class="mb-2 flex items-center justify-between">
               <div class="flex items-center gap-2">
                 <div
+                  v-if="brand.homePage.rankingCard.showIcon"
                   class="flex items-center justify-center"
-                  :class="brand.hero.variant === 'split' ? 'h-8 w-8 brand-pill' : ''"
-                  :style="brand.hero.variant === 'split' ? { backgroundColor: `${brand.colors.negative}20` } : {}"
+                  :class="brand.homePage.rankingCard.iconStyle === 'pill' ? 'h-8 w-8 brand-pill' : ''"
+                  :style="brand.homePage.rankingCard.iconStyle === 'pill' ? { backgroundColor: `${brand.colors.negative}20` } : {}"
                 >
                   <UIcon name="i-lucide-trending-down" class="h-5 w-5" :style="{ color: brand.colors.negative }" />
                 </div>
@@ -445,11 +441,11 @@
             <!-- Lista -->
             <div class="flex flex-col">
               <AtomsTickerListItem
-                v-for="stock in topAssets.bottom[item.key]"
+                v-for="stock in sliceRanking(topAssets.bottom[item.key])"
                 :key="stock?.ticker"
                 :stock="stock"
                 class="border-b"
-                :style="{ borderColor: `${brand.colors.border}` }"
+                :style="{ borderColor: brand.colors.border }"
               />
             </div>
           </div>
@@ -569,159 +565,73 @@
           </p>
         </div>
 
-        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <!-- Ações -->
-          <NuxtLink
-            to="/acoes"
-            class="group flex flex-col gap-3 border p-6 transition-all brand-card"
-            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
-          >
-            <div class="flex items-center gap-3">
-              <div class="bg-secondary/20 p-3 brand-pill">
-                <UIcon name="i-lucide-trending-up" class="text-secondary h-6 w-6" />
+        <div class="grid gap-4" :class="categoryGridCols">
+          <!-- Variant: icon-left (Primo Rico — icon beside title, description, CTA) -->
+          <template v-if="brand.homePage.categoryCard.variant === 'icon-left'">
+            <NuxtLink
+              v-for="cat in brand.homePage.categories"
+              :key="cat.to"
+              :to="cat.to"
+              class="group flex flex-col gap-3 border p-6 transition-all brand-card"
+              :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+            >
+              <div class="flex items-center gap-3">
+                <div class="bg-secondary/20 p-3 brand-pill">
+                  <UIcon :name="cat.icon" class="text-secondary h-6 w-6" />
+                </div>
+                <h3 class="text-xl font-bold group-hover:text-secondary" :style="{ color: brand.colors.text }">{{ cat.label }}</h3>
               </div>
-              <h3 class="text-xl font-bold group-hover:text-secondary">Ações</h3>
-            </div>
-            <p class="text-sm" :style="{ color: brand.colors.textMuted }">
-              Invista nas maiores empresas do Brasil. Potencial de crescimento e
-              dividendos.
-            </p>
-            <div class="flex items-center gap-2 text-secondary text-sm font-medium">
-              <span>Explorar ações</span>
-              <UIcon
-                name="i-lucide-arrow-right"
-                class="h-4 w-4 transition-transform group-hover:translate-x-1"
-              />
-            </div>
-          </NuxtLink>
+              <p v-if="cat.description" class="text-sm" :style="{ color: brand.colors.textMuted }">
+                {{ cat.description }}
+              </p>
+              <div class="flex items-center gap-2 text-secondary text-sm font-medium">
+                <span>{{ cat.cta }}</span>
+                <UIcon name="i-lucide-arrow-right" class="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </div>
+            </NuxtLink>
+          </template>
 
-          <!-- FIIs -->
-          <NuxtLink
-            to="/fiis"
-            class="group flex flex-col gap-3 border p-6 transition-all brand-card"
-            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
-          >
-            <div class="flex items-center gap-3">
-              <div class="bg-secondary/20 p-3 brand-pill">
-                <UIcon name="i-lucide-building-2" class="text-secondary h-6 w-6" />
+          <!-- Variant: icon-top (Me Poupe — icon centered above, spacious, friendly) -->
+          <template v-else-if="brand.homePage.categoryCard.variant === 'icon-top'">
+            <NuxtLink
+              v-for="cat in brand.homePage.categories"
+              :key="cat.to"
+              :to="cat.to"
+              class="group flex flex-col items-center gap-4 border p-8 text-center transition-all brand-card"
+              :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+            >
+              <div class="bg-secondary/20 p-4 brand-pill">
+                <UIcon :name="cat.icon" class="text-secondary h-8 w-8" />
               </div>
-              <h3 class="text-xl font-bold group-hover:text-secondary">FIIs</h3>
-            </div>
-            <p class="text-sm" :style="{ color: brand.colors.textMuted }">
-              Renda passiva mensal com fundos imobiliários. Dividendos isentos de
-              IR.
-            </p>
-            <div class="flex items-center gap-2 text-secondary text-sm font-medium">
-              <span>Explorar FIIs</span>
-              <UIcon
-                name="i-lucide-arrow-right"
-                class="h-4 w-4 transition-transform group-hover:translate-x-1"
-              />
-            </div>
-          </NuxtLink>
+              <h3 class="text-lg font-bold group-hover:text-secondary" :style="{ color: brand.colors.text }">{{ cat.label }}</h3>
+              <p v-if="cat.description" class="text-sm" :style="{ color: brand.colors.textMuted }">
+                {{ cat.description }}
+              </p>
+              <span class="mt-auto flex items-center gap-1 text-secondary text-sm font-semibold">
+                {{ cat.cta }}
+                <UIcon name="i-lucide-arrow-right" class="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </span>
+            </NuxtLink>
+          </template>
 
-          <!-- ETFs -->
-          <NuxtLink
-            to="/etfs"
-            class="group flex flex-col gap-3 border p-6 transition-all brand-card"
-            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
-          >
-            <div class="flex items-center gap-3">
-              <div class="bg-secondary/20 p-3 brand-pill">
-                <UIcon name="i-lucide-bar-chart-3" class="text-secondary h-6 w-6" />
-              </div>
-              <h3 class="text-xl font-bold group-hover:text-secondary">ETFs</h3>
-            </div>
-            <p class="text-sm" :style="{ color: brand.colors.textMuted }">
-              Diversificação instantânea. Invista no Ibovespa e S&P 500 com um
-              clique.
-            </p>
-            <div class="flex items-center gap-2 text-secondary text-sm font-medium">
-              <span>Explorar ETFs</span>
-              <UIcon
-                name="i-lucide-arrow-right"
-                class="h-4 w-4 transition-transform group-hover:translate-x-1"
-              />
-            </div>
-          </NuxtLink>
-
-          <!-- Small Caps -->
-          <NuxtLink
-            to="/small-caps"
-            class="group flex flex-col gap-3 border p-6 transition-all brand-card"
-            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
-          >
-            <div class="flex items-center gap-3">
-              <div class="bg-secondary/20 p-3 brand-pill">
-                <UIcon name="i-lucide-rocket" class="text-secondary h-6 w-6" />
-              </div>
-              <h3 class="text-xl font-bold group-hover:text-secondary">
-                Small Caps
-              </h3>
-            </div>
-            <p class="text-sm" :style="{ color: brand.colors.textMuted }">
-              Empresas pequenas com alto potencial de crescimento. Risco maior,
-              retorno maior.
-            </p>
-            <div class="flex items-center gap-2 text-secondary text-sm font-medium">
-              <span>Explorar small caps</span>
-              <UIcon
-                name="i-lucide-arrow-right"
-                class="h-4 w-4 transition-transform group-hover:translate-x-1"
-              />
-            </div>
-          </NuxtLink>
-
-          <!-- Dividendos -->
-          <NuxtLink
-            to="/dividendos"
-            class="group flex flex-col gap-3 border p-6 transition-all brand-card"
-            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
-          >
-            <div class="flex items-center gap-3">
-              <div class="bg-secondary/20 p-3 brand-pill">
-                <UIcon name="i-lucide-coins" class="text-secondary h-6 w-6" />
-              </div>
-              <h3 class="text-xl font-bold group-hover:text-secondary">
-                Dividendos
-              </h3>
-            </div>
-            <p class="text-sm" :style="{ color: brand.colors.textMuted }">
-              Construa renda passiva mensal. Descubra os melhores pagadores de
-              dividendos.
-            </p>
-            <div class="flex items-center gap-2 text-secondary text-sm font-medium">
-              <span>Explorar dividendos</span>
-              <UIcon
-                name="i-lucide-arrow-right"
-                class="h-4 w-4 transition-transform group-hover:translate-x-1"
-              />
-            </div>
-          </NuxtLink>
-
-          <!-- BDRs -->
-          <NuxtLink
-            to="/search?group=bdrs"
-            class="group flex flex-col gap-3 border p-6 transition-all brand-card"
-            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
-          >
-            <div class="flex items-center gap-3">
-              <div class="bg-secondary/20 p-3 brand-pill">
-                <UIcon name="i-lucide-globe" class="text-secondary h-6 w-6" />
-              </div>
-              <h3 class="text-xl font-bold group-hover:text-secondary">BDRs</h3>
-            </div>
-            <p class="text-sm" :style="{ color: brand.colors.textMuted }">
-              Invista em empresas estrangeiras (Apple, Google, Amazon) em reais.
-            </p>
-            <div class="flex items-center gap-2 text-secondary text-sm font-medium">
-              <span>Explorar BDRs</span>
-              <UIcon
-                name="i-lucide-arrow-right"
-                class="h-4 w-4 transition-transform group-hover:translate-x-1"
-              />
-            </div>
-          </NuxtLink>
+          <!-- Variant: minimal (Sardinha — compact, left border accent, no icon) -->
+          <template v-else>
+            <NuxtLink
+              v-for="cat in brand.homePage.categories"
+              :key="cat.to"
+              :to="cat.to"
+              class="group flex items-center justify-between border-l-2 py-3 pl-4 pr-2 transition-colors"
+              :style="{ borderLeftColor: brand.colors.primary }"
+              @mouseenter="$event.currentTarget.style.backgroundColor = brand.colors.textMuted + '0D'"
+              @mouseleave="$event.currentTarget.style.backgroundColor = 'transparent'"
+            >
+              <span class="text-sm font-medium" :style="{ color: brand.colors.text }">{{ cat.label }}</span>
+              <span class="flex items-center gap-1 text-xs font-medium" :style="{ color: brand.colors.primary }">
+                {{ cat.cta }}
+                <UIcon name="i-lucide-chevron-right" class="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+              </span>
+            </NuxtLink>
+          </template>
         </div>
       </div>
     </section>
@@ -1197,6 +1107,32 @@ const topAssets = ref<{
 
 const RANKING_LIMIT = 8
 const TREEMAP_LIMIT = 200
+
+// Ranking card variant helpers
+const rankingCardClass = computed(() => {
+  const v = brand.homePage.rankingCard.variant
+  if (v === 'card') return 'mx-2 brand-card-md border p-4'
+  if (v === 'border-left') return 'mx-1 border-l-2 pl-4'
+  return ''
+})
+
+function rankingCardStyle(accentColor: string) {
+  const v = brand.homePage.rankingCard.variant
+  if (v === 'card') return { borderColor: brand.colors.border, backgroundColor: brand.colors.surface }
+  if (v === 'border-left') return { borderColor: accentColor }
+  return {}
+}
+
+function sliceRanking(items: any[] | undefined) {
+  if (!items) return []
+  return items.slice(0, brand.homePage.rankingCard.itemsPerCategory)
+}
+
+const categoryGridCols = computed(() => {
+  const cols = brand.homePage.categoryCard.columns
+  if (cols === 2) return 'sm:grid-cols-2'
+  return 'sm:grid-cols-2 lg:grid-cols-3'
+})
 
 // Aguarda os dados para SSR correto (evita hydration mismatch)
 const { data: homeMarketData } = await useAsyncData<HomeMarketData>(

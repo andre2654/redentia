@@ -7,7 +7,7 @@
           <UIcon name="i-lucide-newspaper" class="text-secondary h-8 w-8" />
           <h1 class="text-3xl font-bold md:text-4xl">Blog da {{ brand.name }}</h1>
         </div>
-        <p class="text-base text-gray-400 md:text-lg">
+        <p class="text-base md:text-lg" :style="{ color: brand.colors.textMuted }">
           Guias completos, tutoriais práticos e análises detalhadas sobre investimentos. Aprenda desde o básico até estratégias avançadas para dominar o mercado financeiro.
         </p>
       </section>
@@ -30,12 +30,12 @@
           <div class="flex-1">
             <div class="mb-3 flex items-center gap-3">
               <UBadge label="Ações" color="secondary" variant="subtle" size="xs" />
-              <span class="text-xs text-gray-500">8 min de leitura</span>
+              <span class="text-xs" :style="{ color: brand.colors.textMuted }">8 min de leitura</span>
             </div>
             <h3 class="mb-2 text-2xl font-bold group-hover:text-secondary transition-colors">
               Como Investir em Ações para Iniciantes
             </h3>
-            <p class="mb-4 text-gray-300">
+            <p class="mb-4" :style="{ color: brand.colors.textMuted }">
               Guia completo passo a passo para você começar a investir na bolsa de valores. Aprenda desde o básico até estratégias avançadas.
             </p>
             <div class="flex items-center gap-2 text-secondary text-sm font-medium">
@@ -54,7 +54,7 @@
         <h2 class="text-xl font-semibold">Filtrar por Categoria</h2>
         <div class="flex flex-wrap gap-2">
           <UButton
-            color="neutral"
+            color="secondary"
             :variant="filtroCategoria === 'todos' ? 'soft' : 'ghost'"
             size="md"
             @click="filtroCategoria = 'todos'"
@@ -62,7 +62,7 @@
             Todos
           </UButton>
           <UButton
-            color="neutral"
+            color="secondary"
             :variant="filtroCategoria === 'acoes' ? 'soft' : 'ghost'"
             size="md"
             icon="i-lucide-trending-up"
@@ -71,7 +71,7 @@
             Ações
           </UButton>
           <UButton
-            color="neutral"
+            color="secondary"
             :variant="filtroCategoria === 'fiis' ? 'soft' : 'ghost'"
             size="md"
             icon="i-lucide-building-2"
@@ -80,7 +80,7 @@
             FIIs
           </UButton>
           <UButton
-            color="neutral"
+            color="secondary"
             :variant="filtroCategoria === 'dividendos' ? 'soft' : 'ghost'"
             size="md"
             icon="i-lucide-coins"
@@ -89,7 +89,7 @@
             Dividendos
           </UButton>
           <UButton
-            color="neutral"
+            color="secondary"
             :variant="filtroCategoria === 'analises' ? 'soft' : 'ghost'"
             size="md"
             icon="i-lucide-chart-line"

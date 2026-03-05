@@ -2,16 +2,16 @@
   <NuxtLayout name="static" :title="termo?.nome || 'Glossário'">
     <div v-if="termo" class="flex flex-col gap-8 px-6 py-8">
       <!-- Breadcrumbs -->
-      <nav class="flex items-center gap-2 text-sm text-gray-400">
-        <NuxtLink to="/" class="hover:text-white transition-colors">
+      <nav class="flex items-center gap-2 text-sm" :style="{ color: brand.colors.textMuted }">
+        <NuxtLink to="/" class="transition-colors hover:text-secondary">
           Home
         </NuxtLink>
         <UIcon name="i-lucide-chevron-right" class="h-4 w-4" />
-        <NuxtLink to="/glossario" class="hover:text-white transition-colors">
+        <NuxtLink to="/glossario" class="transition-colors hover:text-secondary">
           Glossário
         </NuxtLink>
         <UIcon name="i-lucide-chevron-right" class="h-4 w-4" />
-        <span class="text-white">{{ termo.nome }}</span>
+        <span :style="{ color: brand.colors.text }">{{ termo.nome }}</span>
       </nav>
 
       <!-- Header -->
@@ -48,7 +48,7 @@
           </div>
           <div class="flex flex-col gap-3">
             <h2 class="text-xl font-semibold">Definição</h2>
-            <p class="text-lg leading-relaxed text-gray-200">
+            <p class="text-lg leading-relaxed" :style="{ color: brand.colors.textMuted }">
               {{ termo.definicaoResumida }}
             </p>
           </div>
@@ -56,8 +56,8 @@
       </section>
 
       <!-- Conteúdo Completo -->
-      <section class="prose prose-invert max-w-none">
-        <div class="whitespace-pre-line text-base leading-relaxed text-gray-300">
+      <section class="prose max-w-none" :style="{ color: brand.colors.text }">
+        <div class="whitespace-pre-line text-base leading-relaxed" :style="{ color: brand.colors.textMuted }">
           {{ termo.definicaoCompleta }}
         </div>
       </section>
@@ -65,7 +65,8 @@
       <!-- Fórmula -->
       <section
         v-if="termo.formula"
-        class="rounded-2xl border border-white/10 bg-white/5 p-6"
+        class="rounded-2xl border p-6"
+        :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
       >
         <div class="flex items-start gap-4">
           <div class="bg-tertiary/20 rounded-full p-3 max-md:hidden">
@@ -85,7 +86,8 @@
       <!-- Exemplo Prático -->
       <section
         v-if="termo.exemplo"
-        class="rounded-2xl border border-white/10 bg-white/5 p-6"
+        class="rounded-2xl border p-6"
+        :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
       >
         <div class="flex items-start gap-4">
           <div class="bg-primary/20 rounded-full p-3 max-md:hidden">
@@ -93,7 +95,7 @@
           </div>
           <div class="flex flex-col gap-3">
             <h2 class="text-xl font-semibold">Exemplo Prático</h2>
-            <p class="leading-relaxed text-gray-300">{{ termo.exemplo }}</p>
+            <p class="leading-relaxed" :style="{ color: brand.colors.textMuted }">{{ termo.exemplo }}</p>
           </div>
         </div>
       </section>
@@ -101,7 +103,8 @@
       <!-- Como Usar -->
       <section
         v-if="termo.comoUsar"
-        class="rounded-2xl border border-white/10 bg-white/5 p-6"
+        class="rounded-2xl border p-6"
+        :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
       >
         <div class="flex items-start gap-4">
           <div class="bg-blue-500/20 rounded-full p-3 max-md:hidden">
@@ -109,7 +112,7 @@
           </div>
           <div class="flex flex-col gap-3">
             <h2 class="text-xl font-semibold">Como Usar na Prática</h2>
-            <p class="leading-relaxed text-gray-300">{{ termo.comoUsar }}</p>
+            <p class="leading-relaxed" :style="{ color: brand.colors.textMuted }">{{ termo.comoUsar }}</p>
           </div>
         </div>
       </section>
@@ -130,7 +133,7 @@
             <h2 class="text-xl font-semibold text-yellow-400">
               Pontos de Atenção
             </h2>
-            <p class="leading-relaxed text-gray-300">{{ termo.atencao }}</p>
+            <p class="leading-relaxed" :style="{ color: brand.colors.textMuted }">{{ termo.atencao }}</p>
           </div>
         </div>
       </section>
@@ -146,7 +149,8 @@
             v-for="relacionado in termosRelacionados"
             :key="relacionado.slug"
             :to="`/glossario/${relacionado.slug}`"
-            class="group flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-4 transition-all hover:border-white/20 hover:bg-white/10"
+            class="group flex items-center justify-between rounded-xl border p-4 transition-all hover:opacity-80"
+            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
           >
             <div class="flex flex-col gap-1">
               <span class="font-semibold group-hover:text-secondary">
@@ -168,7 +172,7 @@
       </section>
 
       <!-- Navegação (Anterior/Próximo) -->
-      <section class="flex items-center justify-between border-t border-white/10 pt-6">
+      <section class="flex items-center justify-between border-t pt-6" :style="{ borderColor: brand.colors.border }">
         <NuxtLink
           v-if="termoAnterior"
           :to="`/glossario/${termoAnterior.slug}`"
@@ -179,7 +183,7 @@
             class="h-5 w-5 transition-transform group-hover:-translate-x-1"
           />
           <div class="flex flex-col items-start">
-            <span class="text-xs text-gray-400">Anterior</span>
+            <span class="text-xs" :style="{ color: brand.colors.textMuted }">Anterior</span>
             <span class="font-semibold">{{ termoAnterior.nome }}</span>
           </div>
         </NuxtLink>
@@ -191,7 +195,7 @@
           class="group flex items-center gap-2 hover:text-secondary"
         >
           <div class="flex flex-col items-end">
-            <span class="text-xs text-gray-400">Próximo</span>
+            <span class="text-xs" :style="{ color: brand.colors.textMuted }">Próximo</span>
             <span class="font-semibold">{{ termoProximo.nome }}</span>
           </div>
           <UIcon
@@ -220,7 +224,7 @@
       <UIcon name="i-lucide-search-x" class="h-20 w-20 text-gray-500" />
       <div class="text-center">
         <h1 class="mb-2 text-3xl font-bold">Termo não encontrado</h1>
-        <p class="text-gray-400">
+        <p :style="{ color: brand.colors.textMuted }">
           O termo que você procura não existe ou foi removido.
         </p>
       </div>
