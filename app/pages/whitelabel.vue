@@ -416,113 +416,117 @@
     </section>
 
     <!-- ========== SHOWCASE — CAROUSEL CARDS ========== -->
-    <section id="showcase" class="relative border-t border-white/[0.04] py-20 md:py-28 overflow-hidden">
-      <div class="pointer-events-none absolute left-0 top-1/2 h-[500px] w-[500px] -translate-y-1/2 rounded-full bg-blue-400/5 blur-[140px]" />
+    <section id="showcase" class="relative border-t border-white/[0.04] py-24 md:py-36 overflow-hidden">
+      <div class="pointer-events-none absolute left-1/2 top-0 h-[800px] w-[800px] -translate-x-1/2 rounded-full bg-blue-400/[0.04] blur-[200px]" />
 
-      <div class="relative mx-auto max-w-6xl px-6">
-        <div class="wl-reveal mb-16 text-center">
+      <div class="relative mx-auto max-w-7xl px-6">
+        <div class="wl-reveal mb-12 md:mb-20 text-center">
           <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-blue-400">Cases reais</p>
-          <h2 class="mb-4 text-3xl font-bold tracking-tight md:text-5xl">Mesmo motor. Marcas unicas.</h2>
-          <p class="mx-auto max-w-lg text-base text-white/40">Cada plataforma abaixo e real e esta rodando agora. Clique para explorar.</p>
-        </div>
-      </div>
-
-      <!-- Carousel container -->
-      <div class="relative mx-auto max-w-7xl overflow-hidden" style="perspective: 1200px;">
-        <div class="relative flex items-center justify-center" style="height: 480px; height: clamp(380px, 60vw, 580px);">
-          <div
-            v-for="(s, idx) in showcaseBrands"
-            :key="s.slug"
-            class="absolute flex flex-col cursor-pointer overflow-hidden rounded-2xl border shadow-2xl transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)]"
-            :class="[
-              idx === activeShowcase
-                ? 'z-30 border-white/15 shadow-blue-400/5'
-                : 'z-10 border-white/5 md:hover:border-white/10',
-              idx !== activeShowcase ? 'hidden md:flex' : 'flex',
-            ]"
-            :style="getCardStyle(idx)"
-            @click="idx !== activeShowcase && (activeShowcase = idx, resetAutoRotate())"
-          >
-            <!-- Browser chrome -->
-            <div class="flex items-center gap-2 sm:gap-3 bg-[#1C1C1E] px-3 sm:px-4 py-2">
-              <div class="flex gap-1.5">
-                <div class="h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full bg-[#FF5F57]" />
-                <div class="h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full bg-[#FEBC2E]" />
-                <div class="h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full bg-[#28C840]" />
-              </div>
-              <div class="flex flex-1 items-center gap-2 rounded-md bg-[#2C2C2E] px-2 sm:px-3 py-1 min-w-0">
-                <UIcon name="i-lucide-lock" class="h-2.5 w-2.5 text-[#8E8E93] shrink-0" />
-                <span class="text-[9px] sm:text-[10px] text-[#8E8E93] truncate">{{ s.domain }}</span>
-              </div>
-              <div v-if="idx === activeShowcase" class="hidden items-center gap-1 rounded-full px-2 py-0.5 sm:flex shrink-0" :style="{ backgroundColor: `${s.accent}20` }">
-                <UIcon name="i-lucide-wand-2" class="h-2.5 w-2.5" :style="{ color: s.accent }" />
-                <span class="text-[8px] font-bold uppercase tracking-wider" :style="{ color: s.accent }">Gerado por IA</span>
-              </div>
-            </div>
-
-            <!-- Live iframe -->
-            <div class="relative flex-1 overflow-hidden" :style="{ backgroundColor: s.bg }">
-              <div class="absolute inset-0 flex items-center justify-center">
-                <div class="flex flex-col items-center gap-3">
-                  <div class="h-6 w-6 animate-spin rounded-full border-2 border-t-transparent" :style="{ borderColor: `${s.accent}40`, borderTopColor: 'transparent' }" />
-                  <span class="text-[10px]" :style="{ color: `${s.accent}60` }">{{ s.name }}</span>
-                </div>
-              </div>
-              <iframe
-                :src="`https://redentia.com.br/?brand=${s.slug}`"
-                class="relative h-full w-full border-0"
-                :title="`Preview ${s.name}`"
-                loading="lazy"
-                sandbox="allow-scripts allow-same-origin"
-                :style="{ pointerEvents: idx === activeShowcase ? 'auto' : 'none' }"
-              />
-              <!-- Click overlay only for non-active cards -->
-              <div
-                v-if="idx !== activeShowcase"
-                class="absolute inset-0 bg-black/30 transition-opacity duration-500"
-              />
-            </div>
-
-            <!-- Footer -->
-            <div class="flex items-center justify-between bg-[#1C1C1E] px-3 sm:px-4 py-2">
-              <div class="flex items-center gap-2">
-                <div class="flex gap-1">
-                  <div v-for="(color, i) in s.colors" :key="i" class="h-3 w-3 rounded-full ring-1 ring-white/10" :style="{ backgroundColor: color }" />
-                </div>
-                <span class="text-[10px] font-bold text-white/50">{{ s.name }}</span>
-              </div>
-              <span class="text-[9px] text-white/25">{{ s.font }} &middot; {{ s.heroVariant }}</span>
-            </div>
-          </div>
+          <h2 class="mb-4 text-4xl font-bold tracking-tight md:text-6xl">Mesmo motor.<br class="md:hidden" /> Marcas unicas.</h2>
+          <p class="mx-auto max-w-xl text-base md:text-lg text-white/40">Cada plataforma abaixo e real e esta rodando agora — gerada por IA em minutos.</p>
         </div>
 
-        <!-- Navigation with progress bars -->
-        <div class="mt-4 sm:mt-6 flex items-center justify-center gap-2 sm:gap-3">
+        <!-- Brand selector tabs -->
+        <div class="wl-reveal mb-8 md:mb-12 flex items-center justify-center gap-2 md:gap-3">
           <button
             v-for="(s, idx) in showcaseBrands"
-            :key="`dot-${s.slug}`"
-            class="group/dot flex items-center gap-2 rounded-full px-3 py-2 transition-all duration-300"
-            :class="idx === activeShowcase ? 'bg-white/10' : 'bg-transparent hover:bg-white/5'"
+            :key="`tab-${s.slug}`"
+            class="group relative flex items-center gap-2.5 rounded-xl px-4 py-2.5 md:px-5 md:py-3 transition-all duration-500"
+            :class="idx === activeShowcase ? 'bg-white/[0.08]' : 'bg-white/[0.02] hover:bg-white/[0.05]'"
             @click="activeShowcase = idx; resetAutoRotate()"
           >
-            <div class="relative h-2 overflow-hidden rounded-full transition-all duration-500" :style="{ width: idx === activeShowcase ? '32px' : '8px', backgroundColor: idx === activeShowcase ? 'transparent' : 'rgba(255,255,255,0.2)' }">
-              <!-- Background track -->
-              <div v-if="idx === activeShowcase" class="absolute inset-0 rounded-full" :style="{ backgroundColor: `${s.accent}30` }" />
-              <!-- Animated fill -->
-              <div
-                v-if="idx === activeShowcase"
-                class="absolute inset-y-0 left-0 rounded-full wl-progress-fill"
-                :style="{ backgroundColor: s.accent, animationDuration: `${CAROUSEL_INTERVAL}ms` }"
-              />
+            <div class="flex gap-1">
+              <div v-for="(color, ci) in s.colors.slice(0, 2)" :key="ci" class="h-2.5 w-2.5 rounded-full ring-1 ring-white/10 transition-transform duration-300" :class="idx === activeShowcase ? 'scale-110' : 'scale-100'" :style="{ backgroundColor: color }" />
             </div>
-            <span
-              class="text-[11px] font-semibold transition-all duration-300"
-              :class="idx === activeShowcase ? 'opacity-100' : 'opacity-0 w-0 overflow-hidden'"
-              :style="{ color: s.accent }"
-            >
-              {{ s.name }}
-            </span>
+            <span class="text-xs md:text-sm font-bold transition-colors duration-300" :style="{ color: idx === activeShowcase ? s.accent : 'rgba(255,255,255,0.4)' }">{{ s.name }}</span>
+            <!-- Active indicator bar -->
+            <div class="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 rounded-full transition-all duration-500" :style="{ width: idx === activeShowcase ? '60%' : '0%', backgroundColor: s.accent }" />
+            <!-- Progress overlay -->
+            <div v-if="idx === activeShowcase" class="absolute inset-0 rounded-xl overflow-hidden">
+              <div class="absolute bottom-0 left-0 h-0.5 rounded-full wl-progress-fill" :style="{ backgroundColor: `${s.accent}60`, animationDuration: `${CAROUSEL_INTERVAL}ms` }" />
+            </div>
           </button>
+        </div>
+
+        <!-- Main showcase card -->
+        <div class="wl-reveal relative mx-auto max-w-5xl">
+          <div
+            v-for="(s, idx) in showcaseBrands"
+            :key="`card-${s.slug}`"
+            class="transition-all duration-700 ease-[cubic-bezier(0.4,0,0.2,1)]"
+            :class="idx === activeShowcase ? 'relative opacity-100' : 'absolute inset-0 opacity-0 pointer-events-none'"
+            :style="{ transform: idx === activeShowcase ? 'translateY(0) scale(1)' : 'translateY(20px) scale(0.98)' }"
+          >
+            <!-- Glow behind card -->
+            <div class="absolute -inset-4 rounded-3xl blur-2xl opacity-20 transition-opacity duration-700" :style="{ backgroundColor: s.accent }" />
+
+            <!-- Browser frame -->
+            <div class="relative overflow-hidden rounded-2xl border border-white/10 shadow-2xl" :style="{ boxShadow: `0 25px 80px -20px ${s.accent}15` }">
+              <!-- Browser chrome -->
+              <div class="flex items-center gap-3 bg-[#1C1C1E] px-4 py-2.5 md:px-5 md:py-3">
+                <div class="flex gap-1.5">
+                  <div class="h-2.5 w-2.5 md:h-3 md:w-3 rounded-full bg-[#FF5F57]" />
+                  <div class="h-2.5 w-2.5 md:h-3 md:w-3 rounded-full bg-[#FEBC2E]" />
+                  <div class="h-2.5 w-2.5 md:h-3 md:w-3 rounded-full bg-[#28C840]" />
+                </div>
+                <div class="flex flex-1 items-center gap-2 rounded-lg bg-[#2C2C2E] px-3 py-1.5 min-w-0">
+                  <UIcon name="i-lucide-lock" class="h-3 w-3 text-[#8E8E93] shrink-0" />
+                  <span class="text-[10px] md:text-xs text-[#8E8E93] truncate">{{ s.domain }}</span>
+                </div>
+                <div class="hidden items-center gap-1.5 rounded-full px-3 py-1 sm:flex shrink-0" :style="{ backgroundColor: `${s.accent}15` }">
+                  <UIcon name="i-lucide-sparkles" class="h-3 w-3" :style="{ color: s.accent }" />
+                  <span class="text-[9px] font-bold uppercase tracking-wider" :style="{ color: s.accent }">Gerado por IA</span>
+                </div>
+              </div>
+
+              <!-- Live iframe -->
+              <div class="relative overflow-hidden" style="height: clamp(320px, 50vw, 600px);" :style="{ backgroundColor: s.bg }">
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <div class="flex flex-col items-center gap-3">
+                    <div class="h-6 w-6 animate-spin rounded-full border-2 border-t-transparent" :style="{ borderColor: `${s.accent}40`, borderTopColor: 'transparent' }" />
+                    <span class="text-[10px]" :style="{ color: `${s.accent}60` }">Carregando {{ s.name }}...</span>
+                  </div>
+                </div>
+                <iframe
+                  :src="`https://redentia.com.br/?brand=${s.slug}`"
+                  class="relative h-full w-full border-0"
+                  :title="`Preview ${s.name}`"
+                  loading="lazy"
+                  sandbox="allow-scripts allow-same-origin"
+                  style="pointer-events: auto;"
+                />
+              </div>
+            </div>
+
+            <!-- Brand info below card -->
+            <div class="mt-6 flex flex-col items-center gap-4 md:flex-row md:justify-between md:items-start md:gap-8 px-2">
+              <div class="flex items-center gap-4">
+                <div class="flex gap-1.5">
+                  <div v-for="(color, ci) in s.colors" :key="ci" class="h-5 w-5 rounded-full ring-1 ring-white/10" :style="{ backgroundColor: color }" />
+                </div>
+                <div>
+                  <p class="text-sm font-bold text-white/80">{{ s.name }}</p>
+                  <p class="text-xs text-white/30">{{ s.font }} · {{ s.style }}</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-6 text-center md:text-right">
+                <div>
+                  <p class="text-lg font-bold" :style="{ color: s.accent }">100%</p>
+                  <p class="text-[10px] text-white/30 uppercase tracking-wider">Customizado</p>
+                </div>
+                <div class="h-8 w-px bg-white/10" />
+                <div>
+                  <p class="text-lg font-bold" :style="{ color: s.accent }">&lt; 5min</p>
+                  <p class="text-[10px] text-white/30 uppercase tracking-wider">Setup por IA</p>
+                </div>
+                <div class="h-8 w-px bg-white/10" />
+                <div>
+                  <p class="text-lg font-bold" :style="{ color: s.accent }">PWA</p>
+                  <p class="text-[10px] text-white/30 uppercase tracking-wider">App nativo</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -1388,34 +1392,6 @@ onMounted(() => {
 onUnmounted(() => {
   stopAutoRotate()
 })
-
-function getCardStyle(idx: number) {
-  const diff = idx - activeShowcase.value
-  const isActive = diff === 0
-
-  if (isActive) {
-    return {
-      width: '720px',
-      maxWidth: '92vw',
-      height: 'clamp(340px, 55vw, 540px)',
-      transform: 'translateX(0) scale(1) rotateY(0deg)',
-      opacity: '1',
-      filter: 'brightness(1)',
-    }
-  }
-
-  const side = diff < 0 ? -1 : 1
-  const wrappedSide = Math.abs(diff) === 2 ? -side : side
-
-  return {
-    width: '600px',
-    maxWidth: '75vw',
-    height: '480px',
-    transform: `translateX(${wrappedSide * 72}%) scale(0.82) rotateY(${wrappedSide * -8}deg)`,
-    opacity: '0.5',
-    filter: 'brightness(0.6)',
-  }
-}
 
 const aiToggleFeatures = [
   { label: 'Calculadoras', on: true },
