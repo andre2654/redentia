@@ -637,24 +637,24 @@
       <div class="relative mx-auto max-w-6xl px-6">
         <div class="wl-reveal mb-10 text-center">
           <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-blue-400">Dados em tempo real</p>
-          <h2 class="mb-4 text-3xl font-bold tracking-tight md:text-5xl">A bolsa inteira na palma da mao</h2>
-          <p class="mx-auto max-w-lg text-base text-white/40">Cotacoes, indicadores e analise fundamentalista de 800+ ativos brasileiros. <span class="text-white/60">Os dados abaixo sao reais.</span></p>
+          <h2 class="mb-4 text-3xl font-bold tracking-tight md:text-5xl">Seus seguidores confiam porque<br />os dados sao reais</h2>
+          <p class="mx-auto max-w-lg text-base text-white/40">800+ ativos brasileiros com cotacoes ao vivo, indicadores fundamentalistas e analise completa. <span class="text-white/60">Tudo abaixo e real — nao mockup.</span></p>
         </div>
 
         <!-- Category tabs -->
-        <div class="wl-reveal mb-6 flex items-center justify-center gap-1.5">
+        <div class="wl-reveal mb-8 flex items-center justify-center gap-2 md:gap-3">
           <button
             v-for="cat in marketCategories"
             :key="cat.key"
-            class="flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold transition-all duration-300"
+            class="flex items-center gap-2.5 rounded-xl px-5 py-3 md:px-6 md:py-3.5 text-sm font-bold transition-all duration-300"
             :class="activeMarketCat === cat.key
               ? 'bg-blue-400 text-black shadow-lg shadow-blue-400/20'
               : 'bg-white/[0.04] text-white/40 hover:bg-white/[0.08] hover:text-white/60'"
             @click="activeMarketCat = cat.key"
           >
-            <UIcon :name="cat.icon" class="h-3.5 w-3.5" />
+            <UIcon :name="cat.icon" class="h-4 w-4" />
             {{ cat.label }}
-            <span class="rounded-full px-1.5 py-0.5 text-[9px] font-bold" :class="activeMarketCat === cat.key ? 'bg-black/20 text-black/60' : 'bg-white/[0.06] text-white/20'">
+            <span class="rounded-full px-2 py-0.5 text-[10px] font-bold" :class="activeMarketCat === cat.key ? 'bg-black/20 text-black/60' : 'bg-white/[0.06] text-white/20'">
               {{ cat.count }}
             </span>
           </button>
@@ -672,8 +672,9 @@
               <div
                 v-for="ticker in cat.topTickers.value"
                 :key="`${n}-${ticker.symbol}`"
-                class="group flex shrink-0 items-center gap-5 border-r border-white/[0.04] px-7 py-5 transition-colors hover:bg-white/[0.02]"
+                class="group flex shrink-0 items-center gap-4 border-r border-white/[0.04] px-7 py-5 transition-colors hover:bg-white/[0.02]"
               >
+                <img v-if="ticker.logo" :src="ticker.logo" :alt="ticker.symbol" class="h-11 w-11 rounded-xl ring-1 ring-white/[0.06] bg-white/[0.03] p-1.5 shrink-0" />
                 <div class="flex flex-col gap-0.5">
                   <div class="flex items-center gap-2.5">
                     <span class="text-base font-bold text-white/90">{{ ticker.symbol }}</span>
@@ -706,8 +707,9 @@
               <div
                 v-for="ticker in cat.bottomTickers.value"
                 :key="`${n}-${ticker.symbol}`"
-                class="group flex shrink-0 items-center gap-5 border-r border-white/[0.04] px-7 py-5 transition-colors hover:bg-white/[0.02]"
+                class="group flex shrink-0 items-center gap-4 border-r border-white/[0.04] px-7 py-5 transition-colors hover:bg-white/[0.02]"
               >
+                <img v-if="ticker.logo" :src="ticker.logo" :alt="ticker.symbol" class="h-11 w-11 rounded-xl ring-1 ring-white/[0.06] bg-white/[0.03] p-1.5 shrink-0" />
                 <div class="flex flex-col gap-0.5">
                   <div class="flex items-center gap-2.5">
                     <span class="text-base font-bold text-white/90">{{ ticker.symbol }}</span>
@@ -870,6 +872,48 @@
                 <div class="flex-1 border-l border-white/[0.04] p-4 text-center">
                   <p class="text-lg font-bold tabular-nums">12</p>
                   <p class="text-[9px] text-white/25">Pagamentos</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Open Finance — Em breve -->
+        <div class="wl-reveal mt-10 relative overflow-hidden rounded-2xl border border-emerald-400/15 bg-[#0a0a0f] p-6 md:p-8" style="box-shadow: 0 0 60px rgba(52,211,153,0.04);">
+          <!-- Blurred overlay effect -->
+          <div class="pointer-events-none absolute right-0 top-0 h-full w-1/2 bg-gradient-to-l from-emerald-400/[0.03] to-transparent" />
+
+          <div class="relative flex flex-col md:flex-row md:items-center gap-6">
+            <!-- Left: text + badge -->
+            <div class="flex-1 min-w-0">
+              <div class="mb-3 inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1.5">
+                <span class="relative flex h-1.5 w-1.5">
+                  <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                  <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                </span>
+                <span class="text-[10px] font-bold uppercase tracking-widest text-emerald-400">Em breve</span>
+              </div>
+              <h3 class="mb-2 text-xl font-bold md:text-2xl">Open Finance integrado</h3>
+              <p class="text-sm text-white/35 max-w-md">Seus seguidores conectam bancos, cartoes e corretoras em um so lugar — com a sua marca. <span class="text-white/50 font-medium">Retencao vai a outro nivel.</span></p>
+            </div>
+
+            <!-- Right: connected banks preview -->
+            <div class="flex items-center gap-3 md:gap-4 shrink-0">
+              <div class="flex -space-x-3">
+                <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-[#820ad1]/20 text-[10px] font-black text-[#820ad1] ring-2 ring-[#0a0a0f] z-30">NU</div>
+                <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-500/20 text-[10px] font-black text-blue-400 ring-2 ring-[#0a0a0f] z-20">XP</div>
+                <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-500/20 text-[10px] font-black text-amber-400 ring-2 ring-[#0a0a0f] z-10">BB</div>
+                <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-white/[0.04] text-[10px] font-bold text-white/20 ring-2 ring-[#0a0a0f]">+8</div>
+              </div>
+
+              <div class="hidden md:flex flex-col gap-1">
+                <div class="flex items-center gap-1.5">
+                  <div class="h-1.5 w-1.5 rounded-full bg-emerald-400/60" />
+                  <span class="text-[10px] text-white/30">Bacen regulamentado</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <div class="h-1.5 w-1.5 rounded-full bg-emerald-400/60" />
+                  <span class="text-[10px] text-white/30">Zero dev necessario</span>
                 </div>
               </div>
             </div>
@@ -1909,46 +1953,46 @@ function unwrapApi<T>(payload: any): T[] {
 
 // ── Fallback tickers per category ──
 const fallbackStocks = [
-  { symbol: 'PETR4', name: 'Petrobras PN', price: 38.72, change: 2.34 },
-  { symbol: 'VALE3', name: 'Vale ON', price: 61.45, change: -1.18 },
-  { symbol: 'ITUB4', name: 'Itau Unibanco PN', price: 32.90, change: 0.85 },
-  { symbol: 'WEGE3', name: 'WEG ON', price: 44.15, change: 3.12 },
-  { symbol: 'BBAS3', name: 'Banco do Brasil ON', price: 28.33, change: 1.47 },
-  { symbol: 'ABEV3', name: 'Ambev ON', price: 13.22, change: -0.45 },
-  { symbol: 'RENT3', name: 'Localiza ON', price: 55.80, change: 2.08 },
-  { symbol: 'MGLU3', name: 'Magazine Luiza ON', price: 12.65, change: -3.22 },
-  { symbol: 'BBDC4', name: 'Bradesco PN', price: 15.48, change: 0.92 },
-  { symbol: 'SUZB3', name: 'Suzano ON', price: 52.30, change: 1.65 },
+  { symbol: 'PETR4', name: 'Petrobras PN', price: 38.72, change: 2.34, logo: 'https://icons.brapi.dev/icons/PETR4.svg' },
+  { symbol: 'VALE3', name: 'Vale ON', price: 61.45, change: -1.18, logo: 'https://icons.brapi.dev/icons/VALE3.svg' },
+  { symbol: 'ITUB4', name: 'Itau Unibanco PN', price: 32.90, change: 0.85, logo: 'https://icons.brapi.dev/icons/ITUB4.svg' },
+  { symbol: 'WEGE3', name: 'WEG ON', price: 44.15, change: 3.12, logo: 'https://icons.brapi.dev/icons/WEGE3.svg' },
+  { symbol: 'BBAS3', name: 'Banco do Brasil ON', price: 28.33, change: 1.47, logo: 'https://icons.brapi.dev/icons/BBAS3.svg' },
+  { symbol: 'ABEV3', name: 'Ambev ON', price: 13.22, change: -0.45, logo: 'https://icons.brapi.dev/icons/ABEV3.svg' },
+  { symbol: 'RENT3', name: 'Localiza ON', price: 55.80, change: 2.08, logo: 'https://icons.brapi.dev/icons/RENT3.svg' },
+  { symbol: 'MGLU3', name: 'Magazine Luiza ON', price: 12.65, change: -3.22, logo: 'https://icons.brapi.dev/icons/MGLU3.svg' },
+  { symbol: 'BBDC4', name: 'Bradesco PN', price: 15.48, change: 0.92, logo: 'https://icons.brapi.dev/icons/BBDC4.svg' },
+  { symbol: 'SUZB3', name: 'Suzano ON', price: 52.30, change: 1.65, logo: 'https://icons.brapi.dev/icons/SUZB3.svg' },
 ]
 const fallbackFIIs = [
-  { symbol: 'MXRF11', name: 'Maxi Renda', price: 10.89, change: 0.42 },
-  { symbol: 'HGLG11', name: 'CSHG Logistica', price: 158.20, change: -0.31 },
-  { symbol: 'XPLG11', name: 'XP Log', price: 95.40, change: 1.15 },
-  { symbol: 'KNRI11', name: 'Kinea Renda', price: 133.50, change: 0.28 },
-  { symbol: 'VISC11', name: 'Vinci Shopping', price: 105.80, change: -0.67 },
-  { symbol: 'HGBS11', name: 'Hedge Brasil Shopping', price: 198.30, change: 0.55 },
-  { symbol: 'BTLG11', name: 'BTG Logistico', price: 92.10, change: 1.22 },
-  { symbol: 'PVBI11', name: 'VBI Prime', price: 78.60, change: -0.18 },
+  { symbol: 'MXRF11', name: 'Maxi Renda', price: 10.89, change: 0.42, logo: 'https://icons.brapi.dev/icons/MXRF11.svg' },
+  { symbol: 'HGLG11', name: 'CSHG Logistica', price: 158.20, change: -0.31, logo: 'https://icons.brapi.dev/icons/HGLG11.svg' },
+  { symbol: 'XPLG11', name: 'XP Log', price: 95.40, change: 1.15, logo: 'https://icons.brapi.dev/icons/XPLG11.svg' },
+  { symbol: 'KNRI11', name: 'Kinea Renda', price: 133.50, change: 0.28, logo: 'https://icons.brapi.dev/icons/KNRI11.svg' },
+  { symbol: 'VISC11', name: 'Vinci Shopping', price: 105.80, change: -0.67, logo: 'https://icons.brapi.dev/icons/VISC11.svg' },
+  { symbol: 'HGBS11', name: 'Hedge Brasil Shopping', price: 198.30, change: 0.55, logo: 'https://icons.brapi.dev/icons/HGBS11.svg' },
+  { symbol: 'BTLG11', name: 'BTG Logistico', price: 92.10, change: 1.22, logo: 'https://icons.brapi.dev/icons/BTLG11.svg' },
+  { symbol: 'PVBI11', name: 'VBI Prime', price: 78.60, change: -0.18, logo: 'https://icons.brapi.dev/icons/PVBI11.svg' },
 ]
 const fallbackETFs = [
-  { symbol: 'BOVA11', name: 'iShares Ibovespa', price: 118.45, change: 1.08 },
-  { symbol: 'IVVB11', name: 'iShares S&P 500', price: 302.80, change: 2.15 },
-  { symbol: 'SMAL11', name: 'iShares Small Cap', price: 98.30, change: -1.42 },
-  { symbol: 'HASH11', name: 'Hashdex Crypto', price: 45.60, change: 4.33 },
-  { symbol: 'XFIX11', name: 'XP IFIX', price: 9.85, change: 0.22 },
-  { symbol: 'NASD11', name: 'Trend Nasdaq', price: 15.20, change: 1.87 },
-  { symbol: 'GOLD11', name: 'Trend Ouro', price: 12.40, change: 0.95 },
-  { symbol: 'DIVO11', name: 'It Now Dividendos', price: 72.30, change: -0.38 },
+  { symbol: 'BOVA11', name: 'iShares Ibovespa', price: 118.45, change: 1.08, logo: 'https://icons.brapi.dev/icons/BOVA11.svg' },
+  { symbol: 'IVVB11', name: 'iShares S&P 500', price: 302.80, change: 2.15, logo: 'https://icons.brapi.dev/icons/IVVB11.svg' },
+  { symbol: 'SMAL11', name: 'iShares Small Cap', price: 98.30, change: -1.42, logo: 'https://icons.brapi.dev/icons/SMAL11.svg' },
+  { symbol: 'HASH11', name: 'Hashdex Crypto', price: 45.60, change: 4.33, logo: 'https://icons.brapi.dev/icons/HASH11.svg' },
+  { symbol: 'XFIX11', name: 'XP IFIX', price: 9.85, change: 0.22, logo: 'https://icons.brapi.dev/icons/XFIX11.svg' },
+  { symbol: 'NASD11', name: 'Trend Nasdaq', price: 15.20, change: 1.87, logo: 'https://icons.brapi.dev/icons/NASD11.svg' },
+  { symbol: 'GOLD11', name: 'Trend Ouro', price: 12.40, change: 0.95, logo: 'https://icons.brapi.dev/icons/GOLD11.svg' },
+  { symbol: 'DIVO11', name: 'It Now Dividendos', price: 72.30, change: -0.38, logo: 'https://icons.brapi.dev/icons/DIVO11.svg' },
 ]
 const fallbackBDRs = [
-  { symbol: 'AAPL34', name: 'Apple', price: 52.80, change: 1.45 },
-  { symbol: 'MSFT34', name: 'Microsoft', price: 78.30, change: 0.92 },
-  { symbol: 'AMZO34', name: 'Amazon', price: 45.10, change: -0.68 },
-  { symbol: 'GOGL34', name: 'Alphabet', price: 62.40, change: 2.13 },
-  { symbol: 'NVDC34', name: 'NVIDIA', price: 38.90, change: 3.55 },
-  { symbol: 'TSLA34', name: 'Tesla', price: 28.70, change: -2.10 },
-  { symbol: 'META34', name: 'Meta', price: 41.20, change: 1.78 },
-  { symbol: 'NFLX34', name: 'Netflix', price: 22.50, change: 0.65 },
+  { symbol: 'AAPL34', name: 'Apple', price: 52.80, change: 1.45, logo: 'https://icons.brapi.dev/icons/AAPL34.svg' },
+  { symbol: 'MSFT34', name: 'Microsoft', price: 78.30, change: 0.92, logo: 'https://icons.brapi.dev/icons/MSFT34.svg' },
+  { symbol: 'AMZO34', name: 'Amazon', price: 45.10, change: -0.68, logo: 'https://icons.brapi.dev/icons/AMZO34.svg' },
+  { symbol: 'GOGL34', name: 'Alphabet', price: 62.40, change: 2.13, logo: 'https://icons.brapi.dev/icons/GOGL34.svg' },
+  { symbol: 'NVDC34', name: 'NVIDIA', price: 38.90, change: 3.55, logo: 'https://icons.brapi.dev/icons/NVDC34.svg' },
+  { symbol: 'TSLA34', name: 'Tesla', price: 28.70, change: -2.10, logo: 'https://icons.brapi.dev/icons/TSLA34.svg' },
+  { symbol: 'META34', name: 'Meta', price: 41.20, change: 1.78, logo: 'https://icons.brapi.dev/icons/META34.svg' },
+  { symbol: 'NFLX34', name: 'Netflix', price: 22.50, change: 0.65, logo: 'https://icons.brapi.dev/icons/NFLX34.svg' },
 ]
 
 // ── Fetch all categories ──
@@ -1994,6 +2038,7 @@ function mapApiTickers(data: Ref<ApiAsset[] | null>, fallback: typeof fallbackSt
       name: a.name ?? '',
       price: a.market_price ?? 0,
       change: a.change_percent ?? 0,
+      logo: a.logo || `https://icons.brapi.dev/icons/${a.ticker}.svg`,
     }))
   })
 }
