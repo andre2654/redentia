@@ -391,7 +391,7 @@
     </section>
 
     <!-- ========== SHOWCASE — CAROUSEL CARDS ========== -->
-    <section id="showcase" class="relative border-t border-white/[0.04] py-20 md:py-28">
+    <section id="showcase" class="relative border-t border-white/[0.04] py-20 md:py-28 overflow-hidden">
       <div class="pointer-events-none absolute left-0 top-1/2 h-[500px] w-[500px] -translate-y-1/2 rounded-full bg-blue-400/5 blur-[140px]" />
 
       <div class="relative mx-auto max-w-6xl px-6">
@@ -403,8 +403,8 @@
       </div>
 
       <!-- Carousel container -->
-      <div class="relative mx-auto max-w-7xl" style="perspective: 1200px;">
-        <div class="relative flex items-center justify-center" style="height: 580px;">
+      <div class="relative mx-auto max-w-7xl overflow-hidden" style="perspective: 1200px;">
+        <div class="relative flex items-center justify-center" style="height: 480px; height: clamp(380px, 60vw, 580px);">
           <div
             v-for="(s, idx) in showcaseBrands"
             :key="s.slug"
@@ -412,23 +412,24 @@
             :class="[
               idx === activeShowcase
                 ? 'z-30 border-white/15 shadow-blue-400/5'
-                : 'z-10 border-white/5 hover:border-white/10',
+                : 'z-10 border-white/5 md:hover:border-white/10',
+              idx !== activeShowcase ? 'hidden md:flex' : 'flex',
             ]"
             :style="getCardStyle(idx)"
             @click="idx !== activeShowcase && (activeShowcase = idx, resetAutoRotate())"
           >
             <!-- Browser chrome -->
-            <div class="flex items-center gap-3 bg-[#1C1C1E] px-4 py-2">
+            <div class="flex items-center gap-2 sm:gap-3 bg-[#1C1C1E] px-3 sm:px-4 py-2">
               <div class="flex gap-1.5">
-                <div class="h-2.5 w-2.5 rounded-full bg-[#FF5F57]" />
-                <div class="h-2.5 w-2.5 rounded-full bg-[#FEBC2E]" />
-                <div class="h-2.5 w-2.5 rounded-full bg-[#28C840]" />
+                <div class="h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full bg-[#FF5F57]" />
+                <div class="h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full bg-[#FEBC2E]" />
+                <div class="h-2 w-2 sm:h-2.5 sm:w-2.5 rounded-full bg-[#28C840]" />
               </div>
-              <div class="flex flex-1 items-center gap-2 rounded-md bg-[#2C2C2E] px-3 py-1">
-                <UIcon name="i-lucide-lock" class="h-2.5 w-2.5 text-[#8E8E93]" />
-                <span class="text-[10px] text-[#8E8E93]">{{ s.domain }}</span>
+              <div class="flex flex-1 items-center gap-2 rounded-md bg-[#2C2C2E] px-2 sm:px-3 py-1 min-w-0">
+                <UIcon name="i-lucide-lock" class="h-2.5 w-2.5 text-[#8E8E93] shrink-0" />
+                <span class="text-[9px] sm:text-[10px] text-[#8E8E93] truncate">{{ s.domain }}</span>
               </div>
-              <div v-if="idx === activeShowcase" class="hidden items-center gap-1 rounded-full px-2 py-0.5 sm:flex" :style="{ backgroundColor: `${s.accent}20` }">
+              <div v-if="idx === activeShowcase" class="hidden items-center gap-1 rounded-full px-2 py-0.5 sm:flex shrink-0" :style="{ backgroundColor: `${s.accent}20` }">
                 <UIcon name="i-lucide-wand-2" class="h-2.5 w-2.5" :style="{ color: s.accent }" />
                 <span class="text-[8px] font-bold uppercase tracking-wider" :style="{ color: s.accent }">Gerado por IA</span>
               </div>
@@ -458,7 +459,7 @@
             </div>
 
             <!-- Footer -->
-            <div class="flex items-center justify-between bg-[#1C1C1E] px-4 py-2">
+            <div class="flex items-center justify-between bg-[#1C1C1E] px-3 sm:px-4 py-2">
               <div class="flex items-center gap-2">
                 <div class="flex gap-1">
                   <div v-for="(color, i) in s.colors" :key="i" class="h-3 w-3 rounded-full ring-1 ring-white/10" :style="{ backgroundColor: color }" />
@@ -471,7 +472,7 @@
         </div>
 
         <!-- Navigation with progress bars -->
-        <div class="mt-6 flex items-center justify-center gap-3">
+        <div class="mt-4 sm:mt-6 flex items-center justify-center gap-2 sm:gap-3">
           <button
             v-for="(s, idx) in showcaseBrands"
             :key="`dot-${s.slug}`"
@@ -1370,8 +1371,8 @@ function getCardStyle(idx: number) {
   if (isActive) {
     return {
       width: '720px',
-      maxWidth: '90vw',
-      height: '540px',
+      maxWidth: '92vw',
+      height: 'clamp(340px, 55vw, 540px)',
       transform: 'translateX(0) scale(1) rotateY(0deg)',
       opacity: '1',
       filter: 'brightness(1)',
