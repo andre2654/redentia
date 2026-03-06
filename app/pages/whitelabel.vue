@@ -556,26 +556,26 @@
 
       <div class="relative mx-auto max-w-5xl px-6">
         <div class="wl-reveal mb-16 text-center">
-          <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-blue-400">Funcionalidades</p>
-          <h2 class="mb-4 text-3xl font-bold tracking-tight md:text-5xl">Tudo incluso. Zero dev.</h2>
-          <p class="mx-auto max-w-lg text-base text-white/40">Mais de 40 funcionalidades prontas para seus seguidores usarem.</p>
+          <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-blue-400">Tudo pronto pra usar</p>
+          <h2 class="mb-4 text-3xl font-bold tracking-tight md:text-5xl">40+ ferramentas que mantem<br />seus seguidores engajados</h2>
+          <p class="mx-auto max-w-lg text-base text-white/40">Cotacoes, carteira, calculadoras, glossario, chat IA — tudo com a sua marca, sem voce precisar construir nada.</p>
         </div>
 
-        <!-- Feature count highlight -->
+        <!-- Impact metrics -->
         <div class="wl-reveal mb-12 flex items-center justify-center gap-8 md:gap-12">
           <div class="text-center">
             <p class="text-4xl font-extrabold text-blue-400 md:text-5xl">40+</p>
-            <p class="mt-1 text-[11px] uppercase tracking-widest text-white/25">Features</p>
+            <p class="mt-1 text-[11px] uppercase tracking-widest text-white/25">Ferramentas prontas</p>
           </div>
           <div class="h-10 w-px bg-white/[0.06]" />
           <div class="text-center">
             <p class="text-4xl font-extrabold text-white/80 md:text-5xl">800+</p>
-            <p class="mt-1 text-[11px] uppercase tracking-widest text-white/25">Ativos</p>
+            <p class="mt-1 text-[11px] uppercase tracking-widest text-white/25">Ativos cobertos</p>
           </div>
           <div class="h-10 w-px bg-white/[0.06]" />
           <div class="text-center">
-            <p class="text-4xl font-extrabold text-white/80 md:text-5xl">350+</p>
-            <p class="mt-1 text-[11px] uppercase tracking-widest text-white/25">Termos</p>
+            <p class="text-4xl font-extrabold text-white/80 md:text-5xl">24/7</p>
+            <p class="mt-1 text-[11px] uppercase tracking-widest text-white/25">Disponivel sempre</p>
           </div>
         </div>
       </div>
@@ -1120,17 +1120,17 @@
               <div class="space-y-2">
                 <div class="flex items-center gap-2">
                   <div class="h-1.5 w-1.5 rounded-full bg-blue-400 ai-terminal-pulse" />
-                  <span class="text-[10px] text-white/30 font-mono">Analisando thumbnails...</span>
+                  <span class="text-[10px] text-white/30 font-mono">Identidade visual mapeada</span>
                   <UIcon name="i-lucide-check" class="h-3 w-3 text-emerald-400/60" />
                 </div>
                 <div class="flex items-center gap-2">
                   <div class="h-1.5 w-1.5 rounded-full bg-blue-400 ai-terminal-pulse" style="animation-delay: 0.5s;" />
-                  <span class="text-[10px] text-white/30 font-mono">Extraindo paleta de cores...</span>
+                  <span class="text-[10px] text-white/30 font-mono">Tom de voz capturado</span>
                   <UIcon name="i-lucide-check" class="h-3 w-3 text-emerald-400/60" />
                 </div>
                 <div class="flex items-center gap-2">
                   <div class="h-1.5 w-1.5 rounded-full bg-blue-400 ai-terminal-pulse" style="animation-delay: 1s;" />
-                  <span class="text-[10px] text-white/30 font-mono">Detectando tom de voz...</span>
+                  <span class="text-[10px] text-white/30 font-mono">Gerando sua plataforma...</span>
                   <UIcon name="i-lucide-loader-2" class="h-3 w-3 text-blue-400/40 animate-spin" />
                 </div>
               </div>
@@ -1145,7 +1145,7 @@
                 <div class="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-400 text-sm font-bold text-black">1</div>
                 <h3 class="text-base font-bold">Cole o link</h3>
               </div>
-              <p class="text-[13px] leading-relaxed text-white/35">Nossa IA analisa thumbnails, cores, tipografia, bordoes e como voce fala com seu publico.</p>
+              <p class="text-[13px] leading-relaxed text-white/35">A IA mapeia sua marca — cores, fonte, tom de voz — e gera tudo automaticamente.</p>
             </div>
           </div>
 
@@ -1199,55 +1199,44 @@
                 <div class="flex h-8 w-8 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-sm font-bold text-white/60">2</div>
                 <h3 class="text-base font-bold">Revisamos juntos</h3>
               </div>
-              <p class="text-[13px] leading-relaxed text-white/35">Paleta, fonte, tom de voz, textos e features gerados pela IA. Voce ajusta o que quiser.</p>
+              <p class="text-[13px] leading-relaxed text-white/35">Voce aprova cores, textos e funcionalidades. Ajusta o que quiser antes de lancar.</p>
             </div>
           </div>
 
-          <!-- Step 3: Lancamento -->
+          <!-- Step 3: Monetize -->
           <div class="wl-reveal group relative overflow-hidden rounded-2xl border border-white/[0.06] bg-[#0a0a0f]" style="transition-delay: 200ms;">
             <!-- Visual preview -->
             <div class="relative border-b border-white/[0.04] p-5">
-              <!-- Deploy terminal mockup -->
-              <div class="space-y-2 font-mono text-[10px]">
-                <div class="flex items-center gap-2">
-                  <UIcon name="i-lucide-check-circle" class="h-3 w-3 text-emerald-400/70" />
-                  <span class="text-emerald-400/50">Build completo</span>
+              <!-- Revenue mockup -->
+              <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="text-[10px] text-white/30">Seu dominio</span>
+                  <span class="text-[10px] font-bold text-emerald-400 flex items-center gap-1">
+                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                    LIVE
+                  </span>
                 </div>
-                <div class="flex items-center gap-2">
-                  <UIcon name="i-lucide-check-circle" class="h-3 w-3 text-emerald-400/70" />
-                  <span class="text-emerald-400/50">PWA configurada</span>
+                <div class="rounded-lg bg-white/[0.03] p-3 ring-1 ring-white/[0.06]">
+                  <p class="text-[9px] text-white/25 mb-1">Receita do mes</p>
+                  <p class="text-xl font-extrabold text-emerald-400 tabular-nums">R$ 39.800</p>
+                  <div class="mt-2 flex items-center gap-1.5">
+                    <UIcon name="i-lucide-trending-up" class="h-3 w-3 text-emerald-400/60" />
+                    <span class="text-[9px] text-emerald-400/60 font-bold">+2.000 assinantes</span>
+                  </div>
                 </div>
-                <div class="flex items-center gap-2">
-                  <UIcon name="i-lucide-check-circle" class="h-3 w-3 text-emerald-400/70" />
-                  <span class="text-emerald-400/50">SEO otimizado</span>
+                <div class="flex items-center gap-2 text-[10px]">
+                  <UIcon name="i-lucide-users" class="h-3 w-3 text-white/20" />
+                  <span class="text-white/30">312 novos usuarios hoje</span>
                 </div>
-                <div class="flex items-center gap-2">
-                  <UIcon name="i-lucide-check-circle" class="h-3 w-3 text-emerald-400/70" />
-                  <span class="text-emerald-400/50">SSL ativo</span>
-                </div>
-                <div class="h-px bg-white/[0.04] my-1" />
-                <div class="flex items-center gap-2">
-                  <UIcon name="i-lucide-globe" class="h-3 w-3 text-blue-400" />
-                  <span class="text-blue-400/70">suaplataforma.com.br</span>
-                  <span class="text-emerald-400 ml-auto">LIVE</span>
-                </div>
-              </div>
-              <!-- Confetti-like dots -->
-              <div class="mt-4 flex items-center justify-center gap-1">
-                <div class="h-1.5 w-1.5 rounded-full bg-blue-400/40" />
-                <div class="h-1.5 w-1.5 rounded-full bg-emerald-400/40" />
-                <div class="h-1.5 w-1.5 rounded-full bg-violet-400/40" />
-                <div class="h-1.5 w-1.5 rounded-full bg-amber-400/40" />
-                <div class="h-1.5 w-1.5 rounded-full bg-blue-400/40" />
               </div>
             </div>
             <!-- Text content -->
             <div class="p-5">
               <div class="mb-3 flex items-center gap-3">
                 <div class="flex h-8 w-8 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-sm font-bold text-white/60">3</div>
-                <h3 class="text-base font-bold">Lancamento</h3>
+                <h3 class="text-base font-bold">Monetize</h3>
               </div>
-              <p class="text-[13px] leading-relaxed text-white/35">Deploy com dominio customizado, PWA pronta, SEO configurado. Monetize desde o dia 1.</p>
+              <p class="text-[13px] leading-relaxed text-white/35">Plataforma no ar com seu dominio. Seus seguidores assinam e a receita cai na sua conta.</p>
             </div>
           </div>
         </div>
@@ -1270,47 +1259,6 @@
         <div class="wl-reveal mt-10 flex items-center justify-center gap-2 rounded-2xl border border-blue-400/10 bg-blue-400/[0.04] px-6 py-4">
           <UIcon name="i-lucide-zap" class="h-5 w-5 text-blue-400" />
           <p class="text-sm font-semibold text-blue-300">Zero trabalho tecnico. A IA faz o trabalho pesado.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ========== FAQ ========== -->
-    <section class="relative border-t border-white/[0.04] px-6 py-20 md:py-28">
-      <div class="pointer-events-none absolute right-0 top-1/3 h-[400px] w-[400px] rounded-full bg-blue-400/5 blur-[140px]" />
-
-      <div class="relative mx-auto max-w-3xl">
-        <div class="wl-reveal mb-12 text-center">
-          <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-blue-400">Duvidas frequentes</p>
-          <h2 class="mb-4 text-3xl font-bold tracking-tight md:text-5xl">Perguntas & Respostas</h2>
-        </div>
-
-        <div class="wl-reveal space-y-3">
-          <div
-            v-for="(faq, fIdx) in faqs"
-            :key="fIdx"
-            class="group overflow-hidden rounded-2xl border transition-all duration-300"
-            :class="openFaq === fIdx ? 'border-blue-400/20 bg-blue-400/[0.03]' : 'border-white/[0.06] bg-white/[0.02] hover:border-white/10'"
-          >
-            <button
-              class="flex w-full items-center justify-between gap-4 px-6 py-5 text-left"
-              @click="openFaq = openFaq === fIdx ? -1 : fIdx"
-            >
-              <span class="text-sm font-semibold md:text-base" :class="openFaq === fIdx ? 'text-white' : 'text-white/70'">{{ faq.q }}</span>
-              <UIcon
-                name="i-lucide-chevron-down"
-                class="h-5 w-5 shrink-0 transition-transform duration-300"
-                :class="openFaq === fIdx ? 'rotate-180 text-blue-400' : 'text-white/20'"
-              />
-            </button>
-            <div
-              class="grid transition-all duration-300"
-              :style="{ gridTemplateRows: openFaq === fIdx ? '1fr' : '0fr' }"
-            >
-              <div class="overflow-hidden">
-                <p class="px-6 pb-5 text-sm leading-relaxed text-white/40">{{ faq.a }}</p>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </section>
@@ -1395,6 +1343,47 @@
 
         <div class="wl-reveal mt-8 text-center">
           <p class="text-xs text-white/30">Apos as {{ earlyAdopterSpots }} vagas, os precos sobem para a tabela cheia.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== FAQ ========== -->
+    <section class="relative border-t border-white/[0.04] px-6 py-20 md:py-28">
+      <div class="pointer-events-none absolute right-0 top-1/3 h-[400px] w-[400px] rounded-full bg-blue-400/5 blur-[140px]" />
+
+      <div class="relative mx-auto max-w-3xl">
+        <div class="wl-reveal mb-12 text-center">
+          <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-blue-400">Duvidas frequentes</p>
+          <h2 class="mb-4 text-3xl font-bold tracking-tight md:text-5xl">Perguntas & Respostas</h2>
+        </div>
+
+        <div class="wl-reveal space-y-3">
+          <div
+            v-for="(faq, fIdx) in faqs"
+            :key="fIdx"
+            class="group overflow-hidden rounded-2xl border transition-all duration-300"
+            :class="openFaq === fIdx ? 'border-blue-400/20 bg-blue-400/[0.03]' : 'border-white/[0.06] bg-white/[0.02] hover:border-white/10'"
+          >
+            <button
+              class="flex w-full items-center justify-between gap-4 px-6 py-5 text-left"
+              @click="openFaq = openFaq === fIdx ? -1 : fIdx"
+            >
+              <span class="text-sm font-semibold md:text-base" :class="openFaq === fIdx ? 'text-white' : 'text-white/70'">{{ faq.q }}</span>
+              <UIcon
+                name="i-lucide-chevron-down"
+                class="h-5 w-5 shrink-0 transition-transform duration-300"
+                :class="openFaq === fIdx ? 'rotate-180 text-blue-400' : 'text-white/20'"
+              />
+            </button>
+            <div
+              class="grid transition-all duration-300"
+              :style="{ gridTemplateRows: openFaq === fIdx ? '1fr' : '0fr' }"
+            >
+              <div class="overflow-hidden">
+                <p class="px-6 pb-5 text-sm leading-relaxed text-white/40">{{ faq.a }}</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
