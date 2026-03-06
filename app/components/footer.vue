@@ -154,6 +154,11 @@
                 {{ brand.nav.footerDownload }}
               </NuxtLink>
             </li>
+            <li>
+              <NuxtLink to="/whitelabel" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
+                White-Label
+              </NuxtLink>
+            </li>
           </ul>
         </div>
 

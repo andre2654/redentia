@@ -187,6 +187,11 @@ export default defineNuxtConfig({
           priority: 0.4 as const,
           changefreq: 'monthly' as const,
         },
+        {
+          loc: '/whitelabel',
+          priority: 0.9 as const,
+          changefreq: 'weekly' as const,
+        },
       ]
 
       // Termos do glossário
