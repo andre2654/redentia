@@ -306,10 +306,10 @@ usePageSeo({
   title: `Política de Privacidade | ${brand.name}`,
   description:
     `Saiba como a ${brand.name} coleta, utiliza e protege seus dados pessoais e financeiros de acordo com a LGPD.`,
-  path: '/redentia/privacy',
+  path: '/institucional/privacy',
   breadcrumbs: [
     { name: 'Início', path: '/' },
-    { name: 'Privacidade', path: '/redentia/privacy' },
+    { name: 'Privacidade', path: '/institucional/privacy' },
   ],
 })
 </script>

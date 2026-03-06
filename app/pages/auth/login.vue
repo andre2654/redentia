@@ -8,7 +8,7 @@
           class="flex flex-1 flex-col items-center gap-8 text-center md:items-start md:text-left"
         >
           <AtomsAuthHeader class="mt-0 w-full max-w-sm" />
-          <p class="text-sm leading-relaxed text-white/70 md:max-w-sm">
+          <p class="text-sm leading-relaxed md:max-w-sm" :style="{ color: brand.colors.textMuted }">
             Faça login para acessar seus dashboards em tempo real, acompanhar
             ativos favoritos e receber insights personalizados sobre sua
             carteira.
@@ -18,19 +18,21 @@
         <UForm
           :schema="schema"
           :state="state"
-          class="flex w-full max-w-md flex-col gap-5 rounded-[32px] border border-white/10 bg-white/5 px-8 py-10 shadow-[0_25px_60px_-15px_rgba(15,23,42,0.5)] backdrop-blur-2xl"
+          class="flex w-full max-w-md flex-col gap-5 rounded-[32px] border px-8 py-10 shadow-[0_25px_60px_-15px_rgba(15,23,42,0.5)] backdrop-blur-2xl"
+          :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
           @submit="onSubmit"
         >
           <div class="space-y-2 text-center md:text-left">
             <span
-              class="text-secondary/80 text-xs font-medium uppercase tracking-[0.2em]"
+              class="text-xs font-medium uppercase tracking-[0.2em]"
+              :style="{ color: brand.colors.primary }"
             >
               Acesso
             </span>
-            <h1 class="text-2xl font-semibold text-white">
+            <h1 class="text-2xl font-semibold" :style="{ color: brand.colors.text }">
               {{ brand.auth.loginTitle }}
             </h1>
-            <p class="text-sm text-white/70">
+            <p class="text-sm" :style="{ color: brand.colors.textMuted }">
               {{ brand.auth.loginSubtitle }}
             </p>
           </div>
@@ -63,11 +65,12 @@
           <div class="flex flex-col gap-2 text-center md:text-left">
             <NuxtLink
               to="/auth/register"
-              class="text-secondary hover:text-secondary/80 text-sm font-medium transition"
+              class="text-sm font-medium transition hover:opacity-80"
+              :style="{ color: brand.colors.primary }"
             >
               Ainda nao tem conta? Cadastre-se agora
             </NuxtLink>
-            <p class="text-[11px] leading-relaxed text-white/60">
+            <p class="text-[11px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
               {{ brand.auth.termsText }}
             </p>
           </div>

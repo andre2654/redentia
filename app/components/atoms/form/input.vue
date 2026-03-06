@@ -10,8 +10,8 @@
 
 <style scoped>
 .input:deep(input:-webkit-autofill) {
-  -webkit-box-shadow: 0 0 0 10px black inset;
-  -webkit-text-fill-color: white;
+  -webkit-box-shadow: 0 0 0 10px var(--brand-input-bg, var(--brand-surface)) inset;
+  -webkit-text-fill-color: var(--brand-text);
   -webkit-background-clip: text;
 }
 </style>

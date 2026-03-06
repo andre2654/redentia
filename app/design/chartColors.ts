@@ -1,9 +1,11 @@
-// Legacy static fallback — prefer useChartColors() composable for brand-aware colors
+// Brand-aware static-like accessor — reads from active brand config
+import { brand as activeBrand } from '~/config/brand'
+
 export const ChartColors = {
-  positive: '#b9ecc1',
-  negative: '#8E3939',
-  secondary: '#a7d6ff',
-  neutral: '#6B7280',
+  get positive() { return activeBrand.colors.positive },
+  get negative() { return activeBrand.colors.negative },
+  get secondary() { return activeBrand.colors.secondary },
+  get neutral() { return activeBrand.colors.neutral },
 } as const
 
 /**

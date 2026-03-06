@@ -15,7 +15,7 @@
             }"
           />
           <div
-            class="w-[12px] rounded-full bg-[#A7D6FF]"
+            class="w-[12px] rounded-full bg-[var(--brand-primary)]"
             :style="{
               height: percentageHeight(item.actual, item.ideal) + '%',
             }"

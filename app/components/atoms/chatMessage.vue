@@ -17,7 +17,7 @@
       <!-- Status Indicator (Generative UI) -->
       <div
         v-if="message.status && !message.content && !message.structuredData"
-        class="flex items-center gap-2 text-sm text-white/70"
+        class="flex items-center gap-2 text-sm text-[rgb(var(--brand-overlay)_/_0.7)]"
       >
         <UIcon name="i-lucide-loader-2" class="h-4 w-4 animate-spin" />
         {{ message.status }}
@@ -26,7 +26,7 @@
       <!-- Message Content -->
       <div
         v-if="message.content || message.structuredData"
-        class="rounded-lg border border-white/20 bg-white/10 px-4 py-3"
+        class="rounded-lg border border-[rgb(var(--brand-overlay)_/_0.2)] bg-[rgb(var(--brand-overlay)_/_0.1)] px-4 py-3"
       >
         <!-- Recommendation (from structured meta or REC: line) -->
         <div
@@ -122,7 +122,7 @@
               <div
                 v-for="(div, idx) in message.structuredData.data.slice(0, 5)"
                 :key="idx"
-                class="flex justify-between rounded bg-white/5 px-3 py-2"
+                class="flex justify-between rounded bg-[rgb(var(--brand-overlay)_/_0.05)] px-3 py-2"
               >
                 <span>{{ new Date(div.date).toLocaleDateString() }}</span>
                 <span class="font-mono font-bold text-green-400"
@@ -141,25 +141,25 @@
             class="flex flex-col gap-3"
           >
             <div class="grid grid-cols-2 gap-3">
-              <div class="rounded bg-white/5 p-3">
+              <div class="rounded bg-[rgb(var(--brand-overlay)_/_0.05)] p-3">
                 <div class="text-xs opacity-60">P/L</div>
                 <div class="text-lg font-bold">
                   {{ message.structuredData.data.pe ?? '-' }}
                 </div>
               </div>
-              <div class="rounded bg-white/5 p-3">
+              <div class="rounded bg-[rgb(var(--brand-overlay)_/_0.05)] p-3">
                 <div class="text-xs opacity-60">Dividend Yield</div>
                 <div class="text-lg font-bold text-green-400">
                   {{ message.structuredData.data.dy ?? '-' }}%
                 </div>
               </div>
-              <div class="rounded bg-white/5 p-3">
+              <div class="rounded bg-[rgb(var(--brand-overlay)_/_0.05)] p-3">
                 <div class="text-xs opacity-60">Setor</div>
                 <div class="font-medium">
                   {{ message.structuredData.data.sector ?? '-' }}
                 </div>
               </div>
-              <div class="rounded bg-white/5 p-3">
+              <div class="rounded bg-[rgb(var(--brand-overlay)_/_0.05)] p-3">
                 <div class="text-xs opacity-60">Valor de Mercado</div>
                 <div class="font-medium">
                   {{ message.structuredData.data.marketCap ?? '-' }}
@@ -175,7 +175,7 @@
           >
             <!-- Header: Price & Ticker -->
             <div
-              class="flex items-center justify-between rounded-lg bg-white/5 p-3"
+              class="flex items-center justify-between rounded-lg bg-[rgb(var(--brand-overlay)_/_0.05)] p-3"
             >
               <div>
                 <div class="text-sm font-bold">
@@ -235,7 +235,7 @@
                     div, idx
                   ) in message.structuredData.data.dividends.slice(0, 5)"
                   :key="idx"
-                  class="flex justify-between rounded bg-white/5 px-3 py-2"
+                  class="flex justify-between rounded bg-[rgb(var(--brand-overlay)_/_0.05)] px-3 py-2"
                 >
                   <span>{{ new Date(div.date).toLocaleDateString() }}</span>
                   <span class="font-mono font-bold text-green-400"
@@ -248,25 +248,25 @@
               v-if="message.structuredData.data?.analysis"
               class="grid grid-cols-2 gap-2"
             >
-              <div class="rounded bg-white/5 p-2">
+              <div class="rounded bg-[rgb(var(--brand-overlay)_/_0.05)] p-2">
                 <div class="text-[10px] opacity-60">P/L</div>
                 <div class="font-mono text-sm font-bold">
                   {{ message.structuredData.data.analysis.pe ?? '-' }}
                 </div>
               </div>
-              <div class="rounded bg-white/5 p-2">
+              <div class="rounded bg-[rgb(var(--brand-overlay)_/_0.05)] p-2">
                 <div class="text-[10px] opacity-60">DY</div>
                 <div class="font-mono text-sm font-bold text-green-400">
                   {{ message.structuredData.data.analysis.dy ?? '-' }}%
                 </div>
               </div>
-              <div class="rounded bg-white/5 p-2">
+              <div class="rounded bg-[rgb(var(--brand-overlay)_/_0.05)] p-2">
                 <div class="text-[10px] opacity-60">Setor</div>
                 <div class="truncate text-sm font-medium">
                   {{ message.structuredData.data.analysis.sector ?? '-' }}
                 </div>
               </div>
-              <div class="rounded bg-white/5 p-2">
+              <div class="rounded bg-[rgb(var(--brand-overlay)_/_0.05)] p-2">
                 <div class="text-[10px] opacity-60">Valor</div>
                 <div class="text-sm font-medium">
                   {{ message.structuredData.data.analysis.marketCap ?? '-' }}
@@ -279,16 +279,16 @@
           <!-- Tool Results & Visualizations -->
           <div
             v-if="message.structuredData.toolsUsed?.length"
-            class="mt-4 flex flex-col gap-4 border-t border-white/10 pt-4"
+            class="mt-4 flex flex-col gap-4 border-t border-[rgb(var(--brand-overlay)_/_0.1)] pt-4"
           >
             <div
               v-for="(tool, index) in message.structuredData.toolsUsed"
               :key="index"
-              class="flex flex-col gap-4 rounded-xl border border-white/10 bg-white/5 p-4"
+              class="flex flex-col gap-4 rounded-xl border border-[rgb(var(--brand-overlay)_/_0.1)] bg-[rgb(var(--brand-overlay)_/_0.05)] p-4"
             >
               <!-- Tool Header -->
               <div
-                class="flex items-center gap-2 border-b border-white/10 pb-3"
+                class="flex items-center gap-2 border-b border-[rgb(var(--brand-overlay)_/_0.1)] pb-3"
               >
                 <div
                   class="bg-secondary/20 flex h-8 w-8 items-center justify-center rounded-full"
@@ -317,7 +317,7 @@
                 class="flex flex-col gap-4"
               >
                 <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                  <div class="rounded-lg bg-white/5 p-3">
+                  <div class="rounded-lg bg-[rgb(var(--brand-overlay)_/_0.05)] p-3">
                     <div class="text-xs opacity-60">Total Investido</div>
                     <div class="font-mono text-lg font-bold">
                       {{
@@ -328,7 +328,7 @@
                       }}
                     </div>
                   </div>
-                  <div class="rounded-lg bg-white/5 p-3">
+                  <div class="rounded-lg bg-[rgb(var(--brand-overlay)_/_0.05)] p-3">
                     <div class="text-xs opacity-60">Valor Final</div>
                     <div class="text-secondary font-mono text-lg font-bold">
                       {{
@@ -341,7 +341,7 @@
                   </div>
                   <div
                     v-if="tool.result.returnPercentage !== undefined"
-                    class="rounded-lg bg-white/5 p-3"
+                    class="rounded-lg bg-[rgb(var(--brand-overlay)_/_0.05)] p-3"
                   >
                     <div class="text-xs opacity-60">Rentabilidade</div>
                     <div
@@ -377,7 +377,7 @@
                 class="flex flex-col gap-4"
               >
                 <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <div class="rounded-lg bg-white/5 p-3">
+                  <div class="rounded-lg bg-[rgb(var(--brand-overlay)_/_0.05)] p-3">
                     <div class="text-xs opacity-60">Meta</div>
                     <div class="font-mono text-lg font-bold">
                       {{
@@ -388,7 +388,7 @@
                       }}
                     </div>
                   </div>
-                  <div class="rounded-lg bg-white/5 p-3">
+                  <div class="rounded-lg bg-[rgb(var(--brand-overlay)_/_0.05)] p-3">
                     <div class="text-xs opacity-60">Tempo Estimado</div>
                     <div class="text-secondary font-mono text-lg font-bold">
                       {{ Math.ceil(tool.result.monthsToGoal / 12) }} anos
@@ -414,7 +414,7 @@
                 <!-- Recommended Assets -->
                 <div
                   v-if="tool.result.recommendedAssets?.length"
-                  class="flex flex-col gap-2 border-t border-white/10 pt-3"
+                  class="flex flex-col gap-2 border-t border-[rgb(var(--brand-overlay)_/_0.1)] pt-3"
                 >
                   <div class="text-xs font-medium opacity-70">
                     Carteira Sugerida ({{
@@ -427,7 +427,7 @@
                     <div
                       v-for="(asset, idx) in tool.result.recommendedAssets"
                       :key="idx"
-                      class="flex items-center justify-between rounded bg-white/5 p-2 px-3"
+                      class="flex items-center justify-between rounded bg-[rgb(var(--brand-overlay)_/_0.05)] p-2 px-3"
                     >
                       <div class="flex flex-col">
                         <span class="text-sm font-bold">{{
@@ -463,7 +463,7 @@
           <!-- Related Tickers -->
           <div
             v-if="message.structuredData.relatedTickers?.length"
-            class="mt-2 flex flex-col gap-2 border-t border-white/10 pt-3"
+            class="mt-2 flex flex-col gap-2 border-t border-[rgb(var(--brand-overlay)_/_0.1)] pt-3"
           >
             <div class="text-xs font-medium opacity-70">
               Ativos mencionados:
@@ -473,7 +473,7 @@
                 v-for="(item, index) in message.structuredData.relatedTickers"
                 :key="index"
                 :to="`/asset/${item.ticker?.toLowerCase?.() || item.ticker || ''}`"
-                class="flex items-center gap-2 rounded bg-white/5 px-3 py-2 transition-colors hover:bg-white/10"
+                class="flex items-center gap-2 rounded bg-[rgb(var(--brand-overlay)_/_0.05)] px-3 py-2 transition-colors hover:bg-[rgb(var(--brand-overlay)_/_0.1)]"
               >
                 <img
                   :src="item.logo"
@@ -505,7 +505,7 @@
         <button
           v-for="suggestion in message.suggestions"
           :key="suggestion"
-          class="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white/80 transition-colors hover:bg-white/10 hover:text-white"
+          class="rounded-full border border-[rgb(var(--brand-overlay)_/_0.1)] bg-[rgb(var(--brand-overlay)_/_0.05)] px-3 py-1.5 text-xs text-[rgb(var(--brand-overlay)_/_0.8)] transition-colors hover:bg-[rgb(var(--brand-overlay)_/_0.1)] hover:text-[rgb(var(--brand-overlay))]"
           @click="$emit('action', suggestion)"
         >
           {{ suggestion }}
@@ -513,21 +513,21 @@
       </div>
 
       <!-- Timestamp -->
-      <small class="text-xs text-white/60">
+      <small class="text-xs text-[rgb(var(--brand-overlay)_/_0.6)]">
         {{ formattedTime }}
       </small>
     </div>
 
     <!-- User Message -->
     <div v-else class="flex max-w-[70%] flex-col gap-2">
-      <div class="bg-primary-500 rounded-lg px-4 py-3 text-white">
+      <div class="bg-primary-500 rounded-lg px-4 py-3 text-[rgb(var(--brand-overlay))]">
         <p class="text-[14px]">
           {{ message.content }}
         </p>
       </div>
 
       <!-- Timestamp -->
-      <small class="text-right text-xs text-white/60">
+      <small class="text-right text-xs text-[rgb(var(--brand-overlay)_/_0.6)]">
         {{ formattedTime }}
       </small>
     </div>

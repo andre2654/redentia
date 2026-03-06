@@ -647,10 +647,10 @@ usePageSeo({
   title: `Termos de Uso | ${brand.name}`,
   description:
     `Conheça os direitos e deveres ao utilizar a plataforma ${brand.name}, incluindo regras de serviço e proteção de dados.`,
-  path: '/redentia/terms',
+  path: '/institucional/terms',
   breadcrumbs: [
     { name: 'Início', path: '/' },
-    { name: 'Termos de uso', path: '/redentia/terms' },
+    { name: 'Termos de uso', path: '/institucional/terms' },
   ],
 })
 </script>

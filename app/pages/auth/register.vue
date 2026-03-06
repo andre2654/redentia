@@ -8,7 +8,7 @@
           class="flex flex-1 flex-col items-center gap-8 text-center md:items-start md:text-left"
         >
           <AtomsAuthHeader class="mt-0 w-full max-w-sm" />
-          <p class="text-sm leading-relaxed text-white/70 md:max-w-sm">
+          <p class="text-sm leading-relaxed md:max-w-sm" :style="{ color: brand.colors.textMuted }">
             Crie sua conta para acessar carteiras inteligentes, simuladores de
             investimentos e recursos personalizados que aceleram seus
             resultados.
@@ -18,17 +18,19 @@
         <UForm
           :schema="schema"
           :state="state"
-          class="flex w-full max-w-md flex-col gap-5 rounded-[32px] border border-white/10 bg-white/5 px-8 py-10 shadow-[0_25px_60px_-15px_rgba(15,23,42,0.5)] backdrop-blur-2xl"
+          class="flex w-full max-w-md flex-col gap-5 rounded-[32px] border px-8 py-10 shadow-[0_25px_60px_-15px_rgba(15,23,42,0.5)] backdrop-blur-2xl"
+          :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
           @submit="onSubmit"
         >
           <div class="space-y-2 text-center md:text-left">
             <span
-              class="text-secondary/80 text-xs font-medium uppercase tracking-[0.2em]"
+              class="text-xs font-medium uppercase tracking-[0.2em]"
+              :style="{ color: brand.colors.primary }"
             >
               Cadastro
             </span>
-            <h1 class="text-2xl font-semibold text-white">{{ brand.auth.registerTitle }}</h1>
-            <p class="text-sm text-white/70">
+            <h1 class="text-2xl font-semibold" :style="{ color: brand.colors.text }">{{ brand.auth.registerTitle }}</h1>
+            <p class="text-sm" :style="{ color: brand.colors.textMuted }">
               {{ brand.auth.registerSubtitle }}
             </p>
           </div>
@@ -97,7 +99,10 @@
           </UFormField>
 
           <!-- Código do assessor (opcional) -->
-          <UFormField name="advisor_code" label="Código do assessor (opcional)">
+          <UFormField name="advisor_code">
+            <template #label>
+              <span :style="{ color: brand.colors.textMuted }">Código do assessor (opcional)</span>
+            </template>
             <AtomsFormInput
               v-model="state.advisor_code"
               type="text"
@@ -105,13 +110,13 @@
               size="lg"
               class="w-full"
             />
-            <p class="mt-1 text-xs text-white/50">
+            <p class="mt-1 text-xs" :style="{ color: brand.colors.textMuted }">
               Se você tem um código do seu assessor, informe para vincular sua conta.
             </p>
           </UFormField>
 
           <!-- Password Strength -->
-          <div class="rounded-2xl border border-white/10 bg-white/5 p-5">
+          <div class="rounded-2xl border p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
             <UProgress
               :model-value="score"
               :max="requirements.length"
@@ -124,10 +129,10 @@
               id="password-strength"
               class="mt-4 flex flex-col gap-3 text-sm font-medium"
             >
-              <span class="text-center text-[13px] font-light text-white/80">{{
+              <span class="text-center text-[13px] font-light" :style="{ color: brand.colors.text }">{{
                 text
               }}</span>
-              <span class="text-[13px] font-extralight text-white/70">
+              <span class="text-[13px] font-extralight" :style="{ color: brand.colors.textMuted }">
                 Sua senha precisa ter:
               </span>
             </div>
@@ -137,7 +142,7 @@
                 v-for="req in requirements"
                 :key="req.text"
                 class="flex items-center gap-2"
-                :class="req.met ? 'text-secondary' : 'text-white/70'"
+                :style="{ color: req.met ? brand.colors.primary : brand.colors.textMuted }"
               >
                 <UIcon
                   :name="
@@ -162,11 +167,12 @@
           <div class="flex flex-col gap-2 text-center md:text-left">
             <NuxtLink
               to="/auth/login"
-              class="text-secondary hover:text-secondary/80 text-sm font-medium transition"
+              class="text-sm font-medium transition hover:opacity-80"
+              :style="{ color: brand.colors.primary }"
             >
               Já tem uma conta? Faça login
             </NuxtLink>
-            <p class="text-[11px] leading-relaxed text-white/60">
+            <p class="text-[11px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
               {{ brand.auth.termsText }}
             </p>
           </div>

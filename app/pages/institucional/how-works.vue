@@ -27,10 +27,10 @@ usePageSeo({
   title: `Como funciona a ${brand.name} | Consolide e analise seus investimentos`,
   description:
     `Veja passo a passo como a plataforma ${brand.name} conecta corretoras, usa IA para gerar insights e entrega dashboards completos para seus investimentos.`,
-  path: '/redentia/how-works',
+  path: '/institucional/how-works',
   breadcrumbs: [
     { name: 'Início', path: '/' },
-    { name: 'Como funciona', path: '/redentia/how-works' },
+    { name: 'Como funciona', path: '/institucional/how-works' },
   ],
 })
 </script>

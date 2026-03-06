@@ -318,7 +318,7 @@
         primary-button-text="Criar conta grátis"
         primary-button-link="/auth/register"
         secondary-button-text="Conhecer a plataforma"
-        secondary-button-link="/redentia/how-works"
+        secondary-button-link="/institucional/how-works"
       />
     </section>
   </NuxtLayout>

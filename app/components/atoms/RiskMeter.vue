@@ -63,7 +63,7 @@ const riskLabel = computed(() => {
 
 const COLORS = computed(() => ({
   LOW: cc.positive,
-  MEDIUM: '#fde047',
+  MEDIUM: brand.colors.neutral,
   HIGH: cc.negative,
 }))
 

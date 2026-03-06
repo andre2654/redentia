@@ -116,14 +116,14 @@
             <label class="text-xs opacity-70">
               Ao enviar esta mensagem, você concorda com nossos
               <NuxtLink
-                to="/redentia/terms"
+                to="/institucional/terms"
                 class="text-secondary underline hover:text-secondary/80"
               >
                 Termos de Serviço
               </NuxtLink>
               e
               <NuxtLink
-                to="/redentia/privacy"
+                to="/institucional/privacy"
                 class="text-secondary underline hover:text-secondary/80"
               >
                 Política de Privacidade
@@ -300,10 +300,10 @@ usePageSeo({
   title: `Fale com a ${brand.name} | Atendimento e suporte`,
   description:
     `Entre em contato com a equipe ${brand.name} para tirar dúvidas, enviar sugestões ou falar sobre parcerias. Respondemos rapidamente.`,
-  path: '/redentia/contact',
+  path: '/institucional/contact',
   breadcrumbs: [
     { name: 'Início', path: '/' },
-    { name: 'Contato', path: '/redentia/contact' },
+    { name: 'Contato', path: '/institucional/contact' },
   ],
 })
 </script>

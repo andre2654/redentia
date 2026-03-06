@@ -219,6 +219,7 @@ interface BrandConfig {
     ctaSecondaryLabel: string    // label do botao secundario
     ctaIcon: string              // icone do botao principal
     trustIndicators: string[]    // textos dos indicadores de confianca
+    image?: string               // imagem do founder/brand no hero (ex: foto da Nathalia no split)
   }
 
   // HEADER (barra superior quando logado)
@@ -420,11 +421,66 @@ interface BrandConfig {
     backgroundPattern: 'none' | 'grid' | 'dots' | 'gradient' | 'noise'  // textura de fundo
   }
 
+  // === PERSONAGENS / MASCOTES DA MARCA (opcional) ===
+  characters?: {
+    sectionTitle: string
+    sectionSubtitle: string
+    items: Array<{
+      name: string                 // "Margarete", "Sidnelson", "Juro Composto"
+      emoji: string                // icone ou emoji visual
+      role: string                 // "A espada da verdade"
+      color: string                // cor de destaque do personagem
+      catchphrase: string          // fala iconica
+      description: string          // quem e e o que faz
+      cta: string                  // texto do botao
+      ctaLink: string              // link de destino
+      personality: 'hero' | 'villain' | 'ally'  // muda o visual do card
+    }>
+  }
+
+  // === CHECKLIST DO INVESTIDOR NA HOME (opcional) ===
+  investorChecklist?: {
+    sectionTitle: string
+    sectionSubtitle: string
+    steps: Array<{
+      number: number                // numero do passo (1, 2, 3...)
+      title: string                 // "Monte sua reserva de emergencia"
+      description: string           // descricao curta do passo
+      icon: string                  // icone Lucide
+      status: 'locked' | 'available' | 'recommended'  // estado visual do step
+      ctaText: string               // "Saiba mais"
+      ctaLink: string               // link de destino
+    }>
+    footerText: string              // texto de rodape da secao
+    footerLink: string              // link do rodape
+    footerLinkText: string          // texto do link
+  }
+
+  // === CALCULADORA DE IMPACTO NA HOME (opcional) ===
+  wealthCalculator?: {
+    sectionTitle: string
+    sectionSubtitle: string
+    defaultAge: number              // idade inicial do slider
+    compareAge: number              // idade de comparacao
+    defaultMonthly: number          // aporte mensal padrao
+    annualRate: number              // taxa anual (ex: 0.10 = 10%)
+    targetAge: number               // idade alvo (ex: 65)
+    ctaText: string                 // "Comece agora"
+    ctaLink: string                 // "/calculadora/juros-compostos"
+    labels: {
+      ageSlider: string             // "Idade de inicio"
+      monthlySlider: string         // "Aporte mensal"
+      resultPrefix: string          // "Aos 65 anos voce tera"
+      comparisonText: string        // "Quem comeca aos {age} perde {diff}"
+      timeLabel: string             // "anos investindo"
+    }
+  }
+
   // === SECOES DA HOME (ordem e visibilidade) ===
   // A ordem no array define a ordem de exibicao na home.
   // Cada secao pode ser ativada/desativada individualmente.
   homeSections: Array<{
-    id: 'hero' | 'trustBar' | 'market' | 'categories' | 'guides' | 'metrics' | 'featureTabs' | 'marquee' | 'testimonials' | 'aiCta' | 'educational' | 'products'
+    id: 'hero' | 'trustBar' | 'market' | 'categories' | 'guides' | 'metrics' | 'featureTabs' | 'marquee' | 'testimonials' | 'aiCta' | 'educational' | 'products' | 'wealthCalculator' | 'characters' | 'investorChecklist'
     visible: boolean
   }>
 
@@ -584,16 +640,14 @@ const primoRico: BrandConfig = {
     },
     categoryCard: {
       variant: 'icon-left',
-      columns: 3,
+      columns: 2,
     },
-    // Categorias organizadas pela logica do Metodo ARCA
+    // Metodo ARCA: 4 pilares puros
     categories: [
-      { label: 'A — Acoes', to: '/acoes', icon: 'i-lucide-trending-up', description: 'Pilar do patrimonio de longo prazo. Empresas solidas que geram valor e dividendos por decadas.', cta: 'Analisar acoes' },
-      { label: 'R — Real Estate', to: '/fiis', icon: 'i-lucide-building-2', description: 'Fundos imobiliarios com renda passiva mensal. Dividendos isentos de IR — eficiencia tributaria.', cta: 'Analisar FIIs' },
-      { label: 'Dividendos', to: '/dividendos', icon: 'i-lucide-coins', description: 'Renda passiva recorrente. Fluxo de caixa que trabalha por voce, sem vender patrimonio.', cta: 'Ver pagadores' },
-      { label: 'ETFs', to: '/etfs', icon: 'i-lucide-bar-chart-3', description: 'Diversificacao estrutural com um unico ativo. Ibovespa, S&P 500, indices globais.', cta: 'Explorar ETFs' },
-      { label: 'Small Caps', to: '/small-caps', icon: 'i-lucide-rocket', description: 'Risco controlado, retorno assimetrico. Empresas com potencial de se tornarem large caps.', cta: 'Explorar small caps' },
-      { label: 'BDRs', to: '/search?group=bdrs', icon: 'i-lucide-globe', description: 'Exposicao global sem sair da B3. Apple, Google, Amazon — diversificacao internacional.', cta: 'Explorar BDRs' },
+      { label: 'A — Acoes Brasileiras', to: '/acoes', icon: 'i-lucide-trending-up', description: 'Pilar do patrimonio de longo prazo. Large caps, small caps e dividendos — empresas que geram valor por decadas.', cta: 'Analisar acoes' },
+      { label: 'R — Real Estate', to: '/fiis', icon: 'i-lucide-building-2', description: 'Fundos imobiliarios com renda passiva mensal. Dividendos isentos de IR — eficiencia tributaria maxima.', cta: 'Analisar FIIs' },
+      { label: 'C — Caixa', to: '/dividendos', icon: 'i-lucide-shield', description: 'Renda fixa e reserva estrategica. Tesouro Direto, CDB, LCI/LCA — a base que protege o patrimonio.', cta: 'Ver renda fixa' },
+      { label: 'A — Ativos Alternativos', to: '/etfs', icon: 'i-lucide-globe', description: 'Exposicao global e diversificacao. ETFs internacionais, BDRs, cripto — risco controlado, retorno assimetrico.', cta: 'Explorar ativos' },
     ],
   },
 
@@ -865,18 +919,37 @@ const primoRico: BrandConfig = {
     backgroundPattern: 'gradient',
   },
 
-  // Primo Rico: hero premium > mercado > metricas > categorias > IA > guias > depoimentos
-  // Estetica premium: espacoso, minimalista, dados proeminentes
+  wealthCalculator: {
+    sectionTitle: 'O poder do tempo',
+    sectionSubtitle: 'Consistencia supera sorte. Veja a diferenca que 10 anos fazem no seu patrimonio.',
+    defaultAge: 20,
+    compareAge: 30,
+    defaultMonthly: 500,
+    annualRate: 0.10,
+    targetAge: 65,
+    ctaText: 'Simular com mais detalhes',
+    ctaLink: '/calculadora/juros-compostos',
+    labels: {
+      ageSlider: 'Idade de inicio',
+      monthlySlider: 'Aporte mensal',
+      resultPrefix: 'Aos {target} anos voce tera',
+      comparisonText: 'Quem comeca aos {age} perde R$ {diff} em patrimonio',
+      timeLabel: 'anos investindo',
+    },
+  },
+
+  // Primo Rico: hero > poder do tempo > mercado > ARCA > metricas > IA > ecossistema > depoimentos
   homeSections: [
     { id: 'hero', visible: true },
+    { id: 'wealthCalculator', visible: true },
     { id: 'trustBar', visible: true },
     { id: 'market', visible: true },
+    { id: 'categories', visible: true },
     { id: 'metrics', visible: true },
     { id: 'featureTabs', visible: true },
-    { id: 'categories', visible: true },
     { id: 'aiCta', visible: true },
-    { id: 'educational', visible: true },
     { id: 'products', visible: true },
+    { id: 'educational', visible: true },
     { id: 'guides', visible: true },
     { id: 'testimonials', visible: true },
     { id: 'marquee', visible: false },
@@ -1169,6 +1242,7 @@ const mePoupe: BrandConfig = {
     ctaSecondaryLabel: 'Ja tenho conta',
     ctaIcon: 'i-lucide-heart',
     trustIndicators: ['100% gratis', 'Dados protegidos', 'Sem letras miudas'],
+    image: '/brand/mepoupe/nathalia-arcuri-me-poupe.png',
   },
 
   header: {
@@ -1391,10 +1465,51 @@ const mePoupe: BrandConfig = {
     backgroundPattern: 'dots',
   },
 
-  // Me Poupe: hero energetico > IA primeiro (Na_th IA e a estrela) > educacional > depoimentos > mercado > produtos
-  // Estetica pop: pill shapes, colorida, personalidade antes de dados
+  characters: {
+    sectionTitle: 'O Universo Me Poupe!',
+    sectionSubtitle: 'Conhece a galera que vai te ajudar (ou atrapalhar) na sua jornada financeira',
+    items: [
+      {
+        name: 'Margarete',
+        emoji: 'i-lucide-sword',
+        role: 'A espada da verdade',
+        color: '#FACC15',
+        catchphrase: 'Choque de realidade: voce precisa parar de dar desculpa e comecar a agir!',
+        description: 'A espada que a Nath carrega pra dar coragem e choques de realidade. Se voce ta enrolando pra investir, a Margarete vai te dar aquele empurrao.',
+        cta: 'Receber meu choque',
+        ctaLink: '/auth/register',
+        personality: 'hero',
+      },
+      {
+        name: 'Sidnelson',
+        emoji: 'i-lucide-briefcase',
+        role: 'O gerente do bancao',
+        color: '#EF4444',
+        catchphrase: 'Boa tarde! Tenho um titulo de capitalizacao PERFEITO pra voce...',
+        description: 'O vilao do universo financeiro. Quer te vender titulo de capitalizacao, consorcio e previdencia cara. Tudo pra bater a meta DELE, nao a sua.',
+        cta: 'Fugir do Sidnelson',
+        ctaLink: '/acoes',
+        personality: 'villain',
+      },
+      {
+        name: 'Juro Composto',
+        emoji: 'i-lucide-trending-up',
+        role: 'O filho maravilhoso',
+        color: '#4ADE80',
+        catchphrase: 'Fica tranquila, criatura. Eu trabalho por voce 24 horas por dia, 7 dias por semana!',
+        description: 'O melhor funcionario que existe: trabalha sem parar, nao tira ferias e faz seu dinheiro se multiplicar sozinho. Quanto mais cedo voce contrata ele, mais rico ele te deixa.',
+        cta: 'Colocar pra trabalhar',
+        ctaLink: '/calculadora/juros-compostos',
+        personality: 'ally',
+      },
+    ],
+  },
+
+  // Me Poupe: hero > personagens > IA > educacional > depoimentos > mercado > produtos
+  // Personalidade primeiro, dados depois. Pop, colorido, humano.
   homeSections: [
     { id: 'hero', visible: true },
+    { id: 'characters', visible: true },
     { id: 'aiCta', visible: true },
     { id: 'educational', visible: true },
     { id: 'testimonials', visible: true },
@@ -1895,11 +2010,76 @@ const investidorSardinha: BrandConfig = {
     backgroundPattern: 'grid',
   },
 
-  // Sardinha: hero minimal > mercado primeiro (dados sao rei) > metricas > categorias > IA > guias tecnicos
+  investorChecklist: {
+    sectionTitle: 'Roteiro do Investidor',
+    sectionSubtitle: 'O caminho AUVP para investir com fundamento — passo a passo, sem atalhos.',
+    steps: [
+      {
+        number: 1,
+        title: 'Monte sua reserva de emergencia',
+        description: 'Antes de investir, tenha 6 a 12 meses de custo de vida em renda fixa de alta liquidez. Esse e o alicerce.',
+        icon: 'i-lucide-shield',
+        status: 'recommended',
+        ctaText: 'Calcular reserva',
+        ctaLink: '/calculadoras',
+      },
+      {
+        number: 2,
+        title: 'Elimine dividas caras',
+        description: 'Cartao de credito, cheque especial e financiamentos com juros acima de 1% ao mes destroem patrimonio. Quite primeiro.',
+        icon: 'i-lucide-ban',
+        status: 'available',
+        ctaText: 'Simular quitacao',
+        ctaLink: '/calculadoras',
+      },
+      {
+        number: 3,
+        title: 'Entenda os indicadores fundamentalistas',
+        description: 'P/L, P/VP, ROE, margem liquida, DY — aprenda a ler os numeros antes de comprar qualquer ativo.',
+        icon: 'i-lucide-bar-chart-3',
+        status: 'available',
+        ctaText: 'Ver glossario',
+        ctaLink: '/glossario',
+      },
+      {
+        number: 4,
+        title: 'Defina sua estrategia de alocacao',
+        description: 'Renda fixa, acoes, FIIs, ativos internacionais — distribua de acordo com seu perfil e horizonte de tempo.',
+        icon: 'i-lucide-pie-chart',
+        status: 'available',
+        ctaText: 'Explorar categorias',
+        ctaLink: '/acoes',
+      },
+      {
+        number: 5,
+        title: 'Analise antes de comprar',
+        description: 'Use preco teto (Graham/Bazin), compare indicadores e consulte o Analista AUVP. Nunca compre por dica.',
+        icon: 'i-lucide-search',
+        status: 'locked',
+        ctaText: 'Usar ferramentas',
+        ctaLink: '/calculadoras',
+      },
+      {
+        number: 6,
+        title: 'Invista com consistencia',
+        description: 'Aportes mensais, reinvestimento de dividendos e paciencia. Buy and hold funciona no longo prazo — os dados comprovam.',
+        icon: 'i-lucide-repeat',
+        status: 'locked',
+        ctaText: 'Simular aportes',
+        ctaLink: '/calculadoras',
+      },
+    ],
+    footerText: 'Baseado na metodologia',
+    footerLink: 'https://auvp.com.br',
+    footerLinkText: 'AUVP — A Unica Verdade Possivel',
+  },
+
+  // Sardinha: hero minimal > mercado (dados sao rei) > checklist > metricas > categorias > IA > guias tecnicos
   // Estetica tecnica: sharp corners, compacta, informacao densa, sem firulas
   homeSections: [
     { id: 'hero', visible: true },
     { id: 'market', visible: true },
+    { id: 'investorChecklist', visible: true },
     { id: 'metrics', visible: true },
     { id: 'categories', visible: true },
     { id: 'featureTabs', visible: true },

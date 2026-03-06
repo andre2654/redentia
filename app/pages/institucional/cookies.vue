@@ -357,10 +357,10 @@ usePageSeo({
   title: `Política de Cookies | ${brand.name}`,
   description:
     `Entenda quais cookies utilizamos, por que eles são importantes e como personalizar suas preferências na plataforma ${brand.name}.`,
-  path: '/redentia/cookies',
+  path: '/institucional/cookies',
   breadcrumbs: [
     { name: 'Início', path: '/' },
-    { name: 'Cookies', path: '/redentia/cookies' },
+    { name: 'Cookies', path: '/institucional/cookies' },
   ],
 })
 </script>

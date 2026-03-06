@@ -135,17 +135,17 @@
           </h3>
           <ul class="flex flex-col items-center gap-3 md:items-start">
             <li>
-              <NuxtLink to="/redentia/about" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
+              <NuxtLink to="/institucional/about" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
                 {{ brand.nav.footerAbout }}
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/redentia/how-works" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
+              <NuxtLink to="/institucional/how-works" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
                 {{ brand.nav.footerHowWorks }}
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/redentia/contact" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
+              <NuxtLink to="/institucional/contact" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
                 {{ brand.nav.footerContact }}
               </NuxtLink>
             </li>
@@ -164,17 +164,17 @@
           </h3>
           <ul class="flex flex-col items-center gap-3 md:items-start">
             <li>
-              <NuxtLink to="/redentia/terms" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
+              <NuxtLink to="/institucional/terms" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
                 {{ brand.nav.footerTerms }}
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/redentia/privacy" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
+              <NuxtLink to="/institucional/privacy" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
                 {{ brand.nav.footerPrivacy }}
               </NuxtLink>
             </li>
             <li>
-              <NuxtLink to="/redentia/cookies" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
+              <NuxtLink to="/institucional/cookies" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
                 {{ brand.nav.footerCookies }}
               </NuxtLink>
             </li>

@@ -23,7 +23,7 @@
         <UButton
           to="/"
           variant="ghost"
-          color="white"
+          color="neutral"
           icon="i-lucide-arrow-left"
           class="hidden sm:flex"
         >

@@ -235,10 +235,10 @@ function formatPercent(changePercent: number | null): string {
       </div>
 
       <div class="footer">
-        <IconLogoFull class="logo-full" />
+        <BrandLogo variant="full" class="logo-full" />
 
         <div class="brand-mark">
-          <IconLogo class="logo" />
+          <BrandLogo variant="icon" class="logo" />
           <div class="brand-text">{{ brand.domain }}</div>
         </div>
       </div>

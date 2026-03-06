@@ -53,7 +53,7 @@
       >
         <BrandLogo
           variant="icon"
-          class="h-5 drop-shadow-[0_4px_10px_rgba(255,255,255,0.2)]"
+          class="h-5" :style="{ filter: `drop-shadow(0 4px 10px rgb(var(--brand-overlay) / 0.2))` }"
         />
         {{ brand.nav.downloadApp }}
       </NuxtLink>

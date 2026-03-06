@@ -48,6 +48,9 @@ function buildCssVars(b: typeof defaultBrand): string {
   --brand-input-bg: ${b.colors.inputBg};
   --brand-input-bg-hover: ${b.colors.inputBgHover};
   --brand-input-border: ${b.colors.inputBorder};
+  --brand-gradient-from: ${b.colors.gradient.from};
+  --brand-gradient-via: ${b.colors.gradient.via};
+  --brand-gradient-to: ${b.colors.gradient.to};
   --brand-font: '${b.font.family}', sans-serif;
   --brand-radius-sm: ${radius.sm};
   --brand-radius-md: ${radius.md};
@@ -56,6 +59,8 @@ function buildCssVars(b: typeof defaultBrand): string {
   --brand-radius-full: ${radius.full};
   --brand-duration: ${anim.duration};
   --brand-ease: ${anim.ease};
+  --brand-overlay: ${isLight ? '0, 0, 0' : '255, 255, 255'};
+  --brand-overlay-inverse: ${isLight ? '255, 255, 255' : '0, 0, 0'};
 }
 body {
   background-image: ${bgPattern};
@@ -72,6 +77,9 @@ export default defineNuxtPlugin(() => {
   const brand = useBrand()
 
   useHead({
+    htmlAttrs: {
+      class: computed(() => brand.theme.mode === 'light' ? '' : 'dark'),
+    },
     style: [
       {
         innerHTML: computed(() => buildCssVars(brand)),

@@ -47,7 +47,7 @@ const frame = computed(() => {
 })
 
 const brandRight = computed(
-  () => firstString(route.query.brandRight) || 'REDENTIA.COM.BR'
+  () => firstString(route.query.brandRight) || brand.domain.toUpperCase()
 )
 
 const notifTitle = computed(
@@ -121,8 +121,8 @@ useHead(() => ({
     <div class="card">
       <header class="header">
         <div class="brandLeft">
-          <IconLogo class="brandIcon" />
-          <div class="brandName">REDENTIA</div>
+          <BrandLogo variant="icon" class="brandIcon" />
+          <div class="brandName">{{ brand.shortName.toUpperCase() }}</div>
         </div>
         <div class="brandRight">{{ brandRight }}</div>
       </header>
@@ -136,7 +136,7 @@ useHead(() => ({
             <div class="notifHeader">
               <div class="notifHeaderLeft">
                 <div class="appIcon">
-                  <IconLogo class="appIconSvg" />
+                  <BrandLogo variant="icon" class="appIconSvg" />
                 </div>
                 <div class="notifTitle">{{ notifTitle }}</div>
               </div>

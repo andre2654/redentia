@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-full flex-col overflow-hidden rounded-[30px] bg-gradient-to-b from-[#042f54] to-[#0b3f6d] text-white">
+  <div class="flex h-full flex-col overflow-hidden rounded-[30px] text-white" :style="{ background: `linear-gradient(to bottom, ${brand.colors.surface}, ${brand.colors.background})` }">
     <!-- Header alinhado ao estilo da IA -->
     <div class="flex shrink-0 items-center gap-3 border-b border-white/10 px-5 py-4">
       <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10 text-sm font-semibold text-secondary">
@@ -94,13 +94,13 @@
       />
       <UButton
         type="submit"
-        class="ml-auto flex h-[30px] w-[30px] items-center justify-center rounded-full bg-[#E9E6E6] p-0"
+        class="ml-auto flex h-[30px] w-[30px] items-center justify-center rounded-full bg-[var(--brand-surface-hover)] p-0"
         color="neutral"
         variant="soft"
         :disabled="!inputValue.trim() || sending"
         :loading="sending"
         :icon="sending ? 'i-lucide-loader-2' : 'i-heroicons-outline-arrow-sm-right'"
-        :ui="{ base: '!flex !items-center !justify-center !p-0', leadingIcon: 'text-[#999595] m-0 w-5 h-5 shrink-0' }"
+        :ui="{ base: '!flex !items-center !justify-center !p-0', leadingIcon: 'text-[var(--brand-text-muted)] m-0 w-5 h-5 shrink-0' }"
       />
     </form>
   </div>
@@ -108,6 +108,8 @@
 
 <script setup lang="ts">
 import type { ApiMessage } from '~/services/messages'
+
+const brand = useBrand()
 
 const props = defineProps<{
   /** ID do outro participante (assessor ou investidor) */

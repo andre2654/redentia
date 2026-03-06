@@ -158,32 +158,32 @@ export default defineNuxtConfig({
 
         // Páginas institucionais
         {
-          loc: '/redentia/about',
+          loc: '/institucional/about',
           priority: 0.6 as const,
           changefreq: 'monthly' as const,
         },
         {
-          loc: '/redentia/contact',
+          loc: '/institucional/contact',
           priority: 0.6 as const,
           changefreq: 'monthly' as const,
         },
         {
-          loc: '/redentia/how-works',
+          loc: '/institucional/how-works',
           priority: 0.7 as const,
           changefreq: 'monthly' as const,
         },
         {
-          loc: '/redentia/privacy',
+          loc: '/institucional/privacy',
           priority: 0.5 as const,
           changefreq: 'monthly' as const,
         },
         {
-          loc: '/redentia/terms',
+          loc: '/institucional/terms',
           priority: 0.5 as const,
           changefreq: 'monthly' as const,
         },
         {
-          loc: '/redentia/cookies',
+          loc: '/institucional/cookies',
           priority: 0.4 as const,
           changefreq: 'monthly' as const,
         },
@@ -241,7 +241,7 @@ export default defineNuxtConfig({
     },
   },
   routeRules: {
-    '/redentia/**': { prerender: true },
+    '/institucional/**': { prerender: true },
     '/download': { prerender: true },
     '/glossario': { prerender: true },
     '/glossario/**': { prerender: true },
@@ -291,7 +291,7 @@ export default defineNuxtConfig({
       title: brand.seo.title,
       htmlAttrs: {
         lang: brand.seo.lang,
-        class: 'dark',
+        class: brand.theme.mode === 'light' ? '' : 'dark',
       },
       viewport: 'width=device-width, initial-scale=1',
       charset: 'utf-8',

@@ -17,9 +17,9 @@
           :key="tab.id"
           class="rounded-full px-4 py-2 text-sm font-medium transition-all md:px-6 md:text-base"
           :class="activeTab === tab.id
-            ? 'bg-secondary text-black'
+            ? 'bg-secondary'
             : 'border'"
-          :style="activeTab !== tab.id ? { borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.textMuted } : {}"
+          :style="activeTab === tab.id ? { color: brand.colors.background } : { borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.textMuted }"
           @click="activeTab = tab.id"
         >
           {{ tab.label }}

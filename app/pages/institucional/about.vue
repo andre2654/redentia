@@ -21,10 +21,10 @@ usePageSeo({
   title: `Sobre a ${brand.name} | Plataforma inteligente de investimentos`,
   description:
     `Entenda a missão da ${brand.name} e como combinamos consolidação de carteira e inteligência artificial para simplificar a vida do investidor brasileiro.`,
-  path: '/redentia/about',
+  path: '/institucional/about',
   breadcrumbs: [
     { name: 'Início', path: '/' },
-    { name: 'Sobre', path: '/redentia/about' },
+    { name: 'Sobre', path: '/institucional/about' },
   ],
 })
 </script>

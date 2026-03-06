@@ -12,7 +12,7 @@
         <button
           v-for="(suggestion, idx) in suggestions"
           :key="idx"
-          class="glass flex h-[130px] items-center justify-center rounded-lg bg-gradient-to-t from-white/10 to-transparent p-3 text-[13px] font-medium transition-colors hover:from-white/20"
+          class="glass flex h-[130px] items-center justify-center rounded-lg bg-gradient-to-t from-[rgb(var(--brand-overlay)_/_0.1)] to-transparent p-3 text-[13px] font-medium transition-colors hover:from-[rgb(var(--brand-overlay)_/_0.2)]"
           @click="sendSuggestion(suggestion)"
         >
           {{ suggestion }}
@@ -39,7 +39,7 @@
           <span class="text-[17px] font-semibold">{{ brand.ai.typingLabel }}</span>
         </div>
         <div
-          class="rounded-lg border border-white/20 bg-white/10 py-3 pl-4 pr-7"
+          class="rounded-lg border border-[rgb(var(--brand-overlay)_/_0.2)] bg-[rgb(var(--brand-overlay)_/_0.1)] py-3 pl-4 pr-7"
         >
           <span class="inline-flex items-center gap-1">
             <span class="dot" />
@@ -47,13 +47,13 @@
             <span class="dot" />
           </span>
         </div>
-        <small class="text-xs text-white/60">digitando…</small>
+        <small class="text-xs text-[rgb(var(--brand-overlay)_/_0.6)]">digitando…</small>
       </div>
     </div>
 
     <!-- Input Area -->
     <div
-      class="flex w-full flex-col gap-3 bg-white/10 p-3 pb-6 backdrop-blur-[99px]"
+      class="flex w-full flex-col gap-3 bg-[rgb(var(--brand-overlay)_/_0.1)] p-3 pb-6 backdrop-blur-[99px]"
       v-bind="textareaContainerProps"
     >
       <div
@@ -69,7 +69,7 @@
         :rows="4"
         autoresize
         :ui="{
-          base: 'text-[14px] max-h-[200px] bg-transparent hover:!bg-transparent focus:!bg-transparent focus-visible:!bg-transparent ring-0 !border-0 !shadow-none placeholder:text-white/40',
+          base: 'text-[14px] max-h-[200px] bg-transparent hover:!bg-transparent focus:!bg-transparent focus-visible:!bg-transparent ring-0 !border-0 !shadow-none placeholder:text-[rgb(var(--brand-overlay)_/_0.4)]',
         }"
         @keydown.enter.prevent="sendMessage"
       />
@@ -81,8 +81,8 @@
         variant="soft"
         :disabled="!canSend"
         :ui="{
-          base: '!flex !items-center !justify-center bg-[#E9E6E6] !p-0',
-          leadingIcon: 'text-[#999595] m-0 w-5 h-5 shrink-0',
+          base: '!flex !items-center !justify-center bg-[var(--brand-surface-hover)] !p-0',
+          leadingIcon: 'text-[var(--brand-text-muted)] m-0 w-5 h-5 shrink-0',
         }"
         icon="i-heroicons-outline-arrow-sm-right"
         @click="sendMessage"
@@ -443,7 +443,7 @@ function handleStreamError(error: unknown, botMessageId: string): void {
   height: 6px;
   border-radius: 50%;
   display: inline-block;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgb(var(--brand-overlay) / 0.8);
   animation: blink 1.4s infinite both;
 }
 

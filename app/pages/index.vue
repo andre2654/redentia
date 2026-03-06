@@ -76,7 +76,17 @@
 
       <div class="relative px-6 py-12 md:py-16">
         <div class="mx-auto flex max-w-6xl flex-col items-center gap-10 md:flex-row md:gap-16">
-          <!-- Left: text content -->
+          <!-- Left: founder image (when hero.image is set) -->
+          <div v-if="brand.hero.image" class="relative flex flex-1 items-end justify-center md:justify-start">
+            <div class="absolute -inset-16 rounded-full blur-3xl" :style="{ backgroundColor: `${brand.colors.primary}15` }" />
+            <img
+              :src="brand.hero.image"
+              :alt="brand.founder.name"
+              class="relative w-[15rem] max-w-none object-contain drop-shadow-2xl sm:w-[20rem] md:w-[25rem] lg:w-[30rem]"
+            />
+          </div>
+
+          <!-- Text content -->
           <div class="flex flex-1 flex-col items-center text-center md:items-start md:text-left">
             <!-- Badge energetico -->
             <div class="mb-6 inline-flex items-center gap-2 px-4 py-2 brand-card-sm" :style="{ backgroundColor: `${brand.colors.primary}1A`, border: `1px solid ${brand.colors.primary}33` }">
@@ -91,6 +101,12 @@
 
             <p class="mb-8 max-w-md text-base md:text-lg" :style="{ color: brand.colors.textMuted }">
               {{ brand.hero.subtitle }}
+            </p>
+
+            <!-- Founder quote -->
+            <p class="mb-6 max-w-sm text-sm italic" :style="{ color: `${brand.colors.text}80` }">
+              "{{ brand.hero.founderQuote }}"
+              <span class="not-italic" :style="{ color: `${brand.colors.text}4D` }"> — {{ brand.founder.name }}</span>
             </p>
 
             <!-- CTAs lado a lado, pill shape -->
@@ -112,8 +128,8 @@
             </div>
           </div>
 
-          <!-- Right: founder quote card + personality -->
-          <div class="flex flex-1 flex-col items-center gap-4">
+          <!-- Right: quote card fallback (when NO hero.image) -->
+          <div v-if="!brand.hero.image" class="flex flex-1 flex-col items-center gap-4">
             <div class="w-full max-w-sm border p-6 backdrop-blur-sm brand-card" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
               <div class="mb-4 flex items-center gap-3">
                 <div class="flex h-12 w-12 items-center justify-center rounded-full" :style="{ backgroundColor: `${brand.colors.primary}26` }">
@@ -180,6 +196,15 @@
 
     <!-- Social Proof - Logos de corretoras -->
     <MoleculesTrustedBy v-if="showSection('trustBar') && !authStore.isAuthenticated" :style="{ order: sectionOrder('trustBar') }" class="mt-8" />
+
+    <!-- Calculadora de Impacto / Poder do Tempo -->
+    <MoleculesWealthProjection v-if="showSection('wealthCalculator') && brand.wealthCalculator && !authStore.isAuthenticated" :style="{ order: sectionOrder('wealthCalculator') }" />
+
+    <!-- Personagens / Universo da marca -->
+    <MoleculesCharacterShowcase v-if="showSection('characters') && brand.characters && !authStore.isAuthenticated" :style="{ order: sectionOrder('characters') }" />
+
+    <!-- Checklist / Roteiro do Investidor -->
+    <MoleculesInvestorChecklist v-if="showSection('investorChecklist') && brand.investorChecklist && !authStore.isAuthenticated" :style="{ order: sectionOrder('investorChecklist') }" />
 
     <!-- Seção de Mercado ao Vivo (Prioridade) -->
     <div v-if="showSection('market')" :style="{ order: sectionOrder('market') }" class="flex h-auto flex-col gap-4 pt-6">
@@ -902,7 +927,7 @@
             </UButton>
 
             <!-- Trust -->
-            <p class="flex items-center gap-2 text-xs text-white/40">
+            <p class="flex items-center gap-2 text-xs" :style="{ color: `rgb(var(--brand-overlay) / 0.4)` }">
               <UIcon name="i-lucide-shield-check" class="h-3 w-3" />
               100% gratuito • Sem cadastro de cartão
             </p>
@@ -924,7 +949,9 @@ const authStore = useAuthStore()
 type HomeSectionId = typeof brand.homeSections[number]['id']
 const sectionIndexMap = computed(() => new Map(brand.homeSections.map((s, i) => [s.id, i])))
 function showSection(id: HomeSectionId) {
-  return brand.homeSections.find(s => s.id === id)?.visible ?? true
+  const section = brand.homeSections.find(s => s.id === id)
+  if (!section) return false
+  return section.visible
 }
 function sectionOrder(id: HomeSectionId) {
   return sectionIndexMap.value.get(id) ?? 99
