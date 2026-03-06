@@ -30,23 +30,23 @@
       <div class="relative mx-auto max-w-4xl text-center">
 
         <!-- Orbiting tickers -->
-        <div class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[700px] w-[700px] md:h-[900px] md:w-[900px]">
-          <!-- Orbit ring 1 -->
-          <div class="absolute inset-0 rounded-full border border-white/[0.02]" />
-          <!-- Orbit ring 2 -->
-          <div class="absolute inset-[18%] rounded-full border border-white/[0.03]" />
+        <div class="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[900px] w-[900px] hidden md:block">
+
+          <!-- Outer orbit ring + dots -->
+          <div class="absolute inset-0 rounded-full border border-white/[0.03]" />
+          <div v-for="d in 5" :key="`dot-o-${d}`" class="wl-orbit-dot absolute left-1/2 top-1/2" :style="{ transform: `rotate(${d * 72}deg) translateX(420px)`, animationDelay: `${d * 0.8}s` }" />
 
           <!-- Outer orbit tickers -->
           <div
             v-for="(ot, oIdx) in orbitTickersOuter"
             :key="`orbit-o-${oIdx}`"
-            class="wl-orbit-outer absolute left-1/2 top-1/2 opacity-40"
+            class="wl-orbit-outer absolute left-1/2 top-1/2"
             :style="{
               '--orbit-duration': `${50 + oIdx * 5}s`,
               '--orbit-delay': `${oIdx * -(50 / orbitTickersOuter.length)}s`,
             }"
           >
-            <div class="flex items-center gap-2 rounded-full border border-white/[0.06] bg-[#0a0a0f]/70 px-3 py-1.5 backdrop-blur-md">
+            <div class="flex items-center gap-2 rounded-full border border-white/[0.08] bg-[#0a0a0f]/80 px-3 py-1.5 backdrop-blur-md" :class="ot.change >= 0 ? 'shadow-[0_0_12px_rgba(52,211,153,0.15)]' : 'shadow-[0_0_12px_rgba(248,113,113,0.15)]'">
               <img v-if="ot.logo" :src="ot.logo" :alt="ot.symbol" class="h-4 w-4 rounded-full" />
               <span class="text-[11px] font-bold text-white/80">{{ ot.symbol }}</span>
               <span class="text-[10px] font-bold tabular-nums" :class="ot.change >= 0 ? 'text-emerald-400' : 'text-red-400'">
@@ -55,17 +55,21 @@
             </div>
           </div>
 
+          <!-- Inner orbit ring + dots -->
+          <div class="absolute inset-[18%] rounded-full border border-white/[0.04]" />
+          <div v-for="d in 4" :key="`dot-i-${d}`" class="wl-orbit-dot absolute left-1/2 top-1/2" :style="{ transform: `rotate(${d * 90 + 45}deg) translateX(260px)`, animationDelay: `${d * 1.1}s` }" />
+
           <!-- Inner orbit tickers -->
           <div
             v-for="(it, iIdx) in orbitTickersInner"
             :key="`orbit-i-${iIdx}`"
-            class="wl-orbit-inner absolute left-1/2 top-1/2 opacity-30"
+            class="wl-orbit-inner absolute left-1/2 top-1/2"
             :style="{
               '--orbit-duration': `${40 + iIdx * 4}s`,
               '--orbit-delay': `${iIdx * -(40 / orbitTickersInner.length)}s`,
             }"
           >
-            <div class="flex items-center gap-2 rounded-full border border-white/[0.06] bg-[#0a0a0f]/70 px-3 py-1.5 backdrop-blur-md">
+            <div class="flex items-center gap-2 rounded-full border border-white/[0.08] bg-[#0a0a0f]/80 px-3 py-1.5 backdrop-blur-md" :class="it.change >= 0 ? 'shadow-[0_0_12px_rgba(52,211,153,0.15)]' : 'shadow-[0_0_12px_rgba(248,113,113,0.15)]'">
               <img v-if="it.logo" :src="it.logo" :alt="it.symbol" class="h-4 w-4 rounded-full" />
               <span class="text-[11px] font-bold text-white/80">{{ it.symbol }}</span>
               <span class="text-[10px] font-bold tabular-nums" :class="it.change >= 0 ? 'text-emerald-400' : 'text-red-400'">
@@ -73,6 +77,27 @@
               </span>
             </div>
           </div>
+
+          <!-- Micro orbit ring + dots -->
+          <div class="absolute inset-[36%] rounded-full border border-white/[0.02]" />
+          <div v-for="d in 3" :key="`dot-m-${d}`" class="wl-orbit-dot absolute left-1/2 top-1/2" :style="{ transform: `rotate(${d * 120}deg) translateX(150px)`, animationDelay: `${d * 1.5}s` }" />
+
+          <!-- Micro orbit tickers -->
+          <div
+            v-for="(mt, mIdx) in orbitTickersMicro"
+            :key="`orbit-m-${mIdx}`"
+            class="wl-orbit-micro absolute left-1/2 top-1/2"
+            :style="{
+              '--orbit-duration': `${25 + mIdx * 3}s`,
+              '--orbit-delay': `${mIdx * -(25 / orbitTickersMicro.length)}s`,
+            }"
+          >
+            <div class="flex items-center gap-1.5 rounded-full border border-white/[0.06] bg-[#0a0a0f]/60 px-2.5 py-1 backdrop-blur-md">
+              <img v-if="mt.logo" :src="mt.logo" :alt="mt.symbol" class="h-3 w-3 rounded-full" />
+              <span class="text-[10px] font-bold text-white/60">{{ mt.symbol }}</span>
+            </div>
+          </div>
+
         </div>
 
         <div class="relative">
@@ -1597,6 +1622,20 @@ const orbitTickersInner = computed(() => {
   return combined.map(a => ({ symbol: a.ticker ?? '—', price: a.market_price ?? 0, change: a.change_percent ?? 0, logo: a.logo }))
 })
 
+const orbitFallbackMicro = [
+  { symbol: 'PETR4', logo: 'https://icons.brapi.dev/icons/PETR4.svg' },
+  { symbol: 'MXRF11', logo: 'https://icons.brapi.dev/icons/MXRF11.svg' },
+  { symbol: 'BOVA11', logo: 'https://icons.brapi.dev/icons/BOVA11.svg' },
+]
+const orbitTickersMicro = computed(() => {
+  const s = unwrapApi<ApiAsset>(stocksTop.value).slice(0, 1)
+  const f = unwrapApi<ApiAsset>(fiisTop.value).slice(0, 1)
+  const e = unwrapApi<ApiAsset>(etfsTop.value).slice(0, 1)
+  const combined = [...s, ...f, ...e]
+  if (combined.length < 2) return orbitFallbackMicro
+  return combined.map(a => ({ symbol: a.ticker ?? '—', logo: a.logo }))
+})
+
 const activeMarketCat = ref('stocks')
 
 const marketCategories = [
@@ -1753,7 +1792,8 @@ const dividendMonths = [
 
 /* Orbit animations for hero tickers */
 .wl-orbit-outer,
-.wl-orbit-inner {
+.wl-orbit-inner,
+.wl-orbit-micro {
   transform-origin: 0 0;
 }
 
@@ -1767,26 +1807,51 @@ const dividendMonths = [
   animation-delay: var(--orbit-delay, 0s);
 }
 
+.wl-orbit-micro {
+  animation: wl-orbit-micro var(--orbit-duration, 25s) linear infinite;
+  animation-delay: var(--orbit-delay, 0s);
+}
+
+/* Outer orbit: clockwise, radius 420px, subtle opacity breathing */
 @keyframes wl-orbit {
-  from { transform: rotate(0deg) translateX(330px) rotate(0deg); }
-  to { transform: rotate(360deg) translateX(330px) rotate(-360deg); }
+  0%   { transform: rotate(0deg)   translateX(420px) rotate(0deg);   opacity: 0.3; }
+  25%  { transform: rotate(90deg)  translateX(420px) rotate(-90deg);  opacity: 0.5; }
+  50%  { transform: rotate(180deg) translateX(420px) rotate(-180deg); opacity: 0.3; }
+  75%  { transform: rotate(270deg) translateX(420px) rotate(-270deg); opacity: 0.5; }
+  100% { transform: rotate(360deg) translateX(420px) rotate(-360deg); opacity: 0.3; }
 }
 
+/* Inner orbit: counter-clockwise, radius 260px */
 @keyframes wl-orbit-reverse {
-  from { transform: rotate(0deg) translateX(200px) rotate(0deg); }
-  to { transform: rotate(-360deg) translateX(200px) rotate(360deg); }
+  0%   { transform: rotate(0deg)    translateX(260px) rotate(0deg);    opacity: 0.2; }
+  25%  { transform: rotate(-90deg)  translateX(260px) rotate(90deg);   opacity: 0.4; }
+  50%  { transform: rotate(-180deg) translateX(260px) rotate(180deg);  opacity: 0.2; }
+  75%  { transform: rotate(-270deg) translateX(260px) rotate(270deg);  opacity: 0.4; }
+  100% { transform: rotate(-360deg) translateX(260px) rotate(360deg);  opacity: 0.2; }
 }
 
-@media (min-width: 768px) {
-  @keyframes wl-orbit {
-    from { transform: rotate(0deg) translateX(420px) rotate(0deg); }
-    to { transform: rotate(360deg) translateX(420px) rotate(-360deg); }
-  }
+/* Micro orbit: clockwise fast, radius 150px */
+@keyframes wl-orbit-micro {
+  0%   { transform: rotate(0deg)   translateX(150px) rotate(0deg);   opacity: 0.12; }
+  25%  { transform: rotate(90deg)  translateX(150px) rotate(-90deg);  opacity: 0.25; }
+  50%  { transform: rotate(180deg) translateX(150px) rotate(-180deg); opacity: 0.12; }
+  75%  { transform: rotate(270deg) translateX(150px) rotate(-270deg); opacity: 0.25; }
+  100% { transform: rotate(360deg) translateX(150px) rotate(-360deg); opacity: 0.12; }
+}
 
-  @keyframes wl-orbit-reverse {
-    from { transform: rotate(0deg) translateX(260px) rotate(0deg); }
-    to { transform: rotate(-360deg) translateX(260px) rotate(360deg); }
-  }
+/* Pulsing dots on orbit tracks */
+.wl-orbit-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(96, 165, 250, 0.4);
+  transform-origin: 0 0;
+  animation: wl-dot-pulse 3s ease-in-out infinite;
+}
+
+@keyframes wl-dot-pulse {
+  0%, 100% { opacity: 0.2; box-shadow: 0 0 4px rgba(96, 165, 250, 0.3); }
+  50% { opacity: 0.7; box-shadow: 0 0 8px rgba(96, 165, 250, 0.6); }
 }
 
 /* AI Terminal animations */
