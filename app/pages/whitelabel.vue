@@ -9,9 +9,9 @@
         <NuxtLink to="/" class="flex items-center gap-2.5 transition-opacity hover:opacity-80">
           <img src="/brand/logo-full.svg" alt="Redentia" class="h-7" />
         </NuxtLink>
-        <a href="#cta" class="rounded-full bg-white px-5 py-2 text-sm font-semibold text-black transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(255,255,255,0.15)]">
+        <button class="rounded-full bg-white px-5 py-2 text-sm font-semibold text-black transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(255,255,255,0.15)]" @click="openContactModal">
           Comecar agora
-        </a>
+        </button>
       </div>
     </nav>
 
@@ -101,21 +101,21 @@
         </div>
 
         <div class="relative">
-          <div class="wl-reveal mb-8 inline-flex items-center gap-2 rounded-full border border-blue-400/20 bg-blue-400/10 px-4 py-2 backdrop-blur-sm">
+          <div class="wl-reveal mb-8 inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-4 py-2 backdrop-blur-sm">
             <span class="relative flex h-2 w-2">
-              <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-400 opacity-75" />
-              <span class="relative inline-flex h-2 w-2 rounded-full bg-blue-400" />
+              <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+              <span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
             </span>
-            <span class="text-xs font-semibold uppercase tracking-widest text-blue-400">Powered by AI</span>
+            <span class="text-xs font-semibold uppercase tracking-widest text-emerald-400">Criadores ja monetizando</span>
           </div>
 
           <h1 class="wl-reveal wl-reveal-d1 mb-6 text-5xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl md:text-7xl">
-            Cole seu YouTube.<br />
-            <span class="bg-gradient-to-r from-blue-400 via-blue-300 to-blue-500 bg-[length:200%_100%] bg-clip-text text-transparent wl-gradient-shift">Receba sua plataforma.</span>
+            Sua audiencia ja vale dinheiro.<br />
+            <span class="bg-gradient-to-r from-blue-400 via-blue-300 to-blue-500 bg-[length:200%_100%] bg-clip-text text-transparent wl-gradient-shift">Voce so precisa cobrar.</span>
           </h1>
 
           <p class="wl-reveal wl-reveal-d2 mx-auto mb-12 max-w-2xl text-lg leading-relaxed text-white/50 md:text-xl">
-            Nossa IA analisa seu canal, extrai sua marca, tom de voz e estilo — e gera uma plataforma de investimentos completa com a sua cara. <span class="text-white/80 font-medium">Em minutos, nao meses.</span>
+            A IA analisa seu canal, cria uma plataforma de investimentos com a sua marca e tom de voz — e seus seguidores pagam para usar. <span class="text-white/80 font-medium">Receita recorrente desde o dia 1.</span>
           </p>
 
           <!-- CTA Input -->
@@ -131,7 +131,7 @@
             </div>
             <button
               class="group relative flex items-center justify-center gap-2 overflow-hidden rounded-2xl bg-blue-400 px-7 py-4 text-sm font-bold text-black transition-all hover:bg-blue-300 hover:shadow-[0_0_40px_rgba(96,165,250,0.3)] hover:scale-[1.02] active:scale-[0.98]"
-              @click="handleGenerate"
+              @click="openContactModal"
             >
               <div class="absolute inset-0 bg-gradient-to-r from-blue-400/0 via-white/20 to-blue-400/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
               <UIcon name="i-lucide-wand-2" class="relative h-4 w-4" />
@@ -153,8 +153,8 @@
       <div class="relative mx-auto max-w-6xl">
         <div class="wl-reveal mb-16 text-center">
           <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-blue-400">Inteligencia artificial</p>
-          <h2 class="mb-4 text-3xl font-bold tracking-tight md:text-5xl">A IA entende quem voce e</h2>
-          <p class="mx-auto max-w-lg text-base text-white/40">Em segundos, ela analisa seu canal e extrai tudo que precisa para montar sua plataforma.</p>
+          <h2 class="mb-4 text-3xl font-bold tracking-tight md:text-5xl">Ela substitui uma equipe inteira</h2>
+          <p class="mx-auto max-w-lg text-base text-white/40">Designer, copywriter, dev e branding — a IA faz em minutos o que custaria meses e dezenas de milhares de reais.</p>
         </div>
 
         <!-- AI Analysis Terminal — single unified interface -->
@@ -398,16 +398,23 @@
 
             </div>
 
-            <!-- Terminal footer -->
-            <div class="flex items-center justify-between border-t border-white/[0.04] bg-white/[0.01] px-5 py-2.5">
-              <div class="flex items-center gap-4 text-[10px] font-mono text-white/15">
-                <span>6 modulos extraidos</span>
-                <span>tempo: 4.2s</span>
-                <span>confianca: 96%</span>
+            <!-- Terminal footer — business metrics -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 border-t border-white/[0.04]">
+              <div class="flex flex-col items-center gap-1 border-r border-white/[0.04] px-4 py-3">
+                <span class="text-base font-extrabold text-emerald-400">R$ 0</span>
+                <span class="text-[9px] text-white/25 uppercase tracking-wider">Custo de equipe</span>
               </div>
-              <div class="flex items-center gap-1.5 text-[10px] text-blue-400/40 font-mono">
-                <UIcon name="i-lucide-zap" class="h-3 w-3" />
-                <span>Powered by Redentia AI</span>
+              <div class="flex flex-col items-center gap-1 sm:border-r border-white/[0.04] px-4 py-3">
+                <span class="text-base font-extrabold text-blue-400">4 min</span>
+                <span class="text-[9px] text-white/25 uppercase tracking-wider">vs 3 meses manual</span>
+              </div>
+              <div class="flex flex-col items-center gap-1 border-r border-white/[0.04] px-4 py-3">
+                <span class="text-base font-extrabold text-amber-400">5 profissionais</span>
+                <span class="text-[9px] text-white/25 uppercase tracking-wider">Substituidos pela IA</span>
+              </div>
+              <div class="flex flex-col items-center gap-1 px-4 py-3">
+                <span class="text-base font-extrabold text-white/80">~ R$ 40k</span>
+                <span class="text-[9px] text-white/25 uppercase tracking-wider">Economia estimada</span>
               </div>
             </div>
           </div>
@@ -431,7 +438,7 @@
           <button
             v-for="(s, idx) in showcaseBrands"
             :key="`tab-${s.slug}`"
-            class="group relative flex items-center gap-2.5 rounded-xl px-4 py-2.5 md:px-5 md:py-3 transition-all duration-500"
+            class="group relative flex items-center gap-2.5 overflow-hidden rounded-xl px-4 py-2.5 md:px-5 md:py-3 transition-all duration-500"
             :class="idx === activeShowcase ? 'bg-white/[0.08]' : 'bg-white/[0.02] hover:bg-white/[0.05]'"
             @click="activeShowcase = idx; resetAutoRotate()"
           >
@@ -439,12 +446,8 @@
               <div v-for="(color, ci) in s.colors.slice(0, 2)" :key="ci" class="h-2.5 w-2.5 rounded-full ring-1 ring-white/10 transition-transform duration-300" :class="idx === activeShowcase ? 'scale-110' : 'scale-100'" :style="{ backgroundColor: color }" />
             </div>
             <span class="text-xs md:text-sm font-bold transition-colors duration-300" :style="{ color: idx === activeShowcase ? s.accent : 'rgba(255,255,255,0.4)' }">{{ s.name }}</span>
-            <!-- Active indicator bar -->
-            <div class="absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 rounded-full transition-all duration-500" :style="{ width: idx === activeShowcase ? '60%' : '0%', backgroundColor: s.accent }" />
-            <!-- Progress overlay -->
-            <div v-if="idx === activeShowcase" class="absolute inset-0 rounded-xl overflow-hidden">
-              <div class="absolute bottom-0 left-0 h-0.5 rounded-full wl-progress-fill" :style="{ backgroundColor: `${s.accent}60`, animationDuration: `${CAROUSEL_INTERVAL}ms` }" />
-            </div>
+            <!-- Progress bar (only on active) -->
+            <div v-if="idx === activeShowcase" class="absolute bottom-0 left-0 h-0.5 wl-progress-fill" :style="{ backgroundColor: s.accent, animationDuration: `${CAROUSEL_INTERVAL}ms` }" />
           </button>
         </div>
 
@@ -489,12 +492,22 @@
                 </div>
                 <iframe
                   :src="`https://redentia.com.br/?brand=${s.slug}`"
-                  class="relative h-full w-full border-0"
+                  class="relative h-full w-full border-0 pointer-events-none"
                   :title="`Preview ${s.name}`"
                   loading="lazy"
                   sandbox="allow-scripts allow-same-origin"
-                  style="pointer-events: auto;"
                 />
+                <!-- Overlay to allow page scroll + open link -->
+                <a
+                  :href="`https://redentia.com.br/?brand=${s.slug}`"
+                  target="_blank"
+                  class="absolute inset-0 z-10 flex items-end justify-center pb-6 opacity-0 hover:opacity-100 transition-opacity duration-300 bg-gradient-to-t from-black/40 via-transparent to-transparent"
+                >
+                  <span class="flex items-center gap-2 rounded-full px-4 py-2 text-xs font-bold text-white backdrop-blur-md" :style="{ backgroundColor: `${s.accent}CC` }">
+                    <UIcon name="i-lucide-external-link" class="h-3.5 w-3.5" />
+                    Explorar {{ s.name }}
+                  </span>
+                </a>
               </div>
             </div>
 
@@ -871,18 +884,43 @@
           <div class="lg:w-2/5">
             <div class="wl-reveal">
               <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-blue-400">Assessor IA</p>
-              <h2 class="mb-5 text-3xl font-bold tracking-tight md:text-5xl leading-[1.1]">Seu clone digital respondendo 24/7</h2>
-              <p class="mb-8 text-base leading-relaxed text-white/40">O chatbot fala como voce, conhece seu conteudo e responde duvidas de investimentos no seu tom de voz.</p>
+              <h2 class="mb-5 text-3xl font-bold tracking-tight md:text-5xl leading-[1.1]">Voce dorme. Seu clone atende 10.000.</h2>
+              <p class="mb-8 text-base leading-relaxed text-white/40">A IA fala como voce, conhece seu conteudo e responde com dados reais da B3 — escalando sua entrega sem escalar seu tempo.</p>
             </div>
 
-            <div class="wl-reveal space-y-4" style="transition-delay: 100ms;">
+            <!-- Economy comparison -->
+            <div class="wl-reveal mb-6 overflow-hidden rounded-xl border border-white/[0.06] bg-white/[0.02]" style="transition-delay: 80ms;">
+              <div class="grid grid-cols-2 divide-x divide-white/[0.06]">
+                <div class="p-4 text-center">
+                  <p class="text-[10px] uppercase tracking-widest text-white/25 mb-1">Assessor humano</p>
+                  <p class="text-xl font-extrabold text-red-400/70 line-through decoration-red-400/40">R$ 8k<span class="text-xs font-bold text-white/20 no-underline">/mes</span></p>
+                  <p class="text-[10px] text-white/20 mt-1">1 pessoa, horario comercial</p>
+                </div>
+                <div class="p-4 text-center bg-emerald-400/[0.03]">
+                  <p class="text-[10px] uppercase tracking-widest text-emerald-400/50 mb-1">Sua IA</p>
+                  <p class="text-xl font-extrabold text-emerald-400">R$ 0<span class="text-xs font-bold text-emerald-400/40">/adicional</span></p>
+                  <p class="text-[10px] text-white/20 mt-1">Ilimitado, 24/7, seu tom de voz</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="wl-reveal space-y-4" style="transition-delay: 150ms;">
               <div class="flex items-start gap-3">
                 <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-400/10 mt-0.5">
                   <UIcon name="i-lucide-brain" class="h-4 w-4 text-blue-400" />
                 </div>
                 <div>
-                  <p class="text-sm font-semibold">Treinado com seu conteudo</p>
-                  <p class="text-[13px] text-white/30">Analisa seus videos, posts e estilo para responder como voce.</p>
+                  <p class="text-sm font-semibold">Treinado com seus videos</p>
+                  <p class="text-[13px] text-white/30">Extrai bordoes, exemplos e jeito de explicar direto do seu canal.</p>
+                </div>
+              </div>
+              <div class="flex items-start gap-3">
+                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-400/10 mt-0.5">
+                  <UIcon name="i-lucide-users" class="h-4 w-4 text-emerald-400" />
+                </div>
+                <div>
+                  <p class="text-sm font-semibold">10.000 conversas simultaneas</p>
+                  <p class="text-[13px] text-white/30">Escala infinita sem contratar ninguem. Cada seguidor tem atendimento individual.</p>
                 </div>
               </div>
               <div class="flex items-start gap-3">
@@ -890,17 +928,8 @@
                   <UIcon name="i-lucide-bar-chart-3" class="h-4 w-4 text-blue-400" />
                 </div>
                 <div>
-                  <p class="text-sm font-semibold">Dados fundamentalistas reais</p>
-                  <p class="text-[13px] text-white/30">P/L, DY, P/VP e mais — direto da B3 em tempo real.</p>
-                </div>
-              </div>
-              <div class="flex items-start gap-3">
-                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-400/10 mt-0.5">
-                  <UIcon name="i-lucide-clock" class="h-4 w-4 text-blue-400" />
-                </div>
-                <div>
-                  <p class="text-sm font-semibold">Disponivel 24 horas</p>
-                  <p class="text-[13px] text-white/30">Seus seguidores tiram duvidas a qualquer hora, sem esperar.</p>
+                  <p class="text-sm font-semibold">Dados reais, nao achismo</p>
+                  <p class="text-[13px] text-white/30">P/L, DY, P/VP, margem e mais — direto da B3 em tempo real.</p>
                 </div>
               </div>
             </div>
@@ -1239,33 +1268,164 @@
       </div>
     </section>
 
-    <!-- ========== TECH STACK ========== -->
-    <section class="border-t border-white/[0.04] px-6 py-14">
-      <div class="mx-auto max-w-4xl text-center">
-        <p class="wl-reveal mb-6 text-xs font-semibold uppercase tracking-widest text-white/25">Construido com</p>
-        <div class="flex flex-wrap justify-center gap-2">
-          <span
-            v-for="(tech, tIdx) in techStack"
-            :key="tech"
-            class="wl-reveal rounded-full border border-white/[0.06] bg-white/[0.02] px-4 py-2 text-xs font-medium text-white/30 transition-all duration-300 hover:border-white/15 hover:text-white/60 hover:bg-white/[0.05]"
-            :style="{ transitionDelay: `${tIdx * 40}ms` }"
+    <!-- ========== FAQ ========== -->
+    <section class="relative border-t border-white/[0.04] px-6 py-20 md:py-28">
+      <div class="pointer-events-none absolute right-0 top-1/3 h-[400px] w-[400px] rounded-full bg-blue-400/5 blur-[140px]" />
+
+      <div class="relative mx-auto max-w-3xl">
+        <div class="wl-reveal mb-12 text-center">
+          <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-blue-400">Duvidas frequentes</p>
+          <h2 class="mb-4 text-3xl font-bold tracking-tight md:text-5xl">Perguntas & Respostas</h2>
+        </div>
+
+        <div class="wl-reveal space-y-3">
+          <div
+            v-for="(faq, fIdx) in faqs"
+            :key="fIdx"
+            class="group overflow-hidden rounded-2xl border transition-all duration-300"
+            :class="openFaq === fIdx ? 'border-blue-400/20 bg-blue-400/[0.03]' : 'border-white/[0.06] bg-white/[0.02] hover:border-white/10'"
           >
-            {{ tech }}
-          </span>
+            <button
+              class="flex w-full items-center justify-between gap-4 px-6 py-5 text-left"
+              @click="openFaq = openFaq === fIdx ? -1 : fIdx"
+            >
+              <span class="text-sm font-semibold md:text-base" :class="openFaq === fIdx ? 'text-white' : 'text-white/70'">{{ faq.q }}</span>
+              <UIcon
+                name="i-lucide-chevron-down"
+                class="h-5 w-5 shrink-0 transition-transform duration-300"
+                :class="openFaq === fIdx ? 'rotate-180 text-blue-400' : 'text-white/20'"
+              />
+            </button>
+            <div
+              class="grid transition-all duration-300"
+              :style="{ gridTemplateRows: openFaq === fIdx ? '1fr' : '0fr' }"
+            >
+              <div class="overflow-hidden">
+                <p class="px-6 pb-5 text-sm leading-relaxed text-white/40">{{ faq.a }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== PRICING ========== -->
+    <section class="relative border-t border-white/[0.04] px-6 py-20 md:py-28 overflow-hidden">
+      <div class="pointer-events-none absolute left-1/2 top-0 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-blue-400/[0.04] blur-[200px]" />
+
+      <div class="relative mx-auto max-w-5xl">
+        <div class="wl-reveal mb-14 text-center">
+          <div class="mb-5 inline-flex items-center gap-2 rounded-full border border-amber-400/20 bg-amber-400/10 px-4 py-2">
+            <span class="relative flex h-2 w-2">
+              <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75" />
+              <span class="relative inline-flex h-2 w-2 rounded-full bg-amber-400" />
+            </span>
+            <span class="text-xs font-bold uppercase tracking-widest text-amber-400">{{ earlyAdopterSpots }} vagas com preco de lancamento</span>
+          </div>
+          <h2 class="mb-4 text-3xl font-bold tracking-tight md:text-5xl">Escolha seu plano</h2>
+          <p class="mx-auto max-w-md text-base text-white/40">100k seguidores × 2% conversao × R$ 19,90 = <span class="font-bold text-emerald-400">R$ 39.800/mes</span></p>
+        </div>
+
+        <div class="wl-reveal grid gap-5 md:grid-cols-3 items-start">
+          <!-- Starter -->
+          <div class="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-[#0a0a0f] p-7 transition-all duration-300 hover:border-white/10">
+            <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-white/30">Starter</p>
+            <div class="mb-1 flex items-baseline gap-2">
+              <span class="text-base text-white/25 line-through">R$ 3.497</span>
+              <span class="text-4xl font-extrabold">R$ 2.497</span>
+              <span class="text-sm text-white/30">/mes</span>
+            </div>
+            <p class="mb-6 text-xs text-white/30">~ R$ 83/dia</p>
+            <ul class="mb-8 space-y-3">
+              <li v-for="f in pricingPlans[0].features" :key="f" class="flex items-start gap-2.5 text-sm text-white/50">
+                <UIcon name="i-lucide-check" class="mt-0.5 h-4 w-4 shrink-0 text-blue-400/60" />
+                <span>{{ f }}</span>
+              </li>
+            </ul>
+            <button class="block w-full rounded-xl border border-white/10 bg-white/5 py-3.5 text-center text-sm font-semibold text-white/70 transition-all hover:bg-white/10 hover:text-white cursor-pointer" @click="openContactModal">
+              Comecar agora
+            </button>
+          </div>
+
+          <!-- Pro (highlighted) -->
+          <div class="relative overflow-hidden rounded-2xl border border-blue-400/30 bg-[#0a0a0f] p-7 shadow-lg shadow-blue-400/5 md:-mt-3 md:mb-[-12px]">
+            <div class="absolute right-4 top-4 rounded-full bg-blue-400 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-black">Mais escolhido</div>
+            <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-blue-400">Pro</p>
+            <div class="mb-1 flex items-baseline gap-2">
+              <span class="text-base text-white/25 line-through">R$ 7.497</span>
+              <span class="text-4xl font-extrabold">R$ 4.997</span>
+              <span class="text-sm text-white/30">/mes</span>
+            </div>
+            <p class="mb-6 text-xs text-emerald-400 font-bold">ROI de 7x no primeiro mes</p>
+            <ul class="mb-8 space-y-3">
+              <li v-for="f in pricingPlans[1].features" :key="f" class="flex items-start gap-2.5 text-sm text-white/60">
+                <UIcon name="i-lucide-check" class="mt-0.5 h-4 w-4 shrink-0 text-blue-400" />
+                <span>{{ f }}</span>
+              </li>
+            </ul>
+            <button class="block w-full rounded-xl bg-blue-400 py-3.5 text-center text-sm font-bold text-black transition-all hover:bg-blue-300 hover:shadow-[0_0_30px_rgba(96,165,250,0.2)] cursor-pointer" @click="openContactModal">
+              Comecar agora
+            </button>
+          </div>
+
+          <!-- Enterprise -->
+          <div class="relative overflow-hidden rounded-2xl border border-white/[0.06] bg-[#0a0a0f] p-7 transition-all duration-300 hover:border-white/10">
+            <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-white/30">Enterprise</p>
+            <div class="mb-1 flex items-baseline gap-1">
+              <span class="text-4xl font-extrabold">Custom</span>
+            </div>
+            <p class="mb-6 text-xs text-white/30">Para operacoes de grande escala</p>
+            <ul class="mb-8 space-y-3">
+              <li v-for="f in pricingPlans[2].features" :key="f" class="flex items-start gap-2.5 text-sm text-white/50">
+                <UIcon name="i-lucide-check" class="mt-0.5 h-4 w-4 shrink-0 text-blue-400/60" />
+                <span>{{ f }}</span>
+              </li>
+            </ul>
+            <button class="block w-full rounded-xl border border-white/10 bg-white/5 py-3.5 text-center text-sm font-semibold text-white/70 transition-all hover:bg-white/10 hover:text-white cursor-pointer" @click="openContactModal">
+              Falar com a equipe
+            </button>
+          </div>
+        </div>
+
+        <div class="wl-reveal mt-8 text-center">
+          <p class="text-xs text-white/30">Apos as {{ earlyAdopterSpots }} vagas, os precos sobem para a tabela cheia.</p>
         </div>
       </div>
     </section>
 
     <!-- ========== CTA FINAL ========== -->
-    <section id="cta" class="relative border-t border-white/[0.04] px-6 py-20 md:py-32">
+    <section id="cta" class="relative border-t border-white/[0.04] px-6 py-24 md:py-36">
       <div class="pointer-events-none absolute inset-0 overflow-hidden">
         <div class="wl-orb wl-orb-1 absolute left-1/3 bottom-0 h-[500px] w-[500px] rounded-full bg-blue-400/8 blur-[150px]" />
         <div class="wl-orb wl-orb-2 absolute right-1/3 bottom-1/4 h-[400px] w-[400px] rounded-full bg-blue-300/5 blur-[120px]" />
       </div>
 
-      <div class="relative mx-auto max-w-2xl text-center">
-        <h2 class="wl-reveal mb-4 text-3xl font-bold tracking-tight md:text-5xl">Pronto para ver a sua?</h2>
-        <p class="wl-reveal mb-10 text-lg text-white/40">Cole seu canal e veja como ficaria em minutos.</p>
+      <div class="relative mx-auto max-w-3xl text-center">
+        <div class="wl-reveal mb-8 inline-flex items-center gap-2 rounded-full border border-blue-400/20 bg-blue-400/10 px-4 py-2">
+          <UIcon name="i-lucide-zap" class="h-4 w-4 text-blue-400" />
+          <span class="text-xs font-semibold text-blue-400">Setup em minutos, nao meses</span>
+        </div>
+
+        <h2 class="wl-reveal mb-5 text-4xl font-bold tracking-tight md:text-6xl">Seus seguidores merecem<br /><span class="bg-gradient-to-r from-blue-400 to-blue-300 bg-clip-text text-transparent">uma plataforma a sua altura</span></h2>
+        <p class="wl-reveal mb-6 text-lg text-white/40 max-w-xl mx-auto">Enquanto voce cria conteudo, sua plataforma gera receita recorrente, fortalece sua marca e educa seu publico.</p>
+
+        <!-- Value props -->
+        <div class="wl-reveal mb-10 flex flex-wrap items-center justify-center gap-6 text-sm text-white/50">
+          <div class="flex items-center gap-2">
+            <UIcon name="i-lucide-trending-up" class="h-4 w-4 text-emerald-400" />
+            <span>Receita recorrente</span>
+          </div>
+          <div class="h-4 w-px bg-white/10" />
+          <div class="flex items-center gap-2">
+            <UIcon name="i-lucide-shield-check" class="h-4 w-4 text-blue-400" />
+            <span>Sua marca, seu dominio</span>
+          </div>
+          <div class="h-4 w-px bg-white/10" />
+          <div class="flex items-center gap-2">
+            <UIcon name="i-lucide-clock" class="h-4 w-4 text-amber-400" />
+            <span>Zero trabalho tecnico</span>
+          </div>
+        </div>
 
         <div class="wl-reveal mx-auto flex max-w-xl flex-col gap-3 sm:flex-row">
           <div class="relative flex-1">
@@ -1279,34 +1439,255 @@
           </div>
           <button
             class="group relative flex items-center justify-center gap-2 overflow-hidden rounded-2xl bg-blue-400 px-7 py-4 text-sm font-bold text-black transition-all hover:bg-blue-300 hover:shadow-[0_0_40px_rgba(96,165,250,0.3)] hover:scale-[1.02] active:scale-[0.98]"
-            @click="handleGenerate"
+            @click="openContactModal"
           >
             <div class="absolute inset-0 bg-gradient-to-r from-blue-400/0 via-white/20 to-blue-400/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
             <UIcon name="i-lucide-wand-2" class="relative h-4 w-4" />
-            <span class="relative">Gerar plataforma</span>
+            <span class="relative">Gerar minha plataforma</span>
           </button>
         </div>
 
-        <p class="wl-reveal mt-8 text-sm text-white/25">
-          Ou
-          <a href="mailto:contato@redentia.com.br" class="font-semibold text-blue-400 underline underline-offset-4 transition-colors hover:text-blue-300">
-            fale com a equipe
-          </a>
-        </p>
+        <p class="wl-reveal mt-6 text-xs text-white/20">Sem cartao de credito. Sem compromisso. Veja o resultado antes de pagar.</p>
       </div>
     </section>
 
-    <!-- Footer mini -->
-    <footer class="border-t border-white/[0.04] px-6 py-8">
-      <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 text-xs text-white/20 sm:flex-row">
-        <p>&copy; {{ new Date().getFullYear() }} Redentia. Todos os direitos reservados.</p>
-        <div class="flex gap-6">
-          <NuxtLink to="/institucional/terms" class="transition-colors hover:text-white/50">Termos</NuxtLink>
-          <NuxtLink to="/institucional/privacy" class="transition-colors hover:text-white/50">Privacidade</NuxtLink>
-          <NuxtLink to="/institucional/contact" class="transition-colors hover:text-white/50">Contato</NuxtLink>
+    <!-- Footer -->
+    <footer class="border-t border-white/[0.04] px-6 py-12 md:py-16">
+      <div class="mx-auto max-w-6xl">
+        <div class="grid gap-10 sm:grid-cols-2 md:grid-cols-4 mb-12">
+          <!-- Brand -->
+          <div class="sm:col-span-2 md:col-span-1">
+            <img src="/brand/logo-full.svg" alt="Redentia" class="mb-4 h-6 opacity-60" />
+            <p class="text-sm text-white/25 leading-relaxed max-w-xs">A plataforma white-label de investimentos para criadores de conteudo.</p>
+          </div>
+
+          <!-- Produto -->
+          <div>
+            <p class="mb-4 text-xs font-semibold uppercase tracking-widest text-white/30">Produto</p>
+            <ul class="space-y-2.5">
+              <li><button class="text-sm text-white/25 transition-colors hover:text-white/60" @click="scrollTo('showcase')">Cases reais</button></li>
+              <li><button class="text-sm text-white/25 transition-colors hover:text-white/60" @click="openContactModal">Gerar plataforma</button></li>
+              <li><button class="text-sm text-white/25 transition-colors hover:text-white/60" @click="openContactModal">Fale conosco</button></li>
+            </ul>
+          </div>
+
+          <!-- Legal -->
+          <div>
+            <p class="mb-4 text-xs font-semibold uppercase tracking-widest text-white/30">Legal</p>
+            <ul class="space-y-2.5">
+              <li><NuxtLink to="/institucional/terms" class="text-sm text-white/25 transition-colors hover:text-white/60">Termos de Uso</NuxtLink></li>
+              <li><NuxtLink to="/institucional/privacy" class="text-sm text-white/25 transition-colors hover:text-white/60">Privacidade</NuxtLink></li>
+            </ul>
+          </div>
+
+          <!-- Contato -->
+          <div>
+            <p class="mb-4 text-xs font-semibold uppercase tracking-widest text-white/30">Contato</p>
+            <ul class="space-y-2.5">
+              <li><button class="text-sm text-white/25 transition-colors hover:text-white/60" @click="openContactModal">contato@redentia.com.br</button></li>
+              <li>
+                <div class="flex items-center gap-3 mt-3">
+                  <a href="https://instagram.com/redentia" target="_blank" class="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.04] text-white/25 transition-all hover:bg-white/[0.08] hover:text-white/60">
+                    <UIcon name="i-lucide-instagram" class="h-4 w-4" />
+                  </a>
+                  <a href="https://linkedin.com/company/redentia" target="_blank" class="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.04] text-white/25 transition-all hover:bg-white/[0.08] hover:text-white/60">
+                    <UIcon name="i-lucide-linkedin" class="h-4 w-4" />
+                  </a>
+                  <a href="https://twitter.com/redentia" target="_blank" class="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.04] text-white/25 transition-all hover:bg-white/[0.08] hover:text-white/60">
+                    <UIcon name="i-lucide-twitter" class="h-4 w-4" />
+                  </a>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Bottom bar -->
+        <div class="flex flex-col items-center justify-between gap-4 border-t border-white/[0.04] pt-8 sm:flex-row">
+          <p class="text-xs text-white/15">&copy; {{ new Date().getFullYear() }} Redentia. Todos os direitos reservados.</p>
+          <div class="flex items-center gap-4">
+            <div class="flex items-center gap-1.5 rounded-full border border-white/[0.06] bg-white/[0.02] px-3 py-1.5">
+              <UIcon name="i-lucide-shield-check" class="h-3 w-3 text-emerald-400/60" />
+              <span class="text-[10px] text-white/25">SSL Seguro</span>
+            </div>
+            <div class="flex items-center gap-1.5 rounded-full border border-white/[0.06] bg-white/[0.02] px-3 py-1.5">
+              <UIcon name="i-lucide-lock" class="h-3 w-3 text-blue-400/60" />
+              <span class="text-[10px] text-white/25">LGPD Compliance</span>
+            </div>
+          </div>
         </div>
       </div>
     </footer>
+
+    <!-- ========== CONTACT MODAL ========== -->
+    <Teleport to="body">
+      <Transition name="wl-modal">
+        <div v-if="showContactModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <!-- Backdrop -->
+          <div class="absolute inset-0 bg-black/80 backdrop-blur-md" @click="showContactModal = false" />
+
+          <!-- Modal -->
+          <div class="relative w-full max-w-[560px] overflow-hidden rounded-3xl border border-white/[0.08] bg-[#08080d]">
+            <!-- Ambient glow -->
+            <div class="pointer-events-none absolute -top-40 left-1/2 h-80 w-80 -translate-x-1/2 rounded-full bg-blue-400/[0.07] blur-[100px]" />
+            <div class="pointer-events-none absolute -inset-px rounded-3xl bg-gradient-to-b from-blue-400/15 via-transparent to-transparent" />
+
+            <!-- Close -->
+            <button class="absolute right-5 top-5 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/[0.05] text-white/50 transition-all hover:bg-white/10 hover:text-white" @click="showContactModal = false">
+              <UIcon name="i-lucide-x" class="h-4 w-4" />
+            </button>
+
+            <!-- Step 1: Value prop + YouTube (hero input) -->
+            <div v-if="modalStep === 0" class="relative">
+              <!-- Header with outcome focus -->
+              <div class="px-8 pt-10 pb-2 text-center">
+                <div class="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-400/10 ring-1 ring-blue-400/15">
+                  <UIcon name="i-lucide-rocket" class="h-6 w-6 text-blue-400" />
+                </div>
+                <h3 class="text-2xl font-extrabold tracking-tight">Transforme seguidores em receita</h3>
+                <p class="mt-2 text-sm text-white/50 max-w-xs mx-auto">Cole seu canal. A IA faz o resto. Voce ve o resultado antes de pagar.</p>
+              </div>
+
+              <!-- What they get — ROI focus (Primo thinks in numbers) -->
+              <div class="mx-8 mt-5 grid grid-cols-3 gap-3">
+                <div class="rounded-xl bg-white/[0.03] p-3 text-center ring-1 ring-white/[0.04]">
+                  <p class="text-lg font-extrabold text-blue-400">5 min</p>
+                  <p class="text-[10px] text-white/40 mt-0.5">Para ficar pronta</p>
+                </div>
+                <div class="rounded-xl bg-white/[0.03] p-3 text-center ring-1 ring-white/[0.04]">
+                  <p class="text-lg font-extrabold text-emerald-400">R$ 0</p>
+                  <p class="text-[10px] text-white/40 mt-0.5">Custo de dev</p>
+                </div>
+                <div class="rounded-xl bg-white/[0.03] p-3 text-center ring-1 ring-white/[0.04]">
+                  <p class="text-lg font-extrabold text-amber-400">100%</p>
+                  <p class="text-[10px] text-white/40 mt-0.5">Sua marca</p>
+                </div>
+              </div>
+
+              <!-- YouTube input — THE hero -->
+              <div class="px-8 mt-6">
+                <div class="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.03] transition-all duration-300 focus-within:border-red-400/30 focus-within:bg-white/[0.05] focus-within:shadow-[0_0_30px_rgba(248,113,113,0.06)]">
+                  <div class="flex items-center gap-3 px-5 py-4">
+                    <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-red-500/10 ring-1 ring-red-400/10">
+                      <UIcon name="i-lucide-youtube" class="h-5 w-5 text-red-400/60" />
+                    </div>
+                    <input v-model="contactForm.youtube" type="text" placeholder="youtube.com/@seucanal" class="w-full bg-transparent text-[15px] text-white placeholder:text-white/30 focus:outline-none" />
+                  </div>
+                </div>
+              </div>
+
+              <!-- CTA -->
+              <div class="px-8 mt-4 pb-8">
+                <button
+                  class="group relative flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-2xl bg-blue-400 py-4 text-sm font-bold text-black transition-all hover:bg-blue-300 hover:shadow-[0_0_40px_rgba(96,165,250,0.25)] hover:scale-[1.01] active:scale-[0.99]"
+                  @click="modalStep = 1"
+                >
+                  <div class="absolute inset-0 bg-gradient-to-r from-blue-400/0 via-white/25 to-blue-400/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                  <span class="relative">Continuar</span>
+                  <UIcon name="i-lucide-arrow-right" class="relative h-4 w-4" />
+                </button>
+                <p class="mt-3 text-center text-[11px] text-white/30">Sem cartao. Sem compromisso.</p>
+              </div>
+            </div>
+
+            <!-- Step 2: Contact details (minimal friction) -->
+            <div v-else class="relative">
+              <div class="px-8 pt-8 pb-2">
+                <!-- Back button + progress -->
+                <div class="relative flex items-center mb-6">
+                  <button class="flex items-center gap-1.5 text-xs text-white/50 transition-colors hover:text-white/80" @click="modalStep = 0">
+                    <UIcon name="i-lucide-arrow-left" class="h-3.5 w-3.5" />
+                    Voltar
+                  </button>
+                  <div class="absolute left-1/2 -translate-x-1/2 flex items-center gap-1.5">
+                    <div class="h-1 w-6 rounded-full bg-blue-400" />
+                    <div class="h-1 w-6 rounded-full bg-blue-400" />
+                  </div>
+                </div>
+
+                <h3 class="relative text-xl font-extrabold tracking-tight text-white">Quase la. Onde te encontramos?</h3>
+                <p class="mt-1 text-sm text-white/45">So precisamos do basico para agendar sua demo.</p>
+              </div>
+
+              <div class="space-y-3 px-8 pt-4 pb-8">
+                <!-- Name -->
+                <div class="group">
+                  <div class="relative overflow-hidden rounded-xl border border-white/[0.06] bg-white/[0.03] transition-all duration-300 focus-within:border-blue-400/30 focus-within:bg-white/[0.05]">
+                    <div class="flex items-center gap-3 px-4 py-3.5">
+                      <UIcon name="i-lucide-user" class="h-4 w-4 shrink-0 text-white/30 transition-colors group-focus-within:text-blue-400/60" />
+                      <input v-model="contactForm.name" type="text" placeholder="Seu nome" class="w-full bg-transparent text-sm text-white placeholder:text-white/30 focus:outline-none" />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Email -->
+                <div class="group">
+                  <div class="relative overflow-hidden rounded-xl border border-white/[0.06] bg-white/[0.03] transition-all duration-300 focus-within:border-blue-400/30 focus-within:bg-white/[0.05]">
+                    <div class="flex items-center gap-3 px-4 py-3.5">
+                      <UIcon name="i-lucide-mail" class="h-4 w-4 shrink-0 text-white/30 transition-colors group-focus-within:text-blue-400/60" />
+                      <input v-model="contactForm.email" type="email" placeholder="seu@email.com" class="w-full bg-transparent text-sm text-white placeholder:text-white/30 focus:outline-none" />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- WhatsApp (Primo values speed — WhatsApp > email for closing) -->
+                <div class="group">
+                  <div class="relative overflow-hidden rounded-xl border border-white/[0.06] bg-white/[0.03] transition-all duration-300 focus-within:border-emerald-400/30 focus-within:bg-white/[0.05]">
+                    <div class="flex items-center gap-3 px-4 py-3.5">
+                      <UIcon name="i-lucide-phone" class="h-4 w-4 shrink-0 text-white/30 transition-colors group-focus-within:text-emerald-400/60" />
+                      <input v-model="contactForm.whatsapp" type="tel" placeholder="WhatsApp (11) 99999-9999" class="w-full bg-transparent text-sm text-white placeholder:text-white/30 focus:outline-none" />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Audience size (qualifies the lead — Primo thinks in scale) -->
+                <div class="group">
+                  <div class="relative overflow-hidden rounded-xl border border-white/[0.06] bg-white/[0.03] transition-all duration-300 focus-within:border-blue-400/30 focus-within:bg-white/[0.05]">
+                    <div class="flex items-center gap-3 px-4 py-3.5">
+                      <UIcon name="i-lucide-users" class="h-4 w-4 shrink-0 text-white/30 transition-colors group-focus-within:text-blue-400/60" />
+                      <select v-model="contactForm.audience" class="w-full appearance-none bg-transparent text-sm text-white/70 focus:outline-none [&>option]:bg-[#0a0a0f] [&>option]:text-white">
+                        <option value="" disabled class="text-white/30">Tamanho da sua audiencia</option>
+                        <option value="< 50k">&lt; 50 mil seguidores</option>
+                        <option value="50k-200k">50 mil — 200 mil</option>
+                        <option value="200k-1M">200 mil — 1 milhao</option>
+                        <option value="1M+">1 milhao+</option>
+                      </select>
+                      <UIcon name="i-lucide-chevron-down" class="h-3.5 w-3.5 shrink-0 text-white/30" />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Submit -->
+                <button
+                  class="group relative mt-2 flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-2xl bg-blue-400 py-4 text-sm font-bold text-black transition-all hover:bg-blue-300 hover:shadow-[0_0_40px_rgba(96,165,250,0.25)] hover:scale-[1.01] active:scale-[0.99]"
+                  @click="submitContact"
+                >
+                  <div class="absolute inset-0 bg-gradient-to-r from-blue-400/0 via-white/25 to-blue-400/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                  <UIcon name="i-lucide-wand-2" class="relative h-4 w-4" />
+                  <span class="relative">Gerar minha plataforma</span>
+                </button>
+
+                <!-- Trust — results-oriented (not "we're nice") -->
+                <div class="flex items-center justify-center gap-5 pt-2">
+                  <div class="flex items-center gap-1.5">
+                    <UIcon name="i-lucide-zap" class="h-3 w-3 text-amber-400/60" />
+                    <span class="text-[10px] text-white/35">Demo em 24h</span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <UIcon name="i-lucide-lock" class="h-3 w-3 text-blue-400/50" />
+                    <span class="text-[10px] text-white/35">Sem compromisso</span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <UIcon name="i-lucide-trending-up" class="h-3 w-3 text-emerald-400/50" />
+                    <span class="text-[10px] text-white/35">ROI do dia 1</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
@@ -1332,13 +1713,26 @@ useHead({
   bodyAttrs: { style: 'font-family: Inter, sans-serif;' },
 })
 
-function handleGenerate() {
+const showContactModal = ref(false)
+const modalStep = ref(0)
+const contactForm = reactive({ name: '', email: '', youtube: '', whatsapp: '', audience: '' })
+
+function openContactModal() {
   const url = youtubeUrl.value || youtubeUrlBottom.value
-  if (url) {
-    navigateTo(`/institucional/contact?youtube=${encodeURIComponent(url)}`)
-  } else {
-    navigateTo('/institucional/contact')
-  }
+  if (url) contactForm.youtube = url
+  modalStep.value = 0
+  showContactModal.value = true
+}
+
+function submitContact() {
+  // TODO: integrate with API
+  showContactModal.value = false
+  modalStep.value = 0
+  contactForm.name = ''
+  contactForm.email = ''
+  contactForm.youtube = ''
+  contactForm.whatsapp = ''
+  contactForm.audience = ''
 }
 
 function scrollTo(id: string) {
@@ -1411,7 +1805,7 @@ const showcaseBrands = [
     bg: '#000000',
     accent: '#FF5900',
     colors: ['#FF5900', '#E55000', '#0A0A0A'],
-    domain: 'redentia.com.br/?brand=primo-rico',
+    domain: 'invest.primorico.com.br',
   },
   {
     name: 'Me Poupe!',
@@ -1422,7 +1816,7 @@ const showcaseBrands = [
     bg: '#1A0A2E',
     accent: '#FACC15',
     colors: ['#FACC15', '#EAB308', '#1A0A2E'],
-    domain: 'redentia.com.br/?brand=me-poupe',
+    domain: 'app.mepoupe.com',
   },
   {
     name: 'Investidor Sardinha',
@@ -1433,7 +1827,7 @@ const showcaseBrands = [
     bg: '#FFFFFF',
     accent: '#DC2626',
     colors: ['#DC2626', '#B91C1C', '#F9FAFB'],
-    domain: 'redentia.com.br/?brand=investidor-sardinha',
+    domain: 'mercado.investidorsardinha.com.br',
   },
 ]
 
@@ -1455,7 +1849,49 @@ const steps = [
   { title: 'Lancamento', description: 'Deploy com seu dominio customizado, PWA pronta, SEO configurado. Seus seguidores acessam e voce monetiza desde o dia 1.' },
 ]
 
-const techStack = ['Nuxt 3', 'Vue 3', 'TypeScript', 'Tailwind v4', 'SSR + PWA', 'SEO otimizado', 'Laravel API', 'PostgreSQL', 'Docker', 'CI/CD']
+const openFaq = ref(0)
+
+const faqs = [
+  { q: 'Preciso saber programar?', a: 'Nao. A IA faz todo o trabalho tecnico — desde a analise do seu canal ate o deploy da plataforma. Voce so precisa colar o link do seu YouTube e revisar o resultado.' },
+  { q: 'Quanto tempo leva para ficar pronta?', a: 'A IA gera a primeira versao em menos de 5 minutos. Apos sua revisao e ajustes, o deploy e feito em segundos. Do zero ao ar em menos de uma hora.' },
+  { q: 'Posso usar meu proprio dominio?', a: 'Sim. Nos planos Pro e Enterprise voce conecta seu dominio customizado (ex: invest.seucanal.com.br) com SSL gratuito configurado automaticamente.' },
+  { q: 'Como funciona a IA de assessoria?', a: 'O chatbot e treinado com seus videos, estilo de comunicacao e tom de voz. Ele responde duvidas de investimentos usando dados fundamentalistas reais da B3, sempre no seu jeito de falar.' },
+  { q: 'Quais dados de mercado estao inclusos?', a: 'Cotacoes em tempo real de 800+ ativos: acoes, FIIs, ETFs, BDRs e Small Caps. Alem de indicadores fundamentalistas como P/L, DY, P/VP, margem liquida e mais.' },
+  { q: 'Posso cancelar a qualquer momento?', a: 'Sim. Nao existe fidelidade ou multa. Voce pode cancelar seu plano a qualquer momento e sua plataforma fica no ar ate o fim do periodo pago.' },
+  { q: 'Meus seguidores precisam pagar para usar?', a: 'Voce decide. A plataforma pode ser 100% gratuita para seus seguidores ou voce pode ativar um modelo freemium com funcionalidades premium pagas — a receita vai direto para voce.' },
+]
+
+const earlyAdopterSpots = ref(7)
+
+const pricingPlans = [
+  {
+    features: [
+      'Plataforma com sua marca',
+      'Ate 5.000 usuarios',
+      'Cotacoes em tempo real',
+      'Chatbot IA basico',
+    ],
+  },
+  {
+    features: [
+      'Tudo do Starter',
+      'Usuarios ilimitados',
+      'Seu dominio + SSL',
+      'IA com seu tom de voz',
+      'Carteira + Dividendos',
+      'Suporte prioritario',
+    ],
+  },
+  {
+    features: [
+      'Tudo do Pro',
+      'Features sob medida',
+      'SLA dedicado',
+      'Onboarding personalizado',
+      'Gerente de conta exclusivo',
+    ],
+  },
+]
 
 // ── Real market data from API ──
 const API = 'https://redentia-api.saraivada.com/api'
@@ -1856,5 +2292,27 @@ const dividendMonths = [
 @keyframes ai-grow {
   from { transform: scaleX(0); }
   to { transform: scaleX(1); }
+}
+
+/* Contact modal transitions */
+.wl-modal-enter-active,
+.wl-modal-leave-active {
+  transition: opacity 0.3s ease;
+}
+.wl-modal-enter-active > :last-child,
+.wl-modal-leave-active > :last-child {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+.wl-modal-enter-from,
+.wl-modal-leave-to {
+  opacity: 0;
+}
+.wl-modal-enter-from > :last-child {
+  transform: scale(0.95) translateY(10px);
+  opacity: 0;
+}
+.wl-modal-leave-to > :last-child {
+  transform: scale(0.95) translateY(10px);
+  opacity: 0;
 }
 </style>
