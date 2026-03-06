@@ -641,12 +641,12 @@
           <p class="mx-auto max-w-lg text-base text-white/40">800+ ativos brasileiros com cotacoes ao vivo, indicadores fundamentalistas e analise completa. <span class="text-white/60">Tudo abaixo e real — nao mockup.</span></p>
         </div>
 
-        <!-- Category tabs -->
-        <div class="wl-reveal mb-8 flex items-center justify-center gap-2 md:gap-3">
+        <!-- Category tabs — desktop buttons -->
+        <div class="wl-reveal mb-8 hidden md:flex items-center justify-center gap-3">
           <button
             v-for="cat in marketCategories"
             :key="cat.key"
-            class="flex items-center gap-2.5 rounded-xl px-5 py-3 md:px-6 md:py-3.5 text-sm font-bold transition-all duration-300"
+            class="flex items-center gap-2.5 rounded-xl px-6 py-3.5 text-sm font-bold transition-all duration-300"
             :class="activeMarketCat === cat.key
               ? 'bg-blue-400 text-black shadow-lg shadow-blue-400/20'
               : 'bg-white/[0.04] text-white/40 hover:bg-white/[0.08] hover:text-white/60'"
@@ -658,6 +658,22 @@
               {{ cat.count }}
             </span>
           </button>
+        </div>
+
+        <!-- Category select — mobile -->
+        <div class="wl-reveal mb-8 flex md:hidden justify-center">
+          <div class="relative">
+            <select
+              :value="activeMarketCat"
+              class="appearance-none rounded-xl border border-white/[0.08] bg-white/[0.04] pl-4 pr-10 py-3 text-sm font-bold text-white/80 outline-none focus:border-blue-400/40 focus:ring-1 focus:ring-blue-400/20 transition-all"
+              @change="activeMarketCat = ($event.target as HTMLSelectElement).value"
+            >
+              <option v-for="cat in marketCategories" :key="cat.key" :value="cat.key" class="bg-[#0a0a0f] text-white">
+                {{ cat.label }} ({{ cat.count }})
+              </option>
+            </select>
+            <UIcon name="i-lucide-chevron-down" class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/30" />
+          </div>
         </div>
       </div>
 
