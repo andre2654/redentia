@@ -434,20 +434,23 @@
         </div>
 
         <!-- Brand selector tabs -->
-        <div class="wl-reveal mb-8 md:mb-12 flex items-center justify-center gap-2 md:gap-3">
+        <div class="wl-reveal mb-10 md:mb-14 flex items-stretch justify-center gap-3 md:gap-4">
           <button
             v-for="(s, idx) in showcaseBrands"
             :key="`tab-${s.slug}`"
-            class="group relative flex items-center gap-2.5 overflow-hidden rounded-xl px-4 py-2.5 md:px-5 md:py-3 transition-all duration-500"
-            :class="idx === activeShowcase ? 'bg-white/[0.08]' : 'bg-white/[0.02] hover:bg-white/[0.05]'"
+            class="group relative flex flex-col items-center gap-2 overflow-hidden rounded-2xl border px-5 py-4 md:px-8 md:py-5 transition-all duration-500 cursor-pointer"
+            :class="idx === activeShowcase ? 'bg-white/[0.06]' : 'border-transparent bg-white/[0.02] hover:bg-white/[0.04]'"
+            :style="idx === activeShowcase ? { borderColor: `${s.accent}30`, boxShadow: `0 0 40px ${s.accent}10` } : {}"
             @click="activeShowcase = idx; resetAutoRotate()"
           >
-            <div class="flex gap-1">
-              <div v-for="(color, ci) in s.colors.slice(0, 2)" :key="ci" class="h-2.5 w-2.5 rounded-full ring-1 ring-white/10 transition-transform duration-300" :class="idx === activeShowcase ? 'scale-110' : 'scale-100'" :style="{ backgroundColor: color }" />
+            <!-- Color dots -->
+            <div class="flex gap-1.5 mb-1">
+              <div v-for="(color, ci) in s.colors" :key="ci" class="h-3 w-3 md:h-3.5 md:w-3.5 rounded-full ring-1 ring-white/10 transition-all duration-300" :class="idx === activeShowcase ? 'scale-110' : 'scale-90 opacity-50'" :style="{ backgroundColor: color }" />
             </div>
-            <span class="text-xs md:text-sm font-bold transition-colors duration-300" :style="{ color: idx === activeShowcase ? s.accent : 'rgba(255,255,255,0.4)' }">{{ s.name }}</span>
-            <!-- Progress bar (only on active) -->
-            <div v-if="idx === activeShowcase" class="absolute bottom-0 left-0 h-0.5 wl-progress-fill" :style="{ backgroundColor: s.accent, animationDuration: `${CAROUSEL_INTERVAL}ms` }" />
+            <!-- Brand name -->
+            <span class="text-xs md:text-sm font-bold tracking-wide transition-colors duration-300" :style="{ color: idx === activeShowcase ? s.accent : 'rgba(255,255,255,0.3)' }">{{ s.name }}</span>
+            <!-- Progress bar bottom -->
+            <div v-if="idx === activeShowcase" class="absolute bottom-0 left-0 h-[2px] wl-progress-fill" :style="{ backgroundColor: s.accent, animationDuration: `${CAROUSEL_INTERVAL}ms` }" />
           </button>
         </div>
 
@@ -492,21 +495,24 @@
                 </div>
                 <iframe
                   :src="`https://redentia.com.br/?brand=${s.slug}`"
-                  class="relative h-full w-full border-0 pointer-events-none"
+                  class="relative h-full w-full border-0"
                   :title="`Preview ${s.name}`"
                   loading="lazy"
                   sandbox="allow-scripts allow-same-origin"
                 />
-                <!-- Overlay to allow page scroll + open link -->
+                <!-- Bottom fade gradient (always visible) -->
+                <div class="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+              </div>
+
+              <!-- Explore button below iframe -->
+              <div class="flex justify-center border-t border-white/[0.06] bg-[#1C1C1E] py-3">
                 <a
                   :href="`https://redentia.com.br/?brand=${s.slug}`"
                   target="_blank"
-                  class="absolute inset-0 z-10 flex items-end justify-center pb-6 opacity-0 hover:opacity-100 transition-opacity duration-300 bg-gradient-to-t from-black/40 via-transparent to-transparent"
+                  class="flex items-center gap-2 rounded-full px-5 py-2 text-xs font-bold text-white transition-all duration-300 hover:scale-105" :style="{ backgroundColor: `${s.accent}CC` }"
                 >
-                  <span class="flex items-center gap-2 rounded-full px-4 py-2 text-xs font-bold text-white backdrop-blur-md" :style="{ backgroundColor: `${s.accent}CC` }">
-                    <UIcon name="i-lucide-external-link" class="h-3.5 w-3.5" />
-                    Explorar {{ s.name }}
-                  </span>
+                  <UIcon name="i-lucide-external-link" class="h-3.5 w-3.5" />
+                  Explorar {{ s.name }}
                 </a>
               </div>
             </div>
@@ -2172,6 +2178,16 @@ const dividendMonths = [
 @keyframes wl-fill {
   from { width: 0; }
   to { width: 100%; }
+}
+
+/* Vertical progress bar for desktop showcase tabs */
+.wl-progress-fill-vertical {
+  animation: wl-fill-vertical linear forwards;
+}
+
+@keyframes wl-fill-vertical {
+  from { height: 0; }
+  to { height: 100%; }
 }
 
 /* Marquee scrolling rows */
