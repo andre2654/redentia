@@ -745,25 +745,31 @@
     </section>
 
     <!-- ========== PORTFOLIO & DIVIDENDOS ========== -->
-    <section class="relative border-t border-white/[0.04] px-6 py-20 md:py-28">
-      <div class="pointer-events-none absolute left-0 bottom-0 h-[400px] w-[400px] rounded-full bg-blue-400/5 blur-[140px]" />
+    <section class="relative border-t border-white/[0.04] px-6 py-24 md:py-32">
+      <!-- Dual ambient glows -->
+      <div class="pointer-events-none absolute left-0 bottom-0 h-[500px] w-[500px] rounded-full bg-blue-400/[0.06] blur-[180px]" />
+      <div class="pointer-events-none absolute right-0 top-1/3 h-[400px] w-[400px] rounded-full bg-emerald-400/[0.03] blur-[160px]" />
 
       <div class="relative mx-auto max-w-5xl">
+        <!-- Header -->
         <div class="wl-reveal mb-16 text-center">
-          <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-blue-400">Carteira & Dividendos</p>
-          <h2 class="mb-4 text-3xl font-bold tracking-tight md:text-5xl">Controle total do patrimonio</h2>
-          <p class="mx-auto max-w-lg text-base text-white/40">Seus seguidores acompanham a carteira, dividendos e rentabilidade em um so lugar.</p>
+          <div class="mb-5 inline-flex items-center gap-3 rounded-full border border-blue-400/15 bg-blue-400/[0.06] px-4 py-2">
+            <UIcon name="i-lucide-briefcase" class="h-3.5 w-3.5 text-blue-400" />
+            <span class="text-xs font-bold uppercase tracking-widest text-blue-400">Carteira & Dividendos</span>
+          </div>
+          <h2 class="mb-5 text-3xl font-bold tracking-tight md:text-5xl">Seus seguidores veem<br /><span class="bg-gradient-to-r from-blue-400 to-blue-300 bg-clip-text text-transparent">o patrimonio crescer</span></h2>
+          <p class="mx-auto max-w-lg text-base md:text-lg text-white/40">Carteira, dividendos e rentabilidade atualizados em tempo real — tudo na sua marca.</p>
         </div>
 
-        <!-- App-like dashboard mockup in a single terminal frame -->
-        <div class="wl-reveal relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0a0a0f] shadow-2xl shadow-blue-400/5">
+        <!-- App-like dashboard mockup -->
+        <div class="wl-reveal relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0a0a0f]" style="box-shadow: 0 0 80px rgba(96,165,250,0.06), 0 25px 50px rgba(0,0,0,0.4);">
 
           <!-- Window chrome -->
           <div class="flex items-center gap-3 border-b border-white/[0.06] bg-white/[0.02] px-5 py-3">
             <div class="flex gap-1.5">
-              <div class="h-2.5 w-2.5 rounded-full bg-white/10" />
-              <div class="h-2.5 w-2.5 rounded-full bg-white/10" />
-              <div class="h-2.5 w-2.5 rounded-full bg-white/10" />
+              <div class="h-2.5 w-2.5 rounded-full bg-red-400/40" />
+              <div class="h-2.5 w-2.5 rounded-full bg-amber-400/40" />
+              <div class="h-2.5 w-2.5 rounded-full bg-emerald-400/40" />
             </div>
             <div class="flex flex-1 items-center justify-center gap-2">
               <UIcon name="i-lucide-briefcase" class="h-3 w-3 text-blue-400" />
@@ -775,16 +781,16 @@
           <!-- Top stats row -->
           <div class="grid grid-cols-3 border-b border-white/[0.04]">
             <div class="p-5 text-center border-r border-white/[0.04]">
-              <p class="text-[11px] text-white/30 mb-1">Patrimonio total</p>
-              <p class="text-2xl font-bold tabular-nums md:text-3xl">R$ {{ portfolioTotal.toLocaleString('pt-BR') }}</p>
+              <p class="text-[10px] text-white/25 mb-1.5 uppercase tracking-wider">Patrimonio total</p>
+              <p class="text-xl font-extrabold tabular-nums md:text-3xl">R$ {{ portfolioTotal.toLocaleString('pt-BR') }}</p>
             </div>
             <div class="p-5 text-center border-r border-white/[0.04]">
-              <p class="text-[11px] text-white/30 mb-1">Dividendos (6m)</p>
-              <p class="text-2xl font-bold text-blue-400 tabular-nums md:text-3xl">R$ 2.140</p>
+              <p class="text-[10px] text-white/25 mb-1.5 uppercase tracking-wider">Dividendos (6m)</p>
+              <p class="text-xl font-extrabold text-blue-400 tabular-nums md:text-3xl">R$ 2.140</p>
             </div>
             <div class="p-5 text-center">
-              <p class="text-[11px] text-white/30 mb-1">Yield medio</p>
-              <p class="text-2xl font-bold tabular-nums md:text-3xl">6.8%</p>
+              <p class="text-[10px] text-white/25 mb-1.5 uppercase tracking-wider">Yield medio</p>
+              <p class="text-xl font-extrabold tabular-nums md:text-3xl">6.8%</p>
             </div>
           </div>
 
@@ -794,22 +800,22 @@
             <!-- Left: Asset list -->
             <div class="flex-1 lg:border-r lg:border-white/[0.04]">
               <!-- Column header -->
-              <div class="flex items-center gap-3 px-5 py-2.5 border-b border-white/[0.04] bg-white/[0.01]">
+              <div class="flex items-center gap-3 px-5 py-2.5 border-b border-white/[0.04] bg-white/[0.015]">
                 <span class="w-6 text-[9px] font-bold uppercase tracking-widest text-white/15">#</span>
                 <span class="flex-1 text-[9px] font-bold uppercase tracking-widest text-white/15">Ativo</span>
                 <span class="hidden sm:block w-28 text-right text-[9px] font-bold uppercase tracking-widest text-white/15">Alocacao</span>
                 <span class="w-24 text-right text-[9px] font-bold uppercase tracking-widest text-white/15">Valor</span>
               </div>
 
-              <div class="divide-y divide-white/[0.03]">
+              <div class="divide-y !divide-white/[0.1]">
                 <div
                   v-for="(asset, aIdx) in portfolioAssets"
                   :key="asset.ticker"
-                  class="group flex items-center gap-3 px-5 py-3 transition-colors hover:bg-white/[0.02]"
+                  class="group flex items-center gap-3 px-5 py-3.5 transition-all duration-200 hover:bg-white/[0.025]"
                 >
                   <span class="w-6 text-center text-[10px] font-bold text-white/15 tabular-nums">{{ aIdx + 1 }}</span>
 
-                  <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-[10px] font-bold" :class="asset.pct >= 0 ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'">
+                  <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[10px] font-bold ring-1 transition-all duration-200" :class="asset.pct >= 0 ? 'bg-emerald-500/10 text-emerald-400 ring-emerald-400/10 group-hover:ring-emerald-400/20' : 'bg-red-500/10 text-red-400 ring-red-400/10 group-hover:ring-red-400/20'">
                     {{ asset.ticker.slice(0, 2) }}
                   </div>
 
@@ -820,10 +826,10 @@
 
                   <!-- Allocation bar -->
                   <div class="hidden sm:flex items-center gap-2 w-28">
-                    <div class="h-1 flex-1 overflow-hidden rounded-full bg-white/[0.04]">
+                    <div class="h-1.5 flex-1 overflow-hidden rounded-full bg-white/[0.04]">
                       <div
-                        class="h-full rounded-full"
-                        :class="asset.pct >= 0 ? 'bg-blue-400/50' : 'bg-red-400/40'"
+                        class="h-full rounded-full transition-all duration-500"
+                        :class="asset.pct >= 0 ? 'bg-gradient-to-r from-blue-400/30 to-blue-400/60' : 'bg-gradient-to-r from-red-400/30 to-red-400/50'"
                         :style="{ width: `${Math.min(Math.abs(asset.pct ?? 0) * 4, 100)}%` }"
                       />
                     </div>
@@ -843,7 +849,7 @@
             <!-- Right: Dividend chart -->
             <div class="lg:w-[320px] flex flex-col">
               <!-- Chart header -->
-              <div class="flex items-center gap-2 px-5 py-2.5 border-b border-white/[0.04] bg-white/[0.01]">
+              <div class="flex items-center gap-2 px-5 py-2.5 border-b border-white/[0.04] bg-white/[0.015]">
                 <UIcon name="i-lucide-coins" class="h-3.5 w-3.5 text-blue-400" />
                 <span class="text-[9px] font-bold uppercase tracking-widest text-white/15">Dividendos mensais</span>
               </div>
@@ -856,8 +862,8 @@
                   class="group/bar flex flex-1 flex-col items-center gap-1"
                 >
                   <span class="text-[8px] font-bold text-blue-400/70 tabular-nums opacity-0 transition-opacity group-hover/bar:opacity-100">{{ d.value }}</span>
-                  <div class="relative w-full overflow-hidden rounded transition-all duration-300 group-hover/bar:brightness-125" :style="{ height: `${(d.value / 480) * 120}px` }">
-                    <div class="absolute inset-0 bg-gradient-to-t from-blue-400/20 to-blue-400/60" />
+                  <div class="relative w-full overflow-hidden rounded-sm transition-all duration-300 group-hover/bar:brightness-125" :style="{ height: `${(d.value / 480) * 120}px` }">
+                    <div class="absolute inset-0 bg-gradient-to-t from-blue-400/15 to-blue-400/50 group-hover/bar:from-blue-400/25 group-hover/bar:to-blue-400/70 transition-all duration-300" />
                   </div>
                   <span class="text-[9px] text-white/25">{{ d.month }}</span>
                 </div>
@@ -866,54 +872,55 @@
               <!-- Bottom stats -->
               <div class="flex border-t border-white/[0.04]">
                 <div class="flex-1 p-4 text-center">
-                  <p class="text-lg font-bold text-blue-400 tabular-nums">R$ 2.140</p>
+                  <p class="text-lg font-extrabold text-blue-400 tabular-nums">R$ 2.140</p>
                   <p class="text-[9px] text-white/25">Total recebido</p>
                 </div>
                 <div class="flex-1 border-l border-white/[0.04] p-4 text-center">
-                  <p class="text-lg font-bold tabular-nums">12</p>
+                  <p class="text-lg font-extrabold tabular-nums">12</p>
                   <p class="text-[9px] text-white/25">Pagamentos</p>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Open Finance — Em breve -->
-        <div class="wl-reveal mt-10 relative overflow-hidden rounded-2xl border border-emerald-400/15 bg-[#0a0a0f] p-6 md:p-8" style="box-shadow: 0 0 60px rgba(52,211,153,0.04);">
-          <!-- Blurred overlay effect -->
-          <div class="pointer-events-none absolute right-0 top-0 h-full w-1/2 bg-gradient-to-l from-emerald-400/[0.03] to-transparent" />
+          <!-- Open Finance — integrated as bottom extension of the dashboard -->
+          <div class="relative border-t border-dashed border-emerald-400/15">
+            <!-- Subtle emerald glow line -->
+            <div class="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-400/20 to-transparent" />
 
-          <div class="relative flex flex-col md:flex-row md:items-center gap-6">
-            <!-- Left: text + badge -->
-            <div class="flex-1 min-w-0">
-              <div class="mb-3 inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1.5">
-                <span class="relative flex h-1.5 w-1.5">
-                  <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                  <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                </span>
-                <span class="text-[10px] font-bold uppercase tracking-widest text-emerald-400">Em breve</span>
-              </div>
-              <h3 class="mb-2 text-xl font-bold md:text-2xl">Open Finance integrado</h3>
-              <p class="text-sm text-white/35 max-w-md">Seus seguidores conectam bancos, cartoes e corretoras em um so lugar — com a sua marca. <span class="text-white/50 font-medium">Retencao vai a outro nivel.</span></p>
-            </div>
-
-            <!-- Right: connected banks preview -->
-            <div class="flex items-center gap-3 md:gap-4 shrink-0">
-              <div class="flex -space-x-3">
-                <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-[#820ad1]/20 text-[10px] font-black text-[#820ad1] ring-2 ring-[#0a0a0f] z-30">NU</div>
-                <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-500/20 text-[10px] font-black text-blue-400 ring-2 ring-[#0a0a0f] z-20">XP</div>
-                <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-500/20 text-[10px] font-black text-amber-400 ring-2 ring-[#0a0a0f] z-10">BB</div>
-                <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-white/[0.04] text-[10px] font-bold text-white/20 ring-2 ring-[#0a0a0f]">+8</div>
-              </div>
-
-              <div class="hidden md:flex flex-col gap-1">
-                <div class="flex items-center gap-1.5">
-                  <div class="h-1.5 w-1.5 rounded-full bg-emerald-400/60" />
-                  <span class="text-[10px] text-white/30">Bacen regulamentado</span>
+            <div class="flex flex-col md:flex-row md:items-center gap-5 px-6 py-5">
+              <!-- Badge + text -->
+              <div class="flex items-center gap-4 flex-1 min-w-0">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-400/10 ring-1 ring-emerald-400/15">
+                  <UIcon name="i-lucide-landmark" class="h-4.5 w-4.5 text-emerald-400" />
                 </div>
-                <div class="flex items-center gap-1.5">
-                  <div class="h-1.5 w-1.5 rounded-full bg-emerald-400/60" />
-                  <span class="text-[10px] text-white/30">Zero dev necessario</span>
+                <div class="min-w-0">
+                  <div class="flex items-center gap-2.5 mb-1">
+                    <p class="text-sm font-bold">Open Finance</p>
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-400/10 px-2.5 py-0.5">
+                      <span class="relative flex h-1.5 w-1.5">
+                        <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                        <span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                      </span>
+                      <span class="text-[9px] font-bold uppercase tracking-widest text-emerald-400">Em breve</span>
+                    </span>
+                  </div>
+                  <p class="text-[11px] text-white/30">Consolide bancos, cartoes e corretoras — seus seguidores nunca mais saem</p>
+                </div>
+              </div>
+
+              <!-- Bank avatars -->
+              <div class="flex items-center gap-4 shrink-0">
+                <div class="flex -space-x-2.5">
+                  <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-[#820ad1]/20 text-[9px] font-black text-[#820ad1] ring-2 ring-[#0a0a0f] z-30">NU</div>
+                  <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500/20 text-[9px] font-black text-blue-400 ring-2 ring-[#0a0a0f] z-20">XP</div>
+                  <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-500/20 text-[9px] font-black text-amber-400 ring-2 ring-[#0a0a0f] z-10">BB</div>
+                  <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/15 text-[9px] font-black text-emerald-400 ring-2 ring-[#0a0a0f]">+8</div>
+                </div>
+                <div class="hidden lg:block h-8 w-px bg-white/[0.06]" />
+                <div class="hidden lg:flex flex-col gap-0.5">
+                  <span class="text-[10px] font-bold text-emerald-400 tabular-nums">+340%</span>
+                  <span class="text-[9px] text-white/20">retencao estimada</span>
                 </div>
               </div>
             </div>
@@ -974,12 +981,12 @@
                 </div>
               </div>
               <div class="flex items-start gap-3">
-                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-400/10 mt-0.5">
-                  <UIcon name="i-lucide-bar-chart-3" class="h-4 w-4 text-blue-400" />
+                <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-400/10 mt-0.5">
+                  <UIcon name="i-lucide-bell-ring" class="h-4 w-4 text-amber-400" />
                 </div>
                 <div>
-                  <p class="text-sm font-semibold">Dados reais, nao achismo</p>
-                  <p class="text-[13px] text-white/30">P/L, DY, P/VP, margem e mais — direto da B3 em tempo real.</p>
+                  <p class="text-sm font-semibold">Alerta que salva dinheiro</p>
+                  <p class="text-[13px] text-white/30">PETR4 caiu 8% e o seguidor vendeu a tempo. Queda, alta, dividendo — alerta instantaneo.</p>
                 </div>
               </div>
             </div>
@@ -998,6 +1005,24 @@
                     <UIcon name="i-lucide-signal" class="h-3 w-3 text-white/30" />
                     <UIcon name="i-lucide-wifi" class="h-3 w-3 text-white/30" />
                     <UIcon name="i-lucide-battery-full" class="h-3 w-3 text-white/30" />
+                  </div>
+                </div>
+
+                <!-- Push notification banner — slides in -->
+                <div class="mx-3 mt-1.5 mb-1 animate-[wl-slide-down_0.5s_ease-out_1.5s_both] rounded-2xl bg-white/[0.08] backdrop-blur-xl p-3 ring-1 ring-white/[0.06]">
+                  <div class="flex items-start gap-2.5">
+                    <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-red-500/20">
+                      <UIcon name="i-lucide-trending-down" class="h-4 w-4 text-red-400" />
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <div class="flex items-center justify-between">
+                        <p class="text-[11px] font-bold text-white/70">Alerta de Preco</p>
+                        <span class="text-[9px] text-white/25">agora</span>
+                      </div>
+                      <p class="text-[11px] text-white/50 mt-0.5">
+                        <span class="font-semibold text-red-400">PETR4 caiu 3.2%</span> — abaixo do seu alerta de R$ 37.00
+                      </p>
+                    </div>
                   </div>
                 </div>
 
@@ -1130,6 +1155,27 @@
                 </div>
               </div>
 
+              <!-- Floating alert cards — desktop only -->
+              <div class="hidden lg:flex absolute bottom-24 -left-16 items-center gap-2.5 rounded-2xl bg-white/[0.05] backdrop-blur-xl px-3.5 py-2.5 ring-1 ring-white/[0.08] shadow-xl -rotate-2 animate-[wl-notif-float_7s_ease-in-out_infinite_2s] z-20">
+                <div class="h-8 w-8 shrink-0 rounded-xl bg-emerald-500/20 flex items-center justify-center">
+                  <UIcon name="i-lucide-trending-up" class="h-3.5 w-3.5 text-emerald-400" />
+                </div>
+                <div>
+                  <p class="text-[11px] font-bold text-emerald-400">VALE3 +5.1%</p>
+                  <p class="text-[10px] text-white/30">Meta de R$ 68.50 atingida</p>
+                </div>
+              </div>
+
+              <div class="hidden lg:flex absolute top-28 -left-12 items-center gap-2.5 rounded-2xl bg-white/[0.05] backdrop-blur-xl px-3.5 py-2.5 ring-1 ring-white/[0.08] shadow-xl -rotate-1 animate-[wl-notif-float_5s_ease-in-out_infinite_1s] z-20">
+                <div class="h-8 w-8 shrink-0 rounded-xl bg-blue-500/20 flex items-center justify-center">
+                  <UIcon name="i-lucide-coins" class="h-3.5 w-3.5 text-blue-400" />
+                </div>
+                <div>
+                  <p class="text-[11px] font-bold text-blue-400">MXRF11</p>
+                  <p class="text-[10px] text-white/30">Dividendo R$ 0.10 creditado</p>
+                </div>
+              </div>
+
               <!-- Floating glow behind phone -->
               <div class="pointer-events-none absolute -inset-4 -z-10 rounded-3xl bg-blue-400/[0.03] blur-2xl" />
             </div>
@@ -1139,170 +1185,124 @@
     </section>
 
     <!-- ========== COMO FUNCIONA ========== -->
-    <section class="relative border-t border-white/[0.04] px-6 py-20 md:py-28 overflow-hidden">
+    <section class="relative border-t border-white/[0.04] px-6 py-24 md:py-32 overflow-hidden">
       <div class="pointer-events-none absolute left-1/2 top-1/3 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-blue-400/[0.03] blur-[160px]" />
 
-      <div class="relative mx-auto max-w-5xl">
-        <div class="wl-reveal mb-16 text-center">
-          <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-blue-400">Como funciona</p>
-          <h2 class="mb-4 text-3xl font-bold tracking-tight md:text-5xl">3 passos. 3 minutos.</h2>
+      <div class="relative mx-auto max-w-4xl">
+        <div class="wl-reveal mb-20 text-center">
+          <div class="mb-5 inline-flex items-center gap-3 rounded-full border border-blue-400/15 bg-blue-400/[0.06] px-4 py-2">
+            <UIcon name="i-lucide-sparkles" class="h-3.5 w-3.5 text-blue-400" />
+            <span class="text-xs font-bold uppercase tracking-widest text-blue-400">Como funciona</span>
+          </div>
+          <h2 class="mb-5 text-3xl font-bold tracking-tight md:text-5xl">Do link do YouTube<br /><span class="bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">ao primeiro faturamento</span></h2>
+          <p class="mx-auto max-w-md text-base text-white/40">3 minutos. Zero codigo. A IA faz tudo.</p>
         </div>
 
-        <!-- Horizontal steps with visual previews -->
-        <div class="grid gap-4 md:grid-cols-3">
+        <!-- Vertical timeline -->
+        <div class="relative">
+          <!-- Timeline line -->
+          <div class="absolute left-6 md:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-blue-400/30 via-blue-400/15 to-emerald-400/30 md:-translate-x-px" />
 
-          <!-- Step 1: Cole o link -->
-          <div class="wl-reveal group relative overflow-hidden rounded-2xl border border-white/[0.06] bg-[#0a0a0f]">
-            <!-- Visual preview -->
-            <div class="relative border-b border-white/[0.04] p-5">
-              <!-- URL input mockup -->
-              <div class="mb-4 flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] px-3 py-2.5">
-                <UIcon name="i-lucide-youtube" class="h-4 w-4 text-red-400/60" />
-                <span class="text-sm text-white/50 font-mono">youtube.com/<span class="text-blue-400">@seucanal</span></span>
-              </div>
-              <!-- Processing animation mockup -->
-              <div class="space-y-2">
-                <div class="flex items-center gap-2">
-                  <div class="h-1.5 w-1.5 rounded-full bg-blue-400 ai-terminal-pulse" />
-                  <span class="text-[10px] text-white/30 font-mono">Identidade visual mapeada</span>
-                  <UIcon name="i-lucide-check" class="h-3 w-3 text-emerald-400/60" />
-                </div>
-                <div class="flex items-center gap-2">
-                  <div class="h-1.5 w-1.5 rounded-full bg-blue-400 ai-terminal-pulse" style="animation-delay: 0.5s;" />
-                  <span class="text-[10px] text-white/30 font-mono">Tom de voz capturado</span>
-                  <UIcon name="i-lucide-check" class="h-3 w-3 text-emerald-400/60" />
-                </div>
-                <div class="flex items-center gap-2">
-                  <div class="h-1.5 w-1.5 rounded-full bg-blue-400 ai-terminal-pulse" style="animation-delay: 1s;" />
-                  <span class="text-[10px] text-white/30 font-mono">Gerando sua plataforma...</span>
-                  <UIcon name="i-lucide-loader-2" class="h-3 w-3 text-blue-400/40 animate-spin" />
-                </div>
-              </div>
-              <!-- Progress bar -->
-              <div class="mt-4 h-1 w-full rounded-full bg-white/[0.04] overflow-hidden">
-                <div class="h-full w-[72%] rounded-full bg-gradient-to-r from-blue-400/60 to-blue-400" />
-              </div>
+          <!-- Step 1 -->
+          <div class="wl-reveal relative flex flex-col md:flex-row md:items-center gap-6 md:gap-12 mb-16 md:mb-20">
+            <!-- Timeline dot -->
+            <div class="absolute left-6 md:left-1/2 top-0 md:top-1/2 -translate-x-1/2 md:-translate-y-1/2 z-10">
+              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-400 text-lg font-black text-black shadow-lg shadow-blue-400/20">1</div>
             </div>
-            <!-- Text content -->
-            <div class="p-5">
-              <div class="mb-3 flex items-center gap-3">
-                <div class="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-400 text-sm font-bold text-black">1</div>
-                <h3 class="text-base font-bold">Cole o link</h3>
+
+            <!-- Left: text -->
+            <div class="pl-16 md:pl-0 md:w-1/2 md:pr-16 md:text-right">
+              <h3 class="text-xl font-bold mb-2">Cole o link do YouTube</h3>
+              <p class="text-sm text-white/35 leading-relaxed">A IA assiste seus videos, extrai seu tom de voz, identifica cores e estilo — e gera sua plataforma completa em minutos.</p>
+            </div>
+
+            <!-- Right: visual -->
+            <div class="pl-16 md:pl-16 md:w-1/2">
+              <div class="rounded-2xl border border-white/[0.06] bg-[#0a0a0f] p-5 max-w-xs" style="box-shadow: 0 0 40px rgba(96,165,250,0.04);">
+                <div class="flex items-center gap-2.5 rounded-xl border border-white/[0.08] bg-white/[0.03] px-3.5 py-3 mb-4">
+                  <UIcon name="i-lucide-youtube" class="h-5 w-5 text-red-400" />
+                  <span class="text-sm text-white/40">youtube.com/<span class="text-white/70 font-medium">@seucanal</span></span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <div class="h-1.5 flex-1 rounded-full bg-white/[0.04] overflow-hidden">
+                    <div class="h-full w-[85%] rounded-full bg-gradient-to-r from-blue-400/50 to-blue-400 animate-pulse" />
+                  </div>
+                  <span class="text-[10px] font-bold text-blue-400 tabular-nums">85%</span>
+                </div>
               </div>
-              <p class="text-[13px] leading-relaxed text-white/35">A IA mapeia sua marca — cores, fonte, tom de voz — e gera tudo automaticamente.</p>
             </div>
           </div>
 
-          <!-- Step 2: Revisamos juntos -->
-          <div class="wl-reveal group relative overflow-hidden rounded-2xl border border-white/[0.06] bg-[#0a0a0f]" style="transition-delay: 100ms;">
-            <!-- Visual preview -->
-            <div class="relative border-b border-white/[0.04] p-5">
-              <!-- Config panel mockup -->
-              <div class="space-y-3">
-                <div class="flex items-center justify-between">
-                  <span class="text-[11px] text-white/40">Paleta</span>
-                  <div class="flex gap-1">
-                    <div class="h-5 w-5 rounded-md bg-[#4ADE80] ring-1 ring-white/10" />
-                    <div class="h-5 w-5 rounded-md bg-[#0A0A0A] ring-1 ring-white/10" />
-                    <div class="h-5 w-5 rounded-md bg-[#FFFFFF] ring-1 ring-white/10" />
-                    <UIcon name="i-lucide-pencil" class="h-5 w-5 text-white/15 p-0.5" />
-                  </div>
-                </div>
-                <div class="flex items-center justify-between">
-                  <span class="text-[11px] text-white/40">Fonte</span>
-                  <span class="text-[11px] font-bold text-blue-400">Poppins Black</span>
-                </div>
-                <div class="flex items-center justify-between">
-                  <span class="text-[11px] text-white/40">Tom de voz</span>
-                  <span class="text-[11px] text-white/50">Motivacional, informal</span>
-                </div>
-                <div class="h-px bg-white/[0.04]" />
-                <div class="flex items-center justify-between">
-                  <span class="text-[11px] text-white/40">Calculadoras</span>
-                  <div class="h-4 w-8 rounded-full bg-blue-400">
-                    <div class="h-4 w-4 translate-x-4 rounded-full bg-white shadow" />
-                  </div>
-                </div>
-                <div class="flex items-center justify-between">
-                  <span class="text-[11px] text-white/40">Glossario</span>
-                  <div class="h-4 w-8 rounded-full bg-blue-400">
-                    <div class="h-4 w-4 translate-x-4 rounded-full bg-white shadow" />
-                  </div>
-                </div>
-                <div class="flex items-center justify-between">
-                  <span class="text-[11px] text-white/40">Simulador</span>
-                  <div class="h-4 w-8 rounded-full bg-white/10">
-                    <div class="h-4 w-4 rounded-full bg-white/40 shadow" />
-                  </div>
-                </div>
-              </div>
+          <!-- Step 2 -->
+          <div class="wl-reveal relative flex flex-col md:flex-row-reverse md:items-center gap-6 md:gap-12 mb-16 md:mb-20">
+            <!-- Timeline dot -->
+            <div class="absolute left-6 md:left-1/2 top-0 md:top-1/2 -translate-x-1/2 md:-translate-y-1/2 z-10">
+              <div class="flex h-12 w-12 items-center justify-center rounded-2xl border-2 border-white/15 bg-white/[0.05] text-lg font-black text-white/60">2</div>
             </div>
-            <!-- Text content -->
-            <div class="p-5">
-              <div class="mb-3 flex items-center gap-3">
-                <div class="flex h-8 w-8 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-sm font-bold text-white/60">2</div>
-                <h3 class="text-base font-bold">Revisamos juntos</h3>
+
+            <!-- Right (reversed): text -->
+            <div class="pl-16 md:pl-0 md:w-1/2 md:pl-16">
+              <h3 class="text-xl font-bold mb-2">Ajuste o que quiser</h3>
+              <p class="text-sm text-white/35 leading-relaxed">Revise cores, fonte, funcionalidades e conteudo. Quando estiver perfeito, manda lancar.</p>
+            </div>
+
+            <!-- Left (reversed): visual -->
+            <div class="pl-16 md:pl-0 md:w-1/2 md:pr-16 md:flex md:justify-end">
+              <div class="rounded-2xl border border-white/[0.06] bg-[#0a0a0f] p-5 max-w-xs" style="box-shadow: 0 0 40px rgba(96,165,250,0.04);">
+                <div class="space-y-3">
+                  <div class="flex items-center justify-between">
+                    <span class="text-[11px] text-white/35">Cores</span>
+                    <div class="flex gap-1.5">
+                      <div class="h-6 w-6 rounded-lg bg-[#4ADE80] ring-1 ring-white/10" />
+                      <div class="h-6 w-6 rounded-lg bg-[#0a0a0f] ring-1 ring-white/10" />
+                      <div class="h-6 w-6 rounded-lg bg-white ring-1 ring-white/10" />
+                    </div>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-[11px] text-white/35">Fonte</span>
+                    <span class="text-[11px] font-bold text-white/60">Montserrat Bold</span>
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <span class="text-[11px] text-white/35">Tom</span>
+                    <span class="text-[11px] text-white/45">Direto, motivacional</span>
+                  </div>
+                </div>
+                <div class="mt-4 flex gap-2">
+                  <div class="flex-1 rounded-lg bg-white/[0.04] py-2 text-center text-[10px] text-white/30">Editar</div>
+                  <div class="flex-1 rounded-lg bg-blue-400 py-2 text-center text-[10px] font-bold text-black">Lancar</div>
+                </div>
               </div>
-              <p class="text-[13px] leading-relaxed text-white/35">Voce aprova cores, textos e funcionalidades. Ajusta o que quiser antes de lancar.</p>
             </div>
           </div>
 
-          <!-- Step 3: Monetize -->
-          <div class="wl-reveal group relative overflow-hidden rounded-2xl border border-white/[0.06] bg-[#0a0a0f]" style="transition-delay: 200ms;">
-            <!-- Visual preview -->
-            <div class="relative border-b border-white/[0.04] p-5">
-              <!-- Revenue mockup -->
-              <div class="space-y-3">
-                <div class="flex items-center justify-between">
-                  <span class="text-[10px] text-white/30">Seu dominio</span>
-                  <span class="text-[10px] font-bold text-emerald-400 flex items-center gap-1">
-                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+          <!-- Step 3 -->
+          <div class="wl-reveal relative flex flex-col md:flex-row md:items-center gap-6 md:gap-12">
+            <!-- Timeline dot -->
+            <div class="absolute left-6 md:left-1/2 top-0 md:top-1/2 -translate-x-1/2 md:-translate-y-1/2 z-10">
+              <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-400 text-lg font-black text-black shadow-lg shadow-emerald-400/20">3</div>
+            </div>
+
+            <!-- Left: text -->
+            <div class="pl-16 md:pl-0 md:w-1/2 md:pr-16 md:text-right">
+              <h3 class="text-xl font-bold mb-2">Fature</h3>
+              <p class="text-sm text-white/35 leading-relaxed">Sua plataforma no ar, com seu dominio. Seguidores assinam e a receita cai direto na sua conta.</p>
+            </div>
+
+            <!-- Right: visual -->
+            <div class="pl-16 md:pl-16 md:w-1/2">
+              <div class="rounded-2xl border border-emerald-400/10 bg-[#0a0a0f] p-5 max-w-xs" style="box-shadow: 0 0 40px rgba(52,211,153,0.06);">
+                <div class="flex items-center justify-between mb-3">
+                  <span class="text-[10px] text-white/25 uppercase tracking-wider">Receita do mes</span>
+                  <span class="flex items-center gap-1.5 text-[10px] font-bold text-emerald-400">
+                    <span class="relative flex h-1.5 w-1.5"><span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" /><span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" /></span>
                     LIVE
                   </span>
                 </div>
-                <div class="rounded-lg bg-white/[0.03] p-3 ring-1 ring-white/[0.06]">
-                  <p class="text-[9px] text-white/25 mb-1">Receita do mes</p>
-                  <p class="text-xl font-extrabold text-emerald-400 tabular-nums">R$ 39.800</p>
-                  <div class="mt-2 flex items-center gap-1.5">
-                    <UIcon name="i-lucide-trending-up" class="h-3 w-3 text-emerald-400/60" />
-                    <span class="text-[9px] text-emerald-400/60 font-bold">+2.000 assinantes</span>
-                  </div>
-                </div>
-                <div class="flex items-center gap-2 text-[10px]">
-                  <UIcon name="i-lucide-users" class="h-3 w-3 text-white/20" />
-                  <span class="text-white/30">312 novos usuarios hoje</span>
-                </div>
+                <p class="text-3xl font-black text-emerald-400 tabular-nums mb-1">R$ 39.800</p>
+                <p class="text-[11px] text-white/30">+2.000 assinantes ativos</p>
               </div>
             </div>
-            <!-- Text content -->
-            <div class="p-5">
-              <div class="mb-3 flex items-center gap-3">
-                <div class="flex h-8 w-8 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-sm font-bold text-white/60">3</div>
-                <h3 class="text-base font-bold">Monetize</h3>
-              </div>
-              <p class="text-[13px] leading-relaxed text-white/35">Plataforma no ar com seu dominio. Seus seguidores assinam e a receita cai na sua conta.</p>
-            </div>
           </div>
-        </div>
-
-        <!-- Connecting arrows between cards (desktop only) -->
-        <div class="hidden md:flex items-center justify-center gap-0 -mt-[210px] mb-[210px] pointer-events-none relative z-10 px-16">
-          <div class="flex-1" />
-          <div class="flex items-center gap-0 text-white/10">
-            <div class="h-px w-8 bg-gradient-to-r from-transparent to-white/10" />
-            <UIcon name="i-lucide-chevron-right" class="h-4 w-4" />
-          </div>
-          <div class="flex-1" />
-          <div class="flex items-center gap-0 text-white/10">
-            <div class="h-px w-8 bg-gradient-to-r from-transparent to-white/10" />
-            <UIcon name="i-lucide-chevron-right" class="h-4 w-4" />
-          </div>
-          <div class="flex-1" />
-        </div>
-
-        <div class="wl-reveal mt-10 flex items-center justify-center gap-2 rounded-2xl border border-blue-400/10 bg-blue-400/[0.04] px-6 py-4">
-          <UIcon name="i-lucide-zap" class="h-5 w-5 text-blue-400" />
-          <p class="text-sm font-semibold text-blue-300">Zero trabalho tecnico. A IA faz o trabalho pesado.</p>
         </div>
       </div>
     </section>
@@ -2192,6 +2192,16 @@ const dividendMonths = [
   0%, 100% { transform: translate(0, 0) scale(1); }
   33% { transform: translate(30px, -20px) scale(1.05); }
   66% { transform: translate(-20px, 15px) scale(0.95); }
+}
+
+@keyframes wl-notif-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes wl-slide-down {
+  from { opacity: 0; transform: translateY(-100%); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* Gradient text shimmer */
