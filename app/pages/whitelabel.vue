@@ -1743,6 +1743,76 @@
         </div>
       </Transition>
     </Teleport>
+
+    <!-- ========== EXIT-INTENT MODAL ========== -->
+    <Teleport to="body">
+      <Transition name="wl-modal">
+        <div v-if="showExitModal" class="fixed inset-0 z-[110] flex items-center justify-center p-4">
+          <div class="absolute inset-0 bg-black/85 backdrop-blur-md" @click="dismissExitModal" />
+
+          <div class="relative w-full max-w-md overflow-hidden rounded-3xl border border-white/[0.08] bg-[#08080d]">
+            <!-- Ambient glow -->
+            <div class="pointer-events-none absolute -top-32 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full bg-emerald-400/[0.08] blur-[80px]" />
+            <div class="pointer-events-none absolute -inset-px rounded-3xl bg-gradient-to-b from-emerald-400/10 via-transparent to-transparent" />
+
+            <!-- Close -->
+            <button class="absolute right-4 top-4 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-white/[0.05] text-white/40 transition-all hover:bg-white/10 hover:text-white" @click="dismissExitModal">
+              <UIcon name="i-lucide-x" class="h-3.5 w-3.5" />
+            </button>
+
+            <div class="relative px-7 pt-9 pb-7 text-center">
+              <!-- Revenue calculator — Primo thinks in numbers -->
+              <div class="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-400/10 ring-1 ring-emerald-400/20">
+                <UIcon name="i-lucide-calculator" class="h-7 w-7 text-emerald-400" />
+              </div>
+
+              <h3 class="text-xl font-extrabold tracking-tight">Você está deixando dinheiro na mesa</h3>
+              <p class="mt-2 text-sm text-white/45 max-w-xs mx-auto">Faça as contas — quanto seus seguidores valem como assinantes?</p>
+
+              <!-- The math — this is what Primo would show -->
+              <div class="mt-5 rounded-2xl bg-white/[0.03] ring-1 ring-white/[0.06] p-4">
+                <div class="space-y-2.5">
+                  <div class="flex items-center justify-between text-sm">
+                    <span class="text-white/40">100k seguidores</span>
+                    <span class="text-white/60">× 2% conversão</span>
+                  </div>
+                  <div class="flex items-center justify-between text-sm">
+                    <span class="text-white/40">2.000 assinantes</span>
+                    <span class="text-white/60">× R$ 19,90/mês</span>
+                  </div>
+                  <div class="h-px bg-gradient-to-r from-transparent via-emerald-400/20 to-transparent" />
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm font-bold text-white/60">Receita mensal</span>
+                    <span class="text-xl font-black text-emerald-400 tabular-nums">R$ 39.800</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Scarcity — limited spots -->
+              <div class="mt-4 flex items-center justify-center gap-2">
+                <span class="relative flex h-2 w-2">
+                  <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75" />
+                  <span class="relative inline-flex h-2 w-2 rounded-full bg-amber-400" />
+                </span>
+                <span class="text-xs font-bold text-amber-400">Apenas {{ earlyAdopterSpots }} vagas com preço de lançamento</span>
+              </div>
+
+              <!-- CTA -->
+              <button
+                class="group relative mt-5 flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-2xl bg-emerald-400 py-4 text-sm font-bold text-black transition-all hover:bg-emerald-300 hover:shadow-[0_0_40px_rgba(52,211,153,0.25)] hover:scale-[1.01] active:scale-[0.99]"
+                @click="dismissExitModal(); openContactModal()"
+              >
+                <div class="absolute inset-0 bg-gradient-to-r from-emerald-400/0 via-white/25 to-emerald-400/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                <UIcon name="i-lucide-wand-2" class="relative h-4 w-4" />
+                <span class="relative">Gerar minha plataforma grátis</span>
+              </button>
+
+              <p class="mt-3 text-[11px] text-white/25">5 minutos. Zero código. Sem cartão.</p>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
@@ -1766,6 +1836,37 @@ useHead({
   ],
   htmlAttrs: { class: 'dark' },
   bodyAttrs: { style: 'font-family: Inter, sans-serif;' },
+})
+
+// ── Exit-intent modal ──
+const showExitModal = ref(false)
+const exitModalDismissed = ref(false)
+
+function dismissExitModal() {
+  showExitModal.value = false
+  exitModalDismissed.value = true
+}
+
+onMounted(() => {
+  // Desktop: mouse leaves viewport (exit intent)
+  const handleMouseLeave = (e: MouseEvent) => {
+    if (e.clientY <= 0 && !exitModalDismissed.value && !showContactModal.value) {
+      showExitModal.value = true
+    }
+  }
+  document.addEventListener('mouseleave', handleMouseLeave)
+
+  // Mobile + desktop fallback: 45s idle on page
+  const idleTimer = setTimeout(() => {
+    if (!exitModalDismissed.value && !showContactModal.value) {
+      showExitModal.value = true
+    }
+  }, 45000)
+
+  onUnmounted(() => {
+    document.removeEventListener('mouseleave', handleMouseLeave)
+    clearTimeout(idleTimer)
+  })
 })
 
 const showContactModal = ref(false)
