@@ -494,7 +494,7 @@
                   </div>
                 </div>
                 <iframe
-                  :src="`https://redentia.com.br/${s.slug}`"
+                  :src="`https://redentia.com.br/?brand=${s.slug}`"
                   class="relative h-full w-full border-0"
                   :title="`Preview ${s.name}`"
                   loading="lazy"
@@ -507,7 +507,7 @@
               <!-- Explore button below iframe -->
               <div class="flex justify-center border-t border-white/[0.06] bg-[#1C1C1E] py-3">
                 <a
-                  :href="`https://redentia.com.br/${s.slug}`"
+                  :href="`https://redentia.com.br/?brand=${s.slug}`"
                   target="_blank"
                   class="flex items-center gap-2 rounded-full px-5 py-2 text-xs font-bold text-white transition-all duration-300 hover:scale-105" :style="{ backgroundColor: `${s.accent}CC` }"
                 >
