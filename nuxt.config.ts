@@ -1,6 +1,5 @@
 import svgLoader from 'vite-svg-loader'
-import { brand, BRAND_SLUGS } from './app/config/brand'
-import type { NuxtPage } from 'nuxt/schema'
+import { brand } from './app/config/brand'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -16,32 +15,6 @@ export default defineNuxtConfig({
     '@nuxtjs/sitemap',
   ],
   ssr: true,
-
-  // ── Brand route prefixes (removable when migrating to tenants) ──
-  hooks: {
-    'pages:extend'(pages) {
-      function cloneRoute(route: NuxtPage, slug: string): NuxtPage {
-        const prefixed = route.path === '/'
-          ? `/${slug}`
-          : `/${slug}${route.path}`
-        return {
-          ...route,
-          path: prefixed,
-          name: route.name ? `${slug}--${String(route.name)}` : undefined,
-          meta: { ...route.meta, brandSlug: slug },
-          children: route.children?.map(c => cloneRoute(c, slug)),
-        }
-      }
-
-      const original = [...pages]
-      for (const slug of BRAND_SLUGS) {
-        for (const route of original) {
-          pages.push(cloneRoute(route, slug))
-        }
-      }
-    },
-  },
-
   vite: {
     plugins: [svgLoader()],
   },
