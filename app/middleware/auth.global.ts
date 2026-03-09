@@ -9,12 +9,12 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   // If route is protected and no token, redirect to login
   if (!isPublic && !token) {
-    return navigateTo({ path: '/auth/login', query: to.query })
+    return navigateTo('/auth/login')
   }
 
   // If route is an auth page and already authenticated, send to home
   if (isPublic && token && to.path.startsWith('/auth/')) {
-    return navigateTo({ path: '/', query: to.query })
+    return navigateTo('/')
   }
 
   // If authenticated but profile not loaded, try fetching it
