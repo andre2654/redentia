@@ -2614,6 +2614,9 @@ const brands: Record<BrandSlug, BrandConfig> = {
 // ============================================================
 export const brand = brands[ACTIVE_BRAND]
 
+/** Slugs that can appear as route prefix (excludes default 'redentia') */
+export const BRAND_SLUGS = Object.keys(brands).filter(s => s !== ACTIVE_BRAND) as BrandSlug[]
+
 export type Brand = BrandConfig
 export type { BrandSlug, BrandColors }
 export { brands }

@@ -18,6 +18,10 @@ const uAppConfig = {
 
 initBrandFromRoute()
 
+// Make $brand() path helper available in all templates
+const $brand = useBrandPath()
+provide('$brand', $brand)
+
 const interfaceStore = useInterfaceStore()
 const route = useRoute()
 
