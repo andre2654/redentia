@@ -10,7 +10,7 @@
           <img src="/brand/logo-full.svg" alt="Redentia" class="h-7" />
         </NuxtLink>
         <button class="rounded-full bg-white px-5 py-2 text-sm font-semibold text-black transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(255,255,255,0.15)]" @click="openContactModal">
-          Comecar agora
+          Começar agora
         </button>
       </div>
     </nav>
@@ -106,12 +106,12 @@
               <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
               <span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
             </span>
-            <span class="text-xs font-semibold uppercase tracking-widest text-emerald-400">Criadores ja monetizando</span>
+            <span class="text-xs font-semibold uppercase tracking-widest text-emerald-400">Criadores já monetizando</span>
           </div>
 
           <h1 class="wl-reveal wl-reveal-d1 mb-6 text-5xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl md:text-7xl">
-            Sua audiencia ja vale dinheiro.<br />
-            <span class="bg-gradient-to-r from-blue-400 via-blue-300 to-blue-500 bg-[length:200%_100%] bg-clip-text text-transparent wl-gradient-shift">Voce so precisa cobrar.</span>
+            Sua audiência já vale dinheiro.<br />
+            <span class="bg-gradient-to-r from-blue-400 via-blue-300 to-blue-500 bg-[length:200%_100%] bg-clip-text text-transparent wl-gradient-shift">Você só precisa cobrar.</span>
           </h1>
 
           <p class="wl-reveal wl-reveal-d2 mx-auto mb-12 max-w-2xl text-lg leading-relaxed text-white/50 md:text-xl">
@@ -152,7 +152,7 @@
 
       <div class="relative mx-auto max-w-6xl">
         <div class="wl-reveal mb-16 text-center">
-          <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-blue-400">Inteligencia artificial</p>
+          <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-blue-400">Inteligência artificial</p>
           <h2 class="mb-4 text-3xl font-bold tracking-tight md:text-5xl">Ela substitui uma equipe inteira</h2>
           <p class="mx-auto max-w-lg text-base text-white/40">Designer, copywriter, dev e branding — a IA faz em minutos o que custaria meses e dezenas de milhares de reais.</p>
         </div>
@@ -184,7 +184,7 @@
               <UIcon name="i-lucide-link" class="h-3.5 w-3.5 text-white/20" />
               <span class="font-mono text-sm text-white/60">youtube.com/<span class="text-blue-400">@primorico</span></span>
               <div class="ml-auto flex items-center gap-2">
-                <span class="text-[10px] text-emerald-400/80 font-mono">Analise completa</span>
+                <span class="text-[10px] text-emerald-400/80 font-mono">Análise completa</span>
                 <UIcon name="i-lucide-check-circle" class="h-3.5 w-3.5 text-emerald-400/80" />
               </div>
             </div>
@@ -215,7 +215,7 @@
                     <div class="flex h-6 w-6 items-center justify-center rounded-lg bg-blue-400/10">
                       <UIcon name="i-lucide-palette" class="h-3.5 w-3.5 text-blue-400" />
                     </div>
-                    <span class="text-[11px] font-semibold uppercase tracking-widest text-blue-400/70">Paleta extraida</span>
+                    <span class="text-[11px] font-semibold uppercase tracking-widest text-blue-400/70">Paleta extraída</span>
                   </div>
 
                   <div class="flex items-center gap-3">
@@ -299,13 +299,13 @@
                       <div class="h-1 flex-1 rounded-full bg-white/[0.04] overflow-hidden">
                         <div class="h-full w-[60%] rounded-full bg-gradient-to-r from-blue-400/60 to-blue-400/30 ai-bar-fill" style="animation-delay: 0.3s;" />
                       </div>
-                      <span class="text-[10px] text-white/30 w-20 text-right">Didatico</span>
+                      <span class="text-[10px] text-white/30 w-20 text-right">Didático</span>
                     </div>
                     <div class="flex items-center gap-2">
                       <div class="h-1 flex-1 rounded-full bg-white/[0.04] overflow-hidden">
                         <div class="h-full w-[40%] rounded-full bg-gradient-to-r from-blue-400/60 to-blue-400/30 ai-bar-fill" style="animation-delay: 0.6s;" />
                       </div>
-                      <span class="text-[10px] text-white/30 w-20 text-right">Tecnico</span>
+                      <span class="text-[10px] text-white/30 w-20 text-right">Técnico</span>
                     </div>
                     <div class="flex items-center gap-2">
                       <div class="h-1 flex-1 rounded-full bg-white/[0.04] overflow-hidden">
@@ -340,7 +340,7 @@
                       {{ feat.label }}
                     </span>
                   </div>
-                  <p class="mt-3 text-[10px] text-white/15">Baseado no perfil do publico do canal</p>
+                  <p class="mt-3 text-[10px] text-white/15">Baseado no perfil do público do canal</p>
                 </div>
 
                 <!-- Divider -->
@@ -366,7 +366,7 @@
                     </div>
                     <div>
                       <span class="text-white/15">desc:</span>
-                      <span class="text-white/30 ml-1">Acoes, FIIs e dividendos...</span>
+                      <span class="text-white/30 ml-1">Ações, FIIs e dividendos...</span>
                     </div>
                   </div>
                 </div>
@@ -410,7 +410,7 @@
               </div>
               <div class="flex flex-col items-center gap-1 border-r border-white/[0.04] px-4 py-3">
                 <span class="text-base font-extrabold text-amber-400">5 profissionais</span>
-                <span class="text-[9px] text-white/25 uppercase tracking-wider">Substituidos pela IA</span>
+                <span class="text-[9px] text-white/25 uppercase tracking-wider">Substituídos pela IA</span>
               </div>
               <div class="flex flex-col items-center gap-1 px-4 py-3">
                 <span class="text-base font-extrabold text-white/80">~ R$ 40k</span>
@@ -429,8 +429,8 @@
       <div class="relative mx-auto max-w-7xl px-6">
         <div class="wl-reveal mb-12 md:mb-20 text-center">
           <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-blue-400">Cases reais</p>
-          <h2 class="mb-4 text-4xl font-bold tracking-tight md:text-6xl">Mesmo motor.<br class="md:hidden" /> Marcas unicas.</h2>
-          <p class="mx-auto max-w-xl text-base md:text-lg text-white/40">Cada plataforma abaixo e real e esta rodando agora — gerada por IA em minutos.</p>
+          <h2 class="mb-4 text-4xl font-bold tracking-tight md:text-6xl">Mesmo motor.<br class="md:hidden" /> Marcas únicas.</h2>
+          <p class="mx-auto max-w-xl text-base md:text-lg text-white/40">Cada plataforma abaixo é real e está rodando agora — gerada por IA em minutos.</p>
         </div>
 
         <!-- Brand selector tabs -->
@@ -558,7 +558,7 @@
         <div class="wl-reveal mb-16 text-center">
           <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-blue-400">Tudo pronto pra usar</p>
           <h2 class="mb-4 text-3xl font-bold tracking-tight md:text-5xl">40+ ferramentas que mantem<br />seus seguidores engajados</h2>
-          <p class="mx-auto max-w-lg text-base text-white/40">Cotacoes, carteira, calculadoras, glossario, chat IA — tudo com a sua marca, sem voce precisar construir nada.</p>
+          <p class="mx-auto max-w-lg text-base text-white/40">Cotações, carteira, calculadoras, glossário, chat IA — tudo com a sua marca, sem você precisar construir nada.</p>
         </div>
 
         <!-- Impact metrics -->
@@ -575,7 +575,7 @@
           <div class="h-10 w-px bg-white/[0.06]" />
           <div class="text-center">
             <p class="text-4xl font-extrabold text-white/80 md:text-5xl">24/7</p>
-            <p class="mt-1 text-[11px] uppercase tracking-widest text-white/25">Disponivel sempre</p>
+            <p class="mt-1 text-[11px] uppercase tracking-widest text-white/25">Disponível sempre</p>
           </div>
         </div>
       </div>
@@ -637,8 +637,8 @@
       <div class="relative mx-auto max-w-6xl px-6">
         <div class="wl-reveal mb-10 text-center">
           <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-blue-400">Dados em tempo real</p>
-          <h2 class="mb-4 text-3xl font-bold tracking-tight md:text-5xl">Seus seguidores confiam porque<br />os dados sao reais</h2>
-          <p class="mx-auto max-w-lg text-base text-white/40">800+ ativos brasileiros com cotacoes ao vivo, indicadores fundamentalistas e analise completa. <span class="text-white/60">Tudo abaixo e real — nao mockup.</span></p>
+          <h2 class="mb-4 text-3xl font-bold tracking-tight md:text-5xl">Seus seguidores confiam porque<br />os dados são reais</h2>
+          <p class="mx-auto max-w-lg text-base text-white/40">800+ ativos brasileiros com cotações ao vivo, indicadores fundamentalistas e análise completa. <span class="text-white/60">Tudo abaixo é real — não mockup.</span></p>
         </div>
 
         <!-- Category tabs — desktop buttons -->
@@ -773,7 +773,7 @@
             <UIcon name="i-lucide-briefcase" class="h-3.5 w-3.5 text-blue-400" />
             <span class="text-xs font-bold uppercase tracking-widest text-blue-400">Carteira & Dividendos</span>
           </div>
-          <h2 class="mb-5 text-3xl font-bold tracking-tight md:text-5xl">Seus seguidores veem<br /><span class="bg-gradient-to-r from-blue-400 to-blue-300 bg-clip-text text-transparent">o patrimonio crescer</span></h2>
+          <h2 class="mb-5 text-3xl font-bold tracking-tight md:text-5xl">Seus seguidores veem<br /><span class="bg-gradient-to-r from-blue-400 to-blue-300 bg-clip-text text-transparent">o patrimônio crescer</span></h2>
           <p class="mx-auto max-w-lg text-base md:text-lg text-white/40">Carteira, dividendos e rentabilidade atualizados em tempo real — tudo na sua marca.</p>
         </div>
 
@@ -797,7 +797,7 @@
           <!-- Top stats row -->
           <div class="grid grid-cols-3 border-b border-white/[0.04]">
             <div class="p-5 text-center border-r border-white/[0.04]">
-              <p class="text-[10px] text-white/25 mb-1.5 uppercase tracking-wider">Patrimonio total</p>
+              <p class="text-[10px] text-white/25 mb-1.5 uppercase tracking-wider">Patrimônio total</p>
               <p class="text-xl font-extrabold tabular-nums md:text-3xl">R$ {{ portfolioTotal.toLocaleString('pt-BR') }}</p>
             </div>
             <div class="p-5 text-center border-r border-white/[0.04]">
@@ -805,7 +805,7 @@
               <p class="text-xl font-extrabold text-blue-400 tabular-nums md:text-3xl">R$ 2.140</p>
             </div>
             <div class="p-5 text-center">
-              <p class="text-[10px] text-white/25 mb-1.5 uppercase tracking-wider">Yield medio</p>
+              <p class="text-[10px] text-white/25 mb-1.5 uppercase tracking-wider">Yield médio</p>
               <p class="text-xl font-extrabold tabular-nums md:text-3xl">6.8%</p>
             </div>
           </div>
@@ -819,7 +819,7 @@
               <div class="flex items-center gap-3 px-5 py-2.5 border-b border-white/[0.04] bg-white/[0.015]">
                 <span class="w-6 text-[9px] font-bold uppercase tracking-widest text-white/15">#</span>
                 <span class="flex-1 text-[9px] font-bold uppercase tracking-widest text-white/15">Ativo</span>
-                <span class="hidden sm:block w-28 text-right text-[9px] font-bold uppercase tracking-widest text-white/15">Alocacao</span>
+                <span class="hidden sm:block w-28 text-right text-[9px] font-bold uppercase tracking-widest text-white/15">Alocação</span>
                 <span class="w-24 text-right text-[9px] font-bold uppercase tracking-widest text-white/15">Valor</span>
               </div>
 
@@ -921,7 +921,7 @@
                       <span class="text-[9px] font-bold uppercase tracking-widest text-emerald-400">Em breve</span>
                     </span>
                   </div>
-                  <p class="text-[11px] text-white/30">Consolide bancos, cartoes e corretoras — seus seguidores nunca mais saem</p>
+                  <p class="text-[11px] text-white/30">Consolide bancos, cartões e corretoras — seus seguidores nunca mais saem</p>
                 </div>
               </div>
 
@@ -936,7 +936,7 @@
                 <div class="hidden lg:block h-8 w-px bg-white/[0.06]" />
                 <div class="hidden lg:flex flex-col gap-0.5">
                   <span class="text-[10px] font-bold text-emerald-400 tabular-nums">+340%</span>
-                  <span class="text-[9px] text-white/20">retencao estimada</span>
+                  <span class="text-[9px] text-white/20">retenção estimada</span>
                 </div>
               </div>
             </div>
@@ -957,8 +957,8 @@
           <div class="lg:w-2/5">
             <div class="wl-reveal">
               <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-blue-400">Assessor IA</p>
-              <h2 class="mb-5 text-3xl font-bold tracking-tight md:text-5xl leading-[1.1]">Voce dorme. Seu clone atende 10.000.</h2>
-              <p class="mb-8 text-base leading-relaxed text-white/40">A IA fala como voce, conhece seu conteudo e responde com dados reais da B3 — escalando sua entrega sem escalar seu tempo.</p>
+              <h2 class="mb-5 text-3xl font-bold tracking-tight md:text-5xl leading-[1.1]">Você dorme. Seu clone atende 10.000.</h2>
+              <p class="mb-8 text-base leading-relaxed text-white/40">A IA fala como você, conhece seu conteúdo e responde com dados reais da B3 — escalando sua entrega sem escalar seu tempo.</p>
             </div>
 
             <!-- Economy comparison -->
@@ -967,7 +967,7 @@
                 <div class="p-4 text-center">
                   <p class="text-[10px] uppercase tracking-widest text-white/25 mb-1">Assessor humano</p>
                   <p class="text-xl font-extrabold text-red-400/70 line-through decoration-red-400/40">R$ 8k<span class="text-xs font-bold text-white/20 no-underline">/mes</span></p>
-                  <p class="text-[10px] text-white/20 mt-1">1 pessoa, horario comercial</p>
+                  <p class="text-[10px] text-white/20 mt-1">1 pessoa, horário comercial</p>
                 </div>
                 <div class="p-4 text-center bg-emerald-400/[0.03]">
                   <p class="text-[10px] uppercase tracking-widest text-emerald-400/50 mb-1">Sua IA</p>
@@ -984,7 +984,7 @@
                 </div>
                 <div>
                   <p class="text-sm font-semibold">Treinado com seus videos</p>
-                  <p class="text-[13px] text-white/30">Extrai bordoes, exemplos e jeito de explicar direto do seu canal.</p>
+                  <p class="text-[13px] text-white/30">Extrai bordões, exemplos e jeito de explicar direto do seu canal.</p>
                 </div>
               </div>
               <div class="flex items-start gap-3">
@@ -992,8 +992,8 @@
                   <UIcon name="i-lucide-users" class="h-4 w-4 text-emerald-400" />
                 </div>
                 <div>
-                  <p class="text-sm font-semibold">10.000 conversas simultaneas</p>
-                  <p class="text-[13px] text-white/30">Escala infinita sem contratar ninguem. Cada seguidor tem atendimento individual.</p>
+                  <p class="text-sm font-semibold">10.000 conversas simultâneas</p>
+                  <p class="text-[13px] text-white/30">Escala infinita sem contratar ninguém. Cada seguidor tem atendimento individual.</p>
                 </div>
               </div>
               <div class="flex items-start gap-3">
@@ -1002,7 +1002,7 @@
                 </div>
                 <div>
                   <p class="text-sm font-semibold">Alerta que salva dinheiro</p>
-                  <p class="text-[13px] text-white/30">PETR4 caiu 8% e o seguidor vendeu a tempo. Queda, alta, dividendo — alerta instantaneo.</p>
+                  <p class="text-[13px] text-white/30">PETR4 caiu 8% e o seguidor vendeu a tempo. Queda, alta, dividendo — alerta instantâneo.</p>
                 </div>
               </div>
             </div>
@@ -1032,7 +1032,7 @@
                     </div>
                     <div class="flex-1 min-w-0">
                       <div class="flex items-center justify-between">
-                        <p class="text-[11px] font-bold text-white/70">Alerta de Preco</p>
+                        <p class="text-[11px] font-bold text-white/70">Alerta de Preço</p>
                         <span class="text-[9px] text-white/25">agora</span>
                       </div>
                       <p class="text-[11px] text-white/50 mt-0.5">
@@ -1067,7 +1067,7 @@
                   <!-- User message 1 -->
                   <div class="flex justify-end">
                     <div class="max-w-[75%] rounded-2xl rounded-br-sm bg-blue-400 px-4 py-2.5">
-                      <p class="text-sm font-medium text-black">Qual FII tem o melhor DY neste mes?</p>
+                      <p class="text-sm font-medium text-black">Qual FII tem o melhor DY neste mês?</p>
                     </div>
                   </div>
 
@@ -1079,11 +1079,11 @@
                     <div class="max-w-[80%] flex flex-col gap-2">
                       <div class="rounded-2xl rounded-tl-sm bg-white/[0.06] px-4 py-3">
                         <p class="text-[13px] leading-relaxed text-white/80">
-                          Olha, o <span class="font-semibold text-blue-400">MXRF11</span> ta com DY de 1.08% esse mes, mas olha o
-                          <span class="font-semibold text-blue-400">HGLG11</span> que ta pagando 0.95% com muito mais estabilidade.
+                          Olha, o <span class="font-semibold text-blue-400">MXRF11</span> tá com DY de 1.08% esse mês, mas olha o
+                          <span class="font-semibold text-blue-400">HGLG11</span> que tá pagando 0.95% com muito mais estabilidade.
                         </p>
                         <p class="mt-2 text-[13px] leading-relaxed text-white/50">
-                          DY alto sozinho nao e tudo — olha vacancia, P/VP e consistencia.
+                          DY alto sozinho não é tudo — olha vacância, P/VP e consistência.
                         </p>
                       </div>
                       <!-- Inline data cards -->
@@ -1120,7 +1120,7 @@
                     <div class="max-w-[80%] flex flex-col gap-2">
                       <div class="rounded-2xl rounded-tl-sm bg-white/[0.06] px-4 py-3">
                         <p class="text-[13px] leading-relaxed text-white/80">
-                          Momento interessante. Vamos aos numeros:
+                          Momento interessante. Vamos aos números:
                         </p>
                         <!-- Ticker card inline -->
                         <div class="mt-3 rounded-lg bg-white/[0.04] p-3 ring-1 ring-white/[0.06]">
@@ -1149,7 +1149,7 @@
                           </div>
                         </div>
                         <p class="mt-2 text-[13px] leading-relaxed text-white/50">
-                          P/L baixo, DY gordo. Mas e ciclica — nunca coloque tudo em uma so.
+                          P/L baixo, DY gordo. Mas é cíclica — nunca coloque tudo em uma só.
                         </p>
                       </div>
                       <span class="text-[10px] text-white/15">14:33</span>
@@ -1211,7 +1211,7 @@
             <span class="text-xs font-bold uppercase tracking-widest text-blue-400">Como funciona</span>
           </div>
           <h2 class="mb-5 text-3xl font-bold tracking-tight md:text-5xl">Do link do YouTube<br /><span class="bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">ao primeiro faturamento</span></h2>
-          <p class="mx-auto max-w-md text-base text-white/40">3 minutos. Zero codigo. A IA faz tudo.</p>
+          <p class="mx-auto max-w-md text-base text-white/40">3 minutos. Zero código. A IA faz tudo.</p>
         </div>
 
         <!-- Vertical timeline -->
@@ -1229,7 +1229,7 @@
             <!-- Left: text -->
             <div class="pl-16 md:pl-0 md:w-1/2 md:pr-16 md:text-right">
               <h3 class="text-xl font-bold mb-2">Cole o link do YouTube</h3>
-              <p class="text-sm text-white/35 leading-relaxed">A IA assiste seus videos, extrai seu tom de voz, identifica cores e estilo — e gera sua plataforma completa em minutos.</p>
+              <p class="text-sm text-white/35 leading-relaxed">A IA assiste seus vídeos, extrai seu tom de voz, identifica cores e estilo — e gera sua plataforma completa em minutos.</p>
             </div>
 
             <!-- Right: visual -->
@@ -1259,7 +1259,7 @@
             <!-- Right (reversed): text -->
             <div class="pl-16 md:pl-0 md:w-1/2 md:pl-16">
               <h3 class="text-xl font-bold mb-2">Ajuste o que quiser</h3>
-              <p class="text-sm text-white/35 leading-relaxed">Revise cores, fonte, funcionalidades e conteudo. Quando estiver perfeito, manda lancar.</p>
+              <p class="text-sm text-white/35 leading-relaxed">Revise cores, fonte, funcionalidades e conteúdo. Quando estiver perfeito, manda lançar.</p>
             </div>
 
             <!-- Left (reversed): visual -->
@@ -1285,7 +1285,7 @@
                 </div>
                 <div class="mt-4 flex gap-2">
                   <div class="flex-1 rounded-lg bg-white/[0.04] py-2 text-center text-[10px] text-white/30">Editar</div>
-                  <div class="flex-1 rounded-lg bg-blue-400 py-2 text-center text-[10px] font-bold text-black">Lancar</div>
+                  <div class="flex-1 rounded-lg bg-blue-400 py-2 text-center text-[10px] font-bold text-black">Lançar</div>
                 </div>
               </div>
             </div>
@@ -1301,14 +1301,14 @@
             <!-- Left: text -->
             <div class="pl-16 md:pl-0 md:w-1/2 md:pr-16 md:text-right">
               <h3 class="text-xl font-bold mb-2">Fature</h3>
-              <p class="text-sm text-white/35 leading-relaxed">Sua plataforma no ar, com seu dominio. Seguidores assinam e a receita cai direto na sua conta.</p>
+              <p class="text-sm text-white/35 leading-relaxed">Sua plataforma no ar, com seu domínio. Seguidores assinam e a receita cai direto na sua conta.</p>
             </div>
 
             <!-- Right: visual -->
             <div class="pl-16 md:pl-16 md:w-1/2">
               <div class="rounded-2xl border border-emerald-400/10 bg-[#0a0a0f] p-5 max-w-xs" style="box-shadow: 0 0 40px rgba(52,211,153,0.06);">
                 <div class="flex items-center justify-between mb-3">
-                  <span class="text-[10px] text-white/25 uppercase tracking-wider">Receita do mes</span>
+                  <span class="text-[10px] text-white/25 uppercase tracking-wider">Receita do mês</span>
                   <span class="flex items-center gap-1.5 text-[10px] font-bold text-emerald-400">
                     <span class="relative flex h-1.5 w-1.5"><span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" /><span class="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" /></span>
                     LIVE
@@ -1334,10 +1334,10 @@
               <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75" />
               <span class="relative inline-flex h-2 w-2 rounded-full bg-amber-400" />
             </span>
-            <span class="text-xs font-bold uppercase tracking-widest text-amber-400">{{ earlyAdopterSpots }} vagas com preco de lancamento</span>
+            <span class="text-xs font-bold uppercase tracking-widest text-amber-400">{{ earlyAdopterSpots }} vagas com preço de lançamento</span>
           </div>
           <h2 class="mb-4 text-3xl font-bold tracking-tight md:text-5xl">Escolha seu plano</h2>
-          <p class="mx-auto max-w-md text-base text-white/40">100k seguidores × 2% conversao × R$ 19,90 = <span class="font-bold text-emerald-400">R$ 39.800/mes</span></p>
+          <p class="mx-auto max-w-md text-base text-white/40">100k seguidores × 2% conversão × R$ 19,90 = <span class="font-bold text-emerald-400">R$ 39.800/mês</span></p>
         </div>
 
         <div class="wl-reveal grid gap-5 md:grid-cols-3 items-start">
@@ -1347,7 +1347,7 @@
             <div class="mb-1 flex items-baseline gap-2">
               <span class="text-base text-white/25 line-through">R$ 3.497</span>
               <span class="text-4xl font-extrabold">R$ 2.497</span>
-              <span class="text-sm text-white/30">/mes</span>
+              <span class="text-sm text-white/30">/mês</span>
             </div>
             <p class="mb-6 text-xs text-white/30">~ R$ 83/dia</p>
             <ul class="mb-8 space-y-3">
@@ -1357,7 +1357,7 @@
               </li>
             </ul>
             <button class="block w-full rounded-xl border border-white/10 bg-white/5 py-3.5 text-center text-sm font-semibold text-white/70 transition-all hover:bg-white/10 hover:text-white cursor-pointer" @click="openContactModal">
-              Comecar agora
+              Começar agora
             </button>
           </div>
 
@@ -1368,9 +1368,9 @@
             <div class="mb-1 flex items-baseline gap-2">
               <span class="text-base text-white/25 line-through">R$ 7.497</span>
               <span class="text-4xl font-extrabold">R$ 4.997</span>
-              <span class="text-sm text-white/30">/mes</span>
+              <span class="text-sm text-white/30">/mês</span>
             </div>
-            <p class="mb-6 text-xs text-emerald-400 font-bold">ROI de 7x no primeiro mes</p>
+            <p class="mb-6 text-xs text-emerald-400 font-bold">ROI de 7x no primeiro mês</p>
             <ul class="mb-8 space-y-3">
               <li v-for="f in pricingPlans[1].features" :key="f" class="flex items-start gap-2.5 text-sm text-white/60">
                 <UIcon name="i-lucide-check" class="mt-0.5 h-4 w-4 shrink-0 text-blue-400" />
@@ -1378,7 +1378,7 @@
               </li>
             </ul>
             <button class="block w-full rounded-xl bg-blue-400 py-3.5 text-center text-sm font-bold text-black transition-all hover:bg-blue-300 hover:shadow-[0_0_30px_rgba(96,165,250,0.2)] cursor-pointer" @click="openContactModal">
-              Comecar agora
+              Começar agora
             </button>
           </div>
 
@@ -1388,7 +1388,7 @@
             <div class="mb-1 flex items-baseline gap-1">
               <span class="text-4xl font-extrabold">Custom</span>
             </div>
-            <p class="mb-6 text-xs text-white/30">Para operacoes de grande escala</p>
+            <p class="mb-6 text-xs text-white/30">Para operações de grande escala</p>
             <ul class="mb-8 space-y-3">
               <li v-for="f in pricingPlans[2].features" :key="f" class="flex items-start gap-2.5 text-sm text-white/50">
                 <UIcon name="i-lucide-check" class="mt-0.5 h-4 w-4 shrink-0 text-blue-400/60" />
@@ -1402,7 +1402,7 @@
         </div>
 
         <div class="wl-reveal mt-8 text-center">
-          <p class="text-xs text-white/30">Apos as {{ earlyAdopterSpots }} vagas, os precos sobem para a tabela cheia.</p>
+          <p class="text-xs text-white/30">Após as {{ earlyAdopterSpots }} vagas, os preços sobem para a tabela cheia.</p>
         </div>
       </div>
     </section>
@@ -1413,7 +1413,7 @@
 
       <div class="relative mx-auto max-w-3xl">
         <div class="wl-reveal mb-12 text-center">
-          <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-blue-400">Duvidas frequentes</p>
+          <p class="mb-3 text-xs font-semibold uppercase tracking-widest text-blue-400">Dúvidas frequentes</p>
           <h2 class="mb-4 text-3xl font-bold tracking-tight md:text-5xl">Perguntas & Respostas</h2>
         </div>
 
@@ -1458,11 +1458,11 @@
       <div class="relative mx-auto max-w-3xl text-center">
         <div class="wl-reveal mb-8 inline-flex items-center gap-2 rounded-full border border-blue-400/20 bg-blue-400/10 px-4 py-2">
           <UIcon name="i-lucide-zap" class="h-4 w-4 text-blue-400" />
-          <span class="text-xs font-semibold text-blue-400">Setup em minutos, nao meses</span>
+          <span class="text-xs font-semibold text-blue-400">Setup em minutos, não meses</span>
         </div>
 
-        <h2 class="wl-reveal mb-5 text-4xl font-bold tracking-tight md:text-6xl">Seus seguidores merecem<br /><span class="bg-gradient-to-r from-blue-400 to-blue-300 bg-clip-text text-transparent">uma plataforma a sua altura</span></h2>
-        <p class="wl-reveal mb-6 text-lg text-white/40 max-w-xl mx-auto">Enquanto voce cria conteudo, sua plataforma gera receita recorrente, fortalece sua marca e educa seu publico.</p>
+        <h2 class="wl-reveal mb-5 text-4xl font-bold tracking-tight md:text-6xl">Seus seguidores merecem<br /><span class="bg-gradient-to-r from-blue-400 to-blue-300 bg-clip-text text-transparent">uma plataforma à sua altura</span></h2>
+        <p class="wl-reveal mb-6 text-lg text-white/40 max-w-xl mx-auto">Enquanto você cria conteúdo, sua plataforma gera receita recorrente, fortalece sua marca e educa seu público.</p>
 
         <!-- Value props -->
         <div class="wl-reveal mb-10 flex flex-wrap items-center justify-center gap-6 text-sm text-white/50">
@@ -1473,12 +1473,12 @@
           <div class="h-4 w-px bg-white/10" />
           <div class="flex items-center gap-2">
             <UIcon name="i-lucide-shield-check" class="h-4 w-4 text-blue-400" />
-            <span>Sua marca, seu dominio</span>
+            <span>Sua marca, seu domínio</span>
           </div>
           <div class="h-4 w-px bg-white/10" />
           <div class="flex items-center gap-2">
             <UIcon name="i-lucide-clock" class="h-4 w-4 text-amber-400" />
-            <span>Zero trabalho tecnico</span>
+            <span>Zero trabalho técnico</span>
           </div>
         </div>
 
@@ -1502,7 +1502,7 @@
           </button>
         </div>
 
-        <p class="wl-reveal mt-6 text-xs text-white/20">Sem cartao de credito. Sem compromisso. Veja o resultado antes de pagar.</p>
+        <p class="wl-reveal mt-6 text-xs text-white/20">Sem cartão de crédito. Sem compromisso. Veja o resultado antes de pagar.</p>
       </div>
     </section>
 
@@ -1513,7 +1513,7 @@
           <!-- Brand -->
           <div class="sm:col-span-2 md:col-span-1">
             <img src="/brand/logo-full.svg" alt="Redentia" class="mb-4 h-6 opacity-60" />
-            <p class="text-sm text-white/25 leading-relaxed max-w-xs">A plataforma white-label de investimentos para criadores de conteudo.</p>
+            <p class="text-sm text-white/25 leading-relaxed max-w-xs">A plataforma white-label de investimentos para criadores de conteúdo.</p>
           </div>
 
           <!-- Produto -->
@@ -1600,7 +1600,7 @@
                   <UIcon name="i-lucide-rocket" class="h-6 w-6 text-blue-400" />
                 </div>
                 <h3 class="text-2xl font-extrabold tracking-tight">Transforme seguidores em receita</h3>
-                <p class="mt-2 text-sm text-white/50 max-w-xs mx-auto">Cole seu canal. A IA faz o resto. Voce ve o resultado antes de pagar.</p>
+                <p class="mt-2 text-sm text-white/50 max-w-xs mx-auto">Cole seu canal. A IA faz o resto. Você vê o resultado antes de pagar.</p>
               </div>
 
               <!-- What they get — ROI focus (Primo thinks in numbers) -->
@@ -1641,7 +1641,7 @@
                   <span class="relative">Continuar</span>
                   <UIcon name="i-lucide-arrow-right" class="relative h-4 w-4" />
                 </button>
-                <p class="mt-3 text-center text-[11px] text-white/30">Sem cartao. Sem compromisso.</p>
+                <p class="mt-3 text-center text-[11px] text-white/30">Sem cartão. Sem compromisso.</p>
               </div>
             </div>
 
@@ -1660,8 +1660,8 @@
                   </div>
                 </div>
 
-                <h3 class="relative text-xl font-extrabold tracking-tight text-white">Quase la. Onde te encontramos?</h3>
-                <p class="mt-1 text-sm text-white/45">So precisamos do basico para agendar sua demo.</p>
+                <h3 class="relative text-xl font-extrabold tracking-tight text-white">Quase lá. Onde te encontramos?</h3>
+                <p class="mt-1 text-sm text-white/45">Só precisamos do básico para agendar sua demo.</p>
               </div>
 
               <div class="space-y-3 px-8 pt-4 pb-8">
@@ -1701,11 +1701,11 @@
                     <div class="flex items-center gap-3 px-4 py-3.5">
                       <UIcon name="i-lucide-users" class="h-4 w-4 shrink-0 text-white/30 transition-colors group-focus-within:text-blue-400/60" />
                       <select v-model="contactForm.audience" class="w-full appearance-none bg-transparent text-sm text-white/70 focus:outline-none [&>option]:bg-[#0a0a0f] [&>option]:text-white">
-                        <option value="" disabled class="text-white/30">Tamanho da sua audiencia</option>
+                        <option value="" disabled class="text-white/30">Tamanho da sua audiência</option>
                         <option value="< 50k">&lt; 50 mil seguidores</option>
                         <option value="50k-200k">50 mil — 200 mil</option>
-                        <option value="200k-1M">200 mil — 1 milhao</option>
-                        <option value="1M+">1 milhao+</option>
+                        <option value="200k-1M">200 mil — 1 milhão</option>
+                        <option value="1M+">1 milhão+</option>
                       </select>
                       <UIcon name="i-lucide-chevron-down" class="h-3.5 w-3.5 shrink-0 text-white/30" />
                     </div>
@@ -1844,10 +1844,10 @@ onUnmounted(() => {
 
 const aiToggleFeatures = [
   { label: 'Calculadoras', on: true },
-  { label: 'Analise fundamentalista', on: true },
+  { label: 'Análise fundamentalista', on: true },
   { label: 'Carteira', on: true },
   { label: 'Simulador aposentadoria', on: false },
-  { label: 'Glossario', on: true },
+  { label: 'Glossário', on: true },
 ]
 
 const showcaseBrands = [
@@ -1877,7 +1877,7 @@ const showcaseBrands = [
     name: 'Investidor Sardinha',
     slug: 'investidor-sardinha',
     font: 'Barlow',
-    style: 'Bold • Tecnico',
+    style: 'Bold • Técnico',
     heroVariant: 'Minimal',
     bg: '#FFFFFF',
     accent: '#DC2626',
@@ -1887,33 +1887,33 @@ const showcaseBrands = [
 ]
 
 const platformFeatures = [
-  { icon: 'i-lucide-trending-up', title: 'Cotacoes em tempo real', description: 'Acoes, FIIs, ETFs, BDRs e Small Caps atualizados.' },
+  { icon: 'i-lucide-trending-up', title: 'Cotações em tempo real', description: 'Ações, FIIs, ETFs, BDRs e Small Caps atualizados.' },
   { icon: 'i-lucide-bot', title: 'Assessor IA personalizado', description: 'Chatbot treinado com tom de voz do criador.' },
-  { icon: 'i-lucide-calculator', title: '8 calculadoras financeiras', description: 'Juros compostos, preco teto, aposentadoria e mais.' },
-  { icon: 'i-lucide-briefcase', title: 'Carteira inteligente', description: 'Importacao Excel, rentabilidade e rebalanceamento.' },
-  { icon: 'i-lucide-coins', title: 'Dividendos', description: 'Calendario, historico e projecoes de proventos.' },
-  { icon: 'i-lucide-book-open', title: 'Glossario com 350+ termos', description: 'Conteudo SEO que gera trafego organico.' },
+  { icon: 'i-lucide-calculator', title: '8 calculadoras financeiras', description: 'Juros compostos, preço teto, aposentadoria e mais.' },
+  { icon: 'i-lucide-briefcase', title: 'Carteira inteligente', description: 'Importação Excel, rentabilidade e rebalanceamento.' },
+  { icon: 'i-lucide-coins', title: 'Dividendos', description: 'Calendário, histórico e projeções de proventos.' },
+  { icon: 'i-lucide-book-open', title: 'Glossário com 350+ termos', description: 'Conteúdo SEO que gera tráfego orgânico.' },
   { icon: 'i-lucide-graduation-cap', title: 'Guias educacionais', description: 'Artigos completos otimizados para Google.' },
   { icon: 'i-lucide-smartphone', title: 'PWA nativa', description: 'Funciona como app sem precisar de App Store.' },
-  { icon: 'i-lucide-bar-chart-3', title: 'Dashboard de mercado', description: 'Ibovespa, cambio, crypto e indicadores ao vivo.' },
+  { icon: 'i-lucide-bar-chart-3', title: 'Dashboard de mercado', description: 'Ibovespa, câmbio, crypto e indicadores ao vivo.' },
 ]
 
 const steps = [
-  { title: 'Cole o link do seu YouTube', description: 'Nossa IA assiste seus videos, analisa thumbnails, cores, tipografia, bordoes e como voce fala com seu publico. Em segundos ela entende sua marca.' },
-  { title: 'Revisamos juntos', description: 'A IA gera: paleta de cores, fonte, tom de voz do chatbot, textos do site e quais features fazem sentido pro seu publico. Voce ajusta o que quiser.' },
-  { title: 'Lancamento', description: 'Deploy com seu dominio customizado, PWA pronta, SEO configurado. Seus seguidores acessam e voce monetiza desde o dia 1.' },
+  { title: 'Cole o link do seu YouTube', description: 'Nossa IA assiste seus vídeos, analisa thumbnails, cores, tipografia, bordões e como você fala com seu público. Em segundos ela entende sua marca.' },
+  { title: 'Revisamos juntos', description: 'A IA gera: paleta de cores, fonte, tom de voz do chatbot, textos do site e quais features fazem sentido pro seu público. Você ajusta o que quiser.' },
+  { title: 'Lançamento', description: 'Deploy com seu domínio customizado, PWA pronta, SEO configurado. Seus seguidores acessam e você monetiza desde o dia 1.' },
 ]
 
 const openFaq = ref(0)
 
 const faqs = [
-  { q: 'Preciso saber programar?', a: 'Nao. A IA faz todo o trabalho tecnico — desde a analise do seu canal ate o deploy da plataforma. Voce so precisa colar o link do seu YouTube e revisar o resultado.' },
-  { q: 'Quanto tempo leva para ficar pronta?', a: 'A IA gera a primeira versao em menos de 5 minutos. Apos sua revisao e ajustes, o deploy e feito em segundos. Do zero ao ar em menos de uma hora.' },
-  { q: 'Posso usar meu proprio dominio?', a: 'Sim. Nos planos Pro e Enterprise voce conecta seu dominio customizado (ex: invest.seucanal.com.br) com SSL gratuito configurado automaticamente.' },
-  { q: 'Como funciona a IA de assessoria?', a: 'O chatbot e treinado com seus videos, estilo de comunicacao e tom de voz. Ele responde duvidas de investimentos usando dados fundamentalistas reais da B3, sempre no seu jeito de falar.' },
-  { q: 'Quais dados de mercado estao inclusos?', a: 'Cotacoes em tempo real de 800+ ativos: acoes, FIIs, ETFs, BDRs e Small Caps. Alem de indicadores fundamentalistas como P/L, DY, P/VP, margem liquida e mais.' },
-  { q: 'Posso cancelar a qualquer momento?', a: 'Sim. Nao existe fidelidade ou multa. Voce pode cancelar seu plano a qualquer momento e sua plataforma fica no ar ate o fim do periodo pago.' },
-  { q: 'Meus seguidores precisam pagar para usar?', a: 'Voce decide. A plataforma pode ser 100% gratuita para seus seguidores ou voce pode ativar um modelo freemium com funcionalidades premium pagas — a receita vai direto para voce.' },
+  { q: 'Preciso saber programar?', a: 'Não. A IA faz todo o trabalho técnico — desde a análise do seu canal até o deploy da plataforma. Você só precisa colar o link do seu YouTube e revisar o resultado.' },
+  { q: 'Quanto tempo leva para ficar pronta?', a: 'A IA gera a primeira versão em menos de 5 minutos. Após sua revisão e ajustes, o deploy é feito em segundos. Do zero ao ar em menos de uma hora.' },
+  { q: 'Posso usar meu próprio domínio?', a: 'Sim. Nos planos Pro e Enterprise você conecta seu domínio customizado (ex: invest.seucanal.com.br) com SSL gratuito configurado automaticamente.' },
+  { q: 'Como funciona a IA de assessoria?', a: 'O chatbot é treinado com seus vídeos, estilo de comunicação e tom de voz. Ele responde dúvidas de investimentos usando dados fundamentalistas reais da B3, sempre no seu jeito de falar.' },
+  { q: 'Quais dados de mercado estão inclusos?', a: 'Cotações em tempo real de 800+ ativos: ações, FIIs, ETFs, BDRs e Small Caps. Além de indicadores fundamentalistas como P/L, DY, P/VP, margem líquida e mais.' },
+  { q: 'Posso cancelar a qualquer momento?', a: 'Sim. Não existe fidelidade ou multa. Você pode cancelar seu plano a qualquer momento e sua plataforma fica no ar até o fim do período pago.' },
+  { q: 'Meus seguidores precisam pagar para usar?', a: 'Você decide. A plataforma pode ser 100% gratuita para seus seguidores ou você pode ativar um modelo freemium com funcionalidades premium pagas — a receita vai direto para você.' },
 ]
 
 const earlyAdopterSpots = ref(7)
@@ -1922,19 +1922,19 @@ const pricingPlans = [
   {
     features: [
       'Plataforma com sua marca',
-      'Ate 5.000 usuarios',
-      'Cotacoes em tempo real',
-      'Chatbot IA basico',
+      'Até 5.000 usuários',
+      'Cotações em tempo real',
+      'Chatbot IA básico',
     ],
   },
   {
     features: [
       'Tudo do Starter',
-      'Usuarios ilimitados',
-      'Seu dominio + SSL',
+      'Usuários ilimitados',
+      'Seu domínio + SSL',
       'IA com seu tom de voz',
       'Carteira + Dividendos',
-      'Suporte prioritario',
+      'Suporte prioritário',
     ],
   },
   {
@@ -1971,7 +1971,7 @@ function unwrapApi<T>(payload: any): T[] {
 const fallbackStocks = [
   { symbol: 'PETR4', name: 'Petrobras PN', price: 38.72, change: 2.34, logo: 'https://icons.brapi.dev/icons/PETR4.svg' },
   { symbol: 'VALE3', name: 'Vale ON', price: 61.45, change: -1.18, logo: 'https://icons.brapi.dev/icons/VALE3.svg' },
-  { symbol: 'ITUB4', name: 'Itau Unibanco PN', price: 32.90, change: 0.85, logo: 'https://icons.brapi.dev/icons/ITUB4.svg' },
+  { symbol: 'ITUB4', name: 'Itaú Unibanco PN', price: 32.90, change: 0.85, logo: 'https://icons.brapi.dev/icons/ITUB4.svg' },
   { symbol: 'WEGE3', name: 'WEG ON', price: 44.15, change: 3.12, logo: 'https://icons.brapi.dev/icons/WEGE3.svg' },
   { symbol: 'BBAS3', name: 'Banco do Brasil ON', price: 28.33, change: 1.47, logo: 'https://icons.brapi.dev/icons/BBAS3.svg' },
   { symbol: 'ABEV3', name: 'Ambev ON', price: 13.22, change: -0.45, logo: 'https://icons.brapi.dev/icons/ABEV3.svg' },
@@ -1982,12 +1982,12 @@ const fallbackStocks = [
 ]
 const fallbackFIIs = [
   { symbol: 'MXRF11', name: 'Maxi Renda', price: 10.89, change: 0.42, logo: 'https://icons.brapi.dev/icons/MXRF11.svg' },
-  { symbol: 'HGLG11', name: 'CSHG Logistica', price: 158.20, change: -0.31, logo: 'https://icons.brapi.dev/icons/HGLG11.svg' },
+  { symbol: 'HGLG11', name: 'CSHG Logística', price: 158.20, change: -0.31, logo: 'https://icons.brapi.dev/icons/HGLG11.svg' },
   { symbol: 'XPLG11', name: 'XP Log', price: 95.40, change: 1.15, logo: 'https://icons.brapi.dev/icons/XPLG11.svg' },
   { symbol: 'KNRI11', name: 'Kinea Renda', price: 133.50, change: 0.28, logo: 'https://icons.brapi.dev/icons/KNRI11.svg' },
   { symbol: 'VISC11', name: 'Vinci Shopping', price: 105.80, change: -0.67, logo: 'https://icons.brapi.dev/icons/VISC11.svg' },
   { symbol: 'HGBS11', name: 'Hedge Brasil Shopping', price: 198.30, change: 0.55, logo: 'https://icons.brapi.dev/icons/HGBS11.svg' },
-  { symbol: 'BTLG11', name: 'BTG Logistico', price: 92.10, change: 1.22, logo: 'https://icons.brapi.dev/icons/BTLG11.svg' },
+  { symbol: 'BTLG11', name: 'BTG Logístico', price: 92.10, change: 1.22, logo: 'https://icons.brapi.dev/icons/BTLG11.svg' },
   { symbol: 'PVBI11', name: 'VBI Prime', price: 78.60, change: -0.18, logo: 'https://icons.brapi.dev/icons/PVBI11.svg' },
 ]
 const fallbackETFs = [
@@ -2109,7 +2109,7 @@ const activeMarketCat = ref('stocks')
 const marketCategories = [
   {
     key: 'stocks',
-    label: 'Acoes',
+    label: 'Ações',
     icon: 'i-lucide-trending-up',
     count: '400+',
     topTickers: mapApiTickers(stocksTop, fallbackStocks),
