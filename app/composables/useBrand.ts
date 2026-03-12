@@ -1,5 +1,4 @@
-import { brand as defaultBrand, brands } from '~/config/brand'
-import type { BrandSlug } from '~/config/brand'
+import { brand as defaultBrand } from '~/config/brand'
 
 const activeBrand = reactive({ ...defaultBrand })
 
@@ -10,11 +9,8 @@ export const useBrand = () => activeBrand
 export const useBrandMeta = () => ({ tenantLoaded })
 
 /**
- * Reads the `?brand=` query param and resolves the brand config.
- *
- * Resolution order:
- * 1. Try API: GET /api/tenants/resolve/{slug}  (dynamic, from DB)
- * 2. Fallback: static brands map from brand.ts (legacy)
+ * Reads the `?brand=` query param and resolves the brand config
+ * from the API (tenants table in DB).
  *
  * Called once in app.vue.
  */
@@ -38,27 +34,16 @@ export function initBrandFromRoute() {
         return true
       }
     } catch {
-      // API unavailable or tenant not found — fall through to static
+      console.warn(`[useBrand] Tenant "${slug}" not found in API`)
     }
     return false
-  }
-
-  function applyStaticBrand(slug: string) {
-    const key = slug as BrandSlug
-    if (brands[key] && slug !== activeBrand.slug) {
-      applyConfig(brands[key])
-    }
   }
 
   async function detectAndApply() {
     const querySlug = route.query.brand as string | undefined
 
     if (querySlug) {
-      // Try API first, then fall back to static
-      const resolved = await resolveFromApi(querySlug)
-      if (!resolved) {
-        applyStaticBrand(querySlug)
-      }
+      await resolveFromApi(querySlug)
       return
     }
 
