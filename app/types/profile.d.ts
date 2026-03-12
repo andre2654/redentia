@@ -2,7 +2,7 @@ export interface IProfile {
   id: string
   name: string
   email: string
-  role?: 'investor' | 'advisor'
+  role?: 'investor' | 'advisor' | 'admin'
   approval_status?: 'pending' | 'approved' | 'rejected' | null
   advisor_code?: string | null
   advisor_id?: number | null

@@ -17,6 +17,17 @@ export default defineNuxtConfig({
   ssr: true,
   vite: {
     plugins: [svgLoader()],
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'chart': ['chart.js', 'vue-chartjs'],
+            'markdown': ['marked', 'isomorphic-dompurify'],
+            'firebase': ['firebase/app', 'firebase/messaging'],
+          },
+        },
+      },
+    },
   },
   site: {
     url: brand.url,
@@ -220,7 +231,7 @@ export default defineNuxtConfig({
       '/ideal',
 
       // Rotas internas (render/automação)
-      '/n8n/**',
+      '/render/**',
     ],
   },
   runtimeConfig: {

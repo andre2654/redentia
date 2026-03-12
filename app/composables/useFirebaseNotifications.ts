@@ -62,11 +62,16 @@ export const useFirebaseNotifications = () => {
     }
   }
 
+  let unsubscribeMessage: (() => void) | null = null
+
   const listen = async () => {
     if (!process.client || !messaging) return
 
+    // Prevent stacking listeners
+    if (unsubscribeMessage) return
+
     const { onMessage } = await import('firebase/messaging')
-    onMessage(messaging, (payload) => {
+    unsubscribeMessage = onMessage(messaging, (payload) => {
       const { title, body } = payload.notification || {}
 
       if (title && body) {
@@ -80,11 +85,19 @@ export const useFirebaseNotifications = () => {
     })
   }
 
+  const cleanup = () => {
+    if (unsubscribeMessage) {
+      unsubscribeMessage()
+      unsubscribeMessage = null
+    }
+  }
+
   return {
     token,
     permissionStatus,
     checkPermission,
     requestPermission,
     listen,
+    cleanup,
   }
 }

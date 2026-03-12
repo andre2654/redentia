@@ -7,7 +7,7 @@ type ApiUser = {
   email?: string
   login?: string
   celular?: string
-  role?: 'investor' | 'advisor'
+  role?: 'investor' | 'advisor' | 'admin'
   approval_status?: 'pending' | 'approved' | 'rejected' | null
   advisor_code?: string | null
   advisor_id?: number | null

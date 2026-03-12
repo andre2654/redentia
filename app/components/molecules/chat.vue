@@ -3,19 +3,27 @@
     class="flex flex-col items-center justify-between gap-[100px] overflow-hidden xl:rounded-[30px]"
   >
     <!-- Suggestions Section -->
-    <div class="flex flex-col items-center justify-center gap-4 px-3 pt-[70px]">
-      <h2 class="text-center text-2xl">{{ brand.ai.chatTitle }}</h2>
-      <p class="text-center text-[13px] font-light opacity-60">
-        {{ brand.ai.chatSubtitle }}
-      </p>
-      <div class="grid max-w-[800px] grid-cols-2 gap-3 md:grid-cols-3">
+    <div class="flex flex-col items-center justify-center gap-5 px-4 pt-[70px]">
+      <div class="flex flex-col items-center gap-2">
+        <BrandLogo variant="icon" class="h-10 w-10 opacity-80" />
+        <h2 class="text-center text-2xl font-semibold">{{ brand.ai.chatTitle }}</h2>
+        <p class="max-w-md text-center text-[13px] font-light" :style="{ color: brand.colors.textMuted }">
+          {{ brand.ai.chatSubtitle }}
+        </p>
+      </div>
+      <div class="flex w-full max-w-[600px] flex-col gap-2">
         <button
           v-for="(suggestion, idx) in suggestions"
           :key="idx"
-          class="glass flex h-[130px] items-center justify-center rounded-lg bg-gradient-to-t from-[rgb(var(--brand-overlay)_/_0.1)] to-transparent p-3 text-[13px] font-medium transition-colors hover:from-[rgb(var(--brand-overlay)_/_0.2)]"
+          class="suggestion-btn group flex w-full items-center gap-3 rounded-xl border px-4 py-3.5 text-left text-[13px] font-medium transition-all duration-200"
+          :style="{ borderColor: brand.colors.border, color: brand.colors.text }"
           @click="sendSuggestion(suggestion)"
         >
-          {{ suggestion }}
+          <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-secondary/10 transition-colors group-hover:bg-secondary/20">
+            <UIcon :name="suggestionIcons[idx % suggestionIcons.length]" class="size-4 text-secondary" />
+          </div>
+          <span>{{ suggestion }}</span>
+          <UIcon name="i-lucide-arrow-right" class="ml-auto size-4 opacity-0 transition-all group-hover:translate-x-0.5 group-hover:opacity-60" />
         </button>
       </div>
     </div>
@@ -96,6 +104,15 @@ import type { IChatMessage } from '~/types/ai'
 
 const brand = useBrand()
 
+const suggestionIcons = [
+  'i-lucide-file-text',
+  'i-lucide-coins',
+  'i-lucide-trending-up',
+  'i-lucide-bar-chart-3',
+  'i-lucide-search',
+  'i-lucide-lightbulb',
+]
+
 // ==================== TYPES ====================
 
 type RoutePath = '/help' | '/ticker'
@@ -126,7 +143,8 @@ const ERROR_MESSAGES = {
 
 const inputValue = ref('')
 const isLoading = ref(false)
-const internalMessages = ref<IChatMessage[]>([])
+const internalMessages = shallowRef<IChatMessage[]>([])
+const messageIndex = new Map<string, IChatMessage>()
 
 // ==================== COMPUTED ====================
 
@@ -151,16 +169,13 @@ onMounted(() => {
 
 // ==================== METHODS ====================
 
-/**
- * Load messages from props
- */
 function loadMessages(): void {
-  internalMessages.value = props.messages || []
+  const msgs = props.messages || []
+  messageIndex.clear()
+  msgs.forEach((m) => messageIndex.set(m.id, m))
+  internalMessages.value = msgs
 }
 
-/**
- * Generate a unique ID
- */
 function generateId(): string {
   try {
     return crypto.randomUUID()
@@ -169,20 +184,21 @@ function generateId(): string {
   }
 }
 
-/**
- * Add a message to the chat
- */
 function addMessage(message: IChatMessage): void {
+  messageIndex.set(message.id, message)
   internalMessages.value = [...internalMessages.value, message]
 }
 
-/**
- * Update a specific message
- */
 function updateMessage(id: string, updates: Partial<IChatMessage>): void {
-  internalMessages.value = internalMessages.value.map((msg) =>
-    msg.id === id ? { ...msg, ...updates } : msg
-  )
+  const msg = messageIndex.get(id)
+  if (msg) {
+    Object.assign(msg, updates)
+    triggerRef(internalMessages)
+  }
+}
+
+function getMessageById(id: string): IChatMessage | undefined {
+  return messageIndex.get(id)
 }
 
 /**
@@ -247,17 +263,21 @@ async function fetchBotResponse(prompt: string): Promise<void> {
   const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT)
 
   const buildHistory = () => {
-    // internalMessages already contains the current user message at the end.
-    // We must NOT duplicate it; we only send the previous messages.
-    const prior = internalMessages.value.slice(0, -1)
-    const last = prior.slice(-HISTORY_LIMIT)
+    const msgs = internalMessages.value
+    const end = msgs.length - 1
+    const start = Math.max(0, end - HISTORY_LIMIT)
 
-    return last
-      .filter((m) => typeof m.content === 'string' && m.content.trim().length > 0)
-      .map((m) => ({
-        role: m.type === 'user' ? 'user' : 'assistant',
-        content: m.content.trim().slice(0, HISTORY_MAX_CHARS),
-      }))
+    const result = []
+    for (let i = start; i < end; i++) {
+      const m = msgs[i]
+      if (typeof m.content === 'string' && m.content.trim().length > 0) {
+        result.push({
+          role: m.type === 'user' ? 'user' : 'assistant',
+          content: m.content.trim().slice(0, HISTORY_MAX_CHARS),
+        })
+      }
+    }
+    return result
   }
 
   const ensureMessage = () => {
@@ -308,8 +328,6 @@ async function fetchBotResponse(prompt: string): Promise<void> {
 
           if (event.type === 'data') {
             ensureMessage()
-            // Update structured data
-            // Ensure we are passing the content object which matches IAgentResponse
             updateMessage(botMessageId, { structuredData: event.content })
           } else if (event.type === 'status') {
             ensureMessage()
@@ -319,69 +337,33 @@ async function fetchBotResponse(prompt: string): Promise<void> {
             updateMessage(botMessageId, { suggestions: event.content })
           } else if (event.type === 'content') {
             ensureMessage()
-            // Append text content
-            const currentMsg = internalMessages.value.find(
-              (m) => m.id === botMessageId
-            )
-            const newContent = (currentMsg?.content || '') + event.content
-
-            // Check for recommendation tag in content
-            // Simple check: if content starts with REC: ...
-            // We might want to strip it from display or keep it
-
-            updateMessage(botMessageId, { content: newContent })
+            const currentMsg = getMessageById(botMessageId)
+            updateMessage(botMessageId, { content: (currentMsg?.content || '') + event.content })
           } else if (event.type === 'related-tickers') {
             ensureMessage()
-            const currentMsg = internalMessages.value.find(
-              (m) => m.id === botMessageId
-            )
-            const currentStructuredData = currentMsg?.structuredData || {
-              status: 'success',
-              type: 'text',
-            }
-
+            const currentMsg = getMessageById(botMessageId)
+            const sd = currentMsg?.structuredData || { status: 'success', type: 'text' }
             updateMessage(botMessageId, {
-              structuredData: {
-                ...currentStructuredData,
-                relatedTickers: event.content,
-              },
+              structuredData: { ...sd, relatedTickers: event.content },
             })
           } else if (event.type === 'tool-used') {
             ensureMessage()
-            const currentMsg = internalMessages.value.find(
-              (m) => m.id === botMessageId
-            )
-            const currentStructuredData = currentMsg?.structuredData || {
-              status: 'success',
-              type: 'text',
-            }
-
-            const toolsUsed = currentStructuredData.toolsUsed || []
+            const currentMsg = getMessageById(botMessageId)
+            const sd = currentMsg?.structuredData || { status: 'success', type: 'text' }
+            const toolsUsed = sd.toolsUsed || []
             toolsUsed.push(event.content)
-
             updateMessage(botMessageId, {
-              structuredData: {
-                ...currentStructuredData,
-                toolsUsed,
-              },
+              structuredData: { ...sd, toolsUsed },
             })
           } else if (event.type === 'meta') {
             ensureMessage()
-            const currentMsg = internalMessages.value.find(
-              (m) => m.id === botMessageId
-            )
-
-            // Prefer attaching meta to structuredData when available.
-            // For pure text answers, the UI can still infer REC from message.content.
+            const currentMsg = getMessageById(botMessageId)
             if (currentMsg?.structuredData) {
-              const currentStructuredData = currentMsg.structuredData
+              const sd = currentMsg.structuredData
               updateMessage(botMessageId, {
                 structuredData: {
-                  ...currentStructuredData,
-                  meta: {
-                    ...(currentStructuredData.meta || {}),
-                    ...(event.content || {}),
-                  },
+                  ...sd,
+                  meta: { ...(sd.meta || {}), ...(event.content || {}) },
                 },
               })
             }
@@ -420,7 +402,7 @@ function handleStreamError(error: unknown, botMessageId: string): void {
     }
   }
 
-  const existing = internalMessages.value.find((m) => m.id === botMessageId)
+  const existing = getMessageById(botMessageId)
   if (existing) {
     updateMessage(botMessageId, {
       content: existing.content + '\n\n' + errorMessage,
@@ -438,6 +420,14 @@ function handleStreamError(error: unknown, botMessageId: string): void {
 </script>
 
 <style scoped>
+.suggestion-btn {
+  background: var(--brand-surface, transparent);
+}
+.suggestion-btn:hover {
+  background: var(--brand-surface-hover, rgba(255, 255, 255, 0.05));
+  border-color: var(--brand-secondary, var(--ui-secondary)) !important;
+}
+
 .dot {
   width: 6px;
   height: 6px;

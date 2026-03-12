@@ -25,14 +25,18 @@ const showBanner = computed(() => {
   return !route.meta.hideInstallAppBanner && !interfaceStore.hideInstallBanner
 })
 
-const { checkPermission, listen } = useFirebaseNotifications()
+const { checkPermission, listen, cleanup } = useFirebaseNotifications()
 
 onMounted(() => {
   checkPermission()
   listen()
 
-  watchEffect(() => {
-    document.body.classList.toggle('hide-amount', !interfaceStore.revealAmount)
-  })
+  watch(() => interfaceStore.revealAmount, (reveal) => {
+    document.body.classList.toggle('hide-amount', !reveal)
+  }, { immediate: true })
+})
+
+onUnmounted(() => {
+  cleanup()
 })
 </script>

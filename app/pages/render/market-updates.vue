@@ -2,6 +2,7 @@
 definePageMeta({
   layout: false,
   isPublicRoute: true,
+  hideInstallAppBanner: true
 })
 
 type Format = 'square' | 'feed' | 'story'
@@ -20,6 +21,22 @@ function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(max, n))
 }
 
+function hexToRgb(hex: string): string {
+  const c = hex.replace('#', '')
+  const r = parseInt(c.substring(0, 2), 16)
+  const g = parseInt(c.substring(2, 4), 16)
+  const b = parseInt(c.substring(4, 6), 16)
+  return `${r}, ${g}, ${b}`
+}
+
+function darkenHex(hex: string, factor: number): string {
+  const c = hex.replace('#', '')
+  const r = Math.round(parseInt(c.substring(0, 2), 16) * factor)
+  const g = Math.round(parseInt(c.substring(2, 4), 16) * factor)
+  const b = Math.round(parseInt(c.substring(4, 6), 16) * factor)
+  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`
+}
+
 // Opcional: se NUXT_N8N_RENDER_KEY estiver configurada, exige ?key=...
 if (import.meta.server) {
   const requiredKey = (runtimeConfig as any).n8nRenderKey as string | undefined
@@ -36,7 +53,6 @@ const format = computed<Format>(() => {
   if (f === 'feed') return 'feed'
   if (f === 'story') return 'story'
   if (f === 'square') return 'square'
-  // default: square (ref que você mandou)
   return 'square'
 })
 
@@ -95,7 +111,7 @@ const headline2Parts = computed(() => {
   }
 })
 
-const accent = computed(() => firstString(route.query.accent) || '#FFFFFF')
+const accent = computed(() => firstString(route.query.accent) || brand.colors.primary || '#FFFFFF')
 
 const cardOpacity = computed(() => {
   const raw = firstString(route.query.cardOpacity)
@@ -104,8 +120,26 @@ const cardOpacity = computed(() => {
   return clamp(n, 0.6, 1)
 })
 
+// Derive gradient colors from brand
+const primaryRgb = computed(() => hexToRgb(brand.colors.primary || '#198ed6'))
+const bgDark = computed(() => brand.colors.background || '#041a2b')
+const bgDarker = computed(() => darkenHex(bgDark.value, 0.7))
+const bgDarkest = computed(() => darkenHex(bgDark.value, 0.4))
+
+const cardBackground = computed(() =>
+  `radial-gradient(circle at 20% 15%, rgba(${primaryRgb.value}, 0.35) 0%, rgba(0, 0, 0, 0) 55%), ` +
+  `radial-gradient(circle at 70% 60%, rgba(${primaryRgb.value}, 0.25) 0%, rgba(0, 0, 0, 0) 65%), ` +
+  `radial-gradient(circle at 50% 105%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0) 55%), ` +
+  `linear-gradient(180deg, ${bgDark.value} 0%, ${bgDarker.value} 55%, ${bgDarkest.value} 100%)`
+)
+
+const fontFamily = computed(() => {
+  const f = brand.font?.family || 'Sora'
+  return `'${f}', system-ui, -apple-system, BlinkMacSystemFont, sans-serif`
+})
+
 useHead(() => ({
-  title: `${brand.name} - Market updates (n8n)`,
+  title: `${brand.name} - Market Updates`,
   htmlAttrs: {
     style: `--w:${frame.value.w}px; --h:${frame.value.h}px; --accent:${accent.value}; --cardOpacity:${cardOpacity.value};`,
   },
@@ -113,12 +147,22 @@ useHead(() => ({
     { name: 'robots', content: 'noindex,nofollow,noarchive' },
     { name: 'viewport', content: `width=${frame.value.w}, initial-scale=1` },
   ],
+  link: brand.font?.google ? [
+    { rel: 'stylesheet', href: `https://fonts.googleapis.com/css2?family=${brand.font.google}&display=swap` },
+  ] : [],
 }))
 </script>
 
 <template>
   <div class="frame">
-    <div class="card">
+    <div
+      class="card"
+      :style="{
+        background: cardBackground,
+        fontFamily: fontFamily,
+        color: brand.colors.text || '#fff',
+      }"
+    >
       <header class="header">
         <div class="brandLeft">
           <BrandLogo variant="icon" class="brandIcon" />
@@ -135,7 +179,7 @@ useHead(() => ({
           <div class="notif front" role="group" aria-label="Notificação">
             <div class="notifHeader">
               <div class="notifHeaderLeft">
-                <div class="appIcon">
+                <div class="appIcon" :style="{ background: bgDarkest }">
                   <BrandLogo variant="icon" class="appIconSvg" />
                 </div>
                 <div class="notifTitle">{{ notifTitle }}</div>
@@ -171,11 +215,7 @@ useHead(() => ({
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background: #041a2b;
-}
-
-:global(body) {
-  font-family: 'Sora', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--brand-background, #041a2b);
 }
 
 * {
@@ -199,12 +239,6 @@ useHead(() => ({
   justify-content: space-between;
   position: relative;
   overflow: hidden;
-  background:
-    radial-gradient(circle at 20% 15%, rgba(25, 142, 214, 0.35) 0%, rgba(0, 0, 0, 0) 55%),
-    radial-gradient(circle at 70% 60%, rgba(10, 94, 152, 0.45) 0%, rgba(0, 0, 0, 0) 65%),
-    radial-gradient(circle at 50% 105%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0) 55%),
-    linear-gradient(180deg, #05263b 0%, #031a2b 55%, #021220 100%);
-  color: #fff;
 }
 
 .header {
@@ -222,7 +256,6 @@ useHead(() => ({
 .brandIcon {
   width: 56px;
   height: 56px;
-  fill: #fff;
 }
 
 .brandName {
@@ -301,7 +334,6 @@ useHead(() => ({
   width: 64px;
   height: 64px;
   border-radius: 16px;
-  background: #0b0b0b;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -311,7 +343,6 @@ useHead(() => ({
 .appIconSvg {
   width: 40px;
   height: 40px;
-  fill: #fff;
 }
 
 .notifTitle {
@@ -361,4 +392,3 @@ useHead(() => ({
   color: var(--accent);
 }
 </style>
-

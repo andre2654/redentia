@@ -50,7 +50,8 @@
                 <div class="relative">
                   <UIcon
                     name="i-lucide-search"
-                    class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40"
+                    class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
+                    :style="{ color: brand.colors.textMuted }"
                   />
                   <input
                     v-model="contactSearch"
@@ -76,13 +77,13 @@
                     class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
                     :class="selectedContact === null ? 'bg-secondary/20' : 'bg-secondary/5 group-hover:bg-secondary/10'"
                   >
-                    <IconAi class="h-5 w-5" :class="selectedContact === null ? 'fill-secondary' : 'fill-white/60 group-hover:fill-white/80'" />
+                    <IconAi class="h-5 w-5" :class="selectedContact === null ? 'fill-secondary' : 'opacity-60 group-hover:opacity-80'" :style="selectedContact === null ? {} : { fill: brand.colors.textMuted }" />
                   </div>
                   <div class="min-w-0 flex-1">
                     <p class="truncate text-sm font-medium">
                       {{ brand.ai.name }}
                     </p>
-                    <p class="truncate text-xs text-white/50">
+                    <p class="truncate text-xs" :style="{ color: brand.colors.textMuted }">
                       {{ brand.nav.mobileAiLabel }}
                     </p>
                   </div>
@@ -90,7 +91,7 @@
                 <div v-if="investorsLoading" class="flex justify-center py-8">
                   <UIcon name="i-lucide-loader-2" class="h-5 w-5 animate-spin text-secondary" />
                 </div>
-                <div v-else-if="filteredInvestors.length === 0" class="px-3 py-6 text-center text-xs leading-relaxed text-white/40">
+                <div v-else-if="filteredInvestors.length === 0" class="px-3 py-6 text-center text-xs leading-relaxed" :style="{ color: brand.colors.textMuted }">
                   {{ contactSearch ? 'Nenhum contato encontrado.' : 'Nenhum investidor vinculado. Compartilhe seu código nas configurações.' }}
                 </div>
                 <button
@@ -115,13 +116,14 @@
                     <p class="truncate text-sm font-medium">
                       {{ inv.name ?? 'Investidor' }}
                     </p>
-                    <p v-if="inv.email" class="truncate text-xs text-white/50">
+                    <p v-if="inv.email" class="truncate text-xs" :style="{ color: brand.colors.textMuted }">
                       {{ inv.email }}
                     </p>
                   </div>
                   <span
                     v-if="inv.approval_status === 'pending'"
-                    class="shrink-0 rounded-full bg-amber-400/15 px-2 py-0.5 text-[10px] font-medium text-amber-300"
+                    class="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium"
+                    :style="{ backgroundColor: brand.colors.neutral + '26', color: brand.colors.neutral }"
                   >
                     Pendente
                   </span>
@@ -135,7 +137,7 @@
                 class="flex h-full min-h-[300px] flex-col items-center justify-center gap-3 brand-card p-6 text-center"
                 :style="{ backgroundColor: brand.colors.surface, color: brand.colors.text }"
               >
-                <UIcon name="i-lucide-user-clock" class="h-12 w-12 text-amber-400/80" />
+                <UIcon name="i-lucide-user-clock" class="h-12 w-12" :style="{ color: brand.colors.neutral }" />
                 <p class="text-sm font-medium">Aprove este investidor para conversar</p>
                 <p class="max-w-xs text-[13px]" :style="{ color: brand.colors.textMuted }">
                   O vínculo está pendente. Aprove em <NuxtLink to="/advisor" class="underline text-secondary">Área do assessor</NuxtLink> para trocar mensagens.
@@ -157,7 +159,7 @@
                   'Tenho R$ 100,00 para investir, qual ação comprar?',
                   'Como está o mercado hoje?',
                 ]"
-                textarea-container-class="bg-gray-200"
+                :textarea-container-style="{ backgroundColor: brand.colors.surfaceHover }"
                 :messages="messages"
                 route-path="/help"
               />
@@ -180,13 +182,13 @@
                 class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
                 :class="activeTab === 'ia' ? 'bg-secondary/20' : 'bg-secondary/5 group-hover:bg-secondary/10'"
               >
-                <IconAi class="h-5 w-5" :class="activeTab === 'ia' ? 'fill-secondary' : 'fill-white/60 group-hover:fill-white/80'" />
+                <IconAi class="h-5 w-5" :class="activeTab === 'ia' ? 'fill-secondary' : 'opacity-60 group-hover:opacity-80'" :style="activeTab === 'ia' ? {} : { fill: brand.colors.textMuted }" />
               </div>
               <div class="min-w-0 flex-1">
                 <p class="truncate text-sm font-medium">
                   Assessor inteligente
                 </p>
-                <p class="truncate text-xs text-white/50">
+                <p class="truncate text-xs" :style="{ color: brand.colors.textMuted }">
                   Assistente com IA
                 </p>
               </div>
@@ -213,7 +215,7 @@
                 <p class="truncate text-sm font-medium">
                   Conversar com {{ advisorName }}
                 </p>
-                <p class="truncate text-xs text-white/50">
+                <p class="truncate text-xs" :style="{ color: brand.colors.textMuted }">
                   Seu assessor
                 </p>
               </div>
@@ -228,7 +230,7 @@
                 'Tenho R$ 100,00 para investir, qual ação comprar?',
                 'Como está o mercado hoje?',
               ]"
-              textarea-container-class="bg-gray-200"
+              :textarea-container-style="{ backgroundColor: brand.colors.surfaceHover }"
               :messages="messages"
               route-path="/help"
             />

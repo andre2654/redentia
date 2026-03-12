@@ -11,6 +11,7 @@ export const useCustomFetch = () => {
     const headers = {
       ...options.headers,
       Authorization: `Bearer ${store.token}`,
+      Accept: 'application/json',
     }
 
     const response = await $fetch<CustomResponse<T>>(url, {

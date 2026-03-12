@@ -121,6 +121,7 @@
         <AtomsSidebarButton to="/help" :text="brand.nav.chat" icon="i-lucide-message-circle" />
         <AtomsSidebarButton v-if="authStore.me?.role === 'advisor'" to="/advisor" :text="brand.nav.advisorArea" icon="i-lucide-users" />
         <AtomsSidebarButton to="/settings" :text="brand.nav.settings" icon="i-lucide-settings" />
+        <AtomsSidebarButton v-if="authStore.me?.role === 'admin'" to="/backoffice" text="Backoffice" icon="i-lucide-shield" />
 
         <div class="my-2" />
         <span class="mb-2 px-4 text-[10px] font-medium uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">{{ brand.nav.toolsLabel }}</span>

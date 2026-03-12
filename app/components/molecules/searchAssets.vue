@@ -106,6 +106,9 @@
                       :src="item.avatar.src"
                       :alt="item.label"
                       class="h-full w-full object-cover"
+                      width="36"
+                      height="36"
+                      loading="lazy"
                     >
                     <span v-else class="text-xs font-bold" :style="{ color: brand.colors.textMuted }">
                       {{ item.label.slice(0, 2) }}

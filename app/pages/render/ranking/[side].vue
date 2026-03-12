@@ -2,6 +2,7 @@
 definePageMeta({
   layout: false,
   isPublicRoute: true,
+  hideInstallAppBanner: true
 })
 
 type ApiSide = 'top' | 'bottom'
@@ -25,6 +26,22 @@ function asFiniteNumber(value: unknown): number | undefined {
   return n
 }
 
+function hexToRgb(hex: string): string {
+  const c = hex.replace('#', '')
+  const r = parseInt(c.substring(0, 2), 16)
+  const g = parseInt(c.substring(2, 4), 16)
+  const b = parseInt(c.substring(4, 6), 16)
+  return `${r}, ${g}, ${b}`
+}
+
+function darkenHex(hex: string, factor: number): string {
+  const c = hex.replace('#', '')
+  const r = Math.round(parseInt(c.substring(0, 2), 16) * factor)
+  const g = Math.round(parseInt(c.substring(2, 4), 16) * factor)
+  const b = Math.round(parseInt(c.substring(4, 6), 16) * factor)
+  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`
+}
+
 // Opcional: se NUXT_N8N_RENDER_KEY estiver configurada, exige ?key=...
 if (import.meta.server) {
   const requiredKey = (runtimeConfig as any).n8nRenderKey as string | undefined
@@ -44,7 +61,6 @@ const theme = computed<Theme>(() => {
   const v = sideParam.value
   if (v.startsWith('neg') || v === 'bottom' || v === 'down') return 'negative'
   if (v.startsWith('pos') || v === 'top' || v === 'up') return 'positive'
-  // fallback (para não quebrar automações com typo)
   return 'positive'
 })
 
@@ -75,12 +91,36 @@ const title = computed(
 )
 const label = computed(() => firstString(route.query.label) || defaultLabel())
 
+// Dynamic colors from brand
+const positiveColor = computed(() => brand.colors.positive || '#69d167')
+const negativeColor = computed(() => brand.colors.negative || '#ff4444')
+const bgColor = computed(() => brand.colors.background || '#000000')
+const textColor = computed(() => brand.colors.text || '#ffffff')
+
+const positiveGlow = computed(() => darkenHex(positiveColor.value, 0.3))
+const negativeGlow = computed(() => darkenHex(negativeColor.value, 0.3))
+
+const cardBackground = computed(() => {
+  if (theme.value === 'positive') {
+    return `radial-gradient(circle at 10% 85%, ${positiveGlow.value} 0%, ${bgColor.value} 60%)`
+  }
+  return `radial-gradient(circle at 90% 85%, ${negativeGlow.value} 0%, ${bgColor.value} 60%)`
+})
+
+const fontFamily = computed(() => {
+  const f = brand.font?.family || 'Sora'
+  return `'${f}', system-ui, -apple-system, BlinkMacSystemFont, sans-serif`
+})
+
 useHead(() => ({
   title: `${title.value} - ${theme.value === 'positive' ? 'Altas' : 'Baixas'}`,
   meta: [
     { name: 'robots', content: 'noindex,nofollow,noarchive' },
     { name: 'viewport', content: 'width=1080, initial-scale=1' },
   ],
+  link: brand.font?.google ? [
+    { rel: 'stylesheet', href: `https://fonts.googleapis.com/css2?family=${brand.font.google}&display=swap` },
+  ] : [],
 }))
 
 type RawTopStock = {
@@ -137,7 +177,7 @@ function toChangePercent(value: unknown): number | null {
 }
 
 const { data: stocks, pending, error } = await useAsyncData<RankingStock[]>(
-  `n8n-ranking-${apiSide.value}-${volume.value}-${limit.value}`,
+  `render-ranking-${apiSide.value}-${volume.value}-${limit.value}`,
   async () => {
     const inlineData = firstString(route.query.data)
     if (inlineData && import.meta.server) {
@@ -153,7 +193,7 @@ const { data: stocks, pending, error } = await useAsyncData<RankingStock[]>(
             change_percent: toChangePercent(s.change_percent),
           }))
         } catch {
-          // cai para fetch normal
+          // falls through to fetch
         }
       }
     }
@@ -181,8 +221,8 @@ const { data: stocks, pending, error } = await useAsyncData<RankingStock[]>(
 )
 
 function colorFor(changePercent: number | null): string {
-  if (typeof changePercent === 'number' && changePercent >= 0) return '#69d167'
-  return '#ff4444'
+  if (typeof changePercent === 'number' && changePercent >= 0) return positiveColor.value
+  return negativeColor.value
 }
 
 function formatPercent(changePercent: number | null): string {
@@ -195,13 +235,20 @@ function formatPercent(changePercent: number | null): string {
 
 <template>
   <div class="frame" :class="theme">
-    <div class="card">
+    <div
+      class="card"
+      :style="{
+        background: cardBackground,
+        fontFamily: fontFamily,
+        color: textColor,
+      }"
+    >
       <h1 class="title">
         {{ title }}
         <span>{{ label }}</span>
       </h1>
 
-      <div class="table-header">
+      <div class="table-header" :style="{ borderColor: `rgba(${hexToRgb(textColor)}, 0.12)` }">
         <div class="table-header-inner">
           <div class="table-header-title">Ativo</div>
           <div class="table-header-return">Rentabilidade (%)</div>
@@ -213,13 +260,19 @@ function formatPercent(changePercent: number | null): string {
         <div v-else-if="error" class="loading">Erro ao carregar dados.</div>
 
         <template v-else>
-          <div v-for="stock in stocks" :key="stock.ticker" class="table-row">
+          <div
+            v-for="stock in stocks"
+            :key="stock.ticker"
+            class="table-row"
+            :style="{ borderBottomColor: `rgba(${hexToRgb(textColor)}, 0.2)` }"
+          >
             <div class="table-row-left">
               <img
                 class="asset-icon"
                 :src="stock.logo || '/favicon.png'"
                 :alt="stock.ticker"
                 loading="eager"
+                :style="{ background: `rgba(${hexToRgb(textColor)}, 0.06)` }"
               />
               <div class="asset-symbol">{{ stock.ticker }}</div>
             </div>
@@ -255,11 +308,7 @@ function formatPercent(changePercent: number | null): string {
   margin: 0;
   padding: 0;
   overflow: hidden;
-}
-
-:global(body) {
-  font-family: 'Sora', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #000;
+  background: var(--brand-background, #000);
 }
 
 * {
@@ -277,7 +326,6 @@ function formatPercent(changePercent: number | null): string {
 .card {
   width: 1080px;
   height: 1080px;
-  color: #fff;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -285,11 +333,6 @@ function formatPercent(changePercent: number | null): string {
   gap: 25px;
   overflow: hidden;
   position: relative;
-  background: radial-gradient(circle at 10% 85%, #083311 0%, #000000 60%);
-}
-
-.frame.negative .card {
-  background: radial-gradient(circle at 90% 85%, #330808 0%, #000000 60%);
 }
 
 .title {
@@ -298,21 +341,16 @@ function formatPercent(changePercent: number | null): string {
   font-weight: 600;
   text-transform: uppercase;
   line-height: 75px;
-  background: linear-gradient(90deg, #ffffff 0%, #c9c9c9 100%);
+  background: linear-gradient(90deg, currentColor 0%, currentColor 100%);
   -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
   background-clip: text;
-  color: transparent;
+  opacity: 0.95;
 }
 
 .title span {
   display: block;
   text-transform: none;
-  background: linear-gradient(90deg, #ffffff 0%, #c9c9c9 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: transparent;
+  opacity: 0.8;
 }
 
 .table-header {
@@ -363,7 +401,7 @@ function formatPercent(changePercent: number | null): string {
   justify-content: space-between;
   align-items: center;
   padding: 13px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid;
   border-radius: 8px;
 }
 
@@ -378,7 +416,6 @@ function formatPercent(changePercent: number | null): string {
   height: 70px;
   border-radius: 50%;
   object-fit: cover;
-  background: rgba(255, 255, 255, 0.06);
 }
 
 .asset-symbol {
@@ -431,4 +468,3 @@ function formatPercent(changePercent: number | null): string {
   opacity: 0.95;
 }
 </style>
-
