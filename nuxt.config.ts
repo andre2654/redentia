@@ -254,6 +254,8 @@ export default defineNuxtConfig({
       firebaseMessagingSenderId: process.env.NUXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
       firebaseAppId: process.env.NUXT_PUBLIC_FIREBASE_APP_ID,
       firebaseVapidKey: process.env.NUXT_PUBLIC_FIREBASE_VAPID_KEY,
+      metaPixelId: process.env.NUXT_PUBLIC_META_PIXEL_ID || '',
+      metaAccessToken: process.env.NUXT_PUBLIC_META_ACCESS_TOKEN || '',
     },
   },
   routeRules: {

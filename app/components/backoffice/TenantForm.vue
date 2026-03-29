@@ -296,6 +296,18 @@
       </div>
     </BackofficeFormSection>
 
+    <!-- Meta / Facebook Pixel -->
+    <BackofficeFormSection title="Meta / Facebook Pixel" icon="i-lucide-megaphone" hint="Configure o pixel do Meta (Facebook) para rastreamento de conversoes">
+      <div class="grid gap-4 sm:grid-cols-2">
+        <BackofficeFormField label="Pixel ID" hint="ID do pixel do Facebook (ex: 945074934545164)">
+          <input v-model="metaConfig.pixelId" type="text" class="form-input font-mono" placeholder="945074934545164" />
+        </BackofficeFormField>
+        <BackofficeFormField label="Access Token (CAPI)" hint="Token de acesso da Conversion API do Meta">
+          <input v-model="metaConfig.accessToken" type="text" class="form-input font-mono text-xs" placeholder="EAATLLdXzNtMBR..." />
+        </BackofficeFormField>
+      </div>
+    </BackofficeFormSection>
+
     <!-- Company -->
     <BackofficeFormSection title="Institucional" icon="i-lucide-building">
       <div class="grid gap-4 sm:grid-cols-2">
@@ -478,6 +490,12 @@ function makeConfig() {
 
 const config = reactive(makeConfig())
 
+// Meta pixel config (nested optional object)
+const metaConfig = reactive({
+  pixelId: config.meta?.pixelId ?? '',
+  accessToken: config.meta?.accessToken ?? '',
+})
+
 // Sync domain from form to config.domain
 watch(() => form.domain, (d) => {
   config.domain = d
@@ -617,6 +635,16 @@ function handleSubmit() {
 
   // Sync slug in config with form slug
   finalConfig.slug = form.slug
+
+  // Sync meta pixel config
+  const meta: Record<string, string> = {}
+  if (metaConfig.pixelId) meta.pixelId = metaConfig.pixelId
+  if (metaConfig.accessToken) meta.accessToken = metaConfig.accessToken
+  if (Object.keys(meta).length > 0) {
+    finalConfig.meta = meta
+  } else {
+    delete finalConfig.meta
+  }
 
   // Merge JSON override if valid
   if (jsonOverride.value.trim()) {

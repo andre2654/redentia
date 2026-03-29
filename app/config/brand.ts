@@ -476,6 +476,12 @@ interface BrandConfig {
     }
   }
 
+  // === META / FACEBOOK PIXEL ===
+  meta?: {
+    pixelId?: string
+    accessToken?: string
+  }
+
   // === SECOES DA HOME (ordem e visibilidade) ===
   // A ordem no array define a ordem de exibicao na home.
   // Cada secao pode ser ativada/desativada individualmente.
@@ -2597,6 +2603,7 @@ const redentia: BrandConfig = {
     sectionSubtitle: 'Tudo que voce precisa para investir melhor',
     categories: [],
   },
+
 }
 
 // ============================================================
