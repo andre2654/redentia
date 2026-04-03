@@ -213,47 +213,53 @@
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <span
-                class="h-2 w-2 animate-pulse rounded-full md:h-3 md:w-3"
-                :style="{ backgroundColor: brand.colors.primary, boxShadow: `0 0 12px ${brand.colors.primary}80` }"
+                class="h-2 w-2 rounded-full md:h-3 md:w-3"
+                :class="{ 'animate-pulse': marketStatus.animate }"
+                :style="{ backgroundColor: marketStatus.color, boxShadow: marketStatus.animate ? `0 0 12px ${marketStatus.color}80` : 'none' }"
               />
               <span
                 class="text-xs font-medium uppercase tracking-wider md:text-sm"
-                :style="{ color: brand.colors.primary }"
-                >Ao Vivo</span
-              >
-              <span class="text-xs" :style="{ color: brand.colors.textMuted }">
-                • Atualizado agora
+                :style="{ color: marketStatus.color }"
+              >{{ marketStatus.label }}</span>
+              <span v-if="marketStatus.lastUpdate" class="text-xs" :style="{ color: brand.colors.textMuted }">
+                • Atualizado em {{ marketStatus.lastUpdate }}
               </span>
             </div>
           </div>
-          <div class="flex gap-4">
-            <div class="flex flex-col gap-2">
+          <div class="flex gap-8">
+            <div class="flex flex-col gap-1">
               <h3
-                class="font-regular mb-1 flex items-center gap-2 text-xl md:mb-2 md:text-2xl"
+                class="font-regular flex items-center gap-2 text-xl md:text-2xl"
                 :style="{ color: brand.colors.text }"
               >
                 IBOVESPA
               </h3>
               <p
-                class="mb-1 text-3xl font-semibold tabular-nums sm:text-4xl md:text-5xl"
-                :style="{ color: brand.colors.text }"
+                class="text-3xl font-semibold tabular-nums sm:text-4xl md:text-5xl"
+                :style="{ color: ibovVariationColor }"
               >
                 {{ ibovIndicator }}
               </p>
+              <p class="text-sm tabular-nums" :style="{ color: brand.colors.textMuted }">
+                R$ {{ ibovLastPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+              </p>
             </div>
 
-            <div class="flex flex-col gap-2">
+            <div class="flex flex-col gap-1">
               <h3
-                class="font-regular mb-1 flex items-center gap-2 text-xl md:mb-2 md:text-2xl"
+                class="font-regular flex items-center gap-2 text-xl md:text-2xl"
                 :style="{ color: brand.colors.text }"
               >
                 IFIX
               </h3>
               <p
-                class="mb-1 text-3xl font-semibold tabular-nums sm:text-4xl md:text-5xl"
-                :style="{ color: brand.colors.text }"
+                class="text-3xl font-semibold tabular-nums sm:text-4xl md:text-5xl"
+                :style="{ color: ifixVariationColor }"
               >
                 {{ ifixIndicator }}
+              </p>
+              <p class="text-sm tabular-nums" :style="{ color: brand.colors.textMuted }">
+                R$ {{ ifixLastPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
               </p>
             </div>
           </div>
@@ -1245,6 +1251,48 @@ function formatVariation(value: number) {
 
 const ibovChartData = ref<ChartPoint[]>([])
 
+// Status do mercado (B3: 10h-17h dias uteis, timezone America/Sao_Paulo)
+const marketStatus = computed(() => {
+  const series = homeMarketData.value?.ibovSeries
+  const lastEntry = Array.isArray(series) && series.length > 0 ? series[series.length - 1] : null
+  const lastPriceAt = lastEntry?.price_at ?? ''
+
+  // Hora atual em Sao Paulo
+  const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }))
+  const day = now.getDay() // 0=dom, 6=sab
+  const hour = now.getHours()
+
+  // Data de hoje formatada YYYY-MM-DD
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+
+  // Formatar ultima atualizacao
+  const lastUpdateFormatted = lastPriceAt
+    ? new Date(lastPriceAt + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
+    : ''
+
+  // Fim de semana
+  if (day === 0 || day === 6) {
+    return { label: 'Fechado', color: '#71717a', animate: false, lastUpdate: lastUpdateFormatted }
+  }
+
+  // Dia util, antes do mercado
+  if (hour < 10) {
+    return { label: 'Pre-mercado', color: '#eab308', animate: true, lastUpdate: lastUpdateFormatted }
+  }
+
+  // Dia util, horario de mercado
+  if (hour >= 10 && hour < 17) {
+    // Se nao tem dado de hoje, provavelmente e feriado
+    if (lastPriceAt && lastPriceAt < todayStr) {
+      return { label: 'Feriado', color: '#f97316', animate: false, lastUpdate: lastUpdateFormatted }
+    }
+    return { label: 'Ao Vivo', color: '#22c55e', animate: true, lastUpdate: lastUpdateFormatted }
+  }
+
+  // Dia util, apos mercado
+  return { label: 'Fechado', color: '#71717a', animate: false, lastUpdate: lastUpdateFormatted }
+})
+
 // Computed properties para SSR correto (evita hydration mismatch)
 const ibovIndicator = computed(() => {
   const stats = calculateSeriesStats(homeMarketData.value?.ibovSeries)
@@ -1259,6 +1307,23 @@ const ibovLastPrice = computed(() => {
 const ifixIndicator = computed(() => {
   const stats = calculateSeriesStats(homeMarketData.value?.ifixSeries)
   return stats ? formatVariation(stats.variation) : '+0,00%'
+})
+
+const ifixLastPrice = computed(() => {
+  const stats = calculateSeriesStats(homeMarketData.value?.ifixSeries)
+  return stats?.lastPrice ?? 0
+})
+
+const ibovVariationColor = computed(() => {
+  const stats = calculateSeriesStats(homeMarketData.value?.ibovSeries)
+  if (!stats || stats.variation === 0) return brand.colors.textMuted
+  return stats.variation > 0 ? brand.colors.positive : brand.colors.negative
+})
+
+const ifixVariationColor = computed(() => {
+  const stats = calculateSeriesStats(homeMarketData.value?.ifixSeries)
+  if (!stats || stats.variation === 0) return brand.colors.textMuted
+  return stats.variation > 0 ? brand.colors.positive : brand.colors.negative
 })
 
 const chatSuggestions = [
