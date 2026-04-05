@@ -210,7 +210,7 @@ interface BrandConfig {
 
   // HERO (pagina inicial, visitante nao logado)
   hero: {
-    variant: 'centered' | 'split' | 'minimal'  // layout do hero: centered (padrao premium), split (lado a lado com founder), minimal (compacto data-first)
+    variant: 'centered' | 'split' | 'minimal' | 'institutional'  // layout do hero: centered (premium), split (founder), minimal (data-first), institutional (assessoria/escritorio)
     badge: string                // texto do badge animado no topo
     title: string                // headline principal (pode usar HTML)
     subtitle: string             // subtitulo
@@ -2771,15 +2771,15 @@ const lifetime: BrandConfig = {
   },
 
   hero: {
-    variant: 'centered',
-    badge: 'Assessoria credenciada • Plataforma com IA',
+    variant: 'institutional',
+    badge: '',
     title: 'Seus investimentos\nem um so lugar.',
-    subtitle: 'Acompanhe sua carteira, receba analises e fale com seu assessor — tudo com a Lifetime Investimentos.',
+    subtitle: 'Acompanhe sua carteira consolidada, receba analises personalizadas e fale com seu assessor — tudo em uma unica plataforma.',
     founderQuote: '',
     ctaLabel: 'Acessar Minha Carteira',
     ctaSecondaryLabel: 'Falar com Assessor',
     ctaIcon: 'i-lucide-briefcase',
-    trustIndicators: ['800+ ativos', 'Tempo real', 'Assessor IA', 'Escritorio credenciado'],
+    trustIndicators: ['Escritorio credenciado CVM', '800+ ativos monitorados', 'Dados em tempo real', 'Assessor com IA 24/7'],
   },
 
   header: {

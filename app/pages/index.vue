@@ -194,6 +194,74 @@
       </div>
     </section>
 
+    <!-- ========== HERO: INSTITUTIONAL (Assessoria — sobrio, profissional, confiavel) ========== -->
+    <section v-if="showSection('hero') && !authStore.isAuthenticated && brand.hero.variant === 'institutional'" :style="{ order: sectionOrder('hero') }" class="relative overflow-hidden">
+      <!-- Background: gradiente sutil, sem animacoes exageradas -->
+      <div class="pointer-events-none absolute inset-0">
+        <div class="absolute left-1/2 top-0 h-[600px] w-[800px] -translate-x-1/2 rounded-full opacity-[0.07] blur-[160px]" :style="{ backgroundColor: brand.colors.primary }" />
+      </div>
+      <!-- Linha decorativa superior -->
+      <div class="mx-auto h-px max-w-3xl" :style="{ background: `linear-gradient(90deg, transparent, ${brand.colors.primary}30, transparent)` }" />
+
+      <div class="relative mx-auto max-w-5xl px-6 py-20 md:py-28">
+        <div class="flex flex-col items-center text-center">
+          <!-- Logo grande e proeminente -->
+          <BrandLogo variant="full" class="mb-10 h-12 w-auto md:h-16" />
+
+          <!-- Headline institucional -->
+          <h2
+            :class="[brand.font.headingWeight]"
+            class="mb-5 max-w-3xl text-3xl leading-[1.15] tracking-tight md:text-5xl lg:text-6xl"
+            :style="{ color: brand.colors.text, fontFamily: `'${brand.font.family}', sans-serif` }"
+          >
+            <template v-for="(line, i) in brand.hero.title.split('\n')" :key="i">
+              {{ line }}<br v-if="i < brand.hero.title.split('\n').length - 1" />
+            </template>
+          </h2>
+
+          <!-- Subtitulo -->
+          <p class="mx-auto mb-10 max-w-xl text-base leading-relaxed md:text-lg" :style="{ color: brand.colors.textMuted }">
+            {{ brand.hero.subtitle }}
+          </p>
+
+          <!-- CTAs -->
+          <div class="mb-12 flex flex-col items-center gap-3 sm:flex-row">
+            <NuxtLink
+              to="/auth/register"
+              class="inline-flex items-center gap-2.5 rounded-xl px-8 py-3.5 text-sm font-semibold text-white transition hover:opacity-90"
+              :style="{ backgroundColor: brand.colors.primary }"
+            >
+              <UIcon :name="brand.hero.ctaIcon || 'i-lucide-briefcase'" class="size-4" />
+              {{ brand.hero.ctaLabel }}
+            </NuxtLink>
+            <NuxtLink
+              to="/auth/login"
+              class="inline-flex items-center gap-2 rounded-xl border px-8 py-3.5 text-sm font-medium transition hover:opacity-80"
+              :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted }"
+            >
+              {{ brand.hero.ctaSecondaryLabel }}
+            </NuxtLink>
+          </div>
+
+          <!-- Credenciais / Trust indicators (estilo sobrio, sem icones coloridos) -->
+          <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
+            <div
+              v-for="(indicator, i) in brand.hero.trustIndicators"
+              :key="i"
+              class="flex items-center gap-2 text-sm"
+              :style="{ color: brand.colors.textMuted }"
+            >
+              <span class="h-1 w-1 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
+              {{ indicator }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Linha decorativa inferior -->
+      <div class="mx-auto h-px max-w-3xl" :style="{ background: `linear-gradient(90deg, transparent, ${brand.colors.border}, transparent)` }" />
+    </section>
+
     <!-- Social Proof - Logos de corretoras -->
     <MoleculesTrustedBy v-if="showSection('trustBar') && !authStore.isAuthenticated" :style="{ order: sectionOrder('trustBar') }" class="mt-8" />
 
