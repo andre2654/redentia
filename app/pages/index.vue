@@ -205,9 +205,8 @@
           :style="{ backgroundImage: `url(${brand.hero.image})` }"
         />
         <!-- Overlay escuro para legibilidade -->
-        <div class="absolute inset-0 bg-gradient-to-b from-black/80 via-black/75 to-black/85" />
-        <!-- Glow sutil da cor primaria -->
-        <div class="absolute inset-0 opacity-10" :style="{ background: `radial-gradient(ellipse at 50% 80%, ${brand.colors.primary}, transparent 60%)` }" />
+        <div class="absolute inset-0 bg-black/70" />
+        <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/50" />
 
         <div class="relative mx-auto max-w-4xl px-6 py-20 md:px-12 md:py-28 lg:py-32">
           <div class="flex flex-col items-center text-center">
@@ -219,7 +218,7 @@
             <!-- Headline -->
             <h2
               :class="[brand.font.headingWeight]"
-              class="mb-5 max-w-3xl text-3xl leading-[1.12] tracking-tight text-white md:text-5xl lg:text-6xl"
+              class="mb-5 max-w-3xl text-3xl leading-[1.12] tracking-tight text-white drop-shadow-lg md:text-5xl lg:text-6xl"
               :style="{ fontFamily: `'${brand.font.family}', sans-serif` }"
             >
               <template v-for="(line, i) in brand.hero.title.split('\n')" :key="i">
@@ -228,7 +227,7 @@
             </h2>
 
             <!-- Subtitulo -->
-            <p class="mx-auto mb-10 max-w-xl text-base leading-relaxed text-white/80 md:text-lg">
+            <p class="mx-auto mb-10 max-w-xl text-base leading-relaxed text-white/90 drop-shadow md:text-lg">
               {{ brand.hero.subtitle }}
             </p>
 
@@ -255,9 +254,9 @@
               <div
                 v-for="(indicator, i) in brand.hero.trustIndicators"
                 :key="i"
-                class="flex items-center gap-2 text-xs text-white/60 md:text-sm"
+                class="flex items-center gap-2 text-xs text-white/80 drop-shadow md:text-sm"
               >
-                <span class="h-1 w-1 rounded-full bg-white/50" />
+                <span class="h-1 w-1 rounded-full bg-white/70" />
                 {{ indicator }}
               </div>
             </div>
