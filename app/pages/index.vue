@@ -195,71 +195,73 @@
     </section>
 
     <!-- ========== HERO: INSTITUTIONAL (Assessoria — sobrio, profissional, confiavel) ========== -->
-    <section v-if="showSection('hero') && !authStore.isAuthenticated && brand.hero.variant === 'institutional'" :style="{ order: sectionOrder('hero') }" class="relative overflow-hidden">
-      <!-- Background: gradiente sutil, sem animacoes exageradas -->
-      <div class="pointer-events-none absolute inset-0">
-        <div class="absolute left-1/2 top-0 h-[600px] w-[800px] -translate-x-1/2 rounded-full opacity-[0.07] blur-[160px]" :style="{ backgroundColor: brand.colors.primary }" />
-      </div>
-      <!-- Linha decorativa superior -->
-      <div class="mx-auto h-px max-w-3xl" :style="{ background: `linear-gradient(90deg, transparent, ${brand.colors.primary}30, transparent)` }" />
+    <section v-if="showSection('hero') && !authStore.isAuthenticated && brand.hero.variant === 'institutional'" :style="{ order: sectionOrder('hero') }" class="relative overflow-hidden px-4 pt-4 md:px-6 md:pt-6">
+      <!-- Container com imagem de fundo e rounded -->
+      <div class="relative mx-auto max-w-7xl overflow-hidden rounded-2xl md:rounded-3xl">
+        <!-- Background image -->
+        <div
+          v-if="brand.hero.image"
+          class="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          :style="{ backgroundImage: `url(${brand.hero.image})` }"
+        />
+        <!-- Overlay escuro para legibilidade -->
+        <div class="absolute inset-0 bg-gradient-to-b from-black/75 via-black/65 to-black/80" />
+        <!-- Glow sutil da cor primaria -->
+        <div class="absolute inset-0 opacity-10" :style="{ background: `radial-gradient(ellipse at 50% 80%, ${brand.colors.primary}, transparent 60%)` }" />
 
-      <div class="relative mx-auto max-w-5xl px-6 py-20 md:py-28">
-        <div class="flex flex-col items-center text-center">
-          <!-- Logo grande e proeminente -->
-          <BrandLogo variant="full" class="mb-10 h-12 w-auto md:h-16" />
+        <div class="relative mx-auto max-w-4xl px-6 py-20 md:px-12 md:py-28 lg:py-32">
+          <div class="flex flex-col items-center text-center">
+            <!-- Logo -->
+            <BrandLogo variant="full" class="mb-10 h-10 w-auto md:h-14" />
 
-          <!-- Headline institucional -->
-          <h2
-            :class="[brand.font.headingWeight]"
-            class="mb-5 max-w-3xl text-3xl leading-[1.15] tracking-tight md:text-5xl lg:text-6xl"
-            :style="{ color: brand.colors.text, fontFamily: `'${brand.font.family}', sans-serif` }"
-          >
-            <template v-for="(line, i) in brand.hero.title.split('\n')" :key="i">
-              {{ line }}<br v-if="i < brand.hero.title.split('\n').length - 1" />
-            </template>
-          </h2>
-
-          <!-- Subtitulo -->
-          <p class="mx-auto mb-10 max-w-xl text-base leading-relaxed md:text-lg" :style="{ color: brand.colors.textMuted }">
-            {{ brand.hero.subtitle }}
-          </p>
-
-          <!-- CTAs -->
-          <div class="mb-12 flex flex-col items-center gap-3 sm:flex-row">
-            <NuxtLink
-              to="/auth/register"
-              class="inline-flex items-center gap-2.5 rounded-xl px-8 py-3.5 text-sm font-semibold text-white transition hover:opacity-90"
-              :style="{ backgroundColor: brand.colors.primary }"
+            <!-- Headline -->
+            <h2
+              :class="[brand.font.headingWeight]"
+              class="mb-5 max-w-3xl text-3xl leading-[1.12] tracking-tight text-white md:text-5xl lg:text-6xl"
+              :style="{ fontFamily: `'${brand.font.family}', sans-serif` }"
             >
-              <UIcon :name="brand.hero.ctaIcon || 'i-lucide-briefcase'" class="size-4" />
-              {{ brand.hero.ctaLabel }}
-            </NuxtLink>
-            <NuxtLink
-              to="/auth/login"
-              class="inline-flex items-center gap-2 rounded-xl border px-8 py-3.5 text-sm font-medium transition hover:opacity-80"
-              :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted }"
-            >
-              {{ brand.hero.ctaSecondaryLabel }}
-            </NuxtLink>
-          </div>
+              <template v-for="(line, i) in brand.hero.title.split('\n')" :key="i">
+                {{ line }}<br v-if="i < brand.hero.title.split('\n').length - 1" />
+              </template>
+            </h2>
 
-          <!-- Credenciais / Trust indicators (estilo sobrio, sem icones coloridos) -->
-          <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
-            <div
-              v-for="(indicator, i) in brand.hero.trustIndicators"
-              :key="i"
-              class="flex items-center gap-2 text-sm"
-              :style="{ color: brand.colors.textMuted }"
-            >
-              <span class="h-1 w-1 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
-              {{ indicator }}
+            <!-- Subtitulo -->
+            <p class="mx-auto mb-10 max-w-xl text-base leading-relaxed text-white/60 md:text-lg">
+              {{ brand.hero.subtitle }}
+            </p>
+
+            <!-- CTAs -->
+            <div class="mb-14 flex flex-col items-center gap-3 sm:flex-row">
+              <NuxtLink
+                to="/auth/register"
+                class="inline-flex items-center gap-2.5 rounded-xl px-8 py-3.5 text-sm font-semibold text-white shadow-lg transition hover:opacity-90"
+                :style="{ backgroundColor: brand.colors.primary, boxShadow: `0 8px 30px ${brand.colors.primary}30` }"
+              >
+                <UIcon :name="brand.hero.ctaIcon || 'i-lucide-briefcase'" class="size-4" />
+                {{ brand.hero.ctaLabel }}
+              </NuxtLink>
+              <NuxtLink
+                to="/auth/login"
+                class="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-8 py-3.5 text-sm font-medium text-white/70 backdrop-blur-sm transition hover:bg-white/10 hover:text-white"
+              >
+                {{ brand.hero.ctaSecondaryLabel }}
+              </NuxtLink>
+            </div>
+
+            <!-- Trust indicators -->
+            <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 md:gap-x-8">
+              <div
+                v-for="(indicator, i) in brand.hero.trustIndicators"
+                :key="i"
+                class="flex items-center gap-2 text-xs text-white/40 md:text-sm"
+              >
+                <span class="h-1 w-1 rounded-full bg-white/30" />
+                {{ indicator }}
+              </div>
             </div>
           </div>
         </div>
       </div>
-
-      <!-- Linha decorativa inferior -->
-      <div class="mx-auto h-px max-w-3xl" :style="{ background: `linear-gradient(90deg, transparent, ${brand.colors.border}, transparent)` }" />
     </section>
 
     <!-- Social Proof - Logos de corretoras -->

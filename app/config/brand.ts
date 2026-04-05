@@ -2780,6 +2780,7 @@ const lifetime: BrandConfig = {
     ctaSecondaryLabel: 'Falar com Assessor',
     ctaIcon: 'i-lucide-briefcase',
     trustIndicators: ['Escritorio credenciado CVM', '800+ ativos monitorados', 'Dados em tempo real', 'Assessor com IA 24/7'],
+    image: '/brand/lifetime/background.jpg',
   },
 
   header: {
