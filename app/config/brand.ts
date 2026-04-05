@@ -1673,6 +1673,7 @@ const investidorSardinha: BrandConfig = {
     inputBg: '#FFFFFF',
     inputBgHover: '#F9FAFB',
     inputBorder: '#D1D5DB',
+    logoBg: '#DC2626',
     gradient: { from: '#DC2626', via: '#B91C1C', to: '#991B1B' },
   },
 
