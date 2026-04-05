@@ -1,10 +1,12 @@
 <template>
   <div
-    class="flex min-h-screen flex-col xl:p-4"
+    class="flex min-h-screen flex-col"
+    :class="brand.hero?.variant !== 'institutional' ? 'xl:p-4' : ''"
   >
     <MoleculesMobileMenuOverlay v-model:open="menuMobileActive" mode="public" />
     <header
-      class="sticky top-0 z-20 flex items-center justify-between gap-6 border-b px-5 py-3 backdrop-blur-xl xl:top-4 xl:rounded-full xl:border"
+      class="z-20 flex items-center justify-between gap-6 border-b px-5 py-3"
+      :class="brand.hero?.variant === 'institutional' ? '' : 'sticky top-0 backdrop-blur-xl xl:top-4 xl:rounded-full xl:border'"
       :style="{
         background: headerBg || (brand.colors.background + 'CC'),
         borderColor: brand.colors.border,

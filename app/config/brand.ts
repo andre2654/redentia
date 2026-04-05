@@ -2648,22 +2648,22 @@ const lifetime: BrandConfig = {
   privacyEmail: 'privacidade@lifetimeinvest.com.br',
 
   colors: {
-    primary: '#C9A94E',
-    secondary: '#A68B3C',
-    tertiary: '#0A0A0A',
-    positive: '#4ADE80',
-    negative: '#EF4444',
+    primary: '#1E40AF',
+    secondary: '#1D4ED8',
+    tertiary: '#F8FAFC',
+    positive: '#16A34A',
+    negative: '#DC2626',
     neutral: '#6B7280',
-    background: '#000000',
-    surface: '#0A0A0A',
-    surfaceHover: '#131313',
-    border: '#1A1A1A',
-    text: '#F5F5F5',
-    textMuted: '#8A8A8A',
-    inputBg: '#050505',
-    inputBgHover: '#0A0A0A',
-    inputBorder: '#1A1A1A',
-    gradient: { from: '#C9A94E', via: '#A68B3C', to: '#8A7230' },
+    background: '#FFFFFF',
+    surface: '#F8FAFC',
+    surfaceHover: '#F1F5F9',
+    border: '#E2E8F0',
+    text: '#0F172A',
+    textMuted: '#64748B',
+    inputBg: '#F8FAFC',
+    inputBgHover: '#F1F5F9',
+    inputBorder: '#CBD5E1',
+    gradient: { from: '#1E40AF', via: '#1D4ED8', to: '#2563EB' },
   },
 
   font: {
@@ -2690,7 +2690,7 @@ const lifetime: BrandConfig = {
     description: 'Assessoria de investimentos com carteira consolidada, cotacoes em tempo real, analises fundamentalistas, calculadoras financeiras e assessor com IA. Tudo em um so lugar.',
     locale: 'pt_BR',
     lang: 'pt-BR',
-    themeColor: '#000000',
+    themeColor: '#1E40AF',
     keywords: ['lifetime investimentos', 'assessoria de investimentos', 'carteira consolidada', 'assessor financeiro', 'investimentos', 'acoes', 'fiis', 'dividendos'],
   },
 
@@ -2764,9 +2764,9 @@ const lifetime: BrandConfig = {
   ecosystem: [],
 
   chartColors: {
-    positive: '#4ADE80',
-    negative: '#8E3939',
-    secondary: '#C9A94E',
+    positive: '#16A34A',
+    negative: '#DC2626',
+    secondary: '#1E40AF',
     neutral: '#6B7280',
   },
 
@@ -2996,10 +2996,10 @@ const lifetime: BrandConfig = {
   },
 
   theme: {
-    mode: 'dark',
+    mode: 'light',
     borderRadius: 'rounded',
     animation: 'smooth',
-    backgroundPattern: 'gradient',
+    backgroundPattern: 'none',
   },
 
   homeSections: [
