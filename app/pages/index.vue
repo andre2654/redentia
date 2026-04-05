@@ -195,9 +195,9 @@
     </section>
 
     <!-- ========== HERO: INSTITUTIONAL (Assessoria — sobrio, profissional, confiavel) ========== -->
-    <section v-if="showSection('hero') && !authStore.isAuthenticated && brand.hero.variant === 'institutional'" :style="{ order: sectionOrder('hero') }" class="relative overflow-hidden px-4 pt-4 md:px-6 md:pt-6">
-      <!-- Container com imagem de fundo e rounded -->
-      <div class="relative mx-auto max-w-7xl overflow-hidden rounded-2xl md:rounded-3xl">
+    <section v-if="showSection('hero') && !authStore.isAuthenticated && brand.hero.variant === 'institutional'" :style="{ order: sectionOrder('hero') }" class="relative overflow-hidden">
+      <!-- Container com imagem de fundo — mesma largura do header (sem padding proprio, usa o do layout) -->
+      <div class="relative overflow-hidden rounded-2xl xl:rounded-3xl">
         <!-- Background image -->
         <div
           v-if="brand.hero.image"
@@ -652,7 +652,7 @@
     <MoleculesProductsCarousel v-if="showSection('products')" :style="{ order: sectionOrder('products') }" class="mt-12" />
 
     <!-- Seção Invista por Categoria -->
-    <section v-if="showSection('categories')" :style="{ order: sectionOrder('categories'), borderColor: brand.colors.border }" class="mt-12 border-t px-6 pt-12">
+    <section v-if="showSection('categories')" :style="{ order: sectionOrder('categories') }" class="mt-12 px-6 pt-6">
       <div class="flex flex-col gap-6">
         <div class="text-center">
           <p class="mb-2 text-xs uppercase tracking-[0.2em]" :style="{ color: brand.colors.textMuted }">
