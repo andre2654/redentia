@@ -195,7 +195,7 @@
     </section>
 
     <!-- ========== HERO: INSTITUTIONAL (Assessoria — sobrio, profissional, confiavel) ========== -->
-    <section v-if="showSection('hero') && !authStore.isAuthenticated && brand.hero.variant === 'institutional'" :style="{ order: sectionOrder('hero') }" class="relative overflow-hidden">
+    <section v-if="showSection('hero') && !authStore.isAuthenticated && brand.hero.variant === 'institutional'" :style="{ order: sectionOrder('hero') }" class="relative overflow-hidden px-4 pt-2 md:px-6">
       <!-- Container com imagem de fundo — mesma largura do header (sem padding proprio, usa o do layout) -->
       <div class="relative overflow-hidden rounded-2xl xl:rounded-3xl">
         <!-- Background image -->
@@ -205,14 +205,16 @@
           :style="{ backgroundImage: `url(${brand.hero.image})` }"
         />
         <!-- Overlay escuro para legibilidade -->
-        <div class="absolute inset-0 bg-gradient-to-b from-black/75 via-black/65 to-black/80" />
+        <div class="absolute inset-0 bg-gradient-to-b from-black/80 via-black/75 to-black/85" />
         <!-- Glow sutil da cor primaria -->
         <div class="absolute inset-0 opacity-10" :style="{ background: `radial-gradient(ellipse at 50% 80%, ${brand.colors.primary}, transparent 60%)` }" />
 
         <div class="relative mx-auto max-w-4xl px-6 py-20 md:px-12 md:py-28 lg:py-32">
           <div class="flex flex-col items-center text-center">
             <!-- Logo -->
-            <BrandLogo variant="full" class="mb-10 h-10 w-auto md:h-14" />
+            <div class="mb-10 rounded-2xl bg-black/30 px-8 py-4 backdrop-blur-sm">
+              <BrandLogo variant="full" class="h-10 w-auto md:h-14" />
+            </div>
 
             <!-- Headline -->
             <h2
@@ -226,7 +228,7 @@
             </h2>
 
             <!-- Subtitulo -->
-            <p class="mx-auto mb-10 max-w-xl text-base leading-relaxed text-white/60 md:text-lg">
+            <p class="mx-auto mb-10 max-w-xl text-base leading-relaxed text-white/80 md:text-lg">
               {{ brand.hero.subtitle }}
             </p>
 
@@ -242,7 +244,7 @@
               </NuxtLink>
               <NuxtLink
                 to="/auth/login"
-                class="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-8 py-3.5 text-sm font-medium text-white/70 backdrop-blur-sm transition hover:bg-white/10 hover:text-white"
+                class="inline-flex items-center gap-2 rounded-xl border border-white/25 bg-white/10 px-8 py-3.5 text-sm font-medium text-white backdrop-blur-sm transition hover:bg-white/20"
               >
                 {{ brand.hero.ctaSecondaryLabel }}
               </NuxtLink>
@@ -253,9 +255,9 @@
               <div
                 v-for="(indicator, i) in brand.hero.trustIndicators"
                 :key="i"
-                class="flex items-center gap-2 text-xs text-white/40 md:text-sm"
+                class="flex items-center gap-2 text-xs text-white/60 md:text-sm"
               >
-                <span class="h-1 w-1 rounded-full bg-white/30" />
+                <span class="h-1 w-1 rounded-full bg-white/50" />
                 {{ indicator }}
               </div>
             </div>
