@@ -29,7 +29,7 @@ const ACTIVE_BRAND: BrandSlug = 'redentia'
 // ============================================================
 // TYPES
 // ============================================================
-type BrandSlug = 'redentia' | 'primo-rico' | 'me-poupe' | 'investidor-sardinha'
+type BrandSlug = 'redentia' | 'primo-rico' | 'me-poupe' | 'investidor-sardinha' | 'lifetime'
 
 interface BrandColors {
   primary: string
@@ -2607,6 +2607,429 @@ const redentia: BrandConfig = {
 }
 
 // ============================================================
+// LIFETIME INVESTIMENTOS (Assessoria)
+// ============================================================
+// Persona: Assessoria de investimentos profissional. Tom institucional,
+// confiavel, focado em retencao de clientes e geracao de leads.
+// Diferencial: consolidador de carteira, assessor humano + IA,
+// credenciais CVM/Ancord, corretora credenciada.
+// Estetica: dark premium + verde/dourado — transmite confianca e sofisticacao.
+// Tipografia: Inter — limpa, profissional, neutra.
+// ============================================================
+const lifetime: BrandConfig = {
+  name: 'Lifetime Investimentos',
+  shortName: 'Lifetime',
+  slug: 'lifetime',
+  tagline: 'Seus investimentos em um so lugar.',
+  subtitle: 'Assessoria de investimentos completa',
+  description: 'Assessoria de investimentos com plataforma completa: acompanhe sua carteira consolidada, receba analises personalizadas, fale com seu assessor e invista com inteligencia — tudo com a Lifetime Investimentos.',
+
+  founder: {
+    name: 'Lifetime Investimentos',
+    photo: '',
+    role: 'Assessoria de Investimentos',
+    bio: 'Assessoria credenciada focada em construcao de patrimonio de longo prazo. Unimos tecnologia, dados e atendimento humano para entregar resultados consistentes aos nossos clientes.',
+    signaturePhrase: 'Seus investimentos em um so lugar.',
+  },
+
+  voice: {
+    style: 'premium',
+    greeting: 'Ola! Como podemos ajudar com seus investimentos?',
+    ctaPrimary: 'Acessar Minha Carteira',
+    ctaSecondary: 'Falar com Assessor',
+    emptyState: 'Nenhum dado disponivel no momento.',
+    encouragement: 'Continue acompanhando sua carteira. Estamos aqui para ajudar.',
+    error: 'Algo deu errado. Tente novamente ou fale com seu assessor.',
+  },
+
+  domain: 'www.lifetimeinvest.com.br',
+  url: 'https://www.lifetimeinvest.com.br',
+  email: 'contato@lifetimeinvest.com.br',
+  privacyEmail: 'privacidade@lifetimeinvest.com.br',
+
+  colors: {
+    primary: '#C9A94E',
+    secondary: '#A68B3C',
+    tertiary: '#0A0A0A',
+    positive: '#4ADE80',
+    negative: '#EF4444',
+    neutral: '#6B7280',
+    background: '#000000',
+    surface: '#0A0A0A',
+    surfaceHover: '#131313',
+    border: '#1A1A1A',
+    text: '#F5F5F5',
+    textMuted: '#8A8A8A',
+    inputBg: '#050505',
+    inputBgHover: '#0A0A0A',
+    inputBorder: '#1A1A1A',
+    gradient: { from: '#C9A94E', via: '#A68B3C', to: '#8A7230' },
+  },
+
+  font: {
+    family: 'Inter',
+    google: 'Inter:wght@300..800',
+    headingWeight: 'font-bold',
+    headingStyle: 'normal-case',
+  },
+
+  logo: {
+    icon: '/brand/lifetime/logo.png',
+    full: '/brand/lifetime/logo.png',
+    favicon: '/brand/lifetime/logo.png',
+    faviconIco: '/brand/lifetime/logo.png',
+    faviconSvg: '/brand/lifetime/logo.png',
+    appleTouchIcon: '/brand/lifetime/logo.png',
+    icon192: '/brand/lifetime/logo.png',
+    icon512: '/brand/lifetime/logo.png',
+    og: '/brand/lifetime/logo.png',
+  },
+
+  seo: {
+    title: 'Lifetime Investimentos — Assessoria completa com IA',
+    description: 'Assessoria de investimentos com carteira consolidada, cotacoes em tempo real, analises fundamentalistas, calculadoras financeiras e assessor com IA. Tudo em um so lugar.',
+    locale: 'pt_BR',
+    lang: 'pt-BR',
+    themeColor: '#000000',
+    keywords: ['lifetime investimentos', 'assessoria de investimentos', 'carteira consolidada', 'assessor financeiro', 'investimentos', 'acoes', 'fiis', 'dividendos'],
+  },
+
+  company: {
+    legalName: 'Lifetime Investimentos Ltda.',
+    address: '',
+    cnpj: '',
+  },
+
+  features: {
+    showAIAdvisor: true,
+    showAppStoreLinks: false,
+    showCalculators: true,
+    showDividends: true,
+    showNews: true,
+    showDownloadPage: false,
+    showFounderPhoto: false,
+    showEcosystemLinks: false,
+    showGlossary: true,
+    showGuides: true,
+  },
+
+  homePage: {
+    rankingCard: {
+      variant: 'flat',
+      showIcon: true,
+      iconStyle: 'bare',
+      itemsPerCategory: 5,
+    },
+    stockItem: {
+      variant: 'default',
+      showLogo: true,
+      logoSize: 'md',
+      showName: true,
+      changeFormat: 'percent',
+    },
+    categoryCard: {
+      variant: 'icon-left',
+      columns: 3,
+    },
+    categories: [
+      { label: 'Carteira Consolidada', to: '/wallet', icon: 'i-lucide-briefcase', description: 'Veja todos os seus investimentos consolidados em um so lugar. Importe via Excel ou Open Finance.', cta: 'Acessar carteira' },
+      { label: 'Acoes', to: '/acoes', icon: 'i-lucide-trending-up', description: 'Cotacoes, fundamentos, preco teto e dividendos das principais empresas da B3.', cta: 'Explorar acoes' },
+      { label: 'FIIs', to: '/fiis', icon: 'i-lucide-building-2', description: 'Fundos imobiliarios com analise de rendimentos, vacancia e dividend yield.', cta: 'Explorar FIIs' },
+      { label: 'Calculadoras', to: '/calculadora', icon: 'i-lucide-calculator', description: 'Juros compostos, preco teto, aposentadoria, dividend yield e planejamento financeiro.', cta: 'Usar calculadoras' },
+      { label: 'Dividendos', to: '/dividendos', icon: 'i-lucide-coins', description: 'Calendario de proventos, rankings de dividend yield e projecao de renda passiva.', cta: 'Ver dividendos' },
+      { label: 'Assessor IA', to: '/help', icon: 'i-lucide-bot', description: 'Tire duvidas com o assistente da Lifetime. Disponivel 24/7 com respostas em segundos.', cta: 'Falar com assessor' },
+    ],
+  },
+
+  assetPage: {
+    showVolatility: true,
+    showIndicators: true,
+    showSmartIndicators: true,
+    showDividendMap: true,
+    showDividendChart: true,
+    showFinancials: true,
+    showChecklist: true,
+    showCompanyInfo: true,
+  },
+
+  social: {
+    youtube: '',
+    instagram: '',
+    twitter: '',
+    tiktok: '',
+    telegram: '',
+    podcast: '',
+  },
+
+  ecosystem: [],
+
+  chartColors: {
+    positive: '#4ADE80',
+    negative: '#8E3939',
+    secondary: '#C9A94E',
+    neutral: '#6B7280',
+  },
+
+  hero: {
+    variant: 'centered',
+    badge: 'Assessoria credenciada • Plataforma com IA',
+    title: 'Seus investimentos\nem um so lugar.',
+    subtitle: 'Acompanhe sua carteira, receba analises e fale com seu assessor — tudo com a Lifetime Investimentos.',
+    founderQuote: '',
+    ctaLabel: 'Acessar Minha Carteira',
+    ctaSecondaryLabel: 'Falar com Assessor',
+    ctaIcon: 'i-lucide-briefcase',
+    trustIndicators: ['800+ ativos', 'Tempo real', 'Assessor IA', 'Escritorio credenciado'],
+  },
+
+  header: {
+    title: 'Lifetime',
+    subtitle: 'Assessoria de Investimentos',
+  },
+
+  sidebar: {
+    aiCtaTitle: 'Assessor Lifetime',
+    aiCtaSubtitle: 'Tire suas duvidas com IA',
+    planLabel: 'Cliente Lifetime',
+  },
+
+  calculators: {
+    pageTitle: 'Calculadoras Financeiras',
+    pageSubtitle: 'Ferramentas da Lifetime para simular investimentos, calcular preco teto e planejar seu patrimonio.',
+    labels: {
+      jurosCompostos: 'Simulador de Juros Compostos',
+      precoTeto: 'Calculadora de Preco Teto',
+      dividendYield: 'Calculadora de Dividend Yield',
+      aposentadoria: 'Simulador de Aposentadoria',
+      acoes: 'Simulador de Acoes',
+      quantoInvestir: 'Quanto Investir por Mes',
+      impostoRenda: 'Calculadora de Imposto de Renda',
+      planejamento: 'Planejamento Financeiro',
+    },
+  },
+
+  ai: {
+    name: 'Assessor Lifetime',
+    avatar: '/brand/lifetime/logo.png',
+    chatTitle: 'Assessor Lifetime',
+    chatSubtitle: 'Tire duvidas sobre investimentos, compare ativos e receba orientacoes. Para decisoes importantes, fale com seu assessor humano.',
+    typingLabel: 'ASSESSOR LIFETIME:',
+    welcomeTitle: 'Fale com o Assessor Lifetime',
+    welcomeSubtitle: 'Nosso assistente com IA complementa o trabalho do seu assessor. Tire duvidas rapidas, compare ativos e receba analises 24/7.',
+    placeholder: 'Pergunte sobre sua carteira, acoes, FIIs, dividendos...',
+    suggestedQuestions: [
+      'Como esta minha carteira hoje?',
+      'Quais acoes pagam mais dividendos?',
+      'PETR4 esta cara ou barata agora?',
+      'Como diversificar meus investimentos?',
+      'Qual o preco teto de VALE3?',
+    ],
+    systemPromptContext: 'Voce e o Assessor Lifetime, assistente de IA da Lifetime Investimentos. Responda de forma profissional, confiavel e didatica. Foque em analise fundamentalista, renda passiva e construcao de patrimonio de longo prazo. Quando a duvida exigir decisao complexa, sugira que o cliente fale com seu assessor humano.',
+    ctaGreeting: 'Ola! Sou o Assessor Lifetime. Posso ajudar com analises, tirar duvidas e orientar sobre seus investimentos. Para decisoes importantes, seu assessor humano esta sempre disponivel.',
+    ctaButton: 'Falar com Assessor',
+    ctaFeatures: ['Resposta em ~3s', 'Complementa seu assessor', '24/7'],
+  },
+
+  metrics: {
+    sectionTitle: 'Numeros que geram confianca.',
+    sectionSubtitle: 'Tecnologia e atendimento humano juntos',
+    counterLabel: 'Analises realizadas na Lifetime (e contando)',
+    stats: [
+      { value: '800+', label: 'Ativos monitorados' },
+      { value: 'Tempo real', label: 'Atualizacao' },
+      { value: '24/7', label: 'Assessor IA' },
+      { value: '~3s', label: 'Resposta da IA' },
+    ],
+  },
+
+  testimonials: {
+    sectionTitle: 'Clientes que confiam na Lifetime',
+    sectionSubtitle: 'Assessoria que faz diferenca no patrimonio',
+    items: [
+      {
+        quote: 'Com a Lifetime consegui consolidar todos os meus investimentos em um so lugar. A visao global da carteira mudou completamente a forma como tomo decisoes.',
+        name: 'Ricardo M.',
+        role: 'Empresario, SP',
+        metrics: [{ value: 'R$ 2.1M', label: 'sob assessoria' }, { value: '3 anos', label: 'como cliente' }],
+      },
+      {
+        quote: 'O assessor IA me ajuda no dia a dia com duvidas rapidas, e quando preciso de algo mais complexo, meu assessor humano esta sempre disponivel. Melhor dos dois mundos.',
+        name: 'Fernanda L.',
+        role: 'Medica, RJ',
+        metrics: [{ value: '18', label: 'ativos na carteira' }, { value: 'R$ 3.200', label: 'dividendos/mes' }],
+      },
+      {
+        quote: 'As calculadoras de preco teto e aposentadoria me deram clareza sobre meus objetivos. Hoje invisto com estrategia, nao com emocao.',
+        name: 'Eduardo P.',
+        role: 'Engenheiro, MG',
+        metrics: [{ value: '+31%', label: 'em 2 anos' }, { value: '5h', label: 'economizadas/semana' }],
+      },
+    ],
+  },
+
+  trustBar: {
+    text: 'Clientes da Lifetime operam em',
+    footnote: 'E outras corretoras credenciadas',
+    partners: ['XP', 'BTG', 'Genial', 'Rico', 'Clear', 'Inter', 'Toro', 'Orama'],
+  },
+
+  footer: {
+    tagline: 'Seus investimentos em um so lugar.',
+    newsletterCta: 'Receba analises e insights da Lifetime',
+    sections: { tools: 'Ferramentas', resources: 'Recursos', company: 'Institucional', legal: 'Legal' },
+  },
+
+  notifications: {
+    ctaTitle: 'Ativar notificacoes',
+    ctaSubtitle: 'Receba alertas de mercado, dividendos e atualizacoes do seu assessor',
+    ctaButton: 'Ativar agora',
+  },
+
+  auth: {
+    loginTitle: 'Acessar Lifetime',
+    loginSubtitle: 'Entre na sua conta para acompanhar seus investimentos.',
+    registerTitle: 'Criar conta na Lifetime',
+    registerSubtitle: 'Cadastre-se para acessar a plataforma completa de investimentos.',
+    termsText: 'Ao criar sua conta, voce concorda com os Termos de Uso e Politica de Privacidade da Lifetime Investimentos.',
+  },
+
+  about: {
+    title: 'Sobre a Lifetime Investimentos',
+    paragraphs: [
+      'A Lifetime Investimentos e uma assessoria focada em construcao de patrimonio de longo prazo. Unimos atendimento humano qualificado com tecnologia de ponta para oferecer a melhor experiencia de investimento aos nossos clientes.',
+      'Nossa plataforma consolida todos os seus investimentos em um unico lugar — acoes, FIIs, renda fixa, cripto — com cotacoes em tempo real, analises fundamentalistas e ferramentas de planejamento.',
+      'Contamos com um assessor com inteligencia artificial disponivel 24/7 que complementa o trabalho do assessor humano, respondendo duvidas rapidas e gerando analises personalizadas.',
+      'Credenciada junto a CVM e Ancord, a Lifetime opera com total transparencia e seguranca, sempre priorizando os interesses dos nossos clientes.',
+    ],
+  },
+
+  contact: {
+    title: 'Fale com a Lifetime',
+    subtitle: 'Agende uma conversa com nosso time ou envie sua mensagem.',
+    email: 'contato@lifetimeinvest.com.br',
+    channels: [
+      { icon: 'i-lucide-mail', label: 'Email', value: 'contato@lifetimeinvest.com.br', href: 'mailto:contato@lifetimeinvest.com.br' },
+      { icon: 'i-lucide-message-circle', label: 'WhatsApp', value: 'Fale conosco', href: 'https://wa.me/' },
+    ],
+  },
+
+  howWorks: {
+    title: 'Como funciona a Lifetime',
+    steps: [
+      { icon: 'i-lucide-user-plus', title: 'Crie sua conta', description: 'Cadastro rapido e seguro. Comece a acompanhar seus investimentos em menos de 1 minuto.' },
+      { icon: 'i-lucide-briefcase', title: 'Consolide sua carteira', description: 'Importe seus investimentos via Excel ou Open Finance. Veja tudo em um so lugar.' },
+      { icon: 'i-lucide-search', title: 'Analise o mercado', description: 'Cotacoes em tempo real, fundamentus, preco teto e calendario de dividendos.' },
+      { icon: 'i-lucide-users', title: 'Fale com seu assessor', description: 'IA disponivel 24/7 para duvidas rapidas. Assessor humano para decisoes importantes.' },
+    ],
+  },
+
+  nav: {
+    menuLabel: 'Menu',
+    toolsLabel: 'Ferramentas',
+    overview: 'Visao Geral',
+    wallet: 'Minha Carteira',
+    chat: 'Assessor',
+    advisorArea: 'Area do assessor',
+    settings: 'Configuracoes',
+    calculators: 'Calculadoras',
+    guides: 'Guias',
+    dividends: 'Proventos',
+    downloadApp: 'Baixar app',
+    logout: 'Sair',
+    hide: 'Ocultar',
+    show: 'Mostrar',
+    login: 'Entrar',
+    register: 'Criar conta',
+    mobileAiLabel: 'Assessor Lifetime',
+    mobileAiAccess: 'Falar com assessor',
+    mobileAiLocked: 'Assessor bloqueado',
+    mobileAiLockedSub: 'Faca login para acessar',
+    mobileAiDescription: 'Assessor com Inteligencia Artificial',
+    mobileAiDescriptionSub: 'Tire duvidas sobre investimentos com o assistente da Lifetime.',
+    mobileCalc: 'Calculadoras',
+    mobileGuides: 'Guias',
+    mobileHome: 'Inicio',
+    footerGlossaryTitle: 'Glossario',
+    footerCalc: 'Calculadoras',
+    footerJuros: 'Juros Compostos',
+    footerPrecoTeto: 'Preco Teto',
+    footerDY: 'Dividend Yield',
+    footerAI: 'Assessor IA',
+    footerGuides: 'Guias',
+    footerGlossary: 'Glossario',
+    footerStocks: 'Acoes',
+    footerFiis: 'FIIs',
+    footerDividends: 'Dividendos',
+    footerAbout: 'Sobre',
+    footerHowWorks: 'Como funciona',
+    footerContact: 'Contato',
+    footerDownload: 'Download',
+    footerTerms: 'Termos de Uso',
+    footerPrivacy: 'Privacidade',
+    footerCookies: 'Cookies',
+    footerCopyright: 'Todos os direitos reservados.',
+    headerCalc: 'Calculadoras',
+    headerAI: 'Falar com Assessor',
+  },
+
+  homeTexts: {
+    marketTitle: 'O mercado em tempo real',
+    marketSubtitle: 'Cotacoes, altas e baixas atualizadas automaticamente.',
+    filtersTitle: 'Filtros inteligentes',
+    categoriesEyebrow: 'Ferramentas da Lifetime',
+    categoriesTitle: 'Tudo para seus investimentos',
+    categoriesSubtitle: 'Carteira consolidada, cotacoes, calculadoras e assessoria — em um so lugar.',
+    guidesTitle: 'Conhecimento para investir melhor',
+    guidesSubtitle: 'Guias praticos e analises da Lifetime.',
+    aiCtaEyebrow: 'Assessor com IA',
+    aiCtaTitle: 'Tire duvidas em segundos',
+    aiCtaSubtitle: 'Nosso assessor com IA complementa o atendimento humano. Disponivel 24/7.',
+    aiCtaQuestions: [
+      { icon: 'i-lucide-briefcase', question: 'Como esta minha carteira hoje?', category: 'Carteira' },
+      { icon: 'i-lucide-coins', question: 'Quais acoes pagam mais dividendos?', category: 'Renda Passiva' },
+      { icon: 'i-lucide-scale', question: 'Devo diversificar mais?', category: 'Estrategia' },
+      { icon: 'i-lucide-calculator', question: 'Qual o preco teto de VALE3?', category: 'Analise' },
+      { icon: 'i-lucide-target', question: 'Quanto preciso para viver de renda?', category: 'Planejamento' },
+      { icon: 'i-lucide-building-2', question: 'Quais FIIs recomendados para iniciante?', category: 'FIIs' },
+    ],
+  },
+
+  theme: {
+    mode: 'dark',
+    borderRadius: 'rounded',
+    animation: 'smooth',
+    backgroundPattern: 'gradient',
+  },
+
+  homeSections: [
+    { id: 'hero', visible: true },
+    { id: 'trustBar', visible: true },
+    { id: 'market', visible: true },
+    { id: 'categories', visible: true },
+    { id: 'aiCta', visible: true },
+    { id: 'metrics', visible: true },
+    { id: 'guides', visible: true },
+    { id: 'testimonials', visible: true },
+    { id: 'featureTabs', visible: false },
+    { id: 'marquee', visible: false },
+    { id: 'educational', visible: false },
+    { id: 'products', visible: false },
+  ],
+
+  educational: {
+    sectionTitle: 'Aprenda com a Lifetime',
+    sectionSubtitle: 'Conteudos educacionais para todos os niveis de investidor',
+    items: [],
+  },
+
+  products: {
+    sectionTitle: 'Servicos',
+    sectionSubtitle: 'Solucoes completas de assessoria de investimentos',
+    categories: [],
+  },
+}
+
+// ============================================================
 // REGISTRO DE MARCAS
 // ============================================================
 const brands: Record<BrandSlug, BrandConfig> = {
@@ -2614,6 +3037,7 @@ const brands: Record<BrandSlug, BrandConfig> = {
   'primo-rico': primoRico,
   'me-poupe': mePoupe,
   'investidor-sardinha': investidorSardinha,
+  'lifetime': lifetime,
 }
 
 // ============================================================
