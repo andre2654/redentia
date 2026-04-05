@@ -2832,13 +2832,13 @@ const lifetime: BrandConfig = {
 
   metrics: {
     sectionTitle: 'Numeros que geram confianca.',
-    sectionSubtitle: 'Tecnologia e atendimento humano juntos',
-    counterLabel: 'Analises realizadas na Lifetime (e contando)',
+    sectionSubtitle: 'Resultado consistente para nossos clientes',
+    counterLabel: 'Operacoes assessoradas pela Lifetime (e contando)',
     stats: [
-      { value: '800+', label: 'Ativos monitorados' },
-      { value: 'Tempo real', label: 'Atualizacao' },
-      { value: '24/7', label: 'Assessor IA' },
-      { value: '~3s', label: 'Resposta da IA' },
+      { value: 'R$ 150M+', label: 'Sob custodia' },
+      { value: '500+', label: 'Clientes ativos' },
+      { value: '5 anos', label: 'No mercado' },
+      { value: '24/7', label: 'Suporte com IA' },
     ],
   },
 
@@ -2868,9 +2868,9 @@ const lifetime: BrandConfig = {
   },
 
   trustBar: {
-    text: 'Clientes da Lifetime operam em',
-    footnote: 'E outras corretoras credenciadas',
-    partners: ['XP', 'BTG', 'Genial', 'Rico', 'Clear', 'Inter', 'Toro', 'Orama'],
+    text: 'Credenciada junto a',
+    footnote: 'Escritorio regulado pela CVM e Ancord',
+    partners: ['XP', 'BTG Pactual', 'Genial', 'B3', 'CVM', 'Ancord'],
   },
 
   footer: {
@@ -3004,17 +3004,52 @@ const lifetime: BrandConfig = {
   homeSections: [
     { id: 'hero', visible: true },
     { id: 'trustBar', visible: true },
-    { id: 'market', visible: true },
     { id: 'categories', visible: true },
+    { id: 'investorChecklist', visible: true },
+    { id: 'wealthCalculator', visible: true },
     { id: 'aiCta', visible: true },
     { id: 'metrics', visible: true },
-    { id: 'guides', visible: true },
     { id: 'testimonials', visible: true },
+    { id: 'guides', visible: true },
+    { id: 'market', visible: false },
     { id: 'featureTabs', visible: false },
     { id: 'marquee', visible: false },
     { id: 'educational', visible: false },
     { id: 'products', visible: false },
   ],
+
+  investorChecklist: {
+    sectionTitle: 'Como funciona a assessoria',
+    sectionSubtitle: 'Um processo simples e transparente para cuidar do seu patrimonio',
+    steps: [
+      { number: 1, title: 'Converse com um assessor', description: 'Entenda seus objetivos, perfil de risco e horizonte de investimento em uma conversa personalizada.', icon: 'i-lucide-users', status: 'recommended' as const, ctaText: 'Agendar conversa', ctaLink: '/help' },
+      { number: 2, title: 'Consolide sua carteira', description: 'Importe todos os seus investimentos via Excel ou Open Finance e tenha uma visao completa do seu patrimonio.', icon: 'i-lucide-briefcase', status: 'available' as const, ctaText: 'Importar carteira', ctaLink: '/wallet' },
+      { number: 3, title: 'Receba recomendacoes', description: 'Analises personalizadas, rebalanceamento e alertas de oportunidades com base no seu perfil.', icon: 'i-lucide-target', status: 'available' as const, ctaText: 'Ver analises', ctaLink: '/help' },
+      { number: 4, title: 'Acompanhe em tempo real', description: 'Monitore cotacoes, dividendos e desempenho da carteira 24/7 pela plataforma ou app.', icon: 'i-lucide-activity', status: 'available' as const, ctaText: 'Explorar plataforma', ctaLink: '/' },
+    ],
+    footerText: 'Duvidas sobre o processo?',
+    footerLink: '/help',
+    footerLinkText: 'Fale com nosso assessor',
+  },
+
+  wealthCalculator: {
+    sectionTitle: 'O impacto de investir com assessoria',
+    sectionSubtitle: 'Veja como o tempo e a consistencia transformam seu patrimonio',
+    defaultAge: 30,
+    compareAge: 40,
+    defaultMonthly: 2000,
+    annualRate: 0.12,
+    targetAge: 65,
+    ctaText: 'Falar com assessor',
+    ctaLink: '/help',
+    labels: {
+      ageSlider: 'Idade de inicio',
+      monthlySlider: 'Aporte mensal',
+      resultPrefix: 'Aos {target} anos voce tera',
+      comparisonText: 'Quem comeca aos {age} perde {diff}',
+      timeLabel: 'anos investindo',
+    },
+  },
 
   educational: {
     sectionTitle: 'Aprenda com a Lifetime',
