@@ -208,18 +208,16 @@
         <div class="absolute inset-0 bg-black/70" />
         <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/50" />
 
-        <div class="relative mx-auto max-w-4xl px-6 py-20 md:px-12 md:py-28 lg:py-32">
+        <div class="relative mx-auto max-w-4xl px-6 py-20 md:px-12 md:py-28 lg:py-32" style="color: #ffffff">
           <div class="flex flex-col items-center text-center">
             <!-- Logo -->
-            <div class="mb-10 rounded-2xl bg-black/30 px-8 py-4 backdrop-blur-sm">
-              <BrandLogo variant="full" class="h-10 w-auto md:h-14" />
-            </div>
+            <BrandLogo variant="full" class="mb-10 h-10 w-auto md:h-14" />
 
             <!-- Headline -->
             <h2
               :class="[brand.font.headingWeight]"
-              class="mb-5 max-w-3xl text-3xl leading-[1.12] tracking-tight text-white drop-shadow-lg md:text-5xl lg:text-6xl"
-              :style="{ fontFamily: `'${brand.font.family}', sans-serif` }"
+              class="mb-5 max-w-3xl text-3xl leading-[1.12] tracking-tight md:text-5xl lg:text-6xl"
+              :style="{ fontFamily: `'${brand.font.family}', sans-serif`, color: '#ffffff', textShadow: '0 2px 8px rgba(0,0,0,0.4)' }"
             >
               <template v-for="(line, i) in brand.hero.title.split('\n')" :key="i">
                 {{ line }}<br v-if="i < brand.hero.title.split('\n').length - 1" />
@@ -227,7 +225,10 @@
             </h2>
 
             <!-- Subtitulo -->
-            <p class="mx-auto mb-10 max-w-xl text-base leading-relaxed text-white/90 drop-shadow md:text-lg">
+            <p
+              class="mx-auto mb-10 max-w-xl text-base leading-relaxed md:text-lg"
+              style="color: rgba(255,255,255,0.9); text-shadow: 0 1px 4px rgba(0,0,0,0.3)"
+            >
               {{ brand.hero.subtitle }}
             </p>
 
@@ -235,15 +236,18 @@
             <div class="mb-14 flex flex-col items-center gap-3 sm:flex-row">
               <NuxtLink
                 to="/auth/register"
-                class="inline-flex items-center gap-2.5 rounded-xl px-8 py-3.5 text-sm font-semibold text-white shadow-lg transition hover:opacity-90"
-                :style="{ backgroundColor: brand.colors.primary, boxShadow: `0 8px 30px ${brand.colors.primary}30` }"
+                class="inline-flex items-center gap-2.5 rounded-xl px-8 py-3.5 text-sm font-semibold shadow-lg transition hover:opacity-90"
+                :style="{ backgroundColor: brand.colors.primary, color: '#ffffff', boxShadow: `0 8px 30px ${brand.colors.primary}30` }"
               >
                 <UIcon :name="brand.hero.ctaIcon || 'i-lucide-briefcase'" class="size-4" />
                 {{ brand.hero.ctaLabel }}
               </NuxtLink>
               <NuxtLink
                 to="/auth/login"
-                class="inline-flex items-center gap-2 rounded-xl border border-white/25 bg-white/10 px-8 py-3.5 text-sm font-medium text-white backdrop-blur-sm transition hover:bg-white/20"
+                class="inline-flex items-center gap-2 rounded-xl px-8 py-3.5 text-sm font-medium backdrop-blur-sm transition"
+                style="border: 1px solid rgba(255,255,255,0.25); background: rgba(255,255,255,0.1); color: #ffffff"
+                @mouseenter="($event.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.2)'"
+                @mouseleave="($event.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.1)'"
               >
                 {{ brand.hero.ctaSecondaryLabel }}
               </NuxtLink>
@@ -254,9 +258,10 @@
               <div
                 v-for="(indicator, i) in brand.hero.trustIndicators"
                 :key="i"
-                class="flex items-center gap-2 text-xs text-white/80 drop-shadow md:text-sm"
+                class="flex items-center gap-2 text-xs md:text-sm"
+                style="color: rgba(255,255,255,0.8); text-shadow: 0 1px 3px rgba(0,0,0,0.3)"
               >
-                <span class="h-1 w-1 rounded-full bg-white/70" />
+                <span class="h-1 w-1 rounded-full" style="background: rgba(255,255,255,0.7)" />
                 {{ indicator }}
               </div>
             </div>

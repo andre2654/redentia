@@ -47,6 +47,7 @@ interface BrandColors {
   inputBg: string
   inputBgHover: string
   inputBorder: string
+  logoBg?: string
   gradient: { from: string; via: string; to: string }
 }
 
@@ -2663,6 +2664,7 @@ const lifetime: BrandConfig = {
     inputBg: '#F8FAFC',
     inputBgHover: '#F1F5F9',
     inputBorder: '#CBD5E1',
+    logoBg: '#ffffff',
     gradient: { from: '#1E40AF', via: '#1D4ED8', to: '#2563EB' },
   },
 

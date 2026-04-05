@@ -1,4 +1,5 @@
-import { brand as defaultBrand } from '~/config/brand'
+import { brand as defaultBrand, brands } from '~/config/brand'
+import type { BrandSlug } from '~/config/brand'
 
 const activeBrand = reactive({ ...defaultBrand })
 
@@ -39,17 +40,31 @@ export function initBrandFromRoute() {
     return false
   }
 
+  let lastResolvedSlug: string | null = null
+
   async function detectAndApply() {
     const querySlug = route.query.brand as string | undefined
 
     if (querySlug) {
+      // Skip if already resolved this slug
+      if (querySlug === lastResolvedSlug && tenantLoaded.value) return
+      lastResolvedSlug = querySlug
+
+      // Apply local brand config immediately to prevent flash
+      const localBrand = brands[querySlug as BrandSlug]
+      if (localBrand) {
+        applyConfig(localBrand)
+      }
+
+      // Then resolve from API (may have newer data)
       await resolveFromApi(querySlug)
       return
     }
 
-    // No param = default brand
-    tenantLoaded.value = false
-    if (activeBrand.slug !== defaultBrand.slug) {
+    // No param = default brand (only reset if we previously loaded a tenant)
+    if (tenantLoaded.value) {
+      tenantLoaded.value = false
+      lastResolvedSlug = null
       applyConfig(defaultBrand)
     }
   }
@@ -57,7 +72,8 @@ export function initBrandFromRoute() {
   detectAndApply()
 
   // Re-apply when query changes
-  watch(() => route.query.brand, () => {
+  watch(() => route.query.brand, (newSlug, oldSlug) => {
+    if (newSlug === oldSlug) return
     detectAndApply()
   })
 }

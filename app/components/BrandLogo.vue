@@ -19,7 +19,7 @@ const needsBg = computed(() => brand.theme.mode === 'light')
     v-if="needsBg && !noBg"
     class="inline-flex items-center justify-center brand-card-sm"
     :class="$props.class"
-    :style="{ backgroundColor: brand.colors.primary, padding: variant === 'icon' ? '6px' : '8px 16px' }"
+    :style="{ backgroundColor: brand.colors.logoBg || brand.colors.primary, padding: variant === 'icon' ? '6px' : '8px 16px' }"
   >
     <img
       :src="variant === 'icon' ? brand.logo.icon : brand.logo.full"
