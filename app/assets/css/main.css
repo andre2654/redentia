@@ -18,8 +18,57 @@ body {
 }
 
 * {
-  font-family: var(--brand-font, 'Inter');
+  font-family: var(--brand-font, 'Inter'), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   box-sizing: border-box;
+}
+
+/* Terminal-style typography helpers (Redentia v2 Bloomberg-reimagined
+   aesthetic). `.font-display` swaps to Instrument Serif for editorial
+   headlines. `.font-mono-tab` uses JetBrains Mono with tabular numerics
+   for numeric displays (prices, percentages, tickers, timestamps). */
+.font-display {
+  font-family: 'Instrument Serif', 'Didot', 'Times New Roman', serif;
+  font-feature-settings: 'liga' 1, 'dlig' 1;
+  letter-spacing: -0.01em;
+}
+.font-mono-tab {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', 'Menlo', 'Courier New', monospace;
+  font-feature-settings: 'tnum' 1, 'zero' 1, 'ss01' 1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Subtle scanline overlay — optional global texture for the "terminal"
+   feel on the Redentia tenant. Applied via `.has-scanlines` on <body>
+   or section containers. Keeps opacity low enough to not distract. */
+.has-scanlines {
+  position: relative;
+}
+.has-scanlines::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 2px,
+    rgba(255, 255, 255, 0.012) 2px,
+    rgba(255, 255, 255, 0.012) 3px
+  );
+  z-index: 1;
+}
+
+/* Blinking caret used inside terminal-styled inputs and hero prompts. */
+@keyframes brand-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+.terminal-caret::after {
+  content: '▊';
+  display: inline-block;
+  margin-left: 0.15em;
+  color: var(--brand-primary);
+  animation: brand-blink 1.1s steps(1) infinite;
 }
 
 /* Accessible focus states - WCAG 2.1 compliant */

@@ -29,15 +29,15 @@
       <span class="truncate text-sm font-medium" :style="{ color: brand.colors.text }">
         {{ cfg.showName ? normalizeText(stock?.name) : stock?.ticker }}
       </span>
-      <span v-if="cfg.showName" class="text-xs" :style="{ color: brand.colors.textMuted }">{{ stock?.ticker }}</span>
+      <span v-if="cfg.showName" class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">{{ stock?.ticker }}</span>
     </div>
 
     <div class="flex flex-shrink-0 flex-col items-end">
-      <span class="text-sm font-medium tabular-nums" :style="{ color: brand.colors.text }">
+      <span class="font-mono-tab text-sm font-medium tabular-nums" :style="{ color: brand.colors.text }">
         R$ {{ formatPrice(stock?.market_price) }}
       </span>
       <span
-        class="flex items-center gap-0.5 text-xs font-medium tabular-nums"
+        class="flex items-center gap-0.5 font-mono-tab text-xs font-medium tabular-nums"
         :style="{ color: changeColor }"
       >
         <UIcon

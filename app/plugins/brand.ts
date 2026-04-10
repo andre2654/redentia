@@ -70,7 +70,15 @@ body {
 }
 
 function googleFontsUrl(googleSpec: string): string {
-  return `https://fonts.googleapis.com/css2?family=${encodeURIComponent(googleSpec).replace(/%20/g, '+')}&display=swap`
+  // Support multiple families joined with `&family=`. Each family segment
+  // is URL-encoded individually so the `&family=` delimiter itself is
+  // preserved. This enables loading e.g. Inter + Instrument Serif + JetBrains Mono
+  // in a single stylesheet request.
+  const families = googleSpec.split('&family=')
+  const encoded = families
+    .map((f) => encodeURIComponent(f).replace(/%20/g, '+'))
+    .join('&family=')
+  return `https://fonts.googleapis.com/css2?family=${encoded}&display=swap`
 }
 
 export default defineNuxtPlugin(() => {

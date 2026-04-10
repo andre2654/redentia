@@ -1,67 +1,162 @@
 <template>
   <NuxtLayout :name="layoutName" title="Visão geral">
-    <h1 class="sr-only">
-      {{ brand.seo.title }}
-    </h1>
     <div class="flex flex-col">
-    <!-- ========== HERO: CENTERED (Primo Rico — premium, espacoso, aspiracional) ========== -->
+    <!-- ========== HERO: CENTERED (Redentia v2 — Bloomberg Terminal Reimaginado) ========== -->
     <section v-if="showSection('hero') && !authStore.isAuthenticated && brand.hero.variant === 'centered'" :style="{ order: sectionOrder('hero') }" class="relative overflow-hidden">
-      <!-- Background: gradient sutil, premium -->
-      <div class="pointer-events-none absolute inset-0">
-        <div class="absolute left-1/2 top-0 h-[500px] w-[800px] -translate-x-1/2 rounded-full blur-3xl" :style="{ background: `radial-gradient(ellipse at center top, ${brand.colors.secondary}4D, transparent)` }" />
-        <div class="absolute left-1/4 top-20 h-64 w-64 rounded-full blur-3xl" :style="{ backgroundColor: `${brand.colors.secondary}33` }" />
+      <!-- Live market ticker — rendered only after mount so the scroll animation
+           and fetch don't fight with SSR hydration. Reserved space kept the same
+           to prevent layout shift. -->
+      <div class="h-9 border-y" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+        <AtomsMarketTicker v-if="isMounted" class="!border-0" />
       </div>
 
-      <div class="relative px-6 py-20 text-center md:py-28">
-        <!-- Badge -->
-        <div class="mb-8 inline-flex items-center gap-2 rounded-full border px-4 py-2 backdrop-blur-sm" :style="{ borderColor: `${brand.colors.text}15`, backgroundColor: `${brand.colors.text}08` }">
-          <span class="flex h-2 w-2">
-            <span class="absolute inline-flex h-2 w-2 animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.primary }" />
-            <span class="relative inline-flex h-2 w-2 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
+      <!-- Background depth: warm amber radial + faint grid + scanlines -->
+      <div class="pointer-events-none absolute inset-0 top-9">
+        <!-- Ambient amber glow from top-center -->
+        <div class="absolute left-1/2 top-0 h-[540px] w-[900px] -translate-x-1/2 rounded-full blur-3xl opacity-60" :style="{ background: `radial-gradient(ellipse at center top, ${brand.colors.primary}33, transparent 60%)` }" />
+        <!-- Terminal-style grid overlay (tight 32px grid) -->
+        <div class="absolute inset-0 opacity-[0.04]" :style="{ backgroundImage: `linear-gradient(${brand.colors.text} 1px, transparent 1px), linear-gradient(90deg, ${brand.colors.text} 1px, transparent 1px)`, backgroundSize: '32px 32px' }" />
+        <!-- Horizontal scanlines (1px stripes) — CRT texture -->
+        <div class="absolute inset-0 opacity-30" :style="{ backgroundImage: `repeating-linear-gradient(to bottom, transparent 0px, transparent 2px, ${brand.colors.text}04 2px, ${brand.colors.text}04 3px)` }" />
+      </div>
+
+      <div class="relative mx-auto max-w-6xl px-6 pb-20 pt-16 md:pb-28 md:pt-20">
+        <!-- Terminal status line: [MARKET.LIVE] + timestamp + version -->
+        <div class="mb-8 flex flex-wrap items-center justify-center gap-3 font-mono-tab text-[10px] uppercase tracking-[0.18em]">
+          <span class="flex items-center gap-1.5" :style="{ color: brand.colors.primary }">
+            <span class="relative flex size-1.5">
+              <span class="absolute inline-flex size-1.5 animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.primary }" />
+              <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
+            </span>
+            {{ brand.hero.badge }}
           </span>
-          <span class="text-sm" :style="{ color: `${brand.colors.text}CC` }">{{ brand.hero.badge }}</span>
+          <span :style="{ color: brand.colors.border }">·</span>
+          <span :style="{ color: brand.colors.textMuted }">B3 · SESSAO ABERTA</span>
+          <span :style="{ color: brand.colors.border }">·</span>
+          <span :style="{ color: brand.colors.textMuted }">REDENTIA v2.1</span>
         </div>
 
-        <BrandLogo variant="full" class="mx-auto mb-10 h-10 md:h-14" />
+        <!-- Display serif headline — editorial scale, high contrast -->
+        <h1
+          class="font-display mx-auto mb-6 max-w-4xl text-center text-[56px] leading-[0.95] tracking-tight sm:text-[72px] md:text-[96px] lg:text-[120px]"
+          :style="{ color: brand.colors.text }"
+        >
+          Investir com
+          <span class="italic" :style="{ color: brand.colors.primary }">inteligência.</span>
+        </h1>
 
-        <h2 class="mx-auto mb-6 max-w-3xl text-3xl leading-tight sm:text-4xl md:text-5xl lg:text-6xl" :class="[brand.font.headingWeight, brand.font.headingStyle]" :style="{ color: brand.colors.text }">
-          <template v-for="(line, idx) in brand.hero.title.split('\n')" :key="idx">
-            <br v-if="idx > 0" />{{ line }}
-          </template>
-        </h2>
-
-        <p class="mx-auto mb-10 max-w-xl text-base md:text-lg" :style="{ color: brand.colors.textMuted }">
+        <!-- Subtitle: mono eyebrow feel -->
+        <p
+          class="mx-auto mb-10 max-w-2xl text-center text-sm leading-relaxed md:text-base"
+          :style="{ color: brand.colors.textMuted }"
+        >
           {{ brand.hero.subtitle }}
         </p>
 
-        <!-- CTAs -->
-        <div class="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
-          <UButton to="/auth/register" color="secondary" size="xl" :icon="brand.hero.ctaIcon" class="group w-full px-8 transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-secondary/25 sm:w-auto">
-            {{ brand.hero.ctaLabel }}
-            <template #trailing>
-              <UIcon name="i-lucide-arrow-right" class="h-4 w-4 transition-transform group-hover:translate-x-1" />
+        <!-- Terminal command bar: the "product shot" — simulated REPL input -->
+        <div
+          class="mx-auto mb-8 max-w-2xl overflow-hidden rounded-lg border backdrop-blur-sm"
+          :style="{
+            borderColor: brand.colors.border,
+            backgroundColor: `${brand.colors.surface}E6`,
+          }"
+        >
+          <!-- Terminal header bar -->
+          <div
+            class="flex items-center justify-between border-b px-4 py-2 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
+            :style="{
+              borderColor: brand.colors.border,
+              backgroundColor: brand.colors.background,
+              color: brand.colors.textMuted,
+            }"
+          >
+            <div class="flex items-center gap-2">
+              <div class="flex gap-1.5">
+                <span class="size-2 rounded-full opacity-60" :style="{ backgroundColor: brand.colors.negative }" />
+                <span class="size-2 rounded-full opacity-60" :style="{ backgroundColor: brand.colors.primary }" />
+                <span class="size-2 rounded-full opacity-60" :style="{ backgroundColor: brand.colors.positive }" />
+              </div>
+              <span class="ml-2">REDENTIA.TERMINAL</span>
+            </div>
+            <span class="hidden sm:inline">~/mercado/brasil</span>
+          </div>
+          <!-- Prompt line with typewriter placeholder -->
+          <div class="flex items-center gap-3 px-5 py-5">
+            <span class="font-mono-tab text-sm" :style="{ color: brand.colors.primary }">&gt;</span>
+            <!-- Typewriter prompt — identical structure on SSR and client to
+                 avoid hydration mismatches. `typedPrompt` starts empty (SSR sees
+                 just the caret), then animates after mount. -->
+            <span
+              class="flex-1 truncate font-mono-tab text-sm"
+              :style="{ color: brand.colors.text }"
+            >
+              <span>{{ isMounted ? typedPrompt : 'Pergunte sobre qualquer ativo...' }}</span>
+              <span v-if="isMounted" class="terminal-caret"></span>
+            </span>
+            <kbd
+              class="hidden shrink-0 rounded border px-2 py-0.5 font-mono-tab text-[10px] sm:inline-block"
+              :style="{
+                borderColor: brand.colors.border,
+                color: brand.colors.textMuted,
+                backgroundColor: brand.colors.background,
+              }"
+            >ENTER</kbd>
+          </div>
+        </div>
+
+        <!-- CTAs styled as keyboard function keys -->
+        <div class="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-3">
+          <UButton
+            to="/auth/register"
+            size="xl"
+            class="group w-full px-8 font-mono-tab font-semibold uppercase tracking-wider transition-all duration-300 hover:opacity-90 sm:w-auto"
+            :style="{
+              backgroundColor: brand.colors.primary,
+              color: brand.colors.background,
+            }"
+          >
+            <template #leading>
+              <span class="font-mono-tab text-[10px] opacity-70">[F1]</span>
             </template>
+            {{ brand.hero.ctaLabel }}
           </UButton>
-          <UButton to="/auth/login" variant="ghost" size="xl" class="w-full transition-all sm:w-auto" :style="{ color: brand.colors.textMuted }">
+          <UButton
+            to="/auth/login"
+            variant="outline"
+            size="xl"
+            class="w-full border font-mono-tab font-medium uppercase tracking-wider transition-all hover:bg-white/5 sm:w-auto"
+            :style="{
+              color: brand.colors.text,
+              borderColor: `${brand.colors.text}25`,
+            }"
+          >
+            <template #leading>
+              <span class="font-mono-tab text-[10px] opacity-70">[F2]</span>
+            </template>
             {{ brand.hero.ctaSecondaryLabel }}
           </UButton>
         </div>
 
-        <!-- Founder quote -->
-        <div class="mt-14 flex flex-col items-center gap-3">
-          <p class="text-sm italic" :style="{ color: `${brand.colors.text}4D` }">"{{ brand.hero.founderQuote }}"</p>
-          <span class="text-xs" :style="{ color: `${brand.colors.text}33` }">— {{ brand.founder.name }}</span>
-        </div>
-
-        <!-- Trust indicators -->
-        <div class="mt-8 flex items-center justify-center gap-8 text-sm" :style="{ color: `${brand.colors.text}66` }">
-          <template v-for="(indicator, idx) in brand.hero.trustIndicators" :key="idx">
-            <div v-if="idx > 0" class="hidden h-4 w-px sm:block" :style="{ backgroundColor: `${brand.colors.text}15` }" />
-            <div class="flex items-center gap-2">
-              <UIcon :name="trustIndicatorStyles[idx % trustIndicatorStyles.length].icon" class="h-3 w-3" :class="trustIndicatorStyles[idx % trustIndicatorStyles.length].text" />
-              <span>{{ indicator }}</span>
-            </div>
-          </template>
+        <!-- Trust indicators as terminal chips with mono labels -->
+        <div class="mt-12 flex flex-wrap items-center justify-center gap-2 font-mono-tab sm:gap-3">
+          <div
+            v-for="(indicator, idx) in brand.hero.trustIndicators"
+            :key="indicator"
+            class="inline-flex items-center gap-2 rounded border px-3 py-1.5"
+            :style="{
+              borderColor: brand.colors.border,
+              backgroundColor: `${brand.colors.surface}80`,
+            }"
+          >
+            <UIcon
+              :name="trustIndicatorStyles[idx % trustIndicatorStyles.length].icon"
+              class="size-3"
+              :style="{ color: brand.colors.primary }"
+            />
+            <span class="text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
+              {{ indicator }}
+            </span>
+          </div>
         </div>
       </div>
     </section>
@@ -283,59 +378,73 @@
     <MoleculesInvestorChecklist v-if="showSection('investorChecklist') && brand.investorChecklist && !authStore.isAuthenticated" :style="{ order: sectionOrder('investorChecklist') }" />
 
     <!-- Seção de Mercado ao Vivo (Prioridade) -->
-    <div v-if="showSection('market')" :style="{ order: sectionOrder('market') }" class="flex h-auto flex-col gap-4 pt-6">
+    <div v-if="showSection('market')" :style="{ order: sectionOrder('market') }" class="flex h-auto flex-col gap-4 pt-10">
       <div class="flex flex-col gap-8">
-        <div class="flex flex-col gap-4 px-6">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
+        <div class="flex flex-col gap-6 px-6">
+          <!-- Terminal-style market status line -->
+          <div class="flex flex-wrap items-center gap-3 font-mono-tab text-[10px] uppercase tracking-[0.18em]">
+            <span
+              class="flex items-center gap-1.5"
+              :style="{ color: marketStatus.color }"
+            >
               <span
-                class="h-2 w-2 rounded-full md:h-3 md:w-3"
-                :class="{ 'animate-pulse': marketStatus.animate }"
-                :style="{ backgroundColor: marketStatus.color, boxShadow: marketStatus.animate ? `0 0 12px ${marketStatus.color}80` : 'none' }"
-              />
-              <span
-                class="text-xs font-medium uppercase tracking-wider md:text-sm"
-                :style="{ color: marketStatus.color }"
-              >{{ marketStatus.label }}</span>
-              <span v-if="marketStatus.lastUpdate" class="text-xs" :style="{ color: brand.colors.textMuted }">
-                • Atualizado em {{ marketStatus.lastUpdate }}
-              </span>
-            </div>
-          </div>
-          <div class="flex gap-8">
-            <div class="flex flex-col gap-1">
-              <h3
-                class="font-regular flex items-center gap-2 text-xl md:text-2xl"
-                :style="{ color: brand.colors.text }"
+                class="relative flex size-1.5"
               >
-                IBOVESPA
-              </h3>
+                <span
+                  v-if="marketStatus.animate"
+                  class="absolute inline-flex size-1.5 animate-ping rounded-full opacity-75"
+                  :style="{ backgroundColor: marketStatus.color }"
+                />
+                <span
+                  class="relative inline-flex size-1.5 rounded-full"
+                  :style="{ backgroundColor: marketStatus.color }"
+                />
+              </span>
+              [{{ marketStatus.label }}]
+            </span>
+            <span :style="{ color: brand.colors.border }">·</span>
+            <span :style="{ color: brand.colors.textMuted }">B3 · BOLSA BRASILEIRA</span>
+            <span v-if="marketStatus.lastUpdate" :style="{ color: brand.colors.border }">·</span>
+            <span v-if="marketStatus.lastUpdate" :style="{ color: brand.colors.textMuted }">
+              UPDATE {{ marketStatus.lastUpdate }}
+            </span>
+          </div>
+
+          <!-- Index readouts as terminal cells — mono, large, tabular -->
+          <div class="flex flex-wrap gap-8 md:gap-12">
+            <div class="flex flex-col gap-1">
+              <span
+                class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
+                :style="{ color: brand.colors.primary }"
+              >
+                [IBOVESPA]
+              </span>
               <p
-                class="text-3xl font-semibold tabular-nums sm:text-4xl md:text-5xl"
+                class="font-mono-tab text-3xl font-bold tabular-nums sm:text-4xl md:text-5xl"
                 :style="{ color: ibovVariationColor }"
               >
                 {{ ibovIndicator }}
               </p>
-              <p class="text-sm tabular-nums" :style="{ color: brand.colors.textMuted }">
-                R$ {{ ibovLastPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+              <p class="font-mono-tab text-[11px] tabular-nums" :style="{ color: brand.colors.textMuted }">
+                {{ ibovLastPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }} PTS
               </p>
             </div>
 
             <div class="flex flex-col gap-1">
-              <h3
-                class="font-regular flex items-center gap-2 text-xl md:text-2xl"
-                :style="{ color: brand.colors.text }"
+              <span
+                class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
+                :style="{ color: brand.colors.primary }"
               >
-                IFIX
-              </h3>
+                [IFIX]
+              </span>
               <p
-                class="text-3xl font-semibold tabular-nums sm:text-4xl md:text-5xl"
+                class="font-mono-tab text-3xl font-bold tabular-nums sm:text-4xl md:text-5xl"
                 :style="{ color: ifixVariationColor }"
               >
                 {{ ifixIndicator }}
               </p>
-              <p class="text-sm tabular-nums" :style="{ color: brand.colors.textMuted }">
-                R$ {{ ifixLastPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+              <p class="font-mono-tab text-[11px] tabular-nums" :style="{ color: brand.colors.textMuted }">
+                {{ ifixLastPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }} PTS
               </p>
             </div>
           </div>
@@ -348,9 +457,18 @@
       </div>
 
       <div class="flex w-full flex-col">
-        <div class="flex w-full items-center justify-between p-6 pb-0">
-          <div class="flex flex-col gap-4">
-            <h2 class="text-[30px] font-semibold" :style="{ color: brand.colors.text }">
+        <div class="flex w-full items-end justify-between gap-4 p-6 pb-0">
+          <div class="flex flex-col gap-1">
+            <span
+              class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
+              :style="{ color: brand.colors.primary }"
+            >
+              [IBOV.CHART]
+            </span>
+            <h2
+              class="font-mono-tab text-3xl font-bold tabular-nums md:text-4xl"
+              :style="{ color: brand.colors.text }"
+            >
               {{
                 new Intl.NumberFormat('pt-BR', {
                   style: 'currency',
@@ -358,7 +476,6 @@
                 }).format(ibovLastPrice)
               }}
             </h2>
-            <p class="mb-4" :style="{ color: brand.colors.textMuted }">Cotação do IBOV</p>
           </div>
           <MoleculesPeriodSelector
             v-model="selectedTimeRange"
@@ -388,31 +505,43 @@
         />
       </div>
 
-      <div class="flex items-center justify-between gap-4 px-6">
-        <div class="flex flex-col">
-          <h2 class="text-[18px]" :class="brand.font.headingWeight" :style="{ color: brand.colors.text }">{{ brand.homeTexts.marketTitle }}</h2>
-          <p class="text-[13px] font-extralight" :style="{ color: brand.colors.textMuted }">
-            {{ brand.homeTexts.marketSubtitle }}
+      <div class="flex items-end justify-between gap-4 px-6 pt-8">
+        <div class="flex flex-col gap-1">
+          <span
+            class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
+            :style="{ color: brand.colors.primary }"
+          >
+            [LIVE.MARKET]
+          </span>
+          <h2
+            class="font-display text-3xl leading-none md:text-4xl lg:text-5xl"
+            :style="{ color: brand.colors.text }"
+          >
+            {{ brand.homeTexts.marketTitle }}
+          </h2>
+          <p class="font-mono-tab text-[11px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
+            &gt; {{ brand.homeTexts.marketSubtitle }}
           </p>
         </div>
-        <div class="flex items-center gap-1 rounded-lg p-1" :style="{ borderColor: brand.colors.border, border: `1px solid ${brand.colors.border}`, backgroundColor: `${brand.colors.text}05` }">
+        <!-- View toggle as terminal-style segmented control -->
+        <div class="flex items-center gap-0 border font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ borderColor: brand.colors.border }">
           <button
             type="button"
-            class="flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all"
-            :style="!showMap ? { backgroundColor: `${brand.colors.text}15`, color: brand.colors.text } : { color: brand.colors.textMuted }"
+            class="flex cursor-pointer items-center gap-1.5 px-3 py-2 transition-all"
+            :style="!showMap ? { backgroundColor: brand.colors.primary, color: brand.colors.background } : { color: brand.colors.textMuted }"
             @click="showMap = false"
           >
-            <UIcon name="i-lucide-list" class="h-3.5 w-3.5" />
-            <span class="max-sm:hidden">Lista</span>
+            <UIcon name="i-lucide-list" class="h-3 w-3" />
+            <span class="max-sm:hidden">LIST</span>
           </button>
           <button
             type="button"
-            class="flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all"
-            :style="showMap ? { backgroundColor: `${brand.colors.text}15`, color: brand.colors.text } : { color: brand.colors.textMuted }"
+            class="flex cursor-pointer items-center gap-1.5 border-l px-3 py-2 transition-all"
+            :style="showMap ? { backgroundColor: brand.colors.primary, color: brand.colors.background, borderColor: brand.colors.border } : { color: brand.colors.textMuted, borderColor: brand.colors.border }"
             @click="showMap = true"
           >
-            <UIcon name="i-lucide-grid-2x2" class="h-3.5 w-3.5" />
-            <span class="max-sm:hidden">Mapa</span>
+            <UIcon name="i-lucide-grid-2x2" class="h-3 w-3" />
+            <span class="max-sm:hidden">MAP</span>
           </button>
         </div>
       </div>
@@ -469,29 +598,24 @@
             :class="rankingCardClass"
             :style="rankingCardStyle(brand.colors.positive)"
           >
-            <!-- Header -->
-            <div class="mb-2 flex items-center justify-between">
+            <!-- Header — terminal register style -->
+            <div class="mb-3 flex items-center justify-between border-b pb-2" :style="{ borderColor: brand.colors.border }">
               <div class="flex items-center gap-2">
-                <div
-                  v-if="brand.homePage.rankingCard.showIcon"
-                  class="flex items-center justify-center"
-                  :class="brand.homePage.rankingCard.iconStyle === 'pill' ? 'h-8 w-8 brand-pill' : ''"
-                  :style="brand.homePage.rankingCard.iconStyle === 'pill' ? { backgroundColor: `${brand.colors.positive}20` } : {}"
-                >
-                  <UIcon name="i-lucide-trending-up" class="h-5 w-5" :style="{ color: brand.colors.positive }" />
-                </div>
-                <div>
-                  <h2 class="text-base" :class="brand.font.headingWeight" :style="{ color: brand.colors.text }">{{ item.label }}</h2>
-                  <p class="text-xs" :style="{ color: brand.colors.textMuted }">Maiores altas</p>
+                <UIcon name="i-lucide-trending-up" class="h-3 w-3" :style="{ color: brand.colors.positive }" />
+                <div class="flex flex-col">
+                  <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.positive }">
+                    [TOP.{{ (item.key || '').toString().toUpperCase() }}]
+                  </span>
+                  <h3 class="font-mono-tab text-[11px] font-semibold uppercase tracking-wider" :style="{ color: brand.colors.text }">{{ item.label }} / MAIORES ALTAS</h3>
                 </div>
               </div>
               <NuxtLink
                 :to="{ path: '/search', query: rankingLinkQueries.top[item.key] }"
-                class="flex items-center gap-1 text-sm transition-colors"
+                class="flex items-center gap-1 font-mono-tab text-[10px] uppercase tracking-[0.12em] transition-colors hover:opacity-80"
                 :style="{ color: brand.colors.textMuted }"
               >
-                Ver todos
-                <UIcon name="i-lucide-arrow-right" class="h-4 w-4" />
+                VIEW ALL
+                <UIcon name="i-lucide-arrow-right" class="h-3 w-3" />
               </NuxtLink>
             </div>
             <!-- Lista -->
@@ -520,29 +644,24 @@
             :class="rankingCardClass"
             :style="rankingCardStyle(brand.colors.negative)"
           >
-            <!-- Header -->
-            <div class="mb-2 flex items-center justify-between">
+            <!-- Header — terminal register style -->
+            <div class="mb-3 flex items-center justify-between border-b pb-2" :style="{ borderColor: brand.colors.border }">
               <div class="flex items-center gap-2">
-                <div
-                  v-if="brand.homePage.rankingCard.showIcon"
-                  class="flex items-center justify-center"
-                  :class="brand.homePage.rankingCard.iconStyle === 'pill' ? 'h-8 w-8 brand-pill' : ''"
-                  :style="brand.homePage.rankingCard.iconStyle === 'pill' ? { backgroundColor: `${brand.colors.negative}20` } : {}"
-                >
-                  <UIcon name="i-lucide-trending-down" class="h-5 w-5" :style="{ color: brand.colors.negative }" />
-                </div>
-                <div>
-                  <h2 class="text-base" :class="brand.font.headingWeight" :style="{ color: brand.colors.text }">{{ item.label }}</h2>
-                  <p class="text-xs" :style="{ color: brand.colors.textMuted }">Maiores baixas</p>
+                <UIcon name="i-lucide-trending-down" class="h-3 w-3" :style="{ color: brand.colors.negative }" />
+                <div class="flex flex-col">
+                  <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.negative }">
+                    [BOT.{{ (item.key || '').toString().toUpperCase() }}]
+                  </span>
+                  <h3 class="font-mono-tab text-[11px] font-semibold uppercase tracking-wider" :style="{ color: brand.colors.text }">{{ item.label }} / MAIORES BAIXAS</h3>
                 </div>
               </div>
               <NuxtLink
                 :to="{ path: '/search', query: rankingLinkQueries.bottom[item.key] }"
-                class="flex items-center gap-1 text-sm transition-colors"
+                class="flex items-center gap-1 font-mono-tab text-[10px] uppercase tracking-[0.12em] transition-colors hover:opacity-80"
                 :style="{ color: brand.colors.textMuted }"
               >
-                Ver todos
-                <UIcon name="i-lucide-arrow-right" class="h-4 w-4" />
+                VIEW ALL
+                <UIcon name="i-lucide-arrow-right" class="h-3 w-3" />
               </NuxtLink>
             </div>
             <!-- Lista -->
@@ -1028,6 +1147,12 @@ import type { ChartTimeRange } from '~/types/chart'
 const brand = useBrand()
 const authStore = useAuthStore()
 
+// Gate for client-only renders (typewriter + market ticker) — avoids
+// SSR/hydration mismatches by rendering identical markup on both sides
+// initially, then flipping to client content after mount.
+const isMounted = ref(false)
+onMounted(() => { isMounted.value = true })
+
 type HomeSectionId = typeof brand.homeSections[number]['id']
 const sectionIndexMap = computed(() => new Map(brand.homeSections.map((s, i) => [s.id, i])))
 function showSection(id: HomeSectionId) {
@@ -1044,6 +1169,46 @@ const trustIndicatorStyles = [
   { bg: 'bg-primary/20', text: 'text-primary', icon: 'i-lucide-zap' },
   { bg: 'bg-secondary/20', text: 'text-secondary', icon: 'i-lucide-credit-card' },
 ]
+
+// Typewriter effect for the terminal prompt in the hero. Cycles through
+// example queries a user might type, mimicking a REPL / command palette.
+const promptExamples = [
+  'Qual o preco teto de PETR4?',
+  'Quais FIIs pagam mais dividendos?',
+  'Como montar uma carteira de R$ 10.000?',
+  'ITUB4 esta cara ou barata agora?',
+  'Me mostre os melhores DY da bolsa',
+]
+const typedPrompt = ref('')
+if (import.meta.client) {
+  let exampleIdx = 0
+  let charIdx = 0
+  let direction: 'typing' | 'pausing' | 'deleting' = 'typing'
+  const tick = () => {
+    const current = promptExamples[exampleIdx] || ''
+    if (direction === 'typing') {
+      charIdx++
+      typedPrompt.value = current.slice(0, charIdx)
+      if (charIdx >= current.length) {
+        direction = 'pausing'
+        setTimeout(() => { direction = 'deleting'; tick() }, 2200)
+        return
+      }
+      setTimeout(tick, 55 + Math.random() * 50)
+    } else if (direction === 'deleting') {
+      charIdx--
+      typedPrompt.value = current.slice(0, charIdx)
+      if (charIdx <= 0) {
+        exampleIdx = (exampleIdx + 1) % promptExamples.length
+        direction = 'typing'
+      }
+      setTimeout(tick, 25)
+    }
+  }
+  // Kick off after a small delay so the page paints first
+  onMounted(() => { setTimeout(tick, 600) })
+}
+
 const layoutName = computed(() =>
   authStore.isAuthenticated ? 'default' : 'unauthenticated'
 )

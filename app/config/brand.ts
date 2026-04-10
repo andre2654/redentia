@@ -2265,29 +2265,35 @@ const redentia: BrandConfig = {
   email: 'contato@redentia.com.br',
   privacyEmail: 'privacidade@redentia.com.br',
 
+  // "Bloomberg Terminal Reimaginado" — Redentia v2 brand.
+  // Amber primary (authority + warmth), off-black warm bg (not pure #000),
+  // terminal-green for positive, saturated red for negative, mono for
+  // numbers. Signals "professional financial data tool" at first glance.
   colors: {
-    primary: '#60A5FA',
-    secondary: '#3B82F6',
-    tertiary: '#0A0A0A',
-    positive: '#4ADE80',
-    negative: '#EF4444',
-    neutral: '#6B7280',
-    background: '#000000',
-    surface: '#0A0A0A',
-    surfaceHover: '#131313',
-    border: '#1F1F1F',
-    text: '#FFFFFF',
-    textMuted: '#9CA3AF',
-    inputBg: '#05070b',
-    inputBgHover: '#070b12',
-    inputBorder: '#1f2937',
-    gradient: { from: '#60A5FA', via: '#3B82F6', to: '#2563EB' },
+    primary: '#F5A623',          // amber Bloomberg (accent, actionable)
+    secondary: '#FFC555',        // amber bright (hover / emphasis)
+    tertiary: '#14161C',         // charcoal elevated
+    positive: '#00D395',         // terminal cyan-green
+    negative: '#FF4747',         // saturated red
+    neutral: '#8B92A7',          // warm muted
+    background: '#0A0B0E',       // off-black warm (not pure)
+    surface: '#14161C',          // charcoal elevated
+    surfaceHover: '#1B1E26',     // more elevated on hover
+    border: '#2A2E39',           // subtle warm border
+    text: '#E8EAED',             // off-white warm (not pure)
+    textMuted: '#8B92A7',
+    inputBg: '#0F1116',
+    inputBgHover: '#14161C',
+    inputBorder: '#2A2E39',
+    gradient: { from: '#F5A623', via: '#FFC555', to: '#FFE082' },
   },
 
   font: {
+    // Inter remains the workhorse UI sans. Display serif and mono are
+    // loaded via the plugin and referenced by the new home hero + metrics.
     family: 'Inter',
-    google: 'Inter:wght@300..800',
-    headingWeight: 'font-bold',
+    google: 'Inter:wght@300..800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600',
+    headingWeight: 'font-normal',  // serif display looks heavier without bold
     headingStyle: 'normal-case',
   },
 
@@ -2304,12 +2310,12 @@ const redentia: BrandConfig = {
   },
 
   seo: {
-    title: 'Redentia — Acoes, FIIs, dividendos e analises com IA',
-    description: 'Plataforma completa de investimentos com cotacoes em tempo real, analises fundamentalistas, calculadoras financeiras e assessoria com inteligencia artificial.',
+    title: 'Redentia — Terminal de mercado com IA',
+    description: 'Mercado em tempo real, inteligencia sob demanda. Cotacoes, analises fundamentalistas, calculadoras e assessor com IA em um so terminal.',
     locale: 'pt_BR',
     lang: 'pt-BR',
-    themeColor: '#000000',
-    keywords: ['redentia', 'investimentos', 'acoes', 'fiis', 'dividendos', 'analise fundamentalista', 'inteligencia artificial'],
+    themeColor: '#0A0B0E',
+    keywords: ['redentia', 'terminal financeiro', 'investimentos', 'acoes', 'fiis', 'dividendos', 'analise fundamentalista', 'inteligencia artificial'],
   },
 
   company: {
@@ -2396,13 +2402,13 @@ const redentia: BrandConfig = {
 
   hero: {
     variant: 'centered',
-    badge: 'Assessoria com IA • Novo',
+    badge: '[MARKET.LIVE]',
     title: 'Investir com\ninteligencia.',
-    subtitle: 'Cotacoes em tempo real, analises fundamentalistas, calculadoras e assessoria com IA. Tudo que voce precisa para investir melhor.',
+    subtitle: 'Mercado em tempo real. Inteligencia sob demanda. Cotacoes, analises fundamentalistas e assessoria com IA em um so terminal.',
     founderQuote: '',
     ctaLabel: 'Comecar agora',
     ctaSecondaryLabel: 'Ja tenho conta',
-    ctaIcon: 'i-lucide-sparkles',
+    ctaIcon: 'i-lucide-terminal',
     trustIndicators: ['Criptografado', 'Sempre gratis', 'Dados em tempo real'],
   },
 
@@ -2455,14 +2461,16 @@ const redentia: BrandConfig = {
   },
 
   metrics: {
-    sectionTitle: 'Dados que fazem a diferenca.',
-    sectionSubtitle: 'Tudo que voce precisa em um so lugar',
-    counterLabel: 'Analises realizadas na Redentia (e contando)',
+    sectionTitle: 'Velocidade como diferencial.',
+    sectionSubtitle: 'Do clique a resposta em segundos',
+    // Big number is no longer a raw analysis count (which reads as vanity
+    // without context). It's the IA response time — the real differentiator.
+    counterLabel: 'segundos em media para a IA responder qualquer duvida',
     stats: [
       { value: '12.500+', label: 'Ativos monitorados' },
-      { value: '50.000+', label: 'Simulacoes' },
-      { value: '24/7', label: 'Disponibilidade' },
-      { value: '~3s', label: 'Resposta da IA' },
+      { value: '50.000+', label: 'Simulacoes rodadas' },
+      { value: '24/7', label: 'Dados sempre atualizados' },
+      { value: 'B3', label: 'Fonte oficial' },
     ],
   },
 
@@ -2492,9 +2500,18 @@ const redentia: BrandConfig = {
   },
 
   trustBar: {
-    text: 'Investidores que usam a Redentia operam em',
-    footnote: 'E muitas outras corretoras',
-    partners: ['XP', 'Rico', 'Clear', 'BTG', 'Inter', 'Nubank', 'Toro', 'Genial'],
+    text: 'Tudo o que voce precisa em um so lugar',
+    footnote: 'Dados oficiais da B3 · LGPD-compliant · 100% gratuito',
+    // Partners transformed into "proof pillars" — not broker endorsements.
+    // Each entry represents a verifiable capability, not a partnership.
+    partners: [
+      '12.500+ ativos',
+      'Dados B3 em tempo real',
+      'Analise com IA',
+      'Calculadoras avancadas',
+      'Carteira consolidada',
+      'Alertas personalizados',
+    ],
   },
 
   footer: {
@@ -2624,12 +2641,16 @@ const redentia: BrandConfig = {
     backgroundPattern: 'gradient',
   },
 
+  // Home section order + visibility. Trimmed down from the original 8
+  // sections to 7 — `featureTabs` was removed because it largely duplicates
+  // `categories` (both lead to /acoes, /fiis, /etfs, etc). This shaves
+  // ~600px of vertical scroll on desktop and ~1000px on mobile.
   homeSections: [
     { id: 'hero', visible: true },
     { id: 'trustBar', visible: true },
     { id: 'market', visible: true },
     { id: 'metrics', visible: true },
-    { id: 'featureTabs', visible: true },
+    { id: 'featureTabs', visible: false },
     { id: 'categories', visible: true },
     { id: 'aiCta', visible: true },
     { id: 'educational', visible: false },
