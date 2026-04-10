@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 112 112" width="112" height="112">
+  <title>Norte Capital</title>
+  <!-- Square icon for small-slot usage (sidebar, chat, mobile menu).
+       Content fills 100% of viewBox — no padding. Transparent bg so it
+       adapts to any host background. -->
+
+  <circle cx="56" cy="56" r="52" fill="none" stroke="#0C1E3C" stroke-width="3"/>
+
+  <g stroke="#0C1E3C" stroke-width="2" stroke-linecap="round">
+    <line x1="56" y1="6" x2="56" y2="12"/>
+    <line x1="106" y1="56" x2="100" y2="56"/>
+    <line x1="56" y1="106" x2="56" y2="100"/>
+    <line x1="6" y1="56" x2="12" y2="56"/>
+  </g>
+
+  <path d="M 56 18 L 66 56 L 46 56 Z" fill="#C8932F"/>
+  <path d="M 56 94 L 66 56 L 46 56 Z" fill="#0C1E3C"/>
+
+  <circle cx="56" cy="56" r="3" fill="#C8932F"/>
+  <circle cx="56" cy="56" r="1.2" fill="#0C1E3C"/>
+</svg>

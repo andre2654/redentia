@@ -2,8 +2,8 @@
  * Blocks routes whose feature flag is disabled for the active tenant.
  *
  * The `ranking`, `dividendos/calendario` and `setor` pages are SEO
- * programmatic pages that don't fit every tenant (e.g. Lifetime is an
- * advisory and doesn't want clients making decisions from rankings).
+ * programmatic pages that don't fit every tenant (e.g. Norte Capital is
+ * an advisory and doesn't want clients making decisions from rankings).
  *
  * When the active brand has the corresponding flag disabled, we 404
  * instead of redirecting — that way the sitemap entries that a different

@@ -29,7 +29,7 @@ const ACTIVE_BRAND: BrandSlug = 'redentia'
 // ============================================================
 // TYPES
 // ============================================================
-type BrandSlug = 'redentia' | 'primo-rico' | 'me-poupe' | 'investidor-sardinha' | 'lifetime'
+type BrandSlug = 'redentia' | 'primo-rico' | 'me-poupe' | 'investidor-sardinha' | 'norte-capital'
 
 interface BrandColors {
   primary: string
@@ -2654,34 +2654,37 @@ const redentia: BrandConfig = {
 }
 
 // ============================================================
-// LIFETIME INVESTIMENTOS (Assessoria)
+// NORTE CAPITAL (Assessoria)
 // ============================================================
-// Persona: Assessoria de investimentos profissional. Tom institucional,
-// confiavel, focado em retencao de clientes e geracao de leads.
+// Persona: Assessoria de investimentos premium. Tom institucional,
+// confiavel, discreto — estetica de "private bank". Publico: investidor
+// com patrimonio em construcao ou consolidado que valoriza assessor
+// humano + tecnologia. Foco em preservacao de patrimonio e longo prazo.
 // Diferencial: consolidador de carteira, assessor humano + IA,
-// credenciais CVM/Ancord, corretora credenciada.
-// Estetica: dark premium + verde/dourado — transmite confianca e sofisticacao.
-// Tipografia: Inter — limpa, profissional, neutra.
+// credenciais CVM/Ancord.
+// Estetica: light mode premium + navy profundo + ambar dourado fosco —
+// classica, refinada, com sensacao de "banco privado de Genebra".
+// Tipografia: Inter — limpa, institucional, neutra.
 // ============================================================
-const lifetime: BrandConfig = {
-  name: 'Lifetime Investimentos',
-  shortName: 'Lifetime',
-  slug: 'lifetime',
-  tagline: 'Seus investimentos em um so lugar.',
-  subtitle: 'Assessoria de investimentos completa',
-  description: 'Assessoria de investimentos com plataforma completa: acompanhe sua carteira consolidada, receba analises personalizadas, fale com seu assessor e invista com inteligencia — tudo com a Lifetime Investimentos.',
+const norteCapital: BrandConfig = {
+  name: 'Norte Capital',
+  shortName: 'Norte',
+  slug: 'norte-capital',
+  tagline: 'Sua direcao. Nosso compromisso.',
+  subtitle: 'Assessoria de investimentos premium',
+  description: 'Assessoria de investimentos premium com plataforma completa: acompanhe sua carteira consolidada, receba analises personalizadas, fale com seu assessor e construa patrimonio de longo prazo — tudo com a Norte Capital.',
 
   founder: {
-    name: 'Lifetime Investimentos',
+    name: 'Norte Capital',
     photo: '',
     role: 'Assessoria de Investimentos',
-    bio: 'Assessoria credenciada focada em construcao de patrimonio de longo prazo. Unimos tecnologia, dados e atendimento humano para entregar resultados consistentes aos nossos clientes.',
-    signaturePhrase: 'Seus investimentos em um so lugar.',
+    bio: 'Assessoria credenciada focada em construcao e preservacao de patrimonio de longo prazo. Unimos tecnologia, dados e atendimento humano para entregar resultados consistentes aos nossos clientes.',
+    signaturePhrase: 'Sua direcao. Nosso compromisso.',
   },
 
   voice: {
     style: 'premium',
-    greeting: 'Ola! Como podemos ajudar com seus investimentos?',
+    greeting: 'Ola. Como podemos ajudar com seus investimentos hoje?',
     ctaPrimary: 'Acessar Minha Carteira',
     ctaSecondary: 'Falar com Assessor',
     emptyState: 'Nenhum dado disponivel no momento.',
@@ -2689,29 +2692,30 @@ const lifetime: BrandConfig = {
     error: 'Algo deu errado. Tente novamente ou fale com seu assessor.',
   },
 
-  domain: 'www.lifetimeinvest.com.br',
-  url: 'https://www.lifetimeinvest.com.br',
-  email: 'contato@lifetimeinvest.com.br',
-  privacyEmail: 'privacidade@lifetimeinvest.com.br',
+  domain: 'www.nortecapital.com.br',
+  url: 'https://www.nortecapital.com.br',
+  email: 'contato@nortecapital.com.br',
+  privacyEmail: 'privacidade@nortecapital.com.br',
 
   colors: {
-    primary: '#1E40AF',
-    secondary: '#1D4ED8',
-    tertiary: '#F8FAFC',
-    positive: '#16A34A',
-    negative: '#DC2626',
-    neutral: '#6B7280',
-    background: '#FFFFFF',
-    surface: '#F8FAFC',
-    surfaceHover: '#F1F5F9',
-    border: '#E2E8F0',
-    text: '#0F172A',
-    textMuted: '#64748B',
-    inputBg: '#F8FAFC',
-    inputBgHover: '#F1F5F9',
-    inputBorder: '#CBD5E1',
-    logoBg: '#ffffff',
-    gradient: { from: '#1E40AF', via: '#1D4ED8', to: '#2563EB' },
+    // Paleta "Navy + Ambar" — classica, premium, inspirada em private banks.
+    primary: '#0C1E3C',          // navy profundo
+    secondary: '#C8932F',        // ambar dourado fosco (accent)
+    tertiary: '#FBFAF5',         // creme claro
+    positive: '#2F6B3A',         // verde floresta (sobrio)
+    negative: '#B33A3A',         // vermelho tijolo (nao muito agressivo)
+    neutral: '#6B6A5E',          // cinza quente
+    background: '#F7F5EF',       // off-white creme
+    surface: '#FBFAF5',          // creme mais claro
+    surfaceHover: '#EFEBDC',     // creme levemente mais escuro no hover
+    border: '#E8E3D5',           // bege clarissimo
+    text: '#0C1E3C',             // mesmo navy do primary (alto contraste)
+    textMuted: '#6B6A5E',        // cinza quente
+    inputBg: '#FBFAF5',
+    inputBgHover: '#EFEBDC',
+    inputBorder: '#D9D3BF',
+    logoBg: '#F7F5EF',
+    gradient: { from: '#0C1E3C', via: '#1A3866', to: '#2B4E85' },
   },
 
   font: {
@@ -2722,28 +2726,28 @@ const lifetime: BrandConfig = {
   },
 
   logo: {
-    icon: '/brand/lifetime/logo.png',
-    full: '/brand/lifetime/logo.png',
-    favicon: '/brand/lifetime/logo.png',
-    faviconIco: '/brand/lifetime/logo.png',
-    faviconSvg: '/brand/lifetime/logo.png',
-    appleTouchIcon: '/brand/lifetime/logo.png',
-    icon192: '/brand/lifetime/logo.png',
-    icon512: '/brand/lifetime/logo.png',
-    og: '/brand/lifetime/logo.png',
+    icon: '/brand/norte/logo-icon.svg',
+    full: '/brand/norte/logo-full.svg',
+    favicon: '/brand/norte/favicon.svg',
+    faviconIco: '/brand/norte/icon-48.png',
+    faviconSvg: '/brand/norte/favicon.svg',
+    appleTouchIcon: '/brand/norte/icon-180.png',
+    icon192: '/brand/norte/icon-192.png',
+    icon512: '/brand/norte/icon-512.png',
+    og: '/brand/norte/og-image.png',
   },
 
   seo: {
-    title: 'Lifetime Investimentos — Assessoria completa com IA',
-    description: 'Assessoria de investimentos com carteira consolidada, cotacoes em tempo real, analises fundamentalistas, calculadoras financeiras e assessor com IA. Tudo em um so lugar.',
+    title: 'Norte Capital — Assessoria de Investimentos Premium',
+    description: 'Assessoria de investimentos premium com carteira consolidada, analises personalizadas, assessor dedicado e tecnologia de ponta. Construa seu patrimonio de longo prazo com a Norte Capital.',
     locale: 'pt_BR',
     lang: 'pt-BR',
-    themeColor: '#1E40AF',
-    keywords: ['lifetime investimentos', 'assessoria de investimentos', 'carteira consolidada', 'assessor financeiro', 'investimentos', 'acoes', 'fiis', 'dividendos'],
+    themeColor: '#0C1E3C',
+    keywords: ['norte capital', 'assessoria de investimentos', 'private banking', 'wealth management', 'carteira consolidada', 'assessor financeiro', 'patrimonio', 'investimentos longo prazo'],
   },
 
   company: {
-    legalName: 'Lifetime Investimentos Ltda.',
+    legalName: 'Norte Capital Assessoria de Investimentos Ltda.',
     address: '',
     cnpj: '',
   },
@@ -2759,7 +2763,7 @@ const lifetime: BrandConfig = {
     showEcosystemLinks: false,
     showGlossary: true,
     showGuides: true,
-    // Lifetime: assessoria premium — cliente acompanhado pelo assessor.
+    // Norte Capital: assessoria premium — cliente acompanhado pelo assessor.
     // Rankings e commentaries poderiam minar o papel do assessor ao
     // incentivar decisões autônomas baseadas em ruído de mercado.
     // Apenas o calendário de dividendos (info contábil neutra) fica ligado.
@@ -2794,7 +2798,7 @@ const lifetime: BrandConfig = {
       { label: 'FIIs', to: '/fiis', icon: 'i-lucide-building-2', description: 'Fundos imobiliarios com analise de rendimentos, vacancia e dividend yield.', cta: 'Explorar FIIs' },
       { label: 'Calculadoras', to: '/calculadora', icon: 'i-lucide-calculator', description: 'Juros compostos, preco teto, aposentadoria, dividend yield e planejamento financeiro.', cta: 'Usar calculadoras' },
       { label: 'Dividendos', to: '/dividendos', icon: 'i-lucide-coins', description: 'Calendario de proventos, rankings de dividend yield e projecao de renda passiva.', cta: 'Ver dividendos' },
-      { label: 'Assessor IA', to: '/help', icon: 'i-lucide-bot', description: 'Tire duvidas com o assistente da Lifetime. Disponivel 24/7 com respostas em segundos.', cta: 'Falar com assessor' },
+      { label: 'Assessor IA', to: '/help', icon: 'i-lucide-bot', description: 'Tire duvidas com o assistente da Norte. Disponivel 24/7 com respostas em segundos.', cta: 'Falar com assessor' },
     ],
   },
 
@@ -2830,30 +2834,30 @@ const lifetime: BrandConfig = {
   hero: {
     variant: 'institutional',
     badge: '',
-    title: 'Seus investimentos\nem um so lugar.',
-    subtitle: 'Acompanhe sua carteira consolidada, receba analises personalizadas e fale com seu assessor — tudo em uma unica plataforma.',
+    title: 'Sua direcao.\nNosso compromisso.',
+    subtitle: 'Assessoria de investimentos premium: carteira consolidada, analises personalizadas e seu assessor dedicado — tudo em uma unica plataforma.',
     founderQuote: '',
     ctaLabel: 'Acessar Minha Carteira',
     ctaSecondaryLabel: 'Falar com Assessor',
     ctaIcon: 'i-lucide-briefcase',
     trustIndicators: ['Escritorio credenciado CVM', '800+ ativos monitorados', 'Dados em tempo real', 'Assessor com IA 24/7'],
-    image: '/brand/lifetime/background.jpg',
+    image: '/brand/norte/background.jpg',
   },
 
   header: {
-    title: 'Lifetime',
+    title: 'Norte Capital',
     subtitle: 'Assessoria de Investimentos',
   },
 
   sidebar: {
-    aiCtaTitle: 'Assessor Lifetime',
+    aiCtaTitle: 'Assessor Norte',
     aiCtaSubtitle: 'Tire suas duvidas com IA',
-    planLabel: 'Cliente Lifetime',
+    planLabel: 'Cliente Norte',
   },
 
   calculators: {
     pageTitle: 'Calculadoras Financeiras',
-    pageSubtitle: 'Ferramentas da Lifetime para simular investimentos, calcular preco teto e planejar seu patrimonio.',
+    pageSubtitle: 'Ferramentas da Norte para simular investimentos, calcular preco teto e planejar seu patrimonio.',
     labels: {
       jurosCompostos: 'Simulador de Juros Compostos',
       precoTeto: 'Calculadora de Preco Teto',
@@ -2867,12 +2871,12 @@ const lifetime: BrandConfig = {
   },
 
   ai: {
-    name: 'Assessor Lifetime',
-    avatar: '/brand/lifetime/logo.png',
-    chatTitle: 'Assessor Lifetime',
+    name: 'Assessor Norte',
+    avatar: '/brand/norte/icon-192.png',
+    chatTitle: 'Assessor Norte',
     chatSubtitle: 'Tire duvidas sobre investimentos, compare ativos e receba orientacoes. Para decisoes importantes, fale com seu assessor humano.',
-    typingLabel: 'ASSESSOR LIFETIME:',
-    welcomeTitle: 'Fale com o Assessor Lifetime',
+    typingLabel: 'ASSESSOR NORTE:',
+    welcomeTitle: 'Fale com o Assessor Norte',
     welcomeSubtitle: 'Nosso assistente com IA complementa o trabalho do seu assessor. Tire duvidas rapidas, compare ativos e receba analises 24/7.',
     placeholder: 'Pergunte sobre sua carteira, acoes, FIIs, dividendos...',
     suggestedQuestions: [
@@ -2882,8 +2886,8 @@ const lifetime: BrandConfig = {
       'Como diversificar meus investimentos?',
       'Qual o preco teto de VALE3?',
     ],
-    systemPromptContext: 'Voce e o Assessor Lifetime, assistente de IA da Lifetime Investimentos. Responda de forma profissional, confiavel e didatica. Foque em analise fundamentalista, renda passiva e construcao de patrimonio de longo prazo. Quando a duvida exigir decisao complexa, sugira que o cliente fale com seu assessor humano.',
-    ctaGreeting: 'Ola! Sou o Assessor Lifetime. Posso ajudar com analises, tirar duvidas e orientar sobre seus investimentos. Para decisoes importantes, seu assessor humano esta sempre disponivel.',
+    systemPromptContext: 'Voce e o Assessor Norte, assistente de IA da Norte Capital. Responda de forma profissional, confiavel e didatica. Foque em analise fundamentalista, renda passiva e construcao de patrimonio de longo prazo. Quando a duvida exigir decisao complexa, sugira que o cliente fale com seu assessor humano.',
+    ctaGreeting: 'Ola! Sou o Assessor Norte. Posso ajudar com analises, tirar duvidas e orientar sobre seus investimentos. Para decisoes importantes, seu assessor humano esta sempre disponivel.',
     ctaButton: 'Falar com Assessor',
     ctaFeatures: ['Resposta em ~3s', 'Complementa seu assessor', '24/7'],
   },
@@ -2891,7 +2895,7 @@ const lifetime: BrandConfig = {
   metrics: {
     sectionTitle: 'Numeros que geram confianca.',
     sectionSubtitle: 'Resultado consistente para nossos clientes',
-    counterLabel: 'Operacoes assessoradas pela Lifetime (e contando)',
+    counterLabel: 'Operacoes assessoradas pela Norte (e contando)',
     stats: [
       { value: 'R$ 150M+', label: 'Sob custodia' },
       { value: '500+', label: 'Clientes ativos' },
@@ -2901,11 +2905,11 @@ const lifetime: BrandConfig = {
   },
 
   testimonials: {
-    sectionTitle: 'Clientes que confiam na Lifetime',
+    sectionTitle: 'Clientes que confiam na Norte',
     sectionSubtitle: 'Assessoria que faz diferenca no patrimonio',
     items: [
       {
-        quote: 'Com a Lifetime consegui consolidar todos os meus investimentos em um so lugar. A visao global da carteira mudou completamente a forma como tomo decisoes.',
+        quote: 'Com a Norte consegui consolidar todos os meus investimentos em um so lugar. A visao global da carteira mudou completamente a forma como tomo decisoes.',
         name: 'Ricardo M.',
         role: 'Empresario, SP',
         metrics: [{ value: 'R$ 2.1M', label: 'sob assessoria' }, { value: '3 anos', label: 'como cliente' }],
@@ -2932,8 +2936,8 @@ const lifetime: BrandConfig = {
   },
 
   footer: {
-    tagline: 'Seus investimentos em um so lugar.',
-    newsletterCta: 'Receba analises e insights da Lifetime',
+    tagline: 'Sua direcao. Nosso compromisso.',
+    newsletterCta: 'Receba analises e insights da Norte Capital',
     sections: { tools: 'Ferramentas', resources: 'Recursos', company: 'Institucional', legal: 'Legal' },
   },
 
@@ -2944,35 +2948,35 @@ const lifetime: BrandConfig = {
   },
 
   auth: {
-    loginTitle: 'Acessar Lifetime',
+    loginTitle: 'Acessar Norte',
     loginSubtitle: 'Entre na sua conta para acompanhar seus investimentos.',
-    registerTitle: 'Criar conta na Lifetime',
+    registerTitle: 'Criar conta na Norte',
     registerSubtitle: 'Cadastre-se para acessar a plataforma completa de investimentos.',
-    termsText: 'Ao criar sua conta, voce concorda com os Termos de Uso e Politica de Privacidade da Lifetime Investimentos.',
+    termsText: 'Ao criar sua conta, voce concorda com os Termos de Uso e Politica de Privacidade da Norte Capital.',
   },
 
   about: {
-    title: 'Sobre a Lifetime Investimentos',
+    title: 'Sobre a Norte Capital',
     paragraphs: [
-      'A Lifetime Investimentos e uma assessoria focada em construcao de patrimonio de longo prazo. Unimos atendimento humano qualificado com tecnologia de ponta para oferecer a melhor experiencia de investimento aos nossos clientes.',
+      'A Norte Capital e uma assessoria focada em construcao de patrimonio de longo prazo. Unimos atendimento humano qualificado com tecnologia de ponta para oferecer a melhor experiencia de investimento aos nossos clientes.',
       'Nossa plataforma consolida todos os seus investimentos em um unico lugar — acoes, FIIs, renda fixa, cripto — com cotacoes em tempo real, analises fundamentalistas e ferramentas de planejamento.',
       'Contamos com um assessor com inteligencia artificial disponivel 24/7 que complementa o trabalho do assessor humano, respondendo duvidas rapidas e gerando analises personalizadas.',
-      'Credenciada junto a CVM e Ancord, a Lifetime opera com total transparencia e seguranca, sempre priorizando os interesses dos nossos clientes.',
+      'Credenciada junto a CVM e Ancord, a Norte opera com total transparencia e seguranca, sempre priorizando os interesses dos nossos clientes.',
     ],
   },
 
   contact: {
-    title: 'Fale com a Lifetime',
+    title: 'Fale com a Norte',
     subtitle: 'Agende uma conversa com nosso time ou envie sua mensagem.',
-    email: 'contato@lifetimeinvest.com.br',
+    email: 'contato@nortecapital.com.br',
     channels: [
-      { icon: 'i-lucide-mail', label: 'Email', value: 'contato@lifetimeinvest.com.br', href: 'mailto:contato@lifetimeinvest.com.br' },
+      { icon: 'i-lucide-mail', label: 'Email', value: 'contato@nortecapital.com.br', href: 'mailto:contato@nortecapital.com.br' },
       { icon: 'i-lucide-message-circle', label: 'WhatsApp', value: 'Fale conosco', href: 'https://wa.me/' },
     ],
   },
 
   howWorks: {
-    title: 'Como funciona a Lifetime',
+    title: 'Como funciona a Norte',
     steps: [
       { icon: 'i-lucide-user-plus', title: 'Crie sua conta', description: 'Cadastro rapido e seguro. Comece a acompanhar seus investimentos em menos de 1 minuto.' },
       { icon: 'i-lucide-briefcase', title: 'Consolide sua carteira', description: 'Importe seus investimentos via Excel ou Open Finance. Veja tudo em um so lugar.' },
@@ -2998,12 +3002,12 @@ const lifetime: BrandConfig = {
     show: 'Mostrar',
     login: 'Entrar',
     register: 'Criar conta',
-    mobileAiLabel: 'Assessor Lifetime',
+    mobileAiLabel: 'Assessor Norte',
     mobileAiAccess: 'Falar com assessor',
     mobileAiLocked: 'Assessor bloqueado',
     mobileAiLockedSub: 'Faca login para acessar',
     mobileAiDescription: 'Assessor com Inteligencia Artificial',
-    mobileAiDescriptionSub: 'Tire duvidas sobre investimentos com o assistente da Lifetime.',
+    mobileAiDescriptionSub: 'Tire duvidas sobre investimentos com o assistente da Norte.',
     mobileCalc: 'Calculadoras',
     mobileGuides: 'Guias',
     mobileHome: 'Inicio',
@@ -3034,11 +3038,11 @@ const lifetime: BrandConfig = {
     marketTitle: 'O mercado em tempo real',
     marketSubtitle: 'Cotacoes, altas e baixas atualizadas automaticamente.',
     filtersTitle: 'Filtros inteligentes',
-    categoriesEyebrow: 'Ferramentas da Lifetime',
+    categoriesEyebrow: 'Ferramentas da Norte',
     categoriesTitle: 'Tudo para seus investimentos',
     categoriesSubtitle: 'Carteira consolidada, cotacoes, calculadoras e assessoria — em um so lugar.',
     guidesTitle: 'Conhecimento para investir melhor',
-    guidesSubtitle: 'Guias praticos e analises da Lifetime.',
+    guidesSubtitle: 'Guias praticos e analises da Norte.',
     aiCtaEyebrow: 'Assessor com IA',
     aiCtaTitle: 'Tire duvidas em segundos',
     aiCtaSubtitle: 'Nosso assessor com IA complementa o atendimento humano. Disponivel 24/7.',
@@ -3110,7 +3114,7 @@ const lifetime: BrandConfig = {
   },
 
   educational: {
-    sectionTitle: 'Aprenda com a Lifetime',
+    sectionTitle: 'Aprenda com a Norte',
     sectionSubtitle: 'Conteudos educacionais para todos os niveis de investidor',
     items: [],
   },
@@ -3130,7 +3134,7 @@ const brands: Record<BrandSlug, BrandConfig> = {
   'primo-rico': primoRico,
   'me-poupe': mePoupe,
   'investidor-sardinha': investidorSardinha,
-  'lifetime': lifetime,
+  'norte-capital': norteCapital,
 }
 
 // ============================================================
