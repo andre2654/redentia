@@ -203,6 +203,42 @@ export default defineNuxtConfig({
           priority: 0.9 as const,
           changefreq: 'weekly' as const,
         },
+
+        // Rankings (SEO programático, atualizado diariamente)
+        {
+          loc: '/ranking',
+          priority: 0.9 as const,
+          changefreq: 'daily' as const,
+        },
+        {
+          loc: '/ranking/maiores-dividend-yield',
+          priority: 0.9 as const,
+          changefreq: 'daily' as const,
+        },
+        {
+          loc: '/ranking/maiores-altas-mes',
+          priority: 0.9 as const,
+          changefreq: 'daily' as const,
+        },
+        {
+          loc: '/ranking/maiores-baixas-mes',
+          priority: 0.9 as const,
+          changefreq: 'daily' as const,
+        },
+
+        // Calendário de dividendos
+        {
+          loc: '/dividendos/calendario',
+          priority: 0.9 as const,
+          changefreq: 'daily' as const,
+        },
+
+        // Setores (índice)
+        {
+          loc: '/setor',
+          priority: 0.8 as const,
+          changefreq: 'weekly' as const,
+        },
       ]
 
       // Termos do glossário
@@ -213,8 +249,31 @@ export default defineNuxtConfig({
         changefreq: 'monthly' as const,
       }))
 
+      // Setores dinâmicos: busca lista atual do backend para gerar comparativos
+      let sectorUrls: Array<{
+        loc: string
+        priority: 0.8
+        changefreq: 'weekly'
+      }> = []
+      try {
+        const apiBase =
+          process.env.NUXT_PUBLIC_API_BASE_URL ||
+          'https://redentia-api.saraivada.com/api'
+        const res = await $fetch<{ data: Array<{ slug: string }> }>(
+          `${apiBase}/sectors`
+        )
+        const sectors = Array.isArray(res?.data) ? res.data : []
+        sectorUrls = sectors.map((s) => ({
+          loc: `/setor/${s.slug}/comparativo`,
+          priority: 0.8 as const,
+          changefreq: 'weekly' as const,
+        }))
+      } catch {
+        // Backend indisponível no build — sitemap ignora setores nesta iteração
+      }
+
       // Rotas dinâmicas (assets) são fornecidas exclusivamente via /api/__sitemap__/urls
-      return [...staticUrls, ...glossarioUrls]
+      return [...staticUrls, ...glossarioUrls, ...sectorUrls]
     },
     exclude: [
       // Páginas de autenticação
@@ -235,10 +294,11 @@ export default defineNuxtConfig({
     ],
   },
   runtimeConfig: {
-    openaiApiKey: process.env.NUXT_OPENAI_API_KEY,
-    openaiChatModel: process.env.NUXT_OPENAI_CHAT_MODEL,
-    openaiRouterModel: process.env.NUXT_OPENAI_ROUTER_MODEL,
-    openaiAlertModel: process.env.NUXT_OPENAI_ALERT_MODEL,
+    anthropicApiKey: process.env.NUXT_ANTHROPIC_API_KEY,
+    anthropicChatModel: process.env.NUXT_ANTHROPIC_CHAT_MODEL || 'claude-sonnet-4-5',
+    anthropicAlertModel: process.env.NUXT_ANTHROPIC_ALERT_MODEL || 'claude-haiku-4-5',
+    anthropicCommentaryModel: process.env.NUXT_ANTHROPIC_COMMENTARY_MODEL || 'claude-haiku-4-5',
+    internalApiKey: process.env.NUXT_INTERNAL_API_KEY,
     n8nRenderKey: process.env.NUXT_N8N_RENDER_KEY,
     public: {
       apiBaseUrl:
@@ -277,6 +337,12 @@ export default defineNuxtConfig({
     '/whitelabel': { isr: 3600 },
     '/search': { isr: 300 },
     '/asset/**': { swr: 300 },
+    // SEO programático — rankings + dividendos + setores
+    '/ranking': { isr: 900 },
+    '/ranking/**': { isr: 900 },
+    '/dividendos/calendario': { isr: 1800 },
+    '/setor': { isr: 3600 },
+    '/setor/**': { isr: 900 },
   },
   components: [
     {

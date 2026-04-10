@@ -153,6 +153,95 @@ export const useAssetsService = () => {
     return unwrapValue<FundamentusApiResponse>(resp)
   }
 
+  // ---------- Rankings (SEO pages) ----------
+
+  async function getTopDividendYield(
+    type: 'STOCK' | 'REIT' | 'ETF' | null = null,
+    limit = 30
+  ): Promise<IAsset[]> {
+    const params = new URLSearchParams({ limit: String(limit) })
+    if (type) params.set('type', type)
+    const url = `${API}/rankings/top-dividend-yield?${params.toString()}`
+    const resp = await preventWithCache(
+      url,
+      async () => await $fetch<IAsset[]>(url, { method: 'GET' })
+    )
+    return unwrapArray<IAsset>(resp)
+  }
+
+  async function getMonthlyChange(
+    side: 'top' | 'bottom' = 'top',
+    type: 'STOCK' | 'REIT' | 'ETF' | 'BDR' | null = null,
+    limit = 30
+  ): Promise<IAsset[]> {
+    const params = new URLSearchParams({ side, limit: String(limit) })
+    if (type) params.set('type', type)
+    const url = `${API}/rankings/monthly-change?${params.toString()}`
+    const resp = await preventWithCache(
+      url,
+      async () => await $fetch<IAsset[]>(url, { method: 'GET' })
+    )
+    return unwrapArray<IAsset>(resp)
+  }
+
+  async function getUpcomingDividends(days = 60, limit = 200) {
+    const url = `${API}/dividends/upcoming?days=${days}&limit=${limit}`
+    const resp = await preventWithCache(
+      url,
+      async () => await $fetch(url, { method: 'GET' })
+    )
+    return unwrapArray<any>(resp)
+  }
+
+  async function getRecentDividends(days = 30, limit = 200) {
+    const url = `${API}/dividends/recent?days=${days}&limit=${limit}`
+    const resp = await preventWithCache(
+      url,
+      async () => await $fetch(url, { method: 'GET' })
+    )
+    return unwrapArray<any>(resp)
+  }
+
+  async function getSectors(): Promise<
+    Array<{ slug: string; name: string; count: number }>
+  > {
+    const url = `${API}/sectors`
+    const resp = await preventWithCache(
+      url,
+      async () => await $fetch(url, { method: 'GET' })
+    )
+    return unwrapArray(resp)
+  }
+
+  async function getSectorTickers(
+    slug: string,
+    limit = 100
+  ): Promise<{
+    sector: { slug: string; name: string } | null
+    aggregates: {
+      ticker_count: number
+      total_market_cap: number
+      avg_change_percent: number
+      avg_dividend_yield: number | null
+      avg_trailing_pe: number | null
+    } | null
+    data: IAsset[]
+  }> {
+    const url = `${API}/sectors/${slug}/tickers?limit=${limit}`
+    const resp = await preventWithCache(
+      url,
+      async () => await $fetch<any>(url, { method: 'GET' })
+    )
+    const sector = resp?.sector ?? null
+    const aggregates = resp?.aggregates ?? null
+    const data = Array.isArray(resp?.data)
+      ? resp.data
+      : Array.isArray(resp?.data?.data)
+        ? resp.data.data
+        : []
+    return { sector, aggregates, data }
+  }
+
   return {
     getAssets,
     getTopStocks,
@@ -164,5 +253,11 @@ export const useAssetsService = () => {
     getTickerDividends,
     getTickerFundamentus,
     getIndiceHistoricPrices,
+    getTopDividendYield,
+    getMonthlyChange,
+    getUpcomingDividends,
+    getRecentDividends,
+    getSectors,
+    getSectorTickers,
   }
 }

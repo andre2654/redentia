@@ -49,6 +49,61 @@
         </NuxtLink>
       </section>
 
+      <!-- Ferramentas de Mercado (dados em tempo real) -->
+      <section v-if="marketTools.length > 0" class="flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <p
+              class="mb-1 text-[10px] font-medium uppercase tracking-[0.15em]"
+              :style="{ color: brand.colors.textMuted }"
+            >
+              Dados em tempo real
+            </p>
+            <h2 class="text-xl font-semibold">Ferramentas de Mercado</h2>
+          </div>
+        </div>
+        <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+          <NuxtLink
+            v-for="tool in marketTools"
+            :key="tool.to"
+            :to="tool.to"
+            class="group flex items-start gap-3 rounded-2xl border p-4 transition-all hover:border-white/20"
+            :style="{
+              borderColor: brand.colors.border,
+              backgroundColor: brand.colors.surface,
+            }"
+          >
+            <div
+              class="flex size-10 shrink-0 items-center justify-center rounded-xl"
+              :style="{ backgroundColor: tool.accent + '22' }"
+            >
+              <UIcon :name="tool.icon" class="size-5" :style="{ color: tool.accent }" />
+            </div>
+            <div class="min-w-0 flex-1">
+              <div class="mb-0.5 flex items-center gap-1.5">
+                <h3
+                  class="text-sm font-semibold"
+                  :style="{ color: brand.colors.text }"
+                >
+                  {{ tool.title }}
+                </h3>
+                <UIcon
+                  name="i-lucide-arrow-up-right"
+                  class="size-3 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                  :style="{ color: brand.colors.textMuted }"
+                />
+              </div>
+              <p
+                class="text-[11px] leading-relaxed"
+                :style="{ color: brand.colors.textMuted }"
+              >
+                {{ tool.description }}
+              </p>
+            </div>
+          </NuxtLink>
+        </div>
+      </section>
+
       <!-- Categorias -->
       <section class="flex flex-col gap-4">
         <h2 class="text-xl font-semibold">Filtrar por Categoria</h2>
@@ -130,11 +185,7 @@
       <MoleculesCtaSection
         title="Explore Nossas Ferramentas"
         description="Além dos guias, use nossas ferramentas para analisar ativos e planejar investimentos"
-        :buttons="[
-          { label: 'Buscar Ativos', to: '/search', icon: 'i-lucide-search', variant: 'primary' },
-          { label: 'Calculadoras', to: '/calculadora', icon: 'i-lucide-calculator', variant: 'outline' },
-          { label: 'Glossário', to: '/glossario', icon: 'i-lucide-book-open', variant: 'ghost' },
-        ]"
+        :buttons="ctaButtons"
       />
     </div>
   </NuxtLayout>
@@ -155,6 +206,108 @@ interface Guia {
   data: string
   tempoLeitura: number
 }
+
+interface MarketTool {
+  to: string
+  title: string
+  description: string
+  icon: string
+  accent: string
+  flag: keyof typeof brand.features | '__any_ranking__'
+}
+
+const allMarketTools: MarketTool[] = [
+  {
+    to: '/ranking/maiores-dividend-yield',
+    title: 'Maiores Dividend Yields',
+    description:
+      'Ranking diário das ações e FIIs que mais pagam dividendos proporcionalmente ao preço.',
+    icon: 'i-lucide-coins',
+    accent: brand.colors.primary,
+    flag: 'showDividendYieldRanking',
+  },
+  {
+    to: '/ranking/maiores-altas-mes',
+    title: 'Maiores Altas do Mês',
+    description:
+      'Ativos com maior valorização nos últimos 30 dias na bolsa brasileira.',
+    icon: 'i-lucide-trending-up',
+    accent: brand.colors.positive,
+    flag: 'showMonthlyMoversRanking',
+  },
+  {
+    to: '/ranking/maiores-baixas-mes',
+    title: 'Maiores Baixas do Mês',
+    description:
+      'Ativos com maior desvalorização nos últimos 30 dias — oportunidades ou alertas.',
+    icon: 'i-lucide-trending-down',
+    accent: brand.colors.negative,
+    flag: 'showMonthlyMoversRanking',
+  },
+  {
+    to: '/dividendos/calendario',
+    title: 'Calendário de Dividendos',
+    description:
+      'Próximos pagamentos de dividendos, JCP e rendimentos das empresas listadas na B3.',
+    icon: 'i-lucide-calendar-days',
+    accent: brand.colors.primary,
+    flag: 'showDividendCalendar',
+  },
+  {
+    to: '/setor',
+    title: 'Comparativos Setoriais',
+    description:
+      'Compare empresas do mesmo setor econômico com indicadores fundamentalistas.',
+    icon: 'i-lucide-layers',
+    accent: brand.colors.secondary,
+    flag: 'showSectorComparatives',
+  },
+  {
+    to: '/ranking',
+    title: 'Todos os Rankings',
+    description:
+      'Hub completo com todos os rankings e ferramentas de análise do mercado.',
+    icon: 'i-lucide-trophy',
+    accent: brand.colors.secondary,
+    flag: '__any_ranking__',
+  },
+]
+
+const marketTools = computed(() =>
+  allMarketTools.filter((t) => {
+    if (t.flag === '__any_ranking__') {
+      return (
+        (brand.features as any)?.showDividendYieldRanking === true ||
+        (brand.features as any)?.showMonthlyMoversRanking === true
+      )
+    }
+    return (brand.features as any)?.[t.flag] === true
+  })
+)
+
+// CTA buttons adapt to the tenant's active features — no dead links.
+const ctaButtons = computed(() => {
+  const buttons: Array<{ label: string; to: string; icon: string; variant: string }> = []
+  const hasRankings =
+    (brand.features as any)?.showDividendYieldRanking === true ||
+    (brand.features as any)?.showMonthlyMoversRanking === true
+  if (hasRankings) {
+    buttons.push({ label: 'Rankings', to: '/ranking', icon: 'i-lucide-trophy', variant: 'primary' })
+  }
+  buttons.push({
+    label: 'Buscar Ativos',
+    to: '/search',
+    icon: 'i-lucide-search',
+    variant: buttons.length === 0 ? 'primary' : 'outline',
+  })
+  buttons.push({
+    label: 'Calculadoras',
+    to: '/calculadora',
+    icon: 'i-lucide-calculator',
+    variant: 'ghost',
+  })
+  return buttons
+})
 
 const guias: Guia[] = [
   {

@@ -139,6 +139,19 @@ interface BrandConfig {
     showEcosystemLinks: boolean
     showGlossary: boolean
     showGuides: boolean
+    // --- SEO programático / páginas de dados ---
+    // Controla se os rankings de DY aparecem na sidebar, guias e sitemap.
+    showDividendYieldRanking: boolean
+    // Controla rankings de altas/baixas do mês. Público leigo ou tese de
+    // longo prazo devem manter OFF para não estimular timing de mercado.
+    showMonthlyMoversRanking: boolean
+    // Calendário de dividendos (página /dividendos/calendario).
+    showDividendCalendar: boolean
+    // Comparativos setoriais (páginas /setor/*).
+    showSectorComparatives: boolean
+    // Commentaries AI nas páginas de asset (seção "Movimentos notáveis").
+    // Explica movimentos de curto prazo — pode conflitar com buy and hold.
+    showMarketCommentaries: boolean
   }
 
   // === HOME PAGE ===
@@ -179,6 +192,7 @@ interface BrandConfig {
     showFinancials: boolean
     showChecklist: boolean
     showCompanyInfo: boolean
+    showMarketCommentaries?: boolean
   }
 
   // === SOCIAL ===
@@ -629,6 +643,13 @@ const primoRico: BrandConfig = {
     showEcosystemLinks: true,
     showGlossary: true,
     showGuides: true,
+    // Primo Rico: método ARCA incentiva análise fundamentalista e
+    // acompanhamento ativo do mercado. Todos os rankings ligados.
+    showDividendYieldRanking: true,
+    showMonthlyMoversRanking: true,
+    showDividendCalendar: true,
+    showSectorComparatives: true,
+    showMarketCommentaries: true,
   },
 
   homePage: {
@@ -1177,6 +1198,15 @@ const mePoupe: BrandConfig = {
     showEcosystemLinks: true,
     showGlossary: true,
     showGuides: true,
+    // Me Poupe!: público leigo absoluto, foco em hábito financeiro.
+    // Rankings de altas/baixas incentivam timing — desligados.
+    // DY e calendário de dividendos apoiam a tese de renda passiva.
+    // Commentaries explicam movimentos de curto prazo — geram ansiedade.
+    showDividendYieldRanking: true,
+    showMonthlyMoversRanking: false,
+    showDividendCalendar: true,
+    showSectorComparatives: false,
+    showMarketCommentaries: false,
   },
 
   assetPage: {
@@ -1722,6 +1752,15 @@ const investidorSardinha: BrandConfig = {
     showEcosystemLinks: true,
     showGlossary: true,
     showGuides: true,
+    // Sardinha / AUVP: análise fundamentalista, buy and hold, valor.
+    // Rankings de altas/baixas contradizem a tese (trading de curto prazo).
+    // Commentaries explicam ruído de curto prazo — conflitam com horizonte
+    // longo. DY, calendário e setores apoiam análise fundamentalista.
+    showDividendYieldRanking: true,
+    showMonthlyMoversRanking: false,
+    showDividendCalendar: true,
+    showSectorComparatives: true,
+    showMarketCommentaries: false,
   },
 
   assetPage: {
@@ -2290,6 +2329,12 @@ const redentia: BrandConfig = {
     showEcosystemLinks: false,
     showGlossary: true,
     showGuides: true,
+    // Redentia: plataforma completa e neutra — tudo ligado por padrão.
+    showDividendYieldRanking: true,
+    showMonthlyMoversRanking: true,
+    showDividendCalendar: true,
+    showSectorComparatives: true,
+    showMarketCommentaries: true,
   },
 
   homePage: {
@@ -2714,6 +2759,15 @@ const lifetime: BrandConfig = {
     showEcosystemLinks: false,
     showGlossary: true,
     showGuides: true,
+    // Lifetime: assessoria premium — cliente acompanhado pelo assessor.
+    // Rankings e commentaries poderiam minar o papel do assessor ao
+    // incentivar decisões autônomas baseadas em ruído de mercado.
+    // Apenas o calendário de dividendos (info contábil neutra) fica ligado.
+    showDividendYieldRanking: false,
+    showMonthlyMoversRanking: false,
+    showDividendCalendar: true,
+    showSectorComparatives: false,
+    showMarketCommentaries: false,
   },
 
   homePage: {

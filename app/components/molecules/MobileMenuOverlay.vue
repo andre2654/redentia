@@ -88,6 +88,32 @@
                 {{ brand.nav.mobileCalc }}
               </NuxtLink>
               <NuxtLink
+                v-if="brand.features?.showDividendYieldRanking || brand.features?.showMonthlyMoversRanking"
+                to="/ranking"
+                class="flex items-center gap-3 brand-card border px-5 py-4 text-sm font-medium transition"
+                :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.text }"
+                @click="closeMenu"
+              >
+                <UIcon
+                  name="i-lucide-trophy"
+                  class="text-secondary size-5"
+                />
+                Rankings
+              </NuxtLink>
+              <NuxtLink
+                v-if="brand.features?.showDividendCalendar"
+                to="/dividendos/calendario"
+                class="flex items-center gap-3 brand-card border px-5 py-4 text-sm font-medium transition"
+                :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.text }"
+                @click="closeMenu"
+              >
+                <UIcon
+                  name="i-lucide-calendar-days"
+                  class="text-secondary size-5"
+                />
+                Calendário de Dividendos
+              </NuxtLink>
+              <NuxtLink
                 to="/guias"
                 class="flex items-center gap-3 brand-card border px-5 py-4 text-sm font-medium transition"
                 :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.text }"
@@ -238,11 +264,20 @@ const isAuthenticated = computed(() => {
 
 const userName = computed(() => authStore.me?.name ?? 'Usuário')
 
-const publicLinks = computed(() => [
-  { to: '/', label: brand.nav.mobileHome, icon: 'i-lucide-home' },
-  { to: '/calculadora', label: brand.nav.calculators, icon: 'i-lucide-calculator' },
-  { to: '/guias', label: brand.nav.mobileGuides, icon: 'i-lucide-book-open' },
-])
+const publicLinks = computed(() => {
+  const links: Array<{ to: string; label: string; icon: string }> = [
+    { to: '/', label: brand.nav.mobileHome, icon: 'i-lucide-home' },
+  ]
+  if (brand.features?.showDividendYieldRanking || brand.features?.showMonthlyMoversRanking) {
+    links.push({ to: '/ranking', label: 'Rankings', icon: 'i-lucide-trophy' })
+  }
+  if (brand.features?.showDividendCalendar) {
+    links.push({ to: '/dividendos/calendario', label: 'Calendário de Dividendos', icon: 'i-lucide-calendar-days' })
+  }
+  links.push({ to: '/calculadora', label: brand.nav.calculators, icon: 'i-lucide-calculator' })
+  links.push({ to: '/guias', label: brand.nav.mobileGuides, icon: 'i-lucide-book-open' })
+  return links
+})
 
 function closeMenu() {
   open.value = false

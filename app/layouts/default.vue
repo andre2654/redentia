@@ -126,6 +126,24 @@
         <div class="my-2" />
         <span class="mb-2 px-4 text-[10px] font-medium uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">{{ brand.nav.toolsLabel }}</span>
         <AtomsSidebarButton to="/calculadora" :text="brand.nav.calculators" icon="i-lucide-calculator" />
+        <AtomsSidebarButton
+          v-if="brand.features?.showDividendYieldRanking || brand.features?.showMonthlyMoversRanking"
+          to="/ranking"
+          text="Rankings"
+          icon="i-lucide-trophy"
+        />
+        <AtomsSidebarButton
+          v-if="brand.features?.showDividendCalendar"
+          to="/dividendos/calendario"
+          text="Calendário"
+          icon="i-lucide-calendar-days"
+        />
+        <AtomsSidebarButton
+          v-if="brand.features?.showSectorComparatives"
+          to="/setor"
+          text="Setores"
+          icon="i-lucide-layers"
+        />
         <AtomsSidebarButton to="/guias" :text="brand.nav.guides" icon="i-lucide-book-open" />
         <AtomsSidebarButton to="/dividends" :text="brand.nav.dividends" icon="i-lucide-coins" disabled />
       </nav>

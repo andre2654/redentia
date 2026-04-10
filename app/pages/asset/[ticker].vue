@@ -74,6 +74,23 @@
             :legend="chartLabel"
             :height="320"
             :loading="isLoadingChart"
+            :markers="chartMarkers"
+            @marker-click="onMarkerClick"
+          />
+        </section>
+
+        <!-- Market Commentaries (AI-generated news/analysis) -->
+        <section
+          v-if="
+            brand.features?.showMarketCommentaries !== false &&
+            brand.assetPage.showMarketCommentaries !== false &&
+            (commentaries.length > 0 || backfillStatus?.running)
+          "
+        >
+          <MoleculesMarketCommentaries
+            :commentaries="commentaries"
+            :highlighted-date="highlightedCommentaryDate"
+            :backfill-status="backfillStatus"
           />
         </section>
 
@@ -810,6 +827,138 @@ const baseSiteUrl = computed(() => {
 })
 
 const tickerUpper = computed(() => ticker.toUpperCase())
+
+// ==========================================================
+// Market Commentaries (AI-generated news/analysis)
+// ==========================================================
+const commentariesService = useCommentariesService()
+const { data: commentariesData } = await useAsyncData(
+  `commentaries-${ticker}`,
+  () => commentariesService.forTicker(ticker),
+  { default: () => [] }
+)
+const commentaries = computed(() => commentariesData.value || [])
+
+const chartMarkers = computed(() =>
+  commentaries.value.map((c) => ({
+    date: c.date,
+    title: c.title,
+    changePercent: c.change_percent,
+  }))
+)
+
+const highlightedCommentaryDate = ref<string | null>(null)
+
+function onMarkerClick(date: string) {
+  highlightedCommentaryDate.value = date
+  // Scroll to the commentary element
+  nextTick(() => {
+    const el = document.getElementById(`commentary-${date}`)
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      // Clear highlight after a few seconds
+      setTimeout(() => {
+        highlightedCommentaryDate.value = null
+      }, 3000)
+    }
+  })
+}
+
+// ==========================================================
+// Backfill: generate historical commentaries on first visit
+// ==========================================================
+interface BackfillStatus {
+  running: boolean
+  total: number
+  current: number
+  done: boolean
+}
+
+const backfillStatus = ref<BackfillStatus | null>(null)
+let backfillPollTimer: ReturnType<typeof setInterval> | null = null
+
+async function refreshCommentaries() {
+  try {
+    const fresh = await commentariesService.forTicker(ticker)
+    commentariesData.value = fresh
+  } catch {}
+}
+
+async function startBackfill() {
+  try {
+    // Fire and forget (don't await the POST — server runs it async)
+    await $fetch<{ queued?: number; skipped?: boolean; reason?: string }>(
+      '/api/commentaries/backfill-ticker',
+      {
+        method: 'POST',
+        body: { ticker: tickerUpper.value },
+      }
+    ).catch(() => null)
+
+    // Poll status every 3s
+    let stableCount = 0
+    backfillPollTimer = setInterval(async () => {
+      try {
+        const res = await $fetch<{ status: BackfillStatus; stale?: boolean }>(
+          '/api/commentaries/backfill-status',
+          { query: { ticker: tickerUpper.value } }
+        )
+        const status = res?.status
+        if (!status) return
+
+        // Only expose to UI if there's actual work
+        if (status.total > 0 && !status.done) {
+          backfillStatus.value = status
+        }
+
+        // Refresh commentaries list whenever progress increments
+        if (status.current > 0) {
+          await refreshCommentaries()
+        }
+
+        if (status.done || !status.running) {
+          stableCount++
+          // Wait one extra tick to catch the last saved commentary
+          if (stableCount >= 2) {
+            backfillStatus.value = null
+            if (backfillPollTimer) {
+              clearInterval(backfillPollTimer)
+              backfillPollTimer = null
+            }
+          }
+        }
+      } catch {}
+    }, 3000)
+
+    // Hard timeout after 3 minutes
+    setTimeout(
+      () => {
+        if (backfillPollTimer) {
+          clearInterval(backfillPollTimer)
+          backfillPollTimer = null
+        }
+        backfillStatus.value = null
+      },
+      3 * 60 * 1000
+    )
+  } catch {}
+}
+
+onMounted(() => {
+  // Start backfill in background — but only if this tenant actually
+  // shows market commentaries. Saves AI costs on tenants that disabled it.
+  if (brand.features?.showMarketCommentaries === false) return
+  if (brand.assetPage.showMarketCommentaries === false) return
+  startBackfill()
+})
+
+onBeforeUnmount(() => {
+  if (backfillPollTimer) {
+    clearInterval(backfillPollTimer)
+    backfillPollTimer = null
+  }
+})
+
 const assetName = computed(() => {
   const resolvedName = asset.value?.name
   return resolvedName ? String(resolvedName) : tickerUpper.value
