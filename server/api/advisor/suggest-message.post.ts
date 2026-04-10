@@ -1,4 +1,4 @@
-import OpenAI from 'openai'
+import Anthropic from '@anthropic-ai/sdk'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event).catch(() => ({}))
@@ -31,15 +31,18 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, message: 'Contexto do investidor não encontrado.' })
   }
 
-  const openaiKey = (config as any).openaiApiKey
-  if (!openaiKey) {
+  const anthropicKey = (config as any).anthropicApiKey
+  if (!anthropicKey) {
     return {
       suggested_message: `Bom dia ${contextResp.investor_name}, tudo bem? Aqui está um resumo da sua carteira: ${contextResp.portfolio_summary}. Quando quiser, podemos conversar sobre próximos passos.`,
     }
   }
 
-  const openai = new OpenAI({ apiKey: openaiKey, timeout: 15_000 })
-  const model = (config as any).openaiChatModel || 'gpt-4o'
+  const client = new Anthropic({ apiKey: anthropicKey, timeout: 15_000 })
+  const model =
+    (config as any).anthropicAlertModel ||
+    (config as any).anthropicChatModel ||
+    'claude-haiku-4-5'
 
   const profileText = contextResp.profile
     ? [
@@ -58,17 +61,22 @@ Resumo da carteira: ${contextResp.portfolio_summary}
 Gere a mensagem sugerida.`
 
   try {
-    const response = await openai.chat.completions.create({
+    const response = await client.messages.create({
       model,
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userContent },
-      ],
+      max_tokens: 1024,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: userContent }],
     })
-    const text = response.choices[0]?.message?.content?.trim() || ''
-    return { suggested_message: text || `Bom dia ${contextResp.investor_name}, tudo bem? ${contextResp.portfolio_summary}.` }
+    const textBlock = response.content.find((b) => b.type === 'text')
+    const text =
+      textBlock && textBlock.type === 'text' ? textBlock.text.trim() : ''
+    return {
+      suggested_message:
+        text ||
+        `Bom dia ${contextResp.investor_name}, tudo bem? ${contextResp.portfolio_summary}.`,
+    }
   } catch (e) {
-    console.error('Suggest message OpenAI error:', e)
+    console.error('Suggest message Claude error:', e)
     return {
       suggested_message: `Bom dia ${contextResp.investor_name}, tudo bem? Aqui está o resumo da sua carteira: ${contextResp.portfolio_summary}. Quando quiser, podemos conversar.`,
     }

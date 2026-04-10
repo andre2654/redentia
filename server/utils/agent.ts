@@ -1,4 +1,4 @@
-import OpenAI from 'openai'
+import Anthropic from '@anthropic-ai/sdk'
 import type { H3Event } from 'h3'
 import { getMarketData } from './market'
 import { formatMarketData } from './formatter'
@@ -8,11 +8,13 @@ import {
   calculateStockReturn,
 } from './calculators'
 
-// Helper to reduce token usage by summarizing large datasets
+// ============================================================
+// Token optimization helpers
+// ============================================================
+
 function sanitizeContext(type: string, rawData: any) {
   if (!rawData) return null
 
-  // Helper to safely get data
   const unwrap = (d: any) => (d && d.data ? d.data : d)
 
   if (type === 'report') {
@@ -21,8 +23,6 @@ function sanitizeContext(type: string, rawData: any) {
     const chart = unwrap(rawData.chart)
     const divs = unwrap(rawData.dividends)
 
-    // Extract key fundamentals if available (handling different API shapes)
-    // We try to grab as many useful metrics as possible without dumping the whole JSON
     const keyStats = fund?.key_statistics || {}
     const financialData = fund?.financial_data || {}
 
@@ -36,13 +36,11 @@ function sanitizeContext(type: string, rawData: any) {
       price_to_book: keyStats.price_to_book || fund?.pvp,
     }
 
-    // Summarize chart (don't send 365 points)
     const chartPoints = Array.isArray(chart) ? chart : chart?.data || []
     let chartSummary = 'No chart data'
     if (Array.isArray(chartPoints) && chartPoints.length > 0) {
       const start = chartPoints[0]
       const end = chartPoints[chartPoints.length - 1]
-      // Find min/max
       const values = chartPoints.map(
         (p: any) => p.value ?? p.close ?? p.price ?? 0
       )
@@ -59,18 +57,15 @@ function sanitizeContext(type: string, rawData: any) {
     }
   }
 
-  // For chart type, just send summary
   if (type === 'chart') {
     const points = Array.isArray(rawData) ? rawData : rawData.data || []
     if (Array.isArray(points) && points.length > 50) {
-      // Sample every Nth point to keep shape but reduce size
       const step = Math.ceil(points.length / 50)
       return points.filter((_, i) => i % step === 0)
     }
     return points
   }
 
-  // For other types, just return rawData but truncated if it's a large array
   if (Array.isArray(rawData) && rawData.length > 50) {
     return rawData.slice(0, 50)
   }
@@ -78,11 +73,9 @@ function sanitizeContext(type: string, rawData: any) {
   return rawData
 }
 
-// Helper to reduce token usage for large tool results
 function sanitizeToolResult(toolName: string, toolResult: any) {
   if (!toolResult) return null
 
-  // Generic helpers
   const sampleChart = (chartData: any, maxPoints = 20) => {
     if (!Array.isArray(chartData)) return []
     if (chartData.length <= maxPoints) return chartData
@@ -133,314 +126,12 @@ function sanitizeToolResult(toolName: string, toolResult: any) {
     }
   }
 
-  // Default: return as-is for unknown tools (already server-generated)
   return toolResult
 }
 
-export const streamAgentResponse = async (
-  event: H3Event,
-  ticker: string,
-  type: string,
-  rawData: any,
-  userMessage: string,
-  toolResult: any = null,
-  toolName: string = '',
-  requestId: string = ''
-) => {
-  const config = useRuntimeConfig()
-
-  if (!config.openaiApiKey) {
-    event.node.res.write(
-      JSON.stringify({ type: 'error', content: 'API Key missing' })
-    )
-    return
-  }
-
-  const OPENAI_STREAM_TIMEOUT_MS = 120_000
-
-  const openai = new OpenAI({
-    apiKey: config.openaiApiKey,
-    timeout: OPENAI_STREAM_TIMEOUT_MS,
-  })
-  const chatModel = (config as any).openaiChatModel || 'gpt-4o'
-
-  const systemPrompt = `
-    Você é o agente financeiro da Redentia.
-    
-    Contexto:
-    - Ticker identificado: ${ticker || 'Nenhum (Pergunta Geral)'}
-    - Tipo de solicitação: ${type}
-    
-    Seus objetivos:
-    1. PRIORIDADE MÁXIMA: Se uma ferramenta de cálculo foi usada (veja Contexto), sua resposta DEVE ser focada em explicar os resultados dessa simulação. Use os números retornados pela ferramenta.
-    2. Se um ticker foi identificado e NENHUMA ferramenta foi usada, analise os dados fornecidos (${type}).
-    3. Se NÃO houver ticker e NENHUMA ferramenta, responda como um especialista de mercado financeiro.
-    4. Responder a pergunta do usuário de forma direta e explicativa.
-    5. Se houver dados suficientes do ativo, forneça uma recomendação de investimento (Compra, Manter ou Venda) no início.
-    6. Se o tipo for "report" ou "analysis" E houver um ativo, cite os números principais.
-    7. Use os dados brutos fornecidos para embasar sua análise. Não invente números.
-    8. IMPORTANTE: Mesmo que faltem dados fundamentais, faça a melhor análise possível com o preço e histórico disponíveis.
-    9. IMPORTANTE: Se o usuário perguntar sobre "melhores ações", "oportunidades" ou "recomendações" de forma genérica, CITE EXEMPLOS CONCRETOS de ativos.
-
-    Formato de saída OBRIGATÓRIO:
-    - Primeira linha: "REC: [BUY|HOLD|SELL|NULL]" (apenas se fizer sentido dar recomendação para um ativo específico e NENHUMA ferramenta de cálculo foi usada)
-    - Linhas seguintes: O texto da sua resposta/análise. Use Markdown para formatar (negrito, listas).
-
-    NÃO retorne JSON. Retorne texto puro streamado.
-    Responda em Português do Brasil.
-  `
-
-  // Sanitize context to avoid Token Limit errors
-  const contextData = sanitizeContext(type, rawData)
-  const sanitizedToolResult = sanitizeToolResult(toolName, toolResult)
-
-  // Keep user prompt compact to reduce tokens and improve comprehension.
-  // Avoid duplicating large payloads (e.g. toolResult) in both system and user messages.
-  const userPrompt = [
-    `Pergunta do usuário: ${userMessage}`,
-    '',
-    'Contexto (sistema):',
-    `- ticker: ${ticker || 'null'}`,
-    `- type: ${type}`,
-    sanitizedToolResult
-      ? `- toolResult (${toolName || 'tool'}): ${JSON.stringify(sanitizedToolResult)}`
-      : '',
-    contextData ? `- data: ${JSON.stringify(contextData)}` : '',
-  ]
-    .filter(Boolean)
-    .join('\n')
-
-  try {
-    const startedAt = Date.now()
-    if (toolResult) {
-      event.node.res.write(
-        JSON.stringify({
-          type: 'tool-used',
-          content: { name: toolName, result: toolResult },
-        }) + '\n'
-      )
-    }
-
-    let fullContent = ''
-    let usage: any = null
-    // Abort OpenAI stream on client disconnect or timeout
-    const abortController = new AbortController()
-    const timeoutId = setTimeout(
-      () => abortController.abort(),
-      OPENAI_STREAM_TIMEOUT_MS
-    )
-    const onClose = () => abortController.abort()
-    event.node.req.on('close', onClose)
-    event.node.res.on('close', onClose)
-
-    try {
-      const stream = await openai.chat.completions.create({
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt },
-        ],
-        model: chatModel,
-        stream: true,
-        stream_options: { include_usage: true },
-      }, { signal: abortController.signal } as any)
-
-      for await (const chunk of stream) {
-        if (event.node.res.writableEnded) break
-        if ((chunk as any)?.usage) usage = (chunk as any).usage
-        const content = chunk.choices[0]?.delta?.content || ''
-        if (content) {
-          fullContent += content
-          event.node.res.write(
-            JSON.stringify({ type: 'content', content }) + '\n'
-          )
-        }
-      }
-    } finally {
-      clearTimeout(timeoutId)
-      event.node.req.off('close', onClose)
-      event.node.res.off('close', onClose)
-    }
-
-    const durationMs = Date.now() - startedAt
-    if (requestId) {
-      const usageStr =
-        usage && usage.total_tokens
-          ? ` prompt=${usage.prompt_tokens} completion=${usage.completion_tokens} total=${usage.total_tokens}`
-          : ''
-      console.log(
-        `[chat:${requestId}] agent_stream_done model=${chatModel} durationMs=${durationMs}${usageStr}`
-      )
-    }
-
-    // Extract recommendation from the streamed content (REC: BUY|HOLD|SELL|NULL)
-    // and send it as structured meta for the UI.
-    const recMatch = fullContent
-      .trimStart()
-      .match(/^REC:\s*(BUY|HOLD|SELL|NULL)\b/i)
-
-    if (recMatch) {
-      const recValue = recMatch[1].toUpperCase()
-      const recommendation =
-        recValue === 'BUY'
-          ? 'buy'
-          : recValue === 'HOLD'
-            ? 'hold'
-            : recValue === 'SELL'
-              ? 'sell'
-              : null
-
-      event.node.res.write(
-        JSON.stringify({
-          type: 'meta',
-          content: { recommendation },
-        }) + '\n'
-      )
-    }
-
-    // Extract tickers from fullContent
-    const MAX_RELATED_TICKERS = 5
-    const tickerRegex = /\b[A-Z]{4}[0-9]{1,2}\b/g
-    const matches = fullContent.match(tickerRegex)
-
-    if (matches) {
-      // Filter unique tickers and exclude the main ticker if present
-      const isValidTicker = (t: string) => /^[A-Z]{4}[0-9]{1,2}$/.test(t)
-      const uniqueTickers = [...new Set(matches)]
-        .map((t) => t.toUpperCase())
-        .filter((t) => isValidTicker(t) && t !== ticker)
-        .slice(0, MAX_RELATED_TICKERS)
-
-      if (uniqueTickers.length > 0) {
-        if (event.node.res.writableEnded) return
-        // Fetch data for these tickers
-        const relatedTickers = await Promise.all(
-          uniqueTickers.map(async (t) => {
-            try {
-              const data = (await getMarketData(t, 'price')) as any
-              if (!data) return null
-              return {
-                ticker: t,
-                name: data.name || t,
-                logo: data.logo || '',
-                change: data.change
-                  ? `${Number(data.change).toFixed(2)}%`
-                  : '0.00%',
-              }
-            } catch {
-              return null
-            }
-          })
-        )
-
-        const validTickers = relatedTickers.filter((t) => t !== null)
-
-        if (validTickers.length > 0) {
-          event.node.res.write(
-            JSON.stringify({ type: 'related-tickers', content: validTickers }) +
-            '\n'
-          )
-        }
-      }
-    }
-  } catch (error) {
-    const isConnectionClosed =
-      event.node.res.writableEnded ||
-      (event.node.res as any).destroyed ||
-      (event.node.req as any).aborted
-
-    if (isConnectionClosed) return
-
-    const isAbort =
-      (error as any)?.name === 'AbortError' ||
-      (error as any)?.code === 'ABORT_ERR'
-
-    if (isAbort) {
-      event.node.res.write(
-        JSON.stringify({ type: 'error', content: 'Tempo limite na IA' }) + '\n'
-      )
-      return
-    }
-
-    console.error('OpenAI Stream Error:', error)
-    event.node.res.write(
-      JSON.stringify({ type: 'error', content: 'Erro na IA' }) + '\n'
-    )
-  }
-}
-
-export const generateMarketAlertMessage = async (
-  ticker: string,
-  data: any
-) => {
-  const config = useRuntimeConfig()
-
-  if (!config.openaiApiKey) {
-    console.error('OpenAI API Key missing')
-    return `O ativo ${ticker} teve uma movimentação relevante hoje.`
-  }
-
-  const openai = new OpenAI({
-    apiKey: config.openaiApiKey,
-    timeout: 15_000,
-  })
-  const alertModel =
-    (config as any).openaiAlertModel || (config as any).openaiChatModel || 'gpt-4o'
-
-  const systemPrompt = `
-    Você é um analista financeiro sênior da Redentia.
-    Seu objetivo é criar uma notificação curta e impactante (máximo 150 caracteres) sobre um movimento relevante de mercado.
-    
-    Dados do ativo (${ticker}):
-    ${JSON.stringify(sanitizeContext('report', data))}
-
-    A mensagem deve seguir este formato:
-    "A [TICKER] [caiu/subiu] [X]% hoje. [Comentário curto sobre dividendo ou oportunidade]."
-
-    Exemplo: "A PETR4 caiu 20% hoje, nesses preços o dividendo estimado é de 15% ao ano."
-    
-    Seja direto. Não use emojis.
-    Responda apenas com o texto da notificação.
-  `
-
-  try {
-    const response = await openai.chat.completions.create({
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: `Gere uma notificação para ${ticker}.` },
-      ],
-      model: alertModel,
-    })
-
-    return response.choices[0]?.message?.content || `Movimentação relevante em ${ticker}`
-  } catch (error) {
-    console.error('OpenAI Error:', error)
-    return `Movimentação relevante em ${ticker}`
-  }
-}
-
-// ----------------------------
-// Unified Chat Agent (tools + streaming)
-// ----------------------------
-
-type ToolCallInfo = {
-  id: string
-  name: string
-  arguments: string
-}
-
-function extractToolCallsFromDelta(
-  toolCallMap: Map<number, ToolCallInfo>,
-  deltaToolCalls: any[]
-) {
-  for (const tc of deltaToolCalls) {
-    const idx = typeof tc.index === 'number' ? tc.index : 0
-    const existing = toolCallMap.get(idx) || { id: '', name: '', arguments: '' }
-    if (tc.id) existing.id = tc.id
-    if (tc.function?.name) existing.name = tc.function.name
-    if (tc.function?.arguments) existing.arguments += tc.function.arguments
-    toolCallMap.set(idx, existing)
-  }
-}
+// ============================================================
+// Helpers shared by both agent functions
+// ============================================================
 
 function buildDefaultSuggestions(ticker: string | null, toolName: string) {
   const suggestions: string[] = []
@@ -467,6 +158,393 @@ function buildDefaultSuggestions(ticker: string | null, toolName: string) {
   return suggestions.slice(0, 3)
 }
 
+async function emitRelatedTickers(
+  event: H3Event,
+  content: string,
+  currentTicker: string | null
+) {
+  const MAX_RELATED_TICKERS = 5
+  const tickerRegex = /\b[A-Z]{4}[0-9]{1,2}\b/g
+  const matches = content.match(tickerRegex)
+  if (!matches) return
+
+  const isValidTicker = (t: string) => /^[A-Z]{4}[0-9]{1,2}$/.test(t)
+  const uniqueTickers = [...new Set(matches)]
+    .map((t) => t.toUpperCase())
+    .filter((t) => isValidTicker(t) && t !== currentTicker)
+    .slice(0, MAX_RELATED_TICKERS)
+
+  if (uniqueTickers.length === 0 || event.node.res.writableEnded) return
+
+  const relatedTickers = await Promise.all(
+    uniqueTickers.map(async (t) => {
+      try {
+        const data = (await getMarketData(t, 'price')) as any
+        if (!data) return null
+        return {
+          ticker: t,
+          name: data.name || t,
+          logo: data.logo || '',
+          change: data.change
+            ? `${Number(data.change).toFixed(2)}%`
+            : '0.00%',
+        }
+      } catch {
+        return null
+      }
+    })
+  )
+
+  const validTickers = relatedTickers.filter((t) => t !== null)
+  if (validTickers.length > 0) {
+    event.node.res.write(
+      JSON.stringify({ type: 'related-tickers', content: validTickers }) + '\n'
+    )
+  }
+}
+
+function emitRecommendation(event: H3Event, fullContent: string) {
+  const recMatch = fullContent
+    .trimStart()
+    .match(/^REC:\s*(BUY|HOLD|SELL|NULL)\b/i)
+  if (!recMatch) return
+
+  const recValue = recMatch[1].toUpperCase()
+  const recommendation =
+    recValue === 'BUY'
+      ? 'buy'
+      : recValue === 'HOLD'
+        ? 'hold'
+        : recValue === 'SELL'
+          ? 'sell'
+          : null
+  event.node.res.write(
+    JSON.stringify({ type: 'meta', content: { recommendation } }) + '\n'
+  )
+}
+
+// ============================================================
+// Tool definitions (Claude format)
+// ============================================================
+
+const chatTools: Anthropic.Messages.Tool[] = [
+  {
+    name: 'calculate_compound_interest',
+    description:
+      'Simulação de Juros Compostos. Use quando o usuário quer simular rendimento sem depender do histórico de um ticker específico.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        initialValue: { type: 'number' },
+        monthlyValue: { type: 'number' },
+        interestRate: { type: 'number', description: 'Percentual (ex.: 10 = 10%)' },
+        period: { type: 'number' },
+        periodType: { type: 'string', enum: ['months', 'years'] },
+        interestPeriod: { type: 'string', enum: ['month', 'year'] },
+      },
+      required: ['initialValue', 'monthlyValue', 'interestRate', 'period'],
+    },
+  },
+  {
+    name: 'calculate_planning',
+    description:
+      'Planejamento Financeiro. Use quando o usuário tem uma meta (valor alvo) e um aporte mensal.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        goalValue: { type: 'number' },
+        monthlyContribution: { type: 'number' },
+        strategy: {
+          type: 'string',
+          enum: ['rentabilidade', 'seguranca'],
+          description: 'Se não informado, use "seguranca".',
+        },
+      },
+      required: ['goalValue', 'monthlyContribution'],
+    },
+  },
+  {
+    name: 'calculate_stock_return',
+    description:
+      'Simulação histórica de rentabilidade de ativos (B3) com ou sem reinvestimento de dividendos.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        tickers: {
+          type: 'array',
+          items: { type: 'string' },
+          description: 'Ex.: ["PETR4", "VALE3"]',
+        },
+        ticker: {
+          type: 'string',
+          description: 'Ticker único (fallback).',
+        },
+        initialInvestment: { type: 'number' },
+        monthlyInvestment: { type: 'number' },
+        periodYears: { type: 'number' },
+        reinvestDividends: { type: 'boolean' },
+      },
+      required: ['tickers'],
+    },
+  },
+  {
+    name: 'view_market_data',
+    description:
+      'Consulta dados de mercado para um ativo (preço, gráfico, dividendos, análise, relatório).',
+    input_schema: {
+      type: 'object',
+      properties: {
+        ticker: { type: 'string' },
+        view: {
+          type: 'string',
+          enum: ['report', 'chart', 'dividends', 'analysis', 'price'],
+        },
+      },
+      required: ['ticker', 'view'],
+    },
+  },
+]
+
+// ============================================================
+// streamAgentResponse — legacy simple streaming without tools
+// ============================================================
+
+export const streamAgentResponse = async (
+  event: H3Event,
+  ticker: string,
+  type: string,
+  rawData: any,
+  userMessage: string,
+  toolResult: any = null,
+  toolName: string = '',
+  requestId: string = ''
+) => {
+  const config = useRuntimeConfig()
+
+  if (!config.anthropicApiKey) {
+    event.node.res.write(
+      JSON.stringify({ type: 'error', content: 'API Key missing' }) + '\n'
+    )
+    return
+  }
+
+  const CLAUDE_STREAM_TIMEOUT_MS = 120_000
+
+  const client = new Anthropic({
+    apiKey: config.anthropicApiKey,
+    timeout: CLAUDE_STREAM_TIMEOUT_MS,
+  })
+  const chatModel = (config as any).anthropicChatModel || 'claude-sonnet-4-5'
+
+  const systemPrompt = `
+Você é o agente financeiro da Redentia.
+
+Contexto:
+- Ticker identificado: ${ticker || 'Nenhum (Pergunta Geral)'}
+- Tipo de solicitação: ${type}
+
+Seus objetivos:
+1. PRIORIDADE MÁXIMA: Se uma ferramenta de cálculo foi usada (veja Contexto), sua resposta DEVE ser focada em explicar os resultados dessa simulação. Use os números retornados pela ferramenta.
+2. Se um ticker foi identificado e NENHUMA ferramenta foi usada, analise os dados fornecidos (${type}).
+3. Se NÃO houver ticker e NENHUMA ferramenta, responda como um especialista de mercado financeiro.
+4. Responder a pergunta do usuário de forma direta e explicativa.
+5. Se houver dados suficientes do ativo, forneça uma recomendação de investimento (Compra, Manter ou Venda) no início.
+6. Se o tipo for "report" ou "analysis" E houver um ativo, cite os números principais.
+7. Use os dados brutos fornecidos para embasar sua análise. Não invente números.
+8. IMPORTANTE: Mesmo que faltem dados fundamentais, faça a melhor análise possível com o preço e histórico disponíveis.
+9. IMPORTANTE: Se o usuário perguntar sobre "melhores ações", "oportunidades" ou "recomendações" de forma genérica, CITE EXEMPLOS CONCRETOS de ativos.
+
+Formato de saída OBRIGATÓRIO:
+- Primeira linha: "REC: [BUY|HOLD|SELL|NULL]" (apenas se fizer sentido dar recomendação para um ativo específico e NENHUMA ferramenta de cálculo foi usada)
+- Linhas seguintes: O texto da sua resposta/análise. Use Markdown para formatar (negrito, listas).
+
+NÃO retorne JSON. Retorne texto puro streamado.
+Responda em Português do Brasil.
+  `.trim()
+
+  const contextData = sanitizeContext(type, rawData)
+  const sanitizedToolResult = sanitizeToolResult(toolName, toolResult)
+
+  const userPrompt = [
+    `Pergunta do usuário: ${userMessage}`,
+    '',
+    'Contexto (sistema):',
+    `- ticker: ${ticker || 'null'}`,
+    `- type: ${type}`,
+    sanitizedToolResult
+      ? `- toolResult (${toolName || 'tool'}): ${JSON.stringify(sanitizedToolResult)}`
+      : '',
+    contextData ? `- data: ${JSON.stringify(contextData)}` : '',
+  ]
+    .filter(Boolean)
+    .join('\n')
+
+  try {
+    const startedAt = Date.now()
+    if (toolResult) {
+      event.node.res.write(
+        JSON.stringify({
+          type: 'tool-used',
+          content: { name: toolName, result: toolResult },
+        }) + '\n'
+      )
+    }
+
+    let fullContent = ''
+    let inputTokens = 0
+    let outputTokens = 0
+    const abortController = new AbortController()
+    const timeoutId = setTimeout(
+      () => abortController.abort(),
+      CLAUDE_STREAM_TIMEOUT_MS
+    )
+    const onClose = () => abortController.abort()
+    event.node.req.on('close', onClose)
+    event.node.res.on('close', onClose)
+
+    try {
+      const stream = client.messages.stream(
+        {
+          model: chatModel,
+          max_tokens: 2048,
+          system: systemPrompt,
+          messages: [{ role: 'user', content: userPrompt }],
+        },
+        { signal: abortController.signal }
+      )
+
+      for await (const streamEvent of stream) {
+        if (event.node.res.writableEnded) break
+
+        if (
+          streamEvent.type === 'content_block_delta' &&
+          streamEvent.delta.type === 'text_delta'
+        ) {
+          const textChunk = streamEvent.delta.text
+          fullContent += textChunk
+          event.node.res.write(
+            JSON.stringify({ type: 'content', content: textChunk }) + '\n'
+          )
+        }
+
+        if (streamEvent.type === 'message_delta' && streamEvent.usage) {
+          outputTokens = streamEvent.usage.output_tokens || outputTokens
+        }
+
+        if (streamEvent.type === 'message_start' && streamEvent.message.usage) {
+          inputTokens = streamEvent.message.usage.input_tokens || 0
+        }
+      }
+    } finally {
+      clearTimeout(timeoutId)
+      event.node.req.off('close', onClose)
+      event.node.res.off('close', onClose)
+    }
+
+    const durationMs = Date.now() - startedAt
+    if (requestId) {
+      const usageStr =
+        inputTokens || outputTokens
+          ? ` input=${inputTokens} output=${outputTokens}`
+          : ''
+      console.log(
+        `[chat:${requestId}] agent_stream_done model=${chatModel} durationMs=${durationMs}${usageStr}`
+      )
+    }
+
+    emitRecommendation(event, fullContent)
+    await emitRelatedTickers(event, fullContent, ticker || null)
+  } catch (error) {
+    const isConnectionClosed =
+      event.node.res.writableEnded ||
+      (event.node.res as any).destroyed ||
+      (event.node.req as any).aborted
+
+    if (isConnectionClosed) return
+
+    const isAbort =
+      (error as any)?.name === 'AbortError' ||
+      (error as any)?.code === 'ABORT_ERR'
+
+    if (isAbort) {
+      event.node.res.write(
+        JSON.stringify({ type: 'error', content: 'Tempo limite na IA' }) + '\n'
+      )
+      return
+    }
+
+    console.error('Claude Stream Error:', error)
+    event.node.res.write(
+      JSON.stringify({ type: 'error', content: 'Erro na IA' }) + '\n'
+    )
+  }
+}
+
+// ============================================================
+// generateMarketAlertMessage — short alert notification
+// ============================================================
+
+export const generateMarketAlertMessage = async (
+  ticker: string,
+  data: any
+) => {
+  const config = useRuntimeConfig()
+
+  if (!config.anthropicApiKey) {
+    console.error('Anthropic API Key missing')
+    return `O ativo ${ticker} teve uma movimentação relevante hoje.`
+  }
+
+  const client = new Anthropic({
+    apiKey: config.anthropicApiKey,
+    timeout: 15_000,
+  })
+  const alertModel =
+    (config as any).anthropicAlertModel ||
+    (config as any).anthropicChatModel ||
+    'claude-haiku-4-5'
+
+  const systemPrompt = `
+Você é um analista financeiro sênior da Redentia.
+Seu objetivo é criar uma notificação curta e impactante (máximo 150 caracteres) sobre um movimento relevante de mercado.
+
+Dados do ativo (${ticker}):
+${JSON.stringify(sanitizeContext('report', data))}
+
+A mensagem deve seguir este formato:
+"A [TICKER] [caiu/subiu] [X]% hoje. [Comentário curto sobre dividendo ou oportunidade]."
+
+Exemplo: "A PETR4 caiu 20% hoje, nesses preços o dividendo estimado é de 15% ao ano."
+
+Seja direto. Não use emojis.
+Responda apenas com o texto da notificação.
+  `.trim()
+
+  try {
+    const response = await client.messages.create({
+      model: alertModel,
+      max_tokens: 256,
+      system: systemPrompt,
+      messages: [
+        { role: 'user', content: `Gere uma notificação para ${ticker}.` },
+      ],
+    })
+
+    const textBlock = response.content.find((b) => b.type === 'text')
+    return (
+      (textBlock && textBlock.type === 'text' ? textBlock.text : '') ||
+      `Movimentação relevante em ${ticker}`
+    )
+  } catch (error) {
+    console.error('Claude Error:', error)
+    return `Movimentação relevante em ${ticker}`
+  }
+}
+
+// ============================================================
+// streamChatWithTools — Main chat engine with tools
+// ============================================================
+
 export const streamChatWithTools = async (
   event: H3Event,
   userMessage: string,
@@ -477,35 +555,38 @@ export const streamChatWithTools = async (
 ) => {
   const config = useRuntimeConfig()
 
-  if (!config.openaiApiKey) {
+  if (!config.anthropicApiKey) {
     event.node.res.write(
       JSON.stringify({ type: 'error', content: 'API Key missing' }) + '\n'
     )
     return
   }
 
-  const OPENAI_STREAM_TIMEOUT_MS = 120_000
-  const openai = new OpenAI({
-    apiKey: config.openaiApiKey,
-    timeout: OPENAI_STREAM_TIMEOUT_MS,
+  const CLAUDE_STREAM_TIMEOUT_MS = 120_000
+  const client = new Anthropic({
+    apiKey: config.anthropicApiKey,
+    timeout: CLAUDE_STREAM_TIMEOUT_MS,
   })
 
-  const chatModel = (config as any).openaiChatModel || 'gpt-4o'
+  const chatModel = (config as any).anthropicChatModel || 'claude-sonnet-4-5'
 
   const normalizeTicker = (t: any) =>
     typeof t === 'string' ? t.trim().toUpperCase() : ''
   const isValidTicker = (t: string) => /^[A-Z]{4}[0-9]{1,2}$/.test(t)
 
-  const safeHistory = Array.isArray(history)
-    ? history
-        .slice(-6)
-        .map((h) => ({
-          role: h?.role === 'assistant' ? 'assistant' : 'user',
-          content:
-            typeof h?.content === 'string' ? h.content.slice(0, 800) : '',
-        }))
-        .filter((h) => h.content.trim().length > 0)
-    : []
+  const safeHistory: Array<{ role: 'user' | 'assistant'; content: string }> =
+    Array.isArray(history)
+      ? history
+          .slice(-6)
+          .map((h) => ({
+            role: (h?.role === 'assistant' ? 'assistant' : 'user') as
+              | 'user'
+              | 'assistant',
+            content:
+              typeof h?.content === 'string' ? h.content.slice(0, 800) : '',
+          }))
+          .filter((h) => h.content.trim().length > 0)
+      : []
 
   const systemPrompt = `
 Você é o agente financeiro da Redentia.
@@ -541,153 +622,44 @@ Formato de saída:
     .filter(Boolean)
     .join('\n')
 
-  const baseMessages: any[] = [
-    { role: 'system', content: systemPrompt },
-    ...safeHistory,
+  const baseMessages: Anthropic.Messages.MessageParam[] = [
+    ...safeHistory.map((h) => ({ role: h.role, content: h.content })),
     { role: 'user', content: userPrompt },
   ]
 
-  const tools = [
-    {
-      type: 'function',
-      function: {
-        name: 'calculate_compound_interest',
-        description:
-          'Simulação de Juros Compostos. Use quando o usuário quer simular rendimento sem depender do histórico de um ticker específico.',
-        parameters: {
-          type: 'object',
-          properties: {
-            initialValue: { type: 'number' },
-            monthlyValue: { type: 'number' },
-            interestRate: { type: 'number', description: 'Percentual (ex.: 10 = 10%)' },
-            period: { type: 'number' },
-            periodType: { type: 'string', enum: ['months', 'years'], default: 'years' },
-            interestPeriod: { type: 'string', enum: ['month', 'year'], default: 'year' },
-          },
-          required: ['initialValue', 'monthlyValue', 'interestRate', 'period'],
-        },
-      },
-    },
-    {
-      type: 'function',
-      function: {
-        name: 'calculate_planning',
-        description:
-          'Planejamento Financeiro. Use quando o usuário tem uma meta (valor alvo) e um aporte mensal.',
-        parameters: {
-          type: 'object',
-          properties: {
-            goalValue: { type: 'number' },
-            monthlyContribution: { type: 'number' },
-            strategy: {
-              type: 'string',
-              enum: ['rentabilidade', 'seguranca'],
-              description: 'Se não informado, use "seguranca".',
-            },
-          },
-          required: ['goalValue', 'monthlyContribution'],
-        },
-      },
-    },
-    {
-      type: 'function',
-      function: {
-        name: 'calculate_stock_return',
-        description:
-          'Simulação histórica de rentabilidade de ativos (B3) com ou sem reinvestimento de dividendos.',
-        parameters: {
-          type: 'object',
-          properties: {
-            tickers: {
-              type: 'array',
-              items: { type: 'string' },
-              description: 'Ex.: ["PETR4", "VALE3"]',
-            },
-            ticker: {
-              type: 'string',
-              description: 'Ticker único (fallback).',
-            },
-            initialInvestment: { type: 'number' },
-            monthlyInvestment: { type: 'number' },
-            periodYears: { type: 'number', default: 1 },
-            reinvestDividends: { type: 'boolean', default: true },
-          },
-          required: ['tickers'],
-        },
-      },
-    },
-    {
-      type: 'function',
-      function: {
-        name: 'view_market_data',
-        description:
-          'Consulta dados de mercado para um ativo (preço, gráfico, dividendos, análise, relatório).',
-        parameters: {
-          type: 'object',
-          properties: {
-            ticker: { type: 'string' },
-            view: {
-              type: 'string',
-              enum: ['report', 'chart', 'dividends', 'analysis', 'price'],
-            },
-          },
-          required: ['ticker', 'view'],
-        },
-      },
-    },
-  ]
-
-  // 1) First call: stream directly; if tool_calls happen, we execute tool and do a second call for the final answer.
-  const toolCallMap = new Map<number, ToolCallInfo>()
-  let firstFinishReason: string | null = null
-  let firstUsage: any = null
-  let firstFullContent = ''
-  let sawToolCalls = false
+  // ----------------------------
+  // Step 1: First call (non-stream) to detect tool_use
+  // Claude's tool use is cleaner when we don't stream the first pass.
+  // If no tool is used, we do a streaming pass as final answer.
+  // ----------------------------
 
   const abortController = new AbortController()
-  const timeoutId = setTimeout(() => abortController.abort(), OPENAI_STREAM_TIMEOUT_MS)
+  const timeoutId = setTimeout(
+    () => abortController.abort(),
+    CLAUDE_STREAM_TIMEOUT_MS
+  )
   const onClose = () => abortController.abort()
   event.node.req.on('close', onClose)
   event.node.res.on('close', onClose)
 
+  let firstResponse: Anthropic.Messages.Message | null = null
+
   try {
-    const stream = await openai.chat.completions.create(
+    firstResponse = await client.messages.create(
       {
         model: chatModel,
+        max_tokens: 4096,
+        system: systemPrompt,
+        tools: chatTools,
         messages: baseMessages,
-        tools: tools as any,
-        tool_choice: 'auto',
-        stream: true,
-        stream_options: { include_usage: true },
       },
-      { signal: abortController.signal } as any
+      { signal: abortController.signal }
     )
-
-    for await (const chunk of stream) {
-      if (event.node.res.writableEnded) break
-      const choice = chunk.choices?.[0]
-      if (!choice) continue
-      if (choice.finish_reason) firstFinishReason = choice.finish_reason
-      if ((chunk as any)?.usage) firstUsage = (chunk as any).usage
-
-      const delta: any = choice.delta || {}
-      if (Array.isArray(delta.tool_calls) && delta.tool_calls.length > 0) {
-        sawToolCalls = true
-        extractToolCallsFromDelta(toolCallMap, delta.tool_calls)
-      }
-
-      const content = delta.content || ''
-      if (content) {
-        firstFullContent += content
-        // Only stream to the client if we're not in tool-call mode.
-        if (!sawToolCalls) {
-          event.node.res.write(
-            JSON.stringify({ type: 'content', content }) + '\n'
-          )
-        }
-      }
-    }
   } catch (error) {
+    clearTimeout(timeoutId)
+    event.node.req.off('close', onClose)
+    event.node.res.off('close', onClose)
+
     const isConnectionClosed =
       event.node.res.writableEnded ||
       (event.node.res as any).destroyed ||
@@ -695,7 +667,9 @@ Formato de saída:
     if (isConnectionClosed) return
 
     const isAbort =
-      (error as any)?.name === 'AbortError' || (error as any)?.code === 'ABORT_ERR'
+      (error as any)?.name === 'AbortError' ||
+      (error as any)?.code === 'ABORT_ERR'
+    console.error('Claude First Call Error:', error)
     event.node.res.write(
       JSON.stringify({
         type: 'error',
@@ -709,38 +683,37 @@ Formato de saída:
     event.node.res.off('close', onClose)
   }
 
-  if (requestId) {
-    const usageStr =
-      firstUsage && firstUsage.total_tokens
-        ? ` prompt=${firstUsage.prompt_tokens} completion=${firstUsage.completion_tokens} total=${firstUsage.total_tokens}`
-        : ''
+  if (requestId && firstResponse) {
     console.log(
-      `[chat:${requestId}] unified_first_done model=${chatModel} finish=${firstFinishReason || '-'}${usageStr}`
+      `[chat:${requestId}] unified_first_done model=${chatModel} stop=${firstResponse.stop_reason || '-'} input=${firstResponse.usage.input_tokens} output=${firstResponse.usage.output_tokens}`
     )
   }
 
-  // If no tool calls, this was the final answer (already streamed).
-  if (!sawToolCalls && toolCallMap.size === 0 && firstFinishReason !== 'tool_calls') {
-    // Emit meta + related tickers based on the full content (best-effort)
-    const recMatch = firstFullContent
-      .trimStart()
-      .match(/^REC:\s*(BUY|HOLD|SELL|NULL)\b/i)
-    if (recMatch) {
-      const recValue = recMatch[1].toUpperCase()
-      const recommendation =
-        recValue === 'BUY'
-          ? 'buy'
-          : recValue === 'HOLD'
-            ? 'hold'
-            : recValue === 'SELL'
-              ? 'sell'
-              : null
+  // Check if Claude used a tool
+  const toolUseBlock = firstResponse.content.find(
+    (b): b is Anthropic.Messages.ToolUseBlock => b.type === 'tool_use'
+  )
+
+  // ----------------------------
+  // Path A: No tool call → stream final answer
+  // ----------------------------
+  if (!toolUseBlock || firstResponse.stop_reason !== 'tool_use') {
+    // Extract text from the first response and stream it as chunks
+    // (since we didn't stream the first call, we emit the full text now)
+    const textBlock = firstResponse.content.find(
+      (b): b is Anthropic.Messages.TextBlock => b.type === 'text'
+    )
+    const fullText = textBlock?.text || ''
+
+    if (fullText) {
+      // Emit as a single content chunk (client reassembles)
       event.node.res.write(
-        JSON.stringify({ type: 'meta', content: { recommendation } }) + '\n'
+        JSON.stringify({ type: 'content', content: fullText }) + '\n'
       )
     }
 
-    // Suggestions (simple heuristic)
+    emitRecommendation(event, fullText)
+
     const suggestions = buildDefaultSuggestions(contextTicker, '')
     if (suggestions.length > 0) {
       event.node.res.write(
@@ -748,94 +721,40 @@ Formato de saída:
       )
     }
 
-    // Related tickers
-    const MAX_RELATED_TICKERS = 5
-    const tickerRegex = /\b[A-Z]{4}[0-9]{1,2}\b/g
-    const matches = firstFullContent.match(tickerRegex)
-    if (matches) {
-      const uniqueTickers = [...new Set(matches)]
-        .map((t) => t.toUpperCase())
-        .filter((t) => isValidTicker(t) && t !== contextTicker)
-        .slice(0, MAX_RELATED_TICKERS)
-
-      if (uniqueTickers.length > 0 && !event.node.res.writableEnded) {
-        const relatedTickers = await Promise.all(
-          uniqueTickers.map(async (t) => {
-            try {
-              const data = (await getMarketData(t, 'price')) as any
-              if (!data) return null
-              return {
-                ticker: t,
-                name: data.name || t,
-                logo: data.logo || '',
-                change: data.change
-                  ? `${Number(data.change).toFixed(2)}%`
-                  : '0.00%',
-              }
-            } catch {
-              return null
-            }
-          })
-        )
-
-        const validTickers = relatedTickers.filter((t) => t !== null)
-        if (validTickers.length > 0) {
-          event.node.res.write(
-            JSON.stringify({ type: 'related-tickers', content: validTickers }) +
-              '\n'
-          )
-        }
-      }
-    }
-
+    await emitRelatedTickers(event, fullText, contextTicker)
     return
   }
 
-  // 2) Tool call path: execute tool and do a second model call to generate the final answer.
-  const toolCalls = Array.from(toolCallMap.entries())
-    .sort((a, b) => a[0] - b[0])
-    .map(([, v]) => v)
-    .slice(0, 1) // keep 1 tool call to mirror previous behavior
+  // ----------------------------
+  // Path B: Tool call → execute tool, then stream final answer
+  // ----------------------------
+  const toolName = toolUseBlock.name
+  const args = (toolUseBlock.input || {}) as Record<string, any>
 
-  if (toolCalls.length === 0) {
-    event.node.res.write(
-      JSON.stringify({
-        type: 'error',
-        content: 'Não consegui identificar a ação necessária.',
-      }) + '\n'
-    )
-    return
-  }
-
-  const tc = toolCalls[0]
-  const toolName = tc.name
   let toolResult: any = null
   let toolResultForModel: any = null
   let ticker: string | null = contextTicker
   let viewType: string = 'text'
   let rawData: any = null
 
-  const safeJsonParse = (s: string) => {
-    try {
-      return JSON.parse(s)
-    } catch {
-      return {}
-    }
-  }
-
-  const args = safeJsonParse(tc.arguments || '{}')
-
   if (toolName === 'view_market_data') {
     const t = normalizeTicker(args.ticker || contextTicker)
     const view = typeof args.view === 'string' ? args.view : 'report'
-    if (!t || !isValidTicker(t) || !['report', 'chart', 'dividends', 'analysis', 'price'].includes(view)) {
+    if (
+      !t ||
+      !isValidTicker(t) ||
+      !['report', 'chart', 'dividends', 'analysis', 'price'].includes(view)
+    ) {
       toolResult = { error: 'Ticker/view inválidos' }
       toolResultForModel = toolResult
     } else {
       ticker = t
       viewType = view
       event.node.res.write(
-        JSON.stringify({ type: 'status', content: `📊 Buscando dados de ${t}...` }) + '\n'
+        JSON.stringify({
+          type: 'status',
+          content: `📊 Buscando dados de ${t}...`,
+        }) + '\n'
       )
       rawData = await getMarketData(t, view)
       const structuredData = {
@@ -852,30 +771,54 @@ Formato de saída:
     }
   } else if (toolName === 'calculate_compound_interest') {
     event.node.res.write(
-      JSON.stringify({ type: 'status', content: '🧮 Executando: Calculadora...' }) + '\n'
+      JSON.stringify({
+        type: 'status',
+        content: '🧮 Executando: Calculadora...',
+      }) + '\n'
     )
     const iv = Number(args.initialValue)
     const mv = Number(args.monthlyValue)
     const ir = Number(args.interestRate)
     const p = Number(args.period)
-    const periodType = args.periodType === 'months' || args.periodType === 'years' ? args.periodType : 'years'
-    const interestPeriod = args.interestPeriod === 'month' || args.interestPeriod === 'year' ? args.interestPeriod : 'year'
-    if (!Number.isFinite(iv) || !Number.isFinite(mv) || !Number.isFinite(ir) || !Number.isFinite(p) || p <= 0) {
+    const periodType =
+      args.periodType === 'months' || args.periodType === 'years'
+        ? args.periodType
+        : 'years'
+    const interestPeriod =
+      args.interestPeriod === 'month' || args.interestPeriod === 'year'
+        ? args.interestPeriod
+        : 'year'
+    if (
+      !Number.isFinite(iv) ||
+      !Number.isFinite(mv) ||
+      !Number.isFinite(ir) ||
+      !Number.isFinite(p) ||
+      p <= 0
+    ) {
       toolResult = { error: 'Parâmetros inválidos' }
     } else {
       toolResult = calculateCompoundInterest(iv, mv, ir, p, periodType, interestPeriod)
     }
     toolResultForModel = sanitizeToolResult(toolName, toolResult)
     event.node.res.write(
-      JSON.stringify({ type: 'tool-used', content: { name: toolName, result: toolResult } }) + '\n'
+      JSON.stringify({
+        type: 'tool-used',
+        content: { name: toolName, result: toolResult },
+      }) + '\n'
     )
   } else if (toolName === 'calculate_planning') {
     event.node.res.write(
-      JSON.stringify({ type: 'status', content: '🧮 Executando: Planejamento Financeiro...' }) + '\n'
+      JSON.stringify({
+        type: 'status',
+        content: '🧮 Executando: Planejamento Financeiro...',
+      }) + '\n'
     )
     const gv = Number(args.goalValue)
     const mc = Number(args.monthlyContribution)
-    const strategy = args.strategy === 'rentabilidade' || args.strategy === 'seguranca' ? args.strategy : 'seguranca'
+    const strategy =
+      args.strategy === 'rentabilidade' || args.strategy === 'seguranca'
+        ? args.strategy
+        : 'seguranca'
     if (!Number.isFinite(gv) || !Number.isFinite(mc) || gv <= 0 || mc <= 0) {
       toolResult = { error: 'Parâmetros inválidos' }
     } else {
@@ -883,11 +826,17 @@ Formato de saída:
     }
     toolResultForModel = sanitizeToolResult(toolName, toolResult)
     event.node.res.write(
-      JSON.stringify({ type: 'tool-used', content: { name: toolName, result: toolResult } }) + '\n'
+      JSON.stringify({
+        type: 'tool-used',
+        content: { name: toolName, result: toolResult },
+      }) + '\n'
     )
   } else if (toolName === 'calculate_stock_return') {
     event.node.res.write(
-      JSON.stringify({ type: 'status', content: '🧮 Executando: Simulação de Rentabilidade...' }) + '\n'
+      JSON.stringify({
+        type: 'status',
+        content: '🧮 Executando: Simulação de Rentabilidade...',
+      }) + '\n'
     )
     const rawTickers = Array.isArray(args.tickers)
       ? args.tickers
@@ -901,7 +850,9 @@ Formato de saída:
     const mi = Number(args.monthlyInvestment)
     const py = Number(args.periodYears || 1)
     const reinvestDividends =
-      typeof args.reinvestDividends === 'boolean' ? args.reinvestDividends : true
+      typeof args.reinvestDividends === 'boolean'
+        ? args.reinvestDividends
+        : true
 
     if (!tickers.length || !Number.isFinite(py) || py <= 0) {
       toolResult = { error: 'Parâmetros inválidos' }
@@ -917,14 +868,17 @@ Formato de saída:
     }
     toolResultForModel = sanitizeToolResult(toolName, toolResult)
     event.node.res.write(
-      JSON.stringify({ type: 'tool-used', content: { name: toolName, result: toolResult } }) + '\n'
+      JSON.stringify({
+        type: 'tool-used',
+        content: { name: toolName, result: toolResult },
+      }) + '\n'
     )
   } else {
     toolResult = { error: 'Ferramenta não suportada' }
     toolResultForModel = toolResult
   }
 
-  // Suggestions after tool execution
+  // Emit suggestions after tool execution
   const suggestions = buildDefaultSuggestions(ticker, toolName)
   if (suggestions.length > 0) {
     event.node.res.write(
@@ -932,75 +886,88 @@ Formato de saída:
     )
   }
 
-  // 3) Second call: final answer (no more tools)
+  // ----------------------------
+  // Step 2: Second call (streaming) with tool result
+  // ----------------------------
   event.node.res.write(
     JSON.stringify({ type: 'status', content: '✅ Gerando resposta...' }) + '\n'
   )
 
-  const assistantToolCallMessage: any = {
-    role: 'assistant',
-    tool_calls: [
-      {
-        id: tc.id,
-        type: 'function',
-        function: { name: tc.name, arguments: tc.arguments },
-      },
-    ],
-  }
+  const toolResultPayload = JSON.stringify({
+    tool: toolName,
+    result: toolResultForModel,
+    context: {
+      ticker,
+      viewType,
+      data: sanitizeContext(viewType, rawData),
+    },
+  })
 
-  const toolResponseMessage: any = {
-    role: 'tool',
-    tool_call_id: tc.id,
-    content: JSON.stringify({
-      tool: toolName,
-      result: toolResultForModel,
-      context: {
-        ticker,
-        viewType,
-        data: sanitizeContext(viewType, rawData),
-      },
-    }),
-  }
+  // Claude messages for second call:
+  // 1. original user message
+  // 2. assistant with tool_use (from first response)
+  // 3. user with tool_result
+  const finalMessages: Anthropic.Messages.MessageParam[] = [
+    ...baseMessages,
+    { role: 'assistant', content: firstResponse.content },
+    {
+      role: 'user',
+      content: [
+        {
+          type: 'tool_result',
+          tool_use_id: toolUseBlock.id,
+          content: toolResultPayload,
+        },
+      ],
+    },
+  ]
 
   const finalAbortController = new AbortController()
   const finalTimeoutId = setTimeout(
     () => finalAbortController.abort(),
-    OPENAI_STREAM_TIMEOUT_MS
+    CLAUDE_STREAM_TIMEOUT_MS
   )
   const finalOnClose = () => finalAbortController.abort()
   event.node.req.on('close', finalOnClose)
   event.node.res.on('close', finalOnClose)
 
   let finalFullContent = ''
-  let finalUsage: any = null
   let finalError: any = null
+  let finalInputTokens = 0
+  let finalOutputTokens = 0
 
   try {
-    const stream = await openai.chat.completions.create(
+    const stream = client.messages.stream(
       {
         model: chatModel,
-        messages: [
-          ...baseMessages,
-          assistantToolCallMessage,
-          toolResponseMessage,
-        ],
-        tools: tools as any,
-        tool_choice: 'none',
-        stream: true,
-        stream_options: { include_usage: true },
-      } as any,
-      { signal: finalAbortController.signal } as any
+        max_tokens: 4096,
+        system: systemPrompt,
+        tools: chatTools,
+        messages: finalMessages,
+      },
+      { signal: finalAbortController.signal }
     )
 
-    for await (const chunk of stream) {
+    for await (const streamEvent of stream) {
       if (event.node.res.writableEnded) break
-      if ((chunk as any)?.usage) finalUsage = (chunk as any).usage
-      const content = chunk.choices?.[0]?.delta?.content || ''
-      if (content) {
-        finalFullContent += content
+
+      if (
+        streamEvent.type === 'content_block_delta' &&
+        streamEvent.delta.type === 'text_delta'
+      ) {
+        const textChunk = streamEvent.delta.text
+        finalFullContent += textChunk
         event.node.res.write(
-          JSON.stringify({ type: 'content', content }) + '\n'
+          JSON.stringify({ type: 'content', content: textChunk }) + '\n'
         )
+      }
+
+      if (streamEvent.type === 'message_start' && streamEvent.message.usage) {
+        finalInputTokens = streamEvent.message.usage.input_tokens || 0
+      }
+      if (streamEvent.type === 'message_delta' && streamEvent.usage) {
+        finalOutputTokens =
+          streamEvent.usage.output_tokens || finalOutputTokens
       }
     }
   } catch (error) {
@@ -1012,7 +979,9 @@ Formato de saída:
     if (isConnectionClosed) return
 
     const isAbort =
-      (error as any)?.name === 'AbortError' || (error as any)?.code === 'ABORT_ERR'
+      (error as any)?.name === 'AbortError' ||
+      (error as any)?.code === 'ABORT_ERR'
+    console.error('Claude Second Call Error:', error)
     event.node.res.write(
       JSON.stringify({
         type: 'error',
@@ -1028,71 +997,11 @@ Formato de saída:
   if (finalError) return
 
   if (requestId) {
-    const usageStr =
-      finalUsage && finalUsage.total_tokens
-        ? ` prompt=${finalUsage.prompt_tokens} completion=${finalUsage.completion_tokens} total=${finalUsage.total_tokens}`
-        : ''
     console.log(
-      `[chat:${requestId}] unified_final_done model=${chatModel}${usageStr}`
+      `[chat:${requestId}] unified_final_done model=${chatModel} input=${finalInputTokens} output=${finalOutputTokens}`
     )
   }
 
-  // Emit meta + related tickers based on final content
-  const recMatch = finalFullContent
-    .trimStart()
-    .match(/^REC:\s*(BUY|HOLD|SELL|NULL)\b/i)
-  if (recMatch) {
-    const recValue = recMatch[1].toUpperCase()
-    const recommendation =
-      recValue === 'BUY'
-        ? 'buy'
-        : recValue === 'HOLD'
-          ? 'hold'
-          : recValue === 'SELL'
-            ? 'sell'
-            : null
-    event.node.res.write(
-      JSON.stringify({ type: 'meta', content: { recommendation } }) + '\n'
-    )
-  }
-
-  const MAX_RELATED_TICKERS = 5
-  const tickerRegex = /\b[A-Z]{4}[0-9]{1,2}\b/g
-  const matches = finalFullContent.match(tickerRegex)
-  if (matches) {
-    const uniqueTickers = [...new Set(matches)]
-      .map((t) => t.toUpperCase())
-      .filter((t) => isValidTicker(t) && t !== ticker)
-      .slice(0, MAX_RELATED_TICKERS)
-
-    if (uniqueTickers.length > 0 && !event.node.res.writableEnded) {
-      const relatedTickers = await Promise.all(
-        uniqueTickers.map(async (t) => {
-          try {
-            const data = (await getMarketData(t, 'price')) as any
-            if (!data) return null
-            return {
-              ticker: t,
-              name: data.name || t,
-              logo: data.logo || '',
-              change: data.change
-                ? `${Number(data.change).toFixed(2)}%`
-                : '0.00%',
-            }
-          } catch {
-            return null
-          }
-        })
-      )
-
-      const validTickers = relatedTickers.filter((t) => t !== null)
-      if (validTickers.length > 0) {
-        event.node.res.write(
-          JSON.stringify({ type: 'related-tickers', content: validTickers }) +
-            '\n'
-        )
-      }
-    }
-  }
+  emitRecommendation(event, finalFullContent)
+  await emitRelatedTickers(event, finalFullContent, ticker)
 }
-
