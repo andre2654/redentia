@@ -25,6 +25,22 @@
 
 <template>
   <div v-if="rawMode" class="raw-passthrough">
+    <!-- Floating toolbar above the canvas, hidden when ?key= is set
+         (Puppeteer renders) so the screenshot stays clean. -->
+    <div v-if="!isPuppeteer" class="raw-toolbar">
+      <button class="raw-btn raw-btn-back" @click="exitRaw" title="Voltar para o painel de controles">
+        <UIcon name="i-lucide-arrow-left" class="size-3.5" />
+        <span>Voltar ao editor</span>
+      </button>
+      <div class="raw-toolbar-meta">
+        <span class="raw-toolbar-tag">[ {{ creativeName }} ]</span>
+        <span class="raw-toolbar-sep">·</span>
+        <span class="raw-toolbar-meta-text">1080 × 1080 · screenshot ready</span>
+      </div>
+      <div class="raw-toolbar-actions">
+        <slot name="raw-actions" />
+      </div>
+    </div>
     <slot />
   </div>
   <div v-else class="cpc-shell">
@@ -218,6 +234,16 @@ const rawMode = computed(() => {
   return !!route.query.key || route.query.preview === 'raw'
 })
 
+// Pure Puppeteer mode (?key=...) — even the toolbar should disappear
+// so the headless screenshot is pristine. The ?preview=raw branch is
+// for HUMAN preview at full canvas size.
+const isPuppeteer = computed(() => !!route.query.key)
+
+function exitRaw() {
+  const { preview, ...rest } = route.query
+  router.replace({ query: rest })
+}
+
 const currentPath = computed(() => {
   const q = Object.entries(route.query)
     .filter(([, v]) => v != null && v !== '')
@@ -267,8 +293,96 @@ async function copyUrl() {
 
 <style scoped>
 .raw-passthrough {
+  position: relative;
   width: 1080px;
   height: 1080px;
+}
+
+/* Floating toolbar above the raw 1080x1080 canvas (only visible in
+   human preview, hidden when Puppeteer renders). */
+.raw-toolbar {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 14px 10px 10px;
+  border-radius: 9999px;
+  background: rgba(10, 11, 14, 0.92);
+  border: 1px solid #2A2E39;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 20px 60px -20px rgba(0, 0, 0, 0.8);
+  font-family: 'Inter', system-ui, sans-serif;
+  color: #E8EAED;
+}
+
+.raw-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #E8EAED;
+}
+
+.raw-btn-back {
+  background: rgba(245, 166, 35, 0.12);
+  color: #F5A623;
+  border-color: rgba(245, 166, 35, 0.4);
+}
+.raw-btn-back:hover {
+  background: rgba(245, 166, 35, 0.2);
+  transform: translateY(-1px);
+}
+
+.raw-toolbar-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: #8B92A7;
+}
+.raw-toolbar-tag { color: #F5A623; text-transform: uppercase; }
+.raw-toolbar-sep { color: #2A2E39; }
+.raw-toolbar-meta-text { text-transform: uppercase; }
+
+.raw-toolbar-actions {
+  display: flex;
+  gap: 6px;
+}
+
+/* Slotted action buttons inherit a consistent look */
+.raw-toolbar-actions :slotted(button),
+.raw-toolbar-actions :slotted(.raw-action-btn) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid #2A2E39;
+  background: rgba(255, 255, 255, 0.04);
+  color: #F5A623;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.raw-toolbar-actions :slotted(button:hover) {
+  background: rgba(245, 166, 35, 0.12);
+  border-color: #F5A623;
 }
 
 .cpc-shell {

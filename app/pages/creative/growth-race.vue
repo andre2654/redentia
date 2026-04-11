@@ -158,9 +158,19 @@ async function fetchTickerMeta(ticker: string): Promise<TickerData | null> {
 }
 
 async function fetchPrices(ticker: string): Promise<RawPricePoint[]> {
-  // Backend supports mode in {1mo, 3mo, 6mo, 3y, 5y}. We pick the
-  // widest window that covers the requested `years` input.
-  const mode = years.value >= 5 ? '5y' : years.value >= 3 ? '3y' : years.value >= 0.5 ? '6mo' : '3mo'
+  // Backend supports {ytd, 1mo, 3mo, 6mo, 12mo, 2y, 3y, 4y, 5y, full}.
+  // For windows beyond 5 years we ask for `full` (since 1900) and let
+  // clampToYears trim down. For 5 or less we pick the smallest mode
+  // that covers the request to keep the response light.
+  let mode: string
+  if (years.value > 5) mode = 'full'
+  else if (years.value >= 5) mode = '5y'
+  else if (years.value >= 4) mode = '4y'
+  else if (years.value >= 3) mode = '3y'
+  else if (years.value >= 2) mode = '2y'
+  else if (years.value >= 1) mode = '12mo'
+  else if (years.value >= 0.5) mode = '6mo'
+  else mode = '3mo'
   try {
     const resp = await $fetch<any>(`${apiBase}/tickers/${ticker}/prices`, {
       method: 'GET',
@@ -508,6 +518,11 @@ function replay() {
     :controls="previewControls"
     @reset="resetControls"
   >
+  <template #raw-actions>
+    <button class="raw-action-btn" @click="replay" title="Reiniciar animação">
+      <UIcon name="i-lucide-rotate-cw" class="size-3.5" />
+    </button>
+  </template>
   <div class="frame">
     <div class="card">
       <!-- Header -->
@@ -655,9 +670,6 @@ function replay() {
         <div class="footer-brand">
           <span class="footer-text">redentia.com.br/creative</span>
         </div>
-        <button class="replay-btn" @click="replay">
-          <UIcon name="i-lucide-rotate-cw" class="replay-icon" />
-        </button>
       </div>
     </div>
   </div>
