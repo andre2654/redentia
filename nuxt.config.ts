@@ -505,12 +505,42 @@ export default defineNuxtConfig({
     },
     workbox: {
       importScripts: ['/firebase-messaging-sw.js'],
+      // Fallback navegacional só para `/` EXATO (sem query string).
+      // Qualquer URL com `?brand=...` sai do precache e vai direto
+      // pro SSR — senão o workbox serve a home default (Redentia)
+      // em vez da home do tenant, mesmo quando o usuário dá F5 em
+      // `/?brand=saraiva-invest`. navigateFallbackDenylist cobre todas
+      // as rotas com query string e aninhadas.
+      navigateFallback: '/',
+      navigateFallbackAllowlist: [/^\/$/],
+      navigateFallbackDenylist: [
+        /\?/,                        // qualquer URL com query string
+        /\/api\//,                   // API routes
+        /\/_nuxt\//,                 // asset bundles
+        /\/_ipx\//,                  // optimized images
+        /\.(png|jpg|jpeg|svg|webp|ico|css|js)$/,  // estáticos com extensão
+      ],
+      // Network-first para navegação — sempre tenta SSR fresco,
+      // cache só como fallback offline. Elimina a janela de 5-60s
+      // de staleness que o autoUpdate padrão tem.
+      runtimeCaching: [
+        {
+          urlPattern: ({ request }) => request.mode === 'navigate',
+          handler: 'NetworkFirst',
+          options: {
+            cacheName: 'pages',
+            networkTimeoutSeconds: 3,
+            expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 },
+          },
+        },
+      ],
     },
     devOptions: {
       enabled: true,
       suppressWarnings: true,
       navigateFallback: '/',
       navigateFallbackAllowlist: [/^\/$/],
+      navigateFallbackDenylist: [/\?/],
       type: 'module',
     },
   },
