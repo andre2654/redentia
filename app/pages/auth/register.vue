@@ -835,8 +835,8 @@
         </div>
       </div>
 
-      <div class="mx-auto grid max-w-7xl grid-cols-12 gap-0 px-6 md:px-10">
-        <div class="col-span-12 flex flex-col justify-center border-b py-12 lg:col-span-7 lg:border-b-0 lg:border-r lg:py-16 lg:pr-10" :style="{ borderColor: brand.colors.border }">
+      <div class="mx-auto grid max-w-7xl grid-cols-12 items-stretch gap-0 px-6 py-12 md:px-10 md:py-16 lg:py-20">
+        <div class="col-span-12 flex flex-col justify-center border-b pb-10 lg:col-span-7 lg:border-b-0 lg:border-r lg:pb-0 lg:pr-10" :style="{ borderColor: brand.colors.border }">
           <div class="mb-6 text-[10px] font-bold uppercase tracking-[0.22em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: brand.colors.primary }">
             01 · Tornar-se holder
           </div>
@@ -877,7 +877,7 @@
           </div>
         </div>
 
-        <div class="col-span-12 flex items-start py-10 lg:col-span-5 lg:py-16 lg:pl-10">
+        <div class="col-span-12 flex items-start lg:col-span-5">
           <UForm
             :schema="schema"
             :state="state"

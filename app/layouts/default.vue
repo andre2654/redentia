@@ -72,11 +72,11 @@
   >
     <!-- Sidebar Desktop -->
     <aside
-      class="sticky top-0 flex h-screen w-[320px] min-w-[320px] flex-col gap-6 p-4 max-xl:hidden"
+      class="sticky top-0 flex h-screen w-[320px] min-w-[320px] flex-col gap-6 overflow-y-auto p-4 max-xl:hidden"
       :style="{ backgroundColor: brand.colors.background }"
     >
       <!-- User Profile Card -->
-      <div class="brand-card border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+      <div class="brand-card flex-shrink-0 border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
         <div class="flex items-center gap-3">
           <div class="relative">
             <UAvatar :alt="authStore.me?.name || 'Usuário'" size="lg" class="ring-2 ring-secondary/30" />
@@ -118,12 +118,12 @@
       <!-- Search -->
       <MoleculesSearchAssets
         v-if="!hideSearchBar"
-        class="brand-card border px-4 py-3 transition"
+        class="brand-card flex-shrink-0 border px-4 py-3 transition"
         :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
       />
 
       <!-- Navigation -->
-      <nav class="flex flex-1 flex-col gap-1">
+      <nav class="flex flex-shrink-0 flex-col gap-1">
         <span class="mb-2 px-4 text-[10px] font-medium uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">{{ brand.nav.menuLabel }}</span>
         <AtomsSidebarButton to="/" :text="brand.nav.overview" icon="i-lucide-layout-dashboard" />
         <AtomsSidebarButton to="/wallet" :text="brand.nav.wallet" icon="i-lucide-wallet" />
@@ -159,14 +159,14 @@
           icon="i-lucide-layers"
         />
         <AtomsSidebarButton to="/guias" :text="brand.nav.guides" icon="i-lucide-book-open" />
-        <AtomsSidebarButton to="/dividends" :text="brand.nav.dividends" icon="i-lucide-coins" disabled />
+        <AtomsSidebarButton to="/dividendos" :text="brand.nav.dividends" icon="i-lucide-coins" />
       </nav>
 
       <!-- AI CTA (oculto para assessor; assessor usa o item Chat no menu) -->
       <NuxtLink
         v-if="authStore.me?.role !== 'advisor'"
         to="/help"
-        class="group relative overflow-hidden brand-card border border-secondary/20 bg-gradient-to-br from-secondary/10 to-transparent p-4 transition-all hover:border-secondary/40 hover:from-secondary/20"
+        class="group relative mt-auto flex-shrink-0 overflow-hidden brand-card border border-secondary/20 bg-gradient-to-br from-secondary/10 to-transparent p-4 transition-all hover:border-secondary/40 hover:from-secondary/20"
       >
         <div class="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-secondary/20 blur-2xl transition-all group-hover:bg-secondary/30" />
         <div class="relative flex items-center gap-3">
