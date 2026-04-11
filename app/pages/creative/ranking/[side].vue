@@ -199,7 +199,7 @@ function toChangePercent(value: unknown): number | null {
 }
 
 const { data: stocks, pending, error } = await useAsyncData<RankingStock[]>(
-  `render-ranking-${apiSide.value}-${volume.value}-${limit.value}`,
+  'render-ranking',
   async () => {
     const inlineData = firstString(route.query.data)
     if (inlineData && import.meta.server) {
@@ -239,7 +239,7 @@ const { data: stocks, pending, error } = await useAsyncData<RankingStock[]>(
       change_percent: toChangePercent(s.change_percent),
     }))
   },
-  { server: true, default: () => [] }
+  { server: true, default: () => [], watch: [apiSide, volume, limit] }
 )
 
 function colorFor(changePercent: number | null): string {

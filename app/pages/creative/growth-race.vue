@@ -261,7 +261,7 @@ const lineColors = [
 ]
 
 const { data: seriesData, pending } = await useAsyncData(
-  `growth-race-${tickerList.value.join(',')}-${years.value}-${reinvest.value}`,
+  'growth-race',
   async () => {
     const out: NormalizedSeries[] = []
     for (let i = 0; i < tickerList.value.length; i++) {
@@ -283,6 +283,7 @@ const { data: seriesData, pending } = await useAsyncData(
     }
     return out
   },
+  { watch: [tickerList, years, reinvest] },
 )
 
 // Align all series to a common date grid (intersection): start

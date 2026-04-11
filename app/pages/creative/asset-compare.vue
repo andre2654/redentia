@@ -129,15 +129,15 @@ async function fetchAsset(symbol: string): Promise<AssetSide> {
 }
 
 const { data: assetA } = await useAsyncData<AssetSide>(
-  `render-compare-a-${tickerA.value}`,
+  'render-compare-a',
   () => fetchAsset(tickerA.value),
-  { server: true, default: () => ({ ticker: null, fundamentals: null }) }
+  { server: true, default: () => ({ ticker: null, fundamentals: null }), watch: [tickerA] }
 )
 
 const { data: assetB } = await useAsyncData<AssetSide>(
-  `render-compare-b-${tickerB.value}`,
+  'render-compare-b',
   () => fetchAsset(tickerB.value),
-  { server: true, default: () => ({ ticker: null, fundamentals: null }) }
+  { server: true, default: () => ({ ticker: null, fundamentals: null }), watch: [tickerB] }
 )
 
 // Helpers

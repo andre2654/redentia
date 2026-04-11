@@ -131,7 +131,7 @@ type FundamentalsData = {
 const apiBase = runtimeConfig.public.apiBaseUrl as string
 
 const { data: tickerData } = await useAsyncData<TickerData | null>(
-  `render-spotlight-ticker-${ticker.value}`,
+  'render-spotlight-ticker',
   async () => {
     try {
       const resp = await $fetch(`${apiBase}/tickers/${ticker.value}`, { method: 'GET' })
@@ -141,11 +141,11 @@ const { data: tickerData } = await useAsyncData<TickerData | null>(
       return null
     }
   },
-  { server: true, default: () => null }
+  { server: true, default: () => null, watch: [ticker] }
 )
 
 const { data: fundamentals } = await useAsyncData<FundamentalsData | null>(
-  `render-spotlight-fundamentals-${ticker.value}`,
+  'render-spotlight-fundamentals',
   async () => {
     try {
       const resp = await $fetch(`${apiBase}/fundamentals/${ticker.value}/overview`, { method: 'GET' })
@@ -155,7 +155,7 @@ const { data: fundamentals } = await useAsyncData<FundamentalsData | null>(
       return null
     }
   },
-  { server: true, default: () => null }
+  { server: true, default: () => null, watch: [ticker] }
 )
 
 // Computed display values
