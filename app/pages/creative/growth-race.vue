@@ -79,6 +79,44 @@ const durationMs = computed(() => {
 
 const autoStart = computed(() => firstString(route.query.auto) !== 'false')
 
+const router = useRouter()
+
+const previewControls = computed(() => [
+  { id: 'tickers', label: 'Ativos', type: 'tickers' as const, param: 'tickers', hint: 'Até 5 tickers', value: tickersRaw.value },
+  {
+    id: 'years',
+    label: 'Janela',
+    type: 'select' as const,
+    param: 'years',
+    value: String(years.value),
+    options: [
+      { label: '1 ano', value: '1' },
+      { label: '3 anos', value: '3' },
+      { label: '5 anos', value: '5' },
+      { label: '10 anos', value: '10' },
+      { label: '15 anos', value: '15' },
+    ],
+  },
+  { id: 'reinvest', label: 'Reinvestir dividendos', type: 'toggle' as const, param: 'reinvest', value: String(reinvest.value) },
+  {
+    id: 'duration',
+    label: 'Duração da animação',
+    type: 'select' as const,
+    param: 'duration',
+    value: String(durationMs.value),
+    options: [
+      { label: '5 segundos', value: '5000' },
+      { label: '10 segundos', value: '10000' },
+      { label: '15 segundos', value: '15000' },
+      { label: '20 segundos', value: '20000' },
+    ],
+  },
+])
+
+function resetControls() {
+  router.replace({ query: {} })
+}
+
 // --- Page head ---
 useHead(() => ({
   title: `Redentia — Growth Race: ${tickerList.value.join(' vs ')}`,
@@ -464,6 +502,11 @@ function replay() {
 </script>
 
 <template>
+  <MoleculesCreativePreviewControls
+    creative-name="GROWTH RACE"
+    :controls="previewControls"
+    @reset="resetControls"
+  >
   <div class="frame">
     <div class="card">
       <!-- Header -->
@@ -617,6 +660,7 @@ function replay() {
       </div>
     </div>
   </div>
+  </MoleculesCreativePreviewControls>
 </template>
 
 <style scoped>

@@ -922,7 +922,7 @@
               {{ brand.hero.badge }}
             </span>
             <span class="font-academic-body text-[12px] italic" :style="{ color: brand.colors.textMuted }">
-              Publicação interna · {{ researchDate }}
+              {{ researchDate }}
             </span>
           </div>
           <span class="font-academic-mono text-[11px] uppercase tabular-nums" :style="{ color: brand.colors.textMuted }">
@@ -935,7 +935,7 @@
       <div class="mx-auto max-w-6xl px-6 py-14 md:grid md:grid-cols-12 md:gap-10 md:px-10 md:py-20">
         <div class="md:col-span-7">
           <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">
-            volume 1, número 001 · mesa de análise AUVP
+            mesa de análise AUVP
           </span>
           <h1
             class="font-academic-display mt-6"
@@ -3332,198 +3332,290 @@
     -->
     <section
       v-if="showSection('apiProduct') && !authStore.isAuthenticated && brand.hero.variant === 'terminal'"
-      :style="{ order: sectionOrder('apiProduct'), borderColor: brand.colors.border }"
-      class="relative mt-12 overflow-hidden border-t px-4 py-20 md:px-6 md:py-24"
+      :style="{ order: sectionOrder('apiProduct'), borderColor: brand.colors.border, backgroundColor: brand.colors.background }"
+      class="api-product-section relative mt-16 overflow-hidden border-t"
     >
-      <!-- Background depth: amber glow + grid -->
+      <!-- Atmospheric layers: scanlines + grid + amber sweep -->
       <div class="pointer-events-none absolute inset-0">
         <div
-          class="absolute left-1/2 top-0 h-[540px] w-[900px] -translate-x-1/2 rounded-full blur-3xl opacity-40"
-          :style="{ background: `radial-gradient(ellipse at center top, ${brand.colors.primary}40, transparent 60%)` }"
+          class="absolute inset-0 opacity-[0.035]"
+          :style="{ backgroundImage: `linear-gradient(${brand.colors.text} 1px, transparent 1px), linear-gradient(90deg, ${brand.colors.text} 1px, transparent 1px)`, backgroundSize: '48px 48px' }"
         />
         <div
-          class="absolute inset-0 opacity-[0.04]"
-          :style="{ backgroundImage: `linear-gradient(${brand.colors.text} 1px, transparent 1px), linear-gradient(90deg, ${brand.colors.text} 1px, transparent 1px)`, backgroundSize: '32px 32px' }"
+          class="absolute inset-x-0 top-0 h-px"
+          :style="{ background: `linear-gradient(90deg, transparent, ${brand.colors.primary}80, transparent)` }"
+        />
+        <div
+          class="absolute -right-32 top-32 h-[520px] w-[520px] rounded-full blur-3xl opacity-25"
+          :style="{ background: `radial-gradient(circle, ${brand.colors.primary}, transparent 65%)` }"
+        />
+        <div
+          class="absolute -left-40 bottom-0 h-[420px] w-[420px] rounded-full blur-3xl opacity-15"
+          :style="{ background: `radial-gradient(circle, ${brand.colors.primary}, transparent 70%)` }"
         />
       </div>
 
-      <div class="relative mx-auto max-w-6xl">
-        <!-- Top status line -->
-        <div class="mb-6 flex flex-wrap items-center justify-center gap-3 font-mono-tab text-[10px] uppercase tracking-[0.18em]">
-          <span class="flex items-center gap-1.5" :style="{ color: brand.colors.primary }">
-            <span class="relative flex size-1.5">
-              <span class="absolute inline-flex size-1.5 animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.primary }" />
-              <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
-            </span>
-            [DEVELOPER.TOOLS]
-          </span>
-          <span :style="{ color: brand.colors.border }">·</span>
-          <span :style="{ color: brand.colors.textMuted }">2 NOVOS PRODUTOS</span>
+      <!-- ============ MASTHEAD ============ -->
+      <div class="relative mx-auto max-w-7xl px-6 pt-20 md:px-10 md:pt-28">
+        <div class="flex flex-wrap items-end justify-between gap-6 border-b pb-8" :style="{ borderColor: `${brand.colors.border}80` }">
+          <div class="flex flex-col gap-3">
+            <div class="flex items-center gap-3 font-mono-tab text-[10px] uppercase tracking-[0.22em]">
+              <span class="flex items-center gap-1.5" :style="{ color: brand.colors.primary }">
+                <span class="relative flex size-1.5">
+                  <span class="absolute inline-flex size-1.5 animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.primary }" />
+                  <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
+                </span>
+                [DEVELOPERS.SHIPPED]
+              </span>
+              <span :style="{ color: brand.colors.border }">/</span>
+              <span :style="{ color: brand.colors.textMuted }">2026.04 · BUILD 2</span>
+            </div>
+            <h2
+              class="font-display max-w-2xl text-[44px] leading-[0.92] tracking-tight sm:text-[60px] md:text-[80px]"
+              :style="{ color: brand.colors.text }"
+            >
+              Pegue os dados.
+              <br />
+              <span class="italic" :style="{ color: brand.colors.primary }">Faça outra coisa.</span>
+            </h2>
+          </div>
+          <p class="max-w-sm text-sm leading-relaxed md:text-[15px]" :style="{ color: brand.colors.textMuted }">
+            Dois produtos abertos: o <span :style="{ color: brand.colors.text }">terminal</span> que você está vendo é só uma das interfaces. Pegue os mesmos dados em JSON, ou em PNG pronto pro feed.
+          </p>
         </div>
+      </div>
 
-        <!-- Section headline -->
-        <h2
-          class="font-display mx-auto mb-4 max-w-3xl text-center text-[40px] leading-[0.95] tracking-tight sm:text-[52px] md:text-[64px]"
-          :style="{ color: brand.colors.text }"
-        >
-          Construa em cima da
-          <span class="italic" :style="{ color: brand.colors.primary }">Redent.IA.</span>
-        </h2>
-        <p class="mx-auto mb-12 max-w-2xl text-center text-sm md:text-base" :style="{ color: brand.colors.textMuted }">
-          Duas plataformas pra transformar os dados que a gente coleta em algo que você pode vender, postar ou automatizar.
-        </p>
-
-        <!-- Side-by-side product cards -->
-        <div class="grid gap-6 md:grid-cols-2">
-          <!-- ============ CARD 01 — API ============ -->
-          <a
-            href="https://api.redentia.com.br"
-            target="_blank"
-            rel="noopener"
-            class="group relative flex flex-col overflow-hidden rounded-lg border p-8 transition-all hover:-translate-y-1 md:p-10"
-            :style="{
-              borderColor: brand.colors.border,
-              backgroundColor: `${brand.colors.surface}E6`,
-              boxShadow: `0 10px 40px -20px ${brand.colors.primary}50`,
-            }"
-          >
-            <!-- Corner ribbon -->
-            <span
-              class="absolute right-4 top-4 rounded border px-2 py-0.5 font-mono-tab text-[9px] uppercase tracking-[0.15em]"
-              :style="{ borderColor: `${brand.colors.primary}60`, backgroundColor: `${brand.colors.primary}15`, color: brand.colors.primary }"
+      <!-- ============ PRODUCT 01 — API ============ -->
+      <a
+        href="https://api.redentia.com.br"
+        target="_blank"
+        rel="noopener"
+        class="api-row group relative block border-b transition-colors"
+        :style="{ borderColor: `${brand.colors.border}60` }"
+      >
+        <div class="relative mx-auto grid max-w-7xl grid-cols-12 gap-6 px-6 py-16 md:gap-10 md:px-10 md:py-24">
+          <!-- Numero gigante outline -->
+          <div class="col-span-12 md:col-span-2">
+            <div
+              class="font-display select-none text-[120px] leading-[0.8] tracking-tighter md:text-[180px]"
+              :style="{
+                color: 'transparent',
+                WebkitTextStroke: `1.5px ${brand.colors.primary}50`,
+              }"
             >
-              PUBLIC BETA
-            </span>
+              01
+            </div>
+          </div>
 
-            <!-- Eyebrow -->
-            <div class="mb-4 inline-flex items-center gap-2 font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
-              <UIcon name="i-lucide-terminal" class="size-3.5" />
-              REDENTIA.API
+          <!-- Conteudo -->
+          <div class="col-span-12 md:col-span-5 md:pl-4">
+            <div class="mb-5 flex flex-wrap items-center gap-3 font-mono-tab text-[10px] uppercase tracking-[0.2em]">
+              <span class="rounded-full border px-2.5 py-1" :style="{ borderColor: `${brand.colors.primary}80`, color: brand.colors.primary, backgroundColor: `${brand.colors.primary}10` }">
+                PUBLIC BETA
+              </span>
+              <span :style="{ color: brand.colors.textMuted }">REDENTIA.API/V1</span>
             </div>
 
-            <!-- Headline -->
             <h3
-              class="font-display mb-3 text-[32px] leading-[1] tracking-tight md:text-[40px]"
+              class="font-display text-[40px] leading-[0.95] tracking-tight md:text-[64px]"
               :style="{ color: brand.colors.text }"
             >
-              Os dados em <span class="italic" :style="{ color: brand.colors.primary }">JSON.</span>
+              Os dados em
+              <span class="italic" :style="{ color: brand.colors.primary }">JSON.</span>
             </h3>
 
-            <p class="mb-6 text-sm leading-relaxed md:text-[15px]" :style="{ color: brand.colors.textMuted }">
-              Preços, fundamentos, dividendos e commentaries via REST. Schemas estáveis, latência sub-50ms, pronta pra produção.
+            <p class="mt-5 max-w-md text-[14px] leading-relaxed md:text-[15px]" :style="{ color: brand.colors.textMuted }">
+              Preços, fundamentos completos, dividendos e commentaries via REST. Schemas estáveis, latência sub-50&nbsp;ms, autenticação por API key. Pronta pra rodar em produção amanhã.
             </p>
 
-            <!-- Terminal mini-preview -->
-            <div
-              class="mb-6 rounded border p-3 font-mono-tab text-[11px] leading-relaxed"
-              :style="{ borderColor: `${brand.colors.border}80`, backgroundColor: `${brand.colors.background}CC` }"
-            >
-              <div class="flex items-center gap-2">
-                <span :style="{ color: brand.colors.primary }">$</span>
-                <span :style="{ color: brand.colors.text }">curl /v1/tickers/PETR4</span>
+            <!-- Stats inline -->
+            <div class="mt-8 grid max-w-md grid-cols-3 gap-px overflow-hidden rounded border" :style="{ borderColor: `${brand.colors.border}80`, backgroundColor: `${brand.colors.border}40` }">
+              <div class="flex flex-col gap-0.5 px-3 py-3" :style="{ backgroundColor: `${brand.colors.surface}` }">
+                <span class="font-mono-tab text-[20px] tabular-nums leading-none md:text-[24px]" :style="{ color: brand.colors.primary }">50+</span>
+                <span class="font-mono-tab text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">ENDPOINTS</span>
               </div>
-              <div class="mt-1 flex items-center gap-2" :style="{ color: brand.colors.textMuted }">
-                <span :style="{ color: brand.colors.positive }">✓ 200 OK</span>
-                <span :style="{ color: brand.colors.border }">·</span>
-                <span>42ms</span>
+              <div class="flex flex-col gap-0.5 px-3 py-3" :style="{ backgroundColor: `${brand.colors.surface}` }">
+                <span class="font-mono-tab text-[20px] tabular-nums leading-none md:text-[24px]" :style="{ color: brand.colors.primary }">42<span class="text-[12px]">ms</span></span>
+                <span class="font-mono-tab text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">P50 LAT.</span>
+              </div>
+              <div class="flex flex-col gap-0.5 px-3 py-3" :style="{ backgroundColor: `${brand.colors.surface}` }">
+                <span class="font-mono-tab text-[20px] tabular-nums leading-none md:text-[24px]" :style="{ color: brand.colors.primary }">99.9<span class="text-[12px]">%</span></span>
+                <span class="font-mono-tab text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">UPTIME</span>
               </div>
             </div>
 
-            <!-- Chips row -->
-            <div class="mb-6 flex flex-wrap gap-2">
-              <span class="rounded border px-2 py-0.5 font-mono-tab text-[9px] uppercase tracking-[0.12em]" :style="{ borderColor: brand.colors.border, color: brand.colors.text }">50+ ENDPOINTS</span>
-              <span class="rounded border px-2 py-0.5 font-mono-tab text-[9px] uppercase tracking-[0.12em]" :style="{ borderColor: brand.colors.border, color: brand.colors.text }">MCP READY</span>
-              <span class="rounded border px-2 py-0.5 font-mono-tab text-[9px] uppercase tracking-[0.12em]" :style="{ borderColor: brand.colors.border, color: brand.colors.text }">R$ 49/mês</span>
+            <div class="mt-10 inline-flex items-center gap-3 border-b pb-1 font-mono-tab text-[11px] uppercase tracking-[0.2em] transition-colors" :style="{ color: brand.colors.primary, borderColor: brand.colors.primary }">
+              <span>PEGAR API KEY</span>
+              <span class="transition-transform group-hover:translate-x-2">→</span>
             </div>
+          </div>
 
-            <!-- CTA -->
+          <!-- Terminal mockup -->
+          <div class="col-span-12 md:col-span-5">
             <div
-              class="mt-auto flex items-center justify-between border-t pt-4 font-mono-tab text-[10px] uppercase tracking-[0.18em]"
-              :style="{ borderColor: brand.colors.border }"
+              class="terminal-window overflow-hidden rounded-lg border shadow-2xl"
+              :style="{
+                borderColor: `${brand.colors.border}`,
+                backgroundColor: `${brand.colors.background}F5`,
+                boxShadow: `0 30px 80px -30px ${brand.colors.primary}40, 0 0 0 1px ${brand.colors.border}40`,
+              }"
             >
-              <span :style="{ color: brand.colors.primary }">[ PEGAR API KEY ]</span>
-              <UIcon name="i-lucide-arrow-right" class="size-4 transition-transform group-hover:translate-x-1" :style="{ color: brand.colors.primary }" />
+              <!-- Title bar -->
+              <div class="flex items-center justify-between border-b px-4 py-2.5" :style="{ borderColor: `${brand.colors.border}80`, backgroundColor: `${brand.colors.surface}80` }">
+                <div class="flex items-center gap-1.5">
+                  <span class="size-2.5 rounded-full" style="background: #ff5f57" />
+                  <span class="size-2.5 rounded-full" style="background: #febc2e" />
+                  <span class="size-2.5 rounded-full" style="background: #28c840" />
+                </div>
+                <span class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">~/redentia/api</span>
+                <span class="font-mono-tab text-[10px]" :style="{ color: brand.colors.textMuted }">●●●</span>
+              </div>
+
+              <!-- Body -->
+              <div class="px-5 py-4 font-mono-tab text-[12px] leading-[1.65] md:text-[13px]">
+                <div class="flex items-center gap-2">
+                  <span :style="{ color: brand.colors.positive }">$</span>
+                  <span :style="{ color: brand.colors.text }">curl https://api.redentia.com.br/v1/tickers/<span :style="{ color: brand.colors.primary }">PETR4</span></span>
+                </div>
+                <div class="mt-1.5 flex items-center gap-2" :style="{ color: brand.colors.textMuted }">
+                  <span :style="{ color: brand.colors.positive }">→</span>
+                  <span :style="{ color: brand.colors.positive }">200 OK</span>
+                  <span :style="{ color: brand.colors.border }">·</span>
+                  <span>42 ms</span>
+                  <span :style="{ color: brand.colors.border }">·</span>
+                  <span>1.4 KB</span>
+                </div>
+
+                <div class="mt-3 rounded border-l-2 py-1 pl-3" :style="{ borderColor: brand.colors.primary, backgroundColor: `${brand.colors.primary}08` }">
+                  <div :style="{ color: brand.colors.text }">{</div>
+                  <div class="pl-4">
+                    <span :style="{ color: brand.colors.primary }">"symbol"</span><span :style="{ color: brand.colors.textMuted }">: </span><span :style="{ color: brand.colors.positive }">"PETR4"</span>,
+                  </div>
+                  <div class="pl-4">
+                    <span :style="{ color: brand.colors.primary }">"price"</span><span :style="{ color: brand.colors.textMuted }">: </span><span :style="{ color: brand.colors.text }">38.42</span>,
+                  </div>
+                  <div class="pl-4">
+                    <span :style="{ color: brand.colors.primary }">"market_cap"</span><span :style="{ color: brand.colors.textMuted }">: </span><span :style="{ color: brand.colors.text }">501823000000</span>,
+                  </div>
+                  <div class="pl-4">
+                    <span :style="{ color: brand.colors.primary }">"dividend_yield"</span><span :style="{ color: brand.colors.textMuted }">: </span><span :style="{ color: brand.colors.text }">0.142</span>,
+                  </div>
+                  <div class="pl-4">
+                    <span :style="{ color: brand.colors.primary }">"updated_at"</span><span :style="{ color: brand.colors.textMuted }">: </span><span :style="{ color: brand.colors.positive }">"2026-04-11T14:32:18Z"</span>
+                  </div>
+                  <div :style="{ color: brand.colors.text }">}</div>
+                </div>
+
+                <div class="mt-3 flex items-center gap-2">
+                  <span :style="{ color: brand.colors.positive }">$</span>
+                  <span class="inline-block h-3 w-1.5 animate-pulse" :style="{ backgroundColor: brand.colors.primary }" />
+                </div>
+              </div>
             </div>
-          </a>
+          </div>
+        </div>
+      </a>
 
-          <!-- ============ CARD 02 — CREATIVE ============ -->
-          <a
-            href="https://creative.redentia.com.br"
-            target="_blank"
-            rel="noopener"
-            class="group relative flex flex-col overflow-hidden rounded-lg border p-8 transition-all hover:-translate-y-1 md:p-10"
-            :style="{
-              borderColor: brand.colors.border,
-              backgroundColor: `${brand.colors.surface}E6`,
-              boxShadow: `0 10px 40px -20px ${brand.colors.primary}50`,
-            }"
-          >
-            <!-- Corner ribbon -->
-            <span
-              class="absolute right-4 top-4 rounded border px-2 py-0.5 font-mono-tab text-[9px] uppercase tracking-[0.15em]"
-              :style="{ borderColor: `${brand.colors.primary}`, backgroundColor: brand.colors.primary, color: brand.colors.background }"
-            >
-              NEW
-            </span>
-
-            <!-- Eyebrow -->
-            <div class="mb-4 inline-flex items-center gap-2 font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
-              <UIcon name="i-lucide-image" class="size-3.5" />
-              REDENTIA.CREATIVE
-            </div>
-
-            <!-- Headline -->
-            <h3
-              class="font-display mb-3 text-[32px] leading-[1] tracking-tight md:text-[40px]"
-              :style="{ color: brand.colors.text }"
-            >
-              Os dados no <span class="italic" :style="{ color: brand.colors.primary }">feed.</span>
-            </h3>
-
-            <p class="mb-6 text-sm leading-relaxed md:text-[15px]" :style="{ color: brand.colors.textMuted }">
-              Cards, rankings e animações com dados reais — prontos pra tirar print e postar nas redes. Growth races, spotlights, notificações.
-            </p>
-
-            <!-- Mini thumbs strip -->
-            <div class="mb-6 grid grid-cols-4 gap-2">
-              <a
-                v-for="thumb in creativeThumbs"
+      <!-- ============ PRODUCT 02 — CREATIVE ============ -->
+      <a
+        href="https://creative.redentia.com.br"
+        target="_blank"
+        rel="noopener"
+        class="api-row group relative block transition-colors"
+      >
+        <div class="relative mx-auto grid max-w-7xl grid-cols-12 gap-6 px-6 py-16 md:gap-10 md:px-10 md:py-24">
+          <!-- Creative thumbs first on desktop (asymmetric flip) -->
+          <div class="order-2 col-span-12 md:order-1 md:col-span-5">
+            <div class="grid grid-cols-2 gap-3">
+              <div
+                v-for="(thumb, i) in creativeThumbs"
                 :key="thumb.slug"
-                :href="`https://creative.redentia.com.br${thumb.path}`"
-                target="_blank"
-                rel="noopener"
-                class="relative aspect-square overflow-hidden rounded border"
-                :style="{ borderColor: `${brand.colors.border}80`, backgroundColor: `${brand.colors.background}CC` }"
-                @click.stop
+                class="creative-tile relative aspect-square overflow-hidden rounded-lg border transition-transform"
+                :style="{
+                  borderColor: `${brand.colors.border}`,
+                  backgroundColor: `${brand.colors.surface}`,
+                  boxShadow: `0 20px 50px -25px ${brand.colors.primary}30`,
+                  transform: i % 2 === 0 ? 'translateY(-12px)' : 'translateY(12px)',
+                }"
               >
                 <div
                   class="absolute inset-0"
-                  :style="{ background: `radial-gradient(circle at 30% 20%, ${brand.colors.primary}30, transparent 60%)` }"
+                  :style="{ background: `radial-gradient(circle at 30% 20%, ${brand.colors.primary}25, transparent 60%)` }"
                 />
-                <div class="absolute inset-0 flex items-center justify-center">
-                  <UIcon :name="thumb.icon" class="size-5" :style="{ color: brand.colors.primary }" />
+                <!-- Frame label top -->
+                <div class="absolute inset-x-0 top-0 flex items-center justify-between px-3 py-2 font-mono-tab text-[8px] uppercase tracking-[0.18em]">
+                  <span :style="{ color: brand.colors.primary }">{{ thumb.eyebrow || '·' }}</span>
+                  <span :style="{ color: brand.colors.textMuted }">1080²</span>
                 </div>
-              </a>
+                <!-- Center icon -->
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <UIcon :name="thumb.icon" class="size-10" :style="{ color: brand.colors.primary }" />
+                </div>
+                <!-- Bottom label -->
+                <div class="absolute inset-x-0 bottom-0 px-3 py-2 font-mono-tab text-[9px] uppercase tracking-[0.16em]" :style="{ color: brand.colors.text }">
+                  {{ thumb.label }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Conteudo -->
+          <div class="order-1 col-span-12 md:order-2 md:col-span-5 md:pl-4">
+            <div class="mb-5 flex flex-wrap items-center gap-3 font-mono-tab text-[10px] uppercase tracking-[0.2em]">
+              <span class="rounded-full px-2.5 py-1" :style="{ backgroundColor: brand.colors.primary, color: brand.colors.background }">
+                NEW · GRÁTIS
+              </span>
+              <span :style="{ color: brand.colors.textMuted }">REDENTIA.CREATIVE</span>
             </div>
 
-            <!-- Chips row -->
-            <div class="mb-6 flex flex-wrap gap-2">
-              <span class="rounded border px-2 py-0.5 font-mono-tab text-[9px] uppercase tracking-[0.12em]" :style="{ borderColor: brand.colors.border, color: brand.colors.text }">6 TEMPLATES</span>
-              <span class="rounded border px-2 py-0.5 font-mono-tab text-[9px] uppercase tracking-[0.12em]" :style="{ borderColor: brand.colors.border, color: brand.colors.text }">1080 × 1080</span>
-              <span class="rounded border px-2 py-0.5 font-mono-tab text-[9px] uppercase tracking-[0.12em]" :style="{ borderColor: brand.colors.border, color: brand.colors.text }">GRÁTIS</span>
-            </div>
-
-            <!-- CTA -->
-            <div
-              class="mt-auto flex items-center justify-between border-t pt-4 font-mono-tab text-[10px] uppercase tracking-[0.18em]"
-              :style="{ borderColor: brand.colors.border }"
+            <h3
+              class="font-display text-[40px] leading-[0.95] tracking-tight md:text-[64px]"
+              :style="{ color: brand.colors.text }"
             >
-              <span :style="{ color: brand.colors.primary }">[ ABRIR STUDIO ]</span>
-              <UIcon name="i-lucide-arrow-right" class="size-4 transition-transform group-hover:translate-x-1" :style="{ color: brand.colors.primary }" />
+              Os dados no
+              <span class="italic" :style="{ color: brand.colors.primary }">feed.</span>
+            </h3>
+
+            <p class="mt-5 max-w-md text-[14px] leading-relaxed md:text-[15px]" :style="{ color: brand.colors.textMuted }">
+              Cards, rankings e mockups com dados reais — prontos pra tirar print e postar. Growth races, spotlights de ativo, notificações iPhone, top gainers. Tudo em 1080×1080.
+            </p>
+
+            <!-- Stats inline -->
+            <div class="mt-8 grid max-w-md grid-cols-3 gap-px overflow-hidden rounded border" :style="{ borderColor: `${brand.colors.border}80`, backgroundColor: `${brand.colors.border}40` }">
+              <div class="flex flex-col gap-0.5 px-3 py-3" :style="{ backgroundColor: `${brand.colors.surface}` }">
+                <span class="font-mono-tab text-[20px] tabular-nums leading-none md:text-[24px]" :style="{ color: brand.colors.primary }">20+</span>
+                <span class="font-mono-tab text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">TEMPLATES</span>
+              </div>
+              <div class="flex flex-col gap-0.5 px-3 py-3" :style="{ backgroundColor: `${brand.colors.surface}` }">
+                <span class="font-mono-tab text-[20px] tabular-nums leading-none md:text-[24px]" :style="{ color: brand.colors.primary }">1080²</span>
+                <span class="font-mono-tab text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">FORMATO</span>
+              </div>
+              <div class="flex flex-col gap-0.5 px-3 py-3" :style="{ backgroundColor: `${brand.colors.surface}` }">
+                <span class="font-mono-tab text-[20px] tabular-nums leading-none md:text-[24px]" :style="{ color: brand.colors.primary }">PNG</span>
+                <span class="font-mono-tab text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">EXPORT</span>
+              </div>
             </div>
-          </a>
+
+            <div class="mt-10 inline-flex items-center gap-3 border-b pb-1 font-mono-tab text-[11px] uppercase tracking-[0.2em] transition-colors" :style="{ color: brand.colors.primary, borderColor: brand.colors.primary }">
+              <span>ABRIR STUDIO</span>
+              <span class="transition-transform group-hover:translate-x-2">→</span>
+            </div>
+          </div>
+
+          <!-- Numero gigante outline na direita -->
+          <div class="order-3 col-span-12 flex justify-end md:col-span-2">
+            <div
+              class="font-display select-none text-[120px] leading-[0.8] tracking-tighter md:text-[180px]"
+              :style="{
+                color: 'transparent',
+                WebkitTextStroke: `1.5px ${brand.colors.primary}50`,
+              }"
+            >
+              02
+            </div>
+          </div>
         </div>
-      </div>
+      </a>
     </section>
     </div>
   </NuxtLayout>
@@ -4661,5 +4753,34 @@ definePageMeta({
 <style scoped>
 .carousel-container {
   box-shadow: 0px 0px 80px 0px rgba(55, 77, 60, 0.6);
+}
+
+/* ========== API PRODUCT SECTION ========== */
+.api-product-section .api-row {
+  position: relative;
+}
+.api-product-section .api-row::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, var(--brand-primary, #f59e0b)0a, transparent);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+.api-product-section .api-row:hover::before {
+  opacity: 1;
+}
+.api-product-section .creative-tile {
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.api-product-section .api-row:hover .creative-tile {
+  transform: translateY(0) !important;
+}
+.api-product-section .terminal-window {
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.api-product-section .api-row:hover .terminal-window {
+  transform: translateY(-4px);
 }
 </style>

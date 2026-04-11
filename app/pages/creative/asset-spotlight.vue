@@ -43,8 +43,33 @@ if (import.meta.server) {
   }
 }
 
+const router = useRouter()
 const ticker = computed(() => (firstString(route.query.ticker) || 'PETR4').toUpperCase())
 const subtitle = computed(() => firstString(route.query.subtitle) || 'Destaque do dia')
+
+const previewControls = computed(() => [
+  {
+    id: 'ticker',
+    label: 'Ticker',
+    type: 'text' as const,
+    param: 'ticker',
+    placeholder: 'PETR4',
+    hint: 'Código da B3',
+    value: ticker.value,
+  },
+  {
+    id: 'subtitle',
+    label: 'Subtítulo',
+    type: 'text' as const,
+    param: 'subtitle',
+    placeholder: 'Destaque do dia',
+    value: subtitle.value,
+  },
+])
+
+function resetControls() {
+  router.replace({ query: {} })
+}
 
 // Hardcoded Redentia palette — creatives are tenant-agnostic by
 // design: they always render as the Redentia brand regardless of
@@ -196,6 +221,11 @@ const changeSign = computed(() =>
 </script>
 
 <template>
+  <MoleculesCreativePreviewControls
+    creative-name="ASSET SPOTLIGHT"
+    :controls="previewControls"
+    @reset="resetControls"
+  >
   <div class="frame">
     <div
       class="card"
@@ -305,6 +335,7 @@ const changeSign = computed(() =>
       </div>
     </div>
   </div>
+  </MoleculesCreativePreviewControls>
 </template>
 
 <style scoped>

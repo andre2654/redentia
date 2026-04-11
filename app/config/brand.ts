@@ -732,7 +732,7 @@ const primoRico: BrandConfig = {
     // aesthetic (Montserrat Black display, chunky orange blocks, founder
     // portrait, pull quotes). Nothing else shares this variant.
     variant: 'mentor',
-    badge: 'MANUAL DO PRIMO · CAPÍTULO I',
+    badge: 'MANUAL DO PRIMO',
     title: 'CONSTRUA\nPATRIMÔNIO.',
     subtitle: 'Análise fundamentalista, eficiência tributária e ferramentas de construção de patrimônio. Não existe atalho. Só consistência, tempo e as decisões certas — todos os dias.',
     founderQuote: 'Liberdade ou mediocridade. A escolha é sua.',
@@ -1871,7 +1871,7 @@ const investidorSardinha: BrandConfig = {
     // aesthetic with IBM Plex serif, § section marks, footnotes, author
     // signature. Copy rewritten as a study paper front matter.
     variant: 'research',
-    badge: 'AUVP RESEARCH · Nº 001',
+    badge: 'AUVP RESEARCH',
     title: 'Estudo sobre investir\ncom fundamento.',
     subtitle: 'Análise fundamentalista, método e verdade. Este é o estudo que a gente queria ter lido antes de comprar a primeira ação. Compilado para quem prefere estudar a especular.',
     founderQuote: 'Não existe investimento ruim. Existe investidor sem conhecimento.',
@@ -2698,12 +2698,12 @@ const redentia: BrandConfig = {
   homeSections: [
     { id: 'hero', visible: true },
     { id: 'trustBar', visible: true },
-    { id: 'market', visible: false },
+    { id: 'market', visible: true },
     { id: 'metrics', visible: true },
     { id: 'featureTabs', visible: false },
     { id: 'categories', visible: true },
     { id: 'aiCta', visible: true },
-    { id: 'apiProduct', visible: false },
+    { id: 'apiProduct', visible: true },
     { id: 'creativeProduct', visible: false },
     { id: 'educational', visible: false },
     { id: 'products', visible: false },

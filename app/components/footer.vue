@@ -196,6 +196,40 @@
           </ul>
         </div>
 
+        <!-- Para Devs (apenas no tenant Redentia) -->
+        <div v-if="brand.slug === 'redentia'" class="flex flex-col items-center md:items-start">
+          <h3 class="mb-5 text-sm font-semibold uppercase tracking-wider" :style="{ color: brand.colors.text }">
+            Para Devs
+          </h3>
+          <ul class="flex flex-col items-center gap-3 md:items-start">
+            <li>
+              <a href="https://api.redentia.com.br" target="_blank" rel="noopener" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
+                Redentia API
+              </a>
+            </li>
+            <li>
+              <a href="https://creative.redentia.com.br" target="_blank" rel="noopener" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
+                Creative Studio
+              </a>
+            </li>
+            <li>
+              <a href="https://whitelabel.redentia.com.br" target="_blank" rel="noopener" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
+                White-Label
+              </a>
+            </li>
+            <li>
+              <NuxtLink to="/api-portal/docs" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
+                Documentação
+              </NuxtLink>
+            </li>
+            <li>
+              <NuxtLink to="/backoffice" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
+                Admin
+              </NuxtLink>
+            </li>
+          </ul>
+        </div>
+
         <!-- Legal -->
         <div class="flex flex-col items-center md:items-start">
           <h3 class="mb-5 text-sm font-semibold uppercase tracking-wider" :style="{ color: brand.colors.text }">

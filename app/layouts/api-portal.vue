@@ -12,10 +12,13 @@
     exactly what the page component wants.
   -->
   <div
-    class="min-h-screen"
+    class="flex min-h-screen flex-col"
     :style="{ backgroundColor: brand.colors.background, color: brand.colors.text }"
   >
-    <slot />
+    <div class="flex-1">
+      <slot />
+    </div>
+    <AtomsDevPortalFooter />
   </div>
 </template>
 

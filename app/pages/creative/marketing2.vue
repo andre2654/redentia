@@ -49,6 +49,16 @@ const pushApp = computed(() => q('push_app', 'REDENTIA'))
 // Tenant slug for tenant-hero variants
 const tenantSlug = computed(() => q('tenant', 'mepoupe'))
 
+// Mock data for the iphone-assets-list variant
+const mockAssets = [
+  { ticker: 'PETR4', name: 'Petrobras PN', price: '49,03', change: '0,27', up: true, initials: 'PT', bg: '#0a8a44' },
+  { ticker: 'VALE3', name: 'Vale ON', price: '85,59', change: '0,16', up: true, initials: 'VL', bg: '#1c8a8a' },
+  { ticker: 'ITUB4', name: 'Itaú PN', price: '34,17', change: '1,42', up: true, initials: 'IT', bg: '#ec7000' },
+  { ticker: 'BBDC4', name: 'Bradesco PN', price: '14,28', change: '0,84', up: false, initials: 'BB', bg: '#cc092f' },
+  { ticker: 'WEGE3', name: 'WEG ON', price: '38,90', change: '2,15', up: true, initials: 'WG', bg: '#005496' },
+  { ticker: 'MGLU3', name: 'Magazine Luiza', price: '8,42', change: '3,28', up: false, initials: 'ML', bg: '#1a47a1' },
+]
+
 // Jargon text color & font already baked into each jargon variant
 
 // Google Fonts stylesheet (extended with Poppins, Fraunces,
@@ -156,6 +166,178 @@ const sampleTickers = [
           <div class="iphone-eyebrow">{{ eyebrow || '[ NOTIFICAÇÕES INTELIGENTES ]' }}</div>
           <h2 class="iphone-title">{{ title || 'O mercado no seu bolso.' }}</h2>
           <p class="iphone-sub">{{ subtitle || 'Defina alertas de preço, dividendos e eventos corporativos. A Redentia manda um push só quando realmente importa.' }}</p>
+          <div class="iphone-tag">{{ cta || 'redentia.com.br' }}</div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           VARIANT · IPHONE ASSETS LIST (full app screen mockup)
+           Phone showing the carteira / lista de ativos
+           ============================================================ -->
+      <div v-else-if="variant === 'iphone-assets-list'" class="body iphone-body">
+        <div class="iphone">
+          <div class="iphone-frame">
+            <div class="iphone-notch"></div>
+            <div class="iphone-screen iphone-screen-app">
+              <!-- Status bar -->
+              <div class="status-bar">
+                <span class="status-time">9:41</span>
+                <span class="status-icons">
+                  <svg width="18" height="12" viewBox="0 0 18 12" fill="none"><rect x="0" y="7" width="3" height="4" rx="1" fill="white"/><rect x="5" y="5" width="3" height="6" rx="1" fill="white"/><rect x="10" y="2" width="3" height="9" rx="1" fill="white"/><rect x="15" y="0" width="3" height="11" rx="1" fill="white" opacity="0.5"/></svg>
+                  <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M8 11C6.2 9.2 2.6 7.4 0.2 6C2 3.4 4.8 1.8 8 1.8C11.2 1.8 14 3.4 15.8 6C13.4 7.4 9.8 9.2 8 11Z" fill="white"/></svg>
+                  <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="1" y="1" width="21" height="10" rx="2.5" stroke="white" stroke-opacity="0.7"/><rect x="3" y="3" width="16" height="6" rx="1" fill="white"/><rect x="23" y="4" width="1.5" height="4" rx="0.5" fill="white" opacity="0.5"/></svg>
+                </span>
+              </div>
+
+              <!-- App header -->
+              <div class="app-header">
+                <div class="app-header-row">
+                  <span class="app-greeting">Olá, Lucas</span>
+                  <span class="app-bell">🔔</span>
+                </div>
+                <div class="app-portfolio">
+                  <span class="app-portfolio-label">PATRIMÔNIO TOTAL</span>
+                  <div class="app-portfolio-value">R$ 142.380,<span class="app-portfolio-cents">42</span></div>
+                  <div class="app-portfolio-change">+R$ 2.418 <span>(+1,72%)</span></div>
+                </div>
+              </div>
+
+              <!-- Tabs -->
+              <div class="app-tabs">
+                <span class="app-tab app-tab-active">Carteira</span>
+                <span class="app-tab">Mercado</span>
+                <span class="app-tab">Proventos</span>
+              </div>
+
+              <!-- Asset list -->
+              <div class="app-asset-list">
+                <div class="app-asset" v-for="asset in mockAssets" :key="asset.ticker">
+                  <div class="app-asset-icon" :style="{ background: asset.bg }">{{ asset.initials }}</div>
+                  <div class="app-asset-info">
+                    <div class="app-asset-ticker">{{ asset.ticker }}</div>
+                    <div class="app-asset-name">{{ asset.name }}</div>
+                  </div>
+                  <div class="app-asset-meta">
+                    <div class="app-asset-price">R$ {{ asset.price }}</div>
+                    <div class="app-asset-change" :class="asset.up ? 'pos' : 'neg'">
+                      {{ asset.up ? '+' : '' }}{{ asset.change }}%
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Bottom nav -->
+              <div class="app-bottom-nav">
+                <div class="app-nav-item app-nav-active">
+                  <div class="app-nav-icon">●</div>
+                  <span>Home</span>
+                </div>
+                <div class="app-nav-item">
+                  <div class="app-nav-icon">○</div>
+                  <span>Mercado</span>
+                </div>
+                <div class="app-nav-item">
+                  <div class="app-nav-icon">○</div>
+                  <span>IA</span>
+                </div>
+                <div class="app-nav-item">
+                  <div class="app-nav-icon">○</div>
+                  <span>Perfil</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="iphone-caption">
+          <div class="iphone-eyebrow">{{ eyebrow || '[ SUA CARTEIRA · TEMPO REAL ]' }}</div>
+          <h2 class="iphone-title">{{ title || 'Tudo numa tela só.' }}</h2>
+          <p class="iphone-sub">{{ subtitle || 'Ações, FIIs, ETFs, BDRs, renda fixa. Importa via Excel ou Open Finance e a Redentia faz o resto. Rentabilidade ponderada, dividendos calculados, alertas inteligentes.' }}</p>
+          <div class="iphone-tag">{{ cta || 'redentia.com.br' }}</div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           VARIANT · IPHONE AI CHAT (iMessage-style conversation)
+           ============================================================ -->
+      <div v-else-if="variant === 'iphone-ai-chat'" class="body iphone-body">
+        <div class="iphone">
+          <div class="iphone-frame">
+            <div class="iphone-notch"></div>
+            <div class="iphone-screen iphone-screen-app">
+              <div class="status-bar">
+                <span class="status-time">9:41</span>
+                <span class="status-icons">
+                  <svg width="18" height="12" viewBox="0 0 18 12" fill="none"><rect x="0" y="7" width="3" height="4" rx="1" fill="white"/><rect x="5" y="5" width="3" height="6" rx="1" fill="white"/><rect x="10" y="2" width="3" height="9" rx="1" fill="white"/><rect x="15" y="0" width="3" height="11" rx="1" fill="white" opacity="0.5"/></svg>
+                  <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M8 11C6.2 9.2 2.6 7.4 0.2 6C2 3.4 4.8 1.8 8 1.8C11.2 1.8 14 3.4 15.8 6C13.4 7.4 9.8 9.2 8 11Z" fill="white"/></svg>
+                  <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="1" y="1" width="21" height="10" rx="2.5" stroke="white" stroke-opacity="0.7"/><rect x="3" y="3" width="16" height="6" rx="1" fill="white"/><rect x="23" y="4" width="1.5" height="4" rx="0.5" fill="white" opacity="0.5"/></svg>
+                </span>
+              </div>
+
+              <!-- Chat header -->
+              <div class="chat-header">
+                <div class="chat-avatar">
+                  <img src="/brand/logo-icon.svg" alt="Redentia" />
+                </div>
+                <div class="chat-header-info">
+                  <div class="chat-header-name">Assessor Redentia</div>
+                  <div class="chat-header-status">
+                    <span class="chat-dot-pulse"></span>
+                    online · respondendo
+                  </div>
+                </div>
+                <div class="chat-info-btn">ⓘ</div>
+              </div>
+
+              <!-- Messages -->
+              <div class="chat-messages">
+                <div class="chat-msg chat-msg-user">
+                  <div class="chat-bubble chat-bubble-user">Vale a pena entrar em PETR4 hoje?</div>
+                  <div class="chat-time">9:38</div>
+                </div>
+
+                <div class="chat-msg chat-msg-ai">
+                  <div class="chat-bubble chat-bubble-ai">
+                    Pelo preço atual (R$ 49,03) e DY de 16,3%, PETR4 está negociando 12% abaixo do preço-teto de Bazin. Mas o setor de petróleo tem volatilidade alta — recomendo limitar a 5% da carteira.
+                  </div>
+                </div>
+                <div class="chat-msg chat-msg-ai">
+                  <div class="chat-bubble chat-bubble-ai chat-bubble-card">
+                    <div class="chat-card-label">PETR4 · DESTAQUE</div>
+                    <div class="chat-card-row"><span>Preço</span><strong>R$ 49,03</strong></div>
+                    <div class="chat-card-row"><span>DY</span><strong class="pos">16,3%</strong></div>
+                    <div class="chat-card-row"><span>Preço-teto Bazin</span><strong>R$ 55,80</strong></div>
+                  </div>
+                  <div class="chat-time">9:39 · IA</div>
+                </div>
+
+                <div class="chat-msg chat-msg-user">
+                  <div class="chat-bubble chat-bubble-user">Mostra os 3 maiores DY da bolsa</div>
+                  <div class="chat-time">9:40</div>
+                </div>
+
+                <div class="chat-msg chat-msg-ai">
+                  <div class="chat-bubble chat-bubble-ai chat-typing">
+                    <span class="chat-typing-dot"></span>
+                    <span class="chat-typing-dot"></span>
+                    <span class="chat-typing-dot"></span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Input -->
+              <div class="chat-input">
+                <div class="chat-input-field">Pergunta qualquer coisa…</div>
+                <div class="chat-send-btn">↑</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="iphone-caption">
+          <div class="iphone-eyebrow">{{ eyebrow || '[ ASSESSOR · IA · 24/7 ]' }}</div>
+          <h2 class="iphone-title">{{ title || 'Tira a dúvida na hora.' }}</h2>
+          <p class="iphone-sub">{{ subtitle || 'A IA da Redentia foi treinada no mercado brasileiro. Pergunta sobre qualquer ação, fundo, indicador ou estratégia — resposta em segundos, com dados reais e fontes citadas.' }}</p>
           <div class="iphone-tag">{{ cta || 'redentia.com.br' }}</div>
         </div>
       </div>
@@ -975,6 +1157,347 @@ const sampleTickers = [
   font-size: 15px;
   line-height: 1.35;
   color: rgba(255, 255, 255, 0.8);
+}
+
+/* ===== App-screen variant (full UI inside iPhone) ===== */
+.iphone-screen-app {
+  background: linear-gradient(180deg, #0a0b0e 0%, #14161c 100%);
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  padding: 50px 22px 18px;
+  background: linear-gradient(180deg, rgba(245, 166, 35, 0.18) 0%, transparent 100%);
+}
+.app-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.app-greeting {
+  font-family: -apple-system, 'SF Pro Display', 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+}
+.app-bell { font-size: 18px; }
+.app-portfolio {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.app-portfolio-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: #F5A623;
+  font-weight: 600;
+}
+.app-portfolio-value {
+  font-family: -apple-system, 'SF Pro Display', 'Inter', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+.app-portfolio-cents {
+  font-size: 22px;
+  opacity: 0.7;
+}
+.app-portfolio-change {
+  font-family: -apple-system, 'SF Pro Display', 'Inter', sans-serif;
+  font-size: 13px;
+  color: #00D395;
+  font-weight: 600;
+}
+.app-portfolio-change span { opacity: 0.85; }
+
+.app-tabs {
+  display: flex;
+  gap: 18px;
+  padding: 8px 22px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.app-tab {
+  font-family: -apple-system, 'SF Pro Display', 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.5);
+  padding-bottom: 6px;
+  border-bottom: 2px solid transparent;
+}
+.app-tab-active {
+  color: #fff;
+  border-bottom-color: #F5A623;
+}
+
+.app-asset-list {
+  flex: 1;
+  padding: 8px 0 70px;
+  overflow: hidden;
+}
+.app-asset {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 22px;
+}
+.app-asset + .app-asset { border-top: 1px solid rgba(255,255,255,0.04); }
+.app-asset-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: -apple-system, 'SF Pro Display', 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  color: #fff;
+  flex-shrink: 0;
+}
+.app-asset-info { flex: 1; min-width: 0; }
+.app-asset-ticker {
+  font-family: -apple-system, 'SF Pro Display', 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.15;
+}
+.app-asset-name {
+  font-family: -apple-system, 'SF Pro Display', 'Inter', sans-serif;
+  font-size: 11px;
+  color: rgba(255,255,255,0.55);
+  margin-top: 1px;
+}
+.app-asset-meta {
+  text-align: right;
+  font-family: -apple-system, 'SF Pro Display', 'Inter', sans-serif;
+}
+.app-asset-price {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+.app-asset-change {
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 1px;
+  font-variant-numeric: tabular-nums;
+}
+.app-asset-change.pos { color: #00D395; }
+.app-asset-change.neg { color: #FF4747; }
+
+.app-bottom-nav {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0 20px;
+  background: rgba(10,11,14,0.95);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.app-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-family: -apple-system, 'SF Pro Display', 'Inter', sans-serif;
+  font-size: 9px;
+  color: rgba(255,255,255,0.4);
+}
+.app-nav-active { color: #F5A623; }
+.app-nav-icon { font-size: 14px; line-height: 1; }
+
+/* ===== Chat (iMessage style) ===== */
+.chat-header {
+  padding: 50px 18px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(180deg, rgba(245, 166, 35, 0.12) 0%, transparent 100%);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.chat-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #F5A623;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px;
+  flex-shrink: 0;
+}
+.chat-avatar img { width: 100%; height: 100%; }
+.chat-header-info { flex: 1; }
+.chat-header-name {
+  font-family: -apple-system, 'SF Pro Display', 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.15;
+}
+.chat-header-status {
+  font-family: -apple-system, 'SF Pro Display', 'Inter', sans-serif;
+  font-size: 10px;
+  color: rgba(255,255,255,0.55);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 1px;
+}
+.chat-dot-pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #00D395;
+  box-shadow: 0 0 8px #00D395;
+}
+.chat-info-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(245, 166, 35, 0.15);
+  color: #F5A623;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.chat-messages {
+  flex: 1;
+  padding: 12px 14px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+}
+.chat-msg {
+  display: flex;
+  flex-direction: column;
+  max-width: 84%;
+}
+.chat-msg-user { align-self: flex-end; align-items: flex-end; }
+.chat-msg-ai { align-self: flex-start; align-items: flex-start; }
+.chat-bubble {
+  font-family: -apple-system, 'SF Pro Display', 'Inter', sans-serif;
+  font-size: 13px;
+  line-height: 1.4;
+  padding: 9px 13px;
+  border-radius: 18px;
+  word-wrap: break-word;
+}
+.chat-bubble-user {
+  background: linear-gradient(135deg, #F5A623 0%, #ec9210 100%);
+  color: #0a0b0e;
+  font-weight: 500;
+  border-bottom-right-radius: 4px;
+}
+.chat-bubble-ai {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border-bottom-left-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.04);
+}
+.chat-bubble-card {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 12px 14px;
+  background: rgba(245, 166, 35, 0.1);
+  border: 1px solid rgba(245, 166, 35, 0.3);
+}
+.chat-card-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: #F5A623;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.chat-card-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: rgba(255,255,255,0.7);
+}
+.chat-card-row strong {
+  color: #fff;
+  font-weight: 600;
+}
+.chat-card-row strong.pos { color: #00D395; }
+.chat-time {
+  font-family: -apple-system, 'SF Pro Display', 'Inter', sans-serif;
+  font-size: 9px;
+  color: rgba(255,255,255,0.4);
+  margin-top: 3px;
+  padding: 0 8px;
+}
+.chat-typing {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 16px !important;
+}
+.chat-typing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+  animation: chat-typing-bounce 1.2s infinite;
+}
+.chat-typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.chat-typing-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes chat-typing-bounce {
+  0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-3px); }
+}
+
+.chat-input {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 10px 14px 18px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background: rgba(10,11,14,0.95);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.chat-input-field {
+  flex: 1;
+  padding: 9px 14px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 9999px;
+  font-family: -apple-system, 'SF Pro Display', 'Inter', sans-serif;
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.chat-send-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #F5A623;
+  color: #0a0b0e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  flex-shrink: 0;
 }
 
 .iphone-caption {

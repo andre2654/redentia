@@ -92,6 +92,30 @@ const title = computed(
 )
 const label = computed(() => firstString(route.query.label) || defaultLabel())
 
+const router = useRouter()
+const previewControls = computed(() => [
+  {
+    id: 'limit',
+    label: 'Quantidade',
+    type: 'select' as const,
+    param: 'limit',
+    value: String(limit.value),
+    options: [
+      { label: '5 ativos', value: '5' },
+      { label: '6 ativos', value: '6' },
+      { label: '8 ativos', value: '8' },
+      { label: '10 ativos', value: '10' },
+    ],
+  },
+  { id: 'title', label: 'Título', type: 'text' as const, param: 'title', value: title.value },
+  { id: 'label', label: 'Rótulo / data', type: 'text' as const, param: 'label', value: label.value },
+])
+
+function resetControls() {
+  // keep the side param so the route still resolves
+  router.replace({ query: {} })
+}
+
 // Hardcoded Redentia palette.
 const positiveColor = computed(() => '#00D395')
 const negativeColor = computed(() => '#FF4747')
@@ -232,6 +256,11 @@ function formatPercent(changePercent: number | null): string {
 </script>
 
 <template>
+  <MoleculesCreativePreviewControls
+    :creative-name="`RANKING · ${sideParam.toUpperCase()}`"
+    :controls="previewControls"
+    @reset="resetControls"
+  >
   <div class="frame" :class="theme">
     <div
       class="card"
@@ -295,6 +324,7 @@ function formatPercent(changePercent: number | null): string {
       </div>
     </div>
   </div>
+  </MoleculesCreativePreviewControls>
 </template>
 
 <style scoped>

@@ -40,9 +40,20 @@ if (import.meta.server) {
   }
 }
 
+const router = useRouter()
 const tickerA = computed(() => (firstString(route.query.tickerA) || 'PETR4').toUpperCase())
 const tickerB = computed(() => (firstString(route.query.tickerB) || 'VALE3').toUpperCase())
 const subtitle = computed(() => firstString(route.query.subtitle) || 'Comparativo')
+
+const previewControls = computed(() => [
+  { id: 'tickerA', label: 'Ativo A', type: 'text' as const, param: 'tickerA', placeholder: 'PETR4', value: tickerA.value },
+  { id: 'tickerB', label: 'Ativo B', type: 'text' as const, param: 'tickerB', placeholder: 'VALE3', value: tickerB.value },
+  { id: 'subtitle', label: 'Subtítulo', type: 'text' as const, param: 'subtitle', placeholder: 'Comparativo', value: subtitle.value },
+])
+
+function resetControls() {
+  router.replace({ query: {} })
+}
 
 // Hardcoded Redentia palette — creatives are tenant-agnostic by design.
 const primaryColor = computed(() => '#F5A623')
@@ -239,6 +250,11 @@ const indicators = computed(() => [
 </script>
 
 <template>
+  <MoleculesCreativePreviewControls
+    creative-name="ASSET COMPARE"
+    :controls="previewControls"
+    @reset="resetControls"
+  >
   <div class="frame">
     <div
       class="card"
@@ -354,6 +370,7 @@ const indicators = computed(() => [
       </div>
     </div>
   </div>
+  </MoleculesCreativePreviewControls>
 </template>
 
 <style scoped>

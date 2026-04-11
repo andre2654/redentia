@@ -114,6 +114,30 @@ const headline2Parts = computed(() => {
 
 const accent = computed(() => firstString(route.query.accent) || '#F5A623')
 
+const router = useRouter()
+const previewControls = computed(() => [
+  { id: 'notifTitle', label: 'Título da notificação', type: 'text' as const, param: 'notifTitle', value: notifTitle.value },
+  { id: 'notifMessage', label: 'Mensagem', type: 'text' as const, param: 'notifMessage', value: firstString(route.query.notifMessage) || '' },
+  { id: 'headline', label: 'Headline', type: 'text' as const, param: 'headline', value: firstString(route.query.headline) || '' },
+  { id: 'highlight', label: 'Palavra destacada', type: 'text' as const, param: 'highlight', value: highlight.value, hint: 'cor primária' },
+  {
+    id: 'format',
+    label: 'Formato',
+    type: 'select' as const,
+    param: 'format',
+    value: firstString(route.query.format) || 'square',
+    options: [
+      { label: 'Square (1080×1080)', value: 'square' },
+      { label: 'Story (1080×1920)', value: 'story' },
+      { label: 'Feed (1080×1350)', value: 'feed' },
+    ],
+  },
+])
+
+function resetControls() {
+  router.replace({ query: {} })
+}
+
 const cardOpacity = computed(() => {
   const raw = firstString(route.query.cardOpacity)
   const n = raw ? Number(raw) : 1
@@ -152,6 +176,11 @@ useHead(() => ({
 </script>
 
 <template>
+  <MoleculesCreativePreviewControls
+    creative-name="MARKET UPDATE"
+    :controls="previewControls"
+    @reset="resetControls"
+  >
   <div class="frame">
     <div
       class="card"
@@ -202,6 +231,7 @@ useHead(() => ({
       </footer>
     </div>
   </div>
+  </MoleculesCreativePreviewControls>
 </template>
 
 <style scoped>
