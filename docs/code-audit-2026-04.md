@@ -31,6 +31,7 @@ acontecer — sempre confirme com `grep` antes de deletar.
 | `atoms/installAppBanner.vue` | Usado via auto-import `<AtomsInstallAppBanner />` em pages — busque com `grep -r "AtomsInstallAppBanner"` |
 | `atoms/devPortalFooter.vue` | Usado pelo layout `api-portal.vue` (criado nesta sessão) |
 | `molecules/creativePreviewControls.vue` | Usado pelos creatives (`asset-spotlight`, `growth-race`, etc) |
+| ~~`molecules/searchAssets.vue`~~ | **DELETADO POR ENGANO** em 2026-04-11 e restaurado — era referenciado em `layouts/default.vue`, `layouts/unauthenticated.vue`, `pages/index.vue`, `components/molecules/MobileMenuOverlay.vue` via auto-import `<MoleculesSearchAssets />`. O grep do audit procurou só o basename `searchAssets` mas não o PascalCase `MoleculesSearchAssets`. **Lição:** sempre testar com BOTH `basename` E `PascalCase(path)`. |
 
 ## Composables
 
@@ -76,16 +77,42 @@ rm app/components/molecules/searchAssets.vue
 
 ## Como rodar a auditoria de novo
 
-```bash
-# Para um componente específico:
-grep -r "AtomsInstallAppBanner\|atoms/installAppBanner" app/ --include='*.vue' --include='*.ts'
+**Cuidado com auto-import do Nuxt:** um arquivo em
+`app/components/atoms/foo/barBaz.vue` vira
+`<AtomsFooBarBaz />` (PascalCase do path inteiro, não só o
+basename). O script abaixo já faz essa derivação.
 
-# Para todos os components:
-for f in app/components/**/*.vue; do
-  name=$(basename "$f" .vue)
-  count=$(grep -r "$name" app/ --include='*.vue' --include='*.ts' | wc -l)
-  echo "$count  $f"
-done | sort -n
+```bash
+# Checa TANTO basename (lowercase) QUANTO PascalCase derivado
+# do path completo. Deleta só se ambos forem 0.
+audit() {
+  cd app/components
+  for f in $(find . -name '*.vue'); do
+    rel="${f#./}"
+    basename=$(basename "$rel" .vue)
+    # Derive PascalCase: e.g. atoms/form/inputPassword.vue → AtomsFormInputPassword
+    pascal=$(echo "${rel%.vue}" | awk -F/ '{
+      out=""
+      for (i=1; i<=NF; i++) {
+        s=$i
+        out = out toupper(substr(s,1,1)) substr(s,2)
+      }
+      print out
+    }')
+    refs_basename=$(grep -rl "\b$basename\b" ../ --include='*.vue' --include='*.ts' 2>/dev/null | grep -v "$f" | wc -l)
+    refs_pascal=$(grep -rl "\b$pascal\b" ../ --include='*.vue' --include='*.ts' 2>/dev/null | grep -v "$f" | wc -l)
+    total=$((refs_basename + refs_pascal))
+    echo "$total  $rel  (base=$refs_basename, pascal=$refs_pascal as $pascal)"
+  done | sort -n | head -30
+  cd - > /dev/null
+}
+audit
+```
+
+**Antes de deletar qualquer componente**, sempre rode o check
+manual também:
+```bash
+rg "MoleculesSearchAssets|SearchAssets" app/
 ```
 
 ## Observações

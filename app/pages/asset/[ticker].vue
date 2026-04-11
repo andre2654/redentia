@@ -1597,6 +1597,1365 @@
       </div>
     </div>
 
+    <!-- ========== PLAYBOOK VARIANT (Saraiva Invest — calm method + chunky sticker accents) ========== -->
+    <!--
+      Playbook asset page: dark profundo + amber + chunky sticker highlights
+      no estilo do logo. Dados densos mas calmos, framing do "método aplicado
+      a este ativo". Sem alertas piscantes, sem badges hype.
+
+      Estrutura:
+        §1  Lower-third com data + catchphrase "cabeça fria"
+        §2  Hero: ticker + name + sticker-price + variation
+        §3  "O método diz" — 4 cards horizontais (P/L, DY, Preço-teto, ROE)
+        §4  Checklist do investidor (se houver)
+        §5  Fundamentais
+        §6  Signature closing — foto do André + quote
+    -->
+    <div
+      v-else-if="brand.assetPage.variant === 'playbook'"
+      class="pb-asset-root relative z-10 flex flex-col"
+      :style="{ backgroundColor: brand.colors.background, color: brand.colors.text }"
+    >
+      <!-- Atmospheric glows -->
+      <div class="pointer-events-none absolute inset-0 overflow-hidden">
+        <div
+          class="absolute -top-40 right-0 h-[560px] w-[900px] rounded-full blur-3xl opacity-20"
+          :style="{ background: `radial-gradient(ellipse, ${brand.colors.primary}, transparent 65%)` }"
+        />
+        <div
+          class="absolute inset-0 opacity-[0.04]"
+          :style="{
+            backgroundImage: `radial-gradient(${brand.colors.text} 1px, transparent 1px)`,
+            backgroundSize: '40px 40px',
+          }"
+        />
+      </div>
+
+      <!-- §1 · Top lower-third strip -->
+      <div class="pb-asset-strip relative z-10 mx-auto w-full max-w-7xl px-6 pt-10 md:px-10 md:pt-12">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div
+              class="pb-asset-chip inline-flex items-center gap-2 rounded-full px-4 py-1.5"
+              :style="{
+                backgroundColor: brand.colors.primary,
+                color: brand.colors.background,
+                boxShadow: `0 6px 20px -6px ${brand.colors.primary}80, 0 0 0 2px ${brand.colors.background}, 0 0 0 4px ${brand.colors.primary}40`,
+              }"
+            >
+              <span class="relative flex size-1.5">
+                <span class="absolute inline-flex size-1.5 animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.background }" />
+                <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: brand.colors.background }" />
+              </span>
+              <span class="text-[10px] font-bold uppercase tracking-[0.15em]">CABEÇA FRIA · {{ tickerUpper }}</span>
+            </div>
+            <span class="text-[11px] font-medium uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
+              Análise do método · {{ assetEditorialDate }}
+            </span>
+          </div>
+          <span class="text-[11px] font-medium uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
+            B3 · {{ tickerUpper }}
+          </span>
+        </div>
+      </div>
+
+      <!-- §2 · Hero: ticker + giant price -->
+      <section class="relative z-10 mx-auto w-full max-w-7xl px-6 py-16 md:px-10 md:py-24">
+        <div class="grid gap-10 md:grid-cols-12 md:gap-12">
+          <!-- LEFT: ticker identity -->
+          <div class="md:col-span-7">
+            <!-- Logo + ticker row -->
+            <div class="mb-6 flex items-center gap-5">
+              <img
+                v-if="asset?.logo"
+                :src="asset.logo"
+                :alt="tickerUpper"
+                class="size-20 rounded-2xl object-cover"
+                :style="{ backgroundColor: brand.colors.surface, border: `2px solid ${brand.colors.border}` }"
+              />
+              <div
+                v-else
+                class="flex size-20 items-center justify-center rounded-2xl text-[26px] font-black"
+                :style="{ backgroundColor: brand.colors.primary, color: brand.colors.background }"
+              >
+                {{ tickerUpper.slice(0, 2) }}
+              </div>
+              <div>
+                <div class="pb-asset-ticker text-[52px] font-black leading-[0.9] tracking-tight md:text-[72px]" :style="{ color: brand.colors.text }">
+                  {{ tickerUpper }}
+                </div>
+                <div class="mt-1 text-[14px] font-medium" :style="{ color: brand.colors.textMuted }">
+                  {{ asset?.name || 'Empresa listada na B3' }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Price row -->
+            <div class="flex items-baseline gap-5">
+              <div class="pb-asset-price" :style="{ color: brand.colors.text }">
+                <span class="text-[14px] font-medium uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">R$&nbsp;</span>
+                <span class="text-[76px] font-black leading-none tabular-nums md:text-[96px]">
+                  {{ (asset?.market_price ?? 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+                </span>
+              </div>
+              <div
+                class="pb-asset-change inline-flex items-center gap-1.5 rounded-full px-4 py-2"
+                :style="{
+                  backgroundColor: (asset?.change_percent ?? 0) >= 0 ? brand.colors.positive : brand.colors.negative,
+                  color: brand.colors.background,
+                  boxShadow: `0 6px 20px -6px ${(asset?.change_percent ?? 0) >= 0 ? brand.colors.positive : brand.colors.negative}80`,
+                }"
+              >
+                <UIcon
+                  :name="(asset?.change_percent ?? 0) >= 0 ? 'i-lucide-trending-up' : 'i-lucide-trending-down'"
+                  class="size-4"
+                />
+                <span class="text-[14px] font-bold tabular-nums">
+                  {{ (asset?.change_percent ?? 0) >= 0 ? '+' : '' }}{{ (asset?.change_percent ?? 0).toFixed(2) }}%
+                </span>
+              </div>
+            </div>
+
+            <p class="mt-6 max-w-xl text-[14px]" :style="{ color: `${brand.colors.text}A0` }">
+              {{ lastUpdateLabel ? `Última atualização: ${lastUpdateLabel}` : 'Cotação em tempo real.' }}
+              Zero alerta vermelho piscante — só o dado.
+            </p>
+          </div>
+
+          <!-- RIGHT: sector + type badge -->
+          <div class="md:col-span-5">
+            <div
+              class="flex flex-col gap-5 rounded-3xl border p-8"
+              :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.surface}80` }"
+            >
+              <div class="text-[11px] font-bold uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
+                Ficha técnica
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <div class="text-[10px] font-medium uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">Tipo</div>
+                  <div class="mt-1 text-[15px] font-bold" :style="{ color: brand.colors.text }">
+                    {{ asset?.type === 'STOCK' ? 'Ação' : asset?.type === 'REIT' ? 'FII' : asset?.type === 'ETF' ? 'ETF' : asset?.type || '—' }}
+                  </div>
+                </div>
+                <div>
+                  <div class="text-[10px] font-medium uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">Setor</div>
+                  <div class="mt-1 truncate text-[15px] font-bold" :style="{ color: brand.colors.text }">
+                    {{ asset?.sector || '—' }}
+                  </div>
+                </div>
+                <div>
+                  <div class="text-[10px] font-medium uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">Market Cap</div>
+                  <div class="mt-1 text-[15px] font-bold tabular-nums" :style="{ color: brand.colors.text }">
+                    {{ formatMarketCapShort(asset?.market_cap) || '—' }}
+                  </div>
+                </div>
+                <div>
+                  <div class="text-[10px] font-medium uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">Listado desde</div>
+                  <div class="mt-1 text-[15px] font-bold tabular-nums" :style="{ color: brand.colors.text }">
+                    {{ asset?.founded_at ? new Date(asset.founded_at).getFullYear() : '—' }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- §3 · "O método diz" — indicator cards -->
+      <section class="relative z-10 border-y" :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.surface}40` }">
+        <div class="mx-auto max-w-7xl px-6 py-20 md:px-10 md:py-28">
+          <div class="mb-12 max-w-3xl">
+            <div class="mb-4 text-[11px] font-bold uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
+              — O método diz
+            </div>
+            <h2
+              class="leading-[0.95] tracking-tight"
+              :style="{
+                color: brand.colors.text,
+                fontSize: 'clamp(2rem, 5vw, 3.5rem)',
+                fontFamily: `'Fredoka', 'Inter', sans-serif`,
+                fontWeight: 700,
+              }"
+            >
+              O que os dados<br />
+              dizem sobre <span class="pb-asset-sticker" :style="{ color: brand.colors.primary }">{{ tickerUpper }}.</span>
+            </h2>
+          </div>
+
+          <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+            <!-- P/L -->
+            <div
+              class="flex flex-col gap-4 rounded-3xl border p-7"
+              :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.background }"
+            >
+              <div class="flex items-center justify-between">
+                <div class="text-[10px] font-bold uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
+                  Preço / Lucro
+                </div>
+                <UIcon name="i-lucide-scale" class="size-4" :style="{ color: brand.colors.textMuted }" />
+              </div>
+              <div class="text-[46px] font-black leading-none tabular-nums" :style="{ color: brand.colors.text, fontFamily: `'Fredoka', sans-serif` }">
+                {{ basicIndicators?.pl || '—' }}
+              </div>
+              <div class="text-[12px]" :style="{ color: brand.colors.textMuted }">
+                Relação entre preço atual e lucro por ação.
+              </div>
+            </div>
+
+            <!-- DY -->
+            <div
+              class="flex flex-col gap-4 rounded-3xl border p-7"
+              :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.background }"
+            >
+              <div class="flex items-center justify-between">
+                <div class="text-[10px] font-bold uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
+                  Dividend Yield
+                </div>
+                <UIcon name="i-lucide-coins" class="size-4" :style="{ color: brand.colors.textMuted }" />
+              </div>
+              <div class="text-[46px] font-black leading-none tabular-nums" :style="{ color: brand.colors.positive, fontFamily: `'Fredoka', sans-serif` }">
+                {{ basicIndicators?.dividendYield || '—' }}
+              </div>
+              <div class="text-[12px]" :style="{ color: brand.colors.textMuted }">
+                Retorno em dividendos nos últimos 12 meses.
+              </div>
+            </div>
+
+            <!-- P/VPA -->
+            <div
+              class="flex flex-col gap-4 rounded-3xl border p-7"
+              :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.background }"
+            >
+              <div class="flex items-center justify-between">
+                <div class="text-[10px] font-bold uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
+                  Preço / VPA
+                </div>
+                <UIcon name="i-lucide-layout-grid" class="size-4" :style="{ color: brand.colors.textMuted }" />
+              </div>
+              <div class="text-[46px] font-black leading-none tabular-nums" :style="{ color: brand.colors.text, fontFamily: `'Fredoka', sans-serif` }">
+                {{ basicIndicators?.pvpa || '—' }}
+              </div>
+              <div class="text-[12px]" :style="{ color: brand.colors.textMuted }">
+                Preço em relação ao valor patrimonial.
+              </div>
+            </div>
+
+            <!-- ROE -->
+            <div
+              class="flex flex-col gap-4 rounded-3xl border p-7"
+              :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.background }"
+            >
+              <div class="flex items-center justify-between">
+                <div class="text-[10px] font-bold uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
+                  ROE
+                </div>
+                <UIcon name="i-lucide-trending-up" class="size-4" :style="{ color: brand.colors.textMuted }" />
+              </div>
+              <div class="text-[46px] font-black leading-none tabular-nums" :style="{ color: brand.colors.text, fontFamily: `'Fredoka', sans-serif` }">
+                {{ basicIndicators?.roe || '—' }}
+              </div>
+              <div class="text-[12px]" :style="{ color: brand.colors.textMuted }">
+                Retorno sobre patrimônio líquido.
+              </div>
+            </div>
+          </div>
+
+          <!-- Method commentary -->
+          <div
+            class="mt-10 flex items-start gap-4 rounded-3xl border p-6 md:p-8"
+            :style="{ borderColor: `${brand.colors.primary}40`, backgroundColor: `${brand.colors.primary}08` }"
+          >
+            <div
+              class="flex size-10 shrink-0 items-center justify-center rounded-xl"
+              :style="{ backgroundColor: brand.colors.primary, color: brand.colors.background }"
+            >
+              <UIcon name="i-lucide-flask-conical" class="size-5" />
+            </div>
+            <div class="flex-1">
+              <div class="text-[11px] font-bold uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
+                Nota do método
+              </div>
+              <p class="mt-2 text-[14px] leading-relaxed" :style="{ color: brand.colors.text }">
+                Esses números são um ponto de partida, não uma sentença. O que importa é o histórico de consistência, a qualidade da gestão e o ciclo do setor.
+                <strong :style="{ color: brand.colors.primary }">Cabeça fria</strong> e zero FOMO.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           §3.5 · CABEÇA QUENTE vs CABEÇA FRIA — debate split
+           ============================================================
+           Os dois personagens reagem ao MESMO ativo de jeitos opostos.
+           Reações dinâmicas baseadas no preço atual, P/L, DY, etc.
+           Pedagógico: o leitor vê o ridículo do impulso e a sanidade
+           do método lado a lado, ambos olhando os mesmos dados.
+      -->
+      <section class="relative z-10 overflow-hidden">
+        <!-- Background flame on left, amber on right -->
+        <div class="pointer-events-none absolute inset-0">
+          <div
+            class="absolute -left-32 top-1/2 h-[420px] w-[420px] -translate-y-1/2 rounded-full blur-3xl opacity-[0.15]"
+            style="background: radial-gradient(circle, #EF4444, transparent 65%);"
+          />
+          <div
+            class="absolute -right-32 top-1/2 h-[420px] w-[420px] -translate-y-1/2 rounded-full blur-3xl opacity-[0.15]"
+            :style="{ background: `radial-gradient(circle, ${brand.colors.primary}, transparent 65%)` }"
+          />
+        </div>
+
+        <div class="relative mx-auto max-w-7xl px-6 py-20 md:px-10 md:py-28">
+          <!-- Header -->
+          <div class="mb-14 max-w-3xl">
+            <div class="mb-4 text-[11px] font-bold uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
+              — Como cada um vê
+            </div>
+            <h2
+              class="leading-[0.95] tracking-tight"
+              :style="{
+                color: brand.colors.text,
+                fontSize: 'clamp(2rem, 5vw, 3.75rem)',
+                fontFamily: `'Fredoka', 'Inter', sans-serif`,
+                fontWeight: 700,
+              }"
+            >
+              <span class="pb-asset-sticker pb-asset-sticker-cold" :style="{ color: brand.colors.primary }">Cabeça Fria</span>
+              vs.
+              <span class="pb-asset-sticker pb-asset-sticker-hot">Cabeça Quente.</span><br />
+              Olhando o mesmo {{ tickerUpper }}.
+            </h2>
+            <p class="mt-6 max-w-2xl text-[15px] leading-relaxed" :style="{ color: `${brand.colors.text}B0` }">
+              Os mesmos números aí em cima podem ser lidos de dois jeitos. Um destrói patrimônio. O outro constrói.
+              <strong :style="{ color: brand.colors.text }">Adivinha qual é qual.</strong>
+            </p>
+          </div>
+
+          <!-- Debate cards: villain LEFT, hero RIGHT -->
+          <div class="grid gap-6 md:grid-cols-2">
+            <!-- LEFT: Cabeça Quente -->
+            <div
+              class="pb-asset-villain relative flex flex-col gap-6 rounded-3xl border-2 p-8 md:p-10"
+              style="border-color: #EF4444; background: rgba(239, 68, 68, 0.05);"
+            >
+              <!-- Avatar -->
+              <div class="flex items-center gap-4">
+                <div class="pb-asset-villain-avatar relative shrink-0">
+                  <div
+                    class="flex size-16 items-center justify-center rounded-full"
+                    style="background: #EF4444; box-shadow: 0 0 0 3px #0B0B0E, 0 0 0 6px #EF4444, 0 16px 32px -8px rgba(239, 68, 68, 0.5);"
+                  >
+                    <UIcon name="i-lucide-flame" class="size-8 text-white" />
+                  </div>
+                  <!-- sweat drops -->
+                  <div class="pb-asset-sweat absolute -right-1 top-1 size-2.5 rounded-full bg-blue-300 opacity-80"></div>
+                  <div class="pb-asset-sweat pb-asset-sweat-2 absolute -left-2 top-4 size-2 rounded-full bg-blue-300 opacity-80"></div>
+                </div>
+                <div>
+                  <div class="text-[10px] font-bold uppercase tracking-[0.18em]" style="color: #EF4444;">
+                    O VILÃO REAGE
+                  </div>
+                  <div class="text-[24px] font-black leading-tight md:text-[28px]" :style="{ color: brand.colors.text, fontFamily: `'Fredoka', sans-serif` }">
+                    Cabeça Quente.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Reactions to actual data -->
+              <div class="flex flex-col gap-4">
+                <!-- Reaction to price/change -->
+                <div class="flex items-start gap-3 rounded-2xl border px-4 py-3" style="border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.08);">
+                  <UIcon name="i-lucide-megaphone" class="size-4 shrink-0 mt-0.5" style="color: #EF4444;" />
+                  <div class="text-[14px] font-bold leading-snug italic" style="color: #FF8A8A;">
+                    <template v-if="(asset?.change_percent ?? 0) > 3">
+                      "+{{ Number(asset?.change_percent || 0).toFixed(1) }}%?! PERDI A CORRIDA! COMPRA TUDO ANTES QUE SUBA MAIS!"
+                    </template>
+                    <template v-else-if="(asset?.change_percent ?? 0) < -3">
+                      "{{ Number(asset?.change_percent || 0).toFixed(1) }}%?! VAI ZERAR! VENDE TUDO AGORA, SALVA O QUE DÁ!"
+                    </template>
+                    <template v-else-if="(asset?.change_percent ?? 0) > 0">
+                      "Só +{{ Number(asset?.change_percent || 0).toFixed(1) }}%?! Que tédio! Vou trocar por algo que sobe mais rápido!"
+                    </template>
+                    <template v-else>
+                      "{{ Number(asset?.change_percent || 0).toFixed(1) }}%?! Já começou a queda! Foge enquanto pode!"
+                    </template>
+                  </div>
+                </div>
+
+                <!-- Reaction to DY -->
+                <div v-if="basicIndicators?.dividendYield" class="flex items-start gap-3 rounded-2xl border px-4 py-3" style="border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.08);">
+                  <UIcon name="i-lucide-megaphone" class="size-4 shrink-0 mt-0.5" style="color: #EF4444;" />
+                  <div class="text-[14px] font-bold leading-snug italic" style="color: #FF8A8A;">
+                    "{{ basicIndicators.dividendYield }} de dividendo?! É O MELHOR DO BRASIL! COMPRA TUDO AGORA, MAIS TARDE EU PENSO NO PORQUÊ!"
+                  </div>
+                </div>
+
+                <!-- Reaction to P/L -->
+                <div v-if="basicIndicators?.pl" class="flex items-start gap-3 rounded-2xl border px-4 py-3" style="border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.08);">
+                  <UIcon name="i-lucide-megaphone" class="size-4 shrink-0 mt-0.5" style="color: #EF4444;" />
+                  <div class="text-[14px] font-bold leading-snug italic" style="color: #FF8A8A;">
+                    "P/L de {{ basicIndicators.pl }}?! Tá BARATO DEMAIS, certeza que tem coisa errada, FOGE!"
+                  </div>
+                </div>
+              </div>
+
+              <!-- Disclaimer footer -->
+              <div class="mt-auto flex items-start gap-2 border-t pt-5" style="border-color: rgba(239, 68, 68, 0.3);">
+                <UIcon name="i-lucide-x-circle" class="size-3.5 shrink-0 mt-0.5" style="color: #EF4444;" />
+                <span class="text-[11px] font-bold uppercase tracking-[0.1em] leading-snug" style="color: #FF8A8A;">
+                  Isso não é uma estratégia. É um diagnóstico.
+                </span>
+              </div>
+            </div>
+
+            <!-- RIGHT: Cabeça Fria -->
+            <div
+              class="pb-asset-hero relative flex flex-col gap-6 rounded-3xl border-2 p-8 md:p-10"
+              :style="{ borderColor: brand.colors.primary, backgroundColor: `${brand.colors.primary}08` }"
+            >
+              <!-- Avatar -->
+              <div class="flex items-center gap-4">
+                <div class="shrink-0">
+                  <img
+                    v-if="brand.hero.image"
+                    :src="brand.hero.image"
+                    :alt="brand.founder.name"
+                    class="size-16 rounded-full object-cover"
+                    :style="{
+                      backgroundColor: brand.colors.primary,
+                      boxShadow: `0 0 0 3px ${brand.colors.background}, 0 0 0 6px ${brand.colors.primary}, 0 16px 32px -8px ${brand.colors.primary}80`,
+                    }"
+                  />
+                  <div
+                    v-else
+                    class="flex size-16 items-center justify-center rounded-full"
+                    :style="{
+                      backgroundColor: brand.colors.primary,
+                      boxShadow: `0 0 0 3px ${brand.colors.background}, 0 0 0 6px ${brand.colors.primary}, 0 16px 32px -8px ${brand.colors.primary}80`,
+                    }"
+                  >
+                    <UIcon name="i-lucide-snowflake" class="size-8" :style="{ color: brand.colors.background }" />
+                  </div>
+                </div>
+                <div>
+                  <div class="text-[10px] font-bold uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
+                    O HERÓI RESPONDE
+                  </div>
+                  <div class="text-[24px] font-black leading-tight md:text-[28px]" :style="{ color: brand.colors.text, fontFamily: `'Fredoka', sans-serif` }">
+                    Cabeça Fria.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Calm interpretations of the same data -->
+              <div class="flex flex-col gap-4">
+                <!-- Calm reading of price -->
+                <div class="flex items-start gap-3 rounded-2xl border px-4 py-3" :style="{ borderColor: `${brand.colors.primary}40`, backgroundColor: `${brand.colors.primary}08` }">
+                  <UIcon name="i-lucide-snowflake" class="size-4 shrink-0 mt-0.5" :style="{ color: brand.colors.primary }" />
+                  <div class="text-[14px] leading-snug" :style="{ color: brand.colors.text }">
+                    Variação de
+                    <strong class="tabular-nums" :style="{ color: brand.colors.primary }">{{ (asset?.change_percent ?? 0) >= 0 ? '+' : '' }}{{ Number(asset?.change_percent || 0).toFixed(1) }}%</strong>
+                    num único dia é <strong>ruído estatístico</strong>. Decisão de investir não se toma olhando candle de 5 minutos — se toma olhando histórico de 5 anos.
+                  </div>
+                </div>
+
+                <!-- Calm reading of DY -->
+                <div v-if="basicIndicators?.dividendYield" class="flex items-start gap-3 rounded-2xl border px-4 py-3" :style="{ borderColor: `${brand.colors.primary}40`, backgroundColor: `${brand.colors.primary}08` }">
+                  <UIcon name="i-lucide-snowflake" class="size-4 shrink-0 mt-0.5" :style="{ color: brand.colors.primary }" />
+                  <div class="text-[14px] leading-snug" :style="{ color: brand.colors.text }">
+                    DY de
+                    <strong :style="{ color: brand.colors.primary }">{{ basicIndicators.dividendYield }}</strong>
+                    é uma <strong>foto, não um filme</strong>. Vai no histórico: paga há quantos anos? É consistente? Se não pagou em 2020, é armadilha — não oportunidade.
+                  </div>
+                </div>
+
+                <!-- Calm reading of P/L -->
+                <div v-if="basicIndicators?.pl" class="flex items-start gap-3 rounded-2xl border px-4 py-3" :style="{ borderColor: `${brand.colors.primary}40`, backgroundColor: `${brand.colors.primary}08` }">
+                  <UIcon name="i-lucide-snowflake" class="size-4 shrink-0 mt-0.5" :style="{ color: brand.colors.primary }" />
+                  <div class="text-[14px] leading-snug" :style="{ color: brand.colors.text }">
+                    P/L de
+                    <strong :style="{ color: brand.colors.primary }">{{ basicIndicators.pl }}</strong>
+                    pode ser desconto, pode ser problema. <strong>Estuda o setor</strong>: se o ciclo tá no fundo, é oportunidade. Se a empresa tá perdendo mercado, é armadilha.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Method footer -->
+              <div class="mt-auto flex items-start gap-2 border-t pt-5" :style="{ borderColor: `${brand.colors.primary}30` }">
+                <UIcon name="i-lucide-check-circle-2" class="size-3.5 shrink-0 mt-0.5" :style="{ color: brand.colors.primary }" />
+                <span class="text-[11px] font-bold uppercase tracking-[0.1em] leading-snug" :style="{ color: brand.colors.primary }">
+                  Isso é o método. Cabeça fria.
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           §3.7 · MOVIMENTOS NOTÁVEIS — timeline com framing dos personagens
+           ============================================================
+           Cada commentary do mercado é um momento histórico em que algo
+           aconteceu com o ativo. Aqui mostramos como timeline editorial:
+           data + magnitude + título + reação cabeça quente em vermelho +
+           leitura calma do método em ambar. É a literalização do
+           manifesto: "olha o mesmo evento por dois lados."
+      -->
+      <section
+        v-if="commentaries.length > 0"
+        class="relative z-10 border-y"
+        :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.surface}40` }"
+      >
+        <div class="mx-auto max-w-7xl px-6 py-20 md:px-10 md:py-28">
+          <!-- Header -->
+          <div class="mb-14 max-w-3xl">
+            <div class="mb-4 text-[11px] font-bold uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
+              — Movimentos notáveis
+            </div>
+            <h2
+              class="leading-[0.95] tracking-tight"
+              :style="{
+                color: brand.colors.text,
+                fontSize: 'clamp(2rem, 5vw, 3.75rem)',
+                fontFamily: `'Fredoka', 'Inter', sans-serif`,
+                fontWeight: 700,
+              }"
+            >
+              Cada movimento<br />
+              tem <span class="pb-asset-sticker" :style="{ color: brand.colors.primary }">duas leituras.</span>
+            </h2>
+            <p class="mt-6 max-w-2xl text-[15px] leading-relaxed" :style="{ color: `${brand.colors.text}B0` }">
+              Toda vez que o {{ tickerUpper }} se mexeu de forma notável, o
+              <strong style="color: #EF4444;">Cabeça Quente</strong> reagiu no impulso
+              e o <strong :style="{ color: brand.colors.primary }">Cabeça Fria</strong> respondeu no método.
+              Aqui está a história — lado a lado.
+            </p>
+          </div>
+
+          <!-- Timeline of commentaries (max 5) -->
+          <div class="flex flex-col gap-8">
+            <article
+              v-for="(c, idx) in commentaries.slice(0, 5)"
+              :key="c.id || idx"
+              class="pb-asset-event relative grid gap-6 md:grid-cols-12 md:gap-10"
+            >
+              <!-- LEFT: timestamp / magnitude -->
+              <div class="flex items-start gap-4 md:col-span-3">
+                <!-- Big rotated date sticker -->
+                <div
+                  class="pb-asset-event-date inline-flex flex-col items-center justify-center rounded-2xl px-5 py-4"
+                  :style="{
+                    backgroundColor: brand.colors.background,
+                    border: `2px solid ${brand.colors.border}`,
+                  }"
+                >
+                  <div class="text-[10px] font-bold uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">
+                    {{ formatEventMonth(c.date) }}
+                  </div>
+                  <div class="text-[32px] font-black leading-none tabular-nums" :style="{ color: brand.colors.text, fontFamily: `'Fredoka', sans-serif` }">
+                    {{ formatEventDay(c.date) }}
+                  </div>
+                  <div class="mt-1 text-[10px] font-bold uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
+                    {{ formatEventYear(c.date) }}
+                  </div>
+                </div>
+                <!-- Magnitude pill -->
+                <div
+                  class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[12px] font-bold tabular-nums"
+                  :style="{
+                    backgroundColor: (c.change_percent ?? 0) >= 0 ? `${brand.colors.positive}20` : `${brand.colors.negative}20`,
+                    color: (c.change_percent ?? 0) >= 0 ? brand.colors.positive : brand.colors.negative,
+                  }"
+                >
+                  <UIcon
+                    :name="(c.change_percent ?? 0) >= 0 ? 'i-lucide-trending-up' : 'i-lucide-trending-down'"
+                    class="size-3.5"
+                  />
+                  {{ (c.change_percent ?? 0) >= 0 ? '+' : '' }}{{ Number(c.change_percent || 0).toFixed(1) }}%
+                </div>
+              </div>
+
+              <!-- RIGHT: title + dual reading -->
+              <div class="flex flex-col gap-5 md:col-span-9">
+                <!-- Event title -->
+                <h3
+                  class="text-[20px] leading-snug md:text-[24px]"
+                  :style="{ color: brand.colors.text, fontFamily: `'Fredoka', sans-serif`, fontWeight: 700 }"
+                >
+                  {{ c.title }}
+                </h3>
+
+                <!-- Cabeça Quente reaction (red panic pill) -->
+                <div
+                  class="flex items-start gap-3 rounded-2xl border px-4 py-3"
+                  style="border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.06);"
+                >
+                  <div class="flex size-8 shrink-0 items-center justify-center rounded-full" style="background: #EF4444;">
+                    <UIcon name="i-lucide-flame" class="size-4 text-white" />
+                  </div>
+                  <div class="flex-1">
+                    <div class="text-[9px] font-bold uppercase tracking-[0.18em]" style="color: #EF4444;">
+                      Cabeça Quente reagiu
+                    </div>
+                    <div class="mt-1 text-[14px] font-bold leading-snug italic" style="color: #FF8A8A;">
+                      <template v-if="(c.change_percent ?? 0) > 5">
+                        "+{{ Number(c.change_percent || 0).toFixed(1) }}%?! COMPRA TUDO! Vai pro infinito!"
+                      </template>
+                      <template v-else-if="(c.change_percent ?? 0) > 2">
+                        "Subiu {{ Number(c.change_percent || 0).toFixed(1) }}%! AINDA DÁ TEMPO! ENTRA AGORA!"
+                      </template>
+                      <template v-else-if="(c.change_percent ?? 0) < -5">
+                        "{{ Number(c.change_percent || 0).toFixed(1) }}%?! É O FIM! VENDE TUDO ANTES QUE ZERA!"
+                      </template>
+                      <template v-else-if="(c.change_percent ?? 0) < -2">
+                        "Caiu {{ Number(c.change_percent || 0).toFixed(1) }}%! FOGE ENQUANTO PODE!"
+                      </template>
+                      <template v-else>
+                        "Mal se mexe! Que tédio! Vou trocar por uma cripto qualquer!"
+                      </template>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Cabeça Fria reading (the actual commentary, framed calmly) -->
+                <div
+                  class="flex items-start gap-3 rounded-2xl border px-5 py-4"
+                  :style="{ borderColor: `${brand.colors.primary}40`, backgroundColor: `${brand.colors.primary}08` }"
+                >
+                  <div class="flex size-8 shrink-0 items-center justify-center rounded-full" :style="{ backgroundColor: brand.colors.primary }">
+                    <UIcon name="i-lucide-snowflake" class="size-4" :style="{ color: brand.colors.background }" />
+                  </div>
+                  <div class="flex-1">
+                    <div class="text-[9px] font-bold uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
+                      Cabeça Fria leu assim
+                    </div>
+                    <p class="mt-2 text-[14px] leading-relaxed" :style="{ color: brand.colors.text }">
+                      {{ c.commentary }}
+                    </p>
+
+                    <!-- Sources, if any -->
+                    <div v-if="c.sources && c.sources.length > 0" class="mt-3 flex flex-wrap items-center gap-2 border-t pt-3" :style="{ borderColor: `${brand.colors.primary}30` }">
+                      <span class="text-[9px] font-bold uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
+                        Fontes:
+                      </span>
+                      <a
+                        v-for="(src, sIdx) in c.sources.slice(0, 3)"
+                        :key="sIdx"
+                        :href="src.url"
+                        target="_blank"
+                        rel="noopener"
+                        class="inline-flex items-center gap-1 text-[10px] underline-offset-2 hover:underline"
+                        :style="{ color: brand.colors.primary }"
+                      >
+                        <UIcon name="i-lucide-link-2" class="size-3" />
+                        {{ (src.title || 'fonte').slice(0, 30) }}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <!-- Closing line -->
+          <div class="mt-12 flex items-center gap-4 border-t pt-8" :style="{ borderColor: brand.colors.border }">
+            <UIcon name="i-lucide-snowflake" class="size-5 shrink-0" :style="{ color: brand.colors.primary }" />
+            <p class="text-[14px] italic" :style="{ color: `${brand.colors.text}B0` }">
+              Cada um desses dias parecia o fim do mundo (ou o início do bull run). Nenhum era. <strong :style="{ color: brand.colors.primary }">Cabeça fria.</strong>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- §4 · What to do next (call-to-action sections) -->
+      <section class="relative z-10">
+        <div class="mx-auto max-w-7xl px-6 py-20 md:px-10 md:py-28">
+          <div class="mb-12 max-w-3xl">
+            <div class="mb-4 text-[11px] font-bold uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
+              — O que fazer agora
+            </div>
+            <h2
+              class="leading-[0.95] tracking-tight"
+              :style="{
+                color: brand.colors.text,
+                fontSize: 'clamp(2rem, 5vw, 3.5rem)',
+                fontFamily: `'Fredoka', 'Inter', sans-serif`,
+                fontWeight: 700,
+              }"
+            >
+              Aplique o método.
+            </h2>
+          </div>
+
+          <div class="grid gap-5 md:grid-cols-3">
+            <NuxtLink
+              to="/calculadora/preco-teto"
+              class="group flex flex-col gap-4 rounded-3xl border p-8 transition-all hover:-translate-y-1"
+              :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.surface}80` }"
+            >
+              <div class="flex size-12 items-center justify-center rounded-2xl" :style="{ backgroundColor: `${brand.colors.primary}20`, color: brand.colors.primary }">
+                <UIcon name="i-lucide-scale" class="size-6" />
+              </div>
+              <h3 class="text-[18px] font-bold" :style="{ color: brand.colors.text, fontFamily: `'Fredoka', sans-serif` }">
+                Calcular preço-teto
+              </h3>
+              <p class="text-[13px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
+                Use os métodos de Bazin e Graham pra saber se {{ tickerUpper }} está cara ou barata.
+              </p>
+              <div class="mt-auto inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.15em] transition-transform group-hover:translate-x-1" :style="{ color: brand.colors.primary }">
+                Abrir calculadora <span>→</span>
+              </div>
+            </NuxtLink>
+
+            <NuxtLink
+              to="/calculadora/juros-compostos"
+              class="group flex flex-col gap-4 rounded-3xl border p-8 transition-all hover:-translate-y-1"
+              :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.surface}80` }"
+            >
+              <div class="flex size-12 items-center justify-center rounded-2xl" :style="{ backgroundColor: `${brand.colors.primary}20`, color: brand.colors.primary }">
+                <UIcon name="i-lucide-timer" class="size-6" />
+              </div>
+              <h3 class="text-[18px] font-bold" :style="{ color: brand.colors.text, fontFamily: `'Fredoka', sans-serif` }">
+                Simular juros compostos
+              </h3>
+              <p class="text-[13px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
+                Veja quanto essa posição pode render se você segurar por 10, 15 ou 20 anos.
+              </p>
+              <div class="mt-auto inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.15em] transition-transform group-hover:translate-x-1" :style="{ color: brand.colors.primary }">
+                Rodar simulação <span>→</span>
+              </div>
+            </NuxtLink>
+
+            <NuxtLink
+              to="/help"
+              class="group flex flex-col gap-4 rounded-3xl border p-8 transition-all hover:-translate-y-1"
+              :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.surface}80` }"
+            >
+              <div class="flex size-12 items-center justify-center rounded-2xl" :style="{ backgroundColor: `${brand.colors.primary}20`, color: brand.colors.primary }">
+                <UIcon name="i-lucide-message-circle" class="size-6" />
+              </div>
+              <h3 class="text-[18px] font-bold" :style="{ color: brand.colors.text, fontFamily: `'Fredoka', sans-serif` }">
+                Perguntar à Saraiva IA
+              </h3>
+              <p class="text-[13px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
+                "{{ tickerUpper }} tá cara agora pelo método Bazin?" — resposta em 3s, com fonte.
+              </p>
+              <div class="mt-auto inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.15em] transition-transform group-hover:translate-x-1" :style="{ color: brand.colors.primary }">
+                Abrir chat <span>→</span>
+              </div>
+            </NuxtLink>
+          </div>
+        </div>
+      </section>
+
+      <!-- §5 · Signature closing -->
+      <section class="relative z-10 border-t" :style="{ borderColor: brand.colors.border }">
+        <div class="mx-auto max-w-5xl px-6 py-20 text-center md:px-10 md:py-28">
+          <div class="mb-8 text-[60px] leading-none" :style="{ color: brand.colors.primary, fontFamily: `'Fredoka', sans-serif` }">"</div>
+          <blockquote
+            class="-mt-4 leading-[1.2]"
+            :style="{
+              color: brand.colors.text,
+              fontSize: 'clamp(1.5rem, 3.5vw, 2.5rem)',
+              fontFamily: `'Fredoka', 'Inter', sans-serif`,
+              fontWeight: 700,
+            }"
+          >
+            Não é palpite. É método, paciência e juros compostos.
+          </blockquote>
+          <div class="mt-10 flex justify-center">
+            <div
+              class="inline-flex items-center gap-3 rounded-full px-5 py-2.5"
+              :style="{
+                backgroundColor: brand.colors.primary,
+                color: brand.colors.background,
+                boxShadow: `0 0 0 3px ${brand.colors.background}, 0 0 0 6px ${brand.colors.primary}, 0 20px 40px -15px ${brand.colors.primary}A0`,
+              }"
+            >
+              <img
+                v-if="brand.hero.image"
+                :src="brand.hero.image"
+                :alt="brand.founder.name"
+                class="size-9 rounded-full object-cover"
+              />
+              <div class="flex flex-col items-start">
+                <span class="text-[12px] font-bold leading-tight">{{ brand.founder.name }}</span>
+                <span class="text-[9px] font-medium uppercase tracking-[0.15em] opacity-80">Fundador · Saraiva Invest</span>
+              </div>
+            </div>
+          </div>
+          <p class="mt-10 text-[11px] font-bold uppercase tracking-[0.2em]" :style="{ color: brand.colors.textMuted }">
+            cabeça fria · sem grito · sem guru
+          </p>
+        </div>
+      </section>
+    </div>
+
+    <!-- ========== HOLDER VARIANT (Holder — sentencious editorial paper) ========== -->
+    <!--
+      Holder asset page: pure editorial autoral. Black + red + cream.
+      IBM Plex Serif body + Anton chunky condensed display + JetBrains
+      Mono numbers. Sem sticker, sem outline, sem emoji. § paragrafação,
+      números de capítulo, footnotes. Catchphrase HOLD. fechando.
+
+      Estrutura:
+        §1   Top strip: chapter index + ticker
+        1.01 Hero — ticker em Anton GIGANTE + name serif + price editorial
+        2.01 § VALUATION — table 4 indicadores estilo paper
+        3.01 § TESE — long-form (porque holdar ou não holdar)
+        4.01 § HISTÓRICO — commentaries com framing serif
+        5.01 § O QUE FAZER — 3 CTAs sharp
+        6.01 § HOLD — assinatura final com selo
+    -->
+    <div
+      v-else-if="brand.assetPage.variant === 'holder'"
+      class="hl-asset-root relative z-10 flex flex-col"
+      :style="{ backgroundColor: brand.colors.background, color: brand.colors.text }"
+    >
+      <!-- §1 · Top chapter strip -->
+      <div
+        class="hl-asset-strip relative z-10 border-b"
+        :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.background }"
+      >
+        <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4 md:px-10">
+          <div class="flex items-center gap-4">
+            <span class="hl-mono text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
+              [ HOLD. ]
+            </span>
+            <span class="hl-mono text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
+              FICHA · {{ tickerUpper }} · {{ assetEditorialDate }}
+            </span>
+          </div>
+          <div class="flex items-center gap-4">
+            <span class="hl-mono text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
+              B3 · BRASIL
+            </span>
+            <span class="hl-mono text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
+              ⊕
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1.01 · Hero — ticker em Anton + price editorial -->
+      <section class="relative">
+        <div class="mx-auto grid max-w-7xl grid-cols-12 gap-10 px-6 py-20 md:px-10 md:py-28">
+          <!-- LEFT: ticker + name + price -->
+          <div class="col-span-12 lg:col-span-8">
+            <!-- Chapter mark -->
+            <div class="hl-mono mb-6 text-[10px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.textMuted }">
+              1.01 · § FICHA
+            </div>
+
+            <!-- Logo + ticker -->
+            <div class="flex items-end gap-6">
+              <img
+                v-if="asset?.logo"
+                :src="asset.logo"
+                :alt="tickerUpper"
+                class="h-24 w-24 shrink-0 object-cover md:h-28 md:w-28"
+                :style="{ backgroundColor: brand.colors.surface, border: `2px solid ${brand.colors.border}` }"
+              />
+              <div
+                v-else
+                class="hl-display flex h-24 w-24 shrink-0 items-center justify-center text-[34px] md:h-28 md:w-28 md:text-[42px]"
+                :style="{
+                  backgroundColor: brand.colors.primary,
+                  color: brand.colors.text,
+                  fontFamily: `'Anton', sans-serif`,
+                }"
+              >
+                {{ tickerUpper.slice(0, 2) }}
+              </div>
+              <div class="min-w-0 flex-1">
+                <div
+                  class="hl-display leading-[0.85]"
+                  :style="{
+                    color: brand.colors.text,
+                    fontFamily: `'Anton', 'Bebas Neue', sans-serif`,
+                    fontWeight: 400,
+                    fontSize: 'clamp(4rem, 12vw, 9rem)',
+                    letterSpacing: '0.01em',
+                  }"
+                >
+                  {{ tickerUpper }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Company name in serif italic -->
+            <div
+              class="hl-serif mt-6 max-w-xl text-[20px] italic md:text-[24px]"
+              :style="{
+                color: `${brand.colors.text}D0`,
+                fontFamily: `'IBM Plex Serif', serif`,
+              }"
+            >
+              {{ asset?.name || 'Empresa listada na B3' }} · {{ asset?.sector || '—' }}
+            </div>
+
+            <!-- Price block -->
+            <div class="mt-12 flex items-baseline gap-6 border-t pt-10" :style="{ borderColor: brand.colors.border }">
+              <div>
+                <div class="hl-mono mb-2 text-[10px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.textMuted }">
+                  Preço · fechamento
+                </div>
+                <div class="flex items-baseline gap-4">
+                  <span class="hl-serif text-[20px]" :style="{ color: brand.colors.textMuted, fontFamily: `'IBM Plex Serif', serif` }">R$</span>
+                  <span
+                    class="hl-display tabular-nums leading-none"
+                    :style="{
+                      color: brand.colors.text,
+                      fontFamily: `'Anton', 'Bebas Neue', sans-serif`,
+                      fontSize: 'clamp(3rem, 8vw, 6rem)',
+                      letterSpacing: '0.01em',
+                    }"
+                  >
+                    {{ (asset?.market_price ?? 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+                  </span>
+                </div>
+              </div>
+              <div class="hl-mono inline-flex items-center gap-2 text-[16px] tabular-nums md:text-[20px]" :style="{ color: (asset?.change_percent ?? 0) >= 0 ? brand.colors.positive : brand.colors.negative }">
+                <span>{{ (asset?.change_percent ?? 0) >= 0 ? '↑' : '↓' }}</span>
+                {{ (asset?.change_percent ?? 0) >= 0 ? '+' : '' }}{{ Number(asset?.change_percent || 0).toFixed(2) }}%
+              </div>
+            </div>
+
+            <!-- Sentencious one-liner -->
+            <p
+              class="hl-serif mt-8 max-w-xl text-[16px] italic"
+              :style="{
+                color: brand.colors.textMuted,
+                fontFamily: `'IBM Plex Serif', serif`,
+              }"
+            >
+              O preço é uma opinião. Aqui você vai encontrar o que importa: o fato.
+            </p>
+          </div>
+
+          <!-- RIGHT: ficha técnica column -->
+          <aside class="col-span-12 lg:col-span-4">
+            <div
+              class="border p-6 md:p-8"
+              :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+            >
+              <div class="hl-mono mb-5 text-[10px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
+                § Ficha técnica
+              </div>
+              <dl class="hl-mono flex flex-col gap-4 text-[12px]">
+                <div class="flex items-baseline justify-between gap-4 border-b pb-3" :style="{ borderColor: brand.colors.border }">
+                  <dt class="uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">Tipo</dt>
+                  <dd class="text-right tabular-nums" :style="{ color: brand.colors.text }">
+                    {{ asset?.type === 'STOCK' ? 'Ação' : asset?.type === 'REIT' ? 'FII' : asset?.type === 'ETF' ? 'ETF' : asset?.type || '—' }}
+                  </dd>
+                </div>
+                <div class="flex items-baseline justify-between gap-4 border-b pb-3" :style="{ borderColor: brand.colors.border }">
+                  <dt class="uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">Setor</dt>
+                  <dd class="truncate text-right text-[11px]" :style="{ color: brand.colors.text }">
+                    {{ asset?.sector || '—' }}
+                  </dd>
+                </div>
+                <div class="flex items-baseline justify-between gap-4 border-b pb-3" :style="{ borderColor: brand.colors.border }">
+                  <dt class="uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">Market Cap</dt>
+                  <dd class="text-right tabular-nums" :style="{ color: brand.colors.text }">
+                    {{ formatMarketCapShort(asset?.market_cap) || '—' }}
+                  </dd>
+                </div>
+                <div class="flex items-baseline justify-between gap-4 border-b pb-3" :style="{ borderColor: brand.colors.border }">
+                  <dt class="uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">Listado</dt>
+                  <dd class="text-right tabular-nums" :style="{ color: brand.colors.text }">
+                    {{ asset?.founded_at ? new Date(asset.founded_at).getFullYear() : '—' }}
+                  </dd>
+                </div>
+                <div class="flex items-baseline justify-between gap-4">
+                  <dt class="uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">Última atual.</dt>
+                  <dd class="text-right tabular-nums" :style="{ color: brand.colors.text }">
+                    {{ lastUpdateLabel || '—' }}
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- 2.01 · § VALUATION — paper-style indicator table -->
+      <section class="relative border-y" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+        <div class="mx-auto max-w-7xl px-6 py-20 md:px-10 md:py-28">
+          <div class="mb-12 grid items-end gap-8 md:grid-cols-12">
+            <div class="md:col-span-7">
+              <div class="hl-mono mb-3 text-[10px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
+                2.01 · § VALUATION
+              </div>
+              <h2
+                class="hl-serif leading-[1.05]"
+                :style="{
+                  color: brand.colors.text,
+                  fontFamily: `'IBM Plex Serif', serif`,
+                  fontSize: 'clamp(2rem, 5vw, 3.75rem)',
+                  fontWeight: 600,
+                }"
+              >
+                Os <em :style="{ color: brand.colors.primary }">fatos</em>,<br />
+                não as opiniões.
+              </h2>
+            </div>
+            <p class="hl-serif text-[15px] italic md:col-span-5" :style="{ color: brand.colors.textMuted, fontFamily: `'IBM Plex Serif', serif` }">
+              Cada número aqui é mensurável, auditável e reportado oficialmente. O resto é narrativa.
+            </p>
+          </div>
+
+          <!-- Indicator paper-style table -->
+          <div class="grid grid-cols-12 gap-px overflow-hidden border" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }">
+            <!-- Headers -->
+            <div class="col-span-12 grid grid-cols-12 gap-px" style="border-collapse: collapse;">
+              <div class="hl-mono col-span-1 px-4 py-4 text-[10px] uppercase tracking-[0.18em]" :style="{ backgroundColor: brand.colors.background, color: brand.colors.textMuted }">§</div>
+              <div class="hl-mono col-span-5 px-4 py-4 text-[10px] uppercase tracking-[0.18em]" :style="{ backgroundColor: brand.colors.background, color: brand.colors.textMuted }">Indicador</div>
+              <div class="hl-mono col-span-2 px-4 py-4 text-right text-[10px] uppercase tracking-[0.18em]" :style="{ backgroundColor: brand.colors.background, color: brand.colors.textMuted }">Valor</div>
+              <div class="hl-mono col-span-4 px-4 py-4 text-[10px] uppercase tracking-[0.18em]" :style="{ backgroundColor: brand.colors.background, color: brand.colors.textMuted }">Leitura do método</div>
+            </div>
+
+            <!-- P/L row -->
+            <div class="col-span-12 grid grid-cols-12 gap-px">
+              <div class="hl-mono col-span-1 px-4 py-5 text-[11px] tabular-nums" :style="{ backgroundColor: brand.colors.background, color: brand.colors.textMuted }">2.01</div>
+              <div class="col-span-5 px-4 py-5" :style="{ backgroundColor: brand.colors.background }">
+                <div class="hl-serif text-[15px]" :style="{ color: brand.colors.text, fontFamily: `'IBM Plex Serif', serif` }">Preço sobre lucro</div>
+                <div class="hl-mono mt-1 text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">P/L · múltiplo</div>
+              </div>
+              <div class="hl-display col-span-2 px-4 py-5 text-right text-[26px] leading-none tabular-nums" :style="{ backgroundColor: brand.colors.background, color: brand.colors.primary, fontFamily: `'Anton', sans-serif` }">
+                {{ basicIndicators?.pl || '—' }}
+              </div>
+              <div class="hl-serif col-span-4 px-4 py-5 text-[12px] italic" :style="{ backgroundColor: brand.colors.background, color: brand.colors.textMuted, fontFamily: `'IBM Plex Serif', serif` }">
+                Abaixo de 10 sugere desconto frente ao histórico brasileiro.
+              </div>
+            </div>
+
+            <!-- DY row -->
+            <div class="col-span-12 grid grid-cols-12 gap-px">
+              <div class="hl-mono col-span-1 px-4 py-5 text-[11px] tabular-nums" :style="{ backgroundColor: brand.colors.background, color: brand.colors.textMuted }">2.02</div>
+              <div class="col-span-5 px-4 py-5" :style="{ backgroundColor: brand.colors.background }">
+                <div class="hl-serif text-[15px]" :style="{ color: brand.colors.text, fontFamily: `'IBM Plex Serif', serif` }">Dividend yield 12M</div>
+                <div class="hl-mono mt-1 text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">DY · proventos anualizados</div>
+              </div>
+              <div class="hl-display col-span-2 px-4 py-5 text-right text-[26px] leading-none tabular-nums" :style="{ backgroundColor: brand.colors.background, color: brand.colors.positive, fontFamily: `'Anton', sans-serif` }">
+                {{ basicIndicators?.dividendYield || '—' }}
+              </div>
+              <div class="hl-serif col-span-4 px-4 py-5 text-[12px] italic" :style="{ backgroundColor: brand.colors.background, color: brand.colors.textMuted, fontFamily: `'IBM Plex Serif', serif` }">
+                Acima de 6% indica empresa geradora de caixa madura.
+              </div>
+            </div>
+
+            <!-- P/VPA row -->
+            <div class="col-span-12 grid grid-cols-12 gap-px">
+              <div class="hl-mono col-span-1 px-4 py-5 text-[11px] tabular-nums" :style="{ backgroundColor: brand.colors.background, color: brand.colors.textMuted }">2.03</div>
+              <div class="col-span-5 px-4 py-5" :style="{ backgroundColor: brand.colors.background }">
+                <div class="hl-serif text-[15px]" :style="{ color: brand.colors.text, fontFamily: `'IBM Plex Serif', serif` }">Preço sobre valor patrimonial</div>
+                <div class="hl-mono mt-1 text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">P/VP · book value</div>
+              </div>
+              <div class="hl-display col-span-2 px-4 py-5 text-right text-[26px] leading-none tabular-nums" :style="{ backgroundColor: brand.colors.background, color: brand.colors.text, fontFamily: `'Anton', sans-serif` }">
+                {{ basicIndicators?.pvpa || '—' }}
+              </div>
+              <div class="hl-serif col-span-4 px-4 py-5 text-[12px] italic" :style="{ backgroundColor: brand.colors.background, color: brand.colors.textMuted, fontFamily: `'IBM Plex Serif', serif` }">
+                Abaixo de 1: negocia por menos do que vale no papel. Investigue.
+              </div>
+            </div>
+
+            <!-- ROE row -->
+            <div class="col-span-12 grid grid-cols-12 gap-px">
+              <div class="hl-mono col-span-1 px-4 py-5 text-[11px] tabular-nums" :style="{ backgroundColor: brand.colors.background, color: brand.colors.textMuted }">2.04</div>
+              <div class="col-span-5 px-4 py-5" :style="{ backgroundColor: brand.colors.background }">
+                <div class="hl-serif text-[15px]" :style="{ color: brand.colors.text, fontFamily: `'IBM Plex Serif', serif` }">Retorno sobre patrimônio</div>
+                <div class="hl-mono mt-1 text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">ROE · eficiência do capital</div>
+              </div>
+              <div class="hl-display col-span-2 px-4 py-5 text-right text-[26px] leading-none tabular-nums" :style="{ backgroundColor: brand.colors.background, color: brand.colors.text, fontFamily: `'Anton', sans-serif` }">
+                {{ basicIndicators?.roe || '—' }}
+              </div>
+              <div class="hl-serif col-span-4 px-4 py-5 text-[12px] italic" :style="{ backgroundColor: brand.colors.background, color: brand.colors.textMuted, fontFamily: `'IBM Plex Serif', serif` }">
+                Acima de 15% por anos seguidos indica vantagem competitiva.
+              </div>
+            </div>
+          </div>
+
+          <p class="hl-mono mt-8 text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
+            ⊕ Fontes: Demonstrativos públicos · CVM · B3 · Atualização trimestral
+          </p>
+        </div>
+      </section>
+
+      <!-- 3.01 · § TESE — long-form -->
+      <section class="relative">
+        <div class="mx-auto grid max-w-6xl grid-cols-12 gap-12 px-6 py-24 md:px-10 md:py-32">
+          <div class="col-span-12 md:col-span-3">
+            <div class="hl-mono mb-3 text-[10px] uppercase tracking-[0.22em] sticky top-24" :style="{ color: brand.colors.primary }">
+              3.01 · § TESE
+            </div>
+          </div>
+          <div class="col-span-12 md:col-span-9">
+            <h2
+              class="hl-serif leading-[1.1]"
+              :style="{
+                color: brand.colors.text,
+                fontFamily: `'IBM Plex Serif', serif`,
+                fontSize: 'clamp(2rem, 5vw, 3.75rem)',
+                fontWeight: 600,
+              }"
+            >
+              Por que <em :style="{ color: brand.colors.primary }">eu deteria</em> {{ tickerUpper }}.
+            </h2>
+
+            <div class="hl-serif mt-10 flex flex-col gap-6 text-[17px] leading-[1.7] md:text-[18px]" :style="{ color: brand.colors.text, fontFamily: `'IBM Plex Serif', serif` }">
+              <p>
+                <span class="hl-drop-cap-asset" :style="{ color: brand.colors.primary }">A</span>ntes de qualquer linha sobre {{ tickerUpper }}, dois fatos: o ativo está negociando a {{ basicIndicators?.pl || '—' }}× lucros e entrega DY de {{ basicIndicators?.dividendYield || '—' }}. Os números são pontos de partida, não conclusões.
+              </p>
+              <p>
+                A pergunta correta nunca é "essa ação vai subir?". A pergunta correta é: <em :style="{ color: brand.colors.primary }">se eu tivesse capital pra comprar a empresa inteira nesse preço, eu compraria?</em> Se a resposta for sim, comprar uma parte é trivial. Se for não, nem o melhor gráfico técnico do mundo deveria te convencer.
+              </p>
+              <p>
+                Quem analisa {{ asset?.name || tickerUpper }} olhando 5 indicadores numa tela perde 95% da história. A história está no histórico de 10 anos de receita, na consistência de payout, no que o management fala em call de resultado, na durabilidade do moat. Nada disso aparece num candle de 5 minutos. Tudo isso aparece num relatório anual lido com calma.
+              </p>
+              <p>
+                Eu não vou te dizer "compra hoje". Eu vou te dizer: <strong :style="{ color: brand.colors.primary }">leia o último 10-K, compare com o de 5 anos atrás, e me diga se a empresa está melhor ou pior</strong>. Se está melhor e o preço é razoável, há tese pra holdar. Se está pior e o preço é caro, esquece. Se está melhor e o preço é caro, esperar é grátis. <strong>HOLD.</strong>
+              </p>
+            </div>
+
+            <div class="hl-mono mt-12 flex items-center gap-4 text-[11px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.textMuted }">
+              <span class="h-px flex-1 max-w-12" :style="{ backgroundColor: brand.colors.border }" />
+              <span :style="{ color: brand.colors.primary }">— @holder</span>
+              <span class="h-px flex-1" :style="{ backgroundColor: brand.colors.border }" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4.01 · § HISTÓRICO DE MOVIMENTOS — commentaries reframed -->
+      <section
+        v-if="commentaries.length > 0"
+        class="relative border-y"
+        :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+      >
+        <div class="mx-auto max-w-7xl px-6 py-24 md:px-10 md:py-32">
+          <div class="mb-14 max-w-3xl">
+            <div class="hl-mono mb-3 text-[10px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
+              4.01 · § HISTÓRICO
+            </div>
+            <h2
+              class="hl-serif leading-[1.05]"
+              :style="{
+                color: brand.colors.text,
+                fontFamily: `'IBM Plex Serif', serif`,
+                fontSize: 'clamp(2rem, 5vw, 3.75rem)',
+                fontWeight: 600,
+              }"
+            >
+              Os dias em que<br />
+              <em :style="{ color: brand.colors.primary }">tudo parecia importar.</em>
+            </h2>
+            <p class="hl-serif mt-6 max-w-xl text-[15px] italic" :style="{ color: brand.colors.textMuted, fontFamily: `'IBM Plex Serif', serif` }">
+              Cada um desses momentos pareceu o fim do mundo (ou o início do bull run). Nenhum era. O Holder leu, registrou, e seguiu.
+            </p>
+          </div>
+
+          <div class="flex flex-col gap-12">
+            <article
+              v-for="(c, idx) in commentaries.slice(0, 5)"
+              :key="c.id || idx"
+              class="grid grid-cols-12 gap-6 border-t pt-12 md:gap-10"
+              :style="{ borderColor: brand.colors.border }"
+            >
+              <!-- LEFT: chapter mark + date stack -->
+              <div class="col-span-12 md:col-span-3">
+                <div class="hl-mono mb-4 text-[10px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.textMuted }">
+                  4.{{ String(idx + 2).padStart(2, '0') }}
+                </div>
+                <div
+                  class="hl-display leading-[0.85]"
+                  :style="{
+                    color: brand.colors.text,
+                    fontFamily: `'Anton', sans-serif`,
+                    fontSize: 'clamp(2.5rem, 4vw, 3.5rem)',
+                  }"
+                >
+                  {{ formatEventDay(c.date) }}<span :style="{ color: brand.colors.primary }">.</span>{{ formatEventMonth(c.date) }}
+                </div>
+                <div class="hl-mono mt-2 text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
+                  {{ formatEventYear(c.date) }}
+                </div>
+                <div
+                  class="hl-mono mt-4 inline-flex items-center gap-1.5 text-[12px] tabular-nums"
+                  :style="{ color: (c.change_percent ?? 0) >= 0 ? brand.colors.positive : brand.colors.negative }"
+                >
+                  <span>{{ (c.change_percent ?? 0) >= 0 ? '↑' : '↓' }}</span>
+                  {{ (c.change_percent ?? 0) >= 0 ? '+' : '' }}{{ Number(c.change_percent || 0).toFixed(2) }}%
+                </div>
+              </div>
+
+              <!-- RIGHT: title + commentary -->
+              <div class="col-span-12 md:col-span-9">
+                <h3
+                  class="hl-serif leading-[1.2]"
+                  :style="{
+                    color: brand.colors.text,
+                    fontFamily: `'IBM Plex Serif', serif`,
+                    fontSize: 'clamp(1.5rem, 3vw, 2rem)',
+                    fontWeight: 600,
+                  }"
+                >
+                  {{ c.title }}
+                </h3>
+
+                <p
+                  class="hl-serif mt-5 text-[15px] leading-[1.7] md:text-[16px]"
+                  :style="{
+                    color: `${brand.colors.text}D0`,
+                    fontFamily: `'IBM Plex Serif', serif`,
+                  }"
+                >
+                  {{ c.commentary }}
+                </p>
+
+                <!-- Sources, footnote-style -->
+                <div v-if="c.sources && c.sources.length > 0" class="mt-6 flex flex-wrap items-center gap-3 border-t pt-4" :style="{ borderColor: brand.colors.border }">
+                  <span class="hl-mono text-[9px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.textMuted }">
+                    Fontes:
+                  </span>
+                  <a
+                    v-for="(src, sIdx) in c.sources.slice(0, 3)"
+                    :key="sIdx"
+                    :href="src.url"
+                    target="_blank"
+                    rel="noopener"
+                    class="hl-mono text-[10px] underline-offset-4 hover:underline"
+                    :style="{ color: brand.colors.primary }"
+                  >
+                    {{ String(sIdx + 1).padStart(2, '0') }}. {{ (src.title || 'fonte').slice(0, 32) }}
+                  </a>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5.01 · § O QUE FAZER — 3 sharp CTAs -->
+      <section class="relative">
+        <div class="mx-auto max-w-7xl px-6 py-24 md:px-10 md:py-32">
+          <div class="mb-14 max-w-3xl">
+            <div class="hl-mono mb-3 text-[10px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
+              5.01 · § O QUE FAZER
+            </div>
+            <h2
+              class="hl-serif leading-[1.05]"
+              :style="{
+                color: brand.colors.text,
+                fontFamily: `'IBM Plex Serif', serif`,
+                fontSize: 'clamp(2rem, 5vw, 3.75rem)',
+                fontWeight: 600,
+              }"
+            >
+              Antes de comprar.<br />
+              <em :style="{ color: brand.colors.primary }">Antes de vender.</em>
+            </h2>
+          </div>
+
+          <div class="grid grid-cols-1 gap-px overflow-hidden border md:grid-cols-3" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }">
+            <NuxtLink
+              to="/calculadora/preco-teto"
+              class="group flex flex-col gap-5 p-8 transition-colors md:p-10"
+              :style="{ backgroundColor: brand.colors.background }"
+            >
+              <div class="hl-mono text-[10px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
+                01 · Calcule
+              </div>
+              <h3 class="hl-serif text-[24px] leading-tight" :style="{ color: brand.colors.text, fontFamily: `'IBM Plex Serif', serif`, fontWeight: 600 }">
+                O preço-teto
+              </h3>
+              <p class="hl-serif text-[14px] italic" :style="{ color: brand.colors.textMuted, fontFamily: `'IBM Plex Serif', serif` }">
+                Bazin para dividendos. Graham para crescimento. Espere o preço.
+              </p>
+              <div class="hl-mono mt-auto inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.22em] transition-transform group-hover:translate-x-1" :style="{ color: brand.colors.primary }">
+                Abrir →
+              </div>
+            </NuxtLink>
+
+            <NuxtLink
+              to="/calculadora/juros-compostos"
+              class="group flex flex-col gap-5 p-8 transition-colors md:p-10"
+              :style="{ backgroundColor: brand.colors.background }"
+            >
+              <div class="hl-mono text-[10px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
+                02 · Simule
+              </div>
+              <h3 class="hl-serif text-[24px] leading-tight" :style="{ color: brand.colors.text, fontFamily: `'IBM Plex Serif', serif`, fontWeight: 600 }">
+                20 anos holdando
+              </h3>
+              <p class="hl-serif text-[14px] italic" :style="{ color: brand.colors.textMuted, fontFamily: `'IBM Plex Serif', serif` }">
+                Veja quanto este ativo pode pagar de dividendos compostos por décadas.
+              </p>
+              <div class="hl-mono mt-auto inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.22em] transition-transform group-hover:translate-x-1" :style="{ color: brand.colors.primary }">
+                Abrir →
+              </div>
+            </NuxtLink>
+
+            <NuxtLink
+              to="/help"
+              class="group flex flex-col gap-5 p-8 transition-colors md:p-10"
+              :style="{ backgroundColor: brand.colors.background }"
+            >
+              <div class="hl-mono text-[10px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
+                03 · Pergunte
+              </div>
+              <h3 class="hl-serif text-[24px] leading-tight" :style="{ color: brand.colors.text, fontFamily: `'IBM Plex Serif', serif`, fontWeight: 600 }">
+                À Holder IA
+              </h3>
+              <p class="hl-serif text-[14px] italic" :style="{ color: brand.colors.textMuted, fontFamily: `'IBM Plex Serif', serif` }">
+                "Por que ainda deteria {{ tickerUpper }}?" — resposta sentenciosa, sem floreio.
+              </p>
+              <div class="hl-mono mt-auto inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.22em] transition-transform group-hover:translate-x-1" :style="{ color: brand.colors.primary }">
+                Abrir →
+              </div>
+            </NuxtLink>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6.01 · § HOLD — final signature -->
+      <section class="relative border-t" :style="{ borderColor: brand.colors.border }">
+        <div class="mx-auto max-w-5xl px-6 py-24 text-center md:px-10 md:py-32">
+          <div class="hl-mono mb-8 text-[10px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
+            6.01 · § ASSINATURA
+          </div>
+          <blockquote
+            class="hl-serif italic leading-[1.2]"
+            :style="{
+              color: brand.colors.text,
+              fontFamily: `'IBM Plex Serif', serif`,
+              fontSize: 'clamp(1.5rem, 3.5vw, 2.5rem)',
+              fontWeight: 500,
+            }"
+          >
+            "Compro empresa, não ação. O tempo é o único sócio que me importa."
+          </blockquote>
+          <div class="hl-mono mt-10 flex items-center justify-center gap-4 text-[11px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.textMuted }">
+            <span class="h-px w-12" :style="{ backgroundColor: brand.colors.border }" />
+            <span :style="{ color: brand.colors.primary }">— @holder</span>
+            <span class="h-px w-12" :style="{ backgroundColor: brand.colors.border }" />
+          </div>
+          <p
+            class="hl-display mt-12 leading-none"
+            :style="{
+              color: brand.colors.primary,
+              fontFamily: `'Anton', sans-serif`,
+              fontSize: 'clamp(4rem, 10vw, 8rem)',
+              letterSpacing: '0.02em',
+            }"
+          >
+            HOLD.
+          </p>
+        </div>
+      </section>
+    </div>
+
     <!-- ========== DEFAULT VARIANT (Redentia — Bloomberg terminal) ========== -->
     <div v-else class="relative z-10 flex flex-col px-4 pt-4">
       <div class="flex flex-col">
@@ -2537,6 +3896,40 @@ function formatDyShort(value: unknown): string {
   const num = Number(str)
   if (!Number.isFinite(num)) return '—'
   return `${num.toFixed(2)}%`
+}
+
+// =======================================================
+// Event date formatters used by the playbook 'Movimentos
+// Notáveis' timeline. Each commentary date is split into
+// month / day / year stacks for the date sticker.
+// =======================================================
+const PT_MONTHS_SHORT = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ']
+function parseEventDate(value: unknown): Date | null {
+  if (!value) return null
+  // Accept Date, ISO string, "YYYY-MM-DD", or "DD/MM/YYYY".
+  if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value
+  const s = String(value).trim()
+  if (!s) return null
+  // DD/MM/YYYY → YYYY-MM-DD
+  const br = s.match(/^(\d{2})\/(\d{2})\/(\d{4})/)
+  if (br) {
+    const d = new Date(`${br[3]}-${br[2]}-${br[1]}`)
+    return Number.isNaN(d.getTime()) ? null : d
+  }
+  const d = new Date(s)
+  return Number.isNaN(d.getTime()) ? null : d
+}
+function formatEventMonth(value: unknown): string {
+  const d = parseEventDate(value)
+  return d ? PT_MONTHS_SHORT[d.getMonth()] : '—'
+}
+function formatEventDay(value: unknown): string {
+  const d = parseEventDate(value)
+  return d ? String(d.getDate()).padStart(2, '0') : '—'
+}
+function formatEventYear(value: unknown): string {
+  const d = parseEventDate(value)
+  return d ? String(d.getFullYear()) : '—'
 }
 
 // Current volume — tries fundamentus first, then asset field
@@ -4276,11 +5669,70 @@ definePageMeta({
       typeof to.params.ticker === 'string' ? to.params.ticker : String(to.params.ticker || '')
     const normalized = raw.toLowerCase()
     if (raw && raw !== normalized) {
+      // Preserve query string when lowercasing the ticker — otherwise
+      // params like ?brand=saraiva-invest get dropped on the redirect.
       return navigateTo(
-        `/asset/${normalized}`,
+        { path: `/asset/${normalized}`, query: to.query, hash: to.hash },
         import.meta.server ? { redirectCode: 301 } : { replace: true }
       )
     }
   },
 })
 </script>
+
+<style scoped>
+/* ========== PLAYBOOK ASSET PAGE (Saraiva Invest) ========== */
+.pb-asset-root {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-feature-settings: 'ss01', 'cv11';
+}
+
+/* Sticker text styles — match the home hero */
+.pb-asset-sticker {
+  display: inline-block;
+  font-family: 'Fredoka', 'Inter', system-ui, sans-serif;
+  font-weight: 700;
+}
+
+.pb-asset-sticker-cold {
+  display: inline-block;
+}
+
+.pb-asset-sticker-hot {
+  display: inline-block;
+  background: #EF4444;
+  color: #FFFFFF !important;
+  padding: 0.02em 0.3em;
+  border-radius: 0.15em;
+  font-family: 'Fredoka', 'Inter', system-ui, sans-serif;
+  font-weight: 700;
+  box-shadow:
+    -3px 3px 0 #0B0B0E,
+    0 0 0 4px #FFFFFF,
+    -3px 3px 0 4px #0B0B0E;
+  transform: rotate(2deg);
+}
+
+/* Villain card pulse */
+@keyframes pb-asset-villain-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+  50% { box-shadow: 0 0 60px -10px rgba(239, 68, 68, 0.25); }
+}
+
+.pb-asset-villain {
+  animation: pb-asset-villain-pulse 3s ease-in-out infinite;
+}
+
+/* Sweat drops */
+@keyframes pb-asset-sweat-drop {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.85; }
+  50% { transform: translateY(5px) scale(0.85); opacity: 0.4; }
+}
+
+.pb-asset-sweat {
+  animation: pb-asset-sweat-drop 1.4s ease-in-out infinite;
+}
+.pb-asset-sweat-2 {
+  animation-delay: 0.7s;
+}
+</style>

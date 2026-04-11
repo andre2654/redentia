@@ -29,7 +29,7 @@ const ACTIVE_BRAND: BrandSlug = 'redentia'
 // ============================================================
 // TYPES
 // ============================================================
-type BrandSlug = 'redentia' | 'primo-rico' | 'me-poupe' | 'investidor-sardinha' | 'norte-capital'
+type BrandSlug = 'redentia' | 'primo-rico' | 'me-poupe' | 'investidor-sardinha' | 'norte-capital' | 'saraiva-invest' | 'holder'
 
 interface BrandColors {
   primary: string
@@ -200,7 +200,7 @@ interface BrandConfig {
     // Primo Rico. 'research' switches to the AUVP academic paper layout
     // used by Investidor Sardinha (IBM Plex serif, § section marks, red
     // pen marks, footnotes, margin notes, author signature).
-    variant?: 'default' | 'editorial' | 'mentor' | 'research' | 'showtime'
+    variant?: 'default' | 'editorial' | 'mentor' | 'research' | 'showtime' | 'playbook' | 'holder'
   }
 
   // === SOCIAL ===
@@ -233,7 +233,7 @@ interface BrandConfig {
 
   // HERO (pagina inicial, visitante nao logado)
   hero: {
-    variant: 'centered' | 'split' | 'minimal' | 'institutional' | 'editorial' | 'terminal' | 'mentor' | 'research' | 'showtime'  // layout do hero: centered (premium), split (founder), minimal (data-first), institutional (assessoria/escritorio), editorial (narrated private-bank letter — Norte Capital), terminal (Bloomberg-reimagined — Redentia), mentor (aspirational book-cover — Primo Rico), research (academic paper / AUVP study notebook — Investidor Sardinha), showtime (TV show / pop magazine — Me Poupe!)
+    variant: 'centered' | 'split' | 'minimal' | 'institutional' | 'editorial' | 'terminal' | 'mentor' | 'research' | 'showtime' | 'playbook' | 'holder'  // layout do hero: centered (premium), split (founder), minimal (data-first), institutional (assessoria/escritorio), editorial (narrated private-bank letter — Norte Capital), terminal (Bloomberg-reimagined — Redentia), mentor (aspirational book-cover — Primo Rico), research (academic paper / AUVP study notebook — Investidor Sardinha), showtime (TV show / pop magazine — Me Poupe!), playbook (calm method + author photo + bold sticker accents — Saraiva Invest), holder (sentencious editorial portrait + giant chunky condensed wordmark + serif manifesto — Holder, the conviction-driven pseudonymous buy-and-hold archetype)
     badge: string                // texto do badge animado no topo
     title: string                // headline principal (pode usar HTML)
     subtitle: string             // subtitulo
@@ -3212,6 +3212,1026 @@ const norteCapital: BrandConfig = {
 }
 
 // ============================================================
+// SARAIVA INVEST (André Saraiva)
+// ============================================================
+// Persona: O metódico. Cientista calmo + nômade paciente — mix de "lab"
+// (B: backtests, ceticismo metódico, anti-guru) com "async" (C: slow
+// money, juros compostos, cabeça fria). Acessível, ironia fina, zero
+// grito. Visual híbrido: dark terminal-ish + sticker bold do logo +
+// foto do autor como âncora de autoridade.
+// Estética: Dark profundo + amber Claude + white chunky sticker stroke.
+// Tipografia display: Fredoka (chunky, rounded, casa com o logo).
+// Tipografia body: Inter (legibilidade técnica, mantém seriedade).
+// Catchphrase-marca: "cabeça fria"
+// ============================================================
+const saraivaInvest: BrandConfig = {
+  name: 'Saraiva Invest',
+  shortName: 'Saraiva',
+  slug: 'saraiva-invest',
+  tagline: 'Invista com método. Sem grito. Sem guru.',
+  subtitle: 'Cabeça fria. Dados duros. Longo prazo.',
+  description: 'A plataforma do Saraiva Invest para você parar de adivinhar o mercado e começar a seguir método. Backtests, análise fundamentalista e juros compostos — sem pressa, sem hype.',
+
+  founder: {
+    name: 'André Saraiva',
+    photo: '/brand/saraiva-invest/author.png',
+    role: 'Fundador · Saraiva Invest',
+    bio: 'Engenheiro e investidor. Estuda mercado há uma década e virou ponte entre o método acadêmico e o investidor normal. Zero FOMO, zero hype, zero guru. Só dado.',
+    signaturePhrase: 'Cabeça fria. O tempo faz o trabalho duro.',
+  },
+
+  voice: {
+    style: 'analytical',
+    greeting: 'E aí. Bora com cabeça fria?',
+    ctaPrimary: 'Falar com o método',
+    ctaSecondary: 'Já sou do clube',
+    emptyState: 'Nada aqui ainda. Bora rodar um backtest ou revisar a carteira?',
+    encouragement: 'Não é sorte. É método. Juros compostos trabalham enquanto você dorme — e eu faço o trabalho chato pra você não precisar.',
+    error: 'Deu ruim na requisição. Respira, tenta de novo. Se persistir, me chama no DM.',
+  },
+
+  domain: 'www.saraivainvest.com.br',
+  url: 'https://www.saraivainvest.com.br',
+  email: 'contato@saraivainvest.com.br',
+  privacyEmail: 'privacidade@saraivainvest.com.br',
+
+  colors: {
+    primary: '#E67E22',       // amber Claude/Anthropic (matches logo)
+    secondary: '#F39C12',     // amber claro (accent)
+    tertiary: '#0B0B0E',      // preto profundo (logo background)
+    positive: '#4ADE80',
+    negative: '#EF4444',
+    neutral: '#94A3B8',
+    background: '#0B0B0E',
+    surface: '#17171B',
+    surfaceHover: '#1F1F24',
+    border: '#2A2A32',
+    text: '#F5F5F7',
+    textMuted: '#9CA3AF',
+    inputBg: '#141418',
+    inputBgHover: '#1C1C22',
+    inputBorder: '#2A2A32',
+    logoBg: '#E67E22',
+    gradient: { from: '#E67E22', via: '#D4691A', to: '#B35412' },
+  },
+
+  font: {
+    family: 'Fredoka',
+    google: 'Fredoka:wght@300..700&family=Inter:wght@400;500;600;700',
+    headingWeight: 'font-black',
+    headingStyle: 'normal-case',
+  },
+
+  logo: {
+    icon: '/brand/saraiva-invest/logo-icon.png',
+    full: '/brand/saraiva-invest/logo-full.png',
+    favicon: '/brand/favicon.png',
+    faviconIco: '/brand/favicon.ico',
+    faviconSvg: '/brand/favicon.svg',
+    appleTouchIcon: '/brand/apple-touch-icon.png',
+    icon192: '/brand/icon-192.png',
+    icon512: '/brand/icon-512.png',
+    og: '/brand/saraiva-invest/og-image.png',
+  },
+
+  seo: {
+    title: 'Saraiva Invest — Invista com método. Sem grito. Sem guru.',
+    description: 'Análise fundamentalista, backtests e juros compostos — sem pressa, sem hype. A plataforma do André Saraiva para investidores que preferem método a palpite.',
+    locale: 'pt_BR',
+    lang: 'pt-BR',
+    themeColor: '#0B0B0E',
+    keywords: ['andré saraiva', 'saraiva invest', 'investimentos', 'análise fundamentalista', 'backtest', 'juros compostos', 'método', 'longo prazo', 'buy and hold'],
+  },
+
+  company: {
+    legalName: 'Saraiva Invest Conteudo e Tecnologia Ltda.',
+    address: '',
+    cnpj: '',
+  },
+
+  features: {
+    showAIAdvisor: true,
+    showAppStoreLinks: false,
+    showCalculators: true,
+    showDividends: true,
+    showNews: false,
+    showDownloadPage: true,
+    showFounderPhoto: true,
+    showEcosystemLinks: true,
+    showGlossary: true,
+    showGuides: true,
+    // Saraiva Invest: audiência quer método, não timing. Rankings diários
+    // incentivam o oposto do pitch ("sem pressa"). DY + calendário de
+    // dividendos reforçam a tese de renda passiva de longo prazo.
+    // Commentaries LIGADOS pra o playbook poder framear cada movimento
+    // como "isso fez o Cabeça Quente surtar — e aqui está a leitura
+    // calma do método."
+    showDividendYieldRanking: true,
+    showMonthlyMoversRanking: false,
+    showDividendCalendar: true,
+    showSectorComparatives: true,
+    showMarketCommentaries: true,
+  },
+
+  assetPage: {
+    showVolatility: true,
+    showIndicators: true,
+    showSmartIndicators: true,
+    showDividendMap: true,
+    showDividendChart: true,
+    showFinancials: true,
+    showChecklist: true,
+    showCompanyInfo: true,
+    variant: 'playbook',
+  },
+
+  homePage: {
+    rankingCard: {
+      variant: 'card',
+      showIcon: true,
+      iconStyle: 'pill',
+      itemsPerCategory: 3,
+    },
+    stockItem: {
+      variant: 'default',
+      showLogo: true,
+      logoSize: 'md',
+      showName: true,
+      changeFormat: 'badge',
+    },
+    categoryCard: {
+      variant: 'icon-left',
+      columns: 2,
+    },
+    categories: [
+      { label: 'Ações', to: '/acoes', icon: 'i-lucide-trending-up', description: 'Empresa de verdade, dona de pedaço de negócio. O melhor ativo do longo prazo.', cta: 'Estudar' },
+      { label: 'FIIs', to: '/fiis', icon: 'i-lucide-building-2', description: 'Renda passiva mensal isenta. Funciona se você olhar os fundamentos certos.', cta: 'Estudar' },
+      { label: 'Dividendos', to: '/dividendos', icon: 'i-lucide-coins', description: 'Calendário, pagamento e métrica de consistência. Não confia no DY solto.', cta: 'Estudar' },
+      { label: 'ETFs', to: '/etfs', icon: 'i-lucide-bar-chart-3', description: 'Diversificação pronta, baixo custo. O primeiro passo de quem começa certo.', cta: 'Estudar' },
+    ],
+  },
+
+  social: {
+    youtube: 'https://youtube.com/@saraivainvest',
+    instagram: 'https://instagram.com/saraivainvest',
+    twitter: 'https://twitter.com/saraivainvest',
+    tiktok: 'https://tiktok.com/@saraivainvest',
+    telegram: '',
+    podcast: 'https://saraivainvest.com.br/podcast',
+  },
+
+  ecosystem: [
+    { name: 'Método Saraiva', url: 'https://saraivainvest.com.br/metodo', description: 'O playbook completo em 7 aulas', icon: 'i-lucide-book-open' },
+    { name: 'Backtests Semanais', url: 'https://saraivainvest.com.br/backtests', description: 'Teses populares testadas com dados reais', icon: 'i-lucide-flask-conical' },
+    { name: 'Carta do Saraiva', url: 'https://saraivainvest.com.br/carta', description: 'Reflexão mensal, tom calmo, direto no e-mail', icon: 'i-lucide-mail' },
+  ],
+
+  chartColors: {
+    positive: '#4ADE80',
+    negative: '#EF4444',
+    secondary: '#E67E22',
+    neutral: '#94A3B8',
+  },
+
+  // --- PERSONALIZACOES POR AREA ---
+
+  hero: {
+    // 'playbook' is Saraiva Invest's dedicated variant — calm scientific
+    // method + author photo anchor + bold sticker highlights from the logo.
+    // Dark profundo, tipografia chunky Fredoka nos highlights, Inter no
+    // corpo técnico. Catchphrase-marca: "cabeça fria".
+    variant: 'playbook',
+    badge: 'CABEÇA FRIA',
+    title: 'Invista com método.\nSem grito. Sem guru.',
+    subtitle: 'Eu sou o André Saraiva. Faço o trabalho chato pra você não precisar: leio balanço, testo tese, comparo setores, acompanho ciclo. Você só precisa confiar no método — e deixar juros compostos fazer o resto.',
+    founderQuote: 'Não existe atalho. Existe método, paciência e juros compostos. Quem tem pressa perde dinheiro; quem tem método ganha tempo.',
+    ctaLabel: 'Começar o método',
+    ctaSecondaryLabel: 'Já tenho conta',
+    ctaIcon: 'i-lucide-flask-conical',
+    trustIndicators: ['Backtests reais', 'Zero guru', 'Método publicado', 'Sem FOMO'],
+    image: '/brand/saraiva-invest/author.png',
+  },
+
+  header: {
+    title: 'Saraiva Invest',
+    subtitle: 'Método, calma e juros compostos.',
+  },
+
+  sidebar: {
+    aiCtaTitle: 'Saraiva IA',
+    aiCtaSubtitle: 'Seu copiloto metódico',
+    planLabel: 'Acesso Saraiva',
+  },
+
+  calculators: {
+    pageTitle: 'Calculadoras do Método',
+    pageSubtitle: 'Ferramentas objetivas. Sem emoji no número, sem painel de hype. Coloque os inputs e veja a matemática trabalhar por você.',
+    labels: {
+      jurosCompostos: 'Juros compostos (o motor)',
+      precoTeto: 'Preço-teto (Bazin & Graham)',
+      dividendYield: 'Dividend Yield real',
+      aposentadoria: 'Aposentadoria: quanto preciso?',
+      acoes: 'Simulador de carteira',
+      quantoInvestir: 'Quanto aportar por mês',
+      impostoRenda: 'IR na renda variável',
+      planejamento: 'Plano anual de aportes',
+    },
+  },
+
+  ai: {
+    name: 'Saraiva IA',
+    avatar: '/brand/saraiva-invest/ai-avatar.png',
+    chatTitle: 'Fala com a Saraiva IA',
+    chatSubtitle: 'Respostas diretas, com fonte. Como se eu mesmo estivesse respondendo — só que 24/7.',
+    typingLabel: 'SARAIVA IA:',
+    welcomeTitle: 'Saraiva IA — seu copiloto metódico',
+    welcomeSubtitle: 'Análise fundamentalista, backtests, cálculo de preço-teto e plano de aportes. Pergunta direto, sem rodeio. Eu entrego o que o dado diz, não o que você quer ouvir.',
+    placeholder: 'Pergunta direto. Ex: "PETR4 tá cara agora pelo Bazin?"',
+    suggestedQuestions: [
+      'Quanto preciso aportar por mês pra aposentar com 60?',
+      'PETR4 tá cara ou barata pelo método Bazin?',
+      'Roda um backtest de carteira 60% ações + 40% FII',
+      'Quais FIIs pagam DY consistente há 5+ anos?',
+      'Meu plano de 10 anos tá furando — por onde começo?',
+    ],
+    systemPromptContext: 'Voce e a Saraiva IA, copiloto do André Saraiva. Tom: analitico, direto, calmo. Zero hype, zero FOMO, zero linguagem de guru. Responda como um engenheiro que entende de mercado e respeita a inteligencia do usuario. Sempre que possivel, cite a fonte (balanco trimestral, release oficial, CVM, B3, FGV, IPCA, etc). Quando o usuario pedir opiniao, prefira responder com o que o metodo diz e os dados historicos apontam, nao com achismo. Use portugues brasileiro correto, sem girias forcadas. Pode ser ironico com hype mas nunca com o usuario. Ritmo: paragrafos curtos, frases diretas, numeros concretos. Catchphrase natural: "cabeca fria".',
+    ctaGreeting: 'E aí. Sou a Saraiva IA. Pode perguntar direto — eu respondo com o que o dado diz, não com o que te agradaria ouvir. Cabeça fria.',
+    ctaButton: 'Falar com a Saraiva IA',
+    ctaFeatures: ['Resposta em ~3s', 'Com fonte citada', 'Zero achismo'],
+  },
+
+  metrics: {
+    sectionTitle: 'Os dados que importam',
+    sectionSubtitle: 'Nenhum número aqui é decoração. Cada um é consequência do método.',
+    counterLabel: 'Investidores seguindo o método',
+    stats: [
+      { value: '12.500+', label: 'Ativos monitorados' },
+      { value: '10 anos', label: 'de dados históricos' },
+      { value: '24/7', label: 'IA disponível' },
+      { value: 'R$ 0', label: 'de pagamento por acerto' },
+    ],
+  },
+
+  testimonials: {
+    sectionTitle: 'Quem seguiu o método',
+    sectionSubtitle: 'Histórias reais de gente que trocou palpite por playbook.',
+    items: [
+      {
+        quote: 'Eu passei 3 anos tentando acertar timing. Em 6 meses seguindo o método do Saraiva eu finalmente parei de olhar o gráfico de 5 em 5 minutos — e comecei a dormir melhor.',
+        name: 'Daniel M.',
+        role: 'Engenheiro de software, SP',
+        metrics: [{ value: '+24%', label: 'retorno anual' }, { value: '0', label: 'trades por impulso' }],
+      },
+      {
+        quote: 'A calculadora de preço-teto me mostrou que 60% do que eu comprava era caro. Mudei a carteira seguindo o método e em 2 anos recuperei o atraso.',
+        name: 'Paula R.',
+        role: 'Arquiteta, RJ',
+        metrics: [{ value: '14', label: 'ativos na carteira' }, { value: 'R$ 1.8k', label: 'dividendos/mês' }],
+      },
+      {
+        quote: 'Nunca vi ninguém explicar juro composto de um jeito tão direto. O Saraiva não vende sonho — vende cálculo. Era o que faltava.',
+        name: 'Rafael S.',
+        role: 'Médico, MG',
+        metrics: [{ value: '20 anos', label: 'horizonte' }, { value: '+R$ 3M', label: 'meta 2045' }],
+      },
+    ],
+  },
+
+  trustBar: {
+    text: 'Compatível com as principais corretoras',
+    footnote: 'Conecte via Open Finance e pare de atualizar planilha',
+    partners: ['XP', 'Rico', 'Clear', 'Nubank', 'Inter', 'BTG', 'C6', 'Genial'],
+  },
+
+  footer: {
+    tagline: 'Invista com método. Sem grito. Sem guru.',
+    newsletterCta: 'Carta do Saraiva, uma vez por mês. Zero spam, só método.',
+    sections: { tools: 'Ferramentas', resources: 'Aprender', company: 'Saraiva Invest', legal: 'Legal' },
+  },
+
+  notifications: {
+    ctaTitle: 'Ativar alertas do método',
+    ctaSubtitle: 'Só te chamo quando precisar. Dividendo chegando, preço-teto batido, rebalance pedindo. Sem ruído de curto prazo.',
+    ctaButton: 'Ativar',
+  },
+
+  auth: {
+    loginTitle: 'Entrar no método',
+    loginSubtitle: 'Continue de onde parou. Seu plano, sua carteira, seus backtests — esperando.',
+    registerTitle: 'Começar o método',
+    registerSubtitle: 'Gratuito pra sempre. Sem cartão, sem trial, sem pegadinha. Você entra e começa hoje.',
+    termsText: 'Ao criar sua conta, você concorda com os Termos de Uso e Política de Privacidade.',
+  },
+
+  about: {
+    title: 'Sobre o Saraiva Invest',
+    paragraphs: [
+      'Saraiva Invest é o método que eu gostaria de ter tido quando comecei a investir. Em vez de gurus gritando "compra!", entrega backtests, análise fundamentalista e cálculos transparentes — tudo em português claro, sem jargão inflado.',
+      'Eu sou o André Saraiva. Sou engenheiro, estudo o mercado há mais de uma década e passei a maior parte desse tempo aprendendo o que não funciona: timing, palpite, hype, FOMO. O que sobrou — método, paciência, consistência — eu transformei em playbook.',
+      'A plataforma reúne todas as ferramentas que uso no meu próprio processo: cotações em tempo real, análise fundamentalista completa, backtests de tese, calculadoras de preço-teto e uma IA que responde com cabeça fria — não com entusiasmo manufaturado.',
+      'Se você está cansado de guru, de grito e de promessa de resultado, o Saraiva Invest é pra você. Sem pressa. Só método.',
+    ],
+  },
+
+  contact: {
+    title: 'Fala comigo',
+    subtitle: 'Dúvida, parceria ou só pra apresentar uma tese — bora conversar.',
+    email: 'contato@saraivainvest.com.br',
+    channels: [
+      { icon: 'i-lucide-mail', label: 'E-mail', value: 'contato@saraivainvest.com.br', href: 'mailto:contato@saraivainvest.com.br' },
+      { icon: 'i-lucide-instagram', label: 'Instagram', value: '@saraivainvest', href: 'https://instagram.com/saraivainvest' },
+      { icon: 'i-lucide-youtube', label: 'YouTube', value: 'Saraiva Invest', href: 'https://youtube.com/@saraivainvest' },
+    ],
+  },
+
+  howWorks: {
+    title: 'Como funciona o método',
+    steps: [
+      { icon: 'i-lucide-user-plus', title: 'Crie conta (grátis)', description: 'Sem cartão, sem trial. Você entra hoje e começa a usar agora.' },
+      { icon: 'i-lucide-search', title: 'Estude os ativos', description: 'Fundamentalista completo, preço-teto, histórico de DY. O trabalho duro já tá feito.' },
+      { icon: 'i-lucide-flask-conical', title: 'Rode o backtest', description: 'Antes de comprar, teste a tese nos últimos 10 anos de dados. Dado manda, palpite cala.' },
+      { icon: 'i-lucide-message-circle', title: 'Pergunte direto à IA', description: 'Sem rodeio, sem hype. Pergunta o que é — a Saraiva IA responde com cabeça fria.' },
+    ],
+  },
+
+  nav: {
+    menuLabel: 'Menu',
+    toolsLabel: 'Ferramentas',
+    overview: 'Visão Geral',
+    wallet: 'Minha carteira',
+    chat: 'Chat',
+    advisorArea: 'Área do método',
+    settings: 'Configurações',
+    calculators: 'Calculadoras',
+    guides: 'Playbook',
+    dividends: 'Proventos',
+    downloadApp: 'Baixar app',
+    logout: 'Sair',
+    hide: 'Ocultar',
+    show: 'Mostrar',
+    login: 'Entrar',
+    register: 'Começar',
+    mobileAiLabel: 'Saraiva IA',
+    mobileAiAccess: 'Acessar grátis',
+    mobileAiLocked: 'Saraiva IA bloqueada',
+    mobileAiLockedSub: 'Faça login para acessar',
+    mobileAiDescription: 'Copiloto metódico com IA',
+    mobileAiDescriptionSub: 'Entre na plataforma pra conversar com a Saraiva IA e aplicar o método no seu processo.',
+    mobileCalc: 'Calculadoras',
+    mobileGuides: 'Playbook',
+    mobileHome: 'Início',
+    footerGlossaryTitle: 'Glossário do Método',
+    footerCalc: 'Calculadoras',
+    footerJuros: 'Juros Compostos',
+    footerPrecoTeto: 'Preço-Teto',
+    footerDY: 'Dividend Yield',
+    footerAI: 'Saraiva IA',
+    footerGuides: 'Playbook',
+    footerGlossary: 'Glossário',
+    footerStocks: 'Ações',
+    footerFiis: 'FIIs',
+    footerDividends: 'Dividendos',
+    footerAbout: 'Sobre',
+    footerHowWorks: 'Como funciona',
+    footerContact: 'Contato',
+    footerDownload: 'Download',
+    footerTerms: 'Termos de Uso',
+    footerPrivacy: 'Privacidade',
+    footerCookies: 'Cookies',
+    footerCopyright: 'Todos os direitos reservados.',
+    headerCalc: 'Calculadoras',
+    headerAI: 'Saraiva IA',
+  },
+
+  homeTexts: {
+    marketTitle: 'O mercado sem ruído',
+    marketSubtitle: 'Os números que importam. Nenhum alerta vermelho piscante, nenhum grito. Só o que move o método.',
+    filtersTitle: 'Atalhos metódicos',
+    categoriesEyebrow: 'Estudar antes de comprar',
+    categoriesTitle: 'Por onde começar',
+    categoriesSubtitle: 'Cada categoria tem um caminho metódico. Nenhum palpite, zero atalho — só o processo.',
+    guidesTitle: 'Playbook do método',
+    guidesSubtitle: 'Sem guru, sem curso caro. A teoria que eu estudo, aplicada no que eu faço.',
+    aiCtaEyebrow: 'Saraiva IA',
+    aiCtaTitle: 'Pergunta direto. Eu respondo direto.',
+    aiCtaSubtitle: 'Sem rodeio, sem hype, sem linguagem de vendedor. A Saraiva IA foi treinada pra pensar como o método pensa — cabeça fria.',
+    aiCtaQuestions: [
+      { icon: 'i-lucide-calculator', question: 'Quanto aportar por mês pra aposentar com 60?', category: 'Planejamento' },
+      { icon: 'i-lucide-flask-conical', question: 'Roda backtest de 60% ações + 40% FII', category: 'Backtest' },
+      { icon: 'i-lucide-scale', question: 'PETR4 tá cara pelo Bazin?', category: 'Valuation' },
+      { icon: 'i-lucide-coins', question: 'Melhores FIIs com DY consistente', category: 'Dividendos' },
+      { icon: 'i-lucide-pie-chart', question: 'Como rebalancear minha carteira', category: 'Gestão' },
+      { icon: 'i-lucide-line-chart', question: 'Backtest: poupança vs Ibov em 20 anos', category: 'Comparativo' },
+    ],
+  },
+
+  theme: {
+    mode: 'dark',
+    borderRadius: 'rounded',
+    animation: 'smooth',
+    backgroundPattern: 'dots',
+  },
+
+  // Saraiva Invest: hero > categorias > playbook > depoimentos.
+  // Hero variant 'playbook' já é super denso (manifesto + photo + stats +
+  // method cards + quotes + CTA), então o resto da home fica minimal.
+  // Rankings de timing desligados (incentivam FOMO); categorias + guides
+  // mantidos porque complementam o "estude antes de comprar".
+  homeSections: [
+    { id: 'hero', visible: true },
+    { id: 'categories', visible: true },
+    { id: 'guides', visible: true },
+    { id: 'testimonials', visible: true },
+    { id: 'aiCta', visible: false },
+    { id: 'market', visible: false },
+    { id: 'trustBar', visible: false },
+    { id: 'metrics', visible: false },
+    { id: 'featureTabs', visible: false },
+    { id: 'marquee', visible: false },
+    { id: 'educational', visible: false },
+    { id: 'products', visible: false },
+  ],
+
+  educational: {
+    sectionTitle: 'Playbook do método',
+    sectionSubtitle: 'O trabalho duro já tá feito. Aplica no seu processo.',
+    items: [],
+  },
+
+  products: {
+    sectionTitle: 'Ferramentas do método',
+    sectionSubtitle: 'Tudo que eu uso no meu próprio processo, aberto pra você.',
+    categories: [],
+  },
+
+  // ============================================================
+  // PERSONAGENS DO UNIVERSO SARAIVA INVEST
+  // ============================================================
+  // Característica da marca: dois extremos.
+  //   - Cabeça Fria (hero): o investidor metódico. Zero FOMO, olha
+  //     10 anos pra frente, respira antes de cada decisão. É o próprio
+  //     André Saraiva e é quem a audiência quer virar.
+  //   - Cabeça Quente (villain): o investidor pânico. Olha o gráfico
+  //     de 5 em 5 minutos, vende na baixa, compra no topo, segue guru
+  //     no Twitter, pergunta "ainda dá tempo?". É o arquétipo anti-
+  //     método — todo post com esse personagem é um alerta contra o
+  //     comportamento que ele encarna.
+  //   - Juros Compostos (ally): o mentor invisível. Não grita, não
+  //     aparece no feed, mas trabalha 24h por você. É o motor que
+  //     todo investidor cabeça-fria aprende a respeitar.
+  // ============================================================
+  characters: {
+    sectionTitle: 'Cabeça Fria vs. Cabeça Quente',
+    sectionSubtitle: 'Dois jeitos de investir. Um funciona, o outro destrói patrimônio. Escolhe.',
+    items: [
+      {
+        name: 'Cabeça Fria',
+        emoji: 'i-lucide-snowflake',
+        role: 'O método · o herói',
+        color: '#E67E22',
+        catchphrase: 'Calma. O mercado tá aberto há 200 anos e vai continuar aberto amanhã.',
+        description: 'O investidor que virou método. Lê balanço antes de comprar, roda backtest antes de apostar, respira antes de reagir. Acredita em três coisas: método, paciência e juros compostos. Nada mais. Nada menos.',
+        cta: 'Quero ser cabeça fria',
+        ctaLink: '/auth/register',
+        personality: 'hero',
+      },
+      {
+        name: 'Cabeça Quente',
+        emoji: 'i-lucide-flame',
+        role: 'O pânico · o vilão',
+        color: '#EF4444',
+        catchphrase: 'CAIU 2%?! VENDE TUDO! SUBIU 3%?! COMPRA MAIS! AINDA DÁ TEMPO?!',
+        description: 'Checa o gráfico de 5 em 5 minutos. Entra em todo pump, sai em toda queda. Segue 40 gurus no Twitter. Já vendeu PETR4 3 vezes só em abril. Todo post do Saraiva é um alerta contra o que o Cabeça Quente encarna — porque ele mora dentro de todo investidor novato, e o trabalho do método é silenciá-lo.',
+        cta: 'Fugir do Cabeça Quente',
+        ctaLink: '/calculadora/juros-compostos',
+        personality: 'villain',
+      },
+      {
+        name: 'Juros Compostos',
+        emoji: 'i-lucide-infinity',
+        role: 'O motor · o aliado invisível',
+        color: '#4ADE80',
+        catchphrase: 'Me dá tempo. Só isso. E eu devolvo liberdade.',
+        description: 'Não grita, não aparece, não tem conta no Twitter. Mas trabalha 24h por dia, 7 dias por semana, pra quem tem paciência de segurar posição. Quanto mais cedo você contrata ele, mais absurdo ele devolve. Einstein chamou de "oitava maravilha do mundo" — o Cabeça Quente chama de "muito lento". Você decide em quem acreditar.',
+        cta: 'Ver o composto trabalhando',
+        ctaLink: '/calculadora/juros-compostos',
+        personality: 'ally',
+      },
+    ],
+  },
+}
+
+// ============================================================
+// HOLDER (pseudonymous "the convicted holder")
+// ============================================================
+// Persona: O Convicto. Pseudônimo puro — só "Holder", nenhum nome
+// real. Editorial autoral, Buffet/Munger/Howard Marks redesigned
+// pra Gen Z brasileira que cansou de guru de hype mas ainda quer
+// alguém pra admirar. Não te ensina — te mostra como pensa.
+//
+// Diferença essencial:
+//   - Saraiva Invest = calmo porque é metódico (testa, mede, valida)
+//   - Holder         = calmo porque é convicto (comprou empresa, dorme)
+//
+// Estética: black puro + red Netflix + cream editorial.
+// Display: Anton (chunky condensed sans, casa com o logo HOLDER.).
+// Body: IBM Plex Serif (gravitas acadêmica + coerência com Sardinha).
+// Numbers: JetBrains Mono tabular.
+// Sem stickers, sem outline white, sem emoji. Tudo flat, editorial,
+// imprensa. Marcas tipográficas: § paragrafação, números de capítulo
+// (1.01, 1.02, 2.01...).
+//
+// Catchphrase-marca: "HOLD." (uma palavra, maiúscula, ponto final).
+// ============================================================
+const holder: BrandConfig = {
+  name: 'Holder',
+  shortName: 'HOLDER',
+  slug: 'holder',
+  tagline: 'Eu não vendo. Eu detenho.',
+  subtitle: 'Décadas. Não dias.',
+  description: 'A plataforma do Holder. Concentração, convicção e horizonte de décadas. Sem hype, sem timing, sem palpite. Compro empresa, não ação.',
+
+  founder: {
+    name: 'Holder',
+    photo: '/brand/holder/author.png',
+    role: '@holder · pseudônimo',
+    bio: 'Pseudônimo. Sem nome, sem rosto fora dos posts oficiais, sem bio detalhada. O personagem é o método. O método é a conversa.',
+    signaturePhrase: 'Compro empresa, não ação. O tempo é o único sócio que me importa.',
+  },
+
+  voice: {
+    style: 'editorial',
+    greeting: 'Bem-vindo.',
+    ctaPrimary: 'Ler o manifesto',
+    ctaSecondary: 'Já sou holder',
+    emptyState: 'Vazio. Como deve ser quando você está esperando o preço certo.',
+    encouragement: 'Você não precisa estar certo todo dia. Precisa estar certo sobre as poucas coisas que importam, por décadas.',
+    error: 'Erro na requisição. A vida segue.',
+  },
+
+  domain: 'www.holder.com.br',
+  url: 'https://www.holder.com.br',
+  email: 'contato@holder.com.br',
+  privacyEmail: 'privacidade@holder.com.br',
+
+  colors: {
+    primary: '#E50914',       // Netflix red — bold, sério, sem ser hype
+    secondary: '#B81118',     // red dark accent
+    tertiary: '#0A0A0A',      // pure black
+    positive: '#22C55E',
+    negative: '#EF4444',
+    neutral: '#71717A',
+    background: '#0A0A0A',
+    surface: '#141414',
+    surfaceHover: '#1C1C1C',
+    border: '#27272A',
+    text: '#F5F5F0',          // cream — não white puro, dá feel editorial impresso
+    textMuted: '#A1A1AA',
+    inputBg: '#141414',
+    inputBgHover: '#1C1C1C',
+    inputBorder: '#27272A',
+    logoBg: '#E50914',
+    gradient: { from: '#E50914', via: '#B81118', to: '#7A0A0F' },
+  },
+
+  font: {
+    family: 'Spectral',
+    // Spectral é uma serif editorial feita pra leitura digital — mais
+    // elegante e leve que IBM Plex Serif. Anton fica reservado APENAS
+    // pro wordmark "HOLDER." e o selo "HOLD." JetBrains Mono pros
+    // labels e numbers tabular.
+    google: 'Anton&family=Spectral:ital,wght@0,200;0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=JetBrains+Mono:wght@400;500;700',
+    headingWeight: 'font-normal',
+    headingStyle: 'normal-case',
+  },
+
+  logo: {
+    icon: '/brand/holder/logo-icon.png',
+    full: '/brand/holder/logo-full.png',
+    favicon: '/brand/favicon.png',
+    faviconIco: '/brand/favicon.ico',
+    faviconSvg: '/brand/favicon.svg',
+    appleTouchIcon: '/brand/apple-touch-icon.png',
+    icon192: '/brand/icon-192.png',
+    icon512: '/brand/icon-512.png',
+    og: '/brand/holder/og-image.png',
+  },
+
+  seo: {
+    title: 'HOLDER. — Eu não vendo. Eu detenho.',
+    description: 'A plataforma do Holder. Buy and hold sem terapia. Concentração, convicção e horizonte de décadas. Compro empresa, não ação.',
+    locale: 'pt_BR',
+    lang: 'pt-BR',
+    themeColor: '#0A0A0A',
+    keywords: ['holder', 'buy and hold', 'value investing', 'long term', 'convicção', 'patrimônio', 'décadas', 'munger', 'buffett'],
+  },
+
+  company: {
+    legalName: 'Holder Conteudo e Tecnologia Ltda.',
+    address: '',
+    cnpj: '',
+  },
+
+  features: {
+    showAIAdvisor: true,
+    showAppStoreLinks: false,
+    showCalculators: true,
+    showDividends: true,
+    showNews: false,
+    showDownloadPage: true,
+    showFounderPhoto: true,
+    showEcosystemLinks: true,
+    showGlossary: false,
+    showGuides: true,
+    // Holder: tudo que incentiva timing está OFF. O cara é buy-and-hold.
+    // DY consistente importa (tese de renda passiva); rankings diários
+    // e movers do mês não — são exatamente o que ele despreza.
+    showDividendYieldRanking: true,
+    showMonthlyMoversRanking: false,
+    showDividendCalendar: true,
+    showSectorComparatives: true,
+    showMarketCommentaries: true,
+  },
+
+  assetPage: {
+    showVolatility: false,        // volatilidade diária é ruído pro Holder
+    showIndicators: true,
+    showSmartIndicators: true,
+    showDividendMap: true,
+    showDividendChart: true,
+    showFinancials: true,
+    showChecklist: true,
+    showCompanyInfo: true,
+    showMarketCommentaries: true,
+    variant: 'holder',
+  },
+
+  homePage: {
+    rankingCard: {
+      variant: 'border-left',
+      showIcon: false,
+      iconStyle: 'flat',
+      itemsPerCategory: 3,
+    },
+    stockItem: {
+      variant: 'detailed',
+      showLogo: true,
+      logoSize: 'sm',
+      showName: true,
+      changeFormat: 'text',
+    },
+    categoryCard: {
+      variant: 'minimal',
+      columns: 2,
+    },
+    categories: [
+      { label: 'Ações', to: '/acoes', icon: 'i-lucide-building', description: 'Pedaços de empresas reais. Buy and hold só faz sentido aqui.', cta: 'Estudar' },
+      { label: 'FIIs', to: '/fiis', icon: 'i-lucide-warehouse', description: 'Renda mensal isenta. Concentre nos com gestão e ativo de qualidade.', cta: 'Estudar' },
+      { label: 'Dividendos', to: '/dividendos', icon: 'i-lucide-coins', description: 'O único retorno que cabe num spreadsheet de aposentadoria.', cta: 'Estudar' },
+      { label: 'ETFs', to: '/etfs', icon: 'i-lucide-grid-3x3', description: 'Para o que você não consegue (ou não quer) estudar a fundo.', cta: 'Estudar' },
+    ],
+  },
+
+  social: {
+    youtube: 'https://youtube.com/@holder',
+    instagram: 'https://instagram.com/holder',
+    twitter: 'https://twitter.com/holder',
+    tiktok: '',
+    telegram: 'https://t.me/holder',
+    podcast: '',
+  },
+
+  ecosystem: [
+    { name: 'Manifesto', url: 'https://holder.com.br/manifesto', description: 'A carta mensal sentenciosa', icon: 'i-lucide-book' },
+    { name: 'Posições', url: 'https://holder.com.br/posicoes', description: 'Revelado 1× por trimestre. Máx 10 empresas.', icon: 'i-lucide-list' },
+    { name: 'Por Quê', url: 'https://holder.com.br/por-que', description: 'Análise profunda de 1 empresa por mês.', icon: 'i-lucide-search' },
+  ],
+
+  chartColors: {
+    positive: '#22C55E',
+    negative: '#EF4444',
+    secondary: '#E50914',
+    neutral: '#71717A',
+  },
+
+  // --- PERSONALIZACOES POR AREA ---
+
+  hero: {
+    // 'holder' is Holder's dedicated variant — editorial portrait full-bleed
+    // + giant chunky condensed wordmark + serif manifesto. Black + red +
+    // cream. Sem stickers, sem outline white, sem emoji. § paragrafação.
+    variant: 'holder',
+    badge: 'HOLD.',
+    title: 'Eu não vendo.\nEu detenho.',
+    subtitle: 'Compro empresa, não ação. O tempo é o único sócio que me importa.',
+    founderQuote: 'O preço é uma opinião. O valor é um fato. Quem confunde os dois passa a vida vendendo no fundo e comprando no topo.',
+    ctaLabel: 'Ler o manifesto',
+    ctaSecondaryLabel: 'Já sou holder',
+    ctaIcon: 'i-lucide-book-open',
+    trustIndicators: ['Sem hype', 'Sem timing', 'Sem palpite', 'Décadas'],
+    image: '/brand/holder/author.png',
+  },
+
+  header: {
+    title: 'HOLDER.',
+    subtitle: 'Décadas. Não dias.',
+  },
+
+  sidebar: {
+    aiCtaTitle: 'Holder IA',
+    aiCtaSubtitle: 'Pergunta direto. Sem rodeio.',
+    planLabel: 'Acesso Holder',
+  },
+
+  calculators: {
+    pageTitle: 'Calculadoras',
+    pageSubtitle: 'Ferramentas pra calcular o que importa: preço-teto, juros compostos, e quanto a poupança custou pra você nos últimos 20 anos.',
+    labels: {
+      jurosCompostos: 'Juros compostos',
+      precoTeto: 'Preço-teto (Bazin / Graham)',
+      dividendYield: 'Dividend Yield real',
+      aposentadoria: 'Aposentadoria',
+      acoes: 'Simulador de carteira',
+      quantoInvestir: 'Aporte mensal',
+      impostoRenda: 'IR — renda variável',
+      planejamento: 'Plano de aportes',
+    },
+  },
+
+  ai: {
+    name: 'Holder IA',
+    avatar: '/brand/holder/ai-avatar.png',
+    chatTitle: 'Holder IA',
+    chatSubtitle: 'Treinada nos meus textos. Responde como eu responderia. Sem floreio.',
+    typingLabel: 'HOLDER IA:',
+    welcomeTitle: 'Holder IA',
+    welcomeSubtitle: 'Treinada nas minhas cartas, nos clássicos do value investing e nos balanços que eu leio toda semana. Pergunta direto. Resposta vai vir direto.',
+    placeholder: 'Pergunta. Sem rodeio.',
+    suggestedQuestions: [
+      'Por que você não opera no swing?',
+      'Como você define preço-teto?',
+      'O que pensar quando sua tese cai 30%?',
+      'Diversificação ou concentração?',
+      'Qual a única razão pra vender uma posição?',
+    ],
+    systemPromptContext: 'Voce e a Holder IA, treinada nas cartas do Holder (pseudonimo). Tom: sentencioso, editorial, sem floreio. Frases curtas. Pontos finais. Sem exclamacao. Sem emoji. Cita Buffett, Munger, Howard Marks, Seth Klarman, Peter Lynch. Despreza day trade, swing trade, analise tecnica, hype. Filosofia: buy and hold concentrado, alta convicao, horizonte de decadas, foco em empresa (nao em acao). Quando o usuario pergunta sobre timing, responda com calma fria que timing nao importa. Quando pergunta sobre venda, responda que so se vende quando a tese muda fundamentalmente — nao quando o preco cai. Termine as respostas mais importantes com "HOLD." em maiusculo.',
+    ctaGreeting: 'Bem-vindo. Sou a Holder IA. Pergunta direto. Resposta vai vir direto. HOLD.',
+    ctaButton: 'Falar com a Holder IA',
+    ctaFeatures: ['Sem floreio', 'Cita os clássicos', 'Pensa em décadas'],
+  },
+
+  metrics: {
+    sectionTitle: 'Os números que importam',
+    sectionSubtitle: 'Tudo aqui é mensurável. Nada aqui é vendido.',
+    counterLabel: 'Holders silenciosos',
+    stats: [
+      { value: '12.500+', label: 'Empresas monitoradas' },
+      { value: '30 anos', label: 'de histórico' },
+      { value: '0', label: 'sinais de compra' },
+      { value: '∞', label: 'horizonte' },
+    ],
+  },
+
+  testimonials: {
+    sectionTitle: 'Quem holdou',
+    sectionSubtitle: 'Sem testemunhal pago. Sem foto sorrindo. Só relato.',
+    items: [
+      {
+        quote: 'Eu trocava de tese a cada 3 meses. Lia o Holder durante 6 meses. Hoje tenho 7 empresas na carteira e não troquei nenhuma em 2 anos. A diferença de patrimônio é incomparável.',
+        name: 'D.R.',
+        role: 'Engenheiro · Curitiba',
+        metrics: [{ value: '7', label: 'empresas' }, { value: '+38%', label: '24 meses' }],
+      },
+      {
+        quote: 'Não é uma plataforma de investimentos. É um filtro contra a ansiedade. Eu literalmente parei de checar o app todo dia. Hoje abro 1× por semana, no domingo. O patrimônio cresceu mais nesse ano do que nos 4 anteriores juntos.',
+        name: 'L.M.',
+        role: 'Médica · Salvador',
+        metrics: [{ value: '1×', label: 'por semana' }, { value: '+R$ 280k', label: 'em 12 meses' }],
+      },
+      {
+        quote: 'O Holder não diz o que comprar. Ele diz como pensar. Por isso funciona — porque depois de internalizar, você não precisa mais dele. É o oposto de todo guru.',
+        name: 'F.S.',
+        role: 'Advogado · São Paulo',
+        metrics: [{ value: '5 anos', label: 'sem trocar tese' }, { value: 'R$ 0', label: 'em cursos' }],
+      },
+    ],
+  },
+
+  trustBar: {
+    text: 'Funciona em qualquer corretora',
+    footnote: 'A plataforma não te vende nada. A corretora é sua escolha.',
+    partners: ['XP', 'Rico', 'Clear', 'Nubank', 'Inter', 'BTG', 'C6', 'Genial'],
+  },
+
+  footer: {
+    tagline: 'Eu não vendo. Eu detenho.',
+    newsletterCta: 'Manifesto mensal. Uma vez por mês. Texto longo. Zero spam.',
+    sections: { tools: 'Ferramentas', resources: 'Leituras', company: 'Holder', legal: 'Legal' },
+  },
+
+  notifications: {
+    ctaTitle: 'Alertas relevantes',
+    ctaSubtitle: 'Só te chamo quando algo realmente muda na tese. Resultado anual, mudança de gestão, evento corporativo material. O resto é ruído.',
+    ctaButton: 'Ativar',
+  },
+
+  auth: {
+    loginTitle: 'Entrar',
+    loginSubtitle: 'Continue de onde parou.',
+    registerTitle: 'Começar',
+    registerSubtitle: 'Grátis. Sem cartão. Sem trial. Sem pegadinha. Você entra hoje.',
+    termsText: 'Ao criar sua conta, você concorda com os Termos de Uso e Política de Privacidade.',
+  },
+
+  about: {
+    title: 'Sobre',
+    paragraphs: [
+      'Holder é um pseudônimo. Eu não revelo nome, não revelo rosto fora dos posts oficiais, não dou entrevista. O motivo é simples: a conversa é sobre o método, não sobre mim.',
+      'Eu invisto há mais de uma década com a mesma filosofia: buy and hold concentrado, alta convicção, horizonte de décadas. Compro empresa, não ação. Quando o preço cai, isso não muda meu plano — muda só o quanto eu posso comprar a mais.',
+      'Esta plataforma existe porque eu cansei de ver gente boa perdendo dinheiro tentando fazer o que não funciona: trocar de tese toda semana, seguir guru, comprar pump, vender dump, otimizar curto prazo. Tudo isso destrói patrimônio. O método correto destrói ansiedade. Escolhe.',
+      'Aqui você não vai encontrar sinal de compra, calendário de live, planilha mágica nem grupo de Telegram. Vai encontrar: dados de empresa, calculadoras de preço-teto, análises de fundamentos, e cartas mensais que te ensinam a pensar como dono de negócio.',
+      'Se isso parece pouco, é porque é. E é tudo de que você precisa.',
+    ],
+  },
+
+  contact: {
+    title: 'Contato',
+    subtitle: 'Resposta pode demorar. Resposta vai vir.',
+    email: 'contato@holder.com.br',
+    channels: [
+      { icon: 'i-lucide-mail', label: 'E-mail', value: 'contato@holder.com.br', href: 'mailto:contato@holder.com.br' },
+      { icon: 'i-lucide-twitter', label: 'Twitter', value: '@holder', href: 'https://twitter.com/holder' },
+      { icon: 'i-lucide-send', label: 'Telegram', value: '@holder', href: 'https://t.me/holder' },
+    ],
+  },
+
+  howWorks: {
+    title: 'Como funciona',
+    steps: [
+      { icon: 'i-lucide-user-plus', title: '01 · Crie conta', description: 'Grátis. Sem cartão. Sem trial. Você entra agora.' },
+      { icon: 'i-lucide-search', title: '02 · Estude empresas', description: 'Não estude ações. Estude empresas. Há diferença.' },
+      { icon: 'i-lucide-target', title: '03 · Calcule o preço-teto', description: 'Bazin para dividendos, Graham para crescimento. Espere o preço.' },
+      { icon: 'i-lucide-anchor', title: '04 · Compre. Detenha.', description: 'A parte mais difícil é a de não fazer nada depois.' },
+    ],
+  },
+
+  nav: {
+    menuLabel: 'Menu',
+    toolsLabel: 'Ferramentas',
+    overview: 'Visão Geral',
+    wallet: 'Carteira',
+    chat: 'Chat',
+    advisorArea: 'Área do método',
+    settings: 'Configurações',
+    calculators: 'Calculadoras',
+    guides: 'Leituras',
+    dividends: 'Proventos',
+    downloadApp: 'Baixar app',
+    logout: 'Sair',
+    hide: 'Ocultar',
+    show: 'Mostrar',
+    login: 'Entrar',
+    register: 'Começar',
+    mobileAiLabel: 'Holder IA',
+    mobileAiAccess: 'Grátis',
+    mobileAiLocked: 'Holder IA bloqueada',
+    mobileAiLockedSub: 'Faça login',
+    mobileAiDescription: 'IA treinada nas cartas',
+    mobileAiDescriptionSub: 'Pergunta direto.',
+    mobileCalc: 'Calculadoras',
+    mobileGuides: 'Leituras',
+    mobileHome: 'Início',
+    footerGlossaryTitle: 'Glossário',
+    footerCalc: 'Calculadoras',
+    footerJuros: 'Juros Compostos',
+    footerPrecoTeto: 'Preço-Teto',
+    footerDY: 'Dividend Yield',
+    footerAI: 'Holder IA',
+    footerGuides: 'Leituras',
+    footerGlossary: 'Glossário',
+    footerStocks: 'Ações',
+    footerFiis: 'FIIs',
+    footerDividends: 'Dividendos',
+    footerAbout: 'Sobre',
+    footerHowWorks: 'Como funciona',
+    footerContact: 'Contato',
+    footerDownload: 'Download',
+    footerTerms: 'Termos',
+    footerPrivacy: 'Privacidade',
+    footerCookies: 'Cookies',
+    footerCopyright: 'Todos os direitos reservados.',
+    headerCalc: 'Calculadoras',
+    headerAI: 'Holder IA',
+  },
+
+  homeTexts: {
+    marketTitle: 'O mercado, hoje',
+    marketSubtitle: 'Os números do dia. Não importam tanto quanto você acha.',
+    filtersTitle: 'Filtros',
+    categoriesEyebrow: 'Estude antes',
+    categoriesTitle: 'Por onde começar',
+    categoriesSubtitle: 'Cada categoria pede um modo de pensar. Comece pelo modo, não pelo ativo.',
+    guidesTitle: 'Leituras essenciais',
+    guidesSubtitle: 'O que está aqui é o que eu releio todo ano.',
+    aiCtaEyebrow: 'Holder IA',
+    aiCtaTitle: 'Pergunta direto.',
+    aiCtaSubtitle: 'Treinada nas minhas cartas e nos clássicos. Resposta vai vir sem floreio. Sem hype. Sem promessa.',
+    aiCtaQuestions: [
+      { icon: 'i-lucide-book', question: 'Por que você não opera no swing?', category: 'Filosofia' },
+      { icon: 'i-lucide-scale', question: 'Como você define preço-teto?', category: 'Valuation' },
+      { icon: 'i-lucide-trending-down', question: 'Tese caiu 30%, e agora?', category: 'Tese' },
+      { icon: 'i-lucide-target', question: 'Diversificar ou concentrar?', category: 'Carteira' },
+      { icon: 'i-lucide-anchor', question: 'Qual a única razão pra vender?', category: 'Venda' },
+      { icon: 'i-lucide-clock', question: 'Quanto tempo de horizonte?', category: 'Horizonte' },
+    ],
+  },
+
+  theme: {
+    mode: 'dark',
+    borderRadius: 'sharp',
+    animation: 'smooth',
+    backgroundPattern: 'none',
+  },
+
+  // ============================================================
+  // PERSONAGENS DO HOLDER UNIVERSE
+  // ============================================================
+  // Holder não tem mascote alegre tipo Margarete. Tem 3 figuras
+  // arquetípicas: Holder (o herói), Trader (o vilão), Tempo (o aliado).
+  // ============================================================
+  characters: {
+    sectionTitle: 'Personagens',
+    sectionSubtitle: 'Três jeitos de existir no mercado. Apenas um sobrevive a um ciclo completo.',
+    items: [
+      {
+        name: 'Holder',
+        emoji: 'i-lucide-anchor',
+        role: 'O herói · o método',
+        color: '#E50914',
+        catchphrase: 'Eu não vendo. Eu detenho.',
+        description: 'Compra a empresa, não a ação. Pensa em décadas, não em dias. Concentra em poucas teses de alta convicção. Quando o preço cai, isso não muda o plano — muda só o quanto pode comprar a mais. HOLD.',
+        cta: 'Ser Holder',
+        ctaLink: '/auth/register',
+        personality: 'hero',
+      },
+      {
+        name: 'Trader',
+        emoji: 'i-lucide-zap',
+        role: 'O vilão · o ruído',
+        color: '#71717A',
+        catchphrase: 'Esse mês fechou no positivo? Próximo mês a gente vê.',
+        description: 'Compra no pump, vende no dump, paga corretagem em todo trade, paga IR mensal de day trade, troca de tese a cada notícia. No fim do ciclo, somou +312% em retorno bruto e -8% em retorno líquido. A matemática é cruel com quem não respeita o tempo.',
+        cta: 'Por que não Trader',
+        ctaLink: '/calculadora/juros-compostos',
+        personality: 'villain',
+      },
+      {
+        name: 'Tempo',
+        emoji: 'i-lucide-hourglass',
+        role: 'O aliado · o sócio invisível',
+        color: '#22C55E',
+        catchphrase: 'Eu nunca te apresso. Mas também nunca volto.',
+        description: 'O único sócio que importa. Não pede aporte, não pede atenção, não cobra taxa. Trabalha enquanto você dorme, viaja, esquece. Mas só responde a quem segura. Quem vende cedo, perde o tempo. Quem detém, ganha o tempo.',
+        cta: 'Ver o tempo trabalhando',
+        ctaLink: '/calculadora/juros-compostos',
+        personality: 'ally',
+      },
+    ],
+  },
+
+  // Holder: hero variant 'holder' já é super denso (manifesto +
+  // editorial portrait + chapters + posicoes + por que). O resto
+  // da home fica desligado. Categories e guides ligados pra dar
+  // entrada nos estudos profundos.
+  homeSections: [
+    { id: 'hero', visible: true },
+    { id: 'categories', visible: true },
+    { id: 'guides', visible: true },
+    { id: 'testimonials', visible: true },
+    { id: 'aiCta', visible: false },
+    { id: 'market', visible: false },
+    { id: 'trustBar', visible: false },
+    { id: 'metrics', visible: false },
+    { id: 'featureTabs', visible: false },
+    { id: 'marquee', visible: false },
+    { id: 'educational', visible: false },
+    { id: 'products', visible: false },
+  ],
+
+  educational: {
+    sectionTitle: 'Leituras essenciais',
+    sectionSubtitle: 'O que eu releio todo ano.',
+    items: [],
+  },
+
+  products: {
+    sectionTitle: 'Ferramentas do método',
+    sectionSubtitle: 'Tudo que eu uso. Aberto.',
+    categories: [],
+  },
+}
+
+// ============================================================
 // REGISTRO DE MARCAS
 // ============================================================
 const brands: Record<BrandSlug, BrandConfig> = {
@@ -3220,6 +4240,8 @@ const brands: Record<BrandSlug, BrandConfig> = {
   'me-poupe': mePoupe,
   'investidor-sardinha': investidorSardinha,
   'norte-capital': norteCapital,
+  'saraiva-invest': saraivaInvest,
+  'holder': holder,
 }
 
 // ============================================================

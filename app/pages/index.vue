@@ -2550,6 +2550,1146 @@
       </div>
     </section>
 
+    <!-- ========== HERO: PLAYBOOK (Saraiva Invest — calm method + author photo + sticker accents) ========== -->
+    <!--
+      Playbook variant: dark profundo + amber Claude + Fredoka chunky
+      sticker highlights + foto do autor como âncora. Mix de cientista
+      calmo (B) + nômade paciente (C). Catchphrase "cabeça fria".
+
+      Estrutura:
+        §1  Topo: badge "CABEÇA FRIA" + título + manifesto + CTAs + trust indicators
+        §2  Photo anchor: foto do autor dentro de círculo amber (mimica logo)
+        §3  Manifesto em 3 linhas grandes ("Não existe atalho. / Existe método...")
+        §4  4 pilares do método (cards com número outline + title + body)
+        §5  Signature quote assinada
+        §6  CTA final ("começar o método")
+    -->
+    <section
+      v-if="showSection('hero') && !authStore.isAuthenticated && brand.hero.variant === 'playbook'"
+      :style="{ order: sectionOrder('hero') }"
+      class="playbook-hero relative overflow-hidden"
+    >
+      <!-- Atmospheric background layers -->
+      <div class="pointer-events-none absolute inset-0">
+        <!-- Big amber radial glow from top -->
+        <div
+          class="absolute -top-40 left-1/2 h-[720px] w-[1200px] -translate-x-1/2 rounded-full blur-3xl opacity-25"
+          :style="{ background: `radial-gradient(ellipse at center, ${brand.colors.primary}, transparent 65%)` }"
+        />
+        <!-- Second glow bottom-right -->
+        <div
+          class="absolute -right-40 bottom-0 h-[520px] w-[520px] rounded-full blur-3xl opacity-15"
+          :style="{ background: `radial-gradient(circle, ${brand.colors.primary}, transparent 70%)` }"
+        />
+        <!-- Subtle dot grid -->
+        <div
+          class="absolute inset-0 opacity-[0.04]"
+          :style="{
+            backgroundImage: `radial-gradient(${brand.colors.text} 1px, transparent 1px)`,
+            backgroundSize: '40px 40px',
+          }"
+        />
+      </div>
+
+      <!-- ============================================================
+           §1 · HERO TOP — asymmetric: copy left, author photo right
+           ============================================================ -->
+      <div class="relative mx-auto max-w-7xl px-6 pb-20 pt-20 md:px-10 md:pb-28 md:pt-28">
+        <div class="grid grid-cols-12 gap-8 md:gap-12 lg:gap-16">
+          <!-- LEFT: copy -->
+          <div class="col-span-12 lg:col-span-7">
+            <!-- Catchphrase pill -->
+            <div
+              class="pb-badge mb-8 inline-flex items-center gap-2.5 rounded-full px-5 py-2"
+              :style="{
+                backgroundColor: brand.colors.primary,
+                color: brand.colors.background,
+                boxShadow: `0 8px 30px -8px ${brand.colors.primary}80, 0 0 0 3px ${brand.colors.background}, 0 0 0 5px ${brand.colors.primary}40`,
+              }"
+            >
+              <span class="relative flex size-1.5">
+                <span class="absolute inline-flex size-1.5 animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.background }" />
+                <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: brand.colors.background }" />
+              </span>
+              <span class="pb-badge-text text-[11px] font-bold uppercase tracking-[0.15em]">
+                {{ brand.hero.badge }}
+              </span>
+            </div>
+
+            <!-- Title -->
+            <h1
+              class="pb-title mb-8 leading-[0.92] tracking-tight"
+              :style="{
+                color: brand.colors.text,
+                fontSize: 'clamp(2.75rem, 7vw, 6.5rem)',
+              }"
+            >
+              <template v-for="(line, idx) in brand.hero.title.split('\n')" :key="idx">
+                <br v-if="idx > 0" />
+                <span v-if="idx === 1">
+                  Sem <span class="pb-sticker" :style="{ color: brand.colors.primary }">grito.</span>
+                  <br />
+                  Sem <span class="pb-sticker pb-sticker-outline" :style="{ '--sticker-bg': brand.colors.text, '--sticker-fg': brand.colors.background }">guru.</span>
+                </span>
+                <span v-else>{{ line }}</span>
+              </template>
+            </h1>
+
+            <!-- Subtitle -->
+            <p class="pb-subtitle mb-10 max-w-2xl text-[16px] leading-[1.65] md:text-[18px]" :style="{ color: `${brand.colors.text}C0` }">
+              {{ brand.hero.subtitle }}
+            </p>
+
+            <!-- CTAs -->
+            <div class="mb-12 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+              <NuxtLink
+                to="/auth/register"
+                class="pb-cta-primary group inline-flex items-center gap-3 rounded-full px-8 py-4 text-[14px] font-bold transition-all hover:-translate-y-0.5"
+                :style="{
+                  backgroundColor: brand.colors.primary,
+                  color: brand.colors.background,
+                  boxShadow: `0 16px 50px -16px ${brand.colors.primary}A0, 0 0 0 2px ${brand.colors.background}, 0 0 0 4px ${brand.colors.primary}`,
+                }"
+              >
+                <UIcon :name="brand.hero.ctaIcon" class="size-4" />
+                {{ brand.hero.ctaLabel }}
+                <span class="inline-block transition-transform group-hover:translate-x-1">→</span>
+              </NuxtLink>
+              <NuxtLink
+                to="/auth/login"
+                class="inline-flex items-center gap-2 px-2 py-2 text-[14px] font-semibold transition-opacity hover:opacity-70"
+                :style="{ color: brand.colors.text }"
+              >
+                <span class="border-b-2 pb-0.5" :style="{ borderColor: brand.colors.text }">{{ brand.hero.ctaSecondaryLabel }}</span>
+              </NuxtLink>
+            </div>
+
+            <!-- Trust indicators row -->
+            <div class="flex flex-wrap items-center gap-x-5 gap-y-3 border-t pt-6" :style="{ borderColor: `${brand.colors.border}80` }">
+              <div
+                v-for="(t, i) in brand.hero.trustIndicators"
+                :key="i"
+                class="flex items-center gap-2 text-[12px] font-medium"
+                :style="{ color: `${brand.colors.text}A0` }"
+              >
+                <UIcon name="i-lucide-check-circle-2" class="size-3.5" :style="{ color: brand.colors.primary }" />
+                {{ t }}
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT: author photo — aspect-ratio preserved, contained -->
+          <div class="col-span-12 flex items-center justify-center lg:col-span-5">
+            <div class="pb-author relative flex aspect-square w-full max-w-[520px] items-center justify-center">
+              <!-- Amber circle behind -->
+              <div
+                class="pb-author-circle absolute left-1/2 top-1/2 aspect-square w-[82%] -translate-x-1/2 -translate-y-1/2 rounded-full"
+                :style="{
+                  backgroundColor: brand.colors.primary,
+                  boxShadow: `0 40px 100px -30px ${brand.colors.primary}A0`,
+                }"
+              />
+              <!-- Rotating dashed stroke ring (subtle, sits around photo) -->
+              <div
+                class="pb-author-ring absolute left-1/2 top-1/2 aspect-square w-[102%] -translate-x-1/2 -translate-y-1/2 rounded-full border-2"
+                :style="{ borderColor: `${brand.colors.primary}30` }"
+              />
+              <!-- Photo — preserves natural aspect ratio, never stretches -->
+              <img
+                v-if="brand.hero.image"
+                :src="brand.hero.image"
+                :alt="brand.founder.name"
+                class="pb-author-photo relative z-10 h-full w-full object-contain"
+                @error="onPhotoError"
+              />
+              <!-- Fallback sticker (if photo missing) -->
+              <div
+                v-else
+                class="relative z-10 flex aspect-square w-[82%] items-center justify-center rounded-full"
+                :style="{ backgroundColor: brand.colors.primary, color: brand.colors.background }"
+              >
+                <div class="text-center">
+                  <div class="text-[120px] font-black leading-none">AS</div>
+                  <div class="mt-2 text-[14px] font-bold uppercase tracking-[0.2em]">{{ brand.founder.name }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           §2 · MANIFESTO — big 3-line pull quote
+           ============================================================ -->
+      <div class="relative border-y" :style="{ borderColor: `${brand.colors.border}`, backgroundColor: `${brand.colors.surface}60` }">
+        <div class="mx-auto max-w-6xl px-6 py-24 md:px-10 md:py-32">
+          <div class="mb-8 flex items-center gap-3">
+            <span class="h-px w-12" :style="{ backgroundColor: brand.colors.primary }" />
+            <span class="pb-eyebrow text-[11px] font-bold uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
+              O Manifesto
+            </span>
+          </div>
+          <div
+            class="pb-manifesto leading-[0.95] tracking-tight"
+            :style="{
+              color: brand.colors.text,
+              fontSize: 'clamp(2.5rem, 6.5vw, 5.75rem)',
+            }"
+          >
+            Não existe atalho.<br />
+            Existe <span class="pb-sticker" :style="{ color: brand.colors.primary }">método</span>,
+            <span class="pb-sticker" :style="{ color: brand.colors.primary }">paciência</span><br />
+            e <span class="pb-sticker pb-sticker-outline" :style="{ '--sticker-bg': brand.colors.text, '--sticker-fg': brand.colors.background }">juros compostos.</span>
+          </div>
+          <div class="mt-12 flex items-center gap-4 text-[13px]" :style="{ color: brand.colors.textMuted }">
+            <div class="h-px flex-1 max-w-20" :style="{ backgroundColor: `${brand.colors.border}` }" />
+            <span class="font-medium italic">— {{ brand.founder.name }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           §2.5 · CABEÇA QUENTE vs CABEÇA FRIA — character + rankings
+           ============================================================
+           Mostra os 3 rankings do dia (top altas, top baixas, top FIIs)
+           framing eles como o que o "Cabeça Quente" entra em pânico
+           olhando — e a Saraiva (cabeça fria) responde com calma. Usa
+           homeMarketData.topAssets que já é fetched pra todos os tenants.
+      -->
+      <div class="relative overflow-hidden">
+        <!-- Background flame glow on left side (Cabeça Quente lives here) -->
+        <div class="pointer-events-none absolute inset-0">
+          <div
+            class="absolute -left-32 top-1/2 h-[520px] w-[520px] -translate-y-1/2 rounded-full blur-3xl opacity-[0.18]"
+            :style="{ background: `radial-gradient(circle, #EF4444, transparent 65%)` }"
+          />
+          <div
+            class="absolute -right-20 top-1/2 h-[420px] w-[420px] -translate-y-1/2 rounded-full blur-3xl opacity-15"
+            :style="{ background: `radial-gradient(circle, ${brand.colors.primary}, transparent 65%)` }"
+          />
+        </div>
+
+        <div class="relative mx-auto max-w-7xl px-6 py-24 md:px-10 md:py-32">
+          <!-- Section header -->
+          <div class="mb-16 grid items-end gap-8 md:grid-cols-12">
+            <div class="md:col-span-7">
+              <div class="pb-eyebrow mb-4 text-[11px] font-bold uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
+                — Personagens
+              </div>
+              <h2
+                class="leading-[0.95] tracking-tight"
+                :style="{
+                  color: brand.colors.text,
+                  fontSize: 'clamp(2.5rem, 6vw, 5rem)',
+                  fontFamily: `'Fredoka', 'Inter', sans-serif`,
+                  fontWeight: 700,
+                }"
+              >
+                <span class="pb-sticker pb-sticker-cold" :style="{ color: brand.colors.primary }">Cabeça Fria</span> vs.<br />
+                <span class="pb-sticker pb-sticker-hot">Cabeça Quente.</span>
+              </h2>
+            </div>
+            <p class="text-[15px] leading-relaxed md:col-span-5" :style="{ color: `${brand.colors.text}B0` }">
+              Dois jeitos de ler o mesmo ranking. Um respira fundo e segura a posição por 10 anos. O outro vende tudo em pânico no fim do dia. <strong :style="{ color: brand.colors.text }">Adivinha qual deles fica rico.</strong>
+            </p>
+          </div>
+
+          <!-- The villain "card" — Cabeça Quente in panic -->
+          <div
+            class="pb-villain mb-10 flex flex-col items-start gap-6 rounded-3xl border-2 p-8 md:flex-row md:items-center md:gap-10 md:p-12"
+            :style="{
+              borderColor: '#EF4444',
+              backgroundColor: 'rgba(239, 68, 68, 0.06)',
+            }"
+          >
+            <!-- Character avatar (sticker style) -->
+            <div class="pb-villain-avatar relative shrink-0">
+              <div
+                class="flex size-24 items-center justify-center rounded-full md:size-32"
+                :style="{
+                  backgroundColor: '#EF4444',
+                  boxShadow: '0 0 0 4px #0B0B0E, 0 0 0 7px #EF4444, 0 20px 40px -10px rgba(239, 68, 68, 0.6)',
+                }"
+              >
+                <UIcon name="i-lucide-flame" class="size-12 text-white md:size-16" />
+              </div>
+              <!-- Sweat drops -->
+              <div class="pb-sweat absolute -right-2 top-2 size-3 rounded-full bg-blue-300 opacity-80"></div>
+              <div class="pb-sweat pb-sweat-2 absolute -left-3 top-6 size-2 rounded-full bg-blue-300 opacity-80"></div>
+            </div>
+
+            <div class="flex-1">
+              <div class="text-[10px] font-bold uppercase tracking-[0.2em]" style="color: #EF4444;">
+                O VILÃO · NÃO FAÇA ISSO
+              </div>
+              <div class="pb-villain-name mt-2 text-[28px] font-black leading-none md:text-[40px]" :style="{ color: brand.colors.text, fontFamily: `'Fredoka', sans-serif` }">
+                Cabeça Quente.
+              </div>
+              <div class="pb-villain-quote mt-4 text-[15px] italic md:text-[17px]" :style="{ color: `${brand.colors.text}D0` }">
+                "CAIU 2%?! VENDE TUDO! SUBIU 3%?! COMPRA MAIS! CADÊ A IA?! AINDA DÁ TEMPO?!"
+              </div>
+              <div class="mt-3 text-[13px]" :style="{ color: brand.colors.textMuted }">
+                Checa o gráfico de 5 em 5 minutos. Já vendeu PETR4 3 vezes só em abril. Segue 40 gurus no Twitter.
+              </div>
+            </div>
+          </div>
+
+          <!-- 3 rankings — what the Cabeça Quente sees and panics about -->
+          <div class="grid gap-5 md:grid-cols-3">
+            <!-- TOP ALTAS -->
+            <div
+              class="pb-ranking flex flex-col gap-4 rounded-3xl border p-6 md:p-7"
+              :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+            >
+              <div class="flex items-center justify-between">
+                <div class="text-[10px] font-bold uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
+                  Top Altas do Dia
+                </div>
+                <UIcon name="i-lucide-trending-up" class="size-4" :style="{ color: brand.colors.positive }" />
+              </div>
+              <!-- Cabeça Quente reaction -->
+              <div class="flex items-start gap-2 rounded-xl border px-3 py-2.5" style="border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.08);">
+                <UIcon name="i-lucide-flame" class="size-3.5 shrink-0 mt-0.5" style="color: #EF4444;" />
+                <span class="text-[11px] font-bold leading-tight" style="color: #EF4444;">
+                  "PERDI A CORRIDA! COMPRA TUDO!"
+                </span>
+              </div>
+              <!-- Items -->
+              <div class="flex flex-col gap-2.5 pt-1">
+                <NuxtLink
+                  v-for="(stock, i) in (topAssets.top.stocks || []).slice(0, 5)"
+                  :key="'top-' + (stock?.ticker || i)"
+                  :to="`/asset/${stock?.ticker?.toLowerCase()}`"
+                  class="pb-ranking-row flex items-center justify-between gap-3 rounded-lg px-2 py-1.5 transition-colors"
+                  :style="{ color: brand.colors.text }"
+                >
+                  <div class="flex items-center gap-3 min-w-0">
+                    <span class="text-[10px] font-bold tabular-nums w-4" :style="{ color: brand.colors.textMuted }">{{ i + 1 }}</span>
+                    <img
+                      v-if="stock?.logo"
+                      :src="stock.logo"
+                      :alt="stock?.ticker"
+                      class="size-7 rounded-md object-cover"
+                      :style="{ backgroundColor: brand.colors.background }"
+                    />
+                    <div
+                      v-else
+                      class="flex size-7 items-center justify-center rounded-md text-[9px] font-bold"
+                      :style="{ backgroundColor: brand.colors.primary, color: brand.colors.background }"
+                    >
+                      {{ (stock?.ticker || '??').slice(0, 2) }}
+                    </div>
+                    <div class="flex flex-col min-w-0">
+                      <span class="text-[12px] font-bold leading-none">{{ stock?.ticker || '—' }}</span>
+                      <span class="text-[10px] truncate" :style="{ color: brand.colors.textMuted }">
+                        {{ (stock?.name || '').slice(0, 18) }}
+                      </span>
+                    </div>
+                  </div>
+                  <span class="text-[12px] font-bold tabular-nums" :style="{ color: brand.colors.positive }">
+                    +{{ Number(stock?.change_percent || 0).toFixed(1) }}%
+                  </span>
+                </NuxtLink>
+              </div>
+              <!-- Cabeça Fria counter -->
+              <div class="mt-auto flex items-start gap-2 border-t pt-4" :style="{ borderColor: brand.colors.border }">
+                <UIcon name="i-lucide-snowflake" class="size-3.5 shrink-0 mt-0.5" :style="{ color: brand.colors.primary }" />
+                <span class="text-[11px] leading-snug" :style="{ color: brand.colors.textMuted }">
+                  <strong :style="{ color: brand.colors.primary }">Cabeça fria:</strong> +5% num dia é ruído. Mostra o mesmo ativo daqui a 5 anos.
+                </span>
+              </div>
+            </div>
+
+            <!-- TOP BAIXAS -->
+            <div
+              class="pb-ranking flex flex-col gap-4 rounded-3xl border p-6 md:p-7"
+              :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+            >
+              <div class="flex items-center justify-between">
+                <div class="text-[10px] font-bold uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
+                  Top Quedas do Dia
+                </div>
+                <UIcon name="i-lucide-trending-down" class="size-4" :style="{ color: brand.colors.negative }" />
+              </div>
+              <div class="flex items-start gap-2 rounded-xl border px-3 py-2.5" style="border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.08);">
+                <UIcon name="i-lucide-flame" class="size-3.5 shrink-0 mt-0.5" style="color: #EF4444;" />
+                <span class="text-[11px] font-bold leading-tight" style="color: #EF4444;">
+                  "VAI ZERAR! VENDE TUDO AGORA!"
+                </span>
+              </div>
+              <div class="flex flex-col gap-2.5 pt-1">
+                <NuxtLink
+                  v-for="(stock, i) in (topAssets.bottom.stocks || []).slice(0, 5)"
+                  :key="'bot-' + (stock?.ticker || i)"
+                  :to="`/asset/${stock?.ticker?.toLowerCase()}`"
+                  class="pb-ranking-row flex items-center justify-between gap-3 rounded-lg px-2 py-1.5 transition-colors"
+                  :style="{ color: brand.colors.text }"
+                >
+                  <div class="flex items-center gap-3 min-w-0">
+                    <span class="text-[10px] font-bold tabular-nums w-4" :style="{ color: brand.colors.textMuted }">{{ i + 1 }}</span>
+                    <img
+                      v-if="stock?.logo"
+                      :src="stock.logo"
+                      :alt="stock?.ticker"
+                      class="size-7 rounded-md object-cover"
+                      :style="{ backgroundColor: brand.colors.background }"
+                    />
+                    <div
+                      v-else
+                      class="flex size-7 items-center justify-center rounded-md text-[9px] font-bold"
+                      :style="{ backgroundColor: brand.colors.primary, color: brand.colors.background }"
+                    >
+                      {{ (stock?.ticker || '??').slice(0, 2) }}
+                    </div>
+                    <div class="flex flex-col min-w-0">
+                      <span class="text-[12px] font-bold leading-none">{{ stock?.ticker || '—' }}</span>
+                      <span class="text-[10px] truncate" :style="{ color: brand.colors.textMuted }">
+                        {{ (stock?.name || '').slice(0, 18) }}
+                      </span>
+                    </div>
+                  </div>
+                  <span class="text-[12px] font-bold tabular-nums" :style="{ color: brand.colors.negative }">
+                    {{ Number(stock?.change_percent || 0).toFixed(1) }}%
+                  </span>
+                </NuxtLink>
+              </div>
+              <div class="mt-auto flex items-start gap-2 border-t pt-4" :style="{ borderColor: brand.colors.border }">
+                <UIcon name="i-lucide-snowflake" class="size-3.5 shrink-0 mt-0.5" :style="{ color: brand.colors.primary }" />
+                <span class="text-[11px] leading-snug" :style="{ color: brand.colors.textMuted }">
+                  <strong :style="{ color: brand.colors.primary }">Cabeça fria:</strong> queda boa é desconto. Estuda os fundamentos antes de fugir.
+                </span>
+              </div>
+            </div>
+
+            <!-- TOP FIIS -->
+            <div
+              class="pb-ranking flex flex-col gap-4 rounded-3xl border p-6 md:p-7"
+              :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+            >
+              <div class="flex items-center justify-between">
+                <div class="text-[10px] font-bold uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
+                  Top FIIs do Dia
+                </div>
+                <UIcon name="i-lucide-building-2" class="size-4" :style="{ color: brand.colors.primary }" />
+              </div>
+              <div class="flex items-start gap-2 rounded-xl border px-3 py-2.5" style="border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.08);">
+                <UIcon name="i-lucide-flame" class="size-3.5 shrink-0 mt-0.5" style="color: #EF4444;" />
+                <span class="text-[11px] font-bold leading-tight" style="color: #EF4444;">
+                  "MAS O DY DESSE TÁ ALTO! ENTRA TODOS!"
+                </span>
+              </div>
+              <div class="flex flex-col gap-2.5 pt-1">
+                <NuxtLink
+                  v-for="(reit, i) in (topAssets.top.reits || []).slice(0, 5)"
+                  :key="'reit-' + (reit?.ticker || i)"
+                  :to="`/asset/${reit?.ticker?.toLowerCase()}`"
+                  class="pb-ranking-row flex items-center justify-between gap-3 rounded-lg px-2 py-1.5 transition-colors"
+                  :style="{ color: brand.colors.text }"
+                >
+                  <div class="flex items-center gap-3 min-w-0">
+                    <span class="text-[10px] font-bold tabular-nums w-4" :style="{ color: brand.colors.textMuted }">{{ i + 1 }}</span>
+                    <img
+                      v-if="reit?.logo"
+                      :src="reit.logo"
+                      :alt="reit?.ticker"
+                      class="size-7 rounded-md object-cover"
+                      :style="{ backgroundColor: brand.colors.background }"
+                    />
+                    <div
+                      v-else
+                      class="flex size-7 items-center justify-center rounded-md text-[9px] font-bold"
+                      :style="{ backgroundColor: brand.colors.primary, color: brand.colors.background }"
+                    >
+                      {{ (reit?.ticker || '??').slice(0, 2) }}
+                    </div>
+                    <div class="flex flex-col min-w-0">
+                      <span class="text-[12px] font-bold leading-none">{{ reit?.ticker || '—' }}</span>
+                      <span class="text-[10px] truncate" :style="{ color: brand.colors.textMuted }">
+                        {{ (reit?.name || '').slice(0, 18) }}
+                      </span>
+                    </div>
+                  </div>
+                  <span class="text-[12px] font-bold tabular-nums" :style="{ color: brand.colors.positive }">
+                    +{{ Number(reit?.change_percent || 0).toFixed(1) }}%
+                  </span>
+                </NuxtLink>
+              </div>
+              <div class="mt-auto flex items-start gap-2 border-t pt-4" :style="{ borderColor: brand.colors.border }">
+                <UIcon name="i-lucide-snowflake" class="size-3.5 shrink-0 mt-0.5" :style="{ color: brand.colors.primary }" />
+                <span class="text-[11px] leading-snug" :style="{ color: brand.colors.textMuted }">
+                  <strong :style="{ color: brand.colors.primary }">Cabeça fria:</strong> DY alto sem histórico de 5 anos é armadilha. Olha consistência.
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom: the calm hero (Cabeça Fria / Saraiva) responds -->
+          <div
+            class="pb-hero-card mt-10 flex flex-col items-start gap-6 rounded-3xl border-2 p-8 md:flex-row md:items-center md:gap-10 md:p-12"
+            :style="{
+              borderColor: brand.colors.primary,
+              backgroundColor: `${brand.colors.primary}08`,
+            }"
+          >
+            <!-- Hero avatar (Saraiva photo or sticker) -->
+            <div class="shrink-0">
+              <img
+                v-if="brand.hero.image"
+                :src="brand.hero.image"
+                :alt="brand.founder.name"
+                class="size-24 rounded-full object-cover md:size-32"
+                :style="{
+                  backgroundColor: brand.colors.primary,
+                  boxShadow: `0 0 0 4px ${brand.colors.background}, 0 0 0 7px ${brand.colors.primary}, 0 20px 40px -10px ${brand.colors.primary}80`,
+                }"
+              />
+              <div
+                v-else
+                class="flex size-24 items-center justify-center rounded-full md:size-32"
+                :style="{
+                  backgroundColor: brand.colors.primary,
+                  boxShadow: `0 0 0 4px ${brand.colors.background}, 0 0 0 7px ${brand.colors.primary}, 0 20px 40px -10px ${brand.colors.primary}80`,
+                }"
+              >
+                <UIcon name="i-lucide-snowflake" class="size-12 md:size-16" :style="{ color: brand.colors.background }" />
+              </div>
+            </div>
+
+            <div class="flex-1">
+              <div class="text-[10px] font-bold uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
+                O HERÓI · O QUE FAZER
+              </div>
+              <div class="mt-2 text-[28px] font-black leading-none md:text-[40px]" :style="{ color: brand.colors.text, fontFamily: `'Fredoka', sans-serif` }">
+                Cabeça Fria.
+              </div>
+              <div class="mt-4 text-[15px] italic md:text-[17px]" :style="{ color: `${brand.colors.text}D0` }">
+                "Calma. O mercado tá aberto há 200 anos e vai continuar aberto amanhã. Hoje é só um dia."
+              </div>
+              <div class="mt-6 flex flex-wrap gap-3">
+                <NuxtLink
+                  to="/auth/register"
+                  class="group inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-[12px] font-bold transition-all hover:-translate-y-0.5"
+                  :style="{
+                    backgroundColor: brand.colors.primary,
+                    color: brand.colors.background,
+                    boxShadow: `0 8px 24px -8px ${brand.colors.primary}80`,
+                  }"
+                >
+                  <UIcon name="i-lucide-snowflake" class="size-3.5" />
+                  Quero ser cabeça fria
+                  <span class="inline-block transition-transform group-hover:translate-x-1">→</span>
+                </NuxtLink>
+                <NuxtLink
+                  to="/calculadora/juros-compostos"
+                  class="inline-flex items-center gap-2 rounded-full border-2 px-5 py-2.5 text-[12px] font-bold transition-opacity hover:opacity-70"
+                  :style="{
+                    borderColor: brand.colors.border,
+                    color: brand.colors.text,
+                  }"
+                >
+                  Ver juros compostos →
+                </NuxtLink>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           §3 · 4 PILARES DO MÉTODO
+           ============================================================ -->
+      <div class="relative">
+        <div class="mx-auto max-w-7xl px-6 py-24 md:px-10 md:py-32">
+          <div class="mb-14 grid items-end gap-8 md:grid-cols-12">
+            <div class="md:col-span-7">
+              <div class="pb-eyebrow mb-4 text-[11px] font-bold uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
+                — 4 pilares
+              </div>
+              <h2
+                class="pb-section-title leading-[0.95] tracking-tight"
+                :style="{
+                  color: brand.colors.text,
+                  fontSize: 'clamp(2.25rem, 5vw, 4rem)',
+                }"
+              >
+                O playbook em <span class="pb-sticker" :style="{ color: brand.colors.primary }">4 passos.</span>
+              </h2>
+            </div>
+            <p class="text-[15px] leading-relaxed md:col-span-5" :style="{ color: `${brand.colors.text}B0` }">
+              Zero promessa de retorno. Zero palpite. Só o método que eu uso no meu próprio processo, aberto pra você aplicar.
+            </p>
+          </div>
+
+          <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+            <div
+              v-for="(pillar, idx) in playbookPillars"
+              :key="pillar.title"
+              class="pb-pillar group relative flex flex-col gap-5 overflow-hidden rounded-3xl border p-8 transition-all hover:-translate-y-1 md:p-10"
+              :style="{
+                borderColor: brand.colors.border,
+                backgroundColor: brand.colors.surface,
+              }"
+            >
+              <!-- Big number outline background -->
+              <div
+                class="pointer-events-none absolute -right-4 -top-8 select-none text-[160px] font-black leading-none"
+                :style="{
+                  color: 'transparent',
+                  WebkitTextStroke: `1.5px ${brand.colors.primary}40`,
+                }"
+              >
+                {{ idx + 1 }}
+              </div>
+
+              <div
+                class="relative flex size-12 items-center justify-center rounded-2xl"
+                :style="{ backgroundColor: `${brand.colors.primary}20`, color: brand.colors.primary }"
+              >
+                <UIcon :name="pillar.icon" class="size-6" />
+              </div>
+
+              <h3 class="relative text-[20px] font-bold leading-tight tracking-tight" :style="{ color: brand.colors.text }">
+                {{ pillar.title }}
+              </h3>
+
+              <p class="relative text-[13px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
+                {{ pillar.description }}
+              </p>
+
+              <div class="relative mt-auto inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.15em]" :style="{ color: brand.colors.primary }">
+                <span>{{ pillar.tag }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           §4 · SIGNATURE QUOTE — big pull quote with sticker author
+           ============================================================ -->
+      <div class="relative overflow-hidden border-y" :style="{ borderColor: `${brand.colors.border}`, backgroundColor: `${brand.colors.background}` }">
+        <div class="pointer-events-none absolute inset-0">
+          <div
+            class="absolute left-1/2 top-1/2 h-[600px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl opacity-20"
+            :style="{ background: `radial-gradient(ellipse, ${brand.colors.primary}, transparent 60%)` }"
+          />
+        </div>
+
+        <div class="relative mx-auto max-w-5xl px-6 py-24 md:px-10 md:py-32">
+          <div class="mb-8 text-center">
+            <div class="inline-block">
+              <div class="text-[80px] leading-none" :style="{ color: brand.colors.primary }">"</div>
+            </div>
+          </div>
+          <blockquote
+            class="pb-quote text-center leading-[1.2]"
+            :style="{
+              color: brand.colors.text,
+              fontSize: 'clamp(1.75rem, 4vw, 3rem)',
+            }"
+          >
+            {{ brand.hero.founderQuote }}
+          </blockquote>
+          <div class="mt-12 flex justify-center">
+            <div
+              class="pb-quote-author inline-flex items-center gap-3 rounded-full px-6 py-3"
+              :style="{
+                backgroundColor: brand.colors.primary,
+                color: brand.colors.background,
+                boxShadow: `0 0 0 3px ${brand.colors.background}, 0 0 0 6px ${brand.colors.primary}, 0 20px 40px -15px ${brand.colors.primary}A0`,
+              }"
+            >
+              <img v-if="brand.hero.image" :src="brand.hero.image" :alt="brand.founder.name" class="size-10 rounded-full object-cover" />
+              <div class="flex flex-col">
+                <span class="text-[13px] font-bold leading-tight">{{ brand.founder.name }}</span>
+                <span class="text-[10px] font-medium uppercase tracking-[0.1em] opacity-70">{{ brand.founder.role }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           §5 · FINAL CTA — simpler, direct
+           ============================================================ -->
+      <div class="relative">
+        <div class="mx-auto max-w-5xl px-6 py-24 text-center md:px-10 md:py-32">
+          <div class="pb-eyebrow mb-6 text-[11px] font-bold uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
+            — Começar hoje
+          </div>
+          <h2
+            class="pb-final-title leading-[0.92] tracking-tight"
+            :style="{
+              color: brand.colors.text,
+              fontSize: 'clamp(2.5rem, 6vw, 5rem)',
+            }"
+          >
+            Sua carteira em<br />
+            <span class="pb-sticker" :style="{ color: brand.colors.primary }">modo método.</span>
+          </h2>
+          <p class="mx-auto mt-8 max-w-xl text-[16px] leading-relaxed" :style="{ color: `${brand.colors.text}B0` }">
+            Grátis pra sempre. Sem cartão, sem trial, sem pegadinha. Você entra e começa hoje.
+          </p>
+          <div class="mt-12 flex flex-col items-center justify-center gap-5 sm:flex-row">
+            <NuxtLink
+              to="/auth/register"
+              class="pb-cta-primary group inline-flex items-center gap-3 rounded-full px-10 py-5 text-[15px] font-bold transition-all hover:-translate-y-0.5"
+              :style="{
+                backgroundColor: brand.colors.primary,
+                color: brand.colors.background,
+                boxShadow: `0 20px 60px -15px ${brand.colors.primary}A0, 0 0 0 2px ${brand.colors.background}, 0 0 0 4px ${brand.colors.primary}`,
+              }"
+            >
+              <UIcon name="i-lucide-flask-conical" class="size-4" />
+              Começar o método
+              <span class="inline-block transition-transform group-hover:translate-x-1">→</span>
+            </NuxtLink>
+          </div>
+          <p class="mt-10 text-[11px] font-bold uppercase tracking-[0.2em]" :style="{ color: brand.colors.textMuted }">
+            cabeça fria · sem grito · sem guru
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== HERO: HOLDER (refined editorial — minimal, sober) ========== -->
+    <!--
+      Holder variant — REFINED: removido todos os §, texto cortado pela
+      metade, Anton reservado APENAS para o wordmark "HOLDER." e o selo
+      "HOLD." Tudo o resto em IBM Plex Serif (display + body) ou
+      JetBrains Mono (labels + numbers). Mais whitespace, menos texto.
+
+      Estrutura mais sucinta:
+        Top strip — chapter index minimal
+        Hero split — title serif + portrait
+        Wordmark band — "HOLDER." gigante (única peça em Anton)
+        Manifesto — 2 parágrafos (era 4)
+        Trader vs Holder — 4 linhas (era 7)
+        Posições — 5 (era 7)
+        Closing quote + selo HOLD.
+    -->
+    <section
+      v-if="showSection('hero') && !authStore.isAuthenticated && brand.hero.variant === 'holder'"
+      :style="{ order: sectionOrder('hero') }"
+      class="holder-hero relative overflow-hidden"
+    >
+      <!-- ============================================================
+           Top strip — chapter index
+           ============================================================ -->
+      <div
+        class="hl-strip relative z-10 border-b"
+        :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.background }"
+      >
+        <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4 md:px-10">
+          <div class="flex items-center gap-4">
+            <span class="hl-mono text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
+              [ HOLD. ]
+            </span>
+            <span class="hl-mono text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
+              EDIÇÃO 01 · {{ holderEditionDate }}
+            </span>
+          </div>
+          <div class="flex items-center gap-4">
+            <span class="hl-mono text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
+              06 CAPÍTULOS
+            </span>
+            <span class="hl-mono text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
+              ⊕
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           1.01 · HERO SPLIT — manifesto + editorial portrait
+           ============================================================ -->
+      <div class="relative">
+        <div class="mx-auto grid max-w-7xl grid-cols-12 gap-0 px-6 md:px-10">
+          <!-- LEFT: manifesto + giant headline -->
+          <div class="col-span-12 flex flex-col justify-center border-b py-20 lg:col-span-7 lg:border-b-0 lg:border-r lg:py-32 lg:pr-16" :style="{ borderColor: brand.colors.border }">
+            <!-- Chapter number -->
+            <div class="hl-mono mb-6 text-[10px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.textMuted }">
+              01 · O Manifesto
+            </div>
+
+            <!-- Serif sentencious title — refined: lighter weight + more space -->
+            <h1
+              class="hl-serif mb-10 leading-[1.1] tracking-tight"
+              :style="{
+                color: brand.colors.text,
+                fontSize: 'clamp(2.5rem, 5vw, 4.5rem)',
+                fontFamily: `'Spectral', 'Georgia', serif`,
+                fontWeight: 400,
+              }"
+            >
+              <template v-for="(line, idx) in brand.hero.title.split('\n')" :key="idx">
+                <br v-if="idx > 0" />
+                <span v-if="idx === 1" class="italic" :style="{ color: brand.colors.primary, fontWeight: 500 }">{{ line }}</span>
+                <span v-else>{{ line }}</span>
+              </template>
+            </h1>
+
+            <!-- Subtitle in serif -->
+            <p
+              class="hl-serif mb-12 max-w-xl text-[16px] leading-[1.65] md:text-[18px]"
+              :style="{
+                color: `${brand.colors.text}C0`,
+                fontFamily: `'Spectral', 'Georgia', serif`,
+              }"
+            >
+              {{ brand.hero.subtitle }}
+            </p>
+
+            <!-- CTAs (sharp, sober, no pill) -->
+            <div class="mb-12 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+              <NuxtLink
+                to="/auth/register"
+                class="hl-cta-primary group inline-flex items-center gap-3 px-7 py-4 text-[12px] font-bold uppercase tracking-[0.18em] transition-all hover:-translate-y-0.5"
+                :style="{
+                  backgroundColor: brand.colors.primary,
+                  color: brand.colors.text,
+                }"
+              >
+                <UIcon :name="brand.hero.ctaIcon" class="size-4" />
+                {{ brand.hero.ctaLabel }}
+                <span class="inline-block transition-transform group-hover:translate-x-1">→</span>
+              </NuxtLink>
+              <NuxtLink
+                to="/auth/login"
+                class="inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.18em] transition-opacity hover:opacity-70"
+                :style="{ color: brand.colors.text }"
+              >
+                <span class="border-b-2 pb-1" :style="{ borderColor: brand.colors.text }">{{ brand.hero.ctaSecondaryLabel }}</span>
+              </NuxtLink>
+            </div>
+
+            <!-- Trust indicators — minimal, sober -->
+            <div class="flex flex-wrap items-center gap-x-6 gap-y-2 border-t pt-6" :style="{ borderColor: brand.colors.border }">
+              <div
+                v-for="(t, i) in brand.hero.trustIndicators"
+                :key="i"
+                class="hl-mono flex items-center gap-2 text-[10px] uppercase tracking-[0.18em]"
+                :style="{ color: brand.colors.textMuted }"
+              >
+                <span :style="{ color: brand.colors.primary }">·</span>
+                {{ t }}
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT: editorial portrait — full-bleed, tall -->
+          <div class="col-span-12 flex items-stretch justify-center lg:col-span-5">
+            <div class="relative h-full min-h-[520px] w-full overflow-hidden lg:min-h-[760px]">
+              <!-- Vertical "H." mark top-left, like the asset cover -->
+              <div
+                class="hl-display absolute left-6 top-6 z-10 select-none text-[80px] leading-none md:left-10 md:top-10 md:text-[100px]"
+                :style="{
+                  color: brand.colors.primary,
+                  fontFamily: `'Anton', 'Bebas Neue', sans-serif`,
+                  fontWeight: 400,
+                }"
+              >
+                H.
+              </div>
+
+              <!-- Photo full-bleed -->
+              <img
+                v-if="brand.hero.image"
+                :src="brand.hero.image"
+                :alt="brand.founder.name"
+                class="hl-portrait absolute inset-0 h-full w-full object-cover object-top"
+                @error="onPhotoError"
+              />
+              <!-- Fallback solid block -->
+              <div
+                v-else
+                class="absolute inset-0 flex items-end justify-center pb-16"
+                :style="{ backgroundColor: brand.colors.surface }"
+              >
+                <div
+                  class="hl-display text-[100px] leading-none md:text-[140px]"
+                  :style="{
+                    color: brand.colors.primary,
+                    fontFamily: `'Anton', 'Bebas Neue', sans-serif`,
+                  }"
+                >
+                  HOLDER.
+                </div>
+              </div>
+
+              <!-- Subtle gradient bottom for legibility -->
+              <div class="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/60 to-transparent" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           1.02 · GIANT WORDMARK BAND
+           ============================================================ -->
+      <div class="relative overflow-hidden border-y" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.background }">
+        <div class="hl-wordmark-band relative flex items-center justify-center py-10 md:py-16">
+          <div
+            class="hl-display select-none text-center leading-none"
+            :style="{
+              color: brand.colors.primary,
+              fontFamily: `'Anton', 'Bebas Neue', sans-serif`,
+              fontWeight: 400,
+              fontSize: 'clamp(5rem, 18vw, 22rem)',
+              letterSpacing: '-0.02em',
+            }"
+          >
+            HOLDER.
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           2.01 · MANIFESTO LONG-FORM (4 parágrafos sentenciosos)
+           ============================================================ -->
+      <div class="relative">
+        <div class="mx-auto grid max-w-6xl grid-cols-12 gap-12 px-6 py-24 md:px-10 md:py-32">
+          <div class="col-span-12 md:col-span-3">
+            <div class="hl-mono mb-3 text-[10px] uppercase tracking-[0.22em] sticky top-24" :style="{ color: brand.colors.primary }">
+              02 · A Doutrina
+            </div>
+          </div>
+          <div class="col-span-12 md:col-span-9">
+            <div class="hl-serif flex flex-col gap-8 text-[19px] leading-[1.7] md:text-[22px]" :style="{ color: brand.colors.text, fontFamily: `'Spectral', 'Georgia', serif` }">
+              <p>
+                Quem compra ação olha pro gráfico. Quem compra empresa olha pro balanço. <em :style="{ color: brand.colors.primary }">A primeira é apostar. A segunda é investir.</em>
+              </p>
+              <p>
+                Eu não dou sinal de compra. Eu te ensino a pensar como dono de negócio — e quando você internalizar, não precisa mais de mim.
+              </p>
+            </div>
+            <!-- Signature -->
+            <div class="hl-mono mt-16 flex items-center gap-4 text-[11px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.textMuted }">
+              <span class="h-px flex-1 max-w-12" :style="{ backgroundColor: brand.colors.border }" />
+              <span :style="{ color: brand.colors.primary }">— @holder</span>
+              <span class="h-px flex-1" :style="{ backgroundColor: brand.colors.border }" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           3.01 · TRADER vs HOLDER — comparative table
+           ============================================================ -->
+      <div class="relative border-y" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+        <div class="mx-auto max-w-7xl px-6 py-24 md:px-10 md:py-32">
+          <div class="mb-14">
+            <div class="hl-mono mb-3 text-[10px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
+              03 · Comparativo
+            </div>
+            <h2
+              class="hl-serif leading-[1.1]"
+              :style="{
+                color: brand.colors.text,
+                fontFamily: `'Spectral', 'Georgia', serif`,
+                fontSize: 'clamp(2.25rem, 4.5vw, 3.75rem)',
+                fontWeight: 400,
+              }"
+            >
+              Trader vs.<br />
+              <em :style="{ color: brand.colors.primary, fontWeight: 500 }">Holder.</em>
+            </h2>
+            <p class="hl-serif mt-6 max-w-xl text-[16px] italic" :style="{ color: brand.colors.textMuted, fontFamily: `'Spectral', 'Georgia', serif` }">
+              Dois jeitos de existir no mercado. Apenas um sobrevive a um ciclo completo.
+            </p>
+          </div>
+
+          <div class="grid gap-px overflow-hidden border" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }">
+            <div class="grid gap-px md:grid-cols-2">
+              <div
+                v-for="(row, idx) in holderTraderTable"
+                :key="'col-header-' + idx"
+                class="hl-mono px-6 py-5 text-[11px] uppercase tracking-[0.18em]"
+                :class="idx === 1 ? 'border-l-2' : ''"
+                :style="{
+                  backgroundColor: brand.colors.background,
+                  borderColor: idx === 1 ? brand.colors.primary : 'transparent',
+                  color: idx === 1 ? brand.colors.primary : brand.colors.textMuted,
+                }"
+              >
+                {{ idx === 0 ? 'TRADER' : 'HOLDER' }}
+              </div>
+            </div>
+            <div
+              v-for="(row, idx) in holderTraderRows"
+              :key="'row-' + idx"
+              class="grid gap-px md:grid-cols-2"
+            >
+              <div class="px-6 py-5 text-[14px]" :style="{ backgroundColor: brand.colors.background, color: brand.colors.textMuted, fontFamily: `'Spectral', 'Georgia', serif` }">
+                {{ row.trader }}
+              </div>
+              <div class="border-l-2 px-6 py-5 text-[14px]" :style="{ backgroundColor: brand.colors.background, borderColor: brand.colors.primary, color: brand.colors.text, fontFamily: `'Spectral', 'Georgia', serif` }">
+                <strong :style="{ color: brand.colors.primary }">→</strong> {{ row.holder }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           4.01 · § POSIÇÕES — mostradas só no quarter
+           ============================================================ -->
+      <div class="relative">
+        <div class="mx-auto max-w-6xl px-6 py-24 md:px-10 md:py-32">
+          <div class="mb-12 grid items-end gap-8 md:grid-cols-12">
+            <div class="md:col-span-7">
+              <div class="hl-mono mb-3 text-[10px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
+                04 · Posições
+              </div>
+              <h2
+                class="hl-serif leading-[1.1]"
+                :style="{
+                  color: brand.colors.text,
+                  fontFamily: `'Spectral', 'Georgia', serif`,
+                  fontSize: 'clamp(2rem, 4.5vw, 3.5rem)',
+                  fontWeight: 400,
+                }"
+              >
+                Eu detenho<br />
+                <em :style="{ color: brand.colors.primary, fontWeight: 500 }">apenas estas.</em>
+              </h2>
+            </div>
+            <p class="hl-serif text-[15px] italic md:col-span-5" :style="{ color: brand.colors.textMuted, fontFamily: `'Spectral', 'Georgia', serif` }">
+              Eu revelo a carteira inteira uma vez por trimestre. Sempre as mesmas. Quase nunca trocadas. A última vez que mudei algo foi há oito meses.
+            </p>
+          </div>
+
+          <!-- Position cards — minimal, sharp -->
+          <div class="grid gap-0 border" :style="{ borderColor: brand.colors.border }">
+            <div
+              v-for="(pos, idx) in holderPositions"
+              :key="pos.ticker"
+              class="grid grid-cols-12 items-center gap-4 border-b px-6 py-6 last:border-b-0 md:px-10"
+              :style="{ borderColor: brand.colors.border }"
+            >
+              <!-- Index -->
+              <div class="col-span-1 hl-mono text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
+                {{ String(idx + 1).padStart(2, '0') }}
+              </div>
+              <!-- Ticker -->
+              <div class="col-span-3 md:col-span-2">
+                <div class="hl-mono text-[20px] tabular-nums md:text-[24px]" :style="{ color: brand.colors.primary, fontFamily: `'JetBrains Mono', monospace`, letterSpacing: '0.02em' }">
+                  {{ pos.ticker }}
+                </div>
+              </div>
+              <!-- Name + thesis -->
+              <div class="col-span-8 md:col-span-7">
+                <div class="hl-mono text-[10px] uppercase tracking-[0.16em]" :style="{ color: brand.colors.primary }">
+                  {{ pos.sector }}
+                </div>
+                <div class="hl-serif mt-1 text-[14px] italic md:text-[15px]" :style="{ color: brand.colors.text, fontFamily: `'Spectral', 'Georgia', serif` }">
+                  "{{ pos.thesis }}"
+                </div>
+              </div>
+              <!-- Held since -->
+              <div class="col-span-12 md:col-span-2 md:text-right">
+                <div class="hl-mono text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
+                  Detido desde
+                </div>
+                <div class="hl-mono mt-0.5 text-[15px] tabular-nums" :style="{ color: brand.colors.text }">
+                  {{ pos.since }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p class="hl-mono mt-8 text-center text-[10px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.textMuted }">
+            ⊕ próxima revelação · Q3 · 30 jun
+          </p>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           5.01 · § POR QUÊ — long-form intro
+           ============================================================ -->
+      <div class="relative border-y" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+        <div class="mx-auto max-w-6xl px-6 py-24 md:px-10 md:py-32">
+          <div class="grid grid-cols-12 gap-12">
+            <div class="col-span-12 md:col-span-3">
+              <div class="hl-mono mb-3 text-[10px] uppercase tracking-[0.22em] sticky top-24" :style="{ color: brand.colors.primary }">
+                05 · Por Quê
+              </div>
+            </div>
+            <div class="col-span-12 md:col-span-9">
+              <h2
+                class="hl-serif leading-[1.1]"
+                :style="{
+                  color: brand.colors.text,
+                  fontFamily: `'Spectral', 'Georgia', serif`,
+                  fontSize: 'clamp(2rem, 4.5vw, 3.25rem)',
+                  fontWeight: 400,
+                }"
+              >
+                Por que ainda<br />
+                <em :style="{ color: brand.colors.primary, fontWeight: 500 }">detenho ITUB4.</em>
+              </h2>
+              <p class="hl-serif mt-10 text-[19px] leading-[1.7]" :style="{ color: `${brand.colors.text}D0`, fontFamily: `'Spectral', 'Georgia', serif` }">
+                Comprei a R$&nbsp;26,80 em 2014. Hoje a R$&nbsp;46. <em :style="{ color: brand.colors.primary }">A parte do gráfico é a menos importante</em> — o que importa são os 9 anos de dividendos pagos no meio do caminho, sem precisar vender uma posição.
+              </p>
+              <NuxtLink
+                to="#"
+                class="hl-mono mt-12 inline-flex items-center gap-3 border-b-2 pb-2 text-[11px] uppercase tracking-[0.22em]"
+                :style="{ color: brand.colors.primary, borderColor: brand.colors.primary }"
+              >
+                Continuar leitura →
+              </NuxtLink>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           6.01 · QUOTE FINAL + ASSINATURA
+           ============================================================ -->
+      <div class="relative">
+        <div class="mx-auto max-w-5xl px-6 py-24 text-center md:px-10 md:py-32">
+          <div class="hl-mono mb-8 text-[10px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
+            06 · Assinatura
+          </div>
+          <blockquote
+            class="hl-serif italic leading-[1.25]"
+            :style="{
+              color: brand.colors.text,
+              fontFamily: `'Spectral', 'Georgia', serif`,
+              fontSize: 'clamp(1.5rem, 3.5vw, 2.5rem)',
+              fontWeight: 400,
+            }"
+          >
+            "{{ brand.hero.founderQuote }}"
+          </blockquote>
+          <div class="hl-mono mt-12 flex items-center justify-center gap-4 text-[11px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.textMuted }">
+            <span class="h-px w-12" :style="{ backgroundColor: brand.colors.border }" />
+            <span :style="{ color: brand.colors.primary }">— @holder</span>
+            <span class="h-px w-12" :style="{ backgroundColor: brand.colors.border }" />
+          </div>
+
+          <div class="mt-16">
+            <NuxtLink
+              to="/auth/register"
+              class="hl-cta-primary group inline-flex items-center gap-3 px-10 py-5 text-[12px] font-bold uppercase tracking-[0.18em] transition-all hover:-translate-y-0.5"
+              :style="{
+                backgroundColor: brand.colors.primary,
+                color: brand.colors.text,
+              }"
+            >
+              <UIcon name="i-lucide-anchor" class="size-4" />
+              Tornar-se holder
+              <span class="inline-block transition-transform group-hover:translate-x-1">→</span>
+            </NuxtLink>
+          </div>
+
+          <p class="hl-display mt-16 text-[60px] leading-none md:text-[80px]" :style="{ color: brand.colors.primary, fontFamily: `'Anton', sans-serif`, letterSpacing: '0.02em' }">
+            HOLD.
+          </p>
+        </div>
+      </div>
+    </section>
+
     <!-- Social Proof - Logos de corretoras -->
     <MoleculesTrustedBy v-if="showSection('trustBar') && !authStore.isAuthenticated" :style="{ order: sectionOrder('trustBar') }" class="mt-8" />
 
@@ -4745,6 +5885,92 @@ watch(selectedTimeRange, (range) => {
   fetchIbovChartData(range)
 })
 
+// ============================================================
+// PLAYBOOK HERO — Saraiva Invest "calm method + author anchor"
+// ============================================================
+//
+// Data + handler used by the `playbook` hero variant. Kept scoped to
+// this file because the variant is Saraiva-only (other tenants don't
+// render the 4-pillar playbook section).
+
+const playbookPillars = [
+  {
+    icon: 'i-lucide-flask-conical',
+    title: 'Testa a tese',
+    description: 'Antes de comprar qualquer ativo, rode o backtest nos últimos 10 anos. Se a tese não sobrevive ao histórico, ela não sobrevive ao futuro.',
+    tag: 'Backtest',
+  },
+  {
+    icon: 'i-lucide-search',
+    title: 'Lê o balanço',
+    description: 'P/L não é estratégia. Você precisa entender receita, dívida, margem, CAPEX e fluxo de caixa. O trabalho chato é onde mora a vantagem.',
+    tag: 'Fundamentalista',
+  },
+  {
+    icon: 'i-lucide-scale',
+    title: 'Calcula o preço-teto',
+    description: 'Método Bazin pra quem vive de dividendos, Graham pra quem olha crescimento. O preço-teto é seu gatilho — não o humor do mercado.',
+    tag: 'Valuation',
+  },
+  {
+    icon: 'i-lucide-timer',
+    title: 'Deixa o tempo trabalhar',
+    description: 'Juros compostos só funcionam com duas coisas: paciência e consistência. Nenhuma delas cabe num tweet. Ambas cabem num método.',
+    tag: 'Composto',
+  },
+]
+
+function onPhotoError(ev: Event) {
+  // If the author photo isn't there yet, just hide the img so the
+  // fallback sticker circle renders instead.
+  const img = ev.target as HTMLImageElement
+  img.style.display = 'none'
+}
+
+// ============================================================
+// HOLDER HERO — editorial autoral
+// ============================================================
+//
+// Data + helpers used by the `holder` hero variant.
+
+const holderEditionDate = computed(() => {
+  const d = new Date()
+  const months = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ']
+  return `${months[d.getMonth()]} ${d.getFullYear()}`
+})
+
+// Trader vs Holder table data — 4 sharp one-liners (was 7).
+// Less is more — cada linha tem que valer por uma frase de manifesto.
+const holderTraderTable = ['', '']  // headers rendered inline
+const holderTraderRows = [
+  {
+    trader: 'Olha o gráfico de 5 em 5 minutos.',
+    holder: 'Olha o relatório anual uma vez por ano.',
+  },
+  {
+    trader: 'Compra na euforia. Vende no pânico.',
+    holder: 'Compra no pânico. Ignora a euforia.',
+  },
+  {
+    trader: 'Quer estar certo todo dia.',
+    holder: 'Aceita estar errado por meses.',
+  },
+  {
+    trader: '10 anos · 4.000 trades · R$ 0.',
+    holder: '10 anos · 12 posições · R$ 1M.',
+  },
+]
+
+// Posições atuais reveladas — 5 (era 7), teses curtas estilo
+// editorial (uma linha cada). Menos texto, mais peso.
+const holderPositions = [
+  { ticker: 'ITUB4', sector: 'Bancos', thesis: 'Moat regulatório, 30M de clientes, ROE consistente acima de 18%.', since: '2014' },
+  { ticker: 'WEGE3', sector: 'Indústria', thesis: 'A única indústria brasileira que compete em pé de igualdade no mundo.', since: '2016' },
+  { ticker: 'BBSE3', sector: 'Seguros', thesis: 'Margem operacional altíssima. Payout altíssimo. Capex baixo.', since: '2018' },
+  { ticker: 'EGIE3', sector: 'Energia', thesis: 'Geradora hidrelétrica com contratos longos. Boring is beautiful.', since: '2020' },
+  { ticker: 'B3SA3', sector: 'Bolsa', thesis: 'Monopólio natural. Cobra até dos traders que perdem dinheiro.', since: '2021' },
+]
+
 definePageMeta({
   isPublicRoute: true,
 })
@@ -4782,5 +6008,240 @@ definePageMeta({
 }
 .api-product-section .api-row:hover .terminal-window {
   transform: translateY(-4px);
+}
+
+/* ========== PLAYBOOK HERO (Saraiva Invest) ========== */
+.playbook-hero {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-feature-settings: 'ss01', 'cv11';
+}
+
+.playbook-hero .pb-title,
+.playbook-hero .pb-manifesto,
+.playbook-hero .pb-section-title,
+.playbook-hero .pb-final-title,
+.playbook-hero .pb-quote {
+  font-family: 'Fredoka', 'Inter', system-ui, sans-serif;
+  font-weight: 700;
+}
+
+.playbook-hero .pb-subtitle {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 400;
+}
+
+.playbook-hero .pb-eyebrow,
+.playbook-hero .pb-badge-text {
+  font-family: 'Fredoka', 'Inter', system-ui, sans-serif;
+}
+
+/* Sticker-style highlight — mimics the chunky white-stroke logo effect */
+.playbook-hero .pb-sticker {
+  display: inline-block;
+  font-family: 'Fredoka', 'Inter', system-ui, sans-serif;
+  font-weight: 700;
+  position: relative;
+  padding: 0 0.05em;
+}
+
+.playbook-hero .pb-sticker-outline {
+  background: var(--sticker-bg, #F5F5F7);
+  color: var(--sticker-fg, #0B0B0E) !important;
+  padding: 0.02em 0.25em;
+  border-radius: 0.15em;
+  -webkit-text-stroke: 2px var(--sticker-fg, #0B0B0E);
+  box-shadow:
+    -3px 3px 0 var(--sticker-fg, #0B0B0E),
+    0 0 0 4px var(--sticker-bg, #F5F5F7),
+    -3px 3px 0 4px var(--sticker-fg, #0B0B0E);
+  transform: rotate(-1.5deg);
+}
+
+/* Cabeça Quente sticker — red, hot, slightly tilted opposite way */
+.playbook-hero .pb-sticker-hot {
+  display: inline-block;
+  background: #EF4444;
+  color: #FFFFFF !important;
+  padding: 0.02em 0.3em;
+  border-radius: 0.15em;
+  font-family: 'Fredoka', 'Inter', system-ui, sans-serif;
+  font-weight: 700;
+  box-shadow:
+    -3px 3px 0 #0B0B0E,
+    0 0 0 4px #FFFFFF,
+    -3px 3px 0 4px #0B0B0E;
+  transform: rotate(2deg);
+}
+
+/* Cabeça Fria sticker — amber, cold, tilted opposite */
+.playbook-hero .pb-sticker-cold {
+  display: inline-block;
+  font-family: 'Fredoka', 'Inter', system-ui, sans-serif;
+  font-weight: 700;
+}
+
+/* Villain card sweat drop animation */
+@keyframes pb-sweat-drop {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.85; }
+  50% { transform: translateY(6px) scale(0.85); opacity: 0.4; }
+}
+
+.playbook-hero .pb-sweat {
+  animation: pb-sweat-drop 1.4s ease-in-out infinite;
+}
+.playbook-hero .pb-sweat-2 {
+  animation-delay: 0.7s;
+}
+
+/* Villain card subtle pulse to feel "agitated" */
+@keyframes pb-villain-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+  50% { box-shadow: 0 0 60px -10px rgba(239, 68, 68, 0.3); }
+}
+
+.playbook-hero .pb-villain {
+  animation: pb-villain-pulse 3s ease-in-out infinite;
+}
+
+/* Ranking row hover */
+.playbook-hero .pb-ranking-row {
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.playbook-hero .pb-ranking-row:hover {
+  background-color: rgba(230, 126, 34, 0.08);
+  transform: translateX(2px);
+}
+
+/* Ranking card subtle hover */
+.playbook-hero .pb-ranking {
+  transition: border-color 0.3s ease, transform 0.4s ease;
+}
+.playbook-hero .pb-ranking:hover {
+  border-color: rgba(230, 126, 34, 0.5);
+  transform: translateY(-2px);
+}
+
+/* Author photo ring — slow rotating stroke */
+@keyframes pb-ring-rotate {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.playbook-hero .pb-author-ring {
+  animation: pb-ring-rotate 40s linear infinite;
+  border-style: dashed;
+}
+
+/* Author photo subtle float */
+@keyframes pb-author-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.playbook-hero .pb-author-photo {
+  animation: pb-author-float 6s ease-in-out infinite;
+}
+
+/* Signature tag bobs gently */
+@keyframes pb-tag-bob {
+  0%, 100% { transform: rotate(-4deg) translateY(0); }
+  50% { transform: rotate(-4deg) translateY(-4px); }
+}
+
+.playbook-hero .pb-signature-tag {
+  animation: pb-tag-bob 5s ease-in-out infinite;
+}
+
+/* Pillar card hover lift */
+.playbook-hero .pb-pillar {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.3s ease,
+              background-color 0.3s ease;
+}
+
+.playbook-hero .pb-pillar:hover {
+  border-color: var(--sticker-bg, rgba(230, 126, 34, 0.5)) !important;
+}
+
+/* Pill CTA hover */
+.playbook-hero .pb-cta-primary {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Responsive: smaller sticker effect on mobile */
+@media (max-width: 768px) {
+  .playbook-hero .pb-sticker-outline {
+    box-shadow:
+      -2px 2px 0 var(--sticker-fg, #0B0B0E),
+      0 0 0 3px var(--sticker-bg, #F5F5F7),
+      -2px 2px 0 3px var(--sticker-fg, #0B0B0E);
+  }
+
+  .playbook-hero .pb-author-ring,
+  .playbook-hero .pb-author-circle {
+    display: none !important;
+  }
+}
+
+/* ========== HOLDER HERO (sentencious editorial) ========== */
+.holder-hero {
+  font-family: 'Spectral', 'Georgia', serif;
+  font-feature-settings: 'kern', 'liga';
+}
+
+.holder-hero .hl-display {
+  font-family: 'Anton', 'Bebas Neue', 'Inter', sans-serif !important;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+.holder-hero .hl-serif {
+  font-family: 'Spectral', 'Georgia', serif !important;
+}
+
+.holder-hero .hl-mono {
+  font-family: 'JetBrains Mono', ui-monospace, 'Menlo', monospace !important;
+}
+
+/* Drop cap for first paragraph of doutrina */
+.holder-hero .hl-drop-cap {
+  font-family: 'Anton', 'Bebas Neue', sans-serif;
+  font-size: 4em;
+  line-height: 0.8;
+  float: left;
+  padding: 0.05em 0.12em 0 0;
+  margin-top: 0.05em;
+}
+
+/* CTA primary — sharp rectangle (sem rounded full no Holder) */
+.holder-hero .hl-cta-primary {
+  border-radius: 0;
+  letter-spacing: 0.18em;
+  border: 2px solid currentColor;
+  position: relative;
+  box-shadow: 4px 4px 0 currentColor;
+  transition: all 0.2s ease;
+}
+.holder-hero .hl-cta-primary:hover {
+  box-shadow: 6px 6px 0 currentColor;
+}
+
+/* Editorial portrait subtle hover lift */
+.holder-hero .hl-portrait {
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.holder-hero .hl-portrait:hover {
+  transform: scale(1.02);
+}
+
+/* Wordmark band — slow pan animation */
+@keyframes hl-wordmark-pan {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-10px); }
+}
+
+/* Typographic strip on top */
+.holder-hero .hl-strip {
+  font-family: 'JetBrains Mono', monospace;
 }
 </style>
