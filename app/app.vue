@@ -2,7 +2,13 @@
   <Analytics />
   <NuxtPwaManifest />
   <UApp :toaster="uAppConfig?.toaster">
-    <AtomsInstallAppBanner v-if="showBanner" />
+    <!-- ClientOnly so the SSR never attempts to render this banner
+         (SSR viewport = desktop default, but client viewport can be
+         anything — the mismatch would cascade through the whole tree
+         and break the brand reactive state on hydration). -->
+    <ClientOnly>
+      <AtomsInstallAppBanner v-if="showBanner" />
+    </ClientOnly>
     <NuxtPage />
   </UApp>
 </template>
