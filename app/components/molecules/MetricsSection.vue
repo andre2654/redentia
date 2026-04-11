@@ -34,9 +34,12 @@
         <span :style="{ color: brand.colors.textMuted }">{{ brand.metrics.sectionSubtitle }}</span>
       </div>
 
-      <!-- Display serif headline for editorial contrast with the mono eyebrow -->
+      <!-- Headline — matches the guides section ("Conhecimento que gera
+           resultados") so the whole unauthenticated home shares one display
+           voice instead of mixing Instrument Serif with the body sans. -->
       <h2
-        class="font-display mx-auto mt-2 max-w-3xl text-4xl leading-[1.05] md:text-6xl lg:text-7xl"
+        class="mx-auto mt-2 max-w-3xl text-4xl leading-[1.05] md:text-6xl lg:text-7xl"
+        :class="[brand.font.headingWeight, brand.font.headingStyle]"
         :style="{ color: brand.colors.text }"
       >
         {{ brand.metrics.sectionTitle.split('.')[0] }}<span class="italic" :style="{ color: brand.colors.primary }">.</span>

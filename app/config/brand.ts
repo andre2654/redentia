@@ -509,7 +509,7 @@ interface BrandConfig {
   // A ordem no array define a ordem de exibicao na home.
   // Cada secao pode ser ativada/desativada individualmente.
   homeSections: Array<{
-    id: 'hero' | 'trustBar' | 'market' | 'categories' | 'guides' | 'metrics' | 'featureTabs' | 'marquee' | 'testimonials' | 'aiCta' | 'educational' | 'products' | 'wealthCalculator' | 'characters' | 'investorChecklist'
+    id: 'hero' | 'trustBar' | 'market' | 'categories' | 'guides' | 'metrics' | 'featureTabs' | 'marquee' | 'testimonials' | 'aiCta' | 'educational' | 'products' | 'wealthCalculator' | 'characters' | 'investorChecklist' | 'apiProduct' | 'creativeProduct'
     visible: boolean
   }>
 
@@ -2703,6 +2703,8 @@ const redentia: BrandConfig = {
     { id: 'featureTabs', visible: false },
     { id: 'categories', visible: true },
     { id: 'aiCta', visible: true },
+    { id: 'apiProduct', visible: true },
+    { id: 'creativeProduct', visible: true },
     { id: 'educational', visible: false },
     { id: 'products', visible: false },
     { id: 'guides', visible: true },
