@@ -365,6 +365,449 @@
       </div>
     </section>
 
+    <!-- ========== HERO: EDITORIAL (Norte Capital — letter from your advisor, private-bank tone) ========== -->
+    <section
+      v-if="showSection('hero') && !authStore.isAuthenticated && brand.hero.variant === 'editorial'"
+      :style="{ order: sectionOrder('hero'), backgroundColor: brand.colors.background }"
+      class="relative"
+    >
+      <!-- Page header strip: eyebrow + date + "page number" counter -->
+      <header
+        class="mx-auto flex max-w-5xl items-start justify-between px-6 pt-10 md:px-12 md:pt-14"
+      >
+        <div class="flex flex-col gap-0.5">
+          <span
+            class="font-small-caps text-[11px]"
+            :style="{ color: brand.colors.textMuted }"
+          >
+            Norte Capital &nbsp;·&nbsp; Assessoria de Investimentos
+          </span>
+          <span
+            class="font-editorial-body text-[12px] italic"
+            :style="{ color: brand.colors.textMuted }"
+          >
+            {{ editorialDate }}
+          </span>
+        </div>
+        <span
+          class="font-editorial-body text-[11px] italic tabular-nums"
+          :style="{ color: brand.colors.textMuted }"
+        >
+          Edição nº 001 — I.
+        </span>
+      </header>
+
+      <!-- Opening: tagline as oversized display serif -->
+      <div class="mx-auto max-w-5xl px-6 pb-6 pt-16 md:px-12 md:pt-24">
+        <h1
+          class="font-editorial-display max-w-4xl leading-[0.92] tracking-tight"
+          :style="{ color: brand.colors.text, fontSize: 'clamp(3.5rem, 9vw, 7.5rem)' }"
+        >
+          <template v-for="(line, idx) in brand.hero.title.split('\n')" :key="idx">
+            <br v-if="idx > 0" />
+            <span v-if="idx === 1" class="italic" :style="{ color: brand.colors.secondary }">{{ line }}</span>
+            <span v-else>{{ line }}</span>
+          </template>
+        </h1>
+
+        <hr class="hairline-rule my-10 max-w-[8rem]" />
+
+        <p
+          class="font-editorial-body max-w-2xl"
+          :style="{ color: brand.colors.text, fontSize: 'clamp(1.15rem, 1.4vw, 1.35rem)' }"
+        >
+          {{ brand.hero.subtitle }}
+        </p>
+
+        <!-- CTAs: the primary reads like an invitation, not a signup button.
+             Underlined text links instead of beefy pills. -->
+        <div class="mt-10 flex flex-col items-start gap-4 md:flex-row md:items-center md:gap-10">
+          <NuxtLink
+            to="/auth/register"
+            class="group inline-flex items-center gap-3 border-b pb-1 font-editorial-body text-lg transition-colors"
+            :style="{
+              borderColor: brand.colors.secondary,
+              color: brand.colors.text,
+            }"
+            @mouseenter="($event.currentTarget as HTMLElement).style.borderColor = brand.colors.text"
+            @mouseleave="($event.currentTarget as HTMLElement).style.borderColor = brand.colors.secondary"
+          >
+            <span>{{ brand.hero.ctaLabel }}</span>
+            <span class="inline-block transition-transform group-hover:translate-x-1" :style="{ color: brand.colors.secondary }">—→</span>
+          </NuxtLink>
+          <NuxtLink
+            to="/auth/login"
+            class="font-editorial-body text-lg italic transition-opacity hover:opacity-70"
+            :style="{ color: brand.colors.textMuted }"
+          >
+            {{ brand.hero.ctaSecondaryLabel }}
+          </NuxtLink>
+        </div>
+      </div>
+
+      <!-- ===== Chapter I: Como trabalhamos ===== -->
+      <div class="mx-auto max-w-5xl px-6 pb-20 pt-16 md:grid md:grid-cols-12 md:gap-10 md:px-12">
+        <div class="md:col-span-4">
+          <span
+            class="font-small-caps text-[11px]"
+            :style="{ color: brand.colors.secondary }"
+          >
+            Capítulo I
+          </span>
+          <h2
+            class="font-editorial-display mt-1 text-3xl leading-tight md:text-4xl"
+            :style="{ color: brand.colors.text }"
+          >
+            Como trabalhamos
+          </h2>
+        </div>
+        <div class="mt-6 md:col-span-7 md:col-start-6 md:mt-0">
+          <p
+            class="font-editorial-body dropcap"
+            :style="{ color: brand.colors.text, fontSize: '1.15rem' }"
+          >
+            Nossa equipe de oito assessores certificados CFA atende um número limitado de famílias. Cada carteira é construída a partir de uma conversa — sobre seus objetivos, seu horizonte, suas obrigações de médio prazo — e não a partir de um formulário preenchido na pressa.
+          </p>
+          <p
+            class="font-editorial-body mt-6"
+            :style="{ color: brand.colors.text, fontSize: '1.15rem' }"
+          >
+            Uma vez construída, sua carteira é revisada trimestralmente em reunião presencial ou por vídeo. Entre as reuniões, você acompanha tudo por esta plataforma, recebe a <em>carta mensal</em> do seu assessor e pode falar conosco quando precisar — sem secretária eletrônica e sem fila de atendimento.
+          </p>
+        </div>
+      </div>
+
+      <hr class="hairline-rule mx-auto max-w-5xl" />
+
+      <!-- ===== Chapter II: Ritual ===== -->
+      <div class="mx-auto max-w-5xl px-6 py-20 md:grid md:grid-cols-12 md:gap-10 md:px-12">
+        <div class="md:col-span-4">
+          <span
+            class="font-small-caps text-[11px]"
+            :style="{ color: brand.colors.secondary }"
+          >
+            Capítulo II
+          </span>
+          <h2
+            class="font-editorial-display mt-1 text-3xl leading-tight md:text-4xl"
+            :style="{ color: brand.colors.text }"
+          >
+            Ritual mensal
+          </h2>
+        </div>
+        <div class="mt-6 md:col-span-7 md:col-start-6 md:mt-0">
+          <!-- Three numbered "ritual" items as an editorial list with roman numerals -->
+          <ol class="flex flex-col gap-6">
+            <li
+              v-for="(item, idx) in editorialRitual"
+              :key="item.title"
+              class="flex gap-5 border-t pt-6"
+              :style="{ borderColor: `color-mix(in srgb, ${brand.colors.text} 10%, transparent)` }"
+            >
+              <span
+                class="font-editorial-display text-3xl italic leading-none"
+                :style="{ color: brand.colors.secondary }"
+              >
+                {{ romanNumeral(idx + 1) }}
+              </span>
+              <div class="flex flex-col gap-1.5">
+                <h3
+                  class="font-editorial-display text-xl"
+                  :style="{ color: brand.colors.text }"
+                >
+                  {{ item.title }}
+                </h3>
+                <p
+                  class="font-editorial-body"
+                  :style="{ color: brand.colors.text, fontSize: '1rem' }"
+                >
+                  {{ item.body }}
+                </p>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </div>
+
+      <hr class="hairline-rule mx-auto max-w-5xl" />
+
+      <!-- ===== Chapter III: Números que importam ===== -->
+      <div class="mx-auto max-w-5xl px-6 py-20 md:px-12">
+        <div class="mb-10 flex flex-col gap-1">
+          <span
+            class="font-small-caps text-[11px]"
+            :style="{ color: brand.colors.secondary }"
+          >
+            Capítulo III
+          </span>
+          <h2
+            class="font-editorial-display text-3xl leading-tight md:text-4xl"
+            :style="{ color: brand.colors.text }"
+          >
+            Números que importam
+          </h2>
+        </div>
+
+        <!-- Narrative metrics — oldstyle figures in serif, inline with prose -->
+        <div class="grid gap-10 md:grid-cols-3">
+          <div v-for="metric in editorialMetrics" :key="metric.label" class="flex flex-col gap-3">
+            <span
+              class="font-small-caps text-[10px]"
+              :style="{ color: brand.colors.textMuted }"
+            >
+              {{ metric.label }}
+            </span>
+            <div class="flex items-baseline gap-2">
+              <span
+                class="font-editorial-display font-serif-numeric text-6xl leading-none"
+                :style="{ color: brand.colors.text }"
+              >
+                {{ metric.value }}
+              </span>
+              <span
+                class="font-editorial-display text-2xl italic"
+                :style="{ color: brand.colors.secondary }"
+              >
+                {{ metric.unit }}
+              </span>
+            </div>
+            <p
+              class="font-editorial-body italic"
+              :style="{ color: brand.colors.textMuted, fontSize: '0.95rem' }"
+            >
+              {{ metric.note }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <hr class="hairline-rule mx-auto max-w-5xl" />
+
+      <!-- ===== Chapter IV: Pauta do dia ===== -->
+      <div class="mx-auto max-w-5xl px-6 py-20 md:grid md:grid-cols-12 md:gap-10 md:px-12">
+        <div class="md:col-span-4">
+          <span
+            class="font-small-caps text-[11px]"
+            :style="{ color: brand.colors.secondary }"
+          >
+            Capítulo IV
+          </span>
+          <h2
+            class="font-editorial-display mt-1 text-3xl leading-tight md:text-4xl"
+            :style="{ color: brand.colors.text }"
+          >
+            Pauta do dia
+          </h2>
+          <p
+            class="font-editorial-body mt-4 italic"
+            :style="{ color: brand.colors.textMuted, fontSize: '0.95rem' }"
+          >
+            Uma leitura editorial do pregão, curada pela mesa. Não é recomendação nem alerta — apenas o que vale comentar hoje.
+          </p>
+        </div>
+
+        <div class="mt-6 md:col-span-7 md:col-start-6 md:mt-0">
+          <!-- Positive movers -->
+          <div class="mb-10">
+            <span
+              class="font-small-caps text-[11px]"
+              :style="{ color: brand.colors.text }"
+            >
+              Altas em destaque
+            </span>
+            <ul class="mt-4 flex flex-col gap-5">
+              <li
+                v-for="mover in editorialMovers.up"
+                :key="`up-${mover.ticker}`"
+                class="flex flex-col gap-1 border-t pt-4"
+                :style="{ borderColor: `color-mix(in srgb, ${brand.colors.text} 10%, transparent)` }"
+              >
+                <div class="flex items-baseline justify-between gap-4">
+                  <div class="flex items-baseline gap-3">
+                    <span
+                      class="font-editorial-display text-2xl italic"
+                      :style="{ color: brand.colors.secondary }"
+                    >
+                      —
+                    </span>
+                    <span
+                      class="font-editorial-display text-xl"
+                      :style="{ color: brand.colors.text }"
+                    >
+                      {{ mover.name || mover.ticker }}
+                    </span>
+                    <span
+                      class="font-editorial-body text-[11px] italic"
+                      :style="{ color: brand.colors.textMuted }"
+                    >
+                      {{ mover.ticker }}
+                    </span>
+                  </div>
+                  <div class="flex items-baseline gap-3">
+                    <span
+                      class="font-serif-numeric text-lg"
+                      :style="{ color: brand.colors.text }"
+                    >
+                      {{ formatMoverPrice(mover.price) }}
+                    </span>
+                    <span
+                      class="font-serif-numeric text-lg italic"
+                      :style="{ color: brand.colors.positive }"
+                    >
+                      {{ formatMoverChange(mover.change) }}
+                    </span>
+                  </div>
+                </div>
+                <p
+                  class="font-editorial-body italic pl-8"
+                  :style="{ color: brand.colors.textMuted, fontSize: '0.95rem' }"
+                >
+                  {{ mover.note }}
+                </p>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Negative movers -->
+          <div>
+            <span
+              class="font-small-caps text-[11px]"
+              :style="{ color: brand.colors.text }"
+            >
+              Quedas em destaque
+            </span>
+            <ul class="mt-4 flex flex-col gap-5">
+              <li
+                v-for="mover in editorialMovers.down"
+                :key="`down-${mover.ticker}`"
+                class="flex flex-col gap-1 border-t pt-4"
+                :style="{ borderColor: `color-mix(in srgb, ${brand.colors.text} 10%, transparent)` }"
+              >
+                <div class="flex items-baseline justify-between gap-4">
+                  <div class="flex items-baseline gap-3">
+                    <span
+                      class="font-editorial-display text-2xl italic"
+                      :style="{ color: brand.colors.secondary }"
+                    >
+                      —
+                    </span>
+                    <span
+                      class="font-editorial-display text-xl"
+                      :style="{ color: brand.colors.text }"
+                    >
+                      {{ mover.name || mover.ticker }}
+                    </span>
+                    <span
+                      class="font-editorial-body text-[11px] italic"
+                      :style="{ color: brand.colors.textMuted }"
+                    >
+                      {{ mover.ticker }}
+                    </span>
+                  </div>
+                  <div class="flex items-baseline gap-3">
+                    <span
+                      class="font-serif-numeric text-lg"
+                      :style="{ color: brand.colors.text }"
+                    >
+                      {{ formatMoverPrice(mover.price) }}
+                    </span>
+                    <span
+                      class="font-serif-numeric text-lg italic"
+                      :style="{ color: brand.colors.negative }"
+                    >
+                      {{ formatMoverChange(mover.change) }}
+                    </span>
+                  </div>
+                </div>
+                <p
+                  class="font-editorial-body italic pl-8"
+                  :style="{ color: brand.colors.textMuted, fontSize: '0.95rem' }"
+                >
+                  {{ mover.note }}
+                </p>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Quiet footnote + discrete link to the client's own portfolio -->
+          <p
+            class="font-editorial-body mt-10 italic"
+            :style="{ color: brand.colors.textMuted, fontSize: '0.85rem' }"
+          >
+            Acompanhamento editorial. Para movimentações em tempo real,
+            <NuxtLink
+              to="/wallet"
+              class="border-b pb-[1px] transition-colors"
+              :style="{
+                color: brand.colors.text,
+                borderColor: `color-mix(in srgb, ${brand.colors.text} 40%, transparent)`,
+              }"
+            >consulte sua carteira</NuxtLink>.
+          </p>
+        </div>
+      </div>
+
+      <hr class="hairline-rule mx-auto max-w-5xl" />
+
+      <!-- ===== Closing: advisor signature + CTA ===== -->
+      <div class="mx-auto max-w-5xl px-6 py-24 md:grid md:grid-cols-12 md:gap-10 md:px-12">
+        <div class="md:col-span-7">
+          <p
+            class="font-editorial-display leading-[1.15]"
+            :style="{ color: brand.colors.text, fontSize: 'clamp(1.75rem, 3vw, 2.75rem)' }"
+          >
+            Se tudo isso ressoa com a forma como você quer cuidar do seu patrimônio, <em :style="{ color: brand.colors.secondary }">converse conosco.</em>
+          </p>
+          <p
+            class="font-editorial-body mt-6 max-w-lg italic"
+            :style="{ color: brand.colors.textMuted, fontSize: '1rem' }"
+          >
+            Uma primeira conversa de 45 minutos, sem custo e sem compromisso. Você explica o que procura, nós explicamos como trabalhamos. Se fizer sentido, seguimos adiante.
+          </p>
+          <div class="mt-8 flex flex-col items-start gap-4 md:flex-row md:items-center md:gap-10">
+            <NuxtLink
+              to="/auth/register"
+              class="group inline-flex items-center gap-3 border-b pb-1 font-editorial-body text-lg transition-colors"
+              :style="{
+                borderColor: brand.colors.secondary,
+                color: brand.colors.text,
+              }"
+              @mouseenter="($event.currentTarget as HTMLElement).style.borderColor = brand.colors.text"
+              @mouseleave="($event.currentTarget as HTMLElement).style.borderColor = brand.colors.secondary"
+            >
+              <span>Agendar uma conversa</span>
+              <span :style="{ color: brand.colors.secondary }">—→</span>
+            </NuxtLink>
+            <span
+              class="font-editorial-body text-[12px] italic"
+              :style="{ color: brand.colors.textMuted }"
+            >
+              Ou ligue: (11) 4000-2780
+            </span>
+          </div>
+        </div>
+        <div class="mt-14 md:col-span-4 md:col-start-9 md:mt-0">
+          <AtomsAdvisorSignature
+            name="Marcelo Oliveira, CFA"
+            role="Sócio-fundador · Norte Capital"
+            closing="Atenciosamente,"
+          />
+        </div>
+      </div>
+
+      <!-- Bottom strip: page number echo + compliance note -->
+      <div
+        class="mx-auto flex max-w-5xl items-center justify-between border-t px-6 py-6 font-editorial-body text-[11px] italic md:px-12"
+        :style="{
+          borderColor: `color-mix(in srgb, ${brand.colors.text} 12%, transparent)`,
+          color: brand.colors.textMuted,
+        }"
+      >
+        <span>Credenciada CVM · Ancord · Certificações CFA</span>
+        <span class="tabular-nums">001 / 012</span>
+      </div>
+    </section>
+
     <!-- Social Proof - Logos de corretoras -->
     <MoleculesTrustedBy v-if="showSection('trustBar') && !authStore.isAuthenticated" :style="{ order: sectionOrder('trustBar') }" class="mt-8" />
 
@@ -1212,6 +1655,152 @@ if (import.meta.client) {
 const layoutName = computed(() =>
   authStore.isAuthenticated ? 'default' : 'unauthenticated'
 )
+
+// ==========================================================
+// EDITORIAL HERO — Norte Capital "letter from your advisor"
+// ==========================================================
+
+// Full-spelled date, editorial style: "Sexta-feira, 10 de abril de 2026"
+const editorialDate = computed(() => {
+  try {
+    const d = new Date()
+    const full = d.toLocaleDateString('pt-BR', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    })
+    // Capitalize first letter ("sexta-feira" → "Sexta-feira")
+    return full.charAt(0).toUpperCase() + full.slice(1)
+  } catch {
+    return ''
+  }
+})
+
+// Ritual items — Chapter II of the editorial home. Fictional but realistic.
+const editorialRitual = [
+  {
+    title: 'Carta mensal do seu assessor',
+    body: 'Toda primeira sexta-feira do mês, você recebe uma nota pessoal do seu assessor com o que aconteceu na sua carteira, o que foi revisado e o que está em análise. É uma carta, não um dashboard.',
+  },
+  {
+    title: 'Reunião trimestral',
+    body: 'A cada trimestre, nos encontramos — presencial ou por vídeo — para revisar a carteira à luz dos seus objetivos. Sem script, sem apresentação de vendas, sem tempo limitado.',
+  },
+  {
+    title: 'Plataforma sempre aberta',
+    body: 'Entre as conversas, você acompanha tudo aqui: carteira consolidada, proventos recebidos, próximos vencimentos e as últimas observações do seu assessor. O que importa, quando importa.',
+  },
+]
+
+// Metrics narrated editorially instead of as vanity counters.
+const editorialMetrics = [
+  {
+    label: 'Famílias atendidas',
+    value: '84',
+    unit: '',
+    note: 'Limitamos o número de clientes por assessor. Quando chegamos ao limite, abrimos lista de espera.',
+  },
+  {
+    label: 'Patrimônio sob consultoria',
+    value: 'R$ 412',
+    unit: 'mi',
+    note: 'Ticket médio de R$ 4,9 milhões por família. Trabalhamos com patrimônios em construção e consolidados.',
+  },
+  {
+    label: 'Anos de mercado',
+    value: '18',
+    unit: '',
+    note: 'Assessoria fundada em 2008, durante a crise financeira. Atravessamos três ciclos completos ao lado dos nossos clientes.',
+  },
+]
+
+// Small roman-numeral helper — used for Chapter II ritual list prefix.
+function romanNumeral(n: number): string {
+  const romans: Record<number, string> = {
+    1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V', 6: 'VI', 7: 'VII', 8: 'VIII', 9: 'IX', 10: 'X',
+  }
+  return romans[n] || String(n)
+}
+
+// ==========================================================
+// "Pauta do dia" — editorial market movers for Norte Capital
+// ==========================================================
+// Fetched once on mount. Falls back silently to a curated seed list if the
+// backend is unreachable. Rendered as a dashed list (no grid, no cards)
+// with oldstyle figures in serif — preserving the editorial stillness.
+
+interface EditorialMover {
+  ticker: string
+  name: string
+  price: number
+  change: number
+  note: string
+}
+
+const editorialMovers = ref<{ up: EditorialMover[]; down: EditorialMover[] }>({
+  up: [
+    { ticker: 'PETR4', name: 'Petrobras PN', price: 38.45, change: 2.18, note: 'movimento técnico na véspera do pagamento de JCP' },
+    { ticker: 'WEGE3', name: 'WEG ON', price: 52.30, change: 1.24, note: 'expectativa do balanço 3T26' },
+  ],
+  down: [
+    { ticker: 'VALE3', name: 'Vale ON', price: 62.12, change: -1.05, note: 'minério de ferro sob pressão no mercado asiático' },
+    { ticker: 'BBDC4', name: 'Bradesco PN', price: 14.22, change: -0.85, note: 'dia de rebalanceamento no IBOV' },
+  ],
+})
+
+// Try to hydrate with real data from the backend if the Redentia assets
+// service is available. Stays graceful on failure.
+onMounted(async () => {
+  if (brand.hero.variant !== 'editorial') return
+  try {
+    const service = useAssetsService()
+    const [top, bottom] = await Promise.all([
+      service.getTopStocks('top', 500_000),
+      service.getTopStocks('bottom', 500_000),
+    ])
+    const mapItem = (x: any, fallbackNote: string): EditorialMover => ({
+      ticker: x?.ticker || x?.symbol || '',
+      name: (x?.name || '').trim() || x?.ticker || '',
+      price: Number(x?.market_price) || 0,
+      change: Number(x?.change_percent) || 0,
+      note: fallbackNote,
+    })
+    const upNotes = [
+      'liderando as altas do pregão',
+      'acumulando valorização na semana',
+    ]
+    const downNotes = [
+      'sob pressão vendedora pontual',
+      'ajuste técnico após alta recente',
+    ]
+    if (Array.isArray(top) && top.length >= 2) {
+      editorialMovers.value.up = top
+        .slice(0, 2)
+        .map((t, i) => mapItem(t, upNotes[i] || upNotes[0]!))
+    }
+    if (Array.isArray(bottom) && bottom.length >= 2) {
+      editorialMovers.value.down = bottom
+        .slice(0, 2)
+        .map((t, i) => mapItem(t, downNotes[i] || downNotes[0]!))
+    }
+  } catch {
+    // keep seeded fallback
+  }
+})
+
+function formatMoverPrice(n: number): string {
+  if (!Number.isFinite(n) || n <= 0) return '—'
+  return n.toLocaleString('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })
+}
+function formatMoverChange(n: number): string {
+  if (!Number.isFinite(n)) return '—'
+  const sign = n >= 0 ? '+' : '−'
+  return `${sign}${Math.abs(n).toFixed(2).replace('.', ',')}%`
+}
 
 const runtimeConfig = useRuntimeConfig()
 const siteUrl = computed(() => {

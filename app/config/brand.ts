@@ -193,6 +193,10 @@ interface BrandConfig {
     showChecklist: boolean
     showCompanyInfo: boolean
     showMarketCommentaries?: boolean
+    // Visual variant — 'default' keeps the terminal/card layout used by
+    // Redentia et al. 'editorial' switches to the narrated column layout
+    // used by Norte Capital (private-bank "letter from your advisor").
+    variant?: 'default' | 'editorial'
   }
 
   // === SOCIAL ===
@@ -225,7 +229,7 @@ interface BrandConfig {
 
   // HERO (pagina inicial, visitante nao logado)
   hero: {
-    variant: 'centered' | 'split' | 'minimal' | 'institutional'  // layout do hero: centered (premium), split (founder), minimal (data-first), institutional (assessoria/escritorio)
+    variant: 'centered' | 'split' | 'minimal' | 'institutional' | 'editorial'  // layout do hero: centered (premium), split (founder), minimal (data-first), institutional (assessoria/escritorio), editorial (narrated private-bank letter — Norte Capital)
     badge: string                // texto do badge animado no topo
     title: string                // headline principal (pode usar HTML)
     subtitle: string             // subtitulo
@@ -2740,9 +2744,12 @@ const norteCapital: BrandConfig = {
   },
 
   font: {
+    // Fraunces (display, high-contrast serif) + Inter (body, UI).
+    // Fraunces is Google Fonts, free, variable font with oldstyle figures —
+    // the editorial/private-bank voice for Norte Capital.
     family: 'Inter',
-    google: 'Inter:wght@300..800',
-    headingWeight: 'font-bold',
+    google: 'Inter:wght@300..600&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400',
+    headingWeight: 'font-normal',  // Fraunces looks heavy at 500/600 naturally
     headingStyle: 'normal-case',
   },
 
@@ -2832,6 +2839,11 @@ const norteCapital: BrandConfig = {
     showFinancials: true,
     showChecklist: true,
     showCompanyInfo: true,
+    // Norte Capital uses the editorial narrated layout — single column,
+    // Fraunces display serif, advisor commentary as chapters. See the
+    // <section v-if="brand.assetPage.variant === 'editorial'"> branch
+    // in pages/asset/[ticker].vue for the implementation.
+    variant: 'editorial',
   },
 
   social: {
@@ -2846,22 +2858,22 @@ const norteCapital: BrandConfig = {
   ecosystem: [],
 
   chartColors: {
-    positive: '#16A34A',
-    negative: '#DC2626',
-    secondary: '#1E40AF',
-    neutral: '#6B7280',
+    positive: '#2F6B3A',  // verde floresta, muted
+    negative: '#B33A3A',  // vermelho tijolo, muted
+    secondary: '#C8932F', // ambar dourado
+    neutral: '#6B6A5E',   // cinza quente
   },
 
   hero: {
-    variant: 'institutional',
+    variant: 'editorial',
     badge: '',
     title: 'Sua direcao.\nNosso compromisso.',
-    subtitle: 'Assessoria de investimentos premium: carteira consolidada, analises personalizadas e seu assessor dedicado — tudo em uma unica plataforma.',
+    subtitle: 'Assessoria de investimentos para patrimonios que nao se constroem em um clique. Atendemos um numero limitado de familias, cada carteira construida a partir de uma conversa — nao de um formulario.',
     founderQuote: '',
-    ctaLabel: 'Acessar Minha Carteira',
-    ctaSecondaryLabel: 'Falar com Assessor',
-    ctaIcon: 'i-lucide-briefcase',
-    trustIndicators: ['Escritorio credenciado CVM', '800+ ativos monitorados', 'Dados em tempo real', 'Assessor com IA 24/7'],
+    ctaLabel: 'Agendar uma conversa',
+    ctaSecondaryLabel: 'Ja sou cliente',
+    ctaIcon: 'i-lucide-arrow-right',
+    trustIndicators: ['Credenciada CVM', 'Atendimento por assessor CFA', 'Relatorios mensais', 'Conversa, nao formulario'],
     image: '/brand/norte/background.jpg',
   },
 
@@ -3084,16 +3096,20 @@ const norteCapital: BrandConfig = {
     backgroundPattern: 'none',
   },
 
+  // Norte Capital uses the editorial narrated layout — the hero itself
+  // already carries most of the page, so we keep only a small set of
+  // supporting sections. Everything else is turned off to preserve the
+  // "letter from your advisor" tone (no dashboards, no noise).
   homeSections: [
     { id: 'hero', visible: true },
-    { id: 'trustBar', visible: true },
-    { id: 'categories', visible: true },
-    { id: 'investorChecklist', visible: true },
-    { id: 'wealthCalculator', visible: true },
-    { id: 'aiCta', visible: true },
-    { id: 'metrics', visible: true },
-    { id: 'testimonials', visible: true },
-    { id: 'guides', visible: true },
+    { id: 'categories', visible: false },
+    { id: 'investorChecklist', visible: false },
+    { id: 'wealthCalculator', visible: false },
+    { id: 'aiCta', visible: false },
+    { id: 'metrics', visible: false },
+    { id: 'testimonials', visible: false },
+    { id: 'guides', visible: false },
+    { id: 'trustBar', visible: false },
     { id: 'market', visible: false },
     { id: 'featureTabs', visible: false },
     { id: 'marquee', visible: false },

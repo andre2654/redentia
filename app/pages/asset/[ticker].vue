@@ -3,7 +3,271 @@
     :name="layoutName"
     container-class="md:px-0"
   >
-    <div class="relative z-10 flex flex-col px-4 pt-4">
+    <!-- ========== EDITORIAL VARIANT (Norte Capital — "letter from your advisor") ========== -->
+    <div
+      v-if="brand.assetPage.variant === 'editorial'"
+      class="relative z-10 flex flex-col"
+      :style="{ backgroundColor: brand.colors.background }"
+    >
+      <!-- Editorial header strip: eyebrow + date + page number -->
+      <header class="mx-auto flex w-full max-w-4xl items-start justify-between px-6 pt-10 md:px-10 md:pt-14">
+        <div class="flex flex-col gap-0.5">
+          <span
+            class="font-small-caps text-[11px]"
+            :style="{ color: brand.colors.textMuted }"
+          >
+            Norte Capital &nbsp;·&nbsp; Análise de ativo
+          </span>
+          <span
+            class="font-editorial-body text-[12px] italic"
+            :style="{ color: brand.colors.textMuted }"
+          >
+            {{ assetEditorialDate }}
+          </span>
+        </div>
+        <span
+          class="font-editorial-body text-[11px] italic tabular-nums"
+          :style="{ color: brand.colors.textMuted }"
+        >
+          {{ tickerUpper }}
+        </span>
+      </header>
+
+      <!-- Hero: company name huge + quiet price -->
+      <div class="mx-auto w-full max-w-4xl px-6 pb-8 pt-16 md:px-10 md:pt-20">
+        <span
+          class="font-small-caps text-[11px]"
+          :style="{ color: brand.colors.secondary }"
+        >
+          {{ (asset?.type || 'ACAO').toString().toUpperCase() === 'REIT' ? 'Fundo imobiliário' : 'Ação' }} &nbsp;·&nbsp; {{ tickerUpper }}
+        </span>
+        <h1
+          class="font-editorial-display mt-2 leading-[0.95] tracking-tight"
+          :style="{ color: brand.colors.text, fontSize: 'clamp(3rem, 7vw, 6rem)' }"
+        >
+          {{ asset?.name || assetName }}
+        </h1>
+
+        <hr class="hairline-rule mt-8 max-w-[6rem]" />
+
+        <!-- Price narrated, not tabular -->
+        <div class="mt-8 flex flex-wrap items-baseline gap-x-4 gap-y-2">
+          <span class="font-editorial-body text-lg italic" :style="{ color: brand.colors.textMuted }">
+            Cotação atual
+          </span>
+          <span
+            class="font-editorial-display font-serif-numeric leading-none"
+            :style="{
+              color: brand.colors.text,
+              fontSize: 'clamp(3rem, 6vw, 5rem)',
+            }"
+          >
+            R$ {{ formatPriceNumber(asset?.market_price) }}
+          </span>
+          <span
+            class="font-editorial-display text-2xl italic"
+            :style="{
+              color: Number(asset?.change_percent) >= 0 ? brand.colors.positive : brand.colors.negative,
+            }"
+          >
+            {{ Number(asset?.change_percent) >= 0 ? '+' : '−' }}{{ Math.abs(Number(asset?.change_percent) || 0).toFixed(2).replace('.', ',') }}% hoje
+          </span>
+        </div>
+
+        <p
+          v-if="editorialPriceNarration"
+          class="font-editorial-body mt-6 max-w-2xl italic"
+          :style="{ color: brand.colors.textMuted, fontSize: '1.05rem' }"
+        >
+          {{ editorialPriceNarration }}
+        </p>
+      </div>
+
+      <hr class="hairline-rule mx-auto max-w-4xl" />
+
+      <!-- Chapter I: Price chart with editorial framing -->
+      <div class="mx-auto w-full max-w-4xl px-6 py-16 md:px-10">
+        <div class="mb-6 flex items-end justify-between gap-4">
+          <div class="flex flex-col gap-1">
+            <span class="font-small-caps text-[11px]" :style="{ color: brand.colors.secondary }">
+              Capítulo I
+            </span>
+            <h2 class="font-editorial-display text-3xl leading-tight md:text-4xl" :style="{ color: brand.colors.text }">
+              A trajetória do preço
+            </h2>
+          </div>
+          <MoleculesPeriodSelector
+            v-model="selectedTimeRange"
+            :loading="isLoadingChart"
+          />
+        </div>
+        <AtomsGraphLine
+          :data="chartData"
+          :legend="chartLabel"
+          :height="320"
+          :loading="isLoadingChart"
+          :markers="chartMarkers"
+          @marker-click="onMarkerClick"
+        />
+      </div>
+
+      <hr class="hairline-rule mx-auto max-w-4xl" />
+
+      <!-- Chapter II: The fundamentals, narrated -->
+      <div v-if="brand.assetPage.showIndicators" class="mx-auto w-full max-w-4xl px-6 py-16 md:grid md:grid-cols-12 md:gap-10 md:px-10">
+        <div class="md:col-span-4">
+          <span class="font-small-caps text-[11px]" :style="{ color: brand.colors.secondary }">
+            Capítulo II
+          </span>
+          <h2 class="font-editorial-display mt-1 text-3xl leading-tight md:text-4xl" :style="{ color: brand.colors.text }">
+            A tese de investimento
+          </h2>
+          <p class="font-editorial-body mt-4 italic" :style="{ color: brand.colors.textMuted, fontSize: '0.95rem' }">
+            Os números que, na nossa leitura, definem a conversa sobre este ativo.
+          </p>
+        </div>
+        <div class="mt-6 md:col-span-7 md:col-start-6 md:mt-0">
+          <p
+            v-if="editorialThesisText"
+            class="font-editorial-body dropcap"
+            :style="{ color: brand.colors.text, fontSize: '1.1rem' }"
+          >
+            {{ editorialThesisText }}
+          </p>
+
+          <!-- Narrative metric list — oldstyle numbers inline, no grid -->
+          <dl class="mt-8 flex flex-col gap-5">
+            <div
+              v-for="(item, idx) in editorialFundamentalsList"
+              :key="item.label"
+              class="flex items-baseline gap-4 border-t pt-4"
+              :style="{ borderColor: `color-mix(in srgb, ${brand.colors.text} 10%, transparent)` }"
+            >
+              <span
+                class="font-editorial-display text-xl italic"
+                :style="{ color: brand.colors.secondary }"
+              >
+                {{ romanNumeralAsset(idx + 1) }}
+              </span>
+              <dt
+                class="font-editorial-body flex-1 italic"
+                :style="{ color: brand.colors.textMuted, fontSize: '1rem' }"
+              >
+                {{ item.label }}
+              </dt>
+              <dd
+                class="font-editorial-display font-serif-numeric text-2xl"
+                :style="{ color: brand.colors.text }"
+              >
+                {{ item.value || '—' }}
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+
+      <hr class="hairline-rule mx-auto max-w-4xl" />
+
+      <!-- Chapter III: Advisor commentary — static narrative fallback when AI commentaries are off -->
+      <div class="mx-auto w-full max-w-4xl px-6 py-16 md:grid md:grid-cols-12 md:gap-10 md:px-10">
+        <div class="md:col-span-4">
+          <span class="font-small-caps text-[11px]" :style="{ color: brand.colors.secondary }">
+            Capítulo III
+          </span>
+          <h2 class="font-editorial-display mt-1 text-3xl leading-tight md:text-4xl" :style="{ color: brand.colors.text }">
+            Nota do seu assessor
+          </h2>
+        </div>
+        <div class="mt-6 md:col-span-7 md:col-start-6 md:mt-0">
+          <blockquote
+            class="font-editorial-display border-l-2 pl-6 italic"
+            :style="{
+              color: brand.colors.text,
+              borderColor: brand.colors.secondary,
+              fontSize: 'clamp(1.25rem, 1.8vw, 1.75rem)',
+              lineHeight: '1.35',
+            }"
+          >
+            "Mantemos esta posição em nossas carteiras modelo. O preço atual oferece uma margem de segurança razoável em relação à nossa estimativa de valor justo, e a distribuição consistente de proventos ao longo dos últimos anos reforça nossa convicção na qualidade do negócio."
+          </blockquote>
+          <div class="mt-8">
+            <AtomsAdvisorSignature
+              name="Marcelo Oliveira, CFA"
+              role="Seu assessor dedicado · Norte Capital"
+              closing="— Comentário de hoje"
+            />
+          </div>
+        </div>
+      </div>
+
+      <hr class="hairline-rule mx-auto max-w-4xl" />
+
+      <!-- Chapter IV: Company identity, quiet and dry -->
+      <div v-if="brand.assetPage.showCompanyInfo" class="mx-auto w-full max-w-4xl px-6 py-16 md:grid md:grid-cols-12 md:gap-10 md:px-10">
+        <div class="md:col-span-4">
+          <span class="font-small-caps text-[11px]" :style="{ color: brand.colors.secondary }">
+            Capítulo IV
+          </span>
+          <h2 class="font-editorial-display mt-1 text-3xl leading-tight md:text-4xl" :style="{ color: brand.colors.text }">
+            A empresa
+          </h2>
+        </div>
+        <div class="mt-6 md:col-span-7 md:col-start-6 md:mt-0">
+          <dl class="flex flex-col gap-4">
+            <div v-if="asset?.sector" class="flex items-baseline gap-4 border-t pt-4" :style="{ borderColor: `color-mix(in srgb, ${brand.colors.text} 10%, transparent)` }">
+              <dt class="font-small-caps w-32 text-[11px]" :style="{ color: brand.colors.textMuted }">
+                Setor
+              </dt>
+              <dd class="font-editorial-body" :style="{ color: brand.colors.text }">
+                {{ asset.sector }}
+              </dd>
+            </div>
+            <div v-if="asset?.industry" class="flex items-baseline gap-4 border-t pt-4" :style="{ borderColor: `color-mix(in srgb, ${brand.colors.text} 10%, transparent)` }">
+              <dt class="font-small-caps w-32 text-[11px]" :style="{ color: brand.colors.textMuted }">
+                Indústria
+              </dt>
+              <dd class="font-editorial-body" :style="{ color: brand.colors.text }">
+                {{ asset.industry }}
+              </dd>
+            </div>
+            <div v-if="asset?.website" class="flex items-baseline gap-4 border-t pt-4" :style="{ borderColor: `color-mix(in srgb, ${brand.colors.text} 10%, transparent)` }">
+              <dt class="font-small-caps w-32 text-[11px]" :style="{ color: brand.colors.textMuted }">
+                Site institucional
+              </dt>
+              <dd>
+                <a
+                  :href="asset.website"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="font-editorial-body border-b pb-[1px] transition-colors"
+                  :style="{
+                    color: brand.colors.text,
+                    borderColor: brand.colors.secondary,
+                  }"
+                >
+                  {{ asset.website.replace(/^https?:\/\//, '').replace(/\/$/, '') }} →
+                </a>
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+
+      <!-- Bottom strip: compliance + ticker echo -->
+      <div
+        class="mx-auto flex w-full max-w-4xl items-center justify-between border-t px-6 py-6 font-editorial-body text-[11px] italic md:px-10"
+        :style="{
+          borderColor: `color-mix(in srgb, ${brand.colors.text} 12%, transparent)`,
+          color: brand.colors.textMuted,
+        }"
+      >
+        <span>Credenciada CVM · Ancord · Esta análise não constitui recomendação de investimento.</span>
+        <span class="tabular-nums">{{ tickerUpper }}</span>
+      </div>
+    </div>
+
+    <!-- ========== DEFAULT VARIANT (Redentia — Bloomberg terminal) ========== -->
+    <div v-else class="relative z-10 flex flex-col px-4 pt-4">
       <div class="flex flex-col">
         <!-- Terminal status bar — pinned context line for the asset -->
         <div
@@ -1011,6 +1275,83 @@ function monthCellAccent(item: any): string {
   if (item.percentage >= 50) return brand.colors.text
   if (item.percentage > 0) return brand.colors.textMuted
   return brand.colors.border
+}
+
+// ==========================================================
+// Editorial variant helpers (Norte Capital — advisor letter tone)
+// ==========================================================
+
+const assetEditorialDate = computed(() => {
+  try {
+    const d = new Date()
+    const full = d.toLocaleDateString('pt-BR', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    })
+    return full.charAt(0).toUpperCase() + full.slice(1)
+  } catch {
+    return ''
+  }
+})
+
+// A short narrated line that frames the day's price move in plain language.
+const editorialPriceNarration = computed(() => {
+  const pct = Number(asset.value?.change_percent)
+  if (!Number.isFinite(pct)) return ''
+  const abs = Math.abs(pct)
+  if (abs < 0.2) return 'A ação negocia praticamente estável, em linha com o pregão anterior.'
+  if (pct > 0 && abs < 1) return 'A ação sobe de forma discreta, dentro da oscilação típica do pregão.'
+  if (pct > 0 && abs < 3) return 'A ação sobe de forma consistente, acima da variação média do Ibovespa.'
+  if (pct > 0) return 'A ação avança com força no pregão de hoje — movimento que merece contexto antes de decisão.'
+  if (pct < 0 && abs < 1) return 'A ação recua levemente, sem sinalizar mudança de tendência.'
+  if (pct < 0 && abs < 3) return 'A ação recua, em movimento correspondente ao que vemos no setor hoje.'
+  return 'A ação cai com intensidade. Recomendamos aguardar contexto antes de qualquer movimento.'
+})
+
+// A short thesis paragraph that introduces the fundamentals chapter.
+const editorialThesisText = computed(() => {
+  const ind = basicIndicators.value
+  if (!ind) return ''
+  const pl = parseFloat(String(ind.pl).replace(',', '.'))
+  const dy = parseFloat(String(ind.dividendYield).replace(',', '.').replace('%', ''))
+  const fragments: string[] = []
+  if (Number.isFinite(pl) && pl > 0) {
+    if (pl < 8) fragments.push(`negocia a ${ind.pl} vezes lucros — um múltiplo descontado em relação à média histórica do mercado brasileiro`)
+    else if (pl < 15) fragments.push(`negocia a ${ind.pl} vezes lucros — múltiplo em linha com o que consideramos justo`)
+    else fragments.push(`negocia a ${ind.pl} vezes lucros — múltiplo que exige um crescimento consistente para se justificar`)
+  }
+  if (Number.isFinite(dy) && dy > 0) {
+    if (dy >= 6) fragments.push(`distribui ${ind.dividendYield} ao ano em proventos, acima da média de pares nacionais`)
+    else if (dy >= 3) fragments.push(`distribui ${ind.dividendYield} ao ano em proventos, nível compatível com empresas maduras`)
+    else fragments.push(`distribui ${ind.dividendYield} em proventos — política de dividendos ainda modesta`)
+  }
+  if (fragments.length === 0) {
+    return `${asset.value?.name || tickerUpper.value} é acompanhada regularmente pela nossa mesa. Os números abaixo resumem a fotografia mais recente.`
+  }
+  return `${asset.value?.name || tickerUpper.value} ${fragments.join(', e ')}.`
+})
+
+// Fundamentals as a narrated list — different shape than the terminal grid.
+const editorialFundamentalsList = computed(() => {
+  const ind = basicIndicators.value
+  if (!ind) return []
+  return [
+    { label: 'Preço sobre lucro', value: ind.pl },
+    { label: 'Preço sobre valor patrimonial', value: ind.pvpa },
+    { label: 'Dividend yield nos últimos 12 meses', value: ind.dividendYield },
+    { label: 'Retorno sobre patrimônio', value: ind.roe },
+    { label: 'Margem líquida', value: ind.netMargin },
+  ]
+})
+
+// Roman numerals for the fundamentals list prefix in editorial mode.
+function romanNumeralAsset(n: number): string {
+  const romans: Record<number, string> = {
+    1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V', 6: 'VI', 7: 'VII', 8: 'VIII',
+  }
+  return romans[n] || String(n)
 }
 
 // Smart/AI-interpreted indicators register

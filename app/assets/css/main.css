@@ -71,6 +71,75 @@ body {
   animation: brand-blink 1.1s steps(1) infinite;
 }
 
+/* ============================================================
+   Editorial typography helpers (Norte Capital — "private bank"
+   letter-from-your-advisor aesthetic). Opposite of the Redentia
+   terminal: high-contrast display serif, oldstyle figures,
+   generous whitespace, narrated data.
+   ============================================================ */
+
+/* Display serif — Fraunces with optical sizing tuned for headlines.
+   `opsz` variable axis pulls the face into its display optimum. */
+.font-editorial-display {
+  font-family: 'Fraunces', 'Canela', 'Tiempos Headline', 'Didot', 'Georgia', serif;
+  font-optical-sizing: auto;
+  font-variation-settings: 'opsz' 144, 'SOFT' 30;
+  font-feature-settings: 'liga' 1, 'dlig' 1, 'ss01' 1;
+  letter-spacing: -0.015em;
+  font-weight: 500;
+}
+
+/* Editorial body serif — Fraunces at text optical size for paragraphs.
+   Used for advisor commentary, chapter body copy. */
+.font-editorial-body {
+  font-family: 'Fraunces', 'Canela Text', 'Tiempos Text', 'Georgia', serif;
+  font-optical-sizing: auto;
+  font-variation-settings: 'opsz' 14;
+  font-feature-settings: 'liga' 1, 'onum' 1;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: 0.005em;
+}
+
+/* Oldstyle figures — numbers that sit like letters instead of standing
+   at cap height. This is the "private bank" number treatment. Pair with
+   a serif face. Fraunces supports oldstyle via the `onum` feature. */
+.font-serif-numeric {
+  font-family: 'Fraunces', 'Canela Text', 'Tiempos Text', 'Georgia', serif;
+  font-feature-settings: 'onum' 1, 'lnum' 0, 'tnum' 0, 'liga' 1;
+  font-variant-numeric: oldstyle-nums proportional-nums;
+}
+
+/* Hairline horizontal rule — the thin separator used between editorial
+   chapters. Replaces gap-px/borders of the terminal layout. */
+.hairline-rule {
+  height: 1px;
+  background-color: color-mix(in srgb, var(--brand-text) 12%, transparent);
+  border: 0;
+}
+
+/* Dropcap — the first letter of a chapter body, enlarged and anchored. */
+.dropcap::first-letter {
+  font-family: 'Fraunces', 'Canela', 'Georgia', serif;
+  font-weight: 500;
+  float: left;
+  font-size: 4.2em;
+  line-height: 0.85;
+  padding-right: 0.08em;
+  padding-top: 0.08em;
+  color: var(--brand-text);
+}
+
+/* Small caps — for section labels ("BOM DIA, RODRIGO") in the editorial
+   header. Real small caps via OpenType feature, not CSS font-variant. */
+.font-small-caps {
+  font-family: 'Fraunces', 'Canela Text', 'Tiempos Text', 'Georgia', serif;
+  font-feature-settings: 'smcp' 1, 'c2sc' 1, 'liga' 1;
+  letter-spacing: 0.08em;
+  text-transform: lowercase;
+  font-weight: 500;
+}
+
 /* Accessible focus states - WCAG 2.1 compliant */
 @layer base {
   input:focus,
