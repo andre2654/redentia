@@ -154,34 +154,104 @@ export const useAssetsService = () => {
   }
 
   // ---------- Rankings (SEO pages) ----------
+  //
+  // NOTE: The /api/rankings/* routes exist in the Laravel backend but
+  // are NOT yet deployed to production (redentia-api.saraivada.com).
+  // Until the next backend deploy, both functions below fall back to
+  // /top-stocks which IS available and returns a superset of the data
+  // we need. The fallback computes DY from the `mdi.sum_total` field
+  // (accumulated 12-month dividends) divided by market price.
+  //
+  // Once the backend is redeployed with the rankings routes, the
+  // fallbacks become dead code and can be removed.
+
+  async function fetchTopStocksByType(
+    type: 'STOCK' | 'REIT' | 'ETF' | 'BDR' | null,
+    side: 'top' | 'bottom',
+    volume: number,
+  ): Promise<IAsset[]> {
+    const endpointMap: Record<string, string> = {
+      STOCK: 'top-stocks',
+      REIT: 'top-reits',
+      ETF: 'top-etfs',
+      BDR: 'top-bdrs',
+    }
+    const endpoint = type && endpointMap[type] ? endpointMap[type] : 'top-stocks'
+    const url = `${API}/${endpoint}?side=${side}&volume=${volume}`
+    // NOTE: we call $fetch directly (bypassing preventWithCache) because
+    // this helper runs inside the catch block of an already-awaited call,
+    // where Nuxt instance context is lost. preventWithCache internally
+    // invokes useRuntimeConfig() which would throw there.
+    try {
+      const resp = await $fetch<IAsset[]>(url, { method: 'GET' })
+      return unwrapArray<IAsset>(resp)
+    } catch {
+      return []
+    }
+  }
+
+  function computeDividendYield(asset: any): number {
+    // Top-stocks returns monthly dividend index (mdi) history per
+    // ticker. The last entry's `sum_total` is the trailing-12-month
+    // absolute dividend per share; dividing by market price gives DY.
+    const mdi = Array.isArray(asset?.mdi) && asset.mdi.length > 0
+      ? asset.mdi[asset.mdi.length - 1]
+      : null
+    const sumTotal = Number(mdi?.sum_total)
+    const price = Number(asset?.market_price)
+    if (!Number.isFinite(sumTotal) || !Number.isFinite(price) || price === 0) return 0
+    return (sumTotal / price) * 100
+  }
 
   async function getTopDividendYield(
     type: 'STOCK' | 'REIT' | 'ETF' | null = null,
-    limit = 30
+    limit = 30,
   ): Promise<IAsset[]> {
     const params = new URLSearchParams({ limit: String(limit) })
     if (type) params.set('type', type)
     const url = `${API}/rankings/top-dividend-yield?${params.toString()}`
-    const resp = await preventWithCache(
-      url,
-      async () => await $fetch<IAsset[]>(url, { method: 'GET' })
-    )
-    return unwrapArray<IAsset>(resp)
+    try {
+      const resp = await preventWithCache(
+        url,
+        async () => await $fetch<IAsset[]>(url, { method: 'GET' }),
+      )
+      const arr = unwrapArray<IAsset>(resp)
+      if (arr.length > 0) return arr
+      throw new Error('empty')
+    } catch {
+      // Fallback: fetch top-stocks wide, compute DY from mdi, sort desc
+      const topStocks = await fetchTopStocksByType(type, 'top', 100_000)
+      const enriched = topStocks
+        .map((t: any) => ({ ...t, dividend_yield: computeDividendYield(t) }))
+        .filter((t: any) => t.dividend_yield > 0)
+        .sort((a: any, b: any) => b.dividend_yield - a.dividend_yield)
+        .slice(0, limit)
+      return enriched as IAsset[]
+    }
   }
 
   async function getMonthlyChange(
     side: 'top' | 'bottom' = 'top',
     type: 'STOCK' | 'REIT' | 'ETF' | 'BDR' | null = null,
-    limit = 30
+    limit = 30,
   ): Promise<IAsset[]> {
     const params = new URLSearchParams({ side, limit: String(limit) })
     if (type) params.set('type', type)
     const url = `${API}/rankings/monthly-change?${params.toString()}`
-    const resp = await preventWithCache(
-      url,
-      async () => await $fetch<IAsset[]>(url, { method: 'GET' })
-    )
-    return unwrapArray<IAsset>(resp)
+    try {
+      const resp = await preventWithCache(
+        url,
+        async () => await $fetch<IAsset[]>(url, { method: 'GET' }),
+      )
+      const arr = unwrapArray<IAsset>(resp)
+      if (arr.length > 0) return arr
+      throw new Error('empty')
+    } catch {
+      // Fallback: use /top-stocks which is daily top gainers/losers.
+      // Good-enough signal while the monthly endpoint is not deployed.
+      const topStocks = await fetchTopStocksByType(type, side, 500_000)
+      return topStocks.slice(0, limit)
+    }
   }
 
   async function getUpcomingDividends(days = 60, limit = 200) {

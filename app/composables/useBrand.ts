@@ -116,11 +116,23 @@ export function initBrandFromRoute() {
       const localBrand = brands[querySlug as BrandSlug]
       if (localBrand) {
         applyConfig(localBrand)
+        // CRITICAL: if the tenant exists in local brand.ts, consider it
+        // resolved and DO NOT call the API. The local file is the single
+        // source of truth for layout/colors/logo/hero variants; the API
+        // is only a fallback for tenants that were added dynamically in
+        // the backoffice and aren't in the local config.
+        //
+        // Skipping the API here eliminates the flicker that used to show
+        // on F5: SSR renders with local config → client hydrates → old
+        // code would hit the API again and merge a slightly-stale config,
+        // causing components (logos, colors, section order) to swap mid-
+        // render. Now the client's first paint IS the final paint.
+        tenantLoaded.value = true
+        return
       }
 
-      // Then resolve from API (may have newer data) — client only, because
-      // on SSR we already have the correct local config and the API call
-      // would just add latency to the first paint.
+      // Slug not in local brand.ts → fall back to API (dynamic tenant).
+      // SSR still skips the API call for perf; client does the fetch.
       if (import.meta.client) {
         await resolveFromApi(querySlug)
       }

@@ -620,15 +620,9 @@ function replay() {
 </template>
 
 <style scoped>
-:global(html),
-:global(body) {
-  margin: 0;
-  padding: 0;
-  background: v-bind(cBg);
-  color: v-bind(cText);
-  font-family: v-bind(fBody);
-  -webkit-font-smoothing: antialiased;
-}
+/* See asset-spotlight.vue comment — :global() rules leak across the
+   dev server and break navigation. The .frame wrapper below already
+   centers the card with its own background and font context. */
 
 .frame {
   display: flex;

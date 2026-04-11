@@ -145,12 +145,20 @@ const displayType = computed(() => {
   return 'Ativo'
 })
 
-const price = computed(() => tickerData.value?.market_price ?? null)
-const change = computed(() => tickerData.value?.change_percent ?? null)
+// Backend returns numeric fields as strings ("6.184060"). Coerce
+// with Number() before any arithmetic so .toFixed() doesn't blow up.
+function num(v: unknown): number | null {
+  if (v == null) return null
+  const n = typeof v === 'number' ? v : Number(v)
+  return Number.isFinite(n) ? n : null
+}
+
+const price = computed(() => num(tickerData.value?.market_price))
+const change = computed(() => num(tickerData.value?.change_percent))
 const priceAt = computed(() => tickerData.value?.price_at || '')
 const marketCap = computed(() => {
-  const mc = tickerData.value?.market_cap
-  if (!mc) return '-'
+  const mc = num(tickerData.value?.market_cap)
+  if (mc == null || mc === 0) return '-'
   if (mc >= 1e12) return `R$ ${(mc / 1e12).toFixed(1)}T`
   if (mc >= 1e9) return `R$ ${(mc / 1e9).toFixed(1)}B`
   if (mc >= 1e6) return `R$ ${(mc / 1e6).toFixed(0)}M`
@@ -158,19 +166,19 @@ const marketCap = computed(() => {
 })
 
 const pe = computed(() => {
-  const v = fundamentals.value?.key_statistics?.pe_ratio
+  const v = num(fundamentals.value?.key_statistics?.pe_ratio)
   return v != null ? v.toFixed(1) : '-'
 })
 const dy = computed(() => {
-  const v = fundamentals.value?.key_statistics?.dividend_yield
+  const v = num(fundamentals.value?.key_statistics?.dividend_yield)
   return v != null ? `${v.toFixed(2)}%` : '-'
 })
 const pb = computed(() => {
-  const v = fundamentals.value?.key_statistics?.price_to_book
+  const v = num(fundamentals.value?.key_statistics?.price_to_book)
   return v != null ? v.toFixed(2) : '-'
 })
 const roe = computed(() => {
-  const v = fundamentals.value?.key_statistics?.return_on_equity
+  const v = num(fundamentals.value?.key_statistics?.return_on_equity)
   return v != null ? `${(v * 100).toFixed(1)}%` : '-'
 })
 const sector = computed(() => {
@@ -300,16 +308,12 @@ const changeSign = computed(() =>
 </template>
 
 <style scoped>
-:global(html),
-:global(body),
-:global(#__nuxt) {
-  width: 1080px;
-  height: 1080px;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  background: var(--brand-background, #000);
-}
+/* NOTE: don't force html/body/#__nuxt to 1080x1080 globally — that
+   rule leaks across the whole dev server (Vue SFC :global selectors
+   are injected without cleanup) and breaks navigation between pages.
+   The .frame below is already 1080x1080; for n8n Puppeteer captures
+   the headless browser sets its viewport to 1080x1080 so the outer
+   html/body sizing doesn't matter. For human preview we simply scroll. */
 
 * {
   box-sizing: border-box;

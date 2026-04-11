@@ -298,16 +298,7 @@ function formatPercent(changePercent: number | null): string {
 </template>
 
 <style scoped>
-:global(html),
-:global(body),
-:global(#__nuxt) {
-  width: 1080px;
-  height: 1080px;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  background: var(--brand-background, #000);
-}
+/* See asset-spotlight.vue comment — :global() rules leak. */
 
 * {
   box-sizing: border-box;

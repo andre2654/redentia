@@ -2704,7 +2704,7 @@ const redentia: BrandConfig = {
     { id: 'categories', visible: true },
     { id: 'aiCta', visible: true },
     { id: 'apiProduct', visible: true },
-    { id: 'creativeProduct', visible: true },
+    { id: 'creativeProduct', visible: false },
     { id: 'educational', visible: false },
     { id: 'products', visible: false },
     { id: 'guides', visible: true },

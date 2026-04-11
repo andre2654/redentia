@@ -130,54 +130,65 @@ const { data: assetB } = await useAsyncData<AssetSide>(
 )
 
 // Helpers
-function formatPrice(v: number | null | undefined): string {
+// Backend returns numeric fields as strings — coerce to Number first
+function num(v: unknown): number | null {
+  if (v == null) return null
+  const n = typeof v === 'number' ? v : Number(v)
+  return Number.isFinite(n) ? n : null
+}
+
+function formatPrice(raw: unknown): string {
+  const v = num(raw)
   if (v == null) return '-'
   return `R$ ${v.toFixed(2).replace('.', ',')}`
 }
 
-function formatChange(v: number | null | undefined): string {
+function formatChange(raw: unknown): string {
+  const v = num(raw)
   if (v == null) return '-'
   const sign = v > 0 ? '+' : ''
   return `${sign}${v.toFixed(2).replace('.', ',')}%`
 }
 
-function changeColor(v: number | null | undefined): string {
+function changeColor(raw: unknown): string {
+  const v = num(raw)
   if (v == null) return textColor.value
   return v >= 0 ? positiveColor.value : negativeColor.value
 }
 
 function formatPe(f: FundamentalsData | null): string {
-  const v = f?.key_statistics?.pe_ratio
+  const v = num(f?.key_statistics?.pe_ratio)
   return v != null ? v.toFixed(1) : '-'
 }
 
 function formatDy(f: FundamentalsData | null): string {
-  const v = f?.key_statistics?.dividend_yield
+  const v = num(f?.key_statistics?.dividend_yield)
   return v != null ? `${v.toFixed(2)}%` : '-'
 }
 
 function formatPb(f: FundamentalsData | null): string {
-  const v = f?.key_statistics?.price_to_book
+  const v = num(f?.key_statistics?.price_to_book)
   return v != null ? v.toFixed(2) : '-'
 }
 
 function formatRoe(f: FundamentalsData | null): string {
-  const v = f?.key_statistics?.return_on_equity
+  const v = num(f?.key_statistics?.return_on_equity)
   return v != null ? `${(v * 100).toFixed(1)}%` : '-'
 }
 
-function formatCap(v: number | null | undefined): string {
-  if (v == null) return '-'
+function formatCap(raw: unknown): string {
+  const v = num(raw)
+  if (v == null || v === 0) return '-'
   if (v >= 1e12) return `R$ ${(v / 1e12).toFixed(1)}T`
   if (v >= 1e9) return `R$ ${(v / 1e9).toFixed(1)}B`
   if (v >= 1e6) return `R$ ${(v / 1e6).toFixed(0)}M`
-  return '-'
+  return `R$ ${v.toLocaleString('pt-BR')}`
 }
 
-// Compare highlights: who wins each metric
+// Compare highlights: who wins each metric (both values coerced to Number)
 function betterPe(a: FundamentalsData | null, b: FundamentalsData | null): 'a' | 'b' | null {
-  const va = a?.key_statistics?.pe_ratio
-  const vb = b?.key_statistics?.pe_ratio
+  const va = num(a?.key_statistics?.pe_ratio)
+  const vb = num(b?.key_statistics?.pe_ratio)
   if (va == null || vb == null) return null
   if (va <= 0 && vb <= 0) return null
   if (va <= 0) return 'b'
@@ -186,15 +197,15 @@ function betterPe(a: FundamentalsData | null, b: FundamentalsData | null): 'a' |
 }
 
 function betterDy(a: FundamentalsData | null, b: FundamentalsData | null): 'a' | 'b' | null {
-  const va = a?.key_statistics?.dividend_yield
-  const vb = b?.key_statistics?.dividend_yield
+  const va = num(a?.key_statistics?.dividend_yield)
+  const vb = num(b?.key_statistics?.dividend_yield)
   if (va == null || vb == null) return null
   return va > vb ? 'a' : va < vb ? 'b' : null // higher DY is better
 }
 
 function betterRoe(a: FundamentalsData | null, b: FundamentalsData | null): 'a' | 'b' | null {
-  const va = a?.key_statistics?.return_on_equity
-  const vb = b?.key_statistics?.return_on_equity
+  const va = num(a?.key_statistics?.return_on_equity)
+  const vb = num(b?.key_statistics?.return_on_equity)
   if (va == null || vb == null) return null
   return va > vb ? 'a' : va < vb ? 'b' : null // higher ROE is better
 }
@@ -346,16 +357,8 @@ const indicators = computed(() => [
 </template>
 
 <style scoped>
-:global(html),
-:global(body),
-:global(#__nuxt) {
-  width: 1080px;
-  height: 1080px;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  background: var(--brand-background, #000);
-}
+/* See comment in asset-spotlight.vue — :global() rules leak across
+   the dev server and break navigation. .frame below is already sized. */
 
 * { box-sizing: border-box; }
 

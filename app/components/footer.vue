@@ -128,6 +128,40 @@
           </ul>
         </div>
 
+        <!-- Rankings — top-level entry point for /ranking hub -->
+        <div class="flex flex-col items-center md:items-start">
+          <h3 class="mb-5 text-sm font-semibold uppercase tracking-wider" :style="{ color: brand.colors.text }">
+            Rankings
+          </h3>
+          <ul class="flex flex-col items-center gap-3 md:items-start">
+            <li>
+              <NuxtLink to="/ranking" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
+                Todos os rankings
+              </NuxtLink>
+            </li>
+            <li>
+              <NuxtLink to="/ranking/maiores-dividend-yield" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
+                Maiores Dividend Yields
+              </NuxtLink>
+            </li>
+            <li>
+              <NuxtLink to="/ranking/maiores-altas-mes" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
+                Maiores Altas do Mês
+              </NuxtLink>
+            </li>
+            <li>
+              <NuxtLink to="/ranking/maiores-baixas-mes" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
+                Maiores Baixas do Mês
+              </NuxtLink>
+            </li>
+            <li>
+              <NuxtLink to="/dividendos/calendario" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
+                Calendário de Dividendos
+              </NuxtLink>
+            </li>
+          </ul>
+        </div>
+
         <!-- Empresa -->
         <div class="flex flex-col items-center md:items-start">
           <h3 class="mb-5 text-sm font-semibold uppercase tracking-wider" :style="{ color: brand.colors.text }">

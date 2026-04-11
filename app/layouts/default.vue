@@ -130,7 +130,12 @@
         <AtomsSidebarButton to="/help" :text="brand.nav.chat" icon="i-lucide-message-circle" />
         <AtomsSidebarButton v-if="authStore.me?.role === 'advisor'" to="/advisor" :text="brand.nav.advisorArea" icon="i-lucide-users" />
         <AtomsSidebarButton to="/settings" :text="brand.nav.settings" icon="i-lucide-settings" />
-        <AtomsSidebarButton v-if="authStore.me?.role === 'admin'" to="/backoffice" text="Backoffice" icon="i-lucide-shield" />
+        <!--
+          Backoffice link removed — tenant administration now lives in
+          the dedicated admin.redentia.com.br subdomain. Keeping it out
+          of the main sidebar prevents admin tools from leaking into
+          white-label tenant customer journeys.
+        -->
 
         <div class="my-2" />
         <span class="mb-2 px-4 text-[10px] font-medium uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">{{ brand.nav.toolsLabel }}</span>

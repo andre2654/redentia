@@ -205,16 +205,10 @@ useHead(() => ({
 </template>
 
 <style scoped>
-:global(html),
-:global(body),
-:global(#__nuxt) {
-  width: var(--w);
-  height: var(--h);
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  background: var(--brand-background, #041a2b);
-}
+/* See comment in asset-spotlight.vue — :global() rules leak across
+   the dev server. The .frame below is sized via --w / --h so the
+   creative renders exactly 1080x1080 (or other formats) in a
+   headless Puppeteer capture without polluting html/body. */
 
 * {
   box-sizing: border-box;
