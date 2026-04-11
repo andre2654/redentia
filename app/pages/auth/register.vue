@@ -686,6 +686,293 @@
       </div>
     </section>
 
+    <!-- ========== PLAYBOOK VARIANT (Saraiva Invest) ========== -->
+    <section
+      v-else-if="variant === 'playbook'"
+      class="relative min-h-screen overflow-hidden px-4 pb-16 pt-12"
+      :style="{ backgroundColor: brand.colors.background }"
+    >
+      <div class="pointer-events-none absolute inset-0">
+        <div
+          class="absolute -top-40 left-1/2 h-[640px] w-[1100px] -translate-x-1/2 rounded-full blur-3xl opacity-25"
+          :style="{ background: `radial-gradient(ellipse, ${brand.colors.primary}, transparent 65%)` }"
+        />
+        <div
+          class="absolute inset-0 opacity-[0.04]"
+          :style="{ backgroundImage: `radial-gradient(${brand.colors.text} 1px, transparent 1px)`, backgroundSize: '36px 36px' }"
+        />
+      </div>
+
+      <div class="relative mx-auto flex max-w-6xl flex-col items-start gap-12 md:flex-row md:gap-16 md:py-12">
+        <div class="flex flex-1 flex-col items-start text-left md:sticky md:top-12">
+          <div
+            class="mb-7 inline-flex items-center gap-2.5 rounded-full px-5 py-2"
+            :style="{
+              backgroundColor: brand.colors.primary,
+              color: brand.colors.background,
+              boxShadow: `0 8px 30px -8px ${brand.colors.primary}80, 0 0 0 3px ${brand.colors.background}, 0 0 0 5px ${brand.colors.primary}40`,
+            }"
+          >
+            <span class="relative flex size-1.5">
+              <span class="absolute inline-flex size-1.5 animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.background }" />
+              <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: brand.colors.background }" />
+            </span>
+            <span class="text-[11px] font-bold uppercase tracking-[0.15em]">CABEÇA FRIA</span>
+          </div>
+          <h1
+            class="leading-[0.92] tracking-tight"
+            :style="{
+              color: brand.colors.text,
+              fontFamily: `'Fredoka', 'Inter', sans-serif`,
+              fontSize: 'clamp(2.5rem, 6vw, 4.5rem)',
+              fontWeight: 700,
+            }"
+          >
+            Comece o<br />
+            <span :style="{ color: brand.colors.primary }">método.</span>
+          </h1>
+          <p class="mt-6 max-w-md text-[16px] leading-relaxed" :style="{ color: `${brand.colors.text}C0` }">
+            {{ brand.auth.registerSubtitle }}
+          </p>
+
+          <ul class="mt-10 flex flex-col gap-3 border-t pt-6" :style="{ borderColor: `${brand.colors.border}80` }">
+            <li v-for="t in ['Backtests reais', 'Zero guru', 'Método publicado', 'Sem FOMO']" :key="t" class="flex items-center gap-3 text-[13px]" :style="{ color: brand.colors.text }">
+              <UIcon name="i-lucide-check-circle-2" class="size-4" :style="{ color: brand.colors.primary }" />
+              {{ t }}
+            </li>
+          </ul>
+        </div>
+
+        <UForm
+          :schema="schema"
+          :state="state"
+          class="flex w-full max-w-md flex-col gap-5 rounded-3xl border p-8 md:p-10"
+          :style="{
+            borderColor: brand.colors.border,
+            backgroundColor: brand.colors.surface,
+            boxShadow: `0 30px 80px -30px ${brand.colors.primary}30`,
+          }"
+          @submit="onSubmit"
+        >
+          <div class="space-y-2">
+            <span class="text-[10px] font-bold uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
+              — Cadastro
+            </span>
+            <h2
+              class="leading-tight"
+              :style="{
+                color: brand.colors.text,
+                fontFamily: `'Fredoka', sans-serif`,
+                fontSize: '1.75rem',
+                fontWeight: 700,
+              }"
+            >
+              {{ brand.auth.registerTitle }}
+            </h2>
+          </div>
+
+          <UFormField name="name">
+            <AtomsFormInput v-model="state.name" type="text" placeholder="Nome completo" size="lg" class="w-full" />
+          </UFormField>
+          <UFormField name="login">
+            <AtomsFormInput v-model="state.login" type="text" placeholder="Usuário" size="lg" class="w-full" />
+          </UFormField>
+          <UFormField name="celular">
+            <AtomsFormInput v-model="state.celular" v-maska="'+55 (##) # ####-####'" type="text" placeholder="Celular" size="lg" class="w-full" />
+          </UFormField>
+          <UFormField name="email">
+            <AtomsFormInput v-model="state.email" type="email" placeholder="E-mail" size="lg" class="w-full" />
+          </UFormField>
+          <UFormField name="password">
+            <AtomsFormInputPassword v-model="state.password" :aria-invalid="score < 4" class="w-full" />
+          </UFormField>
+          <UFormField name="password_confirmation">
+            <AtomsFormInputPassword v-model="state.password_confirmation" placeholder="Confirme a senha" class="w-full" />
+          </UFormField>
+          <AtomsPasswordStrengthBlock :requirements="requirements" :score="score" :text="text" :color="color" />
+
+          <button
+            type="submit"
+            class="group mt-3 inline-flex w-full items-center justify-center gap-3 rounded-full px-6 py-4 text-[13px] font-bold transition-all hover:-translate-y-0.5"
+            :style="{
+              backgroundColor: brand.colors.primary,
+              color: brand.colors.background,
+              boxShadow: `0 16px 50px -16px ${brand.colors.primary}A0`,
+            }"
+          >
+            <UIcon name="i-lucide-flask-conical" class="size-4" />
+            Começar o método
+            <span class="transition-transform group-hover:translate-x-1">→</span>
+          </button>
+
+          <div class="flex flex-col gap-2 pt-2 text-center">
+            <NuxtLink to="/auth/login" class="text-[12px] font-bold underline-offset-4 transition hover:opacity-70" :style="{ color: brand.colors.primary }">
+              Já tem conta? <span class="underline">Entrar</span>
+            </NuxtLink>
+            <p class="text-[10px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
+              {{ brand.auth.termsText }}
+            </p>
+          </div>
+        </UForm>
+      </div>
+    </section>
+
+    <!-- ========== HOLDER VARIANT ========== -->
+    <section
+      v-else-if="variant === 'holder'"
+      class="relative min-h-screen overflow-hidden"
+      :style="{ backgroundColor: brand.colors.background }"
+    >
+      <div class="border-b" :style="{ borderColor: brand.colors.border }">
+        <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4 md:px-10">
+          <div class="flex items-center gap-4 text-[10px] uppercase tracking-[0.18em]" style="font-family: 'JetBrains Mono', monospace;">
+            <span :style="{ color: brand.colors.primary }">[ HOLD. ]</span>
+            <span :style="{ color: brand.colors.textMuted }">CADASTRO · NOVO HOLDER</span>
+          </div>
+          <span class="text-[10px] uppercase tracking-[0.18em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: brand.colors.textMuted }">
+            01 / 01
+          </span>
+        </div>
+      </div>
+
+      <div class="mx-auto grid max-w-7xl grid-cols-12 gap-0 px-6 md:px-10">
+        <div class="col-span-12 flex flex-col justify-center border-b py-12 lg:col-span-7 lg:border-b-0 lg:border-r lg:py-16 lg:pr-10" :style="{ borderColor: brand.colors.border }">
+          <div class="mb-6 text-[10px] font-bold uppercase tracking-[0.22em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: brand.colors.primary }">
+            01 · Tornar-se holder
+          </div>
+          <h1
+            class="mb-10 leading-[1.1]"
+            :style="{
+              color: brand.colors.text,
+              fontFamily: `'Spectral', 'Georgia', serif`,
+              fontSize: 'clamp(2.5rem, 5vw, 4.5rem)',
+              fontWeight: 400,
+            }"
+          >
+            {{ brand.auth.registerTitle }}.<br />
+            <span class="italic" :style="{ color: brand.colors.primary, fontWeight: 500 }">Sem trial. Sem cartão.</span>
+          </h1>
+          <p
+            class="max-w-xl text-[18px] leading-[1.65]"
+            :style="{
+              color: `${brand.colors.text}C0`,
+              fontFamily: `'Spectral', 'Georgia', serif`,
+            }"
+          >
+            {{ brand.auth.registerSubtitle }}
+          </p>
+
+          <ul class="mt-12 flex flex-col gap-3" style="font-family: 'Spectral', serif;">
+            <li v-for="(t, i) in ['Sem trial. Sem cartão. Grátis.', 'Acesso completo ao Manifesto mensal.', 'Calculadoras + IA treinada nas cartas.', 'Dados B3 em tempo real.']" :key="i" class="flex items-baseline gap-3 text-[15px]" :style="{ color: brand.colors.text }">
+              <span class="text-[10px] tabular-nums" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: brand.colors.primary }">
+                {{ String(i + 1).padStart(2, '0') }}
+              </span>
+              <span class="italic">{{ t }}</span>
+            </li>
+          </ul>
+
+          <div class="mt-12 flex items-center gap-4 text-[11px] uppercase tracking-[0.22em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: brand.colors.textMuted }">
+            <span class="h-px w-12" :style="{ backgroundColor: brand.colors.border }" />
+            <span :style="{ color: brand.colors.primary }">— @holder</span>
+          </div>
+        </div>
+
+        <div class="col-span-12 flex items-start py-10 lg:col-span-5 lg:py-16 lg:pl-10">
+          <UForm
+            :schema="schema"
+            :state="state"
+            class="flex w-full flex-col gap-4 border p-7"
+            :style="{
+              borderColor: brand.colors.border,
+              backgroundColor: brand.colors.surface,
+            }"
+            @submit="onSubmit"
+          >
+            <div class="border-b pb-5" :style="{ borderColor: brand.colors.border }">
+              <span class="text-[10px] font-bold uppercase tracking-[0.22em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: brand.colors.primary }">
+                Dados de cadastro
+              </span>
+            </div>
+
+            <UFormField name="name">
+              <template #label>
+                <span class="text-[10px] font-bold uppercase tracking-[0.18em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: brand.colors.textMuted }">Nome</span>
+              </template>
+              <AtomsFormInput v-model="state.name" type="text" placeholder="Nome completo" size="lg" class="w-full" />
+            </UFormField>
+            <UFormField name="login">
+              <template #label>
+                <span class="text-[10px] font-bold uppercase tracking-[0.18em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: brand.colors.textMuted }">Usuário</span>
+              </template>
+              <AtomsFormInput v-model="state.login" type="text" placeholder="Usuário" size="lg" class="w-full" />
+            </UFormField>
+            <UFormField name="celular">
+              <template #label>
+                <span class="text-[10px] font-bold uppercase tracking-[0.18em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: brand.colors.textMuted }">Celular</span>
+              </template>
+              <AtomsFormInput v-model="state.celular" v-maska="'+55 (##) # ####-####'" type="text" placeholder="+55 (00) 0 0000-0000" size="lg" class="w-full" />
+            </UFormField>
+            <UFormField name="email">
+              <template #label>
+                <span class="text-[10px] font-bold uppercase tracking-[0.18em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: brand.colors.textMuted }">E-mail</span>
+              </template>
+              <AtomsFormInput v-model="state.email" type="email" placeholder="seu@email.com" size="lg" class="w-full" />
+            </UFormField>
+            <UFormField name="password">
+              <template #label>
+                <span class="text-[10px] font-bold uppercase tracking-[0.18em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: brand.colors.textMuted }">Senha</span>
+              </template>
+              <AtomsFormInputPassword v-model="state.password" :aria-invalid="score < 4" class="w-full" />
+            </UFormField>
+            <UFormField name="password_confirmation">
+              <template #label>
+                <span class="text-[10px] font-bold uppercase tracking-[0.18em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: brand.colors.textMuted }">Confirmar senha</span>
+              </template>
+              <AtomsFormInputPassword v-model="state.password_confirmation" placeholder="Confirme a senha" class="w-full" />
+            </UFormField>
+            <AtomsPasswordStrengthBlock :requirements="requirements" :score="score" :text="text" :color="color" />
+
+            <button
+              type="submit"
+              class="mt-4 inline-flex w-full items-center justify-center gap-3 px-6 py-4 text-[12px] font-bold uppercase tracking-[0.18em] transition-all hover:-translate-y-0.5"
+              :style="{
+                backgroundColor: brand.colors.primary,
+                color: brand.colors.text,
+              }"
+            >
+              <UIcon name="i-lucide-anchor" class="size-4" />
+              Tornar-se holder
+              <span>→</span>
+            </button>
+
+            <div class="mt-2 flex flex-col gap-3 border-t pt-5" :style="{ borderColor: brand.colors.border }">
+              <NuxtLink to="/auth/login" class="text-[11px] font-bold uppercase tracking-[0.18em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: brand.colors.primary }">
+                Já sou holder · entrar →
+              </NuxtLink>
+              <p class="text-[10px] leading-snug italic" style="font-family: 'Spectral', serif;" :style="{ color: brand.colors.textMuted }">
+                {{ brand.auth.termsText }}
+              </p>
+            </div>
+          </UForm>
+        </div>
+      </div>
+
+      <div class="border-t py-12 text-center" :style="{ borderColor: brand.colors.border }">
+        <p
+          class="select-none leading-none"
+          :style="{
+            color: brand.colors.primary,
+            fontFamily: `'Anton', 'Bebas Neue', sans-serif`,
+            fontWeight: 400,
+            fontSize: 'clamp(3rem, 6vw, 5rem)',
+            letterSpacing: '0.02em',
+          }"
+        >
+          HOLD.
+        </p>
+      </div>
+    </section>
+
     <!-- ========== DEFAULT VARIANT (fallback) ========== -->
     <section v-else class="px-4 pb-16 pt-12">
       <div class="mx-auto flex max-w-5xl flex-col items-center gap-14 md:flex-row md:items-start md:gap-20">

@@ -3425,21 +3425,59 @@
       </div>
 
       <!-- ============================================================
-           1.02 · GIANT WORDMARK BAND
-           ============================================================ -->
-      <div class="relative overflow-hidden border-y" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.background }">
-        <div class="hl-wordmark-band relative flex items-center justify-center py-10 md:py-16">
-          <div
-            class="hl-display select-none text-center leading-none"
-            :style="{
-              color: brand.colors.primary,
-              fontFamily: `'Anton', 'Bebas Neue', sans-serif`,
-              fontWeight: 400,
-              fontSize: 'clamp(5rem, 18vw, 22rem)',
-              letterSpacing: '-0.02em',
-            }"
-          >
-            HOLDER.
+           1.02 · TICKER CAROUSEL — elegant horizontal marquee
+           ============================================================
+           Substitui o "HOLDER." gigante por um carrossel sutil de
+           tickers do dia. Estilo elegante (Spectral + JetBrains Mono),
+           loop infinito, sem hype. Movimento lento e calmo, igual o
+           pitch da marca.
+      -->
+      <div class="hl-marquee-band relative overflow-hidden border-y" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.background }">
+        <div class="hl-marquee py-8 md:py-10">
+          <div class="hl-marquee-track">
+            <!-- Render the ticker list TWICE so the loop is seamless -->
+            <template v-for="copy in [0, 1]" :key="copy">
+              <div
+                v-for="(t, i) in holderTickerCarousel"
+                :key="copy + '-' + (t.ticker || i)"
+                class="hl-marquee-item flex items-baseline gap-3 px-8"
+              >
+                <span
+                  class="hl-mono text-[14px] tabular-nums md:text-[16px]"
+                  :style="{
+                    color: brand.colors.primary,
+                    fontFamily: `'JetBrains Mono', monospace`,
+                    letterSpacing: '0.03em',
+                  }"
+                >
+                  {{ t.ticker }}
+                </span>
+                <span
+                  class="hl-serif italic text-[14px] md:text-[16px]"
+                  :style="{
+                    color: `${brand.colors.text}A0`,
+                    fontFamily: `'Spectral', 'Georgia', serif`,
+                  }"
+                >
+                  {{ t.name }}
+                </span>
+                <span
+                  class="hl-mono text-[14px] tabular-nums md:text-[16px]"
+                  :style="{
+                    color: (t.change ?? 0) >= 0 ? brand.colors.positive : brand.colors.negative,
+                    fontFamily: `'JetBrains Mono', monospace`,
+                  }"
+                >
+                  {{ (t.change ?? 0) >= 0 ? '+' : '' }}{{ Number(t.change || 0).toFixed(2) }}%
+                </span>
+                <span
+                  class="hl-mono text-[12px] md:text-[14px]"
+                  :style="{ color: `${brand.colors.text}50`, fontFamily: `'JetBrains Mono', monospace` }"
+                >
+                  ·
+                </span>
+              </div>
+            </template>
           </div>
         </div>
       </div>
@@ -5961,6 +5999,51 @@ const holderTraderRows = [
   },
 ]
 
+// Carrossel elegante de tickers que substitui o wordmark "HOLDER."
+// gigante. Combina top altas + top quedas + top FIIs em uma única
+// lista pra dar variedade. Usa dados reais do homeMarketData
+// fetched no SSR; cai pra fallback estático se vazio.
+const holderTickerCarousel = computed(() => {
+  type T = { ticker: string; name: string; change: number }
+  const out: T[] = []
+  const seen = new Set<string>()
+  const add = (s: any) => {
+    const tk = (s?.ticker || '').toString().trim().toUpperCase()
+    if (!tk || seen.has(tk)) return
+    seen.add(tk)
+    out.push({
+      ticker: tk,
+      name: (s?.name || '').toString().slice(0, 22),
+      change: Number(s?.change_percent || 0),
+    })
+  }
+  // Top altas (5)
+  ;(topAssets.value?.top?.stocks || []).slice(0, 5).forEach(add)
+  // Top FIIs (3)
+  ;(topAssets.value?.top?.reits || []).slice(0, 3).forEach(add)
+  // Top quedas (4)
+  ;(topAssets.value?.bottom?.stocks || []).slice(0, 4).forEach(add)
+  // Mais altas pra encher (2)
+  ;(topAssets.value?.top?.stocks || []).slice(5, 7).forEach(add)
+
+  // Fallback se SSR não trouxe nada
+  if (out.length === 0) {
+    return [
+      { ticker: 'PETR4', name: 'Petrobras', change: 0.42 },
+      { ticker: 'VALE3', name: 'Vale', change: -0.18 },
+      { ticker: 'ITUB4', name: 'Itaú Unibanco', change: 1.12 },
+      { ticker: 'BBAS3', name: 'Banco do Brasil', change: 0.84 },
+      { ticker: 'WEGE3', name: 'WEG', change: 1.85 },
+      { ticker: 'BBSE3', name: 'BB Seguridade', change: 0.27 },
+      { ticker: 'EGIE3', name: 'Engie Brasil', change: -0.11 },
+      { ticker: 'B3SA3', name: 'B3', change: 0.58 },
+      { ticker: 'MXRF11', name: 'Maxi Renda', change: 0.31 },
+      { ticker: 'KNCR11', name: 'Kinea Rendimentos', change: 0.12 },
+    ]
+  }
+  return out
+})
+
 // Posições atuais reveladas — 5 (era 7), teses curtas estilo
 // editorial (uma linha cada). Menos texto, mais peso.
 const holderPositions = [
@@ -6213,17 +6296,15 @@ definePageMeta({
   margin-top: 0.05em;
 }
 
-/* CTA primary — sharp rectangle (sem rounded full no Holder) */
+/* CTA primary — sharp flat rectangle, no border, no offset shadow */
 .holder-hero .hl-cta-primary {
   border-radius: 0;
   letter-spacing: 0.18em;
-  border: 2px solid currentColor;
   position: relative;
-  box-shadow: 4px 4px 0 currentColor;
   transition: all 0.2s ease;
 }
 .holder-hero .hl-cta-primary:hover {
-  box-shadow: 6px 6px 0 currentColor;
+  filter: brightness(1.1);
 }
 
 /* Editorial portrait subtle hover lift */
@@ -6234,10 +6315,48 @@ definePageMeta({
   transform: scale(1.02);
 }
 
-/* Wordmark band — slow pan animation */
-@keyframes hl-wordmark-pan {
-  0%, 100% { transform: translateX(0); }
-  50% { transform: translateX(-10px); }
+/* Marquee band — slow elegant horizontal scroll
+   The track contains TWO copies of the ticker list rendered inline.
+   We translate -50% so the second copy seamlessly takes over when the
+   first scrolls out — no visible jump. */
+.holder-hero .hl-marquee {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 8%,
+    #000 92%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 8%,
+    #000 92%,
+    transparent 100%
+  );
+}
+
+.holder-hero .hl-marquee-track {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  animation: hl-marquee-scroll 60s linear infinite;
+}
+
+.holder-hero .hl-marquee-band:hover .hl-marquee-track {
+  animation-play-state: paused;
+}
+
+.holder-hero .hl-marquee-item {
+  flex-shrink: 0;
+}
+
+@keyframes hl-marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
 }
 
 /* Typographic strip on top */

@@ -2445,7 +2445,7 @@
           <div class="col-span-12 lg:col-span-8">
             <!-- Chapter mark -->
             <div class="hl-mono mb-6 text-[10px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.textMuted }">
-              1.01 · § FICHA
+              01 · Ficha
             </div>
 
             <!-- Logo + ticker -->
@@ -2489,7 +2489,7 @@
               class="hl-serif mt-6 max-w-xl text-[20px] italic md:text-[24px]"
               :style="{
                 color: `${brand.colors.text}D0`,
-                fontFamily: `'IBM Plex Serif', serif`,
+                fontFamily: `'Spectral', 'Georgia', serif`,
               }"
             >
               {{ asset?.name || 'Empresa listada na B3' }} · {{ asset?.sector || '—' }}
@@ -2502,7 +2502,7 @@
                   Preço · fechamento
                 </div>
                 <div class="flex items-baseline gap-4">
-                  <span class="hl-serif text-[20px]" :style="{ color: brand.colors.textMuted, fontFamily: `'IBM Plex Serif', serif` }">R$</span>
+                  <span class="hl-serif text-[20px]" :style="{ color: brand.colors.textMuted, fontFamily: `'Spectral', 'Georgia', serif` }">R$</span>
                   <span
                     class="hl-display tabular-nums leading-none"
                     :style="{
@@ -2527,7 +2527,7 @@
               class="hl-serif mt-8 max-w-xl text-[16px] italic"
               :style="{
                 color: brand.colors.textMuted,
-                fontFamily: `'IBM Plex Serif', serif`,
+                fontFamily: `'Spectral', 'Georgia', serif`,
               }"
             >
               O preço é uma opinião. Aqui você vai encontrar o que importa: o fato.
@@ -2541,7 +2541,7 @@
               :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
             >
               <div class="hl-mono mb-5 text-[10px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
-                § Ficha técnica
+                Ficha técnica
               </div>
               <dl class="hl-mono flex flex-col gap-4 text-[12px]">
                 <div class="flex items-baseline justify-between gap-4 border-b pb-3" :style="{ borderColor: brand.colors.border }">
@@ -2586,13 +2586,13 @@
           <div class="mb-12 grid items-end gap-8 md:grid-cols-12">
             <div class="md:col-span-7">
               <div class="hl-mono mb-3 text-[10px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
-                2.01 · § VALUATION
+                02 · Valuation
               </div>
               <h2
                 class="hl-serif leading-[1.05]"
                 :style="{
                   color: brand.colors.text,
-                  fontFamily: `'IBM Plex Serif', serif`,
+                  fontFamily: `'Spectral', 'Georgia', serif`,
                   fontSize: 'clamp(2rem, 5vw, 3.75rem)',
                   fontWeight: 600,
                 }"
@@ -2601,7 +2601,7 @@
                 não as opiniões.
               </h2>
             </div>
-            <p class="hl-serif text-[15px] italic md:col-span-5" :style="{ color: brand.colors.textMuted, fontFamily: `'IBM Plex Serif', serif` }">
+            <p class="hl-serif text-[15px] italic md:col-span-5" :style="{ color: brand.colors.textMuted, fontFamily: `'Spectral', 'Georgia', serif` }">
               Cada número aqui é mensurável, auditável e reportado oficialmente. O resto é narrativa.
             </p>
           </div>
@@ -2610,7 +2610,7 @@
           <div class="grid grid-cols-12 gap-px overflow-hidden border" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }">
             <!-- Headers -->
             <div class="col-span-12 grid grid-cols-12 gap-px" style="border-collapse: collapse;">
-              <div class="hl-mono col-span-1 px-4 py-4 text-[10px] uppercase tracking-[0.18em]" :style="{ backgroundColor: brand.colors.background, color: brand.colors.textMuted }">§</div>
+              <div class="hl-mono col-span-1 px-4 py-4 text-[10px] uppercase tracking-[0.18em]" :style="{ backgroundColor: brand.colors.background, color: brand.colors.textMuted }">№</div>
               <div class="hl-mono col-span-5 px-4 py-4 text-[10px] uppercase tracking-[0.18em]" :style="{ backgroundColor: brand.colors.background, color: brand.colors.textMuted }">Indicador</div>
               <div class="hl-mono col-span-2 px-4 py-4 text-right text-[10px] uppercase tracking-[0.18em]" :style="{ backgroundColor: brand.colors.background, color: brand.colors.textMuted }">Valor</div>
               <div class="hl-mono col-span-4 px-4 py-4 text-[10px] uppercase tracking-[0.18em]" :style="{ backgroundColor: brand.colors.background, color: brand.colors.textMuted }">Leitura do método</div>
@@ -2620,13 +2620,13 @@
             <div class="col-span-12 grid grid-cols-12 gap-px">
               <div class="hl-mono col-span-1 px-4 py-5 text-[11px] tabular-nums" :style="{ backgroundColor: brand.colors.background, color: brand.colors.textMuted }">2.01</div>
               <div class="col-span-5 px-4 py-5" :style="{ backgroundColor: brand.colors.background }">
-                <div class="hl-serif text-[15px]" :style="{ color: brand.colors.text, fontFamily: `'IBM Plex Serif', serif` }">Preço sobre lucro</div>
+                <div class="hl-serif text-[15px]" :style="{ color: brand.colors.text, fontFamily: `'Spectral', 'Georgia', serif` }">Preço sobre lucro</div>
                 <div class="hl-mono mt-1 text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">P/L · múltiplo</div>
               </div>
               <div class="hl-display col-span-2 px-4 py-5 text-right text-[26px] leading-none tabular-nums" :style="{ backgroundColor: brand.colors.background, color: brand.colors.primary, fontFamily: `'Anton', sans-serif` }">
                 {{ basicIndicators?.pl || '—' }}
               </div>
-              <div class="hl-serif col-span-4 px-4 py-5 text-[12px] italic" :style="{ backgroundColor: brand.colors.background, color: brand.colors.textMuted, fontFamily: `'IBM Plex Serif', serif` }">
+              <div class="hl-serif col-span-4 px-4 py-5 text-[12px] italic" :style="{ backgroundColor: brand.colors.background, color: brand.colors.textMuted, fontFamily: `'Spectral', 'Georgia', serif` }">
                 Abaixo de 10 sugere desconto frente ao histórico brasileiro.
               </div>
             </div>
@@ -2635,13 +2635,13 @@
             <div class="col-span-12 grid grid-cols-12 gap-px">
               <div class="hl-mono col-span-1 px-4 py-5 text-[11px] tabular-nums" :style="{ backgroundColor: brand.colors.background, color: brand.colors.textMuted }">2.02</div>
               <div class="col-span-5 px-4 py-5" :style="{ backgroundColor: brand.colors.background }">
-                <div class="hl-serif text-[15px]" :style="{ color: brand.colors.text, fontFamily: `'IBM Plex Serif', serif` }">Dividend yield 12M</div>
+                <div class="hl-serif text-[15px]" :style="{ color: brand.colors.text, fontFamily: `'Spectral', 'Georgia', serif` }">Dividend yield 12M</div>
                 <div class="hl-mono mt-1 text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">DY · proventos anualizados</div>
               </div>
               <div class="hl-display col-span-2 px-4 py-5 text-right text-[26px] leading-none tabular-nums" :style="{ backgroundColor: brand.colors.background, color: brand.colors.positive, fontFamily: `'Anton', sans-serif` }">
                 {{ basicIndicators?.dividendYield || '—' }}
               </div>
-              <div class="hl-serif col-span-4 px-4 py-5 text-[12px] italic" :style="{ backgroundColor: brand.colors.background, color: brand.colors.textMuted, fontFamily: `'IBM Plex Serif', serif` }">
+              <div class="hl-serif col-span-4 px-4 py-5 text-[12px] italic" :style="{ backgroundColor: brand.colors.background, color: brand.colors.textMuted, fontFamily: `'Spectral', 'Georgia', serif` }">
                 Acima de 6% indica empresa geradora de caixa madura.
               </div>
             </div>
@@ -2650,13 +2650,13 @@
             <div class="col-span-12 grid grid-cols-12 gap-px">
               <div class="hl-mono col-span-1 px-4 py-5 text-[11px] tabular-nums" :style="{ backgroundColor: brand.colors.background, color: brand.colors.textMuted }">2.03</div>
               <div class="col-span-5 px-4 py-5" :style="{ backgroundColor: brand.colors.background }">
-                <div class="hl-serif text-[15px]" :style="{ color: brand.colors.text, fontFamily: `'IBM Plex Serif', serif` }">Preço sobre valor patrimonial</div>
+                <div class="hl-serif text-[15px]" :style="{ color: brand.colors.text, fontFamily: `'Spectral', 'Georgia', serif` }">Preço sobre valor patrimonial</div>
                 <div class="hl-mono mt-1 text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">P/VP · book value</div>
               </div>
               <div class="hl-display col-span-2 px-4 py-5 text-right text-[26px] leading-none tabular-nums" :style="{ backgroundColor: brand.colors.background, color: brand.colors.text, fontFamily: `'Anton', sans-serif` }">
                 {{ basicIndicators?.pvpa || '—' }}
               </div>
-              <div class="hl-serif col-span-4 px-4 py-5 text-[12px] italic" :style="{ backgroundColor: brand.colors.background, color: brand.colors.textMuted, fontFamily: `'IBM Plex Serif', serif` }">
+              <div class="hl-serif col-span-4 px-4 py-5 text-[12px] italic" :style="{ backgroundColor: brand.colors.background, color: brand.colors.textMuted, fontFamily: `'Spectral', 'Georgia', serif` }">
                 Abaixo de 1: negocia por menos do que vale no papel. Investigue.
               </div>
             </div>
@@ -2665,13 +2665,13 @@
             <div class="col-span-12 grid grid-cols-12 gap-px">
               <div class="hl-mono col-span-1 px-4 py-5 text-[11px] tabular-nums" :style="{ backgroundColor: brand.colors.background, color: brand.colors.textMuted }">2.04</div>
               <div class="col-span-5 px-4 py-5" :style="{ backgroundColor: brand.colors.background }">
-                <div class="hl-serif text-[15px]" :style="{ color: brand.colors.text, fontFamily: `'IBM Plex Serif', serif` }">Retorno sobre patrimônio</div>
+                <div class="hl-serif text-[15px]" :style="{ color: brand.colors.text, fontFamily: `'Spectral', 'Georgia', serif` }">Retorno sobre patrimônio</div>
                 <div class="hl-mono mt-1 text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">ROE · eficiência do capital</div>
               </div>
               <div class="hl-display col-span-2 px-4 py-5 text-right text-[26px] leading-none tabular-nums" :style="{ backgroundColor: brand.colors.background, color: brand.colors.text, fontFamily: `'Anton', sans-serif` }">
                 {{ basicIndicators?.roe || '—' }}
               </div>
-              <div class="hl-serif col-span-4 px-4 py-5 text-[12px] italic" :style="{ backgroundColor: brand.colors.background, color: brand.colors.textMuted, fontFamily: `'IBM Plex Serif', serif` }">
+              <div class="hl-serif col-span-4 px-4 py-5 text-[12px] italic" :style="{ backgroundColor: brand.colors.background, color: brand.colors.textMuted, fontFamily: `'Spectral', 'Georgia', serif` }">
                 Acima de 15% por anos seguidos indica vantagem competitiva.
               </div>
             </div>
@@ -2688,7 +2688,7 @@
         <div class="mx-auto grid max-w-6xl grid-cols-12 gap-12 px-6 py-24 md:px-10 md:py-32">
           <div class="col-span-12 md:col-span-3">
             <div class="hl-mono mb-3 text-[10px] uppercase tracking-[0.22em] sticky top-24" :style="{ color: brand.colors.primary }">
-              3.01 · § TESE
+              03 · Tese
             </div>
           </div>
           <div class="col-span-12 md:col-span-9">
@@ -2696,7 +2696,7 @@
               class="hl-serif leading-[1.1]"
               :style="{
                 color: brand.colors.text,
-                fontFamily: `'IBM Plex Serif', serif`,
+                fontFamily: `'Spectral', 'Georgia', serif`,
                 fontSize: 'clamp(2rem, 5vw, 3.75rem)',
                 fontWeight: 600,
               }"
@@ -2704,7 +2704,7 @@
               Por que <em :style="{ color: brand.colors.primary }">eu deteria</em> {{ tickerUpper }}.
             </h2>
 
-            <div class="hl-serif mt-10 flex flex-col gap-6 text-[17px] leading-[1.7] md:text-[18px]" :style="{ color: brand.colors.text, fontFamily: `'IBM Plex Serif', serif` }">
+            <div class="hl-serif mt-10 flex flex-col gap-6 text-[17px] leading-[1.7] md:text-[18px]" :style="{ color: brand.colors.text, fontFamily: `'Spectral', 'Georgia', serif` }">
               <p>
                 <span class="hl-drop-cap-asset" :style="{ color: brand.colors.primary }">A</span>ntes de qualquer linha sobre {{ tickerUpper }}, dois fatos: o ativo está negociando a {{ basicIndicators?.pl || '—' }}× lucros e entrega DY de {{ basicIndicators?.dividendYield || '—' }}. Os números são pontos de partida, não conclusões.
               </p>
@@ -2737,13 +2737,13 @@
         <div class="mx-auto max-w-7xl px-6 py-24 md:px-10 md:py-32">
           <div class="mb-14 max-w-3xl">
             <div class="hl-mono mb-3 text-[10px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
-              4.01 · § HISTÓRICO
+              04 · Histórico
             </div>
             <h2
               class="hl-serif leading-[1.05]"
               :style="{
                 color: brand.colors.text,
-                fontFamily: `'IBM Plex Serif', serif`,
+                fontFamily: `'Spectral', 'Georgia', serif`,
                 fontSize: 'clamp(2rem, 5vw, 3.75rem)',
                 fontWeight: 600,
               }"
@@ -2751,7 +2751,7 @@
               Os dias em que<br />
               <em :style="{ color: brand.colors.primary }">tudo parecia importar.</em>
             </h2>
-            <p class="hl-serif mt-6 max-w-xl text-[15px] italic" :style="{ color: brand.colors.textMuted, fontFamily: `'IBM Plex Serif', serif` }">
+            <p class="hl-serif mt-6 max-w-xl text-[15px] italic" :style="{ color: brand.colors.textMuted, fontFamily: `'Spectral', 'Georgia', serif` }">
               Cada um desses momentos pareceu o fim do mundo (ou o início do bull run). Nenhum era. O Holder leu, registrou, e seguiu.
             </p>
           </div>
@@ -2796,7 +2796,7 @@
                   class="hl-serif leading-[1.2]"
                   :style="{
                     color: brand.colors.text,
-                    fontFamily: `'IBM Plex Serif', serif`,
+                    fontFamily: `'Spectral', 'Georgia', serif`,
                     fontSize: 'clamp(1.5rem, 3vw, 2rem)',
                     fontWeight: 600,
                   }"
@@ -2808,7 +2808,7 @@
                   class="hl-serif mt-5 text-[15px] leading-[1.7] md:text-[16px]"
                   :style="{
                     color: `${brand.colors.text}D0`,
-                    fontFamily: `'IBM Plex Serif', serif`,
+                    fontFamily: `'Spectral', 'Georgia', serif`,
                   }"
                 >
                   {{ c.commentary }}
@@ -2842,13 +2842,13 @@
         <div class="mx-auto max-w-7xl px-6 py-24 md:px-10 md:py-32">
           <div class="mb-14 max-w-3xl">
             <div class="hl-mono mb-3 text-[10px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
-              5.01 · § O QUE FAZER
+              05 · O que fazer
             </div>
             <h2
               class="hl-serif leading-[1.05]"
               :style="{
                 color: brand.colors.text,
-                fontFamily: `'IBM Plex Serif', serif`,
+                fontFamily: `'Spectral', 'Georgia', serif`,
                 fontSize: 'clamp(2rem, 5vw, 3.75rem)',
                 fontWeight: 600,
               }"
@@ -2867,10 +2867,10 @@
               <div class="hl-mono text-[10px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
                 01 · Calcule
               </div>
-              <h3 class="hl-serif text-[24px] leading-tight" :style="{ color: brand.colors.text, fontFamily: `'IBM Plex Serif', serif`, fontWeight: 600 }">
+              <h3 class="hl-serif text-[24px] leading-tight" :style="{ color: brand.colors.text, fontFamily: `'Spectral', 'Georgia', serif`, fontWeight: 600 }">
                 O preço-teto
               </h3>
-              <p class="hl-serif text-[14px] italic" :style="{ color: brand.colors.textMuted, fontFamily: `'IBM Plex Serif', serif` }">
+              <p class="hl-serif text-[14px] italic" :style="{ color: brand.colors.textMuted, fontFamily: `'Spectral', 'Georgia', serif` }">
                 Bazin para dividendos. Graham para crescimento. Espere o preço.
               </p>
               <div class="hl-mono mt-auto inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.22em] transition-transform group-hover:translate-x-1" :style="{ color: brand.colors.primary }">
@@ -2886,10 +2886,10 @@
               <div class="hl-mono text-[10px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
                 02 · Simule
               </div>
-              <h3 class="hl-serif text-[24px] leading-tight" :style="{ color: brand.colors.text, fontFamily: `'IBM Plex Serif', serif`, fontWeight: 600 }">
+              <h3 class="hl-serif text-[24px] leading-tight" :style="{ color: brand.colors.text, fontFamily: `'Spectral', 'Georgia', serif`, fontWeight: 600 }">
                 20 anos holdando
               </h3>
-              <p class="hl-serif text-[14px] italic" :style="{ color: brand.colors.textMuted, fontFamily: `'IBM Plex Serif', serif` }">
+              <p class="hl-serif text-[14px] italic" :style="{ color: brand.colors.textMuted, fontFamily: `'Spectral', 'Georgia', serif` }">
                 Veja quanto este ativo pode pagar de dividendos compostos por décadas.
               </p>
               <div class="hl-mono mt-auto inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.22em] transition-transform group-hover:translate-x-1" :style="{ color: brand.colors.primary }">
@@ -2905,10 +2905,10 @@
               <div class="hl-mono text-[10px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
                 03 · Pergunte
               </div>
-              <h3 class="hl-serif text-[24px] leading-tight" :style="{ color: brand.colors.text, fontFamily: `'IBM Plex Serif', serif`, fontWeight: 600 }">
+              <h3 class="hl-serif text-[24px] leading-tight" :style="{ color: brand.colors.text, fontFamily: `'Spectral', 'Georgia', serif`, fontWeight: 600 }">
                 À Holder IA
               </h3>
-              <p class="hl-serif text-[14px] italic" :style="{ color: brand.colors.textMuted, fontFamily: `'IBM Plex Serif', serif` }">
+              <p class="hl-serif text-[14px] italic" :style="{ color: brand.colors.textMuted, fontFamily: `'Spectral', 'Georgia', serif` }">
                 "Por que ainda deteria {{ tickerUpper }}?" — resposta sentenciosa, sem floreio.
               </p>
               <div class="hl-mono mt-auto inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.22em] transition-transform group-hover:translate-x-1" :style="{ color: brand.colors.primary }">
@@ -2923,13 +2923,13 @@
       <section class="relative border-t" :style="{ borderColor: brand.colors.border }">
         <div class="mx-auto max-w-5xl px-6 py-24 text-center md:px-10 md:py-32">
           <div class="hl-mono mb-8 text-[10px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
-            6.01 · § ASSINATURA
+            06 · Assinatura
           </div>
           <blockquote
             class="hl-serif italic leading-[1.2]"
             :style="{
               color: brand.colors.text,
-              fontFamily: `'IBM Plex Serif', serif`,
+              fontFamily: `'Spectral', 'Georgia', serif`,
               fontSize: 'clamp(1.5rem, 3.5vw, 2.5rem)',
               fontWeight: 500,
             }"
