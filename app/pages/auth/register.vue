@@ -1,17 +1,698 @@
 <template>
   <NuxtLayout name="static" :title="false" :showLogo="false">
-    <section class="px-4 pb-16 pt-12">
-      <div
-        class="mx-auto flex max-w-5xl flex-col items-center gap-14 md:flex-row md:items-start md:gap-20"
-      >
+    <!-- ========== TERMINAL VARIANT (Redentia) ========== -->
+    <section
+      v-if="variant === 'terminal'"
+      class="relative min-h-screen overflow-hidden px-4 pb-16 pt-10"
+      :style="{ backgroundColor: brand.colors.background }"
+    >
+      <div class="pointer-events-none absolute inset-0">
         <div
-          class="flex flex-1 flex-col items-center gap-8 text-center md:items-start md:text-left"
+          class="absolute left-1/2 top-0 h-[540px] w-[900px] -translate-x-1/2 rounded-full blur-3xl opacity-40"
+          :style="{ background: `radial-gradient(ellipse at center top, ${brand.colors.primary}33, transparent 60%)` }"
+        />
+        <div
+          class="absolute inset-0 opacity-[0.04]"
+          :style="{ backgroundImage: `linear-gradient(${brand.colors.text} 1px, transparent 1px), linear-gradient(90deg, ${brand.colors.text} 1px, transparent 1px)`, backgroundSize: '32px 32px' }"
+        />
+      </div>
+
+      <div class="relative mx-auto flex max-w-5xl flex-col items-center gap-14 md:flex-row md:items-start md:gap-16">
+        <div class="flex flex-1 flex-col gap-6">
+          <div class="flex items-center gap-3 font-mono-tab text-[10px] uppercase tracking-[0.18em]">
+            <span class="flex items-center gap-1.5" :style="{ color: brand.colors.primary }">
+              <span class="relative flex size-1.5">
+                <span class="absolute inline-flex size-1.5 animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.primary }" />
+                <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
+              </span>
+              [REGISTER.TERMINAL]
+            </span>
+            <span :style="{ color: brand.colors.border }">·</span>
+            <span :style="{ color: brand.colors.textMuted }">NEW SESSION</span>
+          </div>
+
+          <h1
+            class="font-display"
+            :style="{ color: brand.colors.text, fontSize: 'clamp(2.5rem, 5vw, 4rem)', lineHeight: '0.95' }"
+          >
+            Crie sua <span class="italic" :style="{ color: brand.colors.primary }">conta.</span>
+          </h1>
+
+          <p class="max-w-md text-sm font-mono-tab" :style="{ color: brand.colors.textMuted }">
+            {{ brand.auth.registerSubtitle }}
+          </p>
+
+          <div
+            class="mt-4 overflow-hidden rounded-lg border backdrop-blur-sm"
+            :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.surface}E6` }"
+          >
+            <div
+              class="flex items-center justify-between border-b px-4 py-2 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
+              :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.background, color: brand.colors.textMuted }"
+            >
+              <div class="flex items-center gap-2">
+                <div class="flex gap-1.5">
+                  <span class="size-2 rounded-full opacity-60" :style="{ backgroundColor: brand.colors.negative }" />
+                  <span class="size-2 rounded-full opacity-60" :style="{ backgroundColor: brand.colors.primary }" />
+                  <span class="size-2 rounded-full opacity-60" :style="{ backgroundColor: brand.colors.positive }" />
+                </div>
+                <span class="ml-2">{{ brand.name.toUpperCase() }}.INIT</span>
+              </div>
+              <span class="hidden sm:inline">~/register</span>
+            </div>
+            <div class="px-5 py-4 font-mono-tab text-xs" :style="{ color: brand.colors.textMuted }">
+              <div><span :style="{ color: brand.colors.primary }">&gt;</span> provisioning session...</div>
+              <div><span :style="{ color: brand.colors.positive }">✓</span> welcome package ready</div>
+              <div><span :style="{ color: brand.colors.primary }">&gt;</span> awaiting credentials_</div>
+            </div>
+          </div>
+        </div>
+
+        <UForm
+          :schema="schema"
+          :state="state"
+          class="flex w-full max-w-md flex-col gap-5 rounded-lg border p-8"
+          :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.surface}E6` }"
+          @submit="onSubmit"
         >
+          <div class="flex items-center justify-between border-b pb-4" :style="{ borderColor: brand.colors.border }">
+            <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
+              [SIGNUP.FORM]
+            </span>
+            <span class="font-mono-tab text-[10px]" :style="{ color: brand.colors.textMuted }">v2.1 · INIT</span>
+          </div>
+
+          <UFormField name="name">
+            <template #label>
+              <span class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">&gt; FULL_NAME</span>
+            </template>
+            <AtomsFormInput v-model="state.name" type="text" placeholder="Seu nome completo" size="lg" class="w-full" />
+          </UFormField>
+
+          <UFormField name="login">
+            <template #label>
+              <span class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">&gt; USER_ID</span>
+            </template>
+            <AtomsFormInput v-model="state.login" type="text" placeholder="investidor123" size="lg" class="w-full" />
+          </UFormField>
+
+          <UFormField name="celular">
+            <template #label>
+              <span class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">&gt; PHONE</span>
+            </template>
+            <AtomsFormInput
+              v-model="state.celular"
+              v-maska="'+55 (##) # ####-####'"
+              type="text"
+              placeholder="+55 (11) 9 9999-9999"
+              size="lg"
+              class="w-full"
+            />
+          </UFormField>
+
+          <UFormField name="email">
+            <template #label>
+              <span class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">&gt; EMAIL</span>
+            </template>
+            <AtomsFormInput v-model="state.email" type="email" placeholder="voce@exemplo.com" size="lg" class="w-full" />
+          </UFormField>
+
+          <UFormField name="password">
+            <template #label>
+              <span class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">&gt; PASSWORD</span>
+            </template>
+            <AtomsFormInputPassword v-model="state.password" :aria-invalid="score < 4" class="w-full" />
+          </UFormField>
+
+          <UFormField name="password_confirmation">
+            <template #label>
+              <span class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">&gt; PASSWORD_CONFIRM</span>
+            </template>
+            <AtomsFormInputPassword v-model="state.password_confirmation" placeholder="Confirme a senha" class="w-full" />
+          </UFormField>
+
+          <UFormField name="advisor_code">
+            <template #label>
+              <span class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">&gt; ADVISOR_CODE [OPT]</span>
+            </template>
+            <AtomsFormInput v-model="state.advisor_code" type="text" placeholder="ex: ABC123" size="lg" class="w-full" />
+          </UFormField>
+
+          <AtomsPasswordStrengthBlock :requirements="requirements" :score="score" :text="text" :color="color" />
+
+          <AtomsButton type="submit" color="secondary" size="lg" class="w-full justify-center font-mono-tab text-xs tracking-[0.15em]">
+            [ CRIAR SESSÃO ]
+          </AtomsButton>
+
+          <div class="flex items-center justify-between border-t pt-4" :style="{ borderColor: brand.colors.border }">
+            <NuxtLink to="/auth/login" class="font-mono-tab text-[10px] uppercase tracking-[0.15em] transition hover:opacity-80" :style="{ color: brand.colors.primary }">
+              &gt; LOGIN
+            </NuxtLink>
+            <span class="font-mono-tab text-[10px]" :style="{ color: brand.colors.textMuted }">ENC · TLS</span>
+          </div>
+          <p class="font-mono-tab text-[10px]" :style="{ color: brand.colors.textMuted }">
+            {{ brand.auth.termsText }}
+          </p>
+        </UForm>
+      </div>
+    </section>
+
+    <!-- ========== EDITORIAL VARIANT (Norte Capital) ========== -->
+    <section
+      v-else-if="variant === 'editorial'"
+      class="min-h-screen px-4 pb-16 pt-12"
+      :style="{ backgroundColor: brand.colors.background }"
+    >
+      <div class="mx-auto grid max-w-5xl gap-16 md:grid-cols-12 md:gap-20">
+        <div class="md:col-span-6 md:pt-10">
+          <span class="font-small-caps text-[11px]" :style="{ color: brand.colors.textMuted }">
+            {{ brand.name }} &nbsp;·&nbsp; Nova conta
+          </span>
+          <h1
+            class="font-editorial-display mt-4"
+            :style="{ color: brand.colors.text, fontSize: 'clamp(2.5rem, 5vw, 4rem)', lineHeight: '1.05' }"
+          >
+            Abra sua<br />
+            <span class="italic" :style="{ color: brand.colors.primary }">gestão patrimonial.</span>
+          </h1>
+          <hr class="dashed-rule mt-8 max-w-[6rem]" />
+          <p class="font-editorial-body mt-8 max-w-md text-base italic" :style="{ color: brand.colors.textMuted }">
+            Prezado futuro cliente, em poucos minutos abrimos seu perfil no portal. A partir daí, seu assessor envia as cartas mensais, acompanha o portfólio e está disponível para suas dúvidas.
+          </p>
+          <p class="font-editorial-body mt-6 max-w-md text-sm" :style="{ color: brand.colors.textMuted }">
+            {{ brand.auth.registerSubtitle }}
+          </p>
+        </div>
+
+        <UForm
+          :schema="schema"
+          :state="state"
+          class="flex w-full flex-col gap-6 border px-10 py-12 md:col-span-6"
+          :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+          @submit="onSubmit"
+        >
+          <div>
+            <span class="font-small-caps text-[10px]" :style="{ color: brand.colors.textMuted }">Ficha de abertura</span>
+            <h2 class="font-editorial-display mt-2 text-2xl" :style="{ color: brand.colors.text }">
+              {{ brand.auth.registerTitle }}
+            </h2>
+          </div>
+
+          <UFormField name="name">
+            <template #label>
+              <span class="font-small-caps text-[10px]" :style="{ color: brand.colors.textMuted }">Nome completo</span>
+            </template>
+            <AtomsFormInput v-model="state.name" type="text" placeholder="Seu nome" size="lg" class="w-full" />
+          </UFormField>
+
+          <UFormField name="login">
+            <template #label>
+              <span class="font-small-caps text-[10px]" :style="{ color: brand.colors.textMuted }">Usuário</span>
+            </template>
+            <AtomsFormInput v-model="state.login" type="text" placeholder="Seu usuário" size="lg" class="w-full" />
+          </UFormField>
+
+          <UFormField name="celular">
+            <template #label>
+              <span class="font-small-caps text-[10px]" :style="{ color: brand.colors.textMuted }">Telefone</span>
+            </template>
+            <AtomsFormInput
+              v-model="state.celular"
+              v-maska="'+55 (##) # ####-####'"
+              type="text"
+              placeholder="+55 (11) 9 9999-9999"
+              size="lg"
+              class="w-full"
+            />
+          </UFormField>
+
+          <UFormField name="email">
+            <template #label>
+              <span class="font-small-caps text-[10px]" :style="{ color: brand.colors.textMuted }">E-mail</span>
+            </template>
+            <AtomsFormInput v-model="state.email" type="email" placeholder="voce@exemplo.com" size="lg" class="w-full" />
+          </UFormField>
+
+          <UFormField name="password">
+            <template #label>
+              <span class="font-small-caps text-[10px]" :style="{ color: brand.colors.textMuted }">Senha</span>
+            </template>
+            <AtomsFormInputPassword v-model="state.password" :aria-invalid="score < 4" class="w-full" />
+          </UFormField>
+
+          <UFormField name="password_confirmation">
+            <template #label>
+              <span class="font-small-caps text-[10px]" :style="{ color: brand.colors.textMuted }">Confirme a senha</span>
+            </template>
+            <AtomsFormInputPassword v-model="state.password_confirmation" placeholder="Confirme a senha" class="w-full" />
+          </UFormField>
+
+          <UFormField name="advisor_code">
+            <template #label>
+              <span class="font-small-caps text-[10px]" :style="{ color: brand.colors.textMuted }">Código do assessor (opcional)</span>
+            </template>
+            <AtomsFormInput v-model="state.advisor_code" type="text" placeholder="Ex: ABC123" size="lg" class="w-full" />
+          </UFormField>
+
+          <AtomsPasswordStrengthBlock :requirements="requirements" :score="score" :text="text" :color="color" />
+
+          <AtomsButton type="submit" color="secondary" size="lg" class="mt-2 w-full justify-center font-small-caps tracking-wide">
+            Abrir conta
+          </AtomsButton>
+
+          <hr class="dashed-rule" />
+
+          <div class="flex flex-col gap-2">
+            <NuxtLink to="/auth/login" class="font-editorial-body text-[13px] italic transition hover:opacity-70" :style="{ color: brand.colors.text }">
+              Já é cliente? Entre no portal <span :style="{ color: brand.colors.primary }">→</span>
+            </NuxtLink>
+            <p class="font-editorial-body text-[11px] italic" :style="{ color: brand.colors.textMuted }">
+              {{ brand.auth.termsText }}
+            </p>
+          </div>
+        </UForm>
+      </div>
+    </section>
+
+    <!-- ========== MENTOR VARIANT (Primo Rico) ========== -->
+    <section
+      v-else-if="variant === 'mentor'"
+      class="min-h-screen"
+      :style="{ backgroundColor: brand.colors.background }"
+    >
+      <div
+        class="flex items-center gap-4 px-6 py-3 md:px-10"
+        :style="{ backgroundColor: brand.colors.primary, color: brand.colors.background }"
+      >
+        <span class="font-mentor-eyebrow">MANUAL DO PRIMO · INSCRIÇÃO</span>
+        <span class="flex-1 border-t" :style="{ borderColor: `${brand.colors.background}40` }" />
+        <span class="font-mentor-eyebrow">REGISTRO · CAPÍTULO 00</span>
+      </div>
+
+      <div class="mx-auto grid max-w-5xl gap-14 px-6 pb-20 pt-16 md:grid-cols-12 md:gap-16 md:px-10 md:pt-20">
+        <div class="md:col-span-6">
+          <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
+            CAPÍTULO ZERO
+          </span>
+          <h1
+            class="font-mentor-display mt-5"
+            :style="{ color: brand.colors.text, fontSize: 'clamp(2.5rem, 5.5vw, 4.5rem)', lineHeight: '0.95' }"
+          >
+            Comece a sua<br />
+            <span class="italic" :style="{ color: brand.colors.primary }">construção.</span>
+          </h1>
+          <p class="mt-8 max-w-md text-base leading-relaxed" :style="{ color: `${brand.colors.text}CC` }">
+            {{ brand.auth.registerSubtitle }} O Método ARCA funciona quando você faz o básico bem feito, todo mês, por muitos anos.
+          </p>
+
+          <div
+            class="mt-12 border-l-4 pl-6"
+            :style="{ borderColor: brand.colors.primary }"
+          >
+            <p class="font-mentor-display text-lg italic" :style="{ color: brand.colors.text }">
+              "{{ brand.hero.founderQuote || 'Não existe atalho pra liberdade financeira. Só o caminho certo, feito com paciência.' }}"
+            </p>
+            <p class="font-mentor-eyebrow mt-3" :style="{ color: brand.colors.primary }">
+              — {{ brand.founder?.name || 'Thiago Nigro' }}
+            </p>
+          </div>
+        </div>
+
+        <UForm
+          :schema="schema"
+          :state="state"
+          class="flex w-full flex-col gap-5 border-2 p-8 md:col-span-6"
+          :style="{ borderColor: brand.colors.text, backgroundColor: brand.colors.surface }"
+          @submit="onSubmit"
+        >
+          <div class="border-b-2 pb-4" :style="{ borderColor: brand.colors.text }">
+            <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">INSCRIÇÃO</span>
+            <h2 class="font-mentor-display mt-1 text-3xl" :style="{ color: brand.colors.text }">
+              {{ brand.auth.registerTitle }}
+            </h2>
+          </div>
+
+          <UFormField name="name">
+            <template #label>
+              <span class="font-mentor-eyebrow" :style="{ color: brand.colors.text }">Nome completo</span>
+            </template>
+            <AtomsFormInput v-model="state.name" type="text" placeholder="Seu nome" size="lg" class="w-full" />
+          </UFormField>
+
+          <UFormField name="login">
+            <template #label>
+              <span class="font-mentor-eyebrow" :style="{ color: brand.colors.text }">Usuário</span>
+            </template>
+            <AtomsFormInput v-model="state.login" type="text" placeholder="Seu usuário" size="lg" class="w-full" />
+          </UFormField>
+
+          <UFormField name="celular">
+            <template #label>
+              <span class="font-mentor-eyebrow" :style="{ color: brand.colors.text }">Celular</span>
+            </template>
+            <AtomsFormInput
+              v-model="state.celular"
+              v-maska="'+55 (##) # ####-####'"
+              type="text"
+              placeholder="+55 (11) 9 9999-9999"
+              size="lg"
+              class="w-full"
+            />
+          </UFormField>
+
+          <UFormField name="email">
+            <template #label>
+              <span class="font-mentor-eyebrow" :style="{ color: brand.colors.text }">E-mail</span>
+            </template>
+            <AtomsFormInput v-model="state.email" type="email" placeholder="voce@exemplo.com" size="lg" class="w-full" />
+          </UFormField>
+
+          <UFormField name="password">
+            <template #label>
+              <span class="font-mentor-eyebrow" :style="{ color: brand.colors.text }">Senha</span>
+            </template>
+            <AtomsFormInputPassword v-model="state.password" :aria-invalid="score < 4" class="w-full" />
+          </UFormField>
+
+          <UFormField name="password_confirmation">
+            <template #label>
+              <span class="font-mentor-eyebrow" :style="{ color: brand.colors.text }">Confirme a senha</span>
+            </template>
+            <AtomsFormInputPassword v-model="state.password_confirmation" placeholder="Confirme a senha" class="w-full" />
+          </UFormField>
+
+          <UFormField name="advisor_code">
+            <template #label>
+              <span class="font-mentor-eyebrow" :style="{ color: brand.colors.text }">Código do assessor (opcional)</span>
+            </template>
+            <AtomsFormInput v-model="state.advisor_code" type="text" placeholder="Ex: ABC123" size="lg" class="w-full" />
+          </UFormField>
+
+          <AtomsPasswordStrengthBlock :requirements="requirements" :score="score" :text="text" :color="color" />
+
+          <AtomsButton type="submit" color="secondary" size="lg" class="mt-2 w-full justify-center font-mentor-eyebrow">
+            COMEÇAR A CONSTRUIR →
+          </AtomsButton>
+
+          <div class="flex flex-col gap-2 border-t-2 pt-4" :style="{ borderColor: brand.colors.text }">
+            <NuxtLink to="/auth/login" class="font-mentor-eyebrow transition hover:opacity-80" :style="{ color: brand.colors.primary }">
+              JÁ É LEITOR? ENTRE NO MANUAL →
+            </NuxtLink>
+            <p class="text-[11px] leading-relaxed" :style="{ color: `${brand.colors.text}80` }">
+              {{ brand.auth.termsText }}
+            </p>
+          </div>
+        </UForm>
+      </div>
+    </section>
+
+    <!-- ========== RESEARCH VARIANT (Investidor Sardinha) ========== -->
+    <section
+      v-else-if="variant === 'research'"
+      class="min-h-screen px-4 pb-16 pt-12"
+      :style="{ backgroundColor: brand.colors.background }"
+    >
+      <div class="mx-auto flex max-w-5xl flex-col gap-10">
+        <div class="flex items-start justify-between border-b pb-6" :style="{ borderColor: brand.colors.border }">
+          <div class="flex flex-col gap-0.5">
+            <span class="font-academic-label" :style="{ color: brand.colors.primary }">
+              AUVP RESEARCH · NOVA MATRÍCULA
+            </span>
+            <span class="font-academic-body text-[12px] italic" :style="{ color: brand.colors.textMuted }">
+              Protocolo de cadastro · aluno iniciante
+            </span>
+          </div>
+          <span class="font-academic-mono text-[11px] uppercase tabular-nums" :style="{ color: brand.colors.textMuted }">
+            VOL. {{ new Date().getFullYear() }}
+          </span>
+        </div>
+
+        <div class="grid gap-14 md:grid-cols-12 md:gap-16">
+          <div class="md:col-span-6">
+            <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">
+              § · matrícula
+            </span>
+            <h1
+              class="font-academic-display mt-4"
+              :style="{ color: brand.colors.text, fontSize: 'clamp(2.5rem, 5vw, 4rem)', lineHeight: '1' }"
+            >
+              Abra o<br />
+              <span class="italic" :style="{ color: brand.colors.primary }">caderno de estudo.</span>
+            </h1>
+            <hr class="dashed-rule mt-8 max-w-[8rem]" />
+            <p class="font-academic-body mt-6 max-w-md text-[14px] italic" :style="{ color: brand.colors.textMuted }">
+              <span class="red-pen">Nota do professor</span> — o cadastro é de graça, o esforço é cobrado em horas de estudo. Compareça. O método só funciona pra quem aparece.
+            </p>
+            <p class="font-academic-body mt-6 max-w-md text-[13px]" :style="{ color: brand.colors.text }">
+              {{ brand.auth.registerSubtitle }}
+            </p>
+          </div>
+
+          <UForm
+            :schema="schema"
+            :state="state"
+            class="flex w-full flex-col gap-5 border p-8 md:col-span-6"
+            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+            @submit="onSubmit"
+          >
+            <div class="flex items-start justify-between border-b pb-4" :style="{ borderColor: brand.colors.border }">
+              <span class="font-academic-label" :style="{ color: brand.colors.primary }">§1 · dados pessoais</span>
+              <span class="font-academic-mono text-[10px] tabular-nums" :style="{ color: brand.colors.textMuted }">
+                {{ sessionTime }}
+              </span>
+            </div>
+
+            <UFormField name="name">
+              <template #label>
+                <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">Nome completo</span>
+              </template>
+              <AtomsFormInput v-model="state.name" type="text" placeholder="Como consta no seu documento" size="lg" class="w-full" />
+            </UFormField>
+
+            <UFormField name="login">
+              <template #label>
+                <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">Usuário</span>
+              </template>
+              <AtomsFormInput v-model="state.login" type="text" placeholder="Seu login" size="lg" class="w-full" />
+            </UFormField>
+
+            <UFormField name="celular">
+              <template #label>
+                <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">Celular</span>
+              </template>
+              <AtomsFormInput
+                v-model="state.celular"
+                v-maska="'+55 (##) # ####-####'"
+                type="text"
+                placeholder="+55 (11) 9 9999-9999"
+                size="lg"
+                class="w-full"
+              />
+            </UFormField>
+
+            <UFormField name="email">
+              <template #label>
+                <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">E-mail</span>
+              </template>
+              <AtomsFormInput v-model="state.email" type="email" placeholder="voce@exemplo.com" size="lg" class="w-full" />
+            </UFormField>
+
+            <UFormField name="password">
+              <template #label>
+                <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">Senha</span>
+              </template>
+              <AtomsFormInputPassword v-model="state.password" :aria-invalid="score < 4" class="w-full" />
+            </UFormField>
+
+            <UFormField name="password_confirmation">
+              <template #label>
+                <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">Confirme a senha</span>
+              </template>
+              <AtomsFormInputPassword v-model="state.password_confirmation" placeholder="Confirme a senha" class="w-full" />
+            </UFormField>
+
+            <UFormField name="advisor_code">
+              <template #label>
+                <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">Código do assessor (opcional)</span>
+              </template>
+              <AtomsFormInput v-model="state.advisor_code" type="text" placeholder="Ex: ABC123" size="lg" class="w-full" />
+            </UFormField>
+
+            <AtomsPasswordStrengthBlock :requirements="requirements" :score="score" :text="text" :color="color" />
+
+            <AtomsButton type="submit" color="secondary" size="lg" class="mt-2 w-full justify-center font-academic-label">
+              MATRICULAR-SE →
+            </AtomsButton>
+
+            <hr class="dashed-rule" />
+
+            <div class="flex flex-col gap-2">
+              <NuxtLink to="/auth/login" class="font-academic-body text-[13px] italic transition hover:opacity-70" :style="{ color: brand.colors.text }">
+                Já sou aluno · entrar no terminal <span :style="{ color: brand.colors.primary }">→</span>
+              </NuxtLink>
+              <p class="font-academic-body text-[11px] italic" :style="{ color: brand.colors.textMuted }">
+                {{ brand.auth.termsText }}
+              </p>
+            </div>
+          </UForm>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== SHOWTIME VARIANT (Me Poupe!) ========== -->
+    <section
+      v-else-if="variant === 'showtime'"
+      class="relative min-h-screen overflow-hidden px-4 pb-16 pt-12"
+      :style="{ backgroundColor: brand.colors.background }"
+    >
+      <div class="pointer-events-none absolute inset-0 opacity-25">
+        <div class="absolute left-[8%] top-[12%] size-3 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
+        <div class="absolute left-[18%] top-[60%] size-2 rounded-full" :style="{ backgroundColor: brand.colors.secondary }" />
+        <div class="absolute right-[12%] top-[20%] size-4 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
+        <div class="absolute right-[30%] top-[75%] size-2 rounded-full" :style="{ backgroundColor: brand.colors.positive }" />
+      </div>
+
+      <div class="relative mx-auto flex max-w-5xl flex-col items-center gap-14 md:flex-row md:items-start md:gap-16">
+        <div class="flex flex-1 flex-col items-center text-center md:items-start md:pt-4 md:text-left">
+          <span class="lower-third">NOVO NO PROGRAMA · BEM-VINDA!</span>
+          <h1
+            class="font-showtime-display chunky-shadow mt-6"
+            :style="{ color: brand.colors.text, fontSize: 'clamp(2.5rem, 5.5vw, 4.5rem)' }"
+          >
+            Bora entrar pra<br />
+            <span class="highlighter" :style="{ color: brand.colors.primary }">família, criatura!</span>
+          </h1>
+          <p class="font-showtime-body mt-8 max-w-md text-base" :style="{ color: `${brand.colors.text}CC` }">
+            {{ brand.auth.registerSubtitle }} Sem Sidnelson, sem pegadinha, sem frescura — só você, seu bolso e a Nath.
+          </p>
+
+          <div class="mt-8 flex items-start gap-3">
+            <img src="/brand/mepoupe/margarete.svg" alt="Margarete" class="h-12 shrink-0" />
+            <p class="font-showtime-body max-w-xs text-sm italic" :style="{ color: `${brand.colors.text}B3` }">
+              "Abre essa conta e bora pro primeiro aporte — ai que festa, criatura!"
+            </p>
+          </div>
+
+          <div class="mt-10 flex flex-wrap gap-3">
+            <div
+              class="inline-flex items-center gap-2 rounded-full border-2 px-4 py-2 font-showtime-label text-[10px]"
+              :style="{ borderColor: `${brand.colors.primary}70`, backgroundColor: `${brand.colors.primary}15`, color: brand.colors.text }"
+            >
+              💛 100% GRÁTIS
+            </div>
+            <div
+              class="inline-flex items-center gap-2 rounded-full border-2 px-4 py-2 font-showtime-label text-[10px]"
+              :style="{ borderColor: `${brand.colors.primary}70`, backgroundColor: `${brand.colors.primary}15`, color: brand.colors.text }"
+            >
+              ⚡ EM 2 MINUTOS
+            </div>
+            <div
+              class="inline-flex items-center gap-2 rounded-full border-2 px-4 py-2 font-showtime-label text-[10px]"
+              :style="{ borderColor: `${brand.colors.primary}70`, backgroundColor: `${brand.colors.primary}15`, color: brand.colors.text }"
+            >
+              🚫 SEM CARTÃO
+            </div>
+          </div>
+        </div>
+
+        <UForm
+          :schema="schema"
+          :state="state"
+          class="showtime-frame showtime-frame--tilt-right relative flex w-full max-w-md flex-col gap-5 rounded-[28px] p-8"
+          :style="{ backgroundColor: brand.colors.surface }"
+          @submit="onSubmit"
+        >
+          <div class="washi-tape" />
+          <div class="text-center">
+            <span class="font-showtime-label" :style="{ color: brand.colors.primary }">
+              MINHA FICHA DE INSCRIÇÃO
+            </span>
+            <h2 class="font-showtime-display mt-2" :style="{ color: brand.colors.text, fontSize: '1.75rem' }">
+              {{ brand.auth.registerTitle }}
+            </h2>
+          </div>
+
+          <UFormField name="name">
+            <template #label>
+              <span class="font-showtime-label" :style="{ color: `${brand.colors.text}80` }">SEU NOME</span>
+            </template>
+            <AtomsFormInput v-model="state.name" type="text" placeholder="Como a gente te chama?" size="lg" class="w-full" />
+          </UFormField>
+
+          <UFormField name="login">
+            <template #label>
+              <span class="font-showtime-label" :style="{ color: `${brand.colors.text}80` }">USUÁRIO</span>
+            </template>
+            <AtomsFormInput v-model="state.login" type="text" placeholder="Escolha um apelido" size="lg" class="w-full" />
+          </UFormField>
+
+          <UFormField name="celular">
+            <template #label>
+              <span class="font-showtime-label" :style="{ color: `${brand.colors.text}80` }">CELULAR</span>
+            </template>
+            <AtomsFormInput
+              v-model="state.celular"
+              v-maska="'+55 (##) # ####-####'"
+              type="text"
+              placeholder="+55 (11) 9 9999-9999"
+              size="lg"
+              class="w-full"
+            />
+          </UFormField>
+
+          <UFormField name="email">
+            <template #label>
+              <span class="font-showtime-label" :style="{ color: `${brand.colors.text}80` }">E-MAIL</span>
+            </template>
+            <AtomsFormInput v-model="state.email" type="email" placeholder="voce@exemplo.com" size="lg" class="w-full" />
+          </UFormField>
+
+          <UFormField name="password">
+            <template #label>
+              <span class="font-showtime-label" :style="{ color: `${brand.colors.text}80` }">SENHA SECRETA</span>
+            </template>
+            <AtomsFormInputPassword v-model="state.password" :aria-invalid="score < 4" class="w-full" />
+          </UFormField>
+
+          <UFormField name="password_confirmation">
+            <template #label>
+              <span class="font-showtime-label" :style="{ color: `${brand.colors.text}80` }">REPETE A SENHA</span>
+            </template>
+            <AtomsFormInputPassword v-model="state.password_confirmation" placeholder="Confirme a senha" class="w-full" />
+          </UFormField>
+
+          <UFormField name="advisor_code">
+            <template #label>
+              <span class="font-showtime-label" :style="{ color: `${brand.colors.text}80` }">CÓDIGO DO ASSESSOR (OPCIONAL)</span>
+            </template>
+            <AtomsFormInput v-model="state.advisor_code" type="text" placeholder="Ex: ABC123" size="lg" class="w-full" />
+          </UFormField>
+
+          <AtomsPasswordStrengthBlock :requirements="requirements" :score="score" :text="text" :color="color" />
+
+          <AtomsButton type="submit" color="secondary" size="lg" class="mt-3 w-full justify-center font-showtime-label">
+            BORA COMEÇAR, CRIATURA! →
+          </AtomsButton>
+
+          <div class="flex flex-col items-center gap-2 text-center">
+            <NuxtLink to="/auth/login" class="font-showtime-label underline underline-offset-4 transition hover:opacity-70" :style="{ color: brand.colors.primary }">
+              JÁ SOU DA FAMÍLIA · ENTRAR →
+            </NuxtLink>
+            <p class="font-showtime-body text-[11px]" :style="{ color: `${brand.colors.text}80` }">
+              {{ brand.auth.termsText }}
+            </p>
+          </div>
+        </UForm>
+      </div>
+    </section>
+
+    <!-- ========== DEFAULT VARIANT (fallback) ========== -->
+    <section v-else class="px-4 pb-16 pt-12">
+      <div class="mx-auto flex max-w-5xl flex-col items-center gap-14 md:flex-row md:items-start md:gap-20">
+        <div class="flex flex-1 flex-col items-center gap-8 text-center md:items-start md:text-left">
           <AtomsAuthHeader class="mt-0 w-full max-w-sm" />
           <p class="text-sm leading-relaxed md:max-w-sm" :style="{ color: brand.colors.textMuted }">
-            Crie sua conta para acessar carteiras inteligentes, simuladores de
-            investimentos e recursos personalizados que aceleram seus
-            resultados.
+            Crie sua conta para acessar carteiras inteligentes, simuladores de investimentos e recursos personalizados que aceleram seus resultados.
           </p>
         </div>
 
@@ -23,10 +704,7 @@
           @submit="onSubmit"
         >
           <div class="space-y-2 text-center md:text-left">
-            <span
-              class="text-xs font-medium uppercase tracking-[0.2em]"
-              :style="{ color: brand.colors.primary }"
-            >
+            <span class="text-xs font-medium uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
               Cadastro
             </span>
             <h1 class="text-2xl font-semibold" :style="{ color: brand.colors.text }">{{ brand.auth.registerTitle }}</h1>
@@ -35,29 +713,14 @@
             </p>
           </div>
 
-          <!-- Name -->
           <UFormField name="name">
-            <AtomsFormInput
-              v-model="state.name"
-              type="text"
-              placeholder="Nome completo"
-              size="lg"
-              class="w-full"
-            />
+            <AtomsFormInput v-model="state.name" type="text" placeholder="Nome completo" size="lg" class="w-full" />
           </UFormField>
 
-          <!-- Login -->
           <UFormField name="login">
-            <AtomsFormInput
-              v-model="state.login"
-              type="text"
-              placeholder="Usuário"
-              size="lg"
-              class="w-full"
-            />
+            <AtomsFormInput v-model="state.login" type="text" placeholder="Usuário" size="lg" class="w-full" />
           </UFormField>
 
-          <!-- Celular -->
           <UFormField name="celular">
             <AtomsFormInput
               v-model="state.celular"
@@ -69,107 +732,33 @@
             />
           </UFormField>
 
-          <!-- Email -->
           <UFormField name="email">
-            <AtomsFormInput
-              v-model="state.email"
-              type="email"
-              placeholder="E-mail"
-              size="lg"
-              class="w-full"
-            />
+            <AtomsFormInput v-model="state.email" type="email" placeholder="E-mail" size="lg" class="w-full" />
           </UFormField>
 
-          <!-- Password -->
           <UFormField name="password">
-            <AtomsFormInputPassword
-              v-model="state.password"
-              :aria-invalid="score < 4"
-              class="w-full"
-            />
+            <AtomsFormInputPassword v-model="state.password" :aria-invalid="score < 4" class="w-full" />
           </UFormField>
 
-          <!-- Password Confirmation -->
           <UFormField name="password_confirmation">
-            <AtomsFormInputPassword
-              v-model="state.password_confirmation"
-              placeholder="Confirme a senha"
-              class="w-full"
-            />
+            <AtomsFormInputPassword v-model="state.password_confirmation" placeholder="Confirme a senha" class="w-full" />
           </UFormField>
 
-          <!-- Código do assessor (opcional) -->
           <UFormField name="advisor_code">
             <template #label>
               <span :style="{ color: brand.colors.textMuted }">Código do assessor (opcional)</span>
             </template>
-            <AtomsFormInput
-              v-model="state.advisor_code"
-              type="text"
-              placeholder="Ex: ABC123"
-              size="lg"
-              class="w-full"
-            />
-            <p class="mt-1 text-xs" :style="{ color: brand.colors.textMuted }">
-              Se você tem um código do seu assessor, informe para vincular sua conta.
-            </p>
+            <AtomsFormInput v-model="state.advisor_code" type="text" placeholder="Ex: ABC123" size="lg" class="w-full" />
           </UFormField>
 
-          <!-- Password Strength -->
-          <div class="rounded-2xl border p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
-            <UProgress
-              :model-value="score"
-              :max="requirements.length"
-              :color="color"
-              :indicator="text"
-              size="sm"
-            />
+          <AtomsPasswordStrengthBlock :requirements="requirements" :score="score" :text="text" :color="color" />
 
-            <div
-              id="password-strength"
-              class="mt-4 flex flex-col gap-3 text-sm font-medium"
-            >
-              <span class="text-center text-[13px] font-light" :style="{ color: brand.colors.text }">{{
-                text
-              }}</span>
-              <span class="text-[13px] font-extralight" :style="{ color: brand.colors.textMuted }">
-                Sua senha precisa ter:
-              </span>
-            </div>
-
-            <ul class="mt-2 space-y-2" aria-label="Requisitos da senha">
-              <li
-                v-for="req in requirements"
-                :key="req.text"
-                class="flex items-center gap-2"
-                :style="{ color: req.met ? brand.colors.primary : brand.colors.textMuted }"
-              >
-                <UIcon
-                  :name="
-                    req.met ? 'i-lucide-circle-check' : 'i-lucide-circle-x'
-                  "
-                  class="size-4 shrink-0"
-                />
-                <span class="text-xs font-medium">{{ req.text }}</span>
-              </li>
-            </ul>
-          </div>
-
-          <AtomsButton
-            type="submit"
-            color="secondary"
-            size="lg"
-            class="w-full justify-center"
-          >
+          <AtomsButton type="submit" color="secondary" size="lg" class="w-full justify-center">
             {{ brand.nav.register }}
           </AtomsButton>
 
           <div class="flex flex-col gap-2 text-center md:text-left">
-            <NuxtLink
-              to="/auth/login"
-              class="text-sm font-medium transition hover:opacity-80"
-              :style="{ color: brand.colors.primary }"
-            >
+            <NuxtLink to="/auth/login" class="text-sm font-medium transition hover:opacity-80" :style="{ color: brand.colors.primary }">
               Já tem uma conta? Faça login
             </NuxtLink>
             <p class="text-[11px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
@@ -190,6 +779,16 @@ import { vMaska } from 'maska/vue'
 const brand = useBrand()
 const { register } = useAuthService()
 const authStore = useAuthStore()
+
+const variant = computed(() => brand.hero?.variant || 'default')
+
+const sessionTime = computed(() => {
+  try {
+    return new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+  } catch {
+    return ''
+  }
+})
 
 const passwordRequirements = [
   { regex: /.{8,}/, text: 'Pelo menos 8 caracteres' },

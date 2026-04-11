@@ -194,9 +194,13 @@ interface BrandConfig {
     showCompanyInfo: boolean
     showMarketCommentaries?: boolean
     // Visual variant — 'default' keeps the terminal/card layout used by
-    // Redentia et al. 'editorial' switches to the narrated column layout
-    // used by Norte Capital (private-bank "letter from your advisor").
-    variant?: 'default' | 'editorial'
+    // Redentia. 'editorial' switches to the narrated column layout used
+    // by Norte Capital (private-bank "letter from your advisor"). 'mentor'
+    // switches to the aspirational masterclass/book-cover layout used by
+    // Primo Rico. 'research' switches to the AUVP academic paper layout
+    // used by Investidor Sardinha (IBM Plex serif, § section marks, red
+    // pen marks, footnotes, margin notes, author signature).
+    variant?: 'default' | 'editorial' | 'mentor' | 'research' | 'showtime'
   }
 
   // === SOCIAL ===
@@ -229,7 +233,7 @@ interface BrandConfig {
 
   // HERO (pagina inicial, visitante nao logado)
   hero: {
-    variant: 'centered' | 'split' | 'minimal' | 'institutional' | 'editorial'  // layout do hero: centered (premium), split (founder), minimal (data-first), institutional (assessoria/escritorio), editorial (narrated private-bank letter — Norte Capital)
+    variant: 'centered' | 'split' | 'minimal' | 'institutional' | 'editorial' | 'terminal' | 'mentor' | 'research' | 'showtime'  // layout do hero: centered (premium), split (founder), minimal (data-first), institutional (assessoria/escritorio), editorial (narrated private-bank letter — Norte Capital), terminal (Bloomberg-reimagined — Redentia), mentor (aspirational book-cover — Primo Rico), research (academic paper / AUVP study notebook — Investidor Sardinha), showtime (TV show / pop magazine — Me Poupe!)
     badge: string                // texto do badge animado no topo
     title: string                // headline principal (pode usar HTML)
     subtitle: string             // subtitulo
@@ -692,6 +696,10 @@ const primoRico: BrandConfig = {
     showFinancials: true,
     showChecklist: true,
     showCompanyInfo: true,
+    // Primo Rico uses the masterclass/book-cover layout — Montserrat Black
+    // display, chunky orange blocks, numbered chapters, and a pull quote
+    // from the mentor framing the asset analysis.
+    variant: 'mentor',
   },
 
   social: {
@@ -720,15 +728,18 @@ const primoRico: BrandConfig = {
   // --- PERSONALIZACOES POR AREA ---
 
   hero: {
-    variant: 'centered',
-    badge: 'Assessor Patrimonial com IA • Novo',
-    title: 'Construa patrimonio.\nNao dependa de sorte.',
-    subtitle: 'Analise fundamentalista, eficiencia tributaria e ferramentas de patrimonio. Tudo o que voce precisa pra sair do mil e chegar ao milhao.',
-    founderQuote: 'Liberdade ou mediocridade: a escolha e sua.',
-    ctaLabel: 'Comecar a construir',
-    ctaSecondaryLabel: 'Ja tenho conta',
-    ctaIcon: 'i-lucide-sparkles',
-    trustIndicators: ['Criptografado', 'Sempre gratis', 'Dados em tempo real'],
+    // 'mentor' is Primo Rico's dedicated variant — aspirational book-cover
+    // aesthetic (Montserrat Black display, chunky orange blocks, founder
+    // portrait, pull quotes). Nothing else shares this variant.
+    variant: 'mentor',
+    badge: 'MANUAL DO PRIMO · CAPÍTULO I',
+    title: 'CONSTRUA\nPATRIMÔNIO.',
+    subtitle: 'Análise fundamentalista, eficiência tributária e ferramentas de construção de patrimônio. Não existe atalho. Só consistência, tempo e as decisões certas — todos os dias.',
+    founderQuote: 'Liberdade ou mediocridade. A escolha é sua.',
+    ctaLabel: 'Começar a construir',
+    ctaSecondaryLabel: 'Já tenho conta',
+    ctaIcon: 'i-lucide-arrow-right',
+    trustIndicators: ['+7M seguidores', '2M+ livros vendidos', '15+ anos de mercado', 'Método ARCA'],
   },
 
   header: {
@@ -972,18 +983,22 @@ const primoRico: BrandConfig = {
 
   // Primo Rico: hero > poder do tempo > mercado > ARCA > metricas > IA > ecossistema > depoimentos
   homeSections: [
+    // Primo Rico's hero ("mentor" variant) carries the full narrative
+    // arc — pull quote, method ARCA, stats, ecosystem, closing CTA. We
+    // keep a light supporting tail (market live + testimonials) and turn
+    // everything else off to preserve the book-cover density.
     { id: 'hero', visible: true },
-    { id: 'wealthCalculator', visible: true },
-    { id: 'trustBar', visible: true },
     { id: 'market', visible: true },
-    { id: 'categories', visible: true },
-    { id: 'metrics', visible: true },
-    { id: 'featureTabs', visible: true },
-    { id: 'aiCta', visible: true },
-    { id: 'products', visible: true },
-    { id: 'educational', visible: true },
-    { id: 'guides', visible: true },
     { id: 'testimonials', visible: true },
+    { id: 'guides', visible: true },
+    { id: 'wealthCalculator', visible: false },
+    { id: 'trustBar', visible: false },
+    { id: 'categories', visible: false },
+    { id: 'metrics', visible: false },
+    { id: 'featureTabs', visible: false },
+    { id: 'aiCta', visible: false },
+    { id: 'products', visible: false },
+    { id: 'educational', visible: false },
     { id: 'marquee', visible: false },
   ],
 
@@ -1222,6 +1237,7 @@ const mePoupe: BrandConfig = {
     showFinancials: false,
     showChecklist: false,
     showCompanyInfo: true,
+    variant: 'showtime',
   },
 
   homePage: {
@@ -1274,15 +1290,18 @@ const mePoupe: BrandConfig = {
   // --- PERSONALIZACOES POR AREA ---
 
   hero: {
-    variant: 'split',
-    badge: 'Na_th IA — sua assessora pessoal',
-    title: 'Chega de\ndinheirofobia!',
-    subtitle: 'Simuladores, IA e conteudo — com humor, sem jargao. Bora fazer o dinheiro ser seu escravo, nao o contrario!',
-    founderQuote: 'Poupe primeiro, gaste o que sobrar! E o juro composto faz o resto.',
-    ctaLabel: 'Bora comecar, criatura!',
-    ctaSecondaryLabel: 'Ja tenho conta',
+    // 'showtime' is Me Poupe!'s dedicated variant — TV show / pop magazine
+    // aesthetic with lower thirds, rotated frames, character bubbles,
+    // sticker badges, and Margarete the wooden spoon as recurring mascot.
+    variant: 'showtime',
+    badge: 'NO AR · PROGRAMA #001',
+    title: 'Chega de\ndinheirofobia,\ncriatura!',
+    subtitle: 'Eu sou a Nath. Esta é a Me Poupe! — o programa que explica seu dinheiro do jeito que sua melhor amiga explicaria. Simulador, IA e conteúdo no bom português. O Sidnelson que chore.',
+    founderQuote: 'Poupe primeiro, gaste o que sobrar. E deixa o juro composto, esse filho maravilhoso, trabalhar por você enquanto você vive a vida.',
+    ctaLabel: 'Bora começar, criatura!',
+    ctaSecondaryLabel: 'Já sou da família',
     ctaIcon: 'i-lucide-heart',
-    trustIndicators: ['100% gratis', 'Dados protegidos', 'Sem letras miudas'],
+    trustIndicators: ['+7M na comunidade', '100% grátis', 'Sem Sidnelson', 'Com juro composto amigo'],
     image: '/brand/mepoupe/nathalia-arcuri-me-poupe.png',
   },
 
@@ -1548,20 +1567,26 @@ const mePoupe: BrandConfig = {
 
   // Me Poupe: hero > personagens > IA > educacional > depoimentos > mercado > produtos
   // Personalidade primeiro, dados depois. Pop, colorido, humano.
+  // Me Poupe! uses the dedicated 'showtime' hero variant which self-contains
+  // everything: cover de revista, lower-third TV, elenco (characters), Na_th IA
+  // responde, histórias reais e closing bumper. Desligamos todas as seções
+  // legadas (educational/products com rickroll placeholder, market/metrics com
+  // labels terminal herdados do Redentia, trustBar com [CAPABILITIES]) para
+  // evitar Frankenstein visual.
   homeSections: [
     { id: 'hero', visible: true },
-    { id: 'characters', visible: true },
-    { id: 'aiCta', visible: true },
-    { id: 'educational', visible: true },
-    { id: 'testimonials', visible: true },
-    { id: 'trustBar', visible: true },
-    { id: 'market', visible: true },
-    { id: 'products', visible: true },
-    { id: 'metrics', visible: true },
-    { id: 'categories', visible: true },
-    { id: 'featureTabs', visible: true },
-    { id: 'guides', visible: true },
-    { id: 'marquee', visible: true },
+    { id: 'characters', visible: false },
+    { id: 'aiCta', visible: false },
+    { id: 'educational', visible: false },
+    { id: 'testimonials', visible: false },
+    { id: 'trustBar', visible: false },
+    { id: 'market', visible: false },
+    { id: 'products', visible: false },
+    { id: 'metrics', visible: false },
+    { id: 'categories', visible: false },
+    { id: 'featureTabs', visible: false },
+    { id: 'guides', visible: false },
+    { id: 'marquee', visible: false },
   ],
 
   educational: {
@@ -1692,30 +1717,37 @@ const investidorSardinha: BrandConfig = {
   privacyEmail: 'privacidade@investidorsardinha.com.br',
 
   colors: {
-    primary: '#DC2626',
-    secondary: '#B91C1C',
-    tertiary: '#FEF2F2',
-    positive: '#16A34A',
-    negative: '#DC2626',
-    neutral: '#6B7280',
-    background: '#FFFFFF',
-    surface: '#F9FAFB',
-    surfaceHover: '#F3F4F6',
-    border: '#E5E7EB',
-    text: '#111827',
-    textMuted: '#6B7280',
+    // Sardinha's "AUVP research paper" palette — off-white paper tone,
+    // near-black ink for body, red used only as a highlight (the
+    // professor's red pen correction mark), not as a background.
+    primary: '#C53030',          // red pen · slightly warmer than Tailwind red-600
+    secondary: '#9B2C2C',        // deep red · for emphasis
+    tertiary: '#F5F3EB',         // cream page
+    positive: '#2F7A3F',         // muted forest green
+    negative: '#C53030',         // same red pen
+    neutral: '#6B6357',          // warm muted brown-grey
+    background: '#FAFAF7',       // off-white paper
+    surface: '#F5F3EB',          // cream, for subtle table rows
+    surfaceHover: '#EEEAD8',     // cream slightly darker
+    border: '#D8D4C3',           // paper border warm
+    text: '#1A1A1A',             // near-black ink
+    textMuted: '#6B6357',        // warm muted
     inputBg: '#FFFFFF',
-    inputBgHover: '#F9FAFB',
-    inputBorder: '#D1D5DB',
-    logoBg: '#DC2626',
-    gradient: { from: '#DC2626', via: '#B91C1C', to: '#991B1B' },
+    inputBgHover: '#F5F3EB',
+    inputBorder: '#D8D4C3',
+    logoBg: '#C53030',
+    gradient: { from: '#C53030', via: '#9B2C2C', to: '#7B1D1D' },
   },
 
   font: {
-    family: 'Barlow',
-    google: 'Barlow:wght@300..800',
-    headingWeight: 'font-bold',
-    headingStyle: 'uppercase tracking-wider',
+    // IBM Plex trio loaded at once: Serif for display, Sans for body, Mono
+    // for numbers. IBM Plex is the "research paper / department of
+    // engineering" archetype — used by IBM, Morningstar-esque publications,
+    // and academic reading lists.
+    family: 'IBM Plex Sans',
+    google: 'IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500;600',
+    headingWeight: 'font-normal', // IBM Plex Serif looks heavier at 500/600 than nominal
+    headingStyle: 'normal-case',
   },
 
   logo: {
@@ -1735,7 +1767,7 @@ const investidorSardinha: BrandConfig = {
     description: 'Plataforma do Investidor Sardinha com indicadores financeiros, analise fundamentalista e ferramentas AUVP para investidores de longo prazo.',
     locale: 'pt_BR',
     lang: 'pt-BR',
-    themeColor: '#FFFFFF',
+    themeColor: '#FAFAF7',
     keywords: ['investidor sardinha', 'raul sena', 'auvp', 'analise fundamentalista', 'buy and hold', 'acoes', 'fiis'],
   },
 
@@ -1776,6 +1808,11 @@ const investidorSardinha: BrandConfig = {
     showFinancials: true,
     showChecklist: true,
     showCompanyInfo: true,
+    // Investidor Sardinha uses the "AUVP research paper" layout — IBM Plex
+    // serif display, § section marks, inline footnotes, red-pen highlights,
+    // author signature at the end. The whole page reads like a Ben Graham
+    // textbook applied to one asset.
+    variant: 'research',
   },
 
   homePage: {
@@ -1830,15 +1867,18 @@ const investidorSardinha: BrandConfig = {
   // --- PERSONALIZACOES POR AREA ---
 
   hero: {
-    variant: 'minimal',
-    badge: 'Analista AUVP com IA • Novo',
-    title: 'Sardinha esperta\nnao segue o cardume.',
-    subtitle: 'Indicadores fundamentalistas, preco teto, DY projetado e IA treinada em analise de valor. Pra quem investe com fundamento.',
-    founderQuote: 'Nao existe investimento ruim, existe investidor sem conhecimento.',
-    ctaLabel: 'Acessar plataforma',
-    ctaSecondaryLabel: 'Ja tenho conta',
-    ctaIcon: 'i-lucide-bar-chart-3',
-    trustIndicators: ['Dados em tempo real', 'Criptografia avancada', 'Indicadores fundamentalistas'],
+    // 'research' is Sardinha's dedicated variant — AUVP academic paper
+    // aesthetic with IBM Plex serif, § section marks, footnotes, author
+    // signature. Copy rewritten as a study paper front matter.
+    variant: 'research',
+    badge: 'AUVP RESEARCH · Nº 001',
+    title: 'Estudo sobre investir\ncom fundamento.',
+    subtitle: 'Análise fundamentalista, método e verdade. Este é o estudo que a gente queria ter lido antes de comprar a primeira ação. Compilado para quem prefere estudar a especular.',
+    founderQuote: 'Não existe investimento ruim. Existe investidor sem conhecimento.',
+    ctaLabel: 'Começar o estudo',
+    ctaSecondaryLabel: 'Já sou sardinha',
+    ctaIcon: 'i-lucide-book-open',
+    trustIndicators: ['+1.3M sardinhas', 'Método AUVP', '15 anos de análise', 'Buy and hold'],
   },
 
   header: {
@@ -2072,7 +2112,7 @@ const investidorSardinha: BrandConfig = {
         icon: 'i-lucide-shield',
         status: 'recommended',
         ctaText: 'Calcular reserva',
-        ctaLink: '/calculadoras',
+        ctaLink: '/calculadora',
       },
       {
         number: 2,
@@ -2081,7 +2121,7 @@ const investidorSardinha: BrandConfig = {
         icon: 'i-lucide-ban',
         status: 'available',
         ctaText: 'Simular quitacao',
-        ctaLink: '/calculadoras',
+        ctaLink: '/calculadora',
       },
       {
         number: 3,
@@ -2108,7 +2148,7 @@ const investidorSardinha: BrandConfig = {
         icon: 'i-lucide-search',
         status: 'locked',
         ctaText: 'Usar ferramentas',
-        ctaLink: '/calculadoras',
+        ctaLink: '/calculadora',
       },
       {
         number: 6,
@@ -2117,7 +2157,7 @@ const investidorSardinha: BrandConfig = {
         icon: 'i-lucide-repeat',
         status: 'locked',
         ctaText: 'Simular aportes',
-        ctaLink: '/calculadoras',
+        ctaLink: '/calculadora',
       },
     ],
     footerText: 'Baseado na metodologia',
@@ -2125,20 +2165,22 @@ const investidorSardinha: BrandConfig = {
     footerLinkText: 'AUVP — A Unica Verdade Possivel',
   },
 
-  // Sardinha: hero minimal > mercado (dados sao rei) > checklist > metricas > categorias > IA > guias tecnicos
-  // Estetica tecnica: sharp corners, compacta, informacao densa, sem firulas
+  // Sardinha uses the "AUVP research paper" layout — the hero self-contains
+  // everything: panorama do pregão, §1 radar, §2 screener, §3 setores,
+  // §4 calendário, §5 notas do professor, §6 ecossistema AUVP e closing.
+  // Nenhuma outra seção é renderizada — a página inteira é o paper.
   homeSections: [
     { id: 'hero', visible: true },
-    { id: 'market', visible: true },
-    { id: 'investorChecklist', visible: true },
-    { id: 'metrics', visible: true },
-    { id: 'categories', visible: true },
-    { id: 'featureTabs', visible: true },
-    { id: 'aiCta', visible: true },
-    { id: 'guides', visible: true },
-    { id: 'educational', visible: true },
-    { id: 'products', visible: true },
-    { id: 'trustBar', visible: true },
+    { id: 'market', visible: false },
+    { id: 'guides', visible: false },
+    { id: 'investorChecklist', visible: false },
+    { id: 'metrics', visible: false },
+    { id: 'categories', visible: false },
+    { id: 'featureTabs', visible: false },
+    { id: 'aiCta', visible: false },
+    { id: 'educational', visible: false },
+    { id: 'products', visible: false },
+    { id: 'trustBar', visible: false },
     { id: 'testimonials', visible: false },
     { id: 'marquee', visible: false },
   ],
@@ -2405,7 +2447,11 @@ const redentia: BrandConfig = {
   },
 
   hero: {
-    variant: 'centered',
+    // 'terminal' is Redentia's dedicated variant — Bloomberg-reimagined
+    // aesthetic with live ticker, mono labels, serif display, etc. Other
+    // tenants that used 'centered' (e.g. Primo Rico) should continue
+    // rendering their own layouts without inheriting this one.
+    variant: 'terminal',
     badge: '[MARKET.LIVE]',
     title: 'Investir com\ninteligencia.',
     subtitle: 'Mercado em tempo real. Inteligencia sob demanda. Cotacoes, analises fundamentalistas e assessoria com IA em um so terminal.',

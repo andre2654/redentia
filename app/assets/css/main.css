@@ -140,6 +140,301 @@ body {
   font-weight: 500;
 }
 
+/* ============================================================
+   Mentor display type — Primo Rico "book-cover / masterclass"
+   aesthetic. Massive Montserrat Black uppercase with tight
+   tracking, aggressive weight, leading compressed. Used for
+   the hero headline and the monumental pull quote.
+   ============================================================ */
+.font-mentor-display {
+  font-family: 'Montserrat', 'Inter', sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  line-height: 0.88;
+}
+
+/* Mentor eyebrow — small uppercase label with chunky tracking,
+   the "CAPÍTULO I" / "MANUAL DO PRIMO" style. */
+.font-mentor-eyebrow {
+  font-family: 'Montserrat', 'Inter', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 11px;
+}
+
+/* Monumental pull quote — Montserrat italic for the founder quote. */
+.font-mentor-quote {
+  font-family: 'Montserrat', 'Inter', sans-serif;
+  font-weight: 800;
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: -0.015em;
+  line-height: 0.92;
+}
+
+/* Chunky horizontal rule — 4px solid bar used to divide mentor sections,
+   aligning with the book-cover layout language (confident, blunt). */
+.mentor-rule {
+  height: 4px;
+  border: 0;
+}
+
+/* ============================================================
+   Academic research paper type — Investidor Sardinha "AUVP
+   Research" aesthetic. IBM Plex Serif for display, Sans for
+   body, Mono for numbers. Layouts read like a Ben Graham
+   textbook applied to one asset: § section marks, footnotes,
+   red-pen highlights, author signature.
+   ============================================================ */
+.font-academic-display {
+  font-family: 'IBM Plex Serif', 'Times New Roman', serif;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.05;
+  font-feature-settings: 'liga' 1, 'onum' 1;
+}
+
+.font-academic-body {
+  font-family: 'IBM Plex Serif', 'Times New Roman', serif;
+  font-weight: 400;
+  font-size: 17px;
+  line-height: 1.65;
+  font-feature-settings: 'liga' 1, 'onum' 1;
+  letter-spacing: 0.005em;
+}
+
+.font-academic-sans {
+  font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.005em;
+}
+
+.font-academic-mono {
+  font-family: 'IBM Plex Mono', 'Menlo', 'Courier New', monospace;
+  font-feature-settings: 'tnum' 1, 'zero' 1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Small caps label for § section marks, authorship, footnotes */
+.font-academic-label {
+  font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 10px;
+}
+
+/* The red pen: an inline highlight that looks like a professor
+   corrected the text. Use sparingly on key phrases. */
+.red-pen {
+  background-image: linear-gradient(
+    to bottom,
+    transparent 55%,
+    color-mix(in srgb, var(--brand-primary) 28%, transparent) 55%,
+    color-mix(in srgb, var(--brand-primary) 28%, transparent) 92%,
+    transparent 92%
+  );
+  padding: 0 0.08em;
+}
+
+/* Red pen underline — wavy, as if hand-drawn */
+.red-pen-underline {
+  text-decoration: underline;
+  text-decoration-style: wavy;
+  text-decoration-color: var(--brand-primary);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 4px;
+}
+
+/* Margin note — floats to the right of the main column as a glossa */
+.margin-note {
+  font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+  font-weight: 400;
+  font-style: italic;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--brand-text-muted);
+}
+
+/* Footnote marker (superscript asterisk/number) */
+.footnote-marker {
+  font-feature-settings: 'sups' 1;
+  color: var(--brand-primary);
+  font-weight: 600;
+}
+
+/* Dropcap that looks like a Ben Graham textbook opener */
+.academic-dropcap::first-letter {
+  font-family: 'IBM Plex Serif', 'Times New Roman', serif;
+  font-weight: 600;
+  float: left;
+  font-size: 4.5em;
+  line-height: 0.9;
+  padding-right: 0.1em;
+  padding-top: 0.05em;
+  color: var(--brand-primary);
+}
+
+/* Thin dashed rule — like a classroom blackboard separator */
+.dashed-rule {
+  height: 0;
+  border: 0;
+  border-top: 1px dashed color-mix(in srgb, var(--brand-text) 22%, transparent);
+}
+
+/* ============================================================
+   Showtime display type — Me Poupe! "TV show / pop magazine"
+   aesthetic. Poppins Black with optional skew, sticker badges
+   rotated, washi-tape backgrounds, wooden-spoon dividers.
+   The whole tenant should read as entertainment, not finance.
+   ============================================================ */
+
+/* Display — Poppins Black uppercase with tight tracking */
+.font-showtime-display {
+  font-family: 'Poppins', -apple-system, 'Segoe UI', sans-serif;
+  font-weight: 900;
+  letter-spacing: -0.025em;
+  line-height: 0.92;
+}
+
+/* Body — Poppins SemiBold rounded */
+.font-showtime-body {
+  font-family: 'Poppins', -apple-system, 'Segoe UI', sans-serif;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1.55;
+}
+
+/* Label — Poppins Black tiny uppercase for lower thirds and stickers */
+.font-showtime-label {
+  font-family: 'Poppins', -apple-system, 'Segoe UI', sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 11px;
+}
+
+/* Sticker badge — round yellow sticker rotated slightly,
+   used for "NOVO!", "OLHA ISSO", "BORA!", "#1" etc. */
+.sticker-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  background: var(--brand-primary);
+  color: var(--brand-background);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-radius: 9999px;
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--brand-primary) 45%, transparent);
+  transform: rotate(-4deg);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.sticker-badge:hover {
+  transform: rotate(-2deg) scale(1.05);
+}
+
+/* Showtime frame — rotated card with thick border, like a polaroid
+   or page of a magazine cut out and pasted on the layout. */
+.showtime-frame {
+  position: relative;
+  background: var(--brand-surface);
+  border: 2px solid color-mix(in srgb, var(--brand-text) 18%, transparent);
+  box-shadow:
+    0 2px 0 color-mix(in srgb, var(--brand-primary) 30%, transparent),
+    0 12px 40px color-mix(in srgb, var(--brand-background) 60%, transparent);
+}
+.showtime-frame--tilt-left {
+  transform: rotate(-1.5deg);
+}
+.showtime-frame--tilt-right {
+  transform: rotate(1.2deg);
+}
+
+/* Washi tape — a diagonal stripe of color "taped" to the corner
+   of a card, like the tape on a magazine scrapbook. */
+.washi-tape {
+  position: absolute;
+  top: -10px;
+  left: 30px;
+  width: 90px;
+  height: 22px;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--brand-primary),
+    var(--brand-primary) 10px,
+    color-mix(in srgb, var(--brand-primary) 70%, black) 10px,
+    color-mix(in srgb, var(--brand-primary) 70%, black) 20px
+  );
+  transform: rotate(-6deg);
+  box-shadow: 0 4px 10px color-mix(in srgb, var(--brand-primary) 35%, transparent);
+}
+
+/* Lower third — TV broadcast caption bar, full-width color strip
+   with thick text and pulsating dot. */
+.lower-third {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 1.25rem 0.5rem 0.75rem;
+  background: var(--brand-primary);
+  color: var(--brand-background);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 11px;
+  border-radius: 4px;
+  box-shadow: 0 6px 24px color-mix(in srgb, var(--brand-primary) 35%, transparent);
+}
+.lower-third::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: var(--brand-background);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-background) 30%, transparent);
+  animation: showtime-pulse 1.4s ease-in-out infinite;
+}
+@keyframes showtime-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.15); }
+}
+
+/* Underline handdrawn — as if marked with a yellow highlighter pen */
+.highlighter {
+  background-image: linear-gradient(
+    to bottom,
+    transparent 58%,
+    color-mix(in srgb, var(--brand-primary) 65%, transparent) 58%,
+    color-mix(in srgb, var(--brand-primary) 65%, transparent) 94%,
+    transparent 94%
+  );
+  padding: 0 0.12em;
+  /* Slight rotation on the highlight to look hand-drawn */
+  display: inline;
+}
+
+/* Drop shadow chunky — used for hero headline and sticker prices */
+.chunky-shadow {
+  text-shadow:
+    4px 4px 0 color-mix(in srgb, var(--brand-primary) 40%, transparent),
+    8px 8px 0 color-mix(in srgb, var(--brand-background) 70%, transparent);
+}
+
+/* Scribble divider — mimics a hand-drawn wavy line separator */
+.scribble-rule {
+  width: 100%;
+  height: 14px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 14' preserveAspectRatio='none'%3E%3Cpath d='M0 7 Q 12.5 0 25 7 T 50 7 T 75 7 T 100 7 T 125 7 T 150 7 T 175 7 T 200 7' fill='none' stroke='%23FACC15' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-size: 200px 14px;
+}
+
 /* Accessible focus states - WCAG 2.1 compliant */
 @layer base {
   input:focus,

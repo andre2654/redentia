@@ -1,8 +1,8 @@
 <template>
   <NuxtLayout :name="layoutName" title="Visão geral">
     <div class="flex flex-col">
-    <!-- ========== HERO: CENTERED (Redentia v2 — Bloomberg Terminal Reimaginado) ========== -->
-    <section v-if="showSection('hero') && !authStore.isAuthenticated && brand.hero.variant === 'centered'" :style="{ order: sectionOrder('hero') }" class="relative overflow-hidden">
+    <!-- ========== HERO: TERMINAL (Redentia — Bloomberg-reimagined dedicated variant) ========== -->
+    <section v-if="showSection('hero') && !authStore.isAuthenticated && brand.hero.variant === 'terminal'" :style="{ order: sectionOrder('hero') }" class="relative overflow-hidden">
       <!-- Live market ticker — rendered only after mount so the scroll animation
            and fetch don't fight with SSR hydration. Reserved space kept the same
            to prevent layout shift. -->
@@ -161,6 +161,671 @@
       </div>
     </section>
 
+    <!-- ========== HERO: SHOWTIME (Me Poupe! — TV show / pop magazine) ========== -->
+    <section
+      v-if="showSection('hero') && !authStore.isAuthenticated && brand.hero.variant === 'showtime'"
+      :style="{ order: sectionOrder('hero'), backgroundColor: brand.colors.background, color: brand.colors.text }"
+      class="relative overflow-hidden"
+    >
+      <!-- Decorative background: yellow blob + dots -->
+      <div class="pointer-events-none absolute inset-0">
+        <div
+          class="absolute -left-40 top-20 h-[520px] w-[520px] rounded-full blur-3xl opacity-25"
+          :style="{ backgroundColor: brand.colors.primary }"
+        />
+        <div
+          class="absolute right-0 top-40 h-[420px] w-[420px] rounded-full blur-3xl opacity-20"
+          :style="{ backgroundColor: brand.colors.neutral }"
+        />
+        <div
+          class="absolute inset-0 opacity-[0.08]"
+          :style="{
+            backgroundImage: `radial-gradient(${brand.colors.text} 1px, transparent 1px)`,
+            backgroundSize: '24px 24px',
+          }"
+        />
+      </div>
+
+      <!-- TOP STRIP: "No ar" lower-third + date badge -->
+      <div class="relative flex items-center justify-between gap-3 px-6 pt-6 md:px-10 md:pt-10">
+        <span class="lower-third">
+          {{ brand.hero.badge }}
+        </span>
+        <span
+          class="font-showtime-label hidden sm:inline-block"
+          :style="{ color: `${brand.colors.text}99` }"
+        >
+          EPISÓDIO · {{ showtimeDate }}
+        </span>
+      </div>
+
+      <!-- HERO: headline + founder photo -->
+      <div class="relative mx-auto max-w-6xl px-6 pb-10 pt-10 md:grid md:grid-cols-12 md:gap-8 md:px-10 md:pb-16 md:pt-16">
+        <!-- Text column -->
+        <div class="md:col-span-7">
+          <h1
+            class="font-showtime-display chunky-shadow"
+            :style="{
+              color: brand.colors.text,
+              fontSize: 'clamp(3rem, 7vw, 6rem)',
+            }"
+          >
+            <template v-for="(line, idx) in brand.hero.title.split('\n')" :key="idx">
+              <br v-if="idx > 0" />
+              <span v-if="idx === brand.hero.title.split('\n').length - 1" :style="{ color: brand.colors.primary }">{{ line }}</span>
+              <span v-else>{{ line }}</span>
+            </template>
+          </h1>
+
+          <!-- Yellow scribble rule -->
+          <div class="scribble-rule mt-8 max-w-xs" />
+
+          <p
+            class="font-showtime-body mt-6 max-w-xl"
+            :style="{ color: `${brand.colors.text}E6`, fontSize: 'clamp(1rem, 1.4vw, 1.25rem)' }"
+          >
+            {{ brand.hero.subtitle }}
+          </p>
+
+          <!-- CTAs -->
+          <div class="mt-10 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-5">
+            <NuxtLink
+              to="/auth/register"
+              class="group relative inline-flex items-center gap-3 px-8 py-4 font-showtime-label transition-transform hover:-translate-y-0.5"
+              :style="{
+                backgroundColor: brand.colors.primary,
+                color: brand.colors.background,
+                borderRadius: '14px',
+                boxShadow: `0 6px 0 ${brand.colors.secondary}, 0 16px 40px ${brand.colors.primary}55`,
+              }"
+            >
+              <UIcon name="i-lucide-sparkles" class="size-4" />
+              <span>{{ brand.hero.ctaLabel.toUpperCase() }}</span>
+              <span class="transition-transform group-hover:translate-x-1">→</span>
+            </NuxtLink>
+            <NuxtLink
+              to="/auth/login"
+              class="font-showtime-body text-base underline underline-offset-4 transition-opacity hover:opacity-70"
+              :style="{ color: `${brand.colors.text}CC`, textDecorationColor: brand.colors.primary }"
+            >
+              {{ brand.hero.ctaSecondaryLabel }}
+            </NuxtLink>
+          </div>
+
+          <!-- Trust indicators as sticker-style chips -->
+          <div class="mt-10 flex flex-wrap items-center gap-3">
+            <div
+              v-for="indicator in brand.hero.trustIndicators"
+              :key="indicator"
+              class="inline-flex items-center gap-2 rounded-full border-2 px-4 py-2 font-showtime-label text-[10px]"
+              :style="{
+                borderColor: `${brand.colors.primary}70`,
+                backgroundColor: `${brand.colors.primary}15`,
+                color: brand.colors.text,
+              }"
+            >
+              <span
+                class="inline-block size-1.5 rounded-full"
+                :style="{ backgroundColor: brand.colors.primary }"
+              />
+              {{ indicator }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Photo column -->
+        <div class="relative mt-10 flex items-center justify-center md:col-span-5 md:mt-0">
+          <!-- Yellow circle backdrop -->
+          <div
+            class="absolute inset-0 m-auto aspect-square w-[86%] rounded-full"
+            :style="{
+              background: `radial-gradient(circle at 30% 30%, ${brand.colors.primary}, ${brand.colors.secondary})`,
+              boxShadow: `0 20px 60px ${brand.colors.primary}55`,
+            }"
+          />
+          <!-- Founder photo -->
+          <img
+            v-if="brand.hero.image"
+            :src="brand.hero.image"
+            :alt="`${brand.founder?.name || 'Nathalia Arcuri'} — Me Poupe!`"
+            class="relative z-10 h-auto w-full max-w-[420px] object-contain"
+          />
+
+          <!-- Sticker: "NOVO!" rotated -->
+          <span
+            class="sticker-badge absolute right-2 top-4 z-20 text-xs"
+            style="transform: rotate(12deg);"
+          >
+            NOVO!
+          </span>
+
+          <!-- Margarete mascot peeking from the side -->
+          <img
+            src="/brand/mepoupe/margarete.svg"
+            alt="Margarete"
+            class="absolute -left-2 bottom-6 z-20 h-32 md:h-40"
+            style="transform: rotate(-18deg);"
+          />
+        </div>
+      </div>
+
+      <!-- QUADRO 1 — Elenco / Characters -->
+      <div class="relative py-20 md:py-24" :style="{ backgroundColor: brand.colors.surface }">
+        <div class="mx-auto max-w-6xl px-6 md:px-10">
+          <div class="mb-12 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <span class="lower-third">QUADRO 01 · O ELENCO</span>
+              <h2
+                class="font-showtime-display mt-5"
+                :style="{
+                  color: brand.colors.text,
+                  fontSize: 'clamp(2.5rem, 5vw, 4rem)',
+                }"
+              >
+                A <span class="highlighter" :style="{ color: brand.colors.primary }">galera</span> que faz<br />
+                o programa acontecer.
+              </h2>
+              <p class="font-showtime-body mt-4 max-w-xl text-base" :style="{ color: `${brand.colors.text}CC` }">
+                Os personagens que viraram icônicos na comunidade Me Poupe! — alguns ajudam, outro (você sabe quem) só atrapalha.
+              </p>
+            </div>
+          </div>
+
+          <!-- Character cards in tilted frames -->
+          <div class="grid gap-8 md:grid-cols-3">
+            <div
+              v-for="(char, idx) in showtimeCharacters"
+              :key="char.name"
+              class="showtime-frame relative overflow-visible rounded-[28px] p-6"
+              :class="idx % 2 === 0 ? 'showtime-frame--tilt-left' : 'showtime-frame--tilt-right'"
+              :style="{ backgroundColor: brand.colors.background }"
+            >
+              <div class="washi-tape" />
+
+              <!-- Circular character icon -->
+              <div
+                class="mx-auto mb-4 flex size-24 items-center justify-center rounded-full"
+                :style="{
+                  background: `radial-gradient(circle at 30% 30%, ${brand.colors.primary}, ${brand.colors.secondary})`,
+                  boxShadow: `0 8px 24px ${brand.colors.primary}55`,
+                }"
+              >
+                <UIcon
+                  :name="char.icon"
+                  class="size-12"
+                  :style="{ color: brand.colors.background }"
+                />
+              </div>
+
+              <div class="text-center">
+                <span class="font-showtime-label" :style="{ color: brand.colors.primary }">
+                  {{ char.role }}
+                </span>
+                <h3
+                  class="font-showtime-display mt-2"
+                  :style="{ color: brand.colors.text, fontSize: '2rem' }"
+                >
+                  {{ char.name }}
+                </h3>
+                <p
+                  class="font-showtime-body mt-3 italic"
+                  :style="{ color: `${brand.colors.text}B3`, fontSize: '14px' }"
+                >
+                  "{{ char.quote }}"
+                </p>
+                <p class="font-showtime-body mt-4 text-sm" :style="{ color: `${brand.colors.text}CC` }">
+                  {{ char.body }}
+                </p>
+                <NuxtLink
+                  to="/help"
+                  class="mt-5 inline-flex items-center gap-1 font-showtime-label transition-transform hover:translate-x-1"
+                  :style="{ color: brand.colors.primary }"
+                >
+                  {{ char.cta }} →
+                </NuxtLink>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUADRO 2 — Na_th IA -->
+      <div class="relative py-20 md:py-24">
+        <div class="mx-auto max-w-6xl px-6 md:grid md:grid-cols-12 md:gap-10 md:px-10">
+          <div class="md:col-span-5">
+            <span class="lower-third">QUADRO 02 · PERGUNTE A NATH</span>
+            <h2
+              class="font-showtime-display mt-5"
+              :style="{
+                color: brand.colors.text,
+                fontSize: 'clamp(2.25rem, 4vw, 3.5rem)',
+              }"
+            >
+              Pergunta sem medo,<br />
+              <span class="highlighter" :style="{ color: brand.colors.primary }">criatura!</span>
+            </h2>
+            <p class="font-showtime-body mt-6 text-base" :style="{ color: `${brand.colors.text}CC` }">
+              A <strong :style="{ color: brand.colors.primary }">Na_th IA</strong> responde qualquer dúvida sobre dinheiro como sua melhor amiga explicaria. Sem jargão, sem julgamento, sem cara feia. E fica disponível 24h — até de madrugada, quando bate aquela crise existencial sobre o boleto.
+            </p>
+            <div class="mt-8 flex flex-wrap items-center gap-3">
+              <div
+                class="inline-flex items-center gap-2 rounded-full border-2 px-4 py-2 font-showtime-label text-[10px]"
+                :style="{
+                  borderColor: `${brand.colors.primary}70`,
+                  backgroundColor: `${brand.colors.primary}15`,
+                  color: brand.colors.text,
+                }"
+              >
+                ⚡ RESPOSTA EM ~3s
+              </div>
+              <div
+                class="inline-flex items-center gap-2 rounded-full border-2 px-4 py-2 font-showtime-label text-[10px]"
+                :style="{
+                  borderColor: `${brand.colors.primary}70`,
+                  backgroundColor: `${brand.colors.primary}15`,
+                  color: brand.colors.text,
+                }"
+              >
+                💛 SEM JULGAMENTO
+              </div>
+              <div
+                class="inline-flex items-center gap-2 rounded-full border-2 px-4 py-2 font-showtime-label text-[10px]"
+                :style="{
+                  borderColor: `${brand.colors.primary}70`,
+                  backgroundColor: `${brand.colors.primary}15`,
+                  color: brand.colors.text,
+                }"
+              >
+                ∞ ILIMITADO
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-10 md:col-span-6 md:col-start-7 md:mt-0">
+            <div class="flex flex-col gap-4">
+              <NuxtLink
+                v-for="(q, idx) in showtimeQuestions"
+                :key="q.text"
+                to="/help"
+                class="showtime-frame relative flex cursor-pointer items-start gap-3 rounded-2xl p-5 transition-transform hover:-translate-y-1"
+                :class="idx % 2 === 0 ? 'showtime-frame--tilt-left' : 'showtime-frame--tilt-right'"
+                :style="{ backgroundColor: brand.colors.surface }"
+              >
+                <span
+                  class="flex size-10 shrink-0 items-center justify-center rounded-xl"
+                  :style="{
+                    backgroundColor: `${brand.colors.primary}25`,
+                    color: brand.colors.primary,
+                  }"
+                >
+                  <UIcon :name="q.icon" class="size-5" />
+                </span>
+                <span class="flex min-w-0 flex-1 flex-col">
+                  <span
+                    class="font-showtime-label"
+                    :style="{ color: `${brand.colors.text}80` }"
+                  >
+                    {{ q.category }}
+                  </span>
+                  <span
+                    class="font-showtime-body mt-1 text-base font-semibold"
+                    :style="{ color: brand.colors.text }"
+                  >
+                    {{ q.text }}
+                  </span>
+                </span>
+                <span class="font-showtime-label" :style="{ color: brand.colors.primary }">
+                  →
+                </span>
+              </NuxtLink>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Wooden spoon divider -->
+      <div class="flex items-center justify-center gap-6 py-6" :style="{ backgroundColor: brand.colors.surface }">
+        <div
+          class="h-[2px] max-w-[180px] flex-1"
+          :style="{ backgroundColor: `${brand.colors.primary}55` }"
+        />
+        <img
+          src="/brand/mepoupe/margarete.svg"
+          alt="Margarete"
+          class="h-16"
+          style="transform: rotate(90deg);"
+        />
+        <div
+          class="h-[2px] max-w-[180px] flex-1"
+          :style="{ backgroundColor: `${brand.colors.primary}55` }"
+        />
+      </div>
+
+      <!-- QUADRO 3 — O Placar da Bolsa (Rankings) -->
+      <div class="relative overflow-hidden py-20 md:py-24">
+        <!-- Confetti dots background -->
+        <div class="pointer-events-none absolute inset-0 opacity-20">
+          <div class="absolute left-[8%] top-[12%] size-3 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
+          <div class="absolute left-[18%] top-[34%] size-2 rounded-full" :style="{ backgroundColor: brand.colors.secondary }" />
+          <div class="absolute left-[85%] top-[20%] size-4 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
+          <div class="absolute left-[72%] top-[60%] size-2 rounded-full" :style="{ backgroundColor: brand.colors.positive }" />
+          <div class="absolute left-[30%] top-[82%] size-3 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
+          <div class="absolute left-[90%] top-[88%] size-2 rounded-full" :style="{ backgroundColor: brand.colors.secondary }" />
+        </div>
+
+        <div class="relative mx-auto max-w-6xl px-6 md:px-10">
+          <div class="mb-12 text-center">
+            <span class="lower-third">QUADRO 03 · O PLACAR DA BOLSA</span>
+            <h2
+              class="font-showtime-display mt-5"
+              :style="{
+                color: brand.colors.text,
+                fontSize: 'clamp(2.5rem, 5vw, 4rem)',
+              }"
+            >
+              Quem tá bombando<br />
+              <span class="highlighter" :style="{ color: brand.colors.primary }">e quem tá tomando chá de sumiço</span>
+            </h2>
+            <p class="font-showtime-body mx-auto mt-6 max-w-2xl text-base" :style="{ color: `${brand.colors.text}CC` }">
+              Nem todo dia é dia de festa, criatura. Mas saber o que subiu e o que desceu é o primeiro passo pra entender o mercado — sem entrar em pânico.
+            </p>
+          </div>
+
+          <div class="grid gap-8 md:grid-cols-2">
+            <!-- As Queridinhas (gainers) -->
+            <div
+              class="showtime-frame showtime-frame--tilt-left relative rounded-[28px] p-6"
+              :style="{ backgroundColor: brand.colors.surface }"
+            >
+              <div class="washi-tape" />
+              <div class="mb-5 flex items-center gap-3">
+                <div
+                  class="flex size-12 items-center justify-center rounded-full text-2xl"
+                  :style="{ backgroundColor: `${brand.colors.positive}25` }"
+                >
+                  🚀
+                </div>
+                <div>
+                  <span class="font-showtime-label" :style="{ color: brand.colors.positive }">
+                    AS QUERIDINHAS DE HOJE
+                  </span>
+                  <h3
+                    class="font-showtime-display"
+                    :style="{ color: brand.colors.text, fontSize: '1.5rem' }"
+                  >
+                    Subiram mais
+                  </h3>
+                </div>
+              </div>
+
+              <ul class="flex flex-col gap-3">
+                <li
+                  v-for="(row, idx) in showtimeGainers"
+                  :key="`gain-${row.ticker}`"
+                  class="flex items-center gap-3 rounded-2xl p-3 transition-transform hover:translate-x-1"
+                  :style="{ backgroundColor: brand.colors.background }"
+                >
+                  <span
+                    class="flex size-7 shrink-0 items-center justify-center rounded-full font-showtime-label text-[11px]"
+                    :style="{ backgroundColor: `${brand.colors.primary}25`, color: brand.colors.primary }"
+                  >
+                    {{ idx + 1 }}
+                  </span>
+                  <div class="min-w-0 flex-1">
+                    <div
+                      class="font-showtime-body truncate text-base font-bold"
+                      :style="{ color: brand.colors.text }"
+                    >
+                      {{ row.ticker }}
+                    </div>
+                    <div
+                      class="font-showtime-body truncate text-[11px]"
+                      :style="{ color: `${brand.colors.text}80` }"
+                    >
+                      {{ row.name || '—' }}
+                    </div>
+                  </div>
+                  <span
+                    class="font-showtime-label shrink-0 rounded-full px-3 py-1 text-[11px]"
+                    :style="{
+                      backgroundColor: `${brand.colors.positive}20`,
+                      color: brand.colors.positive,
+                    }"
+                  >
+                    +{{ row.change.toFixed(2) }}%
+                  </span>
+                </li>
+              </ul>
+
+              <NuxtLink
+                to="/ranking/maiores-altas-mes"
+                class="mt-5 inline-flex items-center gap-1 font-showtime-label"
+                :style="{ color: brand.colors.primary }"
+              >
+                Ver o ranking completo →
+              </NuxtLink>
+            </div>
+
+            <!-- As Chatas (losers) -->
+            <div
+              class="showtime-frame showtime-frame--tilt-right relative rounded-[28px] p-6"
+              :style="{ backgroundColor: brand.colors.surface }"
+            >
+              <div class="washi-tape" />
+              <div class="mb-5 flex items-center gap-3">
+                <div
+                  class="flex size-12 items-center justify-center rounded-full text-2xl"
+                  :style="{ backgroundColor: `${brand.colors.negative}25` }"
+                >
+                  😬
+                </div>
+                <div>
+                  <span class="font-showtime-label" :style="{ color: brand.colors.negative }">
+                    CAIU FEIO HOJE
+                  </span>
+                  <h3
+                    class="font-showtime-display"
+                    :style="{ color: brand.colors.text, fontSize: '1.5rem' }"
+                  >
+                    Caíram mais
+                  </h3>
+                </div>
+              </div>
+
+              <ul class="flex flex-col gap-3">
+                <li
+                  v-for="(row, idx) in showtimeLosers"
+                  :key="`lose-${row.ticker}`"
+                  class="flex items-center gap-3 rounded-2xl p-3 transition-transform hover:translate-x-1"
+                  :style="{ backgroundColor: brand.colors.background }"
+                >
+                  <span
+                    class="flex size-7 shrink-0 items-center justify-center rounded-full font-showtime-label text-[11px]"
+                    :style="{ backgroundColor: `${brand.colors.primary}25`, color: brand.colors.primary }"
+                  >
+                    {{ idx + 1 }}
+                  </span>
+                  <div class="min-w-0 flex-1">
+                    <div
+                      class="font-showtime-body truncate text-base font-bold"
+                      :style="{ color: brand.colors.text }"
+                    >
+                      {{ row.ticker }}
+                    </div>
+                    <div
+                      class="font-showtime-body truncate text-[11px]"
+                      :style="{ color: `${brand.colors.text}80` }"
+                    >
+                      {{ row.name || '—' }}
+                    </div>
+                  </div>
+                  <span
+                    class="font-showtime-label shrink-0 rounded-full px-3 py-1 text-[11px]"
+                    :style="{
+                      backgroundColor: `${brand.colors.negative}20`,
+                      color: brand.colors.negative,
+                    }"
+                  >
+                    {{ row.change.toFixed(2) }}%
+                  </span>
+                </li>
+              </ul>
+
+              <NuxtLink
+                to="/ranking/maiores-baixas-mes"
+                class="mt-5 inline-flex items-center gap-1 font-showtime-label"
+                :style="{ color: brand.colors.primary }"
+              >
+                Ver o ranking completo →
+              </NuxtLink>
+            </div>
+          </div>
+
+          <!-- Margarete comment strip below rankings -->
+          <div
+            class="mt-10 flex items-start gap-4 rounded-3xl border-2 border-dashed p-5"
+            :style="{
+              borderColor: `${brand.colors.primary}60`,
+              backgroundColor: `${brand.colors.primary}10`,
+            }"
+          >
+            <img src="/brand/mepoupe/margarete.svg" alt="Margarete" class="h-14 shrink-0" />
+            <p class="font-showtime-body text-sm italic" :style="{ color: `${brand.colors.text}CC` }">
+              <strong :style="{ color: brand.colors.primary }">Margarete diz:</strong>
+              subiu muito? Respira. Caiu muito? Respira de novo. Investir não é torcer pra time de futebol, criatura — é uma maratona de 20 anos. O importante é continuar aportando todo mês.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUADRO 4 — Histórias reais -->
+      <div class="relative py-20 md:py-24" :style="{ backgroundColor: brand.colors.surface }">
+        <div class="mx-auto max-w-6xl px-6 md:px-10">
+          <div class="mb-12">
+            <span class="lower-third">QUADRO 04 · HISTÓRIAS REAIS</span>
+            <h2
+              class="font-showtime-display mt-5"
+              :style="{
+                color: brand.colors.text,
+                fontSize: 'clamp(2.5rem, 5vw, 4rem)',
+              }"
+            >
+              Gente igual a você que<br />
+              <span class="highlighter" :style="{ color: brand.colors.primary }">dominou o próprio dinheiro.</span>
+            </h2>
+          </div>
+
+          <div class="grid gap-8 md:grid-cols-3">
+            <div
+              v-for="(story, idx) in showtimeStories"
+              :key="story.name"
+              class="showtime-frame rounded-[24px] p-6"
+              :class="idx === 1 ? 'showtime-frame--tilt-right' : 'showtime-frame--tilt-left'"
+              :style="{ backgroundColor: brand.colors.background }"
+            >
+              <p
+                class="font-showtime-body text-base italic leading-relaxed"
+                :style="{ color: `${brand.colors.text}E6` }"
+              >
+                "{{ story.quote }}"
+              </p>
+              <div class="mt-6 grid grid-cols-2 gap-4 border-t pt-4" :style="{ borderColor: `${brand.colors.text}15` }">
+                <div v-for="stat in story.stats" :key="stat.label" class="flex flex-col">
+                  <span
+                    class="font-showtime-display"
+                    :style="{ color: brand.colors.primary, fontSize: '1.75rem' }"
+                  >
+                    {{ stat.value }}
+                  </span>
+                  <span
+                    class="font-showtime-body text-[11px]"
+                    :style="{ color: `${brand.colors.text}80` }"
+                  >
+                    {{ stat.label }}
+                  </span>
+                </div>
+              </div>
+              <div class="mt-5 flex items-center gap-3">
+                <div
+                  class="flex size-10 items-center justify-center rounded-full font-showtime-label"
+                  :style="{
+                    backgroundColor: brand.colors.primary,
+                    color: brand.colors.background,
+                  }"
+                >
+                  {{ story.initials }}
+                </div>
+                <div class="flex flex-col">
+                  <span
+                    class="font-showtime-body text-sm font-semibold"
+                    :style="{ color: brand.colors.text }"
+                  >
+                    {{ story.name }}
+                  </span>
+                  <span
+                    class="font-showtime-body text-[11px]"
+                    :style="{ color: `${brand.colors.text}80` }"
+                  >
+                    {{ story.role }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CLOSING BUMPER -->
+      <div class="relative py-24 md:py-32">
+        <div class="mx-auto max-w-4xl px-6 text-center md:px-10">
+          <span class="lower-third">FIM DO PROGRAMA · ATÉ O PRÓXIMO!</span>
+          <h2
+            class="font-showtime-display chunky-shadow mt-8"
+            :style="{
+              color: brand.colors.text,
+              fontSize: 'clamp(3rem, 8vw, 7rem)',
+            }"
+          >
+            BORA COMEÇAR,<br />
+            <span :style="{ color: brand.colors.primary }">CRIATURA?</span>
+          </h2>
+          <p
+            class="font-showtime-body mt-8 text-lg italic"
+            :style="{ color: `${brand.colors.text}CC` }"
+          >
+            "{{ brand.hero.founderQuote }}"
+          </p>
+          <p class="font-showtime-label mt-2" :style="{ color: `${brand.colors.text}80` }">
+            — {{ brand.founder?.name || 'NATHALIA ARCURI' }}
+          </p>
+
+          <div class="mt-12 flex flex-col items-center gap-4 sm:flex-row sm:justify-center sm:gap-6">
+            <NuxtLink
+              to="/auth/register"
+              class="group relative inline-flex items-center gap-3 px-10 py-5 font-showtime-label transition-transform hover:-translate-y-0.5"
+              :style="{
+                backgroundColor: brand.colors.primary,
+                color: brand.colors.background,
+                borderRadius: '16px',
+                fontSize: '13px',
+                boxShadow: `0 6px 0 ${brand.colors.secondary}, 0 20px 50px ${brand.colors.primary}60`,
+              }"
+            >
+              <UIcon name="i-lucide-sparkles" class="size-4" />
+              <span>CRIAR MINHA CONTA</span>
+              <span class="transition-transform group-hover:translate-x-1">→</span>
+            </NuxtLink>
+            <span
+              class="font-showtime-label"
+              :style="{ color: `${brand.colors.text}66` }"
+            >
+              GRÁTIS · SEM CARTÃO · SEM SIDNELSON
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- ========== HERO: SPLIT (Me Poupe — energetico, personalidade, pop) ========== -->
     <section v-if="showSection('hero') && !authStore.isAuthenticated && brand.hero.variant === 'split'" :style="{ order: sectionOrder('hero') }" class="relative overflow-hidden">
       <!-- Background: dots + color splashes -->
@@ -238,6 +903,730 @@
               <p class="text-base italic leading-relaxed" :style="{ color: `${brand.colors.text}B3` }">"{{ brand.hero.founderQuote }}"</p>
             </div>
             <BrandLogo variant="full" class="h-8 opacity-40" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== HERO: RESEARCH (Investidor Sardinha — AUVP data-heavy analyst desk) ========== -->
+    <section
+      v-if="showSection('hero') && !authStore.isAuthenticated && brand.hero.variant === 'research'"
+      :style="{ order: sectionOrder('hero'), backgroundColor: brand.colors.background, color: brand.colors.text }"
+      class="relative"
+    >
+      <!-- Paper masthead -->
+      <div class="border-b" :style="{ borderColor: brand.colors.border }">
+        <div class="mx-auto flex max-w-6xl items-start justify-between gap-6 px-6 pt-10 md:px-10 md:pt-12">
+          <div class="flex flex-col gap-0.5">
+            <span class="font-academic-label" :style="{ color: brand.colors.primary }">
+              {{ brand.hero.badge }}
+            </span>
+            <span class="font-academic-body text-[12px] italic" :style="{ color: brand.colors.textMuted }">
+              Publicação interna · {{ researchDate }}
+            </span>
+          </div>
+          <span class="font-academic-mono text-[11px] uppercase tabular-nums" :style="{ color: brand.colors.textMuted }">
+            B3 · BOLSA DE VALORES DE SÃO PAULO
+          </span>
+        </div>
+      </div>
+
+      <!-- Cover block: compact title + key market numbers on the right -->
+      <div class="mx-auto max-w-6xl px-6 py-14 md:grid md:grid-cols-12 md:gap-10 md:px-10 md:py-20">
+        <div class="md:col-span-7">
+          <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">
+            volume 1, número 001 · mesa de análise AUVP
+          </span>
+          <h1
+            class="font-academic-display mt-6"
+            :style="{
+              color: brand.colors.text,
+              fontSize: 'clamp(2.75rem, 5.5vw, 4.75rem)',
+            }"
+          >
+            <template v-for="(line, idx) in brand.hero.title.split('\n')" :key="idx">
+              <br v-if="idx > 0" />
+              <span v-if="idx === 1" class="italic" :style="{ color: brand.colors.primary }">{{ line }}</span>
+              <span v-else>{{ line }}</span>
+            </template>
+          </h1>
+          <p class="font-academic-body mt-6 max-w-xl" :style="{ color: brand.colors.text, fontSize: '16px' }">
+            <span class="red-pen">Os dados abaixo não são opinião.</span> São o que a mesa olhou hoje. Se quiser o método por trás de cada leitura, o caminho é a <span class="red-pen-underline">AUVP Escola</span>.
+          </p>
+          <div class="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-6">
+            <NuxtLink
+              to="/auth/register"
+              class="group inline-flex items-center gap-3 border-2 px-5 py-2.5 font-academic-label transition-colors"
+              :style="{
+                backgroundColor: brand.colors.primary,
+                color: brand.colors.background,
+                borderColor: brand.colors.primary,
+              }"
+            >
+              <span>{{ brand.hero.ctaLabel.toUpperCase() }}</span>
+              <span>→</span>
+            </NuxtLink>
+            <a
+              href="https://auvp.com.br"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="font-academic-body text-base italic transition-opacity hover:opacity-70"
+              :style="{ color: brand.colors.text }"
+            >
+              Conhecer a AUVP Escola <span :style="{ color: brand.colors.primary }">→</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Right: market key figures as a compact paper panel -->
+        <div class="mt-10 md:col-span-5 md:mt-0">
+          <div
+            class="border p-6"
+            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+          >
+            <div class="flex items-start justify-between">
+              <span class="font-academic-label" :style="{ color: brand.colors.primary }">
+                Panorama do pregão
+              </span>
+              <span class="font-academic-mono text-[10px] uppercase tabular-nums" :style="{ color: brand.colors.textMuted }">
+                {{ researchDate }}
+              </span>
+            </div>
+            <dl class="mt-6 flex flex-col divide-y" :style="{ borderColor: brand.colors.border }">
+              <div
+                v-for="row in researchHeroMarket"
+                :key="row.label"
+                class="flex items-baseline justify-between py-3"
+                :style="{ borderColor: brand.colors.border }"
+              >
+                <dt class="flex flex-col">
+                  <span class="font-academic-display text-[15px]" :style="{ color: brand.colors.text }">
+                    {{ row.label }}
+                  </span>
+                  <span class="font-academic-body text-[11px] italic" :style="{ color: brand.colors.textMuted }">
+                    {{ row.note }}
+                  </span>
+                </dt>
+                <dd class="text-right">
+                  <span class="font-academic-display tabular-nums text-xl" :style="{ color: brand.colors.text }">
+                    {{ row.value }}
+                  </span>
+                  <br />
+                  <span
+                    class="font-academic-mono text-[11px] tabular-nums"
+                    :style="{ color: (row.changePct || 0) >= 0 ? brand.colors.positive : brand.colors.primary }"
+                  >
+                    {{ (row.changePct || 0) >= 0 ? '+' : '' }}{{ (row.changePct || 0).toFixed(2).replace('.', ',') }}%
+                  </span>
+                </dd>
+              </div>
+            </dl>
+            <p class="font-academic-body mt-5 text-[11px] italic" :style="{ color: brand.colors.textMuted }">
+              Dados de fechamento do último pregão. Atualização diária às 19h.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <hr class="dashed-rule mx-auto max-w-6xl" />
+
+      <!-- §1 Radar do dia: top 10 altas + baixas -->
+      <div class="mx-auto max-w-6xl px-6 py-16 md:px-10 md:py-20">
+        <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <span class="font-academic-label" :style="{ color: brand.colors.primary }">
+              §1 · Radar do pregão
+            </span>
+            <h2 class="font-academic-display mt-2 text-3xl md:text-4xl" :style="{ color: brand.colors.text }">
+              Quem subiu, quem caiu
+            </h2>
+            <p class="font-academic-body mt-3 max-w-2xl text-[13px] italic" :style="{ color: brand.colors.textMuted }">
+              Movimentos do último pregão. Esta é a <span class="red-pen">leitura do radar</span>, não uma recomendação — variações de curto prazo rara­mente alteram uma tese de longo prazo.<sup class="footnote-marker">¹</sup>
+            </p>
+          </div>
+          <NuxtLink
+            to="/acoes"
+            class="font-academic-body text-[13px] italic transition-opacity hover:opacity-70"
+            :style="{ color: brand.colors.text }"
+          >
+            Ver todas as ações <span :style="{ color: brand.colors.primary }">→</span>
+          </NuxtLink>
+        </div>
+
+        <div class="grid gap-10 md:grid-cols-2">
+          <!-- Top altas -->
+          <div>
+            <div class="mb-3 flex items-baseline justify-between">
+              <span class="font-academic-label" :style="{ color: brand.colors.text }">
+                ↗ Maiores altas
+              </span>
+              <span class="font-academic-mono text-[11px] tabular-nums" :style="{ color: brand.colors.textMuted }">
+                TOP 10
+              </span>
+            </div>
+            <table class="w-full border-t font-academic-body text-[13px]" :style="{ borderColor: brand.colors.text }">
+              <thead>
+                <tr class="border-b" :style="{ borderColor: brand.colors.border }">
+                  <th class="font-academic-label py-2 text-left" :style="{ color: brand.colors.textMuted }">§</th>
+                  <th class="font-academic-label py-2 text-left" :style="{ color: brand.colors.textMuted }">Ticker</th>
+                  <th class="font-academic-label py-2 text-right" :style="{ color: brand.colors.textMuted }">Preço</th>
+                  <th class="font-academic-label py-2 text-right" :style="{ color: brand.colors.textMuted }">Δ</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(row, idx) in researchTopGainers"
+                  :key="`up-${row.ticker}`"
+                  class="border-b"
+                  :style="{ borderColor: brand.colors.border }"
+                >
+                  <td class="py-2.5 pr-2">
+                    <span class="font-academic-mono text-[11px] tabular-nums" :style="{ color: brand.colors.textMuted }">
+                      {{ String(idx + 1).padStart(2, '0') }}
+                    </span>
+                  </td>
+                  <td class="py-2.5">
+                    <NuxtLink
+                      :to="`/asset/${row.ticker.toLowerCase()}`"
+                      class="flex flex-col"
+                    >
+                      <span class="font-academic-display text-[15px]" :style="{ color: brand.colors.text }">
+                        {{ row.ticker }}
+                      </span>
+                      <span v-if="row.name" class="font-academic-body truncate text-[11px] italic" :style="{ color: brand.colors.textMuted }">
+                        {{ row.name }}
+                      </span>
+                    </NuxtLink>
+                  </td>
+                  <td class="py-2.5 text-right">
+                    <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.text }">
+                      {{ formatSardinhaPrice(row.price) }}
+                    </span>
+                  </td>
+                  <td class="py-2.5 text-right">
+                    <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.positive }">
+                      +{{ Number(row.change || 0).toFixed(2).replace('.', ',') }}%
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Top baixas -->
+          <div>
+            <div class="mb-3 flex items-baseline justify-between">
+              <span class="font-academic-label" :style="{ color: brand.colors.text }">
+                ↘ Maiores baixas
+              </span>
+              <span class="font-academic-mono text-[11px] tabular-nums" :style="{ color: brand.colors.textMuted }">
+                TOP 10
+              </span>
+            </div>
+            <table class="w-full border-t font-academic-body text-[13px]" :style="{ borderColor: brand.colors.text }">
+              <thead>
+                <tr class="border-b" :style="{ borderColor: brand.colors.border }">
+                  <th class="font-academic-label py-2 text-left" :style="{ color: brand.colors.textMuted }">§</th>
+                  <th class="font-academic-label py-2 text-left" :style="{ color: brand.colors.textMuted }">Ticker</th>
+                  <th class="font-academic-label py-2 text-right" :style="{ color: brand.colors.textMuted }">Preço</th>
+                  <th class="font-academic-label py-2 text-right" :style="{ color: brand.colors.textMuted }">Δ</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(row, idx) in researchTopLosers"
+                  :key="`down-${row.ticker}`"
+                  class="border-b"
+                  :style="{ borderColor: brand.colors.border }"
+                >
+                  <td class="py-2.5 pr-2">
+                    <span class="font-academic-mono text-[11px] tabular-nums" :style="{ color: brand.colors.textMuted }">
+                      {{ String(idx + 1).padStart(2, '0') }}
+                    </span>
+                  </td>
+                  <td class="py-2.5">
+                    <NuxtLink
+                      :to="`/asset/${row.ticker.toLowerCase()}`"
+                      class="flex flex-col"
+                    >
+                      <span class="font-academic-display text-[15px]" :style="{ color: brand.colors.text }">
+                        {{ row.ticker }}
+                      </span>
+                      <span v-if="row.name" class="font-academic-body truncate text-[11px] italic" :style="{ color: brand.colors.textMuted }">
+                        {{ row.name }}
+                      </span>
+                    </NuxtLink>
+                  </td>
+                  <td class="py-2.5 text-right">
+                    <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.text }">
+                      {{ formatSardinhaPrice(row.price) }}
+                    </span>
+                  </td>
+                  <td class="py-2.5 text-right">
+                    <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.primary }">
+                      {{ Number(row.change || 0).toFixed(2).replace('.', ',') }}%
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <hr class="dashed-rule mx-auto max-w-6xl" />
+
+      <!-- §2 Screener fundamentalista AUVP -->
+      <div
+        class="py-16 md:py-20"
+        :style="{ backgroundColor: brand.colors.surface }"
+      >
+        <div class="mx-auto max-w-6xl px-6 md:px-10">
+          <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <span class="font-academic-label" :style="{ color: brand.colors.primary }">
+                §2 · Screener fundamentalista
+              </span>
+              <h2 class="font-academic-display mt-2 text-3xl md:text-4xl" :style="{ color: brand.colors.text }">
+                O que passa no filtro AUVP
+              </h2>
+              <p class="font-academic-body mt-3 max-w-2xl text-[13px] italic" :style="{ color: brand.colors.textMuted }">
+                Ações que atravessaram os <span class="red-pen">quatro filtros do método</span>: ROE ≥ 10%, margem líquida ≥ 10%, dívida sob controle e múltiplo razoável.<sup class="footnote-marker">²</sup>
+              </p>
+            </div>
+            <NuxtLink
+              to="/ranking/maiores-dividend-yield"
+              class="font-academic-body text-[13px] italic transition-opacity hover:opacity-70"
+              :style="{ color: brand.colors.text }"
+            >
+              Expandir screener <span :style="{ color: brand.colors.primary }">→</span>
+            </NuxtLink>
+          </div>
+
+          <table class="w-full border-t font-academic-body text-[13px]" :style="{ borderColor: brand.colors.text }">
+            <thead>
+              <tr class="border-b" :style="{ borderColor: brand.colors.border }">
+                <th class="font-academic-label py-3 text-left" :style="{ color: brand.colors.textMuted }">§</th>
+                <th class="font-academic-label py-3 text-left" :style="{ color: brand.colors.textMuted }">Ticker</th>
+                <th class="hidden font-academic-label py-3 text-left md:table-cell" :style="{ color: brand.colors.textMuted }">Setor</th>
+                <th class="font-academic-label py-3 text-right" :style="{ color: brand.colors.textMuted }">P/L</th>
+                <th class="font-academic-label py-3 text-right" :style="{ color: brand.colors.textMuted }">P/VP</th>
+                <th class="font-academic-label py-3 text-right" :style="{ color: brand.colors.textMuted }">ROE</th>
+                <th class="font-academic-label py-3 text-right" :style="{ color: brand.colors.textMuted }">DY</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="(row, idx) in researchScreener"
+                :key="`screener-${row.ticker}`"
+                class="border-b"
+                :style="{ borderColor: brand.colors.border }"
+              >
+                <td class="py-3 pr-2">
+                  <span class="font-academic-mono text-[11px] tabular-nums" :style="{ color: brand.colors.textMuted }">
+                    2.{{ idx + 1 }}
+                  </span>
+                </td>
+                <td class="py-3">
+                  <NuxtLink :to="`/asset/${row.ticker.toLowerCase()}`" class="flex flex-col">
+                    <span class="font-academic-display text-[15px]" :style="{ color: brand.colors.text }">
+                      {{ row.ticker }}
+                    </span>
+                    <span class="font-academic-body truncate text-[11px] italic" :style="{ color: brand.colors.textMuted }">
+                      {{ row.name }}
+                    </span>
+                  </NuxtLink>
+                </td>
+                <td class="hidden py-3 md:table-cell">
+                  <span class="font-academic-body text-[12px]" :style="{ color: brand.colors.textMuted }">
+                    {{ row.sector }}
+                  </span>
+                </td>
+                <td class="py-3 text-right">
+                  <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.text }">
+                    {{ row.pl }}
+                  </span>
+                </td>
+                <td class="py-3 text-right">
+                  <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.text }">
+                    {{ row.pvp }}
+                  </span>
+                </td>
+                <td class="py-3 text-right">
+                  <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.text }">
+                    {{ row.roe }}
+                  </span>
+                </td>
+                <td class="py-3 text-right">
+                  <span class="font-academic-mono tabular-nums font-semibold" :style="{ color: brand.colors.primary }">
+                    {{ row.dy }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="font-academic-body mt-4 text-[11px] italic" :style="{ color: brand.colors.textMuted }">
+            Critério de corte aplicado: ROE ≥ 10%, margem líquida ≥ 10%, D/E ≤ 1,0 e P/L ≤ 15. Dados do último fechamento disponível.
+          </p>
+        </div>
+      </div>
+
+      <hr class="dashed-rule mx-auto max-w-6xl" />
+
+      <!-- §3 Setores comparativos -->
+      <div class="mx-auto max-w-6xl px-6 py-16 md:px-10 md:py-20">
+        <div class="mb-8">
+          <span class="font-academic-label" :style="{ color: brand.colors.primary }">
+            §3 · Setores em análise
+          </span>
+          <h2 class="font-academic-display mt-2 text-3xl md:text-4xl" :style="{ color: brand.colors.text }">
+            O mercado visto por setor
+          </h2>
+          <p class="font-academic-body mt-3 max-w-2xl text-[13px] italic" :style="{ color: brand.colors.textMuted }">
+            Médias setoriais em tempo real. Comparar empresas isoladamente sem contextualizar pelo setor é <span class="red-pen-underline">erro de iniciante</span>.
+          </p>
+        </div>
+
+        <table class="w-full border-t font-academic-body text-[13px]" :style="{ borderColor: brand.colors.text }">
+          <thead>
+            <tr class="border-b" :style="{ borderColor: brand.colors.border }">
+              <th class="font-academic-label py-3 text-left" :style="{ color: brand.colors.textMuted }">§</th>
+              <th class="font-academic-label py-3 text-left" :style="{ color: brand.colors.textMuted }">Setor</th>
+              <th class="font-academic-label py-3 text-right" :style="{ color: brand.colors.textMuted }">Empresas</th>
+              <th class="font-academic-label py-3 text-right" :style="{ color: brand.colors.textMuted }">P/L médio</th>
+              <th class="font-academic-label py-3 text-right" :style="{ color: brand.colors.textMuted }">DY médio</th>
+              <th class="hidden font-academic-label py-3 text-right md:table-cell" :style="{ color: brand.colors.textMuted }">Destaque</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="(row, idx) in researchSectors"
+              :key="row.sector"
+              class="border-b"
+              :style="{ borderColor: brand.colors.border }"
+            >
+              <td class="py-3 pr-2">
+                <span class="font-academic-mono text-[11px] tabular-nums" :style="{ color: brand.colors.textMuted }">
+                  3.{{ idx + 1 }}
+                </span>
+              </td>
+              <td class="py-3">
+                <span class="font-academic-display text-[15px]" :style="{ color: brand.colors.text }">
+                  {{ row.sector }}
+                </span>
+              </td>
+              <td class="py-3 text-right">
+                <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.text }">
+                  {{ row.count }}
+                </span>
+              </td>
+              <td class="py-3 text-right">
+                <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.text }">
+                  {{ row.avgPL }}
+                </span>
+              </td>
+              <td class="py-3 text-right">
+                <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.primary }">
+                  {{ row.avgDY }}
+                </span>
+              </td>
+              <td class="hidden py-3 text-right md:table-cell">
+                <span class="font-academic-body text-[12px] italic" :style="{ color: brand.colors.textMuted }">
+                  {{ row.highlight }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <hr class="dashed-rule mx-auto max-w-6xl" />
+
+      <!-- §4 Calendário de proventos -->
+      <div
+        class="py-16 md:py-20"
+        :style="{ backgroundColor: brand.colors.surface }"
+      >
+        <div class="mx-auto max-w-6xl px-6 md:px-10">
+          <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <span class="font-academic-label" :style="{ color: brand.colors.primary }">
+                §4 · Calendário de proventos
+              </span>
+              <h2 class="font-academic-display mt-2 text-3xl md:text-4xl" :style="{ color: brand.colors.text }">
+                Próximos pagamentos
+              </h2>
+              <p class="font-academic-body mt-3 max-w-2xl text-[13px] italic" :style="{ color: brand.colors.textMuted }">
+                Janela dos próximos 30 dias. Proventos isentos ficam em <span class="red-pen">destaque vermelho</span>; JCP é tributado na fonte.
+              </p>
+            </div>
+            <NuxtLink
+              to="/dividendos/calendario"
+              class="font-academic-body text-[13px] italic transition-opacity hover:opacity-70"
+              :style="{ color: brand.colors.text }"
+            >
+              Ver calendário completo <span :style="{ color: brand.colors.primary }">→</span>
+            </NuxtLink>
+          </div>
+
+          <table class="w-full border-t font-academic-body text-[13px]" :style="{ borderColor: brand.colors.text }">
+            <thead>
+              <tr class="border-b" :style="{ borderColor: brand.colors.border }">
+                <th class="font-academic-label py-3 text-left" :style="{ color: brand.colors.textMuted }">Data-com</th>
+                <th class="font-academic-label py-3 text-left" :style="{ color: brand.colors.textMuted }">Data-pag</th>
+                <th class="font-academic-label py-3 text-left" :style="{ color: brand.colors.textMuted }">Ticker</th>
+                <th class="font-academic-label py-3 text-left" :style="{ color: brand.colors.textMuted }">Tipo</th>
+                <th class="font-academic-label py-3 text-right" :style="{ color: brand.colors.textMuted }">Valor</th>
+                <th class="hidden font-academic-label py-3 text-right md:table-cell" :style="{ color: brand.colors.textMuted }">DY unit.</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="row in researchDividends"
+                :key="`${row.ticker}-${row.exDate}`"
+                class="border-b"
+                :style="{ borderColor: brand.colors.border }"
+              >
+                <td class="py-3 pr-4">
+                  <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.text }">
+                    {{ row.exDate }}
+                  </span>
+                </td>
+                <td class="py-3 pr-4">
+                  <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.textMuted }">
+                    {{ row.payDate }}
+                  </span>
+                </td>
+                <td class="py-3">
+                  <span class="font-academic-display text-[15px]" :style="{ color: brand.colors.text }">
+                    {{ row.ticker }}
+                  </span>
+                </td>
+                <td class="py-3">
+                  <span
+                    class="font-academic-label"
+                    :style="{ color: row.type === 'Dividendo' ? brand.colors.primary : brand.colors.textMuted }"
+                  >
+                    {{ row.type }}
+                  </span>
+                </td>
+                <td class="py-3 text-right">
+                  <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.text }">
+                    R$ {{ row.amount }}
+                  </span>
+                </td>
+                <td class="hidden py-3 text-right md:table-cell">
+                  <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.primary }">
+                    {{ row.unitDY }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <hr class="dashed-rule mx-auto max-w-6xl" />
+
+      <!-- §5 Notas do professor (últimas análises publicadas) -->
+      <div class="mx-auto max-w-6xl px-6 py-16 md:px-10 md:py-20">
+        <div class="mb-8">
+          <span class="font-academic-label" :style="{ color: brand.colors.primary }">
+            §5 · Notas do professor
+          </span>
+          <h2 class="font-academic-display mt-2 text-3xl md:text-4xl" :style="{ color: brand.colors.text }">
+            Últimas análises publicadas
+          </h2>
+          <p class="font-academic-body mt-3 max-w-2xl text-[13px] italic" :style="{ color: brand.colors.textMuted }">
+            Anotações recentes da mesa. Cada título leva para o estudo completo do ativo.
+          </p>
+        </div>
+
+        <ol class="flex flex-col">
+          <li
+            v-for="(note, idx) in researchAnalystNotes"
+            :key="note.ticker"
+            class="grid items-start gap-4 border-t py-5 md:grid-cols-12 md:gap-8"
+            :style="{ borderColor: brand.colors.border }"
+          >
+            <div class="md:col-span-1">
+              <span class="font-academic-mono text-[11px] tabular-nums" :style="{ color: brand.colors.textMuted }">
+                5.{{ idx + 1 }}
+              </span>
+            </div>
+            <div class="md:col-span-2">
+              <span class="font-academic-display text-lg" :style="{ color: brand.colors.text }">
+                {{ note.ticker }}
+              </span>
+              <span class="mt-0.5 block font-academic-mono text-[10px] uppercase tabular-nums" :style="{ color: brand.colors.textMuted }">
+                {{ note.date }}
+              </span>
+            </div>
+            <div class="md:col-span-6">
+              <NuxtLink
+                :to="`/asset/${note.ticker.toLowerCase()}`"
+                class="font-academic-display text-lg transition-opacity hover:opacity-70"
+                :style="{ color: brand.colors.text }"
+              >
+                {{ note.title }}
+              </NuxtLink>
+              <p class="font-academic-body mt-1 text-[13px] italic" :style="{ color: brand.colors.textMuted }">
+                {{ note.excerpt }}
+              </p>
+            </div>
+            <div class="md:col-span-3 md:text-right">
+              <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">Veredicto</span>
+              <span class="mt-1 block font-academic-display text-[15px]" :style="{ color: brand.colors.primary }">
+                {{ note.verdict }}
+              </span>
+            </div>
+          </li>
+        </ol>
+      </div>
+
+      <hr class="dashed-rule mx-auto max-w-6xl" />
+
+      <!-- §6 Ecossistema AUVP -->
+      <div class="mx-auto max-w-6xl px-6 py-20 md:px-10 md:py-24">
+        <div class="mb-10">
+          <span class="font-academic-label" :style="{ color: brand.colors.primary }">
+            §6 · Ecossistema AUVP
+          </span>
+          <h2 class="font-academic-display mt-2 text-3xl md:text-4xl" :style="{ color: brand.colors.text }">
+            Continuar o estudo vai muito além desta página
+          </h2>
+          <p class="font-academic-body mt-4 max-w-2xl" :style="{ color: brand.colors.text, fontSize: '15px' }">
+            A plataforma é o <span class="red-pen">terminal de dados</span>. O método, a comunidade e a escola são o que transformam dados em decisão. Tudo isso vive dentro da AUVP.
+          </p>
+        </div>
+
+        <div class="grid gap-px border" :style="{ borderColor: brand.colors.text, backgroundColor: brand.colors.text }">
+          <div class="grid md:grid-cols-2" :style="{ gap: '1px', backgroundColor: brand.colors.text }">
+            <a
+              v-for="(item, idx) in researchAUVPEcosystem"
+              :key="item.title"
+              :href="item.url"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="group flex flex-col gap-3 border-0 p-8 transition-colors md:p-10"
+              :style="{ backgroundColor: brand.colors.background }"
+              @mouseenter="($event.currentTarget as HTMLElement).style.backgroundColor = brand.colors.surface"
+              @mouseleave="($event.currentTarget as HTMLElement).style.backgroundColor = brand.colors.background"
+            >
+              <div class="flex items-start justify-between">
+                <span class="font-academic-mono text-[11px] tabular-nums" :style="{ color: brand.colors.primary }">
+                  [{{ String(idx + 1).padStart(2, '0') }}]
+                </span>
+                <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">
+                  {{ item.kind }}
+                </span>
+              </div>
+              <h3
+                class="font-academic-display"
+                :style="{
+                  color: brand.colors.text,
+                  fontSize: 'clamp(1.5rem, 2.5vw, 2rem)',
+                  lineHeight: '1.05',
+                }"
+              >
+                {{ item.title }}
+              </h3>
+              <p class="font-academic-body" :style="{ color: brand.colors.text, fontSize: '14px' }">
+                {{ item.body }}
+              </p>
+              <div class="mt-2 flex items-center gap-3 border-t pt-4" :style="{ borderColor: brand.colors.border }">
+                <span class="font-academic-label transition-transform group-hover:translate-x-1" :style="{ color: brand.colors.primary }">
+                  {{ item.cta }} →
+                </span>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- §7 Closing: signature + founder quote + footnotes -->
+      <div
+        class="py-20 md:py-24"
+        :style="{ backgroundColor: brand.colors.surface, borderTop: `1px solid ${brand.colors.border}` }"
+      >
+        <div class="mx-auto max-w-6xl px-6 md:px-10">
+          <span class="font-academic-label" :style="{ color: brand.colors.primary }">
+            Considerações finais
+          </span>
+          <h2
+            class="font-academic-display mt-4"
+            :style="{
+              color: brand.colors.text,
+              fontSize: 'clamp(2.25rem, 4.5vw, 3.75rem)',
+            }"
+          >
+            A única verdade possível <span class="italic" :style="{ color: brand.colors.primary }">é o conhecimento.</span>
+          </h2>
+
+          <blockquote
+            class="font-academic-body mt-8 max-w-3xl border-l-2 pl-6 italic"
+            :style="{
+              color: brand.colors.text,
+              borderColor: brand.colors.primary,
+              fontSize: '18px',
+            }"
+          >
+            "{{ brand.hero.founderQuote }}"
+          </blockquote>
+
+          <div class="mt-14 flex flex-wrap items-start justify-between gap-6 border-t pt-10" :style="{ borderColor: brand.colors.border }">
+            <div class="flex flex-col gap-1">
+              <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">
+                Assinado por
+              </span>
+              <span class="font-academic-display text-2xl" :style="{ color: brand.colors.text }">
+                {{ brand.founder?.name || 'Raul Sena' }}
+              </span>
+              <span class="font-academic-body text-[13px] italic" :style="{ color: brand.colors.textMuted }">
+                Fundador · AUVP — A Única Verdade Possível
+              </span>
+            </div>
+            <div class="flex flex-col items-end gap-3">
+              <NuxtLink
+                to="/auth/register"
+                class="inline-flex items-center gap-3 border-2 px-5 py-2.5 font-academic-label transition-colors"
+                :style="{
+                  backgroundColor: brand.colors.primary,
+                  color: brand.colors.background,
+                  borderColor: brand.colors.primary,
+                }"
+              >
+                <span>ABRIR O TERMINAL</span>
+                <span>→</span>
+              </NuxtLink>
+              <a
+                href="https://auvp.com.br"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="font-academic-body text-[13px] italic transition-opacity hover:opacity-70"
+                :style="{ color: brand.colors.text }"
+              >
+                Conhecer a AUVP Escola <span :style="{ color: brand.colors.primary }">→</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Footnotes -->
+          <div class="mt-14 border-t pt-6" :style="{ borderColor: brand.colors.border }">
+            <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">
+              Notas de rodapé
+            </span>
+            <ol class="mt-4 flex flex-col gap-3">
+              <li class="font-academic-body text-[12px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
+                <sup class="footnote-marker">¹</sup> Variação diária é ruído. O analista olha o radar do pregão para checar contexto, não para tomar decisão.
+              </li>
+              <li class="font-academic-body text-[12px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
+                <sup class="footnote-marker">²</sup> Os filtros do método AUVP são detalhados no curso AUVP Escola — cada corte tem justificativa histórica e comparativa.
+              </li>
+              <li class="font-academic-body text-[12px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
+                <sup class="footnote-marker">³</sup> Esta publicação não constitui recomendação de compra ou venda. AUVP não opera aconselhamento individualizado — oferece método e plataforma de estudo.
+              </li>
+            </ol>
           </div>
         </div>
       </div>
@@ -361,6 +1750,359 @@
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== HERO: MENTOR (Primo Rico — book-cover / masterclass aesthetic) ========== -->
+    <section
+      v-if="showSection('hero') && !authStore.isAuthenticated && brand.hero.variant === 'mentor'"
+      :style="{ order: sectionOrder('hero'), backgroundColor: brand.colors.background, color: brand.colors.text }"
+      class="relative overflow-hidden"
+    >
+      <!-- Top tape: thick orange strip with "MANUAL DO PRIMO" breadcrumb -->
+      <div
+        class="relative flex items-center gap-4 px-6 py-3 md:px-10"
+        :style="{ backgroundColor: brand.colors.primary, color: brand.colors.background }"
+      >
+        <span class="font-mentor-eyebrow">{{ brand.hero.badge }}</span>
+        <span class="flex-1 border-t" :style="{ borderColor: `${brand.colors.background}40` }" />
+        <span class="font-mentor-eyebrow">DO MIL AO MILHÃO · A ESCOLHA É SUA</span>
+      </div>
+
+      <!-- HERO — asymmetric split: portrait left, text right -->
+      <div class="relative grid gap-0 md:grid-cols-12">
+        <!-- Portrait column (decorative B&W placeholder with orange blend) -->
+        <div
+          class="relative aspect-[4/5] overflow-hidden md:col-span-5 md:aspect-auto md:min-h-[720px]"
+          :style="{ backgroundColor: brand.colors.tertiary }"
+        >
+          <!-- Photo layer: high-contrast B&W with orange multiply overlay -->
+          <div
+            v-if="brand.founder?.photo"
+            class="absolute inset-0 bg-cover bg-center"
+            :style="{
+              backgroundImage: `url(${brand.founder.photo})`,
+              filter: 'grayscale(100%) contrast(1.15) brightness(0.85)',
+            }"
+          />
+          <!-- Grain + vignette -->
+          <div
+            class="absolute inset-0 opacity-30"
+            :style="{
+              background: `radial-gradient(ellipse at 40% 30%, transparent 30%, ${brand.colors.background} 95%)`,
+            }"
+          />
+          <!-- Orange bottom wash -->
+          <div
+            class="absolute inset-x-0 bottom-0 h-2/3"
+            :style="{
+              background: `linear-gradient(to top, ${brand.colors.primary}CC, ${brand.colors.primary}33 40%, transparent)`,
+              mixBlendMode: 'multiply',
+            }"
+          />
+          <!-- Bottom-left: founder name plate -->
+          <div class="absolute bottom-6 left-6 right-6 flex flex-col gap-1">
+            <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
+              SEU MENTOR
+            </span>
+            <span
+              class="font-mentor-display text-3xl md:text-4xl"
+              :style="{ color: brand.colors.background + 'F2' }"
+            >
+              {{ brand.founder?.name || 'Thiago Nigro' }}
+            </span>
+            <span
+              class="font-mentor-eyebrow mt-1"
+              :style="{ color: `${brand.colors.background}99` }"
+            >
+              {{ brand.founder?.role || 'Educador financeiro' }}
+            </span>
+          </div>
+          <!-- Vertical orange ticker on the far right edge of the image -->
+          <div
+            class="absolute right-0 top-0 h-full w-1"
+            :style="{ backgroundColor: brand.colors.primary }"
+          />
+        </div>
+
+        <!-- Text column: massive uppercase headline, body, CTAs -->
+        <div class="flex flex-col justify-center px-6 py-16 md:col-span-7 md:px-14 md:py-20">
+          <span
+            class="font-mentor-eyebrow"
+            :style="{ color: brand.colors.primary }"
+          >
+            CAPÍTULO I · CONSTRUÇÃO DE PATRIMÔNIO
+          </span>
+          <h1
+            class="font-mentor-display mt-6 leading-[0.85]"
+            :style="{
+              color: brand.colors.text,
+              fontSize: 'clamp(3.5rem, 8vw, 8rem)',
+            }"
+          >
+            <template v-for="(line, idx) in brand.hero.title.split('\n')" :key="idx">
+              <br v-if="idx > 0" />
+              <span
+                v-if="idx === 1"
+                :style="{ color: brand.colors.primary }"
+              >{{ line }}</span>
+              <span v-else>{{ line }}</span>
+            </template>
+          </h1>
+
+          <!-- Chunky 4px orange rule -->
+          <hr
+            class="mentor-rule mt-8 max-w-[5rem]"
+            :style="{ backgroundColor: brand.colors.primary }"
+          />
+
+          <p
+            class="mt-8 max-w-xl text-base leading-relaxed md:text-lg"
+            :style="{ color: `${brand.colors.text}CC` }"
+          >
+            {{ brand.hero.subtitle }}
+          </p>
+
+          <!-- CTAs: solid orange block + underlined secondary -->
+          <div class="mt-10 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-6">
+            <NuxtLink
+              to="/auth/register"
+              class="group inline-flex items-center gap-3 px-8 py-4 font-mentor-eyebrow text-[12px] transition-transform hover:-translate-y-0.5"
+              :style="{
+                backgroundColor: brand.colors.primary,
+                color: brand.colors.background,
+                letterSpacing: '0.15em',
+              }"
+            >
+              <span>{{ brand.hero.ctaLabel.toUpperCase() }}</span>
+              <span class="inline-block transition-transform group-hover:translate-x-1">→</span>
+            </NuxtLink>
+            <NuxtLink
+              to="/auth/login"
+              class="font-mentor-eyebrow border-b pb-1 transition-opacity hover:opacity-70"
+              :style="{
+                color: brand.colors.text,
+                borderColor: `${brand.colors.text}40`,
+              }"
+            >
+              {{ brand.hero.ctaSecondaryLabel.toUpperCase() }}
+            </NuxtLink>
+          </div>
+
+          <!-- Trust indicators as numbered stats, big and chunky -->
+          <div class="mt-16 grid grid-cols-2 gap-8 border-t pt-8 md:grid-cols-4" :style="{ borderColor: `${brand.colors.text}15` }">
+            <div
+              v-for="(indicator, i) in brand.hero.trustIndicators"
+              :key="indicator"
+              class="flex flex-col gap-1"
+            >
+              <span
+                class="font-mentor-eyebrow"
+                :style="{ color: brand.colors.primary }"
+              >
+                {{ String(i + 1).padStart(2, '0') }}
+              </span>
+              <span
+                class="text-sm font-bold leading-tight md:text-base"
+                :style="{ color: brand.colors.text, textTransform: 'uppercase', letterSpacing: '0.02em' }"
+              >
+                {{ indicator }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Monumental pull quote — the founder line -->
+      <div
+        class="relative border-t border-b py-20 md:py-28"
+        :style="{
+          borderColor: `${brand.colors.text}15`,
+          backgroundColor: brand.colors.surface,
+        }"
+      >
+        <div class="mx-auto max-w-6xl px-6 md:px-10">
+          <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
+            O LIVRO · DO MIL AO MILHÃO
+          </span>
+          <blockquote
+            class="font-mentor-quote mt-6 leading-[0.95]"
+            :style="{
+              color: brand.colors.text,
+              fontSize: 'clamp(2.5rem, 6.5vw, 6rem)',
+            }"
+          >
+            "{{ brand.hero.founderQuote || brand.founder?.signaturePhrase || 'Liberdade ou mediocridade. A escolha é sua.' }}"
+          </blockquote>
+          <div class="mt-10 flex items-center gap-4">
+            <div class="h-[2px] w-12" :style="{ backgroundColor: brand.colors.primary }" />
+            <span class="font-mentor-eyebrow" :style="{ color: `${brand.colors.text}99` }">
+              {{ (brand.founder?.name || 'THIAGO NIGRO').toUpperCase() }} · AUTOR DO BEST-SELLER
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chapter II: Method ARCA — 4 pillars -->
+      <div class="mx-auto max-w-6xl px-6 py-20 md:px-10 md:py-28">
+        <div class="mb-12 flex flex-col gap-3">
+          <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
+            CAPÍTULO II
+          </span>
+          <h2
+            class="font-mentor-display"
+            :style="{
+              color: brand.colors.text,
+              fontSize: 'clamp(2.5rem, 5vw, 4.5rem)',
+            }"
+          >
+            O MÉTODO ARCA
+          </h2>
+          <p class="mt-2 max-w-2xl text-base" :style="{ color: `${brand.colors.text}B3` }">
+            Quatro pilares que sustentam uma carteira de longo prazo. Não é fórmula mágica — é disciplina aplicada.
+          </p>
+        </div>
+
+        <!-- 4 ARCA pillars as numbered blocks -->
+        <div class="grid gap-0 border" :style="{ borderColor: `${brand.colors.text}15` }">
+          <div
+            v-for="(pillar, idx) in mentorArcaPillars"
+            :key="pillar.letter"
+            class="group relative grid items-start gap-6 border-t px-6 py-8 transition-colors md:grid-cols-12 md:gap-10 md:px-10 md:py-10"
+            :class="idx === 0 && '!border-t-0'"
+            :style="{ borderColor: `${brand.colors.text}15` }"
+            @mouseenter="($event.currentTarget as HTMLElement).style.backgroundColor = `${brand.colors.primary}0D`"
+            @mouseleave="($event.currentTarget as HTMLElement).style.backgroundColor = 'transparent'"
+          >
+            <!-- Numeric prefix -->
+            <div class="md:col-span-1">
+              <span
+                class="font-mentor-display text-5xl md:text-6xl"
+                :style="{ color: brand.colors.primary }"
+              >
+                {{ String(idx + 1).padStart(2, '0') }}
+              </span>
+            </div>
+            <!-- Letter + label -->
+            <div class="md:col-span-3 md:pl-2">
+              <span
+                class="font-mentor-display text-3xl md:text-4xl"
+                :style="{ color: brand.colors.text }"
+              >
+                {{ pillar.letter }}
+              </span>
+              <span
+                class="mt-1 block font-mentor-eyebrow"
+                :style="{ color: `${brand.colors.text}80` }"
+              >
+                {{ pillar.label }}
+              </span>
+            </div>
+            <!-- Description -->
+            <div class="md:col-span-6 md:pl-4">
+              <p class="text-base leading-relaxed md:text-lg" :style="{ color: `${brand.colors.text}CC` }">
+                {{ pillar.description }}
+              </p>
+            </div>
+            <!-- CTA -->
+            <div class="md:col-span-2 md:pl-2">
+              <NuxtLink
+                :to="pillar.to"
+                class="group/link inline-flex items-center gap-2 border-b pb-1 font-mentor-eyebrow transition-colors"
+                :style="{
+                  color: brand.colors.text,
+                  borderColor: brand.colors.primary,
+                }"
+              >
+                <span>EXPLORAR</span>
+                <span class="inline-block transition-transform group-hover/link:translate-x-1" :style="{ color: brand.colors.primary }">→</span>
+              </NuxtLink>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats row — chunky numbered cards -->
+      <div
+        class="border-t border-b py-16 md:py-20"
+        :style="{
+          borderColor: `${brand.colors.text}15`,
+          backgroundColor: brand.colors.surface,
+        }"
+      >
+        <div class="mx-auto max-w-6xl px-6 md:px-10">
+          <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
+            OS NÚMEROS
+          </span>
+          <div class="mt-8 grid gap-px md:grid-cols-4" :style="{ backgroundColor: `${brand.colors.text}18` }">
+            <div
+              v-for="(stat, idx) in mentorStats"
+              :key="stat.label"
+              class="flex flex-col gap-2 px-6 py-8 md:py-10"
+              :style="{ backgroundColor: brand.colors.surface }"
+            >
+              <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
+                [{{ String(idx + 1).padStart(2, '0') }}]
+              </span>
+              <span
+                class="font-mentor-display tabular-nums"
+                :style="{
+                  color: brand.colors.text,
+                  fontSize: 'clamp(2.5rem, 4.5vw, 4rem)',
+                }"
+              >
+                {{ stat.value }}
+              </span>
+              <span
+                class="text-xs font-bold uppercase tracking-wider"
+                :style="{ color: `${brand.colors.text}99` }"
+              >
+                {{ stat.label }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Closing CTA: monumental "A ESCOLHA É SUA" -->
+      <div class="mx-auto max-w-6xl px-6 py-24 text-center md:px-10 md:py-32">
+        <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
+          CAPÍTULO FINAL
+        </span>
+        <h2
+          class="font-mentor-display mt-6"
+          :style="{
+            color: brand.colors.text,
+            fontSize: 'clamp(3rem, 10vw, 10rem)',
+          }"
+        >
+          A ESCOLHA
+          <br />
+          <span :style="{ color: brand.colors.primary }">É SUA.</span>
+        </h2>
+        <p
+          class="mx-auto mt-8 max-w-xl text-base md:text-lg"
+          :style="{ color: `${brand.colors.text}B3` }"
+        >
+          Você pode continuar reagindo ao mercado, ou pode começar a construir. Não existe meio-termo.
+        </p>
+        <div class="mt-12 flex flex-col items-center gap-4 sm:flex-row sm:justify-center sm:gap-6">
+          <NuxtLink
+            to="/auth/register"
+            class="group inline-flex items-center gap-3 px-10 py-5 font-mentor-eyebrow text-[13px] transition-transform hover:-translate-y-0.5"
+            :style="{
+              backgroundColor: brand.colors.primary,
+              color: brand.colors.background,
+              letterSpacing: '0.18em',
+            }"
+          >
+            <span>COMEÇAR AGORA</span>
+            <span class="inline-block transition-transform group-hover:translate-x-1">→</span>
+          </NuxtLink>
+          <span class="font-mentor-eyebrow" :style="{ color: `${brand.colors.text}66` }">
+            GRÁTIS · SEM CARTÃO · ACESSO IMEDIATO
+          </span>
         </div>
       </div>
     </section>
@@ -1712,6 +3454,424 @@ const editorialMetrics = [
     value: '18',
     unit: '',
     note: 'Assessoria fundada em 2008, durante a crise financeira. Atravessamos três ciclos completos ao lado dos nossos clientes.',
+  },
+]
+
+// ==========================================================
+// RESEARCH HERO — Investidor Sardinha "AUVP analyst desk"
+// Data-dense version: radar do dia, screener fundamentalista,
+// setores, proventos, notas do professor, ecossistema AUVP.
+// ==========================================================
+
+const researchDate = computed(() => {
+  try {
+    const d = new Date()
+    return d.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+    }).replace(/^./, (c) => c.toUpperCase())
+  } catch {
+    return ''
+  }
+})
+
+interface SardinhaMover {
+  ticker: string
+  name: string
+  price: number
+  change: number
+}
+
+// Seed data for the top gainers / losers section. Replaced at runtime
+// with real data from /api/top-stocks when available.
+const researchTopGainers = ref<SardinhaMover[]>([
+  { ticker: 'PETR4', name: 'Petrobras PN', price: 38.45, change: 4.18 },
+  { ticker: 'VALE3', name: 'Vale ON', price: 62.12, change: 3.76 },
+  { ticker: 'WEGE3', name: 'WEG ON', price: 52.30, change: 3.24 },
+  { ticker: 'ITUB4', name: 'Itaú Unibanco PN', price: 31.78, change: 2.85 },
+  { ticker: 'BBAS3', name: 'Banco do Brasil ON', price: 28.90, change: 2.41 },
+  { ticker: 'BBDC4', name: 'Bradesco PN', price: 14.22, change: 2.15 },
+  { ticker: 'MGLU3', name: 'Magazine Luiza ON', price: 12.45, change: 1.98 },
+  { ticker: 'B3SA3', name: 'B3 ON', price: 11.08, change: 1.76 },
+  { ticker: 'RENT3', name: 'Localiza ON', price: 44.20, change: 1.52 },
+  { ticker: 'SUZB3', name: 'Suzano ON', price: 56.78, change: 1.34 },
+])
+
+const researchTopLosers = ref<SardinhaMover[]>([
+  { ticker: 'AMER3', name: 'Americanas ON', price: 1.28, change: -5.82 },
+  { ticker: 'CVCB3', name: 'CVC ON', price: 3.45, change: -4.18 },
+  { ticker: 'NTCO3', name: 'Natura ON', price: 13.22, change: -3.65 },
+  { ticker: 'COGN3', name: 'Cogna ON', price: 2.08, change: -3.12 },
+  { ticker: 'CYRE3', name: 'Cyrela ON', price: 21.40, change: -2.78 },
+  { ticker: 'PRIO3', name: 'PetroRio ON', price: 42.15, change: -2.45 },
+  { ticker: 'USIM5', name: 'Usiminas PNA', price: 7.80, change: -2.18 },
+  { ticker: 'CSNA3', name: 'CSN ON', price: 14.60, change: -1.92 },
+  { ticker: 'GOAU4', name: 'Metalúrgica Gerdau PN', price: 9.25, change: -1.65 },
+  { ticker: 'MRFG3', name: 'Marfrig ON', price: 11.12, change: -1.48 },
+])
+
+// Panoramic market snapshot shown in the hero right column
+const researchHeroMarket = computed(() => [
+  { label: 'IBOVESPA', note: 'Índice de referência · pontos', value: '127.834', changePct: 1.12 },
+  { label: 'IFIX', note: 'Fundos imobiliários · pontos', value: '3.410', changePct: 0.49 },
+  { label: 'USD/BRL', note: 'Dólar comercial · fechamento', value: 'R$ 5,08', changePct: -0.34 },
+  { label: 'Selic', note: 'Meta · ao ano', value: '10,50%', changePct: 0 },
+  { label: 'CDI', note: '12 meses · acumulado', value: '11,28%', changePct: 0 },
+])
+
+// Screener AUVP — fictional but realistic list of companies that would
+// pass the "4 filters" method described in the method chapter.
+const researchScreener = [
+  { ticker: 'BBAS3', name: 'Banco do Brasil ON', sector: 'Bancos', pl: '5,4', pvp: '0,68', roe: '12,5%', dy: '7,7%' },
+  { ticker: 'ITSA4', name: 'Itaúsa PN', sector: 'Holding financeira', pl: '7,1', pvp: '0,92', roe: '13,8%', dy: '6,9%' },
+  { ticker: 'BBSE3', name: 'BB Seguridade ON', sector: 'Seguros', pl: '9,8', pvp: '2,12', roe: '42,1%', dy: '9,2%' },
+  { ticker: 'TAEE11', name: 'Taesa Unit', sector: 'Energia elétrica', pl: '8,6', pvp: '1,45', roe: '17,2%', dy: '8,4%' },
+  { ticker: 'VIVT3', name: 'Vivo ON', sector: 'Telecom', pl: '11,2', pvp: '1,08', roe: '10,6%', dy: '6,1%' },
+  { ticker: 'EGIE3', name: 'Engie ON', sector: 'Energia elétrica', pl: '8,9', pvp: '2,34', roe: '26,4%', dy: '7,2%' },
+  { ticker: 'KLBN11', name: 'Klabin Unit', sector: 'Papel e celulose', pl: '10,4', pvp: '1,82', roe: '17,8%', dy: '5,8%' },
+  { ticker: 'WEGE3', name: 'WEG ON', sector: 'Bens industriais', pl: '14,6', pvp: '3,12', roe: '22,1%', dy: '2,4%' },
+  { ticker: 'CPFE3', name: 'CPFL Energia ON', sector: 'Energia elétrica', pl: '9,2', pvp: '2,08', roe: '22,5%', dy: '6,5%' },
+  { ticker: 'SAPR11', name: 'Sanepar Unit', sector: 'Saneamento', pl: '6,2', pvp: '0,96', roe: '15,4%', dy: '5,2%' },
+]
+
+// Sector averages shown in §3
+const researchSectors = [
+  { sector: 'Bancos', count: 18, avgPL: '6,8', avgDY: '7,2%', highlight: 'BBAS3 · ITSA4' },
+  { sector: 'Energia elétrica', count: 24, avgPL: '9,4', avgDY: '6,8%', highlight: 'TAEE11 · EGIE3' },
+  { sector: 'Saneamento', count: 6, avgPL: '7,1', avgDY: '5,4%', highlight: 'SAPR11 · SBSP3' },
+  { sector: 'Telecom', count: 4, avgPL: '11,8', avgDY: '5,2%', highlight: 'VIVT3' },
+  { sector: 'Bens industriais', count: 32, avgPL: '13,2', avgDY: '3,1%', highlight: 'WEGE3 · RAIL3' },
+  { sector: 'Commodities', count: 28, avgPL: '8,5', avgDY: '4,8%', highlight: 'VALE3 · SUZB3' },
+  { sector: 'Varejo', count: 41, avgPL: '18,6', avgDY: '2,4%', highlight: 'ASAI3 · LREN3' },
+  { sector: 'Seguros', count: 8, avgPL: '10,1', avgDY: '6,9%', highlight: 'BBSE3 · PSSA3' },
+]
+
+// Upcoming dividend calendar (~next 30 days)
+const researchDividends = [
+  { exDate: '12/04', payDate: '22/04', ticker: 'BBAS3', type: 'Dividendo', amount: '0,58', unitDY: '2,0%' },
+  { exDate: '15/04', payDate: '28/04', ticker: 'TAEE11', type: 'Dividendo', amount: '0,84', unitDY: '2,6%' },
+  { exDate: '17/04', payDate: '30/04', ticker: 'ITSA4', type: 'JCP', amount: '0,12', unitDY: '1,3%' },
+  { exDate: '19/04', payDate: '05/05', ticker: 'BBSE3', type: 'Dividendo', amount: '1,20', unitDY: '3,2%' },
+  { exDate: '22/04', payDate: '07/05', ticker: 'EGIE3', type: 'JCP', amount: '0,92', unitDY: '2,1%' },
+  { exDate: '25/04', payDate: '12/05', ticker: 'VIVT3', type: 'Dividendo', amount: '0,65', unitDY: '1,5%' },
+  { exDate: '29/04', payDate: '15/05', ticker: 'CPFE3', type: 'Dividendo', amount: '1,08', unitDY: '2,4%' },
+  { exDate: '02/05', payDate: '19/05', ticker: 'KLBN11', type: 'Dividendo', amount: '0,42', unitDY: '1,8%' },
+]
+
+// Recent analyst notes — last 5 studies published
+const researchAnalystNotes = [
+  {
+    ticker: 'BBAS3',
+    date: '10 abr 2026',
+    title: 'Banco do Brasil: o desconto do estatal está exagerado?',
+    excerpt: 'Múltiplo de 5,4× lucros e DY de 7,7% colocam o BB em faixa historicamente barata frente a pares. Carteira rural segura a tese.',
+    verdict: 'Passa nos filtros',
+  },
+  {
+    ticker: 'ITSA4',
+    date: '08 abr 2026',
+    title: 'Itaúsa: a holding vale mais do que a soma das partes?',
+    excerpt: 'Desconto persistente sobre NAV e exposição diversificada para além do Itaú. Veículo eficiente para exposição ao setor financeiro.',
+    verdict: 'Passa nos filtros',
+  },
+  {
+    ticker: 'WEGE3',
+    date: '05 abr 2026',
+    title: 'WEG: múltiplo esticado ou crescimento precificado?',
+    excerpt: 'P/L de 14,6× reflete expectativa de crescimento consistente. ROE de 22% valida a tese de moat, mas exige convicção.',
+    verdict: 'Neutro · estudar',
+  },
+  {
+    ticker: 'MGLU3',
+    date: '02 abr 2026',
+    title: 'Magazine Luiza: value trap ou virada operacional?',
+    excerpt: 'Margens pressionadas e endividamento elevado. Enquanto não houver melhora estrutural, não passa no filtro de qualidade.',
+    verdict: 'Não passa',
+  },
+  {
+    ticker: 'TAEE11',
+    date: '28 mar 2026',
+    title: 'Taesa: rendimento contratado e previsibilidade',
+    excerpt: 'Concessões de transmissão de longo prazo e DY consistente. Clássico ativo de geração de caixa para quem busca renda passiva.',
+    verdict: 'Passa nos filtros',
+  },
+]
+
+// AUVP ecosystem — 6 blocks pushing users into the Raul Sena universe
+const researchAUVPEcosystem = [
+  {
+    kind: 'CURSO · ESCOLA',
+    title: 'AUVP Escola',
+    body: 'O curso completo de análise fundamentalista. Mais de 90 horas de aula com Raul Sena, método proprietário e comunidade ativa de alunos. O ponto de partida pra quem quer ir além da plataforma.',
+    cta: 'Conhecer a escola',
+    url: 'https://auvp.com.br',
+  },
+  {
+    kind: 'CONSULTORIA',
+    title: 'AUVP Capital',
+    body: 'Consultoria de investimentos registrada CVM, liderada pela equipe do Raul. Para quem já tem patrimônio formado e quer acompanhamento profissional baseado no mesmo método do canal.',
+    cta: 'Falar com a Capital',
+    url: 'https://auvpcapital.com.br',
+  },
+  {
+    kind: 'PLATAFORMA',
+    title: 'AUVP Analítica',
+    body: 'Indicadores avançados, screener completo e comparativos de pares. A camada técnica que complementa o estudo iniciado aqui nesta página.',
+    cta: 'Explorar ferramentas',
+    url: 'https://analitica.auvp.com.br',
+  },
+  {
+    kind: 'LIVRO',
+    title: 'Investidor Sardinha · o livro',
+    body: 'A síntese em papel do que o canal ensina há anos. Leitura obrigatória para quem prefere livro a vídeo, ou quer um material pra revisar sempre que o mercado testar sua convicção.',
+    cta: 'Ver na Amazon',
+    url: 'https://amzn.to/investidorsardinha',
+  },
+  {
+    kind: 'CANAL · YOUTUBE',
+    title: 'Investidor Sardinha no YouTube',
+    body: 'Mais de 1,3 milhão de sardinhas estudando junto. Análises semanais, lives com convidados, tutoriais do método. O ponto de entrada original do ecossistema.',
+    cta: 'Abrir o canal',
+    url: 'https://youtube.com/@oraulsena',
+  },
+  {
+    kind: 'COMUNIDADE',
+    title: 'Grupo VIP · Telegram',
+    body: 'Canal oficial com alertas, materiais exclusivos e debate diário da mesa de análise. Fechado para assinantes da plataforma e alunos AUVP.',
+    cta: 'Entrar no grupo',
+    url: 'https://t.me/investidorsardinha',
+  },
+]
+
+// Compact price formatter for the Sardinha tables
+function formatSardinhaPrice(n: number | string): string {
+  const num = typeof n === 'number' ? n : Number(n)
+  if (!Number.isFinite(num)) return '—'
+  return `R$ ${num.toFixed(2).replace('.', ',')}`
+}
+
+// Hydrate gainers/losers with real data after mount when the hero is
+// showing. Stays graceful if the backend is offline — the seeded data
+// already reads as realistic.
+onMounted(async () => {
+  if (brand.hero.variant !== 'research') return
+  try {
+    const service = useAssetsService()
+    const [top, bottom] = await Promise.all([
+      service.getTopStocks('top', 500_000),
+      service.getTopStocks('bottom', 500_000),
+    ])
+    const toMover = (x: any): SardinhaMover => ({
+      ticker: x?.ticker || x?.symbol || '',
+      name: (x?.name || '').trim(),
+      price: Number(x?.market_price) || 0,
+      change: Number(x?.change_percent) || 0,
+    })
+    if (Array.isArray(top) && top.length >= 5) {
+      researchTopGainers.value = top.slice(0, 10).map(toMover)
+    }
+    if (Array.isArray(bottom) && bottom.length >= 5) {
+      researchTopLosers.value = bottom.slice(0, 10).map(toMover)
+    }
+  } catch {
+    // keep seeded fallback
+  }
+})
+
+// ==========================================================
+// MENTOR HERO — Primo Rico "book-cover / masterclass"
+// ==========================================================
+
+// Method ARCA pillars — the content spine of the Primo Rico hero.
+// ARCA is Thiago Nigro's portfolio framework: Ações, Real Estate
+// (imóveis/FIIs), Caixa (reserva), Ativos alternativos.
+const mentorArcaPillars = [
+  {
+    letter: 'A · AÇÕES',
+    label: 'Patrimônio de longo prazo',
+    description: 'Large caps, small caps e dividendos. Empresas que geram valor por décadas — não operações de curto prazo.',
+    to: '/acoes',
+  },
+  {
+    letter: 'R · REAL ESTATE',
+    label: 'Renda passiva mensal',
+    description: 'Fundos imobiliários com rendimento isento de imposto. Eficiência tributária que só a PF brasileira tem.',
+    to: '/fiis',
+  },
+  {
+    letter: 'C · CAIXA',
+    label: 'Reserva estratégica',
+    description: 'Tesouro Direto, CDB, LCI/LCA. A base que protege o patrimônio nos momentos em que o mercado testa sua convicção.',
+    to: '/dividendos',
+  },
+  {
+    letter: 'A · ATIVOS ALTERNATIVOS',
+    label: 'Diversificação global',
+    description: 'ETFs internacionais, BDRs e exposição externa. Risco controlado, retorno assimétrico, moeda forte.',
+    to: '/etfs',
+  },
+]
+
+// Stats row — large numbers that back up the "mentor" persona.
+const mentorStats = [
+  { value: '7M+', label: 'Seguidores no ecossistema' },
+  { value: '2M+', label: 'Livros vendidos' },
+  { value: '15+', label: 'Anos no mercado' },
+  { value: '12.500+', label: 'Ativos monitorados' },
+]
+
+// ==========================================================
+// "Showtime" — Me Poupe! TV-show variant helpers
+// ==========================================================
+// The Me Poupe home is framed as an episode of a TV program.
+// Everything has Nath's voice: direct, warm, irreverent.
+
+const showtimeDate = computed(() => {
+  const now = new Date()
+  return now.toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  }).toUpperCase()
+})
+
+const showtimeCharacters = [
+  {
+    name: 'Margarete',
+    role: 'A MASCOTE',
+    icon: 'i-lucide-utensils',
+    quote: 'Mexe no dinheiro igual eu mexo na panela — com carinho e atenção!',
+    body: 'A colher de pau que virou símbolo de quem cuida do próprio bolso. Na cozinha e nas finanças, ela é a chefe.',
+    cta: 'Conhecer a Margarete',
+  },
+  {
+    name: 'Sidnelson',
+    role: 'O VILÃO',
+    icon: 'i-lucide-credit-card',
+    quote: 'Parcela em 12x sem juros que eu resolvo... (spoiler: não resolve)',
+    body: 'O cara que vende crédito fácil, convence você a trocar o carro todo ano e adora um financiamento. Fuja dele.',
+    cta: 'Como driblar o Sidnelson',
+  },
+  {
+    name: 'Juro Composto',
+    role: 'O SUPER-HERÓI',
+    icon: 'i-lucide-trending-up',
+    quote: 'Me dê tempo e paciência — eu devolvo liberdade financeira.',
+    body: 'A oitava maravilha do mundo. Quando está do seu lado, trabalha pra você 24h. Quando está contra, te devora.',
+    cta: 'Ver ele em ação',
+  },
+]
+
+const showtimeQuestions = [
+  {
+    category: 'SOCORRO GERAL',
+    icon: 'i-lucide-life-buoy',
+    text: 'Tô devendo no cartão, começo por onde?',
+  },
+  {
+    category: 'RESERVA DE EMERGÊNCIA',
+    icon: 'i-lucide-shield-check',
+    text: 'Quanto preciso pra me sentir segura?',
+  },
+  {
+    category: 'PRIMEIROS INVESTIMENTOS',
+    icon: 'i-lucide-sprout',
+    text: 'Posso começar a investir com 100 reais?',
+  },
+  {
+    category: 'APOSENTADORIA',
+    icon: 'i-lucide-palm-tree',
+    text: 'Como parar de depender do INSS?',
+  },
+  {
+    category: 'FILHOS',
+    icon: 'i-lucide-baby',
+    text: 'Quanto guardar pra faculdade do meu filho?',
+  },
+  {
+    category: 'CASA PRÓPRIA',
+    icon: 'i-lucide-home',
+    text: 'Financiar ou juntar e comprar à vista?',
+  },
+]
+
+interface ShowtimeMover {
+  ticker: string
+  name: string
+  change: number
+}
+
+const showtimeGainers = ref<ShowtimeMover[]>([
+  { ticker: 'MGLU3', name: 'Magazine Luiza', change: 8.42 },
+  { ticker: 'COGN3', name: 'Cogna Educação', change: 6.91 },
+  { ticker: 'IRBR3', name: 'IRB Brasil RE', change: 5.77 },
+  { ticker: 'AZUL4', name: 'Azul Linhas Aéreas', change: 5.34 },
+  { ticker: 'CVCB3', name: 'CVC Brasil', change: 4.88 },
+])
+
+const showtimeLosers = ref<ShowtimeMover[]>([
+  { ticker: 'VALE3', name: 'Vale', change: -3.21 },
+  { ticker: 'PETR4', name: 'Petrobras PN', change: -2.87 },
+  { ticker: 'BBAS3', name: 'Banco do Brasil', change: -2.54 },
+  { ticker: 'ITUB4', name: 'Itaú Unibanco', change: -2.13 },
+  { ticker: 'WEGE3', name: 'WEG', change: -1.98 },
+])
+
+onMounted(async () => {
+  if (brand.hero.variant !== 'showtime') return
+  try {
+    const service = useAssetsService()
+    const [top, bottom] = await Promise.all([
+      service.getTopStocks('top', 500_000),
+      service.getTopStocks('bottom', 500_000),
+    ])
+    const toMover = (x: any): ShowtimeMover => ({
+      ticker: x?.ticker || x?.symbol || '',
+      name: (x?.name || '').trim(),
+      change: Number(x?.change_percent) || 0,
+    })
+    if (Array.isArray(top) && top.length >= 5) {
+      showtimeGainers.value = top.slice(0, 5).map(toMover)
+    }
+    if (Array.isArray(bottom) && bottom.length >= 5) {
+      showtimeLosers.value = bottom.slice(0, 5).map(toMover)
+    }
+  } catch {
+    // keep seeded fallback
+  }
+})
+
+const showtimeStories = [
+  {
+    name: 'Carla M.',
+    initials: 'CM',
+    role: 'Professora, 34 anos · São Paulo',
+    quote: 'Comecei devendo R$ 18 mil no rotativo do cartão. Hoje tenho reserva de emergência e invisto todo mês. O que mudou? Parei de fingir que o problema não existia.',
+    stats: [
+      { value: 'R$ 0', label: 'Dívidas hoje' },
+      { value: '14 meses', label: 'Pra virar o jogo' },
+    ],
+  },
+  {
+    name: 'Rafael & Bia',
+    initials: 'RB',
+    role: 'Casal, 29 e 27 anos · Belo Horizonte',
+    quote: 'Casamos sem reserva, sem planejamento, achando que o amor bastava. Bastava nada! Hoje temos a casa quitada e o primeiro filho a caminho — sem susto.',
+    stats: [
+      { value: 'R$ 210k', label: 'Patrimônio' },
+      { value: '3 anos', label: 'Do zero até aqui' },
+    ],
+  },
+  {
+    name: 'Dona Neide',
+    initials: 'DN',
+    role: 'Aposentada, 62 anos · Recife',
+    quote: 'Achava que era tarde demais pra aprender. Aos 58 comecei a investir os R$ 500 que sobravam. Hoje vivo de renda passiva e ainda ajudo meus netos.',
+    stats: [
+      { value: 'R$ 2.8k', label: 'Renda passiva/mês' },
+      { value: '4 anos', label: 'Investindo' },
+    ],
   },
 ]
 

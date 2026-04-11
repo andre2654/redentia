@@ -60,11 +60,20 @@
     </template>
   </div>
 
-  <!-- Layout -->
-  <div class="flex min-h-screen w-full">
+  <!-- Layout — both wrapper + sidebar carry an explicit brand background so
+       the whole shell flips together via Vue reactivity. Without this, the
+       sidebar inherits from <body> which is set via CSS vars injected in
+       plugins/brand.ts, and that injection path can lag behind the reactive
+       updates when a tenant changes (producing mixed Redentia-dark sidebar
+       with Norte-cream main content). -->
+  <div
+    class="flex min-h-screen w-full"
+    :style="{ backgroundColor: brand.colors.background, color: brand.colors.text }"
+  >
     <!-- Sidebar Desktop -->
     <aside
       class="sticky top-0 flex h-screen w-[320px] min-w-[320px] flex-col gap-6 p-4 max-xl:hidden"
+      :style="{ backgroundColor: brand.colors.background }"
     >
       <!-- User Profile Card -->
       <div class="brand-card border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">

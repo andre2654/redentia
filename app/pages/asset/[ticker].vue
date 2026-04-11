@@ -3,9 +3,1340 @@
     :name="layoutName"
     container-class="md:px-0"
   >
+    <!-- ========== RESEARCH VARIANT (Investidor Sardinha — AUVP analyst desk) ========== -->
+    <div
+      v-if="brand.assetPage.variant === 'research'"
+      class="relative z-10 flex flex-col"
+      :style="{ backgroundColor: brand.colors.background, color: brand.colors.text }"
+    >
+      <!-- Paper masthead -->
+      <div class="border-b" :style="{ borderColor: brand.colors.border }">
+        <div class="mx-auto flex w-full max-w-6xl items-start justify-between gap-6 px-6 pt-10 md:px-10 md:pt-12">
+          <div class="flex flex-col gap-0.5">
+            <span class="font-academic-label" :style="{ color: brand.colors.primary }">
+              AUVP RESEARCH · ESTUDO DE CASO
+            </span>
+            <span class="font-academic-body text-[12px] italic" :style="{ color: brand.colors.textMuted }">
+              Publicação interna · {{ assetEditorialDate }}
+            </span>
+          </div>
+          <span class="font-academic-mono text-[11px] uppercase tabular-nums" :style="{ color: brand.colors.textMuted }">
+            {{ tickerUpper }} · B3 · BOLSA DE VALORES DE SÃO PAULO
+          </span>
+        </div>
+      </div>
+
+      <!-- Cover: ticker + name + price with inline panorama panel -->
+      <div class="mx-auto w-full max-w-6xl px-6 py-14 md:grid md:grid-cols-12 md:gap-10 md:px-10 md:py-20">
+        <div class="md:col-span-7">
+          <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">
+            volume 1 · {{ (asset?.type || 'AÇÃO').toString().toUpperCase() === 'REIT' ? 'fundo imobiliário' : 'ação ordinária' }} · código {{ tickerUpper }}
+          </span>
+          <h1
+            class="font-academic-display mt-6"
+            :style="{
+              color: brand.colors.text,
+              fontSize: 'clamp(2.5rem, 5.5vw, 4.75rem)',
+            }"
+          >
+            Estudo de caso: <span class="italic" :style="{ color: brand.colors.primary }">{{ asset?.name || tickerUpper }}</span>
+          </h1>
+          <p class="font-academic-body mt-4 text-[13px] italic" :style="{ color: brand.colors.textMuted }">
+            Setor: {{ asset?.sector || '—' }}{{ asset?.industry ? ' · ' + asset.industry : '' }}
+          </p>
+
+          <hr class="dashed-rule mt-10 max-w-[8rem]" />
+
+          <div class="mt-8 flex flex-wrap items-baseline gap-x-6 gap-y-2">
+            <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">
+              Cotação de fechamento
+            </span>
+            <span class="font-academic-display tabular-nums" :style="{ color: brand.colors.text, fontSize: 'clamp(2.25rem, 4vw, 3.5rem)' }">
+              R$ {{ formatPriceNumber(asset?.market_price) }}
+            </span>
+            <span
+              class="font-academic-body text-lg italic"
+              :style="{
+                color: Number(asset?.change_percent) >= 0 ? brand.colors.positive : brand.colors.primary,
+              }"
+            >
+              {{ Number(asset?.change_percent) >= 0 ? '+' : '−' }}{{ Math.abs(Number(asset?.change_percent) || 0).toFixed(2).replace('.', ',') }}% no último pregão
+            </span>
+          </div>
+
+          <p
+            v-if="editorialPriceNarration"
+            class="font-academic-body mt-6 max-w-xl italic"
+            :style="{ color: brand.colors.textMuted }"
+          >
+            <span class="red-pen">Nota do analista</span> — {{ editorialPriceNarration }}
+          </p>
+        </div>
+
+        <!-- Right: compact data panel with key session metrics -->
+        <div class="mt-10 md:col-span-5 md:mt-0">
+          <div
+            class="border p-6"
+            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+          >
+            <div class="flex items-start justify-between">
+              <span class="font-academic-label" :style="{ color: brand.colors.primary }">
+                Dados do pregão
+              </span>
+              <span class="font-academic-mono text-[10px] uppercase tabular-nums" :style="{ color: brand.colors.textMuted }">
+                {{ assetEditorialDate }}
+              </span>
+            </div>
+            <dl class="mt-6 flex flex-col divide-y" :style="{ borderColor: brand.colors.border }">
+              <div
+                v-for="row in researchAssetQuickPanel"
+                :key="row.label"
+                class="flex items-baseline justify-between py-3"
+                :style="{ borderColor: brand.colors.border }"
+              >
+                <dt class="flex flex-col">
+                  <span class="font-academic-display text-[14px]" :style="{ color: brand.colors.text }">
+                    {{ row.label }}
+                  </span>
+                  <span v-if="row.note" class="font-academic-body text-[11px] italic" :style="{ color: brand.colors.textMuted }">
+                    {{ row.note }}
+                  </span>
+                </dt>
+                <dd class="text-right">
+                  <span class="font-academic-mono tabular-nums text-base" :style="{ color: brand.colors.text }">
+                    {{ row.value }}
+                  </span>
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <hr class="dashed-rule mx-auto max-w-6xl" />
+
+      <!-- §1 Histórico de preço -->
+      <div class="mx-auto w-full max-w-6xl px-6 py-14 md:px-10 md:py-16">
+        <div class="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <span class="font-academic-label" :style="{ color: brand.colors.primary }">
+              §1 · Histórico de preço
+            </span>
+            <h2 class="font-academic-display mt-2 text-3xl md:text-4xl" :style="{ color: brand.colors.text }">
+              A série histórica
+            </h2>
+            <p class="font-academic-body mt-3 max-w-2xl text-[13px] italic" :style="{ color: brand.colors.textMuted }">
+              Série de fechamento diário. O gráfico é <span class="red-pen">insumo, não conclusão</span> — use para calibrar expectativa.<sup class="footnote-marker">¹</sup>
+            </p>
+          </div>
+          <MoleculesPeriodSelector
+            v-model="selectedTimeRange"
+            :loading="isLoadingChart"
+          />
+        </div>
+        <div class="mt-8">
+          <AtomsGraphLine
+            :data="chartData"
+            :legend="chartLabel"
+            :height="320"
+            :loading="isLoadingChart"
+            :markers="chartMarkers"
+            @marker-click="onMarkerClick"
+          />
+        </div>
+      </div>
+
+      <hr class="dashed-rule mx-auto max-w-6xl" />
+
+      <!-- §2 Indicadores fundamentalistas — expanded research table -->
+      <div
+        v-if="brand.assetPage.showIndicators"
+        class="py-14 md:py-16"
+        :style="{ backgroundColor: brand.colors.surface }"
+      >
+        <div class="mx-auto w-full max-w-6xl px-6 md:px-10">
+          <div class="mb-8">
+            <span class="font-academic-label" :style="{ color: brand.colors.primary }">
+              §2 · Indicadores fundamentalistas
+            </span>
+            <h2 class="font-academic-display mt-2 text-3xl md:text-4xl" :style="{ color: brand.colors.text }">
+              Quadro sinótico
+            </h2>
+            <p class="font-academic-body mt-3 max-w-2xl text-[13px] italic" :style="{ color: brand.colors.textMuted }">
+              Todos os múltiplos e retornos relevantes. Cada linha traz a <span class="red-pen-underline">leitura do analista</span> aplicada à realidade brasileira.<sup class="footnote-marker">²</sup>
+            </p>
+          </div>
+
+          <table class="w-full border-t font-academic-body text-[13px]" :style="{ borderColor: brand.colors.text }">
+            <thead>
+              <tr class="border-b" :style="{ borderColor: brand.colors.border }">
+                <th class="font-academic-label w-14 py-3 text-left" :style="{ color: brand.colors.textMuted }">§</th>
+                <th class="font-academic-label py-3 text-left" :style="{ color: brand.colors.textMuted }">Indicador</th>
+                <th class="font-academic-label py-3 text-right" :style="{ color: brand.colors.textMuted }">Valor</th>
+                <th class="hidden font-academic-label py-3 text-right md:table-cell" :style="{ color: brand.colors.textMuted }">Leitura AUVP</th>
+              </tr>
+            </thead>
+            <tbody v-if="basicIndicators">
+              <tr
+                v-for="(row, idx) in researchAssetIndicators"
+                :key="row.label"
+                class="border-b"
+                :style="{ borderColor: brand.colors.border }"
+              >
+                <td class="py-3 pr-2">
+                  <span class="font-academic-mono text-[11px] tabular-nums" :style="{ color: brand.colors.textMuted }">
+                    2.{{ idx + 1 }}
+                  </span>
+                </td>
+                <td class="py-3">
+                  <div class="flex flex-col">
+                    <span class="font-academic-display text-[15px]" :style="{ color: brand.colors.text }">
+                      {{ row.label }}
+                    </span>
+                    <span class="font-academic-body text-[11px] italic" :style="{ color: brand.colors.textMuted }">
+                      {{ row.code }}
+                    </span>
+                  </div>
+                </td>
+                <td class="py-3 text-right align-top">
+                  <span class="font-academic-mono tabular-nums text-lg" :style="{ color: brand.colors.primary }">
+                    {{ row.value || '—' }}
+                  </span>
+                </td>
+                <td class="hidden py-3 pl-4 text-right align-top md:table-cell">
+                  <span class="font-academic-body text-[12px] italic" :style="{ color: brand.colors.textMuted }">
+                    {{ row.reading }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+            <tbody v-else>
+              <tr>
+                <td colspan="4" class="py-8 text-center font-academic-body italic" :style="{ color: brand.colors.textMuted }">
+                  Dados fundamentais indisponíveis para este ativo.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <hr class="dashed-rule mx-auto max-w-6xl" />
+
+      <!-- §3 Demonstrações financeiras: 3-col snapshot -->
+      <div
+        v-if="brand.assetPage.showFinancials && (cashFlowItems.length || balanceItems.length || incomeItems.length)"
+        class="mx-auto w-full max-w-6xl px-6 py-14 md:px-10 md:py-16"
+      >
+        <div class="mb-8">
+          <span class="font-academic-label" :style="{ color: brand.colors.primary }">
+            §3 · Demonstrações financeiras
+          </span>
+          <h2 class="font-academic-display mt-2 text-3xl md:text-4xl" :style="{ color: brand.colors.text }">
+            Último trimestre disponível
+          </h2>
+          <p class="font-academic-body mt-3 max-w-2xl text-[13px] italic" :style="{ color: brand.colors.textMuted }">
+            Três janelas do balanço: fluxo de caixa, balanço patrimonial e DRE. Balanço sujo esconde tese torta.
+          </p>
+        </div>
+
+        <div class="grid gap-8 md:grid-cols-3">
+          <!-- Cash flow -->
+          <div>
+            <div class="border-t pt-3" :style="{ borderColor: brand.colors.text }">
+              <span class="font-academic-label" :style="{ color: brand.colors.primary }">
+                3.1 · Fluxo de caixa
+              </span>
+            </div>
+            <table class="mt-3 w-full font-academic-body text-[12px]">
+              <tbody>
+                <tr
+                  v-for="(item, idx) in cashFlowItems.slice(0, 5)"
+                  :key="`cf-${idx}-${item.label}`"
+                  class="border-b"
+                  :style="{ borderColor: brand.colors.border }"
+                >
+                  <td class="py-2 pr-2">
+                    <span class="font-academic-body text-[12px]" :style="{ color: brand.colors.text }">
+                      {{ item.label }}
+                    </span>
+                  </td>
+                  <td class="py-2 text-right">
+                    <span class="font-academic-mono tabular-nums" :style="{ color: Number(item.rawValue || 0) >= 0 ? brand.colors.text : brand.colors.primary }">
+                      {{ item.value }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Balance sheet -->
+          <div>
+            <div class="border-t pt-3" :style="{ borderColor: brand.colors.text }">
+              <span class="font-academic-label" :style="{ color: brand.colors.primary }">
+                3.2 · Balanço patrimonial
+              </span>
+            </div>
+            <table class="mt-3 w-full font-academic-body text-[12px]">
+              <tbody>
+                <tr
+                  v-for="(item, idx) in balanceItems.slice(0, 5)"
+                  :key="`bs-${idx}-${item.label}`"
+                  class="border-b"
+                  :style="{ borderColor: brand.colors.border }"
+                >
+                  <td class="py-2 pr-2">
+                    <span class="font-academic-body text-[12px]" :style="{ color: brand.colors.text }">
+                      {{ item.label }}
+                    </span>
+                  </td>
+                  <td class="py-2 text-right">
+                    <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.text }">
+                      {{ item.value }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Income statement -->
+          <div>
+            <div class="border-t pt-3" :style="{ borderColor: brand.colors.text }">
+              <span class="font-academic-label" :style="{ color: brand.colors.primary }">
+                3.3 · DRE
+              </span>
+            </div>
+            <table class="mt-3 w-full font-academic-body text-[12px]">
+              <tbody>
+                <tr
+                  v-for="(item, idx) in incomeItems.slice(0, 5)"
+                  :key="`is-${idx}-${item.label}`"
+                  class="border-b"
+                  :style="{ borderColor: brand.colors.border }"
+                >
+                  <td class="py-2 pr-2">
+                    <span class="font-academic-body text-[12px]" :style="{ color: brand.colors.text }">
+                      {{ item.label }}
+                    </span>
+                  </td>
+                  <td class="py-2 text-right">
+                    <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.text }">
+                      {{ item.value }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <hr v-if="brand.assetPage.showFinancials" class="dashed-rule mx-auto max-w-6xl" />
+
+      <!-- §4 Histórico de proventos -->
+      <div
+        v-if="dividendsData.length > 0"
+        class="py-14 md:py-16"
+        :style="{ backgroundColor: brand.colors.surface }"
+      >
+        <div class="mx-auto w-full max-w-6xl px-6 md:px-10">
+          <div class="mb-8">
+            <span class="font-academic-label" :style="{ color: brand.colors.primary }">
+              §4 · Histórico de proventos
+            </span>
+            <h2 class="font-academic-display mt-2 text-3xl md:text-4xl" :style="{ color: brand.colors.text }">
+              Últimos pagamentos registrados
+            </h2>
+            <p class="font-academic-body mt-3 max-w-2xl text-[13px] italic" :style="{ color: brand.colors.textMuted }">
+              Consistência de proventos é o que separa empresa madura de <span class="red-pen-underline">promessa de crescimento</span>.
+            </p>
+          </div>
+
+          <table class="w-full border-t font-academic-body text-[13px]" :style="{ borderColor: brand.colors.text }">
+            <thead>
+              <tr class="border-b" :style="{ borderColor: brand.colors.border }">
+                <th class="font-academic-label py-3 text-left" :style="{ color: brand.colors.textMuted }">Data pagamento</th>
+                <th class="font-academic-label py-3 text-left" :style="{ color: brand.colors.textMuted }">Tipo</th>
+                <th class="font-academic-label py-3 text-right" :style="{ color: brand.colors.textMuted }">Valor por cota</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="(d, idx) in researchAssetDividends"
+                :key="`div-${idx}-${d.paymentDate}`"
+                class="border-b"
+                :style="{ borderColor: brand.colors.border }"
+              >
+                <td class="py-3">
+                  <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.text }">
+                    {{ d.paymentDate }}
+                  </span>
+                </td>
+                <td class="py-3">
+                  <span
+                    class="font-academic-label"
+                    :style="{ color: (d.label || '').toUpperCase().includes('JCP') || (d.label || '').toUpperCase().includes('JUROS') ? brand.colors.textMuted : brand.colors.primary }"
+                  >
+                    {{ d.label || 'Provento' }}
+                  </span>
+                </td>
+                <td class="py-3 text-right">
+                  <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.text }">
+                    R$ {{ d.rate }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p v-if="dividendsData.length > researchAssetDividends.length" class="font-academic-body mt-4 text-[11px] italic" :style="{ color: brand.colors.textMuted }">
+            Exibindo os {{ researchAssetDividends.length }} pagamentos mais recentes. Histórico completo disponível no portal interno.
+          </p>
+        </div>
+      </div>
+
+      <hr v-if="dividendsData.length > 0" class="dashed-rule mx-auto max-w-6xl" />
+
+      <!-- §5 Veredicto AUVP: checklist de filtros passa / não passa -->
+      <div class="mx-auto w-full max-w-6xl px-6 py-14 md:grid md:grid-cols-12 md:gap-10 md:px-10 md:py-16">
+        <div class="md:col-span-4">
+          <span class="font-academic-label" :style="{ color: brand.colors.primary }">
+            §5 · Veredicto AUVP
+          </span>
+          <h2 class="font-academic-display mt-2 text-3xl md:text-4xl" :style="{ color: brand.colors.text }">
+            O filtro do método
+          </h2>
+          <p class="font-academic-body mt-4 text-[13px] italic" :style="{ color: brand.colors.textMuted }">
+            Esta é a passagem do ativo pelos <span class="red-pen">quatro filtros do método AUVP</span>. Não é recomendação — é verificação metodológica.
+          </p>
+        </div>
+        <div class="mt-8 md:col-span-7 md:col-start-6 md:mt-0">
+          <p class="font-academic-body academic-dropcap" :style="{ color: brand.colors.text }">
+            {{ researchAssetThesis }}
+          </p>
+
+          <hr class="dashed-rule mt-10" />
+
+          <ol class="mt-8 flex flex-col">
+            <li
+              v-for="(filter, idx) in researchAssetFilters"
+              :key="filter.label"
+              class="flex items-start gap-5 border-b py-5"
+              :style="{ borderColor: brand.colors.border }"
+            >
+              <span
+                class="font-academic-display text-2xl"
+                :style="{ color: filter.passes ? brand.colors.positive : brand.colors.primary }"
+              >
+                {{ filter.passes ? '✓' : '✗' }}
+              </span>
+              <div class="flex flex-1 flex-col">
+                <span class="font-academic-display text-[15px]" :style="{ color: brand.colors.text }">
+                  {{ idx + 1 }}. {{ filter.label }}
+                </span>
+                <span class="font-academic-body text-[12px] italic" :style="{ color: brand.colors.textMuted }">
+                  {{ filter.rule }} · observado: <span class="font-academic-mono" :style="{ color: brand.colors.text }">{{ filter.observed }}</span>
+                </span>
+              </div>
+            </li>
+          </ol>
+
+          <div class="mt-10 border-t pt-6" :style="{ borderColor: brand.colors.border }">
+            <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">
+              Veredicto final
+            </span>
+            <p class="font-academic-display mt-2 text-xl leading-tight" :style="{ color: brand.colors.text }">
+              <span class="red-pen">{{ researchAssetVerdict }}</span>
+            </p>
+            <p class="font-academic-body mt-3 text-[12px] italic" :style="{ color: brand.colors.textMuted }">
+              Passar nos filtros não é sinal de compra. É sinal de que o ativo merece <span class="red-pen-underline">aprofundamento do estudo</span>.<sup class="footnote-marker">³</sup>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <hr class="dashed-rule mx-auto max-w-6xl" />
+
+      <!-- §6 Sobre a empresa -->
+      <div v-if="brand.assetPage.showCompanyInfo" class="mx-auto w-full max-w-6xl px-6 py-14 md:px-10 md:py-16">
+        <div class="mb-8">
+          <span class="font-academic-label" :style="{ color: brand.colors.primary }">
+            §6 · Identificação da empresa
+          </span>
+          <h2 class="font-academic-display mt-2 text-3xl md:text-4xl" :style="{ color: brand.colors.text }">
+            Dados institucionais
+          </h2>
+        </div>
+
+        <dl class="flex flex-col border-t" :style="{ borderColor: brand.colors.border }">
+          <div v-if="asset?.sector" class="flex items-baseline gap-6 border-b py-4" :style="{ borderColor: brand.colors.border }">
+            <dt class="font-academic-label w-40 shrink-0" :style="{ color: brand.colors.textMuted }">Setor</dt>
+            <dd class="font-academic-body" :style="{ color: brand.colors.text }">{{ asset.sector }}</dd>
+          </div>
+          <div v-if="asset?.industry" class="flex items-baseline gap-6 border-b py-4" :style="{ borderColor: brand.colors.border }">
+            <dt class="font-academic-label w-40 shrink-0" :style="{ color: brand.colors.textMuted }">Indústria</dt>
+            <dd class="font-academic-body" :style="{ color: brand.colors.text }">{{ asset.industry }}</dd>
+          </div>
+          <div v-if="asset?.website" class="flex items-baseline gap-6 border-b py-4" :style="{ borderColor: brand.colors.border }">
+            <dt class="font-academic-label w-40 shrink-0" :style="{ color: brand.colors.textMuted }">Site institucional</dt>
+            <dd>
+              <a
+                :href="asset.website"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="font-academic-body border-b pb-[1px]"
+                :style="{ color: brand.colors.text, borderColor: brand.colors.primary }"
+              >
+                {{ asset.website.replace(/^https?:\/\//, '').replace(/\/$/, '') }} →
+              </a>
+            </dd>
+          </div>
+          <div class="flex items-baseline gap-6 border-b py-4" :style="{ borderColor: brand.colors.border }">
+            <dt class="font-academic-label w-40 shrink-0" :style="{ color: brand.colors.textMuted }">Código B3</dt>
+            <dd class="font-academic-mono" :style="{ color: brand.colors.text }">{{ tickerUpper }}</dd>
+          </div>
+        </dl>
+      </div>
+
+      <hr class="dashed-rule mx-auto max-w-6xl" />
+
+      <!-- §7 Próximos passos AUVP -->
+      <div class="mx-auto w-full max-w-6xl px-6 py-14 md:px-10 md:py-16">
+        <div class="mb-8">
+          <span class="font-academic-label" :style="{ color: brand.colors.primary }">
+            §7 · Aprofundar o estudo
+          </span>
+          <h2 class="font-academic-display mt-2 text-3xl md:text-4xl" :style="{ color: brand.colors.text }">
+            Próximos passos no ecossistema AUVP
+          </h2>
+          <p class="font-academic-body mt-3 max-w-2xl text-[13px] italic" :style="{ color: brand.colors.textMuted }">
+            Este estudo é a primeira camada. Para ir além — entender o método, comparar com pares, discutir com a comunidade — o caminho é o ecossistema.
+          </p>
+        </div>
+
+        <div class="grid gap-px border md:grid-cols-3" :style="{ borderColor: brand.colors.text, backgroundColor: brand.colors.text }">
+          <a
+            v-for="(item, idx) in researchAssetNextSteps"
+            :key="item.title"
+            :href="item.url"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="group flex flex-col gap-3 p-6 transition-colors md:p-8"
+            :style="{ backgroundColor: brand.colors.background }"
+            @mouseenter="($event.currentTarget as HTMLElement).style.backgroundColor = brand.colors.surface"
+            @mouseleave="($event.currentTarget as HTMLElement).style.backgroundColor = brand.colors.background"
+          >
+            <div class="flex items-start justify-between">
+              <span class="font-academic-mono text-[11px] tabular-nums" :style="{ color: brand.colors.primary }">
+                [{{ String(idx + 1).padStart(2, '0') }}]
+              </span>
+              <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">
+                {{ item.kind }}
+              </span>
+            </div>
+            <h3
+              class="font-academic-display"
+              :style="{
+                color: brand.colors.text,
+                fontSize: 'clamp(1.25rem, 2vw, 1.5rem)',
+                lineHeight: '1.1',
+              }"
+            >
+              {{ item.title }}
+            </h3>
+            <p class="font-academic-body" :style="{ color: brand.colors.text, fontSize: '13px' }">
+              {{ item.body }}
+            </p>
+            <span class="mt-auto font-academic-label transition-transform group-hover:translate-x-1" :style="{ color: brand.colors.primary }">
+              {{ item.cta }} →
+            </span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Closing: signature + CTAs + footnotes -->
+      <div
+        class="py-16 md:py-20"
+        :style="{ backgroundColor: brand.colors.surface, borderTop: `1px solid ${brand.colors.border}` }"
+      >
+        <div class="mx-auto w-full max-w-6xl px-6 md:px-10">
+          <div class="flex flex-wrap items-start justify-between gap-6">
+            <div class="flex flex-col gap-1">
+              <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">
+                Compilado por
+              </span>
+              <span class="font-academic-display text-2xl" :style="{ color: brand.colors.text }">
+                {{ brand.founder?.name || 'Raul Sena' }}
+              </span>
+              <span class="font-academic-body text-[13px] italic" :style="{ color: brand.colors.textMuted }">
+                Fundador · AUVP — A Única Verdade Possível
+              </span>
+            </div>
+            <div class="flex flex-col items-end gap-3">
+              <NuxtLink
+                to="/auth/register"
+                class="inline-flex items-center gap-3 border-2 px-5 py-2.5 font-academic-label transition-colors"
+                :style="{
+                  backgroundColor: brand.colors.primary,
+                  color: brand.colors.background,
+                  borderColor: brand.colors.primary,
+                }"
+              >
+                <span>ABRIR O TERMINAL</span>
+                <span>→</span>
+              </NuxtLink>
+              <a
+                href="https://auvp.com.br"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="font-academic-body text-[13px] italic transition-opacity hover:opacity-70"
+                :style="{ color: brand.colors.text }"
+              >
+                Conhecer a AUVP Escola <span :style="{ color: brand.colors.primary }">→</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="mt-12 border-t pt-6" :style="{ borderColor: brand.colors.border }">
+            <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">
+              Notas de rodapé
+            </span>
+            <ol class="mt-4 flex flex-col gap-3">
+              <li class="font-academic-body text-[12px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
+                <sup class="footnote-marker">¹</sup> Gráfico é fotografia do passado. Serve para calibrar expectativa, não para prever futuro.
+              </li>
+              <li class="font-academic-body text-[12px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
+                <sup class="footnote-marker">²</sup> Múltiplos fora do contexto setorial induzem a erro. Sempre compare com pares diretos e com a média histórica da própria empresa.
+              </li>
+              <li class="font-academic-body text-[12px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
+                <sup class="footnote-marker">³</sup> AUVP não opera recomendação individualizada. Oferece método e plataforma de estudo. A decisão, por princípio, é sempre do investidor.
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== MENTOR VARIANT (Primo Rico — masterclass / book-cover) ========== -->
+    <div
+      v-else-if="brand.assetPage.variant === 'mentor'"
+      class="relative z-10 flex flex-col"
+      :style="{ backgroundColor: brand.colors.background, color: brand.colors.text }"
+    >
+      <!-- Top tape: thick orange strip with "MANUAL DO PRIMO · FICHA TÉCNICA" -->
+      <div
+        class="relative flex items-center gap-4 px-6 py-3 md:px-10"
+        :style="{ backgroundColor: brand.colors.primary, color: brand.colors.background }"
+      >
+        <span class="font-mentor-eyebrow">MANUAL DO PRIMO · FICHA TÉCNICA</span>
+        <span class="flex-1 border-t" :style="{ borderColor: `${brand.colors.background}40` }" />
+        <span class="font-mentor-eyebrow">{{ tickerUpper }} · {{ (asset?.type || 'AÇÃO').toString().toUpperCase() === 'REIT' ? 'FII' : 'AÇÃO' }}</span>
+      </div>
+
+      <!-- HERO: asymmetric split with oversized ticker + price -->
+      <div class="relative grid gap-0 md:grid-cols-12">
+        <!-- Left column: logo + sector/industry block -->
+        <div
+          class="relative flex flex-col justify-end px-6 py-10 md:col-span-4 md:px-10 md:py-14"
+          :style="{ backgroundColor: brand.colors.tertiary }"
+        >
+          <!-- Vertical orange strip on right edge -->
+          <div class="absolute right-0 top-0 h-full w-1" :style="{ backgroundColor: brand.colors.primary }" />
+          <img
+            v-if="asset?.logo && !isLoadingAsset"
+            :src="asset.logo"
+            :alt="`${assetName}`"
+            class="mb-6 h-20 w-20 rounded-2xl object-cover shadow-2xl"
+          />
+          <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
+            O ATIVO
+          </span>
+          <h1
+            class="font-mentor-display mt-2"
+            :style="{
+              color: brand.colors.text,
+              fontSize: 'clamp(2.5rem, 4.5vw, 4rem)',
+              lineHeight: '0.85',
+            }"
+          >
+            {{ assetName || tickerUpper }}
+          </h1>
+          <div class="mt-6 flex flex-col gap-1">
+            <span class="font-mentor-eyebrow" :style="{ color: `${brand.colors.text}66` }">
+              SETOR
+            </span>
+            <span class="text-sm font-semibold uppercase" :style="{ color: `${brand.colors.text}CC` }">
+              {{ asset?.sector || '—' }}
+            </span>
+          </div>
+          <div v-if="asset?.industry" class="mt-4 flex flex-col gap-1">
+            <span class="font-mentor-eyebrow" :style="{ color: `${brand.colors.text}66` }">
+              INDÚSTRIA
+            </span>
+            <span class="text-sm font-semibold uppercase" :style="{ color: `${brand.colors.text}CC` }">
+              {{ asset.industry }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Right column: price monumental + change + stats -->
+        <div class="flex flex-col justify-center px-6 py-14 md:col-span-8 md:px-14 md:py-20">
+          <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
+            CAPÍTULO I · COTAÇÃO DE HOJE
+          </span>
+
+          <!-- Massive ticker as headline -->
+          <h2
+            class="font-mentor-display mt-4"
+            :style="{
+              color: brand.colors.text,
+              fontSize: 'clamp(4rem, 8.5vw, 8.5rem)',
+              lineHeight: '0.85',
+            }"
+          >
+            {{ tickerUpper }}
+          </h2>
+
+          <!-- Price block -->
+          <div class="mt-8 flex flex-wrap items-baseline gap-6">
+            <div class="flex flex-col">
+              <span class="font-mentor-eyebrow" :style="{ color: `${brand.colors.text}66` }">
+                PREÇO ATUAL
+              </span>
+              <div class="mt-2 flex items-baseline gap-3">
+                <span class="font-mentor-display text-xl" :style="{ color: `${brand.colors.text}80` }">
+                  R$
+                </span>
+                <span
+                  class="font-mentor-display tabular-nums"
+                  :style="{
+                    color: brand.colors.text,
+                    fontSize: 'clamp(3rem, 6vw, 5.5rem)',
+                  }"
+                >
+                  {{ formatPriceNumber(asset?.market_price) }}
+                </span>
+              </div>
+            </div>
+
+            <div class="flex flex-col">
+              <span class="font-mentor-eyebrow" :style="{ color: `${brand.colors.text}66` }">
+                HOJE
+              </span>
+              <span
+                class="font-mentor-display mt-2 tabular-nums"
+                :style="{
+                  color: Number(asset?.change_percent) >= 0 ? brand.colors.positive : brand.colors.negative,
+                  fontSize: 'clamp(2rem, 3.5vw, 3rem)',
+                }"
+              >
+                {{ Number(asset?.change_percent) >= 0 ? '+' : '' }}{{ Number(asset?.change_percent || 0).toFixed(2).replace('.', ',') }}%
+              </span>
+            </div>
+          </div>
+
+          <!-- Chunky orange rule -->
+          <hr
+            class="mentor-rule mt-10 max-w-[6rem]"
+            :style="{ backgroundColor: brand.colors.primary }"
+          />
+
+          <!-- Quick stats: 4 blocks numbered 01-04 -->
+          <div
+            class="mt-10 grid gap-px"
+            :class="basicIndicators ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-1'"
+            :style="{ backgroundColor: `${brand.colors.text}18` }"
+          >
+            <template v-if="basicIndicators">
+              <div
+                v-for="(item, idx) in mentorQuickStats"
+                :key="item.label"
+                class="flex flex-col gap-2 px-5 py-6"
+                :style="{ backgroundColor: brand.colors.background }"
+              >
+                <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
+                  [{{ String(idx + 1).padStart(2, '0') }}]
+                </span>
+                <span
+                  class="font-mentor-display tabular-nums"
+                  :style="{
+                    color: brand.colors.text,
+                    fontSize: 'clamp(1.75rem, 2.5vw, 2.25rem)',
+                  }"
+                >
+                  {{ item.value || '—' }}
+                </span>
+                <span
+                  class="text-[10px] font-bold uppercase tracking-wider"
+                  :style="{ color: `${brand.colors.text}99` }"
+                >
+                  {{ item.label }}
+                </span>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chart section — Chapter II -->
+      <div
+        class="border-t border-b py-16 md:py-20"
+        :style="{ borderColor: `${brand.colors.text}15`, backgroundColor: brand.colors.surface }"
+      >
+        <div class="mx-auto max-w-6xl px-6 md:px-10">
+          <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
+            <div class="flex flex-col gap-2">
+              <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
+                CAPÍTULO II
+              </span>
+              <h2
+                class="font-mentor-display"
+                :style="{
+                  color: brand.colors.text,
+                  fontSize: 'clamp(2.5rem, 5vw, 4.5rem)',
+                }"
+              >
+                A TRAJETÓRIA
+              </h2>
+            </div>
+            <MoleculesPeriodSelector
+              v-model="selectedTimeRange"
+              :loading="isLoadingChart"
+            />
+          </div>
+          <AtomsGraphLine
+            :data="chartData"
+            :legend="chartLabel"
+            :height="360"
+            :loading="isLoadingChart"
+            :markers="chartMarkers"
+            @marker-click="onMarkerClick"
+          />
+        </div>
+      </div>
+
+      <!-- Mentor pull quote about decisions -->
+      <div
+        class="border-b py-20 md:py-24"
+        :style="{ borderColor: `${brand.colors.text}15` }"
+      >
+        <div class="mx-auto max-w-6xl px-6 md:px-10">
+          <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
+            PAUSA PARA REFLEXÃO
+          </span>
+          <blockquote
+            class="font-mentor-quote mt-6 leading-[0.9]"
+            :style="{
+              color: brand.colors.text,
+              fontSize: 'clamp(2rem, 5.5vw, 5rem)',
+            }"
+          >
+            "{{ mentorAssetQuote }}"
+          </blockquote>
+          <div class="mt-8 flex items-center gap-4">
+            <div class="h-[2px] w-12" :style="{ backgroundColor: brand.colors.primary }" />
+            <span class="font-mentor-eyebrow" :style="{ color: `${brand.colors.text}99` }">
+              {{ (brand.founder?.name || 'THIAGO NIGRO').toUpperCase() }} · DO MIL AO MILHÃO
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fundamentals — Chapter III, as a heavy register grid -->
+      <div v-if="brand.assetPage.showIndicators" class="mx-auto w-full max-w-6xl px-6 py-20 md:px-10 md:py-28">
+        <div class="mb-12 flex flex-col gap-3">
+          <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
+            CAPÍTULO III
+          </span>
+          <h2
+            class="font-mentor-display"
+            :style="{
+              color: brand.colors.text,
+              fontSize: 'clamp(2.5rem, 5vw, 4.5rem)',
+            }"
+          >
+            AS MÉTRICAS QUE IMPORTAM
+          </h2>
+          <p class="max-w-2xl text-base" :style="{ color: `${brand.colors.text}B3` }">
+            Os números que um investidor disciplinado olha antes de apertar o botão. Sem ruído, sem hype.
+          </p>
+        </div>
+
+        <!-- Fundamentals list: 6 numbered rows, chunky -->
+        <div class="grid gap-0 border" :style="{ borderColor: `${brand.colors.text}15` }">
+          <div
+            v-for="(item, idx) in mentorFundamentalsList"
+            :key="item.label"
+            class="group grid items-start gap-6 border-t px-6 py-6 transition-colors md:grid-cols-12 md:gap-10 md:px-10 md:py-8"
+            :class="idx === 0 && '!border-t-0'"
+            :style="{ borderColor: `${brand.colors.text}15` }"
+            @mouseenter="($event.currentTarget as HTMLElement).style.backgroundColor = `${brand.colors.primary}0D`"
+            @mouseleave="($event.currentTarget as HTMLElement).style.backgroundColor = 'transparent'"
+          >
+            <!-- Number -->
+            <div class="md:col-span-1">
+              <span
+                class="font-mentor-display"
+                :style="{ color: brand.colors.primary, fontSize: 'clamp(2.5rem, 4vw, 3.5rem)' }"
+              >
+                {{ String(idx + 1).padStart(2, '0') }}
+              </span>
+            </div>
+            <!-- Label -->
+            <div class="md:col-span-4 md:pl-2">
+              <span
+                class="font-mentor-display"
+                :style="{ color: brand.colors.text, fontSize: 'clamp(1.5rem, 2.2vw, 2rem)', lineHeight: '0.9' }"
+              >
+                {{ item.label }}
+              </span>
+              <span
+                class="mt-2 block font-mentor-eyebrow"
+                :style="{ color: `${brand.colors.text}66` }"
+              >
+                {{ item.shortCode }}
+              </span>
+            </div>
+            <!-- Description -->
+            <div class="md:col-span-5 md:pl-2">
+              <p class="text-sm leading-relaxed md:text-base" :style="{ color: `${brand.colors.text}CC` }">
+                {{ item.description }}
+              </p>
+            </div>
+            <!-- Value — big block -->
+            <div class="md:col-span-2 md:text-right">
+              <span
+                class="font-mentor-display tabular-nums"
+                :style="{ color: brand.colors.text, fontSize: 'clamp(2rem, 3.5vw, 3rem)' }"
+              >
+                {{ item.value || '—' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chapter IV: The thesis -->
+      <div
+        class="border-t border-b py-20 md:py-24"
+        :style="{ borderColor: `${brand.colors.text}15`, backgroundColor: brand.colors.surface }"
+      >
+        <div class="mx-auto grid max-w-6xl gap-10 px-6 md:grid-cols-12 md:px-10">
+          <div class="md:col-span-4">
+            <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
+              CAPÍTULO IV
+            </span>
+            <h2
+              class="font-mentor-display mt-3"
+              :style="{
+                color: brand.colors.text,
+                fontSize: 'clamp(2rem, 3.5vw, 3rem)',
+                lineHeight: '0.9',
+              }"
+            >
+              A TESE
+            </h2>
+          </div>
+          <div class="md:col-span-8">
+            <p
+              class="text-lg leading-relaxed md:text-xl"
+              :style="{ color: `${brand.colors.text}E6` }"
+            >
+              {{ mentorThesisText }}
+            </p>
+            <hr class="mentor-rule mt-10 max-w-[4rem]" :style="{ backgroundColor: brand.colors.primary }" />
+            <p class="mt-8 font-mentor-eyebrow" :style="{ color: `${brand.colors.text}80` }">
+              RESUMO EM UMA LINHA
+            </p>
+            <p class="mt-2 font-mentor-display leading-tight" :style="{
+              color: brand.colors.text,
+              fontSize: 'clamp(1.5rem, 2.5vw, 2.25rem)',
+            }">
+              {{ mentorOneLiner }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Closing CTA: "DECIDA COM DADOS." -->
+      <div class="mx-auto max-w-6xl px-6 py-24 text-center md:px-10 md:py-32">
+        <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
+          CAPÍTULO FINAL
+        </span>
+        <h2
+          class="font-mentor-display mt-6"
+          :style="{
+            color: brand.colors.text,
+            fontSize: 'clamp(3rem, 9vw, 9rem)',
+          }"
+        >
+          DECIDA
+          <br />
+          <span :style="{ color: brand.colors.primary }">COM DADOS.</span>
+        </h2>
+        <p class="mx-auto mt-8 max-w-xl text-base md:text-lg" :style="{ color: `${brand.colors.text}B3` }">
+          Fundamentos, não opinião. Paciência, não timing. Método ARCA, não sorte.
+        </p>
+        <div class="mt-12 flex flex-col items-center gap-4 sm:flex-row sm:justify-center sm:gap-6">
+          <NuxtLink
+            to="/auth/register"
+            class="group inline-flex items-center gap-3 px-10 py-5 font-mentor-eyebrow text-[13px] transition-transform hover:-translate-y-0.5"
+            :style="{
+              backgroundColor: brand.colors.primary,
+              color: brand.colors.background,
+              letterSpacing: '0.18em',
+            }"
+          >
+            <span>COMEÇAR A CONSTRUIR</span>
+            <span class="inline-block transition-transform group-hover:translate-x-1">→</span>
+          </NuxtLink>
+          <span class="font-mentor-eyebrow" :style="{ color: `${brand.colors.text}66` }">
+            GRÁTIS · SEM CARTÃO · ACESSO IMEDIATO
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== SHOWTIME VARIANT (Me Poupe! — TV show / pop magazine) ========== -->
+    <div
+      v-else-if="brand.assetPage.variant === 'showtime'"
+      class="relative z-10 flex flex-col overflow-hidden"
+      :style="{ backgroundColor: brand.colors.background, color: brand.colors.text }"
+    >
+      <!-- Top lower-third: "AO VIVO · AULA DE HOJE" -->
+      <div class="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-6 pt-10 md:px-10 md:pt-12">
+        <span class="lower-third">AULA DE HOJE · EP · {{ tickerUpper }}</span>
+        <span class="font-showtime-label hidden sm:inline" :style="{ color: `${brand.colors.text}80` }">
+          {{ assetEditorialDate }}
+        </span>
+      </div>
+
+      <!-- SHOW COVER: headline framed as "A ficha da galera" + giant price -->
+      <div class="relative mx-auto w-full max-w-6xl px-6 pb-10 pt-8 md:grid md:grid-cols-12 md:gap-10 md:px-10 md:pb-14 md:pt-12">
+        <!-- Decorative confetti -->
+        <div class="pointer-events-none absolute inset-0 opacity-25">
+          <div class="absolute left-[6%] top-[15%] size-3 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
+          <div class="absolute left-[22%] top-[70%] size-2 rounded-full" :style="{ backgroundColor: brand.colors.secondary }" />
+          <div class="absolute right-[12%] top-[8%] size-4 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
+          <div class="absolute right-[30%] top-[55%] size-2 rounded-full" :style="{ backgroundColor: brand.colors.positive }" />
+        </div>
+
+        <div class="relative md:col-span-7">
+          <div class="mb-4 flex items-center gap-3">
+            <USkeleton v-if="isLoadingAsset" class="size-14 rounded-2xl" />
+            <div
+              v-else-if="asset?.logo"
+              class="flex size-14 items-center justify-center overflow-hidden rounded-2xl p-1"
+              :style="{ backgroundColor: brand.colors.surface, border: `2px solid ${brand.colors.primary}40` }"
+            >
+              <img :src="asset.logo" :alt="assetName" class="size-full object-contain" />
+            </div>
+            <span class="font-showtime-label" :style="{ color: brand.colors.primary }">
+              {{ (asset?.type || 'AÇÃO').toString().toUpperCase() === 'REIT' ? 'FUNDO IMOBILIÁRIO' : 'AÇÃO' }} · {{ tickerUpper }}
+            </span>
+          </div>
+
+          <h1
+            class="font-showtime-display chunky-shadow"
+            :style="{
+              color: brand.colors.text,
+              fontSize: 'clamp(2.5rem, 5.5vw, 5rem)',
+            }"
+          >
+            A ficha da<br />
+            <span class="highlighter" :style="{ color: brand.colors.primary }">{{ assetName || tickerUpper }}</span>
+          </h1>
+
+          <p v-if="!isLoadingAsset && asset?.sector" class="font-showtime-body mt-5 max-w-xl text-base" :style="{ color: `${brand.colors.text}CC` }">
+            Setor: <strong :style="{ color: brand.colors.primary }">{{ asset?.sector }}</strong>{{ asset?.industry ? ' · ' + asset.industry : '' }}. Tudo que você precisa saber desse bicho num lugar só, criatura — sem jargão, sem cara feia.
+          </p>
+
+          <div class="mt-8 flex flex-wrap items-baseline gap-x-5 gap-y-2">
+            <span class="font-showtime-label" :style="{ color: `${brand.colors.text}80` }">
+              PREÇO AGORA
+            </span>
+            <USkeleton v-if="isLoadingAsset" class="h-14 w-48" />
+            <span
+              v-else
+              class="font-showtime-display tabular-nums"
+              :style="{ color: brand.colors.text, fontSize: 'clamp(2.25rem, 4vw, 3.5rem)' }"
+            >
+              R$ {{ formatPriceNumber(asset?.market_price) }}
+            </span>
+            <span
+              v-if="!isLoadingAsset"
+              class="font-showtime-label rounded-full px-4 py-2 text-[12px]"
+              :style="{
+                backgroundColor: Number(asset?.change_percent) >= 0 ? `${brand.colors.positive}25` : `${brand.colors.negative}25`,
+                color: Number(asset?.change_percent) >= 0 ? brand.colors.positive : brand.colors.negative,
+              }"
+            >
+              {{ Number(asset?.change_percent) >= 0 ? '+' : '' }}{{ Number(asset?.change_percent || 0).toFixed(2).replace('.', ',') }}% hoje
+            </span>
+          </div>
+        </div>
+
+        <!-- Right: quick stats card tilted -->
+        <div class="relative mt-10 md:col-span-5 md:mt-0">
+          <div
+            class="showtime-frame showtime-frame--tilt-right relative rounded-[28px] p-6"
+            :style="{ backgroundColor: brand.colors.surface }"
+          >
+            <div class="washi-tape" />
+            <span class="font-showtime-label" :style="{ color: brand.colors.primary }">
+              FICHA TÉCNICA
+            </span>
+            <h3 class="font-showtime-display mt-2" :style="{ color: brand.colors.text, fontSize: '1.5rem' }">
+              O pregão de hoje
+            </h3>
+            <dl class="mt-5 flex flex-col gap-3">
+              <div v-for="row in showtimeQuickPanel" :key="row.label" class="flex items-center justify-between">
+                <dt class="flex items-center gap-2 font-showtime-label text-[11px]" :style="{ color: `${brand.colors.text}80` }">
+                  <UIcon :name="row.icon" class="size-3.5" :style="{ color: brand.colors.primary }" />
+                  {{ row.label }}
+                </dt>
+                <dd class="font-showtime-body tabular-nums text-sm font-bold" :style="{ color: brand.colors.text }">
+                  {{ row.value }}
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      <!-- Margarete narration strip -->
+      <div class="mx-auto w-full max-w-6xl px-6 pb-8 md:px-10">
+        <div
+          class="flex items-start gap-4 rounded-3xl border-2 border-dashed p-5"
+          :style="{ borderColor: `${brand.colors.primary}60`, backgroundColor: `${brand.colors.primary}10` }"
+        >
+          <img src="/brand/mepoupe/margarete.svg" alt="Margarete" class="h-14 shrink-0" />
+          <p class="font-showtime-body text-sm italic" :style="{ color: `${brand.colors.text}CC` }">
+            <strong :style="{ color: brand.colors.primary }">Margarete diz:</strong>
+            olha só, criatura — esses números ficam subindo e descendo todo dia, é normal. O importante não é o preço de HOJE, é o fundamento. Vamos destrinchar tudo aqui embaixo, beleza?
+          </p>
+        </div>
+      </div>
+
+      <!-- QUADRO 01: Evolução do preço (chart) -->
+      <div class="relative py-16 md:py-20" :style="{ backgroundColor: brand.colors.surface }">
+        <div class="mx-auto w-full max-w-6xl px-6 md:px-10">
+          <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <span class="lower-third">QUADRO 01 · COMO ESSE BICHO ANDOU</span>
+              <h2
+                class="font-showtime-display mt-4"
+                :style="{ color: brand.colors.text, fontSize: 'clamp(2rem, 4vw, 3rem)' }"
+              >
+                A montanha-russa do<br />
+                <span class="highlighter" :style="{ color: brand.colors.primary }">{{ tickerUpper }}</span>
+              </h2>
+            </div>
+            <MoleculesPeriodSelector v-model="selectedTimeRange" :loading="isLoadingChart" />
+          </div>
+
+          <div
+            class="showtime-frame rounded-[28px] p-5"
+            :style="{ backgroundColor: brand.colors.background, transform: 'none' }"
+          >
+            <AtomsGraphLine
+              :data="chartData"
+              :legend="chartLabel"
+              :height="320"
+              :loading="isLoadingChart"
+              :markers="chartMarkers"
+              @marker-click="onMarkerClick"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Wooden spoon divider -->
+      <div class="flex items-center justify-center gap-6 py-6">
+        <div class="h-[2px] max-w-[180px] flex-1" :style="{ backgroundColor: `${brand.colors.primary}55` }" />
+        <img src="/brand/mepoupe/margarete.svg" alt="Margarete" class="h-16" style="transform: rotate(90deg);" />
+        <div class="h-[2px] max-w-[180px] flex-1" :style="{ backgroundColor: `${brand.colors.primary}55` }" />
+      </div>
+
+      <!-- QUADRO 02: Indicadores como "cartões colecionáveis" -->
+      <div v-if="brand.assetPage.showIndicators" class="relative py-16 md:py-20">
+        <div class="mx-auto w-full max-w-6xl px-6 md:px-10">
+          <div class="mb-10 text-center">
+            <span class="lower-third">QUADRO 02 · O QUE OS NÚMEROS DIZEM</span>
+            <h2
+              class="font-showtime-display mt-5"
+              :style="{ color: brand.colors.text, fontSize: 'clamp(2rem, 4vw, 3rem)' }"
+            >
+              Indicadores traduzidos<br />
+              <span class="highlighter" :style="{ color: brand.colors.primary }">pra gente normal</span>
+            </h2>
+            <p class="font-showtime-body mx-auto mt-6 max-w-2xl text-base" :style="{ color: `${brand.colors.text}CC` }">
+              Esses nomes parecem coisa de outro planeta mas são só ferramentas pra entender se a empresa é saudável. Respira, criatura. Vamos com calma.
+            </p>
+          </div>
+
+          <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div
+              v-for="(card, idx) in showtimeIndicatorCards"
+              :key="card.label"
+              class="showtime-frame relative rounded-[24px] p-5"
+              :class="idx % 2 === 0 ? 'showtime-frame--tilt-left' : 'showtime-frame--tilt-right'"
+              :style="{ backgroundColor: brand.colors.surface }"
+            >
+              <div class="washi-tape" />
+              <div
+                class="mb-4 flex size-12 items-center justify-center rounded-full"
+                :style="{ backgroundColor: `${brand.colors.primary}25` }"
+              >
+                <UIcon :name="card.icon" class="size-6" :style="{ color: brand.colors.primary }" />
+              </div>
+              <span class="font-showtime-label" :style="{ color: `${brand.colors.text}80` }">
+                {{ card.label }}
+              </span>
+              <div
+                class="font-showtime-display mt-1 tabular-nums"
+                :style="{ color: brand.colors.text, fontSize: '2rem' }"
+              >
+                {{ card.value }}
+              </div>
+              <p class="font-showtime-body mt-3 text-[12px] italic" :style="{ color: `${brand.colors.text}B3` }">
+                "{{ card.explain }}"
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUADRO 03: Dividendos em estilo piggy bank -->
+      <div v-if="dividendsData.length > 0" class="relative py-16 md:py-20" :style="{ backgroundColor: brand.colors.surface }">
+        <div class="mx-auto w-full max-w-6xl px-6 md:px-10">
+          <div class="mb-10">
+            <span class="lower-third">QUADRO 03 · DINHEIRO PINGANDO</span>
+            <h2
+              class="font-showtime-display mt-5"
+              :style="{ color: brand.colors.text, fontSize: 'clamp(2rem, 4vw, 3rem)' }"
+            >
+              Os dividendos do<br />
+              <span class="highlighter" :style="{ color: brand.colors.primary }">{{ tickerUpper }}</span> 🐷
+            </h2>
+            <p class="font-showtime-body mt-5 max-w-2xl text-base" :style="{ color: `${brand.colors.text}CC` }">
+              Cada centavo que essa empresa te paga por ser dono dela. É o tal do dinheiro "trabalhando pra você" enquanto você dorme — o nosso querido juro composto, esse filho maravilhoso!
+            </p>
+          </div>
+
+          <div
+            class="showtime-frame showtime-frame--tilt-left rounded-[28px] p-6"
+            :style="{ backgroundColor: brand.colors.background }"
+          >
+            <div class="washi-tape" />
+            <ul class="flex flex-col gap-3">
+              <li
+                v-for="(div, idx) in showtimeDividendsPreview"
+                :key="`div-${idx}`"
+                class="flex items-center gap-4 rounded-2xl p-3 transition-transform hover:translate-x-1"
+                :style="{ backgroundColor: brand.colors.surface }"
+              >
+                <div
+                  class="flex size-12 shrink-0 items-center justify-center rounded-full text-2xl"
+                  :style="{ backgroundColor: `${brand.colors.primary}25` }"
+                >
+                  🪙
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="font-showtime-body text-base font-bold" :style="{ color: brand.colors.text }">
+                    {{ div.label || 'Dividendo' }}
+                  </div>
+                  <div class="font-showtime-body text-[11px]" :style="{ color: `${brand.colors.text}80` }">
+                    Pagou dia {{ formatShowtimeDate(div.payment_date) }}
+                  </div>
+                </div>
+                <span
+                  class="font-showtime-label rounded-full px-4 py-2 text-[12px]"
+                  :style="{ backgroundColor: `${brand.colors.positive}20`, color: brand.colors.positive }"
+                >
+                  R$ {{ formatDividendRate(div.rate) }}
+                </span>
+              </li>
+            </ul>
+            <p v-if="dividendsData.length > showtimeDividendsPreview.length" class="font-showtime-label mt-5 text-center" :style="{ color: `${brand.colors.text}70` }">
+              + {{ dividendsData.length - showtimeDividendsPreview.length }} PROVENTOS NO HISTÓRICO
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUADRO 04: Sobre a empresa (company info) -->
+      <div v-if="brand.assetPage.showCompanyInfo && asset?.description" class="relative py-16 md:py-20">
+        <div class="mx-auto w-full max-w-6xl px-6 md:px-10">
+          <div class="grid gap-10 md:grid-cols-12">
+            <div class="md:col-span-5">
+              <span class="lower-third">QUADRO 04 · QUEM É ESSA EMPRESA</span>
+              <h2
+                class="font-showtime-display mt-5"
+                :style="{ color: brand.colors.text, fontSize: 'clamp(2rem, 4vw, 3rem)' }"
+              >
+                Afinal, o que a<br />
+                <span class="highlighter" :style="{ color: brand.colors.primary }">{{ assetName }}</span> faz?
+              </h2>
+              <p class="font-showtime-body mt-5 text-base" :style="{ color: `${brand.colors.text}CC` }">
+                Antes de investir no bicho, você precisa saber o que ele come, onde dorme e como ganha dinheiro, criatura. Regra número 1 da Nath.
+              </p>
+            </div>
+            <div class="md:col-span-7">
+              <div
+                class="showtime-frame showtime-frame--tilt-right rounded-[28px] p-6"
+                :style="{ backgroundColor: brand.colors.surface }"
+              >
+                <div class="washi-tape" />
+                <p class="font-showtime-body text-[15px] leading-relaxed" :style="{ color: `${brand.colors.text}E6` }">
+                  {{ asset.description }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CLOSING BUMPER: CTA pra Na_th IA -->
+      <div class="relative py-20 md:py-28" :style="{ backgroundColor: brand.colors.surface }">
+        <div class="mx-auto max-w-4xl px-6 text-center md:px-10">
+          <span class="lower-third">FIM DO EPISÓDIO · ATÉ AMANHÃ!</span>
+          <h2
+            class="font-showtime-display chunky-shadow mt-6"
+            :style="{ color: brand.colors.text, fontSize: 'clamp(2.5rem, 6vw, 5rem)' }"
+          >
+            Ficou com dúvida,<br />
+            <span class="highlighter" :style="{ color: brand.colors.primary }">criatura?</span>
+          </h2>
+          <p class="font-showtime-body mt-6 text-base" :style="{ color: `${brand.colors.text}CC` }">
+            A Na_th IA tá acordada 24h pra te ajudar a entender qualquer coisa sobre o {{ tickerUpper }}. Pergunte sem medo.
+          </p>
+          <div class="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+            <NuxtLink
+              to="/help"
+              class="group inline-flex items-center gap-3 rounded-full px-10 py-5 font-showtime-label transition-transform hover:-translate-y-0.5"
+              :style="{ backgroundColor: brand.colors.primary, color: brand.colors.background }"
+            >
+              <UIcon name="i-lucide-sparkles" class="size-5" />
+              FALAR COM A NA_TH IA
+              <span class="transition-transform group-hover:translate-x-1">→</span>
+            </NuxtLink>
+            <NuxtLink
+              to="/"
+              class="font-showtime-label text-sm underline underline-offset-4 transition-opacity hover:opacity-70"
+              :style="{ color: brand.colors.text }"
+            >
+              Voltar pro programa
+            </NuxtLink>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ========== EDITORIAL VARIANT (Norte Capital — "letter from your advisor") ========== -->
     <div
-      v-if="brand.assetPage.variant === 'editorial'"
+      v-else-if="brand.assetPage.variant === 'editorial'"
       class="relative z-10 flex flex-col"
       :style="{ backgroundColor: brand.colors.background }"
     >
@@ -1344,6 +2675,445 @@ const editorialFundamentalsList = computed(() => {
     { label: 'Retorno sobre patrimônio', value: ind.roe },
     { label: 'Margem líquida', value: ind.netMargin },
   ]
+})
+
+// ==========================================================
+// Research variant helpers (Investidor Sardinha — AUVP paper)
+// ==========================================================
+
+// Indicators table with per-row methodological reading
+const researchAssetIndicators = computed(() => {
+  const ind = basicIndicators.value
+  if (!ind) return []
+  return [
+    {
+      label: 'Preço sobre lucro',
+      code: 'P/L · múltiplo de lucros',
+      value: ind.pl,
+      reading: 'Abaixo de 10 sugere desconto frente ao histórico brasileiro.',
+    },
+    {
+      label: 'Preço sobre valor patrimonial',
+      code: 'P/VP · book value',
+      value: ind.pvpa,
+      reading: 'Abaixo de 1: negocia por menos do que vale no papel. Investigue o motivo.',
+    },
+    {
+      label: 'Dividend yield 12M',
+      code: 'DY · proventos anualizados',
+      value: ind.dividendYield,
+      reading: 'Acima de 6% indica empresa geradora de caixa madura.',
+    },
+    {
+      label: 'Retorno sobre patrimônio',
+      code: 'ROE · eficiência do capital',
+      value: ind.roe,
+      reading: 'Acima de 15% ao longo de anos é sinal de vantagem competitiva.',
+    },
+    {
+      label: 'Retorno sobre ativos',
+      code: 'ROA · eficiência geral',
+      value: ind.roa,
+      reading: 'Menos manipulável que o ROE — ignora a alavancagem.',
+    },
+    {
+      label: 'Margem líquida',
+      code: 'MG.Líq · lucro sobre receita',
+      value: ind.netMargin,
+      reading: 'Dois dígitos sustentados indicam negócio com moat real.',
+    },
+  ]
+})
+
+// Thesis paragraph — long-form narrative combining the indicators
+const researchAssetThesis = computed(() => {
+  const ind = basicIndicators.value
+  const name = asset.value?.name || tickerUpper.value
+  if (!ind) {
+    return `${name} está sob observação da mesa de análise AUVP. Os dados fundamentais ainda não estão disponíveis neste relatório, mas isso não dispensa o estudo: leia a última carta aos acionistas, entenda o modelo de negócio, compare com três pares diretos e pergunte-se se você compraria a empresa inteira pelo valor de mercado atual. Preço é ruído; fundamento é sinal.`
+  }
+  const pl = parseFloat(String(ind.pl).replace(',', '.'))
+  const dy = parseFloat(String(ind.dividendYield).replace(',', '.').replace('%', ''))
+  const parts: string[] = []
+  parts.push(`${name} negocia a ${ind.pl} vezes lucros e entrega dividend yield de ${ind.dividendYield} nos últimos doze meses.`)
+  if (Number.isFinite(pl) && pl < 10) {
+    parts.push(' Múltiplo em território historicamente descontado — pode indicar oportunidade, pode indicar que o mercado sabe algo que nós não sabemos. O estudo é justamente esse: descobrir qual das duas hipóteses é verdadeira.')
+  } else if (Number.isFinite(pl) && pl > 20) {
+    parts.push(' Múltiplo esticado em relação à média brasileira. Para justificar, a empresa precisa entregar crescimento consistente nos próximos anos — o que exige análise do histórico e do guidance.')
+  } else {
+    parts.push(' Múltiplo em linha com o que consideramos razoável para ativos do seu porte e setor.')
+  }
+  if (Number.isFinite(dy) && dy >= 6) {
+    parts.push(' A distribuição de proventos é consistente com empresas maduras, o que reforça a tese de buy and hold para gerar renda passiva.')
+  }
+  parts.push(' A conclusão final, por princípio, é sua: os números servem como insumo, não como veredicto.')
+  return parts.join('')
+})
+
+// Quick panel on the right of the cover — compact session data
+const researchAssetQuickPanel = computed(() => {
+  const ind = basicIndicators.value
+  const price = Number(asset.value?.market_price)
+  const changePct = Number(asset.value?.change_percent)
+  const rows: { label: string; note?: string; value: string }[] = []
+
+  rows.push({
+    label: 'Último fechamento',
+    note: 'cotação oficial B3',
+    value: Number.isFinite(price) ? `R$ ${formatPriceNumber(price)}` : '—',
+  })
+  rows.push({
+    label: 'Variação do dia',
+    note: 'pregão corrente',
+    value: Number.isFinite(changePct)
+      ? `${changePct >= 0 ? '+' : ''}${changePct.toFixed(2).replace('.', ',')}%`
+      : '—',
+  })
+  rows.push({
+    label: 'Market cap',
+    note: 'valor de mercado',
+    value: formatMarketCapShort(asset.value?.market_cap) || '—',
+  })
+  rows.push({
+    label: 'Volume do dia',
+    note: 'negócios em R$',
+    value: formatVolumeShort(currentVolume.value) || '—',
+  })
+  if (ind?.dividendYield) {
+    rows.push({
+      label: 'Dividend yield',
+      note: 'últimos 12 meses',
+      value: String(ind.dividendYield),
+    })
+  }
+  if (ind?.pl) {
+    rows.push({
+      label: 'P/L',
+      note: 'múltiplo de lucros',
+      value: String(ind.pl),
+    })
+  }
+  return rows
+})
+
+// Dividends list rendered in §4 — formatted dates and limited to 10 recent
+const researchAssetDividends = computed(() => {
+  const raw = Array.isArray(dividendsData.value) ? dividendsData.value : []
+  const sorted = [...raw]
+    .filter((d: any) => d?.payment_date)
+    .sort((a: any, b: any) => {
+      const da = new Date(a.payment_date).getTime()
+      const db = new Date(b.payment_date).getTime()
+      return db - da
+    })
+    .slice(0, 10)
+  return sorted.map((d: any) => {
+    const rate = Number(d.rate)
+    let dateStr = '—'
+    try {
+      const dt = new Date(d.payment_date)
+      dateStr = dt.toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      })
+    } catch {}
+    return {
+      paymentDate: dateStr,
+      label: d.label || 'Provento',
+      rate: Number.isFinite(rate)
+        ? rate.toLocaleString('pt-BR', {
+            minimumFractionDigits: 4,
+            maximumFractionDigits: 6,
+          })
+        : '—',
+    }
+  })
+})
+
+// ==========================================================
+// SHOWTIME VARIANT — Me Poupe! asset page helpers
+// ==========================================================
+
+// Quick panel on the cover (tilted card on the right)
+const showtimeQuickPanel = computed(() => {
+  const ind = basicIndicators.value
+  const rows: { label: string; value: string; icon: string }[] = []
+
+  rows.push({
+    label: 'MARKET CAP',
+    icon: 'i-lucide-landmark',
+    value: formatMarketCapShort(asset.value?.market_cap) || '—',
+  })
+  rows.push({
+    label: 'VOLUME HOJE',
+    icon: 'i-lucide-activity',
+    value: formatVolumeShort(currentVolume.value) || '—',
+  })
+  if (ind?.dividendYield) {
+    rows.push({
+      label: 'DIVIDENDOS',
+      icon: 'i-lucide-piggy-bank',
+      value: String(ind.dividendYield),
+    })
+  }
+  if (ind?.pl) {
+    rows.push({
+      label: 'P/L',
+      icon: 'i-lucide-calculator',
+      value: String(ind.pl),
+    })
+  }
+  return rows
+})
+
+// Indicator cards translated into Nath's voice
+const showtimeIndicatorCards = computed(() => {
+  const ind = basicIndicators.value
+  const cards: { label: string; value: string; icon: string; explain: string }[] = []
+
+  cards.push({
+    label: 'DIVIDEND YIELD',
+    value: ind?.dividendYield ? String(ind.dividendYield) : '—',
+    icon: 'i-lucide-piggy-bank',
+    explain: 'O quanto a empresa te paga por ano só por você ser dono dela. Quanto maior, mais dinheiro pingando.',
+  })
+  cards.push({
+    label: 'P / L',
+    value: ind?.pl ? String(ind.pl) : '—',
+    icon: 'i-lucide-calculator',
+    explain: 'Quantos anos de lucro custa comprar a empresa hoje. Abaixo de 15 costuma ser um bom sinal.',
+  })
+  cards.push({
+    label: 'P / VPA',
+    value: ind?.pvpa ? String(ind.pvpa) : '—',
+    icon: 'i-lucide-scale',
+    explain: 'Quanto você paga por cada real de patrimônio. Perto de 1 é a conta justa.',
+  })
+  cards.push({
+    label: 'ROE',
+    value: ind?.roe ? String(ind.roe) : '—',
+    icon: 'i-lucide-trending-up',
+    explain: 'O quanto a empresa gera de retorno pro dono. Acima de 10% é festa do aluguel!',
+  })
+  return cards
+})
+
+// Dividends list preview (6 most recent)
+const showtimeDividendsPreview = computed(() => {
+  const raw = Array.isArray(dividendsData.value) ? dividendsData.value : []
+  return [...raw]
+    .filter((d: any) => d?.payment_date)
+    .sort((a: any, b: any) => {
+      const da = new Date(a.payment_date).getTime()
+      const db = new Date(b.payment_date).getTime()
+      return db - da
+    })
+    .slice(0, 6)
+})
+
+function formatShowtimeDate(d: string | undefined): string {
+  if (!d) return '—'
+  try {
+    return new Date(d).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })
+  } catch {
+    return '—'
+  }
+}
+
+function formatDividendRate(rate: string | number | undefined): string {
+  const n = Number(rate)
+  if (!Number.isFinite(n)) return '—'
+  return n.toLocaleString('pt-BR', { minimumFractionDigits: 4, maximumFractionDigits: 6 })
+}
+
+// AUVP filters applied to the asset — 4 pass/fail checks
+const researchAssetFilters = computed(() => {
+  const ind = basicIndicators.value
+  if (!ind) return []
+  const parseNum = (v: unknown) => {
+    if (v == null) return NaN
+    const s = String(v).replace('%', '').replace(',', '.').trim()
+    const n = Number(s)
+    return Number.isFinite(n) ? n : NaN
+  }
+  const roe = parseNum(ind.roe)
+  const netMargin = parseNum(ind.netMargin)
+  const pl = parseNum(ind.pl)
+  const pvp = parseNum(ind.pvpa)
+
+  return [
+    {
+      label: 'Retorno sobre patrimônio',
+      rule: 'ROE ≥ 10% (geração de valor)',
+      observed: ind.roe || '—',
+      passes: Number.isFinite(roe) && roe >= 10,
+    },
+    {
+      label: 'Margem líquida',
+      rule: 'margem ≥ 10% (competitividade sustentável)',
+      observed: ind.netMargin || '—',
+      passes: Number.isFinite(netMargin) && netMargin >= 10,
+    },
+    {
+      label: 'Múltiplo de lucros',
+      rule: 'P/L ≤ 15 (margem de segurança)',
+      observed: ind.pl || '—',
+      passes: Number.isFinite(pl) && pl > 0 && pl <= 15,
+    },
+    {
+      label: 'Preço sobre valor patrimonial',
+      rule: 'P/VP ≤ 1,5 (não pagar caro pelo book)',
+      observed: ind.pvpa || '—',
+      passes: Number.isFinite(pvp) && pvp > 0 && pvp <= 1.5,
+    },
+  ]
+})
+
+// Next steps — the AUVP ecosystem hooks specific to asset page
+const researchAssetNextSteps = [
+  {
+    kind: 'CURSO',
+    title: 'AUVP Escola',
+    body: 'Aprofunde o método por trás dos filtros. Mais de 90 horas de aula sobre análise fundamentalista aplicada à realidade brasileira.',
+    cta: 'Entrar na escola',
+    url: 'https://auvp.com.br',
+  },
+  {
+    kind: 'PLATAFORMA',
+    title: 'AUVP Analítica',
+    body: 'Compare este ativo com pares diretos, histórico próprio e médias setoriais. Screener e comparativos avançados.',
+    cta: 'Comparar pares',
+    url: 'https://analitica.auvp.com.br',
+  },
+  {
+    kind: 'COMUNIDADE',
+    title: 'Grupo VIP · Telegram',
+    body: 'Debata este case com outros sardinhas estudando o mesmo setor. Canal oficial fechado para alunos AUVP.',
+    cta: 'Entrar no grupo',
+    url: 'https://t.me/investidorsardinha',
+  },
+]
+
+// Short verdict — used in the highlighted red-pen callout
+const researchAssetVerdict = computed(() => {
+  const ind = basicIndicators.value
+  if (!ind) return 'Caso sob observação — dados insuficientes para análise.'
+  const pl = parseFloat(String(ind.pl).replace(',', '.'))
+  const dy = parseFloat(String(ind.dividendYield).replace(',', '.').replace('%', ''))
+  const roe = parseFloat(String(ind.roe).replace(',', '.').replace('%', ''))
+  if (Number.isFinite(dy) && dy >= 6 && Number.isFinite(roe) && roe >= 10) {
+    return 'Passa nos filtros de geração de caixa e retorno sobre capital.'
+  }
+  if (Number.isFinite(pl) && pl < 10 && Number.isFinite(roe) && roe >= 10) {
+    return 'Múltiplo descontado com retorno aceitável — caso para aprofundar o estudo.'
+  }
+  if (Number.isFinite(pl) && pl > 25) {
+    return 'Múltiplo esticado — exige convicção alta no crescimento futuro.'
+  }
+  return 'Caso neutro pelos filtros metodológicos — recomenda-se estudo aprofundado.'
+})
+
+// ==========================================================
+// Mentor variant helpers (Primo Rico — masterclass tone)
+// ==========================================================
+
+// Quick 4-stat block rendered in the hero right column.
+const mentorQuickStats = computed(() => {
+  const ind = basicIndicators.value
+  if (!ind) return []
+  return [
+    { label: 'DIVIDEND YIELD', value: ind.dividendYield },
+    { label: 'P/L', value: ind.pl },
+    { label: 'P/VP', value: ind.pvpa },
+    { label: 'ROE', value: ind.roe },
+  ]
+})
+
+// Fundamentals list — 6 heavy rows with descriptive copy in the mentor tone.
+const mentorFundamentalsList = computed(() => {
+  const ind = basicIndicators.value
+  if (!ind) return []
+  return [
+    {
+      label: 'PREÇO / LUCRO',
+      shortCode: 'P/L · Quantos anos pra pagar o investimento',
+      description: 'Quanto mais baixo, mais descontado está o ativo em relação ao lucro gerado. Compare sempre com pares do mesmo setor.',
+      value: ind.pl,
+    },
+    {
+      label: 'PREÇO / VALOR PATRIMONIAL',
+      shortCode: 'P/VP · O mercado paga acima ou abaixo do book value',
+      description: 'Abaixo de 1 significa que o ativo negocia por menos do que vale no papel. Cuidado com value traps — entenda porquê está barato.',
+      value: ind.pvpa,
+    },
+    {
+      label: 'DIVIDEND YIELD',
+      shortCode: 'DY 12M · Renda passiva em relação ao preço',
+      description: 'Quanto o ativo distribui em proventos por ano como percentual do preço atual. Útil para comparar geradores de caixa.',
+      value: ind.dividendYield,
+    },
+    {
+      label: 'RETORNO SOBRE PATRIMÔNIO',
+      shortCode: 'ROE · Eficiência do capital dos acionistas',
+      description: 'Acima de 15% é sinal de gestão eficiente. Empresas que sustentam ROE alto por anos são as que constroem valor de verdade.',
+      value: ind.roe,
+    },
+    {
+      label: 'RETORNO SOBRE ATIVOS',
+      shortCode: 'ROA · Eficiência sobre todos os ativos',
+      description: 'Mede quanto a empresa gera de lucro sobre cada real de ativo. Menos manipulável que o ROE porque ignora a alavancagem.',
+      value: ind.roa,
+    },
+    {
+      label: 'MARGEM LÍQUIDA',
+      shortCode: 'MG.LÍQ · Quanto sobra de cada real vendido',
+      description: 'Percentual do lucro líquido sobre a receita total. Margens sustentáveis de dois dígitos indicam negócio com moat.',
+      value: ind.netMargin,
+    },
+  ]
+})
+
+// Pull quote in the mentor variant — rotates between a few Thiago-esque lines
+// based on the asset's change percent so it feels contextual without hitting AI.
+const mentorAssetQuote = computed(() => {
+  const pct = Number(asset.value?.change_percent)
+  if (Number.isFinite(pct)) {
+    if (pct < -3) return 'O mercado testa sua convicção todo dia. Tese não muda com 3% de queda.'
+    if (pct < 0) return 'Preço oscila. Fundamento, não.'
+    if (pct > 3) return 'Euforia não é motivo pra comprar. Nem sua ausência é motivo pra vender.'
+  }
+  return 'Patrimônio se constrói com consistência, não com sorte. Skin in the game.'
+})
+
+// Thesis text — a narrated paragraph that adapts to the basic indicators.
+const mentorThesisText = computed(() => {
+  const ind = basicIndicators.value
+  const name = asset.value?.name || tickerUpper.value
+  if (!ind) {
+    return `${name} está no seu radar? Antes de qualquer decisão, entenda o negócio: como a empresa ganha dinheiro, quem são os concorrentes, qual a margem de segurança na tese. Os números são só a foto — a história é que importa.`
+  }
+  const pl = parseFloat(String(ind.pl).replace(',', '.'))
+  const dy = parseFloat(String(ind.dividendYield).replace(',', '.').replace('%', ''))
+  const parts: string[] = [`${name} negocia a ${ind.pl} vezes lucros`]
+  if (Number.isFinite(pl) && pl < 10) parts.push('— múltiplo que, em ambientes normais, indica desconto em relação ao fluxo de caixa gerado')
+  else if (Number.isFinite(pl) && pl > 20) parts.push('— múltiplo esticado que exige crescimento sustentado pra fazer sentido')
+  if (Number.isFinite(dy) && dy >= 5) {
+    parts.push(`e distribui ${ind.dividendYield} ao ano em proventos, acima do CDI em vários cenários`)
+  }
+  parts.push('.\n\nOlhe além do número: entenda o ciclo do setor, a consistência histórica dos resultados e o posicionamento competitivo. Nenhum indicador sozinho substitui pensamento.')
+  return parts.join(' ')
+})
+
+// A punchy one-liner summary in the thesis section.
+const mentorOneLiner = computed(() => {
+  const ind = basicIndicators.value
+  if (!ind) return 'Faça sua lição de casa antes de decidir.'
+  const dy = parseFloat(String(ind.dividendYield).replace(',', '.').replace('%', ''))
+  if (Number.isFinite(dy) && dy >= 6) return 'Gerador de caixa para quem busca renda passiva com disciplina.'
+  const pl = parseFloat(String(ind.pl).replace(',', '.'))
+  if (Number.isFinite(pl) && pl < 10) return 'Múltiplo descontado — vale entender se é oportunidade ou value trap.'
+  return 'Um caso que merece estudo antes de virar posição.'
 })
 
 // Roman numerals for the fundamentals list prefix in editorial mode.

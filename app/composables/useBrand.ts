@@ -1,13 +1,48 @@
 import { brand as defaultBrand, brands } from '~/config/brand'
 import type { BrandSlug } from '~/config/brand'
 
-const activeBrand = reactive({ ...defaultBrand })
+/**
+ * Tenant-aware brand state.
+ *
+ * CRITICAL: uses `useState` instead of module-level `reactive()` because
+ * module state is shared across SSR requests in Nuxt (one Node process,
+ * many concurrent requests). If two users hit the server at the same time
+ * — one with `?brand=norte-capital` and another with `?brand=primo-rico` —
+ * module-level state would bleed between them, causing responses to be
+ * served with the wrong tenant. `useState` gives us an isolated instance
+ * per request on the server while behaving like a singleton on the client.
+ *
+ * This fix also eliminates the visible hydration glitch where some
+ * components would render with one tenant (from stale module state) and
+ * others with the correct tenant, producing Frankenstein layouts.
+ *
+ * Components call `useBrand()` and consume fields like `brand.colors.text`
+ * directly — consumer-side reactivity works because we return a reactive
+ * proxy (not a ref). Writes go through `applyConfig()` which mutates the
+ * proxy in place so every subscribed template updates simultaneously.
+ */
 
-/** Indicates whether the brand was loaded from the API (tenant) */
-const tenantLoaded = ref(false)
+// Internal helper — returns the shared reactive proxy scoped to the
+// current Nuxt request (SSR) or session (client). The underlying storage
+// is `useState` so it serializes across the hydration boundary.
+function useBrandState() {
+  // Store a reactive proxy. `useState` accepts any serializable value
+  // for hydration; Vue's reactive() wraps it lazily on access.
+  return useState('brand:active', () =>
+    reactive(JSON.parse(JSON.stringify(defaultBrand)))
+  )
+}
 
-export const useBrand = () => activeBrand
-export const useBrandMeta = () => ({ tenantLoaded })
+export const useBrand = () => {
+  const state = useBrandState()
+  return state.value
+}
+
+export const useBrandMeta = () => {
+  const tenantLoaded = useState<boolean>('brand:tenant-loaded', () => false)
+  const lastResolvedSlug = useState<string | null>('brand:last-slug', () => null)
+  return { tenantLoaded, lastResolvedSlug }
+}
 
 /**
  * Reads the `?brand=` query param and resolves the brand config
@@ -18,9 +53,14 @@ export const useBrandMeta = () => ({ tenantLoaded })
 export function initBrandFromRoute() {
   const route = useRoute()
   const config = useRuntimeConfig()
+  const { tenantLoaded, lastResolvedSlug } = useBrandMeta()
+  const brandState = useBrandState()
 
   function applyConfig(cfg: Record<string, any>) {
-    Object.assign(activeBrand, cfg)
+    // Mutate the reactive proxy in place — Object.assign keeps the same
+    // object identity so downstream computeds and template bindings
+    // continue to track it.
+    Object.assign(brandState.value, cfg)
   }
 
   async function resolveFromApi(slug: string): Promise<boolean> {
@@ -30,7 +70,31 @@ export function initBrandFromRoute() {
       )
       const tenantConfig = res?.data?.config
       if (tenantConfig) {
-        applyConfig(tenantConfig)
+        // IMPORTANT: the API config is a snapshot of brand.ts that may be
+        // stale (older variants, removed homeSections, wrong hero.variant).
+        // Prefer the local config for fields that drive the page layout
+        // so a deploy of new variants isn't blocked on re-importing to
+        // the tenants table. Only merge fields that are text/content.
+        const localBrand = brands[slug as BrandSlug]
+        if (localBrand) {
+          // Strip layout-defining keys from the API config before merging,
+          // then re-apply the local versions on top.
+          const merged: Record<string, any> = { ...tenantConfig }
+          const layoutKeys: (keyof typeof localBrand)[] = [
+            'hero',
+            'homeSections',
+            'assetPage',
+            'font',
+            'colors',
+            'theme',
+          ]
+          for (const k of layoutKeys) {
+            merged[k] = (localBrand as any)[k]
+          }
+          applyConfig(merged)
+        } else {
+          applyConfig(tenantConfig)
+        }
         tenantLoaded.value = true
         return true
       }
@@ -40,40 +104,48 @@ export function initBrandFromRoute() {
     return false
   }
 
-  let lastResolvedSlug: string | null = null
-
   async function detectAndApply() {
     const querySlug = route.query.brand as string | undefined
 
     if (querySlug) {
       // Skip if already resolved this slug
-      if (querySlug === lastResolvedSlug && tenantLoaded.value) return
-      lastResolvedSlug = querySlug
+      if (querySlug === lastResolvedSlug.value && tenantLoaded.value) return
+      lastResolvedSlug.value = querySlug
 
-      // Apply local brand config immediately to prevent flash
+      // Apply local brand config immediately to prevent flash of default
       const localBrand = brands[querySlug as BrandSlug]
       if (localBrand) {
         applyConfig(localBrand)
       }
 
-      // Then resolve from API (may have newer data)
-      await resolveFromApi(querySlug)
+      // Then resolve from API (may have newer data) — client only, because
+      // on SSR we already have the correct local config and the API call
+      // would just add latency to the first paint.
+      if (import.meta.client) {
+        await resolveFromApi(querySlug)
+      }
       return
     }
 
-    // No param = default brand (only reset if we previously loaded a tenant)
+    // No param = default brand (reset if we previously loaded a tenant)
     if (tenantLoaded.value) {
       tenantLoaded.value = false
-      lastResolvedSlug = null
+      lastResolvedSlug.value = null
       applyConfig(defaultBrand)
     }
   }
 
+  // Run sync so the server-rendered HTML already has the right tenant
   detectAndApply()
 
-  // Re-apply when query changes
-  watch(() => route.query.brand, (newSlug, oldSlug) => {
-    if (newSlug === oldSlug) return
-    detectAndApply()
-  })
+  // Re-apply when query changes (client navigation)
+  if (import.meta.client) {
+    watch(
+      () => route.query.brand,
+      (newSlug, oldSlug) => {
+        if (newSlug === oldSlug) return
+        detectAndApply()
+      }
+    )
+  }
 }
