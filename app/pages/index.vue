@@ -195,7 +195,7 @@
           class="font-showtime-label hidden sm:inline-block"
           :style="{ color: `${brand.colors.text}99` }"
         >
-          EPISÓDIO · {{ showtimeDate }}
+          {{ showtimeDate }}
         </span>
       </div>
 
@@ -2135,7 +2135,7 @@
           class="font-editorial-body text-[11px] italic tabular-nums"
           :style="{ color: brand.colors.textMuted }"
         >
-          Edição nº 001 — I.
+          Carta Mensal · {{ editorialDate }}
         </span>
       </header>
 
@@ -2563,7 +2563,7 @@
     <MoleculesInvestorChecklist v-if="showSection('investorChecklist') && brand.investorChecklist && !authStore.isAuthenticated" :style="{ order: sectionOrder('investorChecklist') }" />
 
     <!-- Seção de Mercado ao Vivo (Prioridade) -->
-    <div v-if="showSection('market')" :style="{ order: sectionOrder('market') }" class="flex h-auto flex-col gap-4 pt-10">
+    <div v-if="showSection('market') && brand.hero.variant === 'terminal'" :style="{ order: sectionOrder('market') }" class="flex h-auto flex-col gap-4 pt-10">
       <div class="flex flex-col gap-8">
         <div class="flex flex-col gap-6 px-6">
           <!-- Terminal-style market status line -->

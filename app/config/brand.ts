@@ -1294,7 +1294,7 @@ const mePoupe: BrandConfig = {
     // aesthetic with lower thirds, rotated frames, character bubbles,
     // sticker badges, and Margarete the wooden spoon as recurring mascot.
     variant: 'showtime',
-    badge: 'NO AR · PROGRAMA #001',
+    badge: 'BORA LÁ, CRIATURA!',
     title: 'Chega de\ndinheirofobia,\ncriatura!',
     subtitle: 'Eu sou a Nath. Esta é a Me Poupe! — o programa que explica seu dinheiro do jeito que sua melhor amiga explicaria. Simulador, IA e conteúdo no bom português. O Sidnelson que chore.',
     founderQuote: 'Poupe primeiro, gaste o que sobrar. E deixa o juro composto, esse filho maravilhoso, trabalhar por você enquanto você vive a vida.',
@@ -2698,12 +2698,12 @@ const redentia: BrandConfig = {
   homeSections: [
     { id: 'hero', visible: true },
     { id: 'trustBar', visible: true },
-    { id: 'market', visible: true },
+    { id: 'market', visible: false },
     { id: 'metrics', visible: true },
     { id: 'featureTabs', visible: false },
     { id: 'categories', visible: true },
     { id: 'aiCta', visible: true },
-    { id: 'apiProduct', visible: true },
+    { id: 'apiProduct', visible: false },
     { id: 'creativeProduct', visible: false },
     { id: 'educational', visible: false },
     { id: 'products', visible: false },

@@ -17,7 +17,7 @@
               AUVP RESEARCH · ESTUDO DE CASO
             </span>
             <span class="font-academic-body text-[12px] italic" :style="{ color: brand.colors.textMuted }">
-              Publicação interna · {{ assetEditorialDate }}
+              {{ assetEditorialDate }}
             </span>
           </div>
           <span class="font-academic-mono text-[11px] uppercase tabular-nums" :style="{ color: brand.colors.textMuted }">
@@ -30,7 +30,7 @@
       <div class="mx-auto w-full max-w-6xl px-6 py-14 md:grid md:grid-cols-12 md:gap-10 md:px-10 md:py-20">
         <div class="md:col-span-7">
           <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">
-            volume 1 · {{ (asset?.type || 'AÇÃO').toString().toUpperCase() === 'REIT' ? 'fundo imobiliário' : 'ação ordinária' }} · código {{ tickerUpper }}
+            {{ (asset?.type || 'AÇÃO').toString().toUpperCase() === 'REIT' ? 'fundo imobiliário' : 'ação ordinária' }} · código {{ tickerUpper }}
           </span>
           <h1
             class="font-academic-display mt-6"
@@ -1006,7 +1006,7 @@
     >
       <!-- Top lower-third: "AO VIVO · AULA DE HOJE" -->
       <div class="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-6 pt-10 md:px-10 md:pt-12">
-        <span class="lower-third">AULA DE HOJE · EP · {{ tickerUpper }}</span>
+        <span class="lower-third">EM FOCO · {{ tickerUpper }}</span>
         <span class="font-showtime-label hidden sm:inline" :style="{ color: `${brand.colors.text}80` }">
           {{ assetEditorialDate }}
         </span>
@@ -1301,7 +1301,7 @@
       <!-- CLOSING BUMPER: CTA pra Na_th IA -->
       <div class="relative py-20 md:py-28" :style="{ backgroundColor: brand.colors.surface }">
         <div class="mx-auto max-w-4xl px-6 text-center md:px-10">
-          <span class="lower-third">FIM DO EPISÓDIO · ATÉ AMANHÃ!</span>
+          <span class="lower-third">BORA LÁ, CRIATURA!</span>
           <h2
             class="font-showtime-display chunky-shadow mt-6"
             :style="{ color: brand.colors.text, fontSize: 'clamp(2.5rem, 6vw, 5rem)' }"

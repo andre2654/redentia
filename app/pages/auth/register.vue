@@ -423,7 +423,7 @@
             </span>
           </div>
           <span class="font-academic-mono text-[11px] uppercase tabular-nums" :style="{ color: brand.colors.textMuted }">
-            VOL. {{ new Date().getFullYear() }}
+            {{ new Date().getFullYear() }}
           </span>
         </div>
 
