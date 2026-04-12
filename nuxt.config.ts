@@ -341,65 +341,77 @@ export default defineNuxtConfig({
       metaAccessToken: process.env.NUXT_PUBLIC_META_ACCESS_TOKEN || '',
     },
   },
-  routeRules: {
+  routeRules: (() => {
     // ============================================================
     // IMPORTANT: branding is query-string aware
     // ============================================================
-    // All routes below declare `isr.allowQuery: ['brand']` so the
-    // Vercel edge cache keys by BOTH the path AND the `brand` query
-    // param independently. Without this, `/?brand=saraiva-invest`
-    // would share a cache entry with `/` (Redentia default) — which
-    // is exactly the bug that caused the "tenant not switching on
-    // production" issue.
+    // Every branded route below uses `brandedISR(seconds)` to produce:
     //
-    // The `brand` query is the ONLY query we cache on, so:
-    //   - `/` → one cached variant (Redentia default)
-    //   - `/?brand=holder` → a separate cached variant (Holder)
-    //   - `/?brand=saraiva-invest` → another separate cached variant
-    //   - `/?foo=bar` → collapses to `/` (other query params ignored
-    //     by the cache — they still reach the page at runtime)
+    //   {
+    //     isr: {
+    //       expiration: <seconds>,
+    //       allowQuery: ['brand'],
+    //       passQuery: true,          ← CRITICAL
+    //     }
+    //   }
     //
-    // Host-based resolution (e.g. `www.saraivainvest.com.br` → Saraiva)
-    // still works because Vercel keys caches per-host automatically.
+    // Two Vercel options at play, BOTH required:
     //
-    // See: docs/tenant-resolution.md for the full model.
-    // See: node_modules/nitropack/dist/shared/nitro.DLF2_KRt.d.ts
-    //      (VercelISRConfig.allowQuery) for the nitro type.
+    //   `allowQuery: ['brand']` — the Vercel edge network keys the
+    //     cache by (path, brand) independently. Without this,
+    //     `/?brand=holder` would share a cache entry with `/`.
+    //
+    //   `passQuery: true` — the query string is actually PASSED to
+    //     the serverless function when generating a new cache entry.
+    //     Without this, the Vercel edge uses the query for caching
+    //     but invokes the function with `/` (no query). The tenant
+    //     resolver middleware reads `queryBrand=null`, falls back to
+    //     the default brand (Redentia), and the HTML gets cached
+    //     under `/?brand=holder` with the WRONG tenant inside.
+    //     This was the exact bug we hunted for hours.
+    //
+    // Both host-based resolution and query-based override work:
+    //   - `www.saraivainvest.com.br` → Saraiva (host, no query needed)
+    //   - `www.redentia.com.br/?brand=holder` → Holder (query override)
+    //
+    // See: docs/tenant-resolution.md
+    // See: node_modules/nitropack/dist/presets/vercel/types.d.ts
+    //      (VercelISRConfig.allowQuery / passQuery)
     // ============================================================
 
-    // NOTE: these routes used to be `prerender: true` (generated at
-    // build time as static HTML). But prerender bakes the brand default
-    // into the HTML at build — there's no way for `?brand=holder` to
-    // swap the tenant after the fact. Moved to ISR with `allowQuery`
-    // so each (path, brand) pair gets its own cached variant on-demand,
-    // revalidated every hour. SEO impact is minimal: Google still
-    // crawls the default-brand variant at first visit and the ISR
-    // cache serves it in <10ms after that.
-    '/institucional/**': { isr: { expiration: 3600, allowQuery: ['brand'] } },
-    '/download': { isr: { expiration: 3600, allowQuery: ['brand'] } },
-    '/glossario': { isr: { expiration: 3600, allowQuery: ['brand'] } },
-    '/glossario/**': { isr: { expiration: 3600, allowQuery: ['brand'] } },
-    '/guias': { isr: { expiration: 3600, allowQuery: ['brand'] } },
-    '/guias/**': { isr: { expiration: 3600, allowQuery: ['brand'] } },
-    '/calculadora': { isr: { expiration: 3600, allowQuery: ['brand'] } },
-    '/calculadora/**': { isr: { expiration: 3600, allowQuery: ['brand'] } },
-    // ISR: serve cached HTML per (path, brand) pair, revalidate in bg
-    '/': { isr: { expiration: 300, allowQuery: ['brand'] } },
-    '/acoes': { isr: { expiration: 300, allowQuery: ['brand'] } },
-    '/fiis': { isr: { expiration: 300, allowQuery: ['brand'] } },
-    '/etfs': { isr: { expiration: 300, allowQuery: ['brand'] } },
-    '/small-caps': { isr: { expiration: 300, allowQuery: ['brand'] } },
-    '/dividendos': { isr: { expiration: 300, allowQuery: ['brand'] } },
-    '/whitelabel': { isr: { expiration: 3600, allowQuery: ['brand'] } },
-    '/search': { isr: { expiration: 300, allowQuery: ['brand'] } },
-    '/asset/**': { swr: 300 },
-    // SEO programático — rankings + dividendos + setores
-    '/ranking': { isr: { expiration: 900, allowQuery: ['brand'] } },
-    '/ranking/**': { isr: { expiration: 900, allowQuery: ['brand'] } },
-    '/dividendos/calendario': { isr: { expiration: 1800, allowQuery: ['brand'] } },
-    '/setor': { isr: { expiration: 3600, allowQuery: ['brand'] } },
-    '/setor/**': { isr: { expiration: 900, allowQuery: ['brand'] } },
-  },
+    const brandedISR = (seconds: number) => ({
+      isr: {
+        expiration: seconds,
+        allowQuery: ['brand'],
+        passQuery: true,
+      },
+    })
+
+    return {
+      '/institucional/**': brandedISR(3600),
+      '/download': brandedISR(3600),
+      '/glossario': brandedISR(3600),
+      '/glossario/**': brandedISR(3600),
+      '/guias': brandedISR(3600),
+      '/guias/**': brandedISR(3600),
+      '/calculadora': brandedISR(3600),
+      '/calculadora/**': brandedISR(3600),
+      '/': brandedISR(300),
+      '/acoes': brandedISR(300),
+      '/fiis': brandedISR(300),
+      '/etfs': brandedISR(300),
+      '/small-caps': brandedISR(300),
+      '/dividendos': brandedISR(300),
+      '/whitelabel': brandedISR(3600),
+      '/search': brandedISR(300),
+      '/asset/**': { swr: 300 },
+      '/ranking': brandedISR(900),
+      '/ranking/**': brandedISR(900),
+      '/dividendos/calendario': brandedISR(1800),
+      '/setor': brandedISR(3600),
+      '/setor/**': brandedISR(900),
+    }
+  })(),
   components: [
     {
       path: '~/components',
