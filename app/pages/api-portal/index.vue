@@ -70,8 +70,7 @@
 
             <!-- CTAs -->
             <div class="mb-12 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-              <NuxtLink
-                to="/api-portal/auth/register"
+              <button
                 class="group inline-flex items-center gap-3 rounded border-2 px-8 py-4 font-mono-tab text-[11px] uppercase tracking-[0.2em] transition-all hover:-translate-y-0.5"
                 :style="{
                   backgroundColor: brand.colors.primary,
@@ -79,11 +78,12 @@
                   borderColor: brand.colors.primary,
                   boxShadow: `0 10px 40px -10px ${brand.colors.primary}80`,
                 }"
+                @click="openLeadModal('free')"
               >
                 <span>[ PEGAR API KEY</span>
                 <span class="inline-block transition-transform group-hover:translate-x-1">→</span>
                 <span>]</span>
-              </NuxtLink>
+              </button>
               <NuxtLink
                 to="/api-portal/docs"
                 class="inline-flex items-center gap-2 rounded border px-8 py-4 font-mono-tab text-[11px] uppercase tracking-[0.2em] transition-all hover:opacity-80"
@@ -392,180 +392,148 @@
       <!-- ============================================================
            PRICING — 3 plans
            ============================================================ -->
-      <section class="relative border-t" :style="{ borderColor: brand.colors.border }">
+      <!-- ============================================================
+           PRICING — unified container, Stripe-style
+           ============================================================ -->
+      <section class="relative">
         <div class="mx-auto max-w-6xl px-6 py-20 md:px-10 md:py-28">
-          <div class="mb-12 text-center">
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
-              [ PRICING ]
-            </span>
+          <div class="mb-14 max-w-2xl">
             <h2
-              class="font-display mt-4"
+              class="font-display"
               :style="{ color: brand.colors.text, fontSize: 'clamp(2rem, 4vw, 3.5rem)', lineHeight: '1.05' }"
             >
               Escolha seu <span class="italic" :style="{ color: brand.colors.primary }">plano.</span>
             </h2>
-            <p class="mx-auto mt-4 max-w-xl text-sm" :style="{ color: brand.colors.textMuted }">
-              Comece de graça, faça upgrade quando quiser. Sem compromisso, sem surpresa.
+            <p class="mt-4 text-sm" :style="{ color: brand.colors.textMuted }">
+              Comece de graça, faça upgrade quando quiser. Sem compromisso.
             </p>
           </div>
 
-          <div class="grid gap-6 md:grid-cols-3">
+          <!-- Unified container with shared borders -->
+          <div
+            class="grid overflow-hidden rounded-xl border md:grid-cols-3"
+            :style="{ borderColor: brand.colors.border }"
+          >
             <div
-              v-for="(plan, idx) in plans"
+              v-for="plan in plans"
               :key="plan.slug"
-              class="relative flex flex-col gap-5 rounded-lg border p-8"
+              class="relative flex flex-col gap-5 border-b p-8 md:border-b-0 md:border-r last:border-b-0 last:border-r-0"
               :style="{
-                borderColor: plan.popular ? brand.colors.primary : brand.colors.border,
-                backgroundColor: `${brand.colors.surface}E6`,
-                boxShadow: plan.popular ? `0 10px 40px -10px ${brand.colors.primary}60` : 'none',
+                borderColor: brand.colors.border,
+                backgroundColor: plan.popular ? `${brand.colors.primary}06` : 'transparent',
               }"
             >
+              <!-- Popular accent — top border -->
               <div
                 v-if="plan.popular"
-                class="absolute -top-3 left-1/2 -translate-x-1/2 rounded border px-3 py-1 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
-                :style="{ backgroundColor: brand.colors.primary, color: brand.colors.background, borderColor: brand.colors.primary }"
-              >
-                MOST POPULAR
-              </div>
+                class="absolute inset-x-0 top-0 h-0.5"
+                :style="{ backgroundColor: brand.colors.primary }"
+              />
 
-              <div class="flex items-center justify-between">
-                <span class="font-mono-tab text-[11px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
-                  [ {{ plan.slug.toUpperCase() }} ]
-                </span>
-                <span class="font-mono-tab text-[10px]" :style="{ color: brand.colors.textMuted }">
-                  {{ String(idx + 1).padStart(2, '0') }}/{{ String(plans.length).padStart(2, '0') }}
-                </span>
-              </div>
-
-              <div>
-                <h3 class="text-3xl font-bold tracking-tight" :style="{ color: brand.colors.text }">
+              <div class="flex items-center gap-3">
+                <h3 class="text-[15px] font-semibold" :style="{ color: brand.colors.text }">
                   {{ plan.name }}
                 </h3>
-                <p class="mt-2 text-xs" :style="{ color: brand.colors.textMuted }">
-                  {{ plan.description }}
-                </p>
+                <span
+                  v-if="plan.popular"
+                  class="rounded-full px-2.5 py-0.5 font-mono-tab text-[9px] uppercase tracking-wider"
+                  :style="{ backgroundColor: `${brand.colors.primary}20`, color: brand.colors.primary }"
+                >
+                  Popular
+                </span>
               </div>
 
-              <div class="border-y py-5" :style="{ borderColor: brand.colors.border }">
-                <div class="flex items-baseline gap-1">
-                  <span class="font-display text-5xl tabular-nums" :style="{ color: brand.colors.text }">
-                    {{ plan.price }}
-                  </span>
-                  <span class="font-mono-tab text-[11px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">
-                    /{{ plan.priceUnit }}
-                  </span>
-                </div>
-                <p v-if="plan.priceNote" class="mt-2 text-xs" :style="{ color: brand.colors.textMuted }">
-                  {{ plan.priceNote }}
-                </p>
-              </div>
+              <p class="text-[13px]" :style="{ color: brand.colors.textMuted }">
+                {{ plan.description }}
+              </p>
 
-              <ul class="flex flex-col gap-3 text-sm">
-                <li v-for="feat in plan.features" :key="feat" class="flex items-start gap-2" :style="{ color: brand.colors.text }">
-                  <UIcon name="i-lucide-check" class="mt-0.5 size-4 shrink-0" :style="{ color: brand.colors.primary }" />
+              <!-- Price — gigantic -->
+              <div class="flex items-baseline gap-1">
+                <span
+                  class="font-display tabular-nums leading-none tracking-tight"
+                  :style="{
+                    color: brand.colors.text,
+                    fontSize: 'clamp(2.5rem, 4vw, 3.5rem)',
+                  }"
+                >
+                  {{ plan.price }}
+                </span>
+                <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">
+                  /{{ plan.priceUnit }}
+                </span>
+              </div>
+              <p v-if="plan.priceNote" class="text-[11px]" :style="{ color: brand.colors.textMuted }">
+                {{ plan.priceNote }}
+              </p>
+
+              <!-- Features — clean dash list -->
+              <ul class="flex flex-col gap-2 border-t pt-5 text-[13px]" :style="{ borderColor: `${brand.colors.border}80` }">
+                <li v-for="feat in plan.features" :key="feat" class="flex items-start gap-2" :style="{ color: `${brand.colors.text}D0` }">
+                  <span :style="{ color: brand.colors.primary }">—</span>
                   <span>{{ feat }}</span>
                 </li>
               </ul>
 
-              <NuxtLink
-                :to="plan.ctaLink"
-                class="mt-auto inline-flex w-full items-center justify-center gap-2 rounded border-2 px-6 py-3 font-mono-tab text-[11px] uppercase tracking-[0.18em] transition-all hover:-translate-y-0.5"
+              <button
+                class="mt-auto inline-flex w-full items-center justify-center gap-2 rounded-lg px-5 py-3 font-mono-tab text-[11px] uppercase tracking-[0.15em] transition-all hover:opacity-90"
                 :style="{
                   backgroundColor: plan.popular ? brand.colors.primary : 'transparent',
                   color: plan.popular ? brand.colors.background : brand.colors.text,
-                  borderColor: plan.popular ? brand.colors.primary : brand.colors.border,
+                  border: plan.popular ? 'none' : `1px solid ${brand.colors.border}`,
                 }"
+                @click="openLeadModal(plan.slug)"
               >
-                {{ plan.cta }}
-                <span>→</span>
-              </NuxtLink>
+                {{ plan.cta }} →
+              </button>
             </div>
           </div>
-
-          <p class="mt-10 text-center font-mono-tab text-[11px]" :style="{ color: brand.colors.textMuted }">
-            Precisa de mais? <NuxtLink to="/api-portal/contact" :style="{ color: brand.colors.primary }">&gt; contact_enterprise</NuxtLink>
-          </p>
         </div>
       </section>
 
       <!-- ============================================================
-           QUEM USA A REDENTIA — social proof / testimonials
+           TESTIMONIALS — editorial horizontal layout, no stars
            ============================================================ -->
-      <section class="relative border-t" :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.surface}40` }">
+      <section class="relative">
         <div class="mx-auto max-w-6xl px-6 py-20 md:px-10 md:py-28">
-          <div class="mb-14 text-center">
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
-              [ SOCIAL.PROOF ]
-            </span>
-            <h2
-              class="font-display mt-4"
-              :style="{ color: brand.colors.text, fontSize: 'clamp(2rem, 4vw, 3.5rem)', lineHeight: '1.05' }"
-            >
-              Quem usa a <span class="italic" :style="{ color: brand.colors.primary }">Redentia.</span>
-            </h2>
-            <p class="mx-auto mt-4 max-w-xl text-sm" :style="{ color: brand.colors.textMuted }">
-              Times que usam a API em produtos, conteúdo e automações.
-            </p>
-          </div>
+          <h2
+            class="font-display mb-14"
+            :style="{ color: brand.colors.text, fontSize: 'clamp(2rem, 4vw, 3.5rem)', lineHeight: '1.05' }"
+          >
+            Quem usa a <span class="italic" :style="{ color: brand.colors.primary }">Redentia.</span>
+          </h2>
 
-          <div class="grid gap-6 md:grid-cols-2">
+          <!-- Single-column stacked testimonials -->
+          <div class="flex flex-col gap-6">
             <div
-              v-for="(t, idx) in testimonials"
+              v-for="t in testimonials"
               :key="t.name"
-              class="relative flex flex-col gap-5 rounded-lg border p-8"
+              class="grid gap-6 rounded-xl border p-8 md:grid-cols-12 md:p-10"
               :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.background }"
             >
-              <!-- 5-star row + quote mark -->
-              <div class="flex items-start justify-between">
-                <div class="flex gap-1">
-                  <UIcon
-                    v-for="n in 5"
-                    :key="n"
-                    name="i-lucide-star"
-                    class="size-4 fill-current"
-                    :style="{ color: brand.colors.primary }"
-                  />
+              <!-- Quote area -->
+              <div class="md:col-span-8">
+                <!-- Outcome stat -->
+                <div class="mb-4 font-mono-tab text-[12px] font-bold tabular-nums" :style="{ color: brand.colors.primary }">
+                  {{ t.outcome }}
                 </div>
-                <span class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">
-                  [ {{ String(idx + 1).padStart(2, '0') }} ]
-                </span>
+                <blockquote class="text-[15px] leading-relaxed md:text-[16px]" :style="{ color: `${brand.colors.text}E0` }">
+                  "{{ t.quote }}"
+                </blockquote>
               </div>
 
-              <!-- Quote body -->
-              <blockquote class="text-base leading-relaxed md:text-lg" :style="{ color: brand.colors.text }">
-                <span :style="{ color: brand.colors.primary }">"</span>{{ t.quote }}<span :style="{ color: brand.colors.primary }">"</span>
-              </blockquote>
-
-              <!-- Highlighted outcome chip -->
-              <div
-                class="inline-flex w-fit items-center gap-2 rounded border px-3 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.12em]"
-                :style="{ borderColor: `${brand.colors.primary}60`, backgroundColor: `${brand.colors.primary}10`, color: brand.colors.primary }"
-              >
-                <UIcon name="i-lucide-check-circle" class="size-3" />
-                {{ t.outcome }}
-              </div>
-
-              <!-- Author -->
-              <div class="mt-auto flex items-center justify-between border-t pt-5" :style="{ borderColor: brand.colors.border }">
-                <div class="flex items-center gap-3">
-                  <div
-                    class="flex size-10 items-center justify-center rounded-full font-mono-tab text-[11px] font-bold uppercase tracking-wider"
-                    :style="{ backgroundColor: `${brand.colors.primary}20`, color: brand.colors.primary }"
-                  >
-                    {{ t.initials }}
-                  </div>
-                  <div>
-                    <div class="text-sm font-semibold" :style="{ color: brand.colors.text }">
-                      {{ t.name }}
-                    </div>
-                    <div class="text-xs" :style="{ color: brand.colors.textMuted }">
-                      {{ t.role }}
-                    </div>
-                  </div>
+              <!-- Author area -->
+              <div class="flex items-center gap-4 border-t pt-5 md:col-span-4 md:border-l md:border-t-0 md:pl-6 md:pt-0" :style="{ borderColor: brand.colors.border }">
+                <div
+                  class="flex size-10 shrink-0 items-center justify-center rounded-full font-mono-tab text-[11px] font-bold uppercase"
+                  :style="{ backgroundColor: `${brand.colors.primary}15`, color: brand.colors.primary }"
+                >
+                  {{ t.initials }}
                 </div>
-                <span class="font-mono-tab text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">
-                  {{ t.company }}
-                </span>
+                <div>
+                  <div class="text-[13px] font-semibold" :style="{ color: brand.colors.text }">{{ t.name }}</div>
+                  <div class="text-[12px]" :style="{ color: brand.colors.textMuted }">{{ t.role }}</div>
+                  <div class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">{{ t.company }}</div>
+                </div>
               </div>
             </div>
           </div>
@@ -595,11 +563,28 @@
         </div>
       </section>
     </div>
+
+    <!-- Lead capture modal -->
+    <MoleculesLeadCaptureModal
+      v-model:open="leadModalOpen"
+      source="api"
+      :plan="leadModalPlan"
+      title="Solicitar acesso à API"
+    />
   </NuxtLayout>
 </template>
 
 <script setup lang="ts">
 const brand = useBrand()
+
+// Lead capture modal state
+const leadModalOpen = ref(false)
+const leadModalPlan = ref<string | undefined>(undefined)
+
+function openLeadModal(plan?: string) {
+  leadModalPlan.value = plan
+  leadModalOpen.value = true
+}
 
 const features = [
   {

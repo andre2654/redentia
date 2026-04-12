@@ -33,8 +33,7 @@
             </a>
           </nav>
           <div class="flex-1" />
-          <a
-            href="#cta"
+          <button
             class="inline-flex items-center gap-2 rounded-full border-2 px-5 py-2 text-[12px] font-medium transition-all hover:-translate-y-0.5"
             :style="{
               backgroundColor: C.primary,
@@ -42,166 +41,125 @@
               borderColor: C.primary,
               boxShadow: `0 6px 24px -8px ${C.primary}A0`,
             }"
+            @click="openLeadModal()"
           >
             Falar com o time →
-          </a>
+          </button>
         </div>
       </header>
 
       <!-- ============================================================
-           HERO — editorial poster, asymmetric, big visual
+           HERO — Linear-style editorial: headline breathes, no noise
            ============================================================ -->
-      <section class="relative overflow-hidden border-b" :style="{ borderColor: `${C.border}` }">
-        <!-- Atmosphere -->
+      <section class="relative overflow-hidden">
+        <!-- Single radial glow — no dot grids, no scanlines -->
         <div class="pointer-events-none absolute inset-0">
           <div
-            class="absolute -right-40 top-0 h-[720px] w-[720px] rounded-full blur-3xl opacity-30"
-            :style="{ background: `radial-gradient(circle, ${C.primary}, transparent 65%)` }"
-          />
-          <div
-            class="absolute -left-40 bottom-0 h-[520px] w-[520px] rounded-full blur-3xl opacity-20"
-            :style="{ background: `radial-gradient(circle, ${C.accent2}, transparent 70%)` }"
-          />
-          <!-- Subtle dot grid (not full grid → less devvy) -->
-          <div
-            class="absolute inset-0 opacity-[0.08]"
-            :style="{
-              backgroundImage: `radial-gradient(${C.text} 1px, transparent 1px)`,
-              backgroundSize: '36px 36px',
-            }"
+            class="absolute left-1/2 top-0 h-[800px] w-[1200px] -translate-x-1/2 rounded-full blur-3xl opacity-20"
+            :style="{ background: `radial-gradient(ellipse at center, ${C.primary}, transparent 65%)` }"
           />
         </div>
 
-        <div class="relative mx-auto grid max-w-7xl grid-cols-12 gap-8 px-6 pb-24 pt-24 md:gap-12 md:px-10 md:pb-36 md:pt-32 lg:gap-16">
-          <!-- Left: editorial title -->
-          <div class="col-span-12 lg:col-span-7">
-            <!-- Tag line -->
-            <div class="mb-7 inline-flex items-center gap-3 rounded-full border px-4 py-1.5" :style="{ borderColor: `${C.primary}50`, backgroundColor: `${C.primary}10` }">
+        <div class="relative mx-auto max-w-5xl px-6 pb-20 pt-24 md:px-10 md:pb-28 md:pt-32">
+          <!-- Pill badge -->
+          <div class="mb-10 flex justify-center lg:justify-start">
+            <div class="inline-flex items-center gap-2.5 rounded-full border px-4 py-1.5" :style="{ borderColor: `${C.primary}40`, backgroundColor: `${C.primary}08` }">
               <span class="relative flex size-1.5">
                 <span class="absolute inline-flex size-1.5 animate-ping rounded-full opacity-75" :style="{ backgroundColor: C.primary }" />
                 <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: C.primary }" />
               </span>
-              <span class="text-[11px] font-medium uppercase tracking-[0.18em]" :style="{ color: C.primary }">
-                White-label · 5 marcas no ar
+              <span class="text-[11px] font-medium uppercase tracking-[0.2em]" :style="{ color: C.primary }">
+                5 marcas no ar
               </span>
-            </div>
-
-            <!-- Title -->
-            <h1
-              class="mb-8 leading-[0.88] tracking-tighter"
-              :style="{
-                color: C.text,
-                fontFamily: F.display,
-                fontSize: 'clamp(3rem, 8vw, 7.5rem)',
-              }"
-            >
-              Sua marca,<br />
-              <span class="italic" :style="{ color: C.primary, fontStyle: 'italic' }">nossa infraestrutura.</span>
-            </h1>
-
-            <!-- Subtitle -->
-            <p class="mb-12 max-w-2xl text-[17px] leading-[1.55] md:text-[19px]" :style="{ color: `${C.text}D0` }">
-              Você lança uma plataforma de investimentos completa em <strong :style="{ color: C.text }">menos de 7 dias</strong> — com seu logo, suas cores, sua fonte, seu domínio. Sem ter time de engenharia. Sem ter que aprender Bloomberg API. Sem reinventar a roda.
-            </p>
-
-            <!-- CTAs -->
-            <div class="mb-16 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-              <a
-                href="#cta"
-                class="group inline-flex items-center gap-3 rounded-full px-8 py-4 text-[14px] font-semibold transition-all hover:-translate-y-0.5"
-                :style="{
-                  backgroundColor: C.primary,
-                  color: C.background,
-                  boxShadow: `0 16px 50px -16px ${C.primary}A0, 0 0 0 1px ${C.primary}`,
-                }"
-              >
-                Quero meu white-label
-                <span class="inline-block transition-transform group-hover:translate-x-1">→</span>
-              </a>
-              <a
-                href="#tenants"
-                class="inline-flex items-center gap-2 px-2 py-2 text-[14px] font-medium transition-opacity hover:opacity-70"
-                :style="{ color: C.text }"
-              >
-                <span class="border-b pb-0.5" :style="{ borderColor: C.text }">Ver casos no ar</span>
-                <span>↓</span>
-              </a>
-            </div>
-
-            <!-- Quick value props row -->
-            <div class="grid grid-cols-3 gap-6 border-t pt-8" :style="{ borderColor: `${C.border}80` }">
-              <div>
-                <div class="text-[14px]" :style="{ color: C.primary }">📦</div>
-                <div class="mt-1 text-[13px] font-medium" :style="{ color: C.text }">Stack completa</div>
-                <div class="text-[12px]" :style="{ color: C.textMuted }">Frontend + backend + dados B3</div>
-              </div>
-              <div>
-                <div class="text-[14px]" :style="{ color: C.primary }">⚡</div>
-                <div class="mt-1 text-[13px] font-medium" :style="{ color: C.text }">Deploy rápido</div>
-                <div class="text-[12px]" :style="{ color: C.textMuted }">Da call ao ar em uma semana</div>
-              </div>
-              <div>
-                <div class="text-[14px]" :style="{ color: C.primary }">🎨</div>
-                <div class="mt-1 text-[13px] font-medium" :style="{ color: C.text }">Visual radical</div>
-                <div class="text-[12px]" :style="{ color: C.textMuted }">5 variants já provados</div>
-              </div>
             </div>
           </div>
 
-          <!-- Right: floating tenant chip stack (visual hero) -->
-          <div class="relative col-span-12 lg:col-span-5">
-            <div class="relative h-[480px] md:h-[560px] lg:h-[600px]">
-              <!-- Tenant chip 1 — Norte (top right) -->
-              <div
-                class="hero-chip absolute right-0 top-2 w-[78%] rotate-[3deg] rounded-2xl border p-6 shadow-2xl"
-                style="background: #F7F5EF; color: #1C2133; border-color: #E5DFCE; box-shadow: 0 30px 80px -20px rgba(0,0,0,0.6);"
-              >
-                <div class="text-[10px] uppercase tracking-[0.2em]" style="color: #8B6F3D;">Norte Capital</div>
-                <div class="mt-2 text-[22px] leading-[1.05]" style="font-family: 'Fraunces', serif; font-style: italic;">
-                  Estimado<br />investidor.
-                </div>
-                <div class="mt-3 text-[10px]" style="color: #8B6F3D; font-style: italic;">
-                  Carta editorial · privatebank
-                </div>
-              </div>
+          <!-- Title — huge, clean, let it breathe -->
+          <h1
+            class="mb-8 text-center leading-[0.88] tracking-tighter lg:text-left"
+            :style="{
+              color: C.text,
+              fontFamily: F.display,
+              fontSize: 'clamp(3.5rem, 9vw, 8.5rem)',
+            }"
+          >
+            Sua marca,<br />
+            <span class="italic" :style="{ color: C.primary }">nossa infra.</span>
+          </h1>
 
-              <!-- Tenant chip 2 — Me Poupe (middle left) -->
-              <div
-                class="hero-chip absolute left-0 top-32 w-[68%] -rotate-[5deg] rounded-2xl border p-6 shadow-2xl md:top-40"
-                style="background: #1A0A2E; color: #FFFFFF; border-color: #2D1B47; box-shadow: 0 30px 80px -20px rgba(0,0,0,0.7);"
-              >
-                <div class="text-[10px] font-bold uppercase tracking-[0.18em]" style="color: #FACC15;">Me Poupe!</div>
-                <div class="mt-2 text-[24px] leading-[0.95]" style="font-family: 'Poppins', sans-serif; font-weight: 900;">
-                  CHEGA DE<br />DINHEIRO<span style="color: #FACC15;">FOBIA</span>
-                </div>
-                <div class="mt-2 text-[10px] font-bold uppercase tracking-[0.15em]" style="color: #FACC15;">
-                  PROGRAMA · AO VIVO
-                </div>
-              </div>
+          <!-- Subtitle — centered on mobile, left on desktop -->
+          <p class="mx-auto mb-14 max-w-xl text-center text-[17px] leading-[1.6] md:text-[19px] lg:mx-0 lg:text-left" :style="{ color: `${C.text}C0` }">
+            Plataforma de investimentos completa em <strong :style="{ color: C.text }">menos de 7 dias</strong> — com seu logo, suas cores, seu domínio. Sem time de engenharia.
+          </p>
 
-              <!-- Tenant chip 3 — Sardinha (bottom right) -->
-              <div
-                class="hero-chip absolute bottom-12 right-4 w-[72%] rotate-[2deg] rounded-2xl border p-6 shadow-2xl md:bottom-16"
-                style="background: #F6F1E8; color: #1F1A12; border-color: #D9D0BC; box-shadow: 0 30px 80px -20px rgba(0,0,0,0.6);"
-              >
-                <div class="text-[10px] uppercase tracking-[0.2em]" style="color: #C84B31;">Investidor Sardinha</div>
-                <div class="mt-2 text-[20px] leading-[1.1]" style="font-family: 'IBM Plex Serif', serif;">
-                  A única <em style="color: #C84B31;">verdade<br />possível.</em>
-                </div>
-                <div class="mt-3 text-[10px] font-medium uppercase tracking-[0.12em]" style="color: #C84B31;">
-                  AUVP RESEARCH
-                </div>
-              </div>
+          <!-- CTAs -->
+          <div class="mb-10 flex flex-col items-center gap-4 sm:flex-row lg:justify-start">
+            <button
+              class="group inline-flex items-center gap-3 rounded-full px-8 py-4 text-[14px] font-semibold transition-all hover:-translate-y-0.5"
+              :style="{
+                backgroundColor: C.primary,
+                color: C.background,
+                boxShadow: `0 16px 50px -16px ${C.primary}A0`,
+              }"
+              @click="openLeadModal()"
+            >
+              Quero meu white-label
+              <span class="inline-block transition-transform group-hover:translate-x-1">→</span>
+            </button>
+            <a
+              href="#tenants"
+              class="inline-flex items-center gap-2 px-2 py-2 text-[14px] font-medium transition-opacity hover:opacity-70"
+              :style="{ color: C.text }"
+            >
+              <span class="border-b pb-0.5" :style="{ borderColor: C.text }">Ver quem já usa</span>
+              <span>↓</span>
+            </a>
+          </div>
 
-              <!-- Tenant chip 4 — Primo Rico (bottom left, smaller) -->
-              <div
-                class="hero-chip absolute bottom-0 left-8 w-[60%] -rotate-[3deg] rounded-2xl border p-5 shadow-2xl"
-                style="background: #0F0D0B; color: #F4EDE4; border-color: #2A1F18; box-shadow: 0 30px 80px -20px rgba(0,0,0,0.7);"
+          <!-- Tenant logo strip — clean, Vercel "trusted by" style -->
+          <div class="border-t pt-10" :style="{ borderColor: `${C.border}60` }">
+            <p class="mb-6 text-center text-[11px] uppercase tracking-[0.22em] lg:text-left" :style="{ color: C.textMuted }">
+              Mesma infra, 5 identidades radicalmente distintas
+            </p>
+            <div class="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 lg:justify-start">
+              <span
+                v-for="t in tenants.filter(t => t.slug !== 'your-brand')"
+                :key="t.slug"
+                class="text-[20px] leading-none tracking-tight transition-opacity hover:opacity-100 md:text-[24px]"
+                style="opacity: 0.5;"
+                :style="{
+                  color: t.accent,
+                  fontFamily: t.font,
+                  fontWeight: t.weight,
+                  fontStyle: t.italic ? 'italic' : 'normal',
+                }"
               >
-                <div class="text-[9px] font-bold uppercase tracking-[0.2em]" style="color: #FF6B35;">Primo Rico</div>
-                <div class="mt-2 text-[20px] leading-[1]" style="font-family: 'Fraunces', serif; font-weight: 700;">
-                  Liberdade <span style="color: #FF6B35;">ou</span><br />mediocridade.
-                </div>
+                {{ t.name }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Stats row — with Lucide icons, not emojis -->
+          <div class="mt-14 grid grid-cols-3 gap-8">
+            <div class="flex items-start gap-3">
+              <UIcon name="i-lucide-layers" class="mt-0.5 size-5 shrink-0" :style="{ color: C.primary }" />
+              <div>
+                <div class="text-[14px] font-semibold" :style="{ color: C.text }">Stack completa</div>
+                <div class="text-[12px]" :style="{ color: C.textMuted }">Frontend + backend + dados B3</div>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <UIcon name="i-lucide-zap" class="mt-0.5 size-5 shrink-0" :style="{ color: C.primary }" />
+              <div>
+                <div class="text-[14px] font-semibold" :style="{ color: C.text }">Deploy em 7 dias</div>
+                <div class="text-[12px]" :style="{ color: C.textMuted }">Da call ao ar em uma semana</div>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <UIcon name="i-lucide-palette" class="mt-0.5 size-5 shrink-0" :style="{ color: C.primary }" />
+              <div>
+                <div class="text-[14px] font-semibold" :style="{ color: C.text }">100% custom</div>
+                <div class="text-[12px]" :style="{ color: C.textMuted }">Cores, fontes, hero, domínio</div>
               </div>
             </div>
           </div>
@@ -527,130 +485,143 @@
       </section>
 
       <!-- ============================================================
-           PRICING — 3 tiers, big card middle, gradient highlight
+           PRICING — Stripe-style unified container
            ============================================================ -->
       <section
         id="pricing"
-        class="relative border-b"
-        :style="{ borderColor: `${C.border}` }"
+        class="relative"
       >
-        <div class="mx-auto max-w-7xl px-6 py-24 md:px-10 md:py-32">
-          <div class="mb-16 text-center">
-            <div class="text-[12px] uppercase tracking-[0.22em]" :style="{ color: C.primary }">— Investimento</div>
+        <div class="mx-auto max-w-6xl px-6 py-20 md:px-10 md:py-28">
+          <div class="mb-16 max-w-2xl">
             <h2
-              class="mx-auto mt-4 max-w-3xl leading-[0.95] tracking-tight"
+              class="leading-[0.95] tracking-tight"
               :style="{
                 color: C.text,
                 fontFamily: F.display,
-                fontSize: 'clamp(2.5rem, 6vw, 5rem)',
+                fontSize: 'clamp(2.5rem, 6vw, 4.5rem)',
               }"
             >
-              Sem letrinha miúda.<br />
-              <span class="italic" :style="{ color: C.primary }">Sem surpresa no boleto.</span>
+              Sem letrinha miúda.
             </h2>
-            <p class="mx-auto mt-6 max-w-xl text-[15px]" :style="{ color: C.textMuted }">
-              Todo plano inclui deploy, setup inicial, suporte real e atualizações enquanto você for cliente. Você assina mensal — cancela quando quiser.
+            <p class="mt-6 text-[16px] leading-relaxed" :style="{ color: C.textMuted }">
+              Deploy + setup + suporte + atualizações inclusos. Assina mensal, cancela quando quiser.
             </p>
           </div>
 
-          <div class="grid items-start gap-6 md:grid-cols-3 md:gap-5">
+          <!-- Unified container with shared borders -->
+          <div
+            class="grid overflow-hidden rounded-xl border md:grid-cols-3"
+            :style="{ borderColor: C.border }"
+          >
             <div
-              v-for="(plan, idx) in plans"
+              v-for="plan in plans"
               :key="plan.slug"
-              class="relative flex flex-col gap-6 overflow-hidden rounded-3xl border p-8 md:p-10"
+              class="relative flex flex-col gap-6 border-b p-8 md:border-b-0 md:border-r md:p-10 last:border-b-0 last:border-r-0"
               :style="{
-                borderColor: plan.popular ? C.primary : `${C.border}`,
-                backgroundColor: plan.popular ? `${C.primary}08` : C.background,
-                transform: plan.popular ? 'scale(1.02)' : 'none',
-                boxShadow: plan.popular ? `0 40px 80px -30px ${C.primary}50` : 'none',
+                borderColor: C.border,
+                backgroundColor: plan.popular ? `${C.primary}06` : 'transparent',
               }"
             >
-              <span
+              <!-- Popular accent — top border only -->
+              <div
                 v-if="plan.popular"
-                class="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full px-4 py-1 text-[10px] font-bold uppercase tracking-[0.15em]"
-                :style="{ backgroundColor: C.primary, color: C.background }"
-              >
-                ★ Recomendado
-              </span>
+                class="absolute inset-x-0 top-0 h-0.5"
+                :style="{ backgroundColor: C.primary }"
+              />
 
-              <div>
-                <div class="text-[11px] font-medium uppercase tracking-[0.18em]" :style="{ color: C.primary }">
+              <div class="flex items-center gap-3">
+                <h3 class="text-[15px] font-semibold" :style="{ color: C.text }">
                   {{ plan.name }}
-                </div>
-                <p class="mt-2 text-[14px]" :style="{ color: C.textMuted }">
-                  {{ plan.description }}
-                </p>
+                </h3>
+                <span
+                  v-if="plan.popular"
+                  class="rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider"
+                  :style="{ backgroundColor: `${C.primary}20`, color: C.primary }"
+                >
+                  Popular
+                </span>
               </div>
 
-              <div class="border-y py-6" :style="{ borderColor: `${C.border}80` }">
-                <div class="flex items-baseline gap-1.5">
-                  <span class="text-[44px] tabular-nums leading-none md:text-[56px]" :style="{ color: C.text, fontFamily: F.display }">
-                    {{ plan.price }}
-                  </span>
-                  <span class="text-[14px]" :style="{ color: C.textMuted }">
-                    /{{ plan.priceUnit }}
-                  </span>
-                </div>
-                <p v-if="plan.priceNote" class="mt-3 text-[12px]" :style="{ color: C.textMuted }">
-                  {{ plan.priceNote }}
-                </p>
-              </div>
+              <p class="text-[13px] leading-relaxed" :style="{ color: C.textMuted }">
+                {{ plan.description }}
+              </p>
 
-              <ul class="flex flex-col gap-3 text-[14px]">
-                <li v-for="feat in plan.features" :key="feat" class="flex items-start gap-2.5" :style="{ color: C.text }">
-                  <UIcon name="i-lucide-check" class="mt-0.5 size-4 shrink-0" :style="{ color: C.primary }" />
+              <!-- Price — gigantic numbers, tiny unit -->
+              <div class="flex items-baseline gap-1">
+                <span
+                  class="tabular-nums leading-none tracking-tight"
+                  :style="{
+                    color: C.text,
+                    fontFamily: F.display,
+                    fontSize: 'clamp(3rem, 5vw, 4.5rem)',
+                  }"
+                >
+                  {{ plan.price }}
+                </span>
+                <span class="text-[12px]" :style="{ color: C.textMuted }">
+                  /{{ plan.priceUnit }}
+                </span>
+              </div>
+              <p v-if="plan.priceNote" class="text-[12px]" :style="{ color: C.textMuted }">
+                {{ plan.priceNote }}
+              </p>
+
+              <!-- Features — clean list, no card wrapping -->
+              <ul class="flex flex-col gap-2.5 border-t pt-6 text-[13px]" :style="{ borderColor: `${C.border}80` }">
+                <li v-for="feat in plan.features" :key="feat" class="flex items-start gap-2" :style="{ color: `${C.text}D0` }">
+                  <span :style="{ color: C.primary }">—</span>
                   <span>{{ feat }}</span>
                 </li>
               </ul>
 
-              <a
-                href="#cta"
-                class="mt-auto inline-flex w-full items-center justify-center gap-2 rounded-full px-6 py-3.5 text-[13px] font-semibold transition-all hover:-translate-y-0.5"
+              <button
+                class="mt-auto inline-flex w-full items-center justify-center gap-2 rounded-lg px-5 py-3 text-[13px] font-semibold transition-all hover:opacity-90"
                 :style="{
                   backgroundColor: plan.popular ? C.primary : 'transparent',
                   color: plan.popular ? C.background : C.text,
-                  border: `2px solid ${plan.popular ? C.primary : C.border}`,
+                  border: plan.popular ? 'none' : `1px solid ${C.border}`,
                 }"
+                @click="openLeadModal(plan.slug)"
               >
                 {{ plan.cta }} →
-              </a>
+              </button>
             </div>
           </div>
         </div>
       </section>
 
       <!-- ============================================================
-           FAQ MICRO — quick objections handled
+           FAQ — clean dividers, no cards
            ============================================================ -->
-      <section class="relative border-b" :style="{ borderColor: `${C.border}`, backgroundColor: C.surfaceLight }">
-        <div class="mx-auto max-w-5xl px-6 py-24 md:px-10 md:py-28">
-          <div class="mb-12">
-            <div class="text-[12px] uppercase tracking-[0.22em]" :style="{ color: C.primary }">— Perguntas frequentes</div>
-            <h2
-              class="mt-4 leading-[0.95] tracking-tight"
-              :style="{
-                color: C.text,
-                fontFamily: F.display,
-                fontSize: 'clamp(2.25rem, 5vw, 4rem)',
-              }"
-            >
-              O que você está pensando<br />
-              <span class="italic" :style="{ color: C.primary }">agora.</span>
-            </h2>
-          </div>
+      <section class="relative">
+        <div class="mx-auto max-w-4xl px-6 py-20 md:px-10 md:py-28">
+          <h2
+            class="mb-14 leading-[0.95] tracking-tight"
+            :style="{
+              color: C.text,
+              fontFamily: F.display,
+              fontSize: 'clamp(2.25rem, 5vw, 3.5rem)',
+            }"
+          >
+            Perguntas frequentes.
+          </h2>
 
-          <div class="grid gap-3">
+          <div>
             <details
-              v-for="faq in faqs"
+              v-for="(faq, idx) in faqs"
               :key="faq.q"
-              class="group rounded-2xl border p-6 transition-colors"
-              :style="{ borderColor: `${C.border}`, backgroundColor: C.background }"
+              class="group border-b py-6"
+              :style="{ borderColor: `${C.border}60` }"
             >
-              <summary class="flex cursor-pointer items-center justify-between gap-4 text-[16px] font-medium" :style="{ color: C.text }">
+              <summary class="flex cursor-pointer items-center justify-between gap-6 text-[16px] font-medium md:text-[17px]" :style="{ color: C.text }">
                 {{ faq.q }}
-                <span class="text-[20px] transition-transform group-open:rotate-45" :style="{ color: C.primary }">+</span>
+                <UIcon
+                  name="i-lucide-chevron-down"
+                  class="size-5 shrink-0 transition-transform duration-200 group-open:rotate-180"
+                  :style="{ color: C.textMuted }"
+                />
               </summary>
-              <p class="mt-4 text-[14px] leading-relaxed" :style="{ color: C.textMuted }">
+              <p class="mt-4 max-w-3xl text-[14px] leading-relaxed md:text-[15px]" :style="{ color: C.textMuted }">
                 {{ faq.a }}
               </p>
             </details>
@@ -693,18 +664,18 @@
             Fale direto com o time. Primeira call em 24h, protótipo navegável em 72h, produção em 1 semana. Sem proposta de 40 páginas.
           </p>
           <div class="mt-12 flex flex-col items-center justify-center gap-5 sm:flex-row">
-            <a
-              href="mailto:whitelabel@redentia.com.br"
+            <button
               class="group inline-flex items-center gap-3 rounded-full px-10 py-5 text-[15px] font-semibold transition-all hover:-translate-y-0.5"
               :style="{
                 backgroundColor: C.primary,
                 color: C.background,
                 boxShadow: `0 20px 60px -15px ${C.primary}90`,
               }"
+              @click="openLeadModal()"
             >
               Quero meu white-label
               <span class="inline-block transition-transform group-hover:translate-x-1">→</span>
-            </a>
+            </button>
             <a
               href="https://wa.me/5511999999999"
               target="_blank"
@@ -723,10 +694,28 @@
         </div>
       </section>
     </div>
+
+    <!-- Lead capture modal -->
+    <MoleculesLeadCaptureModal
+      v-model:open="leadModalOpen"
+      source="whitelabel"
+      :plan="leadModalPlan"
+    />
   </NuxtLayout>
 </template>
 
 <script setup lang="ts">
+// ============================================================
+// Lead capture modal state
+// ============================================================
+const leadModalOpen = ref(false)
+const leadModalPlan = ref<string | undefined>(undefined)
+
+function openLeadModal(plan?: string) {
+  leadModalPlan.value = plan
+  leadModalOpen.value = true
+}
+
 // ============================================================
 // Redentia Whitelabel — landing page
 //
@@ -1103,43 +1092,17 @@ usePageSeo({
   font-feature-settings: 'ss01', 'cv11';
 }
 
-/* Hero floating chips: gentle bob animation */
-@keyframes hero-chip-float {
-  0%, 100% { transform: translateY(0) rotate(var(--rot, 0deg)); }
-  50% { transform: translateY(-8px) rotate(var(--rot, 0deg)); }
-}
-
-.hero-chip {
-  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: transform;
-}
-
-.hero-chip:nth-child(1) { --rot: 3deg; animation: hero-chip-float 6s ease-in-out infinite; }
-.hero-chip:nth-child(2) { --rot: -5deg; animation: hero-chip-float 7s ease-in-out infinite 0.5s; }
-.hero-chip:nth-child(3) { --rot: 2deg; animation: hero-chip-float 8s ease-in-out infinite 1s; }
-.hero-chip:nth-child(4) { --rot: -3deg; animation: hero-chip-float 7.5s ease-in-out infinite 1.5s; }
-
-.hero-chip:hover {
-  transform: scale(1.04) rotate(0deg) !important;
-  z-index: 10;
-  animation-play-state: paused;
-}
-
-/* Tenant tile: subtle lift on hover */
+/* Tenant tile hover */
 .tenant-tile {
   transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
 }
 .tenant-tile:hover {
-  transform: translateY(-6px);
+  transform: translateY(-4px);
 }
 
-/* Pricing card subtle gradient */
-.wl-root [open] summary {
-  margin-bottom: 0;
-}
-
-/* Smooth focus rings */
-.wl-root a:focus-visible {
+/* Focus rings */
+.wl-root a:focus-visible,
+.wl-root button:focus-visible {
   outline: 2px solid #F5A623;
   outline-offset: 4px;
   border-radius: 8px;
