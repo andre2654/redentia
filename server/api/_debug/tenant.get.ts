@@ -31,7 +31,14 @@ export default defineEventHandler((event) => {
   const queryBrand = url.searchParams.get('brand')
 
   return {
-    resolverVersion: '2026-04-11-v2',
+    // Bump this timestamp on every commit to this file so we can tell
+    // at a glance which build is live in any given environment.
+    resolverVersion: '2026-04-12-v3-isr-allowquery',
+    // Commit SHA of the build that's currently serving requests.
+    // Vercel sets VERCEL_GIT_COMMIT_SHA automatically on every deploy.
+    commitSha: process.env.VERCEL_GIT_COMMIT_SHA || 'local-dev',
+    commitShort: (process.env.VERCEL_GIT_COMMIT_SHA || 'local-dev').slice(0, 7),
+    deployEnv: process.env.VERCEL_ENV || 'dev',
     tenantSlug: event.context.tenantSlug || null,
     host,
     queryBrand,
