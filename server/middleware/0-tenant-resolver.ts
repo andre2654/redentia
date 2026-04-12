@@ -130,13 +130,21 @@ function resolveSlugFromHost(host: string): BrandSlug | null {
 export default defineEventHandler((event) => {
   // Never try to resolve for internal Nuxt/Nitro paths or API calls.
   // Those don't render a tenant-branded page anyway.
+  //
+  // Exception: `/api/_debug/tenant` needs the resolver to run so the
+  // endpoint can report back whether the middleware is active and what
+  // slug it resolved. This is a diagnostic-only carve-out.
   const url = getRequestURL(event)
+  const isDebugEndpoint = url.pathname === '/api/_debug/tenant'
   if (
-    url.pathname.startsWith('/_') ||
-    url.pathname.startsWith('/api/') ||
-    url.pathname.startsWith('/sw.js') ||
-    url.pathname.startsWith('/manifest') ||
-    url.pathname.startsWith('/firebase-messaging-sw.js')
+    !isDebugEndpoint &&
+    (
+      url.pathname.startsWith('/_') ||
+      url.pathname.startsWith('/api/') ||
+      url.pathname.startsWith('/sw.js') ||
+      url.pathname.startsWith('/manifest') ||
+      url.pathname.startsWith('/firebase-messaging-sw.js')
+    )
   ) {
     return
   }
