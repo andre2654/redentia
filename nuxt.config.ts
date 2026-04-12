@@ -31,6 +31,14 @@ export default defineNuxtConfig({
   },
   ssr: true,
   vite: {
+    // Allow any host in dev so the tenant-resolver middleware can
+    // exercise host-based routing via `curl -H "Host: foo.com.br"`
+    // or `/etc/hosts` entries like `saraivainvest.localhost`.
+    // In production (Vercel), Vite dev server is not used — this
+    // setting is irrelevant to builds.
+    server: {
+      allowedHosts: true,
+    },
     plugins: [svgLoader()],
     build: {
       rollupOptions: {

@@ -22,7 +22,14 @@ const uAppConfig = {
   },
 }
 
-initBrandFromRoute()
+// Tenant resolution is handled server-side by:
+//   - server/middleware/0-tenant-resolver.ts — decides the slug from
+//     host/query/default, writes to event.context.tenantSlug
+//   - plugins/tenant.server.ts — reads the context and populates
+//     useState('brand:active') BEFORE any component runs
+// so `useBrand()` is guaranteed correct by the time app.vue mounts.
+// No init function needed here. Client-side navigations with
+// `?brand=` overrides are handled by plugins/brand-router.client.ts.
 
 const interfaceStore = useInterfaceStore()
 const route = useRoute()
