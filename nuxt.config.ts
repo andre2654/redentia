@@ -342,30 +342,63 @@ export default defineNuxtConfig({
     },
   },
   routeRules: {
-    '/institucional/**': { prerender: true },
-    '/download': { prerender: true },
-    '/glossario': { prerender: true },
-    '/glossario/**': { prerender: true },
-    '/guias': { prerender: true },
-    '/guias/**': { prerender: true },
-    '/calculadora': { prerender: true },
-    '/calculadora/**': { prerender: true },
-    // ISR: serve cached HTML, revalidate in background
-    '/': { isr: 300 },
-    '/acoes': { isr: 300 },
-    '/fiis': { isr: 300 },
-    '/etfs': { isr: 300 },
-    '/small-caps': { isr: 300 },
-    '/dividendos': { isr: 300 },
-    '/whitelabel': { isr: 3600 },
-    '/search': { isr: 300 },
+    // ============================================================
+    // IMPORTANT: branding is query-string aware
+    // ============================================================
+    // All routes below declare `isr.allowQuery: ['brand']` so the
+    // Vercel edge cache keys by BOTH the path AND the `brand` query
+    // param independently. Without this, `/?brand=saraiva-invest`
+    // would share a cache entry with `/` (Redentia default) — which
+    // is exactly the bug that caused the "tenant not switching on
+    // production" issue.
+    //
+    // The `brand` query is the ONLY query we cache on, so:
+    //   - `/` → one cached variant (Redentia default)
+    //   - `/?brand=holder` → a separate cached variant (Holder)
+    //   - `/?brand=saraiva-invest` → another separate cached variant
+    //   - `/?foo=bar` → collapses to `/` (other query params ignored
+    //     by the cache — they still reach the page at runtime)
+    //
+    // Host-based resolution (e.g. `www.saraivainvest.com.br` → Saraiva)
+    // still works because Vercel keys caches per-host automatically.
+    //
+    // See: docs/tenant-resolution.md for the full model.
+    // See: node_modules/nitropack/dist/shared/nitro.DLF2_KRt.d.ts
+    //      (VercelISRConfig.allowQuery) for the nitro type.
+    // ============================================================
+
+    // NOTE: these routes used to be `prerender: true` (generated at
+    // build time as static HTML). But prerender bakes the brand default
+    // into the HTML at build — there's no way for `?brand=holder` to
+    // swap the tenant after the fact. Moved to ISR with `allowQuery`
+    // so each (path, brand) pair gets its own cached variant on-demand,
+    // revalidated every hour. SEO impact is minimal: Google still
+    // crawls the default-brand variant at first visit and the ISR
+    // cache serves it in <10ms after that.
+    '/institucional/**': { isr: { expiration: 3600, allowQuery: ['brand'] } },
+    '/download': { isr: { expiration: 3600, allowQuery: ['brand'] } },
+    '/glossario': { isr: { expiration: 3600, allowQuery: ['brand'] } },
+    '/glossario/**': { isr: { expiration: 3600, allowQuery: ['brand'] } },
+    '/guias': { isr: { expiration: 3600, allowQuery: ['brand'] } },
+    '/guias/**': { isr: { expiration: 3600, allowQuery: ['brand'] } },
+    '/calculadora': { isr: { expiration: 3600, allowQuery: ['brand'] } },
+    '/calculadora/**': { isr: { expiration: 3600, allowQuery: ['brand'] } },
+    // ISR: serve cached HTML per (path, brand) pair, revalidate in bg
+    '/': { isr: { expiration: 300, allowQuery: ['brand'] } },
+    '/acoes': { isr: { expiration: 300, allowQuery: ['brand'] } },
+    '/fiis': { isr: { expiration: 300, allowQuery: ['brand'] } },
+    '/etfs': { isr: { expiration: 300, allowQuery: ['brand'] } },
+    '/small-caps': { isr: { expiration: 300, allowQuery: ['brand'] } },
+    '/dividendos': { isr: { expiration: 300, allowQuery: ['brand'] } },
+    '/whitelabel': { isr: { expiration: 3600, allowQuery: ['brand'] } },
+    '/search': { isr: { expiration: 300, allowQuery: ['brand'] } },
     '/asset/**': { swr: 300 },
     // SEO programático — rankings + dividendos + setores
-    '/ranking': { isr: 900 },
-    '/ranking/**': { isr: 900 },
-    '/dividendos/calendario': { isr: 1800 },
-    '/setor': { isr: 3600 },
-    '/setor/**': { isr: 900 },
+    '/ranking': { isr: { expiration: 900, allowQuery: ['brand'] } },
+    '/ranking/**': { isr: { expiration: 900, allowQuery: ['brand'] } },
+    '/dividendos/calendario': { isr: { expiration: 1800, allowQuery: ['brand'] } },
+    '/setor': { isr: { expiration: 3600, allowQuery: ['brand'] } },
+    '/setor/**': { isr: { expiration: 900, allowQuery: ['brand'] } },
   },
   components: [
     {
