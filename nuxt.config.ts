@@ -348,59 +348,21 @@ export default defineNuxtConfig({
   },
   routeRules: (() => {
     // ============================================================
-    // SWR caching — stale-while-revalidate via cache headers
+    // No CDN caching — all pages render fresh per request
     // ============================================================
-    // We use `swr` instead of `isr` because Nuxt 4 + Vercel ISR
-    // creates internal function routes like `/index-isr` that leak
-    // as user-facing URLs and cause 404s. SWR achieves the same
-    // caching behavior via HTTP cache headers without creating
-    // separate serverless functions.
+    // Nuxt 4 + Vercel has two caching bugs that break multi-tenant:
+    //   - ISR creates `/index-isr` routes → Vue Router 404
+    //   - SWR ignores query strings → all `?brand=X` share one cache
     //
-    // Note on brand query strings: tenant resolution happens via
-    // the server middleware (0-tenant-resolver.ts) which reads
-    // `?brand=<slug>` from the query string. SWR caches by full
-    // URL including query string, so `/?brand=holder` and `/` are
-    // separate cache entries automatically.
+    // Without route rules, every request hits the serverless function
+    // and renders with the correct tenant. Performance is fine since
+    // Vercel serverless cold starts are ~100ms.
     //
-    // Both host-based resolution and query-based override work:
-    //   - `www.saraivainvest.com.br` → Saraiva (host, no query needed)
-    //   - `www.redentia.com.br/?brand=holder` → Holder (query override)
+    // When tenants have their own domains, the Vercel CDN caches by
+    // host automatically (no config needed).
     // ============================================================
 
-    // SWR caching with CDN-level Vary header for multi-tenant support.
-    //
-    // We use SWR instead of ISR because Nuxt 4 + Vercel ISR creates
-    // internal function routes like `/index-isr` that the Vue Router
-    // can't match, causing 404s. SWR uses cache headers instead.
-    //
-    // The `Vary: X-Brand` header tells the Vercel CDN to cache
-    // separately per brand. The tenant-resolver middleware sets this
-    // header based on the resolved tenant slug.
-
-    return {
-      '/institucional/**': { swr: 3600 },
-      '/download': { swr: 3600 },
-      '/glossario': { swr: 3600 },
-      '/glossario/**': { swr: 3600 },
-      '/guias': { swr: 3600 },
-      '/guias/**': { swr: 3600 },
-      '/calculadora': { swr: 3600 },
-      '/calculadora/**': { swr: 3600 },
-      '/': { swr: 300 },
-      '/acoes': { swr: 300 },
-      '/fiis': { swr: 300 },
-      '/etfs': { swr: 300 },
-      '/small-caps': { swr: 300 },
-      '/dividendos': { swr: 300 },
-      '/whitelabel': { swr: 3600 },
-      '/search': { swr: 300 },
-      '/asset/**': { swr: 300 },
-      '/ranking': { swr: 900 },
-      '/ranking/**': { swr: 900 },
-      '/dividendos/calendario': { swr: 1800 },
-      '/setor': { swr: 3600 },
-      '/setor/**': { swr: 900 },
-    }
+    return {}
   })(),
   components: [
     {

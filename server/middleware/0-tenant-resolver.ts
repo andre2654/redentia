@@ -152,15 +152,9 @@ export default defineEventHandler((event) => {
   // 1. Query string override — highest priority.
   //    Works in production AND dev: `www.redentia.com.br/?brand=holder`
   //    lets you see the Holder brand running on Redentia's domain.
-  //    Bypasses CDN cache (s-maxage=0) since this is a demo/dev tool —
-  //    in production each tenant uses their own domain.
   const queryBrand = firstString(url.searchParams.get('brand'))
   if (queryBrand && queryBrand in brands) {
     event.context.tenantSlug = queryBrand as BrandSlug
-    setTenantHeaders(event, queryBrand)
-    // CDN-Cache-Control overrides Cache-Control for Vercel's CDN
-    setResponseHeader(event, 'CDN-Cache-Control', 'max-age=0, must-revalidate')
-    setResponseHeader(event, 'Vercel-CDN-Cache-Control', 'max-age=0, must-revalidate')
     return
   }
 
@@ -170,7 +164,6 @@ export default defineEventHandler((event) => {
   const hostSlug = resolveSlugFromHost(host)
   if (hostSlug) {
     event.context.tenantSlug = hostSlug
-    setTenantHeaders(event, hostSlug)
     return
   }
 
@@ -179,15 +172,4 @@ export default defineEventHandler((event) => {
   //    or any unrecognized host. The composable layer will still fall back
   //    to the local brand.ts config for 'redentia' — no API call needed.
   event.context.tenantSlug = 'redentia'
-  setTenantHeaders(event, 'redentia')
 })
-
-/**
- * Set Vary + X-Brand headers so the Vercel CDN (SWR) caches
- * separately per tenant. Without this, all brands share one
- * SWR cache entry per URL path.
- */
-function setTenantHeaders(event: any, slug: string) {
-  setResponseHeader(event, 'X-Brand', slug)
-  appendResponseHeader(event, 'Vary', 'X-Brand')
-}
