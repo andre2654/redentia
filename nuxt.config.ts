@@ -367,40 +367,39 @@ export default defineNuxtConfig({
     //   - `www.redentia.com.br/?brand=holder` → Holder (query override)
     // ============================================================
 
-    // ISR with allowQuery + passQuery for per-brand caching.
-    // A server middleware (1-isr-rewrite.ts) strips the `-isr` suffix
-    // that Vercel adds internally, preventing Nuxt 4 404s.
-    const brandedISR = (seconds: number) => ({
-      isr: {
-        expiration: seconds,
-        allowQuery: ['brand'],
-        passQuery: true,
-      },
-    })
+    // SWR caching with CDN-level Vary header for multi-tenant support.
+    //
+    // We use SWR instead of ISR because Nuxt 4 + Vercel ISR creates
+    // internal function routes like `/index-isr` that the Vue Router
+    // can't match, causing 404s. SWR uses cache headers instead.
+    //
+    // The `Vary: X-Brand` header tells the Vercel CDN to cache
+    // separately per brand. The tenant-resolver middleware sets this
+    // header based on the resolved tenant slug.
 
     return {
-      '/institucional/**': brandedISR(3600),
-      '/download': brandedISR(3600),
-      '/glossario': brandedISR(3600),
-      '/glossario/**': brandedISR(3600),
-      '/guias': brandedISR(3600),
-      '/guias/**': brandedISR(3600),
-      '/calculadora': brandedISR(3600),
-      '/calculadora/**': brandedISR(3600),
-      '/': brandedISR(300),
-      '/acoes': brandedISR(300),
-      '/fiis': brandedISR(300),
-      '/etfs': brandedISR(300),
-      '/small-caps': brandedISR(300),
-      '/dividendos': brandedISR(300),
-      '/whitelabel': brandedISR(3600),
-      '/search': brandedISR(300),
+      '/institucional/**': { swr: 3600 },
+      '/download': { swr: 3600 },
+      '/glossario': { swr: 3600 },
+      '/glossario/**': { swr: 3600 },
+      '/guias': { swr: 3600 },
+      '/guias/**': { swr: 3600 },
+      '/calculadora': { swr: 3600 },
+      '/calculadora/**': { swr: 3600 },
+      '/': { swr: 300 },
+      '/acoes': { swr: 300 },
+      '/fiis': { swr: 300 },
+      '/etfs': { swr: 300 },
+      '/small-caps': { swr: 300 },
+      '/dividendos': { swr: 300 },
+      '/whitelabel': { swr: 3600 },
+      '/search': { swr: 300 },
       '/asset/**': { swr: 300 },
-      '/ranking': brandedISR(900),
-      '/ranking/**': brandedISR(900),
-      '/dividendos/calendario': brandedISR(1800),
-      '/setor': brandedISR(3600),
-      '/setor/**': brandedISR(900),
+      '/ranking': { swr: 900 },
+      '/ranking/**': { swr: 900 },
+      '/dividendos/calendario': { swr: 1800 },
+      '/setor': { swr: 3600 },
+      '/setor/**': { swr: 900 },
     }
   })(),
   components: [

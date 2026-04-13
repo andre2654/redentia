@@ -155,6 +155,7 @@ export default defineEventHandler((event) => {
   const queryBrand = firstString(url.searchParams.get('brand'))
   if (queryBrand && queryBrand in brands) {
     event.context.tenantSlug = queryBrand as BrandSlug
+    setTenantHeaders(event, queryBrand)
     return
   }
 
@@ -164,6 +165,7 @@ export default defineEventHandler((event) => {
   const hostSlug = resolveSlugFromHost(host)
   if (hostSlug) {
     event.context.tenantSlug = hostSlug
+    setTenantHeaders(event, hostSlug)
     return
   }
 
@@ -172,4 +174,15 @@ export default defineEventHandler((event) => {
   //    or any unrecognized host. The composable layer will still fall back
   //    to the local brand.ts config for 'redentia' — no API call needed.
   event.context.tenantSlug = 'redentia'
+  setTenantHeaders(event, 'redentia')
 })
+
+/**
+ * Set Vary + X-Brand headers so the Vercel CDN (SWR) caches
+ * separately per tenant. Without this, all brands share one
+ * SWR cache entry per URL path.
+ */
+function setTenantHeaders(event: any, slug: string) {
+  setResponseHeader(event, 'X-Brand', slug)
+  appendResponseHeader(event, 'Vary', 'X-Brand')
+}
