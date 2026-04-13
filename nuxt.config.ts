@@ -348,73 +348,52 @@ export default defineNuxtConfig({
   },
   routeRules: (() => {
     // ============================================================
-    // IMPORTANT: branding is query-string aware
+    // SWR caching — stale-while-revalidate via cache headers
     // ============================================================
-    // Every branded route below uses `brandedISR(seconds)` to produce:
+    // We use `swr` instead of `isr` because Nuxt 4 + Vercel ISR
+    // creates internal function routes like `/index-isr` that leak
+    // as user-facing URLs and cause 404s. SWR achieves the same
+    // caching behavior via HTTP cache headers without creating
+    // separate serverless functions.
     //
-    //   {
-    //     isr: {
-    //       expiration: <seconds>,
-    //       allowQuery: ['brand'],
-    //       passQuery: true,          ← CRITICAL
-    //     }
-    //   }
-    //
-    // Two Vercel options at play, BOTH required:
-    //
-    //   `allowQuery: ['brand']` — the Vercel edge network keys the
-    //     cache by (path, brand) independently. Without this,
-    //     `/?brand=holder` would share a cache entry with `/`.
-    //
-    //   `passQuery: true` — the query string is actually PASSED to
-    //     the serverless function when generating a new cache entry.
-    //     Without this, the Vercel edge uses the query for caching
-    //     but invokes the function with `/` (no query). The tenant
-    //     resolver middleware reads `queryBrand=null`, falls back to
-    //     the default brand (Redentia), and the HTML gets cached
-    //     under `/?brand=holder` with the WRONG tenant inside.
-    //     This was the exact bug we hunted for hours.
+    // Note on brand query strings: tenant resolution happens via
+    // the server middleware (0-tenant-resolver.ts) which reads
+    // `?brand=<slug>` from the query string. SWR caches by full
+    // URL including query string, so `/?brand=holder` and `/` are
+    // separate cache entries automatically.
     //
     // Both host-based resolution and query-based override work:
     //   - `www.saraivainvest.com.br` → Saraiva (host, no query needed)
     //   - `www.redentia.com.br/?brand=holder` → Holder (query override)
-    //
-    // See: docs/tenant-resolution.md
-    // See: node_modules/nitropack/dist/presets/vercel/types.d.ts
-    //      (VercelISRConfig.allowQuery / passQuery)
     // ============================================================
 
-    const brandedISR = (seconds: number) => ({
-      isr: {
-        expiration: seconds,
-        allowQuery: ['brand'],
-        passQuery: true,
-      },
-    })
+    // SWR (stale-while-revalidate) instead of ISR to avoid Nuxt 4 + Vercel
+    // ISR bug where internal function names like `/index-isr` leak as URLs.
+    // SWR uses cache headers and doesn't create separate serverless functions.
 
     return {
-      '/institucional/**': brandedISR(3600),
-      '/download': brandedISR(3600),
-      '/glossario': brandedISR(3600),
-      '/glossario/**': brandedISR(3600),
-      '/guias': brandedISR(3600),
-      '/guias/**': brandedISR(3600),
-      '/calculadora': brandedISR(3600),
-      '/calculadora/**': brandedISR(3600),
-      '/': brandedISR(300),
-      '/acoes': brandedISR(300),
-      '/fiis': brandedISR(300),
-      '/etfs': brandedISR(300),
-      '/small-caps': brandedISR(300),
-      '/dividendos': brandedISR(300),
-      '/whitelabel': brandedISR(3600),
-      '/search': brandedISR(300),
+      '/institucional/**': { swr: 3600 },
+      '/download': { swr: 3600 },
+      '/glossario': { swr: 3600 },
+      '/glossario/**': { swr: 3600 },
+      '/guias': { swr: 3600 },
+      '/guias/**': { swr: 3600 },
+      '/calculadora': { swr: 3600 },
+      '/calculadora/**': { swr: 3600 },
+      '/': { swr: 300 },
+      '/acoes': { swr: 300 },
+      '/fiis': { swr: 300 },
+      '/etfs': { swr: 300 },
+      '/small-caps': { swr: 300 },
+      '/dividendos': { swr: 300 },
+      '/whitelabel': { swr: 3600 },
+      '/search': { swr: 300 },
       '/asset/**': { swr: 300 },
-      '/ranking': brandedISR(900),
-      '/ranking/**': brandedISR(900),
-      '/dividendos/calendario': brandedISR(1800),
-      '/setor': brandedISR(3600),
-      '/setor/**': brandedISR(900),
+      '/ranking': { swr: 900 },
+      '/ranking/**': { swr: 900 },
+      '/dividendos/calendario': { swr: 1800 },
+      '/setor': { swr: 3600 },
+      '/setor/**': { swr: 900 },
     }
   })(),
   components: [
