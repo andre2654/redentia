@@ -30,6 +30,11 @@ Disallow: /step-by-step
 Disallow: /planejador
 Disallow: /dividends
 Disallow: /ideal
+Disallow: /advisor/
+Disallow: /render/
+Disallow: /creative/
+Disallow: /builder
+Disallow: /backoffice/
 
 # Bloquear arquivos técnicos e assets
 # Disallow: /_nuxt/ (Permitir para que o Google renderize o JS corretamente)
@@ -50,6 +55,36 @@ Disallow: /workbox-*.js
 User-agent: Googlebot-Image
 Allow: /assets/images/
 Disallow: /assets/icons/
+
+# ========================================
+# AI search bots — permitir para aparecer em respostas de IA
+# ========================================
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+# ========================================
+# AI training-only bots — bloquear (não geram tráfego)
+# ========================================
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
 
 # ========================================
 # Regras para bots mal-intencionados

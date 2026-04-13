@@ -79,13 +79,15 @@ definePageMeta({
 const brand = useBrand()
 const service = useAssetsService()
 
-useSeoMeta({
+usePageSeo({
   title: 'Setores da Bolsa Brasileira | Comparativos Completos | Redentia',
   description:
     'Explore todos os setores econômicos da bolsa brasileira com comparativos completos: bancos, energia, varejo, saúde, commodities e mais.',
-  ogTitle: 'Setores da Bolsa Brasileira',
-  ogDescription:
-    'Comparativos de empresas por setor econômico na bolsa brasileira.',
+  path: '/setor',
+  breadcrumbs: [
+    { name: 'Início', path: '/' },
+    { name: 'Setores', path: '/setor' },
+  ],
 })
 
 const { data: sectors, pending } = await useAsyncData(

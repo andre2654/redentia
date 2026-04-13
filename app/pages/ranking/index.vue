@@ -59,13 +59,15 @@ definePageMeta({
 
 const brand = useBrand()
 
-useSeoMeta({
+usePageSeo({
   title: 'Rankings do Mercado Brasileiro | Redentia',
   description:
     'Rankings atualizados diariamente: maiores dividend yields, maiores altas e baixas do mês, calendário de dividendos e comparativos por setor. Dados oficiais da B3.',
-  ogTitle: 'Rankings do Mercado Brasileiro | Redentia',
-  ogDescription:
-    'Rankings atualizados diariamente com dados da B3: DY, variação mensal, setores e calendário de proventos.',
+  path: '/ranking',
+  breadcrumbs: [
+    { name: 'Início', path: '/' },
+    { name: 'Rankings', path: '/ranking' },
+  ],
 })
 
 const allRankings = [

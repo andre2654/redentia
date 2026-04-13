@@ -100,13 +100,24 @@ import { readableOn } from '~/utils/color'
 const brand = useBrand()
 const service = useAssetsService()
 
-useSeoMeta({
+usePageSeo({
   title: 'Maiores Altas do Mês na Bolsa Brasileira | Redentia',
   description:
     'Ranking atualizado diariamente das ações e FIIs que mais subiram nos últimos 30 dias na B3. Veja os top performers do mercado brasileiro.',
-  ogTitle: 'Maiores Altas do Mês na Bolsa | Ranking Diário',
-  ogDescription:
-    'Ações que mais subiram nos últimos 30 dias na bolsa brasileira.',
+  path: '/ranking/maiores-altas-mes',
+  breadcrumbs: [
+    { name: 'Início', path: '/' },
+    { name: 'Rankings', path: '/ranking' },
+    { name: 'Maiores Altas do Mês', path: '/ranking/maiores-altas-mes' },
+  ],
+  structuredData: {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Maiores Altas do Mês na Bolsa Brasileira',
+    description: 'Ações e FIIs que mais subiram nos últimos 30 dias na B3.',
+    itemListOrder: 'https://schema.org/ItemListOrderDescending',
+    numberOfItems: 50,
+  },
 })
 
 type TickerType = 'STOCK' | 'REIT' | 'ETF' | 'BDR' | null

@@ -203,7 +203,7 @@ const sector = computed(() => data.value?.sector || null)
 const aggregates = computed(() => data.value?.aggregates || null)
 const rows = computed(() => data.value?.data || [])
 
-useSeoMeta({
+usePageSeo({
   title: () =>
     sector.value
       ? `${sector.value.name} — Comparativo de Empresas | Redentia`
@@ -212,14 +212,21 @@ useSeoMeta({
     sector.value
       ? `Comparativo completo de empresas do setor ${sector.value.name} na bolsa brasileira: dividend yield, P/L, market cap e variação atualizados diariamente.`
       : 'Setor não encontrado.',
-  ogTitle: () =>
-    sector.value
-      ? `${sector.value.name} — Comparativo | Redentia`
-      : 'Setor não encontrado',
-  ogDescription: () =>
-    sector.value
+  path: `/setor/${slug.value}/comparativo`,
+  breadcrumbs: [
+    { name: 'Início', path: '/' },
+    { name: 'Setores', path: '/setor' },
+    { name: sector.value?.name || slug.value, path: `/setor/${slug.value}/comparativo` },
+  ],
+  structuredData: {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: sector.value ? `Comparativo de Empresas — ${sector.value.name}` : 'Comparativo de Setor',
+    description: sector.value
       ? `Empresas do setor ${sector.value.name} na bolsa brasileira, comparadas por indicadores fundamentalistas.`
       : '',
+    numberOfItems: rows.value.length,
+  },
 })
 
 function formatPercent(value: number | string | null | undefined): string {

@@ -252,13 +252,16 @@ const rateAccent = computed(() =>
   dividendAccent(brand.colors.primary, brand.colors.negative, brand.colors.positive)
 )
 
-useSeoMeta({
+usePageSeo({
   title: 'Calendário de Dividendos da Bolsa | Redentia',
   description:
     'Acompanhe todos os próximos pagamentos de dividendos, JCP e rendimentos das empresas listadas na B3. Calendário atualizado diariamente.',
-  ogTitle: 'Calendário de Dividendos da Bolsa Brasileira',
-  ogDescription:
-    'Todos os próximos dividendos, JCP e rendimentos anunciados pelas empresas da B3.',
+  path: '/dividendos/calendario',
+  breadcrumbs: [
+    { name: 'Início', path: '/' },
+    { name: 'Dividendos', path: '/dividendos' },
+    { name: 'Calendário', path: '/dividendos/calendario' },
+  ],
 })
 
 const rangeOptions = [

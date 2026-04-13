@@ -101,12 +101,24 @@ import { readableOn } from '~/utils/color'
 const brand = useBrand()
 const service = useAssetsService()
 
-useSeoMeta({
+usePageSeo({
   title: 'Maiores Baixas do Mês na Bolsa Brasileira | Redentia',
   description:
     'Ranking atualizado diariamente das ações e FIIs que mais caíram nos últimos 30 dias na B3. Identifique oportunidades e riscos do mercado brasileiro.',
-  ogTitle: 'Maiores Baixas do Mês na Bolsa | Ranking Diário',
-  ogDescription: 'Ações que mais caíram nos últimos 30 dias na bolsa brasileira.',
+  path: '/ranking/maiores-baixas-mes',
+  breadcrumbs: [
+    { name: 'Início', path: '/' },
+    { name: 'Rankings', path: '/ranking' },
+    { name: 'Maiores Baixas do Mês', path: '/ranking/maiores-baixas-mes' },
+  ],
+  structuredData: {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Maiores Baixas do Mês na Bolsa Brasileira',
+    description: 'Ações e FIIs que mais caíram nos últimos 30 dias na B3.',
+    itemListOrder: 'https://schema.org/ItemListOrderAscending',
+    numberOfItems: 50,
+  },
 })
 
 type TickerType = 'STOCK' | 'REIT' | 'ETF' | 'BDR' | null

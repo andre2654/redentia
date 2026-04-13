@@ -1,0 +1,78 @@
+# Redentia
+
+> Terminal de investimentos brasileiro com dados da B3 em tempo real. Plataforma white-label para influenciadores e assessorias criarem suas proprias plataformas de investimentos.
+
+## Sobre
+
+Redentia e uma plataforma de investimentos que oferece cotacoes em tempo real, analise fundamentalista, calculadoras financeiras, calendario de dividendos e rankings de ativos da bolsa brasileira (B3). Disponivel como white-label para marcas que queiram lançar sua propria plataforma de investimentos.
+
+## Paginas principais
+
+- [Home](https://www.redentia.com.br/): Terminal de investimentos com cotacoes ao vivo
+- [Acoes](https://www.redentia.com.br/acoes): Todas as acoes listadas na B3
+- [FIIs](https://www.redentia.com.br/fiis): Fundos Imobiliarios da B3
+- [ETFs](https://www.redentia.com.br/etfs): ETFs disponiveis na B3
+- [Small Caps](https://www.redentia.com.br/small-caps): Acoes small cap brasileiras
+- [Dividendos](https://www.redentia.com.br/dividendos): Guia de dividendos e proventos
+
+## Ativos (1200+ paginas)
+
+- [PETR4](https://www.redentia.com.br/asset/petr4): Petrobras PN — cotacao, dividendos, fundamentalista
+- [VALE3](https://www.redentia.com.br/asset/vale3): Vale ON — cotacao, dividendos, fundamentalista
+- [ITUB4](https://www.redentia.com.br/asset/itub4): Itau Unibanco PN
+- [BBDC4](https://www.redentia.com.br/asset/bbdc4): Bradesco PN
+- [ABEV3](https://www.redentia.com.br/asset/abev3): Ambev ON
+- [WEGE3](https://www.redentia.com.br/asset/wege3): WEG ON
+- [B3SA3](https://www.redentia.com.br/asset/b3sa3): B3 ON
+- Mais 1200 ativos disponiveis em /asset/{ticker}
+
+## Rankings (atualizados diariamente)
+
+- [Maiores Dividend Yield](https://www.redentia.com.br/ranking/maiores-dividend-yield): Top acoes por dividend yield
+- [Maiores Altas do Mes](https://www.redentia.com.br/ranking/maiores-altas-mes): Acoes com maior valorizacao mensal
+- [Maiores Baixas do Mes](https://www.redentia.com.br/ranking/maiores-baixas-mes): Acoes com maior desvalorizacao mensal
+
+## Dividendos
+
+- [Calendario de Dividendos](https://www.redentia.com.br/dividendos/calendario): Proximos pagamentos e datas ex/com de dividendos e JCP
+
+## Calculadoras financeiras
+
+- [Juros Compostos](https://www.redentia.com.br/calculadora/juros-compostos): Simulador de juros compostos
+- [Calculadora de Acoes](https://www.redentia.com.br/calculadora/acoes): Simulador de investimento em acoes
+- [Preco Teto](https://www.redentia.com.br/calculadora/preco-teto): Calculo do preco teto pelo metodo Bazin
+- [Dividend Yield](https://www.redentia.com.br/calculadora/dividend-yield): Calculadora de DY
+- [Aposentadoria](https://www.redentia.com.br/calculadora/aposentadoria): Simulador de aposentadoria com investimentos
+- [Imposto de Renda](https://www.redentia.com.br/calculadora/imposto-renda): Calculadora de IR sobre investimentos
+- [Quanto Investir](https://www.redentia.com.br/calculadora/quanto-investir): Quanto investir por mes para atingir seu objetivo
+- [Planejamento](https://www.redentia.com.br/calculadora/planejamento): Planejador financeiro completo
+
+## Setores da B3
+
+- [Bancos](https://www.redentia.com.br/setor/bancos)
+- [Energia](https://www.redentia.com.br/setor/energia-eletrica)
+- [Petroleo e Gas](https://www.redentia.com.br/setor/petroleo-e-gas)
+- [Siderurgia e Mineracao](https://www.redentia.com.br/setor/siderurgia-e-mineracao)
+- [Varejo](https://www.redentia.com.br/setor/varejo)
+- Mais setores disponiveis em /setor/{slug}
+
+## Guias educacionais
+
+- [Como Investir em Acoes para Iniciantes](https://www.redentia.com.br/guias/como-investir-em-acoes-para-iniciantes)
+- [Melhores FIIs para Investir em 2026](https://www.redentia.com.br/guias/melhores-fiis-para-investir-em-2026)
+- [Calculadora de Dividendos](https://www.redentia.com.br/guias/calculadora-de-dividendos)
+- [Analise PETR4: Vale a Pena Investir?](https://www.redentia.com.br/guias/analise-petr4-vale-a-pena-investir)
+- [Small Caps: Guia Completo](https://www.redentia.com.br/guias/small-caps-guia-completo)
+
+## Glossario
+
+- [Glossario de Investimentos](https://www.redentia.com.br/glossario): Termos e conceitos do mercado financeiro
+
+## API REST
+
+- [Portal da API](https://www.redentia.com.br/api-portal): Documentacao e planos da API REST
+- [Pricing](https://www.redentia.com.br/pricing.md): Planos e precos da API
+
+## White-Label
+
+- [Whitelabel](https://www.redentia.com.br/whitelabel): Plataforma white-label para criar sua propria plataforma de investimentos

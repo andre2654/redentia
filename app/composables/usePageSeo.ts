@@ -50,8 +50,8 @@ export function usePageSeo(options: UsePageSeoOptions) {
     twitterDescription: options.description,
     ogUrl: canonicalUrl,
     ogImage: resolvedImage,
-    ogImageWidth: 512,
-    ogImageHeight: 512,
+    ogImageWidth: 1200,
+    ogImageHeight: 630,
     twitterImage: resolvedImage,
     ogType: options.type || 'website',
     ogSiteName: brand.name,
@@ -74,10 +74,15 @@ export function usePageSeo(options: UsePageSeoOptions) {
       })
     })
   } else {
-    // Default self-referencing hreflang for pt-BR
+    // Default self-referencing hreflang for pt-BR + x-default
     links.push({
       rel: 'alternate',
       hreflang: 'pt-BR',
+      href: canonicalUrl,
+    })
+    links.push({
+      rel: 'alternate',
+      hreflang: 'x-default',
       href: canonicalUrl,
     })
   }

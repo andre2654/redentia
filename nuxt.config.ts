@@ -226,6 +226,11 @@ export default defineNuxtConfig({
           priority: 0.9 as const,
           changefreq: 'weekly' as const,
         },
+        {
+          loc: '/api-portal',
+          priority: 0.7 as const,
+          changefreq: 'weekly' as const,
+        },
 
         // Rankings (SEO programático, atualizado diariamente)
         {

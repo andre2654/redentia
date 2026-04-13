@@ -4751,6 +4751,32 @@ usePageSeo({
   description: () => pageDescription.value,
   path: `/asset/${ticker.toLowerCase()}`,
   image: () => shareImage.value,
+  breadcrumbs: [
+    { name: 'Início', path: '/' },
+    { name: 'Ativos', path: '/acoes' },
+    { name: tickerUpper.value, path: `/asset/${ticker.toLowerCase()}` },
+  ],
+  structuredData: {
+    '@context': 'https://schema.org',
+    '@type': 'FinancialProduct',
+    name: `${tickerUpper.value} — ${assetName.value}`,
+    url: canonicalUrl.value,
+    description: pageDescription.value,
+    provider: {
+      '@type': 'Organization',
+      name: 'B3 — Brasil, Bolsa, Balcão',
+      url: 'https://www.b3.com.br',
+    },
+    offers: assetCurrentPrice.value
+      ? {
+          '@type': 'Offer',
+          price: assetCurrentPrice.value,
+          priceCurrency: 'BRL',
+          priceValidUntil: new Date().toISOString().split('T')[0],
+        }
+      : undefined,
+    image: shareImage.value,
+  },
 })
 
 const monthLabels = [

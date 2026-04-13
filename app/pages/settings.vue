@@ -19,4 +19,11 @@
 
 <script setup lang="ts">
 const authStore = useAuthStore()
+
+usePageSeo({
+  title: 'Configurações',
+  description: 'Configurações da conta',
+  path: '/settings',
+  robots: 'noindex,nofollow',
+})
 </script>

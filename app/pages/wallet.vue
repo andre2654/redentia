@@ -105,6 +105,13 @@
 <script setup lang="ts">
 import type { PortfolioComposition } from '~/services/portfolio'
 
+usePageSeo({
+  title: 'Minha Carteira',
+  description: 'Carteira de investimentos',
+  path: '/wallet',
+  robots: 'noindex,nofollow',
+})
+
 const brand = useBrand()
 const { getPositions, getComposition, uploadPositions } = usePortfolioService()
 const positions = ref<Array<{ ticker: string; quantity: number; average_price: number }>>([])

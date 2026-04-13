@@ -125,13 +125,24 @@ import { readableOn } from '~/utils/color'
 const brand = useBrand()
 const service = useAssetsService()
 
-useSeoMeta({
+usePageSeo({
   title: 'Maiores Dividend Yields da Bolsa 2026 | Redentia',
   description:
     'Ranking atualizado das ações e FIIs com maior dividend yield (DY) da bolsa brasileira nos últimos 12 meses. Dados da B3 em tempo real.',
-  ogTitle: 'Maiores Dividend Yields da Bolsa | Ranking Diário',
-  ogDescription:
-    'Descubra as ações e FIIs que mais pagam dividendos proporcionalmente ao preço. Ranking completo e atualizado.',
+  path: '/ranking/maiores-dividend-yield',
+  breadcrumbs: [
+    { name: 'Início', path: '/' },
+    { name: 'Rankings', path: '/ranking' },
+    { name: 'Maiores Dividend Yields', path: '/ranking/maiores-dividend-yield' },
+  ],
+  structuredData: {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Maiores Dividend Yields da Bolsa Brasileira 2026',
+    description: 'Ranking das ações e FIIs com maior dividend yield da B3, atualizado diariamente.',
+    itemListOrder: 'https://schema.org/ItemListOrderDescending',
+    numberOfItems: 50,
+  },
 })
 
 type TickerType = 'STOCK' | 'REIT' | 'ETF' | null

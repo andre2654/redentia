@@ -98,6 +98,13 @@
 </template>
 
 <script setup lang="ts">
+usePageSeo({
+  title: 'Área do Assessor',
+  description: 'Painel de gestão de investidores',
+  path: '/advisor',
+  robots: 'noindex,nofollow',
+})
+
 const authStore = useAuthStore()
 const { getInvestors, approveInvestor, rejectInvestor } = useAdvisorService()
 
