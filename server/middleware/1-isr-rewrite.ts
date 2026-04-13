@@ -2,45 +2,37 @@
 // ISR URL rewrite — fix Nuxt 4 + Vercel ISR compatibility
 // ============================================================
 //
-// Vercel ISR routing sends: GET /index-isr?url=/&brand=me-poupe
-// The real page is in the `url` query param. Nuxt 4 sees `/index-isr`
-// as the path and 404s because no Vue route matches it.
+// Vercel ISR rewrites `/` → `/index-isr`, `/whitelabel` → `/whitelabel-isr`.
+// Nuxt 4 sees the rewritten path and 404s. This middleware strips `-isr`.
 //
-// This middleware reads the `url` query param that Vercel injects
-// and rewrites event.path to the real route.
+// Uses event._path (h3 internal) to rewrite before Vue router resolves.
 // ============================================================
 
 export default defineEventHandler((event) => {
-  const path = event.path || event.node.req.url || ''
+  // Read the raw URL from multiple sources — Vercel/h3 may use different ones
+  const rawUrl = event._path || event.node.req.url || ''
 
-  // Only act on ISR function paths (ending in -isr)
-  const qIndex = path.indexOf('?')
-  const pathname = qIndex >= 0 ? path.slice(0, qIndex) : path
+  const qIdx = rawUrl.indexOf('?')
+  const pathname = qIdx >= 0 ? rawUrl.slice(0, qIdx) : rawUrl
+  const query = qIdx >= 0 ? rawUrl.slice(qIdx) : ''
 
   if (!pathname.endsWith('-isr')) return
 
-  // Parse query string to extract `url` param (the real route)
-  const searchParams = new URLSearchParams(qIndex >= 0 ? path.slice(qIndex + 1) : '')
-  const realUrl = searchParams.get('url')
+  // Strip -isr: /index-isr → /, /whitelabel-isr → /whitelabel
+  let realPath = pathname.slice(0, -4)
+  if (realPath === '/index') realPath = '/'
 
-  if (!realUrl) {
-    // Fallback: strip -isr suffix manually
-    const base = pathname.slice(0, -4)
-    const realPath = base === '/index' ? '/' : base
-    // Rebuild query without `url` param
-    searchParams.delete('url')
-    const qs = searchParams.toString()
-    const newUrl = realPath + (qs ? '?' + qs : '')
-    event._path = newUrl
-    event.node.req.url = newUrl
-    return
-  }
+  const newUrl = realPath + query
 
-  // Rebuild the URL: use `url` param as path, keep other query params
-  searchParams.delete('url')
-  const qs = searchParams.toString()
-  const newUrl = realUrl + (qs ? '?' + qs : '')
-
+  // Overwrite everywhere Nuxt/h3/Nitro might read the URL from
   event._path = newUrl
   event.node.req.url = newUrl
+
+  // Some Nitro versions cache the parsed URL — clear it
+  if ((event as any)._url) {
+    ;(event as any)._url = undefined
+  }
+  if ((event as any)._parsedUrl) {
+    ;(event as any)._parsedUrl = undefined
+  }
 })
