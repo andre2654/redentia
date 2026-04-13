@@ -2,34 +2,29 @@
 // ISR URL rewrite — fix Nuxt 4 + Vercel ISR compatibility
 // ============================================================
 //
-// When Vercel serves an ISR page, it internally rewrites the URL
-// from `/` to `/index-isr`, `/whitelabel` to `/whitelabel-isr`, etc.
-// In Nuxt 4, the Vue router receives this rewritten URL and returns
-// 404 because there's no route matching `/index-isr`.
+// Vercel ISR rewrites `/` → `/index-isr`, `/whitelabel` → `/whitelabel-isr`.
+// Nuxt 4's Vue router doesn't know about `-isr` suffixed routes and 404s.
 //
-// This middleware strips the `-isr` suffix from the URL BEFORE
-// the Nuxt renderer processes it. This is an internal rewrite
-// (mutating req.url), NOT a redirect — the browser URL stays the
-// same and there's no redirect loop.
-//
-// The prefix `1-` ensures this runs right after `0-tenant-resolver`.
+// This middleware strips the `-isr` suffix BEFORE Nuxt processes the request.
+// It's an internal rewrite (NOT a redirect) — no redirect loop.
 // ============================================================
 
 export default defineEventHandler((event) => {
-  const url = event.node.req.url
-  if (!url) return
+  const path = event.path || event.node.req.url || ''
 
-  // Match paths ending in -isr (with optional query string)
-  const match = url.match(/^(.+)-isr(\?.*)?$/)
-  if (!match) return
+  // Match paths ending in -isr (before query string)
+  const qIndex = path.indexOf('?')
+  const pathname = qIndex >= 0 ? path.slice(0, qIndex) : path
+  const query = qIndex >= 0 ? path.slice(qIndex) : ''
 
-  const basePath = match[1]
-  const query = match[2] || ''
+  if (!pathname.endsWith('-isr')) return
 
-  // /index-isr → /
-  // /whitelabel-isr → /whitelabel
-  // /ranking/maiores-dividend-yield-isr → /ranking/maiores-dividend-yield
-  const realPath = basePath === '/index' ? '/' : basePath
+  // Strip -isr suffix
+  const base = pathname.slice(0, -4) // remove '-isr'
+  const realPath = base === '/index' ? '/' : base
 
-  event.node.req.url = realPath + query
+  // Rewrite both event.path and event.node.req.url
+  const newUrl = realPath + query
+  event._path = newUrl
+  event.node.req.url = newUrl
 })
