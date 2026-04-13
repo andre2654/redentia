@@ -1,4 +1,16 @@
 {
+  "redirects": [
+    {
+      "source": "/index-isr",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/:path*-isr",
+      "destination": "/:path*",
+      "permanent": true
+    }
+  ],
   "crons": [
     {
       "path": "/api/cron/market-alert",
