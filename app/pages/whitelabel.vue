@@ -225,7 +225,7 @@
             </p>
           </div>
 
-          <!-- Bento grid: 2 large + 3 stacked small -->
+          <!-- Bento grid with live iframe previews -->
           <div class="grid grid-cols-1 gap-5 md:grid-cols-6 md:gap-6">
             <a
               v-for="(tenant, idx) in tenants"
@@ -233,7 +233,7 @@
               :href="tenant.url"
               :target="tenant.url.startsWith('http') ? '_blank' : undefined"
               :rel="tenant.url.startsWith('http') ? 'noopener' : undefined"
-              class="tenant-tile group relative block overflow-hidden rounded-2xl border transition-transform"
+              class="tenant-tile group relative block overflow-hidden rounded-2xl border transition-all hover:-translate-y-1"
               :class="bentoSpan(idx)"
               :style="{
                 borderColor: `${C.border}`,
@@ -243,13 +243,50 @@
                 minHeight: bentoMinHeight(idx),
               }"
             >
-              <!-- Tenant accent gradient -->
+              <!-- Live iframe preview (client-only to avoid SSR issues) -->
+              <ClientOnly>
+                <div
+                  v-if="tenant.iframeSrc"
+                  class="absolute inset-0 overflow-hidden"
+                >
+                  <iframe
+                    :src="tenant.iframeSrc"
+                    class="iframe-preview pointer-events-none absolute left-0 top-0 origin-top-left border-0"
+                    :style="{
+                      width: '1440px',
+                      height: '900px',
+                      transform: `scale(${bentoIframeScale(idx)})`,
+                    }"
+                    loading="lazy"
+                    tabindex="-1"
+                    aria-hidden="true"
+                  />
+                  <!-- Gradient overlay — fade to bg at bottom + darken for readability -->
+                  <div
+                    class="absolute inset-0"
+                    :style="{
+                      background: `linear-gradient(180deg, ${tenant.bg}20 0%, ${tenant.bg}40 40%, ${tenant.bg}D0 80%, ${tenant.bg} 100%)`,
+                    }"
+                  />
+                </div>
+                <template #fallback>
+                  <!-- SSR fallback: accent gradient like before -->
+                  <div
+                    class="pointer-events-none absolute inset-0 opacity-50"
+                    :style="{ background: `radial-gradient(circle at 70% 20%, ${tenant.accent}30, transparent 60%)` }"
+                  />
+                </template>
+              </ClientOnly>
+
+              <!-- Fallback for "your-brand" (no iframe) -->
               <div
-                class="pointer-events-none absolute inset-0 opacity-50"
-                :style="{ background: `radial-gradient(circle at 70% 20%, ${tenant.accent}30, transparent 60%)` }"
+                v-if="!tenant.iframeSrc"
+                class="pointer-events-none absolute inset-0"
+                :style="{ background: `radial-gradient(circle at 50% 30%, ${tenant.accent}15, transparent 60%)` }"
               />
 
-              <div class="relative flex h-full flex-col justify-between p-7 md:p-9">
+              <!-- Content overlay -->
+              <div class="relative z-10 flex h-full flex-col justify-between p-7 md:p-9">
                 <!-- Top label row -->
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.18em]" :style="{ color: tenant.accent }">
@@ -258,40 +295,35 @@
                   </div>
                   <span
                     v-if="tenant.slug !== 'your-brand'"
-                    class="rounded-full border px-2 py-0.5 text-[9px] font-medium uppercase tracking-[0.15em]"
-                    :style="{ borderColor: `${tenant.fg}40`, color: `${tenant.fg}80` }"
+                    class="rounded-full border px-2 py-0.5 text-[9px] font-medium uppercase tracking-[0.15em] backdrop-blur-sm"
+                    :style="{ borderColor: `${tenant.fg}40`, color: `${tenant.fg}B0`, backgroundColor: `${tenant.bg}80` }"
                   >
                     Live
                   </span>
                 </div>
 
-                <!-- Big title -->
-                <div class="my-6">
-                  <div
-                    class="leading-[0.95]"
-                    :style="{
-                      color: tenant.fg,
-                      fontFamily: tenant.font,
-                      fontStyle: tenant.italic ? 'italic' : 'normal',
-                      fontWeight: tenant.weight,
-                      fontSize: bentoTitleSize(idx),
-                    }"
-                  >
-                    {{ tenant.previewTitle }}
-                  </div>
-                </div>
+                <!-- Spacer — pushes footer to bottom -->
+                <div class="flex-1" />
 
                 <!-- Footer -->
                 <div class="flex items-end justify-between gap-4 border-t pt-4" :style="{ borderColor: `${tenant.fg}20` }">
                   <div>
-                    <div class="text-[11px] font-semibold uppercase tracking-[0.12em]" :style="{ color: tenant.fg }">
+                    <div
+                      class="text-[18px] font-bold leading-tight tracking-tight md:text-[22px]"
+                      :style="{
+                        color: tenant.fg,
+                        fontFamily: tenant.font,
+                        fontStyle: tenant.italic ? 'italic' : 'normal',
+                        fontWeight: tenant.weight,
+                      }"
+                    >
                       {{ tenant.name }}
                     </div>
-                    <div class="text-[10px] tabular-nums" :style="{ color: `${tenant.fg}80` }">
+                    <div class="mt-1 text-[11px] tabular-nums" :style="{ color: `${tenant.fg}80` }">
                       {{ tenant.domain }}
                     </div>
                   </div>
-                  <div class="flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-[0.15em] transition-transform group-hover:translate-x-1" :style="{ color: tenant.accent }">
+                  <div class="flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[10px] font-medium uppercase tracking-[0.15em] backdrop-blur-sm transition-all group-hover:translate-x-1" :style="{ color: tenant.accent, borderColor: `${tenant.accent}40`, backgroundColor: `${tenant.bg}80` }">
                     {{ tenant.slug === 'your-brand' ? 'Reservar' : 'Visitar' }} →
                   </div>
                 </div>
@@ -763,13 +795,28 @@ function bentoSpan(idx: number) {
 }
 
 function bentoMinHeight(idx: number) {
-  return idx === 0 || idx === 5 ? '380px' : '340px'
+  return idx === 0 || idx === 5 ? '420px' : '380px'
 }
 
 function bentoTitleSize(idx: number) {
-  // Bigger titles for the larger tiles
   if (idx === 0 || idx === 5) return 'clamp(2.5rem, 4.5vw, 3.75rem)'
   return 'clamp(1.75rem, 3vw, 2.5rem)'
+}
+
+function bentoIframeScale(idx: number) {
+  // Scale 1440px iframe to fit card width
+  // Large cards (col-span-4) ≈ ~620px → scale 0.43
+  // Medium cards (col-span-3) ≈ ~465px → scale 0.32
+  // Small cards (col-span-2) ≈ ~310px → scale 0.22
+  const map: Record<number, number> = {
+    0: 0.43, // col-span-4
+    1: 0.22, // col-span-2
+    2: 0.32, // col-span-3
+    3: 0.32, // col-span-3
+    4: 0.22, // col-span-2
+    5: 0.43, // col-span-4
+  }
+  return map[idx] ?? 0.32
 }
 
 // ============================================================
@@ -787,6 +834,7 @@ const tenants = [
     previewTitle: 'Investir com inteligência.',
     description: 'O tenant-mãe. Bloomberg terminal reimaginado — amber, monospace, dados por primeiro.',
     url: 'https://redentia.com.br',
+    iframeSrc: 'https://www.redentia.com.br/',
     bg: '#0A0B0E',
     fg: '#E8EAED',
     accent: '#F5A623',
@@ -803,6 +851,7 @@ const tenants = [
     previewTitle: 'Estimado investidor.',
     description: 'Assessoria fictícia em formato carta editorial de private bank. Fraunces italic, papel ivory, serif voice.',
     url: 'https://redentia.com.br/?brand=norte-capital',
+    iframeSrc: 'https://www.redentia.com.br/asset/petr4?brand=norte-capital',
     bg: '#F7F5EF',
     fg: '#1C2133',
     accent: '#8B6F3D',
@@ -819,6 +868,7 @@ const tenants = [
     previewTitle: 'Liberdade ou mediocridade.',
     description: 'Thiago Nigro em formato manual do autor. Fraunces display, tape orange, quote do fundador.',
     url: 'https://redentia.com.br/?brand=primo-rico',
+    iframeSrc: 'https://www.redentia.com.br/?brand=primo-rico',
     bg: '#0F0D0B',
     fg: '#F4EDE4',
     accent: '#FF6B35',
@@ -835,6 +885,7 @@ const tenants = [
     previewTitle: 'A única verdade possível.',
     description: 'Raul Sena / AUVP em formato paper acadêmico. IBM Plex serif, § marcadores, red-pen notes.',
     url: 'https://redentia.com.br/?brand=investidor-sardinha',
+    iframeSrc: 'https://www.redentia.com.br/asset/vale3?brand=investidor-sardinha',
     bg: '#F6F1E8',
     fg: '#1F1A12',
     accent: '#C84B31',
@@ -851,6 +902,7 @@ const tenants = [
     previewTitle: 'Chega de dinheirofobia.',
     description: 'Nathalia Arcuri em formato programa de TV pop. Poppins 900, amarelo sticker, Margarete mascote.',
     url: 'https://redentia.com.br/?brand=me-poupe',
+    iframeSrc: 'https://www.redentia.com.br/?brand=me-poupe',
     bg: '#1A0A2E',
     fg: '#FFFFFF',
     accent: '#FACC15',
@@ -867,6 +919,7 @@ const tenants = [
     previewTitle: 'O próximo slot é seu.',
     description: 'Deploy em 1 semana. Identidade visual 100% custom, domínio próprio, zero mention de "Redentia".',
     url: '#cta',
+    iframeSrc: '',
     bg: '#14161C',
     fg: '#E8EAED',
     accent: '#F5A623',
