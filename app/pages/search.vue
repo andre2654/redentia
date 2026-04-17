@@ -4,7 +4,398 @@
     :title="authStore.isAuthenticated ? 'Busca avançada' : false"
     :hide-search-bar="authStore.isAuthenticated"
   >
-    <div class="relative flex flex-col gap-12 pb-16 pt-6">
+    <!-- TERMINAL VARIANT (Redentia) — dense Bloomberg layout -->
+    <div
+      v-if="terminalVariant"
+      class="flex flex-col"
+      :style="{ backgroundColor: brand.colors.background, color: brand.colors.text }"
+    >
+      <!-- Status bar top -->
+      <div
+        class="flex flex-wrap items-center gap-x-3 gap-y-1 border-b px-4 py-2 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
+        :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted, backgroundColor: brand.colors.surface }"
+      >
+        <span :style="{ color: brand.colors.primary }">[SEARCH.ENGINE]</span>
+        <span :style="{ color: brand.colors.border }">·</span>
+        <span>B3</span>
+        <span :style="{ color: brand.colors.border }">·</span>
+        <span class="tabular-nums">{{ allAssets.length }} UNIVERSE</span>
+        <span :style="{ color: brand.colors.border }">·</span>
+        <span class="tabular-nums" :style="{ color: brand.colors.text }">{{ resultsCount }} RESULTS</span>
+        <span :style="{ color: brand.colors.border }">·</span>
+        <span class="tabular-nums" :style="{ color: activeFiltersCount > 0 ? brand.colors.primary : brand.colors.textMuted }">
+          {{ activeFiltersCount }} FILTERS
+        </span>
+        <span class="ml-auto flex items-center gap-3">
+          <span class="inline-flex items-center gap-1.5">
+            <span class="h-1.5 w-1.5 rounded-full" :style="{ backgroundColor: brand.colors.positive }" />
+            <span>LIVE · {{ lastUpdatedLabel }}</span>
+          </span>
+        </span>
+      </div>
+
+      <!-- Hero title -->
+      <div class="border-b px-4 py-8 md:py-12" :style="{ borderColor: brand.colors.border }">
+        <div class="font-mono-tab text-[10px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
+          [QUERY.INTERFACE]
+        </div>
+        <h1
+          class="mt-2 text-3xl font-bold tracking-tight md:text-5xl"
+          :class="brand.font.headingWeight"
+          :style="{ color: brand.colors.text, fontFamily: brandFontStack }"
+        >
+          BUSCA AVANÇADA
+        </h1>
+        <p class="mt-2 font-mono-tab text-[11px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
+          &gt; FILTROS FUNDAMENTALISTAS + TECNICOS · COMBINE QUALQUER NUMERO DE CRITERIOS
+        </p>
+      </div>
+
+      <!-- Search input (sticky) -->
+      <div
+        class="sticky top-0 z-20 flex items-center gap-3 border-b px-4 py-3 font-mono-tab"
+        :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.background }"
+      >
+        <span class="text-[11px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
+          &gt; QUERY
+        </span>
+        <input
+          id="global-search-input-terminal"
+          v-model="globalFilter"
+          type="text"
+          placeholder="BUSCAR POR TICKER OU NOME DA COMPANHIA..."
+          class="flex-1 bg-transparent py-1 font-mono-tab text-[14px] uppercase tracking-wide outline-none placeholder:opacity-40"
+          :style="{ color: brand.colors.text, caretColor: brand.colors.primary }"
+        />
+        <span
+          v-if="globalFilter.length > 0"
+          class="inline-flex cursor-pointer items-center gap-1 text-[11px] uppercase tracking-wide opacity-70 hover:opacity-100"
+          :style="{ color: brand.colors.textMuted }"
+          @click="globalFilter = ''"
+        >
+          CLEAR ×
+        </span>
+        <span class="hidden items-center gap-1 text-[10px] lg:flex" :style="{ color: brand.colors.textMuted }">
+          <kbd class="border px-1.5 py-0.5 font-mono-tab" :style="{ borderColor: brand.colors.border }">⌘</kbd>
+          <kbd class="border px-1.5 py-0.5 font-mono-tab" :style="{ borderColor: brand.colors.border }">K</kbd>
+        </span>
+      </div>
+
+      <!-- Ticker strip -->
+      <div class="border-b py-2" :style="{ borderColor: brand.colors.border }">
+        <AtomsTickerCarousel class="px-4" no-control />
+      </div>
+
+      <!-- FILTERS PANEL: 4-col grid, tight, no rounded corners -->
+      <div class="border-b" :style="{ borderColor: brand.colors.border }">
+        <div
+          class="flex items-center gap-2 border-b px-4 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.18em]"
+          :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted, backgroundColor: brand.colors.surface }"
+        >
+          <span :style="{ color: brand.colors.primary }">[FILTERS.PANEL]</span>
+          <span :style="{ color: brand.colors.border }">·</span>
+          <span>RANGE + GROUP + MDI</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
+          <!-- Market cap -->
+          <div class="border-b p-4 xl:border-b-0 xl:border-r" :style="{ borderColor: brand.colors.border }">
+            <div class="mb-2 flex items-baseline justify-between font-mono-tab text-[10px] uppercase tracking-[0.12em]">
+              <span :style="{ color: brand.colors.primary }">[MCAP]</span>
+              <span :style="{ color: brand.colors.textMuted }">R$</span>
+            </div>
+            <div class="mb-2 font-mono-tab tabular-nums text-[12px]" :style="{ color: brand.colors.text }">
+              {{ formatCurrencyBRL(marketCapRange[0]) }}
+              <span :style="{ color: brand.colors.textMuted }">→</span>
+              {{ formatCurrencyBRL(marketCapRange[1]) }}
+            </div>
+            <USlider v-model="marketCapRange" :min="minMax.mcMin" :max="minMax.mcMax" :step="minMax.mcStep" />
+          </div>
+
+          <!-- Price -->
+          <div class="border-b p-4 xl:border-b-0 xl:border-r" :style="{ borderColor: brand.colors.border }">
+            <div class="mb-2 flex items-baseline justify-between font-mono-tab text-[10px] uppercase tracking-[0.12em]">
+              <span :style="{ color: brand.colors.primary }">[PRICE]</span>
+              <span :style="{ color: brand.colors.textMuted }">R$</span>
+            </div>
+            <div class="mb-2 font-mono-tab tabular-nums text-[12px]" :style="{ color: brand.colors.text }">
+              <template v-if="!assetsLoading">
+                {{ formatCurrencyBRL(priceRange[0]) }}
+                <span :style="{ color: brand.colors.textMuted }">→</span>
+                {{ formatCurrencyBRL(priceRange[1]) }}
+              </template>
+              <template v-else>...</template>
+            </div>
+            <USlider v-model="priceRange" :min="minMax.priceMin" :max="minMax.priceMax" :step="0.01" :disabled="assetsLoading" />
+          </div>
+
+          <!-- Change -->
+          <div class="border-b p-4 xl:border-b-0 xl:border-r" :style="{ borderColor: brand.colors.border }">
+            <div class="mb-2 flex items-baseline justify-between font-mono-tab text-[10px] uppercase tracking-[0.12em]">
+              <span :style="{ color: brand.colors.primary }">[CHG%]</span>
+              <span :style="{ color: brand.colors.textMuted }">INTRADAY</span>
+            </div>
+            <div class="mb-2 font-mono-tab tabular-nums text-[12px]" :style="{ color: brand.colors.text }">
+              <template v-if="!assetsLoading">
+                <span :style="{ color: changeRange[0] < 0 ? brand.colors.negative : brand.colors.text }">
+                  {{ formatPercent(changeRange[0]) }}
+                </span>
+                <span :style="{ color: brand.colors.textMuted }">→</span>
+                <span :style="{ color: changeRange[1] > 0 ? brand.colors.positive : brand.colors.text }">
+                  {{ formatPercent(changeRange[1]) }}
+                </span>
+              </template>
+              <template v-else>...</template>
+            </div>
+            <USlider v-model="changeRange" :min="minMax.changeMin" :max="minMax.changeMax" :step="0.1" :disabled="assetsLoading" />
+          </div>
+
+          <!-- Group -->
+          <div class="p-4">
+            <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.primary }">
+              [GROUP]
+            </div>
+            <div class="flex flex-col gap-2">
+              <label class="inline-flex cursor-pointer items-center gap-2 font-mono-tab text-[11px] uppercase tracking-wide">
+                <input v-model="showStock" type="checkbox" class="accent-current" :disabled="assetsLoading" />
+                <span :style="{ color: brand.colors.text }">STOCK</span>
+              </label>
+              <label class="inline-flex cursor-pointer items-center gap-2 font-mono-tab text-[11px] uppercase tracking-wide">
+                <input v-model="showReit" type="checkbox" class="accent-current" :disabled="assetsLoading" />
+                <span :style="{ color: brand.colors.text }">REIT</span>
+              </label>
+              <label class="inline-flex cursor-pointer items-center gap-2 font-mono-tab text-[11px] uppercase tracking-wide">
+                <input v-model="showBdr" type="checkbox" class="accent-current" :disabled="assetsLoading" />
+                <span :style="{ color: brand.colors.text }">BDR</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MDI ROW: 3 columns -->
+      <div class="border-b" :style="{ borderColor: brand.colors.border }">
+        <div
+          class="flex items-center gap-2 border-b px-4 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.18em]"
+          :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted, backgroundColor: brand.colors.surface }"
+        >
+          <span :style="{ color: brand.colors.primary }">[MDI.MODULE]</span>
+          <span :style="{ color: brand.colors.border }">·</span>
+          <span>MONTHLY DIVIDEND INDEX</span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3">
+          <div class="border-b p-4 md:border-b-0 md:border-r" :style="{ borderColor: brand.colors.border }">
+            <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.primary }">
+              [MDI.OCCURRENCE]
+            </div>
+            <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: brand.colors.textMuted }">
+              &gt; MES COM MAIOR RECORRENCIA DE DIVIDENDOS
+            </p>
+            <USelectMenu
+              v-model="mdiOccurrenceFilter"
+              :items="mdiMonthOptions"
+              label-key="label"
+              value-key="value"
+              size="sm"
+            />
+          </div>
+          <div class="border-b p-4 md:border-b-0 md:border-r" :style="{ borderColor: brand.colors.border }">
+            <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.primary }">
+              [MDI.STAR]
+            </div>
+            <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: brand.colors.textMuted }">
+              &gt; MES DE MAIOR PROBABILIDADE DE PAGAMENTO
+            </p>
+            <USelectMenu
+              v-model="mdiStarFilter"
+              :items="mdiMonthOptions"
+              label-key="label"
+              value-key="value"
+              size="sm"
+            />
+          </div>
+          <div class="p-4">
+            <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.primary }">
+              [MDI.DATA]
+            </div>
+            <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: brand.colors.textMuted }">
+              &gt; FILTRAR SO ATIVOS COM HISTORICO MDI
+            </p>
+            <label class="inline-flex cursor-pointer items-center gap-2 font-mono-tab text-[11px] uppercase tracking-wide">
+              <input v-model="onlyWithMdi" type="checkbox" class="accent-current" />
+              <span :style="{ color: brand.colors.text }">ONLY-WITH-MDI</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- RESULTS TABLE -->
+      <div>
+        <div
+          class="flex flex-wrap items-center gap-2 border-b px-4 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.18em]"
+          :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted, backgroundColor: brand.colors.surface }"
+        >
+          <span :style="{ color: brand.colors.primary }">[RESULTS.TABLE]</span>
+          <span :style="{ color: brand.colors.border }">·</span>
+          <span class="tabular-nums" :style="{ color: brand.colors.text }">{{ resultsCount }} MATCHES</span>
+          <span :style="{ color: brand.colors.border }">·</span>
+          <span>PAGE {{ currentPage }} / {{ totalPages }}</span>
+          <span class="ml-auto" :style="{ color: brand.colors.textMuted }">
+            CLICK ROW TO OPEN ASSET
+          </span>
+        </div>
+
+        <!-- Column header -->
+        <div
+          class="hidden md:grid gap-2 border-b px-4 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.18em]"
+          :style="{
+            borderColor: brand.colors.border,
+            color: brand.colors.textMuted,
+            gridTemplateColumns: '1fr 2fr 1fr 1fr 1.2fr 1fr',
+          }"
+        >
+          <span>TICKER</span>
+          <span>NAME</span>
+          <span class="text-right">PRICE</span>
+          <span class="text-right">%CHG</span>
+          <span class="text-right">MCAP</span>
+          <span class="text-right">MDI</span>
+        </div>
+
+        <!-- Loading skeleton -->
+        <div v-if="assetsLoading" class="divide-y" :style="{ '--divide-color': brand.colors.border }">
+          <div
+            v-for="i in 8"
+            :key="`tsk-${i}`"
+            class="grid gap-2 border-b px-4 py-2.5 font-mono-tab tabular-nums"
+            :style="{
+              borderColor: brand.colors.border,
+              gridTemplateColumns: '1fr 2fr 1fr 1fr 1.2fr 1fr',
+            }"
+          >
+            <USkeleton class="h-4 w-16" />
+            <USkeleton class="h-4 w-40" />
+            <USkeleton class="h-4 w-14 justify-self-end" />
+            <USkeleton class="h-4 w-12 justify-self-end" />
+            <USkeleton class="h-4 w-16 justify-self-end" />
+            <USkeleton class="h-4 w-12 justify-self-end" />
+          </div>
+        </div>
+
+        <!-- Rows -->
+        <template v-else>
+          <div v-if="paginatedData.length">
+            <NuxtLink
+              v-for="asset in paginatedData"
+              :key="asset.ticker || asset.stock"
+              :to="`/asset/${String(asset.ticker || asset.stock || '').toLowerCase()}`"
+              class="grid items-center gap-2 border-b px-4 py-2 font-mono-tab text-[12px] tabular-nums transition-colors hover:bg-[var(--row-hover)]"
+              :style="{
+                borderColor: brand.colors.border,
+                gridTemplateColumns: '1fr 2fr 1fr 1fr 1.2fr 1fr',
+                textDecoration: 'none',
+                color: brand.colors.text,
+                '--row-hover': hexWithAlpha(brand.colors.primary, '14'),
+              }"
+            >
+              <span class="flex items-center gap-2">
+                <img
+                  v-if="getAssetLogo(asset)"
+                  :src="getAssetLogo(asset) || ''"
+                  :alt="asset.ticker || asset.stock"
+                  class="h-5 w-5 shrink-0 border object-cover"
+                  :style="{ borderColor: brand.colors.border }"
+                />
+                <span class="truncate font-bold" :style="{ color: brand.colors.primary }">
+                  {{ asset.ticker || asset.stock }}
+                </span>
+              </span>
+              <span class="truncate text-[11px] uppercase" :style="{ color: brand.colors.text }">
+                {{ asset.name }}
+              </span>
+              <span class="text-right">
+                {{ formatCurrencyBRL(getAssetPrice(asset)) }}
+              </span>
+              <span
+                class="text-right"
+                :style="{ color: getAssetChange(asset) >= 0 ? positiveColor : negativeColor }"
+              >
+                {{ getAssetChange(asset) >= 0 ? '+' : '' }}{{ getAssetChange(asset).toFixed(2) }}%
+              </span>
+              <span class="text-right">
+                {{ formatCurrencyBRL(asset.market_cap) }}
+              </span>
+              <span class="flex items-center justify-end gap-1 text-right text-[10px] uppercase" :style="{ color: brand.colors.textMuted }">
+                <template v-if="getMdiLabels(asset.mdi).occurrenceLabel || getMdiLabels(asset.mdi).starLabel">
+                  <span v-if="getMdiLabels(asset.mdi).occurrenceLabel">
+                    {{ getMdiLabels(asset.mdi).occurrenceLabel }}
+                  </span>
+                  <span v-if="getMdiLabels(asset.mdi).starLabel" :style="{ color: brand.colors.secondary }">
+                    ★ {{ getMdiLabels(asset.mdi).starLabel }}
+                  </span>
+                </template>
+                <template v-else>—</template>
+              </span>
+            </NuxtLink>
+          </div>
+          <div
+            v-else
+            class="flex flex-col items-center justify-center gap-2 border-b px-4 py-16 font-mono-tab text-[11px] uppercase tracking-[0.15em]"
+            :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted }"
+          >
+            <span :style="{ color: brand.colors.primary }">[EMPTY.SET]</span>
+            <span>NENHUM ATIVO CASA COM OS FILTROS ATUAIS</span>
+          </div>
+        </template>
+
+        <!-- Pagination -->
+        <div
+          v-if="!assetsLoading && resultsCount > itemsPerPage"
+          class="flex flex-wrap items-center gap-3 px-4 py-3 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
+          :style="{ color: brand.colors.textMuted }"
+        >
+          <span>
+            {{ (currentPage - 1) * itemsPerPage + 1 }}–{{
+              Math.min(currentPage * itemsPerPage, resultsCount)
+            }}
+            OF
+            {{ resultsCount }}
+          </span>
+          <span class="ml-auto flex items-center gap-2">
+            <button
+              type="button"
+              class="border px-2 py-1 uppercase tracking-wide transition-colors disabled:opacity-40"
+              :style="{
+                borderColor: brand.colors.border,
+                color: currentPage > 1 ? brand.colors.text : brand.colors.textMuted,
+              }"
+              :disabled="currentPage <= 1"
+              @click="currentPage = Math.max(1, currentPage - 1)"
+            >
+              ← PREV
+            </button>
+            <span class="tabular-nums">
+              PAGE {{ currentPage }} / {{ totalPages }}
+            </span>
+            <button
+              type="button"
+              class="border px-2 py-1 uppercase tracking-wide transition-colors disabled:opacity-40"
+              :style="{
+                borderColor: brand.colors.border,
+                color: currentPage < totalPages ? brand.colors.text : brand.colors.textMuted,
+              }"
+              :disabled="currentPage >= totalPages"
+              @click="currentPage = Math.min(totalPages, currentPage + 1)"
+            >
+              NEXT →
+            </button>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- DEFAULT VARIANT (all non-terminal tenants) -->
+    <div v-else class="relative flex flex-col gap-12 pb-16 pt-6">
       <!-- Background effects: derivados do brand primary/secondary para
            garantir que a atmosfera da pagina acompanhe o tenant. Terminal
            (Redentia) mostra um grid CRT sutil em vez de gradiente. -->
