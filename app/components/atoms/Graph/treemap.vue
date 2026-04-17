@@ -1,91 +1,188 @@
 <template>
   <div
-    class="treemap-container relative flex h-full w-full flex-col"
-    @mouseleave="onMouseLeave"
+    class="mktmap relative flex w-full flex-col"
+    :style="{
+      backgroundColor: brand.colors.background,
+      color: brand.colors.text,
+      border: `1px solid ${brand.colors.border}`,
+    }"
+    @mouseleave="clearHover"
   >
-    <!-- Layout responsivo para grupos -->
+    <!-- STATUS BAR TOP -->
     <div
-      class="flex h-full w-full flex-col gap-6 lg:flex-row lg:gap-8"
-      :style="{ minHeight: `${responsiveHeight}px` }"
+      class="status-bar-top flex flex-wrap items-center gap-x-3 gap-y-1 border-b px-4 py-2 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
+      :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted }"
     >
-      <!-- Grupo Ações -->
+      <span :style="{ color: brand.colors.primary }">MKTMAP</span>
+      <span :style="{ color: brand.colors.border }">·</span>
+      <span>B3</span>
+      <span :style="{ color: brand.colors.border }">·</span>
+      <span class="inline-flex items-center gap-1.5">
+        <span
+          class="h-1.5 w-1.5 rounded-full"
+          :style="{ backgroundColor: sessionOpen ? brand.colors.positive : brand.colors.neutral }"
+        />
+        <span>SESSION {{ sessionOpen ? 'OPEN' : 'CLOSED' }}</span>
+      </span>
+      <span :style="{ color: brand.colors.border }">·</span>
+      <span class="tabular-nums">{{ clockText }} BRT</span>
+      <span class="ml-auto flex items-center gap-3">
+        <span>HEAT · |%CHG|</span>
+        <span :style="{ color: brand.colors.border }">·</span>
+        <span>{{ totalTickers }} TICKERS</span>
+        <span :style="{ color: brand.colors.border }">·</span>
+        <span>{{ sectorCount }} SECTORS</span>
+      </span>
+    </div>
+
+    <!-- CANVAS 2D -->
+    <div
+      ref="canvasRef"
+      class="map-canvas relative w-full"
+      :style="{ height: `${canvasHeight}px` }"
+    >
       <div
-        v-if="groupedData.acoes.length > 0"
-        class="group-container flex flex-1 flex-col gap-3"
+        v-for="sector in sectorBoxes"
+        :key="sector.code + sector.name"
+        class="sector-box absolute overflow-hidden"
+        :style="{
+          left: `${sector.x}px`,
+          top: `${sector.y}px`,
+          width: `${sector.w}px`,
+          height: `${sector.h}px`,
+          borderRight: `1px solid ${brand.colors.border}`,
+          borderBottom: `1px solid ${brand.colors.border}`,
+        }"
       >
-        <div class="flex items-center gap-2 px-6">
-          <div class="h-1.5 w-1.5 rounded-full" :style="{ backgroundColor: cc.positive }" />
-          <h3 class="text-sm font-medium tracking-wide" :style="{ color: brand.colors.textMuted }">AÇÕES</h3>
+        <!-- Sector label strip -->
+        <div
+          class="sector-label flex items-center gap-2 px-2 font-mono-tab text-[9px] uppercase tracking-[0.12em] sm:text-[10px]"
+          :style="{
+            height: `${SECTOR_LABEL_H}px`,
+            backgroundColor: brand.colors.surface,
+            color: brand.colors.textMuted,
+            borderBottom: `1px solid ${brand.colors.border}`,
+          }"
+        >
+          <span
+            class="font-semibold"
+            :style="{ color: brand.colors.primary }"
+            >{{ sector.code }}</span
+          >
+          <span class="truncate" :style="{ color: brand.colors.text }">{{
+            sector.name
+          }}</span>
+          <span
+            class="ml-auto flex shrink-0 items-center gap-1.5 tabular-nums"
+          >
+            <span
+              :style="{
+                color:
+                  sector.avgChange >= 0 ? brand.colors.positive : brand.colors.negative,
+              }"
+            >
+              {{ sector.avgChange >= 0 ? '+' : '' }}{{ sector.avgChange.toFixed(1) }}%
+            </span>
+            <span :style="{ color: brand.colors.border }">·</span>
+            <span>{{ sector.totalCount }}</span>
+          </span>
         </div>
-        <div class="canvas-container relative min-h-[200px] flex-1">
-          <canvas ref="canvasAcoesRef" class="h-full w-full" />
+
+        <!-- Ticker cells inside sector -->
+        <div
+          class="relative w-full"
+          :style="{ height: `${sector.h - SECTOR_LABEL_H}px` }"
+        >
+          <component
+            :is="isAggregate(cell.item) ? 'div' : 'NuxtLink'"
+            v-for="cell in sector.cells"
+            :key="cell.item.symbol"
+            :to="isAggregate(cell.item) ? undefined : `/asset/${cell.item.symbol}`"
+            class="ticker-cell absolute flex flex-col items-center justify-center overflow-hidden font-mono-tab tabular-nums transition-[opacity,background-color] duration-100"
+            :class="{ 'pointer-events-none': isAggregate(cell.item) }"
+            :style="cellStyle(cell)"
+            @mouseenter="!isAggregate(cell.item) && setHover(cell.item, sector)"
+            @focus="!isAggregate(cell.item) && setHover(cell.item, sector)"
+            @mouseleave="clearHover"
+            @blur="clearHover"
+          >
+            <span
+              class="ticker-symbol ticker-text block truncate px-1 text-center font-bold leading-tight"
+              :style="{ fontSize: symbolSize(cell) + 'px', color: '#FFFFFF' }"
+            >
+              {{ cell.item.symbol }}
+            </span>
+            <span
+              v-if="showChange(cell)"
+              class="ticker-change ticker-text block truncate px-1 font-semibold leading-tight"
+              :style="{ fontSize: changeSize(cell) + 'px', color: '#FFFFFF' }"
+            >
+              {{ cell.item.change >= 0 ? '+' : '' }}{{ cell.item.change.toFixed(1) }}%
+            </span>
+            <span
+              v-if="showPrice(cell)"
+              class="ticker-price ticker-text mt-0.5 block truncate px-1 leading-tight"
+              :style="{
+                fontSize: priceSize(cell) + 'px',
+                color: 'rgba(255,255,255,0.78)',
+              }"
+            >
+              R$ {{ cell.item.price.toFixed(2) }}
+            </span>
+          </component>
         </div>
       </div>
 
-      <!-- Grupo FIIs -->
+      <!-- Empty state -->
       <div
-        v-if="groupedData.fiis.length > 0"
-        class="group-container flex flex-1 flex-col gap-3"
+        v-if="sectorBoxes.length === 0"
+        class="absolute inset-0 flex items-center justify-center font-mono-tab text-[11px] uppercase tracking-[0.15em]"
+        :style="{ color: brand.colors.textMuted }"
       >
-        <div class="flex items-center gap-2 px-6">
-          <div class="h-1.5 w-1.5 rounded-full" :style="{ backgroundColor: cc.secondary }" />
-          <h3 class="text-sm font-medium tracking-wide" :style="{ color: brand.colors.textMuted }">FIIs</h3>
-        </div>
-        <div class="canvas-container relative min-h-[200px] flex-1">
-          <canvas ref="canvasFiisRef" class="h-full w-full" />
-        </div>
-      </div>
-
-      <!-- Fallback para dados sem categoria -->
-      <div
-        v-if="groupedData.outros.length > 0"
-        class="group-container flex flex-1 flex-col gap-3"
-      >
-        <div class="canvas-container relative min-h-[350px] flex-1">
-          <canvas ref="canvasOutrosRef" class="h-full w-full" />
-        </div>
+        NENHUM DADO NO FILTRO ATUAL
       </div>
     </div>
 
-    <!-- Tooltip dinâmico responsivo -->
+    <!-- STATUS BAR BOTTOM -->
     <div
-      v-if="tooltipData"
-      class="pointer-events-none fixed z-10 rounded-lg px-3 py-2 backdrop-blur-md transition-all duration-150"
-      :style="{
-        left: `${tooltipPosition.x + 10}px`,
-        top: `${tooltipPosition.y - 10}px`,
-        backgroundColor: cc.tooltipBg,
-        border: `1px solid ${cc.tooltipBorder}`,
-      }"
+      class="status-bar-bottom flex flex-wrap items-center gap-x-3 gap-y-1 border-t px-4 py-2 font-mono-tab text-[10px] uppercase tracking-[0.15em] sm:text-[11px]"
+      :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted }"
     >
-      <div class="flex flex-col gap-1 text-xs sm:text-sm" :style="{ color: cc.tooltipText }">
-        <div class="flex items-center gap-2">
-          <div
-            class="h-2 w-2 flex-shrink-0 rounded-sm sm:h-3 sm:w-3"
-            :style="{ backgroundColor: tooltipData.color }"
-          />
-          <span class="truncate text-sm font-bold sm:text-base">{{
-            tooltipData.symbol
-          }}</span>
-        </div>
-        <span class="truncate text-xs" :style="{ color: cc.tooltipTextMuted }">{{ tooltipData.name }}</span>
-        <span class="text-sm font-semibold"
-          >R$ {{ tooltipData.price.toFixed(2) }}</span
+      <template v-if="hovered">
+        <span class="font-semibold" :style="{ color: brand.colors.primary }">{{
+          hovered.symbol
+        }}</span>
+        <span :style="{ color: brand.colors.border }">·</span>
+        <span class="max-w-[16rem] truncate" :style="{ color: brand.colors.text }">{{
+          hovered.name
+        }}</span>
+        <span :style="{ color: brand.colors.border }">·</span>
+        <span class="tabular-nums" :style="{ color: brand.colors.text }"
+          >R$ {{ hovered.price.toFixed(2) }}</span
         >
+        <span :style="{ color: brand.colors.border }">·</span>
         <span
-          class="text-sm font-bold"
-          :style="{ color: tooltipData.change >= 0 ? cc.positive : cc.negative }"
+          class="tabular-nums font-semibold"
+          :style="{
+            color: hovered.change >= 0 ? brand.colors.positive : brand.colors.negative,
+          }"
         >
-          {{ tooltipData.change >= 0 ? '+' : ''
-          }}{{ tooltipData.change.toFixed(2) }}%
+          {{ hovered.change >= 0 ? '+' : '' }}{{ hovered.change.toFixed(2) }}%
         </span>
-      </div>
+        <span v-if="hovered.sectorLabel" :style="{ color: brand.colors.border }">·</span>
+        <span v-if="hovered.sectorLabel">{{ hovered.sectorLabel }}</span>
+        <span class="ml-auto opacity-60">CLIQUE PARA ABRIR ATIVO →</span>
+      </template>
+      <template v-else>
+        <span>HOVER OU FOCUS PARA DETALHE DO ATIVO</span>
+        <span class="ml-auto opacity-60">SIZED BY |%CHG| · NESTED SQUARIFIED TREEMAP</span>
+      </template>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, nextTick, watch, onUnmounted } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useChartColors, rgba } from '~/design/chartColors'
 
 const brand = useBrand()
@@ -97,15 +194,8 @@ interface TreemapItem {
   price: number
   change: number
   marketCap?: number
-  category?: 'acoes' | 'fiis' // Nova propriedade para categorização
-}
-
-interface TooltipData {
-  symbol: string
-  name: string
-  price: number
-  change: number
-  color: string
+  category?: 'acoes' | 'fiis'
+  sector?: string
 }
 
 interface Props {
@@ -115,1021 +205,479 @@ interface Props {
   showNegative?: boolean
 }
 
-interface Rectangle {
-  x: number
-  y: number
-  width: number
-  height: number
-  item: TreemapItem
-  color: string
-  groupName?: string // Novo campo para identificar o grupo
-}
-
 const props = withDefaults(defineProps<Props>(), {
-  height: 600,
+  height: 640,
   showPositive: true,
   showNegative: true,
 })
 
-// Altura responsiva baseada no tamanho da tela
-const responsiveHeight = computed(() => {
+// ---- Sector taxonomy (B3) ----
+const SECTOR_MAP: Record<string, { code: string; name: string; order: number }> = {
+  'financial services': { code: 'FIN', name: 'FINANCEIRO', order: 1 },
+  financials: { code: 'FIN', name: 'FINANCEIRO', order: 1 },
+  financial: { code: 'FIN', name: 'FINANCEIRO', order: 1 },
+  energy: { code: 'ENG', name: 'ENERGIA', order: 2 },
+  'basic materials': { code: 'MAT', name: 'MATERIAIS', order: 3 },
+  materials: { code: 'MAT', name: 'MATERIAIS', order: 3 },
+  'consumer cyclical': { code: 'CDS', name: 'CONSUMO DISC.', order: 4 },
+  'consumer discretionary': { code: 'CDS', name: 'CONSUMO DISC.', order: 4 },
+  'consumer defensive': { code: 'CNS', name: 'CONSUMO', order: 5 },
+  'consumer staples': { code: 'CNS', name: 'CONSUMO', order: 5 },
+  technology: { code: 'TEC', name: 'TECNOLOGIA', order: 6 },
+  'information technology': { code: 'TEC', name: 'TECNOLOGIA', order: 6 },
+  healthcare: { code: 'SAU', name: 'SAÚDE', order: 7 },
+  'health care': { code: 'SAU', name: 'SAÚDE', order: 7 },
+  industrials: { code: 'IND', name: 'INDUSTRIAL', order: 8 },
+  utilities: { code: 'UTL', name: 'UTILIDADES', order: 9 },
+  'communication services': { code: 'COM', name: 'COMUNICAÇÃO', order: 10 },
+  communications: { code: 'COM', name: 'COMUNICAÇÃO', order: 10 },
+  'real estate': { code: 'IMB', name: 'IMOBILIÁRIO', order: 11 },
+}
+
+const FIIS_BUCKET = { code: 'IMB', name: 'IMOBILIÁRIO (FIIs)', order: 11 }
+const OTHER_BUCKET = { code: '---', name: 'SEM SETOR', order: 99 }
+
+function resolveSector(item: TreemapItem) {
+  if (item.category === 'fiis') return FIIS_BUCKET
+  const raw = (item.sector || '').trim().toLowerCase()
+  if (!raw) return OTHER_BUCKET
+  return SECTOR_MAP[raw] || OTHER_BUCKET
+}
+
+// ---- Filter (Altas / Baixas) ----
+const filtered = computed(() => {
+  let list = [...props.data]
+  if (props.showPositive && !props.showNegative) list = list.filter((i) => i.change >= 0)
+  else if (!props.showPositive && props.showNegative)
+    list = list.filter((i) => i.change < 0)
+  else if (!props.showPositive && !props.showNegative) list = []
+  return list
+})
+
+// ---- Aggregate/broken-data helpers ----
+function isAggregate(item: TreemapItem): boolean {
+  return item.symbol.startsWith('+')
+}
+function isBrokenData(item: TreemapItem): boolean {
+  return (
+    item.price <= 0 ||
+    !Number.isFinite(item.change) ||
+    Math.abs(item.change) >= 99.5
+  )
+}
+function weightFor(item: TreemapItem): number {
+  if (isAggregate(item)) return Math.abs(item.change) + 0.5
+  if (isBrokenData(item)) return 0.35
+  return Math.abs(item.change) + 0.5
+}
+
+// ---- Responsive canvas dimensions ----
+const canvasRef = ref<HTMLElement | null>(null)
+const canvasWidth = ref(1200)
+
+function measureCanvas() {
+  if (!canvasRef.value) return
+  canvasWidth.value = Math.max(320, Math.floor(canvasRef.value.clientWidth))
+}
+
+let ro: ResizeObserver | null = null
+onMounted(() => {
+  measureCanvas()
+  if (typeof ResizeObserver !== 'undefined') {
+    ro = new ResizeObserver(() => measureCanvas())
+    if (canvasRef.value) ro.observe(canvasRef.value)
+  }
+})
+onUnmounted(() => {
+  if (ro && canvasRef.value) ro.unobserve(canvasRef.value)
+  ro = null
+})
+
+const canvasHeight = computed(() => {
   if (typeof window === 'undefined') return props.height
-
-  // Força re-cálculo quando windowSize muda
-  const _ = windowSize.value
-
-  const screenWidth = window.innerWidth
-  let baseHeight = props.height
-
-  if (screenWidth < 640)
-    baseHeight = Math.max(250, props.height * 0.6) // Mobile
-  else if (screenWidth < 768)
-    baseHeight = Math.max(300, props.height * 0.75) // Tablet small
-  else if (screenWidth < 1024) baseHeight = Math.max(350, props.height * 0.85) // Tablet
-
-  return baseHeight
+  const w = canvasWidth.value
+  if (w < 500) return Math.max(560, props.height)
+  if (w < 900) return Math.max(520, props.height * 0.9)
+  return props.height
 })
 
-// Estado reativo para forçar re-renderização
-const windowSize = ref({ width: 0, height: 0 })
+const SECTOR_LABEL_H = 22
 
-// Atualiza o tamanho da janela
-const updateWindowSize = () => {
-  if (typeof window !== 'undefined') {
-    const newSize = {
-      width: window.innerWidth,
-      height: window.innerHeight,
-    }
-
-    // Só atualiza se houve mudança real
-    if (
-      newSize.width !== windowSize.value.width ||
-      newSize.height !== windowSize.value.height
-    ) {
-      windowSize.value = newSize
-
-      // Força limpeza de cache de layout
-      nextTick(() => {
-        // Força recálculo de todos os containers
-        const containers = [
-          canvasAcoesRef.value?.parentElement,
-          canvasFiisRef.value?.parentElement,
-          canvasOutrosRef.value?.parentElement,
-        ].filter(Boolean)
-
-        containers.forEach((container) => {
-          if (container) {
-            const display = container.style.display
-            container.style.display = 'none'
-            void container.offsetHeight
-            container.style.display = display || ''
-          }
-        })
-      })
-
-      return true
-    }
-  }
-  return false
+// ---- Squarified treemap algorithm ----
+interface Box {
+  x: number
+  y: number
+  w: number
+  h: number
+}
+interface SquaredItem<T> {
+  value: number
+  data: T
+}
+interface Placed<T> extends Box {
+  data: T
 }
 
-// Força re-renderização
-const forceRerender = () => {
-  nextTick(() => {
-    renderTreemap()
-  })
+function squarify<T>(raw: SquaredItem<T>[], box: Box): Placed<T>[] {
+  if (raw.length === 0 || box.w <= 0 || box.h <= 0) return []
+  const total = raw.reduce((s, i) => s + i.value, 0)
+  if (total <= 0) return []
+  const scale = (box.w * box.h) / total
+  const items = raw
+    .map((i) => ({ value: i.value * scale, data: i.data }))
+    .sort((a, b) => b.value - a.value)
+  const result: Placed<T>[] = []
+  squarifyStep(items, [], { ...box }, result)
+  return result
 }
 
-const canvasAcoesRef = ref<HTMLCanvasElement | null>(null)
-const canvasFiisRef = ref<HTMLCanvasElement | null>(null)
-const canvasOutrosRef = ref<HTMLCanvasElement | null>(null)
-const tooltipData = ref<TooltipData | null>(null)
-const tooltipPosition = ref({ x: 0, y: 0 })
-const rectangles = ref<Rectangle[]>([])
-const hoveredRectangle = ref<Rectangle | null>(null)
+function squarifyStep<T>(
+  items: SquaredItem<T>[],
+  row: SquaredItem<T>[],
+  box: Box,
+  result: Placed<T>[]
+) {
+  const w = Math.min(box.w, box.h)
+  if (w <= 0) return
 
-// Estados de animação
-const isAnimating = ref(false)
-const animationProgress = ref(0)
-const animationDuration = 1000 // 1 segundo
-
-// Agrupa os dados por categoria
-const groupedData = computed(() => {
-  let filteredData = [...props.data]
-
-  // Filtra por tipo se especificado
-  if (props.showPositive && !props.showNegative) {
-    filteredData = filteredData.filter((item) => item.change >= 0)
-  } else if (props.showNegative && !props.showPositive) {
-    filteredData = filteredData.filter((item) => item.change < 0)
-  }
-
-  // Ordena por mudança percentual absoluta (maiores variações primeiro)
-  filteredData.sort((a, b) => Math.abs(b.change) - Math.abs(a.change))
-
-  // Agrupa por categoria
-  const groups = {
-    acoes: filteredData.filter((item) => item.category === 'acoes'),
-    fiis: filteredData.filter((item) => item.category === 'fiis'),
-    outros: filteredData.filter(
-      (item) =>
-        !item.category ||
-        (item.category !== 'acoes' && item.category !== 'fiis')
-    ),
-  }
-
-  // Número de itens baseado no tamanho da tela para cada grupo
-  const screenWidth = typeof window !== 'undefined' ? window.innerWidth : 1200
-  let maxItemsPerGroup = 12
-
-  if (screenWidth < 640)
-    maxItemsPerGroup = 8 // Mobile
-  else if (screenWidth < 768)
-    maxItemsPerGroup = 12 // Tablet small
-  else if (screenWidth < 1024)
-    maxItemsPerGroup = 12 // Tablet
-  else maxItemsPerGroup = 12 // Desktop
-
-  return {
-    acoes: groups.acoes.slice(0, maxItemsPerGroup),
-    fiis: groups.fiis.slice(0, maxItemsPerGroup),
-    outros: groups.outros.slice(0, maxItemsPerGroup * 2), // Mais itens se não há categorização
-  }
-})
-
-// Função para calcular a cor baseada na mudança percentual
-const getColor = (change: number): string => {
-  if (change >= 0) {
-    const intensity = Math.min(Math.abs(change) / 12, 1)
-    const alpha = 0.15 + intensity * 0.45
-    return rgba(cc.positive, alpha)
-  } else {
-    const intensity = Math.min(Math.abs(change) / 12, 1)
-    const alpha = 0.15 + intensity * 0.45
-    return rgba(cc.negative, alpha)
-  }
-}
-
-// Função para obter a cor da borda (sem transparência)
-const getBorderColor = (change: number): string => {
-  return change >= 0 ? cc.positive : cc.negative
-}
-
-// Algoritmo de treemap squarified para layout organizado e responsivo
-const createTreemap = (
-  data: TreemapItem[],
-  width: number,
-  height: number
-): Rectangle[] => {
-  if (data.length === 0) return []
-
-  // Calcula valores normalizados baseados na variação percentual
-  const values = data.map((item) => Math.abs(item.change) + 1)
-  const totalValue = values.reduce((sum, val) => sum + val, 0)
-
-  // Normaliza os valores para a área total
-  const normalizedValues = values.map(
-    (val) => (val / totalValue) * width * height
-  )
-
-  // Cria lista de items com valores normalizados
-  const items = data.map((item, index) => ({
-    item,
-    value: normalizedValues[index] || 0,
-    color: getColor(item.change),
-  }))
-
-  // Ordena por valor (maior para menor) para melhor layout
-  items.sort((a, b) => (b.value || 0) - (a.value || 0))
-
-  // Determina a orientação inicial baseada no aspect ratio
-  const aspectRatio = width / height
-  const initialDirection = aspectRatio > 1.2 ? width : height
-
-  return squarify(items, [], width, height, 0, 0, initialDirection)
-}
-
-// Implementação do algoritmo squarified
-const squarify = (
-  items: Array<{ item: TreemapItem; value: number; color: string }>,
-  row: Array<{ item: TreemapItem; value: number; color: string }>,
-  w: number,
-  h: number,
-  x: number,
-  y: number,
-  dx: number
-): Rectangle[] => {
   if (items.length === 0) {
-    return layoutRow(row, w, h, x, y, dx)
-  }
-
-  const item = items[0]
-  if (!item) return layoutRow(row, w, h, x, y, dx)
-
-  const newRow = [...row, item]
-  const remainingItems = items.slice(1)
-
-  if (row.length === 0 || worst(row, w) >= worst(newRow, w)) {
-    return squarify(remainingItems, newRow, w, h, x, y, dx)
-  } else {
-    const rects = layoutRow(row, w, h, x, y, dx)
-    const rowHeight = row.reduce((sum, r) => sum + r.value, 0) / dx
-
-    if (dx === w) {
-      // Layout horizontal
-      return [
-        ...rects,
-        ...squarify(items, [], w, h - rowHeight, x, y + rowHeight, w),
-      ]
-    } else {
-      // Layout vertical
-      return [
-        ...rects,
-        ...squarify(
-          items,
-          [],
-          w - rowHeight,
-          h,
-          x + rowHeight,
-          y,
-          w - rowHeight
-        ),
-      ]
-    }
-  }
-}
-
-// Calcula o pior aspect ratio de uma linha
-const worst = (row: Array<{ value: number }>, w: number): number => {
-  if (row.length === 0) return Infinity
-
-  const sum = row.reduce((s, r) => s + r.value, 0)
-  const min = Math.min(...row.map((r) => r.value))
-  const max = Math.max(...row.map((r) => r.value))
-
-  const s2 = sum * sum
-  const w2 = w * w
-
-  return Math.max((w2 * max) / s2, s2 / (w2 * min))
-}
-
-// Faz o layout de uma linha de retângulos
-const layoutRow = (
-  row: Array<{ item: TreemapItem; value: number; color: string }>,
-  w: number,
-  h: number,
-  x: number,
-  y: number,
-  dx: number
-): Rectangle[] => {
-  if (row.length === 0) return []
-
-  const sum = row.reduce((s, r) => s + r.value, 0)
-  const rowHeight = sum / dx
-
-  let currentX = x
-  let currentY = y
-
-  return row.map((r) => {
-    const rectWidth = dx === w ? r.value / rowHeight : rowHeight
-    const rectHeight = dx === w ? rowHeight : r.value / rowHeight
-
-    const rect: Rectangle = {
-      x: currentX,
-      y: currentY,
-      width: rectWidth,
-      height: rectHeight,
-      item: r.item,
-      color: r.color,
-    }
-
-    if (dx === w) {
-      currentX += rectWidth
-    } else {
-      currentY += rectHeight
-    }
-
-    return rect
-  })
-}
-
-// Função de easing para animações suaves
-const easeOutCubic = (t: number): number => {
-  return 1 - Math.pow(1 - t, 3)
-}
-
-// Gap entre os retângulos para visual moderno
-const CELL_GAP = 3
-const BORDER_RADIUS = 8
-
-// Função para animar os retângulos
-const animateRectangles = (
-  ctx: CanvasRenderingContext2D,
-  rects: Rectangle[],
-  width: number,
-  height: number,
-  fontScale: number,
-  progress: number
-) => {
-  rects.forEach((rectItem, index) => {
-    // Delay escalonado para cada retângulo
-    const delay = index * 0.03
-    const adjustedProgress = Math.max(
-      0,
-      Math.min(1, (progress - delay) / (1 - delay))
-    )
-    const itemProgress = easeOutCubic(adjustedProgress)
-
-    if (adjustedProgress <= 0) return
-
-    // Para a animação, mantemos as posições originais e apenas animamos a escala
-    const scaleProgress = itemProgress
-    let opacity = itemProgress
-
-    // Aplica efeito de hover - reduz opacidade se outro retângulo está sendo hovered
-    if (hoveredRectangle.value && hoveredRectangle.value !== rectItem) {
-      opacity *= 0.4 // Reduz para 40% da opacidade normal
-    }
-
-    // Aplica gap para visual moderno
-    const gap = CELL_GAP
-    const drawX = rectItem.x + gap / 2
-    const drawY = rectItem.y + gap / 2
-    const drawWidth = Math.max(0, rectItem.width - gap)
-    const drawHeight = Math.max(0, rectItem.height - gap)
-
-    if (drawWidth > 0 && drawHeight > 0) {
-      // Salva o estado do contexto
-      ctx.save()
-
-      // Border radius adaptativo baseado no tamanho
-      const borderRadius = Math.min(BORDER_RADIUS, drawWidth / 4, drawHeight / 4)
-
-      // Preenche com a cor de fundo (com transparência animada)
-      const originalColor = rectItem.color
-      const rgbaMatch = originalColor.match(/rgba?\(([^)]+)\)/)
-
-      if (rgbaMatch && rgbaMatch[1]) {
-        const values = rgbaMatch[1].split(',').map((v) => v.trim())
-        if (values.length >= 3) {
-          const alphaValue = values[3]
-          const alpha =
-            values.length === 4 && alphaValue
-              ? parseFloat(alphaValue) * opacity
-              : opacity
-          ctx.fillStyle = `rgba(${values[0]}, ${values[1]}, ${values[2]}, ${alpha})`
-        }
-      } else {
-        ctx.fillStyle = originalColor
-        ctx.globalAlpha = opacity
-      }
-
-      // Aplica transformação de escala no centro do retângulo
-      const centerX = drawX + drawWidth / 2
-      const centerY = drawY + drawHeight / 2
-
-      ctx.translate(centerX, centerY)
-      ctx.scale(scaleProgress, scaleProgress)
-      ctx.translate(-centerX, -centerY)
-
-      ctx.beginPath()
-      ctx.roundRect(drawX, drawY, drawWidth, drawHeight, borderRadius)
-      ctx.fill()
-
-      // Borda sutil e elegante
-      const borderColor = getBorderColor(rectItem.item.change)
-      ctx.strokeStyle = borderColor
-      ctx.lineWidth = 1
-      ctx.globalAlpha = opacity * 0.3
-      ctx.stroke()
-
-      // Renderiza texto
-      const area = drawWidth * drawHeight
-      const areaFactor = Math.sqrt(area) / 100
-
-      const symbolFontSize = Math.max(
-        11,
-        Math.min(28, areaFactor * 7 * fontScale)
-      )
-      const changeFontSize = Math.max(9, symbolFontSize * 0.7)
-      const priceFontSize = Math.max(8, symbolFontSize * 0.55)
-
-      const minWidth = 40
-      const minHeight = 25
-      const minAreaForPrice = 5000
-      const minAreaForSymbol = 1200
-
-      const textCenterX = drawX + drawWidth / 2
-      const textCenterY = drawY + drawHeight / 2
-
-      // Mostra texto apenas se o retângulo for grande o suficiente
-      if (
-        drawWidth > minWidth &&
-        drawHeight > minHeight &&
-        area > minAreaForSymbol
-      ) {
-        ctx.textAlign = 'center'
-        ctx.textBaseline = 'middle'
-
-        ctx.globalAlpha = opacity
-        ctx.fillStyle = cc.tooltipText
-
-        // Symbol (texto principal maior)
-        ctx.font = `700 ${symbolFontSize}px ${brand.font.family}, -apple-system, sans-serif`
-        ctx.fillText(
-          rectItem.item.symbol,
-          textCenterX,
-          textCenterY - changeFontSize * 0.6
-        )
-
-        // Change percentage com cor contextual
-        ctx.font = `600 ${changeFontSize}px ${brand.font.family}, -apple-system, sans-serif`
-        const changeText = `${rectItem.item.change >= 0 ? '+' : ''}${rectItem.item.change.toFixed(1)}%`
-        ctx.globalAlpha = opacity * 0.9
-        ctx.fillText(changeText, textCenterX, textCenterY + symbolFontSize * 0.5)
-
-        // Preço apenas em retângulos maiores
-        if (area > minAreaForPrice && drawHeight > 70) {
-          ctx.font = `500 ${priceFontSize}px ${brand.font.family}, -apple-system, sans-serif`
-          ctx.fillStyle = cc.tooltipTextMuted
-          ctx.globalAlpha = opacity * 0.7
-          ctx.fillText(
-            `R$ ${rectItem.item.price.toFixed(2)}`,
-            textCenterX,
-            textCenterY + symbolFontSize * 0.5 + changeFontSize + 6
-          )
-        }
-      }
-
-      // Restaura o estado do contexto
-      ctx.restore()
-    }
-  })
-}
-
-// Renderiza um treemap específico para um grupo (versão estática para hover)
-const renderTreemapForGroupStatic = (
-  canvas: HTMLCanvasElement,
-  data: TreemapItem[],
-  groupName: string
-) => {
-  if (!canvas) return
-
-  const ctx = canvas.getContext('2d')
-  if (!ctx) return
-
-  const container = canvas.parentElement
-  if (!container) return
-
-  const containerRect = container.getBoundingClientRect()
-  if (containerRect.width <= 0 || containerRect.height <= 0) return
-
-  const width = Math.floor(containerRect.width)
-  const height = Math.floor(containerRect.height)
-
-  if (width <= 0 || height <= 0) return
-
-  // Usa as dimensões já configuradas do canvas
-  ctx.clearRect(0, 0, width, height)
-
-  if (data.length === 0) return
-
-  // Busca os retângulos já criados para este grupo
-  const groupRects = rectangles.value.filter((r) => r.groupName === groupName)
-  if (groupRects.length === 0) return
-
-  // Calcula escala responsiva
-  const baseScale = Math.min(width / 400, height / 300)
-  const fontScale = Math.max(0.7, Math.min(1.4, baseScale))
-
-  // Renderiza sem animação (progress = 1)
-  animateRectangles(ctx, groupRects, width, height, fontScale, 1)
-}
-
-// Renderiza um treemap específico para um grupo
-const renderTreemapForGroup = (
-  canvas: HTMLCanvasElement,
-  data: TreemapItem[],
-  groupName: string
-) => {
-  if (!canvas) return
-
-  const ctx = canvas.getContext('2d')
-  if (!ctx) return
-
-  // Força o canvas a recalcular suas dimensões
-  const container = canvas.parentElement
-  if (!container) return
-
-  // Força o recálculo das dimensões do container
-  const forceReflow = () => {
-    // Limpa estilos inline que podem estar interferindo
-    canvas.style.width = ''
-    canvas.style.height = ''
-    container.style.display = 'none'
-    void container.offsetHeight // Força reflow
-    container.style.display = ''
-  }
-
-  // Para resize aumentando, força um reflow
-  forceReflow()
-
-  // Aguarda um momento para garantir que o container tem dimensões corretas
-  requestAnimationFrame(() => {
-    // Aguarda mais um frame para garantir estabilidade
-    requestAnimationFrame(() => {
-      const containerRect = container.getBoundingClientRect()
-
-      // Se o container não tem tamanho válido, tenta novamente após um delay
-      if (containerRect.width <= 0 || containerRect.height <= 0) {
-        setTimeout(() => renderTreemapForGroup(canvas, data, groupName), 100)
-        return
-      }
-
-      // Ajusta o canvas para o tamanho do container com margem de segurança
-      const dpr = window.devicePixelRatio || 1
-
-      // Usa as dimensões exatas do container (sem adicionar dimensões mínimas)
-      const width = Math.floor(containerRect.width)
-      const height = Math.floor(containerRect.height)
-
-      // Garante que as dimensões são válidas
-      if (width <= 0 || height <= 0) return
-
-      // Limpa qualquer transformação anterior
-      ctx.setTransform(1, 0, 0, 1, 0, 0)
-
-      // Define as dimensões do canvas
-      canvas.width = width * dpr
-      canvas.height = height * dpr
-
-      // IMPORTANTE: Define o tamanho CSS do canvas para corresponder exatamente ao container
-      canvas.style.width = width + 'px'
-      canvas.style.height = height + 'px'
-
-      // Aplica a escala para dispositivos de alta densidade
-      ctx.scale(dpr, dpr)
-
-      // Limpa o canvas
-      ctx.clearRect(0, 0, width, height)
-
-      // Se não há dados, não renderiza
-      if (data.length === 0) return
-
-      // Cria os retângulos do treemap
-      const rects = createTreemap(data, width, height)
-
-      // Remove retângulos antigos deste grupo e adiciona os novos
-      rectangles.value = [
-        ...rectangles.value.filter(
-          (r) => !r.groupName || r.groupName !== groupName
-        ),
-        ...rects.map((r) => ({ ...r, groupName })),
-      ]
-
-      // Calcula escala responsiva baseada no tamanho do container
-      const baseScale = Math.min(width / 400, height / 300)
-      const fontScale = Math.max(0.7, Math.min(1.4, baseScale))
-
-      // Inicia animação
-      isAnimating.value = true
-      animationProgress.value = 0
-
-      // Limpa tooltip durante animação
-      tooltipData.value = null
-
-      const startTime = Date.now()
-
-      const renderFrame = () => {
-        const elapsed = Date.now() - startTime
-        const progress = Math.min(elapsed / animationDuration, 1)
-
-        animationProgress.value = progress
-
-        // Limpa o canvas
-        ctx.clearRect(0, 0, width, height)
-
-        if (progress < 1) {
-          // Renderiza com animação
-          animateRectangles(ctx, rects, width, height, fontScale, progress)
-          requestAnimationFrame(renderFrame)
-        } else {
-          // Renderização final sem animação
-          isAnimating.value = false
-          animationProgress.value = 1
-          animateRectangles(ctx, rects, width, height, fontScale, 1)
-        }
-      }
-
-      // Inicia a animação
-      renderFrame()
-    })
-  })
-}
-
-// Renderiza todos os treemaps
-const renderTreemap = () => {
-  // Aguarda um tick para garantir que os elementos estão prontos
-  nextTick(() => {
-    // Limpa os retângulos anteriores
-    rectangles.value = []
-
-    // Aguarda mais um frame para garantir que o layout foi atualizado
-    requestAnimationFrame(() => {
-      // Renderiza cada grupo se existir e tiver dados
-      if (canvasAcoesRef.value && groupedData.value.acoes.length > 0) {
-        renderTreemapForGroup(
-          canvasAcoesRef.value,
-          groupedData.value.acoes,
-          'acoes'
-        )
-      }
-
-      if (canvasFiisRef.value && groupedData.value.fiis.length > 0) {
-        renderTreemapForGroup(
-          canvasFiisRef.value,
-          groupedData.value.fiis,
-          'fiis'
-        )
-      }
-
-      if (canvasOutrosRef.value && groupedData.value.outros.length > 0) {
-        renderTreemapForGroup(
-          canvasOutrosRef.value,
-          groupedData.value.outros,
-          'outros'
-        )
-      }
-    })
-  })
-}
-
-// Event handlers para múltiplos canvas
-const handleMouseMove = (event: MouseEvent) => {
-  // Se está animando, não processa hover para evitar bugs de posicionamento
-  if (isAnimating.value) return
-
-  const target = event.target as HTMLCanvasElement
-  if (!target) return
-
-  const rect = target.getBoundingClientRect()
-  const x = event.clientX - rect.left
-  const y = event.clientY - rect.top
-
-  // Identifica qual canvas está sendo usado
-  let targetGroupName = ''
-  if (target === canvasAcoesRef.value) targetGroupName = 'acoes'
-  else if (target === canvasFiisRef.value) targetGroupName = 'fiis'
-  else if (target === canvasOutrosRef.value) targetGroupName = 'outros'
-
-  // Encontra o retângulo sob o mouse APENAS no grupo correto
-  const hoveredRect = rectangles.value.find(
-    (r) =>
-      r.groupName === targetGroupName &&
-      x >= r.x &&
-      x <= r.x + r.width &&
-      y >= r.y &&
-      y <= r.y + r.height
-  )
-
-  // Atualiza o estado do hover
-  const prevHoveredRect = hoveredRectangle.value
-  hoveredRectangle.value = hoveredRect || null
-
-  // Se mudou o hover, força re-renderização de todos os grupos
-  if (prevHoveredRect !== hoveredRectangle.value) {
-    requestAnimationFrame(() => {
-      // Re-renderiza todos os grupos para aplicar o efeito de hover globalmente
-      if (canvasAcoesRef.value && groupedData.value.acoes.length > 0) {
-        renderTreemapForGroupStatic(
-          canvasAcoesRef.value,
-          groupedData.value.acoes,
-          'acoes'
-        )
-      }
-      if (canvasFiisRef.value && groupedData.value.fiis.length > 0) {
-        renderTreemapForGroupStatic(
-          canvasFiisRef.value,
-          groupedData.value.fiis,
-          'fiis'
-        )
-      }
-      if (canvasOutrosRef.value && groupedData.value.outros.length > 0) {
-        renderTreemapForGroupStatic(
-          canvasOutrosRef.value,
-          groupedData.value.outros,
-          'outros'
-        )
-      }
-    })
-  }
-
-  if (hoveredRect) {
-    tooltipData.value = {
-      symbol: hoveredRect.item.symbol,
-      name: hoveredRect.item.name,
-      price: hoveredRect.item.price,
-      change: hoveredRect.item.change,
-      color: getBorderColor(hoveredRect.item.change), // Usa a cor sólida da borda
-    }
-
-    // Posicionamento responsivo do tooltip
-    const tooltipWidth = 200 // Largura estimada do tooltip
-    const tooltipHeight = 120 // Altura estimada do tooltip
-    const viewportWidth = window.innerWidth
-    const viewportHeight = window.innerHeight
-
-    let tooltipX = event.clientX + 10
-    let tooltipY = event.clientY - 10
-
-    // Ajusta se o tooltip sair da tela à direita
-    if (tooltipX + tooltipWidth > viewportWidth) {
-      tooltipX = event.clientX - tooltipWidth - 10
-    }
-
-    // Ajusta se o tooltip sair da tela embaixo
-    if (tooltipY + tooltipHeight > viewportHeight) {
-      tooltipY = event.clientY - tooltipHeight - 10
-    }
-
-    // Ajusta se o tooltip sair da tela em cima
-    if (tooltipY < 0) {
-      tooltipY = event.clientY + 10
-    }
-
-    // Ajusta se o tooltip sair da tela à esquerda
-    if (tooltipX < 0) {
-      tooltipX = 10
-    }
-
-    tooltipPosition.value = {
-      x: tooltipX,
-      y: tooltipY,
-    }
-  } else {
-    tooltipData.value = null
-  }
-}
-
-const onMouseLeave = () => {
-  tooltipData.value = null
-  hoveredRectangle.value = null
-
-  // Re-renderiza todos os grupos para remover o efeito de hover
-  requestAnimationFrame(() => {
-    if (canvasAcoesRef.value && groupedData.value.acoes.length > 0) {
-      renderTreemapForGroupStatic(
-        canvasAcoesRef.value,
-        groupedData.value.acoes,
-        'acoes'
-      )
-    }
-    if (canvasFiisRef.value && groupedData.value.fiis.length > 0) {
-      renderTreemapForGroupStatic(
-        canvasFiisRef.value,
-        groupedData.value.fiis,
-        'fiis'
-      )
-    }
-    if (canvasOutrosRef.value && groupedData.value.outros.length > 0) {
-      renderTreemapForGroupStatic(
-        canvasOutrosRef.value,
-        groupedData.value.outros,
-        'outros'
-      )
-    }
-  })
-}
-
-// Handler para scroll - oculta tooltip durante scroll
-const onScroll = () => {
-  tooltipData.value = null
-}
-
-// Handler melhorado para mouse leave que funciona com múltiplos canvas
-const handleCanvasMouseLeave = (event: MouseEvent) => {
-  // Verifica se o mouse realmente saiu do canvas e não foi para outro elemento filho
-  const relatedTarget = event.relatedTarget as HTMLElement
-
-  // Se o mouse foi para outro canvas, não limpa o tooltip
-  if (
-    relatedTarget &&
-    (relatedTarget === canvasAcoesRef.value ||
-      relatedTarget === canvasFiisRef.value ||
-      relatedTarget === canvasOutrosRef.value)
-  ) {
+    layoutRow(row, box, result)
     return
   }
 
-  tooltipData.value = null
-  hoveredRectangle.value = null
+  const nextItem = items[0]!
+  const newRow = [...row, nextItem]
 
-  // Re-renderiza todos os grupos para remover o efeito de hover
-  requestAnimationFrame(() => {
-    if (canvasAcoesRef.value && groupedData.value.acoes.length > 0) {
-      renderTreemapForGroupStatic(
-        canvasAcoesRef.value,
-        groupedData.value.acoes,
-        'acoes'
-      )
-    }
-    if (canvasFiisRef.value && groupedData.value.fiis.length > 0) {
-      renderTreemapForGroupStatic(
-        canvasFiisRef.value,
-        groupedData.value.fiis,
-        'fiis'
-      )
-    }
-    if (canvasOutrosRef.value && groupedData.value.outros.length > 0) {
-      renderTreemapForGroupStatic(
-        canvasOutrosRef.value,
-        groupedData.value.outros,
-        'outros'
-      )
-    }
-  })
+  if (row.length === 0 || worst(row, w) >= worst(newRow, w)) {
+    squarifyStep(items.slice(1), newRow, box, result)
+  } else {
+    layoutRow(row, box, result)
+    const rowValue = row.reduce((s, i) => s + i.value, 0)
+    const slab = rowValue / w
+    const newBox: Box =
+      box.w <= box.h
+        ? { x: box.x, y: box.y + slab, w: box.w, h: box.h - slab }
+        : { x: box.x + slab, y: box.y, w: box.w - slab, h: box.h }
+    squarifyStep(items, [], newBox, result)
+  }
 }
 
-// Lifecycle
-onMounted(async () => {
-  await nextTick()
-
-  // Adiciona event listeners para todos os canvas
-  const canvases = [
-    canvasAcoesRef.value,
-    canvasFiisRef.value,
-    canvasOutrosRef.value,
-  ].filter(Boolean)
-
-  canvases.forEach((canvas) => {
-    if (canvas) {
-      canvas.addEventListener('mousemove', handleMouseMove)
-      canvas.addEventListener('mouseleave', handleCanvasMouseLeave)
+function layoutRow<T>(row: SquaredItem<T>[], box: Box, result: Placed<T>[]) {
+  if (row.length === 0) return
+  const rowValue = row.reduce((s, i) => s + i.value, 0)
+  if (rowValue <= 0) return
+  const w = Math.min(box.w, box.h)
+  const slab = rowValue / w
+  let offset = 0
+  if (box.w <= box.h) {
+    for (const item of row) {
+      const cellW = item.value / slab
+      result.push({ x: box.x, y: box.y, w: cellW, h: slab, data: item.data })
+      result[result.length - 1].x += offset
+      offset += cellW
     }
-  })
-
-  // Adiciona listener de scroll para ocultar tooltip
-  window.addEventListener('scroll', onScroll, { passive: true })
-
-  // Inicializa o tamanho da janela
-  updateWindowSize()
-
-  // Renderiza inicialmente
-  renderTreemap()
-
-  // Sistema de resize melhorado e mais robusto
-  let resizeTimeout: NodeJS.Timeout | null = null
-
-  const handleResize = () => {
-    // Cancela timeout anterior se existir
-    if (resizeTimeout) {
-      clearTimeout(resizeTimeout)
+  } else {
+    for (const item of row) {
+      const cellH = item.value / slab
+      result.push({ x: box.x, y: box.y, w: slab, h: cellH, data: item.data })
+      result[result.length - 1].y += offset
+      offset += cellH
     }
-
-    // Agenda nova renderização com debounce
-    resizeTimeout = setTimeout(() => {
-      if (updateWindowSize()) {
-        // Limpa tooltips durante resize
-        tooltipData.value = null
-
-        // Re-renderiza após um pequeno delay para garantir estabilidade
-        setTimeout(() => {
-          renderTreemap()
-        }, 50)
-      }
-    }, 200) // Debounce time otimizado para responsividade
   }
+}
 
-  // Observer para mudanças de tamanho dos containers
-  let resizeObserver: ResizeObserver | null = null
+function worst(row: SquaredItem<any>[], w: number): number {
+  if (row.length === 0) return Infinity
+  const sum = row.reduce((s, i) => s + i.value, 0)
+  const min = Math.min(...row.map((i) => i.value))
+  const max = Math.max(...row.map((i) => i.value))
+  if (sum <= 0 || min <= 0) return Infinity
+  const s2 = sum * sum
+  const w2 = w * w
+  return Math.max((w2 * max) / s2, s2 / (w2 * min))
+}
 
-  if (typeof ResizeObserver !== 'undefined') {
-    resizeObserver = new ResizeObserver((entries) => {
-      // Verifica se alguma entrada teve mudança real de tamanho
-      const hasRealChange = entries.some((entry) => {
-        const { width, height } = entry.contentRect
-        return width > 0 && height > 0
+// ---- 2-level layout ----
+interface SectorBucket {
+  code: string
+  name: string
+  order: number
+  items: TreemapItem[]
+  totalCount: number
+  weightSum: number
+  avgChange: number
+}
+
+interface CellLayout {
+  x: number
+  y: number
+  w: number
+  h: number
+  item: TreemapItem
+}
+
+interface SectorLayout extends SectorBucket {
+  x: number
+  y: number
+  w: number
+  h: number
+  cells: CellLayout[]
+}
+
+const MAX_CELLS_PER_SECTOR = 16
+
+const sectorBoxes = computed<SectorLayout[]>(() => {
+  const list = filtered.value
+  if (list.length === 0) return []
+
+  const W = canvasWidth.value
+  const H = canvasHeight.value
+  if (W <= 0 || H <= 0) return []
+
+  // Grupo por setor
+  const map = new Map<string, SectorBucket>()
+  for (const item of list) {
+    const sec = resolveSector(item)
+    const key = `${sec.order}|${sec.code}|${sec.name}`
+    if (!map.has(key)) {
+      map.set(key, {
+        code: sec.code,
+        name: sec.name,
+        order: sec.order,
+        items: [],
+        totalCount: 0,
+        weightSum: 0,
+        avgChange: 0,
       })
+    }
+    const bucket = map.get(key)!
+    bucket.items.push(item)
+    bucket.weightSum += weightFor(item)
+    bucket.totalCount += 1
+  }
 
-      if (hasRealChange) {
-        handleResize()
-      }
-    })
+  const buckets = Array.from(map.values())
 
-    // Observa todos os containers de canvas
-    const containers = [
-      canvasAcoesRef.value?.parentElement,
-      canvasFiisRef.value?.parentElement,
-      canvasOutrosRef.value?.parentElement,
-    ].filter(Boolean) as Element[]
+  // Cap de cells por setor (os maiores por |chg|, resto vira "+N")
+  for (const b of buckets) {
+    b.items.sort((a, b) => Math.abs(b.change) - Math.abs(a.change))
+    if (b.items.length > MAX_CELLS_PER_SECTOR) {
+      const head = b.items.slice(0, MAX_CELLS_PER_SECTOR - 1)
+      const tail = b.items.slice(MAX_CELLS_PER_SECTOR - 1)
+      const tailAvg =
+        tail.reduce((s, it) => s + it.change, 0) / Math.max(tail.length, 1)
+      head.push({
+        symbol: `+${tail.length}`,
+        name: `${tail.length} outros ativos`,
+        price: 0,
+        change: tailAvg,
+        category: tail[0]?.category,
+        sector: tail[0]?.sector,
+      })
+      b.items = head
+    }
+    const sum = b.items
+      .filter((it) => !isAggregate(it))
+      .reduce((s, it) => s + it.change, 0)
+    const cnt = b.items.filter((it) => !isAggregate(it)).length
+    b.avgChange = sum / Math.max(cnt, 1)
+  }
 
-    containers.forEach((container) => {
-      if (resizeObserver) {
-        resizeObserver.observe(container)
-      }
+  // Layout nível 1 — setores
+  const sectorBoxesPlaced = squarify<SectorBucket>(
+    buckets.map((b) => ({ value: Math.max(b.weightSum, 0.01), data: b })),
+    { x: 0, y: 0, w: W, h: H }
+  )
+
+  // Layout nível 2 — tickers dentro de cada setor
+  const result: SectorLayout[] = []
+  for (const sbox of sectorBoxesPlaced) {
+    const innerBox: Box = {
+      x: 0,
+      y: 0,
+      w: sbox.w,
+      h: Math.max(0, sbox.h - SECTOR_LABEL_H),
+    }
+    const cellsPlaced = squarify<TreemapItem>(
+      sbox.data.items.map((it) => ({
+        value: Math.max(weightFor(it), 0.01),
+        data: it,
+      })),
+      innerBox
+    )
+    const cells: CellLayout[] = cellsPlaced.map((p) => ({
+      x: p.x,
+      y: p.y,
+      w: p.w,
+      h: p.h,
+      item: p.data,
+    }))
+    result.push({
+      ...sbox.data,
+      x: sbox.x,
+      y: sbox.y,
+      w: sbox.w,
+      h: sbox.h,
+      cells,
     })
   }
 
-  // Listeners de window como fallback
-  window.addEventListener('resize', handleResize)
-
-  // Para dispositivos móveis
-  window.addEventListener('orientationchange', () => {
-    setTimeout(handleResize, 100)
-  })
-
-  // Cleanup
-  onUnmounted(() => {
-    if (resizeTimeout) {
-      clearTimeout(resizeTimeout)
-    }
-
-    if (resizeObserver) {
-      resizeObserver.disconnect()
-    }
-
-    window.removeEventListener('resize', handleResize)
-    window.removeEventListener('orientationchange', handleResize)
-    window.removeEventListener('scroll', onScroll)
-
-    canvases.forEach((canvas) => {
-      if (canvas) {
-        canvas.removeEventListener('mousemove', handleMouseMove)
-        canvas.removeEventListener('mouseleave', handleCanvasMouseLeave)
-      }
-    })
-  })
+  return result
 })
 
-// Observa mudanças nos dados
-watch(
-  () => groupedData.value,
-  () => {
-    nextTick(() => renderTreemap())
-  },
-  { deep: true }
+const totalTickers = computed(() =>
+  sectorBoxes.value.reduce(
+    (acc, s) => acc + s.cells.filter((c) => !isAggregate(c.item)).length,
+    0
+  )
 )
+const sectorCount = computed(() => sectorBoxes.value.length)
 
-// Observa mudanças no tamanho da janela para forçar re-cálculo
-watch(
-  () => windowSize.value,
-  () => {
-    nextTick(() => renderTreemap())
-  },
-  { deep: true }
-)
+// ---- Colors ----
+// Escala Bloomberg: tons saturados sobre fundo off-black, de forma que o
+// texto branco por cima fique legível mesmo nas intensidades médias.
+function getCellBg(change: number): string {
+  const abs = Math.abs(change)
+  let alpha = 0.55
+  if (abs >= 8) alpha = 1
+  else if (abs >= 4) alpha = 0.88
+  else if (abs >= 2) alpha = 0.75
+  else if (abs >= 1) alpha = 0.62
+  else if (abs >= 0.5) alpha = 0.48
+  const base = change >= 0 ? cc.positive : cc.negative
+  return rgba(base, alpha)
+}
 
-// Expõe métodos para uso externo
-defineExpose({
-  renderTreemap: forceRerender,
-  updateSize: () => {
-    updateWindowSize()
-    forceRerender()
-  },
+// ---- Cell rendering helpers ----
+function symbolSize(cell: CellLayout): number {
+  const base = Math.min(cell.w, cell.h)
+  const s = Math.max(9, Math.min(22, Math.round(base * 0.2)))
+  return s
+}
+function changeSize(cell: CellLayout): number {
+  return Math.max(8, symbolSize(cell) - 2)
+}
+function priceSize(cell: CellLayout): number {
+  return Math.max(8, symbolSize(cell) - 3)
+}
+function showChange(cell: CellLayout): boolean {
+  if (isAggregate(cell.item)) return false
+  return cell.w >= 44 && cell.h >= 38
+}
+function showPrice(cell: CellLayout): boolean {
+  if (isAggregate(cell.item)) return false
+  if (cell.item.price <= 0) return false
+  return cell.w >= 70 && cell.h >= 60
+}
+
+function cellStyle(cell: CellLayout) {
+  const item = cell.item
+  const isHovered = hovered.value?.symbol === item.symbol
+  const anyHover = hovered.value !== null
+  const broken = isBrokenData(item) && !isAggregate(item)
+  const aggregate = isAggregate(item)
+  return {
+    left: `${cell.x}px`,
+    top: `${cell.y}px`,
+    width: `${cell.w}px`,
+    height: `${cell.h}px`,
+    backgroundColor: aggregate ? brand.colors.surface : getCellBg(item.change),
+    color: brand.colors.text,
+    borderRight: `1px solid ${brand.colors.border}`,
+    borderBottom: `1px solid ${brand.colors.border}`,
+    opacity: anyHover && !isHovered ? 0.4 : broken ? 0.55 : 1,
+    textDecoration: 'none',
+    outline: isHovered ? `1px solid ${brand.colors.primary}` : 'none',
+    outlineOffset: isHovered ? '-1px' : '0',
+    zIndex: isHovered ? 2 : 1,
+  } as Record<string, string | number>
+}
+
+// ---- Hover ----
+interface HoverInfo {
+  symbol: string
+  name: string
+  price: number
+  change: number
+  sectorLabel?: string
+}
+const hovered = ref<HoverInfo | null>(null)
+
+function setHover(item: TreemapItem, sector: SectorBucket) {
+  hovered.value = {
+    symbol: item.symbol,
+    name: item.name,
+    price: item.price,
+    change: item.change,
+    sectorLabel: `${sector.code} · ${sector.name}`,
+  }
+}
+
+function clearHover() {
+  hovered.value = null
+}
+
+// ---- Clock + session ----
+const now = ref(new Date())
+let clockTimer: ReturnType<typeof setInterval> | null = null
+
+onMounted(() => {
+  clockTimer = setInterval(() => {
+    now.value = new Date()
+  }, 1000)
+})
+
+onUnmounted(() => {
+  if (clockTimer) clearInterval(clockTimer)
+})
+
+const clockText = computed(() => {
+  const d = now.value
+  const hh = String(d.getHours()).padStart(2, '0')
+  const mm = String(d.getMinutes()).padStart(2, '0')
+  const ss = String(d.getSeconds()).padStart(2, '0')
+  return `${hh}:${mm}:${ss}`
+})
+
+const sessionOpen = computed(() => {
+  const d = now.value
+  const day = d.getDay()
+  if (day === 0 || day === 6) return false
+  const minutes = d.getHours() * 60 + d.getMinutes()
+  return minutes >= 600 && minutes <= 1050
 })
 </script>
 
 <style scoped>
-.treemap-container canvas {
-  cursor: pointer;
-  /* Garante que o canvas não extrapole o container */
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
+.mktmap {
+  border-radius: 0;
 }
 
-.canvas-container {
-  overflow: hidden;
-  position: relative;
+.ticker-cell {
+  text-decoration: none;
 }
 
-.group-container {
-  /* Garante que cada grupo respeite seus limites */
-  overflow: hidden;
-  min-width: 0;
-  min-height: 0;
+.ticker-cell:hover,
+.ticker-cell:focus {
+  text-decoration: none;
 }
 
-/* Animações de entrada */
-.canvas-container {
-  animation: fadeInUp 0.4s ease-out;
+/* Text-shadow sutil garante legibilidade sobre qualquer tom de fundo
+   (positivo, negativo e também cells escuros de baixa intensidade). */
+.ticker-text {
+  text-shadow:
+    0 0 3px rgba(0, 0, 0, 0.55),
+    0 1px 1px rgba(0, 0, 0, 0.35);
+  letter-spacing: 0.01em;
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.font-mono-tab {
+  font-family: 'JetBrains Mono', 'SFMono-Regular', Menlo, Monaco, Consolas,
+    monospace;
+  font-feature-settings: 'tnum' 1, 'calt' 0;
 }
 
-/* Layout responsivo para grupos */
-@media (max-width: 1023px) {
-  .treemap-container .flex-row {
-    flex-direction: column;
-  }
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
 }
 </style>

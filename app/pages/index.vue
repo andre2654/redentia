@@ -5572,6 +5572,7 @@ interface TreemapEntry {
   price: number
   change: number
   category: 'acoes' | 'fiis'
+  sector?: string
 }
 
 interface RankingBucket {
@@ -5861,6 +5862,7 @@ function buildTreemapDataset(
         price: coerceNumber(asset.market_price ?? asset.close),
         change: coerceNumber(asset.change_percent ?? asset.change),
         category,
+        sector: asset.sector || undefined,
       })
     })
   }
