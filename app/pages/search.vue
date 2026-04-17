@@ -5,34 +5,69 @@
     :hide-search-bar="authStore.isAuthenticated"
   >
     <div class="relative flex flex-col gap-12 pb-16 pt-6">
-      <!-- Background Effects -->
-      <div class="pointer-events-none absolute inset-0 overflow-hidden">
+      <!-- Background effects: derivados do brand primary/secondary para
+           garantir que a atmosfera da pagina acompanhe o tenant. Terminal
+           (Redentia) mostra um grid CRT sutil em vez de gradiente. -->
+      <div v-if="!terminalVariant" class="pointer-events-none absolute inset-0 overflow-hidden">
         <div
-          class="bg-primary/10 absolute -top-[20%] left-1/2 h-[600px] w-[600px] -translate-x-1/2 rounded-full blur-[120px]"
+          class="absolute -top-[20%] left-1/2 h-[600px] w-[600px] -translate-x-1/2 rounded-full blur-[120px]"
+          :style="{ backgroundColor: bgGlowPrimary }"
         />
         <div
-          class="bg-secondary/5 absolute right-[10%] top-[20%] h-[300px] w-[300px] rounded-full blur-[100px]"
+          class="absolute right-[10%] top-[20%] h-[300px] w-[300px] rounded-full blur-[100px]"
+          :style="{ backgroundColor: bgGlowSecondary }"
         />
       </div>
+      <div
+        v-else
+        class="pointer-events-none absolute inset-0 overflow-hidden"
+        :style="{
+          backgroundImage: terminalGridBg,
+          backgroundSize: '48px 48px',
+          opacity: 0.35,
+          maskImage:
+            'radial-gradient(ellipse at top, black 0%, black 40%, transparent 80%)',
+        }"
+      />
 
       <section class="relative z-10 max-md:px-4">
         <div class="mx-auto flex w-full flex-col gap-6">
+          <!-- Hero title: estilo varia por tenant variant -->
           <div class="flex flex-col gap-2">
             <span
-              class="text-secondary/70 text-xs font-medium uppercase tracking-[0.3em]"
+              v-if="terminalVariant"
+              class="font-mono-tab text-[10px] uppercase tracking-[0.22em]"
+              :style="{ color: brand.colors.primary }"
+            >
+              [SEARCH.ENGINE]
+            </span>
+            <span
+              v-else
+              class="text-xs font-medium uppercase tracking-[0.3em]"
+              :style="{ color: secondaryMuted }"
             >
               Busca
             </span>
             <h1
               class="text-3xl tracking-tight md:text-5xl"
               :class="[brand.font.headingWeight, brand.font.headingStyle]"
-              :style="{ color: brand.colors.text }"
+              :style="{ color: brand.colors.text, fontFamily: brandFontStack }"
             >
-                Encontre ativos com precisão
+              <template v-if="terminalVariant">Busca avançada — Terminal de ativos</template>
+              <template v-else>Encontre ativos com precisão</template>
             </h1>
-            <p class="text-sm md:text-base" :style="{ color: brand.colors.textMuted }">
-              Combine indicadores técnicos e fundamentais para identificar
-              oportunidades em ações, FIIs, BDRs e ETFs.
+            <p
+              class="text-sm md:text-base"
+              :class="terminalVariant ? 'font-mono-tab text-[12px] uppercase tracking-[0.12em]' : ''"
+              :style="{ color: brand.colors.textMuted }"
+            >
+              <template v-if="terminalVariant">
+                &gt; Combine indicadores tecnicos e fundamentalistas. Acoes, FIIs, BDRs e ETFs.
+              </template>
+              <template v-else>
+                Combine indicadores técnicos e fundamentais para identificar
+                oportunidades em ações, FIIs, BDRs e ETFs.
+              </template>
             </p>
           </div>
           <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
@@ -40,7 +75,7 @@
               class="brand-card border p-4 backdrop-blur-md transition-colors sm:p-5"
               :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
             >
-              <span class="text-secondary/70 text-[10px] font-medium uppercase tracking-wider sm:text-xs">Resultados</span>
+              <span class="text-[10px] font-medium uppercase tracking-wider sm:text-xs" :style="{ color: secondaryMuted }">Resultados</span>
               <p class="mt-1 text-2xl font-semibold sm:text-3xl" :style="{ color: brand.colors.text }">
                 {{ resultsCount }}
               </p>
@@ -50,7 +85,7 @@
               class="brand-card border p-4 backdrop-blur-md transition-colors sm:p-5"
               :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
             >
-              <span class="text-secondary/70 text-[10px] font-medium uppercase tracking-wider sm:text-xs">Filtros ativos</span>
+              <span class="text-[10px] font-medium uppercase tracking-wider sm:text-xs" :style="{ color: secondaryMuted }">Filtros ativos</span>
               <p class="mt-1 text-2xl font-semibold sm:text-3xl" :style="{ color: brand.colors.text }">
                 {{ activeFiltersCount }}
               </p>
@@ -60,7 +95,7 @@
               class="brand-card border p-4 backdrop-blur-md transition-colors sm:p-5"
               :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
             >
-              <span class="text-secondary/70 text-[10px] font-medium uppercase tracking-wider sm:text-xs">Atualização</span>
+              <span class="text-[10px] font-medium uppercase tracking-wider sm:text-xs" :style="{ color: secondaryMuted }">Atualização</span>
               <p class="mt-1 text-2xl font-semibold sm:text-3xl" :style="{ color: brand.colors.text }">
                 {{ lastUpdatedLabel }}
               </p>
@@ -95,9 +130,12 @@
             <div class="flex flex-col gap-6" :style="{ color: brand.colors.text }">
               <div class="flex flex-col gap-2">
                 <span
-                  class="text-secondary/70 text-xs font-medium uppercase tracking-[0.3em]"
+                  class="text-xs font-medium uppercase tracking-[0.3em]"
+                  :class="terminalVariant ? 'font-mono-tab' : ''"
+                  :style="{ color: terminalVariant ? primaryStrong : secondaryMuted }"
                 >
-                  Filtros avançados
+                  <template v-if="terminalVariant">[FILTERS.PANEL]</template>
+                  <template v-else>Filtros avançados</template>
                 </span>
                 <h2 class="text-2xl font-semibold" :style="{ color: brand.colors.text }">Personalize sua análise</h2>
                 <p class="text-sm" :style="{ color: brand.colors.textMuted }">
@@ -332,13 +370,16 @@
             <div class="flex flex-col gap-4" :style="{ color: brand.colors.text }">
               <div class="flex flex-col gap-1">
                 <span
-                  class="text-secondary/70 text-[10px] font-medium uppercase tracking-wider sm:text-xs"
+                  class="text-[10px] font-medium uppercase tracking-wider sm:text-xs"
+                  :class="terminalVariant ? 'font-mono-tab tracking-[0.22em]' : ''"
+                  :style="{ color: terminalVariant ? primaryStrong : secondaryMuted }"
                 >
-                  Resultados
+                  <template v-if="terminalVariant">[RESULTS.GRID]</template>
+                  <template v-else>Resultados</template>
                 </span>
                 <h2 class="flex items-center gap-2 text-xl font-semibold sm:text-2xl">
                   Ativos encontrados
-                  <IconAi class="fill-secondary h-5 w-5 shrink-0 sm:h-6 sm:w-6" aria-hidden="true" />
+                  <IconAi class="h-5 w-5 shrink-0 sm:h-6 sm:w-6" :style="{ fill: brand.colors.secondary }" aria-hidden="true" />
                 </h2>
                 <p class="text-xs sm:text-sm" :style="{ color: brand.colors.textMuted }">
                   Toque no card para ver detalhes.
@@ -405,16 +446,12 @@
                         {{ formatCurrencyBRL(getAssetPrice(asset)) }}
                       </span>
                       <span
-                        :class="[
-                          'inline-flex items-center gap-1 font-medium',
-                          getAssetChange(asset) >= 0 ? 'text-primary' : 'text-red-400',
-                        ]"
+                        class="inline-flex items-center gap-1 font-medium tabular-nums"
+                        :style="{ color: getAssetChange(asset) >= 0 ? positiveColor : negativeColor }"
                       >
                         <IconArrowFinanceUp
-                          :class="[
-                            'h-4 w-4 sm:h-5 sm:w-5',
-                            getAssetChange(asset) >= 0 ? 'fill-primary' : 'rotate-180 fill-red-500',
-                          ]"
+                          :class="['h-4 w-4 sm:h-5 sm:w-5', getAssetChange(asset) >= 0 ? '' : 'rotate-180']"
+                          :style="{ fill: getAssetChange(asset) >= 0 ? positiveColor : negativeColor }"
                         />
                         {{ getAssetChange(asset) >= 0 ? '+' : '' }}{{ getAssetChange(asset).toFixed(2) }}%
                       </span>
@@ -433,9 +470,10 @@
                       </span>
                       <span
                         v-if="getMdiLabels(asset.mdi).starLabel"
-                        class="text-secondary inline-flex items-center gap-1 brand-card-sm bg-secondary/10 px-2 py-1 text-[10px] sm:text-xs"
+                        class="inline-flex items-center gap-1 brand-card-sm px-2 py-1 text-[10px] sm:text-xs"
+                        :style="{ color: brand.colors.secondary, backgroundColor: hexWithAlpha(brand.colors.secondary, '1A') }"
                       >
-                        <IconAi class="fill-secondary h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" aria-hidden="true" />
+                        <IconAi class="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" :style="{ fill: brand.colors.secondary }" aria-hidden="true" />
                         {{ getMdiLabels(asset.mdi).starLabel }}
                       </span>
                     </div>
@@ -495,6 +533,42 @@ const siteUrl = computed(() => {
 const layoutName = computed(() =>
   authStore.isAuthenticated ? 'default' : 'unauthenticated'
 )
+
+// ---- Brand-aware cosmetics ----
+// Evitamos classes Tailwind hardcoded (`bg-primary/10`, `text-secondary/70`)
+// porque nao respeitam o tenant ativo: a opacity fica certa mas a cor
+// eh sempre a mesma do Redentia. Em vez disso resolvemos em runtime via
+// `useBrand()` e alpha suffix (+opacidade hex).
+function hexWithAlpha(hex: string, alpha: string): string {
+  if (!hex) return hex
+  const trimmed = hex.trim()
+  if (trimmed.startsWith('#') && (trimmed.length === 7 || trimmed.length === 4)) {
+    return trimmed + alpha
+  }
+  return trimmed
+}
+
+const terminalVariant = computed(() => brand.hero?.variant === 'terminal')
+const editorialVariant = computed(() =>
+  ['research', 'editorial', 'holder', 'mentor', 'playbook'].includes(
+    brand.hero?.variant as string,
+  ),
+)
+
+const bgGlowPrimary = computed(() => hexWithAlpha(brand.colors.primary, '1A')) // ~10%
+const bgGlowSecondary = computed(() => hexWithAlpha(brand.colors.secondary, '14')) // ~8%
+const secondaryMuted = computed(() => hexWithAlpha(brand.colors.secondary, 'B3')) // ~70%
+const primaryStrong = computed(() => brand.colors.primary)
+const positiveColor = computed(() => brand.colors.positive)
+const negativeColor = computed(() => brand.colors.negative)
+const brandFontStack = computed(() => {
+  const f = brand.font?.family || 'Inter'
+  return `'${f}', system-ui, sans-serif`
+})
+const terminalGridBg = computed(() => {
+  const c = hexWithAlpha(brand.colors.border, '55')
+  return `linear-gradient(${c} 1px, transparent 1px), linear-gradient(90deg, ${c} 1px, transparent 1px)`
+})
 
 const { data: assetsDataset, pending: assetsPending } = await useAsyncData<
   IAsset[]

@@ -1,6 +1,183 @@
 <template>
+  <!-- TERMINAL VARIANT (Redentia, Bloomberg-style) -->
   <section
-    v-if="commentaries.length > 0 || backfillStatus?.running"
+    v-if="terminalVariant && (commentaries.length > 0 || backfillStatus?.running)"
+    class="py-6"
+  >
+    <!-- Status bar header -->
+    <header
+      class="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1 border px-3 py-2 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
+      :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted, backgroundColor: brand.colors.surface }"
+    >
+      <span :style="{ color: brand.colors.primary }">[MOVES.TIMELINE]</span>
+      <span :style="{ color: brand.colors.border }">·</span>
+      <span :style="{ color: brand.colors.text }">MOVIMENTOS NOTAVEIS</span>
+      <span :style="{ color: brand.colors.border }">·</span>
+      <span>AI · ANTHROPIC</span>
+      <span class="ml-auto flex items-center gap-3">
+        <span
+          v-if="backfillStatus?.running"
+          class="inline-flex items-center gap-1.5"
+          :style="{ color: brand.colors.primary }"
+        >
+          <span class="h-1.5 w-1.5 animate-pulse rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
+          INGESTING {{ backfillStatus.current }}/{{ backfillStatus.total }}
+        </span>
+        <span v-if="commentaries.length > 0" class="tabular-nums">
+          {{ commentaries.length }} EVENTS
+        </span>
+      </span>
+    </header>
+
+    <!-- Dense terminal grid -->
+    <div
+      class="border font-mono-tab"
+      :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.background }"
+    >
+      <!-- Column headers -->
+      <div
+        class="grid border-b px-3 py-1.5 text-[9px] uppercase tracking-[0.18em]"
+        :style="{
+          borderColor: brand.colors.border,
+          color: brand.colors.textMuted,
+          gridTemplateColumns: '72px 64px 80px 1fr',
+          gap: '12px',
+        }"
+      >
+        <span>DATE</span>
+        <span>TICKER</span>
+        <span class="text-right">%CHG</span>
+        <span>HEADLINE</span>
+      </div>
+
+      <!-- Scrollable rows -->
+      <div class="mc-terminal-scroll" style="max-height: 540px; overflow-y: auto;">
+        <div
+          v-for="item in commentaries"
+          :key="item.id"
+          :id="`commentary-${item.date}`"
+          class="border-b last:border-b-0"
+          :style="{ borderColor: brand.colors.border + '66' }"
+        >
+          <!-- Collapsed row -->
+          <button
+            type="button"
+            class="grid w-full cursor-pointer items-center px-3 py-2 text-left transition-colors hover:bg-[var(--hover-bg,rgba(255,255,255,0.03))]"
+            :class="highlightedDate === item.date && 'mc-terminal-highlight'"
+            :style="{
+              gridTemplateColumns: '72px 64px 80px 1fr',
+              gap: '12px',
+            }"
+            @click="toggleExpand(item.id)"
+          >
+            <span
+              class="text-[11px] font-semibold tabular-nums"
+              :style="{ color: brand.colors.text }"
+            >
+              {{ formatDateTerminal(item.date) }}
+            </span>
+            <span
+              class="truncate text-[11px] font-bold"
+              :style="{ color: brand.colors.primary }"
+            >
+              {{ item.identifier }}
+            </span>
+            <span
+              class="text-right text-[11px] font-semibold tabular-nums"
+              :style="{
+                color: isPositive(item.change_percent) ? brand.colors.positive : brand.colors.negative,
+              }"
+            >
+              {{ formatPercent(item.change_percent) }}
+            </span>
+            <span
+              class="flex min-w-0 items-center gap-2 text-[12px] leading-tight"
+              :style="{ color: brand.colors.text }"
+            >
+              <span class="truncate">{{ item.title }}</span>
+              <UIcon
+                :name="expanded[item.id] ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
+                class="ml-auto size-3 shrink-0"
+                :style="{ color: brand.colors.textMuted }"
+              />
+            </span>
+          </button>
+
+          <!-- Expanded body -->
+          <div
+            v-if="expanded[item.id]"
+            class="grid gap-x-3 px-3 pb-3 text-[12px] leading-relaxed"
+            :style="{
+              gridTemplateColumns: '72px 64px 80px 1fr',
+              color: brand.colors.textMuted,
+              backgroundColor: brand.colors.surface + '55',
+            }"
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+            <div class="pt-1">
+              <div class="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono-tab text-[10px] uppercase tracking-[0.12em]">
+                <span :style="{ color: brand.colors.primary }">[COMMENTARY]</span>
+                <span v-if="extractPriceNumber(item) !== null" :style="{ color: brand.colors.text }">
+                  PRICE {{ formatPrice(item) }}
+                </span>
+                <span v-if="item.scope" :style="{ color: brand.colors.textMuted }">
+                  SCOPE · {{ item.scope.toUpperCase() }}
+                </span>
+                <span v-if="item.ai_model" :style="{ color: brand.colors.textMuted }">
+                  MODEL · {{ item.ai_model }}
+                </span>
+              </div>
+              <p
+                class="whitespace-pre-line text-[12.5px] leading-relaxed"
+                :style="{ color: brand.colors.text, fontFamily: 'Inter, system-ui, sans-serif' }"
+              >
+                {{ item.commentary }}
+              </p>
+
+              <div
+                v-if="item.sources && item.sources.length > 0"
+                class="mt-3 border-t pt-2"
+                :style="{ borderColor: brand.colors.border }"
+              >
+                <div class="mb-1.5 text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
+                  [SOURCES] · {{ item.sources.length }}
+                </div>
+                <ul class="flex flex-col gap-1">
+                  <li v-for="src in item.sources" :key="src.url">
+                    <a
+                      :href="src.url"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="inline-flex items-center gap-1.5 text-[11px] transition hover:underline"
+                      :style="{ color: brand.colors.textMuted, fontFamily: 'Inter, system-ui, sans-serif' }"
+                    >
+                      <span class="truncate max-w-[32rem]">{{ src.title || src.url }}</span>
+                      <UIcon name="i-lucide-external-link" class="size-2.5 shrink-0 opacity-60" />
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer status -->
+      <div
+        class="flex items-center gap-2 border-t px-3 py-1.5 font-mono-tab text-[9px] uppercase tracking-[0.18em]"
+        :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted }"
+      >
+        <span>CLIQUE EM UMA LINHA PARA EXPANDIR</span>
+        <span class="ml-auto">ORDENADO POR DATA DESC</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEFAULT VARIANT (all non-terminal tenants) -->
+  <section
+    v-else-if="commentaries.length > 0 || backfillStatus?.running"
     class="py-6"
   >
     <!-- Header (outside card) -->
@@ -226,6 +403,8 @@ const brand = useBrand()
 const expanded = reactive<Record<number, boolean>>({})
 const sourcesVisible = reactive<Record<number, boolean>>({})
 
+const terminalVariant = computed(() => brand.hero?.variant === 'terminal')
+
 function toggleExpand(id: number) {
   expanded[id] = !expanded[id]
 }
@@ -252,6 +431,18 @@ function formatDateShort(dateStr: string): string {
     return d
       .toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })
       .replace('.', '')
+  } catch {
+    return dateStr
+  }
+}
+
+function formatDateTerminal(dateStr: string): string {
+  try {
+    const d = new Date(dateStr.slice(0, 10) + 'T12:00:00')
+    const day = String(d.getDate()).padStart(2, '0')
+    const month = String(d.getMonth() + 1).padStart(2, '0')
+    const year = String(d.getFullYear()).slice(2)
+    return `${day}/${month}/${year}`
   } catch {
     return dateStr
   }
@@ -384,8 +575,7 @@ function truncate(text: string, max: number): string {
 .mc-connector {
   position: absolute;
   left: 50%;
-  top: 16px; /* below the dot (4 + 12) */
-  /* extends 28px (row-gap) + 4px (next pt) + 6px (half dot) = 38px */
+  top: 16px;
   bottom: -32px;
   width: 1px;
   transform: translateX(-50%);
@@ -414,5 +604,28 @@ function truncate(text: string, max: number): string {
   opacity: 0;
   animation: mc-flash 2s ease-out;
   pointer-events: none;
+}
+
+/* Terminal variant scroll */
+.mc-terminal-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(245, 166, 35, 0.25) transparent;
+}
+.mc-terminal-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.mc-terminal-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.mc-terminal-scroll::-webkit-scrollbar-thumb {
+  background-color: rgba(245, 166, 35, 0.25);
+  border-radius: 0;
+}
+.mc-terminal-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(245, 166, 35, 0.5);
+}
+
+.mc-terminal-highlight {
+  background-color: rgba(245, 166, 35, 0.12);
 }
 </style>

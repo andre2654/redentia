@@ -143,7 +143,24 @@ interface TickerData {
   logo: string | null
 }
 
+// Nomes amigaveis para indices que nao tem entrada em /tickers
+const INDEX_NAMES: Record<string, string> = {
+  IBOV: 'Ibovespa',
+  IFIX: 'Indice de FIIs',
+  SMLL: 'Small Cap',
+  IBRX: 'IBrX 100',
+  IDIV: 'Indice Dividendos',
+  ICON: 'Indice Consumo',
+  IEEX: 'Indice Energia',
+  IMAT: 'Indice Materiais',
+  IMOB: 'Indice Imobiliario',
+  UTIL: 'Indice Utilidade Publica',
+}
+
 async function fetchTickerMeta(ticker: string): Promise<TickerData | null> {
+  if (isIndex(ticker)) {
+    return { ticker, name: INDEX_NAMES[ticker] || ticker, logo: null }
+  }
   try {
     const resp = await $fetch<any>(`${apiBase}/tickers/${ticker}`, { method: 'GET' })
     const d = resp?.data || resp
@@ -155,6 +172,13 @@ async function fetchTickerMeta(ticker: string): Promise<TickerData | null> {
   } catch {
     return { ticker, name: ticker, logo: null }
   }
+}
+
+// Ativos negociados na B3 sempre contem pelo menos um digito no codigo
+// (PETR4, VALE3, PNDL11, BBAS3 etc.). Indices como IBOV, IFIX, SMLL, IBRX
+// nao tem digito. O backend usa endpoints separados para cada um.
+function isIndex(ticker: string): boolean {
+  return !/\d/.test(ticker)
 }
 
 async function fetchPrices(ticker: string): Promise<RawPricePoint[]> {
@@ -172,7 +196,10 @@ async function fetchPrices(ticker: string): Promise<RawPricePoint[]> {
   else if (years.value >= 0.5) mode = '6mo'
   else mode = '3mo'
   try {
-    const resp = await $fetch<any>(`${apiBase}/tickers/${ticker}/prices`, {
+    const url = isIndex(ticker)
+      ? `${apiBase}/indices/${ticker}/prices`
+      : `${apiBase}/tickers/${ticker}/prices`
+    const resp = await $fetch<any>(url, {
       method: 'GET',
       query: { mode },
     })
@@ -184,6 +211,8 @@ async function fetchPrices(ticker: string): Promise<RawPricePoint[]> {
 }
 
 async function fetchDividends(ticker: string): Promise<RawDividend[]> {
+  // Indices nao pagam dividendos.
+  if (isIndex(ticker)) return []
   try {
     const resp = await $fetch<any>(`${apiBase}/dividends/${ticker}`, { method: 'GET' })
     const arr: RawDividend[] = resp?.data || []

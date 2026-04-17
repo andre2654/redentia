@@ -4666,7 +4666,10 @@ onBeforeUnmount(() => {
 
 const assetName = computed(() => {
   const resolvedName = asset.value?.name
-  return resolvedName ? String(resolvedName) : tickerUpper.value
+  if (!resolvedName) return tickerUpper.value
+  // Brapi costuma devolver "BRASIL      ON      NM" com espacos multiplos
+  // para alinhamento. Normaliza para evitar strings feias em title/meta.
+  return String(resolvedName).replace(/\s+/g, ' ').trim()
 })
 const assetCurrentPrice = computed(() => {
   const price =
@@ -4714,21 +4717,30 @@ const yearChangeSentence = computed(() => {
   return `Nos últimos 12 meses, ${assetName.value} acumula ${trend} de ${absolute}%.`
 })
 
-const pageTitle = computed(
-  () => `${tickerUpper.value} - ${assetName.value} - Cotação e Dividendos`
-)
+const pageTitle = computed(() => {
+  // Ticker primeiro, mais curto e direto. Ideal para ranking em queries
+  // de uma unica palavra (ex: "bbas3"). Nome da empresa entra como
+  // sub-contexto; brand fica no tail so se tiver espaco.
+  const price = formattedAssetPrice.value
+    ? ` · ${formattedAssetPrice.value}`
+    : ''
+  return `${tickerUpper.value}${price} — ${assetName.value} | Cotação, Dividendos e Análise`
+})
 
 const pageDescription = computed(() => {
-  const baseSentence = formattedAssetPrice.value
-    ? `A cotação de ${assetName.value} (${tickerUpper.value}) hoje está em ${formattedAssetPrice.value}`
-    : `Acompanhe a cotação de ${assetName.value} (${tickerUpper.value}) em tempo real`
+  // Comeca com o ticker (keyword principal) e o nome da empresa para
+  // casamento de entidade. Depois o preco/variacao do dia, o acumulado
+  // 12m e finalmente o CTA para o que a pagina oferece.
+  const priceSegment = formattedAssetPrice.value
+    ? `cotação hoje ${formattedAssetPrice.value}`
+    : 'cotação em tempo real'
   const intradaySegment = dailyChangeSentence.value
-    ? `, com ${dailyChangeSentence.value}`
+    ? `, ${dailyChangeSentence.value}`
     : ''
   const yearSegment = yearChangeSentence.value
-    ? `${yearChangeSentence.value} `
+    ? ` ${yearChangeSentence.value}`
     : ''
-  return `${baseSentence}${intradaySegment}. ${yearSegment}Explore dividendos, indicadores fundamentalistas e análises com IA na ${brand.name}.`
+  return `${tickerUpper.value} (${assetName.value}): ${priceSegment}${intradaySegment}.${yearSegment} Veja dividendos, P/L, dividend yield, indicadores fundamentalistas e análises com IA na ${brand.name}.`
 })
 
 const canonicalUrl = computed(
@@ -4746,6 +4758,125 @@ const shareImage = computed(() => {
   return `${baseSiteUrl.value}/512x512.png`
 })
 
+// FAQPage expande a SERP com rich snippets (accordion). Perguntas escolhidas
+// para bater o intent das pessoas que procuram o ticker: "o que eh", "paga
+// dividendos", "qual a cotacao", "como investir", "qual o setor".
+const faqStructuredData = computed(() => {
+  const ticker = tickerUpper.value
+  const name = assetName.value
+  const price = formattedAssetPrice.value || 'variavel conforme o pregao'
+  const sector = asset.value?.sector || asset.value?.industry_category || null
+  const divLastPaid =
+    (dividendsData.value && dividendsData.value.length > 0)
+      ? dividendsData.value[0]
+      : null
+
+  const faqs: Array<{ q: string; a: string }> = [
+    {
+      q: `O que e ${ticker}?`,
+      a: `${ticker} e o codigo de negociacao da ${name} na B3 (Bolsa de Valores brasileira).${sector ? ` A empresa atua no setor de ${sector}.` : ''} Esse ticker pode ser comprado atraves de qualquer corretora autorizada.`,
+    },
+    {
+      q: `Qual a cotacao de ${ticker} hoje?`,
+      a: `A cotacao atual de ${ticker} (${name}) e ${price}.${dailyChangeSentence.value ? ' No dia, ' + dailyChangeSentence.value + '.' : ''} Os precos sao atualizados em tempo real durante o pregao da B3 (10h as 17h30).`,
+    },
+    {
+      q: `${ticker} paga dividendos?`,
+      a: divLastPaid
+        ? `Sim, ${ticker} distribui dividendos aos acionistas. O ultimo pagamento registrado foi em ${String(divLastPaid.payment_date || '').slice(0, 10)}. Consulte o historico completo de dividendos, DY e MDI na pagina.`
+        : `Consulte o historico de dividendos, dividend yield e indicadores fundamentalistas de ${ticker} atualizados diariamente.`,
+    },
+    {
+      q: `Como investir em ${ticker}?`,
+      a: `Para investir em ${ticker} voce precisa abrir conta em uma corretora autorizada a operar na B3, transferir recursos e comprar o ativo pelo home broker ou aplicativo da corretora. Lembre-se que investimento em renda variavel envolve riscos de perda de capital.`,
+    },
+    {
+      q: `Qual o setor de ${name}?`,
+      a: sector
+        ? `A ${name} (${ticker}) atua no setor de ${sector} na classificacao setorial da B3.`
+        : `${name} (${ticker}) e negociada na B3. Consulte os indicadores fundamentalistas e a ficha da companhia na pagina do ativo.`,
+    },
+  ]
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: f.a,
+      },
+    })),
+  }
+})
+
+// NewsArticle para cada commentary mais recente (ate 5), marcando a pagina
+// como fonte fresca no indice do Google. Ajuda em queries tipo "petr4 hoje".
+const newsArticlesStructuredData = computed(() => {
+  const arr = (commentaries.value || []) as any[]
+  if (!arr || arr.length === 0) return []
+  return arr.slice(0, 5).map((c) => ({
+    '@context': 'https://schema.org',
+    '@type': 'NewsArticle',
+    headline: c.title,
+    description: (c.commentary || '').slice(0, 200),
+    datePublished: c.date,
+    dateModified: c.updated_at || c.date,
+    author: {
+      '@type': 'Organization',
+      name: brand.name,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: brand.name,
+      logo: {
+        '@type': 'ImageObject',
+        url: `${baseSiteUrl.value}/512x512.png`,
+      },
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `${canonicalUrl.value}#commentary-${c.date}`,
+    },
+    about: {
+      '@type': 'FinancialProduct',
+      name: `${tickerUpper.value} — ${assetName.value}`,
+    },
+    isAccessibleForFree: true,
+  }))
+})
+
+const financialProductStructuredData = computed(() => ({
+  '@context': 'https://schema.org',
+  '@type': 'FinancialProduct',
+  name: `${tickerUpper.value} — ${assetName.value}`,
+  alternateName: [tickerUpper.value, assetName.value].filter(Boolean),
+  url: canonicalUrl.value,
+  description: pageDescription.value,
+  provider: {
+    '@type': 'Organization',
+    name: 'B3 — Brasil, Bolsa, Balcão',
+    url: 'https://www.b3.com.br',
+  },
+  offers: assetCurrentPrice.value
+    ? {
+        '@type': 'Offer',
+        price: assetCurrentPrice.value,
+        priceCurrency: 'BRL',
+        priceValidUntil: new Date().toISOString().split('T')[0],
+        availability: 'https://schema.org/InStock',
+      }
+    : undefined,
+  image: shareImage.value,
+}))
+
+const combinedStructuredData = computed(() => {
+  const base: any[] = [financialProductStructuredData.value, faqStructuredData.value]
+  return [...base, ...newsArticlesStructuredData.value]
+})
+
 usePageSeo({
   title: () => pageTitle.value,
   description: () => pageDescription.value,
@@ -4756,27 +4887,7 @@ usePageSeo({
     { name: 'Ativos', path: '/acoes' },
     { name: tickerUpper.value, path: `/asset/${ticker.toLowerCase()}` },
   ],
-  structuredData: {
-    '@context': 'https://schema.org',
-    '@type': 'FinancialProduct',
-    name: `${tickerUpper.value} — ${assetName.value}`,
-    url: canonicalUrl.value,
-    description: pageDescription.value,
-    provider: {
-      '@type': 'Organization',
-      name: 'B3 — Brasil, Bolsa, Balcão',
-      url: 'https://www.b3.com.br',
-    },
-    offers: assetCurrentPrice.value
-      ? {
-          '@type': 'Offer',
-          price: assetCurrentPrice.value,
-          priceCurrency: 'BRL',
-          priceValidUntil: new Date().toISOString().split('T')[0],
-        }
-      : undefined,
-    image: shareImage.value,
-  },
+  structuredData: combinedStructuredData.value,
 })
 
 const monthLabels = [
