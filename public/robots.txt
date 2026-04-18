@@ -11,6 +11,9 @@ Allow: /$
 Allow: /download$
 Allow: /redentia/
 Allow: /asset/
+Allow: /estudo
+Allow: /estudo/
+Allow: /ebooks/
 
 # Bloquear páginas de autenticação (não queremos indexar login/registro)
 Disallow: /auth/
@@ -75,14 +78,21 @@ User-agent: anthropic-ai
 Allow: /
 
 # ========================================
-# AI training-only bots — bloquear (não geram tráfego)
+# AI search bots adicionais — permitir (drives AI citations)
 # ========================================
+# Google-Extended controla participação em AI Overviews e Gemini — allowing
+# é necessário pra o estudo aparecer em respostas de IA do Google.
 User-agent: Google-Extended
-Disallow: /
+Allow: /
 
+# Common Crawl (usado como base de treinamento e consulta por várias LLMs
+# menores e ferramentas como Perplexity) — allow por enquanto pra maximizar
+# alcance em AI; pode ser desligado se virar custo de bandwidth.
 User-agent: CCBot
-Disallow: /
+Allow: /
 
+# Bytespider (TikTok/ByteDance) — ainda bloqueado por não gerar tráfego
+# citation-worthy pra finanças BR.
 User-agent: Bytespider
 Disallow: /
 

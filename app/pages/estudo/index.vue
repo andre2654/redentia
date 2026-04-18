@@ -223,22 +223,87 @@ definePageMeta({
   hideInstallAppBanner: true,
 })
 
+// Hub-level structured data — CollectionPage wrapping an ItemList of
+// every ebook currently in the catalog. Keeps the hub eligible for
+// sitelinks search results and lets AI engines discover all ebooks in
+// one cached JSON-LD parse instead of crawling each landing.
+const SITE_ORIGIN = 'https://estudo.redentia.com.br'
+const MAIN_SITE_ORIGIN = 'https://redentia.com.br'
+const hubUrl = `${SITE_ORIGIN}/`
+
+const collectionSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  '@id': hubUrl,
+  url: hubUrl,
+  name: 'Redentia Estudo',
+  description:
+    'Catálogo de market research gratuito sobre finfluencers, creator-led asset managers e o varejo digital de investimentos no Brasil.',
+  inLanguage: 'pt-BR',
+  publisher: {
+    '@type': 'Organization',
+    name: 'Redentia',
+    url: MAIN_SITE_ORIGIN,
+    logo: {
+      '@type': 'ImageObject',
+      url: `${MAIN_SITE_ORIGIN}/brand/logo-icon.svg`,
+    },
+  },
+  mainEntity: {
+    '@type': 'ItemList',
+    numberOfItems: ebooks.length,
+    itemListElement: ebooks.map((e, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      url: `${SITE_ORIGIN}/${e.slug}`,
+      name: e.plainTitle,
+    })),
+  },
+}
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Redentia', item: MAIN_SITE_ORIGIN },
+    { '@type': 'ListItem', position: 2, name: 'Estudos', item: SITE_ORIGIN },
+  ],
+}
+
 useHead({
-  title: 'Redentia Estudo, Market research sobre a creator economy financeira',
+  title: 'Redentia Estudo: Market research gratuito sobre finfluencers e creator economy financeira',
+  htmlAttrs: { lang: 'pt-BR' },
   meta: [
     {
       name: 'description',
       content:
-        'Estudos gratuitos da Redentia sobre finfluencers, creator-led asset managers e o varejo digital de investimentos. Dados primários, valuations públicos, múltiplos reais.',
+        'Estudos gratuitos da Redentia sobre finfluencers brasileiros, creator-led asset managers, valuations bilionários e o varejo digital de investimentos. Dados primários, múltiplos reais, 60+ fontes públicas.',
     },
-    { property: 'og:title', content: 'Redentia Estudo, Market research' },
+    {
+      name: 'keywords',
+      content: 'redentia estudo, market research finfluencers, creator economy financeira, influenciadores financeiros brasil, valuations finfluencers',
+    },
+    { name: 'robots', content: 'index,follow,max-image-preview:large,max-snippet:-1' },
+    { property: 'og:title', content: 'Redentia Estudo: Market research gratuito' },
     {
       property: 'og:description',
       content:
-        'Estudos gratuitos sobre a creator economy financeira. Valuations, múltiplos e receitas reais.',
+        'Estudos gratuitos sobre a creator economy financeira brasileira. Valuations, múltiplos e receitas reais de 45+ cases.',
     },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:url', content: hubUrl },
+    { property: 'og:site_name', content: 'Redentia Estudo' },
+    { property: 'og:locale', content: 'pt_BR' },
+    { name: 'twitter:card', content: 'summary_large_image' },
   ],
-  link: [{ rel: 'stylesheet', href: REDENTIA_GOOGLE_FONT_HREF }],
+  link: [
+    { rel: 'canonical', href: hubUrl },
+    { rel: 'stylesheet', href: REDENTIA_GOOGLE_FONT_HREF },
+  ],
+  script: [
+    { type: 'application/ld+json', innerHTML: JSON.stringify(collectionSchema) },
+    { type: 'application/ld+json', innerHTML: JSON.stringify(breadcrumbSchema) },
+  ],
 })
 </script>
 

@@ -1,10 +1,15 @@
 # Redentia
 
-> Terminal de investimentos brasileiro com dados da B3 em tempo real. Plataforma white-label para influenciadores e assessorias criarem suas proprias plataformas de investimentos.
+> Ecossistema de investimentos com IA: dados da B3 em tempo real, analise fundamentalista, calculadoras financeiras, assessor com IA e plataforma white-label. Publica tambem estudos de mercado gratuitos (Redentia Estudo) sobre creator economy financeira e finfluencers brasileiros.
 
 ## Sobre
 
-Redentia e uma plataforma de investimentos que oferece cotacoes em tempo real, analise fundamentalista, calculadoras financeiras, calendario de dividendos e rankings de ativos da bolsa brasileira (B3). Disponivel como white-label para marcas que queiram lançar sua propria plataforma de investimentos.
+Redentia e um ecossistema de investimentos com inteligencia artificial que oferece cotacoes em tempo real, analise fundamentalista, calculadoras financeiras, calendario de dividendos e rankings de ativos da bolsa brasileira (B3). Disponivel como white-label para marcas que queiram lancar sua propria plataforma de investimentos. A Redentia tambem publica estudos de mercado originais em estudo.redentia.com.br.
+
+## Estudos de mercado (Redentia Estudo)
+
+- [Panorama dos finfluencers brasileiros 2026](https://estudo.redentia.com.br/imperio-por-tras-do-feed): Market research gratuito de 41 paginas mapeando 33 finfluencers brasileiros em 8 categorias (Holdings, Educacao Financeira, Research Premium, FIIs, Cripto/Web3, Trade/Day Trade, Stock Picking/B&H, Populares), 45+ cases analisados, 12 deals de M&A e 60+ fontes primarias. Inclui valuations de Grupo Primo (R$ 1,138 bi), Empiricus (R$ 690M BTG), Suno (40% XP) e ARK Invest (US$ 11,6 bi).
+- [Hub de estudos](https://estudo.redentia.com.br): Catalogo completo de market research publicado pela Redentia.
 
 ## Paginas principais
 
