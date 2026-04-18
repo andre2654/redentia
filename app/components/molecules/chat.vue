@@ -1,6 +1,7 @@
 <template>
   <div
-    class="flex h-full min-h-0 flex-col overflow-hidden xl:rounded-[30px]"
+    class="flex h-full min-h-0 flex-col overflow-hidden border xl:rounded-[30px]"
+    :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surfaceHover }"
   >
     <!-- Scrollable area: suggestions + messages. Grows to fill available
          space so the input sticks at the bottom without clipping. -->

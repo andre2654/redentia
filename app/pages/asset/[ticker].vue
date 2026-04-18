@@ -3727,7 +3727,7 @@
 
       <MoleculesChat
         v-else
-        class="w-full" :style="{ backgroundColor: brand.colors.surface }"
+        class="w-full"
         :suggestions="[
           'Me dê um relatório completo sobre a ação',
           'Por que devo investir neste ativo?',

@@ -38,14 +38,14 @@
             </span>
           </NuxtLink>
           <div class="flex-1" />
-          <NuxtLink
-            to="/"
+          <a
+            :href="mainSiteHref"
             class="inline-flex items-center gap-2 font-mono-tab text-[11px] uppercase tracking-[0.15em] transition-colors hover:opacity-70"
             :style="{ color: REDENTIA_COLORS.textMuted }"
           >
             <UIcon name="i-lucide-arrow-left" class="size-3" />
             Voltar pro site
-          </NuxtLink>
+          </a>
         </div>
       </header>
 
@@ -279,6 +279,12 @@
 
 <script setup lang="ts">
 import { REDENTIA_COLORS, REDENTIA_FONTS } from '~/utils/redentiaCreativeColors'
+
+// Build the "Voltar pro site" href. When visited via
+// creative.redentia.com.br, this resolves to `https://redentia.com.br/`
+// so the browser actually hops to the main domain instead of doing an
+// SPA nav that leaves the user on `creative.redentia.com.br/`.
+const mainSiteHref = useMainSiteHref()
 
 interface CreativeCard {
   slug: string

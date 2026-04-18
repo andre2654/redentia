@@ -26,7 +26,7 @@
       <div class="grid gap-10 md:grid-cols-12 md:gap-12">
         <!-- Brand block -->
         <div class="md:col-span-5">
-          <NuxtLink to="/" class="inline-flex items-center gap-3">
+          <a :href="mainSiteHref" class="inline-flex items-center gap-3">
             <BrandLogo variant="icon" class="size-7" />
             <span
               class="font-mono-tab text-[14px] uppercase tracking-[0.18em]"
@@ -34,7 +34,7 @@
             >
               {{ brand.shortName }}<span :style="{ color: brand.colors.primary }">.{{ productLabel }}</span>
             </span>
-          </NuxtLink>
+          </a>
           <p class="mt-4 max-w-sm text-[13px] leading-relaxed">
             {{ description }}
           </p>
@@ -104,6 +104,11 @@
 
 <script setup lang="ts">
 const brand = useBrand()
+// Footer logo links back to the main Redentia site. On subdomains
+// (api., creative., etc.) this resolves to an absolute URL so the
+// host actually changes — otherwise a NuxtLink `to="/"` would do an
+// SPA nav that keeps the user on the same subdomain.
+const mainSiteHref = useMainSiteHref()
 const route = useRoute()
 
 // Detect which "product" we're rendering inside so we can adapt the

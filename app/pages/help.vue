@@ -153,7 +153,7 @@
               />
               <MoleculesChat
                 v-else
-                class="h-full w-full" :style="{ backgroundColor: brand.colors.surface, color: brand.colors.text }"
+                class="h-full w-full" :style="{ color: brand.colors.text }"
                 :suggestions="[
                   'Me dê um relatório completo sobre a Petrobras',
                   'Tenho R$ 100,00 para investir, qual ação comprar?',
@@ -224,7 +224,7 @@
           <div class="min-h-0 flex-1" :class="{ 'mt-4': showAdvisorTab }">
             <MoleculesChat
               v-if="!showAdvisorTab || activeTab === 'ia'"
-              class="h-full w-full" :style="{ backgroundColor: brand.colors.surface, color: brand.colors.text }"
+              class="h-full w-full" :style="{ color: brand.colors.text }"
               :suggestions="[
                 'Me dê um relatório completo sobre a Petrobras',
                 'Tenho R$ 100,00 para investir, qual ação comprar?',
