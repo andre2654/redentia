@@ -71,7 +71,7 @@ function resetControls() {
   router.replace({ query: {} })
 }
 
-// Hardcoded Redentia palette — creatives are tenant-agnostic by
+// Hardcoded Redentia palette, creatives are tenant-agnostic by
 // design: they always render as the Redentia brand regardless of
 // which tenant triggered the render. See utils/redentiaCreativeColors.ts.
 const primaryColor = computed(() => '#F5A623')
@@ -92,7 +92,7 @@ const fontFamily = computed(() => {
 })
 
 useHead(() => ({
-  title: `Redentia — ${ticker.value}`,
+  title: `Redentia, ${ticker.value}`,
   meta: [
     { name: 'robots', content: 'noindex,nofollow,noarchive' },
     { name: 'viewport', content: 'width=1080, initial-scale=1' },
@@ -339,7 +339,7 @@ const changeSign = computed(() =>
 </template>
 
 <style scoped>
-/* NOTE: don't force html/body/#__nuxt to 1080x1080 globally — that
+/* NOTE: don't force html/body/#__nuxt to 1080x1080 globally, that
    rule leaks across the whole dev server (Vue SFC :global selectors
    are injected without cleanup) and breaks navigation between pages.
    The .frame below is already 1080x1080; for n8n Puppeteer captures

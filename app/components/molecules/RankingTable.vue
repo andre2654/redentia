@@ -75,7 +75,7 @@
                 class="truncate text-[11px]"
                 :style="{ color: brand.colors.textMuted }"
               >
-                {{ row.name || '—' }}
+                {{ row.name || '-' }}
               </div>
             </div>
           </div>
@@ -103,7 +103,7 @@
             class="hidden w-20 text-right text-xs tabular-nums md:block"
             :style="{ color: brand.colors.textMuted }"
           >
-            {{ row.trailing_pe != null ? Number(row.trailing_pe).toFixed(1) : '—' }}
+            {{ row.trailing_pe != null ? Number(row.trailing_pe).toFixed(1) : '-' }}
           </div>
 
           <!-- Change -->
@@ -191,7 +191,7 @@ const props = withDefaults(
 
 const brand = useBrand()
 
-// Accent for the DY column — falls back to positive if primary == negative
+// Accent for the DY column, falls back to positive if primary == negative
 // (e.g. Sardinha, where primary and negative are both #DC2626).
 const dyColor = computed(() =>
   dividendAccent(
@@ -212,7 +212,7 @@ function showColumn(col: Column): boolean {
 
 function formatBrl(value: number | string): string {
   const num = typeof value === 'number' ? value : Number(value)
-  if (!Number.isFinite(num)) return '—'
+  if (!Number.isFinite(num)) return '-'
   return num.toLocaleString('pt-BR', {
     style: 'currency',
     currency: 'BRL',
@@ -222,9 +222,9 @@ function formatBrl(value: number | string): string {
 }
 
 function formatPercent(value: number | string | null | undefined, fromDecimal = false): string {
-  if (value == null) return '—'
+  if (value == null) return '-'
   let num = typeof value === 'number' ? value : Number(value)
-  if (!Number.isFinite(num)) return '—'
+  if (!Number.isFinite(num)) return '-'
   if (fromDecimal) num *= 100
   const sign = num >= 0 ? '+' : ''
   return `${sign}${num.toFixed(2).replace('.', ',')}%`
@@ -232,7 +232,7 @@ function formatPercent(value: number | string | null | undefined, fromDecimal = 
 
 function formatMarketCap(value: number | string): string {
   const num = typeof value === 'number' ? value : Number(value)
-  if (!Number.isFinite(num) || num <= 0) return '—'
+  if (!Number.isFinite(num) || num <= 0) return '-'
   if (num >= 1_000_000_000_000) return `${(num / 1_000_000_000_000).toFixed(1)}T`
   if (num >= 1_000_000_000) return `${(num / 1_000_000_000).toFixed(1)}B`
   if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(1)}M`

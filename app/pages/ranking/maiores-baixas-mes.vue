@@ -33,7 +33,7 @@
         </div>
         <p class="max-w-2xl text-base" :style="{ color: brand.colors.textMuted }">
           Os ativos que mais caíram nos últimos 30 dias na bolsa brasileira.
-          Oportunidades de entrada ou alertas de risco — a análise depende da
+          Oportunidades de entrada ou alertas de risco, a análise depende da
           tese de cada investidor.
         </p>
       </div>
@@ -73,7 +73,7 @@
       >
         <h2 class="text-2xl font-bold">Oportunidade ou armadilha?</h2>
         <p class="leading-relaxed" :style="{ color: brand.colors.textMuted }">
-          Ativos em baixa podem representar entradas a preços descontados —
+          Ativos em baixa podem representar entradas a preços descontados,
           mas também podem estar refletindo deterioração de fundamentos. Antes
           de qualquer decisão, analise o motivo da queda: é setorial,
           macroeconômico ou específico da empresa?

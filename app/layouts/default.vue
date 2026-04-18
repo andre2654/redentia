@@ -60,7 +60,7 @@
     </template>
   </div>
 
-  <!-- Layout — both wrapper + sidebar carry an explicit brand background so
+  <!-- Layout, both wrapper + sidebar carry an explicit brand background so
        the whole shell flips together via Vue reactivity. Without this, the
        sidebar inherits from <body> which is set via CSS vars injected in
        plugins/brand.ts, and that injection path can lag behind the reactive
@@ -132,7 +132,7 @@
         <AtomsSidebarButton v-if="authStore.me?.role === 'advisor'" to="/advisor" :text="brand.nav.advisorArea" icon="i-lucide-users" />
         <AtomsSidebarButton to="/settings" :text="brand.nav.settings" icon="i-lucide-settings" />
         <!--
-          Backoffice link removed — tenant administration now lives in
+          Backoffice link removed, tenant administration now lives in
           the dedicated admin.redentia.com.br subdomain. Keeping it out
           of the main sidebar prevents admin tools from leaking into
           white-label tenant customer journeys.

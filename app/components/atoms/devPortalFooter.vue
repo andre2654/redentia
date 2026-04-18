@@ -1,8 +1,8 @@
 <!--
-  AtomsDevPortalFooter — minimal terminal-style footer used by the
+  AtomsDevPortalFooter, minimal terminal-style footer used by the
   developer-facing portals (api / creative / whitelabel / backoffice).
   Visually distinct from the main consumer footer (which has glossary,
-  notifications CTA, etc) — these are surfaces for developers and
+  notifications CTA, etc), these are surfaces for developers and
   resellers, so the footer stays out of the way.
 -->
 
@@ -106,7 +106,7 @@
 const brand = useBrand()
 // Footer logo links back to the main Redentia site. On subdomains
 // (api., creative., etc.) this resolves to an absolute URL so the
-// host actually changes — otherwise a NuxtLink `to="/"` would do an
+// host actually changes, otherwise a NuxtLink `to="/"` would do an
 // SPA nav that keeps the user on the same subdomain.
 const mainSiteHref = useMainSiteHref()
 const route = useRoute()
@@ -132,7 +132,7 @@ const productLabel = computed(() => ({
 
 const description = computed(() => ({
   api: 'A mesma inteligência que move a Redentia, agora em JSON. Endpoints REST para preços, fundamentos, dividendos e commentaries.',
-  creative: 'Cards, rankings e mockups com dados reais — prontos pra tirar print e postar nas redes. PNG 1080×1080, sem fricção.',
+  creative: 'Cards, rankings e mockups com dados reais, prontos pra tirar print e postar nas redes. PNG 1080×1080, sem fricção.',
   whitelabel: 'A plataforma inteira sob a sua marca: dados, IA, design system, calculadoras e checklist do investidor.',
   backoffice: 'Painel administrativo da Redentia. Gerencie tenants, usuários, conteúdo e operação.',
   admin: 'Painel administrativo da Redentia. Gerencie tenants, usuários, conteúdo e operação.',
@@ -144,7 +144,7 @@ const crossLinks = computed(() => {
       slug: 'main',
       tag: '[CORE]',
       title: 'redentia.com.br',
-      subtitle: 'Terminal de mercado com IA',
+      subtitle: 'Ecossistema de investimentos com IA',
       href: 'https://www.redentia.com.br',
       external: true,
     },

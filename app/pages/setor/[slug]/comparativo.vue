@@ -110,7 +110,7 @@
             class="text-xl font-semibold tabular-nums"
             :style="{ color: dyAccent }"
           >
-            {{ aggregates.avg_dividend_yield != null ? formatPercent(aggregates.avg_dividend_yield * 100) : '—' }}
+            {{ aggregates.avg_dividend_yield != null ? formatPercent(aggregates.avg_dividend_yield * 100) : '-' }}
           </span>
         </div>
       </div>
@@ -206,7 +206,7 @@ const rows = computed(() => data.value?.data || [])
 usePageSeo({
   title: () =>
     sector.value
-      ? `${sector.value.name} — Comparativo de Empresas | Redentia`
+      ? `${sector.value.name}, Comparativo de Empresas | Redentia`
       : 'Setor não encontrado | Redentia',
   description: () =>
     sector.value
@@ -221,7 +221,7 @@ usePageSeo({
   structuredData: {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
-    name: sector.value ? `Comparativo de Empresas — ${sector.value.name}` : 'Comparativo de Setor',
+    name: sector.value ? `Comparativo de Empresas, ${sector.value.name}` : 'Comparativo de Setor',
     description: sector.value
       ? `Empresas do setor ${sector.value.name} na bolsa brasileira, comparadas por indicadores fundamentalistas.`
       : '',
@@ -230,16 +230,16 @@ usePageSeo({
 })
 
 function formatPercent(value: number | string | null | undefined): string {
-  if (value == null) return '—'
+  if (value == null) return '-'
   const num = typeof value === 'number' ? value : Number(value)
-  if (!Number.isFinite(num)) return '—'
+  if (!Number.isFinite(num)) return '-'
   const sign = num >= 0 ? '+' : ''
   return `${sign}${num.toFixed(2).replace('.', ',')}%`
 }
 
 function formatMarketCap(value: number | string): string {
   const num = typeof value === 'number' ? value : Number(value)
-  if (!Number.isFinite(num) || num <= 0) return '—'
+  if (!Number.isFinite(num) || num <= 0) return '-'
   if (num >= 1_000_000_000_000) return `R$ ${(num / 1_000_000_000_000).toFixed(1)}T`
   if (num >= 1_000_000_000) return `R$ ${(num / 1_000_000_000).toFixed(1)}B`
   if (num >= 1_000_000) return `R$ ${(num / 1_000_000).toFixed(1)}M`

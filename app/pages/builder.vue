@@ -403,7 +403,7 @@ import { brand as defaultBrand } from '~/config/brand'
 
 definePageMeta({ layout: false, isPublicRoute: true, hideInstallAppBanner: true })
 useHead({
-  title: 'Builder — Crie sua plataforma de investimentos',
+  title: 'Builder, Crie sua plataforma de investimentos',
   meta: [{ name: 'robots', content: 'noindex,nofollow' }],
   link: [{ rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Inter:wght@300..800&family=Montserrat:wght@300..800&family=Poppins:wght@300..800&family=Barlow:wght@300..800&family=Raleway:wght@300..800&display=swap' }],
 })

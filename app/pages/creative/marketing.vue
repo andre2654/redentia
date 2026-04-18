@@ -6,7 +6,7 @@ definePageMeta({
 })
 
 // ============================================================
-// Marketing Creative — 20 visual variants for social media
+// Marketing Creative, 20 visual variants for social media
 //
 // All variants render at 1080x1080 (Instagram post) on the
 // Redentia palette. Content is driven by query params so the
@@ -57,7 +57,7 @@ const footer = computed(() => q('footer', 'REDENTIA.COM.BR'))
 const badge = computed(() => q('badge', ''))
 
 useHead(() => ({
-  title: `Redentia — ${variant.value}`,
+  title: `Redentia, ${variant.value}`,
   meta: [
     { name: 'robots', content: 'noindex,nofollow,noarchive' },
     { name: 'viewport', content: 'width=1080, initial-scale=1' },
@@ -68,7 +68,7 @@ useHead(() => ({
 }))
 
 // Leaderboard data for the ranking-mini variant. Hardcoded because
-// these artes are marketing screenshots — not live data.
+// these artes are marketing screenshots, not live data.
 const rankingRows = [
   { ticker: 'CALI3', name: 'CONST. A LINDON', change: '19,63' },
   { ticker: 'ESTR4', name: 'ESTRELA ON', change: '12,47' },
@@ -97,7 +97,7 @@ const rankingRows = [
 
       <!-- ============ VARIANT CONTENT ============ -->
 
-      <!-- 01 · TERMINAL HOOK — amber eyebrow + big serif headline + curl box -->
+      <!-- 01 · TERMINAL HOOK, amber eyebrow + big serif headline + curl box -->
       <div v-if="variant === 'terminal-hook'" class="body center-col">
         <span class="eyebrow">[ {{ eyebrow || 'NEW RELEASE' }} ]</span>
         <h1 class="serif-huge">
@@ -110,7 +110,7 @@ const rankingRows = [
             <span class="dot red" />
             <span class="dot amber" />
             <span class="dot green" />
-            <span class="terminal-title">REDENTIA.TERMINAL</span>
+            <span class="terminal-title">REDENTIA.MERCADO</span>
           </div>
           <div class="terminal-body">
             <div><span class="prompt">$</span> curl redentia.com.br/v1/tickers/PETR4</div>
@@ -119,7 +119,7 @@ const rankingRows = [
         </div>
       </div>
 
-      <!-- 02 · STAT BIG — single huge number -->
+      <!-- 02 · STAT BIG, single huge number -->
       <div v-else-if="variant === 'stat-big'" class="body center">
         <span class="eyebrow">[ {{ eyebrow || 'DATA' }} ]</span>
         <div class="stat-huge">{{ stat || '25K+' }}</div>
@@ -221,7 +221,7 @@ const rankingRows = [
         </div>
       </div>
 
-      <!-- 07 · CODE PREVIEW — big curl box -->
+      <!-- 07 · CODE PREVIEW, big curl box -->
       <div v-else-if="variant === 'code-preview'" class="body no-center">
         <span class="eyebrow">[ {{ eyebrow || 'DEVS' }} ]</span>
         <h2 class="serif-mid">{{ title || 'Menos parsing. Mais produto.' }}</h2>
@@ -273,7 +273,7 @@ const rankingRows = [
         </div>
       </div>
 
-      <!-- 09 · GROWTH HYPE — big stat + gain indicator -->
+      <!-- 09 · GROWTH HYPE, big stat + gain indicator -->
       <div v-else-if="variant === 'growth-hype'" class="body center">
         <span class="eyebrow">[ {{ eyebrow || 'PREGÃO' }} ]</span>
         <div class="gh-ticker">{{ title || 'PETR4' }}</div>
@@ -298,7 +298,7 @@ const rankingRows = [
         <div class="mb-bottom">{{ cta || 'A Redentia te mostra por onde começar.' }}</div>
       </div>
 
-      <!-- 11 · STEP LIST — 3 steps -->
+      <!-- 11 · STEP LIST, 3 steps -->
       <div v-else-if="variant === 'step-list'" class="body no-center">
         <span class="eyebrow">[ {{ eyebrow || '3 PASSOS' }} ]</span>
         <h2 class="serif-mid">{{ title || 'Como funciona.' }}</h2>
@@ -335,7 +335,7 @@ const rankingRows = [
         <div class="rm-foot">{{ cta || 'Ranking atualizado todo dia na Redentia' }}</div>
       </div>
 
-      <!-- 14 · QUESTION HOOK — huge question -->
+      <!-- 14 · QUESTION HOOK, huge question -->
       <div v-else-if="variant === 'question-hook'" class="body center-col">
         <span class="eyebrow">[ {{ eyebrow || 'PERGUNTA QUE NINGUÉM FAZ' }} ]</span>
         <h1 class="serif-huge">
@@ -357,7 +357,7 @@ const rankingRows = [
         <div class="an-sub">{{ cta || 'Primeiro mês grátis · 50+ endpoints · R$ 49/mês depois' }}</div>
       </div>
 
-      <!-- 16 · REDENTIA DIFF — 3 differentials -->
+      <!-- 16 · REDENTIA DIFF, 3 differentials -->
       <div v-else-if="variant === 'redentia-diff'" class="body no-center">
         <span class="eyebrow">[ {{ eyebrow || 'O QUE NOS TORNA DIFERENTES' }} ]</span>
         <h2 class="serif-mid">{{ title || 'A única que é 100% brasileira.' }}</h2>
@@ -420,13 +420,13 @@ const rankingRows = [
         <div class="cp-foot">{{ cta || 'creative.redentia.com.br · grátis' }}</div>
       </div>
 
-      <!-- 20 · MANIFESTO — big text block -->
+      <!-- 20 · MANIFESTO, big text block -->
       <div v-else-if="variant === 'manifesto'" class="body no-center">
         <span class="eyebrow">[ {{ eyebrow || 'MANIFESTO' }} ]</span>
         <div class="mf-text">
           {{ title || 'Todo investidor brasileiro merece uma plataforma que fala a língua dele. Que entende que PIX é instantâneo, que JCP é tributado, que BDRs pagam dividendo em USD mas a conta é BRL.' }}
         </div>
-        <div class="mf-sig">— {{ cta || 'Time Redentia' }}</div>
+        <div class="mf-sig">, {{ cta || 'Time Redentia' }}</div>
       </div>
 
       <!-- Fallback -->

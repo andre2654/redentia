@@ -3,7 +3,7 @@
     :name="layoutName"
     container-class="md:px-0"
   >
-    <!-- ========== RESEARCH VARIANT (Investidor Sardinha — AUVP analyst desk) ========== -->
+    <!-- ========== RESEARCH VARIANT (Investidor Sardinha, AUVP analyst desk) ========== -->
     <div
       v-if="brand.assetPage.variant === 'research'"
       class="relative z-10 flex flex-col"
@@ -42,7 +42,7 @@
             Estudo de caso: <span class="italic" :style="{ color: brand.colors.primary }">{{ asset?.name || tickerUpper }}</span>
           </h1>
           <p class="font-academic-body mt-4 text-[13px] italic" :style="{ color: brand.colors.textMuted }">
-            Setor: {{ asset?.sector || '—' }}{{ asset?.industry ? ' · ' + asset.industry : '' }}
+            Setor: {{ asset?.sector || '-' }}{{ asset?.industry ? ' · ' + asset.industry : '' }}
           </p>
 
           <hr class="dashed-rule mt-10 max-w-[8rem]" />
@@ -69,7 +69,7 @@
             class="font-academic-body mt-6 max-w-xl italic"
             :style="{ color: brand.colors.textMuted }"
           >
-            <span class="red-pen">Nota do analista</span> — {{ editorialPriceNarration }}
+            <span class="red-pen">Nota do analista</span>, {{ editorialPriceNarration }}
           </p>
         </div>
 
@@ -126,7 +126,7 @@
               A série histórica
             </h2>
             <p class="font-academic-body mt-3 max-w-2xl text-[13px] italic" :style="{ color: brand.colors.textMuted }">
-              Série de fechamento diário. O gráfico é <span class="red-pen">insumo, não conclusão</span> — use para calibrar expectativa.<sup class="footnote-marker">¹</sup>
+              Série de fechamento diário. O gráfico é <span class="red-pen">insumo, não conclusão</span>, use para calibrar expectativa.<sup class="footnote-marker">¹</sup>
             </p>
           </div>
           <MoleculesPeriodSelector
@@ -148,7 +148,7 @@
 
       <hr class="dashed-rule mx-auto max-w-6xl" />
 
-      <!-- §2 Indicadores fundamentalistas — expanded research table -->
+      <!-- §2 Indicadores fundamentalistas, expanded research table -->
       <div
         v-if="brand.assetPage.showIndicators"
         class="py-14 md:py-16"
@@ -200,7 +200,7 @@
                 </td>
                 <td class="py-3 text-right align-top">
                   <span class="font-academic-mono tabular-nums text-lg" :style="{ color: brand.colors.primary }">
-                    {{ row.value || '—' }}
+                    {{ row.value || '-' }}
                   </span>
                 </td>
                 <td class="hidden py-3 pl-4 text-right align-top md:table-cell">
@@ -408,7 +408,7 @@
             O filtro do método
           </h2>
           <p class="font-academic-body mt-4 text-[13px] italic" :style="{ color: brand.colors.textMuted }">
-            Esta é a passagem do ativo pelos <span class="red-pen">quatro filtros do método AUVP</span>. Não é recomendação — é verificação metodológica.
+            Esta é a passagem do ativo pelos <span class="red-pen">quatro filtros do método AUVP</span>. Não é recomendação, é verificação metodológica.
           </p>
         </div>
         <div class="mt-8 md:col-span-7 md:col-start-6 md:mt-0">
@@ -511,7 +511,7 @@
             Próximos passos no ecossistema AUVP
           </h2>
           <p class="font-academic-body mt-3 max-w-2xl text-[13px] italic" :style="{ color: brand.colors.textMuted }">
-            Este estudo é a primeira camada. Para ir além — entender o método, comparar com pares, discutir com a comunidade — o caminho é o ecossistema.
+            Este estudo é a primeira camada. Para ir além, entender o método, comparar com pares, discutir com a comunidade, o caminho é o ecossistema.
           </p>
         </div>
 
@@ -570,7 +570,7 @@
                 {{ brand.founder?.name || 'Raul Sena' }}
               </span>
               <span class="font-academic-body text-[13px] italic" :style="{ color: brand.colors.textMuted }">
-                Fundador · AUVP — A Única Verdade Possível
+                Fundador · AUVP, A Única Verdade Possível
               </span>
             </div>
             <div class="flex flex-col items-end gap-3">
@@ -618,7 +618,7 @@
       </div>
     </div>
 
-    <!-- ========== MENTOR VARIANT (Primo Rico — masterclass / book-cover) ========== -->
+    <!-- ========== MENTOR VARIANT (Primo Rico, masterclass / book-cover) ========== -->
     <div
       v-else-if="brand.assetPage.variant === 'mentor'"
       class="relative z-10 flex flex-col"
@@ -667,7 +667,7 @@
               SETOR
             </span>
             <span class="text-sm font-semibold uppercase" :style="{ color: `${brand.colors.text}CC` }">
-              {{ asset?.sector || '—' }}
+              {{ asset?.sector || '-' }}
             </span>
           </div>
           <div v-if="asset?.industry" class="mt-4 flex flex-col gap-1">
@@ -765,7 +765,7 @@
                     fontSize: 'clamp(1.75rem, 2.5vw, 2.25rem)',
                   }"
                 >
-                  {{ item.value || '—' }}
+                  {{ item.value || '-' }}
                 </span>
                 <span
                   class="text-[10px] font-bold uppercase tracking-wider"
@@ -779,7 +779,7 @@
         </div>
       </div>
 
-      <!-- Chart section — Chapter II -->
+      <!-- Chart section, Chapter II -->
       <div
         class="border-t border-b py-16 md:py-20"
         :style="{ borderColor: `${brand.colors.text}15`, backgroundColor: brand.colors.surface }"
@@ -843,7 +843,7 @@
         </div>
       </div>
 
-      <!-- Fundamentals — Chapter III, as a heavy register grid -->
+      <!-- Fundamentals, Chapter III, as a heavy register grid -->
       <div v-if="brand.assetPage.showIndicators" class="mx-auto w-full max-w-6xl px-6 py-20 md:px-10 md:py-28">
         <div class="mb-12 flex flex-col gap-3">
           <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
@@ -904,13 +904,13 @@
                 {{ item.description }}
               </p>
             </div>
-            <!-- Value — big block -->
+            <!-- Value, big block -->
             <div class="md:col-span-2 md:text-right">
               <span
                 class="font-mentor-display tabular-nums"
                 :style="{ color: brand.colors.text, fontSize: 'clamp(2rem, 3.5vw, 3rem)' }"
               >
-                {{ item.value || '—' }}
+                {{ item.value || '-' }}
               </span>
             </div>
           </div>
@@ -998,7 +998,7 @@
       </div>
     </div>
 
-    <!-- ========== SHOWTIME VARIANT (Me Poupe! — TV show / pop magazine) ========== -->
+    <!-- ========== SHOWTIME VARIANT (Me Poupe!, TV show / pop magazine) ========== -->
     <div
       v-else-if="brand.assetPage.variant === 'showtime'"
       class="relative z-10 flex flex-col overflow-hidden"
@@ -1049,7 +1049,7 @@
           </h1>
 
           <p v-if="!isLoadingAsset && asset?.sector" class="font-showtime-body mt-5 max-w-xl text-base" :style="{ color: `${brand.colors.text}CC` }">
-            Setor: <strong :style="{ color: brand.colors.primary }">{{ asset?.sector }}</strong>{{ asset?.industry ? ' · ' + asset.industry : '' }}. Tudo que você precisa saber desse bicho num lugar só, criatura — sem jargão, sem cara feia.
+            Setor: <strong :style="{ color: brand.colors.primary }">{{ asset?.sector }}</strong>{{ asset?.industry ? ' · ' + asset.industry : '' }}. Tudo que você precisa saber desse bicho num lugar só, criatura, sem jargão, sem cara feia.
           </p>
 
           <div class="mt-8 flex flex-wrap items-baseline gap-x-5 gap-y-2">
@@ -1114,7 +1114,7 @@
           <img src="/brand/mepoupe/margarete.svg" alt="Margarete" class="h-14 shrink-0" />
           <p class="font-showtime-body text-sm italic" :style="{ color: `${brand.colors.text}CC` }">
             <strong :style="{ color: brand.colors.primary }">Margarete diz:</strong>
-            olha só, criatura — esses números ficam subindo e descendo todo dia, é normal. O importante não é o preço de HOJE, é o fundamento. Vamos destrinchar tudo aqui embaixo, beleza?
+            olha só, criatura, esses números ficam subindo e descendo todo dia, é normal. O importante não é o preço de HOJE, é o fundamento. Vamos destrinchar tudo aqui embaixo, beleza?
           </p>
         </div>
       </div>
@@ -1221,7 +1221,7 @@
               <span class="highlighter" :style="{ color: brand.colors.primary }">{{ tickerUpper }}</span> 🐷
             </h2>
             <p class="font-showtime-body mt-5 max-w-2xl text-base" :style="{ color: `${brand.colors.text}CC` }">
-              Cada centavo que essa empresa te paga por ser dono dela. É o tal do dinheiro "trabalhando pra você" enquanto você dorme — o nosso querido juro composto, esse filho maravilhoso!
+              Cada centavo que essa empresa te paga por ser dono dela. É o tal do dinheiro "trabalhando pra você" enquanto você dorme, o nosso querido juro composto, esse filho maravilhoso!
             </p>
           </div>
 
@@ -1334,7 +1334,7 @@
       </div>
     </div>
 
-    <!-- ========== EDITORIAL VARIANT (Norte Capital — "letter from your advisor") ========== -->
+    <!-- ========== EDITORIAL VARIANT (Norte Capital, "letter from your advisor") ========== -->
     <div
       v-else-if="brand.assetPage.variant === 'editorial'"
       class="relative z-10 flex flex-col"
@@ -1466,7 +1466,7 @@
             {{ editorialThesisText }}
           </p>
 
-          <!-- Narrative metric list — oldstyle numbers inline, no grid -->
+          <!-- Narrative metric list, oldstyle numbers inline, no grid -->
           <dl class="mt-8 flex flex-col gap-5">
             <div
               v-for="(item, idx) in editorialFundamentalsList"
@@ -1490,7 +1490,7 @@
                 class="font-editorial-display font-serif-numeric text-2xl"
                 :style="{ color: brand.colors.text }"
               >
-                {{ item.value || '—' }}
+                {{ item.value || '-' }}
               </dd>
             </div>
           </dl>
@@ -1499,7 +1499,7 @@
 
       <hr class="hairline-rule mx-auto max-w-4xl" />
 
-      <!-- Chapter III: Advisor commentary — static narrative fallback when AI commentaries are off -->
+      <!-- Chapter III: Advisor commentary, static narrative fallback when AI commentaries are off -->
       <div class="mx-auto w-full max-w-4xl px-6 py-16 md:grid md:grid-cols-12 md:gap-10 md:px-10">
         <div class="md:col-span-4">
           <span class="font-small-caps text-[11px]" :style="{ color: brand.colors.secondary }">
@@ -1525,7 +1525,7 @@
             <AtomsAdvisorSignature
               name="Marcelo Oliveira, CFA"
               role="Seu assessor dedicado · Norte Capital"
-              closing="— Comentário de hoje"
+              closing=", Comentário de hoje"
             />
           </div>
         </div>
@@ -1597,7 +1597,7 @@
       </div>
     </div>
 
-    <!-- ========== PLAYBOOK VARIANT (Saraiva Invest — calm method + chunky sticker accents) ========== -->
+    <!-- ========== PLAYBOOK VARIANT (Saraiva Invest, calm method + chunky sticker accents) ========== -->
     <!--
       Playbook asset page: dark profundo + amber + chunky sticker highlights
       no estilo do logo. Dados densos mas calmos, framing do "método aplicado
@@ -1606,10 +1606,10 @@
       Estrutura:
         §1  Lower-third com data + catchphrase "cabeça fria"
         §2  Hero: ticker + name + sticker-price + variation
-        §3  "O método diz" — 4 cards horizontais (P/L, DY, Preço-teto, ROE)
+        §3  "O método diz", 4 cards horizontais (P/L, DY, Preço-teto, ROE)
         §4  Checklist do investidor (se houver)
         §5  Fundamentais
-        §6  Signature closing — foto do André + quote
+        §6  Signature closing, foto do André + quote
     -->
     <div
       v-else-if="brand.assetPage.variant === 'playbook'"
@@ -1718,7 +1718,7 @@
 
             <p class="mt-6 max-w-xl text-[14px]" :style="{ color: `${brand.colors.text}A0` }">
               {{ lastUpdateLabel ? `Última atualização: ${lastUpdateLabel}` : 'Cotação em tempo real.' }}
-              Zero alerta vermelho piscante — só o dado.
+              Zero alerta vermelho piscante, só o dado.
             </p>
           </div>
 
@@ -1735,25 +1735,25 @@
                 <div>
                   <div class="text-[10px] font-medium uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">Tipo</div>
                   <div class="mt-1 text-[15px] font-bold" :style="{ color: brand.colors.text }">
-                    {{ asset?.type === 'STOCK' ? 'Ação' : asset?.type === 'REIT' ? 'FII' : asset?.type === 'ETF' ? 'ETF' : asset?.type || '—' }}
+                    {{ asset?.type === 'STOCK' ? 'Ação' : asset?.type === 'REIT' ? 'FII' : asset?.type === 'ETF' ? 'ETF' : asset?.type || '-' }}
                   </div>
                 </div>
                 <div>
                   <div class="text-[10px] font-medium uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">Setor</div>
                   <div class="mt-1 truncate text-[15px] font-bold" :style="{ color: brand.colors.text }">
-                    {{ asset?.sector || '—' }}
+                    {{ asset?.sector || '-' }}
                   </div>
                 </div>
                 <div>
                   <div class="text-[10px] font-medium uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">Market Cap</div>
                   <div class="mt-1 text-[15px] font-bold tabular-nums" :style="{ color: brand.colors.text }">
-                    {{ formatMarketCapShort(asset?.market_cap) || '—' }}
+                    {{ formatMarketCapShort(asset?.market_cap) || '-' }}
                   </div>
                 </div>
                 <div>
                   <div class="text-[10px] font-medium uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">Listado desde</div>
                   <div class="mt-1 text-[15px] font-bold tabular-nums" :style="{ color: brand.colors.text }">
-                    {{ asset?.founded_at ? new Date(asset.founded_at).getFullYear() : '—' }}
+                    {{ asset?.founded_at ? new Date(asset.founded_at).getFullYear() : '-' }}
                   </div>
                 </div>
               </div>
@@ -1762,12 +1762,12 @@
         </div>
       </section>
 
-      <!-- §3 · "O método diz" — indicator cards -->
+      <!-- §3 · "O método diz", indicator cards -->
       <section class="relative z-10 border-y" :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.surface}40` }">
         <div class="mx-auto max-w-7xl px-6 py-20 md:px-10 md:py-28">
           <div class="mb-12 max-w-3xl">
             <div class="mb-4 text-[11px] font-bold uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
-              — O método diz
+             , O método diz
             </div>
             <h2
               class="leading-[0.95] tracking-tight"
@@ -1796,7 +1796,7 @@
                 <UIcon name="i-lucide-scale" class="size-4" :style="{ color: brand.colors.textMuted }" />
               </div>
               <div class="text-[46px] font-black leading-none tabular-nums" :style="{ color: brand.colors.text, fontFamily: `'Fredoka', sans-serif` }">
-                {{ basicIndicators?.pl || '—' }}
+                {{ basicIndicators?.pl || '-' }}
               </div>
               <div class="text-[12px]" :style="{ color: brand.colors.textMuted }">
                 Relação entre preço atual e lucro por ação.
@@ -1815,7 +1815,7 @@
                 <UIcon name="i-lucide-coins" class="size-4" :style="{ color: brand.colors.textMuted }" />
               </div>
               <div class="text-[46px] font-black leading-none tabular-nums" :style="{ color: brand.colors.positive, fontFamily: `'Fredoka', sans-serif` }">
-                {{ basicIndicators?.dividendYield || '—' }}
+                {{ basicIndicators?.dividendYield || '-' }}
               </div>
               <div class="text-[12px]" :style="{ color: brand.colors.textMuted }">
                 Retorno em dividendos nos últimos 12 meses.
@@ -1834,7 +1834,7 @@
                 <UIcon name="i-lucide-layout-grid" class="size-4" :style="{ color: brand.colors.textMuted }" />
               </div>
               <div class="text-[46px] font-black leading-none tabular-nums" :style="{ color: brand.colors.text, fontFamily: `'Fredoka', sans-serif` }">
-                {{ basicIndicators?.pvpa || '—' }}
+                {{ basicIndicators?.pvpa || '-' }}
               </div>
               <div class="text-[12px]" :style="{ color: brand.colors.textMuted }">
                 Preço em relação ao valor patrimonial.
@@ -1853,7 +1853,7 @@
                 <UIcon name="i-lucide-trending-up" class="size-4" :style="{ color: brand.colors.textMuted }" />
               </div>
               <div class="text-[46px] font-black leading-none tabular-nums" :style="{ color: brand.colors.text, fontFamily: `'Fredoka', sans-serif` }">
-                {{ basicIndicators?.roe || '—' }}
+                {{ basicIndicators?.roe || '-' }}
               </div>
               <div class="text-[12px]" :style="{ color: brand.colors.textMuted }">
                 Retorno sobre patrimônio líquido.
@@ -1886,7 +1886,7 @@
       </section>
 
       <!-- ============================================================
-           §3.5 · CABEÇA QUENTE vs CABEÇA FRIA — debate split
+           §3.5 · CABEÇA QUENTE vs CABEÇA FRIA, debate split
            ============================================================
            Os dois personagens reagem ao MESMO ativo de jeitos opostos.
            Reações dinâmicas baseadas no preço atual, P/L, DY, etc.
@@ -1910,7 +1910,7 @@
           <!-- Header -->
           <div class="mb-14 max-w-3xl">
             <div class="mb-4 text-[11px] font-bold uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
-              — Como cada um vê
+             , Como cada um vê
             </div>
             <h2
               class="leading-[0.95] tracking-tight"
@@ -2056,7 +2056,7 @@
                   <div class="text-[14px] leading-snug" :style="{ color: brand.colors.text }">
                     Variação de
                     <strong class="tabular-nums" :style="{ color: brand.colors.primary }">{{ (asset?.change_percent ?? 0) >= 0 ? '+' : '' }}{{ Number(asset?.change_percent || 0).toFixed(1) }}%</strong>
-                    num único dia é <strong>ruído estatístico</strong>. Decisão de investir não se toma olhando candle de 5 minutos — se toma olhando histórico de 5 anos.
+                    num único dia é <strong>ruído estatístico</strong>. Decisão de investir não se toma olhando candle de 5 minutos, se toma olhando histórico de 5 anos.
                   </div>
                 </div>
 
@@ -2066,7 +2066,7 @@
                   <div class="text-[14px] leading-snug" :style="{ color: brand.colors.text }">
                     DY de
                     <strong :style="{ color: brand.colors.primary }">{{ basicIndicators.dividendYield }}</strong>
-                    é uma <strong>foto, não um filme</strong>. Vai no histórico: paga há quantos anos? É consistente? Se não pagou em 2020, é armadilha — não oportunidade.
+                    é uma <strong>foto, não um filme</strong>. Vai no histórico: paga há quantos anos? É consistente? Se não pagou em 2020, é armadilha, não oportunidade.
                   </div>
                 </div>
 
@@ -2094,7 +2094,7 @@
       </section>
 
       <!-- ============================================================
-           §3.7 · MOVIMENTOS NOTÁVEIS — timeline com framing dos personagens
+           §3.7 · MOVIMENTOS NOTÁVEIS, timeline com framing dos personagens
            ============================================================
            Cada commentary do mercado é um momento histórico em que algo
            aconteceu com o ativo. Aqui mostramos como timeline editorial:
@@ -2111,7 +2111,7 @@
           <!-- Header -->
           <div class="mb-14 max-w-3xl">
             <div class="mb-4 text-[11px] font-bold uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
-              — Movimentos notáveis
+             , Movimentos notáveis
             </div>
             <h2
               class="leading-[0.95] tracking-tight"
@@ -2129,7 +2129,7 @@
               Toda vez que o {{ tickerUpper }} se mexeu de forma notável, o
               <strong style="color: #EF4444;">Cabeça Quente</strong> reagiu no impulso
               e o <strong :style="{ color: brand.colors.primary }">Cabeça Fria</strong> respondeu no método.
-              Aqui está a história — lado a lado.
+              Aqui está a história, lado a lado.
             </p>
           </div>
 
@@ -2273,7 +2273,7 @@
         <div class="mx-auto max-w-7xl px-6 py-20 md:px-10 md:py-28">
           <div class="mb-12 max-w-3xl">
             <div class="mb-4 text-[11px] font-bold uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
-              — O que fazer agora
+             , O que fazer agora
             </div>
             <h2
               class="leading-[0.95] tracking-tight"
@@ -2339,7 +2339,7 @@
                 Perguntar à Saraiva IA
               </h3>
               <p class="text-[13px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
-                "{{ tickerUpper }} tá cara agora pelo método Bazin?" — resposta em 3s, com fonte.
+                "{{ tickerUpper }} tá cara agora pelo método Bazin?", resposta em 3s, com fonte.
               </p>
               <div class="mt-auto inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.15em] transition-transform group-hover:translate-x-1" :style="{ color: brand.colors.primary }">
                 Abrir chat <span>→</span>
@@ -2392,7 +2392,7 @@
       </section>
     </div>
 
-    <!-- ========== HOLDER VARIANT (Holder — sentencious editorial paper) ========== -->
+    <!-- ========== HOLDER VARIANT (Holder, sentencious editorial paper) ========== -->
     <!--
       Holder asset page: pure editorial autoral. Black + red + cream.
       IBM Plex Serif body + Anton chunky condensed display + JetBrains
@@ -2401,12 +2401,12 @@
 
       Estrutura:
         §1   Top strip: chapter index + ticker
-        1.01 Hero — ticker em Anton GIGANTE + name serif + price editorial
-        2.01 § VALUATION — table 4 indicadores estilo paper
-        3.01 § TESE — long-form (porque holdar ou não holdar)
-        4.01 § HISTÓRICO — commentaries com framing serif
-        5.01 § O QUE FAZER — 3 CTAs sharp
-        6.01 § HOLD — assinatura final com selo
+        1.01 Hero, ticker em Anton GIGANTE + name serif + price editorial
+        2.01 § VALUATION, table 4 indicadores estilo paper
+        3.01 § TESE, long-form (porque holdar ou não holdar)
+        4.01 § HISTÓRICO, commentaries com framing serif
+        5.01 § O QUE FAZER, 3 CTAs sharp
+        6.01 § HOLD, assinatura final com selo
     -->
     <div
       v-else-if="brand.assetPage.variant === 'holder'"
@@ -2438,7 +2438,7 @@
         </div>
       </div>
 
-      <!-- 1.01 · Hero — ticker em Anton + price editorial -->
+      <!-- 1.01 · Hero, ticker em Anton + price editorial -->
       <section class="relative">
         <div class="mx-auto grid max-w-7xl grid-cols-12 gap-10 px-6 py-20 md:px-10 md:py-28">
           <!-- LEFT: ticker + name + price -->
@@ -2492,7 +2492,7 @@
                 fontFamily: `'Spectral', 'Georgia', serif`,
               }"
             >
-              {{ asset?.name || 'Empresa listada na B3' }} · {{ asset?.sector || '—' }}
+              {{ asset?.name || 'Empresa listada na B3' }} · {{ asset?.sector || '-' }}
             </div>
 
             <!-- Price block -->
@@ -2547,31 +2547,31 @@
                 <div class="flex items-baseline justify-between gap-4 border-b pb-3" :style="{ borderColor: brand.colors.border }">
                   <dt class="uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">Tipo</dt>
                   <dd class="text-right tabular-nums" :style="{ color: brand.colors.text }">
-                    {{ asset?.type === 'STOCK' ? 'Ação' : asset?.type === 'REIT' ? 'FII' : asset?.type === 'ETF' ? 'ETF' : asset?.type || '—' }}
+                    {{ asset?.type === 'STOCK' ? 'Ação' : asset?.type === 'REIT' ? 'FII' : asset?.type === 'ETF' ? 'ETF' : asset?.type || '-' }}
                   </dd>
                 </div>
                 <div class="flex items-baseline justify-between gap-4 border-b pb-3" :style="{ borderColor: brand.colors.border }">
                   <dt class="uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">Setor</dt>
                   <dd class="truncate text-right text-[11px]" :style="{ color: brand.colors.text }">
-                    {{ asset?.sector || '—' }}
+                    {{ asset?.sector || '-' }}
                   </dd>
                 </div>
                 <div class="flex items-baseline justify-between gap-4 border-b pb-3" :style="{ borderColor: brand.colors.border }">
                   <dt class="uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">Market Cap</dt>
                   <dd class="text-right tabular-nums" :style="{ color: brand.colors.text }">
-                    {{ formatMarketCapShort(asset?.market_cap) || '—' }}
+                    {{ formatMarketCapShort(asset?.market_cap) || '-' }}
                   </dd>
                 </div>
                 <div class="flex items-baseline justify-between gap-4 border-b pb-3" :style="{ borderColor: brand.colors.border }">
                   <dt class="uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">Listado</dt>
                   <dd class="text-right tabular-nums" :style="{ color: brand.colors.text }">
-                    {{ asset?.founded_at ? new Date(asset.founded_at).getFullYear() : '—' }}
+                    {{ asset?.founded_at ? new Date(asset.founded_at).getFullYear() : '-' }}
                   </dd>
                 </div>
                 <div class="flex items-baseline justify-between gap-4">
                   <dt class="uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">Última atual.</dt>
                   <dd class="text-right tabular-nums" :style="{ color: brand.colors.text }">
-                    {{ lastUpdateLabel || '—' }}
+                    {{ lastUpdateLabel || '-' }}
                   </dd>
                 </div>
               </dl>
@@ -2580,7 +2580,7 @@
         </div>
       </section>
 
-      <!-- 2.01 · § VALUATION — paper-style indicator table -->
+      <!-- 2.01 · § VALUATION, paper-style indicator table -->
       <section class="relative border-y" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
         <div class="mx-auto max-w-7xl px-6 py-20 md:px-10 md:py-28">
           <div class="mb-12 grid items-end gap-8 md:grid-cols-12">
@@ -2624,7 +2624,7 @@
                 <div class="hl-mono mt-1 text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">P/L · múltiplo</div>
               </div>
               <div class="hl-display col-span-2 px-4 py-5 text-right text-[26px] leading-none tabular-nums" :style="{ backgroundColor: brand.colors.background, color: brand.colors.primary, fontFamily: `'Anton', sans-serif` }">
-                {{ basicIndicators?.pl || '—' }}
+                {{ basicIndicators?.pl || '-' }}
               </div>
               <div class="hl-serif col-span-4 px-4 py-5 text-[12px] italic" :style="{ backgroundColor: brand.colors.background, color: brand.colors.textMuted, fontFamily: `'Spectral', 'Georgia', serif` }">
                 Abaixo de 10 sugere desconto frente ao histórico brasileiro.
@@ -2639,7 +2639,7 @@
                 <div class="hl-mono mt-1 text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">DY · proventos anualizados</div>
               </div>
               <div class="hl-display col-span-2 px-4 py-5 text-right text-[26px] leading-none tabular-nums" :style="{ backgroundColor: brand.colors.background, color: brand.colors.positive, fontFamily: `'Anton', sans-serif` }">
-                {{ basicIndicators?.dividendYield || '—' }}
+                {{ basicIndicators?.dividendYield || '-' }}
               </div>
               <div class="hl-serif col-span-4 px-4 py-5 text-[12px] italic" :style="{ backgroundColor: brand.colors.background, color: brand.colors.textMuted, fontFamily: `'Spectral', 'Georgia', serif` }">
                 Acima de 6% indica empresa geradora de caixa madura.
@@ -2654,7 +2654,7 @@
                 <div class="hl-mono mt-1 text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">P/VP · book value</div>
               </div>
               <div class="hl-display col-span-2 px-4 py-5 text-right text-[26px] leading-none tabular-nums" :style="{ backgroundColor: brand.colors.background, color: brand.colors.text, fontFamily: `'Anton', sans-serif` }">
-                {{ basicIndicators?.pvpa || '—' }}
+                {{ basicIndicators?.pvpa || '-' }}
               </div>
               <div class="hl-serif col-span-4 px-4 py-5 text-[12px] italic" :style="{ backgroundColor: brand.colors.background, color: brand.colors.textMuted, fontFamily: `'Spectral', 'Georgia', serif` }">
                 Abaixo de 1: negocia por menos do que vale no papel. Investigue.
@@ -2669,7 +2669,7 @@
                 <div class="hl-mono mt-1 text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">ROE · eficiência do capital</div>
               </div>
               <div class="hl-display col-span-2 px-4 py-5 text-right text-[26px] leading-none tabular-nums" :style="{ backgroundColor: brand.colors.background, color: brand.colors.text, fontFamily: `'Anton', sans-serif` }">
-                {{ basicIndicators?.roe || '—' }}
+                {{ basicIndicators?.roe || '-' }}
               </div>
               <div class="hl-serif col-span-4 px-4 py-5 text-[12px] italic" :style="{ backgroundColor: brand.colors.background, color: brand.colors.textMuted, fontFamily: `'Spectral', 'Georgia', serif` }">
                 Acima de 15% por anos seguidos indica vantagem competitiva.
@@ -2683,7 +2683,7 @@
         </div>
       </section>
 
-      <!-- 3.01 · § TESE — long-form -->
+      <!-- 3.01 · § TESE, long-form -->
       <section class="relative">
         <div class="mx-auto grid max-w-6xl grid-cols-12 gap-12 px-6 py-24 md:px-10 md:py-32">
           <div class="col-span-12 md:col-span-3">
@@ -2706,7 +2706,7 @@
 
             <div class="hl-serif mt-10 flex flex-col gap-6 text-[17px] leading-[1.7] md:text-[18px]" :style="{ color: brand.colors.text, fontFamily: `'Spectral', 'Georgia', serif` }">
               <p>
-                <span class="hl-drop-cap-asset" :style="{ color: brand.colors.primary }">A</span>ntes de qualquer linha sobre {{ tickerUpper }}, dois fatos: o ativo está negociando a {{ basicIndicators?.pl || '—' }}× lucros e entrega DY de {{ basicIndicators?.dividendYield || '—' }}. Os números são pontos de partida, não conclusões.
+                <span class="hl-drop-cap-asset" :style="{ color: brand.colors.primary }">A</span>ntes de qualquer linha sobre {{ tickerUpper }}, dois fatos: o ativo está negociando a {{ basicIndicators?.pl || '-' }}× lucros e entrega DY de {{ basicIndicators?.dividendYield || '-' }}. Os números são pontos de partida, não conclusões.
               </p>
               <p>
                 A pergunta correta nunca é "essa ação vai subir?". A pergunta correta é: <em :style="{ color: brand.colors.primary }">se eu tivesse capital pra comprar a empresa inteira nesse preço, eu compraria?</em> Se a resposta for sim, comprar uma parte é trivial. Se for não, nem o melhor gráfico técnico do mundo deveria te convencer.
@@ -2721,14 +2721,14 @@
 
             <div class="hl-mono mt-12 flex items-center gap-4 text-[11px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.textMuted }">
               <span class="h-px flex-1 max-w-12" :style="{ backgroundColor: brand.colors.border }" />
-              <span :style="{ color: brand.colors.primary }">— @holder</span>
+              <span :style="{ color: brand.colors.primary }">, @holder</span>
               <span class="h-px flex-1" :style="{ backgroundColor: brand.colors.border }" />
             </div>
           </div>
         </div>
       </section>
 
-      <!-- 4.01 · § HISTÓRICO DE MOVIMENTOS — commentaries reframed -->
+      <!-- 4.01 · § HISTÓRICO DE MOVIMENTOS, commentaries reframed -->
       <section
         v-if="commentaries.length > 0"
         class="relative border-y"
@@ -2837,7 +2837,7 @@
         </div>
       </section>
 
-      <!-- 5.01 · § O QUE FAZER — 3 sharp CTAs -->
+      <!-- 5.01 · § O QUE FAZER, 3 sharp CTAs -->
       <section class="relative">
         <div class="mx-auto max-w-7xl px-6 py-24 md:px-10 md:py-32">
           <div class="mb-14 max-w-3xl">
@@ -2909,7 +2909,7 @@
                 À Holder IA
               </h3>
               <p class="hl-serif text-[14px] italic" :style="{ color: brand.colors.textMuted, fontFamily: `'Spectral', 'Georgia', serif` }">
-                "Por que ainda deteria {{ tickerUpper }}?" — resposta sentenciosa, sem floreio.
+                "Por que ainda deteria {{ tickerUpper }}?", resposta sentenciosa, sem floreio.
               </p>
               <div class="hl-mono mt-auto inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.22em] transition-transform group-hover:translate-x-1" :style="{ color: brand.colors.primary }">
                 Abrir →
@@ -2919,7 +2919,7 @@
         </div>
       </section>
 
-      <!-- 6.01 · § HOLD — final signature -->
+      <!-- 6.01 · § HOLD, final signature -->
       <section class="relative border-t" :style="{ borderColor: brand.colors.border }">
         <div class="mx-auto max-w-5xl px-6 py-24 text-center md:px-10 md:py-32">
           <div class="hl-mono mb-8 text-[10px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
@@ -2938,7 +2938,7 @@
           </blockquote>
           <div class="hl-mono mt-10 flex items-center justify-center gap-4 text-[11px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.textMuted }">
             <span class="h-px w-12" :style="{ backgroundColor: brand.colors.border }" />
-            <span :style="{ color: brand.colors.primary }">— @holder</span>
+            <span :style="{ color: brand.colors.primary }">, @holder</span>
             <span class="h-px w-12" :style="{ backgroundColor: brand.colors.border }" />
           </div>
           <p
@@ -2956,10 +2956,10 @@
       </section>
     </div>
 
-    <!-- ========== DEFAULT VARIANT (Redentia — Bloomberg terminal) ========== -->
+    <!-- ========== DEFAULT VARIANT (Redentia, Bloomberg terminal) ========== -->
     <div v-else class="relative z-10 flex flex-col px-4 pt-4">
       <div class="flex flex-col">
-        <!-- Terminal status bar — pinned context line for the asset -->
+        <!-- Terminal status bar, pinned context line for the asset -->
         <div
           class="-mx-4 mb-4 flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-t px-4 py-2 font-mono-tab text-[10px] uppercase tracking-[0.18em]"
           :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
@@ -2981,7 +2981,7 @@
           <span v-if="lastUpdateLabel" :style="{ color: brand.colors.textMuted }">UPDATE {{ lastUpdateLabel }}</span>
         </div>
 
-        <!-- Hero Section do Ativo — 3-column terminal layout -->
+        <!-- Hero Section do Ativo, 3-column terminal layout -->
         <section class="border-b pb-8" :style="{ borderColor: brand.colors.border }">
           <div class="grid gap-6 md:grid-cols-12 md:items-end">
             <!-- Col 1: Ticker + company name (serif display) -->
@@ -3104,15 +3104,15 @@
                 </div>
                 <div class="flex flex-col gap-0.5 px-3 py-2" :style="{ backgroundColor: brand.colors.surface }">
                   <span class="text-[9px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">P/L</span>
-                  <span class="font-semibold tabular-nums" :style="{ color: brand.colors.text }">{{ basicIndicators?.pl || '—' }}</span>
+                  <span class="font-semibold tabular-nums" :style="{ color: brand.colors.text }">{{ basicIndicators?.pl || '-' }}</span>
                 </div>
                 <div class="flex flex-col gap-0.5 px-3 py-2" :style="{ backgroundColor: brand.colors.surface }">
                   <span class="text-[9px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">P/VP</span>
-                  <span class="font-semibold tabular-nums" :style="{ color: brand.colors.text }">{{ basicIndicators?.pvpa || '—' }}</span>
+                  <span class="font-semibold tabular-nums" :style="{ color: brand.colors.text }">{{ basicIndicators?.pvpa || '-' }}</span>
                 </div>
                 <div class="flex flex-col gap-0.5 px-3 py-2" :style="{ backgroundColor: brand.colors.surface }">
                   <span class="text-[9px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">ROE</span>
-                  <span class="font-semibold tabular-nums" :style="{ color: brand.colors.text }">{{ basicIndicators?.roe || '—' }}</span>
+                  <span class="font-semibold tabular-nums" :style="{ color: brand.colors.text }">{{ basicIndicators?.roe || '-' }}</span>
                 </div>
               </div>
             </div>
@@ -3183,7 +3183,7 @@
               </p>
             </div>
 
-            <!-- Basic indicators register — 6 tight columns glued together -->
+            <!-- Basic indicators register, 6 tight columns glued together -->
             <div
               v-if="isLoadingFundamentus"
               class="grid grid-cols-3 gap-px border md:grid-cols-6"
@@ -3216,7 +3216,7 @@
                   {{ item.label }}
                 </span>
                 <span class="font-mono-tab text-xl font-bold tabular-nums" :style="{ color: item.accent || brand.colors.text }">
-                  {{ item.value || '—' }}
+                  {{ item.value || '-' }}
                 </span>
               </div>
             </div>
@@ -3258,7 +3258,7 @@
                     {{ item.label }}
                   </span>
                   <span class="font-mono-tab text-base font-bold tabular-nums" :style="{ color: brand.colors.text }">
-                    {{ item.value || '—' }}
+                    {{ item.value || '-' }}
                   </span>
                 </div>
               </div>
@@ -3303,7 +3303,7 @@
           </p>
         </header>
 
-        <!-- MDI Card — terminal dividend heatmap -->
+        <!-- MDI Card, terminal dividend heatmap -->
         <div v-if="brand.assetPage.showDividendMap" class="mb-8 border" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
           <!-- Header: mono label + reference -->
           <div class="flex items-center justify-between border-b px-5 py-3" :style="{ borderColor: brand.colors.border }">
@@ -3365,7 +3365,7 @@
                 {{ item.formattedPercentage }}
               </span>
 
-              <!-- Tiny bar indicator at the bottom — horizontal, width = percentage -->
+              <!-- Tiny bar indicator at the bottom, horizontal, width = percentage -->
               <div class="mt-auto h-[3px] w-full" :style="{ backgroundColor: brand.colors.border }">
                 <div
                   class="h-full transition-all"
@@ -3660,7 +3660,7 @@
         </div>
       </section>
 
-      <!-- Seção de IA para não autenticados — terminal REPL style -->
+      <!-- Seção de IA para não autenticados, terminal REPL style -->
       <section v-if="!authStore.isAuthenticated" class="border-t py-12" :style="{ borderColor: brand.colors.border }">
         <header class="mb-6 flex flex-col gap-1">
           <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
@@ -3674,7 +3674,7 @@
           </p>
         </header>
 
-        <!-- Terminal-styled query cards — like recent commands list -->
+        <!-- Terminal-styled query cards, like recent commands list -->
         <div class="mb-6 grid gap-px border sm:grid-cols-3" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }">
           <NuxtLink
             v-for="(item, idx) in [
@@ -3865,7 +3865,7 @@ const tickerUpper = computed(() => ticker.toUpperCase())
 
 function formatPriceNumber(value: unknown): string {
   const num = typeof value === 'number' ? value : Number(value)
-  if (!Number.isFinite(num)) return '—'
+  if (!Number.isFinite(num)) return '-'
   return num.toLocaleString('pt-BR', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
@@ -3874,7 +3874,7 @@ function formatPriceNumber(value: unknown): string {
 
 function formatVolumeShort(value: unknown): string {
   const num = typeof value === 'number' ? value : Number(value)
-  if (!Number.isFinite(num) || num <= 0) return '—'
+  if (!Number.isFinite(num) || num <= 0) return '-'
   if (num >= 1_000_000_000) return `${(num / 1_000_000_000).toFixed(1)}B`
   if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(1)}M`
   if (num >= 1_000) return `${(num / 1_000).toFixed(1)}K`
@@ -3883,7 +3883,7 @@ function formatVolumeShort(value: unknown): string {
 
 function formatMarketCapShort(value: unknown): string {
   const num = typeof value === 'number' ? value : Number(value)
-  if (!Number.isFinite(num) || num <= 0) return '—'
+  if (!Number.isFinite(num) || num <= 0) return '-'
   if (num >= 1_000_000_000_000) return `${(num / 1_000_000_000_000).toFixed(1)}T`
   if (num >= 1_000_000_000) return `${(num / 1_000_000_000).toFixed(0)}B`
   if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(0)}M`
@@ -3891,10 +3891,10 @@ function formatMarketCapShort(value: unknown): string {
 }
 
 function formatDyShort(value: unknown): string {
-  if (value == null) return '—'
+  if (value == null) return '-'
   const str = String(value).replace('%', '').trim()
   const num = Number(str)
-  if (!Number.isFinite(num)) return '—'
+  if (!Number.isFinite(num)) return '-'
   return `${num.toFixed(2)}%`
 }
 
@@ -3921,18 +3921,18 @@ function parseEventDate(value: unknown): Date | null {
 }
 function formatEventMonth(value: unknown): string {
   const d = parseEventDate(value)
-  return d ? PT_MONTHS_SHORT[d.getMonth()] : '—'
+  return d ? PT_MONTHS_SHORT[d.getMonth()] : '-'
 }
 function formatEventDay(value: unknown): string {
   const d = parseEventDate(value)
-  return d ? String(d.getDate()).padStart(2, '0') : '—'
+  return d ? String(d.getDate()).padStart(2, '0') : '-'
 }
 function formatEventYear(value: unknown): string {
   const d = parseEventDate(value)
-  return d ? String(d.getFullYear()) : '—'
+  return d ? String(d.getFullYear()) : '-'
 }
 
-// Current volume — tries fundamentus first, then asset field
+// Current volume, tries fundamentus first, then asset field
 const currentVolume = computed(() => {
   const v = safeNumber(
     (fundamentusData.value as any)?.key_statistics?.volume
@@ -3941,7 +3941,7 @@ const currentVolume = computed(() => {
   return safeNumber((asset.value as any)?.volume) ?? 0
 })
 
-// "Last update" label for the status bar — tracks the latest price_at
+// "Last update" label for the status bar, tracks the latest price_at
 const lastUpdateLabel = computed(() => {
   const rawDate = (asset.value as any)?.price_at || (asset.value as any)?.priceAt
   if (!rawDate) return ''
@@ -3950,7 +3950,7 @@ const lastUpdateLabel = computed(() => {
   return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
 })
 
-// Fundamentals register rows — maps basicIndicators into the terminal grid.
+// Fundamentals register rows, maps basicIndicators into the terminal grid.
 const fundamentalsCells = computed(() => {
   const ind = basicIndicators.value
   if (!ind) return []
@@ -3964,7 +3964,7 @@ const fundamentalsCells = computed(() => {
   ]
 })
 
-// Dividend heatmap cell styling — flat terminal look, no rounded/gradients.
+// Dividend heatmap cell styling, flat terminal look, no rounded/gradients.
 // Cells share a border via gap-px on a bordered parent, so each cell is
 // a simple rectangle filled with surface/background colors.
 function monthCellStyle(item: any): Record<string, string> {
@@ -3999,7 +3999,7 @@ function monthCellAccent(item: any): string {
 }
 
 // ==========================================================
-// Editorial variant helpers (Norte Capital — advisor letter tone)
+// Editorial variant helpers (Norte Capital, advisor letter tone)
 // ==========================================================
 
 const assetEditorialDate = computed(() => {
@@ -4025,7 +4025,7 @@ const editorialPriceNarration = computed(() => {
   if (abs < 0.2) return 'A ação negocia praticamente estável, em linha com o pregão anterior.'
   if (pct > 0 && abs < 1) return 'A ação sobe de forma discreta, dentro da oscilação típica do pregão.'
   if (pct > 0 && abs < 3) return 'A ação sobe de forma consistente, acima da variação média do Ibovespa.'
-  if (pct > 0) return 'A ação avança com força no pregão de hoje — movimento que merece contexto antes de decisão.'
+  if (pct > 0) return 'A ação avança com força no pregão de hoje, movimento que merece contexto antes de decisão.'
   if (pct < 0 && abs < 1) return 'A ação recua levemente, sem sinalizar mudança de tendência.'
   if (pct < 0 && abs < 3) return 'A ação recua, em movimento correspondente ao que vemos no setor hoje.'
   return 'A ação cai com intensidade. Recomendamos aguardar contexto antes de qualquer movimento.'
@@ -4039,14 +4039,14 @@ const editorialThesisText = computed(() => {
   const dy = parseFloat(String(ind.dividendYield).replace(',', '.').replace('%', ''))
   const fragments: string[] = []
   if (Number.isFinite(pl) && pl > 0) {
-    if (pl < 8) fragments.push(`negocia a ${ind.pl} vezes lucros — um múltiplo descontado em relação à média histórica do mercado brasileiro`)
-    else if (pl < 15) fragments.push(`negocia a ${ind.pl} vezes lucros — múltiplo em linha com o que consideramos justo`)
-    else fragments.push(`negocia a ${ind.pl} vezes lucros — múltiplo que exige um crescimento consistente para se justificar`)
+    if (pl < 8) fragments.push(`negocia a ${ind.pl} vezes lucros, um múltiplo descontado em relação à média histórica do mercado brasileiro`)
+    else if (pl < 15) fragments.push(`negocia a ${ind.pl} vezes lucros, múltiplo em linha com o que consideramos justo`)
+    else fragments.push(`negocia a ${ind.pl} vezes lucros, múltiplo que exige um crescimento consistente para se justificar`)
   }
   if (Number.isFinite(dy) && dy > 0) {
     if (dy >= 6) fragments.push(`distribui ${ind.dividendYield} ao ano em proventos, acima da média de pares nacionais`)
     else if (dy >= 3) fragments.push(`distribui ${ind.dividendYield} ao ano em proventos, nível compatível com empresas maduras`)
-    else fragments.push(`distribui ${ind.dividendYield} em proventos — política de dividendos ainda modesta`)
+    else fragments.push(`distribui ${ind.dividendYield} em proventos, política de dividendos ainda modesta`)
   }
   if (fragments.length === 0) {
     return `${asset.value?.name || tickerUpper.value} é acompanhada regularmente pela nossa mesa. Os números abaixo resumem a fotografia mais recente.`
@@ -4054,7 +4054,7 @@ const editorialThesisText = computed(() => {
   return `${asset.value?.name || tickerUpper.value} ${fragments.join(', e ')}.`
 })
 
-// Fundamentals as a narrated list — different shape than the terminal grid.
+// Fundamentals as a narrated list, different shape than the terminal grid.
 const editorialFundamentalsList = computed(() => {
   const ind = basicIndicators.value
   if (!ind) return []
@@ -4068,7 +4068,7 @@ const editorialFundamentalsList = computed(() => {
 })
 
 // ==========================================================
-// Research variant helpers (Investidor Sardinha — AUVP paper)
+// Research variant helpers (Investidor Sardinha, AUVP paper)
 // ==========================================================
 
 // Indicators table with per-row methodological reading
@@ -4104,7 +4104,7 @@ const researchAssetIndicators = computed(() => {
       label: 'Retorno sobre ativos',
       code: 'ROA · eficiência geral',
       value: ind.roa,
-      reading: 'Menos manipulável que o ROE — ignora a alavancagem.',
+      reading: 'Menos manipulável que o ROE, ignora a alavancagem.',
     },
     {
       label: 'Margem líquida',
@@ -4115,7 +4115,7 @@ const researchAssetIndicators = computed(() => {
   ]
 })
 
-// Thesis paragraph — long-form narrative combining the indicators
+// Thesis paragraph, long-form narrative combining the indicators
 const researchAssetThesis = computed(() => {
   const ind = basicIndicators.value
   const name = asset.value?.name || tickerUpper.value
@@ -4127,9 +4127,9 @@ const researchAssetThesis = computed(() => {
   const parts: string[] = []
   parts.push(`${name} negocia a ${ind.pl} vezes lucros e entrega dividend yield de ${ind.dividendYield} nos últimos doze meses.`)
   if (Number.isFinite(pl) && pl < 10) {
-    parts.push(' Múltiplo em território historicamente descontado — pode indicar oportunidade, pode indicar que o mercado sabe algo que nós não sabemos. O estudo é justamente esse: descobrir qual das duas hipóteses é verdadeira.')
+    parts.push(' Múltiplo em território historicamente descontado, pode indicar oportunidade, pode indicar que o mercado sabe algo que nós não sabemos. O estudo é justamente esse: descobrir qual das duas hipóteses é verdadeira.')
   } else if (Number.isFinite(pl) && pl > 20) {
-    parts.push(' Múltiplo esticado em relação à média brasileira. Para justificar, a empresa precisa entregar crescimento consistente nos próximos anos — o que exige análise do histórico e do guidance.')
+    parts.push(' Múltiplo esticado em relação à média brasileira. Para justificar, a empresa precisa entregar crescimento consistente nos próximos anos, o que exige análise do histórico e do guidance.')
   } else {
     parts.push(' Múltiplo em linha com o que consideramos razoável para ativos do seu porte e setor.')
   }
@@ -4140,7 +4140,7 @@ const researchAssetThesis = computed(() => {
   return parts.join('')
 })
 
-// Quick panel on the right of the cover — compact session data
+// Quick panel on the right of the cover, compact session data
 const researchAssetQuickPanel = computed(() => {
   const ind = basicIndicators.value
   const price = Number(asset.value?.market_price)
@@ -4150,24 +4150,24 @@ const researchAssetQuickPanel = computed(() => {
   rows.push({
     label: 'Último fechamento',
     note: 'cotação oficial B3',
-    value: Number.isFinite(price) ? `R$ ${formatPriceNumber(price)}` : '—',
+    value: Number.isFinite(price) ? `R$ ${formatPriceNumber(price)}` : '-',
   })
   rows.push({
     label: 'Variação do dia',
     note: 'pregão corrente',
     value: Number.isFinite(changePct)
       ? `${changePct >= 0 ? '+' : ''}${changePct.toFixed(2).replace('.', ',')}%`
-      : '—',
+      : '-',
   })
   rows.push({
     label: 'Market cap',
     note: 'valor de mercado',
-    value: formatMarketCapShort(asset.value?.market_cap) || '—',
+    value: formatMarketCapShort(asset.value?.market_cap) || '-',
   })
   rows.push({
     label: 'Volume do dia',
     note: 'negócios em R$',
-    value: formatVolumeShort(currentVolume.value) || '—',
+    value: formatVolumeShort(currentVolume.value) || '-',
   })
   if (ind?.dividendYield) {
     rows.push({
@@ -4186,7 +4186,7 @@ const researchAssetQuickPanel = computed(() => {
   return rows
 })
 
-// Dividends list rendered in §4 — formatted dates and limited to 10 recent
+// Dividends list rendered in §4, formatted dates and limited to 10 recent
 const researchAssetDividends = computed(() => {
   const raw = Array.isArray(dividendsData.value) ? dividendsData.value : []
   const sorted = [...raw]
@@ -4199,7 +4199,7 @@ const researchAssetDividends = computed(() => {
     .slice(0, 10)
   return sorted.map((d: any) => {
     const rate = Number(d.rate)
-    let dateStr = '—'
+    let dateStr = '-'
     try {
       const dt = new Date(d.payment_date)
       dateStr = dt.toLocaleDateString('pt-BR', {
@@ -4216,13 +4216,13 @@ const researchAssetDividends = computed(() => {
             minimumFractionDigits: 4,
             maximumFractionDigits: 6,
           })
-        : '—',
+        : '-',
     }
   })
 })
 
 // ==========================================================
-// SHOWTIME VARIANT — Me Poupe! asset page helpers
+// SHOWTIME VARIANT, Me Poupe! asset page helpers
 // ==========================================================
 
 // Quick panel on the cover (tilted card on the right)
@@ -4233,12 +4233,12 @@ const showtimeQuickPanel = computed(() => {
   rows.push({
     label: 'MARKET CAP',
     icon: 'i-lucide-landmark',
-    value: formatMarketCapShort(asset.value?.market_cap) || '—',
+    value: formatMarketCapShort(asset.value?.market_cap) || '-',
   })
   rows.push({
     label: 'VOLUME HOJE',
     icon: 'i-lucide-activity',
-    value: formatVolumeShort(currentVolume.value) || '—',
+    value: formatVolumeShort(currentVolume.value) || '-',
   })
   if (ind?.dividendYield) {
     rows.push({
@@ -4264,25 +4264,25 @@ const showtimeIndicatorCards = computed(() => {
 
   cards.push({
     label: 'DIVIDEND YIELD',
-    value: ind?.dividendYield ? String(ind.dividendYield) : '—',
+    value: ind?.dividendYield ? String(ind.dividendYield) : '-',
     icon: 'i-lucide-piggy-bank',
     explain: 'O quanto a empresa te paga por ano só por você ser dono dela. Quanto maior, mais dinheiro pingando.',
   })
   cards.push({
     label: 'P / L',
-    value: ind?.pl ? String(ind.pl) : '—',
+    value: ind?.pl ? String(ind.pl) : '-',
     icon: 'i-lucide-calculator',
     explain: 'Quantos anos de lucro custa comprar a empresa hoje. Abaixo de 15 costuma ser um bom sinal.',
   })
   cards.push({
     label: 'P / VPA',
-    value: ind?.pvpa ? String(ind.pvpa) : '—',
+    value: ind?.pvpa ? String(ind.pvpa) : '-',
     icon: 'i-lucide-scale',
     explain: 'Quanto você paga por cada real de patrimônio. Perto de 1 é a conta justa.',
   })
   cards.push({
     label: 'ROE',
-    value: ind?.roe ? String(ind.roe) : '—',
+    value: ind?.roe ? String(ind.roe) : '-',
     icon: 'i-lucide-trending-up',
     explain: 'O quanto a empresa gera de retorno pro dono. Acima de 10% é festa do aluguel!',
   })
@@ -4303,21 +4303,21 @@ const showtimeDividendsPreview = computed(() => {
 })
 
 function formatShowtimeDate(d: string | undefined): string {
-  if (!d) return '—'
+  if (!d) return '-'
   try {
     return new Date(d).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })
   } catch {
-    return '—'
+    return '-'
   }
 }
 
 function formatDividendRate(rate: string | number | undefined): string {
   const n = Number(rate)
-  if (!Number.isFinite(n)) return '—'
+  if (!Number.isFinite(n)) return '-'
   return n.toLocaleString('pt-BR', { minimumFractionDigits: 4, maximumFractionDigits: 6 })
 }
 
-// AUVP filters applied to the asset — 4 pass/fail checks
+// AUVP filters applied to the asset, 4 pass/fail checks
 const researchAssetFilters = computed(() => {
   const ind = basicIndicators.value
   if (!ind) return []
@@ -4336,31 +4336,31 @@ const researchAssetFilters = computed(() => {
     {
       label: 'Retorno sobre patrimônio',
       rule: 'ROE ≥ 10% (geração de valor)',
-      observed: ind.roe || '—',
+      observed: ind.roe || '-',
       passes: Number.isFinite(roe) && roe >= 10,
     },
     {
       label: 'Margem líquida',
       rule: 'margem ≥ 10% (competitividade sustentável)',
-      observed: ind.netMargin || '—',
+      observed: ind.netMargin || '-',
       passes: Number.isFinite(netMargin) && netMargin >= 10,
     },
     {
       label: 'Múltiplo de lucros',
       rule: 'P/L ≤ 15 (margem de segurança)',
-      observed: ind.pl || '—',
+      observed: ind.pl || '-',
       passes: Number.isFinite(pl) && pl > 0 && pl <= 15,
     },
     {
       label: 'Preço sobre valor patrimonial',
       rule: 'P/VP ≤ 1,5 (não pagar caro pelo book)',
-      observed: ind.pvpa || '—',
+      observed: ind.pvpa || '-',
       passes: Number.isFinite(pvp) && pvp > 0 && pvp <= 1.5,
     },
   ]
 })
 
-// Next steps — the AUVP ecosystem hooks specific to asset page
+// Next steps, the AUVP ecosystem hooks specific to asset page
 const researchAssetNextSteps = [
   {
     kind: 'CURSO',
@@ -4385,10 +4385,10 @@ const researchAssetNextSteps = [
   },
 ]
 
-// Short verdict — used in the highlighted red-pen callout
+// Short verdict, used in the highlighted red-pen callout
 const researchAssetVerdict = computed(() => {
   const ind = basicIndicators.value
-  if (!ind) return 'Caso sob observação — dados insuficientes para análise.'
+  if (!ind) return 'Caso sob observação, dados insuficientes para análise.'
   const pl = parseFloat(String(ind.pl).replace(',', '.'))
   const dy = parseFloat(String(ind.dividendYield).replace(',', '.').replace('%', ''))
   const roe = parseFloat(String(ind.roe).replace(',', '.').replace('%', ''))
@@ -4396,16 +4396,16 @@ const researchAssetVerdict = computed(() => {
     return 'Passa nos filtros de geração de caixa e retorno sobre capital.'
   }
   if (Number.isFinite(pl) && pl < 10 && Number.isFinite(roe) && roe >= 10) {
-    return 'Múltiplo descontado com retorno aceitável — caso para aprofundar o estudo.'
+    return 'Múltiplo descontado com retorno aceitável, caso para aprofundar o estudo.'
   }
   if (Number.isFinite(pl) && pl > 25) {
-    return 'Múltiplo esticado — exige convicção alta no crescimento futuro.'
+    return 'Múltiplo esticado, exige convicção alta no crescimento futuro.'
   }
-  return 'Caso neutro pelos filtros metodológicos — recomenda-se estudo aprofundado.'
+  return 'Caso neutro pelos filtros metodológicos, recomenda-se estudo aprofundado.'
 })
 
 // ==========================================================
-// Mentor variant helpers (Primo Rico — masterclass tone)
+// Mentor variant helpers (Primo Rico, masterclass tone)
 // ==========================================================
 
 // Quick 4-stat block rendered in the hero right column.
@@ -4420,7 +4420,7 @@ const mentorQuickStats = computed(() => {
   ]
 })
 
-// Fundamentals list — 6 heavy rows with descriptive copy in the mentor tone.
+// Fundamentals list, 6 heavy rows with descriptive copy in the mentor tone.
 const mentorFundamentalsList = computed(() => {
   const ind = basicIndicators.value
   if (!ind) return []
@@ -4434,7 +4434,7 @@ const mentorFundamentalsList = computed(() => {
     {
       label: 'PREÇO / VALOR PATRIMONIAL',
       shortCode: 'P/VP · O mercado paga acima ou abaixo do book value',
-      description: 'Abaixo de 1 significa que o ativo negocia por menos do que vale no papel. Cuidado com value traps — entenda porquê está barato.',
+      description: 'Abaixo de 1 significa que o ativo negocia por menos do que vale no papel. Cuidado com value traps, entenda porquê está barato.',
       value: ind.pvpa,
     },
     {
@@ -4464,7 +4464,7 @@ const mentorFundamentalsList = computed(() => {
   ]
 })
 
-// Pull quote in the mentor variant — rotates between a few Thiago-esque lines
+// Pull quote in the mentor variant, rotates between a few Thiago-esque lines
 // based on the asset's change percent so it feels contextual without hitting AI.
 const mentorAssetQuote = computed(() => {
   const pct = Number(asset.value?.change_percent)
@@ -4476,18 +4476,18 @@ const mentorAssetQuote = computed(() => {
   return 'Patrimônio se constrói com consistência, não com sorte. Skin in the game.'
 })
 
-// Thesis text — a narrated paragraph that adapts to the basic indicators.
+// Thesis text, a narrated paragraph that adapts to the basic indicators.
 const mentorThesisText = computed(() => {
   const ind = basicIndicators.value
   const name = asset.value?.name || tickerUpper.value
   if (!ind) {
-    return `${name} está no seu radar? Antes de qualquer decisão, entenda o negócio: como a empresa ganha dinheiro, quem são os concorrentes, qual a margem de segurança na tese. Os números são só a foto — a história é que importa.`
+    return `${name} está no seu radar? Antes de qualquer decisão, entenda o negócio: como a empresa ganha dinheiro, quem são os concorrentes, qual a margem de segurança na tese. Os números são só a foto, a história é que importa.`
   }
   const pl = parseFloat(String(ind.pl).replace(',', '.'))
   const dy = parseFloat(String(ind.dividendYield).replace(',', '.').replace('%', ''))
   const parts: string[] = [`${name} negocia a ${ind.pl} vezes lucros`]
-  if (Number.isFinite(pl) && pl < 10) parts.push('— múltiplo que, em ambientes normais, indica desconto em relação ao fluxo de caixa gerado')
-  else if (Number.isFinite(pl) && pl > 20) parts.push('— múltiplo esticado que exige crescimento sustentado pra fazer sentido')
+  if (Number.isFinite(pl) && pl < 10) parts.push(', múltiplo que, em ambientes normais, indica desconto em relação ao fluxo de caixa gerado')
+  else if (Number.isFinite(pl) && pl > 20) parts.push(', múltiplo esticado que exige crescimento sustentado pra fazer sentido')
   if (Number.isFinite(dy) && dy >= 5) {
     parts.push(`e distribui ${ind.dividendYield} ao ano em proventos, acima do CDI em vários cenários`)
   }
@@ -4502,7 +4502,7 @@ const mentorOneLiner = computed(() => {
   const dy = parseFloat(String(ind.dividendYield).replace(',', '.').replace('%', ''))
   if (Number.isFinite(dy) && dy >= 6) return 'Gerador de caixa para quem busca renda passiva com disciplina.'
   const pl = parseFloat(String(ind.pl).replace(',', '.'))
-  if (Number.isFinite(pl) && pl < 10) return 'Múltiplo descontado — vale entender se é oportunidade ou value trap.'
+  if (Number.isFinite(pl) && pl < 10) return 'Múltiplo descontado, vale entender se é oportunidade ou value trap.'
   return 'Um caso que merece estudo antes de virar posição.'
 })
 
@@ -4588,7 +4588,7 @@ async function refreshCommentaries() {
 
 async function startBackfill() {
   try {
-    // Fire and forget (don't await the POST — server runs it async)
+    // Fire and forget (don't await the POST, server runs it async)
     await $fetch<{ queued?: number; skipped?: boolean; reason?: string }>(
       '/api/commentaries/backfill-ticker',
       {
@@ -4647,7 +4647,7 @@ async function startBackfill() {
 }
 
 onMounted(() => {
-  // Start backfill in background — but only if this tenant actually
+  // Start backfill in background, but only if this tenant actually
   // shows market commentaries. Saves AI costs on tenants that disabled it.
   if (brand.features?.showMarketCommentaries === false) return
   if (brand.assetPage.showMarketCommentaries === false) return
@@ -4721,7 +4721,7 @@ const pageTitle = computed(() => {
   const price = formattedAssetPrice.value
     ? ` · ${formattedAssetPrice.value}`
     : ''
-  return `${tickerUpper.value}${price} — ${assetName.value} | Cotação, Dividendos e Análise`
+  return `${tickerUpper.value}${price}, ${assetName.value} | Cotação, Dividendos e Análise`
 })
 
 const pageDescription = computed(() => {
@@ -4839,7 +4839,7 @@ const newsArticlesStructuredData = computed(() => {
     },
     about: {
       '@type': 'FinancialProduct',
-      name: `${tickerUpper.value} — ${assetName.value}`,
+      name: `${tickerUpper.value}, ${assetName.value}`,
     },
     isAccessibleForFree: true,
   }))
@@ -4848,13 +4848,13 @@ const newsArticlesStructuredData = computed(() => {
 const financialProductStructuredData = computed(() => ({
   '@context': 'https://schema.org',
   '@type': 'FinancialProduct',
-  name: `${tickerUpper.value} — ${assetName.value}`,
+  name: `${tickerUpper.value}, ${assetName.value}`,
   alternateName: [tickerUpper.value, assetName.value].filter(Boolean),
   url: canonicalUrl.value,
   description: pageDescription.value,
   provider: {
     '@type': 'Organization',
-    name: 'B3 — Brasil, Bolsa, Balcão',
+    name: 'B3, Brasil, Bolsa, Balcão',
     url: 'https://www.b3.com.br',
   },
   offers: assetCurrentPrice.value
@@ -5157,43 +5157,43 @@ const intelligentIndicators = computed(() => {
 
   return {
     debtToEquity: {
-      value: debtToEquityRaw !== null ? formatIndicator(debtToEquityRaw, { decimals: 1 }) : '—',
+      value: debtToEquityRaw !== null ? formatIndicator(debtToEquityRaw, { decimals: 1 }) : '-',
       rating: getDebtRating(debtToEquityRatio),
     },
     currentRatio: {
-      value: currentRatioRaw !== null ? formatIndicator(currentRatioRaw, { decimals: 2 }) : '—',
+      value: currentRatioRaw !== null ? formatIndicator(currentRatioRaw, { decimals: 2 }) : '-',
       rating:
         currentRatio > 1
           ? { label: 'Saudável', color: 'text-green-400' }
           : { label: 'Preocupante', color: 'text-red-400' },
     },
     roe: {
-      value: roeRaw !== null ? formatIndicator(roeRaw, { decimals: 1, multiplier: 100, suffix: '%' }) : '—',
+      value: roeRaw !== null ? formatIndicator(roeRaw, { decimals: 1, multiplier: 100, suffix: '%' }) : '-',
       rating: getROERating(roe),
     },
     roa: {
-      value: roaRaw !== null ? formatIndicator(roaRaw, { decimals: 1, multiplier: 100, suffix: '%' }) : '—',
+      value: roaRaw !== null ? formatIndicator(roaRaw, { decimals: 1, multiplier: 100, suffix: '%' }) : '-',
       rating:
         roa > 5
           ? { label: 'Bom', color: 'text-green-400' }
           : { label: 'Baixo', color: 'text-red-400' },
     },
     profitMargin: {
-      value: profitMarginRaw !== null ? formatIndicator(profitMarginRaw, { decimals: 1, multiplier: 100, suffix: '%' }) : '—',
+      value: profitMarginRaw !== null ? formatIndicator(profitMarginRaw, { decimals: 1, multiplier: 100, suffix: '%' }) : '-',
       rating:
         profitMargin > 10
           ? { label: 'Alta', color: 'text-green-400' }
           : { label: 'Baixa', color: 'text-red-400' },
     },
     priceToBook: {
-      value: priceToBookRaw !== null ? formatIndicator(priceToBookRaw, { decimals: 2 }) : '—',
+      value: priceToBookRaw !== null ? formatIndicator(priceToBookRaw, { decimals: 2 }) : '-',
       rating:
         priceToBook < 1.5
           ? { label: 'Barato', color: 'text-green-400' }
           : { label: 'Caro', color: 'text-red-400' },
     },
     forwardPE: {
-      value: forwardPERaw !== null ? formatIndicator(forwardPERaw, { decimals: 1 }) : '—',
+      value: forwardPERaw !== null ? formatIndicator(forwardPERaw, { decimals: 1 }) : '-',
       rating: getPERating(forwardPE),
     },
     bazinPrice: {
@@ -5302,7 +5302,7 @@ const bazinPrice = computed<number | null>(() => {
 
 const bazinPriceDisplay = computed(() => {
   const price = bazinPrice.value
-  if (!Number.isFinite(price) || price === null) return '—'
+  if (!Number.isFinite(price) || price === null) return '-'
 
   return `R$ ${price.toLocaleString('pt-BR', {
     minimumFractionDigits: 2,
@@ -5488,7 +5488,7 @@ function formatIndicator(
     fallback?: string
   } = {}
 ): string {
-  const { decimals = 1, multiplier = 1, suffix = '', fallback = '—' } = options
+  const { decimals = 1, multiplier = 1, suffix = '', fallback = '-' } = options
   const num = safeNumber(value)
   if (num === null) return fallback
   const result = num * multiplier
@@ -5803,7 +5803,7 @@ definePageMeta({
       typeof to.params.ticker === 'string' ? to.params.ticker : String(to.params.ticker || '')
     const normalized = raw.toLowerCase()
     if (raw && raw !== normalized) {
-      // Preserve query string when lowercasing the ticker — otherwise
+      // Preserve query string when lowercasing the ticker, otherwise
       // params like ?brand=saraiva-invest get dropped on the redirect.
       return navigateTo(
         { path: `/asset/${normalized}`, query: to.query, hash: to.hash },
@@ -5821,7 +5821,7 @@ definePageMeta({
   font-feature-settings: 'ss01', 'cv11';
 }
 
-/* Sticker text styles — match the home hero */
+/* Sticker text styles, match the home hero */
 .pb-asset-sticker {
   display: inline-block;
   font-family: 'Fredoka', 'Inter', system-ui, sans-serif;

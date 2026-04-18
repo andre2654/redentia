@@ -161,7 +161,7 @@ const cardBackground = computed(() =>
 const fontFamily = computed(() => `'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif`)
 
 useHead(() => ({
-  title: `Redentia — Market Updates`,
+  title: `Redentia, Market Updates`,
   htmlAttrs: {
     style: `--w:${frame.value.w}px; --h:${frame.value.h}px; --accent:${accent.value}; --cardOpacity:${cardOpacity.value};`,
   },
@@ -235,7 +235,7 @@ useHead(() => ({
 </template>
 
 <style scoped>
-/* See comment in asset-spotlight.vue — :global() rules leak across
+/* See comment in asset-spotlight.vue, :global() rules leak across
    the dev server. The .frame below is sized via --w / --h so the
    creative renders exactly 1080x1080 (or other formats) in a
    headless Puppeteer capture without polluting html/body. */

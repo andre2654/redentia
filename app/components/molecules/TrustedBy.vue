@@ -23,14 +23,14 @@
           :style="{ backgroundColor: brand.colors.border }"
         />
         <span :style="{ color: brand.colors.primary }">[CAPABILITIES]</span>
-        <span :style="{ color: brand.colors.textMuted }">— {{ brand.trustBar.text }}</span>
+        <span :style="{ color: brand.colors.textMuted }">, {{ brand.trustBar.text }}</span>
         <span
           class="h-px flex-1 max-w-[60px]"
           :style="{ backgroundColor: brand.colors.border }"
         />
       </div>
 
-      <!-- Pillar grid — terminal cards with bracketed index prefix -->
+      <!-- Pillar grid, terminal cards with bracketed index prefix -->
       <ul
         class="mx-auto grid max-w-5xl grid-cols-2 gap-px border sm:grid-cols-3 lg:grid-cols-6"
         :style="{
@@ -90,7 +90,7 @@ const brand = useBrand()
 
 const hovered = ref(-1)
 
-// Rotating icon pool — each pillar gets a distinct lucide icon.
+// Rotating icon pool, each pillar gets a distinct lucide icon.
 const pillarIcons = [
   'i-lucide-layers',
   'i-lucide-radio',

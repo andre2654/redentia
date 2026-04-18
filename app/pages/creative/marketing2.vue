@@ -6,7 +6,7 @@ definePageMeta({
 })
 
 // ============================================================
-// Marketing Creative · Volume 2 — VISUAL-FIRST
+// Marketing Creative · Volume 2, VISUAL-FIRST
 //
 // Second batch of marketing artes focused on SHOWING, not
 // telling. iPhone push mockups, live tenant hero snippets,
@@ -67,7 +67,7 @@ const mockAssets = [
 const fontsHref = 'https://fonts.googleapis.com/css2?family=Inter:wght@300..800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&family=Poppins:wght@400;500;700;800;900&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,700;1,9..144,400;1,9..144,700&family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Space+Grotesk:wght@300..700&display=swap'
 
 useHead(() => ({
-  title: `Redentia — ${variant.value}`,
+  title: `Redentia, ${variant.value}`,
   meta: [
     { name: 'robots', content: 'noindex,nofollow,noarchive' },
     { name: 'viewport', content: 'width=1080, initial-scale=1' },
@@ -75,7 +75,7 @@ useHead(() => ({
   link: [{ rel: 'stylesheet', href: fontsHref }],
 }))
 
-// Helpers for the data-coverage variant — simulate a list of tickers
+// Helpers for the data-coverage variant, simulate a list of tickers
 const sampleTickers = [
   'PETR4', 'VALE3', 'ITUB4', 'BBAS3', 'BBDC4', 'MGLU3',
   'WEGE3', 'ABEV3', 'ITSA4', 'B3SA3', 'RENT3', 'LREN3',
@@ -88,7 +88,7 @@ const sampleTickers = [
   <div class="stage">
     <div class="card" :class="`card-${variant}`">
       <!-- ============================================================
-           BACKDROP — each variant defines its own look via .card-XXX
+           BACKDROP, each variant defines its own look via .card-XXX
            ============================================================ -->
       <div class="backdrop-1" />
       <div class="backdrop-2" />
@@ -96,7 +96,7 @@ const sampleTickers = [
       <div class="backdrop-noise" />
 
       <!-- ============================================================
-           HEADER (shared — some variants hide it via CSS)
+           HEADER (shared, some variants hide it via CSS)
            ============================================================ -->
       <div class="header">
         <div class="header-brand">
@@ -298,7 +298,7 @@ const sampleTickers = [
 
                 <div class="chat-msg chat-msg-ai">
                   <div class="chat-bubble chat-bubble-ai">
-                    Pelo preço atual (R$ 49,03) e DY de 16,3%, PETR4 está negociando 12% abaixo do preço-teto de Bazin. Mas o setor de petróleo tem volatilidade alta — recomendo limitar a 5% da carteira.
+                    Pelo preço atual (R$ 49,03) e DY de 16,3%, PETR4 está negociando 12% abaixo do preço-teto de Bazin. Mas o setor de petróleo tem volatilidade alta, recomendo limitar a 5% da carteira.
                   </div>
                 </div>
                 <div class="chat-msg chat-msg-ai">
@@ -337,7 +337,7 @@ const sampleTickers = [
         <div class="iphone-caption">
           <div class="iphone-eyebrow">{{ eyebrow || '[ ASSESSOR · IA · 24/7 ]' }}</div>
           <h2 class="iphone-title">{{ title || 'Tira a dúvida na hora.' }}</h2>
-          <p class="iphone-sub">{{ subtitle || 'A IA da Redentia foi treinada no mercado brasileiro. Pergunta sobre qualquer ação, fundo, indicador ou estratégia — resposta em segundos, com dados reais e fontes citadas.' }}</p>
+          <p class="iphone-sub">{{ subtitle || 'A IA da Redentia foi treinada no mercado brasileiro. Pergunta sobre qualquer ação, fundo, indicador ou estratégia, resposta em segundos, com dados reais e fontes citadas.' }}</p>
           <div class="iphone-tag">{{ cta || 'redentia.com.br' }}</div>
         </div>
       </div>
@@ -354,7 +354,7 @@ const sampleTickers = [
           criatura!
         </div>
         <div class="jargon-author">
-          <span class="jargon-author-name">— {{ author || 'Nathalia Arcuri' }}</span>
+          <span class="jargon-author-name">, {{ author || 'Nathalia Arcuri' }}</span>
           <span class="jargon-author-role">ME POUPE! · REDENTIA WHITELABEL</span>
         </div>
       </div>
@@ -366,7 +366,7 @@ const sampleTickers = [
           <span class="italic-orange">{{ subtitle || 'ou mediocridade.' }}</span>
         </div>
         <div class="jargon-author">
-          <span class="jargon-author-name">— {{ author || 'Thiago Nigro' }}</span>
+          <span class="jargon-author-name">, {{ author || 'Thiago Nigro' }}</span>
           <span class="jargon-author-role">PRIMO RICO · REDENTIA WHITELABEL</span>
         </div>
       </div>
@@ -379,7 +379,7 @@ const sampleTickers = [
           é o conhecimento.
         </div>
         <div class="jargon-author">
-          <span class="jargon-author-name">— {{ author || 'Raul Sena' }}</span>
+          <span class="jargon-author-name">, {{ author || 'Raul Sena' }}</span>
           <span class="jargon-author-role">INVESTIDOR SARDINHA · AUVP</span>
         </div>
       </div>
@@ -392,25 +392,25 @@ const sampleTickers = [
           seu portfólio aguarda.
         </div>
         <div class="jargon-author">
-          <span class="jargon-author-name">— NORTE CAPITAL</span>
+          <span class="jargon-author-name">, NORTE CAPITAL</span>
           <span class="jargon-author-role">ASSESSORIA · REDENTIA WHITELABEL</span>
         </div>
       </div>
 
       <div v-else-if="variant === 'jargon-redentia'" class="body jargon-body jargon-redentia">
-        <div class="jargon-eyebrow">[ REDENTIA.TERMINAL ]</div>
+        <div class="jargon-eyebrow">[ REDENTIA.MERCADO ]</div>
         <div class="jargon-quote">
           Investir com<br>
           <span class="italic-amber">inteligência.</span>
         </div>
         <div class="jargon-author">
-          <span class="jargon-author-name">— REDENTIA.COM.BR</span>
+          <span class="jargon-author-name">, REDENTIA.COM.BR</span>
           <span class="jargon-author-role">PLATAFORMA · 100% GRÁTIS</span>
         </div>
       </div>
 
       <!-- ============================================================
-           VARIANT 20 · TENANT SHOWCASE — shows 1 tenant hero rendered
+           VARIANT 20 · TENANT SHOWCASE, shows 1 tenant hero rendered
            with its own fonts/colors (mini version of the real hero)
            ============================================================ -->
       <div v-else-if="variant === 'tenant-showcase-mepoupe'" class="body tenant-body tenant-mepoupe">
@@ -424,7 +424,7 @@ const sampleTickers = [
               dinheirofobia,<br>
               <span class="tenant-highlight-yellow">criatura!</span>
             </h2>
-            <p class="tenant-sub">Eu sou a Nath. Esta é a Me Poupe! — o programa que explica seu dinheiro do jeito que sua melhor amiga explicaria.</p>
+            <p class="tenant-sub">Eu sou a Nath. Esta é a Me Poupe!, o programa que explica seu dinheiro do jeito que sua melhor amiga explicaria.</p>
             <div class="tenant-chips">
               <span class="tenant-chip">+7M NA COMUNIDADE</span>
               <span class="tenant-chip">100% GRÁTIS</span>
@@ -446,10 +446,10 @@ const sampleTickers = [
             </h2>
             <p class="tenant-sub">Ações · Real Estate · Caixa · Ativos alternativos. Os 4 pilares da construção de patrimônio de longo prazo.</p>
             <div class="tenant-bullets">
-              <span>A — AÇÕES</span>
-              <span>R — REAL ESTATE (FIIs)</span>
-              <span>C — CAIXA</span>
-              <span>A — ATIVOS ALTERNATIVOS</span>
+              <span>A, AÇÕES</span>
+              <span>R, REAL ESTATE (FIIs)</span>
+              <span>C, CAIXA</span>
+              <span>A, ATIVOS ALTERNATIVOS</span>
             </div>
           </div>
         </div>
@@ -470,7 +470,7 @@ const sampleTickers = [
               é estudar.
             </h2>
             <p class="tenant-sub">Método AUVP aplicado à realidade brasileira. Filtros de ROE, margem líquida, dívida controlada e múltiplo razoável. Sem dica, sem recomendação.</p>
-            <div class="tenant-sign">— RAUL SENA, EDITOR-CHEFE</div>
+            <div class="tenant-sign">, RAUL SENA, EDITOR-CHEFE</div>
           </div>
         </div>
         <div class="tenant-footer">ESTA É A CARA DO AUVP NA INFRA DA REDENTIA. redentia.com.br/whitelabel</div>
@@ -491,7 +491,7 @@ const sampleTickers = [
             <p class="tenant-sub tenant-sub-italic">
               Nesta edição discutimos o posicionamento tático do portfólio diante do ciclo macro brasileiro, com atenção especial aos setores de energia, financeiro e consumo.
             </p>
-            <div class="tenant-sign tenant-sign-italic">— Norte Capital, Mesa de Gestão</div>
+            <div class="tenant-sign tenant-sign-italic">, Norte Capital, Mesa de Gestão</div>
           </div>
         </div>
         <div class="tenant-footer">ESTA É A CARA DA NORTE CAPITAL NA INFRA DA REDENTIA. redentia.com.br/whitelabel</div>
@@ -508,7 +508,7 @@ const sampleTickers = [
               Investir com<br>
               <span class="tenant-highlight-amber">inteligência.</span>
             </h2>
-            <p class="tenant-sub">Plataforma terminal para o mercado brasileiro. Dados em tempo real, fundamentos desde 2009, IA própria e consolidador de carteira.</p>
+            <p class="tenant-sub">Ecossistema completo para o mercado brasileiro. Dados em tempo real, fundamentos desde 2009, IA própria e consolidador de carteira.</p>
             <div class="tenant-terminal-line">&gt; Pergunte sobre qualquer ativo...<span class="terminal-caret-mini" /></div>
           </div>
         </div>
@@ -534,7 +534,7 @@ const sampleTickers = [
       </div>
 
       <!-- ============================================================
-           VARIANT · DATA TIMELINE — 15+ years of history
+           VARIANT · DATA TIMELINE, 15+ years of history
            ============================================================ -->
       <div v-else-if="variant === 'data-timeline'" class="body data-body">
         <div class="data-eyebrow">[ HISTÓRICO DESDE 2009 ]</div>
@@ -583,7 +583,7 @@ const sampleTickers = [
             <div class="security-desc">Nunca pedimos senha de corretora. Token OAuth só.</div>
           </div>
         </div>
-        <p class="data-foot">redentia.com.br — plataforma brasileira, dados brasileiros, privacidade BR.</p>
+        <p class="data-foot">redentia.com.br, plataforma brasileira, dados brasileiros, privacidade BR.</p>
       </div>
 
       <!-- ============================================================
@@ -617,7 +617,7 @@ const sampleTickers = [
       </div>
 
       <!-- ============================================================
-           VARIANT · STATS ROW — 4 big stats horizontally
+           VARIANT · STATS ROW, 4 big stats horizontally
            ============================================================ -->
       <div v-else-if="variant === 'stats-row'" class="body stats-body">
         <div class="stats-eyebrow">[ NÚMEROS QUE IMPORTAM ]</div>
@@ -647,7 +647,7 @@ const sampleTickers = [
       </div>
 
       <!-- ============================================================
-           VARIANT · WHY NORMAL PERSON — consolidator before/after
+           VARIANT · WHY NORMAL PERSON, consolidator before/after
            ============================================================ -->
       <div v-else-if="variant === 'why-consolidator'" class="body why-body">
         <div class="why-eyebrow">[ POR QUE REDENTIA ]</div>
@@ -677,11 +677,11 @@ const sampleTickers = [
             <div class="why-col-sub">1 tela · rentabilidade consolidada · alertas</div>
           </div>
         </div>
-        <p class="why-foot">redentia.com.br — consolidação via Open Finance · grátis · seguro</p>
+        <p class="why-foot">redentia.com.br, consolidação via Open Finance · grátis · seguro</p>
       </div>
 
       <!-- ============================================================
-           VARIANT · CALCULATORS SHOWCASE — 8 calcs grid
+           VARIANT · CALCULATORS SHOWCASE, 8 calcs grid
            ============================================================ -->
       <div v-else-if="variant === 'calculators'" class="body calc-body">
         <div class="calc-eyebrow">[ FERRAMENTAS ]</div>
@@ -812,7 +812,7 @@ const sampleTickers = [
       </div>
 
       <!-- ============================================================
-           VARIANT · AI INTELLIGENT — features list
+           VARIANT · AI INTELLIGENT, features list
            ============================================================ -->
       <div v-else-if="variant === 'intelligent'" class="body int-body">
         <div class="int-eyebrow">[ INTELIGÊNCIA ARTIFICIAL ]</div>
@@ -823,7 +823,7 @@ const sampleTickers = [
         </h2>
         <ul class="int-list">
           <li><span class="int-num">01</span> Treinada em português brasileiro · responde gírias de mercado</li>
-          <li><span class="int-num">02</span> Cita fontes · ANBIMA, CVM, BACEN, IBGE — com link</li>
+          <li><span class="int-num">02</span> Cita fontes · ANBIMA, CVM, BACEN, IBGE, com link</li>
           <li><span class="int-num">03</span> Conhece regras brasileiras · JCP, day trade, isenção FIIs</li>
           <li><span class="int-num">04</span> Consulta sua carteira · responde com SEUS ativos, não genéricos</li>
         </ul>
@@ -858,7 +858,7 @@ const sampleTickers = [
       </div>
 
       <!-- ============================================================
-           Footer (shared — some variants hide it)
+           Footer (shared, some variants hide it)
            ============================================================ -->
       <div class="footer">
         <img src="/brand/logo-icon.svg" alt="Redentia" class="footer-logo" />
@@ -976,7 +976,7 @@ const sampleTickers = [
   opacity: 0.6;
 }
 
-/* Body wrapper — every variant has its own layout inside */
+/* Body wrapper, every variant has its own layout inside */
 .body {
   position: relative;
   flex: 1;
@@ -987,7 +987,7 @@ const sampleTickers = [
 }
 
 /* ============================================================
-   IPHONE PUSH VARIANTS — 2-column: phone mockup + caption
+   IPHONE PUSH VARIANTS, 2-column: phone mockup + caption
    ============================================================ */
 .iphone-body {
   align-items: center;
@@ -1551,7 +1551,7 @@ const sampleTickers = [
 }
 
 /* ============================================================
-   JARGON VARIANTS — huge type, per-tenant voice
+   JARGON VARIANTS, huge type, per-tenant voice
    ============================================================ */
 .jargon-body {
   flex-direction: column;
@@ -1593,7 +1593,7 @@ const sampleTickers = [
   text-transform: uppercase;
 }
 
-/* Me Poupe jargon — purple + yellow highlight + Poppins 900 */
+/* Me Poupe jargon, purple + yellow highlight + Poppins 900 */
 .card-jargon-mepoupe {
   background: linear-gradient(135deg, #1A0A2E 0%, #2D1047 50%, #1A0A2E 100%);
 }
@@ -1633,7 +1633,7 @@ const sampleTickers = [
   transform: skew(-2deg);
 }
 
-/* Primo Rico jargon — deep dark + orange italic + Fraunces 700 */
+/* Primo Rico jargon, deep dark + orange italic + Fraunces 700 */
 .card-jargon-primo {
   background: linear-gradient(180deg, #0F0D0B 0%, #1a1714 100%);
 }
@@ -1658,7 +1658,7 @@ const sampleTickers = [
   text-transform: none;
 }
 
-/* Sardinha jargon — ivory paper + red-pen IBM Plex Serif */
+/* Sardinha jargon, ivory paper + red-pen IBM Plex Serif */
 .card-jargon-sardinha {
   background: #F6F1E8;
   color: #1F1A12;
@@ -1692,7 +1692,7 @@ const sampleTickers = [
 .card-jargon-sardinha .jargon-author-name { color: #1F1A12; }
 .card-jargon-sardinha .jargon-author-role { color: rgba(31, 26, 18, 0.55); }
 
-/* Norte jargon — ivory editorial + Fraunces italic + gold */
+/* Norte jargon, ivory editorial + Fraunces italic + gold */
 .card-jargon-norte {
   background: #F7F5EF;
   color: #1C2133;
@@ -1726,7 +1726,7 @@ const sampleTickers = [
 .card-jargon-norte .jargon-author-name { color: #1C2133; }
 .card-jargon-norte .jargon-author-role { color: rgba(28, 33, 51, 0.55); }
 
-/* Redentia jargon — amber terminal */
+/* Redentia jargon, amber terminal */
 .card-jargon-redentia .jargon-eyebrow {
   color: #F5A623;
 }
@@ -1740,7 +1740,7 @@ const sampleTickers = [
 }
 
 /* ============================================================
-   TENANT SHOWCASE VARIANTS — shows a tenant's hero inside the card
+   TENANT SHOWCASE VARIANTS, shows a tenant's hero inside the card
    with the real tenant colors + fonts
    ============================================================ */
 .tenant-body {
@@ -2069,7 +2069,7 @@ const sampleTickers = [
 @keyframes blink { 50% { opacity: 0; } }
 
 /* ============================================================
-   DATA COVERAGE — big number + ticker wall
+   DATA COVERAGE, big number + ticker wall
    ============================================================ */
 .data-body {
   flex-direction: column;

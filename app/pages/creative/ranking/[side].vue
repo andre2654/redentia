@@ -189,7 +189,7 @@ function decodeBase64UrlToString(input: string): string | null {
 
 function toTicker(stock: RawTopStock): string {
   const t = (stock.ticker || stock.stock || '').toString().trim()
-  return t ? t.toUpperCase() : '—'
+  return t ? t.toUpperCase() : '-'
 }
 
 function toChangePercent(value: unknown): number | null {
@@ -328,7 +328,7 @@ function formatPercent(changePercent: number | null): string {
 </template>
 
 <style scoped>
-/* See asset-spotlight.vue comment — :global() rules leak. */
+/* See asset-spotlight.vue comment, :global() rules leak. */
 
 * {
   box-sizing: border-box;

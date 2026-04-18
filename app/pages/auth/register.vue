@@ -313,7 +313,7 @@
               "{{ brand.hero.founderQuote || 'Não existe atalho pra liberdade financeira. Só o caminho certo, feito com paciência.' }}"
             </p>
             <p class="font-mentor-eyebrow mt-3" :style="{ color: brand.colors.primary }">
-              — {{ brand.founder?.name || 'Thiago Nigro' }}
+             , {{ brand.founder?.name || 'Thiago Nigro' }}
             </p>
           </div>
         </div>
@@ -441,7 +441,7 @@
             </h1>
             <hr class="dashed-rule mt-8 max-w-[8rem]" />
             <p class="font-academic-body mt-6 max-w-md text-[14px] italic" :style="{ color: brand.colors.textMuted }">
-              <span class="red-pen">Nota do professor</span> — o cadastro é de graça, o esforço é cobrado em horas de estudo. Compareça. O método só funciona pra quem aparece.
+              <span class="red-pen">Nota do professor</span>, o cadastro é de graça, o esforço é cobrado em horas de estudo. Compareça. O método só funciona pra quem aparece.
             </p>
             <p class="font-academic-body mt-6 max-w-md text-[13px]" :style="{ color: brand.colors.text }">
               {{ brand.auth.registerSubtitle }}
@@ -563,13 +563,13 @@
             <span class="highlighter" :style="{ color: brand.colors.primary }">família, criatura!</span>
           </h1>
           <p class="font-showtime-body mt-8 max-w-md text-base" :style="{ color: `${brand.colors.text}CC` }">
-            {{ brand.auth.registerSubtitle }} Sem Sidnelson, sem pegadinha, sem frescura — só você, seu bolso e a Nath.
+            {{ brand.auth.registerSubtitle }} Sem Sidnelson, sem pegadinha, sem frescura, só você, seu bolso e a Nath.
           </p>
 
           <div class="mt-8 flex items-start gap-3">
             <img src="/brand/mepoupe/margarete.svg" alt="Margarete" class="h-12 shrink-0" />
             <p class="font-showtime-body max-w-xs text-sm italic" :style="{ color: `${brand.colors.text}B3` }">
-              "Abre essa conta e bora pro primeiro aporte — ai que festa, criatura!"
+              "Abre essa conta e bora pro primeiro aporte, ai que festa, criatura!"
             </p>
           </div>
 
@@ -756,7 +756,7 @@
         >
           <div class="space-y-2">
             <span class="text-[10px] font-bold uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
-              — Cadastro
+             , Cadastro
             </span>
             <h2
               class="leading-tight"
@@ -873,7 +873,7 @@
 
           <div class="mt-12 flex items-center gap-4 text-[11px] uppercase tracking-[0.22em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: brand.colors.textMuted }">
             <span class="h-px w-12" :style="{ backgroundColor: brand.colors.border }" />
-            <span :style="{ color: brand.colors.primary }">— @holder</span>
+            <span :style="{ color: brand.colors.primary }">, @holder</span>
           </div>
         </div>
 

@@ -45,7 +45,7 @@
           </div>
           <p class="text-[14px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
             A <strong :style="{ color: brand.colors.text }">Redentia API</strong> é uma API REST completa para o mercado financeiro brasileiro. Fornecemos dados em tempo real e históricos de
-            <strong :style="{ color: brand.colors.text }">ações</strong>, <strong :style="{ color: brand.colors.text }">FIIs</strong>, <strong :style="{ color: brand.colors.text }">BDRs</strong>, <strong :style="{ color: brand.colors.text }">ETFs</strong>, dividendos e indicadores fundamentalistas — obtidos direto da
+            <strong :style="{ color: brand.colors.text }">ações</strong>, <strong :style="{ color: brand.colors.text }">FIIs</strong>, <strong :style="{ color: brand.colors.text }">BDRs</strong>, <strong :style="{ color: brand.colors.text }">ETFs</strong>, dividendos e indicadores fundamentalistas, obtidos direto da
             <strong :style="{ color: brand.colors.text }">B3</strong> (cotações), <strong :style="{ color: brand.colors.text }">CVM</strong> (demonstrações) e <strong :style="{ color: brand.colors.text }">BCB</strong> (SELIC, câmbio).
           </p>
         </div>
@@ -64,10 +64,10 @@
           class="font-display mb-5 mt-14 text-3xl tracking-tight"
           :style="{ color: brand.colors.text }"
         >
-          Teste Agora — Sem Cadastro!
+          Teste Agora, Sem Cadastro!
         </h2>
         <p class="mb-5 text-[15px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
-          Para facilitar o desenvolvimento e testes, você pode experimentar nossa API <strong :style="{ color: brand.colors.text }">imediatamente</strong> com estas 4 ações brasileiras populares — <strong :style="{ color: brand.colors.text }">sem precisar de token ou cadastro</strong>:
+          Para facilitar o desenvolvimento e testes, você pode experimentar nossa API <strong :style="{ color: brand.colors.text }">imediatamente</strong> com estas 4 ações brasileiras populares, <strong :style="{ color: brand.colors.text }">sem precisar de token ou cadastro</strong>:
         </p>
 
         <div
@@ -171,7 +171,7 @@
                 Teste sem token (ações gratuitas):
               </p>
               <AtomsCodeBlock
-                label="Terminal (cURL) — Teste Imediato"
+                label="Terminal (cURL), Teste Imediato"
                 :code="codeTestNoToken"
                 lang="bash"
               />
@@ -179,7 +179,7 @@
                 Com token (todos os ativos):
               </p>
               <AtomsCodeBlock
-                label="Terminal (cURL) — Produção"
+                label="Terminal (cURL), Produção"
                 :code="codeProduction"
                 lang="bash"
               />
@@ -343,11 +343,11 @@ const { categories, endpoints } = useApiDocs()
 
 const firstEndpointSlug = endpoints[0]?.slug
 
-// Table of Contents for this page — matches the data-toc-heading
+// Table of Contents for this page, matches the data-toc-heading
 // anchors rendered in the template. Kept static (no auto-extraction)
 // because the page content is hand-authored and doesn't churn.
 const toc = [
-  { id: 'teste-agora', text: 'Teste Agora — Sem Cadastro!', level: 2 },
+  { id: 'teste-agora', text: 'Teste Agora, Sem Cadastro!', level: 2 },
   { id: 'obter-chave', text: 'Obtenha sua Chave de API', level: 3 },
   { id: 'primeira-requisicao-heading', text: 'Faça sua Primeira Requisição', level: 3 },
   { id: 'receba-dados', text: 'Receba os Dados', level: 3 },
@@ -371,7 +371,7 @@ const concepts = [
   {
     icon: 'i-lucide-code-2',
     title: 'Schemas Estáveis',
-    description: 'Schemas versionados — mudanças breaking sempre em versões maiores (v1 → v2), nunca in-place.',
+    description: 'Schemas versionados, mudanças breaking sempre em versões maiores (v1 → v2), nunca in-place.',
   },
   {
     icon: 'i-lucide-gauge',
@@ -382,7 +382,7 @@ const concepts = [
 
 // Code examples (literal strings so the CodeBlock component can render
 // them as-is with copy support).
-const codeQuickstart = `# Cotação simples — funciona sem token
+const codeQuickstart = `# Cotação simples, funciona sem token
 curl "https://api.redentia.com.br/v1/tickers/PETR4"
 
 # Múltiplas ações com histórico
@@ -413,12 +413,12 @@ const codeResponse = `{
   }
 }`
 
-// "Copy markdown" — just dumps the page text for now; real markdown
+// "Copy markdown", just dumps the page text for now; real markdown
 // round-trip is a follow-up.
 const copied = ref(false)
 async function copyMarkdown() {
   try {
-    await navigator.clipboard.writeText('# Redentia API — Comece a usar\n\nVeja https://api.redentia.com.br/api-portal/docs')
+    await navigator.clipboard.writeText('# Redentia API, Comece a usar\n\nVeja https://api.redentia.com.br/api-portal/docs')
     copied.value = true
     setTimeout(() => { copied.value = false }, 2000)
   } catch {}

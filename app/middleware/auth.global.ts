@@ -7,7 +7,7 @@
 // Why path-based and not `to.meta.isPublicRoute`:
 //
 // Relying on `to.meta.isPublicRoute === true` to decide publicness
-// has a subtle failure mode — if page meta isn't loaded by the time
+// has a subtle failure mode, if page meta isn't loaded by the time
 // this middleware runs (e.g. ISR prerender invocation with weird
 // URL rewriting on Vercel edge, async component chunks not resolved
 // yet, etc), `to.meta.isPublicRoute` reads as `undefined`, the
@@ -17,7 +17,7 @@
 // `definePageMeta({ isPublicRoute: true })`.
 //
 // Path-based allowlist is fail-safe: if in doubt, serve public.
-// Worst case a protected page leaks to an anonymous user — but
+// Worst case a protected page leaks to an anonymous user, but
 // those pages each have their own `useAuthStore()` check inside
 // the component, so the data never actually loads without a token.
 // ============================================================

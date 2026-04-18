@@ -12,7 +12,7 @@
  * 2. **Apply brand overrides reactively when the query changes.**
  *    If the user manually edits the URL from `?brand=holder` to
  *    `?brand=saraiva-invest` (or a navigation does it), we swap the
- *    active brand state IMMEDIATELY via `applyBrandOverride()` — no
+ *    active brand state IMMEDIATELY via `applyBrandOverride()`, no
  *    full page reload, no flash. The reactive proxy is mutated in
  *    place so every component re-renders with the new tenant.
  *

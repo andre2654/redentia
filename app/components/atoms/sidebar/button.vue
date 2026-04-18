@@ -58,14 +58,14 @@ const props = defineProps({
 const brand = useBrand()
 const route = useRoute()
 
-// Lightweight active matching — we can't rely on NuxtLink's `active-class`
+// Lightweight active matching, we can't rely on NuxtLink's `active-class`
 // because we're driving styles inline for theme-aware colors. The match
 // rules intentionally match what NuxtLink would do with `exact-active-class`.
 const activeMatch = computed(() => {
   if (!props.to) return false
   // Normalize: strip trailing slash but preserve root as '/'. Without the
   // `|| '/'` fallback, to="/" collapses to '' and the sub-route check below
-  // (`startsWith('' + '/')` = `startsWith('/')`) flags EVERY path as active —
+  // (`startsWith('' + '/')` = `startsWith('/')`) flags EVERY path as active,
   // so "Visão Geral" lit up alongside whichever item was truly active.
   const current = route.path.replace(/\/$/, '') || '/'
   const target = String(props.to).replace(/\/$/, '') || '/'

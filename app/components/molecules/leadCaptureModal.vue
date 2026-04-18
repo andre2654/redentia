@@ -1,5 +1,5 @@
 <!--
-  MoleculesLeadCaptureModal — reusable lead capture form.
+  MoleculesLeadCaptureModal, reusable lead capture form.
 
   Used by the Whitelabel and API Portal landing pages to capture
   interest from potential customers. Opens as a modal overlay,
@@ -15,7 +15,7 @@
 
   The `source` prop determines which landing page the lead came from.
   The `plan` prop (optional) pre-selects the pricing tier the user
-  clicked on — e.g. 'growth' if they clicked "Escolher Growth →".
+  clicked on, e.g. 'growth' if they clicked "Escolher Growth →".
 -->
 
 <template>

@@ -92,7 +92,7 @@ const allRankings = [
     icon: 'i-lucide-trending-down',
     title: 'Maiores Baixas do Mês',
     description:
-      'Ativos que mais caíram no último mês — oportunidades ou alertas, depende da tese.',
+      'Ativos que mais caíram no último mês, oportunidades ou alertas, depende da tese.',
     flag: 'showMonthlyMoversRanking',
   },
   {

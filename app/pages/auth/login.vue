@@ -225,7 +225,7 @@
               "{{ brand.hero.founderQuote || 'Patrimônio se constrói com tempo, método e disciplina.' }}"
             </p>
             <p class="font-mentor-eyebrow mt-3" :style="{ color: brand.colors.primary }">
-              — {{ brand.founder?.name || 'Thiago Nigro' }}
+             , {{ brand.founder?.name || 'Thiago Nigro' }}
             </p>
           </div>
         </div>
@@ -310,7 +310,7 @@
             </h1>
             <hr class="dashed-rule mt-8 max-w-[8rem]" />
             <p class="font-academic-body mt-6 max-w-md text-[14px] italic" :style="{ color: brand.colors.textMuted }">
-              <span class="red-pen">Nota do professor</span> — o método não funciona pra quem estuda uma vez e desaparece. Acesso diário é premissa, não extra.
+              <span class="red-pen">Nota do professor</span>, o método não funciona pra quem estuda uma vez e desaparece. Acesso diário é premissa, não extra.
             </p>
             <p class="font-academic-body mt-6 max-w-md text-[13px]" :style="{ color: brand.colors.text }">
               {{ brand.auth.loginSubtitle }}
@@ -395,7 +395,7 @@
           <div class="mt-8 flex items-start gap-3">
             <img src="/brand/mepoupe/margarete.svg" alt="Margarete" class="h-12 shrink-0" />
             <p class="font-showtime-body max-w-xs text-sm italic" :style="{ color: `${brand.colors.text}B3` }">
-              "Bora lá, que dinheiro parado não rende nada — só o juro composto, esse filho maravilhoso!"
+              "Bora lá, que dinheiro parado não rende nada, só o juro composto, esse filho maravilhoso!"
             </p>
           </div>
         </div>
@@ -447,7 +447,7 @@
       </div>
     </section>
 
-    <!-- ========== PLAYBOOK VARIANT (Saraiva Invest — calm method + author photo) ========== -->
+    <!-- ========== PLAYBOOK VARIANT (Saraiva Invest, calm method + author photo) ========== -->
     <section
       v-else-if="variant === 'playbook'"
       class="relative min-h-screen overflow-hidden px-4 pb-16 pt-12"
@@ -501,7 +501,7 @@
           </h1>
 
           <p class="mt-6 max-w-md text-[16px] leading-relaxed" :style="{ color: `${brand.colors.text}C0` }">
-            Seu plano, sua carteira, seus backtests — esperando. Sem hype, sem ansiedade, no seu ritmo.
+            Seu plano, sua carteira, seus backtests, esperando. Sem hype, sem ansiedade, no seu ritmo.
           </p>
 
           <!-- Author quote -->
@@ -521,7 +521,7 @@
                 "Não é sorte. É método. Juros compostos trabalham enquanto você dorme."
               </p>
               <p class="mt-1 text-[11px] font-bold uppercase tracking-[0.15em]" :style="{ color: brand.colors.primary }">
-                — {{ brand.founder.name }}
+               , {{ brand.founder.name }}
               </p>
             </div>
           </div>
@@ -541,7 +541,7 @@
         >
           <div class="space-y-2">
             <span class="text-[10px] font-bold uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
-              — Acesso
+             , Acesso
             </span>
             <h2
               class="leading-tight"
@@ -638,7 +638,7 @@
           </p>
           <div class="mt-12 flex items-center gap-4 text-[11px] uppercase tracking-[0.22em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: brand.colors.textMuted }">
             <span class="h-px w-12" :style="{ backgroundColor: brand.colors.border }" />
-            <span :style="{ color: brand.colors.primary }">— @holder</span>
+            <span :style="{ color: brand.colors.primary }">, @holder</span>
           </div>
         </div>
 
@@ -792,7 +792,7 @@ const authStore = useAuthStore()
 // Use the hero variant as the single source of truth for auth page styling.
 const variant = computed(() => brand.hero?.variant || 'default')
 
-// Displayed session timestamp — for terminal/research variants.
+// Displayed session timestamp, for terminal/research variants.
 const sessionTime = computed(() => {
   try {
     return new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })

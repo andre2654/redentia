@@ -7,7 +7,7 @@
   1. Scale the 1080x1080 canvas DOWN so the human editor sees the whole
      square at once on a normal browser window.
   2. Render an inline control panel (right side) with the params each
-     creative supports — ticker selectors, dates, format toggles, reset.
+     creative supports, ticker selectors, dates, format toggles, reset.
   3. Stay COMPLETELY out of the way when Puppeteer renders the creative
      for n8n. Puppeteer hits the creative URL with a `?key=` query param;
      when that's present (or when ?preview=raw), the wrapper renders only
@@ -93,7 +93,7 @@
           <div class="cpc-controls-header">
             <span class="cpc-controls-eyebrow">[ CONTROLES ]</span>
             <h3 class="cpc-controls-title">Edite os parâmetros</h3>
-            <p class="cpc-controls-sub">A pré-visualização atualiza ao vivo. Os valores ficam na URL — copie ela pra usar no n8n ou compartilhar.</p>
+            <p class="cpc-controls-sub">A pré-visualização atualiza ao vivo. Os valores ficam na URL, copie ela pra usar no n8n ou compartilhar.</p>
           </div>
 
           <div class="cpc-controls-list">
@@ -234,7 +234,7 @@ const rawMode = computed(() => {
   return !!route.query.key || route.query.preview === 'raw'
 })
 
-// Pure Puppeteer mode (?key=...) — even the toolbar should disappear
+// Pure Puppeteer mode (?key=...), even the toolbar should disappear
 // so the headless screenshot is pristine. The ?preview=raw branch is
 // for HUMAN preview at full canvas size.
 const isPuppeteer = computed(() => !!route.query.key)

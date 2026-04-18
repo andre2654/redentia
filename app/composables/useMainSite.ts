@@ -6,7 +6,7 @@
  * server-side URL rewrites (see Frontend/server/middleware/*-subdomain.ts).
  * That means a NuxtLink like `to="/"` inside a page under `creative.redentia.com.br`
  * triggers a client-side SPA navigation to `/`, which stays on the SAME
- * host — the browser renders the main homepage but the address bar still
+ * host, the browser renders the main homepage but the address bar still
  * reads `creative.redentia.com.br/`. Not what users expect when they
  * click "Voltar para o site".
  *
@@ -30,12 +30,13 @@
 
 // Tool subdomains that the Nuxt app serves as dedicated "mini-sites" via
 // server-side URL rewrites (see Frontend/server/middleware/*-subdomain.ts).
-// Anything else is treated as the main tenant site — no rewriting needed.
+// Anything else is treated as the main tenant site, no rewriting needed.
 const TOOL_SUBDOMAIN_PREFIXES = [
   'creative.',
   'whitelabel.',
   'api.',
   'admin.',
+  'estudo.',
 ]
 
 interface MainSiteOptions {
@@ -53,7 +54,7 @@ function isToolSubdomain(hostname: string): boolean {
 
 /**
  * Strip the tool prefix to get the "main site" host. Works for ANY tenant
- * domain — not just redentia.com.br — because white-labels like
+ * domain, not just redentia.com.br, because white-labels like
  * `creative.usengine.io` should resolve to `https://usengine.io/`, not to
  * the Redentia master domain.
  *

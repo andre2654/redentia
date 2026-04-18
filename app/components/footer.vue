@@ -128,7 +128,7 @@
           </ul>
         </div>
 
-        <!-- Rankings — top-level entry point for /ranking hub -->
+        <!-- Rankings, top-level entry point for /ranking hub -->
         <div class="flex flex-col items-center md:items-start">
           <h3 class="mb-5 text-sm font-semibold uppercase tracking-wider" :style="{ color: brand.colors.text }">
             Rankings
@@ -215,6 +215,11 @@
             <li>
               <a href="https://whitelabel.redentia.com.br" target="_blank" rel="noopener" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
                 White-Label
+              </a>
+            </li>
+            <li>
+              <a href="https://estudo.redentia.com.br" target="_blank" rel="noopener" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
+                Estudos
               </a>
             </li>
             <li>

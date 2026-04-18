@@ -48,7 +48,7 @@ async function copy() {
   } catch {}
 }
 
-// Very lightweight syntax highlighting — no external lib, just regex
+// Very lightweight syntax highlighting, no external lib, just regex
 // for the 4 cases we actually render: bash/curl, JSON, HTTP headers,
 // and generic programming languages. Much cheaper than pulling in
 // Shiki/Prism for a handful of snippets.
@@ -64,7 +64,7 @@ const highlighted = computed(() => {
     kw: brand.colors.primary,
   }
 
-  // Comments — # ... (bash) or // ... (js/go)
+  // Comments, # ... (bash) or // ... (js/go)
   code = code.replace(
     /(^|\n)(\s*(?:#|\/\/)[^\n]*)/g,
     `$1<span style="color:${colors.cmt}">$2</span>`

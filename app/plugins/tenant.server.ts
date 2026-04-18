@@ -1,10 +1,10 @@
 // ============================================================
-// tenant.server — populates the brand state from event.context
+// tenant.server, populates the brand state from event.context
 // ============================================================
 //
 // This plugin runs once per request on the SERVER (note the `.server.ts`
-// suffix). It reads `event.context.tenantSlug` — set by the
-// `0-tenant-resolver` server middleware — and writes the corresponding
+// suffix). It reads `event.context.tenantSlug`, set by the
+// `0-tenant-resolver` server middleware, and writes the corresponding
 // brand config into the `useState('brand:active')` store that
 // `useBrand()` reads.
 //
@@ -13,11 +13,11 @@
 //  - Plugins run BEFORE any component setup, including the root app.vue.
 //    That means the first time any component calls `useBrand()`, the state
 //    is already populated with the correct tenant. No race condition.
-//  - `event.context` is request-scoped — every incoming request gets a
+//  - `event.context` is request-scoped, every incoming request gets a
 //    fresh context, so there's zero chance of state bleeding across
 //    concurrent requests (the classic SSR multi-tenant gotcha).
 //  - SSR output and client-side hydration produce identical trees because
-//    `useState` serializes across the boundary — the client receives the
+//    `useState` serializes across the boundary, the client receives the
 //    already-resolved tenant as part of the payload, no re-init needed.
 //
 // The client-side resolution path (`brand-router.client.ts`) is still
@@ -41,7 +41,7 @@ export default defineNuxtPlugin({
     const config = brands[slug] || brands.redentia
 
     // Populate the shared state. The factory arg (`() => ...`) only runs
-    // if the state doesn't exist yet — which in a fresh SSR request, it
+    // if the state doesn't exist yet, which in a fresh SSR request, it
     // doesn't. We deep-clone via JSON to get a plain object that reactive()
     // can wrap without freezing the source config.
     const brandState = useState('brand:active', () =>

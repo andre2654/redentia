@@ -30,11 +30,11 @@
           :style="{ backgroundColor: brand.colors.primary }"
         />
         <span :style="{ color: brand.colors.primary }">[RESPONSE.TIME]</span>
-        <span :style="{ color: brand.colors.border }">—</span>
+        <span :style="{ color: brand.colors.border }">-</span>
         <span :style="{ color: brand.colors.textMuted }">{{ brand.metrics.sectionSubtitle }}</span>
       </div>
 
-      <!-- Headline — matches the guides section ("Conhecimento que gera
+      <!-- Headline, matches the guides section ("Conhecimento que gera
            resultados") so the whole unauthenticated home shares one display
            voice instead of mixing Instrument Serif with the body sans. -->
       <h2
@@ -45,7 +45,7 @@
         {{ brand.metrics.sectionTitle.split('.')[0] }}<span class="italic" :style="{ color: brand.colors.primary }">.</span>
       </h2>
 
-      <!-- The hero metric: response time in seconds — mono, monumental -->
+      <!-- The hero metric: response time in seconds, mono, monumental -->
       <div ref="counterRef" class="mt-16 md:mt-20">
         <div class="flex items-baseline justify-center gap-2">
           <span
@@ -72,7 +72,7 @@
         </p>
       </div>
 
-      <!-- Stats row as "terminal register" — mono labels, tabular values -->
+      <!-- Stats row as "terminal register", mono labels, tabular values -->
       <div class="mt-20 grid grid-cols-2 gap-0 border md:grid-cols-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
         <div
           v-for="(stat, idx) in brand.metrics.stats"

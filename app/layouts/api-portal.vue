@@ -4,7 +4,7 @@
 
     The portal lives on api.redentia.com.br (via the subdomain
     middleware) and pages under /api-portal/* here. It has its own
-    header rendered by MoleculesDocsShell / AtomsApiPortalHeader —
+    header rendered by MoleculesDocsShell / AtomsApiPortalHeader,
     so the standard Redentia "Buscar Ativos · Calculadoras · Na_th
     IA · Entrar" chrome would be visually redundant and off-brand
     for a developer-facing product. This layout just passes the

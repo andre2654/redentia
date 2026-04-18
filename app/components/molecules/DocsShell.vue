@@ -11,7 +11,7 @@
       />
     </div>
 
-    <!-- Docs header — sticky top bar with logo + main nav -->
+    <!-- Docs header, sticky top bar with logo + main nav -->
     <header
       class="sticky top-0 z-40 border-b backdrop-blur-xl"
       :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.background}CC` }"
@@ -218,7 +218,7 @@ const { categories } = useApiDocs()
 
 const currentPath = computed(() => route.path)
 
-// Sidebar category accordion state — everything open by default so
+// Sidebar category accordion state, everything open by default so
 // the first-time visitor sees the full surface area immediately.
 const expandedCategories = ref<Set<string>>(new Set(categories.map((c) => c.id)))
 

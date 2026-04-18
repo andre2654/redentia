@@ -71,7 +71,7 @@
           <span class="italic" :style="{ color: REDENTIA_COLORS.primary }">feed.</span>
         </h1>
         <p class="max-w-2xl text-base leading-relaxed md:text-lg" :style="{ color: REDENTIA_COLORS.textMuted }">
-          Cards, rankings e animações prontas pra você tirar print, postar nas redes sociais e bombar o conteúdo. Todo creative puxa dados reais da Redentia em tempo real — basta escolher o ativo e screenshotar.
+          Cards, rankings e animações prontas pra você tirar print, postar nas redes sociais e bombar o conteúdo. Todo creative puxa dados reais da Redentia em tempo real, basta escolher o ativo e screenshotar.
         </p>
 
         <div class="mt-6 flex flex-wrap items-center gap-3">
@@ -329,7 +329,7 @@ const creatives: CreativeCard[] = [
   {
     slug: 'asset-compare',
     title: 'Comparativo de 2 Ativos',
-    description: 'Compare 2 ações lado a lado — preço, variação, market cap, DY, P/L. Ideal pra polêmicas do tipo "VALE3 ou PETR4?".',
+    description: 'Compare 2 ações lado a lado, preço, variação, market cap, DY, P/L. Ideal pra polêmicas do tipo "VALE3 ou PETR4?".',
     category: 'COMPARATIVO · POST',
     dimensions: '1080 × 1080',
     icon: 'i-lucide-split',
@@ -397,7 +397,7 @@ definePageMeta({
 })
 
 usePageSeo({
-  title: 'Redentia Creative — Conteúdo pronto pro feed',
+  title: 'Redentia Creative, Conteúdo pronto pro feed',
   description: 'Templates de cards, rankings e animações com dados reais do mercado. Pronto pra print e postar nas redes sociais.',
   path: '/creative',
   robots: 'noindex',

@@ -1,4 +1,4 @@
-// Brand-aware static-like accessor — reads from active brand config
+// Brand-aware static-like accessor, reads from active brand config
 import { brand as activeBrand } from '~/config/brand'
 
 export const ChartColors = {

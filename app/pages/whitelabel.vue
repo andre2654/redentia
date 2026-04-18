@@ -49,10 +49,10 @@
       </header>
 
       <!-- ============================================================
-           HERO — Linear-style editorial: headline breathes, no noise
+           HERO, Linear-style editorial: headline breathes, no noise
            ============================================================ -->
       <section class="relative overflow-hidden">
-        <!-- Single radial glow — no dot grids, no scanlines -->
+        <!-- Single radial glow, no dot grids, no scanlines -->
         <div class="pointer-events-none absolute inset-0">
           <div
             class="absolute left-1/2 top-0 h-[800px] w-[1200px] -translate-x-1/2 rounded-full blur-3xl opacity-20"
@@ -74,7 +74,7 @@
             </div>
           </div>
 
-          <!-- Title — huge, clean, let it breathe -->
+          <!-- Title, huge, clean, let it breathe -->
           <h1
             class="mb-8 text-center leading-[0.88] tracking-tighter lg:text-left"
             :style="{
@@ -87,9 +87,9 @@
             <span class="italic" :style="{ color: C.primary }">nossa infra.</span>
           </h1>
 
-          <!-- Subtitle — centered on mobile, left on desktop -->
+          <!-- Subtitle, centered on mobile, left on desktop -->
           <p class="mx-auto mb-14 max-w-xl text-center text-[17px] leading-[1.6] md:text-[19px] lg:mx-0 lg:text-left" :style="{ color: `${C.text}C0` }">
-            Plataforma de investimentos completa em <strong :style="{ color: C.text }">menos de 7 dias</strong> — com seu logo, suas cores, seu domínio. Sem time de engenharia.
+            Plataforma de investimentos completa em <strong :style="{ color: C.text }">menos de 7 dias</strong>, com seu logo, suas cores, seu domínio. Sem time de engenharia.
           </p>
 
           <!-- CTAs -->
@@ -116,7 +116,7 @@
             </a>
           </div>
 
-          <!-- Tenant logo strip — clean, Vercel "trusted by" style -->
+          <!-- Tenant logo strip, clean, Vercel "trusted by" style -->
           <div class="border-t pt-10" :style="{ borderColor: `${C.border}60` }">
             <p class="mb-6 text-center text-[11px] uppercase tracking-[0.22em] lg:text-left" :style="{ color: C.textMuted }">
               Mesma infra, 5 identidades radicalmente distintas
@@ -139,7 +139,7 @@
             </div>
           </div>
 
-          <!-- Stats row — with Lucide icons, not emojis -->
+          <!-- Stats row, with Lucide icons, not emojis -->
           <div class="mt-14 grid grid-cols-3 gap-8">
             <div class="flex items-start gap-3">
               <UIcon name="i-lucide-layers" class="mt-0.5 size-5 shrink-0" :style="{ color: C.primary }" />
@@ -167,7 +167,7 @@
       </section>
 
       <!-- ============================================================
-           MANIFESTO STRIP — editorial pull quote
+           MANIFESTO STRIP, editorial pull quote
            ============================================================ -->
       <section
         id="manifesto"
@@ -197,7 +197,7 @@
       </section>
 
       <!-- ============================================================
-           TENANTS GALLERY — visual showcase, full-width tiles
+           TENANTS GALLERY, visual showcase, full-width tiles
            ============================================================ -->
       <section
         id="tenants"
@@ -207,7 +207,7 @@
         <div class="mx-auto max-w-7xl px-6 py-24 md:px-10 md:py-32">
           <div class="mb-16 grid items-end gap-8 md:grid-cols-12">
             <div class="md:col-span-7">
-              <div class="text-[12px] uppercase tracking-[0.22em]" :style="{ color: C.primary }">— Casos no ar</div>
+              <div class="text-[12px] uppercase tracking-[0.22em]" :style="{ color: C.primary }">, Casos no ar</div>
               <h2
                 class="mt-4 leading-[0.95] tracking-tight"
                 :style="{
@@ -221,7 +221,7 @@
               </h2>
             </div>
             <p class="text-[15px] leading-relaxed md:col-span-5" :style="{ color: `${C.text}B0` }">
-              Cada tenant tem identidade visual radicalmente distinta — Bloomberg, carta editorial, masterclass, paper acadêmico, programa de TV. Mesmo backend, mesmos dados, mesmas calculadoras. <strong :style="{ color: C.text }">A diferença é só a casca.</strong>
+              Cada tenant tem identidade visual radicalmente distinta, Bloomberg, carta editorial, masterclass, paper acadêmico, programa de TV. Mesmo backend, mesmos dados, mesmas calculadoras. <strong :style="{ color: C.text }">A diferença é só a casca.</strong>
             </p>
           </div>
 
@@ -261,7 +261,7 @@
                     tabindex="-1"
                     aria-hidden="true"
                   />
-                  <!-- Gradient overlay — fade to bg at bottom + darken for readability -->
+                  <!-- Gradient overlay, fade to bg at bottom + darken for readability -->
                   <div
                     class="absolute inset-0"
                     :style="{
@@ -302,7 +302,7 @@
                   </span>
                 </div>
 
-                <!-- Spacer — pushes footer to bottom -->
+                <!-- Spacer, pushes footer to bottom -->
                 <div class="flex-1" />
 
                 <!-- Footer -->
@@ -334,7 +334,7 @@
       </section>
 
       <!-- ============================================================
-           STACK INCLUDED — features in colored cards
+           STACK INCLUDED, features in colored cards
            ============================================================ -->
       <section
         id="stack"
@@ -343,7 +343,7 @@
       >
         <div class="mx-auto max-w-7xl px-6 py-24 md:px-10 md:py-32">
           <div class="mb-16">
-            <div class="text-[12px] uppercase tracking-[0.22em]" :style="{ color: C.primary }">— O que vem no pacote</div>
+            <div class="text-[12px] uppercase tracking-[0.22em]" :style="{ color: C.primary }">, O que vem no pacote</div>
             <h2
               class="mt-4 max-w-3xl leading-[0.95] tracking-tight"
               :style="{
@@ -385,13 +385,13 @@
       </section>
 
       <!-- ============================================================
-           HOW IT WORKS — 3 step horizontal timeline
+           HOW IT WORKS, 3 step horizontal timeline
            ============================================================ -->
       <section class="relative border-b" :style="{ borderColor: `${C.border}` }">
         <div class="mx-auto max-w-7xl px-6 py-24 md:px-10 md:py-32">
           <div class="mb-16 grid items-end gap-8 md:grid-cols-12">
             <div class="md:col-span-8">
-              <div class="text-[12px] uppercase tracking-[0.22em]" :style="{ color: C.primary }">— Como funciona</div>
+              <div class="text-[12px] uppercase tracking-[0.22em]" :style="{ color: C.primary }">, Como funciona</div>
               <h2
                 class="mt-4 leading-[0.95] tracking-tight"
                 :style="{
@@ -456,12 +456,12 @@
       </section>
 
       <!-- ============================================================
-           PERSONAS — who it's for, big editorial cards
+           PERSONAS, who it's for, big editorial cards
            ============================================================ -->
       <section class="relative border-b" :style="{ borderColor: `${C.border}`, backgroundColor: C.surfaceLight }">
         <div class="mx-auto max-w-7xl px-6 py-24 md:px-10 md:py-32">
           <div class="mb-16 max-w-3xl">
-            <div class="text-[12px] uppercase tracking-[0.22em]" :style="{ color: C.primary }">— Pra quem é</div>
+            <div class="text-[12px] uppercase tracking-[0.22em]" :style="{ color: C.primary }">, Pra quem é</div>
             <h2
               class="mt-4 leading-[0.95] tracking-tight"
               :style="{
@@ -517,7 +517,7 @@
       </section>
 
       <!-- ============================================================
-           PRICING — Stripe-style unified container
+           PRICING, Stripe-style unified container
            ============================================================ -->
       <section
         id="pricing"
@@ -554,7 +554,7 @@
                 backgroundColor: plan.popular ? `${C.primary}06` : 'transparent',
               }"
             >
-              <!-- Popular accent — top border only -->
+              <!-- Popular accent, top border only -->
               <div
                 v-if="plan.popular"
                 class="absolute inset-x-0 top-0 h-0.5"
@@ -578,7 +578,7 @@
                 {{ plan.description }}
               </p>
 
-              <!-- Price — gigantic numbers, tiny unit -->
+              <!-- Price, gigantic numbers, tiny unit -->
               <div class="flex items-baseline gap-1">
                 <span
                   class="tabular-nums leading-none tracking-tight"
@@ -598,10 +598,10 @@
                 {{ plan.priceNote }}
               </p>
 
-              <!-- Features — clean list, no card wrapping -->
+              <!-- Features, clean list, no card wrapping -->
               <ul class="flex flex-col gap-2.5 border-t pt-6 text-[13px]" :style="{ borderColor: `${C.border}80` }">
                 <li v-for="feat in plan.features" :key="feat" class="flex items-start gap-2" :style="{ color: `${C.text}D0` }">
-                  <span :style="{ color: C.primary }">—</span>
+                  <span :style="{ color: C.primary }">-</span>
                   <span>{{ feat }}</span>
                 </li>
               </ul>
@@ -623,7 +623,7 @@
       </section>
 
       <!-- ============================================================
-           FAQ — clean dividers, no cards
+           FAQ, clean dividers, no cards
            ============================================================ -->
       <section class="relative">
         <div class="mx-auto max-w-4xl px-6 py-20 md:px-10 md:py-28">
@@ -662,7 +662,7 @@
       </section>
 
       <!-- ============================================================
-           FINAL CTA — full bleed editorial
+           FINAL CTA, full bleed editorial
            ============================================================ -->
       <section
         id="cta"
@@ -749,7 +749,7 @@ function openLeadModal(plan?: string) {
 }
 
 // ============================================================
-// Redentia Whitelabel — landing page
+// Redentia Whitelabel, landing page
 //
 // Hardcoded to the Redentia terminal identity (amber + charcoal)
 // because this page is a self-contained sales funnel meant to
@@ -776,7 +776,7 @@ const F = {
 }
 
 // ============================================================
-// Bento grid sizing helpers — used by tenant gallery to break
+// Bento grid sizing helpers, used by tenant gallery to break
 // out of the boring 3-col grid into an editorial collage.
 // Order: redentia (large), norte (small), primo (small),
 // sardinha (large), me-poupe (small), your-brand (small).
@@ -820,7 +820,7 @@ function bentoIframeScale(idx: number) {
 }
 
 // ============================================================
-// Tenants gallery — 5 live brands on Redentia infrastructure.
+// Tenants gallery, 5 live brands on Redentia infrastructure.
 // Each preview card mimics the tenant's signature visual voice:
 // its primary color, its font family, its hero tagline.
 // ============================================================
@@ -832,7 +832,7 @@ const tenants = [
     variant: 'TERMINAL',
     eyebrow: 'BLOOMBERG REIMAGINED',
     previewTitle: 'Investir com inteligência.',
-    description: 'O tenant-mãe. Bloomberg terminal reimaginado — amber, monospace, dados por primeiro.',
+    description: 'O tenant-mãe. Bloomberg terminal reimaginado, amber, monospace, dados por primeiro.',
     url: 'https://redentia.com.br',
     iframeSrc: 'https://www.redentia.com.br/',
     bg: '#0A0B0E',
@@ -930,7 +930,7 @@ const tenants = [
 ]
 
 // ============================================================
-// HOW IT WORKS — 3 steps
+// HOW IT WORKS, 3 steps
 // ============================================================
 const steps = [
   {
@@ -960,7 +960,7 @@ const features = [
   {
     icon: 'i-lucide-palette',
     title: 'Identidade visual 100% sua',
-    description: 'Cores, fontes, hero variant, layout das páginas, copys — tudo controlado pelo seu brand config. Zero "powered by Redentia".',
+    description: 'Cores, fontes, hero variant, layout das páginas, copys, tudo controlado pelo seu brand config. Zero "powered by Redentia".',
   },
   {
     icon: 'i-lucide-database',
@@ -1000,7 +1000,7 @@ const features = [
 ]
 
 // ============================================================
-// PERSONAS — who it's for
+// PERSONAS, who it's for
 // ============================================================
 const personas = [
   {
@@ -1099,7 +1099,7 @@ const plans = [
 ]
 
 // ============================================================
-// FAQ — short objection handling
+// FAQ, short objection handling
 // ============================================================
 const faqs = [
   {
@@ -1116,7 +1116,7 @@ const faqs = [
   },
   {
     q: 'Vocês têm limites de chamadas à API?',
-    a: 'O plano Starter cobre até 100k chamadas/dia, Growth 1M/dia, Enterprise sem limite. Cache inteligente reduz chamadas em 80% — na prática quase ninguém estoura.',
+    a: 'O plano Starter cobre até 100k chamadas/dia, Growth 1M/dia, Enterprise sem limite. Cache inteligente reduz chamadas em 80%, na prática quase ninguém estoura.',
   },
   {
     q: 'Posso usar minha cloud (AWS, GCP, etc)?',
@@ -1134,8 +1134,8 @@ definePageMeta({
 })
 
 usePageSeo({
-  title: 'Redentia Whitelabel — sua marca em cima da nossa infra',
-  description: 'Plataforma white-label de investimentos: dados da B3, consolidador, IA, calculadoras e creative studio — com o seu logo, suas cores, seu domínio. Deploy em 1 semana.',
+  title: 'Redentia Whitelabel, sua marca em cima da nossa infra',
+  description: 'Plataforma white-label de investimentos: dados da B3, consolidador, IA, calculadoras e creative studio, com o seu logo, suas cores, seu domínio. Deploy em 1 semana.',
   path: '/whitelabel',
 })
 </script>

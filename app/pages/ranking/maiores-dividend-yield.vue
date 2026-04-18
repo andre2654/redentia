@@ -105,7 +105,7 @@
           Um DY muito elevado pode indicar tanto uma oportunidade quanto uma
           armadilha de valor (<em>value trap</em>). Quando o preço da ação cai
           muito por problemas fundamentais, o DY histórico sobe artificialmente
-          — mas dividendos futuros podem ser cortados. Use o ranking como
+         , mas dividendos futuros podem ser cortados. Use o ranking como
           ponto de partida e sempre analise o histórico, payout e geração de
           caixa da empresa.
         </p>

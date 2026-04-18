@@ -6,7 +6,7 @@
  * an advisory and doesn't want clients making decisions from rankings).
  *
  * When the active brand has the corresponding flag disabled, we 404
- * instead of redirecting — that way the sitemap entries that a different
+ * instead of redirecting, that way the sitemap entries that a different
  * tenant might have indexed don't accidentally leak into this tenant.
  */
 export default defineNuxtRouteMiddleware((to) => {

@@ -4,7 +4,7 @@
   <UApp :toaster="uAppConfig?.toaster">
     <!-- ClientOnly so the SSR never attempts to render this banner
          (SSR viewport = desktop default, but client viewport can be
-         anything — the mismatch would cascade through the whole tree
+         anything, the mismatch would cascade through the whole tree
          and break the brand reactive state on hydration). -->
     <ClientOnly>
       <AtomsInstallAppBanner v-if="showBanner" />
@@ -23,9 +23,9 @@ const uAppConfig = {
 }
 
 // Tenant resolution is handled server-side by:
-//   - server/middleware/0-tenant-resolver.ts — decides the slug from
+//   - server/middleware/0-tenant-resolver.ts, decides the slug from
 //     host/query/default, writes to event.context.tenantSlug
-//   - plugins/tenant.server.ts — reads the context and populates
+//   - plugins/tenant.server.ts, reads the context and populates
 //     useState('brand:active') BEFORE any component runs
 // so `useBrand()` is guaranteed correct by the time app.vue mounts.
 // No init function needed here. Client-side navigations with

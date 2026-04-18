@@ -55,7 +55,7 @@ function resetControls() {
   router.replace({ query: {} })
 }
 
-// Hardcoded Redentia palette — creatives are tenant-agnostic by design.
+// Hardcoded Redentia palette, creatives are tenant-agnostic by design.
 const primaryColor = computed(() => '#F5A623')
 const positiveColor = computed(() => '#00D395')
 const negativeColor = computed(() => '#FF4747')
@@ -71,7 +71,7 @@ const cardBackground = computed(() =>
 const fontFamily = computed(() => `'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif`)
 
 useHead(() => ({
-  title: `Redentia — ${tickerA.value} vs ${tickerB.value}`,
+  title: `Redentia, ${tickerA.value} vs ${tickerB.value}`,
   meta: [
     { name: 'robots', content: 'noindex,nofollow,noarchive' },
     { name: 'viewport', content: 'width=1080, initial-scale=1' },
@@ -141,7 +141,7 @@ const { data: assetB } = await useAsyncData<AssetSide>(
 )
 
 // Helpers
-// Backend returns numeric fields as strings — coerce to Number first
+// Backend returns numeric fields as strings, coerce to Number first
 function num(v: unknown): number | null {
   if (v == null) return null
   const n = typeof v === 'number' ? v : Number(v)
@@ -374,7 +374,7 @@ const indicators = computed(() => [
 </template>
 
 <style scoped>
-/* See comment in asset-spotlight.vue — :global() rules leak across
+/* See comment in asset-spotlight.vue, :global() rules leak across
    the dev server and break navigation. .frame below is already sized. */
 
 * { box-sizing: border-box; }

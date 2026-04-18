@@ -4,7 +4,7 @@
     :title="authStore.isAuthenticated ? 'Busca avançada' : false"
     :hide-search-bar="authStore.isAuthenticated"
   >
-    <!-- TERMINAL VARIANT (Redentia) — dense Bloomberg layout -->
+    <!-- TERMINAL VARIANT (Redentia), dense Bloomberg layout -->
     <div
       v-if="terminalVariant"
       class="flex flex-col"
@@ -334,7 +334,7 @@
                     ★ {{ getMdiLabels(asset.mdi).starLabel }}
                   </span>
                 </template>
-                <template v-else>—</template>
+                <template v-else>-</template>
               </span>
             </NuxtLink>
           </div>
@@ -444,7 +444,7 @@
               :class="[brand.font.headingWeight, brand.font.headingStyle]"
               :style="{ color: brand.colors.text, fontFamily: brandFontStack }"
             >
-              <template v-if="terminalVariant">Busca avançada — Terminal de ativos</template>
+              <template v-if="terminalVariant">Busca avançada, Terminal de ativos</template>
               <template v-else>Encontre ativos com precisão</template>
             </h1>
             <p
@@ -660,7 +660,7 @@
                 >
                   <div class="flex flex-col gap-1">
                     <span class="text-sm font-semibold" :style="{ color: brand.colors.text }">
-                      MDI — Ocorrência principal
+                      MDI, Ocorrência principal
                     </span>
                     <p class="text-xs" :style="{ color: brand.colors.textMuted }">
                       Mostra ativos cujo mês com maior recorrência de dividendos
@@ -699,7 +699,7 @@
                 >
                   <div class="flex flex-col gap-1">
                     <span class="text-sm font-semibold" :style="{ color: brand.colors.text }">
-                      MDI — Maior probabilidade
+                      MDI, Maior probabilidade
                     </span>
                     <p class="text-xs" :style="{ color: brand.colors.textMuted }">
                       Filtra conforme o mês com maior indicação de pagamento

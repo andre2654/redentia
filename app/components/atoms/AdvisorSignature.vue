@@ -26,7 +26,7 @@
         class="font-editorial-body text-[11px] italic"
         :style="{ color: brand.colors.textMuted }"
       >
-        — {{ closing }}
+       , {{ closing }}
       </span>
       <span
         class="font-editorial-display text-xl leading-tight"

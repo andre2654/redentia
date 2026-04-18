@@ -45,7 +45,7 @@
     </header>
 
     <!-- ============================================================
-         HERO — text + iPhone mockup side-by-side
+         HERO, text + iPhone mockup side-by-side
          ============================================================ -->
     <section class="relative">
       <div class="mx-auto grid max-w-7xl grid-cols-12 items-center gap-10 px-6 pb-24 pt-16 md:gap-16 md:px-10 md:pb-32 md:pt-24 lg:gap-20">
@@ -79,7 +79,7 @@
           </h1>
 
           <p class="mb-10 max-w-xl text-[17px] leading-[1.55] md:text-[19px]" :style="{ color: `${brand.colors.text}D0` }">
-            Instale como app no seu iPhone, Android ou desktop. <strong :style="{ color: brand.colors.text }">Sem App Store, sem download de 200MB.</strong> O site vira aplicativo em 5 segundos — com ícone na tela inicial, notificações push e modo offline.
+            Instale como app no seu iPhone, Android ou desktop. <strong :style="{ color: brand.colors.text }">Sem App Store, sem download de 200MB.</strong> O site vira aplicativo em 5 segundos, com ícone na tela inicial, notificações push e modo offline.
           </p>
 
           <!-- CTAs -->
@@ -252,7 +252,7 @@
     </section>
 
     <!-- ============================================================
-         BENEFITS — 3 cards
+         BENEFITS, 3 cards
          ============================================================ -->
     <section
       class="relative border-t"
@@ -260,7 +260,7 @@
     >
       <div class="mx-auto max-w-7xl px-6 py-24 md:px-10 md:py-32">
         <div class="mb-16 max-w-3xl">
-          <div class="text-[12px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">— Por que instalar</div>
+          <div class="text-[12px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">, Por que instalar</div>
           <h2
             class="mt-4 leading-[0.95] tracking-tight"
             :style="{
@@ -303,7 +303,7 @@
     </section>
 
     <!-- ============================================================
-         INSTALLATION GUIDE — 3 platforms
+         INSTALLATION GUIDE, 3 platforms
          ============================================================ -->
     <section
       ref="howToSection"
@@ -312,7 +312,7 @@
     >
       <div class="mx-auto max-w-7xl px-6 py-24 md:px-10 md:py-32">
         <div class="mb-16 text-center">
-          <div class="text-[12px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">— Como instalar</div>
+          <div class="text-[12px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">, Como instalar</div>
           <h2
             class="mx-auto mt-4 max-w-3xl leading-[0.95] tracking-tight"
             :style="{
@@ -404,7 +404,7 @@
     >
       <div class="mx-auto max-w-4xl px-6 py-24 md:px-10 md:py-28">
         <div class="mb-12">
-          <div class="text-[12px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">— Perguntas frequentes</div>
+          <div class="text-[12px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">, Perguntas frequentes</div>
           <h2
             class="mt-4 leading-[0.95] tracking-tight"
             :style="{
@@ -483,7 +483,7 @@ const stepsByPlatform = {
   desktop: [
     {
       title: 'Abra no Chrome ou Edge',
-      description: 'Funciona em qualquer Chromium — Chrome, Edge, Brave, Arc.',
+      description: 'Funciona em qualquer Chromium, Chrome, Edge, Brave, Arc.',
     },
     {
       title: 'Toque em Instalar',
@@ -508,7 +508,7 @@ const benefits = [
   {
     icon: 'i-lucide-bell-ring',
     title: 'Notificações de verdade',
-    description: 'Push real do iOS/Android — não é alerta de browser. Alertas de dividendos, preços-alvo e fatos relevantes chegam mesmo com o app fechado.',
+    description: 'Push real do iOS/Android, não é alerta de browser. Alertas de dividendos, preços-alvo e fatos relevantes chegam mesmo com o app fechado.',
     tag: 'NATIVO',
   },
   {
@@ -522,7 +522,7 @@ const benefits = [
 const faqs = [
   {
     q: 'Por que não tem na App Store?',
-    a: 'Porque a Redentia é uma PWA (Progressive Web App). Você instala direto do navegador, sem precisar passar pela App Store nem pela Google Play. Atualizações são instantâneas — quando a gente lança novidade, você já tem.',
+    a: 'Porque a Redentia é uma PWA (Progressive Web App). Você instala direto do navegador, sem precisar passar pela App Store nem pela Google Play. Atualizações são instantâneas, quando a gente lança novidade, você já tem.',
   },
   {
     q: 'É seguro?',

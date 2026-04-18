@@ -1,5 +1,5 @@
 /**
- * REDENTIA WHITELABEL — Brand Configuration
+ * REDENTIA WHITELABEL, Brand Configuration
  *
  * Este e o UNICO arquivo que precisa ser editado para personalizar
  * toda a plataforma para um novo cliente/influenciador.
@@ -17,7 +17,7 @@
  * "Quanto a Margarete precisa render?" ou "Ferramenta AUVP".
  * Dark mode e obrigatorio. Uma unica cor de destaque carrega toda a personalidade.
  * Nenhuma dessas marcas funciona sem a pessoa por tras.
- * Todas evitam azul corporativo — verde, amarelo e vermelho, nunca azul banco.
+ * Todas evitam azul corporativo, verde, amarelo e vermelho, nunca azul banco.
  * ---
  */
 
@@ -150,7 +150,7 @@ interface BrandConfig {
     // Comparativos setoriais (páginas /setor/*).
     showSectorComparatives: boolean
     // Commentaries AI nas páginas de asset (seção "Movimentos notáveis").
-    // Explica movimentos de curto prazo — pode conflitar com buy and hold.
+    // Explica movimentos de curto prazo, pode conflitar com buy and hold.
     showMarketCommentaries: boolean
   }
 
@@ -193,7 +193,7 @@ interface BrandConfig {
     showChecklist: boolean
     showCompanyInfo: boolean
     showMarketCommentaries?: boolean
-    // Visual variant — 'default' keeps the terminal/card layout used by
+    // Visual variant, 'default' keeps the terminal/card layout used by
     // Redentia. 'editorial' switches to the narrated column layout used
     // by Norte Capital (private-bank "letter from your advisor"). 'mentor'
     // switches to the aspirational masterclass/book-cover layout used by
@@ -233,7 +233,7 @@ interface BrandConfig {
 
   // HERO (pagina inicial, visitante nao logado)
   hero: {
-    variant: 'centered' | 'split' | 'minimal' | 'institutional' | 'editorial' | 'terminal' | 'mentor' | 'research' | 'showtime' | 'playbook' | 'holder'  // layout do hero: centered (premium), split (founder), minimal (data-first), institutional (assessoria/escritorio), editorial (narrated private-bank letter — Norte Capital), terminal (Bloomberg-reimagined — Redentia), mentor (aspirational book-cover — Primo Rico), research (academic paper / AUVP study notebook — Investidor Sardinha), showtime (TV show / pop magazine — Me Poupe!), playbook (calm method + author photo + bold sticker accents — Saraiva Invest), holder (sentencious editorial portrait + giant chunky condensed wordmark + serif manifesto — Holder, the conviction-driven pseudonymous buy-and-hold archetype)
+    variant: 'centered' | 'split' | 'minimal' | 'institutional' | 'editorial' | 'terminal' | 'mentor' | 'research' | 'showtime' | 'playbook' | 'holder'  // layout do hero: centered (premium), split (founder), minimal (data-first), institutional (assessoria/escritorio), editorial (narrated private-bank letter, Norte Capital), terminal (Bloomberg-reimagined, Redentia), mentor (aspirational book-cover, Primo Rico), research (academic paper / AUVP study notebook, Investidor Sardinha), showtime (TV show / pop magazine, Me Poupe!), playbook (calm method + author photo + bold sticker accents, Saraiva Invest), holder (sentencious editorial portrait + giant chunky condensed wordmark + serif manifesto, Holder, the conviction-driven pseudonymous buy-and-hold archetype)
     badge: string                // texto do badge animado no topo
     title: string                // headline principal (pode usar HTML)
     subtitle: string             // subtitulo
@@ -369,8 +369,8 @@ interface BrandConfig {
   // === NAVEGACAO E LABELS DE UI ===
   nav: {
     // Sidebar (menu lateral desktop)
-    menuLabel: string              // "Menu" — label da secao de menu
-    toolsLabel: string             // "Ferramentas" — label da secao de ferramentas
+    menuLabel: string              // "Menu", label da secao de menu
+    toolsLabel: string             // "Ferramentas", label da secao de ferramentas
     overview: string               // "Visao Geral"
     wallet: string                 // "Sua carteira"
     chat: string                   // "Chat"
@@ -552,9 +552,9 @@ interface BrandConfig {
 // PRIMO RICO (Thiago Nigro)
 // ============================================================
 // Persona: O mentor premium que ja chegou la. Aspiracional, direto,
-// provocativo. "Do mil ao milhao" — jornada do investidor comum
+// provocativo. "Do mil ao milhao", jornada do investidor comum
 // ao patrimonio relevante. Estetica dark premium + verde maca.
-// Tipografia: Montserrat bold — moderna, limpa, premium.
+// Tipografia: Montserrat bold, moderna, limpa, premium.
 // ============================================================
 const primoRico: BrandConfig = {
   name: 'Primo Rico',
@@ -577,7 +577,7 @@ const primoRico: BrandConfig = {
     greeting: 'E ai, primo!',
     ctaPrimary: 'Construir patrimonio',
     ctaSecondary: 'Ja tenho conta',
-    emptyState: 'Nenhum dado disponivel. O mercado nao espera — volte em instantes.',
+    emptyState: 'Nenhum dado disponivel. O mercado nao espera, volte em instantes.',
     encouragement: 'Patrimonio se constroi com consistencia, nao com sorte. Skin in the game.',
     error: 'Algo deu errado. Estamos corrigindo. Volte em instantes.',
   },
@@ -626,7 +626,7 @@ const primoRico: BrandConfig = {
   },
 
   seo: {
-    title: 'Primo Rico — Acompanhe acoes, FIIs e dividendos',
+    title: 'Primo Rico, Acompanhe acoes, FIIs e dividendos',
     description: 'Plataforma do Primo Rico para cotacoes em tempo real, analises fundamentalistas e calculadoras financeiras.',
     locale: 'pt_BR',
     lang: 'pt-BR',
@@ -680,10 +680,10 @@ const primoRico: BrandConfig = {
     },
     // Metodo ARCA: 4 pilares puros
     categories: [
-      { label: 'A — Acoes Brasileiras', to: '/acoes', icon: 'i-lucide-trending-up', description: 'Pilar do patrimonio de longo prazo. Large caps, small caps e dividendos — empresas que geram valor por decadas.', cta: 'Analisar acoes' },
-      { label: 'R — Real Estate', to: '/fiis', icon: 'i-lucide-building-2', description: 'Fundos imobiliarios com renda passiva mensal. Dividendos isentos de IR — eficiencia tributaria maxima.', cta: 'Analisar FIIs' },
-      { label: 'C — Caixa', to: '/dividendos', icon: 'i-lucide-shield', description: 'Renda fixa e reserva estrategica. Tesouro Direto, CDB, LCI/LCA — a base que protege o patrimonio.', cta: 'Ver renda fixa' },
-      { label: 'A — Ativos Alternativos', to: '/etfs', icon: 'i-lucide-globe', description: 'Exposicao global e diversificacao. ETFs internacionais, BDRs, cripto — risco controlado, retorno assimetrico.', cta: 'Explorar ativos' },
+      { label: 'A, Acoes Brasileiras', to: '/acoes', icon: 'i-lucide-trending-up', description: 'Pilar do patrimonio de longo prazo. Large caps, small caps e dividendos, empresas que geram valor por decadas.', cta: 'Analisar acoes' },
+      { label: 'R, Real Estate', to: '/fiis', icon: 'i-lucide-building-2', description: 'Fundos imobiliarios com renda passiva mensal. Dividendos isentos de IR, eficiencia tributaria maxima.', cta: 'Analisar FIIs' },
+      { label: 'C, Caixa', to: '/dividendos', icon: 'i-lucide-shield', description: 'Renda fixa e reserva estrategica. Tesouro Direto, CDB, LCI/LCA, a base que protege o patrimonio.', cta: 'Ver renda fixa' },
+      { label: 'A, Ativos Alternativos', to: '/etfs', icon: 'i-lucide-globe', description: 'Exposicao global e diversificacao. ETFs internacionais, BDRs, cripto, risco controlado, retorno assimetrico.', cta: 'Explorar ativos' },
     ],
   },
 
@@ -696,7 +696,7 @@ const primoRico: BrandConfig = {
     showFinancials: true,
     showChecklist: true,
     showCompanyInfo: true,
-    // Primo Rico uses the masterclass/book-cover layout — Montserrat Black
+    // Primo Rico uses the masterclass/book-cover layout, Montserrat Black
     // display, chunky orange blocks, numbered chapters, and a pull quote
     // from the mentor framing the asset analysis.
     variant: 'mentor',
@@ -728,13 +728,13 @@ const primoRico: BrandConfig = {
   // --- PERSONALIZACOES POR AREA ---
 
   hero: {
-    // 'mentor' is Primo Rico's dedicated variant — aspirational book-cover
+    // 'mentor' is Primo Rico's dedicated variant, aspirational book-cover
     // aesthetic (Montserrat Black display, chunky orange blocks, founder
     // portrait, pull quotes). Nothing else shares this variant.
     variant: 'mentor',
     badge: 'MANUAL DO PRIMO',
     title: 'CONSTRUA\nPATRIMÔNIO.',
-    subtitle: 'Análise fundamentalista, eficiência tributária e ferramentas de construção de patrimônio. Não existe atalho. Só consistência, tempo e as decisões certas — todos os dias.',
+    subtitle: 'Análise fundamentalista, eficiência tributária e ferramentas de construção de patrimônio. Não existe atalho. Só consistência, tempo e as decisões certas, todos os dias.',
     founderQuote: 'Liberdade ou mediocridade. A escolha é sua.',
     ctaLabel: 'Começar a construir',
     ctaSecondaryLabel: 'Já tenho conta',
@@ -857,7 +857,7 @@ const primoRico: BrandConfig = {
     title: 'Sobre o Primo Rico',
     paragraphs: [
       'O Primo Rico nasceu com uma missao: provar que qualquer pessoa pode construir patrimonio de verdade com disciplina, conhecimento e as ferramentas certas.',
-      'Criada por Thiago Nigro — autor do best-seller "Do Mil ao Milhao" e fundador do Grupo Primo — a plataforma une analise fundamentalista, eficiencia tributaria e inteligencia artificial para quem leva a serio a construcao de riqueza de longo prazo.',
+      'Criada por Thiago Nigro, autor do best-seller "Do Mil ao Milhao" e fundador do Grupo Primo, a plataforma une analise fundamentalista, eficiencia tributaria e inteligencia artificial para quem leva a serio a construcao de riqueza de longo prazo.',
       'Aqui voce encontra cotacoes em tempo real, calculadoras patrimoniais, assessoria com IA e o Metodo ARCA aplicado na pratica. Tudo pensado para quem quer liberdade financeira, nao atalhos.',
       'Patrimonio se constroi com consistencia. A plataforma e a ferramenta. A decisao e sua.',
     ],
@@ -984,7 +984,7 @@ const primoRico: BrandConfig = {
   // Primo Rico: hero > poder do tempo > mercado > ARCA > metricas > IA > ecossistema > depoimentos
   homeSections: [
     // Primo Rico's hero ("mentor" variant) carries the full narrative
-    // arc — pull quote, method ARCA, stats, ecosystem, closing CTA. We
+    // arc, pull quote, method ARCA, stats, ecosystem, closing CTA. We
     // keep a light supporting tail (market live + testimonials) and turn
     // everything else off to preserve the book-cover density.
     { id: 'hero', visible: true },
@@ -1034,7 +1034,7 @@ const primoRico: BrandConfig = {
       },
       {
         type: 'video',
-        title: 'Rumo ao primeiro milhao — minha estrategia',
+        title: 'Rumo ao primeiro milhao, minha estrategia',
         description: 'Como construi meu patrimonio usando juros compostos e disciplina.',
         thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
         url: 'https://youtube.com/@primorico',
@@ -1061,7 +1061,7 @@ const primoRico: BrandConfig = {
             students: '200.000+ alunos',
           },
           {
-            title: 'Do Mil ao Milhao — O Curso',
+            title: 'Do Mil ao Milhao, O Curso',
             description: 'Metodologia completa para construir patrimonio com consistencia.',
             image: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
             url: 'https://primorico.com.br/cursos',
@@ -1075,7 +1075,7 @@ const primoRico: BrandConfig = {
         name: 'Consultoria & Previdencia',
         items: [
           {
-            title: 'Portfel — Consultoria Patrimonial',
+            title: 'Portfel, Consultoria Patrimonial',
             description: 'Consultoria personalizada para quem quer gestao profissional do patrimonio. Metodo ARCA aplicado.',
             image: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
             url: 'https://portfel.com.br',
@@ -1084,7 +1084,7 @@ const primoRico: BrandConfig = {
             students: '10.000+ clientes',
           },
           {
-            title: 'Grao — Previdencia Inteligente',
+            title: 'Grao, Previdencia Inteligente',
             description: 'Previdencia privada com taxas justas e eficiencia tributaria. Beneficio fiscal do PGBL incluso.',
             image: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
             url: 'https://grao.com.br',
@@ -1120,7 +1120,7 @@ const primoRico: BrandConfig = {
 // Persona: A amiga esperta que simplifica dinheiro. Acessivel,
 // divertida, sem frescura. "Margarete" como alter-ego comico.
 // Estetica: Dark + amarelo vibrante/dourado. Energia alta.
-// Tipografia: Poppins bold, rounded — energia, acessibilidade.
+// Tipografia: Poppins bold, rounded, energia, acessibilidade.
 // ============================================================
 const mePoupe: BrandConfig = {
   name: 'Me Poupe!',
@@ -1192,7 +1192,7 @@ const mePoupe: BrandConfig = {
   },
 
   seo: {
-    title: 'Me Poupe! — Domine seu dinheiro e invista com confianca',
+    title: 'Me Poupe!, Domine seu dinheiro e invista com confianca',
     description: 'Plataforma do Me Poupe! com cotacoes, calculadoras e analises de investimentos sem complicacao.',
     locale: 'pt_BR',
     lang: 'pt-BR',
@@ -1218,9 +1218,9 @@ const mePoupe: BrandConfig = {
     showGlossary: true,
     showGuides: true,
     // Me Poupe!: público leigo absoluto, foco em hábito financeiro.
-    // Rankings de altas/baixas incentivam timing — desligados.
+    // Rankings de altas/baixas incentivam timing, desligados.
     // DY e calendário de dividendos apoiam a tese de renda passiva.
-    // Commentaries explicam movimentos de curto prazo — geram ansiedade.
+    // Commentaries explicam movimentos de curto prazo, geram ansiedade.
     showDividendYieldRanking: true,
     showMonthlyMoversRanking: false,
     showDividendCalendar: true,
@@ -1290,13 +1290,13 @@ const mePoupe: BrandConfig = {
   // --- PERSONALIZACOES POR AREA ---
 
   hero: {
-    // 'showtime' is Me Poupe!'s dedicated variant — TV show / pop magazine
+    // 'showtime' is Me Poupe!'s dedicated variant, TV show / pop magazine
     // aesthetic with lower thirds, rotated frames, character bubbles,
     // sticker badges, and Margarete the wooden spoon as recurring mascot.
     variant: 'showtime',
     badge: 'BORA LÁ, CRIATURA!',
     title: 'Chega de\ndinheirofobia,\ncriatura!',
-    subtitle: 'Eu sou a Nath. Esta é a Me Poupe! — o programa que explica seu dinheiro do jeito que sua melhor amiga explicaria. Simulador, IA e conteúdo no bom português. O Sidnelson que chore.',
+    subtitle: 'Eu sou a Nath. Esta é a Me Poupe!, o programa que explica seu dinheiro do jeito que sua melhor amiga explicaria. Simulador, IA e conteúdo no bom português. O Sidnelson que chore.',
     founderQuote: 'Poupe primeiro, gaste o que sobrar. E deixa o juro composto, esse filho maravilhoso, trabalhar por você enquanto você vive a vida.',
     ctaLabel: 'Bora começar, criatura!',
     ctaSecondaryLabel: 'Já sou da família',
@@ -1337,7 +1337,7 @@ const mePoupe: BrandConfig = {
     chatTitle: 'Fala com a Na_th IA',
     chatSubtitle: 'Sua assessora pessoal. Responde com humor, como sua melhor amiga.',
     typingLabel: 'NA_TH IA:',
-    welcomeTitle: 'Na_th IA — sua assessora pessoal',
+    welcomeTitle: 'Na_th IA, sua assessora pessoal',
     welcomeSubtitle: 'Responde com humor, como sua melhor amiga. Tira duvida, simula investimento e te ajuda a dominar seu dinheiro sem frescura!',
     placeholder: 'Pergunta sem medo! Ex: "To endividada, o que faco?"',
     suggestedQuestions: [
@@ -1347,8 +1347,8 @@ const mePoupe: BrandConfig = {
       'O que e melhor: poupanca ou Tesouro Direto?',
       'Como comecar a investir com R$ 100?',
     ],
-    systemPromptContext: 'Voce e a Na_th IA, assistente de IA da plataforma Me Poupe! (Nathalia Arcuri). Voce e como a melhor amiga que entende de dinheiro: responde com humor, empatia e sem jargao. Use linguagem descontraida, pode usar girias leves, emojis e referencias pop. Nunca seja condescendente. Empodere a pessoa. Se ela ta endividada, acolha primeiro e depois de o caminho. Personagens do ecossistema que voce pode usar: Margarete (espada da Nath, da choques de realidade), Sidnelson (gerente de bancao que vende produto ruim), Juro Composto (o filho maravilhoso que trabalha por voce). Nunca indique poupanca — quem investe na poupanca e vacilao. Sempre sugira corretoras em vez de bancoes. Se a pessoa ganha pouco, foque em renda extra antes de cortar gastos.',
-    ctaGreeting: 'Oi, criatura! Sou a Na_th IA, sua assessora pessoal. Pode perguntar qualquer coisa sobre dinheiro — prometo que nao vou te julgar (mas a Margarete talvez sim)!',
+    systemPromptContext: 'Voce e a Na_th IA, assistente de IA da plataforma Me Poupe! (Nathalia Arcuri). Voce e como a melhor amiga que entende de dinheiro: responde com humor, empatia e sem jargao. Use linguagem descontraida, pode usar girias leves, emojis e referencias pop. Nunca seja condescendente. Empodere a pessoa. Se ela ta endividada, acolha primeiro e depois de o caminho. Personagens do ecossistema que voce pode usar: Margarete (espada da Nath, da choques de realidade), Sidnelson (gerente de bancao que vende produto ruim), Juro Composto (o filho maravilhoso que trabalha por voce). Nunca indique poupanca, quem investe na poupanca e vacilao. Sempre sugira corretoras em vez de bancoes. Se a pessoa ganha pouco, foque em renda extra antes de cortar gastos.',
+    ctaGreeting: 'Oi, criatura! Sou a Na_th IA, sua assessora pessoal. Pode perguntar qualquer coisa sobre dinheiro, prometo que nao vou te julgar (mas a Margarete talvez sim)!',
     ctaButton: 'Fala com a Na_th IA',
     ctaFeatures: ['Resposta em ~3s', 'Sem julgamento', 'Ilimitado'],
   },
@@ -1421,7 +1421,7 @@ const mePoupe: BrandConfig = {
     paragraphs: [
       'A Me Poupe! e a maior plataforma de educacao financeira feminina do mundo, criada por Nathalia Arcuri. Nossa missao e descomplicar o dinheiro e empoderar as pessoas a tomarem o controle da sua vida financeira.',
       'Com uma linguagem acessivel, divertida e sem jargoes, a Me Poupe! ja ajudou milhoes de brasileiros a saírem das dividas, comecarem a investir e construirem sua liberdade financeira.',
-      'A plataforma reune cotacoes em tempo real, calculadoras intuitivas e uma conselheira com IA que explica tudo do jeitinho Me Poupe! — sem frescura.',
+      'A plataforma reune cotacoes em tempo real, calculadoras intuitivas e uma conselheira com IA que explica tudo do jeitinho Me Poupe!, sem frescura.',
       'Porque dinheiro nao e so pra quem ja nasce rico. E pra todo mundo que decide tomar as redeas da propria vida.',
     ],
   },
@@ -1662,7 +1662,7 @@ const mePoupe: BrandConfig = {
         name: 'Livros',
         items: [
           {
-            title: 'Me Poupe! — 10 passos',
+            title: 'Me Poupe!, 10 passos',
             description: 'O livro que ja mudou a vida financeira de mais de 500 mil brasileiros.',
             image: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
             url: 'https://amzn.to/mepoupe',
@@ -1683,7 +1683,7 @@ const mePoupe: BrandConfig = {
 // Persona: O professor tecnico e pragmatico. AUVP (A Unica Verdade
 // Possivel). Analise fundamentalista profunda, buy and hold, valor.
 // Estetica: Dark + vermelho intenso. Serio, contrastante, assertivo.
-// Tipografia: Barlow condensed — precisao, seriedade, eficiencia.
+// Tipografia: Barlow condensed, precisao, seriedade, eficiencia.
 // ============================================================
 const investidorSardinha: BrandConfig = {
   name: 'Investidor Sardinha',
@@ -1717,7 +1717,7 @@ const investidorSardinha: BrandConfig = {
   privacyEmail: 'privacidade@investidorsardinha.com.br',
 
   colors: {
-    // Sardinha's "AUVP research paper" palette — off-white paper tone,
+    // Sardinha's "AUVP research paper" palette, off-white paper tone,
     // near-black ink for body, red used only as a highlight (the
     // professor's red pen correction mark), not as a background.
     primary: '#C53030',          // red pen · slightly warmer than Tailwind red-600
@@ -1742,7 +1742,7 @@ const investidorSardinha: BrandConfig = {
   font: {
     // IBM Plex trio loaded at once: Serif for display, Sans for body, Mono
     // for numbers. IBM Plex is the "research paper / department of
-    // engineering" archetype — used by IBM, Morningstar-esque publications,
+    // engineering" archetype, used by IBM, Morningstar-esque publications,
     // and academic reading lists.
     family: 'IBM Plex Sans',
     google: 'IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500;600',
@@ -1763,7 +1763,7 @@ const investidorSardinha: BrandConfig = {
   },
 
   seo: {
-    title: 'Investidor Sardinha — Analise fundamentalista e dados de mercado',
+    title: 'Investidor Sardinha, Analise fundamentalista e dados de mercado',
     description: 'Plataforma do Investidor Sardinha com indicadores financeiros, analise fundamentalista e ferramentas AUVP para investidores de longo prazo.',
     locale: 'pt_BR',
     lang: 'pt-BR',
@@ -1790,7 +1790,7 @@ const investidorSardinha: BrandConfig = {
     showGuides: true,
     // Sardinha / AUVP: análise fundamentalista, buy and hold, valor.
     // Rankings de altas/baixas contradizem a tese (trading de curto prazo).
-    // Commentaries explicam ruído de curto prazo — conflitam com horizonte
+    // Commentaries explicam ruído de curto prazo, conflitam com horizonte
     // longo. DY, calendário e setores apoiam análise fundamentalista.
     showDividendYieldRanking: true,
     showMonthlyMoversRanking: false,
@@ -1808,7 +1808,7 @@ const investidorSardinha: BrandConfig = {
     showFinancials: true,
     showChecklist: true,
     showCompanyInfo: true,
-    // Investidor Sardinha uses the "AUVP research paper" layout — IBM Plex
+    // Investidor Sardinha uses the "AUVP research paper" layout, IBM Plex
     // serif display, § section marks, inline footnotes, red-pen highlights,
     // author signature at the end. The whole page reads like a Ben Graham
     // textbook applied to one asset.
@@ -1853,7 +1853,7 @@ const investidorSardinha: BrandConfig = {
   },
 
   ecosystem: [
-    { name: 'AUVP', url: 'https://auvp.com.br', description: 'Escola de investimentos — A Unica Verdade Possivel', icon: 'i-lucide-graduation-cap' },
+    { name: 'AUVP', url: 'https://auvp.com.br', description: 'Escola de investimentos, A Unica Verdade Possivel', icon: 'i-lucide-graduation-cap' },
     { name: 'AUVP Analítica', url: 'https://analitica.auvp.com.br', description: 'Plataforma de analise de ativos', icon: 'i-lucide-bar-chart-3' },
   ],
 
@@ -1867,7 +1867,7 @@ const investidorSardinha: BrandConfig = {
   // --- PERSONALIZACOES POR AREA ---
 
   hero: {
-    // 'research' is Sardinha's dedicated variant — AUVP academic paper
+    // 'research' is Sardinha's dedicated variant, AUVP academic paper
     // aesthetic with IBM Plex serif, § section marks, footnotes, author
     // signature. Copy rewritten as a study paper front matter.
     variant: 'research',
@@ -1997,7 +1997,7 @@ const investidorSardinha: BrandConfig = {
     paragraphs: [
       'O Investidor Sardinha e a plataforma de investimentos de Raul Sena, fundador da AUVP (A Unica Verdade Possivel). Nossa filosofia: conhecimento solido, analise fundamentalista e visao de longo prazo.',
       'A plataforma oferece dados de mercado em tempo real, indicadores financeiros detalhados e ferramentas de analise para investidores que pensam por conta propria.',
-      'Com inteligencia artificial treinada em analise fundamentalista, o Analista AUVP ajuda voce a avaliar ativos, comparar indicadores e tomar decisoes embasadas — sem hype, sem promessa.',
+      'Com inteligencia artificial treinada em analise fundamentalista, o Analista AUVP ajuda voce a avaliar ativos, comparar indicadores e tomar decisoes embasadas, sem hype, sem promessa.',
       'Porque sardinha esperta nao segue o cardume. Sardinha esperta estuda, analisa e decide com fundamento.',
     ],
   },
@@ -2103,7 +2103,7 @@ const investidorSardinha: BrandConfig = {
 
   investorChecklist: {
     sectionTitle: 'Roteiro do Investidor',
-    sectionSubtitle: 'O caminho AUVP para investir com fundamento — passo a passo, sem atalhos.',
+    sectionSubtitle: 'O caminho AUVP para investir com fundamento, passo a passo, sem atalhos.',
     steps: [
       {
         number: 1,
@@ -2126,7 +2126,7 @@ const investidorSardinha: BrandConfig = {
       {
         number: 3,
         title: 'Entenda os indicadores fundamentalistas',
-        description: 'P/L, P/VP, ROE, margem liquida, DY — aprenda a ler os numeros antes de comprar qualquer ativo.',
+        description: 'P/L, P/VP, ROE, margem liquida, DY, aprenda a ler os numeros antes de comprar qualquer ativo.',
         icon: 'i-lucide-bar-chart-3',
         status: 'available',
         ctaText: 'Ver glossario',
@@ -2135,7 +2135,7 @@ const investidorSardinha: BrandConfig = {
       {
         number: 4,
         title: 'Defina sua estrategia de alocacao',
-        description: 'Renda fixa, acoes, FIIs, ativos internacionais — distribua de acordo com seu perfil e horizonte de tempo.',
+        description: 'Renda fixa, acoes, FIIs, ativos internacionais, distribua de acordo com seu perfil e horizonte de tempo.',
         icon: 'i-lucide-pie-chart',
         status: 'available',
         ctaText: 'Explorar categorias',
@@ -2153,7 +2153,7 @@ const investidorSardinha: BrandConfig = {
       {
         number: 6,
         title: 'Invista com consistencia',
-        description: 'Aportes mensais, reinvestimento de dividendos e paciencia. Buy and hold funciona no longo prazo — os dados comprovam.',
+        description: 'Aportes mensais, reinvestimento de dividendos e paciencia. Buy and hold funciona no longo prazo, os dados comprovam.',
         icon: 'i-lucide-repeat',
         status: 'locked',
         ctaText: 'Simular aportes',
@@ -2162,13 +2162,13 @@ const investidorSardinha: BrandConfig = {
     ],
     footerText: 'Baseado na metodologia',
     footerLink: 'https://auvp.com.br',
-    footerLinkText: 'AUVP — A Unica Verdade Possivel',
+    footerLinkText: 'AUVP, A Unica Verdade Possivel',
   },
 
-  // Sardinha uses the "AUVP research paper" layout — the hero self-contains
+  // Sardinha uses the "AUVP research paper" layout, the hero self-contains
   // everything: panorama do pregão, §1 radar, §2 screener, §3 setores,
   // §4 calendário, §5 notas do professor, §6 ecossistema AUVP e closing.
-  // Nenhuma outra seção é renderizada — a página inteira é o paper.
+  // Nenhuma outra seção é renderizada, a página inteira é o paper.
   homeSections: [
     { id: 'hero', visible: true },
     { id: 'market', visible: false },
@@ -2217,7 +2217,7 @@ const investidorSardinha: BrandConfig = {
       {
         type: 'video',
         title: 'Os indicadores que voce PRECISA saber',
-        description: 'P/L, P/VP, ROE, margem liquida, DY — tudo explicado com exemplos reais.',
+        description: 'P/L, P/VP, ROE, margem liquida, DY, tudo explicado com exemplos reais.',
         thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
         url: 'https://youtube.com/@investidorsardinha',
         duration: '20:15',
@@ -2234,7 +2234,7 @@ const investidorSardinha: BrandConfig = {
         name: 'Formacoes',
         items: [
           {
-            title: 'AUVP — A Unica Verdade Possivel',
+            title: 'AUVP, A Unica Verdade Possivel',
             description: 'O curso completo de investimentos do Raul Sena. Analise fundamentalista na pratica.',
             image: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
             url: 'https://auvp.com.br',
@@ -2275,10 +2275,10 @@ const investidorSardinha: BrandConfig = {
 // ============================================================
 // REDENTIA (Plataforma original)
 // ============================================================
-// Persona: A plataforma de origem — tecnologia financeira pura.
+// Persona: A plataforma de origem, tecnologia financeira pura.
 // Profissional, confiavel, data-driven. Sem influenciador,
 // a marca e o produto. Estetica dark premium + azul tech.
-// Tipografia: Inter — neutra, moderna, profissional.
+// Tipografia: Inter, neutra, moderna, profissional.
 // ============================================================
 const redentia: BrandConfig = {
   name: 'Redentia',
@@ -2311,7 +2311,7 @@ const redentia: BrandConfig = {
   email: 'contato@redentia.com.br',
   privacyEmail: 'privacidade@redentia.com.br',
 
-  // "Bloomberg Terminal Reimaginado" — Redentia v2 brand.
+  // "Bloomberg Terminal Reimaginado", Redentia v2 brand.
   // Amber primary (authority + warmth), off-black warm bg (not pure #000),
   // terminal-green for positive, saturated red for negative, mono for
   // numbers. Signals "professional financial data tool" at first glance.
@@ -2356,12 +2356,12 @@ const redentia: BrandConfig = {
   },
 
   seo: {
-    title: 'Redentia — Terminal de mercado com IA',
-    description: 'Mercado em tempo real, inteligencia sob demanda. Cotacoes, analises fundamentalistas, calculadoras e assessor com IA em um so terminal.',
+    title: 'Redentia, Ecossistema de investimentos com IA',
+    description: 'Mercado em tempo real, inteligencia sob demanda. Cotacoes, analises fundamentalistas, calculadoras e assessor com IA em um so lugar.',
     locale: 'pt_BR',
     lang: 'pt-BR',
     themeColor: '#0A0B0E',
-    keywords: ['redentia', 'terminal financeiro', 'investimentos', 'acoes', 'fiis', 'dividendos', 'analise fundamentalista', 'inteligencia artificial'],
+    keywords: ['redentia', 'ecossistema de investimentos', 'investimentos com IA', 'acoes', 'fiis', 'dividendos', 'analise fundamentalista', 'inteligencia artificial'],
   },
 
   company: {
@@ -2381,7 +2381,7 @@ const redentia: BrandConfig = {
     showEcosystemLinks: false,
     showGlossary: true,
     showGuides: true,
-    // Redentia: plataforma completa e neutra — tudo ligado por padrão.
+    // Redentia: plataforma completa e neutra, tudo ligado por padrão.
     showDividendYieldRanking: true,
     showMonthlyMoversRanking: true,
     showDividendCalendar: true,
@@ -2447,18 +2447,18 @@ const redentia: BrandConfig = {
   },
 
   hero: {
-    // 'terminal' is Redentia's dedicated variant — Bloomberg-reimagined
+    // 'terminal' is Redentia's dedicated variant, Bloomberg-reimagined
     // aesthetic with live ticker, mono labels, serif display, etc. Other
     // tenants that used 'centered' (e.g. Primo Rico) should continue
     // rendering their own layouts without inheriting this one.
     variant: 'terminal',
     badge: '[MARKET.LIVE]',
     title: 'Investir com\ninteligencia.',
-    subtitle: 'Mercado em tempo real. Inteligencia sob demanda. Cotacoes, analises fundamentalistas e assessoria com IA em um so terminal.',
+    subtitle: 'Mercado em tempo real, inteligencia sob demanda. Cotacoes, analises fundamentalistas, calculadoras e assessoria com IA, um ecossistema de investimentos em um so lugar.',
     founderQuote: '',
     ctaLabel: 'Comecar agora',
     ctaSecondaryLabel: 'Ja tenho conta',
-    ctaIcon: 'i-lucide-terminal',
+    ctaIcon: 'i-lucide-sparkles',
     trustIndicators: ['Criptografado', 'Sempre gratis', 'Dados em tempo real'],
   },
 
@@ -2514,7 +2514,7 @@ const redentia: BrandConfig = {
     sectionTitle: 'Velocidade como diferencial.',
     sectionSubtitle: 'Do clique a resposta em segundos',
     // Big number is no longer a raw analysis count (which reads as vanity
-    // without context). It's the IA response time — the real differentiator.
+    // without context). It's the IA response time, the real differentiator.
     counterLabel: 'segundos em media para a IA responder qualquer duvida',
     stats: [
       { value: '12.500+', label: 'Ativos monitorados' },
@@ -2552,7 +2552,7 @@ const redentia: BrandConfig = {
   trustBar: {
     text: 'Tudo o que voce precisa em um so lugar',
     footnote: 'Dados oficiais da B3 · LGPD-compliant · 100% gratuito',
-    // Partners transformed into "proof pillars" — not broker endorsements.
+    // Partners transformed into "proof pillars", not broker endorsements.
     // Each entry represents a verifiable capability, not a partnership.
     partners: [
       '12.500+ ativos',
@@ -2588,7 +2588,7 @@ const redentia: BrandConfig = {
     title: 'Sobre a Redentia',
     paragraphs: [
       'A Redentia e uma plataforma de investimentos que combina tecnologia de ponta com inteligencia artificial para democratizar o acesso a informacao financeira de qualidade.',
-      'Oferecemos cotacoes em tempo real, analises fundamentalistas, calculadoras financeiras e assessoria com IA — tudo em um unico lugar, gratuito e acessivel.',
+      'Oferecemos cotacoes em tempo real, analises fundamentalistas, calculadoras financeiras e assessoria com IA, tudo em um unico lugar, gratuito e acessivel.',
       'Nossa missao e empoderar investidores de todos os niveis com ferramentas profissionais e dados confiaveis para tomadas de decisao mais inteligentes.',
       'Comprometidos com transparencia, seguranca e inovacao, transformamos a experiencia de investir no Brasil.',
     ],
@@ -2609,7 +2609,7 @@ const redentia: BrandConfig = {
       { icon: 'i-lucide-user-plus', title: 'Crie sua conta gratis', description: 'Cadastro rapido, sem cartao de credito. Comece em menos de 1 minuto.' },
       { icon: 'i-lucide-search', title: 'Explore o mercado', description: 'Acompanhe cotacoes em tempo real, analise fundamentos e compare ativos.' },
       { icon: 'i-lucide-calculator', title: 'Simule seus investimentos', description: 'Use as calculadoras para planejar aposentadoria, calcular preco teto e mais.' },
-      { icon: 'i-lucide-message-circle', title: 'Pergunte a IA', description: 'Tire duvidas com o Assessor Redentia — disponivel 24/7 com respostas em segundos.' },
+      { icon: 'i-lucide-message-circle', title: 'Pergunte a IA', description: 'Tire duvidas com o Assessor Redentia, disponivel 24/7 com respostas em segundos.' },
     ],
   },
 
@@ -2692,7 +2692,7 @@ const redentia: BrandConfig = {
   },
 
   // Home section order + visibility. Trimmed down from the original 8
-  // sections to 7 — `featureTabs` was removed because it largely duplicates
+  // sections to 7, `featureTabs` was removed because it largely duplicates
   // `categories` (both lead to /acoes, /fiis, /etfs, etc). This shaves
   // ~600px of vertical scroll on desktop and ~1000px on mobile.
   homeSections: [
@@ -2730,14 +2730,14 @@ const redentia: BrandConfig = {
 // NORTE CAPITAL (Assessoria)
 // ============================================================
 // Persona: Assessoria de investimentos premium. Tom institucional,
-// confiavel, discreto — estetica de "private bank". Publico: investidor
+// confiavel, discreto, estetica de "private bank". Publico: investidor
 // com patrimonio em construcao ou consolidado que valoriza assessor
 // humano + tecnologia. Foco em preservacao de patrimonio e longo prazo.
 // Diferencial: consolidador de carteira, assessor humano + IA,
 // credenciais CVM/Ancord.
-// Estetica: light mode premium + navy profundo + ambar dourado fosco —
+// Estetica: light mode premium + navy profundo + ambar dourado fosco,
 // classica, refinada, com sensacao de "banco privado de Genebra".
-// Tipografia: Inter — limpa, institucional, neutra.
+// Tipografia: Inter, limpa, institucional, neutra.
 // ============================================================
 const norteCapital: BrandConfig = {
   name: 'Norte Capital',
@@ -2745,7 +2745,7 @@ const norteCapital: BrandConfig = {
   slug: 'norte-capital',
   tagline: 'Sua direcao. Nosso compromisso.',
   subtitle: 'Assessoria de investimentos premium',
-  description: 'Assessoria de investimentos premium com plataforma completa: acompanhe sua carteira consolidada, receba analises personalizadas, fale com seu assessor e construa patrimonio de longo prazo — tudo com a Norte Capital.',
+  description: 'Assessoria de investimentos premium com plataforma completa: acompanhe sua carteira consolidada, receba analises personalizadas, fale com seu assessor e construa patrimonio de longo prazo, tudo com a Norte Capital.',
 
   founder: {
     name: 'Norte Capital',
@@ -2771,7 +2771,7 @@ const norteCapital: BrandConfig = {
   privacyEmail: 'privacidade@nortecapital.com.br',
 
   colors: {
-    // Paleta "Navy + Ambar" — classica, premium, inspirada em private banks.
+    // Paleta "Navy + Ambar", classica, premium, inspirada em private banks.
     primary: '#0C1E3C',          // navy profundo
     secondary: '#C8932F',        // ambar dourado fosco (accent)
     tertiary: '#FBFAF5',         // creme claro
@@ -2793,7 +2793,7 @@ const norteCapital: BrandConfig = {
 
   font: {
     // Fraunces (display, high-contrast serif) + Inter (body, UI).
-    // Fraunces is Google Fonts, free, variable font with oldstyle figures —
+    // Fraunces is Google Fonts, free, variable font with oldstyle figures,
     // the editorial/private-bank voice for Norte Capital.
     family: 'Inter',
     google: 'Inter:wght@300..600&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400',
@@ -2814,7 +2814,7 @@ const norteCapital: BrandConfig = {
   },
 
   seo: {
-    title: 'Norte Capital — Assessoria de Investimentos Premium',
+    title: 'Norte Capital, Assessoria de Investimentos Premium',
     description: 'Assessoria de investimentos premium com carteira consolidada, analises personalizadas, assessor dedicado e tecnologia de ponta. Construa seu patrimonio de longo prazo com a Norte Capital.',
     locale: 'pt_BR',
     lang: 'pt-BR',
@@ -2839,7 +2839,7 @@ const norteCapital: BrandConfig = {
     showEcosystemLinks: false,
     showGlossary: true,
     showGuides: true,
-    // Norte Capital: assessoria premium — cliente acompanhado pelo assessor.
+    // Norte Capital: assessoria premium, cliente acompanhado pelo assessor.
     // Rankings e commentaries poderiam minar o papel do assessor ao
     // incentivar decisões autônomas baseadas em ruído de mercado.
     // Apenas o calendário de dividendos (info contábil neutra) fica ligado.
@@ -2887,7 +2887,7 @@ const norteCapital: BrandConfig = {
     showFinancials: true,
     showChecklist: true,
     showCompanyInfo: true,
-    // Norte Capital uses the editorial narrated layout — single column,
+    // Norte Capital uses the editorial narrated layout, single column,
     // Fraunces display serif, advisor commentary as chapters. See the
     // <section v-if="brand.assetPage.variant === 'editorial'"> branch
     // in pages/asset/[ticker].vue for the implementation.
@@ -2916,7 +2916,7 @@ const norteCapital: BrandConfig = {
     variant: 'editorial',
     badge: '',
     title: 'Sua direcao.\nNosso compromisso.',
-    subtitle: 'Assessoria de investimentos para patrimonios que nao se constroem em um clique. Atendemos um numero limitado de familias, cada carteira construida a partir de uma conversa — nao de um formulario.',
+    subtitle: 'Assessoria de investimentos para patrimonios que nao se constroem em um clique. Atendemos um numero limitado de familias, cada carteira construida a partir de uma conversa, nao de um formulario.',
     founderQuote: '',
     ctaLabel: 'Agendar uma conversa',
     ctaSecondaryLabel: 'Ja sou cliente',
@@ -3040,7 +3040,7 @@ const norteCapital: BrandConfig = {
     title: 'Sobre a Norte Capital',
     paragraphs: [
       'A Norte Capital e uma assessoria focada em construcao de patrimonio de longo prazo. Unimos atendimento humano qualificado com tecnologia de ponta para oferecer a melhor experiencia de investimento aos nossos clientes.',
-      'Nossa plataforma consolida todos os seus investimentos em um unico lugar — acoes, FIIs, renda fixa, cripto — com cotacoes em tempo real, analises fundamentalistas e ferramentas de planejamento.',
+      'Nossa plataforma consolida todos os seus investimentos em um unico lugar, acoes, FIIs, renda fixa, cripto, com cotacoes em tempo real, analises fundamentalistas e ferramentas de planejamento.',
       'Contamos com um assessor com inteligencia artificial disponivel 24/7 que complementa o trabalho do assessor humano, respondendo duvidas rapidas e gerando analises personalizadas.',
       'Credenciada junto a CVM e Ancord, a Norte opera com total transparencia e seguranca, sempre priorizando os interesses dos nossos clientes.',
     ],
@@ -3121,7 +3121,7 @@ const norteCapital: BrandConfig = {
     filtersTitle: 'Filtros inteligentes',
     categoriesEyebrow: 'Ferramentas da Norte',
     categoriesTitle: 'Tudo para seus investimentos',
-    categoriesSubtitle: 'Carteira consolidada, cotacoes, calculadoras e assessoria — em um so lugar.',
+    categoriesSubtitle: 'Carteira consolidada, cotacoes, calculadoras e assessoria, em um so lugar.',
     guidesTitle: 'Conhecimento para investir melhor',
     guidesSubtitle: 'Guias praticos e analises da Norte.',
     aiCtaEyebrow: 'Assessor com IA',
@@ -3144,7 +3144,7 @@ const norteCapital: BrandConfig = {
     backgroundPattern: 'none',
   },
 
-  // Norte Capital uses the editorial narrated layout — the hero itself
+  // Norte Capital uses the editorial narrated layout, the hero itself
   // already carries most of the page, so we keep only a small set of
   // supporting sections. Everything else is turned off to preserve the
   // "letter from your advisor" tone (no dashboards, no noise).
@@ -3214,7 +3214,7 @@ const norteCapital: BrandConfig = {
 // ============================================================
 // SARAIVA INVEST (André Saraiva)
 // ============================================================
-// Persona: O metódico. Cientista calmo + nômade paciente — mix de "lab"
+// Persona: O metódico. Cientista calmo + nômade paciente, mix de "lab"
 // (B: backtests, ceticismo metódico, anti-guru) com "async" (C: slow
 // money, juros compostos, cabeça fria). Acessível, ironia fina, zero
 // grito. Visual híbrido: dark terminal-ish + sticker bold do logo +
@@ -3230,7 +3230,7 @@ const saraivaInvest: BrandConfig = {
   slug: 'saraiva-invest',
   tagline: 'Invista com método. Sem grito. Sem guru.',
   subtitle: 'Cabeça fria. Dados duros. Longo prazo.',
-  description: 'A plataforma do Saraiva Invest para você parar de adivinhar o mercado e começar a seguir método. Backtests, análise fundamentalista e juros compostos — sem pressa, sem hype.',
+  description: 'A plataforma do Saraiva Invest para você parar de adivinhar o mercado e começar a seguir método. Backtests, análise fundamentalista e juros compostos, sem pressa, sem hype.',
 
   founder: {
     name: 'André Saraiva',
@@ -3246,7 +3246,7 @@ const saraivaInvest: BrandConfig = {
     ctaPrimary: 'Falar com o método',
     ctaSecondary: 'Já sou do clube',
     emptyState: 'Nada aqui ainda. Bora rodar um backtest ou revisar a carteira?',
-    encouragement: 'Não é sorte. É método. Juros compostos trabalham enquanto você dorme — e eu faço o trabalho chato pra você não precisar.',
+    encouragement: 'Não é sorte. É método. Juros compostos trabalham enquanto você dorme, e eu faço o trabalho chato pra você não precisar.',
     error: 'Deu ruim na requisição. Respira, tenta de novo. Se persistir, me chama no DM.',
   },
 
@@ -3295,8 +3295,8 @@ const saraivaInvest: BrandConfig = {
   },
 
   seo: {
-    title: 'Saraiva Invest — Invista com método. Sem grito. Sem guru.',
-    description: 'Análise fundamentalista, backtests e juros compostos — sem pressa, sem hype. A plataforma do André Saraiva para investidores que preferem método a palpite.',
+    title: 'Saraiva Invest, Invista com método. Sem grito. Sem guru.',
+    description: 'Análise fundamentalista, backtests e juros compostos, sem pressa, sem hype. A plataforma do André Saraiva para investidores que preferem método a palpite.',
     locale: 'pt_BR',
     lang: 'pt-BR',
     themeColor: '#0B0B0E',
@@ -3324,7 +3324,7 @@ const saraivaInvest: BrandConfig = {
     // incentivam o oposto do pitch ("sem pressa"). DY + calendário de
     // dividendos reforçam a tese de renda passiva de longo prazo.
     // Commentaries LIGADOS pra o playbook poder framear cada movimento
-    // como "isso fez o Cabeça Quente surtar — e aqui está a leitura
+    // como "isso fez o Cabeça Quente surtar, e aqui está a leitura
     // calma do método."
     showDividendYieldRanking: true,
     showMonthlyMoversRanking: false,
@@ -3396,14 +3396,14 @@ const saraivaInvest: BrandConfig = {
   // --- PERSONALIZACOES POR AREA ---
 
   hero: {
-    // 'playbook' is Saraiva Invest's dedicated variant — calm scientific
+    // 'playbook' is Saraiva Invest's dedicated variant, calm scientific
     // method + author photo anchor + bold sticker highlights from the logo.
     // Dark profundo, tipografia chunky Fredoka nos highlights, Inter no
     // corpo técnico. Catchphrase-marca: "cabeça fria".
     variant: 'playbook',
     badge: 'CABEÇA FRIA',
     title: 'Invista com método.\nSem grito. Sem guru.',
-    subtitle: 'Eu sou o André Saraiva. Faço o trabalho chato pra você não precisar: leio balanço, testo tese, comparo setores, acompanho ciclo. Você só precisa confiar no método — e deixar juros compostos fazer o resto.',
+    subtitle: 'Eu sou o André Saraiva. Faço o trabalho chato pra você não precisar: leio balanço, testo tese, comparo setores, acompanho ciclo. Você só precisa confiar no método, e deixar juros compostos fazer o resto.',
     founderQuote: 'Não existe atalho. Existe método, paciência e juros compostos. Quem tem pressa perde dinheiro; quem tem método ganha tempo.',
     ctaLabel: 'Começar o método',
     ctaSecondaryLabel: 'Já tenho conta',
@@ -3442,9 +3442,9 @@ const saraivaInvest: BrandConfig = {
     name: 'Saraiva IA',
     avatar: '/brand/saraiva-invest/ai-avatar.png',
     chatTitle: 'Fala com a Saraiva IA',
-    chatSubtitle: 'Respostas diretas, com fonte. Como se eu mesmo estivesse respondendo — só que 24/7.',
+    chatSubtitle: 'Respostas diretas, com fonte. Como se eu mesmo estivesse respondendo, só que 24/7.',
     typingLabel: 'SARAIVA IA:',
-    welcomeTitle: 'Saraiva IA — seu copiloto metódico',
+    welcomeTitle: 'Saraiva IA, seu copiloto metódico',
     welcomeSubtitle: 'Análise fundamentalista, backtests, cálculo de preço-teto e plano de aportes. Pergunta direto, sem rodeio. Eu entrego o que o dado diz, não o que você quer ouvir.',
     placeholder: 'Pergunta direto. Ex: "PETR4 tá cara agora pelo Bazin?"',
     suggestedQuestions: [
@@ -3452,10 +3452,10 @@ const saraivaInvest: BrandConfig = {
       'PETR4 tá cara ou barata pelo método Bazin?',
       'Roda um backtest de carteira 60% ações + 40% FII',
       'Quais FIIs pagam DY consistente há 5+ anos?',
-      'Meu plano de 10 anos tá furando — por onde começo?',
+      'Meu plano de 10 anos tá furando, por onde começo?',
     ],
     systemPromptContext: 'Voce e a Saraiva IA, copiloto do André Saraiva. Tom: analitico, direto, calmo. Zero hype, zero FOMO, zero linguagem de guru. Responda como um engenheiro que entende de mercado e respeita a inteligencia do usuario. Sempre que possivel, cite a fonte (balanco trimestral, release oficial, CVM, B3, FGV, IPCA, etc). Quando o usuario pedir opiniao, prefira responder com o que o metodo diz e os dados historicos apontam, nao com achismo. Use portugues brasileiro correto, sem girias forcadas. Pode ser ironico com hype mas nunca com o usuario. Ritmo: paragrafos curtos, frases diretas, numeros concretos. Catchphrase natural: "cabeca fria".',
-    ctaGreeting: 'E aí. Sou a Saraiva IA. Pode perguntar direto — eu respondo com o que o dado diz, não com o que te agradaria ouvir. Cabeça fria.',
+    ctaGreeting: 'E aí. Sou a Saraiva IA. Pode perguntar direto, eu respondo com o que o dado diz, não com o que te agradaria ouvir. Cabeça fria.',
     ctaButton: 'Falar com a Saraiva IA',
     ctaFeatures: ['Resposta em ~3s', 'Com fonte citada', 'Zero achismo'],
   },
@@ -3477,7 +3477,7 @@ const saraivaInvest: BrandConfig = {
     sectionSubtitle: 'Histórias reais de gente que trocou palpite por playbook.',
     items: [
       {
-        quote: 'Eu passei 3 anos tentando acertar timing. Em 6 meses seguindo o método do Saraiva eu finalmente parei de olhar o gráfico de 5 em 5 minutos — e comecei a dormir melhor.',
+        quote: 'Eu passei 3 anos tentando acertar timing. Em 6 meses seguindo o método do Saraiva eu finalmente parei de olhar o gráfico de 5 em 5 minutos, e comecei a dormir melhor.',
         name: 'Daniel M.',
         role: 'Engenheiro de software, SP',
         metrics: [{ value: '+24%', label: 'retorno anual' }, { value: '0', label: 'trades por impulso' }],
@@ -3489,7 +3489,7 @@ const saraivaInvest: BrandConfig = {
         metrics: [{ value: '14', label: 'ativos na carteira' }, { value: 'R$ 1.8k', label: 'dividendos/mês' }],
       },
       {
-        quote: 'Nunca vi ninguém explicar juro composto de um jeito tão direto. O Saraiva não vende sonho — vende cálculo. Era o que faltava.',
+        quote: 'Nunca vi ninguém explicar juro composto de um jeito tão direto. O Saraiva não vende sonho, vende cálculo. Era o que faltava.',
         name: 'Rafael S.',
         role: 'Médico, MG',
         metrics: [{ value: '20 anos', label: 'horizonte' }, { value: '+R$ 3M', label: 'meta 2045' }],
@@ -3517,7 +3517,7 @@ const saraivaInvest: BrandConfig = {
 
   auth: {
     loginTitle: 'Entrar no método',
-    loginSubtitle: 'Continue de onde parou. Seu plano, sua carteira, seus backtests — esperando.',
+    loginSubtitle: 'Continue de onde parou. Seu plano, sua carteira, seus backtests, esperando.',
     registerTitle: 'Começar o método',
     registerSubtitle: 'Gratuito pra sempre. Sem cartão, sem trial, sem pegadinha. Você entra e começa hoje.',
     termsText: 'Ao criar sua conta, você concorda com os Termos de Uso e Política de Privacidade.',
@@ -3526,16 +3526,16 @@ const saraivaInvest: BrandConfig = {
   about: {
     title: 'Sobre o Saraiva Invest',
     paragraphs: [
-      'Saraiva Invest é o método que eu gostaria de ter tido quando comecei a investir. Em vez de gurus gritando "compra!", entrega backtests, análise fundamentalista e cálculos transparentes — tudo em português claro, sem jargão inflado.',
-      'Eu sou o André Saraiva. Sou engenheiro, estudo o mercado há mais de uma década e passei a maior parte desse tempo aprendendo o que não funciona: timing, palpite, hype, FOMO. O que sobrou — método, paciência, consistência — eu transformei em playbook.',
-      'A plataforma reúne todas as ferramentas que uso no meu próprio processo: cotações em tempo real, análise fundamentalista completa, backtests de tese, calculadoras de preço-teto e uma IA que responde com cabeça fria — não com entusiasmo manufaturado.',
+      'Saraiva Invest é o método que eu gostaria de ter tido quando comecei a investir. Em vez de gurus gritando "compra!", entrega backtests, análise fundamentalista e cálculos transparentes, tudo em português claro, sem jargão inflado.',
+      'Eu sou o André Saraiva. Sou engenheiro, estudo o mercado há mais de uma década e passei a maior parte desse tempo aprendendo o que não funciona: timing, palpite, hype, FOMO. O que sobrou, método, paciência, consistência, eu transformei em playbook.',
+      'A plataforma reúne todas as ferramentas que uso no meu próprio processo: cotações em tempo real, análise fundamentalista completa, backtests de tese, calculadoras de preço-teto e uma IA que responde com cabeça fria, não com entusiasmo manufaturado.',
       'Se você está cansado de guru, de grito e de promessa de resultado, o Saraiva Invest é pra você. Sem pressa. Só método.',
     ],
   },
 
   contact: {
     title: 'Fala comigo',
-    subtitle: 'Dúvida, parceria ou só pra apresentar uma tese — bora conversar.',
+    subtitle: 'Dúvida, parceria ou só pra apresentar uma tese, bora conversar.',
     email: 'contato@saraivainvest.com.br',
     channels: [
       { icon: 'i-lucide-mail', label: 'E-mail', value: 'contato@saraivainvest.com.br', href: 'mailto:contato@saraivainvest.com.br' },
@@ -3550,7 +3550,7 @@ const saraivaInvest: BrandConfig = {
       { icon: 'i-lucide-user-plus', title: 'Crie conta (grátis)', description: 'Sem cartão, sem trial. Você entra hoje e começa a usar agora.' },
       { icon: 'i-lucide-search', title: 'Estude os ativos', description: 'Fundamentalista completo, preço-teto, histórico de DY. O trabalho duro já tá feito.' },
       { icon: 'i-lucide-flask-conical', title: 'Rode o backtest', description: 'Antes de comprar, teste a tese nos últimos 10 anos de dados. Dado manda, palpite cala.' },
-      { icon: 'i-lucide-message-circle', title: 'Pergunte direto à IA', description: 'Sem rodeio, sem hype. Pergunta o que é — a Saraiva IA responde com cabeça fria.' },
+      { icon: 'i-lucide-message-circle', title: 'Pergunte direto à IA', description: 'Sem rodeio, sem hype. Pergunta o que é, a Saraiva IA responde com cabeça fria.' },
     ],
   },
 
@@ -3609,12 +3609,12 @@ const saraivaInvest: BrandConfig = {
     filtersTitle: 'Atalhos metódicos',
     categoriesEyebrow: 'Estudar antes de comprar',
     categoriesTitle: 'Por onde começar',
-    categoriesSubtitle: 'Cada categoria tem um caminho metódico. Nenhum palpite, zero atalho — só o processo.',
+    categoriesSubtitle: 'Cada categoria tem um caminho metódico. Nenhum palpite, zero atalho, só o processo.',
     guidesTitle: 'Playbook do método',
     guidesSubtitle: 'Sem guru, sem curso caro. A teoria que eu estudo, aplicada no que eu faço.',
     aiCtaEyebrow: 'Saraiva IA',
     aiCtaTitle: 'Pergunta direto. Eu respondo direto.',
-    aiCtaSubtitle: 'Sem rodeio, sem hype, sem linguagem de vendedor. A Saraiva IA foi treinada pra pensar como o método pensa — cabeça fria.',
+    aiCtaSubtitle: 'Sem rodeio, sem hype, sem linguagem de vendedor. A Saraiva IA foi treinada pra pensar como o método pensa, cabeça fria.',
     aiCtaQuestions: [
       { icon: 'i-lucide-calculator', question: 'Quanto aportar por mês pra aposentar com 60?', category: 'Planejamento' },
       { icon: 'i-lucide-flask-conical', question: 'Roda backtest de 60% ações + 40% FII', category: 'Backtest' },
@@ -3674,7 +3674,7 @@ const saraivaInvest: BrandConfig = {
   //   - Cabeça Quente (villain): o investidor pânico. Olha o gráfico
   //     de 5 em 5 minutos, vende na baixa, compra no topo, segue guru
   //     no Twitter, pergunta "ainda dá tempo?". É o arquétipo anti-
-  //     método — todo post com esse personagem é um alerta contra o
+  //     método, todo post com esse personagem é um alerta contra o
   //     comportamento que ele encarna.
   //   - Juros Compostos (ally): o mentor invisível. Não grita, não
   //     aparece no feed, mas trabalha 24h por você. É o motor que
@@ -3701,7 +3701,7 @@ const saraivaInvest: BrandConfig = {
         role: 'O pânico · o vilão',
         color: '#EF4444',
         catchphrase: 'CAIU 2%?! VENDE TUDO! SUBIU 3%?! COMPRA MAIS! AINDA DÁ TEMPO?!',
-        description: 'Checa o gráfico de 5 em 5 minutos. Entra em todo pump, sai em toda queda. Segue 40 gurus no Twitter. Já vendeu PETR4 3 vezes só em abril. Todo post do Saraiva é um alerta contra o que o Cabeça Quente encarna — porque ele mora dentro de todo investidor novato, e o trabalho do método é silenciá-lo.',
+        description: 'Checa o gráfico de 5 em 5 minutos. Entra em todo pump, sai em toda queda. Segue 40 gurus no Twitter. Já vendeu PETR4 3 vezes só em abril. Todo post do Saraiva é um alerta contra o que o Cabeça Quente encarna, porque ele mora dentro de todo investidor novato, e o trabalho do método é silenciá-lo.',
         cta: 'Fugir do Cabeça Quente',
         ctaLink: '/calculadora/juros-compostos',
         personality: 'villain',
@@ -3712,7 +3712,7 @@ const saraivaInvest: BrandConfig = {
         role: 'O motor · o aliado invisível',
         color: '#4ADE80',
         catchphrase: 'Me dá tempo. Só isso. E eu devolvo liberdade.',
-        description: 'Não grita, não aparece, não tem conta no Twitter. Mas trabalha 24h por dia, 7 dias por semana, pra quem tem paciência de segurar posição. Quanto mais cedo você contrata ele, mais absurdo ele devolve. Einstein chamou de "oitava maravilha do mundo" — o Cabeça Quente chama de "muito lento". Você decide em quem acreditar.',
+        description: 'Não grita, não aparece, não tem conta no Twitter. Mas trabalha 24h por dia, 7 dias por semana, pra quem tem paciência de segurar posição. Quanto mais cedo você contrata ele, mais absurdo ele devolve. Einstein chamou de "oitava maravilha do mundo", o Cabeça Quente chama de "muito lento". Você decide em quem acreditar.',
         cta: 'Ver o composto trabalhando',
         ctaLink: '/calculadora/juros-compostos',
         personality: 'ally',
@@ -3724,10 +3724,10 @@ const saraivaInvest: BrandConfig = {
 // ============================================================
 // HOLDER (pseudonymous "the convicted holder")
 // ============================================================
-// Persona: O Convicto. Pseudônimo puro — só "Holder", nenhum nome
+// Persona: O Convicto. Pseudônimo puro, só "Holder", nenhum nome
 // real. Editorial autoral, Buffet/Munger/Howard Marks redesigned
 // pra Gen Z brasileira que cansou de guru de hype mas ainda quer
-// alguém pra admirar. Não te ensina — te mostra como pensa.
+// alguém pra admirar. Não te ensina, te mostra como pensa.
 //
 // Diferença essencial:
 //   - Saraiva Invest = calmo porque é metódico (testa, mede, valida)
@@ -3775,7 +3775,7 @@ const holder: BrandConfig = {
   privacyEmail: 'privacidade@holder.com.br',
 
   colors: {
-    primary: '#E50914',       // Netflix red — bold, sério, sem ser hype
+    primary: '#E50914',       // Netflix red, bold, sério, sem ser hype
     secondary: '#B81118',     // red dark accent
     tertiary: '#0A0A0A',      // pure black
     positive: '#22C55E',
@@ -3785,7 +3785,7 @@ const holder: BrandConfig = {
     surface: '#141414',
     surfaceHover: '#1C1C1C',
     border: '#27272A',
-    text: '#F5F5F0',          // cream — não white puro, dá feel editorial impresso
+    text: '#F5F5F0',          // cream, não white puro, dá feel editorial impresso
     textMuted: '#A1A1AA',
     inputBg: '#141414',
     inputBgHover: '#1C1C1C',
@@ -3796,7 +3796,7 @@ const holder: BrandConfig = {
 
   font: {
     family: 'Spectral',
-    // Spectral é uma serif editorial feita pra leitura digital — mais
+    // Spectral é uma serif editorial feita pra leitura digital, mais
     // elegante e leve que IBM Plex Serif. Anton fica reservado APENAS
     // pro wordmark "HOLDER." e o selo "HOLD." JetBrains Mono pros
     // labels e numbers tabular.
@@ -3818,7 +3818,7 @@ const holder: BrandConfig = {
   },
 
   seo: {
-    title: 'HOLDER. — Eu não vendo. Eu detenho.',
+    title: 'HOLDER., Eu não vendo. Eu detenho.',
     description: 'A plataforma do Holder. Buy and hold sem terapia. Concentração, convicção e horizonte de décadas. Compro empresa, não ação.',
     locale: 'pt_BR',
     lang: 'pt-BR',
@@ -3845,7 +3845,7 @@ const holder: BrandConfig = {
     showGuides: true,
     // Holder: tudo que incentiva timing está OFF. O cara é buy-and-hold.
     // DY consistente importa (tese de renda passiva); rankings diários
-    // e movers do mês não — são exatamente o que ele despreza.
+    // e movers do mês não, são exatamente o que ele despreza.
     showDividendYieldRanking: true,
     showMonthlyMoversRanking: false,
     showDividendCalendar: true,
@@ -3917,7 +3917,7 @@ const holder: BrandConfig = {
   // --- PERSONALIZACOES POR AREA ---
 
   hero: {
-    // 'holder' is Holder's dedicated variant — editorial portrait full-bleed
+    // 'holder' is Holder's dedicated variant, editorial portrait full-bleed
     // + giant chunky condensed wordmark + serif manifesto. Black + red +
     // cream. Sem stickers, sem outline white, sem emoji. § paragrafação.
     variant: 'holder',
@@ -3953,7 +3953,7 @@ const holder: BrandConfig = {
       aposentadoria: 'Aposentadoria',
       acoes: 'Simulador de carteira',
       quantoInvestir: 'Aporte mensal',
-      impostoRenda: 'IR — renda variável',
+      impostoRenda: 'IR, renda variável',
       planejamento: 'Plano de aportes',
     },
   },
@@ -3974,7 +3974,7 @@ const holder: BrandConfig = {
       'Diversificação ou concentração?',
       'Qual a única razão pra vender uma posição?',
     ],
-    systemPromptContext: 'Voce e a Holder IA, treinada nas cartas do Holder (pseudonimo). Tom: sentencioso, editorial, sem floreio. Frases curtas. Pontos finais. Sem exclamacao. Sem emoji. Cita Buffett, Munger, Howard Marks, Seth Klarman, Peter Lynch. Despreza day trade, swing trade, analise tecnica, hype. Filosofia: buy and hold concentrado, alta convicao, horizonte de decadas, foco em empresa (nao em acao). Quando o usuario pergunta sobre timing, responda com calma fria que timing nao importa. Quando pergunta sobre venda, responda que so se vende quando a tese muda fundamentalmente — nao quando o preco cai. Termine as respostas mais importantes com "HOLD." em maiusculo.',
+    systemPromptContext: 'Voce e a Holder IA, treinada nas cartas do Holder (pseudonimo). Tom: sentencioso, editorial, sem floreio. Frases curtas. Pontos finais. Sem exclamacao. Sem emoji. Cita Buffett, Munger, Howard Marks, Seth Klarman, Peter Lynch. Despreza day trade, swing trade, analise tecnica, hype. Filosofia: buy and hold concentrado, alta convicao, horizonte de decadas, foco em empresa (nao em acao). Quando o usuario pergunta sobre timing, responda com calma fria que timing nao importa. Quando pergunta sobre venda, responda que so se vende quando a tese muda fundamentalmente, nao quando o preco cai. Termine as respostas mais importantes com "HOLD." em maiusculo.',
     ctaGreeting: 'Bem-vindo. Sou a Holder IA. Pergunta direto. Resposta vai vir direto. HOLD.',
     ctaButton: 'Falar com a Holder IA',
     ctaFeatures: ['Sem floreio', 'Cita os clássicos', 'Pensa em décadas'],
@@ -4009,7 +4009,7 @@ const holder: BrandConfig = {
         metrics: [{ value: '1×', label: 'por semana' }, { value: '+R$ 280k', label: 'em 12 meses' }],
       },
       {
-        quote: 'O Holder não diz o que comprar. Ele diz como pensar. Por isso funciona — porque depois de internalizar, você não precisa mais dele. É o oposto de todo guru.',
+        quote: 'O Holder não diz o que comprar. Ele diz como pensar. Por isso funciona, porque depois de internalizar, você não precisa mais dele. É o oposto de todo guru.',
         name: 'F.S.',
         role: 'Advogado · São Paulo',
         metrics: [{ value: '5 anos', label: 'sem trocar tese' }, { value: 'R$ 0', label: 'em cursos' }],
@@ -4047,7 +4047,7 @@ const holder: BrandConfig = {
     title: 'Sobre',
     paragraphs: [
       'Holder é um pseudônimo. Eu não revelo nome, não revelo rosto fora dos posts oficiais, não dou entrevista. O motivo é simples: a conversa é sobre o método, não sobre mim.',
-      'Eu invisto há mais de uma década com a mesma filosofia: buy and hold concentrado, alta convicção, horizonte de décadas. Compro empresa, não ação. Quando o preço cai, isso não muda meu plano — muda só o quanto eu posso comprar a mais.',
+      'Eu invisto há mais de uma década com a mesma filosofia: buy and hold concentrado, alta convicção, horizonte de décadas. Compro empresa, não ação. Quando o preço cai, isso não muda meu plano, muda só o quanto eu posso comprar a mais.',
       'Esta plataforma existe porque eu cansei de ver gente boa perdendo dinheiro tentando fazer o que não funciona: trocar de tese toda semana, seguir guru, comprar pump, vender dump, otimizar curto prazo. Tudo isso destrói patrimônio. O método correto destrói ansiedade. Escolhe.',
       'Aqui você não vai encontrar sinal de compra, calendário de live, planilha mágica nem grupo de Telegram. Vai encontrar: dados de empresa, calculadoras de preço-teto, análises de fundamentos, e cartas mensais que te ensinam a pensar como dono de negócio.',
       'Se isso parece pouco, é porque é. E é tudo de que você precisa.',
@@ -4169,7 +4169,7 @@ const holder: BrandConfig = {
         role: 'O herói · o método',
         color: '#E50914',
         catchphrase: 'Eu não vendo. Eu detenho.',
-        description: 'Compra a empresa, não a ação. Pensa em décadas, não em dias. Concentra em poucas teses de alta convicção. Quando o preço cai, isso não muda o plano — muda só o quanto pode comprar a mais. HOLD.',
+        description: 'Compra a empresa, não a ação. Pensa em décadas, não em dias. Concentra em poucas teses de alta convicção. Quando o preço cai, isso não muda o plano, muda só o quanto pode comprar a mais. HOLD.',
         cta: 'Ser Holder',
         ctaLink: '/auth/register',
         personality: 'hero',

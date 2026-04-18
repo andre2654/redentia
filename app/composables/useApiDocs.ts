@@ -1,10 +1,10 @@
 // ============================================================
-// useApiDocs — Single source of truth for the Redentia API docs.
+// useApiDocs, Single source of truth for the Redentia API docs.
 //
 // All endpoint definitions live here so the intro page, the
 // sidebar nav, the dynamic endpoint pages and the search index
 // render from the same typed structure. Shapes mirror what
-// `redentia-api.saraivada.com/api/*` returns in production —
+// `redentia-api.saraivada.com/api/*` returns in production,
 // verified via curl during scaffolding.
 //
 // No hooks into the actual backend yet; the playground's "Send"
@@ -67,7 +67,7 @@ const BASE = 'https://api.redentia.com.br'
 // --------------------------------------------------
 // Helpers to compose code samples for every endpoint
 // in all 6 supported languages. Keeps the data file
-// readable — otherwise each endpoint would have 200
+// readable, otherwise each endpoint would have 200
 // lines of hand-written code.
 // --------------------------------------------------
 
@@ -136,7 +136,7 @@ Console.WriteLine(response);`
   ]
 }
 
-// Generic error bodies — reused by every endpoint in responses[].
+// Generic error bodies, reused by every endpoint in responses[].
 const ERR_400 = JSON.stringify({ error: 'bad_request', message: 'Parâmetro inválido ou ausente.' }, null, 2)
 const ERR_401 = JSON.stringify({ error: 'unauthorized', message: 'Token ausente ou inválido.' }, null, 2)
 const ERR_403 = JSON.stringify({ error: 'plan_required', message: 'Seu plano atual não inclui este endpoint.' }, null, 2)
@@ -159,7 +159,7 @@ function defaultErrors(): ApiDocResponse[] {
 
 const ENDPOINTS: ApiDocEndpoint[] = [
   // ======================================================
-  // AÇÕES — Tickers & Prices
+  // AÇÕES, Tickers & Prices
   // ======================================================
   {
     slug: 'tickers-list',
@@ -215,7 +215,7 @@ const ENDPOINTS: ApiDocEndpoint[] = [
     path: '/v1/tickers/{ticker}',
     title: 'Detalhes do Ativo',
     description: 'Retorna o perfil completo de um ativo específico: preço atual, variação, volume, market cap, dividend yield e setor.',
-    longDescription: 'Endpoint principal para obter uma snapshot completa de um ativo. Combina dados de cotação, fundamentais básicos e informações da empresa em uma única resposta — economizando várias chamadas.',
+    longDescription: 'Endpoint principal para obter uma snapshot completa de um ativo. Combina dados de cotação, fundamentais básicos e informações da empresa em uma única resposta, economizando várias chamadas.',
     authorization: 'required',
     pathParams: [
       { name: 'ticker', type: 'string', required: true, description: 'Código B3 do ativo (ex: PETR4, VALE3, ITUB4).', example: 'PETR4' },
@@ -256,7 +256,7 @@ const ENDPOINTS: ApiDocEndpoint[] = [
     path: '/v1/tickers/{ticker}/prices',
     title: 'Preços Históricos (OHLCV)',
     description: 'Série completa de cotações do pregão B3: abertura, fechamento, máxima, mínima e volume. Perfeito para backtests e gráficos.',
-    longDescription: 'Retorna a série histórica de preços de um ativo, respeitando o parâmetro `mode` para o período desejado. Dados desde 2009 no plano Pro — ideal para backtests e análise técnica.',
+    longDescription: 'Retorna a série histórica de preços de um ativo, respeitando o parâmetro `mode` para o período desejado. Dados desde 2009 no plano Pro, ideal para backtests e análise técnica.',
     authorization: 'required',
     pathParams: [
       { name: 'ticker', type: 'string', required: true, description: 'Código B3 do ativo.', example: 'PETR4' },
@@ -398,7 +398,7 @@ const ENDPOINTS: ApiDocEndpoint[] = [
     method: 'GET',
     path: '/v1/fundamentals/{ticker}/balance-sheet',
     title: 'Balanço Patrimonial',
-    description: 'Ativos, passivos e patrimônio líquido — anual ou trimestral, direto da CVM.',
+    description: 'Ativos, passivos e patrimônio líquido, anual ou trimestral, direto da CVM.',
     authorization: 'required',
     pathParams: [
       { name: 'ticker', type: 'string', required: true, description: 'Código B3 do ativo.', example: 'PETR4' },
@@ -439,7 +439,7 @@ const ENDPOINTS: ApiDocEndpoint[] = [
     method: 'GET',
     path: '/v1/fundamentals/{ticker}/cash-flow',
     title: 'Fluxo de Caixa (DFC)',
-    description: 'Fluxo de caixa operacional, de investimentos e de financiamento — com CAPEX e free cash flow.',
+    description: 'Fluxo de caixa operacional, de investimentos e de financiamento, com CAPEX e free cash flow.',
     authorization: 'required',
     pathParams: [
       { name: 'ticker', type: 'string', required: true, description: 'Código B3 do ativo.', example: 'PETR4' },

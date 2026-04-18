@@ -6,7 +6,7 @@ definePageMeta({
 })
 
 // ============================================================
-// Growth Race — Animated multi-ticker valorization race
+// Growth Race, Animated multi-ticker valorization race
 //
 // Plays a 1080x1080 "race" of 2-5 tickers starting at base 100,
 // with the date advancing in the title while the chart draws
@@ -119,7 +119,7 @@ function resetControls() {
 
 // --- Page head ---
 useHead(() => ({
-  title: `Redentia — Growth Race: ${tickerList.value.join(' vs ')}`,
+  title: `Redentia, Growth Race: ${tickerList.value.join(' vs ')}`,
   meta: [
     { name: 'robots', content: 'noindex,nofollow,noarchive' },
     { name: 'viewport', content: 'width=1080, initial-scale=1' },
@@ -706,7 +706,7 @@ function replay() {
 </template>
 
 <style scoped>
-/* See asset-spotlight.vue comment — :global() rules leak across the
+/* See asset-spotlight.vue comment, :global() rules leak across the
    dev server and break navigation. The .frame wrapper below already
    centers the card with its own background and font context. */
 

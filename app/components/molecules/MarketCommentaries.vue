@@ -553,7 +553,7 @@ function truncate(text: string, max: number): string {
   text-align: right;
 }
 
-/* Dot cell — relative so connector line can absolute-position */
+/* Dot cell, relative so connector line can absolute-position */
 .mc-dot-cell {
   position: relative;
   padding-top: 4px;

@@ -2,7 +2,7 @@ import { brand as defaultBrand, brands } from '~/config/brand'
 import type { BrandSlug } from '~/config/brand'
 
 /**
- * Tenant-aware brand state — server-first resolution.
+ * Tenant-aware brand state, server-first resolution.
  *
  * The authoritative decision about WHICH tenant is active happens in
  * `server/middleware/0-tenant-resolver.ts` (host > query > default).
@@ -10,7 +10,7 @@ import type { BrandSlug } from '~/config/brand'
  * and the Nitro plugin `plugins/tenant.server.ts` reads it to populate
  * this `useState('brand:active')` store BEFORE any Vue component runs.
  *
- * As a result, `useBrand()` is just a reader — by the time anything
+ * As a result, `useBrand()` is just a reader, by the time anything
  * calls it, the state is guaranteed to be correct. No init function,
  * no race condition, no hydration mismatch.
  *
@@ -25,7 +25,7 @@ import type { BrandSlug } from '~/config/brand'
  *     which re-applies the config via `applyBrandOverride()` below.
  *
  * Components call `useBrand()` and consume fields like `brand.colors.text`
- * directly — consumer-side reactivity works because we return a reactive
+ * directly, consumer-side reactivity works because we return a reactive
  * proxy (not a ref). Client-side overrides go through `applyBrandOverride()`
  * which mutates the proxy in place so every subscribed template updates.
  */
@@ -33,7 +33,7 @@ import type { BrandSlug } from '~/config/brand'
 /**
  * Internal: returns the shared reactive brand state.
  *
- * The factory is only ever invoked on the client as a safety net —
+ * The factory is only ever invoked on the client as a safety net,
  * on the server, `plugins/tenant.server.ts` creates the state first
  * (with the correct tenant already applied) before any component
  * runs. If the plugin runs we're fine; if it somehow doesn't, we
@@ -46,7 +46,7 @@ function useBrandState() {
 }
 
 /**
- * Public API — returns the current brand config as a reactive proxy.
+ * Public API, returns the current brand config as a reactive proxy.
  * Templates can use it directly: `{{ brand.colors.primary }}` etc.
  */
 export const useBrand = () => {
@@ -59,7 +59,7 @@ export const useBrand = () => {
  *
  * Used by `plugins/brand-router.client.ts` when the user navigates
  * between `?brand=X` URLs inside the same SPA session. Server-side
- * is never involved — the resolver middleware already did its job
+ * is never involved, the resolver middleware already did its job
  * on the initial request.
  *
  * If the slug isn't in the local `brand.ts`, this falls back to the
@@ -74,7 +74,7 @@ export function applyBrandOverride(slug: string) {
 
   const state = useBrandState()
   // Object.assign mutates in place so the reactive proxy stays the
-  // same object identity — all templates already tracking it update
+  // same object identity, all templates already tracking it update
   // simultaneously without needing to re-establish watchers.
   Object.assign(state.value, JSON.parse(JSON.stringify(localBrand)))
   return true

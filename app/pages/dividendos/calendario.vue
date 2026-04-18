@@ -346,7 +346,7 @@ function relativeLabel(dateStr: string): string {
 
 function formatRate(value: number | string): string {
   const num = typeof value === 'number' ? value : Number(value)
-  if (!Number.isFinite(num)) return '—'
+  if (!Number.isFinite(num)) return '-'
   return num.toLocaleString('pt-BR', {
     minimumFractionDigits: 4,
     maximumFractionDigits: 6,

@@ -22,7 +22,7 @@
       </div>
 
       <!-- ============================================================
-           HERO — asymmetric split: headline + social proof stats on left,
+           HERO, asymmetric split: headline + social proof stats on left,
            oversized terminal preview on right. Much more impactful than
            the centered-headline layout it replaces.
            ============================================================ -->
@@ -65,7 +65,7 @@
               class="mb-8 max-w-xl text-base leading-relaxed md:text-lg"
               :style="{ color: brand.colors.textMuted }"
             >
-              Preços em tempo real, fundamentos desde 2009, dividendos, rankings e commentaries com IA. A mesma infraestrutura que alimenta a Redentia — agora via REST, com schemas estáveis e latência sub-50ms.
+              Preços em tempo real, fundamentos desde 2009, dividendos, rankings e commentaries com IA. A mesma infraestrutura que alimenta a Redentia, agora via REST, com schemas estáveis e latência sub-50ms.
             </p>
 
             <!-- CTAs -->
@@ -204,7 +204,7 @@
       </section>
 
       <!-- ============================================================
-           FEATURES GRID — what you get
+           FEATURES GRID, what you get
            ============================================================ -->
       <section class="relative border-t" :style="{ borderColor: brand.colors.border }">
         <div class="mx-auto max-w-6xl px-6 py-20 md:px-10 md:py-28">
@@ -257,7 +257,7 @@
       </section>
 
       <!-- ============================================================
-           VEJA A API NA PRÁTICA — interactive tabs with real JSON
+           VEJA A API NA PRÁTICA, interactive tabs with real JSON
            Shows exactly what the backend returns today, wrapped in a
            terminal-style card with syntax highlighting and inline
            comments to make the shapes easy to read.
@@ -390,10 +390,10 @@
       </section>
 
       <!-- ============================================================
-           PRICING — 3 plans
+           PRICING, 3 plans
            ============================================================ -->
       <!-- ============================================================
-           PRICING — unified container, Stripe-style
+           PRICING, unified container, Stripe-style
            ============================================================ -->
       <section class="relative">
         <div class="mx-auto max-w-6xl px-6 py-20 md:px-10 md:py-28">
@@ -423,7 +423,7 @@
                 backgroundColor: plan.popular ? `${brand.colors.primary}06` : 'transparent',
               }"
             >
-              <!-- Popular accent — top border -->
+              <!-- Popular accent, top border -->
               <div
                 v-if="plan.popular"
                 class="absolute inset-x-0 top-0 h-0.5"
@@ -447,7 +447,7 @@
                 {{ plan.description }}
               </p>
 
-              <!-- Price — gigantic -->
+              <!-- Price, gigantic -->
               <div class="flex items-baseline gap-1">
                 <span
                   class="font-display tabular-nums leading-none tracking-tight"
@@ -466,10 +466,10 @@
                 {{ plan.priceNote }}
               </p>
 
-              <!-- Features — clean dash list -->
+              <!-- Features, clean dash list -->
               <ul class="flex flex-col gap-2 border-t pt-5 text-[13px]" :style="{ borderColor: `${brand.colors.border}80` }">
                 <li v-for="feat in plan.features" :key="feat" class="flex items-start gap-2" :style="{ color: `${brand.colors.text}D0` }">
-                  <span :style="{ color: brand.colors.primary }">—</span>
+                  <span :style="{ color: brand.colors.primary }">-</span>
                   <span>{{ feat }}</span>
                 </li>
               </ul>
@@ -491,7 +491,7 @@
       </section>
 
       <!-- ============================================================
-           TESTIMONIALS — editorial horizontal layout, no stars
+           TESTIMONIALS, editorial horizontal layout, no stars
            ============================================================ -->
       <section class="relative">
         <div class="mx-auto max-w-6xl px-6 py-20 md:px-10 md:py-28">
@@ -591,7 +591,7 @@ const features = [
     title: 'Preços históricos OHLCV',
     slug: 'tickers/*/prices',
     icon: 'i-lucide-line-chart',
-    description: 'Cotações de abertura, fechamento, máxima, mínima e volume. Intraday, diário, semanal, mensal — desde 2009.',
+    description: 'Cotações de abertura, fechamento, máxima, mínima e volume. Intraday, diário, semanal, mensal, desde 2009.',
     tags: ['JSON', 'REST', 'INTRADAY'],
   },
   {
@@ -626,28 +626,28 @@ const features = [
     title: 'Market Commentaries (AI)',
     slug: 'market-commentaries',
     icon: 'i-lucide-sparkles',
-    description: 'Análises geradas diariamente via Claude explicando movimentos relevantes — com fontes citadas e contexto macro.',
+    description: 'Análises geradas diariamente via Claude explicando movimentos relevantes, com fontes citadas e contexto macro.',
     tags: ['CLAUDE', 'SOURCES', 'NEW'],
   },
 ]
 
 // ============================================================
-// "VEJA A API NA PRÁTICA" — real response shapes
+// "VEJA A API NA PRÁTICA", real response shapes
 // Each example mirrors what `redentia-api.saraivada.com/api/*`
 // returns today (checked against production endpoints). JSON
 // is rendered via v-html with manual syntax highlighting because
-// we want inline comments (// Campo) next to each field — no
+// we want inline comments (// Campo) next to each field, no
 // Prism/Highlight.js dependency needed.
 // ============================================================
 
-// Syntax color palette — reads CSS vars so it stays theme-consistent.
+// Syntax color palette, reads CSS vars so it stays theme-consistent.
 // Using direct hex values avoids reflow during SSR hydration.
 const SYN = {
-  key: '#E8A870',      // amber (brand.primary) — object keys
-  str: '#A3D9A5',      // green — strings
-  num: '#F5F5F5',      // off-white — numbers
-  bool: '#D49155',     // darker amber — booleans / null
-  cmt: '#6B7280',      // muted gray — comments
+  key: '#E8A870',      // amber (brand.primary), object keys
+  str: '#A3D9A5',      // green, strings
+  num: '#F5F5F5',      // off-white, numbers
+  bool: '#D49155',     // darker amber, booleans / null
+  cmt: '#6B7280',      // muted gray, comments
 }
 
 function k(name: string): string {
@@ -927,7 +927,7 @@ const plans = [
 ]
 
 // ============================================================
-// TESTIMONIALS — "Quem usa a Redentia"
+// TESTIMONIALS, "Quem usa a Redentia"
 // ============================================================
 const testimonials = [
   {
@@ -970,7 +970,7 @@ definePageMeta({
 })
 
 usePageSeo({
-  title: 'Redentia API — Dados do mercado brasileiro via REST',
+  title: 'Redentia API, Dados do mercado brasileiro via REST',
   description: 'API REST para preços, fundamentos, dividendos e market commentaries do mercado brasileiro. Schemas estáveis, latência sub-50ms, 50+ endpoints.',
   path: '/api-portal',
 })

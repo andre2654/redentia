@@ -239,7 +239,7 @@ const allMarketTools: MarketTool[] = [
     to: '/ranking/maiores-baixas-mes',
     title: 'Maiores Baixas do Mês',
     description:
-      'Ativos com maior desvalorização nos últimos 30 dias — oportunidades ou alertas.',
+      'Ativos com maior desvalorização nos últimos 30 dias, oportunidades ou alertas.',
     icon: 'i-lucide-trending-down',
     accent: brand.colors.negative,
     flag: 'showMonthlyMoversRanking',
@@ -285,7 +285,7 @@ const marketTools = computed(() =>
   })
 )
 
-// CTA buttons adapt to the tenant's active features — no dead links.
+// CTA buttons adapt to the tenant's active features, no dead links.
 const ctaButtons = computed(() => {
   const buttons: Array<{ label: string; to: string; icon: string; variant: string }> = []
   const hasRankings =

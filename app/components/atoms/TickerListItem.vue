@@ -1,5 +1,5 @@
 <template>
-  <!-- Variant: default (Primo Rico — clean, balanced) -->
+  <!-- Variant: default (Primo Rico, clean, balanced) -->
   <NuxtLink
     v-if="cfg.variant === 'default'"
     :to="tickerLink"
@@ -49,7 +49,7 @@
     </div>
   </NuxtLink>
 
-  <!-- Variant: compact (Me Poupe — friendly, bigger logo, text change) -->
+  <!-- Variant: compact (Me Poupe, friendly, bigger logo, text change) -->
   <NuxtLink
     v-else-if="cfg.variant === 'compact'"
     :to="tickerLink"
@@ -96,7 +96,7 @@
     </div>
   </NuxtLink>
 
-  <!-- Variant: detailed (Sardinha — ticker-first, no logo, absolute + percent) -->
+  <!-- Variant: detailed (Sardinha, ticker-first, no logo, absolute + percent) -->
   <NuxtLink
     v-else
     :to="tickerLink"

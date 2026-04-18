@@ -38,7 +38,7 @@ export function luminance(hex: string): number {
 
 /**
  * Returns the best foreground (#000 or #FFF) for a given background.
- * Used for tab pills where the active bg = brand.primary — if primary
+ * Used for tab pills where the active bg = brand.primary, if primary
  * is a light color (yellow, cyan, lime), we need dark text instead of
  * whatever brand.background happens to be.
  */
@@ -78,7 +78,7 @@ export function hoverBg(themeMode: string, surfaceHex: string): string {
 
 /**
  * Picks a distinct accent for the dividend yield column when brand.primary
- * collides with brand.negative (e.g. Investidor Sardinha — primary and
+ * collides with brand.negative (e.g. Investidor Sardinha, primary and
  * negative are both #DC2626). Falls back to positive (green) as the
  * "renda passiva" semantic color.
  */

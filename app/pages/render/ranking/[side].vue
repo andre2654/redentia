@@ -167,7 +167,7 @@ function decodeBase64UrlToString(input: string): string | null {
 
 function toTicker(stock: RawTopStock): string {
   const t = (stock.ticker || stock.stock || '').toString().trim()
-  return t ? t.toUpperCase() : '—'
+  return t ? t.toUpperCase() : '-'
 }
 
 function toChangePercent(value: unknown): number | null {

@@ -483,13 +483,13 @@ const sectorBoxes = computed<SectorLayout[]>(() => {
     b.avgChange = sum / Math.max(cnt, 1)
   }
 
-  // Layout nível 1 — setores
+  // Layout nível 1, setores
   const sectorBoxesPlaced = squarify<SectorBucket>(
     buckets.map((b) => ({ value: Math.max(b.weightSum, 0.01), data: b })),
     { x: 0, y: 0, w: W, h: H }
   )
 
-  // Layout nível 2 — tickers dentro de cada setor
+  // Layout nível 2, tickers dentro de cada setor
   const result: SectorLayout[] = []
   for (const sbox of sectorBoxesPlaced) {
     const innerBox: Box = {

@@ -30,7 +30,7 @@
       LIVE
     </div>
 
-    <!-- Scrolling tape — duplicated twice for seamless loop -->
+    <!-- Scrolling tape, duplicated twice for seamless loop -->
     <div class="flex min-w-0 flex-1 overflow-hidden">
       <div class="ticker-track flex shrink-0 items-center gap-8 whitespace-nowrap px-6">
         <template v-for="(item, idx) in tapeItems" :key="`a-${idx}`">
@@ -142,7 +142,7 @@ onMounted(async () => {
   from { transform: translateX(0); }
   to { transform: translateX(-100%); }
 }
-/* Respect reduced-motion — pause the tape for users who request it */
+/* Respect reduced-motion, pause the tape for users who request it */
 @media (prefers-reduced-motion: reduce) {
   .ticker-track {
     animation: none;

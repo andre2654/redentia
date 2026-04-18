@@ -324,7 +324,7 @@ const hasNoResults = computed(() => {
 })
 
 function formatCurrencyBRL(n: number) {
-  if (!Number.isFinite(n) || n < 0) return 'R$ —'
+  if (!Number.isFinite(n) || n < 0) return 'R$,'
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'BRL',

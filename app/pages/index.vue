@@ -1,9 +1,9 @@
 <template>
   <NuxtLayout :name="layoutName" title="Visão geral">
     <div class="flex flex-col">
-    <!-- ========== HERO: TERMINAL (Redentia — Bloomberg-reimagined dedicated variant) ========== -->
+    <!-- ========== HERO: TERMINAL (Redentia, Bloomberg-reimagined dedicated variant) ========== -->
     <section v-if="showSection('hero') && !authStore.isAuthenticated && brand.hero.variant === 'terminal'" :style="{ order: sectionOrder('hero') }" class="relative overflow-hidden">
-      <!-- Live market ticker — rendered only after mount so the scroll animation
+      <!-- Live market ticker, rendered only after mount so the scroll animation
            and fetch don't fight with SSR hydration. Reserved space kept the same
            to prevent layout shift. -->
       <div class="h-9 border-y" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
@@ -16,7 +16,7 @@
         <div class="absolute left-1/2 top-0 h-[540px] w-[900px] -translate-x-1/2 rounded-full blur-3xl opacity-60" :style="{ background: `radial-gradient(ellipse at center top, ${brand.colors.primary}33, transparent 60%)` }" />
         <!-- Terminal-style grid overlay (tight 32px grid) -->
         <div class="absolute inset-0 opacity-[0.04]" :style="{ backgroundImage: `linear-gradient(${brand.colors.text} 1px, transparent 1px), linear-gradient(90deg, ${brand.colors.text} 1px, transparent 1px)`, backgroundSize: '32px 32px' }" />
-        <!-- Horizontal scanlines (1px stripes) — CRT texture -->
+        <!-- Horizontal scanlines (1px stripes), CRT texture -->
         <div class="absolute inset-0 opacity-30" :style="{ backgroundImage: `repeating-linear-gradient(to bottom, transparent 0px, transparent 2px, ${brand.colors.text}04 2px, ${brand.colors.text}04 3px)` }" />
       </div>
 
@@ -36,7 +36,7 @@
           <span :style="{ color: brand.colors.textMuted }">REDENTIA v2.1</span>
         </div>
 
-        <!-- Display serif headline — editorial scale, high contrast -->
+        <!-- Display serif headline, editorial scale, high contrast -->
         <h1
           class="font-display mx-auto mb-6 max-w-4xl text-center text-[56px] leading-[0.95] tracking-tight sm:text-[72px] md:text-[96px] lg:text-[120px]"
           :style="{ color: brand.colors.text }"
@@ -53,7 +53,7 @@
           {{ brand.hero.subtitle }}
         </p>
 
-        <!-- Terminal command bar: the "product shot" — simulated REPL input -->
+        <!-- Terminal command bar: the "product shot", simulated REPL input -->
         <div
           class="mx-auto mb-8 max-w-2xl overflow-hidden rounded-lg border backdrop-blur-sm"
           :style="{
@@ -76,14 +76,14 @@
                 <span class="size-2 rounded-full opacity-60" :style="{ backgroundColor: brand.colors.primary }" />
                 <span class="size-2 rounded-full opacity-60" :style="{ backgroundColor: brand.colors.positive }" />
               </div>
-              <span class="ml-2">REDENTIA.TERMINAL</span>
+              <span class="ml-2">REDENTIA.MERCADO</span>
             </div>
             <span class="hidden sm:inline">~/mercado/brasil</span>
           </div>
           <!-- Prompt line with typewriter placeholder -->
           <div class="flex items-center gap-3 px-5 py-5">
             <span class="font-mono-tab text-sm" :style="{ color: brand.colors.primary }">&gt;</span>
-            <!-- Typewriter prompt — identical structure on SSR and client to
+            <!-- Typewriter prompt, identical structure on SSR and client to
                  avoid hydration mismatches. `typedPrompt` starts empty (SSR sees
                  just the caret), then animates after mount. -->
             <span
@@ -161,7 +161,7 @@
       </div>
     </section>
 
-    <!-- ========== HERO: SHOWTIME (Me Poupe! — TV show / pop magazine) ========== -->
+    <!-- ========== HERO: SHOWTIME (Me Poupe!, TV show / pop magazine) ========== -->
     <section
       v-if="showSection('hero') && !authStore.isAuthenticated && brand.hero.variant === 'showtime'"
       :style="{ order: sectionOrder('hero'), backgroundColor: brand.colors.background, color: brand.colors.text }"
@@ -287,7 +287,7 @@
           <img
             v-if="brand.hero.image"
             :src="brand.hero.image"
-            :alt="`${brand.founder?.name || 'Nathalia Arcuri'} — Me Poupe!`"
+            :alt="`${brand.founder?.name || 'Nathalia Arcuri'}, Me Poupe!`"
             class="relative z-10 h-auto w-full max-w-[420px] object-contain"
           />
 
@@ -309,7 +309,7 @@
         </div>
       </div>
 
-      <!-- QUADRO 1 — Elenco / Characters -->
+      <!-- QUADRO 1, Elenco / Characters -->
       <div class="relative py-20 md:py-24" :style="{ backgroundColor: brand.colors.surface }">
         <div class="mx-auto max-w-6xl px-6 md:px-10">
           <div class="mb-12 flex flex-wrap items-end justify-between gap-4">
@@ -326,7 +326,7 @@
                 o programa acontecer.
               </h2>
               <p class="font-showtime-body mt-4 max-w-xl text-base" :style="{ color: `${brand.colors.text}CC` }">
-                Os personagens que viraram icônicos na comunidade Me Poupe! — alguns ajudam, outro (você sabe quem) só atrapalha.
+                Os personagens que viraram icônicos na comunidade Me Poupe!, alguns ajudam, outro (você sabe quem) só atrapalha.
               </p>
             </div>
           </div>
@@ -389,7 +389,7 @@
         </div>
       </div>
 
-      <!-- QUADRO 2 — Na_th IA -->
+      <!-- QUADRO 2, Na_th IA -->
       <div class="relative py-20 md:py-24">
         <div class="mx-auto max-w-6xl px-6 md:grid md:grid-cols-12 md:gap-10 md:px-10">
           <div class="md:col-span-5">
@@ -405,7 +405,7 @@
               <span class="highlighter" :style="{ color: brand.colors.primary }">criatura!</span>
             </h2>
             <p class="font-showtime-body mt-6 text-base" :style="{ color: `${brand.colors.text}CC` }">
-              A <strong :style="{ color: brand.colors.primary }">Na_th IA</strong> responde qualquer dúvida sobre dinheiro como sua melhor amiga explicaria. Sem jargão, sem julgamento, sem cara feia. E fica disponível 24h — até de madrugada, quando bate aquela crise existencial sobre o boleto.
+              A <strong :style="{ color: brand.colors.primary }">Na_th IA</strong> responde qualquer dúvida sobre dinheiro como sua melhor amiga explicaria. Sem jargão, sem julgamento, sem cara feia. E fica disponível 24h, até de madrugada, quando bate aquela crise existencial sobre o boleto.
             </p>
             <div class="mt-8 flex flex-wrap items-center gap-3">
               <div
@@ -501,7 +501,7 @@
         />
       </div>
 
-      <!-- QUADRO 3 — O Placar da Bolsa (Rankings) -->
+      <!-- QUADRO 3, O Placar da Bolsa (Rankings) -->
       <div class="relative overflow-hidden py-20 md:py-24">
         <!-- Confetti dots background -->
         <div class="pointer-events-none absolute inset-0 opacity-20">
@@ -527,7 +527,7 @@
               <span class="highlighter" :style="{ color: brand.colors.primary }">e quem tá tomando chá de sumiço</span>
             </h2>
             <p class="font-showtime-body mx-auto mt-6 max-w-2xl text-base" :style="{ color: `${brand.colors.text}CC` }">
-              Nem todo dia é dia de festa, criatura. Mas saber o que subiu e o que desceu é o primeiro passo pra entender o mercado — sem entrar em pânico.
+              Nem todo dia é dia de festa, criatura. Mas saber o que subiu e o que desceu é o primeiro passo pra entender o mercado, sem entrar em pânico.
             </p>
           </div>
 
@@ -582,7 +582,7 @@
                       class="font-showtime-body truncate text-[11px]"
                       :style="{ color: `${brand.colors.text}80` }"
                     >
-                      {{ row.name || '—' }}
+                      {{ row.name || '-' }}
                     </div>
                   </div>
                   <span
@@ -656,7 +656,7 @@
                       class="font-showtime-body truncate text-[11px]"
                       :style="{ color: `${brand.colors.text}80` }"
                     >
-                      {{ row.name || '—' }}
+                      {{ row.name || '-' }}
                     </div>
                   </div>
                   <span
@@ -692,13 +692,13 @@
             <img src="/brand/mepoupe/margarete.svg" alt="Margarete" class="h-14 shrink-0" />
             <p class="font-showtime-body text-sm italic" :style="{ color: `${brand.colors.text}CC` }">
               <strong :style="{ color: brand.colors.primary }">Margarete diz:</strong>
-              subiu muito? Respira. Caiu muito? Respira de novo. Investir não é torcer pra time de futebol, criatura — é uma maratona de 20 anos. O importante é continuar aportando todo mês.
+              subiu muito? Respira. Caiu muito? Respira de novo. Investir não é torcer pra time de futebol, criatura, é uma maratona de 20 anos. O importante é continuar aportando todo mês.
             </p>
           </div>
         </div>
       </div>
 
-      <!-- QUADRO 4 — Histórias reais -->
+      <!-- QUADRO 4, Histórias reais -->
       <div class="relative py-20 md:py-24" :style="{ backgroundColor: brand.colors.surface }">
         <div class="mx-auto max-w-6xl px-6 md:px-10">
           <div class="mb-12">
@@ -796,7 +796,7 @@
             "{{ brand.hero.founderQuote }}"
           </p>
           <p class="font-showtime-label mt-2" :style="{ color: `${brand.colors.text}80` }">
-            — {{ brand.founder?.name || 'NATHALIA ARCURI' }}
+           , {{ brand.founder?.name || 'NATHALIA ARCURI' }}
           </p>
 
           <div class="mt-12 flex flex-col items-center gap-4 sm:flex-row sm:justify-center sm:gap-6">
@@ -826,7 +826,7 @@
       </div>
     </section>
 
-    <!-- ========== HERO: SPLIT (Me Poupe — energetico, personalidade, pop) ========== -->
+    <!-- ========== HERO: SPLIT (Me Poupe, energetico, personalidade, pop) ========== -->
     <section v-if="showSection('hero') && !authStore.isAuthenticated && brand.hero.variant === 'split'" :style="{ order: sectionOrder('hero') }" class="relative overflow-hidden">
       <!-- Background: dots + color splashes -->
       <div class="pointer-events-none absolute inset-0">
@@ -866,7 +866,7 @@
             <!-- Founder quote -->
             <p class="mb-6 max-w-sm text-sm italic" :style="{ color: `${brand.colors.text}80` }">
               "{{ brand.hero.founderQuote }}"
-              <span class="not-italic" :style="{ color: `${brand.colors.text}4D` }"> — {{ brand.founder.name }}</span>
+              <span class="not-italic" :style="{ color: `${brand.colors.text}4D` }">, {{ brand.founder.name }}</span>
             </p>
 
             <!-- CTAs lado a lado, pill shape -->
@@ -908,7 +908,7 @@
       </div>
     </section>
 
-    <!-- ========== HERO: RESEARCH (Investidor Sardinha — AUVP data-heavy analyst desk) ========== -->
+    <!-- ========== HERO: RESEARCH (Investidor Sardinha, AUVP data-heavy analyst desk) ========== -->
     <section
       v-if="showSection('hero') && !authStore.isAuthenticated && brand.hero.variant === 'research'"
       :style="{ order: sectionOrder('hero'), backgroundColor: brand.colors.background, color: brand.colors.text }"
@@ -1041,7 +1041,7 @@
               Quem subiu, quem caiu
             </h2>
             <p class="font-academic-body mt-3 max-w-2xl text-[13px] italic" :style="{ color: brand.colors.textMuted }">
-              Movimentos do último pregão. Esta é a <span class="red-pen">leitura do radar</span>, não uma recomendação — variações de curto prazo rara­mente alteram uma tese de longo prazo.<sup class="footnote-marker">¹</sup>
+              Movimentos do último pregão. Esta é a <span class="red-pen">leitura do radar</span>, não uma recomendação, variações de curto prazo rara­mente alteram uma tese de longo prazo.<sup class="footnote-marker">¹</sup>
             </p>
           </div>
           <NuxtLink
@@ -1583,7 +1583,7 @@
                 {{ brand.founder?.name || 'Raul Sena' }}
               </span>
               <span class="font-academic-body text-[13px] italic" :style="{ color: brand.colors.textMuted }">
-                Fundador · AUVP — A Única Verdade Possível
+                Fundador · AUVP, A Única Verdade Possível
               </span>
             </div>
             <div class="flex flex-col items-end gap-3">
@@ -1596,7 +1596,7 @@
                   borderColor: brand.colors.primary,
                 }"
               >
-                <span>ABRIR O TERMINAL</span>
+                <span>ACESSAR A PLATAFORMA</span>
                 <span>→</span>
               </NuxtLink>
               <a
@@ -1621,10 +1621,10 @@
                 <sup class="footnote-marker">¹</sup> Variação diária é ruído. O analista olha o radar do pregão para checar contexto, não para tomar decisão.
               </li>
               <li class="font-academic-body text-[12px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
-                <sup class="footnote-marker">²</sup> Os filtros do método AUVP são detalhados no curso AUVP Escola — cada corte tem justificativa histórica e comparativa.
+                <sup class="footnote-marker">²</sup> Os filtros do método AUVP são detalhados no curso AUVP Escola, cada corte tem justificativa histórica e comparativa.
               </li>
               <li class="font-academic-body text-[12px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
-                <sup class="footnote-marker">³</sup> Esta publicação não constitui recomendação de compra ou venda. AUVP não opera aconselhamento individualizado — oferece método e plataforma de estudo.
+                <sup class="footnote-marker">³</sup> Esta publicação não constitui recomendação de compra ou venda. AUVP não opera aconselhamento individualizado, oferece método e plataforma de estudo.
               </li>
             </ol>
           </div>
@@ -1632,7 +1632,7 @@
       </div>
     </section>
 
-    <!-- ========== HERO: MINIMAL (Sardinha — compacto, data-first, sem firula) ========== -->
+    <!-- ========== HERO: MINIMAL (Sardinha, compacto, data-first, sem firula) ========== -->
     <section v-if="showSection('hero') && !authStore.isAuthenticated && brand.hero.variant === 'minimal'" :style="{ order: sectionOrder('hero'), borderColor: brand.colors.border }" class="relative overflow-hidden border-b">
       <div class="relative px-6 py-10 md:py-14">
         <div class="mx-auto max-w-5xl">
@@ -1678,9 +1678,9 @@
       </div>
     </section>
 
-    <!-- ========== HERO: INSTITUTIONAL (Assessoria — sobrio, profissional, confiavel) ========== -->
+    <!-- ========== HERO: INSTITUTIONAL (Assessoria, sobrio, profissional, confiavel) ========== -->
     <section v-if="showSection('hero') && !authStore.isAuthenticated && brand.hero.variant === 'institutional'" :style="{ order: sectionOrder('hero') }" class="relative overflow-hidden px-4 pt-2 md:px-6">
-      <!-- Container com imagem de fundo — mesma largura do header (sem padding proprio, usa o do layout) -->
+      <!-- Container com imagem de fundo, mesma largura do header (sem padding proprio, usa o do layout) -->
       <div class="relative overflow-hidden rounded-2xl xl:rounded-3xl">
         <!-- Background image -->
         <div
@@ -1754,7 +1754,7 @@
       </div>
     </section>
 
-    <!-- ========== HERO: MENTOR (Primo Rico — book-cover / masterclass aesthetic) ========== -->
+    <!-- ========== HERO: MENTOR (Primo Rico, book-cover / masterclass aesthetic) ========== -->
     <section
       v-if="showSection('hero') && !authStore.isAuthenticated && brand.hero.variant === 'mentor'"
       :style="{ order: sectionOrder('hero'), backgroundColor: brand.colors.background, color: brand.colors.text }"
@@ -1770,7 +1770,7 @@
         <span class="font-mentor-eyebrow">DO MIL AO MILHÃO · A ESCOLHA É SUA</span>
       </div>
 
-      <!-- HERO — asymmetric split: portrait left, text right -->
+      <!-- HERO, asymmetric split: portrait left, text right -->
       <div class="relative grid gap-0 md:grid-cols-12">
         <!-- Portrait column (decorative B&W placeholder with orange blend) -->
         <div
@@ -1914,7 +1914,7 @@
         </div>
       </div>
 
-      <!-- Monumental pull quote — the founder line -->
+      <!-- Monumental pull quote, the founder line -->
       <div
         class="relative border-t border-b py-20 md:py-28"
         :style="{
@@ -1944,7 +1944,7 @@
         </div>
       </div>
 
-      <!-- Chapter II: Method ARCA — 4 pillars -->
+      <!-- Chapter II: Method ARCA, 4 pillars -->
       <div class="mx-auto max-w-6xl px-6 py-20 md:px-10 md:py-28">
         <div class="mb-12 flex flex-col gap-3">
           <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
@@ -1960,7 +1960,7 @@
             O MÉTODO ARCA
           </h2>
           <p class="mt-2 max-w-2xl text-base" :style="{ color: `${brand.colors.text}B3` }">
-            Quatro pilares que sustentam uma carteira de longo prazo. Não é fórmula mágica — é disciplina aplicada.
+            Quatro pilares que sustentam uma carteira de longo prazo. Não é fórmula mágica, é disciplina aplicada.
           </p>
         </div>
 
@@ -2023,7 +2023,7 @@
         </div>
       </div>
 
-      <!-- Stats row — chunky numbered cards -->
+      <!-- Stats row, chunky numbered cards -->
       <div
         class="border-t border-b py-16 md:py-20"
         :style="{
@@ -2107,7 +2107,7 @@
       </div>
     </section>
 
-    <!-- ========== HERO: EDITORIAL (Norte Capital — letter from your advisor, private-bank tone) ========== -->
+    <!-- ========== HERO: EDITORIAL (Norte Capital, letter from your advisor, private-bank tone) ========== -->
     <section
       v-if="showSection('hero') && !authStore.isAuthenticated && brand.hero.variant === 'editorial'"
       :style="{ order: sectionOrder('hero'), backgroundColor: brand.colors.background }"
@@ -2175,7 +2175,7 @@
             @mouseleave="($event.currentTarget as HTMLElement).style.borderColor = brand.colors.secondary"
           >
             <span>{{ brand.hero.ctaLabel }}</span>
-            <span class="inline-block transition-transform group-hover:translate-x-1" :style="{ color: brand.colors.secondary }">—→</span>
+            <span class="inline-block transition-transform group-hover:translate-x-1" :style="{ color: brand.colors.secondary }">-→</span>
           </NuxtLink>
           <NuxtLink
             to="/auth/login"
@@ -2208,13 +2208,13 @@
             class="font-editorial-body dropcap"
             :style="{ color: brand.colors.text, fontSize: '1.15rem' }"
           >
-            Nossa equipe de oito assessores certificados CFA atende um número limitado de famílias. Cada carteira é construída a partir de uma conversa — sobre seus objetivos, seu horizonte, suas obrigações de médio prazo — e não a partir de um formulário preenchido na pressa.
+            Nossa equipe de oito assessores certificados CFA atende um número limitado de famílias. Cada carteira é construída a partir de uma conversa, sobre seus objetivos, seu horizonte, suas obrigações de médio prazo, e não a partir de um formulário preenchido na pressa.
           </p>
           <p
             class="font-editorial-body mt-6"
             :style="{ color: brand.colors.text, fontSize: '1.15rem' }"
           >
-            Uma vez construída, sua carteira é revisada trimestralmente em reunião presencial ou por vídeo. Entre as reuniões, você acompanha tudo por esta plataforma, recebe a <em>carta mensal</em> do seu assessor e pode falar conosco quando precisar — sem secretária eletrônica e sem fila de atendimento.
+            Uma vez construída, sua carteira é revisada trimestralmente em reunião presencial ou por vídeo. Entre as reuniões, você acompanha tudo por esta plataforma, recebe a <em>carta mensal</em> do seu assessor e pode falar conosco quando precisar, sem secretária eletrônica e sem fila de atendimento.
           </p>
         </div>
       </div>
@@ -2290,7 +2290,7 @@
           </h2>
         </div>
 
-        <!-- Narrative metrics — oldstyle figures in serif, inline with prose -->
+        <!-- Narrative metrics, oldstyle figures in serif, inline with prose -->
         <div class="grid gap-10 md:grid-cols-3">
           <div v-for="metric in editorialMetrics" :key="metric.label" class="flex flex-col gap-3">
             <span
@@ -2344,7 +2344,7 @@
             class="font-editorial-body mt-4 italic"
             :style="{ color: brand.colors.textMuted, fontSize: '0.95rem' }"
           >
-            Uma leitura editorial do pregão, curada pela mesa. Não é recomendação nem alerta — apenas o que vale comentar hoje.
+            Uma leitura editorial do pregão, curada pela mesa. Não é recomendação nem alerta, apenas o que vale comentar hoje.
           </p>
         </div>
 
@@ -2370,7 +2370,7 @@
                       class="font-editorial-display text-2xl italic"
                       :style="{ color: brand.colors.secondary }"
                     >
-                      —
+                     ,
                     </span>
                     <span
                       class="font-editorial-display text-xl"
@@ -2431,7 +2431,7 @@
                       class="font-editorial-display text-2xl italic"
                       :style="{ color: brand.colors.secondary }"
                     >
-                      —
+                     ,
                     </span>
                     <span
                       class="font-editorial-display text-xl"
@@ -2518,7 +2518,7 @@
               @mouseleave="($event.currentTarget as HTMLElement).style.borderColor = brand.colors.secondary"
             >
               <span>Agendar uma conversa</span>
-              <span :style="{ color: brand.colors.secondary }">—→</span>
+              <span :style="{ color: brand.colors.secondary }">-→</span>
             </NuxtLink>
             <span
               class="font-editorial-body text-[12px] italic"
@@ -2550,7 +2550,7 @@
       </div>
     </section>
 
-    <!-- ========== HERO: PLAYBOOK (Saraiva Invest — calm method + author photo + sticker accents) ========== -->
+    <!-- ========== HERO: PLAYBOOK (Saraiva Invest, calm method + author photo + sticker accents) ========== -->
     <!--
       Playbook variant: dark profundo + amber Claude + Fredoka chunky
       sticker highlights + foto do autor como âncora. Mix de cientista
@@ -2592,7 +2592,7 @@
       </div>
 
       <!-- ============================================================
-           §1 · HERO TOP — asymmetric: copy left, author photo right
+           §1 · HERO TOP, asymmetric: copy left, author photo right
            ============================================================ -->
       <div class="relative mx-auto max-w-7xl px-6 pb-20 pt-20 md:px-10 md:pb-28 md:pt-28">
         <div class="grid grid-cols-12 gap-8 md:gap-12 lg:gap-16">
@@ -2678,7 +2678,7 @@
             </div>
           </div>
 
-          <!-- RIGHT: author photo — aspect-ratio preserved, contained -->
+          <!-- RIGHT: author photo, aspect-ratio preserved, contained -->
           <div class="col-span-12 flex items-center justify-center lg:col-span-5">
             <div class="pb-author relative flex aspect-square w-full max-w-[520px] items-center justify-center">
               <!-- Amber circle behind -->
@@ -2694,7 +2694,7 @@
                 class="pb-author-ring absolute left-1/2 top-1/2 aspect-square w-[102%] -translate-x-1/2 -translate-y-1/2 rounded-full border-2"
                 :style="{ borderColor: `${brand.colors.primary}30` }"
               />
-              <!-- Photo — preserves natural aspect ratio, never stretches -->
+              <!-- Photo, preserves natural aspect ratio, never stretches -->
               <img
                 v-if="brand.hero.image"
                 :src="brand.hero.image"
@@ -2719,7 +2719,7 @@
       </div>
 
       <!-- ============================================================
-           §2 · MANIFESTO — big 3-line pull quote
+           §2 · MANIFESTO, big 3-line pull quote
            ============================================================ -->
       <div class="relative border-y" :style="{ borderColor: `${brand.colors.border}`, backgroundColor: `${brand.colors.surface}60` }">
         <div class="mx-auto max-w-6xl px-6 py-24 md:px-10 md:py-32">
@@ -2743,17 +2743,17 @@
           </div>
           <div class="mt-12 flex items-center gap-4 text-[13px]" :style="{ color: brand.colors.textMuted }">
             <div class="h-px flex-1 max-w-20" :style="{ backgroundColor: `${brand.colors.border}` }" />
-            <span class="font-medium italic">— {{ brand.founder.name }}</span>
+            <span class="font-medium italic">, {{ brand.founder.name }}</span>
           </div>
         </div>
       </div>
 
       <!-- ============================================================
-           §2.5 · CABEÇA QUENTE vs CABEÇA FRIA — character + rankings
+           §2.5 · CABEÇA QUENTE vs CABEÇA FRIA, character + rankings
            ============================================================
            Mostra os 3 rankings do dia (top altas, top baixas, top FIIs)
            framing eles como o que o "Cabeça Quente" entra em pânico
-           olhando — e a Saraiva (cabeça fria) responde com calma. Usa
+           olhando, e a Saraiva (cabeça fria) responde com calma. Usa
            homeMarketData.topAssets que já é fetched pra todos os tenants.
       -->
       <div class="relative overflow-hidden">
@@ -2774,7 +2774,7 @@
           <div class="mb-16 grid items-end gap-8 md:grid-cols-12">
             <div class="md:col-span-7">
               <div class="pb-eyebrow mb-4 text-[11px] font-bold uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
-                — Personagens
+               , Personagens
               </div>
               <h2
                 class="leading-[0.95] tracking-tight"
@@ -2794,7 +2794,7 @@
             </p>
           </div>
 
-          <!-- The villain "card" — Cabeça Quente in panic -->
+          <!-- The villain "card", Cabeça Quente in panic -->
           <div
             class="pb-villain mb-10 flex flex-col items-start gap-6 rounded-3xl border-2 p-8 md:flex-row md:items-center md:gap-10 md:p-12"
             :style="{
@@ -2834,7 +2834,7 @@
             </div>
           </div>
 
-          <!-- 3 rankings — what the Cabeça Quente sees and panics about -->
+          <!-- 3 rankings, what the Cabeça Quente sees and panics about -->
           <div class="grid gap-5 md:grid-cols-3">
             <!-- TOP ALTAS -->
             <div
@@ -2880,7 +2880,7 @@
                       {{ (stock?.ticker || '??').slice(0, 2) }}
                     </div>
                     <div class="flex flex-col min-w-0">
-                      <span class="text-[12px] font-bold leading-none">{{ stock?.ticker || '—' }}</span>
+                      <span class="text-[12px] font-bold leading-none">{{ stock?.ticker || '-' }}</span>
                       <span class="text-[10px] truncate" :style="{ color: brand.colors.textMuted }">
                         {{ (stock?.name || '').slice(0, 18) }}
                       </span>
@@ -2942,7 +2942,7 @@
                       {{ (stock?.ticker || '??').slice(0, 2) }}
                     </div>
                     <div class="flex flex-col min-w-0">
-                      <span class="text-[12px] font-bold leading-none">{{ stock?.ticker || '—' }}</span>
+                      <span class="text-[12px] font-bold leading-none">{{ stock?.ticker || '-' }}</span>
                       <span class="text-[10px] truncate" :style="{ color: brand.colors.textMuted }">
                         {{ (stock?.name || '').slice(0, 18) }}
                       </span>
@@ -3003,7 +3003,7 @@
                       {{ (reit?.ticker || '??').slice(0, 2) }}
                     </div>
                     <div class="flex flex-col min-w-0">
-                      <span class="text-[12px] font-bold leading-none">{{ reit?.ticker || '—' }}</span>
+                      <span class="text-[12px] font-bold leading-none">{{ reit?.ticker || '-' }}</span>
                       <span class="text-[10px] truncate" :style="{ color: brand.colors.textMuted }">
                         {{ (reit?.name || '').slice(0, 18) }}
                       </span>
@@ -3103,7 +3103,7 @@
           <div class="mb-14 grid items-end gap-8 md:grid-cols-12">
             <div class="md:col-span-7">
               <div class="pb-eyebrow mb-4 text-[11px] font-bold uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
-                — 4 pilares
+               , 4 pilares
               </div>
               <h2
                 class="pb-section-title leading-[0.95] tracking-tight"
@@ -3165,7 +3165,7 @@
       </div>
 
       <!-- ============================================================
-           §4 · SIGNATURE QUOTE — big pull quote with sticker author
+           §4 · SIGNATURE QUOTE, big pull quote with sticker author
            ============================================================ -->
       <div class="relative overflow-hidden border-y" :style="{ borderColor: `${brand.colors.border}`, backgroundColor: `${brand.colors.background}` }">
         <div class="pointer-events-none absolute inset-0">
@@ -3210,12 +3210,12 @@
       </div>
 
       <!-- ============================================================
-           §5 · FINAL CTA — simpler, direct
+           §5 · FINAL CTA, simpler, direct
            ============================================================ -->
       <div class="relative">
         <div class="mx-auto max-w-5xl px-6 py-24 text-center md:px-10 md:py-32">
           <div class="pb-eyebrow mb-6 text-[11px] font-bold uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
-            — Começar hoje
+           , Começar hoje
           </div>
           <h2
             class="pb-final-title leading-[0.92] tracking-tight"
@@ -3252,20 +3252,20 @@
       </div>
     </section>
 
-    <!-- ========== HERO: HOLDER (refined editorial — minimal, sober) ========== -->
+    <!-- ========== HERO: HOLDER (refined editorial, minimal, sober) ========== -->
     <!--
-      Holder variant — REFINED: removido todos os §, texto cortado pela
+      Holder variant, REFINED: removido todos os §, texto cortado pela
       metade, Anton reservado APENAS para o wordmark "HOLDER." e o selo
       "HOLD." Tudo o resto em IBM Plex Serif (display + body) ou
       JetBrains Mono (labels + numbers). Mais whitespace, menos texto.
 
       Estrutura mais sucinta:
-        Top strip — chapter index minimal
-        Hero split — title serif + portrait
-        Wordmark band — "HOLDER." gigante (única peça em Anton)
-        Manifesto — 2 parágrafos (era 4)
-        Trader vs Holder — 4 linhas (era 7)
-        Posições — 5 (era 7)
+        Top strip, chapter index minimal
+        Hero split, title serif + portrait
+        Wordmark band, "HOLDER." gigante (única peça em Anton)
+        Manifesto, 2 parágrafos (era 4)
+        Trader vs Holder, 4 linhas (era 7)
+        Posições, 5 (era 7)
         Closing quote + selo HOLD.
     -->
     <section
@@ -3274,7 +3274,7 @@
       class="holder-hero relative overflow-hidden"
     >
       <!-- ============================================================
-           Top strip — chapter index
+           Top strip, chapter index
            ============================================================ -->
       <div
         class="hl-strip relative z-10 border-b"
@@ -3301,7 +3301,7 @@
       </div>
 
       <!-- ============================================================
-           1.01 · HERO SPLIT — manifesto + editorial portrait
+           1.01 · HERO SPLIT, manifesto + editorial portrait
            ============================================================ -->
       <div class="relative">
         <div class="mx-auto grid max-w-7xl grid-cols-12 gap-0 px-6 md:px-10">
@@ -3312,7 +3312,7 @@
               01 · O Manifesto
             </div>
 
-            <!-- Serif sentencious title — refined: lighter weight + more space -->
+            <!-- Serif sentencious title, refined: lighter weight + more space -->
             <h1
               class="hl-serif mb-10 leading-[1.1] tracking-tight"
               :style="{
@@ -3363,7 +3363,7 @@
               </NuxtLink>
             </div>
 
-            <!-- Trust indicators — minimal, sober -->
+            <!-- Trust indicators, minimal, sober -->
             <div class="flex flex-wrap items-center gap-x-6 gap-y-2 border-t pt-6" :style="{ borderColor: brand.colors.border }">
               <div
                 v-for="(t, i) in brand.hero.trustIndicators"
@@ -3377,7 +3377,7 @@
             </div>
           </div>
 
-          <!-- RIGHT: editorial portrait — full-bleed, tall -->
+          <!-- RIGHT: editorial portrait, full-bleed, tall -->
           <div class="col-span-12 flex items-stretch justify-center lg:col-span-5">
             <div class="relative h-full min-h-[520px] w-full overflow-hidden lg:min-h-[760px]">
               <!-- Vertical "H." mark top-left, like the asset cover -->
@@ -3425,7 +3425,7 @@
       </div>
 
       <!-- ============================================================
-           1.02 · TICKER CAROUSEL — elegant horizontal marquee
+           1.02 · TICKER CAROUSEL, elegant horizontal marquee
            ============================================================
            Substitui o "HOLDER." gigante por um carrossel sutil de
            tickers do dia. Estilo elegante (Spectral + JetBrains Mono),
@@ -3498,13 +3498,13 @@
                 Quem compra ação olha pro gráfico. Quem compra empresa olha pro balanço. <em :style="{ color: brand.colors.primary }">A primeira é apostar. A segunda é investir.</em>
               </p>
               <p>
-                Eu não dou sinal de compra. Eu te ensino a pensar como dono de negócio — e quando você internalizar, não precisa mais de mim.
+                Eu não dou sinal de compra. Eu te ensino a pensar como dono de negócio, e quando você internalizar, não precisa mais de mim.
               </p>
             </div>
             <!-- Signature -->
             <div class="hl-mono mt-16 flex items-center gap-4 text-[11px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.textMuted }">
               <span class="h-px flex-1 max-w-12" :style="{ backgroundColor: brand.colors.border }" />
-              <span :style="{ color: brand.colors.primary }">— @holder</span>
+              <span :style="{ color: brand.colors.primary }">, @holder</span>
               <span class="h-px flex-1" :style="{ backgroundColor: brand.colors.border }" />
             </div>
           </div>
@@ -3512,7 +3512,7 @@
       </div>
 
       <!-- ============================================================
-           3.01 · TRADER vs HOLDER — comparative table
+           3.01 · TRADER vs HOLDER, comparative table
            ============================================================ -->
       <div class="relative border-y" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
         <div class="mx-auto max-w-7xl px-6 py-24 md:px-10 md:py-32">
@@ -3570,7 +3570,7 @@
       </div>
 
       <!-- ============================================================
-           4.01 · § POSIÇÕES — mostradas só no quarter
+           4.01 · § POSIÇÕES, mostradas só no quarter
            ============================================================ -->
       <div class="relative">
         <div class="mx-auto max-w-6xl px-6 py-24 md:px-10 md:py-32">
@@ -3597,7 +3597,7 @@
             </p>
           </div>
 
-          <!-- Position cards — minimal, sharp -->
+          <!-- Position cards, minimal, sharp -->
           <div class="grid gap-0 border" :style="{ borderColor: brand.colors.border }">
             <div
               v-for="(pos, idx) in holderPositions"
@@ -3643,7 +3643,7 @@
       </div>
 
       <!-- ============================================================
-           5.01 · § POR QUÊ — long-form intro
+           5.01 · § POR QUÊ, long-form intro
            ============================================================ -->
       <div class="relative border-y" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
         <div class="mx-auto max-w-6xl px-6 py-24 md:px-10 md:py-32">
@@ -3667,7 +3667,7 @@
                 <em :style="{ color: brand.colors.primary, fontWeight: 500 }">detenho ITUB4.</em>
               </h2>
               <p class="hl-serif mt-10 text-[19px] leading-[1.7]" :style="{ color: `${brand.colors.text}D0`, fontFamily: `'Spectral', 'Georgia', serif` }">
-                Comprei a R$&nbsp;26,80 em 2014. Hoje a R$&nbsp;46. <em :style="{ color: brand.colors.primary }">A parte do gráfico é a menos importante</em> — o que importa são os 9 anos de dividendos pagos no meio do caminho, sem precisar vender uma posição.
+                Comprei a R$&nbsp;26,80 em 2014. Hoje a R$&nbsp;46. <em :style="{ color: brand.colors.primary }">A parte do gráfico é a menos importante</em>, o que importa são os 9 anos de dividendos pagos no meio do caminho, sem precisar vender uma posição.
               </p>
               <NuxtLink
                 to="#"
@@ -3702,7 +3702,7 @@
           </blockquote>
           <div class="hl-mono mt-12 flex items-center justify-center gap-4 text-[11px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.textMuted }">
             <span class="h-px w-12" :style="{ backgroundColor: brand.colors.border }" />
-            <span :style="{ color: brand.colors.primary }">— @holder</span>
+            <span :style="{ color: brand.colors.primary }">, @holder</span>
             <span class="h-px w-12" :style="{ backgroundColor: brand.colors.border }" />
           </div>
 
@@ -3773,7 +3773,7 @@
             </span>
           </div>
 
-          <!-- Index readouts as terminal cells — mono, large, tabular -->
+          <!-- Index readouts as terminal cells, mono, large, tabular -->
           <div class="flex flex-wrap gap-8 md:gap-12">
             <div class="flex flex-col gap-1">
               <span
@@ -3962,7 +3962,7 @@
             :class="rankingCardClass"
             :style="rankingCardStyle(brand.colors.positive)"
           >
-            <!-- Header — terminal register style -->
+            <!-- Header, terminal register style -->
             <div class="mb-3 flex items-center justify-between border-b pb-2" :style="{ borderColor: brand.colors.border }">
               <div class="flex items-center gap-2">
                 <UIcon name="i-lucide-trending-up" class="h-3 w-3" :style="{ color: brand.colors.positive }" />
@@ -4008,7 +4008,7 @@
             :class="rankingCardClass"
             :style="rankingCardStyle(brand.colors.negative)"
           >
-            <!-- Header — terminal register style -->
+            <!-- Header, terminal register style -->
             <div class="mb-3 flex items-center justify-between border-b pb-2" :style="{ borderColor: brand.colors.border }">
               <div class="flex items-center gap-2">
                 <UIcon name="i-lucide-trending-down" class="h-3 w-3" :style="{ color: brand.colors.negative }" />
@@ -4156,7 +4156,7 @@
         </div>
 
         <div class="grid gap-4" :class="categoryGridCols">
-          <!-- Variant: icon-left (Primo Rico — icon beside title, description, CTA) -->
+          <!-- Variant: icon-left (Primo Rico, icon beside title, description, CTA) -->
           <template v-if="brand.homePage.categoryCard.variant === 'icon-left'">
             <NuxtLink
               v-for="cat in brand.homePage.categories"
@@ -4181,7 +4181,7 @@
             </NuxtLink>
           </template>
 
-          <!-- Variant: icon-top (Me Poupe — icon centered above, spacious, friendly) -->
+          <!-- Variant: icon-top (Me Poupe, icon centered above, spacious, friendly) -->
           <template v-else-if="brand.homePage.categoryCard.variant === 'icon-top'">
             <NuxtLink
               v-for="cat in brand.homePage.categories"
@@ -4204,7 +4204,7 @@
             </NuxtLink>
           </template>
 
-          <!-- Variant: minimal (Sardinha — compact, left border accent, no icon) -->
+          <!-- Variant: minimal (Sardinha, compact, left border accent, no icon) -->
           <template v-else>
             <NuxtLink
               v-for="cat in brand.homePage.categories"
@@ -4558,12 +4558,12 @@
             </h2>
           </div>
           <p class="max-w-sm text-sm leading-relaxed md:text-[15px]" :style="{ color: brand.colors.textMuted }">
-            Dois produtos abertos: o <span :style="{ color: brand.colors.text }">terminal</span> que você está vendo é só uma das interfaces. Pegue os mesmos dados em JSON, ou em PNG pronto pro feed.
+            Dois produtos abertos: a <span :style="{ color: brand.colors.text }">plataforma</span> que você está vendo é só uma das interfaces. Pegue os mesmos dados em JSON, ou em PNG pronto pro feed.
           </p>
         </div>
       </div>
 
-      <!-- ============ PRODUCT 01 — API ============ -->
+      <!-- ============ PRODUCT 01, API ============ -->
       <a
         href="https://api.redentia.com.br"
         target="_blank"
@@ -4694,7 +4694,7 @@
         </div>
       </a>
 
-      <!-- ============ PRODUCT 02 — CREATIVE ============ -->
+      <!-- ============ PRODUCT 02, CREATIVE ============ -->
       <a
         href="https://creative.redentia.com.br"
         target="_blank"
@@ -4755,7 +4755,7 @@
             </h3>
 
             <p class="mt-5 max-w-md text-[14px] leading-relaxed md:text-[15px]" :style="{ color: brand.colors.textMuted }">
-              Cards, rankings e mockups com dados reais — prontos pra tirar print e postar. Growth races, spotlights de ativo, notificações iPhone, top gainers. Tudo em 1080×1080.
+              Cards, rankings e mockups com dados reais, prontos pra tirar print e postar. Growth races, spotlights de ativo, notificações iPhone, top gainers. Tudo em 1080×1080.
             </p>
 
             <!-- Stats inline -->
@@ -4806,7 +4806,7 @@ import type { ChartTimeRange } from '~/types/chart'
 const brand = useBrand()
 const authStore = useAuthStore()
 
-// Creative studio thumbnails — used in the redentia home CTA section.
+// Creative studio thumbnails, used in the redentia home CTA section.
 // Each entry links to a pre-filled creative template on the
 // creative.redentia.com.br subdomain.
 const creativeThumbs = [
@@ -4816,7 +4816,7 @@ const creativeThumbs = [
   { slug: 'market-updates', path: '/market-updates?format=square', icon: 'i-lucide-bell', eyebrow: 'UPDATE', label: 'Notificação', isNew: false },
 ]
 
-// Gate for client-only renders (typewriter + market ticker) — avoids
+// Gate for client-only renders (typewriter + market ticker), avoids
 // SSR/hydration mismatches by rendering identical markup on both sides
 // initially, then flipping to client content after mount.
 const isMounted = ref(false)
@@ -4883,7 +4883,7 @@ const layoutName = computed(() =>
 )
 
 // ==========================================================
-// EDITORIAL HERO — Norte Capital "letter from your advisor"
+// EDITORIAL HERO, Norte Capital "letter from your advisor"
 // ==========================================================
 
 // Full-spelled date, editorial style: "Sexta-feira, 10 de abril de 2026"
@@ -4903,7 +4903,7 @@ const editorialDate = computed(() => {
   }
 })
 
-// Ritual items — Chapter II of the editorial home. Fictional but realistic.
+// Ritual items, Chapter II of the editorial home. Fictional but realistic.
 const editorialRitual = [
   {
     title: 'Carta mensal do seu assessor',
@@ -4911,7 +4911,7 @@ const editorialRitual = [
   },
   {
     title: 'Reunião trimestral',
-    body: 'A cada trimestre, nos encontramos — presencial ou por vídeo — para revisar a carteira à luz dos seus objetivos. Sem script, sem apresentação de vendas, sem tempo limitado.',
+    body: 'A cada trimestre, nos encontramos, presencial ou por vídeo, para revisar a carteira à luz dos seus objetivos. Sem script, sem apresentação de vendas, sem tempo limitado.',
   },
   {
     title: 'Plataforma sempre aberta',
@@ -4942,7 +4942,7 @@ const editorialMetrics = [
 ]
 
 // ==========================================================
-// RESEARCH HERO — Investidor Sardinha "AUVP analyst desk"
+// RESEARCH HERO, Investidor Sardinha "AUVP analyst desk"
 // Data-dense version: radar do dia, screener fundamentalista,
 // setores, proventos, notas do professor, ecossistema AUVP.
 // ==========================================================
@@ -5004,7 +5004,7 @@ const researchHeroMarket = computed(() => [
   { label: 'CDI', note: '12 meses · acumulado', value: '11,28%', changePct: 0 },
 ])
 
-// Screener AUVP — fictional but realistic list of companies that would
+// Screener AUVP, fictional but realistic list of companies that would
 // pass the "4 filters" method described in the method chapter.
 const researchScreener = [
   { ticker: 'BBAS3', name: 'Banco do Brasil ON', sector: 'Bancos', pl: '5,4', pvp: '0,68', roe: '12,5%', dy: '7,7%' },
@@ -5043,7 +5043,7 @@ const researchDividends = [
   { exDate: '02/05', payDate: '19/05', ticker: 'KLBN11', type: 'Dividendo', amount: '0,42', unitDY: '1,8%' },
 ]
 
-// Recent analyst notes — last 5 studies published
+// Recent analyst notes, last 5 studies published
 const researchAnalystNotes = [
   {
     ticker: 'BBAS3',
@@ -5082,7 +5082,7 @@ const researchAnalystNotes = [
   },
 ]
 
-// AUVP ecosystem — 6 blocks pushing users into the Raul Sena universe
+// AUVP ecosystem, 6 blocks pushing users into the Raul Sena universe
 const researchAUVPEcosystem = [
   {
     kind: 'CURSO · ESCOLA',
@@ -5131,12 +5131,12 @@ const researchAUVPEcosystem = [
 // Compact price formatter for the Sardinha tables
 function formatSardinhaPrice(n: number | string): string {
   const num = typeof n === 'number' ? n : Number(n)
-  if (!Number.isFinite(num)) return '—'
+  if (!Number.isFinite(num)) return '-'
   return `R$ ${num.toFixed(2).replace('.', ',')}`
 }
 
 // Hydrate gainers/losers with real data after mount when the hero is
-// showing. Stays graceful if the backend is offline — the seeded data
+// showing. Stays graceful if the backend is offline, the seeded data
 // already reads as realistic.
 onMounted(async () => {
   if (brand.hero.variant !== 'research') return
@@ -5164,17 +5164,17 @@ onMounted(async () => {
 })
 
 // ==========================================================
-// MENTOR HERO — Primo Rico "book-cover / masterclass"
+// MENTOR HERO, Primo Rico "book-cover / masterclass"
 // ==========================================================
 
-// Method ARCA pillars — the content spine of the Primo Rico hero.
+// Method ARCA pillars, the content spine of the Primo Rico hero.
 // ARCA is Thiago Nigro's portfolio framework: Ações, Real Estate
 // (imóveis/FIIs), Caixa (reserva), Ativos alternativos.
 const mentorArcaPillars = [
   {
     letter: 'A · AÇÕES',
     label: 'Patrimônio de longo prazo',
-    description: 'Large caps, small caps e dividendos. Empresas que geram valor por décadas — não operações de curto prazo.',
+    description: 'Large caps, small caps e dividendos. Empresas que geram valor por décadas, não operações de curto prazo.',
     to: '/acoes',
   },
   {
@@ -5197,7 +5197,7 @@ const mentorArcaPillars = [
   },
 ]
 
-// Stats row — large numbers that back up the "mentor" persona.
+// Stats row, large numbers that back up the "mentor" persona.
 const mentorStats = [
   { value: '7M+', label: 'Seguidores no ecossistema' },
   { value: '2M+', label: 'Livros vendidos' },
@@ -5206,7 +5206,7 @@ const mentorStats = [
 ]
 
 // ==========================================================
-// "Showtime" — Me Poupe! TV-show variant helpers
+// "Showtime", Me Poupe! TV-show variant helpers
 // ==========================================================
 // The Me Poupe home is framed as an episode of a TV program.
 // Everything has Nath's voice: direct, warm, irreverent.
@@ -5225,7 +5225,7 @@ const showtimeCharacters = [
     name: 'Margarete',
     role: 'A MASCOTE',
     icon: 'i-lucide-utensils',
-    quote: 'Mexe no dinheiro igual eu mexo na panela — com carinho e atenção!',
+    quote: 'Mexe no dinheiro igual eu mexo na panela, com carinho e atenção!',
     body: 'A colher de pau que virou símbolo de quem cuida do próprio bolso. Na cozinha e nas finanças, ela é a chefe.',
     cta: 'Conhecer a Margarete',
   },
@@ -5241,7 +5241,7 @@ const showtimeCharacters = [
     name: 'Juro Composto',
     role: 'O SUPER-HERÓI',
     icon: 'i-lucide-trending-up',
-    quote: 'Me dê tempo e paciência — eu devolvo liberdade financeira.',
+    quote: 'Me dê tempo e paciência, eu devolvo liberdade financeira.',
     body: 'A oitava maravilha do mundo. Quando está do seu lado, trabalha pra você 24h. Quando está contra, te devora.',
     cta: 'Ver ele em ação',
   },
@@ -5341,7 +5341,7 @@ const showtimeStories = [
     name: 'Rafael & Bia',
     initials: 'RB',
     role: 'Casal, 29 e 27 anos · Belo Horizonte',
-    quote: 'Casamos sem reserva, sem planejamento, achando que o amor bastava. Bastava nada! Hoje temos a casa quitada e o primeiro filho a caminho — sem susto.',
+    quote: 'Casamos sem reserva, sem planejamento, achando que o amor bastava. Bastava nada! Hoje temos a casa quitada e o primeiro filho a caminho, sem susto.',
     stats: [
       { value: 'R$ 210k', label: 'Patrimônio' },
       { value: '3 anos', label: 'Do zero até aqui' },
@@ -5359,7 +5359,7 @@ const showtimeStories = [
   },
 ]
 
-// Small roman-numeral helper — used for Chapter II ritual list prefix.
+// Small roman-numeral helper, used for Chapter II ritual list prefix.
 function romanNumeral(n: number): string {
   const romans: Record<number, string> = {
     1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V', 6: 'VI', 7: 'VII', 8: 'VIII', 9: 'IX', 10: 'X',
@@ -5368,11 +5368,11 @@ function romanNumeral(n: number): string {
 }
 
 // ==========================================================
-// "Pauta do dia" — editorial market movers for Norte Capital
+// "Pauta do dia", editorial market movers for Norte Capital
 // ==========================================================
 // Fetched once on mount. Falls back silently to a curated seed list if the
 // backend is unreachable. Rendered as a dashed list (no grid, no cards)
-// with oldstyle figures in serif — preserving the editorial stillness.
+// with oldstyle figures in serif, preserving the editorial stillness.
 
 interface EditorialMover {
   ticker: string
@@ -5434,14 +5434,14 @@ onMounted(async () => {
 })
 
 function formatMoverPrice(n: number): string {
-  if (!Number.isFinite(n) || n <= 0) return '—'
+  if (!Number.isFinite(n) || n <= 0) return '-'
   return n.toLocaleString('pt-BR', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })
 }
 function formatMoverChange(n: number): string {
-  if (!Number.isFinite(n)) return '—'
+  if (!Number.isFinite(n)) return '-'
   const sign = n >= 0 ? '+' : '−'
   return `${sign}${Math.abs(n).toFixed(2).replace('.', ',')}%`
 }
@@ -5926,7 +5926,7 @@ watch(selectedTimeRange, (range) => {
 })
 
 // ============================================================
-// PLAYBOOK HERO — Saraiva Invest "calm method + author anchor"
+// PLAYBOOK HERO, Saraiva Invest "calm method + author anchor"
 // ============================================================
 //
 // Data + handler used by the `playbook` hero variant. Kept scoped to
@@ -5949,7 +5949,7 @@ const playbookPillars = [
   {
     icon: 'i-lucide-scale',
     title: 'Calcula o preço-teto',
-    description: 'Método Bazin pra quem vive de dividendos, Graham pra quem olha crescimento. O preço-teto é seu gatilho — não o humor do mercado.',
+    description: 'Método Bazin pra quem vive de dividendos, Graham pra quem olha crescimento. O preço-teto é seu gatilho, não o humor do mercado.',
     tag: 'Valuation',
   },
   {
@@ -5968,7 +5968,7 @@ function onPhotoError(ev: Event) {
 }
 
 // ============================================================
-// HOLDER HERO — editorial autoral
+// HOLDER HERO, editorial autoral
 // ============================================================
 //
 // Data + helpers used by the `holder` hero variant.
@@ -5979,8 +5979,8 @@ const holderEditionDate = computed(() => {
   return `${months[d.getMonth()]} ${d.getFullYear()}`
 })
 
-// Trader vs Holder table data — 4 sharp one-liners (was 7).
-// Less is more — cada linha tem que valer por uma frase de manifesto.
+// Trader vs Holder table data, 4 sharp one-liners (was 7).
+// Less is more, cada linha tem que valer por uma frase de manifesto.
 const holderTraderTable = ['', '']  // headers rendered inline
 const holderTraderRows = [
   {
@@ -6046,7 +6046,7 @@ const holderTickerCarousel = computed(() => {
   return out
 })
 
-// Posições atuais reveladas — 5 (era 7), teses curtas estilo
+// Posições atuais reveladas, 5 (era 7), teses curtas estilo
 // editorial (uma linha cada). Menos texto, mais peso.
 const holderPositions = [
   { ticker: 'ITUB4', sector: 'Bancos', thesis: 'Moat regulatório, 30M de clientes, ROE consistente acima de 18%.', since: '2014' },
@@ -6120,7 +6120,7 @@ definePageMeta({
   font-family: 'Fredoka', 'Inter', system-ui, sans-serif;
 }
 
-/* Sticker-style highlight — mimics the chunky white-stroke logo effect */
+/* Sticker-style highlight, mimics the chunky white-stroke logo effect */
 .playbook-hero .pb-sticker {
   display: inline-block;
   font-family: 'Fredoka', 'Inter', system-ui, sans-serif;
@@ -6142,7 +6142,7 @@ definePageMeta({
   transform: rotate(-1.5deg);
 }
 
-/* Cabeça Quente sticker — red, hot, slightly tilted opposite way */
+/* Cabeça Quente sticker, red, hot, slightly tilted opposite way */
 .playbook-hero .pb-sticker-hot {
   display: inline-block;
   background: #EF4444;
@@ -6158,7 +6158,7 @@ definePageMeta({
   transform: rotate(2deg);
 }
 
-/* Cabeça Fria sticker — amber, cold, tilted opposite */
+/* Cabeça Fria sticker, amber, cold, tilted opposite */
 .playbook-hero .pb-sticker-cold {
   display: inline-block;
   font-family: 'Fredoka', 'Inter', system-ui, sans-serif;
@@ -6206,7 +6206,7 @@ definePageMeta({
   transform: translateY(-2px);
 }
 
-/* Author photo ring — slow rotating stroke */
+/* Author photo ring, slow rotating stroke */
 @keyframes pb-ring-rotate {
   from { transform: translate(-50%, -50%) rotate(0deg); }
   to { transform: translate(-50%, -50%) rotate(360deg); }
@@ -6298,7 +6298,7 @@ definePageMeta({
   margin-top: 0.05em;
 }
 
-/* CTA primary — sharp flat rectangle, no border, no offset shadow */
+/* CTA primary, sharp flat rectangle, no border, no offset shadow */
 .holder-hero .hl-cta-primary {
   border-radius: 0;
   letter-spacing: 0.18em;
@@ -6317,10 +6317,10 @@ definePageMeta({
   transform: scale(1.02);
 }
 
-/* Marquee band — slow elegant horizontal scroll
+/* Marquee band, slow elegant horizontal scroll
    The track contains TWO copies of the ticker list rendered inline.
    We translate -50% so the second copy seamlessly takes over when the
-   first scrolls out — no visible jump. */
+   first scrolls out, no visible jump. */
 .holder-hero .hl-marquee {
   position: relative;
   width: 100%;
