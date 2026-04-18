@@ -58,7 +58,7 @@
               class="font-mono-tab text-[11px] uppercase tracking-[0.15em]"
               :style="{ color: C.text }"
             >
-              Imperio por tras do feed
+              {{ ebook.plainTitle }}
             </span>
           </nav>
           <div class="flex-1" />
@@ -105,11 +105,29 @@
             </h1>
 
             <p
-              class="mb-8 max-w-xl text-[15px] leading-[1.7] md:text-[17px]"
+              class="mb-6 max-w-xl text-[15px] leading-[1.7] md:text-[17px]"
               :style="{ color: C.textMuted }"
             >
               {{ ebook.subtitle }}
             </p>
+
+            <!-- Author byline + freshness signal. "Last updated" shown
+                 prominently because dated content ranks and gets cited
+                 more than undated content across both Google and LLMs. -->
+            <div class="mb-8 flex flex-wrap items-center gap-x-4 gap-y-2 font-mono-tab text-[11px] uppercase tracking-[0.15em]" :style="{ color: C.textMuted }">
+              <span class="inline-flex items-center gap-2">
+                <UIcon name="i-lucide-file-pen-line" class="size-3.5" :style="{ color: C.primary }" />
+                <span>POR <strong :style="{ color: C.text }">{{ ebook.seo.authorName.toUpperCase() }}</strong></span>
+              </span>
+              <span :style="{ color: C.border }">·</span>
+              <time :datetime="ebook.publishedAt">
+                PUBLICADO {{ formatDate(ebook.publishedAt) }}
+              </time>
+              <span :style="{ color: C.border }">·</span>
+              <time :datetime="ebook.updatedAt" :style="{ color: C.primary }">
+                ATUALIZADO {{ formatDate(ebook.updatedAt) }}
+              </time>
+            </div>
 
             <!-- Meta chips -->
             <div class="mb-10 flex flex-wrap items-center gap-3 font-mono-tab text-[10px] uppercase tracking-[0.15em]">
@@ -264,6 +282,69 @@
               {{ stat.context.toUpperCase() }}
             </span>
           </div>
+        </div>
+      </section>
+
+      <!-- §1.5 · RADAR FINFLUENCE, 8 categorias × 33 nomes.
+           High-value SEO section: each category name + notable-names list
+           is an extractable block that matches "Thiago Nigro grupo primo",
+           "quem são os finfluencers de fiis", "ARK Invest AUM" type queries.
+           AI engines treat this as an entity list and tend to cite it
+           verbatim in "Who are the top Brazilian finfluencers?" answers. -->
+      <section
+        v-if="ebook.categories && ebook.categories.length > 0"
+        class="relative border-y"
+        :style="{ borderColor: C.border, backgroundColor: `${C.surface}80` }"
+      >
+        <div class="mx-auto max-w-6xl px-6 py-20 md:px-10 md:py-28">
+          <div class="mb-14 flex flex-col gap-3 md:flex-row md:items-end md:justify-between md:gap-10">
+            <div>
+              <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
+                [RADAR FINFLUENCE · BR 2026]
+              </span>
+              <h2 class="mt-3 text-[36px] leading-tight tracking-tight md:text-[52px]" :style="{ color: C.text, fontFamily: F.display }">
+                33 nomes, <em :style="{ color: C.primary }">8 territórios.</em>
+              </h2>
+            </div>
+            <p class="max-w-md text-[14px] leading-[1.7]" :style="{ color: C.textMuted }">
+              Os finfluencers brasileiros não são uma massa homogênea. Dividem-se em territórios com lógicas econômicas, audiências e graus de capitalização completamente diferentes. Este radar condensa os 33 com maior relevância estratégica.
+            </p>
+          </div>
+
+          <div class="grid gap-px overflow-hidden rounded-sm border md:grid-cols-2 lg:grid-cols-4" :style="{ borderColor: C.border, backgroundColor: C.border }">
+            <article
+              v-for="cat in ebook.categories"
+              :key="cat.slug"
+              class="flex flex-col gap-3 p-6 transition-colors hover:brightness-110 md:p-7"
+              :style="{ backgroundColor: C.background }"
+            >
+              <header class="flex items-baseline justify-between gap-3">
+                <h3 class="text-[20px] font-semibold leading-tight md:text-[22px]" :style="{ color: C.text }">
+                  {{ cat.name }}
+                </h3>
+                <span class="font-mono-tab text-[9px] uppercase tracking-[0.15em]" :style="{ color: C.textMuted }">
+                  {{ String(cat.notableNames.length).padStart(2, '0') }} NOMES
+                </span>
+              </header>
+              <p class="text-[13px] leading-[1.6]" :style="{ color: C.textMuted }">
+                {{ cat.description }}
+              </p>
+              <ul class="mt-auto flex flex-wrap gap-1.5 font-mono-tab text-[10px] uppercase tracking-[0.12em]">
+                <li
+                  v-for="name in cat.notableNames"
+                  :key="name"
+                  class="rounded-sm border px-2 py-0.5"
+                  :style="{ borderColor: C.border, color: C.text }"
+                >
+                  {{ name }}
+                </li>
+              </ul>
+            </article>
+          </div>
+
+          <p class="mt-10 max-w-3xl font-mono-tab text-[11px] uppercase leading-[1.6] tracking-[0.12em]" :style="{ color: C.textMuted }">
+            &gt; FONTE: RADAR FINFLUENCE REDENTIA · BASE ANBIMA FINFLUENCE 9ª ED. · 1S 2025 · 803 PERFIS MONITORADOS EM 15 NICHOS · RECORTE EDITORIAL PARA OS 33 COM MAIOR RELEVÂNCIA ESTRATÉGICA.
+          </p>
         </div>
       </section>
 
@@ -430,6 +511,58 @@
                 <span>{{ src }}</span>
               </li>
             </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- §6.5 · FAQ, answered questions block.
+           Every Q/A here is also injected as FAQPage JSON-LD in the head.
+           This is the single highest-leverage SEO block on the page:
+             · Google renders FAQ rich results in SERPs (expandable)
+             · Each question matches a real long-tail query pattern
+             · ChatGPT/Perplexity/AI Overviews extract answers verbatim
+               and cite the page — Princeton GEO measured +30-40% citation
+               uplift when pages surface Q/A + statistics + sources. -->
+      <section
+        v-if="ebook.faqs && ebook.faqs.length > 0"
+        id="perguntas-frequentes"
+        class="relative border-t"
+        :style="{ borderColor: C.border }"
+      >
+        <div class="mx-auto max-w-5xl px-6 py-20 md:px-10 md:py-28">
+          <div class="mb-14 max-w-3xl">
+            <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
+              [PERGUNTAS FREQUENTES]
+            </span>
+            <h2 class="mt-3 text-[36px] leading-tight tracking-tight md:text-[52px]" :style="{ color: C.text, fontFamily: F.display }">
+              O que <em :style="{ color: C.primary }">todo mundo pergunta.</em>
+            </h2>
+            <p class="mt-5 text-[14px] leading-[1.7]" :style="{ color: C.textMuted }">
+              As dez perguntas mais buscadas sobre finfluencers brasileiros, valuations e estrutura regulatória, respondidas com dados do estudo.
+            </p>
+          </div>
+
+          <div class="flex flex-col divide-y" :style="{ borderColor: C.border }">
+            <details
+              v-for="(faq, idx) in ebook.faqs"
+              :key="idx"
+              class="group py-6"
+              :style="{ borderColor: C.border }"
+            >
+              <summary
+                class="flex cursor-pointer items-start justify-between gap-6 text-[18px] font-semibold leading-snug md:text-[22px]"
+                :style="{ color: C.text, fontFamily: F.display }"
+              >
+                <span class="flex-1">{{ faq.question }}</span>
+                <span
+                  class="mt-1 shrink-0 font-mono-tab text-[14px] transition-transform group-open:rotate-45"
+                  :style="{ color: C.primary }"
+                >+</span>
+              </summary>
+              <p class="mt-4 max-w-3xl text-[15px] leading-[1.7]" :style="{ color: C.textMuted }">
+                {{ faq.answer }}
+              </p>
+            </details>
           </div>
         </div>
       </section>
@@ -605,6 +738,12 @@ const mainSiteHref = useMainSiteHref()
 
 const publishedYear = new Date(ebook.publishedAt).getFullYear()
 
+function formatDate(iso: string): string {
+  const d = new Date(iso)
+  if (isNaN(d.getTime())) return iso
+  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase()
+}
+
 // Form state
 const form = reactive({
   name: '',
@@ -658,18 +797,164 @@ definePageMeta({
   hideInstallAppBanner: true,
 })
 
+// ==========================================================
+// SEO: JSON-LD structured data
+// ==========================================================
+// Three schemas stacked in the head so both classic search engines and
+// AI search (ChatGPT, Perplexity, Google AI Overviews) can extract the
+// study's metadata, Q&A pairs and breadcrumb trail cleanly:
+//
+//   1. Article           → Article schema with author, publisher, dates
+//                         and image. Feeds Google Top Stories + Bing news
+//                         and gives LLMs an unambiguous "this is a study,
+//                         published on X, updated on Y" signal.
+//   2. FAQPage          → Each Q/A pair is extractable verbatim by AI
+//                         engines. Princeton GEO (2024) measured 30-40%
+//                         citation uplift when pages surface statistics +
+//                         Q/A answers with sources.
+//   3. BreadcrumbList    → Hub → Landing hierarchy. Helps SERP rendering
+//                         and makes the /estudo hub discoverable from the
+//                         rich result.
+//
+// All three are emitted as separate <script type="application/ld+json">
+// blocks — stacking them as a single @graph also works but keeps them
+// siloed so individual validators (Rich Results Test, Schema.org
+// validator) don't flag the Article missing properties required by FAQ.
+const SITE_ORIGIN = 'https://estudo.redentia.com.br'
+const MAIN_SITE_ORIGIN = 'https://redentia.com.br'
+const pageUrl = `${SITE_ORIGIN}/${ebook.slug}`
+const coverUrl = ebook.coverImage ? `${SITE_ORIGIN}${ebook.coverImage}` : undefined
+const ogImageUrl = ebook.ogImage
+  ? `${SITE_ORIGIN}${ebook.ogImage}`
+  : coverUrl
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: ebook.plainTitle,
+  description: ebook.seo.description,
+  url: pageUrl,
+  image: coverUrl ? [coverUrl] : undefined,
+  datePublished: ebook.publishedAt,
+  dateModified: ebook.updatedAt,
+  inLanguage: 'pt-BR',
+  isAccessibleForFree: true,
+  keywords: ebook.seo.keywords.join(', '),
+  wordCount: ebook.pages * 300, // rough estimate, ~300 words/page
+  author: {
+    '@type': 'Organization',
+    name: ebook.seo.authorName,
+    url: MAIN_SITE_ORIGIN,
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: ebook.seo.publisherName,
+    url: MAIN_SITE_ORIGIN,
+    logo: {
+      '@type': 'ImageObject',
+      url: `${MAIN_SITE_ORIGIN}/brand/logo-icon.svg`,
+    },
+  },
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': pageUrl,
+  },
+  about: ebook.seo.keywords.slice(0, 6).map((kw) => ({
+    '@type': 'Thing',
+    name: kw,
+  })),
+}
+
+const faqSchema = ebook.faqs && ebook.faqs.length > 0
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: ebook.faqs.map((faq) => ({
+        '@type': 'Question',
+        name: faq.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: faq.answer,
+        },
+      })),
+    }
+  : null
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Redentia',
+      item: MAIN_SITE_ORIGIN,
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: 'Estudos',
+      item: SITE_ORIGIN,
+    },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: ebook.plainTitle,
+      item: pageUrl,
+    },
+  ],
+}
+
 useHead({
   title: ebook.seo.title,
+  htmlAttrs: { lang: 'pt-BR' },
   meta: [
     { name: 'description', content: ebook.seo.description },
+    { name: 'keywords', content: ebook.seo.keywords.join(', ') },
+    { name: 'author', content: ebook.seo.authorName },
+    { name: 'robots', content: 'index,follow,max-image-preview:large,max-snippet:-1' },
+    // Open Graph
     { property: 'og:title', content: ebook.seo.title },
     { property: 'og:description', content: ebook.seo.description },
     { property: 'og:type', content: 'article' },
+    { property: 'og:url', content: pageUrl },
+    { property: 'og:site_name', content: 'Redentia Estudo' },
+    { property: 'og:locale', content: 'pt_BR' },
+    ...(ogImageUrl ? [
+      { property: 'og:image', content: ogImageUrl },
+      { property: 'og:image:alt', content: `Capa: ${ebook.plainTitle}` },
+      { property: 'og:image:width', content: '1200' },
+      { property: 'og:image:height', content: '1350' },
+    ] : []),
+    { property: 'article:published_time', content: ebook.publishedAt },
+    { property: 'article:modified_time', content: ebook.updatedAt },
+    { property: 'article:author', content: ebook.seo.authorName },
+    { property: 'article:section', content: 'Market Research' },
+    ...ebook.seo.keywords.slice(0, 6).map((tag) => ({ property: 'article:tag', content: tag })),
+    // Twitter
     { name: 'twitter:card', content: 'summary_large_image' },
     { name: 'twitter:title', content: ebook.seo.title },
     { name: 'twitter:description', content: ebook.seo.description },
+    ...(ogImageUrl ? [{ name: 'twitter:image', content: ogImageUrl }] : []),
   ],
-  link: [{ rel: 'stylesheet', href: REDENTIA_GOOGLE_FONT_HREF }],
+  link: [
+    { rel: 'canonical', href: pageUrl },
+    { rel: 'stylesheet', href: REDENTIA_GOOGLE_FONT_HREF },
+  ],
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify(articleSchema),
+    },
+    ...(faqSchema ? [{
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify(faqSchema),
+    }] : []),
+    {
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify(breadcrumbSchema),
+    },
+  ],
 })
 </script>
 
