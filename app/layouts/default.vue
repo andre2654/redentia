@@ -67,7 +67,8 @@
        updates when a tenant changes (producing mixed Redentia-dark sidebar
        with Norte-cream main content). -->
   <div
-    class="flex min-h-screen w-full"
+    class="flex w-full"
+    :class="hideFooter ? 'h-screen overflow-hidden' : 'min-h-screen'"
     :style="{ backgroundColor: brand.colors.background, color: brand.colors.text }"
   >
     <!-- Sidebar Desktop -->
@@ -227,13 +228,13 @@
           Seu vínculo com o assessor foi recusado. Você pode falar com a assessoria com IA normalmente.
         </template>
       </div>
-      <div v-bind="containerProps" class="flex-1">
+      <div v-bind="containerProps" class="flex min-h-0 flex-1 flex-col">
         <slot />
       </div>
     </div>
   </div>
 
-  <Footer />
+  <Footer v-if="!hideFooter" />
 </template>
 
 <script lang="ts" setup>
@@ -249,6 +250,10 @@ defineProps({
   headerBg: {
     type: String,
     default: '',
+  },
+  hideFooter: {
+    type: Boolean,
+    default: false,
   },
 })
 

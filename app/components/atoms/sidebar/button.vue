@@ -1,5 +1,6 @@
 <template>
   <NuxtLink
+    :to="disabled ? undefined : to"
     class="group flex items-center gap-3 rounded-xl border border-transparent px-4 py-3 text-left transition-all duration-200"
     :class="{
       'pointer-events-none cursor-not-allowed opacity-40': disabled,
@@ -62,8 +63,12 @@ const route = useRoute()
 // rules intentionally match what NuxtLink would do with `exact-active-class`.
 const activeMatch = computed(() => {
   if (!props.to) return false
-  const current = route.path.replace(/\/$/, '')
-  const target = String(props.to).replace(/\/$/, '')
+  // Normalize: strip trailing slash but preserve root as '/'. Without the
+  // `|| '/'` fallback, to="/" collapses to '' and the sub-route check below
+  // (`startsWith('' + '/')` = `startsWith('/')`) flags EVERY path as active —
+  // so "Visão Geral" lit up alongside whichever item was truly active.
+  const current = route.path.replace(/\/$/, '') || '/'
+  const target = String(props.to).replace(/\/$/, '') || '/'
   if (current === target) return true
   // Sub-route: /wallet/anything matches /wallet
   if (target !== '/' && current.startsWith(target + '/')) return true

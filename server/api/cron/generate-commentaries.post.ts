@@ -1,4 +1,5 @@
 import { generateCommentary, type CommentaryCandidate } from '../../utils/marketCommentary'
+import { resolveValidSiblings } from '../../utils/tickerSiblings'
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
@@ -44,11 +45,20 @@ export default defineEventHandler(async (event) => {
 
   let generated = 0
   let failed = 0
+  let propagated = 0
   const errors: string[] = []
+
+  // Track which (scope:identifier:date) combos we've already saved so the
+  // sibling propagation step doesn't double-save when the candidates list
+  // already contains both siblings organically.
+  const savedKeys = new Set<string>()
 
   // 2. Generate + store commentaries sequentially (parallel would hit rate limits)
   for (const candidate of candidates) {
     try {
+      const key = `${candidate.scope}:${candidate.identifier}:${candidate.date}`
+      if (savedKeys.has(key)) continue
+
       const result = await generateCommentary(candidate)
       if (!result) {
         failed++
@@ -73,9 +83,84 @@ export default defineEventHandler(async (event) => {
       })
 
       generated++
+      savedKeys.add(key)
       console.log(
         `[cron:commentaries] Generated ${candidate.scope}:${candidate.identifier} — ${result.title}`
       )
+
+      // Propagate to sibling tickers (PETR3 ↔ PETR4, ITUB3 ↔ ITUB4, etc).
+      // Share classes of the same company share all company-level news, so
+      // generating once and copying (with each sibling's own OHLCV) keeps
+      // the "movimentos notáveis" grid symmetrical even when only one
+      // sibling cleared the 2.5% + R$1M liquidity cutoff.
+      if (candidate.scope === 'ticker') {
+        try {
+          const siblings = await resolveValidSiblings(candidate.identifier, apiBase)
+          for (const sibling of siblings) {
+            const siblingKey = `ticker:${sibling.ticker}:${candidate.date}`
+            if (savedKeys.has(siblingKey)) continue
+
+            // Fetch this sibling's own price for the candidate's date
+            const siblingPriceRes = await $fetch<{ data: any[] }>(
+              `${apiBase}/tickers/${sibling.ticker}/prices?mode=1mo`
+            ).catch(() => ({ data: [] }))
+
+            const siblingRow = (siblingPriceRes?.data || []).find(
+              (r: any) => String(r.price_at).slice(0, 10) === candidate.date
+            )
+            if (!siblingRow) continue
+
+            const siblingContext = {
+              ticker: sibling.ticker,
+              name: sibling.name,
+              sector: sibling.sector,
+              open: Number(siblingRow.open) || 0,
+              high: Number(siblingRow.high) || 0,
+              low: Number(siblingRow.low) || 0,
+              close: Number(siblingRow.market_price) || 0,
+              volume: Number(siblingRow.volume) || 0,
+              change_percent: Number(siblingRow.change_percent) || 0,
+            }
+
+            await $fetch(`${apiBase}/market-commentaries`, {
+              method: 'POST',
+              headers: { 'x-internal-key': expectedKey },
+              body: {
+                scope: 'ticker',
+                identifier: sibling.ticker,
+                date: candidate.date,
+                change_percent: siblingContext.change_percent,
+                title: result.title,
+                commentary: result.commentary,
+                context_data: siblingContext,
+                sources: result.sources,
+                ai_model: model,
+              },
+            })
+              .then(() => {
+                savedKeys.add(siblingKey)
+                propagated++
+                console.log(
+                  `[cron:commentaries] Propagated to ${sibling.ticker} (${candidate.date})`
+                )
+              })
+              .catch((err: any) => {
+                const status = err?.response?.status || err?.statusCode
+                if (status !== 409 && status !== 422) {
+                  console.error(
+                    `[cron:commentaries] sibling propagation failed (${sibling.ticker}):`,
+                    err?.data || err?.message
+                  )
+                }
+              })
+          }
+        } catch (err: any) {
+          console.error(
+            `[cron:commentaries] sibling resolve error for ${candidate.identifier}:`,
+            err?.message || err
+          )
+        }
+      }
 
       // Small delay between generations to avoid rate limits
       await new Promise((r) => setTimeout(r, 500))
@@ -91,6 +176,7 @@ export default defineEventHandler(async (event) => {
 
   return {
     generated,
+    propagated,
     failed,
     total: candidates.length,
     errors: errors.length > 0 ? errors : undefined,

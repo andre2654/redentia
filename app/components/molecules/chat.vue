@@ -1,35 +1,38 @@
 <template>
   <div
-    class="flex flex-col items-center justify-between gap-[100px] overflow-hidden xl:rounded-[30px]"
+    class="flex h-full min-h-0 flex-col overflow-hidden xl:rounded-[30px]"
   >
-    <!-- Suggestions Section -->
-    <div class="flex flex-col items-center justify-center gap-5 px-4 pt-[70px]">
-      <div class="flex flex-col items-center gap-2">
-        <BrandLogo variant="icon" class="h-10 w-10 opacity-80" />
-        <h2 class="text-center text-2xl font-semibold">{{ brand.ai.chatTitle }}</h2>
-        <p class="max-w-md text-center text-[13px] font-light" :style="{ color: brand.colors.textMuted }">
-          {{ brand.ai.chatSubtitle }}
-        </p>
+    <!-- Scrollable area: suggestions + messages. Grows to fill available
+         space so the input sticks at the bottom without clipping. -->
+    <div class="flex min-h-0 flex-1 flex-col items-center gap-10 overflow-y-auto px-4 pb-6 pt-[70px]">
+      <!-- Suggestions Section -->
+      <div class="flex flex-col items-center gap-5">
+        <div class="flex flex-col items-center gap-2">
+          <BrandLogo variant="icon" class="h-10 w-10 opacity-80" />
+          <h2 class="text-center text-2xl font-semibold">{{ brand.ai.chatTitle }}</h2>
+          <p class="max-w-md text-center text-[13px] font-light" :style="{ color: brand.colors.textMuted }">
+            {{ brand.ai.chatSubtitle }}
+          </p>
+        </div>
+        <div class="flex w-full max-w-[600px] flex-col gap-2">
+          <button
+            v-for="(suggestion, idx) in suggestions"
+            :key="idx"
+            class="suggestion-btn group flex w-full items-center gap-3 rounded-xl border px-4 py-3.5 text-left text-[13px] font-medium transition-all duration-200"
+            :style="{ borderColor: brand.colors.border, color: brand.colors.text }"
+            @click="sendSuggestion(suggestion)"
+          >
+            <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-secondary/10 transition-colors group-hover:bg-secondary/20">
+              <UIcon :name="suggestionIcons[idx % suggestionIcons.length]" class="size-4 text-secondary" />
+            </div>
+            <span>{{ suggestion }}</span>
+            <UIcon name="i-lucide-arrow-right" class="ml-auto size-4 opacity-0 transition-all group-hover:translate-x-0.5 group-hover:opacity-60" />
+          </button>
+        </div>
       </div>
-      <div class="flex w-full max-w-[600px] flex-col gap-2">
-        <button
-          v-for="(suggestion, idx) in suggestions"
-          :key="idx"
-          class="suggestion-btn group flex w-full items-center gap-3 rounded-xl border px-4 py-3.5 text-left text-[13px] font-medium transition-all duration-200"
-          :style="{ borderColor: brand.colors.border, color: brand.colors.text }"
-          @click="sendSuggestion(suggestion)"
-        >
-          <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-secondary/10 transition-colors group-hover:bg-secondary/20">
-            <UIcon :name="suggestionIcons[idx % suggestionIcons.length]" class="size-4 text-secondary" />
-          </div>
-          <span>{{ suggestion }}</span>
-          <UIcon name="i-lucide-arrow-right" class="ml-auto size-4 opacity-0 transition-all group-hover:translate-x-0.5 group-hover:opacity-60" />
-        </button>
-      </div>
-    </div>
 
-    <!-- Chat Messages -->
-    <div class="flex w-full flex-col gap-3">
+      <!-- Chat Messages -->
+      <div class="flex w-full flex-col gap-3">
       <AtomsChatMessage
         v-for="message in internalMessages"
         :key="message.id"
@@ -56,6 +59,7 @@
           </span>
         </div>
         <small class="text-xs text-[rgb(var(--brand-overlay)_/_0.6)]">digitando…</small>
+      </div>
       </div>
     </div>
 

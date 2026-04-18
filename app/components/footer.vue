@@ -222,11 +222,6 @@
                 Documentação
               </NuxtLink>
             </li>
-            <li>
-              <NuxtLink to="/backoffice" class="text-sm transition-colors hover:text-secondary" :style="{ color: brand.colors.textMuted }">
-                Admin
-              </NuxtLink>
-            </li>
           </ul>
         </div>
 

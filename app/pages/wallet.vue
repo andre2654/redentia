@@ -92,11 +92,11 @@
             :title="compositionInsight?.title"
             :message="compositionInsight?.message"
           />
-          <MoleculesChat class="w-full" :style="{ backgroundColor: brand.colors.surface }" />
+          <MoleculesChat class="w-full" route-path="/help" :style="{ backgroundColor: brand.colors.surface }" />
         </div>
       </template>
       <div v-else-if="!loading" class="mt-12 flex flex-col items-center gap-12">
-        <MoleculesChat class="w-full" :style="{ backgroundColor: brand.colors.surface }" />
+        <MoleculesChat class="w-full" route-path="/help" :style="{ backgroundColor: brand.colors.surface }" />
       </div>
     </div>
   </NuxtLayout>

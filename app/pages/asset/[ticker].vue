@@ -3945,12 +3945,9 @@ const currentVolume = computed(() => {
 const lastUpdateLabel = computed(() => {
   const rawDate = (asset.value as any)?.price_at || (asset.value as any)?.priceAt
   if (!rawDate) return ''
-  try {
-    const d = new Date(rawDate)
-    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
-  } catch {
-    return ''
-  }
+  const d = new Date(rawDate)
+  if (isNaN(d.getTime())) return ''
+  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
 })
 
 // Fundamentals register rows — maps basicIndicators into the terminal grid.

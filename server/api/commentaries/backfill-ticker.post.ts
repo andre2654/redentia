@@ -10,9 +10,12 @@ import {
 /**
  * Historical backfill for a specific ticker.
  *
- * Finds days in the last 90 days where |change_percent| >= 2%,
- * deduplicates against existing commentaries, and generates up to
- * 10 new commentaries via Claude + web_search.
+ * Finds days in the last 90 days where |change_percent| >= 2% — considering
+ * the primary ticker AND all same-company siblings (PETR3 ↔ PETR4). A day
+ * is "notable" if ANY share class crossed the threshold, so PETR3 -5,31% /
+ * PETR4 -1,8% still produces commentaries for both. Commentary is generated
+ * once from the primary's perspective and copied to each sibling with its
+ * own OHLCV.
  *
  * Guards:
  *  - Rate limited: once per ticker per 24h (Nitro storage cooldown)
@@ -98,12 +101,63 @@ export default defineEventHandler(async (event) => {
     return { queued: 0, message: 'Nenhum histórico disponível', total: 0 }
   }
 
-  // 2. Filter to volatile days (|change| >= 2%)
-  const volatileDays = prices
-    .filter((p) => {
-      const cp = Number(p.change_percent)
-      return Number.isFinite(cp) && Math.abs(cp) >= MIN_CHANGE_PERCENT
-    })
+  // 2a. Build an index of the primary ticker's price history by date, so we
+  // can look up OHLCV for days where only a sibling cleared the threshold.
+  const primaryByDate = new Map<string, any>()
+  for (const p of prices) {
+    primaryByDate.set(String(p.price_at).slice(0, 10), p)
+  }
+
+  // 2b. Pre-resolve siblings and fetch their histories. We pull siblings
+  // BEFORE filtering volatile days because a day is "notable" if ANY share
+  // class of the same company moved — PETR3 -5,31% should trigger even when
+  // PETR4 only moved -1,8% on the same date (and vice-versa).
+  let siblings: SiblingInfo[] = []
+  const siblingSeries = new Map<string, Map<string, SiblingPriceRow>>()
+  const siblingExistingDates = new Map<string, Set<string>>()
+  try {
+    siblings = await resolveValidSiblings(rawTicker, apiBase)
+    if (siblings.length > 0) {
+      await Promise.all(
+        siblings.map(async (s) => {
+          const series = await fetchSiblingPriceSeries(
+            s.ticker,
+            apiBase,
+            HISTORY_MODE as any
+          )
+          siblingSeries.set(s.ticker, series)
+        })
+      )
+    }
+  } catch (err) {
+    console.error(`[backfill:${rawTicker}] sibling resolution failed:`, err)
+  }
+
+  // 2c. Compute the union of volatile dates across primary + siblings.
+  const volatileDateSet = new Set<string>()
+  for (const p of prices) {
+    const cp = Number(p.change_percent)
+    if (Number.isFinite(cp) && Math.abs(cp) >= MIN_CHANGE_PERCENT) {
+      volatileDateSet.add(String(p.price_at).slice(0, 10))
+    }
+  }
+  for (const [, series] of siblingSeries) {
+    for (const [date, row] of series) {
+      if (Math.abs(row.change_percent) >= MIN_CHANGE_PERCENT) {
+        volatileDateSet.add(date)
+      }
+    }
+  }
+
+  // 2d. Resolve each volatile date to the primary ticker's price row. B3
+  // share classes share the same trading calendar in virtually all cases,
+  // so the primary will have a row even when the sibling is the one that
+  // actually crossed the threshold. If the primary is missing a row for
+  // some edge-case date, skip it — the backend reconcile endpoint will
+  // fill that gap on the next run.
+  const volatileDays = Array.from(volatileDateSet)
+    .map((dateStr) => primaryByDate.get(dateStr))
+    .filter((p): p is any => !!p)
     .sort((a, b) => (a.price_at < b.price_at ? 1 : -1)) // DESC (newest first)
 
   if (volatileDays.length === 0) {
@@ -112,12 +166,14 @@ export default defineEventHandler(async (event) => {
     return {
       queued: 0,
       total: 0,
-      message: `Sem dias com variação >= ${MIN_CHANGE_PERCENT}% nos últimos 90 dias.`,
+      message: `Sem dias com variação >= ${MIN_CHANGE_PERCENT}% nos últimos 90 dias (primário + siblings).`,
     }
   }
 
-  // 3. Fetch existing ticker commentaries to dedupe
+  // 3. Fetch existing ticker commentaries to dedupe (primary + siblings)
   let existingDates = new Set<string>()
+  const fromDate = volatileDays[volatileDays.length - 1].price_at
+  const toDate = volatileDays[0].price_at
   try {
     const existingRes = await $fetch<{ data: any[] }>(
       `${apiBase}/market-commentaries`,
@@ -125,8 +181,8 @@ export default defineEventHandler(async (event) => {
         query: {
           scope: 'ticker',
           identifier: rawTicker,
-          from: volatileDays[volatileDays.length - 1].price_at,
-          to: volatileDays[0].price_at,
+          from: fromDate,
+          to: toDate,
           limit: 200,
         },
       }
@@ -136,6 +192,24 @@ export default defineEventHandler(async (event) => {
     )
   } catch {
     // If listing fails, proceed optimistically — unique index will dedupe on POST
+  }
+
+  // Pre-populate sibling existing dates for propagation step downstream
+  if (siblings.length > 0) {
+    await Promise.all(
+      siblings.map(async (s) => {
+        const existing = await fetchExistingCommentaryDates(
+          s.ticker,
+          fromDate,
+          toDate,
+          apiBase
+        )
+        siblingExistingDates.set(s.ticker, existing)
+      })
+    )
+    console.log(
+      `[backfill:${rawTicker}] siblings resolved: ${siblings.map((s) => s.ticker).join(', ')}`
+    )
   }
 
   // 4. Pick missing dates, cap at MAX_GENERATIONS (most recent first)
@@ -167,35 +241,6 @@ export default defineEventHandler(async (event) => {
       profileRes?.data?.sector ||
       null
   } catch {}
-
-  // 5b. Resolve sibling tickers (same company, different share class).
-  // Each commentary generated for the primary ticker will be propagated
-  // to all siblings with their own change_percent/OHLCV.
-  let siblings: SiblingInfo[] = []
-  const siblingSeries = new Map<string, Map<string, SiblingPriceRow>>()
-  const siblingExistingDates = new Map<string, Set<string>>()
-  try {
-    siblings = await resolveValidSiblings(rawTicker, apiBase)
-    if (siblings.length > 0) {
-      const fromDate = volatileDays[volatileDays.length - 1].price_at
-      const toDate = volatileDays[0].price_at
-      await Promise.all(
-        siblings.map(async (s) => {
-          const [series, existing] = await Promise.all([
-            fetchSiblingPriceSeries(s.ticker, apiBase, HISTORY_MODE as any),
-            fetchExistingCommentaryDates(s.ticker, fromDate, toDate, apiBase),
-          ])
-          siblingSeries.set(s.ticker, series)
-          siblingExistingDates.set(s.ticker, existing)
-        })
-      )
-      console.log(
-        `[backfill:${rawTicker}] siblings resolved: ${siblings.map((s) => s.ticker).join(', ')}`
-      )
-    }
-  } catch (err) {
-    console.error(`[backfill:${rawTicker}] sibling resolution failed:`, err)
-  }
 
   // 6. Initialize status
   const initialStatus: BackfillStatus = {

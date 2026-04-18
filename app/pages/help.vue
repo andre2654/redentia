@@ -2,7 +2,7 @@
   <NuxtLayout
     :name="layoutName"
     title="Assessoria"
-    header-class="!text-white !bg-tertiary/50"
+    :hide-footer="authStore.isAuthenticated"
   >
     <h1 class="sr-only">Assessoria com IA | {{ brand.name }}</h1>
     <div class="flex h-full w-full flex-col gap-4 pb-4 pt-4 xl:pt-5">
