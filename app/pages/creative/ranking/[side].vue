@@ -120,6 +120,7 @@ function resetControls() {
 const positiveColor = computed(() => '#00D395')
 const negativeColor = computed(() => '#FF4747')
 const bgColor = computed(() => '#0A0B0E')
+const accentColor = computed(() => theme.value === 'positive' ? positiveColor.value : negativeColor.value)
 const textColor = computed(() => '#E8EAED')
 
 const positiveGlow = computed(() => darkenHex(positiveColor.value, 0.3))
@@ -272,66 +273,69 @@ function formatPercent(changePercent: number | null): string {
     :class="theme"
     :data-render-ready="!pending && !error && stocks && stocks.length > 0 ? 'true' : 'false'"
   >
-    <div
-      class="card"
-      :style="{
-        background: cardBackground,
-        fontFamily: fontFamily,
-        color: textColor,
-      }"
-    >
-      <h1 class="title">
-        {{ title }}
-        <span>{{ label }}</span>
-      </h1>
+    <!-- Status bar -->
+    <div class="statusbar">
+      <span class="sbdot"></span>
+      <span class="sbbrand">REDENT.IA</span>
+      <span class="sbsep">·</span>
+      <span>B3 · {{ theme === 'positive' ? 'TOP MOVERS' : 'BOTTOM MOVERS' }}</span>
+      <div class="sbright">
+        <span>ATUALIZADO</span>
+        <span class="sbsep">·</span>
+        <span class="sbstrong">{{ label }}</span>
+      </div>
+    </div>
 
-      <div class="table-header" :style="{ borderColor: `rgba(${hexToRgb(textColor)}, 0.12)` }">
-        <div class="table-header-inner">
-          <div class="table-header-title">Ativo</div>
-          <div class="table-header-return">Rentabilidade (%)</div>
-        </div>
+    <!-- Headline -->
+    <div class="headline">
+      <div class="tag" :style="{ color: accentColor }">
+        <span class="tagdot" :style="{ background: accentColor }"></span>
+        [{{ theme === 'positive' ? 'ALTAS' : 'BAIXAS' }} · FECHAMENTO]
+      </div>
+      <h1 class="serif-display">Maiores <em>{{ theme === 'positive' ? 'altas' : 'baixas' }}</em><br>do dia.</h1>
+      <div class="date-line">{{ label }}</div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <div class="table-header">
+        <span>Ativo</span>
+        <span>Rentabilidade %</span>
       </div>
 
       <div class="table-body">
-        <div v-if="pending" class="loading">Carregando...</div>
-        <div v-else-if="error" class="loading">Erro ao carregar dados.</div>
+        <div v-if="pending" class="empty">Carregando...</div>
+        <div v-else-if="error" class="empty">Erro ao carregar dados.</div>
 
         <template v-else>
           <div
-            v-for="stock in stocks"
+            v-for="(stock, idx) in stocks"
             :key="stock.ticker"
-            class="table-row"
-            :style="{ borderBottomColor: `rgba(${hexToRgb(textColor)}, 0.2)` }"
+            class="row"
+            :class="colorFor(stock.change_percent) === positiveColor ? 'up' : 'down'"
           >
-            <div class="table-row-left">
-              <img
-                class="asset-icon"
-                :src="stock.logo || '/favicon.png'"
-                :alt="stock.ticker"
-                loading="eager"
-                :style="{ background: `rgba(${hexToRgb(textColor)}, 0.06)` }"
-              />
-              <div class="asset-symbol">{{ stock.ticker }}</div>
-            </div>
-
-            <div
-              class="asset-return"
-              :style="{ color: colorFor(stock.change_percent) }"
-            >
-              {{ formatPercent(stock.change_percent) }}
-            </div>
+            <span class="rank">{{ String(idx + 1).padStart(2, '0') }}</span>
+            <img
+              class="icon"
+              :src="stock.logo || '/favicon.png'"
+              :alt="stock.ticker"
+              loading="eager"
+            />
+            <span class="sym">{{ stock.ticker }}</span>
+            <span class="pct">{{ formatPercent(stock.change_percent) }}</span>
           </div>
         </template>
       </div>
+    </div>
 
-      <div class="footer">
-        <img src="/brand/logo-full.svg" alt="Redentia" class="logo-full" />
-
-        <div class="brand-mark">
-          <img src="/brand/logo-icon.svg" alt="Redentia" class="logo" />
-          <div class="brand-text">redentia.com.br</div>
-        </div>
-      </div>
+    <!-- Footer -->
+    <div class="rkfooter">
+      <span class="fbrand">REDENT<span class="fdot">.IA</span></span>
+      <span class="fsep">·</span>
+      <span>DADOS B3</span>
+      <span class="fsep">·</span>
+      <span>{{ label.toUpperCase() }}</span>
+      <span class="fright">redentia.com.br</span>
     </div>
   </div>
   </MoleculesCreativePreviewControls>
@@ -340,160 +344,150 @@ function formatPercent(changePercent: number | null): string {
 <style scoped>
 /* See asset-spotlight.vue comment, :global() rules leak. */
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 .frame {
-  width: 1080px;
-  height: 1080px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  width: 1080px; height: 1080px;
+  position: relative; overflow: hidden;
+  background: #0A0B0E; color: #E8EAED;
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+/* Same ambient chrome as other creatives (grid + side glow + top amber glow) */
+.frame::before {
+  content: ''; position: absolute; inset: 0;
+  background-image:
+    linear-gradient(#E8EAED 1px, transparent 1px),
+    linear-gradient(90deg, #E8EAED 1px, transparent 1px);
+  background-size: 32px 32px;
+  opacity: 0.035; pointer-events: none;
+}
+.frame.positive::after {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 50% -10%, rgba(245,166,35,0.18) 0%, transparent 55%),
+    radial-gradient(ellipse at 15% 90%, rgba(0, 211, 149, 0.22) 0%, transparent 55%);
+  pointer-events: none;
+}
+.frame.negative::after {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 50% -10%, rgba(245,166,35,0.18) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 90%, rgba(255, 71, 71, 0.22) 0%, transparent 55%);
+  pointer-events: none;
 }
 
-.card {
-  width: 1080px;
-  height: 1080px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 25px;
-  overflow: hidden;
-  position: relative;
+/* Status bar */
+.statusbar {
+  position: absolute; top: 0; left: 0; right: 0; height: 46px;
+  border-bottom: 1px solid #2A2E39;
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 36px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: #8B92A7;
+  background: rgba(10, 11, 14, 0.8);
+  z-index: 3;
 }
+.sbdot { width: 6px; height: 6px; border-radius: 50%; background: #F5A623; box-shadow: 0 0 8px rgba(245,166,35,0.6); }
+.sbbrand { color: #F5A623; font-weight: 600; letter-spacing: 0.2em; }
+.sbsep { opacity: 0.4; }
+.sbright { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+.sbstrong { color: #E8EAED; font-weight: 500; }
 
-.title {
+/* Headline */
+.headline {
+  position: absolute; top: 108px; left: 72px; right: 72px;
   text-align: center;
-  font-size: 50px;
-  font-weight: 600;
-  text-transform: uppercase;
-  line-height: 75px;
-  background: linear-gradient(90deg, currentColor 0%, currentColor 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  opacity: 0.95;
+}
+.tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.tagdot { width: 6px; height: 6px; border-radius: 50%; }
+.serif-display {
+  font-family: 'Instrument Serif', serif;
+  font-size: 92px; line-height: 0.95; letter-spacing: -0.02em;
+  font-weight: 400; color: #E8EAED;
+}
+.serif-display em { color: #F5A623; font-style: italic; }
+.date-line {
+  margin-top: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: #8B92A7;
 }
 
-.title span {
-  display: block;
-  text-transform: none;
-  opacity: 0.8;
+/* Table */
+.table-wrap {
+  position: absolute; top: 360px; left: 96px; right: 96px; bottom: 110px;
 }
-
 .table-header {
-  width: 883px;
-  height: 80px;
-  padding: 20px 50px;
-  background: rgba(255, 255, 255, 0.04);
-  border-radius: 100px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-left: 2px solid rgba(255, 255, 255, 0.12);
-  border-right: 2px solid rgba(255, 255, 255, 0.08);
-  box-shadow:
-    inset 10px 0px 7px rgba(255, 255, 255, 0.05),
-    inset -10px 0px 7px 0px rgba(255, 255, 255, 0.05);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 24px 10px;
+  border-bottom: 1px solid #2A2E39;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: #8B92A7;
 }
-
-.table-header-inner {
-  width: 100%;
-  padding: 0 30px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.table-body { display: flex; flex-direction: column; }
+.row {
+  display: flex; align-items: center;
+  padding: 18px 24px;
+  border-bottom: 1px solid rgba(42, 46, 57, 0.6);
+  gap: 20px;
 }
-
-.table-header-title {
-  font-size: 30px;
-  font-weight: 600;
+.row:last-child { border-bottom: none; }
+.row .rank {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; font-weight: 500;
+  color: #F5A623; letter-spacing: 0.15em;
+  min-width: 28px;
 }
-
-.table-header-return {
-  font-size: 25px;
-  font-weight: 600;
-}
-
-.table-body {
-  width: 729px;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.table-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 13px 0;
-  border-bottom: 1px solid;
-  border-radius: 8px;
-}
-
-.table-row-left {
-  display: flex;
-  align-items: center;
-  gap: 30px;
-}
-
-.asset-icon {
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
+.row .icon {
+  width: 56px; height: 56px; border-radius: 50%;
   object-fit: cover;
+  background: rgba(232, 234, 237, 0.05);
+  border: 1px solid #2A2E39;
+}
+.row .sym {
+  font-family: 'Inter', sans-serif;
+  font-size: 32px; font-weight: 700; letter-spacing: 0.02em;
+  color: #E8EAED;
+  flex: 1 1 auto;
+}
+.row .pct {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 30px; font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  min-width: 180px;
+}
+.row.up .pct { color: #00D395; }
+.row.down .pct { color: #FF4747; }
+.empty {
+  text-align: center; padding: 40px 0;
+  font-size: 20px; color: #8B92A7;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.15em; text-transform: uppercase;
 }
 
-.asset-symbol {
-  font-size: 35px;
-  font-weight: 600;
-  text-align: center;
+/* Footer */
+.rkfooter {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 44px;
+  border-top: 1px solid #2A2E39;
+  display: flex; align-items: center;
+  padding: 0 36px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: #8B92A7;
+  background: rgba(10, 11, 14, 0.8);
+  z-index: 3;
 }
-
-.asset-return {
-  font-size: 35px;
-  font-weight: 600;
-  text-align: center;
-}
-
-.loading {
-  padding: 30px 0;
-  text-align: center;
-  opacity: 0.8;
-  font-size: 22px;
-}
-
-.footer {
-  width: 881px;
-  height: 85px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.logo-full {
-  height: 48px;
-  width: auto;
-}
-
-.brand-mark {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  opacity: 0.9;
-}
-
-.logo {
-  height: 36px;
-  width: 36px;
-}
-
-.brand-text {
-  font-size: 18px;
-  letter-spacing: 0.02em;
-  opacity: 0.95;
-}
+.fbrand { color: #E8EAED; font-weight: 600; letter-spacing: 0.2em; }
+.fbrand .fdot { color: #F5A623; }
+.fsep { opacity: 0.4; margin: 0 12px; }
+.fright { margin-left: auto; color: #F5A623; }
 </style>

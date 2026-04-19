@@ -183,9 +183,9 @@ function worst(row: WeightedItem<any>[], shortSide: number): number {
   return Math.max((w2 * max) / s2, s2 / (w2 * min))
 }
 
-// ---------- Panel dimensions ----------
-const PANEL_W = 490
-const PANEL_H = 760
+// ---------- Panel dimensions (must match CSS .panel-frame). ----------
+const PANEL_W = 485
+const PANEL_H = 650
 const PANEL_GAP = 20
 
 function toCells(items: MoverRow[]) {
@@ -252,17 +252,32 @@ const today = computed(() => {
     @reset="resetControls"
   >
     <div class="frame">
-      <!-- Header -->
-      <div class="hdr">
-        <div>
-          <div class="hdr-title">Fechamento da semana · B3</div>
-          <div class="hdr-sub">Maiores altas e baixas por variação acumulada em 7 dias</div>
+      <!-- Status bar -->
+      <div class="statusbar">
+        <span class="sbdot"></span>
+        <span class="sbbrand">REDENT.IA</span>
+        <span class="sbsep">·</span>
+        <span>MKTMAP</span>
+        <span class="sbsep">·</span>
+        <span>B3</span>
+        <div class="sbright">
+          <span>SESSÃO FECHADA</span>
+          <span class="sbsep">·</span>
+          <span class="sbstrong">{{ today }}</span>
         </div>
-        <div class="hdr-range">
-          PERÍODO
-          <b v-if="data">
-            {{ fmtShortDate(data.window.start) }} → {{ fmtPeriod(data.window.end) }}
-          </b>
+      </div>
+
+      <!-- Headline -->
+      <div class="headline">
+        <div class="tag">
+          [FECHAMENTO SEMANAL]
+          <span class="tag-edition">· VARIAÇÃO 7D</span>
+        </div>
+        <h1 class="serif-display">Maiores altas<br>e baixas <em>da semana.</em></h1>
+        <div class="meta-strip">
+          <span class="chip">PERÍODO <b v-if="data">{{ fmtShortDate(data.window.start) }} → {{ fmtPeriod(data.window.end) }}</b></span>
+          <span class="chip"><b>{{ gainerCells.length + loserCells.length }}</b> ATIVOS</span>
+          <span class="chip">FILTRO <b>VOL &gt; R$ 10M</b></span>
         </div>
       </div>
 
@@ -270,10 +285,10 @@ const today = computed(() => {
       <div class="panels">
         <!-- GAINERS -->
         <div class="panel" :style="{ left: '0px' }">
-          <div class="panel-title" style="color: #00D395">
+          <div class="panel-head" style="color: #00D395">
             <span class="arrow">↗</span>
-            <span>Maiores altas</span>
-            <span class="count">· {{ gainerCells.length }}</span>
+            <span class="label">Maiores altas</span>
+            <span class="count">· {{ gainerCells.length }} ativos</span>
           </div>
           <div class="panel-frame">
             <div
@@ -305,10 +320,10 @@ const today = computed(() => {
 
         <!-- LOSERS -->
         <div class="panel" :style="{ left: (PANEL_W + PANEL_GAP) + 'px' }">
-          <div class="panel-title" style="color: #FF4747">
+          <div class="panel-head" style="color: #FF4747">
             <span class="arrow">↘</span>
-            <span>Maiores baixas</span>
-            <span class="count">· {{ loserCells.length }}</span>
+            <span class="label">Maiores baixas</span>
+            <span class="count">· {{ loserCells.length }} ativos</span>
           </div>
           <div class="panel-frame">
             <div
@@ -341,8 +356,12 @@ const today = computed(() => {
 
       <!-- Footer -->
       <div class="footer">
-        <span>REDENT<span class="accent">.IA</span> · Dados B3 · {{ today }}</span>
-        <span>redentia.com.br</span>
+        <span class="fbrand">REDENT<span class="fdot">.IA</span></span>
+        <span class="fsep">·</span>
+        <span>DADOS B3</span>
+        <span class="fsep">·</span>
+        <span>{{ today.toUpperCase() }}</span>
+        <span class="fright">redentia.com.br</span>
       </div>
     </div>
   </MoleculesCreativePreviewControls>
@@ -360,56 +379,121 @@ const today = computed(() => {
 }
 .frame::before {
   content: ''; position: absolute; inset: 0;
-  background: radial-gradient(ellipse at 50% 10%, rgba(245,166,35,0.10) 0%, transparent 55%);
+  background-image:
+    linear-gradient(#E8EAED 1px, transparent 1px),
+    linear-gradient(90deg, #E8EAED 1px, transparent 1px);
+  background-size: 32px 32px;
+  opacity: 0.035;
   pointer-events: none;
 }
-.hdr {
-  position: absolute; top: 50px; left: 50px; right: 50px;
-  display: flex; justify-content: space-between; align-items: flex-start;
-  gap: 24px;
+.frame::after {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% -10%, rgba(245,166,35,0.18) 0%, transparent 55%);
+  pointer-events: none;
 }
-.hdr-title { font-size: 44px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; }
-.hdr-sub { margin-top: 8px; font-size: 18px; opacity: 0.7; }
-.hdr-range {
-  font-family: 'JetBrains Mono', monospace; font-size: 13px;
-  letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.7;
-  text-align: right;
+
+/* Status bar */
+.statusbar {
+  position: absolute; top: 0; left: 0; right: 0; height: 46px;
+  border-bottom: 1px solid #2A2E39;
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 36px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: #8B92A7;
+  background: rgba(10, 11, 14, 0.8);
+  z-index: 3;
 }
-.hdr-range b { display: block; font-size: 22px; color: #F5A623; margin-top: 6px; letter-spacing: -0.01em; }
-.panels { position: absolute; top: 190px; left: 50px; }
-.panel { position: absolute; top: 0; width: 490px; }
-.panel-title {
-  position: absolute; top: -42px; left: 0;
-  font-size: 16px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase;
-  display: flex; align-items: center; gap: 10px;
+.sbdot { width: 6px; height: 6px; border-radius: 50%; background: #F5A623; box-shadow: 0 0 8px rgba(245,166,35,0.6); }
+.sbbrand { color: #F5A623; font-weight: 600; letter-spacing: 0.2em; }
+.sbsep { opacity: 0.4; }
+.sbright { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+.sbstrong { color: #E8EAED; font-weight: 500; }
+
+/* Headline */
+.headline {
+  position: absolute; top: 76px; left: 50px; right: 50px;
 }
-.panel-title .arrow { font-size: 20px; font-weight: 700; }
-.panel-title .count {
-  opacity: 0.5; font-family: 'JetBrains Mono', monospace;
-  font-size: 12px; margin-left: 4px;
+.tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: #F5A623;
+  margin-bottom: 12px;
+}
+.tag::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #F5A623; }
+.tag-edition { color: #8B92A7; }
+.serif-display {
+  font-family: 'Instrument Serif', serif;
+  font-size: 68px; line-height: 0.92; letter-spacing: -0.02em;
+  font-weight: 400; color: #E8EAED; max-width: 820px;
+}
+.serif-display em { color: #F5A623; font-style: italic; }
+.meta-strip {
+  margin-top: 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase;
+  color: #8B92A7;
+}
+.chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 12px;
+  border: 1px solid #2A2E39;
+  border-radius: 2px;
+  color: #8B92A7;
+}
+.chip b { color: #E8EAED; font-weight: 500; }
+
+/* Panels */
+.panels { position: absolute; top: 330px; left: 50px; right: 50px; height: 660px; }
+.panel { position: absolute; top: 0; width: 485px; height: 660px; }
+.panel-head {
+  position: absolute; top: -30px; left: 0; right: 0;
+  display: flex; align-items: baseline; gap: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;
+}
+.panel-head .arrow { font-size: 16px; font-weight: 700; line-height: 1; }
+.panel-head .label { font-weight: 600; }
+.panel-head .count {
+  margin-left: auto; color: #8B92A7; font-size: 10px;
 }
 .panel-frame {
-  position: relative; width: 490px; height: 760px;
-  border: 1px solid rgba(255,255,255,0.08);
-  background: #0E1014;
+  position: relative; width: 485px; height: 650px;
+  border: 1px solid #2A2E39;
+  background: rgba(20, 22, 28, 0.4);
+  overflow: hidden;
 }
+
+/* Cells */
 .cell {
   position: absolute;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
+  padding: 6px 4px;
   overflow: hidden; color: #fff;
-  border-right: 1px solid rgba(0,0,0,0.35);
-  border-bottom: 1px solid rgba(0,0,0,0.35);
-  text-shadow: 0 1px 2px rgba(0,0,0,0.55), 0 0 4px rgba(0,0,0,0.35);
+  border-right: 1px solid rgba(0,0,0,0.3);
+  border-bottom: 1px solid rgba(0,0,0,0.3);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
 }
-.cell .sym { font-weight: 700; line-height: 1.05; letter-spacing: 0.01em; }
-.cell .pct { font-weight: 600; line-height: 1.05; margin-top: 2px; font-variant-numeric: tabular-nums; }
-.cell .price { font-weight: 500; line-height: 1.05; margin-top: 3px; opacity: 0.78; font-variant-numeric: tabular-nums; font-family: 'JetBrains Mono', monospace; }
+.cell .sym { font-family: 'Inter', sans-serif; font-weight: 700; line-height: 1.0; letter-spacing: 0.01em; }
+.cell .pct { font-family: 'JetBrains Mono', monospace; font-weight: 500; line-height: 1.1; margin-top: 4px; font-variant-numeric: tabular-nums; opacity: 0.95; }
+.cell .price { font-family: 'JetBrains Mono', monospace; font-weight: 400; line-height: 1.1; margin-top: 3px; font-variant-numeric: tabular-nums; opacity: 0.72; }
+
+/* Footer */
 .footer {
-  position: absolute; bottom: 40px; left: 50px; right: 50px;
-  display: flex; justify-content: space-between; align-items: center;
-  font-family: 'JetBrains Mono', monospace; font-size: 13px;
-  letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.7;
+  position: absolute; bottom: 0; left: 0; right: 0; height: 44px;
+  border-top: 1px solid #2A2E39;
+  display: flex; align-items: center;
+  padding: 0 36px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: #8B92A7;
+  background: rgba(10, 11, 14, 0.8);
+  z-index: 3;
 }
-.accent { color: #F5A623; }
+.fbrand { color: #E8EAED; font-weight: 600; letter-spacing: 0.2em; }
+.fbrand .fdot { color: #F5A623; }
+.fsep { opacity: 0.4; margin: 0 12px; }
+.fright { margin-left: auto; color: #F5A623; }
 </style>

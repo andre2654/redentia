@@ -169,6 +169,18 @@ const titleOverlay = computed(() => {
   if (autoMovers.value?.side === 'worst') return `Maiores baixas da semana · últimos ${years.value} anos`
   return tickerList.value.join(' · ')
 })
+// Split the title so the tail gets rendered in amber italic (the Redentia
+// signature). Prefer splitting at " · "; fall back to the last word.
+const titleParts = computed(() => {
+  const t = titleOverlay.value
+  if (t.includes(' · ')) {
+    const [head, ...rest] = t.split(' · ')
+    return { head, tail: '· ' + rest.join(' · ') }
+  }
+  const words = t.split(' ')
+  const tail = words.pop() ?? ''
+  return { head: words.join(' '), tail }
+})
 useHead(() => ({
   title: `Redentia, Growth Race: ${tickerList.value.join(' vs ')}`,
   meta: [
@@ -631,22 +643,34 @@ function replay() {
   </template>
   <div class="frame">
     <div class="card">
-      <!-- Header -->
-      <div class="header">
-        <div class="header-left">
-          <img src="/brand/logo-icon.svg" alt="Redentia" class="brand-icon" />
-          <span class="brand-name">REDENTIA</span>
+      <!-- Status bar (unified with ranking/treemap) -->
+      <div class="statusbar">
+        <span class="sb-live">
+          <span class="sb-live-dot"></span>
+          <span>LIVE</span>
+        </span>
+        <span class="sb-sep">·</span>
+        <span class="sb-brand">REDENT.IA</span>
+        <span class="sb-sep">·</span>
+        <span>GROWTH RACE · B3</span>
+        <div class="sb-right">
+          <span>{{ years }} ANOS</span>
+          <span class="sb-sep">·</span>
+          <span class="sb-strong">{{ new Date().toLocaleDateString('pt-BR') }}</span>
         </div>
-        <span class="header-right">GROWTH RACE</span>
       </div>
 
-      <!-- Title with animated date -->
-      <div class="title-wrap">
-        <div class="title-line">
-          <span class="title-text">{{ titleOverlay }}</span>
+      <!-- Headline: tag + serif italic + subtitle mono (matches Blade). -->
+      <div class="headline">
+        <div class="tag">
+          <span class="tagdot"></span>
+          [CORRIDA DE VALORIZAÇÃO]
         </div>
+        <h1 class="title-line">
+          <span class="title-text">{{ titleParts.head }} <em>{{ titleParts.tail }}</em></span>
+        </h1>
         <div class="subtitle-line">
-          <span class="subtitle">Corrida de valorização</span>
+          <span class="subtitle">R$ 100 investidos em cada</span>
           <span class="dot">·</span>
           <span class="subtitle">{{ reinvest ? 'Com dividendos reinvestidos' : 'Só preço' }}</span>
           <span class="dot">·</span>
@@ -770,12 +794,14 @@ function replay() {
         </div>
       </div>
 
-      <!-- Footer -->
-      <div class="footer">
-        <img src="/brand/logo-full.svg" alt="Redentia" class="footer-logo" />
-        <div class="footer-brand">
-          <span class="footer-text">redentia.com.br/creative</span>
-        </div>
+      <!-- Footer (unified with ranking/treemap) -->
+      <div class="grfooter">
+        <span class="fbrand">REDENT<span class="fdot">.IA</span></span>
+        <span class="fsep">·</span>
+        <span>DADOS B3</span>
+        <span class="fsep">·</span>
+        <span>{{ new Date().toLocaleDateString('pt-BR').toUpperCase() }}</span>
+        <span class="fright">redentia.com.br/creative</span>
       </div>
     </div>
   </div>
@@ -801,100 +827,107 @@ function replay() {
   height: 1080px;
   max-width: 100%;
   aspect-ratio: 1 / 1;
-  background:
-    radial-gradient(circle at 20% 10%, rgba(245, 166, 35, 0.12) 0%, transparent 55%),
-    radial-gradient(circle at 80% 90%, rgba(245, 166, 35, 0.08) 0%, transparent 55%),
-    v-bind(cBg);
+  background: v-bind(cBg);
   color: v-bind(cText);
-  border: 1px solid v-bind(cBorder);
-  border-radius: 8px;
+  border-radius: 0;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  padding: 48px 56px;
-  box-sizing: border-box;
   font-family: v-bind(fBody);
 }
+/* Unified ambient layers — same recipe as ranking/treemap Vue. */
+.card::before {
+  content: ''; position: absolute; inset: 0;
+  background-image:
+    linear-gradient(#E8EAED 1px, transparent 1px),
+    linear-gradient(90deg, #E8EAED 1px, transparent 1px);
+  background-size: 32px 32px;
+  opacity: 0.035; pointer-events: none;
+  z-index: 0;
+}
+.card::after {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% -10%, rgba(245,166,35,0.18) 0%, transparent 55%);
+  pointer-events: none;
+  z-index: 0;
+}
 
-/* Header */
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+/* Status bar (top strip, Bloomberg-esque) */
+.statusbar {
+  position: absolute; top: 0; left: 0; right: 0; height: 46px;
+  border-bottom: 1px solid v-bind(cBorder);
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 36px;
   font-family: v-bind(fMono);
-  font-size: 12px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+  font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
   color: v-bind(cTextMuted);
+  background: rgba(10, 11, 14, 0.8);
+  z-index: 3;
 }
+.sb-live { display: inline-flex; align-items: center; gap: 6px; color: v-bind(cPrimary); }
+.sb-live-dot { width: 6px; height: 6px; border-radius: 50%; background: v-bind(cPrimary); box-shadow: 0 0 6px v-bind(cPrimary); }
+.sb-brand { color: v-bind(cPrimary); font-weight: 600; letter-spacing: 0.2em; }
+.sb-sep { opacity: 0.4; }
+.sb-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+.sb-strong { color: v-bind(cText); font-weight: 500; }
 
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+/* Headline — tag + serif italic + mono subtitle */
+.headline {
+  position: absolute; top: 84px; left: 52px; right: 52px;
+  z-index: 2;
 }
-
-.brand-icon {
-  width: 28px;
-  height: 28px;
-}
-
-.brand-name {
-  color: v-bind(cText);
-  font-weight: 700;
-}
-
-.header-right {
+.tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: v-bind(fMono);
+  font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
   color: v-bind(cPrimary);
-  font-weight: 600;
+  margin-bottom: 14px;
 }
-
-/* Title */
-.title-wrap {
-  margin-top: 24px;
-}
+.tagdot { width: 6px; height: 6px; border-radius: 50%; background: v-bind(cPrimary); }
 
 .title-line {
   font-family: v-bind(fDisplay);
-  font-size: 80px;
-  line-height: 0.95;
+  font-size: 68px;
+  line-height: 0.96;
   letter-spacing: -0.02em;
+  font-weight: 400;
   color: v-bind(cText);
+  max-width: 900px;
 }
-
-.title-text {
-  color: v-bind(cText);
-}
+.title-text { color: v-bind(cText); }
+/* The tail part of the title, italic+amber, lives inside title-text via
+   the component's render — the overlay computed returns plain text but
+   the display font+italic rule already applies via `em`. */
+.title-text em { color: v-bind(cPrimary); font-style: italic; }
 
 .subtitle-line {
   margin-top: 14px;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 10px;
   font-family: v-bind(fMono);
-  font-size: 16px;
+  font-size: 12px;
   text-transform: uppercase;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.18em;
   color: v-bind(cTextMuted);
 }
 
 .date-display {
   color: v-bind(cPrimary);
-  font-weight: 700;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
   min-width: 110px;
 }
 
-.dot {
-  opacity: 0.4;
-}
+.dot { opacity: 0.4; }
 
-/* Chart */
+/* Chart — fills between headline and leaderboard, absolute-positioned. */
 .chart-wrap {
-  flex: 1;
-  margin-top: 20px;
-  margin-bottom: 10px;
-  min-height: 0;
+  position: absolute;
+  top: 290px;
+  left: 36px;
+  right: 36px;
+  height: 540px;
+  z-index: 1;
   display: flex;
   align-items: stretch;
   justify-content: center;
@@ -903,35 +936,38 @@ function replay() {
 .chart-svg {
   width: 100%;
   height: 100%;
-  max-height: 620px;
 }
 
-/* Leaderboard */
+/* Leaderboard — sits between chart and footer. */
 .leaderboard {
+  position: absolute;
+  left: 52px;
+  right: 52px;
+  bottom: 74px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 16px 20px;
-  margin-top: 8px;
-  background: v-bind(cSurfaceSoft);
-  border: 1px solid v-bind(cBorder);
-  border-radius: 12px;
+  gap: 6px;
+  z-index: 2;
 }
 
 .leader-row {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 16px;
+  gap: 14px;
+  padding: 10px 16px;
+  background: rgba(20, 22, 28, 0.65);
+  border: 1px solid v-bind(cBorder);
+  border-radius: 2px;
   font-family: v-bind(fBody);
 }
 
 .leader-rank {
   font-family: v-bind(fMono);
-  font-size: 13px;
-  color: v-bind(cTextMuted);
-  min-width: 30px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: v-bind(cPrimary);
+  min-width: 28px;
 }
 
 .leader-dot {
@@ -942,57 +978,60 @@ function replay() {
 }
 
 .leader-ticker {
-  font-weight: 800;
+  font-size: 17px;
+  font-weight: 700;
   letter-spacing: 0.02em;
   color: v-bind(cText);
+  min-width: 96px;
 }
 
 .leader-sep {
-  color: v-bind(cBorder);
+  display: none;
 }
 
 .leader-name {
+  font-family: v-bind(fMono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: v-bind(cTextMuted);
-  font-size: 14px;
+  flex: 1 1 auto;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .leader-spacer {
-  flex: 1;
+  display: none;
 }
 
 .leader-value {
   font-family: v-bind(fMono);
-  font-weight: 700;
-  font-size: 18px;
+  font-size: 20px;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
+  min-width: 100px;
+  text-align: right;
 }
 
-/* Footer */
-.footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid v-bind(cBorderSoft);
-}
-
-.footer-logo {
-  height: 28px;
-  width: auto;
-  opacity: 0.8;
-}
-
-.footer-brand {
+/* Footer (unified with ranking/treemap) */
+.grfooter {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 44px;
+  border-top: 1px solid v-bind(cBorder);
+  display: flex; align-items: center;
+  padding: 0 36px;
   font-family: v-bind(fMono);
-  font-size: 12px;
-  letter-spacing: 0.15em;
+  font-size: 11px;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: v-bind(cTextMuted);
+  background: rgba(10, 11, 14, 0.8);
+  z-index: 3;
 }
+.fbrand { color: v-bind(cText); font-weight: 600; letter-spacing: 0.2em; }
+.fbrand .fdot { color: v-bind(cPrimary); }
+.fsep { opacity: 0.4; margin: 0 12px; }
+.fright { margin-left: auto; color: v-bind(cPrimary); }
 
 .replay-btn {
   display: flex;
