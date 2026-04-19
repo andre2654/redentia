@@ -56,14 +56,58 @@ function firstString(value: unknown): string | undefined {
 }
 
 // --- Inputs ---
+// Two uses of `?auto=`:
+//   - 'false'         → don't auto-start the animation (legacy)
+//   - 'best-week-N'   → pull the N biggest weekly gainers from /api/weekly-movers
+//   - 'worst-week-N'  → ditto, losers
+// If neither matches we fall back to the legacy behaviour (tickers from
+// the query string).
+const autoParam = computed(() => (firstString(route.query.auto) || '').toLowerCase())
+const autoMovers = computed<null | { side: 'best' | 'worst'; limit: number }>(() => {
+  const m = autoParam.value.match(/^(best|worst)-week-(\d+)$/)
+  if (!m) return null
+  return { side: m[1] as 'best' | 'worst', limit: Math.max(1, Math.min(5, parseInt(m[2]!, 10))) }
+})
+const autoStart = computed(() => autoParam.value !== 'false')
+
 const tickersRaw = computed(() => firstString(route.query.tickers) || 'PETR4,VALE3,ITUB4')
-const tickerList = computed(() =>
-  tickersRaw.value
+
+// Fetch the dynamic movers list when `autoMovers` is active. Empty result
+// when it's not — we short-circuit with default + [], so server-side
+// prerender doesn't waste a request.
+const apiBaseUrl = runtimeConfig.public.apiBaseUrl as string
+const { data: dynamicMovers } = await useAsyncData(
+  'growth-race-auto-movers',
+  async () => {
+    const m = autoMovers.value
+    if (!m) return [] as string[]
+    try {
+      const resp = await $fetch<{ best?: any[]; worst?: any[] }>(`${apiBaseUrl}/weekly-movers`, {
+        method: 'GET',
+        query: { side: m.side, limit: m.limit },
+      })
+      const rows = m.side === 'best' ? resp?.best : resp?.worst
+      return Array.isArray(rows) ? rows.map((r) => String(r.ticker).toUpperCase()).slice(0, m.limit) : []
+    } catch {
+      return []
+    }
+  },
+  { server: true, default: () => [] as string[], watch: [autoMovers] },
+)
+
+const tickerList = computed(() => {
+  // When `auto=best-week-N` resolved to at least one ticker, use that.
+  // Otherwise fall back to whatever's in ?tickers= (or the hardcoded
+  // default, matching the pre-refactor behaviour).
+  if (autoMovers.value && dynamicMovers.value && dynamicMovers.value.length > 0) {
+    return dynamicMovers.value.slice(0, 5)
+  }
+  return tickersRaw.value
     .split(',')
     .map((t) => t.trim().toUpperCase())
     .filter(Boolean)
-    .slice(0, 5),
-)
+    .slice(0, 5)
+})
 
 const years = computed(() => {
   const n = Number(firstString(route.query.years) || '5')
@@ -76,8 +120,6 @@ const durationMs = computed(() => {
   const n = Number(firstString(route.query.duration) || '10000')
   return Number.isFinite(n) && n > 0 ? Math.min(n, 30000) : 10000
 })
-
-const autoStart = computed(() => firstString(route.query.auto) !== 'false')
 
 const router = useRouter()
 
@@ -118,6 +160,15 @@ function resetControls() {
 }
 
 // --- Page head ---
+// Dynamic title so automations using ?auto=worst-week-2 get the right
+// caption overlay ("Maiores baixas da semana · últimos 10 anos") instead
+// of the generic "Growth Race", matching the Blade's behaviour before
+// this was consolidated to the Vue side.
+const titleOverlay = computed(() => {
+  if (autoMovers.value?.side === 'best') return `Maiores altas da semana · últimos ${years.value} anos`
+  if (autoMovers.value?.side === 'worst') return `Maiores baixas da semana · últimos ${years.value} anos`
+  return tickerList.value.join(' · ')
+})
 useHead(() => ({
   title: `Redentia, Growth Race: ${tickerList.value.join(' vs ')}`,
   meta: [
@@ -414,6 +465,32 @@ onMounted(() => {
     // Tiny delay so the first frame paints the initial state
     setTimeout(() => startAnimation(), 100)
   }
+
+  // Frame-exact recording API used by VideoRecorderService on the
+  // backend. Instead of racing against requestAnimationFrame, the
+  // recorder calls `window.__setProgress(i/(total-1))` once per frame,
+  // takes a screenshot, then advances. Stopping the rAF loop is
+  // mandatory — if it's still running in parallel, the captured
+  // `progress.value` flickers between the stepped value and whatever
+  // the animation loop is interpolating.
+  if (typeof window !== 'undefined') {
+    ;(window as any).__setProgress = (p: number) => {
+      stopAnimation()
+      const clamped = Math.max(0, Math.min(1, Number(p) || 0))
+      progress.value = clamped
+    }
+    // Signal readiness for the recorder's warmup wait. We consider the
+    // page ready when series data settled AND at least one series has
+    // enough points to animate.
+    const markReady = () => {
+      if (totalPoints.value > 0) (window as any).__raceReady = true
+    }
+    markReady()
+    // In case data is still loading, re-check on series updates.
+    watch(seriesData, markReady)
+    // Hard ceiling to avoid hanging the recorder on a broken fetch.
+    setTimeout(() => { (window as any).__raceReady = true }, 4000)
+  }
 })
 
 onBeforeUnmount(() => stopAnimation())
@@ -566,7 +643,7 @@ function replay() {
       <!-- Title with animated date -->
       <div class="title-wrap">
         <div class="title-line">
-          <span class="title-text">{{ tickerList.join(' · ') }}</span>
+          <span class="title-text">{{ titleOverlay }}</span>
         </div>
         <div class="subtitle-line">
           <span class="subtitle">Corrida de valorização</span>
