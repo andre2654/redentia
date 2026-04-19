@@ -76,7 +76,7 @@
         <dl class="grid gap-2 text-[13px] md:grid-cols-2">
           <div class="flex items-center justify-between border-b pb-2" :style="{ borderColor: C.border }">
             <dt :style="{ color: C.textMuted }">Postiz console</dt>
-            <dd :style="{ color: C.text }">postiz.redentia.com.br</dd>
+            <dd :style="{ color: C.text }">postiz.saraivada.com</dd>
           </div>
           <div class="flex items-center justify-between border-b pb-2" :style="{ borderColor: C.border }">
             <dt :style="{ color: C.textMuted }">Integração Postiz</dt>
@@ -109,8 +109,8 @@ const autService = useSocialAutomationsService()
 const profilesService = useMonitoredProfilesService()
 
 const postizUrl = computed(() => {
-  if (import.meta.server) return 'https://postiz.redentia.com.br'
-  return window.location.hostname.includes('localhost') ? 'http://localhost:4007' : 'https://postiz.redentia.com.br'
+  if (import.meta.server) return 'https://postiz.saraivada.com'
+  return window.location.hostname.includes('localhost') ? 'http://localhost:4007' : 'https://postiz.saraivada.com'
 })
 
 const loading = ref(true)

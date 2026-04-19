@@ -133,9 +133,9 @@ const mainSiteHref = useMainSiteHref()
 
 // Computed Postiz console URL — respects env so localhost dev still works.
 const postizUrl = computed(() => {
-  if (import.meta.server) return 'https://postiz.redentia.com.br'
+  if (import.meta.server) return 'https://postiz.saraivada.com'
   if (window.location.hostname.includes('localhost')) return 'http://localhost:4007'
-  return 'https://postiz.redentia.com.br'
+  return 'https://postiz.saraivada.com'
 })
 
 const mainNav = [

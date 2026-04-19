@@ -24,7 +24,7 @@ export interface ISocialAutomationInput {
 
 export const useSocialAutomationsService = () => {
   const config = useRuntimeConfig()
-  const authFetch = useAuthFetch()
+  const { authFetch } = useCustomFetch()
   const base = `${config.public.apiBaseUrl as string}/admin/social-automations`
 
   function unwrap<T>(p: any): T {

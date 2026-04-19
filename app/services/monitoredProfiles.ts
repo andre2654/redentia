@@ -21,7 +21,7 @@ export interface IMonitoredProfileInput {
 
 export const useMonitoredProfilesService = () => {
   const config = useRuntimeConfig()
-  const authFetch = useAuthFetch()
+  const { authFetch } = useCustomFetch()
   const base = `${config.public.apiBaseUrl as string}/admin/monitored-profiles`
 
   function unwrap<T>(p: any): T {

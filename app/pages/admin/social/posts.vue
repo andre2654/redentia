@@ -42,7 +42,7 @@
       >
         <div class="flex flex-col gap-1">
           <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]">[ABRIR POSTIZ]</span>
-          <span class="text-[20px] font-semibold">postiz.redentia.com.br</span>
+          <span class="text-[20px] font-semibold">postiz.saraivada.com</span>
           <span class="font-mono-tab text-[10px] uppercase tracking-[0.15em] opacity-70">
             ABRE EM NOVA ABA · LOGIN SEPARADO NA PRIMEIRA VEZ
           </span>
@@ -61,7 +61,7 @@
           <li>
             No VPS, adicione ao <code :style="{ color: C.text }">.env</code> do Laravel:
             <pre class="mt-2 overflow-x-auto rounded-sm border px-3 py-2 font-mono-tab text-[11px]" :style="{ borderColor: C.border, backgroundColor: C.background, color: C.text }">POSTIZ_ENABLED=true
-POSTIZ_API_URL=https://postiz.redentia.com.br/api
+POSTIZ_API_URL=https://postiz.saraivada.com/api
 POSTIZ_API_KEY=sua-chave-aqui</pre>
           </li>
           <li>Rode <code :style="{ color: C.text }">docker exec php-fpm-redentia php artisan config:cache</code>.</li>
@@ -81,8 +81,8 @@ import { REDENTIA_COLORS as C, REDENTIA_FONTS as F } from '~/utils/redentiaCreat
 definePageMeta({ middleware: ['admin-panel'] })
 
 const postizUrl = computed(() => {
-  if (import.meta.server) return 'https://postiz.redentia.com.br'
-  return window.location.hostname.includes('localhost') ? 'http://localhost:4007' : 'https://postiz.redentia.com.br'
+  if (import.meta.server) return 'https://postiz.saraivada.com'
+  return window.location.hostname.includes('localhost') ? 'http://localhost:4007' : 'https://postiz.saraivada.com'
 })
 
 const steps = [
