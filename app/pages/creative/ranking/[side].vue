@@ -261,7 +261,17 @@ function formatPercent(changePercent: number | null): string {
     :controls="previewControls"
     @reset="resetControls"
   >
-  <div class="frame" :class="theme">
+  <!--
+    `data-render-ready` só vira "true" depois que o useAsyncData terminou
+    E o resultado tem pelo menos um stock. BrowserlessService espera por
+    esse seletor quando `waitForSelector: '[data-render-ready="true"]'`,
+    o que elimina screenshots tirados no meio do loading da tabela.
+  -->
+  <div
+    class="frame"
+    :class="theme"
+    :data-render-ready="!pending && !error && stocks && stocks.length > 0 ? 'true' : 'false'"
+  >
     <div
       class="card"
       :style="{
