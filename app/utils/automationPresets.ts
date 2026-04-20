@@ -310,6 +310,112 @@ Comprou na queda ou fugiu a tempo? Manda a decisão 👇
 })
 
 // ------------------------------------------------------------
+// Preset — Daily ranking CAROUSEL (2 slides: top + bottom)
+// ------------------------------------------------------------
+// The RankingSource supports a `namespace` param so we can call it twice
+// in the same automation (once for top, once for bottom) without the
+// second call silently overwriting the first's chips. The caption then
+// reads `{top.1.ticker}` and `{bottom.1.ticker}`.
+const dailyRankingCarousel: AutomationPreset = {
+  id: 'daily-ranking-carousel',
+  label: 'Ranking diário · Carrossel (Altas + Baixas)',
+  description: 'Carrossel de 2 slides: slide 1 com as maiores altas, slide 2 com as maiores baixas. Um post cobre o fechamento inteiro.',
+  icon: 'i-lucide-layers',
+  type: 'scheduled_post',
+  tone: 'neutral',
+  hasMedia: true,
+  params: [
+    {
+      key: 'image_title_top',
+      label: 'Título do slide 1 (altas)',
+      kind: 'text',
+      group: 'content',
+      defaultValue: 'MAIORES ALTAS DA B3',
+      supportsChips: true,
+      placeholder: 'Ex: ALTAS · {date.weekday}',
+    },
+    {
+      key: 'image_title_bottom',
+      label: 'Título do slide 2 (baixas)',
+      kind: 'text',
+      group: 'content',
+      defaultValue: 'MAIORES BAIXAS DA B3',
+      supportsChips: true,
+      placeholder: 'Ex: BAIXAS · {date.weekday}',
+    },
+    {
+      key: 'image_label',
+      label: 'Legenda dos slides (data)',
+      kind: 'text',
+      group: 'content',
+      defaultValue: '',
+      supportsChips: true,
+      placeholder: '{date.today} (padrão: data de hoje)',
+      help: 'Chip de data abaixo dos títulos. Deixe vazio pra auto-preencher.',
+    },
+    {
+      key: 'top_n',
+      label: 'Ativos por slide',
+      kind: 'number',
+      group: 'data',
+      min: 3, max: 10, step: 1,
+      defaultValue: 6,
+    },
+    {
+      key: 'min_volume',
+      label: 'Volume mínimo (BRL)',
+      kind: 'select',
+      group: 'data',
+      defaultValue: 1_000_000,
+      options: [
+        { value: 500_000, label: 'R$ 500 mil' },
+        { value: 1_000_000, label: 'R$ 1 milhão' },
+        { value: 5_000_000, label: 'R$ 5 milhões' },
+        { value: 10_000_000, label: 'R$ 10 milhões' },
+      ],
+    },
+  ],
+  defaultCaption: `🚀 {top.leader.ticker} liderou as altas (+{top.leader.change}) e 🔻 {bottom.leader.ticker} as baixas ({bottom.leader.change}) no fechamento de {date.today}.
+
+Arrasta pro lado pra ver os 2 rankings 👉
+
+SLIDE 1 · Maiores altas
+🥇 {top.1.ticker} · +{top.1.change}
+🥈 {top.2.ticker} · +{top.2.change}
+🥉 {top.3.ticker} · +{top.3.change}
+
+SLIDE 2 · Maiores baixas
+🥇 {bottom.1.ticker} · {bottom.1.change}
+🥈 {bottom.2.ticker} · {bottom.2.change}
+🥉 {bottom.3.ticker} · {bottom.3.change}
+
+Qual lado te surpreendeu mais? 👇
+
+📊 Análise completa em redentia.com.br
+
+#b3 #bolsabrasileira #investimentos #acoes #{top.leader.ticker}`,
+  defaultSchedule: { cron: '0 21 * * 1-5', humanized: 'Dias úteis às 18:00 BRT' },
+  buildMedia: (p) => {
+    const top = urlWithParams('https://creative.redentia.com.br/ranking/top', {
+      limit: p.top_n, volume: p.min_volume,
+      title: p.image_title_top, label: p.image_label,
+    })
+    const bottom = urlWithParams('https://creative.redentia.com.br/ranking/bottom', {
+      limit: p.top_n, volume: p.min_volume,
+      title: p.image_title_bottom, label: p.image_label,
+    })
+    return [
+      { kind: 'image', source: top,    width: 1080, height: 1080, waitFor: 4000 },
+      { kind: 'image', source: bottom, width: 1080, height: 1080, waitFor: 4000 },
+    ]
+  },
+  buildContextSources: (p) => [
+    { type: 'ranking', params: { side: 'top',    limit: Number(p.top_n), min_volume: Number(p.min_volume), namespace: 'top' } },
+    { type: 'ranking', params: { side: 'bottom', limit: Number(p.top_n), min_volume: Number(p.min_volume), namespace: 'bottom' } },
+  ],
+}
+
+// ------------------------------------------------------------
 // Preset #3 — Weekly treemap
 // ------------------------------------------------------------
 const weeklyTreemap: AutomationPreset = {
@@ -407,6 +513,7 @@ const textOnlyPost: AutomationPreset = {
 export const AUTOMATION_PRESETS: AutomationPreset[] = [
   dailyRanking('top'),
   dailyRanking('bottom'),
+  dailyRankingCarousel,
   weeklyRace('best'),
   weeklyRace('worst'),
   weeklyTreemap,
@@ -444,6 +551,36 @@ export function inferPresetFromConfig(config: unknown):
   }
   const path = url.pathname
   const q = url.searchParams
+
+  // Multi-slide carousel: both top and bottom in the same automation.
+  // Detect by looking at EVERY media, not just the first.
+  const mediaList = Array.isArray(media) ? media : []
+  if (mediaList.length >= 2) {
+    const paths = mediaList.map(m => {
+      try { return new URL(String(m?.source ?? '')).pathname } catch { return '' }
+    })
+    const hasTop = paths.some(p => p.includes('/ranking/top'))
+    const hasBottom = paths.some(p => p.includes('/ranking/bottom'))
+    if (hasTop && hasBottom) {
+      const preset = findPreset('daily-ranking-carousel')
+      if (preset) {
+        const topMedia = mediaList.find(m => String(m?.source ?? '').includes('/ranking/top'))
+        const bottomMedia = mediaList.find(m => String(m?.source ?? '').includes('/ranking/bottom'))
+        const topQ = ((): URLSearchParams => { try { return new URL(String(topMedia?.source)).searchParams } catch { return new URLSearchParams() } })()
+        const bottomQ = ((): URLSearchParams => { try { return new URL(String(bottomMedia?.source)).searchParams } catch { return new URLSearchParams() } })()
+        return {
+          preset,
+          params: {
+            top_n: Number(topQ.get('limit')) || 6,
+            min_volume: Number(topQ.get('volume')) || 1_000_000,
+            image_title_top: topQ.get('title') || 'MAIORES ALTAS DA B3',
+            image_title_bottom: bottomQ.get('title') || 'MAIORES BAIXAS DA B3',
+            image_label: topQ.get('label') || '',
+          },
+        }
+      }
+    }
+  }
 
   if (path.endsWith('/ranking/top') || path.includes('/ranking/top?')) {
     const preset = findPreset('daily-ranking-top'); if (!preset) return null
