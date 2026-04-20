@@ -10,8 +10,8 @@
             Ações recorrentes.
           </h1>
           <p class="mt-3 max-w-2xl text-[13px]" :style="{ color: C.textMuted }">
-            Escolha um preset (ranking diário, corrida semanal, treemap…), ajuste os parâmetros visualmente
-            e deixe o agendador rodar. Nada de JSON cru nem cron mental.
+            Escolha um preset, preencha o formulário visual e o agendador faz o resto.
+            Nada de JSON cru, nada de cron mental.
           </p>
         </div>
         <button
@@ -76,9 +76,6 @@
                 </span>
               </div>
               <h3 class="mt-2 text-[18px] font-semibold" :style="{ color: C.text }">{{ a.title }}</h3>
-              <div class="mt-1 font-mono-tab text-[11px]" :style="{ color: C.textMuted }">
-                key: {{ a.key }}
-              </div>
               <div
                 v-if="a.last_run_at"
                 class="mt-3 flex flex-wrap gap-4 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
@@ -136,72 +133,81 @@
       </section>
     </div>
 
-    <!-- ====================== WIZARD OVERLAY ====================== -->
+    <!-- ==================== WIZARD OVERLAY ==================== -->
     <div
       v-if="wizardOpen"
-      class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 md:p-6"
+      class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-3 md:p-6"
       style="background-color: rgba(0,0,0,0.75); backdrop-filter: blur(4px)"
       @click.self="closeWizard"
     >
       <div
-        class="my-auto flex w-full max-w-4xl flex-col rounded-sm border"
+        class="my-auto flex w-full max-w-5xl flex-col rounded-sm border"
         :style="{ borderColor: C.border, backgroundColor: C.background }"
       >
-        <!-- Header + step indicator -->
+        <!-- Header -->
         <div class="flex items-center justify-between border-b px-5 py-4" :style="{ borderColor: C.border }">
           <div class="flex items-center gap-3">
             <span class="font-mono-tab text-[11px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
               [{{ wizardMode === 'create' ? 'NOVA AUTOMAÇÃO' : 'EDITAR AUTOMAÇÃO' }}]
             </span>
-            <span class="flex items-center gap-1.5 font-mono-tab text-[10px]" :style="{ color: C.textMuted }">
-              <span
-                v-for="n in 3"
-                :key="n"
-                class="inline-flex size-5 items-center justify-center rounded-full border transition-all"
-                :style="step >= n
-                  ? { borderColor: C.primary, color: C.primary, backgroundColor: `${C.primary}15` }
-                  : { borderColor: C.border, color: C.textMuted }"
-              >{{ n }}</span>
+            <span
+              v-if="draft.preset"
+              class="rounded-sm border px-2 py-0.5 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
+              :style="{ borderColor: C.border, color: C.textMuted }"
+            >
+              {{ draft.preset.label }}
             </span>
           </div>
           <button type="button" class="text-[14px]" :style="{ color: C.textMuted }" @click="closeWizard">✕</button>
         </div>
 
-        <!-- ============== STEP 1 — choose preset ============== -->
-        <div v-if="step === 1" class="flex flex-col gap-4 p-5 md:p-6">
+        <!-- =============== STEP 1 — choose preset =============== -->
+        <div v-if="step === 1" class="flex flex-col gap-5 p-5 md:p-6">
           <div>
             <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">
-              [ PASSO 1 · ESCOLHA O TIPO ]
+              [ PASSO 1 DE 2 ]
             </span>
-            <h2 class="mt-1 text-[22px]" :style="{ color: C.text, fontFamily: F.display }">
-              O que essa automação vai fazer?
+            <h2 class="mt-1 text-[24px]" :style="{ color: C.text, fontFamily: F.display }">
+              O que essa automação vai postar?
             </h2>
+            <p class="mt-1 text-[13px]" :style="{ color: C.textMuted }">
+              Cada opção vem pré-configurada com dados reais, horário sugerido e variáveis. Você ajusta tudo no próximo passo.
+            </p>
           </div>
           <div class="grid gap-3 md:grid-cols-2">
             <button
               v-for="p in AUTOMATION_PRESETS"
               :key="p.id"
               type="button"
-              class="flex flex-col items-start gap-2 rounded-sm border p-4 text-left transition-all hover:-translate-y-0.5"
+              class="group flex flex-col items-start gap-3 rounded-sm border p-4 text-left transition-all hover:-translate-y-0.5"
               :style="draft.preset?.id === p.id
                 ? { borderColor: C.primary, backgroundColor: `${C.primary}10` }
                 : { borderColor: C.border, backgroundColor: C.surface }"
               @click="selectPreset(p)"
             >
-              <div class="flex w-full items-center gap-3">
+              <div class="flex w-full items-start gap-3">
                 <div
-                  class="flex size-9 items-center justify-center rounded-sm"
-                  :style="{
-                    backgroundColor: toneBg(p.tone),
-                    color: toneColor(p.tone),
-                  }"
+                  class="flex size-10 shrink-0 items-center justify-center rounded-sm"
+                  :style="{ backgroundColor: toneBg(p.tone), color: toneColor(p.tone) }"
                 >
                   <UIcon :name="p.icon" class="size-4" />
                 </div>
                 <div class="flex-1">
-                  <div class="text-[14px] font-semibold" :style="{ color: C.text }">{{ p.label }}</div>
-                  <div class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: C.textMuted }">
-                    {{ p.type.replaceAll('_', ' ') }}
+                  <div class="text-[14px] font-semibold leading-tight" :style="{ color: C.text }">{{ p.label }}</div>
+                  <div class="mt-1 flex flex-wrap items-center gap-1.5">
+                    <span
+                      class="rounded-sm border px-1.5 py-0.5 font-mono-tab text-[9px] uppercase tracking-[0.12em]"
+                      :style="{ borderColor: C.border, color: C.textMuted }"
+                    >
+                      {{ mediaBadge(p) }}
+                    </span>
+                    <span
+                      v-if="p.defaultSchedule"
+                      class="rounded-sm border px-1.5 py-0.5 font-mono-tab text-[9px] uppercase tracking-[0.12em]"
+                      :style="{ borderColor: C.border, color: C.textMuted }"
+                    >
+                      {{ p.defaultSchedule.humanized }}
+                    </span>
                   </div>
                 </div>
                 <UIcon
@@ -216,8 +222,7 @@
               </p>
             </button>
           </div>
-
-          <div class="flex items-center justify-end gap-3 pt-2">
+          <div class="flex items-center justify-end gap-3 pt-1">
             <button
               type="button"
               class="rounded-sm border px-4 py-2 font-mono-tab text-[11px] uppercase tracking-[0.15em]"
@@ -231,291 +236,309 @@
               :style="{ backgroundColor: C.primary, color: C.background }"
               @click="goToStep(2)"
             >
-              PRÓXIMO →
+              CONFIGURAR →
             </button>
           </div>
         </div>
 
-        <!-- ============== STEP 2 — preset params ============== -->
-        <div v-else-if="step === 2" class="flex flex-col gap-4 p-5 md:p-6">
-          <div>
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">
-              [ PASSO 2 · PARÂMETROS · {{ draft.preset?.label.toUpperCase() }} ]
-            </span>
-            <h2 class="mt-1 text-[22px]" :style="{ color: C.text, fontFamily: F.display }">
-              Ajuste os detalhes.
-            </h2>
-            <p class="mt-1 text-[12px]" :style="{ color: C.textMuted }">
-              {{ draft.preset?.description }}
-            </p>
-          </div>
-
-          <!-- Identificação (title + key sempre) -->
-          <div class="grid gap-3 md:grid-cols-2">
-            <label class="flex flex-col gap-1.5">
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">TÍTULO</span>
-              <input
-                v-model="draft.title"
-                type="text"
-                required
-                maxlength="160"
-                class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none"
-                :style="{ borderColor: C.border, color: C.text }"
-                @input="autoKeyIfPristine"
-              />
-            </label>
-            <label class="flex flex-col gap-1.5">
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">
-                KEY (identificador)
-              </span>
-              <input
-                v-model="draft.key"
-                type="text"
-                required
-                maxlength="80"
-                class="rounded-sm border bg-transparent px-3 py-2 font-mono-tab text-[12px] outline-none"
-                :style="{ borderColor: C.border, color: C.text }"
-                @input="draft.keyTouched = true"
-              />
-            </label>
-          </div>
-
-          <!-- Preset-specific params, grouped -->
-          <div
-            v-for="g in groupedParams"
-            :key="g.group"
-            class="flex flex-col gap-3 rounded-sm border p-4"
-            :style="{ borderColor: C.border, backgroundColor: C.surface }"
-          >
-            <div class="flex items-center gap-2">
-              <UIcon
-                :name="g.group === 'content' ? 'i-lucide-type' : 'i-lucide-sliders-horizontal'"
-                class="size-3.5"
-                :style="{ color: C.primary }"
-              />
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
-                [ {{ g.label.toUpperCase() }} ]
-              </span>
-            </div>
-            <div class="grid gap-3 md:grid-cols-2">
-              <label
-                v-for="p in g.params"
-                :key="p.key"
-                class="flex flex-col gap-1.5"
-                :class="g.group === 'content' && p.kind === 'text' ? 'md:col-span-2' : ''"
-              >
-                <span class="flex items-center gap-1.5 font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">
-                  {{ p.label }}
-                  <span
-                    v-if="p.supportsChips"
-                    class="rounded-sm border px-1 py-0.5 text-[9px]"
-                    :style="{ borderColor: C.border, color: C.primary }"
-                    title="Este campo aceita {variáveis} que são resolvidas em tempo real."
-                  >{CHIPS}</span>
-                </span>
-                <select
-                  v-if="p.kind === 'select'"
-                  :value="draft.params[p.key]"
-                  class="rounded-sm border px-3 py-2 text-[13px] outline-none"
-                  :style="{ borderColor: C.border, color: C.text, backgroundColor: C.background }"
-                  @change="setParam(p.key, ($event.target as HTMLSelectElement).value)"
-                >
-                  <option v-for="o in p.options" :key="o.value" :value="o.value">{{ o.label }}</option>
-                </select>
-                <input
-                  v-else-if="p.kind === 'number'"
-                  :value="draft.params[p.key]"
-                  type="number"
-                  :min="p.min"
-                  :max="p.max"
-                  :step="p.step || 1"
-                  class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none"
-                  :style="{ borderColor: C.border, color: C.text }"
-                  @input="setParam(p.key, Number(($event.target as HTMLInputElement).value))"
-                />
-                <input
-                  v-else
-                  :value="draft.params[p.key]"
-                  type="text"
-                  :data-param-key="p.key"
-                  :placeholder="p.placeholder || ''"
-                  class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none"
-                  :style="{ borderColor: C.border, color: C.text }"
-                  @focus="onFieldFocus($event.target as HTMLInputElement)"
-                  @input="setParam(p.key, ($event.target as HTMLInputElement).value)"
-                />
-                <span v-if="p.help" class="text-[11px] leading-snug" :style="{ color: C.textMuted }">{{ p.help }}</span>
-              </label>
-            </div>
-          </div>
-
-          <!-- Chip palette (step 2) — only when at least one param supports chips -->
-          <div
-            v-if="step2SupportsChips"
-            class="flex flex-col gap-2 rounded-sm border p-3"
-            :style="{ borderColor: C.border, backgroundColor: C.background }"
-          >
-            <div class="flex items-center gap-2">
-              <UIcon name="i-lucide-braces" class="size-3.5" :style="{ color: C.primary }" />
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">
-                VARIÁVEIS PRA INSERIR NOS CAMPOS ACIMA (clique pra inserir onde o cursor estiver)
-              </span>
-            </div>
-            <AdminChipPalette
-              :catalog="chipCatalog"
-              :values="chipValues"
-              :loading="chipsLoading"
-              @insert="insertChip"
-            />
-          </div>
-
-          <!-- Live image preview link -->
-          <div
-            v-if="draft.preset?.hasMedia"
-            class="flex flex-wrap items-center justify-between gap-2 rounded-sm border px-4 py-3"
-            :style="{ borderColor: C.border, backgroundColor: `${C.primary}08` }"
-          >
-            <div class="flex items-center gap-2 text-[12px]" :style="{ color: C.text }">
-              <UIcon name="i-lucide-image" class="size-3.5" :style="{ color: C.primary }" />
-              <span>Confira como a imagem vai sair antes de salvar:</span>
-            </div>
-            <a
-              :href="previewMediaUrl"
-              target="_blank"
-              rel="noopener"
-              class="inline-flex items-center gap-1.5 rounded-sm border px-3 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.15em] transition-opacity hover:opacity-80"
-              :style="{ borderColor: C.primary, color: C.primary }"
-            >
-              <UIcon name="i-lucide-external-link" class="size-3" />
-              ABRIR PRÉVIA
-            </a>
-          </div>
-
-          <!-- Navigation -->
-          <div class="flex items-center justify-between gap-3 pt-2">
+        <!-- =============== STEP 2 — single-page config =============== -->
+        <div v-else class="grid grid-cols-1 md:grid-cols-[1fr_320px]">
+          <!-- MAIN FORM (scrollable) -->
+          <div class="flex max-h-[80vh] flex-col gap-4 overflow-y-auto p-5 md:max-h-[85vh] md:p-6">
             <button
               type="button"
-              class="rounded-sm border px-4 py-2 font-mono-tab text-[11px] uppercase tracking-[0.15em]"
-              :style="{ borderColor: C.border, color: C.text }"
+              class="inline-flex w-fit items-center gap-1.5 font-mono-tab text-[10px] uppercase tracking-[0.15em] transition-opacity hover:opacity-70"
+              :style="{ color: C.textMuted }"
               @click="goToStep(1)"
-            >← VOLTAR</button>
-            <button
-              type="button"
-              :disabled="!canLeaveStep2"
-              class="rounded-sm px-4 py-2 font-mono-tab text-[11px] font-bold uppercase tracking-[0.15em] disabled:opacity-40"
-              :style="{ backgroundColor: C.primary, color: C.background }"
-              @click="goToStep(3)"
             >
-              PRÓXIMO →
+              <UIcon name="i-lucide-chevron-left" class="size-3" />
+              TROCAR PRESET
             </button>
-          </div>
-        </div>
 
-        <!-- ============== STEP 3 — schedule + caption + integrations ============== -->
-        <div v-else-if="step === 3" class="flex flex-col gap-5 p-5 md:p-6">
-          <div>
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">
-              [ PASSO 3 · AGENDAMENTO E PUBLICAÇÃO ]
-            </span>
-            <h2 class="mt-1 text-[22px]" :style="{ color: C.text, fontFamily: F.display }">
-              Quando, onde e como.
-            </h2>
-          </div>
+            <!-- === Identification === -->
+            <section
+              class="flex flex-col gap-3 rounded-sm border p-4"
+              :style="{ borderColor: C.border, backgroundColor: C.surface }"
+            >
+              <div class="flex items-center gap-2">
+                <UIcon name="i-lucide-tag" class="size-3.5" :style="{ color: C.primary }" />
+                <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
+                  [ IDENTIFICAÇÃO ]
+                </span>
+              </div>
+              <label class="flex flex-col gap-1.5">
+                <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">
+                  Nome interno
+                </span>
+                <input
+                  v-model="draft.title"
+                  type="text"
+                  required
+                  maxlength="160"
+                  class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none"
+                  :style="{ borderColor: C.border, color: C.text }"
+                  placeholder="Ex: Ranking diário das altas — 18h"
+                />
+                <span class="font-mono-tab text-[10px]" :style="{ color: C.textMuted }">
+                  Só aparece pra você nessa lista. O chip gerado pro banco é <code>{{ draft.key || '—' }}</code>.
+                </span>
+              </label>
+            </section>
 
-          <!-- Schedule -->
-          <div class="flex flex-col gap-2">
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">
-              AGENDAMENTO
-            </span>
-            <AdminSchedulePicker v-model="draft.schedule" />
-          </div>
+            <!-- === Content fields (image title/label) === -->
+            <section
+              v-if="contentParams.length > 0"
+              class="flex flex-col gap-3 rounded-sm border p-4"
+              :style="{ borderColor: C.border, backgroundColor: C.surface }"
+            >
+              <div class="flex items-center gap-2">
+                <UIcon name="i-lucide-image" class="size-3.5" :style="{ color: C.primary }" />
+                <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
+                  [ CONTEÚDO DA IMAGEM ]
+                </span>
+              </div>
+              <div class="grid gap-3 md:grid-cols-2">
+                <label
+                  v-for="p in contentParams"
+                  :key="p.key"
+                  class="flex flex-col gap-1.5 md:col-span-2"
+                >
+                  <span class="flex items-center gap-1.5 font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">
+                    {{ p.label }}
+                    <span
+                      v-if="p.supportsChips"
+                      class="rounded-sm border px-1 py-0.5 text-[9px]"
+                      :style="{ borderColor: C.border, color: C.primary }"
+                      title="Este campo aceita variáveis. Clique nas pílulas do painel direito pra inserir."
+                    >{CHIPS}</span>
+                  </span>
+                  <input
+                    :value="draft.params[p.key]"
+                    :data-param-key="p.key"
+                    :placeholder="p.placeholder || ''"
+                    type="text"
+                    class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none"
+                    :style="{ borderColor: C.border, color: C.text }"
+                    @focus="onFieldFocus($event.target as HTMLInputElement)"
+                    @input="setParam(p.key, ($event.target as HTMLInputElement).value)"
+                  />
+                  <span v-if="p.help" class="text-[11px] leading-snug" :style="{ color: C.textMuted }">{{ p.help }}</span>
+                </label>
+              </div>
+            </section>
 
-          <!-- Integrations (hidden for custom with no scheduled_post) -->
-          <div v-if="draft.preset?.type === 'scheduled_post'" class="flex flex-col gap-2">
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">
-              INTEGRAÇÕES POSTIZ
-            </span>
-            <AdminIntegrationMultiSelect v-model="draft.integrations" />
-          </div>
+            <!-- === Data params (top_n, volume, years, etc.) === -->
+            <section
+              v-if="dataParams.length > 0"
+              class="flex flex-col gap-3 rounded-sm border p-4"
+              :style="{ borderColor: C.border, backgroundColor: C.surface }"
+            >
+              <div class="flex items-center gap-2">
+                <UIcon name="i-lucide-sliders-horizontal" class="size-3.5" :style="{ color: C.primary }" />
+                <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
+                  [ DADOS E FILTROS ]
+                </span>
+              </div>
+              <div class="grid gap-3 md:grid-cols-2">
+                <label
+                  v-for="p in dataParams"
+                  :key="p.key"
+                  class="flex flex-col gap-1.5"
+                >
+                  <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">
+                    {{ p.label }}
+                  </span>
+                  <select
+                    v-if="p.kind === 'select'"
+                    :value="draft.params[p.key]"
+                    class="rounded-sm border px-3 py-2 text-[13px] outline-none"
+                    :style="{ borderColor: C.border, color: C.text, backgroundColor: C.background }"
+                    @change="setParam(p.key, ($event.target as HTMLSelectElement).value)"
+                  >
+                    <option v-for="o in p.options" :key="o.value" :value="o.value">{{ o.label }}</option>
+                  </select>
+                  <input
+                    v-else-if="p.kind === 'number'"
+                    :value="draft.params[p.key]"
+                    type="number"
+                    :min="p.min"
+                    :max="p.max"
+                    :step="p.step || 1"
+                    class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none"
+                    :style="{ borderColor: C.border, color: C.text }"
+                    @input="setParam(p.key, Number(($event.target as HTMLInputElement).value))"
+                  />
+                  <span v-if="p.help" class="text-[11px] leading-snug" :style="{ color: C.textMuted }">{{ p.help }}</span>
+                </label>
+              </div>
+            </section>
 
-          <!-- Caption + chips -->
-          <div v-if="draft.preset" class="grid gap-4 md:grid-cols-[1fr_280px]">
-            <div class="flex flex-col gap-2">
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">
-                LEGENDA DO POST (suporta variáveis · clique nas pílulas ao lado)
-              </span>
+            <!-- === Post caption === -->
+            <section
+              class="flex flex-col gap-3 rounded-sm border p-4"
+              :style="{ borderColor: C.border, backgroundColor: C.surface }"
+            >
+              <div class="flex items-center gap-2">
+                <UIcon name="i-lucide-message-square-text" class="size-3.5" :style="{ color: C.primary }" />
+                <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
+                  [ LEGENDA DO POST ]
+                </span>
+              </div>
               <textarea
                 ref="captionRef"
                 v-model="draft.caption"
                 rows="6"
                 class="rounded-sm border bg-transparent px-3 py-2 text-[13px] leading-relaxed outline-none"
-                :style="{ borderColor: C.border, color: C.text, backgroundColor: C.surface }"
+                :style="{ borderColor: C.border, color: C.text, backgroundColor: C.background }"
                 placeholder="Ex: 🔥 {rank.leader.ticker} liderou com +{rank.leader.change} hoje · {date.today}"
                 @focus="onFieldFocus($event.target as HTMLTextAreaElement)"
               />
-              <!-- Live preview -->
               <div
                 v-if="renderedCaption"
                 class="rounded-sm border px-3 py-2"
                 :style="{ borderColor: C.border, backgroundColor: `${C.primary}08` }"
               >
                 <div class="mb-1 font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
-                  PREVIEW (com valores atuais)
+                  PREVIEW · valores atuais
                 </div>
-                <div class="text-[13px] leading-relaxed" :style="{ color: C.text }">
+                <div class="whitespace-pre-wrap text-[13px] leading-relaxed" :style="{ color: C.text }">
                   {{ renderedCaption }}
                 </div>
               </div>
-            </div>
+            </section>
 
-            <div class="flex flex-col gap-2">
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">
-                VARIÁVEIS DISPONÍVEIS
-              </span>
-              <div
-                class="max-h-[420px] overflow-y-auto rounded-sm border p-3"
-                :style="{ borderColor: C.border, backgroundColor: C.surface }"
-              >
-                <AdminChipPalette
-                  :catalog="chipCatalog"
-                  :values="chipValues"
-                  :loading="chipsLoading"
-                  @insert="insertChip"
-                />
-              </div>
-            </div>
-          </div>
-
-          <!-- Enable on save -->
-          <label class="flex items-center gap-2">
-            <input v-model="draft.enabled" type="checkbox" class="size-4 accent-orange-500" />
-            <span class="text-[13px]" :style="{ color: C.text }">
-              Ativar a automação ao salvar
-            </span>
-          </label>
-
-          <div v-if="wizardError" class="rounded-sm border px-3 py-2 text-[12px]" :style="{ borderColor: C.negative, color: C.negative }">
-            {{ wizardError }}
-          </div>
-
-          <!-- Navigation -->
-          <div class="flex items-center justify-between gap-3 pt-2">
-            <button
-              type="button"
-              class="rounded-sm border px-4 py-2 font-mono-tab text-[11px] uppercase tracking-[0.15em]"
-              :style="{ borderColor: C.border, color: C.text }"
-              @click="goToStep(2)"
-            >← VOLTAR</button>
-            <button
-              type="button"
-              :disabled="saving || !canSave"
-              class="rounded-sm px-4 py-2 font-mono-tab text-[11px] font-bold uppercase tracking-[0.15em] disabled:opacity-40"
-              :style="{ backgroundColor: C.primary, color: C.background }"
-              @click="handleSave"
+            <!-- === Schedule === -->
+            <section
+              class="flex flex-col gap-3 rounded-sm border p-4"
+              :style="{ borderColor: C.border, backgroundColor: C.surface }"
             >
-              {{ saving ? 'SALVANDO…' : (wizardMode === 'create' ? 'CRIAR AUTOMAÇÃO' : 'SALVAR') }}
-            </button>
+              <div class="flex items-center gap-2">
+                <UIcon name="i-lucide-calendar-clock" class="size-3.5" :style="{ color: C.primary }" />
+                <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
+                  [ AGENDAMENTO ]
+                </span>
+              </div>
+              <AdminSchedulePicker v-model="draft.schedule" />
+            </section>
+
+            <!-- === Publish destinations === -->
+            <section
+              v-if="draft.preset?.type === 'scheduled_post'"
+              class="flex flex-col gap-3 rounded-sm border p-4"
+              :style="{ borderColor: C.border, backgroundColor: C.surface }"
+            >
+              <div class="flex items-center gap-2">
+                <UIcon name="i-lucide-send" class="size-3.5" :style="{ color: C.primary }" />
+                <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
+                  [ ONDE PUBLICAR ]
+                </span>
+              </div>
+              <AdminIntegrationMultiSelect v-model="draft.integrations" />
+            </section>
+
+            <!-- === Image preview link === -->
+            <section
+              v-if="draft.preset?.hasMedia && previewMediaUrl"
+              class="flex flex-wrap items-center justify-between gap-2 rounded-sm border p-4"
+              :style="{ borderColor: C.border, backgroundColor: `${C.primary}08` }"
+            >
+              <div class="flex items-center gap-2 text-[12px]" :style="{ color: C.text }">
+                <UIcon name="i-lucide-eye" class="size-3.5" :style="{ color: C.primary }" />
+                <span>Confira como a imagem vai sair antes de salvar.</span>
+              </div>
+              <a
+                :href="previewMediaUrl"
+                target="_blank"
+                rel="noopener"
+                class="inline-flex items-center gap-1.5 rounded-sm border px-3 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.15em] transition-opacity hover:opacity-80"
+                :style="{ borderColor: C.primary, color: C.primary }"
+              >
+                <UIcon name="i-lucide-external-link" class="size-3" />
+                ABRIR PRÉVIA
+              </a>
+            </section>
+
+            <!-- === Activate toggle === -->
+            <label
+              class="flex items-center gap-2 rounded-sm border p-4"
+              :style="{ borderColor: C.border, backgroundColor: C.surface }"
+            >
+              <input v-model="draft.enabled" type="checkbox" class="size-4 accent-orange-500" />
+              <span class="text-[13px]" :style="{ color: C.text }">
+                Ativar a automação ao salvar (vai rodar no próximo horário agendado)
+              </span>
+            </label>
+
+            <div v-if="wizardError" class="rounded-sm border px-3 py-2 text-[12px]" :style="{ borderColor: C.negative, color: C.negative }">
+              {{ wizardError }}
+            </div>
           </div>
+
+          <!-- STICKY SIDEBAR (chip palette) -->
+          <aside
+            class="flex max-h-[80vh] flex-col gap-3 overflow-y-auto border-t p-5 md:max-h-[85vh] md:border-l md:border-t-0 md:p-5"
+            :style="{ borderColor: C.border, backgroundColor: C.tertiary }"
+          >
+            <div class="flex items-center gap-2">
+              <UIcon name="i-lucide-braces" class="size-3.5" :style="{ color: C.primary }" />
+              <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
+                [ VARIÁVEIS ]
+              </span>
+            </div>
+            <p class="text-[11px] leading-snug" :style="{ color: C.textMuted }">
+              Clique numa variável pra inserir no campo onde o cursor estiver
+              (título da imagem, legenda da imagem ou legenda do post).
+            </p>
+
+            <!-- Error / retry state -->
+            <div
+              v-if="chipsError"
+              class="rounded-sm border p-3 text-[11px]"
+              :style="{ borderColor: C.negative, color: C.negative }"
+            >
+              {{ chipsError }}
+              <button
+                type="button"
+                class="mt-2 inline-flex items-center gap-1 font-mono-tab text-[10px] uppercase tracking-[0.15em] transition-opacity hover:opacity-70"
+                :style="{ color: C.primary }"
+                @click="fetchChips()"
+              >
+                <UIcon name="i-lucide-refresh-cw" class="size-3" />
+                TENTAR DE NOVO
+              </button>
+            </div>
+
+            <AdminChipPalette
+              v-else
+              :catalog="chipCatalog"
+              :values="chipValues"
+              :loading="chipsLoading"
+              @insert="insertChip"
+            />
+          </aside>
+        </div>
+
+        <!-- Footer (step 2) -->
+        <div
+          v-if="step === 2"
+          class="flex items-center justify-between gap-3 border-t px-5 py-4"
+          :style="{ borderColor: C.border }"
+        >
+          <button
+            type="button"
+            class="rounded-sm border px-4 py-2 font-mono-tab text-[11px] uppercase tracking-[0.15em]"
+            :style="{ borderColor: C.border, color: C.text }"
+            @click="closeWizard"
+          >CANCELAR</button>
+          <button
+            type="button"
+            :disabled="saving || !canSave"
+            class="rounded-sm px-5 py-2 font-mono-tab text-[11px] font-bold uppercase tracking-[0.15em] disabled:opacity-40"
+            :style="{ backgroundColor: C.primary, color: C.background }"
+            @click="handleSave"
+          >
+            {{ saving ? 'SALVANDO…' : (wizardMode === 'create' ? 'CRIAR AUTOMAÇÃO' : 'SALVAR' ) }}
+          </button>
         </div>
       </div>
     </div>
@@ -528,8 +551,8 @@ import {
   AUTOMATION_PRESETS,
   findPreset,
   buildAutomationConfig,
-  groupPresetParams,
   type AutomationPreset,
+  type PresetParamSchema,
 } from '~/utils/automationPresets'
 import type { ISocialAutomation } from '~/services/socialAutomations'
 
@@ -560,7 +583,7 @@ async function refresh() {
 const wizardOpen = ref(false)
 const wizardMode = ref<'create' | 'edit'>('create')
 const wizardError = ref<string | null>(null)
-const step = ref<1 | 2 | 3>(1)
+const step = ref<1 | 2>(1)
 const saving = ref(false)
 
 interface WizardDraft {
@@ -568,15 +591,13 @@ interface WizardDraft {
   preset: AutomationPreset | null
   title: string
   key: string
-  keyTouched: boolean
   params: Record<string, string | number>
   schedule: string | null
   caption: string
   integrations: string[]
   enabled: boolean
-  // Extra config kept verbatim from automations created before the wizard
-  // existed — we surface nothing editable for it, but re-merge on save so
-  // nothing is lost when the admin edits caption/schedule of a legacy row.
+  // Extras from legacy rows (no `preset`) kept verbatim so the wizard
+  // doesn't drop fields it doesn't render.
   legacyExtras: Record<string, unknown>
 }
 
@@ -585,7 +606,6 @@ const draft = reactive<WizardDraft>({
   preset: null,
   title: '',
   key: '',
-  keyTouched: false,
   params: {},
   schedule: null,
   caption: '',
@@ -594,35 +614,30 @@ const draft = reactive<WizardDraft>({
   legacyExtras: {},
 })
 
-const canLeaveStep2 = computed(() => {
-  if (!draft.preset) return false
-  return draft.title.trim() !== '' && draft.key.trim() !== ''
-})
+// Split preset params into content/data buckets for the two sections.
+const contentParams = computed<PresetParamSchema[]>(() =>
+  (draft.preset?.params ?? []).filter(p => p.group === 'content'),
+)
+const dataParams = computed<PresetParamSchema[]>(() =>
+  (draft.preset?.params ?? []).filter(p => p.group === 'data'),
+)
 
-const canSave = computed(() => canLeaveStep2.value)
+const canSave = computed(() => !!draft.preset && draft.title.trim() !== '' && draft.key.trim() !== '')
 
-// Groups the selected preset's params into content/data sections so the
-// UI can render each block under its own heading.
-const groupedParams = computed(() => (draft.preset ? groupPresetParams(draft.preset) : []))
-
-// Shows the chip palette in step 2 only when at least one of the current
-// preset's params supports placeholder chips (image_title / image_label).
-const step2SupportsChips = computed(() => (draft.preset?.params ?? []).some(p => p.supportsChips))
-
-// Build the live preview URL for step 2: mirrors the buildMedia() output
-// of the preset so the admin opens the exact image the automation would
-// render at run-time.
+// Live preview URL — mirrors what buildMedia() generates so "Abrir prévia"
+// opens the exact page the backend will screenshot at run-time.
 const previewMediaUrl = computed<string | null>(() => {
   if (!draft.preset || !draft.preset.hasMedia) return null
   const media = draft.preset.buildMedia(draft.params)
   return media[0]?.source ?? null
 })
 
-// ---------- Chip catalog (live preview) ----------
-interface CatalogGroup { source: string; label: string; chips: Array<{ path: string; label: string }> }
+// ---------- Chip catalog ----------
+interface CatalogGroup { source: string; label: string; chips: Array<{ path: string; label: string; example?: string; group?: string }> }
 const chipCatalog = ref<CatalogGroup[]>([])
 const chipValues = ref<Record<string, string>>({})
 const chipsLoading = ref(false)
+const chipsError = ref<string | null>(null)
 
 async function fetchChips() {
   if (!draft.preset) {
@@ -631,27 +646,41 @@ async function fetchChips() {
     return
   }
   chipsLoading.value = true
+  chipsError.value = null
   try {
     const sources = draft.preset.buildContextSources(draft.params)
     const url = `${runtimeConfig.public.apiBaseUrl as string}/admin/social-automations/preview-context?sources=${encodeURIComponent(JSON.stringify(sources))}`
-    const r = await authFetch<{ catalog: CatalogGroup[]; values: Record<string, string> }>(url, { method: 'GET' }) as any
-    const payload = r?.data ?? r
-    chipCatalog.value = payload?.catalog ?? []
-    chipValues.value = payload?.values ?? {}
-  } catch (e) {
+    const r = await authFetch<any>(url, { method: 'GET' }) as any
+    // useCustomFetch's type claims { data: T } but the underlying $fetch
+    // passes through whatever the server returned. Our endpoint returns
+    // `{catalog, values}` directly with no wrap — support both shapes.
+    const payload = (r && typeof r === 'object' && ('catalog' in r || 'values' in r))
+      ? r
+      : (r?.data ?? {})
+    chipCatalog.value = Array.isArray(payload?.catalog) ? payload.catalog : []
+    chipValues.value = (payload?.values && typeof payload.values === 'object') ? payload.values : {}
+  } catch (e: any) {
     chipCatalog.value = []
     chipValues.value = {}
+    chipsError.value = e?.data?.message || e?.message || 'Não rolou carregar as variáveis.'
   } finally {
     chipsLoading.value = false
   }
 }
 
-// Refresh the chip catalog whenever the preset or its params change
-// (skip `params` in the key so we don't refetch on every keystroke —
-// the source params only depend on top_n/limit/side, which change rarely).
+// Refetch on preset change or when data params that affect source definitions change.
+// Content-only params (image_title, image_label) don't change the source shape,
+// so we deliberately exclude them to avoid a round-trip on every keystroke.
 watch(
-  () => [draft.preset?.id, draft.params?.top_n, draft.params?.limit, draft.params?.per_side, draft.params?.side],
-  () => { if (wizardOpen.value) fetchChips() },
+  () => [
+    draft.preset?.id,
+    draft.params?.top_n,
+    draft.params?.limit,
+    draft.params?.per_side,
+    draft.params?.side,
+    draft.params?.min_volume,
+  ],
+  () => { if (wizardOpen.value && draft.preset) fetchChips() },
 )
 
 // ---------- Rendered-caption preview ----------
@@ -664,14 +693,13 @@ const renderedCaption = computed(() => {
 // ---------- Wizard lifecycle ----------
 function openWizard(a: ISocialAutomation | null) {
   wizardError.value = null
-  step.value = 1
+  chipsError.value = null
+  chipCatalog.value = []
+  chipValues.value = {}
   if (a) {
     wizardMode.value = 'edit'
     const cfg = (a.config || {}) as any
     const presetId = cfg.preset as string | undefined
-    // Legacy automations (created before the preset system) fall back to
-    // "text-only" — the admin can still edit caption/schedule without
-    // touching JSON. Original media config is preserved in legacyExtras.
     const preset = findPreset(presetId) || findPreset('text-only')!
     const { preset: _p, preset_params: _pp, integrations: _i, context_sources: _cs, content: _c, delay_minutes: _d, ...extras } = cfg
     Object.assign(draft, {
@@ -679,7 +707,6 @@ function openWizard(a: ISocialAutomation | null) {
       preset,
       title: a.title,
       key: a.key,
-      keyTouched: true,
       params: { ...seedParamsFor(preset), ...(cfg.preset_params || {}) },
       schedule: a.schedule,
       caption: (cfg.content?.value as string) || '',
@@ -687,8 +714,10 @@ function openWizard(a: ISocialAutomation | null) {
       enabled: a.enabled,
       legacyExtras: extras,
     })
-    // Open directly at step 2 when editing — the user already knows the preset.
     step.value = 2
+    wizardOpen.value = true
+    // Kick off the chip fetch right away — no need to wait for user interaction.
+    nextTick(() => fetchChips())
   } else {
     wizardMode.value = 'create'
     Object.assign(draft, {
@@ -696,7 +725,6 @@ function openWizard(a: ISocialAutomation | null) {
       preset: null,
       title: '',
       key: '',
-      keyTouched: false,
       params: {},
       schedule: null,
       caption: '',
@@ -704,28 +732,27 @@ function openWizard(a: ISocialAutomation | null) {
       enabled: false,
       legacyExtras: {},
     })
+    step.value = 1
+    wizardOpen.value = true
   }
-  wizardOpen.value = true
 }
 
-function closeWizard() {
-  wizardOpen.value = false
-}
+function closeWizard() { wizardOpen.value = false }
 
 function selectPreset(p: AutomationPreset) {
   draft.preset = p
   draft.params = seedParamsFor(p)
+  // Only seed default title/caption/schedule when we're still on a blank
+  // draft — avoid clobbering edits when the admin hops between presets.
   if (!draft.title) draft.title = p.label
-  if (!draft.key || !draft.keyTouched) draft.key = p.id
   if (!draft.caption) draft.caption = p.defaultCaption
   if (!draft.schedule && p.defaultSchedule) draft.schedule = p.defaultSchedule.cron
+  draft.key = generateKey(draft.title, p.id)
 }
 
 function seedParamsFor(p: AutomationPreset): Record<string, string | number> {
   const out: Record<string, string | number> = {}
-  for (const s of p.params) {
-    out[s.key] = s.defaultValue
-  }
+  for (const s of p.params) out[s.key] = s.defaultValue
   return out
 }
 
@@ -733,14 +760,26 @@ function setParam(key: string, value: string | number) {
   draft.params = { ...draft.params, [key]: value }
 }
 
-function goToStep(n: 1 | 2 | 3) {
+function goToStep(n: 1 | 2) {
   step.value = n
-  if (n === 3) fetchChips()
+  if (n === 2) nextTick(() => fetchChips())
 }
 
-function autoKeyIfPristine() {
-  if (draft.keyTouched) return
-  draft.key = slugify(draft.title)
+// Regenerate key whenever the user edits the title (create mode only;
+// editing keeps the existing key so references don't break).
+watch(() => draft.title, (title) => {
+  if (wizardMode.value !== 'create' || !draft.preset) return
+  draft.key = generateKey(title, draft.preset.id)
+})
+
+// key generation: slugify the title + short stable suffix so two
+// automations of the same preset never collide. Suffix is deterministic
+// from (title + preset) so hitting save twice on the same draft keeps
+// the same key — prevents accidental "new row" on retry.
+function generateKey(title: string, presetId: string): string {
+  const base = slugify(title || presetId) || presetId
+  const hash = hashString(`${base}::${presetId}`).toString(36).slice(0, 4)
+  return (base + '-' + hash).slice(0, 80)
 }
 
 function slugify(s: string): string {
@@ -749,23 +788,22 @@ function slugify(s: string): string {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
-    .slice(0, 80)
+    .slice(0, 60)
+}
+
+function hashString(s: string): number {
+  let h = 0
+  for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0
+  return Math.abs(h)
 }
 
 // ---------- Chip insertion ----------
-// Inserting a chip needs to know WHICH field the admin was typing in.
-// Clicking the chip steals focus from that field, so we track the last
-// focused <input>/<textarea> via `@focus` handlers and reuse it here.
 const captionRef = ref<HTMLTextAreaElement | null>(null)
 const lastFocusedField = ref<HTMLInputElement | HTMLTextAreaElement | null>(null)
 
-function onFieldFocus(el: HTMLInputElement | HTMLTextAreaElement) {
-  lastFocusedField.value = el
-}
+function onFieldFocus(el: HTMLInputElement | HTMLTextAreaElement) { lastFocusedField.value = el }
 
 function insertChip(placeholder: string) {
-  // Priority: the caption ref (step 3 textarea) > the last-focused content
-  // input (step 2) > append to caption as a fallback.
   const el = lastFocusedField.value ?? captionRef.value
   if (!el) {
     draft.caption = (draft.caption || '') + placeholder
@@ -775,27 +813,14 @@ function insertChip(placeholder: string) {
   const end = el.selectionEnd ?? (el.value?.length ?? 0)
   const current = el.value ?? ''
   const next = current.slice(0, start) + placeholder + current.slice(end)
-
-  // If the field is bound to a preset param (image_title, image_label, …)
-  // route the new value through setParam so reactivity kicks in. Otherwise
-  // it's the caption textarea.
-  const paramKey = findParamKeyByElement(el)
-  if (paramKey) {
-    setParam(paramKey, next)
-  } else {
-    draft.caption = next
-  }
+  const paramKey = el.getAttribute?.('data-param-key') ?? null
+  if (paramKey) setParam(paramKey, next)
+  else draft.caption = next
   nextTick(() => {
     el.focus()
     const pos = start + placeholder.length
     el.setSelectionRange(pos, pos)
   })
-}
-
-// Resolve which preset param a given input element controls — we stashed
-// the key on the element via a data-attribute in the template.
-function findParamKeyByElement(el: HTMLElement): string | null {
-  return el.getAttribute('data-param-key')
 }
 
 // ---------- Save ----------
@@ -811,9 +836,6 @@ async function handleSave() {
       caption: draft.caption,
       delayMinutes: null,
     })
-    // Merge any legacy fields the wizard doesn't know about back into the
-    // config so we don't drop data on the floor when editing a pre-wizard
-    // automation. Wizard-owned keys win on collision.
     const config = { ...draft.legacyExtras, ...built }
 
     const body = {
@@ -825,11 +847,8 @@ async function handleSave() {
       config,
     }
 
-    if (wizardMode.value === 'create') {
-      await service.create(body)
-    } else if (draft.id) {
-      await service.update(draft.id, body)
-    }
+    if (wizardMode.value === 'create') await service.create(body)
+    else if (draft.id) await service.update(draft.id, body)
 
     closeWizard()
     await refresh()
@@ -866,10 +885,7 @@ async function handleRunNow(a: ISocialAutomation) {
   try {
     await service.runNow(a.id)
     setTimeout(async () => {
-      try {
-        const updated = await service.show(a.id)
-        Object.assign(a, updated)
-      } catch {}
+      try { const updated = await service.show(a.id); Object.assign(a, updated) } catch {}
     }, 1500)
   } catch (e: any) {
     error.value = e?.message || 'Erro ao disparar execução.'
@@ -891,7 +907,7 @@ async function handleDelete(a: ISocialAutomation) {
   }
 }
 
-// ---------- Helpers for list rendering ----------
+// ---------- Row display helpers ----------
 function presetLabelOf(a: ISocialAutomation): string {
   const cfg = (a.config || {}) as any
   const preset = findPreset(cfg?.preset)
@@ -936,6 +952,12 @@ function toneColor(tone: AutomationPreset['tone']): string {
   if (tone === 'positive') return C.positive
   if (tone === 'negative') return C.negative
   return C.primary
+}
+
+function mediaBadge(p: AutomationPreset): string {
+  if (!p.hasMedia) return 'TEXTO'
+  const firstMedia = p.buildMedia(seedParamsFor(p))[0]
+  return firstMedia?.kind === 'video' ? 'VÍDEO' : 'IMAGEM'
 }
 
 onMounted(refresh)
