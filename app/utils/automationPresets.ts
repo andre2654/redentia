@@ -106,9 +106,11 @@ const dailyRanking = (side: 'top' | 'bottom'): AutomationPreset => ({
       label: 'Título da imagem',
       kind: 'text',
       group: 'content',
-      defaultValue: side === 'top' ? 'Maiores Altas' : 'Maiores Baixas',
+      // Headline all-caps estilo capa de revista — escaneia rápido no thumbnail
+      // do feed e já entrega a identidade do conteúdo em menos de 1s.
+      defaultValue: side === 'top' ? 'MAIORES ALTAS DA B3' : 'MAIORES BAIXAS DA B3',
       supportsChips: true,
-      placeholder: 'Ex: Maiores Altas de {date.weekday}',
+      placeholder: 'Ex: MAIORES ALTAS · {date.weekday}',
       help: 'Headline que aparece no creative. Suporta variáveis ({date.today}, etc).',
     },
     {
@@ -145,9 +147,35 @@ const dailyRanking = (side: 'top' | 'bottom'): AutomationPreset => ({
       help: 'Filtra micro-caps de baixa liquidez pra não hijackarem o ranking.',
     },
   ],
+  // Caption: hook com ticker+variação antes do corte do IG (~125 chars
+  // visíveis), pódio escaneável com 🥇🥈🥉, CTA de pergunta aberta
+  // (puxa comments → pesa mais que like), link direto e mix de 5 hashtags
+  // em 3 tiers (broad + mid + ticker dinâmico pra SEO).
   defaultCaption: side === 'top'
-    ? '🔥 Maiores altas da B3 hoje ({date.today})\n\n{rank.leader.ticker} liderou com +{rank.leader.change}, seguido de {rank.2.ticker} ({rank.2.change}) e {rank.3.ticker} ({rank.3.change}).\n\n📊 Dados ao vivo em redentia.com.br'
-    : '🔻 Maiores baixas da B3 hoje ({date.today})\n\n{rank.leader.ticker} caiu {rank.leader.change}, seguido de {rank.2.ticker} ({rank.2.change}) e {rank.3.ticker} ({rank.3.change}).\n\n📊 Dados ao vivo em redentia.com.br',
+    ? `🚀 {rank.leader.ticker} explodiu +{rank.leader.change} no fechamento de {date.today}.
+
+O pódio da B3 hoje:
+🥇 {rank.1.ticker} · +{rank.1.change}
+🥈 {rank.2.ticker} · +{rank.2.change}
+🥉 {rank.3.ticker} · +{rank.3.change}
+
+Você tinha algum desses na carteira? 👇
+
+📊 Análise completa em redentia.com.br
+
+#b3 #bolsabrasileira #investimentos #acoes #{rank.leader.ticker}`
+    : `🔻 {rank.leader.ticker} afundou {rank.leader.change} no fechamento de {date.today}.
+
+O fundo do poço hoje:
+🥇 {rank.1.ticker} · {rank.1.change}
+🥈 {rank.2.ticker} · {rank.2.change}
+🥉 {rank.3.ticker} · {rank.3.change}
+
+Oportunidade de compra ou só sangueira? Comenta aí 👇
+
+📉 Fundamentos e histórico em redentia.com.br
+
+#b3 #bolsabrasileira #investimentos #trader #{rank.leader.ticker}`,
   defaultSchedule: { cron: '0 21 * * 1-5', humanized: 'Dias úteis às 18:00 BRT' },
   buildMedia: (p) => {
     const src = urlWithParams(`https://creative.redentia.com.br/ranking/${side}`, {
@@ -226,9 +254,31 @@ const weeklyRace = (side: 'best' | 'worst'): AutomationPreset => ({
       defaultValue: 10,
     },
   ],
+  // Vídeo: primeiro frame é o hook, caption complementa com storytelling.
+  // "Salva esse vídeo" é CTA explícito pra save — sinal #1 do algoritmo IG.
   defaultCaption: side === 'best'
-    ? '🚀 Os melhores da semana na B3\n\n{series.leader.ticker} liderou com {series.leader.change} nos últimos 7 dias.\nNa corrida dos últimos anos: {series.list}.\n\n📈 Dados ao vivo em redentia.com.br'
-    : '🥶 Os piores da semana na B3\n\n{series.leader.ticker} afundou {series.leader.change} nos últimos 7 dias.\nRanking completo: {series.list}.\n\n📉 Dados ao vivo em redentia.com.br',
+    ? `🏁 {series.leader.ticker} foi o mais rápido da B3 essa semana: {series.leader.change}.
+
+Os melhores da semana correndo em base 100:
+{series.list}
+
+Salva esse vídeo pra lembrar quem tá performando.
+
+Qual ticker você acha que lidera a próxima? 👇
+
+🎥 redentia.com.br · Histórico completo
+
+#b3 #semanaviva #investimentos #{series.leader.ticker} #bolsabrasileira`
+    : `🥶 Começar segunda olhando pro estrago: {series.leader.ticker} afundou {series.leader.change} na semana.
+
+Os piores da B3 correndo em base 100:
+{series.list}
+
+Comprou na queda ou fugiu a tempo? Manda a decisão 👇
+
+📉 redentia.com.br · Histórico completo
+
+#b3 #crash #investimentos #{series.leader.ticker} #bolsabrasileira`,
   defaultSchedule: side === 'best'
     ? { cron: '0 21 * * 5', humanized: 'Toda sexta às 18:00 BRT' }
     : { cron: '0 10 * * 1', humanized: 'Toda segunda às 07:00 BRT' },
@@ -276,9 +326,9 @@ const weeklyTreemap: AutomationPreset = {
       label: 'Título da imagem',
       kind: 'text',
       group: 'content',
-      defaultValue: 'Raio-X da semana',
+      defaultValue: 'RAIO-X DA SEMANA',
       supportsChips: true,
-      placeholder: 'Ex: Raio-X da semana',
+      placeholder: 'Ex: RAIO-X DA SEMANA',
     },
     {
       key: 'per_side',
@@ -302,7 +352,20 @@ const weeklyTreemap: AutomationPreset = {
       ],
     },
   ],
-  defaultCaption: '📊 Raio-X da semana na B3\n\n↗ {week.leader.ticker} liderou as altas com {week.leader.change}\n↘ Confira quem desabou do outro lado\n\n📅 Período: {week.window.start} → {week.window.end}\n\nDados ao vivo em redentia.com.br',
+  // Treemap = conteúdo de "retrospectiva" da semana. CTA "Salva esse mapa"
+  // converte muito bem (saves são o sinal mais forte pro algoritmo IG).
+  defaultCaption: `📊 Semana de {week.window.start} a {week.window.end} na B3 num só olhar.
+
+↗ {week.leader.ticker} liderou as altas com {week.leader.change}
+↘ E teve muita coisa no vermelho — olha o lado direito
+
+Tamanho da célula = tamanho do movimento. Salva esse mapa antes da próxima abertura.
+
+Qual ativo te surpreendeu aqui? 👇
+
+📊 redentia.com.br · Dados ao vivo
+
+#b3 #bolsabrasileira #investimentos #dividendos #{week.leader.ticker}`,
   defaultSchedule: { cron: '0 12 * * 6', humanized: 'Sábado às 09:00 BRT' },
   buildMedia: (p) => {
     const src = urlWithParams('https://creative.redentia.com.br/treemap-weekly', {
