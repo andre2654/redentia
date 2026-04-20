@@ -203,10 +203,10 @@ Oportunidade de compra ou só sangueira? Comenta aí 👇
 // ------------------------------------------------------------
 const weeklyRace = (side: 'best' | 'worst'): AutomationPreset => ({
   id: side === 'best' ? 'weekly-best-race' : 'weekly-worst-race',
-  label: side === 'best' ? 'Corrida semanal · Melhores' : 'Corrida semanal · Piores',
+  label: side === 'best' ? 'Performance semanal · Melhores' : 'Performance semanal · Piores',
   description: side === 'best'
-    ? 'Animação 1080×1080 com os top N da semana correndo em base 100 pelos últimos Y anos.'
-    : 'Animação 1080×1080 com os piores N da semana correndo em base 100 pelos últimos Y anos.',
+    ? 'Vídeo 1080×1080 comparando a valorização dos top N da semana ao longo dos últimos Y anos (normalizado em 100%).'
+    : 'Vídeo 1080×1080 comparando a queda dos piores N da semana ao longo dos últimos Y anos (normalizado em 100%).',
   icon: side === 'best' ? 'i-lucide-flame' : 'i-lucide-snowflake',
   type: 'scheduled_post',
   tone: side === 'best' ? 'positive' : 'negative',
@@ -254,31 +254,32 @@ const weeklyRace = (side: 'best' | 'worst'): AutomationPreset => ({
       defaultValue: 10,
     },
   ],
-  // Vídeo: primeiro frame é o hook, caption complementa com storytelling.
-  // "Salva esse vídeo" é CTA explícito pra save — sinal #1 do algoritmo IG.
+  // Vídeo: primeiro frame é o hook, caption complementa com storytelling
+  // em termos diretos de mercado (subiu / caiu / valorizou), sem metáforas
+  // de corrida que confundem o investidor iniciante.
   defaultCaption: side === 'best'
-    ? `🏁 {series.leader.ticker} foi o mais rápido da B3 essa semana: {series.leader.change}.
+    ? `📈 {series.leader.ticker} foi a ação que mais subiu na B3 essa semana: {series.leader.change}.
 
-Os melhores da semana correndo em base 100:
+As maiores altas da semana comparadas nos últimos anos:
 {series.list}
 
-Salva esse vídeo pra lembrar quem tá performando.
+Salva esse vídeo pra não perder o ranking.
 
-Qual ticker você acha que lidera a próxima? 👇
+Qual você acha que sobe mais na próxima semana? 👇
 
-🎥 redentia.com.br · Histórico completo
+📊 redentia.com.br · Histórico completo
 
-#b3 #semanaviva #investimentos #{series.leader.ticker} #bolsabrasileira`
-    : `🥶 Começar segunda olhando pro estrago: {series.leader.ticker} afundou {series.leader.change} na semana.
+#b3 #investimentos #acoes #{series.leader.ticker} #bolsabrasileira`
+    : `📉 {series.leader.ticker} foi a ação que mais caiu na B3 essa semana: {series.leader.change}.
 
-Os piores da B3 correndo em base 100:
+As maiores quedas da semana comparadas nos últimos anos:
 {series.list}
 
-Comprou na queda ou fugiu a tempo? Manda a decisão 👇
+Comprou na queda ou fugiu a tempo? Comenta aí 👇
 
-📉 redentia.com.br · Histórico completo
+📊 redentia.com.br · Histórico completo
 
-#b3 #crash #investimentos #{series.leader.ticker} #bolsabrasileira`,
+#b3 #investimentos #acoes #{series.leader.ticker} #bolsabrasileira`,
   defaultSchedule: side === 'best'
     ? { cron: '0 21 * * 5', humanized: 'Toda sexta às 18:00 BRT' }
     : { cron: '0 10 * * 1', humanized: 'Toda segunda às 07:00 BRT' },
