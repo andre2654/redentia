@@ -160,6 +160,29 @@ function resetControls() {
 }
 
 // --- Page head ---
+// Tint the frame green (best) or red (worst) so the ambient glow + the
+// headline `em` match what the race is about. Falls back to green (neutral
+// positive) when the caller isn't using an auto preset.
+const themeClass = computed<'positive' | 'negative'>(() => {
+  if (autoMovers.value?.side === 'worst') return 'negative'
+  return 'positive'
+})
+
+// Same company-name sanitizer the ranking creative uses — trims B3 padding,
+// drops the listing segment/share-class suffix, and title-cases so the
+// card reads like a brand name instead of raw DB string.
+function cleanLeaderName(raw: string | null | undefined): string {
+  if (!raw) return ''
+  const collapsed = raw.replace(/\s+/g, ' ').trim()
+  const noSegment = collapsed.replace(/\s+(NM2?|N1|N2|MA|MB|DR3|M[AB])$/i, '')
+  const noClass = noSegment.replace(/\s+(ON|PN[AB]?|UNT)$/i, '')
+  const lower = noClass.toLowerCase()
+  return lower
+    .split(' ')
+    .map((w) => (w.length <= 2 ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1)))
+    .join(' ')
+}
+
 // Dynamic title so automations using ?auto=worst-week-2 get the right
 // caption overlay ("Maiores baixas da semana · últimos 10 anos") instead
 // of the generic "Growth Race", matching the Blade's behaviour before
@@ -169,13 +192,15 @@ const titleOverlay = computed(() => {
   if (autoMovers.value?.side === 'worst') return `Maiores baixas da semana · últimos ${years.value} anos`
   return tickerList.value.join(' · ')
 })
-// Split the title so the tail gets rendered in amber italic (the Redentia
-// signature). Prefer splitting at " · "; fall back to the last word.
+// Split the title so the tail gets rendered in green/red italic as the
+// second line. Prefer splitting at " · "; fall back to the last word.
+// The tail omits the leading "· " — we put head and tail on two lines
+// with <br>, so a bullet separator would feel stray.
 const titleParts = computed(() => {
   const t = titleOverlay.value
   if (t.includes(' · ')) {
     const [head, ...rest] = t.split(' · ')
-    return { head, tail: '· ' + rest.join(' · ') }
+    return { head, tail: rest.join(' · ') }
   }
   const words = t.split(' ')
   const tail = words.pop() ?? ''
@@ -508,12 +533,11 @@ onMounted(() => {
 onBeforeUnmount(() => stopAnimation())
 
 // --- Chart geometry ---
-// SVG viewBox is 1000x1000 (inner area 0-1000). Reserve padding:
-//   left: 90 (y-axis labels)
-//   right: 90 (logo overflow)
-//   top: 50
-//   bottom: 90 (x-axis dates)
-const CHART = { left: 90, right: 910, top: 60, bottom: 740, width: 820, height: 680 }
+// viewBox matches the chart-wrap container 1-to-1 (1080×740) so there
+// are no empty side margins. CHART.left/right are aligned with the
+// status bar's 48px padding — same x position where the "B3 · CORRIDA"
+// label begins and where "REDENT.IA" ends on the top chrome.
+const CHART = { left: 48, right: 1032, top: 40, bottom: 680, width: 984, height: 640 }
 
 function scaleX(idx: number, total: number): number {
   if (total <= 1) return CHART.left
@@ -540,6 +564,7 @@ interface RenderedLine {
   logo: string | null
   color: string
   path: string
+  areaPath: string
   tipX: number
   tipY: number
   tipValue: number
@@ -555,26 +580,37 @@ const renderedLines = computed<RenderedLine[]>(() => {
   return series.map((s) => {
     const sliced = s.points.slice(0, idx + 1)
     if (sliced.length === 0) {
-      return { ticker: s.ticker, name: s.name, logo: s.logo, color: s.color, path: '', tipX: CHART.left, tipY: CHART.top, tipValue: 100, lastDate: '' }
+      return { ticker: s.ticker, name: s.name, logo: s.logo, color: s.color, path: '', areaPath: '', tipX: CHART.left, tipY: CHART.top, tipValue: 100, lastDate: '' }
     }
     const commands: string[] = []
+    let firstX = CHART.left
+    let lastX = CHART.left
     sliced.forEach((p, i) => {
       // Map local index i to global index (alignedSeries may have
       // shorter series than tp, so clamp)
       const globalIdx = Math.min(i, tp - 1)
       const x = scaleX(globalIdx, tp)
       const y = scaleY(p.value)
+      if (i === 0) firstX = x
+      lastX = x
       commands.push(i === 0 ? `M ${x.toFixed(1)} ${y.toFixed(1)}` : `L ${x.toFixed(1)} ${y.toFixed(1)}`)
     })
     const tail = sliced[sliced.length - 1]
     const tipX = scaleX(Math.min(sliced.length - 1, tp - 1), tp)
     const tipY = scaleY(tail.value)
+    // Area path: same line but closed back to the chart bottom, used for
+    // the colored gradient fill beneath each series.
+    const chartBottom = CHART.top + CHART.height
+    const areaPath = commands.join(' ')
+      + ` L ${lastX.toFixed(1)} ${chartBottom}`
+      + ` L ${firstX.toFixed(1)} ${chartBottom} Z`
     return {
       ticker: s.ticker,
       name: s.name,
       logo: s.logo,
       color: s.color,
       path: commands.join(' '),
+      areaPath,
       tipX,
       tipY,
       tipValue: tail.value,
@@ -606,6 +642,42 @@ function formatDate(iso: string): string {
     return iso
   }
 }
+
+// Year markers: linhas verticais no primeiro ponto de cada ano dentro
+// do range animado. O ano "atual" (onde a animação chegou no momento
+// do render) é flagado com `active` pra ganhar destaque amber.
+const yearMarkers = computed(() => {
+  const s = alignedSeries.value[0]
+  const total = totalPoints.value
+  if (!s || s.points.length === 0 || total === 0) return []
+  const markers: { x: number; label: string; globalIdx: number; active: boolean }[] = []
+  let lastYear = ''
+  s.points.forEach((p, i) => {
+    const year = p.date.slice(0, 4)
+    if (year !== lastYear) {
+      lastYear = year
+      // Global index (capped to total - 1) → converte pra X coordinate
+      // usando a mesma escala das séries.
+      const globalIdx = Math.min(i, total - 1)
+      markers.push({
+        x: scaleX(globalIdx, total),
+        label: year,
+        globalIdx,
+        active: false,
+      })
+    }
+  })
+  // O ano "ativo" é o maior cujo globalIdx <= renderIdx atual. Setar
+  // `active: true` só nele pra ganhar destaque amber.
+  const cur = renderIdx.value
+  let activeIdx = -1
+  for (let i = 0; i < markers.length; i++) {
+    if (markers[i].globalIdx <= cur) activeIdx = i
+    else break
+  }
+  if (activeIdx >= 0) markers[activeIdx].active = true
+  return markers
+})
 
 function formatPercent(value: number): string {
   const pct = value - 100
@@ -641,102 +713,133 @@ function replay() {
       <UIcon name="i-lucide-rotate-cw" class="size-3.5" />
     </button>
   </template>
-  <div class="frame">
+  <div class="frame" :class="themeClass">
     <div class="card">
-      <!-- Status bar (unified with ranking/treemap) -->
+      <!-- Status bar (mesma forma do ranking). -->
       <div class="statusbar">
         <span class="sb-live">
-          <span class="sb-live-dot"></span>
-          <span>LIVE</span>
+          <span class="sb-dot"></span>
+          <span>B3 · CORRIDA · {{ years }} ANOS</span>
         </span>
-        <span class="sb-sep">·</span>
-        <span class="sb-brand">REDENT.IA</span>
-        <span class="sb-sep">·</span>
-        <span>GROWTH RACE · B3</span>
         <div class="sb-right">
-          <span>{{ years }} ANOS</span>
-          <span class="sb-sep">·</span>
-          <span class="sb-strong">{{ new Date().toLocaleDateString('pt-BR') }}</span>
+          <span class="sb-brand">REDENT<span class="sb-brand-accent">.IA</span></span>
         </div>
       </div>
 
-      <!-- Headline: tag + serif italic + subtitle mono (matches Blade). -->
-      <div class="headline">
-        <div class="tag">
-          <span class="tagdot"></span>
-          [CORRIDA DE VALORIZAÇÃO]
-        </div>
-        <h1 class="title-line">
-          <span class="title-text">{{ titleParts.head }} <em>{{ titleParts.tail }}</em></span>
+      <!-- Hero: tickers separados por "x" (italic accent) + data. -->
+      <div class="hero">
+        <h1 class="hero-title">
+          <template v-for="(t, i) in tickerList" :key="t">
+            <em v-if="i > 0" class="sep">x</em>
+            <span class="tk">{{ t }}</span>
+          </template>
         </h1>
-        <div class="subtitle-line">
-          <span class="subtitle">R$ 100 investidos em cada</span>
-          <span class="dot">·</span>
-          <span class="subtitle">{{ reinvest ? 'Com dividendos reinvestidos' : 'Só preço' }}</span>
-          <span class="dot">·</span>
-          <span class="date-display">{{ formatDate(currentDate) }}</span>
-        </div>
+        <div class="hero-sub">{{ formatDate(currentDate) }}</div>
       </div>
 
       <!-- Chart -->
       <div class="chart-wrap">
-        <svg viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid meet" class="chart-svg">
-          <!-- Horizontal grid lines -->
-          <g class="grid">
-            <line
-              v-for="(gl, idx) in yAxisLines"
-              :key="`gl-${idx}`"
-              :x1="CHART.left"
-              :x2="CHART.left + CHART.width"
-              :y1="gl.y"
-              :y2="gl.y"
-              :stroke="REDENTIA_COLORS.border"
-              stroke-width="1"
-              stroke-dasharray="2 4"
-              opacity="0.4"
-            />
-            <text
-              v-for="(gl, idx) in yAxisLines"
-              :key="`gl-label-${idx}`"
-              :x="CHART.left - 10"
-              :y="gl.y + 4"
-              :fill="REDENTIA_COLORS.textMuted"
-              text-anchor="end"
-              font-size="14"
-              font-family="'JetBrains Mono', monospace"
+        <svg viewBox="0 0 1080 740" preserveAspectRatio="xMidYMid meet" class="chart-svg">
+          <defs>
+            <!-- Sem feGaussianBlur aqui — filter SVG é lento em
+                 páginas animadas. O efeito "neon" vem do CSS
+                 drop-shadow aplicado via style em cada <path>. -->
+            <!-- Area fill: gradient que desce pra transparente, discreto. -->
+            <linearGradient
+              v-for="line in renderedLines"
+              :key="`grad-${line.ticker}`"
+              :id="`grad-${line.ticker}`"
+              x1="0" y1="0" x2="0" y2="1"
             >
-              {{ gl.label }}
-            </text>
+              <stop offset="0%" :stop-color="line.color" stop-opacity="0.28" />
+              <stop offset="60%" :stop-color="line.color" stop-opacity="0.06" />
+              <stop offset="100%" :stop-color="line.color" stop-opacity="0" />
+            </linearGradient>
+            <!-- Gradient sutil pra labels do eixo horizontal. -->
+            <linearGradient id="x-fade" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="rgba(255,255,255,0.4)" />
+              <stop offset="100%" stop-color="rgba(255,255,255,0.4)" />
+            </linearGradient>
+          </defs>
+
+          <!-- Year markers — linhas verticais discretas pra cada ano.
+               Label sempre embaixo; o ano "ativo" (em que a animação
+               está agora) ganha uma segunda linha animada crescendo
+               do bottom até o topo do chart, com glow amber. -->
+          <g>
+            <g v-for="m in yearMarkers" :key="`year-${m.label}`">
+              <!-- Pill de background suave atrás do label do ano ativo,
+                   pra dar destaque sem chamar atenção demais. -->
+              <rect
+                v-if="m.active"
+                :x="m.x - 42"
+                :y="CHART.top + CHART.height + 14"
+                width="84"
+                height="36"
+                rx="18"
+                fill="rgba(255,255,255,0.08)"
+                stroke="rgba(255,255,255,0.18)"
+                stroke-width="1"
+              />
+              <!-- Label do ano embaixo do chart. -->
+              <text
+                :x="m.x"
+                :y="CHART.top + CHART.height + 38"
+                :fill="m.active ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.42)'"
+                text-anchor="middle"
+                font-size="19"
+                font-family="'JetBrains Mono', monospace"
+                :font-weight="m.active ? 700 : 500"
+                letter-spacing="0.12em"
+              >
+                {{ m.label }}
+              </text>
+            </g>
           </g>
 
-          <!-- Baseline at 100 -->
-          <line
-            :x1="CHART.left"
-            :x2="CHART.left + CHART.width"
-            :y1="scaleY(100)"
-            :y2="scaleY(100)"
-            :stroke="REDENTIA_COLORS.text"
-            stroke-width="1.5"
-            opacity="0.3"
-          />
-
-          <!-- Lines -->
-          <g
-            v-for="line in renderedLines"
-            :key="`line-${line.ticker}`"
-          >
+          <!-- Area fills (gradient). Empilhadas com mix-blend-mode
+               multiplicado pra que sobreposições não fiquem chapadas. -->
+          <g style="mix-blend-mode: screen;">
             <path
+              v-for="line in renderedLines"
+              :key="`area-${line.ticker}`"
+              :d="line.areaPath"
+              :fill="`url(#grad-${line.ticker})`"
+              stroke="none"
+            />
+          </g>
+
+          <!-- Linhas — stroke 4.5px com drop-shadow CSS (hardware-
+               accelerated) em vez de feGaussianBlur SVG (lento). -->
+          <g>
+            <path
+              v-for="line in renderedLines"
+              :key="`line-${line.ticker}`"
               :d="line.path"
               fill="none"
               :stroke="line.color"
-              stroke-width="5"
+              stroke-width="4.5"
               stroke-linecap="round"
               stroke-linejoin="round"
-              :style="{ filter: `drop-shadow(0 2px 8px ${line.color}80)` }"
+              :style="{ filter: `drop-shadow(0 0 4px ${line.color})` }"
             />
           </g>
 
-          <!-- Logo heads (rendered on top of all lines) -->
+          <!-- Marcador de início (círculo colorido sobre a baseline,
+               posição do primeiro frame de cada série). -->
+          <g>
+            <circle
+              v-for="line in renderedLines"
+              :key="`start-${line.ticker}`"
+              :cx="CHART.left"
+              :cy="scaleY(100)"
+              r="5"
+              :fill="line.color"
+              opacity="0.9"
+            />
+          </g>
+
+          <!-- Logo head na ponta da linha (uma vez por série). -->
           <g v-for="line in renderedLines" :key="`head-${line.ticker}`">
             <circle
               :cx="line.tipX"
@@ -744,7 +847,8 @@ function replay() {
               r="28"
               :fill="REDENTIA_COLORS.background"
               :stroke="line.color"
-              stroke-width="4"
+              stroke-width="3"
+              style="filter: drop-shadow(0 0 8px currentColor);"
             />
             <image
               v-if="line.logo"
@@ -769,28 +873,37 @@ function replay() {
               {{ line.ticker.slice(0, 4) }}
             </text>
           </g>
+
         </svg>
       </div>
 
-      <!-- Leaderboard -->
+      <!-- Leaderboard — chips embaixo do chart, com logo + ticker + %. -->
       <div class="leaderboard">
         <div
           v-for="(line, idx) in leaderboard"
           :key="`leader-${line.ticker}`"
-          class="leader-row"
+          class="lb-card"
+          :class="[line.tipValue >= 100 ? 'up' : 'down', idx === 0 ? 'lb-card-hero' : '']"
         >
-          <span class="leader-rank">{{ idx + 1 }}º</span>
-          <span class="leader-dot" :style="{ backgroundColor: line.color }" />
-          <span class="leader-ticker">{{ line.ticker }}</span>
-          <span class="leader-sep">·</span>
-          <span class="leader-name">{{ line.name }}</span>
-          <span class="leader-spacer" />
-          <span
-            class="leader-value"
-            :style="{ color: line.tipValue >= 100 ? REDENTIA_COLORS.positive : REDENTIA_COLORS.negative }"
-          >
-            {{ formatPercent(line.tipValue) }}
-          </span>
+          <div class="lb-logo-wrap" :style="{ borderColor: line.color }">
+            <img
+              v-if="line.logo"
+              class="lb-logo"
+              :src="line.logo"
+              :alt="line.ticker"
+            />
+            <span
+              v-else
+              class="lb-logo-fallback"
+              :style="{ backgroundColor: line.color, color: '#0A0B0E' }"
+            >{{ line.ticker.slice(0, 3) }}</span>
+          </div>
+          <span class="lb-ticker">{{ line.ticker }}</span>
+          <div class="lb-value">
+            <span class="lb-sign">{{ line.tipValue >= 100 ? '+' : '−' }}</span>
+            <span class="lb-num">{{ Math.abs(line.tipValue - 100).toFixed(2) }}</span>
+            <span class="lb-unit">%</span>
+          </div>
         </div>
       </div>
 
@@ -801,7 +914,7 @@ function replay() {
         <span>DADOS B3</span>
         <span class="fsep">·</span>
         <span>{{ new Date().toLocaleDateString('pt-BR').toUpperCase() }}</span>
-        <span class="fright">redentia.com.br/creative</span>
+        <span class="fright">redentia.com.br</span>
       </div>
     </div>
   </div>
@@ -813,12 +926,14 @@ function replay() {
    dev server and break navigation. The .frame wrapper below already
    centers the card with its own background and font context. */
 
+/* Frame anchored ao top-left, sem min-height nem flex-center. Quando a
+   page é servida dentro do preview wrapper (MoleculesCreativePreviewControls),
+   o card precisa começar em y=0 pro scale 0.55 caber no canvas-wrap
+   de 594px de altura. Centralização no viewport já é feita pelo preview. */
 .frame {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 20px;
+  width: 1080px;
+  height: 1080px;
+  position: relative;
 }
 
 .card {
@@ -827,211 +942,189 @@ function replay() {
   height: 1080px;
   max-width: 100%;
   aspect-ratio: 1 / 1;
-  background: v-bind(cBg);
-  color: v-bind(cText);
+  background: #0A0B0E;
+  color: #FFFFFF;
   border-radius: 0;
   overflow: hidden;
-  font-family: v-bind(fBody);
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
-/* Unified ambient layers — same recipe as ranking/treemap Vue. */
+/* Ambient — grid + side glow + top amber, igual ao ranking. */
 .card::before {
   content: ''; position: absolute; inset: 0;
   background-image:
-    linear-gradient(#E8EAED 1px, transparent 1px),
-    linear-gradient(90deg, #E8EAED 1px, transparent 1px);
-  background-size: 32px 32px;
-  opacity: 0.035; pointer-events: none;
+    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
   z-index: 0;
 }
-.card::after {
+.frame.positive .card::after {
   content: ''; position: absolute; inset: 0;
-  background: radial-gradient(ellipse at 50% -10%, rgba(245,166,35,0.18) 0%, transparent 55%);
+  background:
+    radial-gradient(ellipse at 90% 10%, rgba(245,166,35,0.22) 0%, transparent 55%),
+    radial-gradient(ellipse at 5% 90%, rgba(0,211,149,0.35) 0%, transparent 55%);
+  pointer-events: none;
+  z-index: 0;
+}
+.frame.negative .card::after {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 10% 10%, rgba(245,166,35,0.22) 0%, transparent 55%),
+    radial-gradient(ellipse at 95% 90%, rgba(255,71,71,0.35) 0%, transparent 55%);
   pointer-events: none;
   z-index: 0;
 }
 
-/* Status bar (top strip, Bloomberg-esque) */
+/* Status bar — enxuta pra liberar espaço vertical pro chart. */
 .statusbar {
-  position: absolute; top: 0; left: 0; right: 0; height: 46px;
-  border-bottom: 1px solid v-bind(cBorder);
-  display: flex; align-items: center; gap: 12px;
-  padding: 0 36px;
-  font-family: v-bind(fMono);
-  font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
-  color: v-bind(cTextMuted);
-  background: rgba(10, 11, 14, 0.8);
+  position: absolute; top: 0; left: 0; right: 0; height: 54px;
+  display: flex; align-items: center;
+  padding: 0 48px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 15px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: rgba(255,255,255,0.78);
   z-index: 3;
 }
-.sb-live { display: inline-flex; align-items: center; gap: 6px; color: v-bind(cPrimary); }
-.sb-live-dot { width: 6px; height: 6px; border-radius: 50%; background: v-bind(cPrimary); box-shadow: 0 0 6px v-bind(cPrimary); }
-.sb-brand { color: v-bind(cPrimary); font-weight: 600; letter-spacing: 0.2em; }
-.sb-sep { opacity: 0.4; }
-.sb-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
-.sb-strong { color: v-bind(cText); font-weight: 500; }
+.sb-live { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; }
+.sb-dot { width: 9px; height: 9px; border-radius: 50%; background: #F5A623; box-shadow: 0 0 12px rgba(245,166,35,0.8); }
+.sb-right { margin-left: auto; }
+.sb-brand { color: #FFFFFF; font-weight: 700; letter-spacing: 0.22em; font-size: 17px; }
+.sb-brand-accent { color: #F5A623; }
 
-/* Headline — tag + serif italic + mono subtitle */
-.headline {
-  position: absolute; top: 84px; left: 52px; right: 52px;
+/* Hero: compacto, afastado do status bar pra dar respiro visual. */
+.hero {
+  position: absolute; top: 140px; left: 56px; right: 56px;
+  text-align: center;
   z-index: 2;
 }
-.tag {
-  display: inline-flex; align-items: center; gap: 8px;
-  font-family: v-bind(fMono);
-  font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
-  color: v-bind(cPrimary);
-  margin-bottom: 14px;
+.hero-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 104px; line-height: 0.94; letter-spacing: -0.03em;
+  font-weight: 400; color: #FFFFFF;
+  margin: 0;
+  display: inline-flex; align-items: baseline; gap: 22px; justify-content: center;
 }
-.tagdot { width: 6px; height: 6px; border-radius: 50%; background: v-bind(cPrimary); }
-
-.title-line {
-  font-family: v-bind(fDisplay);
-  font-size: 68px;
-  line-height: 0.96;
-  letter-spacing: -0.02em;
-  font-weight: 400;
-  color: v-bind(cText);
-  max-width: 900px;
-}
-.title-text { color: v-bind(cText); }
-/* The tail part of the title, italic+amber, lives inside title-text via
-   the component's render — the overlay computed returns plain text but
-   the display font+italic rule already applies via `em`. */
-.title-text em { color: v-bind(cPrimary); font-style: italic; }
-
-.subtitle-line {
-  margin-top: 14px;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-  font-family: v-bind(fMono);
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  color: v-bind(cTextMuted);
-}
-
-.date-display {
-  color: v-bind(cPrimary);
-  font-weight: 600;
+.hero-title .tk { font-family: 'Inter', sans-serif; font-weight: 800; font-size: 96px; letter-spacing: -0.02em; }
+.hero-title .sep { font-style: italic; font-weight: 400; }
+.frame.positive .hero-title .sep { color: #00D395; }
+.frame.negative .hero-title .sep { color: #FF4747; }
+.hero-sub {
+  display: block;
+  margin-top: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 22px; font-weight: 300;
+  letter-spacing: 0.28em;
+  color: rgba(255,255,255,0.62);
   font-variant-numeric: tabular-nums;
-  min-width: 110px;
+  text-transform: uppercase;
 }
 
-.dot { opacity: 0.4; }
 
-/* Chart — fills between headline and leaderboard, absolute-positioned. */
+/* Chart area — edge-to-edge, começa logo abaixo do hero + subtítulo. */
 .chart-wrap {
   position: absolute;
-  top: 290px;
-  left: 36px;
-  right: 36px;
-  height: 540px;
+  top: 320px;
+  left: 0;
+  right: 0;
+  bottom: 150px;
   z-index: 1;
   display: flex;
   align-items: stretch;
   justify-content: center;
 }
+.chart-svg { width: 100%; height: 100%; }
 
-.chart-svg {
-  width: 100%;
-  height: 100%;
-}
-
-/* Leaderboard — sits between chart and footer. */
+/* Leaderboard — chips com logo, ticker e valor, posicionados logo acima
+   do footer pra fechar a composição com a legenda identificadora. */
 .leaderboard {
   position: absolute;
-  left: 52px;
-  right: 52px;
-  bottom: 74px;
+  left: 48px;
+  right: 48px;
+  bottom: 72px;
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  flex-direction: row;
+  justify-content: center;
+  gap: 14px;
   z-index: 2;
 }
-
-.leader-row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 10px 16px;
-  background: rgba(20, 22, 28, 0.65);
-  border: 1px solid v-bind(cBorder);
-  border-radius: 2px;
-  font-family: v-bind(fBody);
-}
-
-.leader-rank {
-  font-family: v-bind(fMono);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.15em;
-  color: v-bind(cPrimary);
-  min-width: 28px;
-}
-
-.leader-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.leader-ticker {
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  color: v-bind(cText);
-  min-width: 96px;
-}
-
-.leader-sep {
-  display: none;
-}
-
-.leader-name {
-  font-family: v-bind(fMono);
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: v-bind(cTextMuted);
-  flex: 1 1 auto;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.leader-spacer {
-  display: none;
-}
-
-.leader-value {
-  font-family: v-bind(fMono);
-  font-size: 20px;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-  min-width: 100px;
-  text-align: right;
-}
-
-/* Footer (unified with ranking/treemap) */
-.grfooter {
-  position: absolute; bottom: 0; left: 0; right: 0; height: 44px;
-  border-top: 1px solid v-bind(cBorder);
+.lb-card {
   display: flex; align-items: center;
-  padding: 0 36px;
-  font-family: v-bind(fMono);
-  font-size: 11px;
-  letter-spacing: 0.18em;
+  padding: 10px 22px 10px 10px;
+  gap: 14px;
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.03);
+}
+.lb-card.lb-card-hero,
+.lb-card.down.lb-card-hero { box-shadow: none; background: rgba(255,255,255,0.05); }
+.lb-logo-wrap {
+  flex: 0 0 auto;
+  width: 40px; height: 40px; border-radius: 50%;
+  border: 2px solid;
+  background: rgba(0,0,0,0.55);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.lb-logo {
+  width: 100%; height: 100%; border-radius: 50%;
+  object-fit: cover;
+}
+.lb-logo-fallback {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px; font-weight: 800;
+  letter-spacing: 0.02em;
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+}
+.lb-ticker {
+  font-family: 'Inter', sans-serif;
+  font-size: 24px; font-weight: 800;
+  color: #FFFFFF; letter-spacing: 0.01em; line-height: 1;
+}
+.lb-card-hero .lb-ticker { font-size: 24px; }
+.lb-value {
+  display: flex; align-items: baseline;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  margin-left: 6px;
+}
+.lb-sign {
+  font-family: 'Inter', sans-serif;
+  font-size: 20px; font-weight: 700;
+  margin-right: 2px;
+}
+.lb-num {
+  font-family: 'Inter', sans-serif;
+  font-size: 26px; font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.lb-card-hero .lb-num { font-size: 26px; }
+.lb-unit {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px; font-weight: 700;
+  margin-left: 2px;
+  opacity: 0.7;
+}
+.lb-card.up .lb-value { color: #00D395; }
+.lb-card.down .lb-value { color: #FF4747; }
+
+/* Footer (unified com ranking). */
+.grfooter {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 54px;
+  display: flex; align-items: center;
+  padding: 0 48px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: v-bind(cTextMuted);
-  background: rgba(10, 11, 14, 0.8);
+  color: rgba(255,255,255,0.58);
   z-index: 3;
 }
-.fbrand { color: v-bind(cText); font-weight: 600; letter-spacing: 0.2em; }
-.fbrand .fdot { color: v-bind(cPrimary); }
-.fsep { opacity: 0.4; margin: 0 12px; }
-.fright { margin-left: auto; color: v-bind(cPrimary); }
+.fbrand { color: #FFFFFF; font-weight: 700; letter-spacing: 0.22em; font-size: 16px; }
+.fbrand .fdot { color: #F5A623; }
+.fsep { display: inline-block; width: 12px; height: 1px; background: rgba(255,255,255,0.28); margin: 0 14px; }
+.fright { margin-left: auto; color: #FFFFFF; font-weight: 600; font-size: 15px; }
 
 .replay-btn {
   display: flex;

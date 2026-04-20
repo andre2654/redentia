@@ -254,6 +254,46 @@ function formatPercent(changePercent: number | null): string {
   const sep = sign ? ' ' : ''
   return `${sign}${sep}${changePercent.toFixed(2)} %`
 }
+
+// Raw company names from the DB arrive padded with spaces and share-class
+// suffixes (e.g. "ONCOCLINICASON      NM", "PETROBRAS PN      N2"). Collapse
+// whitespace, drop the trailing listing-segment token, and Title Case the
+// result so the card subtitle reads like a normal brand name.
+function cleanCompanyName(raw: string | null | undefined): string {
+  if (!raw) return ''
+  const collapsed = raw.replace(/\s+/g, ' ').trim()
+  // Drop the short segment suffix (NM, N1, N2, MA, MB, NM2, etc) — it's a
+  // B3 listing tier, not part of the company name.
+  const noSegment = collapsed.replace(/\s+(NM2?|N1|N2|MA|MB|DR3|M[AB])$/i, '')
+  // Drop trailing share class (ON, PN, PNA, PNB, UNT) — we already show
+  // the ticker next to it, so repeating it feels redundant.
+  const noShareClass = noSegment.replace(/\s+(ON|PN[AB]?|UNT)$/i, '')
+  const lower = noShareClass.toLowerCase()
+  return lower
+    .split(' ')
+    .map((w) => (w.length <= 2 ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1)))
+    .join(' ')
+}
+
+// Stats shown above the leaderboard — computed from the same series
+// so the caption never drifts from what the rows actually display.
+const topPct = computed(() => {
+  const list = stocks.value || []
+  if (!list.length) return '—'
+  const v = list[0]?.change_percent
+  if (typeof v !== 'number') return '—'
+  const sign = v >= 0 ? '+' : '−'
+  return `${sign}${Math.abs(v).toFixed(2)}%`
+})
+const avgPct = computed(() => {
+  const nums = (stocks.value || [])
+    .map((s) => s.change_percent)
+    .filter((n): n is number => typeof n === 'number')
+  if (!nums.length) return '—'
+  const avg = nums.reduce((a, b) => a + b, 0) / nums.length
+  const sign = avg >= 0 ? '+' : '−'
+  return `${sign}${Math.abs(avg).toFixed(2)}%`
+})
 </script>
 
 <template>
@@ -273,221 +313,288 @@ function formatPercent(changePercent: number | null): string {
     :class="theme"
     :data-render-ready="!pending && !error && stocks && stocks.length > 0 ? 'true' : 'false'"
   >
-    <!-- Status bar -->
+    <!-- Status bar (compact, high-contrast text). -->
     <div class="statusbar">
-      <span class="sbdot"></span>
-      <span class="sbbrand">REDENT.IA</span>
-      <span class="sbsep">·</span>
-      <span>B3 · {{ theme === 'positive' ? 'TOP MOVERS' : 'BOTTOM MOVERS' }}</span>
-      <div class="sbright">
-        <span>ATUALIZADO</span>
-        <span class="sbsep">·</span>
-        <span class="sbstrong">{{ label }}</span>
+      <span class="sb-live">
+        <span class="sb-dot"></span>
+        <span>B3 · FECHAMENTO</span>
+      </span>
+      <div class="sb-right">
+        <span class="sb-brand">REDENT<span class="sb-brand-accent">.IA</span></span>
       </div>
     </div>
 
-    <!-- Headline -->
-    <div class="headline">
-      <div class="tag" :style="{ color: accentColor }">
-        <span class="tagdot" :style="{ background: accentColor }"></span>
-        [{{ theme === 'positive' ? 'ALTAS' : 'BAIXAS' }} · FECHAMENTO]
-      </div>
-      <h1 class="serif-display">Maiores <em>{{ theme === 'positive' ? 'altas' : 'baixas' }}</em><br>do dia.</h1>
-      <div class="date-line">{{ label }}</div>
+    <!-- Hero: headline centralizado, a linha de baixo é a data do pregão. -->
+    <div class="hero">
+      <h1 class="hero-title">
+        Maiores <em>{{ theme === 'positive' ? 'altas' : 'baixas' }}</em>
+        <span class="hero-title-sub">{{ label }}</span>
+      </h1>
     </div>
 
-    <!-- Table -->
-    <div class="table-wrap">
-      <div class="table-header">
-        <span>Ativo</span>
-        <span>Rentabilidade %</span>
-      </div>
+    <!-- Leaderboard — cards com fundo tingido pela cor do tema. -->
+    <div class="board">
+      <div v-if="pending" class="empty">Carregando...</div>
+      <div v-else-if="error" class="empty">Erro ao carregar dados.</div>
 
-      <div class="table-body">
-        <div v-if="pending" class="empty">Carregando...</div>
-        <div v-else-if="error" class="empty">Erro ao carregar dados.</div>
-
-        <template v-else>
-          <div
-            v-for="(stock, idx) in stocks"
-            :key="stock.ticker"
-            class="row"
-            :class="colorFor(stock.change_percent) === positiveColor ? 'up' : 'down'"
-          >
-            <span class="rank">{{ String(idx + 1).padStart(2, '0') }}</span>
+      <template v-else>
+        <div
+          v-for="(stock, idx) in stocks"
+          :key="stock.ticker"
+          class="card"
+          :class="[colorFor(stock.change_percent) === positiveColor ? 'up' : 'down', idx === 0 ? 'card-hero' : '']"
+        >
+          <span class="card-rank">{{ String(idx + 1).padStart(2, '0') }}</span>
+          <div class="card-logo-wrap">
             <img
-              class="icon"
+              class="card-logo"
               :src="stock.logo || '/favicon.png'"
               :alt="stock.ticker"
               loading="eager"
             />
-            <span class="sym">{{ stock.ticker }}</span>
-            <span class="pct">{{ formatPercent(stock.change_percent) }}</span>
           </div>
-        </template>
-      </div>
+          <div class="card-ident">
+            <span class="card-sym">{{ stock.ticker }}</span>
+            <span v-if="stock.name" class="card-name">{{ cleanCompanyName(stock.name) }}</span>
+          </div>
+          <div class="card-pct">
+            <span class="card-pct-sign">{{ stock.change_percent >= 0 ? '+' : '−' }}</span>
+            <span class="card-pct-num">{{ Math.abs(stock.change_percent || 0).toFixed(2) }}</span>
+            <span class="card-pct-unit">%</span>
+          </div>
+        </div>
+      </template>
     </div>
 
-    <!-- Footer -->
+    <!-- Footer. -->
     <div class="rkfooter">
-      <span class="fbrand">REDENT<span class="fdot">.IA</span></span>
-      <span class="fsep">·</span>
-      <span>DADOS B3</span>
-      <span class="fsep">·</span>
-      <span>{{ label.toUpperCase() }}</span>
-      <span class="fright">redentia.com.br</span>
+      <span class="ff-brand">REDENT<span class="ff-dot">.IA</span></span>
+      <span class="ff-sep"></span>
+      <span>Dados B3 em tempo real</span>
+      <span class="ff-right">redentia.com.br</span>
     </div>
   </div>
   </MoleculesCreativePreviewControls>
 </template>
 
 <style scoped>
-/* See asset-spotlight.vue comment, :global() rules leak. */
+/* --- Redentia ranking creative (modern, high-contrast redesign) ---
+   Large type, bold numbers, tinted row cards. Meant to grab attention
+   on a social feed at thumbnail size.
+*/
 
 * { box-sizing: border-box; }
 
 .frame {
   width: 1080px; height: 1080px;
   position: relative; overflow: hidden;
-  background: #0A0B0E; color: #E8EAED;
+  background: #0A0B0E; color: #FFFFFF;
   font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
-/* Same ambient chrome as other creatives (grid + side glow + top amber glow) */
+
+/* Ambient — strong side tint (green/red) + top amber glow. */
 .frame::before {
   content: ''; position: absolute; inset: 0;
   background-image:
-    linear-gradient(#E8EAED 1px, transparent 1px),
-    linear-gradient(90deg, #E8EAED 1px, transparent 1px);
-  background-size: 32px 32px;
-  opacity: 0.035; pointer-events: none;
+    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: 1; pointer-events: none;
+  z-index: 0;
 }
 .frame.positive::after {
   content: ''; position: absolute; inset: 0;
   background:
-    radial-gradient(ellipse at 50% -10%, rgba(245,166,35,0.18) 0%, transparent 55%),
-    radial-gradient(ellipse at 15% 90%, rgba(0, 211, 149, 0.22) 0%, transparent 55%);
+    radial-gradient(ellipse at 90% 10%, rgba(245,166,35,0.22) 0%, transparent 55%),
+    radial-gradient(ellipse at 5% 90%, rgba(0,211,149,0.35) 0%, transparent 55%);
   pointer-events: none;
+  z-index: 0;
 }
 .frame.negative::after {
   content: ''; position: absolute; inset: 0;
   background:
-    radial-gradient(ellipse at 50% -10%, rgba(245,166,35,0.18) 0%, transparent 55%),
-    radial-gradient(ellipse at 85% 90%, rgba(255, 71, 71, 0.22) 0%, transparent 55%);
+    radial-gradient(ellipse at 10% 10%, rgba(245,166,35,0.22) 0%, transparent 55%),
+    radial-gradient(ellipse at 95% 90%, rgba(255,71,71,0.35) 0%, transparent 55%);
   pointer-events: none;
+  z-index: 0;
 }
 
-/* Status bar */
+/* Status bar — compact, high-contrast (white brand, muted right side). */
 .statusbar {
-  position: absolute; top: 0; left: 0; right: 0; height: 46px;
-  border-bottom: 1px solid #2A2E39;
-  display: flex; align-items: center; gap: 12px;
-  padding: 0 36px;
+  position: absolute; top: 0; left: 0; right: 0; height: 64px;
+  display: flex; align-items: center;
+  padding: 0 48px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
-  color: #8B92A7;
-  background: rgba(10, 11, 14, 0.8);
+  font-size: 17px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: rgba(255,255,255,0.82);
+  background: transparent;
   z-index: 3;
 }
-.sbdot { width: 6px; height: 6px; border-radius: 50%; background: #F5A623; box-shadow: 0 0 8px rgba(245,166,35,0.6); }
-.sbbrand { color: #F5A623; font-weight: 600; letter-spacing: 0.2em; }
-.sbsep { opacity: 0.4; }
-.sbright { margin-left: auto; display: flex; align-items: center; gap: 12px; }
-.sbstrong { color: #E8EAED; font-weight: 500; }
+.sb-live { display: inline-flex; align-items: center; gap: 12px; font-weight: 600; }
+.sb-dot { width: 10px; height: 10px; border-radius: 50%; background: #F5A623; box-shadow: 0 0 14px rgba(245,166,35,0.8); }
+.sb-right { margin-left: auto; }
+.sb-brand { color: #FFFFFF; font-weight: 700; letter-spacing: 0.2em; font-size: 19px; }
+.sb-brand-accent { color: #F5A623; }
 
-/* Headline */
-.headline {
-  position: absolute; top: 108px; left: 72px; right: 72px;
+/* Hero area — headline centered, date as the subtitle line. */
+.hero {
+  position: absolute; top: 84px; left: 56px; right: 56px;
   text-align: center;
+  z-index: 2;
 }
-.tag {
-  display: inline-flex; align-items: center; gap: 8px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
-  margin-bottom: 14px;
-}
-.tagdot { width: 6px; height: 6px; border-radius: 50%; }
-.serif-display {
+.hero-title {
   font-family: 'Instrument Serif', serif;
-  font-size: 92px; line-height: 0.95; letter-spacing: -0.02em;
-  font-weight: 400; color: #E8EAED;
+  font-size: 128px; line-height: 0.92; letter-spacing: -0.03em;
+  font-weight: 400; color: #FFFFFF;
+  margin: 0;
 }
-.serif-display em { color: #F5A623; font-style: italic; }
-.date-line {
-  margin-top: 10px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 14px; letter-spacing: 0.22em; text-transform: uppercase;
-  color: #8B92A7;
-}
-
-/* Table */
-.table-wrap {
-  position: absolute; top: 360px; left: 96px; right: 96px; bottom: 110px;
-}
-.table-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 24px 10px;
-  border-bottom: 1px solid #2A2E39;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase;
-  color: #8B92A7;
-}
-.table-body { display: flex; flex-direction: column; }
-.row {
-  display: flex; align-items: center;
-  padding: 18px 24px;
-  border-bottom: 1px solid rgba(42, 46, 57, 0.6);
-  gap: 20px;
-}
-.row:last-child { border-bottom: none; }
-.row .rank {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 13px; font-weight: 500;
-  color: #F5A623; letter-spacing: 0.15em;
-  min-width: 28px;
-}
-.row .icon {
-  width: 56px; height: 56px; border-radius: 50%;
-  object-fit: cover;
-  background: rgba(232, 234, 237, 0.05);
-  border: 1px solid #2A2E39;
-}
-.row .sym {
-  font-family: 'Inter', sans-serif;
-  font-size: 32px; font-weight: 700; letter-spacing: 0.02em;
-  color: #E8EAED;
-  flex: 1 1 auto;
-}
-.row .pct {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 30px; font-weight: 600;
+.hero-title em { font-style: italic; }
+/* Tail word is tinted by the ranking side — green for top movers,
+   red for bottom movers. Keeps the accent coherent with the card tints
+   below. */
+.frame.positive .hero-title em { color: #00D395; }
+.frame.negative .hero-title em { color: #FF4747; }
+.hero-title-sub {
+  display: block;
+  margin-top: 28px;
+  /* Inter Light tabular: modern fintech caption, loud letter-spacing
+     so the date breathes and the digits align cleanly. */
+  font-family: 'Inter', system-ui, sans-serif;
+  font-style: normal;
+  font-size: 38px; font-weight: 300;
+  letter-spacing: 0.22em;
+  text-transform: none;
+  color: rgba(255,255,255,0.72);
   font-variant-numeric: tabular-nums;
-  text-align: right;
-  min-width: 180px;
-}
-.row.up .pct { color: #00D395; }
-.row.down .pct { color: #FF4747; }
-.empty {
-  text-align: center; padding: 40px 0;
-  font-size: 20px; color: #8B92A7;
-  font-family: 'JetBrains Mono', monospace;
-  letter-spacing: 0.15em; text-transform: uppercase;
 }
 
-/* Footer */
-.rkfooter {
-  position: absolute; bottom: 0; left: 0; right: 0; height: 44px;
-  border-top: 1px solid #2A2E39;
-  display: flex; align-items: center;
-  padding: 0 36px;
+/* Leaderboard — 6 rows, each a card with tinted bg and giant % on the right.
+   Board starts right after the hero; bottom leaves room for the taller
+   footer so the last row's shadow doesn't crowd the brand line. */
+.board {
+  position: absolute; top: 320px; left: 48px; right: 48px; bottom: 80px;
+  display: flex; flex-direction: column;
+  gap: 12px;
+  z-index: 2;
+}
+.empty {
+  flex: 1 1 auto;
+  display: flex; align-items: center; justify-content: center;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
-  color: #8B92A7;
-  background: rgba(10, 11, 14, 0.8);
+  font-size: 18px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+}
+.card {
+  flex: 1 1 0; min-height: 0;
+  display: flex; align-items: center;
+  padding: 22px 32px 22px 28px;
+  gap: 28px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  background: linear-gradient(90deg, rgba(0,211,149,0.10), rgba(0,211,149,0.02));
+  position: relative;
+  overflow: hidden;
+}
+.card.down {
+  background: linear-gradient(90deg, rgba(255,71,71,0.10), rgba(255,71,71,0.02));
+}
+.card-hero {
+  border-color: rgba(0,211,149,0.45);
+  background: linear-gradient(90deg, rgba(0,211,149,0.22), rgba(0,211,149,0.04));
+  box-shadow: 0 20px 50px -30px rgba(0,211,149,0.6);
+}
+.card.down.card-hero {
+  border-color: rgba(255,71,71,0.45);
+  background: linear-gradient(90deg, rgba(255,71,71,0.22), rgba(255,71,71,0.04));
+  box-shadow: 0 20px 50px -30px rgba(255,71,71,0.6);
+}
+
+.card-rank {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 46px; font-weight: 700;
+  color: rgba(255,255,255,0.35);
+  min-width: 76px;
+  text-align: right;
+  letter-spacing: 0.05em;
+  font-variant-numeric: tabular-nums;
+}
+.card-hero .card-rank { color: #F5A623; }
+.card-logo-wrap {
+  flex: 0 0 auto;
+  width: 96px; height: 96px; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.14);
+  padding: 6px;
+  background: rgba(0,0,0,0.55);
+  display: flex; align-items: center; justify-content: center;
+}
+.card-logo {
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.card-ident {
+  flex: 1 1 auto; min-width: 0;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.card-sym {
+  font-family: 'Inter', sans-serif;
+  font-size: 50px; font-weight: 800;
+  color: #FFFFFF;
+  letter-spacing: 0.01em;
+  line-height: 1;
+}
+.card-hero .card-sym { font-size: 58px; }
+.card-name {
+  font-family: 'Inter', sans-serif;
+  font-size: 22px; font-weight: 500;
+  color: rgba(255,255,255,0.7);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 400px;
+  text-transform: capitalize;
+}
+
+.card-pct {
+  flex: 0 0 auto;
+  display: flex; align-items: baseline;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.card-pct-sign {
+  font-family: 'Inter', sans-serif;
+  font-size: 50px; font-weight: 700;
+  margin-right: 4px;
+}
+.card-pct-num {
+  font-family: 'Inter', sans-serif;
+  font-size: 72px; font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.card-hero .card-pct-num { font-size: 82px; }
+.card-pct-unit {
+  font-family: 'Inter', sans-serif;
+  font-size: 32px; font-weight: 700;
+  margin-left: 4px;
+  opacity: 0.7;
+}
+.card.up .card-pct { color: #00D395; }
+.card.down .card-pct { color: #FF4747; }
+
+/* Footer — mono, high-contrast white brand. */
+.rkfooter {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 64px;
+  display: flex; align-items: center;
+  padding: 0 48px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 16px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: rgba(255,255,255,0.62);
   z-index: 3;
 }
-.fbrand { color: #E8EAED; font-weight: 600; letter-spacing: 0.2em; }
-.fbrand .fdot { color: #F5A623; }
-.fsep { opacity: 0.4; margin: 0 12px; }
-.fright { margin-left: auto; color: #F5A623; }
+.ff-brand { color: #FFFFFF; font-weight: 700; letter-spacing: 0.2em; font-size: 18px; }
+.ff-brand .ff-dot { color: #F5A623; }
+.ff-sep { display: inline-block; width: 14px; height: 1px; background: rgba(255,255,255,0.28); margin: 0 18px; }
+.ff-right { margin-left: auto; color: #FFFFFF; font-weight: 600; font-size: 17px; }
 </style>
