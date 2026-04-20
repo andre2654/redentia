@@ -62,10 +62,13 @@ export default defineSitemapEventHandler(async (e) => {
 
     if (Array.isArray(assets) && assets.length > 0) {
       const limitedAssets = assets.slice(0, 5000)
+      const seen = new Set<string>()
 
       for (const asset of limitedAssets) {
         if (asset.ticker) {
           const t = String(asset.ticker).toUpperCase()
+          if (seen.has(t)) continue
+          seen.add(t)
           urls.push({
             loc: `/asset/${t.toLowerCase()}`,
             lastmod: now,
@@ -77,11 +80,12 @@ export default defineSitemapEventHandler(async (e) => {
 
       console.log('[Sitemap] URLs de ativos adicionadas:', urls.length)
     } else {
-      console.warn('[Sitemap] Nenhum ativo encontrado ou formato inválido')
+      console.warn('[Sitemap] Nenhum ativo encontrado, usando fallback')
+      throw new Error('empty-response')
     }
   } catch (error) {
     console.error('[Sitemap] Erro ao buscar ativos:', error)
-    // Fallback usa a lista high-priority inteira
+    // Fallback: high-priority tickers como baseline. Não deixa sitemap vazio.
     for (const ticker of HIGH_PRIORITY_TICKERS) {
       urls.push({
         loc: `/asset/${ticker.toLowerCase()}`,

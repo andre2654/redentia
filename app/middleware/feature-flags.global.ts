@@ -8,6 +8,10 @@
  * When the active brand has the corresponding flag disabled, we 404
  * instead of redirecting, that way the sitemap entries that a different
  * tenant might have indexed don't accidentally leak into this tenant.
+ *
+ * Now that each tenant has its own domain (saraivainvest.com.br,
+ * nortecapital.com.br, etc.), the 404 is scoped per-domain and Google
+ * treats each domain's index independently.
  */
 export default defineNuxtRouteMiddleware((to) => {
   if (import.meta.server && to.path.startsWith('/api/')) return

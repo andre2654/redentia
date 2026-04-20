@@ -6,20 +6,22 @@ definePageMeta({
 })
 
 // ============================================================
-// Weekly treemap creative — 1080x1080.
+// Weekly treemap creative — 1080x1080, STACKED VERTICAL.
 //
-// Live preview of the same treemap that goes out in Saturday's
-// automated Instagram post. Two panels side by side:
-//   - LEFT  (green) : biggest gainers of the last 7 trading days
-//   - RIGHT (red)   : biggest losers
+// Mobile-first redesign (Apr 2026): the old side-by-side panels
+// collapsed to ~180px wide on Instagram feed thumbnails, making
+// tickers unreadable. This version stacks gainers on top and
+// losers below so each panel gets the full 1000px width and ~300px
+// height — cells come out 2-3× bigger at the same cell count.
 //
-// Cell area is proportional to |pct_week| via a squarified layout
-// (1:1 port of the algorithm used in
-// Frontend/app/components/atoms/Graph/treemap.vue).
+// Visual language matches the race/ranking creatives: centered
+// Instrument Serif hero title, compact status bar with amber live
+// dot, ambient glow (amber top + dual green/red bottom) and mono
+// footer.
 //
-// Data pipe: GET /api/weekly-movers?side=both&limit=N — the same
-// endpoint the server-rendered Blade consumes, so preview and
-// published post always agree on the numbers.
+// Data: GET /api/weekly-movers?side=both&limit=N — same endpoint
+// the server-rendered Blade consumes, so preview and published
+// post always agree on the numbers.
 // ============================================================
 
 import { REDENTIA_GOOGLE_FONT_HREF } from '~/utils/redentiaCreativeColors'
@@ -42,6 +44,8 @@ const minVolume = computed(() => {
   const n = Number(firstString(route.query.min_volume) || '10000000')
   return Number.isFinite(n) && n >= 0 ? Math.floor(n) : 10_000_000
 })
+
+const title = computed(() => firstString(route.query.title) || 'Raio-X da semana')
 
 const router = useRouter()
 const previewControls = computed(() => [
@@ -72,13 +76,14 @@ const previewControls = computed(() => [
       { label: 'R$ 50M', value: '50000000' },
     ],
   },
+  { id: 'title', label: 'Título', type: 'text' as const, param: 'title', value: title.value },
 ])
 function resetControls() {
   router.replace({ query: {} })
 }
 
 useHead(() => ({
-  title: 'Redentia, Treemap semanal: altas e baixas B3',
+  title: 'Redentia · Raio-X da semana',
   meta: [
     { name: 'robots', content: 'noindex,nofollow,noarchive' },
     { name: 'viewport', content: 'width=1080, initial-scale=1' },
@@ -102,18 +107,48 @@ interface MoversResponse {
 }
 
 const apiBase = runtimeConfig.public.apiBaseUrl as string
-const { data } = await useAsyncData<MoversResponse>(
+// Volume fallback ladder — if the configured min_volume doesn't yield
+// `perSide` items on both sides, progressively relax until we have 5+5.
+// Matches the backend behavior (InternalCreativeController) so preview
+// and generated image always agree on count.
+const volumeLadder = computed<number[]>(() => {
+  const steps = [minVolume.value, 1_000_000, 100_000, 0]
+  return Array.from(new Set(steps.filter(v => v <= minVolume.value || v === 0)))
+    .sort((a, b) => b - a)
+})
+
+async function fetchSide(side: 'best' | 'worst', signCheck: (p: number) => boolean): Promise<MoverRow[]> {
+  for (const vol of volumeLadder.value) {
+    const resp = await $fetch<MoversResponse>(`${apiBase}/weekly-movers`, {
+      method: 'GET',
+      query: { side: 'both', limit: 100, min_volume: vol },
+    })
+    const list = ((side === 'best' ? resp.best : resp.worst) ?? []).filter(r => signCheck(r.pct_week))
+    if (list.length >= perSide.value) return list.slice(0, perSide.value)
+  }
+  return []
+}
+
+const { data, pending, error } = await useAsyncData<MoversResponse>(
   'weekly-movers-treemap',
   async () => {
-    return await $fetch<MoversResponse>(`${apiBase}/weekly-movers`, {
-      method: 'GET',
-      query: { side: 'both', limit: perSide.value, min_volume: minVolume.value },
-    })
+    // We fire both sides in parallel, each with its own volume ladder.
+    // The `window` info is shared — it only depends on market_prices, so
+    // grab it from the first-ladder-step request of the gainers branch.
+    const [baseResp, gainers, losers] = await Promise.all([
+      $fetch<MoversResponse>(`${apiBase}/weekly-movers`, {
+        method: 'GET',
+        query: { side: 'both', limit: 1, min_volume: 0 },
+      }),
+      fetchSide('best', (p) => p > 0),
+      fetchSide('worst', (p) => p < 0),
+    ])
+    return { best: gainers, worst: losers, window: baseResp.window }
   },
   { server: true, default: () => ({ best: [], worst: [], window: { start: null, end: null } }), watch: [perSide, minVolume] }
 )
 
-// ---------- Layout math (squarified) ----------
+// ---------- Squarified treemap ----------
 interface Box { x: number; y: number; w: number; h: number }
 interface WeightedItem<T> { value: number; data: T }
 interface Placed<T> extends Box { item: T }
@@ -183,46 +218,56 @@ function worst(row: WeightedItem<any>[], shortSide: number): number {
   return Math.max((w2 * max) / s2, s2 / (w2 * min))
 }
 
-// ---------- Panel dimensions (must match CSS .panel-frame). ----------
-const PANEL_W = 485
-const PANEL_H = 650
-const PANEL_GAP = 20
+// ---------- Panel dimensions ----------
+// Stacked vertical: each panel takes the full 1000×320 block. We pack
+// the two panels as close as possible to the hero subtitle so the
+// heatmap dominates the frame instead of floating below empty space.
+const PANEL_W = 1000
+const PANEL_H = 290
 
 function toCells(items: MoverRow[]) {
-  // Weight is |pct|+0.5 so tiny movers still claim a cell.
-  const weighted: WeightedItem<MoverRow>[] = items.map((it) => ({ value: Math.abs(it.pct_week) + 0.5, data: it }))
+  // Weight is |pct|+floor so even tiny movers (like B3SA3 at -0.10%)
+  // claim a readable cell. The floor dampens the dominance of the top
+  // mover — a +12% gainer is no longer 20× bigger than a +0.5% cell,
+  // just ~2× bigger. Social-media tradeoff: lose some "holy cow that
+  // one's huge" drama in exchange for every ticker being legible.
+  const floor = 4
+  const weighted: WeightedItem<MoverRow>[] = items.map((it) => ({ value: Math.abs(it.pct_week) + floor, data: it }))
   return squarify(weighted, { x: 0, y: 0, w: PANEL_W, h: PANEL_H })
 }
 
+// data.best / data.worst are already filtered + sliced by fetchSide()
+// — it walks the volume ladder until it has `perSide` items on each
+// side (or gives up at volume=0). No extra processing needed here.
 const gainerCells = computed(() => toCells(data.value?.best ?? []))
 const loserCells = computed(() => toCells(data.value?.worst ?? []))
 
-// ---------- Cell color intensity by |pct| ----------
+// Color intensity scales with |pct|. Alpha ramps 0.42 → 1 across
+// the typical B3 weekly range (0% to 15%+), so a heated cell really
+// pops against a cooler neighbor.
 function cellBg(positive: boolean, pct: number): string {
   const abs = Math.abs(pct)
-  let alpha = 0.42
+  let alpha = 0.45
   if (abs >= 15) alpha = 1
   else if (abs >= 8) alpha = 0.9
   else if (abs >= 4) alpha = 0.78
   else if (abs >= 2) alpha = 0.65
-  else if (abs >= 1) alpha = 0.52
+  else if (abs >= 1) alpha = 0.54
   return positive
     ? `rgba(0, 211, 149, ${alpha})`
     : `rgba(255, 71, 71, ${alpha})`
 }
 
+// Type sizes scale with cell short side, same logic as before but
+// bumped for the bigger canvas — the minimum legible size is larger
+// because the panel is wider.
 function sizePx(cell: Placed<MoverRow>) {
   const base = Math.min(cell.w, cell.h)
-  return {
-    sym: Math.max(11, Math.min(30, Math.round(base * 0.22))),
-    pct: 0,
-    price: 0,
-  }
+  return Math.max(14, Math.min(42, Math.round(base * 0.22)))
 }
-function pctSize(sym: number) { return Math.max(10, sym - 3) }
-function priceSize(sym: number) { return Math.max(9, pctSize(sym) - 2) }
-function showPct(c: Placed<MoverRow>) { return c.w >= 54 && c.h >= 44 }
-function showPrice(c: Placed<MoverRow>) { return c.w >= 90 && c.h >= 70 }
+function pctSize(sym: number) { return Math.max(11, Math.round(sym * 0.7)) }
+function showPct(c: Placed<MoverRow>) { return c.w >= 70 && c.h >= 56 }
+function showPrice(c: Placed<MoverRow>) { return c.w >= 120 && c.h >= 88 }
 
 function fmtPeriod(iso: string | null) {
   if (!iso) return ''
@@ -243,6 +288,20 @@ const today = computed(() => {
   const mm = String(d.getMonth() + 1).padStart(2, '0')
   return `${dd}/${mm}/${d.getFullYear()}`
 })
+
+// Kept for potential future use — the panel-head "+X.XX%" chip was
+// removed per user feedback, but if we ever want it back these are
+// already wired up.
+const gainerTopPct = computed(() => {
+  const leader = data.value?.best?.[0]
+  if (!leader) return '—'
+  return `+${Math.abs(leader.pct_week).toFixed(2)}%`
+})
+const loserTopPct = computed(() => {
+  const leader = data.value?.worst?.[0]
+  if (!leader) return '—'
+  return `−${Math.abs(leader.pct_week).toFixed(2)}%`
+})
 </script>
 
 <template>
@@ -251,117 +310,116 @@ const today = computed(() => {
     :controls="previewControls"
     @reset="resetControls"
   >
-    <div class="frame">
+    <!--
+      data-render-ready turns "true" once the API call settles AND
+      we have at least one cell on either side. Matches the ranking
+      creative so BrowserlessService can wait on the selector.
+    -->
+    <div
+      class="frame"
+      :data-render-ready="!pending && !error && (gainerCells.length > 0 || loserCells.length > 0) ? 'true' : 'false'"
+    >
       <!-- Status bar -->
       <div class="statusbar">
-        <span class="sbdot"></span>
-        <span class="sbbrand">REDENT.IA</span>
-        <span class="sbsep">·</span>
-        <span>MKTMAP</span>
-        <span class="sbsep">·</span>
-        <span>B3</span>
-        <div class="sbright">
-          <span>SESSÃO FECHADA</span>
-          <span class="sbsep">·</span>
-          <span class="sbstrong">{{ today }}</span>
+        <span class="sb-live">
+          <span class="sb-dot"></span>
+          <span>B3 · SEMANA</span>
+        </span>
+        <div class="sb-right">
+          <span class="sb-brand">REDENT<span class="sb-brand-accent">.IA</span></span>
         </div>
       </div>
 
-      <!-- Headline -->
-      <div class="headline">
-        <div class="tag">
-          [FECHAMENTO SEMANAL]
-          <span class="tag-edition">· VARIAÇÃO 7D</span>
-        </div>
-        <h1 class="serif-display">Maiores altas<br>e baixas <em>da semana.</em></h1>
-        <div class="meta-strip">
-          <span class="chip">PERÍODO <b v-if="data">{{ fmtShortDate(data.window.start) }} → {{ fmtPeriod(data.window.end) }}</b></span>
-          <span class="chip"><b>{{ gainerCells.length + loserCells.length }}</b> ATIVOS</span>
-          <span class="chip">FILTRO <b>VOL &gt; R$ 10M</b></span>
+      <!-- Hero: centered serif headline + date subtitle. -->
+      <div class="hero">
+        <h1 class="hero-title">
+          {{ title.split(' ').slice(0, -1).join(' ') || 'Raio-X da' }}
+          <em>{{ title.split(' ').slice(-1)[0] || 'semana' }}</em>
+        </h1>
+        <div class="hero-sub">
+          <span v-if="data?.window.start && data?.window.end">
+            {{ fmtShortDate(data.window.start) }} → {{ fmtPeriod(data.window.end) }}
+          </span>
+          <span v-else>{{ today }}</span>
         </div>
       </div>
 
-      <!-- Panels -->
-      <div class="panels">
-        <!-- GAINERS -->
-        <div class="panel" :style="{ left: '0px' }">
-          <div class="panel-head" style="color: #00D395">
-            <span class="arrow">↗</span>
-            <span class="label">Maiores altas</span>
-            <span class="count">· {{ gainerCells.length }} ativos</span>
-          </div>
-          <div class="panel-frame">
-            <div
-              v-for="c in gainerCells"
-              :key="'g-' + c.item.ticker"
-              class="cell"
-              :style="{
-                left: c.x + 'px',
-                top: c.y + 'px',
-                width: c.w + 'px',
-                height: c.h + 'px',
-                background: cellBg(true, c.item.pct_week),
-              }"
-            >
-              <span class="sym" :style="{ fontSize: sizePx(c).sym + 'px' }">{{ c.item.ticker }}</span>
-              <span
-                v-if="showPct(c)"
-                class="pct"
-                :style="{ fontSize: pctSize(sizePx(c).sym) + 'px' }"
-              >+{{ c.item.pct_week.toFixed(2) }}%</span>
-              <span
-                v-if="showPrice(c)"
-                class="price"
-                :style="{ fontSize: priceSize(sizePx(c).sym) + 'px' }"
-              >{{ fmtBRL(c.item.last_price) }}</span>
-            </div>
+      <!-- GAINERS panel -->
+      <div class="panel panel-top">
+        <div class="panel-head">
+          <span class="panel-arrow up">↗</span>
+          <span class="panel-label">Maiores altas</span>
+          <span class="panel-count"><b>{{ gainerCells.length }}</b> ativos</span>
+        </div>
+        <div class="panel-frame">
+          <div
+            v-for="c in gainerCells"
+            :key="'g-' + c.item.ticker"
+            class="cell"
+            :style="{
+              left: c.x + 'px',
+              top: c.y + 'px',
+              width: c.w + 'px',
+              height: c.h + 'px',
+              background: cellBg(true, c.item.pct_week),
+            }"
+          >
+            <span class="cell-sym" :style="{ fontSize: sizePx(c) + 'px' }">{{ c.item.ticker }}</span>
+            <span
+              v-if="showPct(c)"
+              class="cell-pct"
+              :style="{ fontSize: pctSize(sizePx(c)) + 'px' }"
+            >+{{ Math.abs(c.item.pct_week).toFixed(2) }}%</span>
+            <span
+              v-if="showPrice(c)"
+              class="cell-price"
+              :style="{ fontSize: pctSize(sizePx(c)) - 2 + 'px' }"
+            >{{ fmtBRL(c.item.last_price) }}</span>
           </div>
         </div>
+      </div>
 
-        <!-- LOSERS -->
-        <div class="panel" :style="{ left: (PANEL_W + PANEL_GAP) + 'px' }">
-          <div class="panel-head" style="color: #FF4747">
-            <span class="arrow">↘</span>
-            <span class="label">Maiores baixas</span>
-            <span class="count">· {{ loserCells.length }} ativos</span>
-          </div>
-          <div class="panel-frame">
-            <div
-              v-for="c in loserCells"
-              :key="'l-' + c.item.ticker"
-              class="cell"
-              :style="{
-                left: c.x + 'px',
-                top: c.y + 'px',
-                width: c.w + 'px',
-                height: c.h + 'px',
-                background: cellBg(false, c.item.pct_week),
-              }"
-            >
-              <span class="sym" :style="{ fontSize: sizePx(c).sym + 'px' }">{{ c.item.ticker }}</span>
-              <span
-                v-if="showPct(c)"
-                class="pct"
-                :style="{ fontSize: pctSize(sizePx(c).sym) + 'px' }"
-              >{{ c.item.pct_week.toFixed(2) }}%</span>
-              <span
-                v-if="showPrice(c)"
-                class="price"
-                :style="{ fontSize: priceSize(sizePx(c).sym) + 'px' }"
-              >{{ fmtBRL(c.item.last_price) }}</span>
-            </div>
+      <!-- LOSERS panel -->
+      <div class="panel panel-bottom">
+        <div class="panel-head">
+          <span class="panel-arrow down">↘</span>
+          <span class="panel-label">Maiores baixas</span>
+          <span class="panel-count"><b>{{ loserCells.length }}</b> ativos</span>
+        </div>
+        <div class="panel-frame">
+          <div
+            v-for="c in loserCells"
+            :key="'l-' + c.item.ticker"
+            class="cell"
+            :style="{
+              left: c.x + 'px',
+              top: c.y + 'px',
+              width: c.w + 'px',
+              height: c.h + 'px',
+              background: cellBg(false, c.item.pct_week),
+            }"
+          >
+            <span class="cell-sym" :style="{ fontSize: sizePx(c) + 'px' }">{{ c.item.ticker }}</span>
+            <span
+              v-if="showPct(c)"
+              class="cell-pct"
+              :style="{ fontSize: pctSize(sizePx(c)) + 'px' }"
+            >−{{ Math.abs(c.item.pct_week).toFixed(2) }}%</span>
+            <span
+              v-if="showPrice(c)"
+              class="cell-price"
+              :style="{ fontSize: pctSize(sizePx(c)) - 2 + 'px' }"
+            >{{ fmtBRL(c.item.last_price) }}</span>
           </div>
         </div>
       </div>
 
       <!-- Footer -->
-      <div class="footer">
-        <span class="fbrand">REDENT<span class="fdot">.IA</span></span>
-        <span class="fsep">·</span>
-        <span>DADOS B3</span>
-        <span class="fsep">·</span>
-        <span>{{ today.toUpperCase() }}</span>
-        <span class="fright">redentia.com.br</span>
+      <div class="rkfooter">
+        <span class="ff-brand">REDENT<span class="ff-dot">.IA</span></span>
+        <span class="ff-sep"></span>
+        <span>Dados B3 · Fechamento semanal</span>
+        <span class="ff-right">redentia.com.br</span>
       </div>
     </div>
   </MoleculesCreativePreviewControls>
@@ -369,131 +427,183 @@ const today = computed(() => {
 
 <style scoped>
 * { box-sizing: border-box; }
+
 .frame {
-  width: 1080px; height: 1080px; position: relative;
-  background: #0A0B0E;
-  color: #E8EAED;
+  width: 1080px; height: 1080px;
+  position: relative; overflow: hidden;
+  background: #0A0B0E; color: #FFFFFF;
   font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
-  overflow: hidden;
 }
+
+/* Ambient — grid + amber top + dual green/red bottom corners.
+   The two bottom glows mirror the dual gainers/losers identity of
+   this creative (the ranking has a single-color tint because it
+   shows only one side at a time). */
 .frame::before {
   content: ''; position: absolute; inset: 0;
   background-image:
-    linear-gradient(#E8EAED 1px, transparent 1px),
-    linear-gradient(90deg, #E8EAED 1px, transparent 1px);
-  background-size: 32px 32px;
-  opacity: 0.035;
-  pointer-events: none;
+    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: 1; pointer-events: none;
+  z-index: 0;
 }
 .frame::after {
   content: ''; position: absolute; inset: 0;
-  background: radial-gradient(ellipse at 50% -10%, rgba(245,166,35,0.18) 0%, transparent 55%);
+  background:
+    radial-gradient(ellipse at 50% -10%, rgba(245,166,35,0.22) 0%, transparent 55%),
+    radial-gradient(ellipse at 8% 52%, rgba(0,211,149,0.26) 0%, transparent 45%),
+    radial-gradient(ellipse at 92% 52%, rgba(255,71,71,0.26) 0%, transparent 45%);
   pointer-events: none;
+  z-index: 0;
 }
 
-/* Status bar */
+/* Status bar — same as ranking/race. */
 .statusbar {
-  position: absolute; top: 0; left: 0; right: 0; height: 46px;
-  border-bottom: 1px solid #2A2E39;
-  display: flex; align-items: center; gap: 12px;
-  padding: 0 36px;
+  position: absolute; top: 0; left: 0; right: 0; height: 64px;
+  display: flex; align-items: center;
+  padding: 0 48px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
-  color: #8B92A7;
-  background: rgba(10, 11, 14, 0.8);
+  font-size: 17px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: rgba(255,255,255,0.82);
   z-index: 3;
 }
-.sbdot { width: 6px; height: 6px; border-radius: 50%; background: #F5A623; box-shadow: 0 0 8px rgba(245,166,35,0.6); }
-.sbbrand { color: #F5A623; font-weight: 600; letter-spacing: 0.2em; }
-.sbsep { opacity: 0.4; }
-.sbright { margin-left: auto; display: flex; align-items: center; gap: 12px; }
-.sbstrong { color: #E8EAED; font-weight: 500; }
+.sb-live { display: inline-flex; align-items: center; gap: 12px; font-weight: 600; }
+.sb-dot { width: 10px; height: 10px; border-radius: 50%; background: #F5A623; box-shadow: 0 0 14px rgba(245,166,35,0.8); }
+.sb-right { margin-left: auto; }
+.sb-brand { color: #FFFFFF; font-weight: 700; letter-spacing: 0.2em; font-size: 19px; }
+.sb-brand-accent { color: #F5A623; }
 
-/* Headline */
-.headline {
-  position: absolute; top: 76px; left: 50px; right: 50px;
+/* Hero */
+.hero {
+  position: absolute; top: 84px; left: 56px; right: 56px;
+  text-align: center;
+  z-index: 2;
 }
-.tag {
-  display: inline-flex; align-items: center; gap: 8px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
-  color: #F5A623;
-  margin-bottom: 12px;
-}
-.tag::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #F5A623; }
-.tag-edition { color: #8B92A7; }
-.serif-display {
+.hero-title {
   font-family: 'Instrument Serif', serif;
-  font-size: 68px; line-height: 0.92; letter-spacing: -0.02em;
-  font-weight: 400; color: #E8EAED; max-width: 820px;
+  font-size: 128px; line-height: 0.92; letter-spacing: -0.03em;
+  font-weight: 400; color: #FFFFFF;
+  margin: 0;
 }
-.serif-display em { color: #F5A623; font-style: italic; }
-.meta-strip {
-  margin-top: 16px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase;
-  color: #8B92A7;
+.hero-title em {
+  font-style: italic;
+  color: #F5A623;
 }
-.chip {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 6px 12px;
-  border: 1px solid #2A2E39;
-  border-radius: 2px;
-  color: #8B92A7;
+.hero-sub {
+  display: block;
+  margin-top: 24px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 34px; font-weight: 300;
+  letter-spacing: 0.22em;
+  color: rgba(255,255,255,0.72);
+  font-variant-numeric: tabular-nums;
 }
-.chip b { color: #E8EAED; font-weight: 500; }
 
-/* Panels */
-.panels { position: absolute; top: 330px; left: 50px; right: 50px; height: 660px; }
-.panel { position: absolute; top: 0; width: 485px; height: 660px; }
+/* Panels — stacked vertical. Each fills almost the full width
+   (40px side gutters). 34px gap under the subtitle, 50px gap
+   between the two panels so the altas vs baixas separation reads
+   clearly instead of feeling like one big continuous block. */
+.panel {
+  position: absolute; left: 40px; right: 40px;
+  height: 330px;
+  z-index: 2;
+}
+.panel-top { top: 300px; }
+.panel-bottom { top: 680px; }
+
 .panel-head {
-  position: absolute; top: -30px; left: 0; right: 0;
-  display: flex; align-items: baseline; gap: 10px;
+  display: flex; align-items: baseline;
+  gap: 14px;
+  padding: 0 6px 12px 6px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: rgba(255,255,255,0.92);
 }
-.panel-head .arrow { font-size: 16px; font-weight: 700; line-height: 1; }
-.panel-head .label { font-weight: 600; }
-.panel-head .count {
-  margin-left: auto; color: #8B92A7; font-size: 10px;
+.panel-arrow { font-size: 28px; font-weight: 700; line-height: 1; }
+.panel-arrow.up { color: #00D395; }
+.panel-arrow.down { color: #FF4747; }
+.panel-label {
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: 0.1em;
 }
+.panel-stat {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 800; font-size: 22px;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  margin-left: 4px;
+}
+.panel-stat.up { color: #00D395; }
+.panel-stat.down { color: #FF4747; }
+/* Ativos count — bold number + mono label, no border. */
+.panel-count {
+  margin-left: auto;
+  display: inline-flex; align-items: baseline; gap: 8px;
+  color: rgba(255,255,255,0.82);
+  font-size: 18px;
+  letter-spacing: 0.14em;
+}
+.panel-count b {
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 800;
+  font-size: 26px;
+  color: #FFFFFF;
+  letter-spacing: -0.01em;
+}
+
 .panel-frame {
-  position: relative; width: 485px; height: 650px;
-  border: 1px solid #2A2E39;
+  position: relative;
+  width: 1000px; height: 290px;
+  border: 1px solid rgba(255,255,255,0.08);
   background: rgba(20, 22, 28, 0.4);
+  border-radius: 8px;
   overflow: hidden;
 }
 
-/* Cells */
+/* Cells — larger padding + drop shadow makes the text readable
+   even at smaller cell sizes. */
 .cell {
   position: absolute;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
-  padding: 6px 4px;
+  padding: 6px 6px; gap: 2px;
   overflow: hidden; color: #fff;
-  border-right: 1px solid rgba(0,0,0,0.3);
-  border-bottom: 1px solid rgba(0,0,0,0.3);
-  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+  border-right: 1px solid rgba(0,0,0,0.28);
+  border-bottom: 1px solid rgba(0,0,0,0.28);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.55);
 }
-.cell .sym { font-family: 'Inter', sans-serif; font-weight: 700; line-height: 1.0; letter-spacing: 0.01em; }
-.cell .pct { font-family: 'JetBrains Mono', monospace; font-weight: 500; line-height: 1.1; margin-top: 4px; font-variant-numeric: tabular-nums; opacity: 0.95; }
-.cell .price { font-family: 'JetBrains Mono', monospace; font-weight: 400; line-height: 1.1; margin-top: 3px; font-variant-numeric: tabular-nums; opacity: 0.72; }
+.cell-sym {
+  font-family: 'Inter', sans-serif;
+  font-weight: 800; line-height: 1; letter-spacing: 0.01em;
+}
+.cell-pct {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700; line-height: 1;
+  margin-top: 2px; font-variant-numeric: tabular-nums;
+  opacity: 0.96;
+}
+.cell-price {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 500; line-height: 1;
+  margin-top: 2px; font-variant-numeric: tabular-nums;
+  opacity: 0.72;
+}
 
 /* Footer */
-.footer {
-  position: absolute; bottom: 0; left: 0; right: 0; height: 44px;
-  border-top: 1px solid #2A2E39;
+.rkfooter {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 64px;
   display: flex; align-items: center;
-  padding: 0 36px;
+  padding: 0 48px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
-  color: #8B92A7;
-  background: rgba(10, 11, 14, 0.8);
+  font-size: 16px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: rgba(255,255,255,0.62);
   z-index: 3;
 }
-.fbrand { color: #E8EAED; font-weight: 600; letter-spacing: 0.2em; }
-.fbrand .fdot { color: #F5A623; }
-.fsep { opacity: 0.4; margin: 0 12px; }
-.fright { margin-left: auto; color: #F5A623; }
+.ff-brand { color: #FFFFFF; font-weight: 700; letter-spacing: 0.2em; font-size: 18px; }
+.ff-brand .ff-dot { color: #F5A623; }
+.ff-sep { display: inline-block; width: 14px; height: 1px; background: rgba(255,255,255,0.28); margin: 0 18px; }
+.ff-right { margin-left: auto; color: #FFFFFF; font-weight: 600; font-size: 17px; }
 </style>

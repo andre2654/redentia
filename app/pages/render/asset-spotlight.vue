@@ -37,7 +37,7 @@ if (import.meta.server) {
   if (requiredKey) {
     const providedKey = firstString(route.query.key)
     if (providedKey !== requiredKey) {
-      throw createError({ statusCode: 404, statusMessage: 'Not Found' })
+      throw createError({ statusCode: 410, statusMessage: 'Gone' })
     }
   }
 }

@@ -267,6 +267,18 @@ export default defineNuxtConfig({
           priority: 0.8 as const,
           changefreq: 'weekly' as const,
         },
+
+        // Estudos / conteúdo editorial
+        {
+          loc: '/estudo',
+          priority: 0.8 as const,
+          changefreq: 'weekly' as const,
+        },
+        {
+          loc: '/estudo/imperio-por-tras-do-feed',
+          priority: 0.8 as const,
+          changefreq: 'monthly' as const,
+        },
       ]
 
       // Termos do glossário
@@ -316,9 +328,14 @@ export default defineNuxtConfig({
       '/planejador',
       '/dividends',
       '/ideal',
+      '/advisor/**',
+      '/admin/**',
+      '/backoffice/**',
+      '/builder',
 
       // Rotas internas (render/automação)
       '/render/**',
+      '/creative/**',
     ],
   },
   runtimeConfig: {

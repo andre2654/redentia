@@ -24,8 +24,22 @@ function resolveUrl(base: string, path: string) {
 export function usePageSeo(options: UsePageSeoOptions) {
   const brand = useBrand()
   const runtimeConfig = useRuntimeConfig()
+  // Canonical tem que apontar pro host REAL da request, não pro brand.url
+  // estático. Motivo: hoje só redentia.com.br está no ar; os outros domínios
+  // (saraivainvest.com.br, nortecapital.com.br) ainda não existem. Se o
+  // canonical apontasse pra brand.url, todos os `?brand=X` na redentia.com.br
+  // teriam canonical pra domínio quebrado → Google descartaria a página.
+  //
+  // useRequestURL() no SSR retorna a URL exata da request (host incluído);
+  // no client, usa window.location. Fallback pro runtimeConfig.public.siteUrl
+  // se por algum motivo o request URL não estiver disponível.
+  let requestOrigin = ''
+  try {
+    const reqUrl = useRequestURL()
+    requestOrigin = reqUrl?.origin || ''
+  } catch {}
   const rawSiteUrl: string =
-    runtimeConfig.public?.siteUrl || brand.url
+    requestOrigin || runtimeConfig.public?.siteUrl || brand.url || ''
   const siteUrl = rawSiteUrl.endsWith('/')
     ? rawSiteUrl.slice(0, -1)
     : rawSiteUrl

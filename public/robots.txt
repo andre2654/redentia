@@ -34,8 +34,9 @@ Disallow: /planejador
 Disallow: /dividends
 Disallow: /ideal
 Disallow: /advisor/
-Disallow: /render/
-Disallow: /creative/
+# /render/ e /creative/ removidos do Disallow: as páginas têm noindex meta.
+# Deixar o Google rastrear permite que o noindex seja respeitado corretamente
+# (robots.txt disallow impede leitura do meta robots, gerando "Crawled, not indexed").
 Disallow: /builder
 Disallow: /backoffice/
 

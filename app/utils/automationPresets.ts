@@ -296,7 +296,11 @@ Comprou na queda ou fugiu a tempo? Comenta aí 👇
       source: src,
       width: 1080, height: 1080,
       durationMs: Number(p.duration) * 1000,
-      fps: 10, warmupMs: 2500, holdMs: 2500,
+      // fps é só o target — o VideoRecorderService agora usa CDP
+      // Page.screencast, que captura frames na taxa real do compositor
+      // do Chrome. O valor aqui vira input pro ffmpeg gerar um MP4
+      // com timing correto pro Reels/feed.
+      fps: 30, warmupMs: 2500, holdMs: 2500,
     }]
   },
   buildContextSources: (p) => [

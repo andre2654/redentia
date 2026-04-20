@@ -66,6 +66,8 @@ const mockAssets = [
 // native font)
 const fontsHref = 'https://fonts.googleapis.com/css2?family=Inter:wght@300..800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&family=Poppins:wght@400;500;700;800;900&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,700;1,9..144,400;1,9..144,700&family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Space+Grotesk:wght@300..700&display=swap'
 
+const isEditorial = computed(() => variant.value.startsWith('redentia-'))
+
 useHead(() => ({
   title: `Redentia, ${variant.value}`,
   meta: [
@@ -73,6 +75,12 @@ useHead(() => ({
     { name: 'viewport', content: 'width=1080, initial-scale=1' },
   ],
   link: [{ rel: 'stylesheet', href: fontsHref }],
+  style: isEditorial.value ? [{
+    children: `
+      html, body, #__nuxt, #__layout { margin: 0; padding: 0; background: #F5A623; width: 1080px; height: 1080px; overflow: hidden; }
+      body > * { width: 1080px; height: 1080px; }
+    `,
+  }] : [],
 }))
 
 // Helpers for the data-coverage variant, simulate a list of tickers
@@ -82,10 +90,49 @@ const sampleTickers = [
   'JBSS3', 'SUZB3', 'HAPV3', 'RADL3', 'EQTL3', 'PRIO3',
   'CCRO3', 'CSAN3', 'GGBR4', 'SBSP3', 'UGPA3', 'VIVT3',
 ]
+
+// ============================================================
+// CARROSSEL REDENTIA · query-param helpers
+// Permite customizar cada slide via ?title=...&subtitle=...&pager=...
+// Usa token {amber} dentro de strings para marcar a parte destacada
+// ============================================================
+function splitHighlight(text: string): { plain: string; highlight: string; tail: string } {
+  const match = text.match(/^(.*?)\{amber\}(.*?)\{\/amber\}(.*)$/)
+  if (!match) return { plain: text, highlight: '', tail: '' }
+  return { plain: match[1] ?? '', highlight: match[2] ?? '', tail: match[3] ?? '' }
+}
+function renderMultiline(text: string): string[] {
+  return text.split('\\n').map(s => s.trim()).filter(Boolean)
+}
+const pager = computed(() => q('pager', ''))
+const url = computed(() => q('url', 'redentia.com.br'))
+const statValue = computed(() => q('stat_value', ''))
+const statUnit = computed(() => q('stat_unit', ''))
+const listItems = computed(() => renderMultiline(q('items', '')))
+const beforeTitle = computed(() => q('before_title', 'ANTES'))
+const afterTitle = computed(() => q('after_title', 'COM REDENTIA'))
+const beforeItems = computed(() => renderMultiline(q('before_items', '')))
+const afterItems = computed(() => renderMultiline(q('after_items', '')))
+const stepsItems = computed(() => renderMultiline(q('steps', '')))
+const badges = computed(() => {
+  const b1 = q('badge1', '')
+  const b2 = q('badge2', '')
+  const b3 = q('badge3', '')
+  return [b1, b2, b3].filter(Boolean).map(s => {
+    const [val, ...rest] = s.split('|')
+    return { value: (val ?? '').trim(), label: rest.join('|').trim() }
+  })
+})
+const marks = computed(() => {
+  const raw = q('marks', '')
+  if (!raw) return []
+  return raw.split('|').map(s => s.trim()).filter(Boolean)
+})
 </script>
 
 <template>
-  <div class="stage">
+  <div v-if="isEditorial" class="editorial-bg-fill"></div>
+  <div class="stage" :class="{ 'stage-editorial': variant.startsWith('redentia-') }">
     <div class="card" :class="`card-${variant}`">
       <!-- ============================================================
            BACKDROP, each variant defines its own look via .card-XXX
@@ -846,6 +893,418 @@ const sampleTickers = [
           <div class="br-feature">✓ IA responde em português, com gírias</div>
           <div class="br-feature">✓ Suporte em pt-BR, time no Brasil</div>
           <div class="br-feature">✓ LGPD nativa, dados em solo brasileiro</div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           CARROSSEL_01 · O QUE É REDENTIA
+           Paleta invertida, amber dominante + preto de contraste.
+           5 posts sequenciais (cover → wallet → analysis → features → cta).
+           Quebra o feed escuro dos posts automáticos.
+           ============================================================ -->
+      <div v-else-if="variant === 'redentia-cover'" class="body amber-body amber-cover-min">
+        <div class="amber-min-grid"></div>
+
+        <div class="amber-min-top">
+          <img src="/brand/logo-full.svg" alt="Redentia" class="amber-min-logo" />
+          <div class="amber-min-pager">{{ pager || '01 — 05' }}</div>
+        </div>
+
+        <div class="amber-min-center">
+          <div class="amber-min-eyebrow">— CONHEÇA</div>
+          <h1 class="amber-min-title">
+            <template v-if="title">
+              <template v-for="(line, i) in renderMultiline(title)" :key="i">
+                <template v-if="splitHighlight(line).plain">{{ splitHighlight(line).plain }}</template><span v-if="splitHighlight(line).highlight" class="amber-min-italic">{{ splitHighlight(line).highlight }}</span>{{ splitHighlight(line).tail }}<br>
+              </template>
+            </template>
+            <template v-else>
+              O ecossistema de<br>
+              investimentos<br>
+              <span class="amber-min-italic">realmente</span> inteligente.
+            </template>
+          </h1>
+          <p class="amber-min-sub">
+            Cotações em tempo real, análise fundamentalista, assessora com IA<br>
+            e calculadora de aporte — numa só tela, do bolso à mesa.
+          </p>
+        </div>
+
+        <div class="amber-min-pillars">
+          <div class="amber-min-pillar">
+            <div class="amber-min-pillar-num">01</div>
+            <div class="amber-min-pillar-name">Carteira</div>
+          </div>
+          <div class="amber-min-pillar-sep"></div>
+          <div class="amber-min-pillar">
+            <div class="amber-min-pillar-num">02</div>
+            <div class="amber-min-pillar-name">Análise</div>
+          </div>
+          <div class="amber-min-pillar-sep"></div>
+          <div class="amber-min-pillar">
+            <div class="amber-min-pillar-num">03</div>
+            <div class="amber-min-pillar-name">Assessora IA</div>
+          </div>
+          <div class="amber-min-pillar-sep"></div>
+          <div class="amber-min-pillar">
+            <div class="amber-min-pillar-num">04</div>
+            <div class="amber-min-pillar-name">Calculadoras</div>
+          </div>
+        </div>
+
+        <div class="amber-min-foot">
+          <div class="amber-min-url">
+            <img src="/brand/logo-icon.svg" alt="" class="amber-min-foot-icon" />
+            redentia.com.br
+          </div>
+          <div class="amber-min-arrow">arraste →</div>
+        </div>
+      </div>
+
+      <div v-else-if="variant === 'redentia-wallet'" class="body amber-body amber-cover-min">
+        <div class="amber-min-grid"></div>
+
+        <div class="amber-min-top">
+          <img src="/brand/logo-full.svg" alt="Redentia" class="amber-min-logo" />
+          <div class="amber-min-pager">02 — 05</div>
+        </div>
+
+        <div class="amber-min-split">
+          <div class="amber-min-split-text">
+            <div class="amber-min-eyebrow">— CARTEIRA</div>
+            <h2 class="amber-min-title amber-min-title-md">
+              Visão completa<br>
+              da <span class="amber-min-italic">sua</span><br>
+              carteira.
+            </h2>
+            <p class="amber-min-sub">
+              Importe via Excel ou Open Finance. A Redentia consolida tudo em uma tela — rentabilidade, dividendos e exposição setorial, atualizados em tempo real.
+            </p>
+          </div>
+          <div class="amber-min-iphone">
+            <div class="iphone-frame">
+              <div class="iphone-notch"></div>
+              <div class="iphone-screen iphone-screen-iframe">
+                <iframe src="/" class="amber-min-iphone-iframe" loading="eager" scrolling="no"></iframe>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="amber-min-pillars">
+          <div class="amber-min-pillar">
+            <div class="amber-min-pillar-num">01</div>
+            <div class="amber-min-pillar-name">Open Finance</div>
+          </div>
+          <div class="amber-min-pillar-sep"></div>
+          <div class="amber-min-pillar">
+            <div class="amber-min-pillar-num">02</div>
+            <div class="amber-min-pillar-name">Rentabilidade TWR</div>
+          </div>
+          <div class="amber-min-pillar-sep"></div>
+          <div class="amber-min-pillar">
+            <div class="amber-min-pillar-num">03</div>
+            <div class="amber-min-pillar-name">Proventos</div>
+          </div>
+          <div class="amber-min-pillar-sep"></div>
+          <div class="amber-min-pillar">
+            <div class="amber-min-pillar-num">04</div>
+            <div class="amber-min-pillar-name">Alertas</div>
+          </div>
+        </div>
+
+        <div class="amber-min-foot">
+          <div class="amber-min-url">
+            <img src="/brand/logo-icon.svg" alt="" class="amber-min-foot-icon" />
+            redentia.com.br
+          </div>
+          <div class="amber-min-arrow">arraste →</div>
+        </div>
+      </div>
+
+      <div v-else-if="variant === 'redentia-analysis'" class="body amber-body amber-cover-min">
+        <div class="amber-min-grid"></div>
+
+        <div class="amber-min-top">
+          <img src="/brand/logo-full.svg" alt="Redentia" class="amber-min-logo" />
+          <div class="amber-min-pager">03 — 05</div>
+        </div>
+
+        <div class="amber-min-center amber-min-center-tight">
+          <div class="amber-min-eyebrow">— ANÁLISE</div>
+          <h2 class="amber-min-title amber-min-title-md">
+            Fundamentos e<br>
+            preço-teto <span class="amber-min-italic">em 30s.</span>
+          </h2>
+          <p class="amber-min-sub">
+            Os 3 métodos clássicos (Bazin, Graham, Gordon) calculados para todos os 1.316 tickers da B3, com comentários gerados por IA treinada em balanços brasileiros.
+          </p>
+        </div>
+
+        <div class="amber-min-cards">
+          <div class="amber-min-card">
+            <div class="amber-min-card-ticker">PETR4</div>
+            <div class="amber-min-card-name">Petrobras PN</div>
+            <div class="amber-min-card-rows">
+              <div><span>Preço</span><em>R$ 49,03</em></div>
+              <div><span>DY 12m</span><em class="pos">16,3%</em></div>
+              <div><span>P/L</span><em>6,1</em></div>
+              <div><span>Teto Bazin</span><em class="pos">R$ 55,80</em></div>
+            </div>
+          </div>
+          <div class="amber-min-card">
+            <div class="amber-min-card-ticker">WEGE3</div>
+            <div class="amber-min-card-name">WEG ON</div>
+            <div class="amber-min-card-rows">
+              <div><span>Preço</span><em>R$ 38,90</em></div>
+              <div><span>ROE</span><em class="pos">28,4%</em></div>
+              <div><span>P/L</span><em>31,2</em></div>
+              <div><span>Teto Graham</span><em class="neg">R$ 32,10</em></div>
+            </div>
+          </div>
+          <div class="amber-min-card">
+            <div class="amber-min-card-ticker">MXRF11</div>
+            <div class="amber-min-card-name">Maxi Renda FII</div>
+            <div class="amber-min-card-rows">
+              <div><span>Cota</span><em>R$ 10,32</em></div>
+              <div><span>DY 12m</span><em class="pos">11,8%</em></div>
+              <div><span>P/VP</span><em class="pos">0,98</em></div>
+              <div><span>Rendimento</span><em>R$ 0,10</em></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="amber-min-foot">
+          <div class="amber-min-url">
+            <img src="/brand/logo-icon.svg" alt="" class="amber-min-foot-icon" />
+            redentia.com.br/asset
+          </div>
+          <div class="amber-min-arrow">arraste →</div>
+        </div>
+      </div>
+
+      <div v-else-if="variant === 'redentia-features'" class="body amber-body amber-cover-min">
+        <div class="amber-min-grid"></div>
+
+        <div class="amber-min-top">
+          <img src="/brand/logo-full.svg" alt="Redentia" class="amber-min-logo" />
+          <div class="amber-min-pager">04 — 05</div>
+        </div>
+
+        <div class="amber-min-center amber-min-center-tight">
+          <div class="amber-min-eyebrow">— DASHBOARD</div>
+          <h2 class="amber-min-title amber-min-title-md">
+            Seu assessor,<br>
+            na <span class="amber-min-italic">sua</span> tela.
+          </h2>
+          <p class="amber-min-sub">
+            Previsão de dividendos, movimentos recentes, assessoria com IA e calculadora de aporte — num só dashboard. Redentia.com.br, direto do navegador.
+          </p>
+        </div>
+
+        <div class="amber-min-laptop">
+          <div class="laptop-frame">
+            <div class="laptop-bar">
+              <span class="laptop-dot laptop-dot-red"></span>
+              <span class="laptop-dot laptop-dot-yellow"></span>
+              <span class="laptop-dot laptop-dot-green"></span>
+              <div class="laptop-url">redentia.com.br/asset/bbas3</div>
+            </div>
+            <div class="laptop-screen-iframe-wrap">
+              <iframe src="/asset/BBAS3" class="amber-min-laptop-iframe" loading="eager" scrolling="no"></iframe>
+            </div>
+          </div>
+        </div>
+
+        <div class="amber-min-foot">
+          <div class="amber-min-url">
+            <img src="/brand/logo-icon.svg" alt="" class="amber-min-foot-icon" />
+            redentia.com.br
+          </div>
+          <div class="amber-min-arrow">arraste →</div>
+        </div>
+      </div>
+
+      <div v-else-if="variant === 'redentia-cta'" class="body amber-body amber-cover-min amber-cta-clean">
+        <div class="amber-min-grid"></div>
+
+        <div class="amber-min-top">
+          <img src="/brand/logo-full.svg" alt="Redentia" class="amber-min-logo" />
+          <div class="amber-min-pager">{{ pager || '05 — 05' }}</div>
+        </div>
+
+        <div class="amber-cta-c">
+          <div class="amber-cta-c-label">— FIM DO CARROSSEL · COMEÇO DO RESTO</div>
+
+          <h2 class="amber-cta-c-hero">
+            <template v-if="title">
+              <template v-for="(line, i) in renderMultiline(title)" :key="i">
+                <template v-if="splitHighlight(line).plain">{{ splitHighlight(line).plain }}</template><span v-if="splitHighlight(line).highlight" class="amber-min-italic">{{ splitHighlight(line).highlight }}</span>{{ splitHighlight(line).tail }}<br>
+              </template>
+            </template>
+            <template v-else>
+              Comece<br>
+              <span class="amber-min-italic">de graça.</span>
+            </template>
+          </h2>
+
+          <p class="amber-cta-c-sub">
+            Sua carteira consolidada, análise de ativos em 30 segundos e uma assessora com IA treinada no mercado brasileiro. Tudo no navegador, sem instalar nada.
+          </p>
+
+          <a class="amber-cta-c-button">
+            <div class="amber-cta-c-button-arrow">↗</div>
+            <div class="amber-cta-c-button-text">
+              <span class="amber-cta-c-button-label">acesse agora</span>
+              <span class="amber-cta-c-button-url">{{ url }}</span>
+            </div>
+          </a>
+
+          <div class="amber-cta-c-foot">
+            <div class="amber-cta-c-foot-left">
+              <img src="/brand/logo-icon.svg" alt="" class="amber-cta-c-foot-icon" />
+              <span>Redent<strong>.IA</strong></span>
+            </div>
+            <div class="amber-cta-c-foot-meta">
+              <span>R$ 0 pra sempre</span>
+              <span class="dot">·</span>
+              <span>cadastro em 30s</span>
+              <span class="dot">·</span>
+              <span>sem cartão</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           CARROSSEL · GENÉRICAS · STAT / LIST / STEPS / COMPARE / QUOTE
+           Reutilizáveis por todos os carrosséis com query params.
+           ============================================================ -->
+      <div v-else-if="variant === 'redentia-stat'" class="body amber-body amber-stat">
+        <div class="amber-pager">{{ pager || '02 / 05' }}</div>
+        <div class="amber-grain"></div>
+        <div class="amber-stat-inner">
+          <div class="amber-eyebrow">{{ eyebrow || '[ NÚMERO ]' }}</div>
+          <div class="amber-stat-value">
+            {{ statValue || '1.316' }}<span v-if="statUnit" class="amber-stat-unit">{{ statUnit }}</span>
+          </div>
+          <h2 class="amber-stat-title">
+            <template v-if="title">
+              <template v-for="(line, i) in renderMultiline(title)" :key="i">
+                <template v-if="splitHighlight(line).plain">{{ splitHighlight(line).plain }}</template><span v-if="splitHighlight(line).highlight" class="amber-underline">{{ splitHighlight(line).highlight }}</span>{{ splitHighlight(line).tail }}<br>
+              </template>
+            </template>
+            <template v-else>
+              Tickers cobertos em<br>
+              <span class="amber-underline">tempo real.</span>
+            </template>
+          </h2>
+          <p v-if="subtitle" class="amber-stat-sub">{{ subtitle }}</p>
+        </div>
+      </div>
+
+      <div v-else-if="variant === 'redentia-list'" class="body amber-body amber-list">
+        <div class="amber-pager">{{ pager || '03 / 05' }}</div>
+        <div class="amber-grain"></div>
+        <div class="amber-list-head">
+          <div class="amber-eyebrow">{{ eyebrow || '[ ITENS ]' }}</div>
+          <h2 class="amber-title amber-title-list">
+            <template v-if="title">
+              <template v-for="(line, i) in renderMultiline(title)" :key="i">
+                <template v-if="splitHighlight(line).plain">{{ splitHighlight(line).plain }}</template><span v-if="splitHighlight(line).highlight" class="amber-underline">{{ splitHighlight(line).highlight }}</span>{{ splitHighlight(line).tail }}<br>
+              </template>
+            </template>
+            <template v-else>
+              Tudo num<br>
+              <span class="amber-underline">lugar só.</span>
+            </template>
+          </h2>
+          <p v-if="subtitle" class="amber-sub amber-sub-wide">{{ subtitle }}</p>
+        </div>
+        <ul class="amber-list-items">
+          <li v-for="(item, i) in listItems" :key="i">
+            <span class="amber-list-num">{{ String(i + 1).padStart(2, '0') }}</span>
+            <span class="amber-list-text">
+              <template v-if="splitHighlight(item).plain">{{ splitHighlight(item).plain }}</template><span v-if="splitHighlight(item).highlight" class="amber-list-hl">{{ splitHighlight(item).highlight }}</span>{{ splitHighlight(item).tail }}
+            </span>
+          </li>
+        </ul>
+      </div>
+
+      <div v-else-if="variant === 'redentia-steps'" class="body amber-body amber-steps">
+        <div class="amber-pager">{{ pager || '03 / 05' }}</div>
+        <div class="amber-grain"></div>
+        <div class="amber-list-head">
+          <div class="amber-eyebrow">{{ eyebrow || '[ PASSO A PASSO ]' }}</div>
+          <h2 class="amber-title amber-title-list">
+            <template v-if="title">
+              <template v-for="(line, i) in renderMultiline(title)" :key="i">
+                <template v-if="splitHighlight(line).plain">{{ splitHighlight(line).plain }}</template><span v-if="splitHighlight(line).highlight" class="amber-underline">{{ splitHighlight(line).highlight }}</span>{{ splitHighlight(line).tail }}<br>
+              </template>
+            </template>
+            <template v-else>
+              Em <span class="amber-underline">3 passos.</span>
+            </template>
+          </h2>
+        </div>
+        <div class="amber-steps-track">
+          <div class="amber-step" v-for="(step, i) in stepsItems" :key="i">
+            <div class="amber-step-num">{{ String(i + 1).padStart(2, '0') }}</div>
+            <div class="amber-step-body">{{ step }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div v-else-if="variant === 'redentia-compare'" class="body amber-body amber-compare">
+        <div class="amber-pager">{{ pager || '04 / 05' }}</div>
+        <div class="amber-grain"></div>
+        <div class="amber-list-head">
+          <div class="amber-eyebrow">{{ eyebrow || '[ ANTES → DEPOIS ]' }}</div>
+          <h2 class="amber-title">
+            <template v-if="title">
+              <template v-for="(line, i) in renderMultiline(title)" :key="i">
+                <template v-if="splitHighlight(line).plain">{{ splitHighlight(line).plain }}</template><span v-if="splitHighlight(line).highlight" class="amber-underline">{{ splitHighlight(line).highlight }}</span>{{ splitHighlight(line).tail }}<br>
+              </template>
+            </template>
+            <template v-else>
+              Antes de depois de <span class="amber-underline">Redentia.</span>
+            </template>
+          </h2>
+        </div>
+        <div class="amber-compare-grid">
+          <div class="amber-compare-col amber-compare-before">
+            <div class="amber-compare-label">{{ beforeTitle }}</div>
+            <ul>
+              <li v-for="(item, i) in beforeItems" :key="i">{{ item }}</li>
+            </ul>
+          </div>
+          <div class="amber-compare-arrow">→</div>
+          <div class="amber-compare-col amber-compare-after">
+            <div class="amber-compare-label amber-compare-label-after">{{ afterTitle }}</div>
+            <ul>
+              <li v-for="(item, i) in afterItems" :key="i">{{ item }}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div v-else-if="variant === 'redentia-quote'" class="body amber-body amber-quote">
+        <div class="amber-pager">{{ pager || '02 / 05' }}</div>
+        <div class="amber-grain"></div>
+        <div class="amber-quote-inner">
+          <div class="amber-quote-mark">"</div>
+          <h2 class="amber-quote-text">
+            <template v-if="title">
+              <template v-for="(line, i) in renderMultiline(title)" :key="i">
+                <template v-if="splitHighlight(line).plain">{{ splitHighlight(line).plain }}</template><span v-if="splitHighlight(line).highlight" class="amber-underline">{{ splitHighlight(line).highlight }}</span>{{ splitHighlight(line).tail }}<br>
+              </template>
+            </template>
+            <template v-else>
+              Investir é liberdade<br>
+              <span class="amber-underline">disfarçada de paciência.</span>
+            </template>
+          </h2>
+          <p v-if="subtitle" class="amber-quote-author">— {{ subtitle }}</p>
         </div>
       </div>
 
@@ -2903,5 +3362,2518 @@ const sampleTickers = [
   border-radius: 8px;
   font-size: 17px;
   color: #E8EAED;
+}
+
+/* ============================================================
+   CARROSSEL REDENTIA · AMBER-DOMINANT PALETTE
+   Inverts the default dark scheme: amber bg, black accents.
+   Differentiates editorial carousels from automated dark posts.
+   ============================================================ */
+/* Override stage padding so the 1080x1080 screenshot captures
+   the full amber card edge-to-edge. Uses an explicit class rather
+   than :has() for broader headless-browser support. */
+.stage-editorial {
+  padding: 0 !important;
+  background: #F5A623 !important;
+  min-height: 1080px !important;
+  height: 1080px !important;
+  align-items: stretch !important;
+}
+.stage-editorial > .card {
+  width: 1080px !important;
+  height: 1080px !important;
+  aspect-ratio: auto !important;
+}
+.card-redentia-cover,
+.card-redentia-wallet,
+.card-redentia-analysis,
+.card-redentia-features,
+.card-redentia-cta {
+  background-color: #F5A623;
+  background-image:
+    linear-gradient(rgba(10, 11, 14, 0.11) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(10, 11, 14, 0.11) 1px, transparent 1px);
+  background-size: 54px 54px;
+  background-position: -1px -1px;
+  color: #0A0B0E;
+  border: none;
+  border-radius: 0;
+  padding: 64px 72px;
+}
+.card-redentia-cover .backdrop-1,
+.card-redentia-cover .backdrop-2,
+.card-redentia-cover .backdrop-grid,
+.card-redentia-cover .backdrop-noise,
+.card-redentia-wallet .backdrop-1,
+.card-redentia-wallet .backdrop-2,
+.card-redentia-wallet .backdrop-grid,
+.card-redentia-wallet .backdrop-noise,
+.card-redentia-analysis .backdrop-1,
+.card-redentia-analysis .backdrop-2,
+.card-redentia-analysis .backdrop-grid,
+.card-redentia-analysis .backdrop-noise,
+.card-redentia-features .backdrop-1,
+.card-redentia-features .backdrop-2,
+.card-redentia-features .backdrop-grid,
+.card-redentia-features .backdrop-noise,
+.card-redentia-cta .backdrop-1,
+.card-redentia-cta .backdrop-2,
+.card-redentia-cta .backdrop-grid,
+.card-redentia-cta .backdrop-noise {
+  display: none;
+}
+
+/* Hide shared header/footer on these editorial variants
+   (carousel paging is handled inline) */
+.card-redentia-cover .header,
+.card-redentia-cover .footer,
+.card-redentia-wallet .header,
+.card-redentia-wallet .footer,
+.card-redentia-analysis .header,
+.card-redentia-analysis .footer,
+.card-redentia-features .header,
+.card-redentia-features .footer,
+.card-redentia-cta .header,
+.card-redentia-cta .footer {
+  display: none;
+}
+
+.amber-body {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+}
+/* Editorial minimal variants need visible overflow so the
+   absolutely positioned footer (anchored to the card) isn't
+   clipped by the 952px-tall body. */
+.amber-body.amber-cover-min {
+  overflow: visible !important;
+}
+
+.amber-grid-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.14;
+  background-image:
+    linear-gradient(#0A0B0E 1px, transparent 1px),
+    linear-gradient(90deg, #0A0B0E 1px, transparent 1px);
+  background-size: 72px 72px;
+}
+
+.amber-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background:
+    radial-gradient(ellipse 900px 600px at 82% 12%, rgba(255, 224, 130, 0.85) 0%, rgba(245, 166, 35, 0) 60%),
+    radial-gradient(ellipse 700px 500px at 8% 105%, rgba(180, 110, 10, 0.18) 0%, transparent 55%);
+}
+
+.amber-grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(ellipse at 85% 8%, rgba(255, 224, 130, 0.55) 0%, transparent 45%),
+    radial-gradient(ellipse at 12% 110%, rgba(10, 11, 14, 0.18) 0%, transparent 55%);
+  z-index: 1;
+}
+
+.amber-pager {
+  position: absolute;
+  top: 16px;
+  right: 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  letter-spacing: 0.25em;
+  color: #0A0B0E;
+  font-weight: 700;
+  z-index: 3;
+  padding: 8px 14px;
+  border: 2px solid #0A0B0E;
+  border-radius: 999px;
+  background: #F5A623;
+}
+
+.amber-pager-inline {
+  position: static;
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+.amber-swipe {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  letter-spacing: 0.3em;
+  color: #0A0B0E;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.amber-swipe span {
+  font-size: 22px;
+  animation: amber-swipe-bounce 1.6s ease-in-out infinite;
+}
+@keyframes amber-swipe-bounce {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(6px); }
+}
+
+/* ----- Shared editorial elements ----- */
+.amber-topbar {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(10, 11, 14, 0.25);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: #0A0B0E;
+  text-transform: uppercase;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.amber-live {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+.amber-live-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #0A0B0E;
+  box-shadow: 0 0 0 0 rgba(10, 11, 14, 0.5);
+  animation: amber-live-pulse 1.8s ease-in-out infinite;
+}
+@keyframes amber-live-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(10, 11, 14, 0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(10, 11, 14, 0); }
+}
+.amber-topbar-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0.75;
+}
+.amber-topbar-meta em {
+  font-style: normal;
+  font-weight: 700;
+}
+.amber-topbar-meta em.pos { color: #0a7a3f; }
+.amber-topbar-meta em.neg { color: #a0211c; }
+.amber-topbar-meta .sep { opacity: 0.35; }
+
+.amber-ticker-tape {
+  position: relative;
+  z-index: 3;
+  background: #0A0B0E;
+  color: #F5A623;
+  overflow: hidden;
+  margin: 12px -72px 4px -72px;
+  border-top: 1px solid rgba(245, 166, 35, 0.18);
+  border-bottom: 1px solid rgba(245, 166, 35, 0.18);
+  height: 42px;
+  min-height: 42px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+.amber-ticker-track {
+  display: flex;
+  gap: 36px;
+  padding: 0 28px;
+  white-space: nowrap;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  /* Static for screenshots — no animation so every PNG is consistent */
+  transform: translateX(0);
+}
+.amber-ticker-track span {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.amber-ticker-track strong {
+  color: #FFE082;
+  font-weight: 800;
+}
+.amber-ticker-track em {
+  font-style: normal;
+}
+.amber-ticker-track em.pos { color: #00D395; }
+.amber-ticker-track em.neg { color: #FF4747; }
+@keyframes amber-ticker-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.amber-eyebrow-issue {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  color: #0A0B0E;
+  font-weight: 700;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(10, 11, 14, 0.2);
+}
+.amber-eyebrow-slash {
+  opacity: 0.4;
+  font-weight: 400;
+}
+
+.terminal-cursor {
+  display: inline-block;
+  width: 0.5em;
+  height: 0.85em;
+  background: currentColor;
+  margin-left: 0.12em;
+  vertical-align: baseline;
+  animation: terminal-blink 1.1s step-end infinite;
+}
+@keyframes terminal-blink {
+  50% { opacity: 0; }
+}
+
+/* Mini stats row · POST 2 side */
+.amber-mini-stats {
+  display: flex;
+  gap: 14px;
+  margin-top: 4px;
+}
+.mini-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 16px;
+  background: rgba(10, 11, 14, 0.08);
+  border: 1px dashed rgba(10, 11, 14, 0.3);
+  border-radius: 10px;
+  flex: 1;
+}
+.mini-stat-num {
+  font-family: 'Instrument Serif', serif;
+  font-size: 32px;
+  color: #0A0B0E;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.mini-stat-num.pos { color: #0a7a3f; }
+.mini-stat-num.neg { color: #a0211c; }
+.mini-stat-lab {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: #0A0B0E;
+  opacity: 0.65;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* Sparklines inside cards · POST 3 */
+.amber-card-spark {
+  width: 100%;
+  height: 22px;
+  margin: 4px 0;
+}
+
+/* IA footer note · POST 3 */
+.amber-analysis-foot {
+  position: relative;
+  z-index: 3;
+  margin-top: 14px;
+}
+.amber-ai-note {
+  background: rgba(10, 11, 14, 0.9);
+  color: #F5A623;
+  padding: 14px 18px;
+  border-radius: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  border: 1px solid rgba(245, 166, 35, 0.22);
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.amber-ai-caret {
+  color: #00D395;
+  font-weight: 700;
+}
+.amber-ai-note em {
+  font-style: normal;
+  font-weight: 700;
+  color: #FFE082;
+  padding-right: 8px;
+  border-right: 1px solid rgba(245, 166, 35, 0.25);
+}
+
+/* Laptop card enhancements · POST 4 */
+.laptop-card-head-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.laptop-card-delta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+.laptop-card-delta.pos {
+  color: #00D395;
+  background: rgba(0, 211, 149, 0.12);
+  border: 1px solid rgba(0, 211, 149, 0.25);
+}
+.laptop-card-legend {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: rgba(232, 234, 237, 0.5);
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+.laptop-card-ai {
+  background: linear-gradient(135deg, rgba(245, 166, 35, 0.1) 0%, rgba(20, 22, 28, 1) 60%);
+  border-color: rgba(245, 166, 35, 0.3);
+}
+
+/* CTA terminal · POST 5 */
+.amber-cta-terminal {
+  background: #0A0B0E;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 20px 48px rgba(10, 11, 14, 0.45);
+  border: 1px solid rgba(245, 166, 35, 0.2);
+  width: 100%;
+  max-width: 760px;
+}
+.amber-cta-terminal-bar {
+  background: #14161C;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid rgba(245, 166, 35, 0.15);
+}
+.amber-cta-terminal-title {
+  margin-left: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: rgba(245, 166, 35, 0.65);
+  letter-spacing: 0.12em;
+  font-weight: 600;
+}
+.amber-cta-terminal-body {
+  padding: 24px 28px 28px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.amber-cta-terminal-line {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  color: rgba(245, 166, 35, 0.6);
+  font-weight: 600;
+}
+.amber-cta-terminal-line .caret {
+  color: #00D395;
+  margin-right: 8px;
+  font-weight: 700;
+}
+.amber-cta-terminal-url {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 44px;
+  color: #F5A623;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  margin-top: 2px;
+}
+.amber-cta-terminal-url .terminal-cursor {
+  background: #F5A623;
+  width: 0.38em;
+  height: 0.78em;
+  margin-left: 0.15em;
+  margin-bottom: 0.08em;
+}
+.amber-cta-terminal-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: rgba(245, 166, 35, 0.55);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+.amber-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  letter-spacing: 0.28em;
+  color: #0A0B0E;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.amber-eyebrow-inv {
+  color: #F5A623;
+  background: #0A0B0E;
+  display: inline-block;
+  padding: 8px 14px;
+  border-radius: 4px;
+}
+
+.amber-underline {
+  display: inline;
+  background-image: linear-gradient(180deg, transparent 0%, transparent 82%, #0A0B0E 82%, #0A0B0E 96%, transparent 96%);
+  padding: 0 4px 4px 4px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* ----- POST 1 · COVER (editorial terminal) ----- */
+.amber-cover {
+  justify-content: flex-start;
+  gap: 0;
+  padding: 0;
+}
+.amber-cover-hero {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 28px;
+}
+.amber-cover-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 200px;
+  line-height: 0.88;
+  margin: 0;
+  color: #0A0B0E;
+  letter-spacing: -0.035em;
+  font-weight: 400;
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 0px;
+  row-gap: 8px;
+}
+.cover-word-1 {
+  display: inline-block;
+}
+.amber-dot {
+  color: #0A0B0E;
+  display: inline-block;
+  transform: translateY(-4px);
+}
+.amber-accent {
+  background: #0A0B0E;
+  color: #F5A623;
+  padding: 6px 22px 18px 22px;
+  display: inline-block;
+  border-radius: 8px;
+  line-height: 0.82;
+  font-style: italic;
+  font-size: 180px;
+  margin-left: 8px;
+}
+.amber-accent-terminal {
+  display: inline-flex;
+  align-items: flex-end;
+  background: #0A0B0E;
+  color: #F5A623;
+  padding: 2px 24px 14px 24px;
+  margin-left: 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-style: italic;
+  font-weight: 700;
+  font-size: 150px;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  border-radius: 6px;
+  box-shadow: 0 18px 40px rgba(10, 11, 14, 0.35), inset 0 0 0 1px rgba(245, 166, 35, 0.15);
+}
+.amber-accent-terminal .terminal-cursor {
+  width: 0.38em;
+  height: 0.72em;
+  margin-left: 0.14em;
+  margin-bottom: 0.06em;
+  background: #F5A623;
+}
+.amber-cover-sub {
+  font-family: 'Instrument Serif', serif;
+  font-size: 48px;
+  line-height: 1.1;
+  color: #0A0B0E;
+  margin: 0;
+  font-weight: 400;
+  max-width: 780px;
+}
+.amber-cover-sub-italic {
+  font-style: italic;
+}
+
+.amber-cover-cards {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: auto;
+}
+.amber-data-card {
+  background: rgba(10, 11, 14, 0.96);
+  color: #F5A623;
+  padding: 18px 18px 16px 18px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 150px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 14px 32px rgba(10, 11, 14, 0.3);
+  border: 1px solid rgba(245, 166, 35, 0.18);
+}
+.amber-data-card-hl {
+  background: #FFE082;
+  color: #0A0B0E;
+  border-color: rgba(10, 11, 14, 0.25);
+}
+.amber-data-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  color: currentColor;
+  opacity: 0.8;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.amber-data-value {
+  font-family: 'Instrument Serif', serif;
+  font-size: 60px;
+  line-height: 0.95;
+  color: currentColor;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+.amber-data-unit {
+  font-size: 22px;
+  font-style: italic;
+  opacity: 0.7;
+  margin-left: 4px;
+}
+.amber-data-sub {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: currentColor;
+  opacity: 0.7;
+  font-weight: 500;
+}
+.amber-data-sparkline {
+  width: 100%;
+  height: 22px;
+  margin-top: auto;
+}
+.amber-data-chips-mini {
+  display: flex;
+  gap: 6px;
+  margin-top: auto;
+}
+.amber-data-chips-mini span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  padding: 3px 6px;
+  border: 1px solid rgba(245, 166, 35, 0.4);
+  border-radius: 3px;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  color: #F5A623;
+}
+.amber-data-chat {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  margin-top: auto;
+  padding-top: 6px;
+  border-top: 1px dashed rgba(10, 11, 14, 0.3);
+  font-weight: 600;
+}
+.amber-data-chat-caret {
+  color: inherit;
+  font-weight: 700;
+  margin-right: 4px;
+}
+
+.amber-cover-foot {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(10, 11, 14, 0.2);
+  font-family: 'JetBrains Mono', monospace;
+}
+.amber-cover-url {
+  font-size: 14px;
+  color: #0A0B0E;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.amber-cover-url-caret {
+  color: #0A0B0E;
+  opacity: 0.55;
+}
+
+/* ----- POST 1 · MINIMALIST COVER ----- */
+.amber-cover-min {
+  /* padding-bottom reserves space for the absolutely-positioned
+     footer so the pillars/content don't overlap it. */
+  padding: 0 0 80px 0 !important;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  height: 100%;
+  gap: 0;
+  /* position: static so absolute children (the footer) resolve
+     to the card, which is position:relative. */
+  position: static;
+  overflow: hidden !important;
+}
+.card-redentia-cover,
+.card-redentia-wallet,
+.card-redentia-analysis,
+.card-redentia-features,
+.card-redentia-cta {
+  position: relative;
+}
+/* Paints the grid onto the card itself via absolutely positioned
+   pseudo-sibling, so it covers the full 1080x1080 card (past the
+   card's 64/72px padding). */
+/* Grid is now painted as a background on .card-redentia-* directly,
+   so this element is just a no-op placeholder (kept for the DOM
+   structure so the existing markup doesn't need to change). */
+.amber-min-grid {
+  display: none;
+}
+.card-redentia-cover,
+.card-redentia-wallet,
+.card-redentia-analysis,
+.card-redentia-features,
+.card-redentia-cta {
+  overflow: hidden !important;
+}
+.amber-min-top {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 2px;
+  flex-shrink: 0;
+}
+.amber-min-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  color: #0A0B0E;
+  font-weight: 600;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+.amber-min-meta em {
+  font-style: normal;
+  font-weight: 700;
+}
+.amber-min-meta em.pos { color: #0a7a3f; }
+.amber-min-meta em.neg { color: #a0211c; }
+.amber-min-meta-sep {
+  opacity: 0.35;
+  font-weight: 400;
+}
+.amber-min-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 700;
+}
+.amber-min-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #0A0B0E;
+  box-shadow: 0 0 0 0 rgba(10, 11, 14, 0.5);
+  animation: amber-live-pulse 1.8s ease-in-out infinite;
+}
+
+.amber-min-stocks {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 16px 0;
+  margin-top: 16px;
+  border-top: 1px solid rgba(10, 11, 14, 0.2);
+  border-bottom: 1px solid rgba(10, 11, 14, 0.2);
+  flex-shrink: 0;
+}
+.amber-min-stock {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 6px;
+}
+.amber-min-stock-ticker {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: #0A0B0E;
+  opacity: 0.55;
+  font-weight: 700;
+}
+.amber-min-stock-price {
+  font-family: 'Instrument Serif', serif;
+  font-size: 26px;
+  color: #0A0B0E;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+.amber-min-stock-change {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+}
+.amber-min-stock-change.pos { color: #0a7a3f; }
+.amber-min-stock-change.neg { color: #a0211c; }
+.amber-min-stock-sep {
+  width: 1px;
+  align-self: stretch;
+  background: rgba(10, 11, 14, 0.15);
+  margin: 0 12px;
+}
+.amber-min-logo {
+  height: 44px;
+  width: auto;
+  filter: brightness(0);
+}
+.amber-min-pager {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  letter-spacing: 0.3em;
+  color: #0A0B0E;
+  font-weight: 600;
+  opacity: 0.65;
+}
+.amber-min-center {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 0;
+  gap: 16px;
+  padding: 20px 0;
+}
+.amber-min-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  letter-spacing: 0.3em;
+  color: #0A0B0E;
+  font-weight: 700;
+  opacity: 0.75;
+}
+.amber-min-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 72px;
+  line-height: 1.02;
+  color: #0A0B0E;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  margin: 0;
+}
+.amber-min-italic {
+  font-style: italic;
+}
+.amber-min-sub {
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
+  line-height: 1.5;
+  color: #0A0B0E;
+  margin: 0;
+  opacity: 0.8;
+  max-width: 720px;
+  font-style: normal;
+  font-weight: 400;
+}
+.amber-min-pillars {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  padding: 22px 0;
+  border-top: 1px solid rgba(10, 11, 14, 0.2);
+  border-bottom: 1px solid rgba(10, 11, 14, 0.2);
+  flex-shrink: 0;
+}
+.amber-min-pillar {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+.amber-min-pillar-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  color: #0A0B0E;
+  opacity: 0.55;
+  font-weight: 600;
+}
+.amber-min-pillar-name {
+  font-family: 'Fraunces', serif;
+  font-size: 24px;
+  color: #0A0B0E;
+  line-height: 1;
+  font-weight: 400;
+}
+.amber-min-pillar-sep {
+  width: 1px;
+  background: rgba(10, 11, 14, 0.2);
+  margin: 0 18px;
+}
+.amber-min-foot {
+  /* Use position:fixed so the footer reliably anchors to the
+     bottom of the 1080×1080 headless viewport. position:absolute
+     inside the overflow-hidden body was being clipped silently
+     in headless Chrome. */
+  position: fixed;
+  left: 72px;
+  right: 72px;
+  bottom: 24px;
+  z-index: 999;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 18px;
+  border-top: 1px solid rgba(10, 11, 14, 0.2);
+}
+.amber-min-foot-icon {
+  height: 22px;
+  width: auto;
+  filter: brightness(0);
+  vertical-align: middle;
+  margin-right: 8px;
+}
+.amber-min-url {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 15px;
+  letter-spacing: 0.12em;
+  color: #0A0B0E;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+.amber-min-arrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  letter-spacing: 0.3em;
+  color: #0A0B0E;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* Variations for other posts */
+.amber-min-title-md {
+  font-size: 94px;
+}
+.amber-min-title-lg {
+  font-size: 120px;
+}
+.amber-min-center-tight {
+  flex: 0 0 auto;
+  gap: 16px;
+  padding: 20px 0;
+}
+.card-redentia-features .amber-min-center-tight {
+  margin-top: 56px;
+}
+.card-redentia-features .amber-min-laptop {
+  margin-top: 20px;
+}
+.amber-min-center-cta {
+  align-items: flex-start;
+  gap: 26px;
+}
+
+/* POST 2 · split: text + iPhone */
+.amber-min-split {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  padding: 24px 0;
+}
+.amber-min-split-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  min-width: 0;
+}
+.amber-min-iphone {
+  flex-shrink: 0;
+  width: 350px;
+  height: 720px;
+  position: relative;
+  filter: drop-shadow(0 24px 48px rgba(10, 11, 14, 0.28));
+}
+.amber-min-iphone .iphone-frame {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(145deg, #1a1a1d 0%, #0f0f11 50%, #050506 100%);
+  border-radius: 52px;
+  padding: 11px;
+  box-shadow:
+    inset 0 0 0 2px #2a2a2e,
+    inset 0 0 0 5px #050506;
+}
+.amber-min-iphone .iphone-notch {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 95px;
+  height: 28px;
+  background: #000;
+  border-radius: 16px;
+  z-index: 10;
+}
+.amber-min-iphone .iphone-screen {
+  width: 100%;
+  height: 100%;
+  background: #000;
+  border-radius: 42px;
+  overflow: hidden;
+  position: relative;
+}
+.iphone-screen-iframe {
+  background: #0A0B0E;
+}
+.amber-min-iphone-iframe {
+  /* Renders real Redentia home at mobile width (390px) and scales down
+     to fit inside the iphone screen (~328px). The original viewport
+     stays at mobile-size so responsive layouts kick in correctly. */
+  width: 390px;
+  height: 840px;
+  border: 0;
+  display: block;
+  transform: scale(0.841);
+  transform-origin: top left;
+  background: #0A0B0E;
+}
+
+/* POST 3 · cards compactos */
+.amber-min-cards {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  flex-shrink: 0;
+  padding: 8px 0;
+}
+.amber-min-card {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(10, 11, 14, 0.18);
+  border-radius: 4px;
+  padding: 24px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  color: #0A0B0E;
+  backdrop-filter: blur(2px);
+}
+.amber-min-card-ticker {
+  font-family: 'Inter', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  color: #0A0B0E;
+  letter-spacing: -0.01em;
+}
+.amber-min-card-name {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: #0A0B0E;
+  opacity: 0.55;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 1;
+  border-bottom: 1px solid rgba(10, 11, 14, 0.15);
+  padding-bottom: 14px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.amber-min-card-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 4px;
+}
+.amber-min-card-rows div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+}
+.amber-min-card-rows span {
+  color: #0A0B0E;
+  opacity: 0.6;
+  letter-spacing: 0.02em;
+  font-weight: 500;
+}
+.amber-min-card-rows em {
+  font-style: normal;
+  color: #0A0B0E;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+}
+.amber-min-card-rows em.pos { color: #0a7a3f; }
+.amber-min-card-rows em.neg { color: #a0211c; }
+.amber-min-card-rows em.pos { color: #0a7a3f; }
+.amber-min-card-rows em.neg { color: #a0211c; }
+
+/* POST 4 · laptop minimal */
+.amber-min-laptop {
+  position: relative;
+  z-index: 2;
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: center;
+  filter: drop-shadow(0 24px 48px rgba(10, 11, 14, 0.3));
+  padding: 10px 0;
+}
+.amber-min-laptop .laptop-frame {
+  width: 920px;
+  height: 600px;
+  background: #0A0B0E;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 3px solid #0A0B0E;
+}
+.amber-min-laptop .laptop-bar {
+  padding: 8px 14px;
+  min-height: 34px;
+  flex-shrink: 0;
+}
+.laptop-screen-iframe-wrap {
+  flex: 1;
+  background: #0A0B0E;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+.amber-min-laptop-iframe {
+  /* Target body is forced to 1080px wide by the app's global layout,
+     so we size the iframe at 1080px and scale to fit the 920px
+     laptop screen width. Height is oversized so overflow:hidden
+     on the wrapper crops the excess, filling the entire screen. */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1080px;
+  height: 760px;
+  border: 0;
+  display: block;
+  transform: scale(0.852);
+  transform-origin: top left;
+  background: #0A0B0E;
+}
+.amber-min-laptop .laptop-frame::after {
+  content: '';
+  display: block;
+  width: 860px;
+  height: 10px;
+  background: linear-gradient(180deg, #1a1a1d 0%, #0a0a0c 100%);
+  border-radius: 0 0 10px 10px;
+  margin: 0 -20px -10px -20px;
+  align-self: center;
+}
+
+/* POST 5 · CTA url box */
+.amber-min-cta-url-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 28px;
+  background: #0A0B0E;
+  color: #F5A623;
+  border-radius: 2px;
+}
+
+/* ----- POST 5 · EDITORIAL CTA (invitation-style) ----- */
+.amber-cta-editorial {
+  position: relative;
+}
+.amber-cta-invite {
+  position: relative;
+  z-index: 3;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 24px 0 0 0;
+}
+.amber-cta-stamp {
+  position: absolute;
+  top: -34px;
+  right: -4px;
+  z-index: 5;
+  transform: rotate(14deg);
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  border: 3px solid #0A0B0E;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  filter: drop-shadow(0 10px 18px rgba(10, 11, 14, 0.15));
+}
+.amber-cta-stamp::before {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 1px dashed #0A0B0E;
+  border-radius: 50%;
+}
+.amber-cta-stamp-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.amber-cta-stamp-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 42px;
+  font-weight: 800;
+  color: #0A0B0E;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.amber-cta-stamp-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  color: #0A0B0E;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+.amber-cta-invite-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(10, 11, 14, 0.2);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  letter-spacing: 0.22em;
+  color: #0A0B0E;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.amber-cta-invite-code {
+  opacity: 0.55;
+  font-weight: 500;
+}
+.amber-cta-hero {
+  font-family: 'Inter', sans-serif;
+  font-size: 110px;
+  line-height: 0.98;
+  color: #0A0B0E;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  margin: 0;
+  max-width: 900px;
+}
+.amber-cta-row {
+  display: flex;
+  gap: 32px;
+  align-items: stretch;
+}
+.amber-cta-row-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  justify-content: center;
+}
+.amber-cta-row-right {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+.amber-cta-url-stack {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 26px;
+  background: #0A0B0E;
+  color: #F5A623;
+  border-radius: 6px;
+  box-shadow: 0 14px 28px rgba(10, 11, 14, 0.25);
+}
+.amber-cta-url-caret {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 32px;
+  color: #F5A623;
+  font-weight: 700;
+}
+.amber-cta-url-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  color: rgba(245, 166, 35, 0.6);
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.amber-cta-url-big {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 32px;
+  color: #F5A623;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1;
+}
+.amber-cta-meta-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 17px;
+  line-height: 1.5;
+  color: #0A0B0E;
+  opacity: 0.8;
+  margin: 0;
+  max-width: 500px;
+  font-weight: 400;
+}
+.amber-cta-meta-text strong {
+  font-weight: 700;
+  opacity: 1;
+}
+.amber-cta-qr {
+  width: 170px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+.amber-cta-qr-svg {
+  width: 170px;
+  height: 170px;
+  border: 2px solid #0A0B0E;
+  padding: 8px;
+  background: #F5A623;
+  border-radius: 4px;
+}
+.amber-cta-qr-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: #0A0B0E;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+.amber-cta-footer-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-top: 20px;
+  border-top: 1px solid rgba(10, 11, 14, 0.2);
+  margin-top: auto;
+}
+.amber-cta-signature {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.amber-cta-signature-icon {
+  width: 36px;
+  height: 36px;
+  filter: brightness(0);
+}
+.amber-cta-signature-name {
+  font-family: 'Inter', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #0A0B0E;
+  line-height: 1.1;
+}
+.amber-cta-signature-role {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  color: #0A0B0E;
+  opacity: 0.6;
+  font-weight: 500;
+  margin-top: 2px;
+}
+.amber-cta-stats {
+  display: flex;
+  gap: 28px;
+}
+.amber-cta-stats div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-end;
+}
+.amber-cta-stats strong {
+  font-family: 'Inter', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: #0A0B0E;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.amber-cta-stats span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: #0A0B0E;
+  opacity: 0.6;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+/* ----- POST 5 · CLEAN CTA ----- */
+.amber-cta-clean {
+  justify-content: flex-start;
+}
+.amber-cta-c {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 28px;
+  padding: 20px 0;
+  margin-top: 72px;
+}
+.amber-cta-c-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  letter-spacing: 0.28em;
+  color: #0A0B0E;
+  font-weight: 700;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+.amber-cta-c-hero {
+  font-family: 'Inter', sans-serif;
+  font-size: 180px;
+  line-height: 0.92;
+  color: #0A0B0E;
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  margin: 0;
+}
+.amber-cta-c-sub {
+  font-family: 'Inter', sans-serif;
+  font-size: 22px;
+  line-height: 1.45;
+  color: #0A0B0E;
+  opacity: 0.75;
+  margin: 0;
+  max-width: 780px;
+  font-weight: 400;
+}
+.amber-cta-c-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 28px 20px 28px;
+  background: #0A0B0E;
+  color: #F5A623;
+  border-radius: 6px;
+  align-self: flex-start;
+  box-shadow: 0 18px 40px rgba(10, 11, 14, 0.3);
+  transition: transform 0.2s ease;
+  cursor: pointer;
+  text-decoration: none;
+}
+.amber-cta-c-button-arrow {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #F5A623;
+  color: #0A0B0E;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 700;
+  font-family: 'Inter', sans-serif;
+  flex-shrink: 0;
+}
+.amber-cta-c-button-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.amber-cta-c-button-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  color: rgba(245, 166, 35, 0.6);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.amber-cta-c-button-url {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 28px;
+  color: #F5A623;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1;
+}
+.amber-cta-c-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 24px;
+  margin-top: auto;
+  border-top: 1px solid rgba(10, 11, 14, 0.2);
+}
+.amber-cta-c-foot-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  color: #0A0B0E;
+  font-weight: 500;
+}
+.amber-cta-c-foot-left strong {
+  font-style: italic;
+  font-weight: 700;
+}
+.amber-cta-c-foot-icon {
+  height: 24px;
+  width: auto;
+  filter: brightness(0);
+}
+.amber-cta-c-foot-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  color: #0A0B0E;
+  font-weight: 600;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+.amber-cta-c-foot-meta .dot {
+  opacity: 0.4;
+}
+.amber-min-cta-icon {
+  height: 32px;
+  width: auto;
+  filter: brightness(1.1);
+}
+.amber-min-cta-url {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 38px;
+  font-weight: 700;
+  color: #F5A623;
+  letter-spacing: 0.02em;
+}
+.amber-min-sub-center {
+  text-align: left;
+  font-style: normal;
+  opacity: 0.65;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.amber-cover-marks {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  letter-spacing: 0.22em;
+  font-weight: 700;
+  color: #0A0B0E;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+/* ----- POST 2 · WALLET ----- */
+.amber-wallet {
+  padding: 72px 8px 40px;
+}
+.amber-row {
+  display: flex;
+  gap: 48px;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  flex: 1;
+}
+.amber-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  min-width: 0;
+}
+.amber-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 88px;
+  line-height: 0.92;
+  margin: 0;
+  color: #0A0B0E;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+.amber-title-wide {
+  font-size: 82px;
+}
+.amber-sub {
+  font-family: 'Inter', sans-serif;
+  font-size: 22px;
+  line-height: 1.45;
+  color: #0A0B0E;
+  margin: 0;
+  max-width: 520px;
+  opacity: 0.85;
+  font-weight: 500;
+}
+.amber-sub-wide {
+  max-width: 840px;
+  font-size: 24px;
+}
+.amber-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 6px 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.amber-bullets li {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 16px;
+  color: #0A0B0E;
+  letter-spacing: 0.04em;
+  padding-left: 24px;
+  position: relative;
+  font-weight: 600;
+}
+.amber-bullets li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #0A0B0E;
+  font-weight: 700;
+}
+.amber-iphone {
+  flex-shrink: 0;
+  width: 400px;
+  height: 820px;
+  position: relative;
+  filter: drop-shadow(0 30px 60px rgba(10, 11, 14, 0.35));
+}
+.amber-iphone .iphone-frame {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(145deg, #1a1a1d 0%, #0f0f11 50%, #050506 100%);
+  border-radius: 58px;
+  padding: 12px;
+  box-shadow:
+    inset 0 0 0 2px #2a2a2e,
+    inset 0 0 0 6px #050506,
+    0 0 0 2px rgba(10, 11, 14, 0.5);
+}
+.amber-iphone .iphone-notch {
+  position: absolute;
+  top: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 105px;
+  height: 32px;
+  background: #000;
+  border-radius: 18px;
+  z-index: 10;
+}
+.amber-iphone .iphone-screen {
+  width: 100%;
+  height: 100%;
+  background: #000;
+  border-radius: 46px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ----- POST 3 · ANALYSIS ----- */
+.amber-analysis {
+  flex-direction: column;
+  gap: 14px;
+  padding: 0;
+}
+.amber-analysis-top {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+.amber-analysis-cards {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 4px;
+}
+.amber-card {
+  background: #0A0B0E;
+  color: #F5A623;
+  padding: 18px 16px 16px 16px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 16px 36px rgba(10, 11, 14, 0.3);
+  border: 1px solid rgba(245, 166, 35, 0.18);
+}
+.amber-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.amber-card-ticker {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 26px;
+  font-weight: 700;
+  color: #F5A623;
+  letter-spacing: 0.04em;
+}
+.amber-card-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border: 1px solid rgba(245, 166, 35, 0.5);
+  border-radius: 4px;
+  color: #F5A623;
+  font-weight: 700;
+}
+.amber-card-badge-pos {
+  background: #00D395;
+  color: #0A0B0E;
+  border-color: #00D395;
+}
+.amber-card-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: rgba(245, 166, 35, 0.65);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.amber-card-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+.amber-card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 8px 0;
+  border-bottom: 1px dashed rgba(245, 166, 35, 0.18);
+  font-family: 'Inter', sans-serif;
+}
+.amber-card-row:last-child { border-bottom: none; }
+.amber-card-row {
+  padding: 6px 0;
+}
+.amber-card-row span {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  font-weight: 500;
+}
+.amber-card-row strong {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  color: #F5A623;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.amber-card-row strong.pos { color: #00D395; }
+.amber-card-row strong.neg { color: #FF4747; }
+
+/* ----- POST 4 · FEATURES / LAPTOP ----- */
+.amber-features {
+  padding: 68px 0 30px;
+  flex-direction: column;
+  gap: 22px;
+}
+.amber-features-head {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.amber-laptop {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  filter: drop-shadow(0 28px 52px rgba(10, 11, 14, 0.35));
+}
+.laptop-frame {
+  width: 880px;
+  height: 500px;
+  background: #0A0B0E;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 4px solid #0A0B0E;
+  box-shadow: 0 4px 0 rgba(10, 11, 14, 0.4);
+}
+.laptop-frame::after {
+  content: '';
+  display: block;
+  width: 920px;
+  height: 12px;
+  background: linear-gradient(180deg, #1a1a1d 0%, #0a0a0c 100%);
+  border-radius: 0 0 12px 12px;
+  margin: 0 -24px -12px -24px;
+  align-self: center;
+  box-shadow: 0 6px 12px rgba(10, 11, 14, 0.3);
+}
+.laptop-bar {
+  background: #14161C;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid rgba(245, 166, 35, 0.1);
+}
+.laptop-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+}
+.laptop-dot-red { background: #FF5F57; }
+.laptop-dot-yellow { background: #FEBC2E; }
+.laptop-dot-green { background: #28C840; }
+.laptop-url {
+  margin-left: auto;
+  margin-right: auto;
+  background: #0A0B0E;
+  padding: 6px 20px;
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: #F5A623;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+.laptop-screen {
+  flex: 1;
+  display: flex;
+  background: #0A0B0E;
+}
+.laptop-sidebar {
+  width: 60px;
+  background: #0A0B0E;
+  border-right: 1px solid rgba(245, 166, 35, 0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  padding: 18px 0;
+}
+.laptop-logo {
+  width: 28px;
+  height: 28px;
+  filter: brightness(1.2);
+  margin-bottom: 8px;
+}
+.laptop-nav, .laptop-nav-active {
+  color: rgba(245, 166, 35, 0.4);
+  font-size: 14px;
+}
+.laptop-nav-active { color: #F5A623; }
+.laptop-main {
+  flex: 1;
+  padding: 18px;
+  overflow: hidden;
+}
+.laptop-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 12px;
+  height: 100%;
+}
+.laptop-card {
+  background: #14161C;
+  border: 1px solid rgba(245, 166, 35, 0.15);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+}
+.laptop-card-span2 { grid-column: span 2; }
+.laptop-card-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  color: #F5A623;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.laptop-card-big {
+  font-family: 'Instrument Serif', serif;
+  font-size: 44px;
+  color: #E8EAED;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.laptop-card-big span {
+  font-size: 28px;
+  color: rgba(232, 234, 237, 0.6);
+}
+.laptop-card-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 70px;
+  margin-top: auto;
+}
+.laptop-card-bars span {
+  flex: 1;
+  background: linear-gradient(180deg, #F5A623 0%, #C47A12 100%);
+  border-radius: 3px 3px 0 0;
+}
+.laptop-chat-bubble {
+  background: rgba(245, 166, 35, 0.1);
+  border: 1px solid rgba(245, 166, 35, 0.3);
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  line-height: 1.35;
+  color: #E8EAED;
+  font-weight: 500;
+}
+.laptop-card-foot {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  color: #00D395;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  margin-top: auto;
+}
+.laptop-move {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: #E8EAED;
+  padding: 4px 0;
+  border-bottom: 1px dashed rgba(245, 166, 35, 0.12);
+  font-weight: 600;
+}
+.laptop-move:last-child { border-bottom: none; }
+.laptop-move .pos { color: #00D395; }
+.laptop-move .neg { color: #FF4747; }
+.laptop-calc {
+  font-family: 'Instrument Serif', serif;
+  font-size: 32px;
+  color: #F5A623;
+  line-height: 1;
+}
+.laptop-calc span {
+  font-size: 16px;
+  color: rgba(245, 166, 35, 0.65);
+}
+.laptop-calc-foot {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: rgba(232, 234, 237, 0.65);
+  letter-spacing: 0.08em;
+  margin-top: auto;
+  font-weight: 600;
+}
+.amber-chips {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  padding: 0 20px;
+}
+.amber-chips span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  padding: 8px 14px;
+  background: #0A0B0E;
+  color: #F5A623;
+  border-radius: 999px;
+}
+
+/* ----- POST 5 · CTA ----- */
+.amber-cta {
+  padding: 0;
+  justify-content: center;
+  align-items: center;
+}
+.amber-cta-inner {
+  position: relative;
+  z-index: 2;
+  max-width: 920px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  text-align: center;
+}
+.amber-cta-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 140px;
+  line-height: 0.92;
+  color: #0A0B0E;
+  margin: 0;
+  font-weight: 400;
+  letter-spacing: -0.03em;
+}
+.amber-cta-accent {
+  font-style: italic;
+  background: #0A0B0E;
+  color: #F5A623;
+  padding: 0 24px 14px 24px;
+  display: inline-block;
+  border-radius: 14px;
+  line-height: 0.85;
+}
+.amber-cta-box {
+  background: #0A0B0E;
+  color: #F5A623;
+  padding: 24px 42px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  margin-top: 12px;
+  box-shadow: 0 20px 48px rgba(10, 11, 14, 0.45);
+}
+.amber-cta-url {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 46px;
+  font-weight: 700;
+  color: #F5A623;
+  letter-spacing: 0.04em;
+}
+.amber-cta-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  letter-spacing: 0.2em;
+  color: rgba(245, 166, 35, 0.75);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+.amber-cta-badges {
+  display: flex;
+  gap: 16px;
+  margin-top: 14px;
+}
+.amber-cta-badge {
+  background: #F5A623;
+  border: 2px solid #0A0B0E;
+  border-radius: 12px;
+  padding: 14px 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 190px;
+}
+.amber-cta-badge strong {
+  font-family: 'Instrument Serif', serif;
+  font-size: 44px;
+  color: #0A0B0E;
+  line-height: 1;
+  font-weight: 400;
+}
+.amber-cta-badge span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: #0A0B0E;
+  font-weight: 700;
+}
+
+.amber-cover-title-text {
+  font-family: 'Instrument Serif', serif;
+  font-size: 140px;
+  line-height: 0.95;
+  margin: 0;
+  color: #0A0B0E;
+  letter-spacing: -0.03em;
+  font-weight: 400;
+  display: block;
+}
+.amber-cover-title-text .amber-accent {
+  font-family: 'Instrument Serif', serif;
+  font-size: 120px;
+  padding: 8px 22px 18px 22px;
+  line-height: 0.8;
+}
+
+/* Shared card shells for new generic variants */
+.card-redentia-stat,
+.card-redentia-list,
+.card-redentia-steps,
+.card-redentia-compare,
+.card-redentia-quote {
+  background: #F5A623;
+  color: #0A0B0E;
+  border: none;
+  border-radius: 0;
+  padding: 64px 72px;
+}
+.card-redentia-stat .backdrop-1,
+.card-redentia-stat .backdrop-2,
+.card-redentia-stat .backdrop-grid,
+.card-redentia-stat .backdrop-noise,
+.card-redentia-list .backdrop-1,
+.card-redentia-list .backdrop-2,
+.card-redentia-list .backdrop-grid,
+.card-redentia-list .backdrop-noise,
+.card-redentia-steps .backdrop-1,
+.card-redentia-steps .backdrop-2,
+.card-redentia-steps .backdrop-grid,
+.card-redentia-steps .backdrop-noise,
+.card-redentia-compare .backdrop-1,
+.card-redentia-compare .backdrop-2,
+.card-redentia-compare .backdrop-grid,
+.card-redentia-compare .backdrop-noise,
+.card-redentia-quote .backdrop-1,
+.card-redentia-quote .backdrop-2,
+.card-redentia-quote .backdrop-grid,
+.card-redentia-quote .backdrop-noise {
+  display: none;
+}
+.card-redentia-stat .header,
+.card-redentia-stat .footer,
+.card-redentia-list .header,
+.card-redentia-list .footer,
+.card-redentia-steps .header,
+.card-redentia-steps .footer,
+.card-redentia-compare .header,
+.card-redentia-compare .footer,
+.card-redentia-quote .header,
+.card-redentia-quote .footer {
+  display: none;
+}
+
+/* ----- GENERIC · STAT ----- */
+.amber-stat {
+  padding: 72px 8px 40px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 24px;
+}
+.amber-stat-inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 960px;
+}
+.amber-stat-value {
+  font-family: 'Instrument Serif', serif;
+  font-size: 320px;
+  line-height: 0.85;
+  color: #0A0B0E;
+  margin: 0;
+  letter-spacing: -0.05em;
+  font-weight: 400;
+}
+.amber-stat-unit {
+  font-size: 120px;
+  margin-left: 8px;
+}
+.amber-stat-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 80px;
+  line-height: 0.95;
+  color: #0A0B0E;
+  margin: 0;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+.amber-stat-sub {
+  font-family: 'Inter', sans-serif;
+  font-size: 22px;
+  line-height: 1.45;
+  color: #0A0B0E;
+  opacity: 0.85;
+  margin: 0;
+  max-width: 820px;
+  font-weight: 500;
+}
+
+/* ----- GENERIC · LIST ----- */
+.amber-list {
+  padding: 72px 4px 40px;
+  flex-direction: column;
+  gap: 26px;
+}
+.amber-list-head {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.amber-title-list {
+  font-size: 82px;
+}
+.amber-list-items {
+  position: relative;
+  z-index: 2;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.amber-list-items li {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 18px 24px;
+  background: #0A0B0E;
+  border-radius: 14px;
+  color: #F5A623;
+  box-shadow: 0 10px 28px rgba(10, 11, 14, 0.25);
+}
+.amber-list-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 22px;
+  font-weight: 700;
+  color: #F5A623;
+  letter-spacing: 0.04em;
+  min-width: 48px;
+}
+.amber-list-text {
+  font-family: 'Instrument Serif', serif;
+  font-size: 30px;
+  line-height: 1.2;
+  color: #F5A623;
+  font-weight: 400;
+}
+.amber-list-hl {
+  color: #FFE082;
+  font-style: italic;
+}
+
+/* ----- GENERIC · STEPS ----- */
+.amber-steps {
+  padding: 72px 4px 44px;
+  flex-direction: column;
+  gap: 32px;
+}
+.amber-steps-track {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  flex: 1;
+  justify-content: center;
+}
+.amber-step {
+  display: flex;
+  align-items: stretch;
+  gap: 24px;
+  padding: 26px 28px;
+  background: rgba(10, 11, 14, 0.06);
+  border: 2px dashed rgba(10, 11, 14, 0.25);
+  border-radius: 18px;
+}
+.amber-step-num {
+  font-family: 'Instrument Serif', serif;
+  font-size: 80px;
+  line-height: 1;
+  color: #0A0B0E;
+  font-weight: 400;
+  min-width: 110px;
+  text-align: center;
+  border-right: 2px solid rgba(10, 11, 14, 0.15);
+  padding-right: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.amber-step-body {
+  font-family: 'Inter', sans-serif;
+  font-size: 24px;
+  line-height: 1.35;
+  color: #0A0B0E;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+}
+
+/* ----- GENERIC · COMPARE ----- */
+.amber-compare {
+  padding: 72px 4px 40px;
+  flex-direction: column;
+  gap: 28px;
+}
+.amber-compare-grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr 60px 1fr;
+  gap: 22px;
+  align-items: stretch;
+  flex: 1;
+}
+.amber-compare-col {
+  padding: 26px 28px;
+  border-radius: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.amber-compare-before {
+  background: rgba(10, 11, 14, 0.08);
+  border: 2px dashed rgba(10, 11, 14, 0.3);
+}
+.amber-compare-after {
+  background: #0A0B0E;
+  color: #F5A623;
+}
+.amber-compare-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  letter-spacing: 0.28em;
+  color: #0A0B0E;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed rgba(10, 11, 14, 0.3);
+}
+.amber-compare-label-after {
+  color: #F5A623;
+  border-bottom-color: rgba(245, 166, 35, 0.3);
+}
+.amber-compare-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.amber-compare-before ul li {
+  font-family: 'Inter', sans-serif;
+  font-size: 18px;
+  line-height: 1.35;
+  color: #0A0B0E;
+  padding-left: 28px;
+  position: relative;
+  font-weight: 500;
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+.amber-compare-before ul li::before {
+  content: '✕';
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-weight: 700;
+}
+.amber-compare-after ul li {
+  font-family: 'Inter', sans-serif;
+  font-size: 19px;
+  line-height: 1.35;
+  color: #F5A623;
+  padding-left: 28px;
+  position: relative;
+  font-weight: 600;
+}
+.amber-compare-after ul li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #00D395;
+  font-weight: 700;
+}
+.amber-compare-arrow {
+  font-family: 'Instrument Serif', serif;
+  font-size: 84px;
+  color: #0A0B0E;
+  align-self: center;
+  justify-self: center;
+  line-height: 1;
+  font-weight: 400;
+}
+
+/* ----- GENERIC · QUOTE ----- */
+.amber-quote {
+  justify-content: center;
+  align-items: center;
+  padding: 60px 12px;
+}
+.amber-quote-inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 940px;
+  text-align: left;
+}
+.amber-quote-mark {
+  font-family: 'Instrument Serif', serif;
+  font-size: 280px;
+  line-height: 0.6;
+  color: #0A0B0E;
+  font-weight: 400;
+  height: 100px;
+  font-style: italic;
+}
+.amber-quote-text {
+  font-family: 'Instrument Serif', serif;
+  font-size: 96px;
+  line-height: 0.98;
+  color: #0A0B0E;
+  margin: 0;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+.amber-quote-author {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 18px;
+  letter-spacing: 0.18em;
+  color: #0A0B0E;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-top: 20px;
+}
+</style>
+
+<style>
+/* Global, unscoped overrides for the marketing2 creative page.
+   Avoids :has() (unreliable in older headless Chrome). */
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+  background: #F5A623 !important;
+  min-height: 1080px !important;
+}
+body {
+  width: 1080px !important;
+}
+.stage-editorial {
+  width: 1080px !important;
+  height: 1080px !important;
+  min-height: 1080px !important;
+  max-height: 1080px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: #F5A623 !important;
+  overflow: hidden !important;
+  display: block !important;
+}
+.stage-editorial > .card {
+  width: 1080px !important;
+  height: 1080px !important;
+  max-width: 1080px !important;
+  max-height: 1080px !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  border: none !important;
+  aspect-ratio: auto !important;
+  box-sizing: border-box !important;
 }
 </style>
