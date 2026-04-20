@@ -356,6 +356,86 @@ export function findPreset(id: string | null | undefined): AutomationPreset | nu
 }
 
 /**
+ * Best-effort match of a legacy automation (created before the preset
+ * system, so no `config.preset` field) to a modern preset by sniffing
+ * the media URL. Also extracts params from the query string so the
+ * wizard renders with sensible defaults pre-filled.
+ *
+ * Returns null when nothing matches — the caller should fall back to
+ * `text-only` so the admin at least gets a usable editor.
+ */
+export function inferPresetFromConfig(config: unknown):
+  | { preset: AutomationPreset; params: Record<string, string | number> }
+  | null
+{
+  if (!config || typeof config !== 'object') return null
+  const media = (config as any)?.content?.media
+  const firstSrc = Array.isArray(media) && media.length > 0 ? media[0]?.source : null
+  if (typeof firstSrc !== 'string' || !firstSrc) return null
+
+  let url: URL
+  try {
+    url = new URL(firstSrc)
+  } catch {
+    return null
+  }
+  const path = url.pathname
+  const q = url.searchParams
+
+  if (path.endsWith('/ranking/top') || path.includes('/ranking/top?')) {
+    const preset = findPreset('daily-ranking-top'); if (!preset) return null
+    return {
+      preset,
+      params: {
+        top_n: Number(q.get('limit')) || 6,
+        min_volume: Number(q.get('volume')) || 1_000_000,
+        image_title: q.get('title') || 'Maiores Altas',
+        image_label: q.get('label') || '',
+      },
+    }
+  }
+  if (path.endsWith('/ranking/bottom') || path.includes('/ranking/bottom?')) {
+    const preset = findPreset('daily-ranking-bottom'); if (!preset) return null
+    return {
+      preset,
+      params: {
+        top_n: Number(q.get('limit')) || 6,
+        min_volume: Number(q.get('volume')) || 1_000_000,
+        image_title: q.get('title') || 'Maiores Baixas',
+        image_label: q.get('label') || '',
+      },
+    }
+  }
+  if (path.includes('/growth-race')) {
+    const auto = q.get('auto') || ''
+    const match = auto.match(/^(best|worst)-week-(\d+)$/)
+    const side = match?.[1] === 'worst' ? 'worst' : 'best'
+    const preset = findPreset(`weekly-${side}-race`); if (!preset) return null
+    return {
+      preset,
+      params: {
+        limit: Number(match?.[2]) || 5,
+        years: Number(q.get('years')) || 5,
+        duration: Math.max(5, Math.round((Number(q.get('duration')) || 10000) / 1000)),
+        image_title: q.get('title') || '',
+      },
+    }
+  }
+  if (path.includes('/treemap-weekly')) {
+    const preset = findPreset('weekly-treemap'); if (!preset) return null
+    return {
+      preset,
+      params: {
+        per_side: Number(q.get('per_side')) || 10,
+        min_volume: Number(q.get('min_volume')) || 10_000_000,
+        image_title: q.get('title') || 'Raio-X da semana',
+      },
+    }
+  }
+  return null
+}
+
+/**
  * Builds the full `config` JSONB stored in social_automations.config.
  * The shape matches what RunSocialAutomation::runScheduledPost expects
  * plus a `preset` marker + `context_sources` for TextRenderer.

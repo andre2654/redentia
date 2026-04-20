@@ -550,6 +550,7 @@ import { REDENTIA_COLORS as C, REDENTIA_FONTS as F } from '~/utils/redentiaCreat
 import {
   AUTOMATION_PRESETS,
   findPreset,
+  inferPresetFromConfig,
   buildAutomationConfig,
   type AutomationPreset,
   type PresetParamSchema,
@@ -700,14 +701,20 @@ function openWizard(a: ISocialAutomation | null) {
     wizardMode.value = 'edit'
     const cfg = (a.config || {}) as any
     const presetId = cfg.preset as string | undefined
-    const preset = findPreset(presetId) || findPreset('text-only')!
+    // Legacy automations (created before the preset system) have no
+    // `config.preset` marker. Try to infer from the media URL shape —
+    // ranking, growth-race, treemap — before falling back to text-only.
+    const explicit = findPreset(presetId)
+    const inferred = !explicit ? inferPresetFromConfig(cfg) : null
+    const preset = explicit || inferred?.preset || findPreset('text-only')!
+    const params = cfg.preset_params ?? inferred?.params ?? seedParamsFor(preset)
     const { preset: _p, preset_params: _pp, integrations: _i, context_sources: _cs, content: _c, delay_minutes: _d, ...extras } = cfg
     Object.assign(draft, {
       id: a.id,
       preset,
       title: a.title,
       key: a.key,
-      params: { ...seedParamsFor(preset), ...(cfg.preset_params || {}) },
+      params: { ...seedParamsFor(preset), ...params },
       schedule: a.schedule,
       caption: (cfg.content?.value as string) || '',
       integrations: Array.isArray(cfg.integrations) ? cfg.integrations : [],
