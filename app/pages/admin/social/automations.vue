@@ -280,67 +280,115 @@
             </label>
           </div>
 
-          <!-- Preset-specific params -->
-          <div v-if="draft.preset && draft.preset.params.length > 0" class="grid gap-3 md:grid-cols-2">
-            <label
-              v-for="p in draft.preset.params"
-              :key="p.key"
-              class="flex flex-col gap-1.5"
-            >
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">
-                {{ p.label }}
+          <!-- Preset-specific params, grouped -->
+          <div
+            v-for="g in groupedParams"
+            :key="g.group"
+            class="flex flex-col gap-3 rounded-sm border p-4"
+            :style="{ borderColor: C.border, backgroundColor: C.surface }"
+          >
+            <div class="flex items-center gap-2">
+              <UIcon
+                :name="g.group === 'content' ? 'i-lucide-type' : 'i-lucide-sliders-horizontal'"
+                class="size-3.5"
+                :style="{ color: C.primary }"
+              />
+              <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
+                [ {{ g.label.toUpperCase() }} ]
               </span>
-              <select
-                v-if="p.kind === 'select'"
-                :value="draft.params[p.key]"
-                class="rounded-sm border px-3 py-2 text-[13px] outline-none"
-                :style="{ borderColor: C.border, color: C.text, backgroundColor: C.surface }"
-                @change="setParam(p.key, ($event.target as HTMLSelectElement).value)"
+            </div>
+            <div class="grid gap-3 md:grid-cols-2">
+              <label
+                v-for="p in g.params"
+                :key="p.key"
+                class="flex flex-col gap-1.5"
+                :class="g.group === 'content' && p.kind === 'text' ? 'md:col-span-2' : ''"
               >
-                <option v-for="o in p.options" :key="o.value" :value="o.value">{{ o.label }}</option>
-              </select>
-              <input
-                v-else-if="p.kind === 'number'"
-                :value="draft.params[p.key]"
-                type="number"
-                :min="p.min"
-                :max="p.max"
-                :step="p.step || 1"
-                class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none"
-                :style="{ borderColor: C.border, color: C.text }"
-                @input="setParam(p.key, Number(($event.target as HTMLInputElement).value))"
-              />
-              <input
-                v-else
-                :value="draft.params[p.key]"
-                type="text"
-                class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none"
-                :style="{ borderColor: C.border, color: C.text }"
-                @input="setParam(p.key, ($event.target as HTMLInputElement).value)"
-              />
-              <span v-if="p.help" class="text-[11px]" :style="{ color: C.textMuted }">{{ p.help }}</span>
-            </label>
+                <span class="flex items-center gap-1.5 font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">
+                  {{ p.label }}
+                  <span
+                    v-if="p.supportsChips"
+                    class="rounded-sm border px-1 py-0.5 text-[9px]"
+                    :style="{ borderColor: C.border, color: C.primary }"
+                    title="Este campo aceita {variáveis} que são resolvidas em tempo real."
+                  >{CHIPS}</span>
+                </span>
+                <select
+                  v-if="p.kind === 'select'"
+                  :value="draft.params[p.key]"
+                  class="rounded-sm border px-3 py-2 text-[13px] outline-none"
+                  :style="{ borderColor: C.border, color: C.text, backgroundColor: C.background }"
+                  @change="setParam(p.key, ($event.target as HTMLSelectElement).value)"
+                >
+                  <option v-for="o in p.options" :key="o.value" :value="o.value">{{ o.label }}</option>
+                </select>
+                <input
+                  v-else-if="p.kind === 'number'"
+                  :value="draft.params[p.key]"
+                  type="number"
+                  :min="p.min"
+                  :max="p.max"
+                  :step="p.step || 1"
+                  class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none"
+                  :style="{ borderColor: C.border, color: C.text }"
+                  @input="setParam(p.key, Number(($event.target as HTMLInputElement).value))"
+                />
+                <input
+                  v-else
+                  :value="draft.params[p.key]"
+                  type="text"
+                  :data-param-key="p.key"
+                  :placeholder="p.placeholder || ''"
+                  class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none"
+                  :style="{ borderColor: C.border, color: C.text }"
+                  @focus="onFieldFocus($event.target as HTMLInputElement)"
+                  @input="setParam(p.key, ($event.target as HTMLInputElement).value)"
+                />
+                <span v-if="p.help" class="text-[11px] leading-snug" :style="{ color: C.textMuted }">{{ p.help }}</span>
+              </label>
+            </div>
           </div>
 
-          <!-- Custom preset: raw JSON config editor -->
-          <div v-if="draft.preset?.id === 'custom'" class="flex flex-col gap-1.5">
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">
-              CONFIG (JSON)
-            </span>
-            <textarea
-              v-model="draft.customConfigText"
-              rows="14"
-              spellcheck="false"
-              class="rounded-sm border bg-transparent px-3 py-2 font-mono-tab text-[12px] outline-none"
-              :style="{
-                borderColor: customJsonError ? C.negative : C.border,
-                color: C.text,
-                backgroundColor: C.surface,
-              }"
+          <!-- Chip palette (step 2) — only when at least one param supports chips -->
+          <div
+            v-if="step2SupportsChips"
+            class="flex flex-col gap-2 rounded-sm border p-3"
+            :style="{ borderColor: C.border, backgroundColor: C.background }"
+          >
+            <div class="flex items-center gap-2">
+              <UIcon name="i-lucide-braces" class="size-3.5" :style="{ color: C.primary }" />
+              <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">
+                VARIÁVEIS PRA INSERIR NOS CAMPOS ACIMA (clique pra inserir onde o cursor estiver)
+              </span>
+            </div>
+            <AdminChipPalette
+              :catalog="chipCatalog"
+              :values="chipValues"
+              :loading="chipsLoading"
+              @insert="insertChip"
             />
-            <span v-if="customJsonError" class="font-mono-tab text-[10px]" :style="{ color: C.negative }">
-              {{ customJsonError }}
-            </span>
+          </div>
+
+          <!-- Live image preview link -->
+          <div
+            v-if="draft.preset?.hasMedia"
+            class="flex flex-wrap items-center justify-between gap-2 rounded-sm border px-4 py-3"
+            :style="{ borderColor: C.border, backgroundColor: `${C.primary}08` }"
+          >
+            <div class="flex items-center gap-2 text-[12px]" :style="{ color: C.text }">
+              <UIcon name="i-lucide-image" class="size-3.5" :style="{ color: C.primary }" />
+              <span>Confira como a imagem vai sair antes de salvar:</span>
+            </div>
+            <a
+              :href="previewMediaUrl"
+              target="_blank"
+              rel="noopener"
+              class="inline-flex items-center gap-1.5 rounded-sm border px-3 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.15em] transition-opacity hover:opacity-80"
+              :style="{ borderColor: C.primary, color: C.primary }"
+            >
+              <UIcon name="i-lucide-external-link" class="size-3" />
+              ABRIR PRÉVIA
+            </a>
           </div>
 
           <!-- Navigation -->
@@ -390,11 +438,11 @@
             <AdminIntegrationMultiSelect v-model="draft.integrations" />
           </div>
 
-          <!-- Caption + chips (only when there's a caption to write) -->
-          <div v-if="draft.preset && draft.preset.id !== 'custom'" class="grid gap-4 md:grid-cols-[1fr_280px]">
+          <!-- Caption + chips -->
+          <div v-if="draft.preset" class="grid gap-4 md:grid-cols-[1fr_280px]">
             <div class="flex flex-col gap-2">
               <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">
-                CAPTION (suporta variáveis · clique nas pílulas ao lado)
+                LEGENDA DO POST (suporta variáveis · clique nas pílulas ao lado)
               </span>
               <textarea
                 ref="captionRef"
@@ -403,6 +451,7 @@
                 class="rounded-sm border bg-transparent px-3 py-2 text-[13px] leading-relaxed outline-none"
                 :style="{ borderColor: C.border, color: C.text, backgroundColor: C.surface }"
                 placeholder="Ex: 🔥 {rank.leader.ticker} liderou com +{rank.leader.change} hoje · {date.today}"
+                @focus="onFieldFocus($event.target as HTMLTextAreaElement)"
               />
               <!-- Live preview -->
               <div
@@ -479,6 +528,7 @@ import {
   AUTOMATION_PRESETS,
   findPreset,
   buildAutomationConfig,
+  groupPresetParams,
   type AutomationPreset,
 } from '~/utils/automationPresets'
 import type { ISocialAutomation } from '~/services/socialAutomations'
@@ -524,7 +574,10 @@ interface WizardDraft {
   caption: string
   integrations: string[]
   enabled: boolean
-  customConfigText: string
+  // Extra config kept verbatim from automations created before the wizard
+  // existed — we surface nothing editable for it, but re-merge on save so
+  // nothing is lost when the admin edits caption/schedule of a legacy row.
+  legacyExtras: Record<string, unknown>
 }
 
 const draft = reactive<WizardDraft>({
@@ -538,27 +591,32 @@ const draft = reactive<WizardDraft>({
   caption: '',
   integrations: [],
   enabled: false,
-  customConfigText: '{\n  "integrations": [],\n  "content": { "type": "text", "value": "" }\n}',
-})
-
-const customJsonError = computed<string | null>(() => {
-  if (draft.preset?.id !== 'custom') return null
-  try {
-    JSON.parse(draft.customConfigText)
-    return null
-  } catch (e: any) {
-    return e.message?.slice(0, 80) || 'JSON inválido'
-  }
+  legacyExtras: {},
 })
 
 const canLeaveStep2 = computed(() => {
   if (!draft.preset) return false
-  if (!draft.title.trim() || !draft.key.trim()) return false
-  if (draft.preset.id === 'custom' && customJsonError.value) return false
-  return true
+  return draft.title.trim() !== '' && draft.key.trim() !== ''
 })
 
 const canSave = computed(() => canLeaveStep2.value)
+
+// Groups the selected preset's params into content/data sections so the
+// UI can render each block under its own heading.
+const groupedParams = computed(() => (draft.preset ? groupPresetParams(draft.preset) : []))
+
+// Shows the chip palette in step 2 only when at least one of the current
+// preset's params supports placeholder chips (image_title / image_label).
+const step2SupportsChips = computed(() => (draft.preset?.params ?? []).some(p => p.supportsChips))
+
+// Build the live preview URL for step 2: mirrors the buildMedia() output
+// of the preset so the admin opens the exact image the automation would
+// render at run-time.
+const previewMediaUrl = computed<string | null>(() => {
+  if (!draft.preset || !draft.preset.hasMedia) return null
+  const media = draft.preset.buildMedia(draft.params)
+  return media[0]?.source ?? null
+})
 
 // ---------- Chip catalog (live preview) ----------
 interface CatalogGroup { source: string; label: string; chips: Array<{ path: string; label: string }> }
@@ -567,7 +625,7 @@ const chipValues = ref<Record<string, string>>({})
 const chipsLoading = ref(false)
 
 async function fetchChips() {
-  if (!draft.preset || draft.preset.id === 'custom') {
+  if (!draft.preset) {
     chipCatalog.value = []
     chipValues.value = {}
     return
@@ -588,9 +646,11 @@ async function fetchChips() {
   }
 }
 
-// Refresh the chip catalog whenever the preset or its params change.
+// Refresh the chip catalog whenever the preset or its params change
+// (skip `params` in the key so we don't refetch on every keystroke —
+// the source params only depend on top_n/limit/side, which change rarely).
 watch(
-  () => [draft.preset?.id, JSON.stringify(draft.params)],
+  () => [draft.preset?.id, draft.params?.top_n, draft.params?.limit, draft.params?.per_side, draft.params?.side],
   () => { if (wizardOpen.value) fetchChips() },
 )
 
@@ -609,19 +669,23 @@ function openWizard(a: ISocialAutomation | null) {
     wizardMode.value = 'edit'
     const cfg = (a.config || {}) as any
     const presetId = cfg.preset as string | undefined
-    const preset = findPreset(presetId) || findPreset('custom')!
+    // Legacy automations (created before the preset system) fall back to
+    // "text-only" — the admin can still edit caption/schedule without
+    // touching JSON. Original media config is preserved in legacyExtras.
+    const preset = findPreset(presetId) || findPreset('text-only')!
+    const { preset: _p, preset_params: _pp, integrations: _i, context_sources: _cs, content: _c, delay_minutes: _d, ...extras } = cfg
     Object.assign(draft, {
       id: a.id,
       preset,
       title: a.title,
       key: a.key,
       keyTouched: true,
-      params: { ...(cfg.preset_params || seedParamsFor(preset)) },
+      params: { ...seedParamsFor(preset), ...(cfg.preset_params || {}) },
       schedule: a.schedule,
       caption: (cfg.content?.value as string) || '',
       integrations: Array.isArray(cfg.integrations) ? cfg.integrations : [],
       enabled: a.enabled,
-      customConfigText: JSON.stringify(cfg, null, 2),
+      legacyExtras: extras,
     })
     // Open directly at step 2 when editing — the user already knows the preset.
     step.value = 2
@@ -638,7 +702,7 @@ function openWizard(a: ISocialAutomation | null) {
       caption: '',
       integrations: [],
       enabled: false,
-      customConfigText: '{\n  "integrations": [],\n  "content": { "type": "text", "value": "" }\n}',
+      legacyExtras: {},
     })
   }
   wizardOpen.value = true
@@ -689,21 +753,49 @@ function slugify(s: string): string {
 }
 
 // ---------- Chip insertion ----------
+// Inserting a chip needs to know WHICH field the admin was typing in.
+// Clicking the chip steals focus from that field, so we track the last
+// focused <input>/<textarea> via `@focus` handlers and reuse it here.
 const captionRef = ref<HTMLTextAreaElement | null>(null)
+const lastFocusedField = ref<HTMLInputElement | HTMLTextAreaElement | null>(null)
+
+function onFieldFocus(el: HTMLInputElement | HTMLTextAreaElement) {
+  lastFocusedField.value = el
+}
+
 function insertChip(placeholder: string) {
-  const el = captionRef.value
+  // Priority: the caption ref (step 3 textarea) > the last-focused content
+  // input (step 2) > append to caption as a fallback.
+  const el = lastFocusedField.value ?? captionRef.value
   if (!el) {
     draft.caption = (draft.caption || '') + placeholder
     return
   }
-  const start = el.selectionStart ?? draft.caption.length
-  const end = el.selectionEnd ?? draft.caption.length
-  draft.caption = draft.caption.slice(0, start) + placeholder + draft.caption.slice(end)
+  const start = el.selectionStart ?? (el.value?.length ?? 0)
+  const end = el.selectionEnd ?? (el.value?.length ?? 0)
+  const current = el.value ?? ''
+  const next = current.slice(0, start) + placeholder + current.slice(end)
+
+  // If the field is bound to a preset param (image_title, image_label, …)
+  // route the new value through setParam so reactivity kicks in. Otherwise
+  // it's the caption textarea.
+  const paramKey = findParamKeyByElement(el)
+  if (paramKey) {
+    setParam(paramKey, next)
+  } else {
+    draft.caption = next
+  }
   nextTick(() => {
     el.focus()
     const pos = start + placeholder.length
     el.setSelectionRange(pos, pos)
   })
+}
+
+// Resolve which preset param a given input element controls — we stashed
+// the key on the element via a data-attribute in the template.
+function findParamKeyByElement(el: HTMLElement): string | null {
+  return el.getAttribute('data-param-key')
 }
 
 // ---------- Save ----------
@@ -712,18 +804,17 @@ async function handleSave() {
   wizardError.value = null
   saving.value = true
   try {
-    let config: Record<string, unknown>
-    if (draft.preset.id === 'custom') {
-      config = JSON.parse(draft.customConfigText)
-    } else {
-      config = buildAutomationConfig({
-        preset: draft.preset,
-        params: draft.params,
-        integrations: draft.integrations,
-        caption: draft.caption,
-        delayMinutes: null,
-      })
-    }
+    const built = buildAutomationConfig({
+      preset: draft.preset,
+      params: draft.params,
+      integrations: draft.integrations,
+      caption: draft.caption,
+      delayMinutes: null,
+    })
+    // Merge any legacy fields the wizard doesn't know about back into the
+    // config so we don't drop data on the floor when editing a pre-wizard
+    // automation. Wizard-owned keys win on collision.
+    const config = { ...draft.legacyExtras, ...built }
 
     const body = {
       key: draft.key,
