@@ -1,17 +1,12 @@
 // Subdomain router: requests to `admin.redentia.com.br` (or `admin.localhost`
 // in dev) are internally rewritten to serve pages under `/admin/*`.
 //
-// Same pattern as creative-subdomain.ts / estudo-subdomain.ts, with one
-// important addition: every response from this subdomain gets an
-// `X-Robots-Tag: noindex, nofollow, noarchive` header. This is the admin
-// control panel — it must NEVER show up in Google/Bing/etc, and the
-// header applies to HTML, images, JSON and any other content-type (unlike
-// `<meta name=robots>` which only works for HTML).
+// See api-subdomain.ts for the history on why this proxies via
+// absolute-URL `$fetch` instead of relative fetch or URL mutation.
 //
-// Even cached/CDN responses respect X-Robots-Tag when served via Cloudflare
-// or Vercel, so this is the belt; the `<meta name=robots>` in pages is
-// the suspenders. See Frontend/server/routes/admin/robots.txt.get.ts for
-// the third layer (explicit Disallow in robots.txt).
+// Every response from this subdomain gets an
+// `X-Robots-Tag: noindex, nofollow, noarchive` header. This is the admin
+// control panel — it must NEVER show up in search engines.
 
 const ADMIN_HOSTS = [
   'admin.redentia.com.br',
@@ -24,10 +19,16 @@ function isAdminHost(host: string): boolean {
   return ADMIN_HOSTS.includes(clean)
 }
 
-// Uses in-process URL mutation — the old `$fetch` self-proxy was
-// failing for subpages on Vercel serverless. See estudo-subdomain.ts
-// for the write-up.
-export default defineEventHandler((event) => {
+function targetOrigin(host: string): string {
+  const clean = host.split(':')[0].toLowerCase()
+  if (clean === 'admin.localhost' || clean === 'admin.redentia.localhost') {
+    const port = host.includes(':') ? host.split(':')[1] : '3000'
+    return `http://localhost:${port}`
+  }
+  return 'https://www.redentia.com.br'
+}
+
+export default defineEventHandler(async (event) => {
   const host = getRequestHeader(event, 'host') || ''
   if (!isAdminHost(host)) return
 
@@ -48,8 +49,24 @@ export default defineEventHandler((event) => {
 
   const newPath = pathname === '/' ? '/admin' : `/admin${pathname}`
   const rewritten = newPath + url.search
+  const absoluteUrl = `${targetOrigin(host)}${rewritten}`
 
-  event.node.req.url = rewritten
-  ;(event as any)._path = undefined
-  ;(event as any)._url = undefined
+  const filteredHeaders = Object.fromEntries(
+    Object.entries(event.node.req.headers).filter(
+      ([k]) => !['host', 'connection', 'content-length', 'x-forwarded-host'].includes(k.toLowerCase())
+    ) as [string, string][]
+  )
+
+  try {
+    const body = await $fetch(absoluteUrl, {
+      method: event.node.req.method as any,
+      headers: filteredHeaders,
+      responseType: 'text',
+      redirect: 'follow',
+    })
+    setHeader(event, 'content-type', 'text/html; charset=utf-8')
+    return body
+  } catch (err) {
+    console.error('[admin-subdomain] proxy failed for', absoluteUrl, (err as any)?.message || err)
+  }
 })

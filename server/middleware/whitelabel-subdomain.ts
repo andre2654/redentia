@@ -1,18 +1,9 @@
 // Subdomain router: requests to `whitelabel.redentia.com.br` (or
-// `whitelabel.localhost` in dev) are internally rewritten to serve the
-// /whitelabel landing page (and any future /whitelabel/* sub-routes).
+// `whitelabel.localhost` in dev) are internally rewritten to serve
+// pages under `/whitelabel/*`.
 //
-// Same pattern as api-subdomain.ts and creative-subdomain.ts — single
-// codebase, single deployment, multiple subdomains served by Nitro
-// rewrites. Production DNS points whitelabel.redentia.com.br at the
-// same Vercel deployment, and this middleware rewrites the URL on the
-// way in so the user just sees `/` in the browser.
-//
-// Passthroughs that must NOT be rewritten:
-//   - /api/*       (Nitro / backend proxy)
-//   - /_nuxt/*     (asset bundles)
-//   - /_ipx/*      (optimized images)
-//   - /whitelabel  (already in target namespace — avoid loop)
+// See api-subdomain.ts for the history on why this proxies via
+// absolute-URL `$fetch` instead of relative fetch or URL mutation.
 
 const WHITELABEL_HOSTS = [
   'whitelabel.redentia.com.br',
@@ -25,10 +16,16 @@ function isWhitelabelHost(host: string): boolean {
   return WHITELABEL_HOSTS.includes(clean)
 }
 
-// Uses in-process URL mutation — the old `$fetch` self-proxy was
-// failing for subpages on Vercel serverless (silent 404). See
-// estudo-subdomain.ts for the write-up.
-export default defineEventHandler((event) => {
+function targetOrigin(host: string): string {
+  const clean = host.split(':')[0].toLowerCase()
+  if (clean === 'whitelabel.localhost' || clean === 'whitelabel.redentia.localhost') {
+    const port = host.includes(':') ? host.split(':')[1] : '3000'
+    return `http://localhost:${port}`
+  }
+  return 'https://www.redentia.com.br'
+}
+
+export default defineEventHandler(async (event) => {
   const host = getRequestHeader(event, 'host') || ''
   if (!isWhitelabelHost(host)) return
 
@@ -46,8 +43,24 @@ export default defineEventHandler((event) => {
 
   const newPath = pathname === '/' ? '/whitelabel' : `/whitelabel${pathname}`
   const rewritten = newPath + url.search
+  const absoluteUrl = `${targetOrigin(host)}${rewritten}`
 
-  event.node.req.url = rewritten
-  ;(event as any)._path = undefined
-  ;(event as any)._url = undefined
+  const filteredHeaders = Object.fromEntries(
+    Object.entries(event.node.req.headers).filter(
+      ([k]) => !['host', 'connection', 'content-length', 'x-forwarded-host'].includes(k.toLowerCase())
+    ) as [string, string][]
+  )
+
+  try {
+    const body = await $fetch(absoluteUrl, {
+      method: event.node.req.method as any,
+      headers: filteredHeaders,
+      responseType: 'text',
+      redirect: 'follow',
+    })
+    setHeader(event, 'content-type', 'text/html; charset=utf-8')
+    return body
+  } catch (err) {
+    console.error('[whitelabel-subdomain] proxy failed for', absoluteUrl, (err as any)?.message || err)
+  }
 })
