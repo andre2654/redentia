@@ -27,7 +27,21 @@ function isEstudoHost(host: string): boolean {
   return ESTUDO_HOSTS.includes(clean)
 }
 
-export default defineEventHandler((event) => {
+// Pick the origin that actually serves the page. On localhost we
+// self-fetch; in prod we point straight at `www.redentia.com.br` so
+// the nested request doesn't get caught by the apex→www 307 (which
+// ofetch doesn't transparently follow across cross-origin in Vercel
+// serverless).
+function targetOrigin(host: string): string {
+  const clean = host.split(':')[0].toLowerCase()
+  if (clean === 'estudo.localhost' || clean === 'estudo.redentia.localhost') {
+    const port = host.includes(':') ? host.split(':')[1] : '3000'
+    return `http://localhost:${port}`
+  }
+  return 'https://www.redentia.com.br'
+}
+
+export default defineEventHandler(async (event) => {
   const host = getRequestHeader(event, 'host') || ''
   if (!isEstudoHost(host)) return
 
@@ -42,14 +56,28 @@ export default defineEventHandler((event) => {
     return
   }
 
-  // Rewrite `/` → `/estudo`, `/imperio-por-tras-do-feed` → `/estudo/imperio-por-tras-do-feed`
   const newPath = pathname === '/' ? '/estudo' : `/estudo${pathname}`
   const rewritten = newPath + url.search
+  const absoluteUrl = `${targetOrigin(host)}${rewritten}`
 
-  // Mutate the request URL in-place so Nuxt's router dispatches to the
-  // namespaced page. h3 caches parsed URL bits on the event object —
-  // clearing them forces a re-parse with the new path.
-  event.node.req.url = rewritten
-  ;(event as any)._path = undefined
-  ;(event as any)._url = undefined
+  const filteredHeaders = Object.fromEntries(
+    Object.entries(event.node.req.headers).filter(
+      ([k]) => !['host', 'connection', 'content-length', 'x-forwarded-host'].includes(k.toLowerCase())
+    ) as [string, string][]
+  )
+
+  try {
+    const body = await $fetch(absoluteUrl, {
+      method: event.node.req.method as any,
+      headers: filteredHeaders,
+      responseType: 'text',
+      redirect: 'follow',
+    })
+    setHeader(event, 'content-type', 'text/html; charset=utf-8')
+    return body
+  } catch (err) {
+    // Log so the root cause shows up in Vercel function logs next time
+    // it happens — prevents silent fall-through to a 404.
+    console.error('[estudo-subdomain] proxy failed for', absoluteUrl, (err as any)?.message || err)
+  }
 })
