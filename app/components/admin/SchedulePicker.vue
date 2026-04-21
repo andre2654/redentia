@@ -133,18 +133,17 @@ const selectedDays = ref<number[]>([5]) // friday default
 const everyN = ref(15)
 const cronRaw = ref('')
 
-// Convert BRT HH:MM to UTC HH for cron. BRT is UTC-3, no DST (since 2019).
-function brtTimeToUtc(timeBrt: string): { hour: number; minute: number } {
+// Laravel's APP_TIMEZONE is America/Sao_Paulo in production, so the
+// Laravel scheduler evaluates cron expressions in BRT — no UTC
+// conversion needed here. A previous version converted BRT→UTC at
+// cron generation, which made every schedule fire 3 hours late.
+function parseTimeStr(timeBrt: string): { hour: number; minute: number } {
   const [h, m] = timeBrt.split(':').map(Number)
-  return { hour: (h + 3) % 24, minute: m || 0 }
-}
-function utcTimeToBrt(hour: number, minute: number): string {
-  const h = (hour - 3 + 24) % 24
-  return `${String(h).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
+  return { hour: h % 24, minute: m || 0 }
 }
 
 const cron = computed<string | null>(() => {
-  const { hour, minute } = brtTimeToUtc(timeStr.value)
+  const { hour, minute } = parseTimeStr(timeStr.value)
   switch (mode.value) {
     case 'daily':
       return `${minute} ${hour} * * *`
@@ -216,7 +215,8 @@ function parseIncoming(c: string | null) {
   const hourN = Number(hh)
   const validTime = !Number.isNaN(minuteN) && !Number.isNaN(hourN) && dom === '*' && mon === '*'
   if (validTime) {
-    timeStr.value = utcTimeToBrt(hourN, minuteN)
+    // Cron is already in BRT (Laravel's APP_TIMEZONE), no conversion.
+    timeStr.value = `${String(hourN).padStart(2, '0')}:${String(minuteN).padStart(2, '0')}`
     if (dow === '*') {
       mode.value = 'daily'; return
     }

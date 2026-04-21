@@ -25,14 +25,16 @@ function isWhitelabelHost(host: string): boolean {
   return WHITELABEL_HOSTS.includes(clean)
 }
 
-export default defineEventHandler(async (event) => {
+// Uses in-process URL mutation — the old `$fetch` self-proxy was
+// failing for subpages on Vercel serverless (silent 404). See
+// estudo-subdomain.ts for the write-up.
+export default defineEventHandler((event) => {
   const host = getRequestHeader(event, 'host') || ''
   if (!isWhitelabelHost(host)) return
 
   const url = getRequestURL(event)
   const pathname = url.pathname
 
-  // Never touch internal Nuxt/Nitro paths or already-target paths.
   if (
     pathname.startsWith('/_') ||
     pathname.startsWith('/api/') ||
@@ -42,27 +44,10 @@ export default defineEventHandler(async (event) => {
     return
   }
 
-  // Rewrite `/` → `/whitelabel`, `/whatever` → `/whitelabel/whatever`.
-  // For now there's only the index page, but the prefix scheme keeps the
-  // door open for /whitelabel/case-studies, /whitelabel/pricing, etc.
   const newPath = pathname === '/' ? '/whitelabel' : `/whitelabel${pathname}`
   const rewritten = newPath + url.search
 
-  const filteredHeaders = Object.fromEntries(
-    Object.entries(event.node.req.headers).filter(
-      ([k]) => !['host', 'connection', 'content-length'].includes(k.toLowerCase())
-    ) as [string, string][]
-  )
-
-  try {
-    const body = await $fetch(rewritten, {
-      method: event.node.req.method as any,
-      headers: filteredHeaders,
-      responseType: 'text',
-    })
-    setHeader(event, 'content-type', 'text/html; charset=utf-8')
-    return body
-  } catch {
-    // Fall through to normal Nuxt routing if the internal fetch fails.
-  }
+  event.node.req.url = rewritten
+  ;(event as any)._path = undefined
+  ;(event as any)._url = undefined
 })

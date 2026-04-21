@@ -2,10 +2,13 @@
 // `estudo.localhost` in dev) are internally rewritten to serve
 // pages under `/estudo/*`.
 //
-// Same pattern as creative-subdomain.ts and whitelabel-subdomain.ts —
-// keeps the ebooks / studies hub inside the main Nuxt app while
-// giving it a clean URL scheme. DNS points estudo.redentia.com.br →
-// same origin as redentia.com.br.
+// Uses an in-process URL mutation (`event.node.req.url = ...`) rather
+// than a self-fetch via `$fetch`. The old `$fetch` approach created a
+// second HTTP hop that failed in Vercel serverless for subpages
+// (`/estudo/imperio-por-tras-do-feed` returned 404 because the nested
+// $fetch hit the apex→www 307 redirect and didn't follow it, the
+// catch silently swallowed the error, and Nuxt fell through to serving
+// the un-rewritten path → 404 → Instagram IAB rendered it as 500).
 //
 // Passthroughs that must NOT be rewritten:
 //   - /api/*       (Nitro / backend proxy)
@@ -24,7 +27,7 @@ function isEstudoHost(host: string): boolean {
   return ESTUDO_HOSTS.includes(clean)
 }
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler((event) => {
   const host = getRequestHeader(event, 'host') || ''
   if (!isEstudoHost(host)) return
 
@@ -43,21 +46,10 @@ export default defineEventHandler(async (event) => {
   const newPath = pathname === '/' ? '/estudo' : `/estudo${pathname}`
   const rewritten = newPath + url.search
 
-  const filteredHeaders = Object.fromEntries(
-    Object.entries(event.node.req.headers).filter(
-      ([k]) => !['host', 'connection', 'content-length'].includes(k.toLowerCase())
-    ) as [string, string][]
-  )
-
-  try {
-    const body = await $fetch(rewritten, {
-      method: event.node.req.method as any,
-      headers: filteredHeaders,
-      responseType: 'text',
-    })
-    setHeader(event, 'content-type', 'text/html; charset=utf-8')
-    return body
-  } catch {
-    // Fall through to normal Nuxt routing if the internal fetch fails.
-  }
+  // Mutate the request URL in-place so Nuxt's router dispatches to the
+  // namespaced page. h3 caches parsed URL bits on the event object —
+  // clearing them forces a re-parse with the new path.
+  event.node.req.url = rewritten
+  ;(event as any)._path = undefined
+  ;(event as any)._url = undefined
 })

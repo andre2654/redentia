@@ -2,9 +2,9 @@
 // `creative.localhost` in dev) are internally rewritten to serve
 // pages under `/creative/*`.
 //
-// Mirrors the api-subdomain middleware — keeps the creative studio
-// inside the main Nuxt app while giving it a clean URL scheme. DNS
-// points creative.redentia.com.br → same origin as redentia.com.br.
+// Uses in-process URL mutation — the old `$fetch` self-proxy was
+// failing for subpages on Vercel serverless. See estudo-subdomain.ts
+// for the full write-up.
 
 const CREATIVE_HOSTS = [
   'creative.redentia.com.br',
@@ -17,7 +17,7 @@ function isCreativeHost(host: string): boolean {
   return CREATIVE_HOSTS.includes(clean)
 }
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler((event) => {
   const host = getRequestHeader(event, 'host') || ''
   if (!isCreativeHost(host)) return
 
@@ -36,21 +36,7 @@ export default defineEventHandler(async (event) => {
   const newPath = pathname === '/' ? '/creative' : `/creative${pathname}`
   const rewritten = newPath + url.search
 
-  const filteredHeaders = Object.fromEntries(
-    Object.entries(event.node.req.headers).filter(
-      ([k]) => !['host', 'connection', 'content-length'].includes(k.toLowerCase())
-    ) as [string, string][]
-  )
-
-  try {
-    const body = await $fetch(rewritten, {
-      method: event.node.req.method as any,
-      headers: filteredHeaders,
-      responseType: 'text',
-    })
-    setHeader(event, 'content-type', 'text/html; charset=utf-8')
-    return body
-  } catch {
-    // Fall through to normal Nuxt routing
-  }
+  event.node.req.url = rewritten
+  ;(event as any)._path = undefined
+  ;(event as any)._url = undefined
 })

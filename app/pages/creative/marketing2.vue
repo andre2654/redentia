@@ -102,7 +102,9 @@ function splitHighlight(text: string): { plain: string; highlight: string; tail:
   return { plain: match[1] ?? '', highlight: match[2] ?? '', tail: match[3] ?? '' }
 }
 function renderMultiline(text: string): string[] {
-  return text.split('\\n').map(s => s.trim()).filter(Boolean)
+  // Accept both real newlines (when multi-line strings are urlencoded)
+  // and the escaped-backslash-n form (when shell passes "\n" literally).
+  return text.split(/\r?\n|\\n/).map(s => s.trim()).filter(Boolean)
 }
 const pager = computed(() => q('pager', ''))
 const url = computed(() => q('url', 'redentia.com.br'))
@@ -127,6 +129,29 @@ const marks = computed(() => {
   const raw = q('marks', '')
   if (!raw) return []
   return raw.split('|').map(s => s.trim()).filter(Boolean)
+})
+
+// Unit-post (single post) props
+const ticker = computed(() => q('ticker', 'PETR4'))
+const tickerName = computed(() => q('ticker_name', 'PETROBRAS PN'))
+const tickerSector = computed(() => q('ticker_sector', 'ENERGIA'))
+const price = computed(() => q('price', 'R$ 49,03'))
+const change = computed(() => q('change', '+0,27%'))
+const direction = computed(() => q('direction', 'up'))
+const meta1 = computed(() => q('meta1', ''))
+const meta2 = computed(() => q('meta2', ''))
+const meta3 = computed(() => q('meta3', ''))
+const rankingItems = computed(() => {
+  const raw = q('ranking', '')
+  if (!raw) return []
+  return raw.split(/\r?\n|\\n/).map(line => {
+    const parts = line.split('|').map(s => s.trim())
+    return {
+      ticker: parts[0] || '',
+      value: parts[1] || '',
+      extra: parts[2] || '',
+    }
+  }).filter(r => r.ticker)
 })
 </script>
 
@@ -911,7 +936,7 @@ const marks = computed(() => {
         </div>
 
         <div class="amber-min-center">
-          <div class="amber-min-eyebrow">— CONHEÇA</div>
+          <div class="amber-min-eyebrow">{{ eyebrow || 'CONHEÇA' }}</div>
           <h1 class="amber-min-title">
             <template v-if="title">
               <template v-for="(line, i) in renderMultiline(title)" :key="i">
@@ -925,8 +950,7 @@ const marks = computed(() => {
             </template>
           </h1>
           <p class="amber-min-sub">
-            Cotações em tempo real, análise fundamentalista, assessora com IA<br>
-            e calculadora de aporte — numa só tela, do bolso à mesa.
+            Cotações em tempo real, análise fundamentalista, assessora com IA e calculadora de aporte, numa só tela, do bolso à mesa.
           </p>
         </div>
 
@@ -971,14 +995,14 @@ const marks = computed(() => {
 
         <div class="amber-min-split">
           <div class="amber-min-split-text">
-            <div class="amber-min-eyebrow">— CARTEIRA</div>
+            <div class="amber-min-eyebrow">CARTEIRA</div>
             <h2 class="amber-min-title amber-min-title-md">
               Visão completa<br>
               da <span class="amber-min-italic">sua</span><br>
               carteira.
             </h2>
             <p class="amber-min-sub">
-              Importe via Excel ou Open Finance. A Redentia consolida tudo em uma tela — rentabilidade, dividendos e exposição setorial, atualizados em tempo real.
+              Importe via Excel ou Open Finance. A Redentia consolida tudo em uma tela, rentabilidade, dividendos e exposição setorial, atualizados em tempo real.
             </p>
           </div>
           <div class="amber-min-iphone">
@@ -1031,7 +1055,7 @@ const marks = computed(() => {
         </div>
 
         <div class="amber-min-center amber-min-center-tight">
-          <div class="amber-min-eyebrow">— ANÁLISE</div>
+          <div class="amber-min-eyebrow">ANÁLISE</div>
           <h2 class="amber-min-title amber-min-title-md">
             Fundamentos e<br>
             preço-teto <span class="amber-min-italic">em 30s.</span>
@@ -1092,13 +1116,13 @@ const marks = computed(() => {
         </div>
 
         <div class="amber-min-center amber-min-center-tight">
-          <div class="amber-min-eyebrow">— DASHBOARD</div>
+          <div class="amber-min-eyebrow">DASHBOARD</div>
           <h2 class="amber-min-title amber-min-title-md">
             Seu assessor,<br>
             na <span class="amber-min-italic">sua</span> tela.
           </h2>
           <p class="amber-min-sub">
-            Previsão de dividendos, movimentos recentes, assessoria com IA e calculadora de aporte — num só dashboard. Redentia.com.br, direto do navegador.
+            Previsão de dividendos, movimentos recentes, assessoria com IA e calculadora de aporte, num só dashboard. Redentia.com.br, direto do navegador.
           </p>
         </div>
 
@@ -1134,7 +1158,7 @@ const marks = computed(() => {
         </div>
 
         <div class="amber-cta-c">
-          <div class="amber-cta-c-label">— FIM DO CARROSSEL · COMEÇO DO RESTO</div>
+          <div class="amber-cta-c-label">FIM DO CARROSSEL · COMEÇO DO RESTO</div>
 
           <h2 class="amber-cta-c-hero">
             <template v-if="title">
@@ -1160,127 +1184,120 @@ const marks = computed(() => {
             </div>
           </a>
 
-          <div class="amber-cta-c-foot">
-            <div class="amber-cta-c-foot-left">
-              <img src="/brand/logo-icon.svg" alt="" class="amber-cta-c-foot-icon" />
-              <span>Redent<strong>.IA</strong></span>
-            </div>
-            <div class="amber-cta-c-foot-meta">
-              <span>R$ 0 pra sempre</span>
-              <span class="dot">·</span>
-              <span>cadastro em 30s</span>
-              <span class="dot">·</span>
-              <span>sem cartão</span>
-            </div>
-          </div>
         </div>
       </div>
 
       <!-- ============================================================
            CARROSSEL · GENÉRICAS · STAT / LIST / STEPS / COMPARE / QUOTE
-           Reutilizáveis por todos os carrosséis com query params.
+           Todas no mesmo layout minimalista (logo + pager topo,
+           eyebrow + title + conteúdo no centro, grid amber de fundo).
            ============================================================ -->
-      <div v-else-if="variant === 'redentia-stat'" class="body amber-body amber-stat">
-        <div class="amber-pager">{{ pager || '02 / 05' }}</div>
-        <div class="amber-grain"></div>
-        <div class="amber-stat-inner">
-          <div class="amber-eyebrow">{{ eyebrow || '[ NÚMERO ]' }}</div>
-          <div class="amber-stat-value">
-            {{ statValue || '1.316' }}<span v-if="statUnit" class="amber-stat-unit">{{ statUnit }}</span>
+      <div v-else-if="variant === 'redentia-stat'" class="body amber-body amber-cover-min">
+        <div class="amber-min-top">
+          <img src="/brand/logo-full.svg" alt="Redentia" class="amber-min-logo" />
+          <div class="amber-min-pager">{{ pager || '02 — 05' }}</div>
+        </div>
+        <div class="amber-min-center amber-min-center-tight">
+          <div class="amber-min-eyebrow">{{ eyebrow || 'NÚMERO' }}</div>
+          <div class="amber-min-stat-big">
+            {{ statValue || '1.316' }}<span v-if="statUnit" class="amber-min-stat-unit">{{ statUnit }}</span>
           </div>
-          <h2 class="amber-stat-title">
+          <h2 class="amber-min-title amber-min-title-stat">
             <template v-if="title">
               <template v-for="(line, i) in renderMultiline(title)" :key="i">
-                <template v-if="splitHighlight(line).plain">{{ splitHighlight(line).plain }}</template><span v-if="splitHighlight(line).highlight" class="amber-underline">{{ splitHighlight(line).highlight }}</span>{{ splitHighlight(line).tail }}<br>
+                <template v-if="splitHighlight(line).plain">{{ splitHighlight(line).plain }}</template><span v-if="splitHighlight(line).highlight" class="amber-min-italic">{{ splitHighlight(line).highlight }}</span>{{ splitHighlight(line).tail }}<br>
               </template>
             </template>
             <template v-else>
-              Tickers cobertos em<br>
-              <span class="amber-underline">tempo real.</span>
+              Tickers cobertos em <span class="amber-min-italic">tempo real.</span>
             </template>
           </h2>
-          <p v-if="subtitle" class="amber-stat-sub">{{ subtitle }}</p>
+          <p v-if="subtitle" class="amber-min-sub">{{ subtitle }}</p>
         </div>
       </div>
 
-      <div v-else-if="variant === 'redentia-list'" class="body amber-body amber-list">
-        <div class="amber-pager">{{ pager || '03 / 05' }}</div>
-        <div class="amber-grain"></div>
-        <div class="amber-list-head">
-          <div class="amber-eyebrow">{{ eyebrow || '[ ITENS ]' }}</div>
-          <h2 class="amber-title amber-title-list">
+      <div v-else-if="variant === 'redentia-list'" class="body amber-body amber-cover-min">
+        <div class="amber-min-top">
+          <img src="/brand/logo-full.svg" alt="Redentia" class="amber-min-logo" />
+          <div class="amber-min-pager">{{ pager || '03 — 05' }}</div>
+        </div>
+        <div class="amber-min-center amber-min-center-tight">
+          <div class="amber-min-eyebrow">{{ eyebrow || 'ITENS' }}</div>
+          <h2 class="amber-min-title">
             <template v-if="title">
               <template v-for="(line, i) in renderMultiline(title)" :key="i">
-                <template v-if="splitHighlight(line).plain">{{ splitHighlight(line).plain }}</template><span v-if="splitHighlight(line).highlight" class="amber-underline">{{ splitHighlight(line).highlight }}</span>{{ splitHighlight(line).tail }}<br>
+                <template v-if="splitHighlight(line).plain">{{ splitHighlight(line).plain }}</template><span v-if="splitHighlight(line).highlight" class="amber-min-italic">{{ splitHighlight(line).highlight }}</span>{{ splitHighlight(line).tail }}<br>
               </template>
             </template>
             <template v-else>
-              Tudo num<br>
-              <span class="amber-underline">lugar só.</span>
+              Tudo num <span class="amber-min-italic">lugar só.</span>
             </template>
           </h2>
-          <p v-if="subtitle" class="amber-sub amber-sub-wide">{{ subtitle }}</p>
+          <p v-if="subtitle" class="amber-min-sub">{{ subtitle }}</p>
         </div>
-        <ul class="amber-list-items">
+        <ul class="amber-min-items-list">
           <li v-for="(item, i) in listItems" :key="i">
-            <span class="amber-list-num">{{ String(i + 1).padStart(2, '0') }}</span>
-            <span class="amber-list-text">
-              <template v-if="splitHighlight(item).plain">{{ splitHighlight(item).plain }}</template><span v-if="splitHighlight(item).highlight" class="amber-list-hl">{{ splitHighlight(item).highlight }}</span>{{ splitHighlight(item).tail }}
+            <span class="amber-min-items-num">{{ String(i + 1).padStart(2, '0') }}</span>
+            <span class="amber-min-items-text">
+              <template v-if="splitHighlight(item).plain">{{ splitHighlight(item).plain }}</template><span v-if="splitHighlight(item).highlight" class="amber-min-italic">{{ splitHighlight(item).highlight }}</span>{{ splitHighlight(item).tail }}
             </span>
           </li>
         </ul>
       </div>
 
-      <div v-else-if="variant === 'redentia-steps'" class="body amber-body amber-steps">
-        <div class="amber-pager">{{ pager || '03 / 05' }}</div>
-        <div class="amber-grain"></div>
-        <div class="amber-list-head">
-          <div class="amber-eyebrow">{{ eyebrow || '[ PASSO A PASSO ]' }}</div>
-          <h2 class="amber-title amber-title-list">
+      <div v-else-if="variant === 'redentia-steps'" class="body amber-body amber-cover-min">
+        <div class="amber-min-top">
+          <img src="/brand/logo-full.svg" alt="Redentia" class="amber-min-logo" />
+          <div class="amber-min-pager">{{ pager || '03 — 05' }}</div>
+        </div>
+        <div class="amber-min-center amber-min-center-tight">
+          <div class="amber-min-eyebrow">{{ eyebrow || 'PASSO A PASSO' }}</div>
+          <h2 class="amber-min-title">
             <template v-if="title">
               <template v-for="(line, i) in renderMultiline(title)" :key="i">
-                <template v-if="splitHighlight(line).plain">{{ splitHighlight(line).plain }}</template><span v-if="splitHighlight(line).highlight" class="amber-underline">{{ splitHighlight(line).highlight }}</span>{{ splitHighlight(line).tail }}<br>
+                <template v-if="splitHighlight(line).plain">{{ splitHighlight(line).plain }}</template><span v-if="splitHighlight(line).highlight" class="amber-min-italic">{{ splitHighlight(line).highlight }}</span>{{ splitHighlight(line).tail }}<br>
               </template>
             </template>
             <template v-else>
-              Em <span class="amber-underline">3 passos.</span>
+              Em <span class="amber-min-italic">3 passos.</span>
             </template>
           </h2>
         </div>
-        <div class="amber-steps-track">
-          <div class="amber-step" v-for="(step, i) in stepsItems" :key="i">
-            <div class="amber-step-num">{{ String(i + 1).padStart(2, '0') }}</div>
-            <div class="amber-step-body">{{ step }}</div>
+        <div class="amber-min-steps-list">
+          <div class="amber-min-step" v-for="(step, i) in stepsItems" :key="i">
+            <div class="amber-min-step-num">{{ String(i + 1).padStart(2, '0') }}</div>
+            <div class="amber-min-step-body">{{ step }}</div>
           </div>
         </div>
       </div>
 
-      <div v-else-if="variant === 'redentia-compare'" class="body amber-body amber-compare">
-        <div class="amber-pager">{{ pager || '04 / 05' }}</div>
-        <div class="amber-grain"></div>
-        <div class="amber-list-head">
-          <div class="amber-eyebrow">{{ eyebrow || '[ ANTES → DEPOIS ]' }}</div>
-          <h2 class="amber-title">
+      <div v-else-if="variant === 'redentia-compare'" class="body amber-body amber-cover-min">
+        <div class="amber-min-top">
+          <img src="/brand/logo-full.svg" alt="Redentia" class="amber-min-logo" />
+          <div class="amber-min-pager">{{ pager || '04 — 05' }}</div>
+        </div>
+        <div class="amber-min-center amber-min-center-tight">
+          <div class="amber-min-eyebrow">{{ eyebrow || 'ANTES / DEPOIS' }}</div>
+          <h2 class="amber-min-title">
             <template v-if="title">
               <template v-for="(line, i) in renderMultiline(title)" :key="i">
-                <template v-if="splitHighlight(line).plain">{{ splitHighlight(line).plain }}</template><span v-if="splitHighlight(line).highlight" class="amber-underline">{{ splitHighlight(line).highlight }}</span>{{ splitHighlight(line).tail }}<br>
+                <template v-if="splitHighlight(line).plain">{{ splitHighlight(line).plain }}</template><span v-if="splitHighlight(line).highlight" class="amber-min-italic">{{ splitHighlight(line).highlight }}</span>{{ splitHighlight(line).tail }}<br>
               </template>
             </template>
             <template v-else>
-              Antes de depois de <span class="amber-underline">Redentia.</span>
+              Antes e depois de <span class="amber-min-italic">Redentia.</span>
             </template>
           </h2>
         </div>
-        <div class="amber-compare-grid">
-          <div class="amber-compare-col amber-compare-before">
-            <div class="amber-compare-label">{{ beforeTitle }}</div>
+        <div class="amber-min-compare-grid">
+          <div class="amber-min-compare-col amber-min-compare-before">
+            <div class="amber-min-compare-label">{{ beforeTitle }}</div>
             <ul>
               <li v-for="(item, i) in beforeItems" :key="i">{{ item }}</li>
             </ul>
           </div>
-          <div class="amber-compare-arrow">→</div>
-          <div class="amber-compare-col amber-compare-after">
-            <div class="amber-compare-label amber-compare-label-after">{{ afterTitle }}</div>
+          <div class="amber-min-compare-col amber-min-compare-after">
+            <div class="amber-min-compare-label amber-min-compare-label-after">{{ afterTitle }}</div>
             <ul>
               <li v-for="(item, i) in afterItems" :key="i">{{ item }}</li>
             </ul>
@@ -1288,23 +1305,121 @@ const marks = computed(() => {
         </div>
       </div>
 
-      <div v-else-if="variant === 'redentia-quote'" class="body amber-body amber-quote">
-        <div class="amber-pager">{{ pager || '02 / 05' }}</div>
-        <div class="amber-grain"></div>
-        <div class="amber-quote-inner">
-          <div class="amber-quote-mark">"</div>
-          <h2 class="amber-quote-text">
+      <div v-else-if="variant === 'redentia-quote'" class="body amber-body amber-cover-min">
+        <div class="amber-min-top">
+          <img src="/brand/logo-full.svg" alt="Redentia" class="amber-min-logo" />
+          <div class="amber-min-pager">{{ pager || '02 — 05' }}</div>
+        </div>
+        <div class="amber-min-center amber-min-center-quote">
+          <div class="amber-min-eyebrow">{{ eyebrow || 'CITAÇÃO' }}</div>
+          <div class="amber-min-quote-mark">"</div>
+          <h2 class="amber-min-title amber-min-title-quote">
             <template v-if="title">
               <template v-for="(line, i) in renderMultiline(title)" :key="i">
-                <template v-if="splitHighlight(line).plain">{{ splitHighlight(line).plain }}</template><span v-if="splitHighlight(line).highlight" class="amber-underline">{{ splitHighlight(line).highlight }}</span>{{ splitHighlight(line).tail }}<br>
+                <template v-if="splitHighlight(line).plain">{{ splitHighlight(line).plain }}</template><span v-if="splitHighlight(line).highlight" class="amber-min-italic">{{ splitHighlight(line).highlight }}</span>{{ splitHighlight(line).tail }}<br>
               </template>
             </template>
             <template v-else>
               Investir é liberdade<br>
-              <span class="amber-underline">disfarçada de paciência.</span>
+              <span class="amber-min-italic">disfarçada de paciência.</span>
             </template>
           </h2>
-          <p v-if="subtitle" class="amber-quote-author">— {{ subtitle }}</p>
+          <p v-if="subtitle" class="amber-min-quote-author">{{ subtitle }}</p>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           UNIT POSTS · PUSH NOTIFICATION
+           iPhone lock screen com notificação Redentia
+           ============================================================ -->
+      <div v-else-if="variant === 'redentia-push'" class="body amber-body amber-cover-min">
+        <div class="amber-min-top">
+          <img src="/brand/logo-full.svg" alt="Redentia" class="amber-min-logo" />
+          <div class="amber-min-pager">{{ pager || 'NOTIFICAÇÃO' }}</div>
+        </div>
+        <div class="amber-push-wrap">
+          <div class="amber-push-eyebrow">{{ eyebrow || 'CHEGOU UM ALERTA' }}</div>
+          <div class="amber-push-lockscreen">
+            <div class="amber-push-time">{{ q('lock_time', '9:41') }}</div>
+            <div class="amber-push-date">{{ q('lock_date', 'Quinta-feira, 28 de Abril') }}</div>
+            <div class="amber-push-card">
+              <div class="amber-push-card-head">
+                <div class="amber-push-card-icon">
+                  <img src="/brand/logo-icon.svg" alt="" />
+                </div>
+                <div class="amber-push-card-meta">
+                  <span class="amber-push-card-app">REDENTIA</span>
+                  <span class="amber-push-card-when">agora</span>
+                </div>
+              </div>
+              <div class="amber-push-card-title">{{ pushTitle || 'BBAS3 anunciou JCP' }}</div>
+              <div class="amber-push-card-body">{{ pushBody || 'R$ 0,42 por ação. Você vai receber R$ 210,00 em 28/abr.' }}</div>
+            </div>
+          </div>
+          <p v-if="subtitle" class="amber-push-caption">{{ subtitle }}</p>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           UNIT POSTS · MOVIMENTO (variação notável de ativo)
+           ============================================================ -->
+      <div v-else-if="variant === 'redentia-movimento'" class="body amber-body amber-cover-min">
+        <div class="amber-min-top">
+          <img src="/brand/logo-full.svg" alt="Redentia" class="amber-min-logo" />
+          <div class="amber-min-pager">{{ pager || (direction === 'up' ? 'ALTA NOTÁVEL' : 'BAIXA NOTÁVEL') }}</div>
+        </div>
+        <div class="amber-min-center amber-min-center-tight">
+          <div class="amber-min-eyebrow">{{ eyebrow || 'MOVIMENTO DO DIA' }}</div>
+          <div class="amber-mov-wrap">
+            <div class="amber-mov-ticker">{{ ticker }}</div>
+            <div class="amber-mov-name">{{ tickerName }} <span v-if="tickerSector">· {{ tickerSector }}</span></div>
+          </div>
+          <div class="amber-mov-price-row">
+            <div class="amber-mov-price">{{ price }}</div>
+            <div class="amber-mov-change" :class="direction === 'up' ? 'pos' : 'neg'">
+              <span class="amber-mov-arrow">{{ direction === 'up' ? '↑' : '↓' }}</span>
+              {{ change }}
+            </div>
+          </div>
+          <p v-if="subtitle" class="amber-min-sub">{{ subtitle }}</p>
+          <div v-if="meta1 || meta2 || meta3" class="amber-mov-meta">
+            <span v-if="meta1">{{ meta1 }}</span>
+            <span v-if="meta2">{{ meta2 }}</span>
+            <span v-if="meta3">{{ meta3 }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           UNIT POSTS · RANKING top 5
+           ============================================================ -->
+      <div v-else-if="variant === 'redentia-ranking'" class="body amber-body amber-cover-min">
+        <div class="amber-min-top">
+          <img src="/brand/logo-full.svg" alt="Redentia" class="amber-min-logo" />
+          <div class="amber-min-pager">{{ pager || 'RANKING' }}</div>
+        </div>
+        <div class="amber-min-center amber-min-center-tight">
+          <div class="amber-min-eyebrow">{{ eyebrow || 'TOP 5 DA SEMANA' }}</div>
+          <h2 class="amber-min-title">
+            <template v-if="title">
+              <template v-for="(line, i) in renderMultiline(title)" :key="i">
+                <template v-if="splitHighlight(line).plain">{{ splitHighlight(line).plain }}</template><span v-if="splitHighlight(line).highlight" class="amber-min-italic">{{ splitHighlight(line).highlight }}</span>{{ splitHighlight(line).tail }}<br>
+              </template>
+            </template>
+            <template v-else>
+              Top 5\n
+              <span class="amber-min-italic">dividend yield.</span>
+            </template>
+          </h2>
+          <p v-if="subtitle" class="amber-min-sub">{{ subtitle }}</p>
+        </div>
+        <div class="amber-ranking-list">
+          <div class="amber-ranking-item" v-for="(item, i) in rankingItems" :key="i">
+            <div class="amber-ranking-pos">{{ String(i + 1).padStart(2, '0') }}</div>
+            <div class="amber-ranking-ticker">{{ item.ticker }}</div>
+            <div class="amber-ranking-value">{{ item.value }}</div>
+            <div class="amber-ranking-extra">{{ item.extra }}</div>
+          </div>
         </div>
       </div>
 
@@ -3398,7 +3513,10 @@ const marks = computed(() => {
   color: #0A0B0E;
   border: none;
   border-radius: 0;
-  padding: 64px 72px;
+  /* Padding moved into .amber-cover-min so the body can use the
+     full 1080 height instead of 952 (1080 − 128px vertical pad),
+     which prevents the footer from being clipped. */
+  padding: 0 !important;
 }
 .card-redentia-cover .backdrop-1,
 .card-redentia-cover .backdrop-2,
@@ -3435,6 +3553,21 @@ const marks = computed(() => {
 .card-redentia-features .footer,
 .card-redentia-cta .header,
 .card-redentia-cta .footer {
+  display: none;
+}
+.card-redentia-push,
+.card-redentia-movimento,
+.card-redentia-ranking {
+  padding: 0 !important;
+  overflow: hidden !important;
+  position: relative;
+}
+.card-redentia-push .header,
+.card-redentia-push .footer,
+.card-redentia-movimento .header,
+.card-redentia-movimento .footer,
+.card-redentia-ranking .header,
+.card-redentia-ranking .footer {
   display: none;
 }
 
@@ -4058,24 +4191,16 @@ const marks = computed(() => {
 
 /* ----- POST 1 · MINIMALIST COVER ----- */
 .amber-cover-min {
-  /* padding-bottom reserves space for the absolutely-positioned
-     footer so the pillars/content don't overlap it. */
-  padding: 0 0 80px 0 !important;
+  /* Use the full card 1080 height; paddings are here (not on the
+     card) so the footer sits inside the visible area. */
+  padding: 64px 72px !important;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto 1fr auto auto;
   height: 100%;
   gap: 0;
-  /* position: static so absolute children (the footer) resolve
-     to the card, which is position:relative. */
-  position: static;
-  overflow: hidden !important;
-}
-.card-redentia-cover,
-.card-redentia-wallet,
-.card-redentia-analysis,
-.card-redentia-features,
-.card-redentia-cta {
   position: relative;
+  overflow: visible !important;
+  box-sizing: border-box;
 }
 /* Paints the grid onto the card itself via absolutely positioned
    pseudo-sibling, so it covers the full 1080x1080 card (past the
@@ -4188,13 +4313,13 @@ const marks = computed(() => {
   margin: 0 12px;
 }
 .amber-min-logo {
-  height: 44px;
+  height: 56px;
   width: auto;
   filter: brightness(0);
 }
 .amber-min-pager {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 13px;
+  font-size: 18px;
   letter-spacing: 0.3em;
   color: #0A0B0E;
   font-weight: 600;
@@ -4212,15 +4337,15 @@ const marks = computed(() => {
 }
 .amber-min-eyebrow {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 14px;
-  letter-spacing: 0.3em;
+  font-size: 20px;
+  letter-spacing: 0.28em;
   color: #0A0B0E;
   font-weight: 700;
   opacity: 0.75;
 }
 .amber-min-title {
   font-family: 'Inter', sans-serif;
-  font-size: 72px;
+  font-size: 84px;
   line-height: 1.02;
   color: #0A0B0E;
   font-weight: 700;
@@ -4232,12 +4357,12 @@ const marks = computed(() => {
 }
 .amber-min-sub {
   font-family: 'Inter', sans-serif;
-  font-size: 20px;
-  line-height: 1.5;
+  font-size: 26px;
+  line-height: 1.45;
   color: #0A0B0E;
   margin: 0;
   opacity: 0.8;
-  max-width: 720px;
+  max-width: 820px;
   font-style: normal;
   font-weight: 400;
 }
@@ -4248,8 +4373,6 @@ const marks = computed(() => {
   align-items: stretch;
   gap: 0;
   padding: 22px 0;
-  border-top: 1px solid rgba(10, 11, 14, 0.2);
-  border-bottom: 1px solid rgba(10, 11, 14, 0.2);
   flex-shrink: 0;
 }
 .amber-min-pillar {
@@ -4261,7 +4384,7 @@ const marks = computed(() => {
 }
 .amber-min-pillar-num {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
+  font-size: 16px;
   letter-spacing: 0.25em;
   color: #0A0B0E;
   opacity: 0.55;
@@ -4269,31 +4392,16 @@ const marks = computed(() => {
 }
 .amber-min-pillar-name {
   font-family: 'Fraunces', serif;
-  font-size: 24px;
+  font-size: 32px;
   color: #0A0B0E;
   line-height: 1;
   font-weight: 400;
 }
 .amber-min-pillar-sep {
-  width: 1px;
-  background: rgba(10, 11, 14, 0.2);
-  margin: 0 18px;
+  display: none;
 }
 .amber-min-foot {
-  /* Use position:fixed so the footer reliably anchors to the
-     bottom of the 1080×1080 headless viewport. position:absolute
-     inside the overflow-hidden body was being clipped silently
-     in headless Chrome. */
-  position: fixed;
-  left: 72px;
-  right: 72px;
-  bottom: 24px;
-  z-index: 999;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 18px;
-  border-top: 1px solid rgba(10, 11, 14, 0.2);
+  display: none;
 }
 .amber-min-foot-icon {
   height: 22px;
@@ -4322,7 +4430,7 @@ const marks = computed(() => {
 
 /* Variations for other posts */
 .amber-min-title-md {
-  font-size: 94px;
+  font-size: 86px;
 }
 .amber-min-title-lg {
   font-size: 120px;
@@ -4333,10 +4441,14 @@ const marks = computed(() => {
   padding: 20px 0;
 }
 .card-redentia-features .amber-min-center-tight {
-  margin-top: 56px;
+  padding-top: 180px;
+  padding-bottom: 60px;
 }
 .card-redentia-features .amber-min-laptop {
-  margin-top: 20px;
+  margin-top: 40px;
+}
+.card-redentia-features .amber-min-laptop .laptop-frame {
+  height: 380px;
 }
 .amber-min-center-cta {
   align-items: flex-start;
@@ -4400,14 +4512,15 @@ const marks = computed(() => {
   background: #0A0B0E;
 }
 .amber-min-iphone-iframe {
-  /* Renders real Redentia home at mobile width (390px) and scales down
-     to fit inside the iphone screen (~328px). The original viewport
-     stays at mobile-size so responsive layouts kick in correctly. */
-  width: 390px;
-  height: 840px;
+  /* The Redentia home page forces its body to 1080px wide.
+     Render the iframe at the natural 1080px (so the whole page
+     layout fits without horizontal overflow) and scale it down
+     to 328px so it fills the iPhone screen edge-to-edge. */
+  width: 1080px;
+  height: 2300px;
   border: 0;
   display: block;
-  transform: scale(0.841);
+  transform: scale(0.304);
   transform-origin: top left;
   background: #0A0B0E;
 }
@@ -4426,37 +4539,37 @@ const marks = computed(() => {
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(10, 11, 14, 0.18);
   border-radius: 4px;
-  padding: 24px 22px;
+  padding: 28px 24px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
   color: #0A0B0E;
   backdrop-filter: blur(2px);
 }
 .amber-min-card-ticker {
   font-family: 'Inter', sans-serif;
-  font-size: 28px;
+  font-size: 34px;
   font-weight: 800;
   color: #0A0B0E;
   letter-spacing: -0.01em;
 }
 .amber-min-card-name {
   font-family: 'Inter', sans-serif;
-  font-size: 12px;
+  font-size: 15px;
   color: #0A0B0E;
   opacity: 0.55;
   font-style: normal;
   font-weight: 600;
   line-height: 1;
   border-bottom: 1px solid rgba(10, 11, 14, 0.15);
-  padding-bottom: 14px;
+  padding-bottom: 16px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 .amber-min-card-rows {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   margin-top: 4px;
 }
 .amber-min-card-rows div {
@@ -4464,7 +4577,7 @@ const marks = computed(() => {
   justify-content: space-between;
   align-items: baseline;
   font-family: 'Inter', sans-serif;
-  font-size: 14px;
+  font-size: 18px;
 }
 .amber-min-card-rows span {
   color: #0A0B0E;
@@ -4478,7 +4591,7 @@ const marks = computed(() => {
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   font-family: 'Inter', sans-serif;
-  font-size: 15px;
+  font-size: 19px;
 }
 .amber-min-card-rows em.pos { color: #0a7a3f; }
 .amber-min-card-rows em.neg { color: #a0211c; }
@@ -4497,7 +4610,7 @@ const marks = computed(() => {
 }
 .amber-min-laptop .laptop-frame {
   width: 920px;
-  height: 600px;
+  height: 500px;
   background: #0A0B0E;
   border-radius: 12px;
   overflow: hidden;
@@ -4794,7 +4907,7 @@ const marks = computed(() => {
 
 /* ----- POST 5 · CLEAN CTA ----- */
 .amber-cta-clean {
-  justify-content: flex-start;
+  grid-template-columns: 1fr;
 }
 .amber-cta-c {
   position: relative;
@@ -4809,7 +4922,7 @@ const marks = computed(() => {
 }
 .amber-cta-c-label {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 14px;
+  font-size: 20px;
   letter-spacing: 0.28em;
   color: #0A0B0E;
   font-weight: 700;
@@ -5505,10 +5618,19 @@ const marks = computed(() => {
 .card-redentia-list,
 .card-redentia-steps,
 .card-redentia-compare,
-.card-redentia-quote {
-  background: #F5A623;
+.card-redentia-quote,
+.card-redentia-push,
+.card-redentia-movimento,
+.card-redentia-ranking {
+  background-color: #F5A623;
+  background-image:
+    linear-gradient(rgba(10, 11, 14, 0.11) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(10, 11, 14, 0.11) 1px, transparent 1px);
+  background-size: 54px 54px;
+  background-position: -1px -1px;
   color: #0A0B0E;
   border: none;
+  border-radius: 0;
   border-radius: 0;
   padding: 64px 72px;
 }
@@ -5839,6 +5961,496 @@ const marks = computed(() => {
   font-weight: 700;
   text-transform: uppercase;
   margin-top: 20px;
+}
+
+/* ============================================================
+   GENERIC VARIANTS · MINIMALIST LAYOUT
+   (stat · list · steps · compare · quote)
+   Same header/footer/grid shell as the POST_01 cover; only the
+   middle content differs between variants.
+   ============================================================ */
+
+/* STAT · big number */
+.amber-min-stat-big {
+  font-family: 'Inter', sans-serif;
+  font-size: 180px;
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+  color: #0A0B0E;
+  margin: 4px 0 0 0;
+}
+.amber-min-stat-unit {
+  font-size: 72px;
+  font-weight: 700;
+  opacity: 0.7;
+  margin-left: 8px;
+}
+.amber-min-title-stat {
+  font-size: 60px;
+  margin-top: 4px;
+}
+
+/* LIST · items numerados */
+.amber-min-items-list {
+  position: relative;
+  z-index: 2;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 40px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.amber-min-items-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 18px 24px;
+  background: rgba(10, 11, 14, 0.04);
+  border: 1px solid rgba(10, 11, 14, 0.15);
+  border-radius: 4px;
+}
+.amber-min-items-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 18px;
+  font-weight: 700;
+  color: #0A0B0E;
+  opacity: 0.5;
+  letter-spacing: 0.04em;
+  min-width: 44px;
+  padding-top: 3px;
+}
+.amber-min-items-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 19px;
+  line-height: 1.4;
+  color: #0A0B0E;
+  font-weight: 500;
+  flex: 1;
+}
+
+/* STEPS */
+.amber-min-steps-list {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 40px;
+  flex-shrink: 0;
+}
+.amber-min-step {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 26px 28px;
+  background: rgba(10, 11, 14, 0.04);
+  border: 1px solid rgba(10, 11, 14, 0.2);
+  border-radius: 4px;
+}
+.amber-min-step-num {
+  font-family: 'Inter', sans-serif;
+  font-size: 64px;
+  font-weight: 800;
+  line-height: 1;
+  color: #0A0B0E;
+  letter-spacing: -0.03em;
+  min-width: 100px;
+  padding-right: 24px;
+  border-right: 1px solid rgba(10, 11, 14, 0.2);
+}
+.amber-min-step-body {
+  font-family: 'Inter', sans-serif;
+  font-size: 22px;
+  line-height: 1.35;
+  color: #0A0B0E;
+  font-weight: 500;
+  flex: 1;
+}
+
+/* COMPARE · 2 cols */
+.amber-min-compare-grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 40px;
+  flex-shrink: 0;
+}
+.amber-min-compare-col {
+  padding: 28px 24px;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.amber-min-compare-before {
+  background: rgba(10, 11, 14, 0.06);
+  border: 1px solid rgba(10, 11, 14, 0.2);
+}
+.amber-min-compare-after {
+  background: #0A0B0E;
+  color: #F5A623;
+}
+.amber-min-compare-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  letter-spacing: 0.24em;
+  color: #0A0B0E;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(10, 11, 14, 0.2);
+}
+.amber-min-compare-label-after {
+  color: #F5A623;
+  border-bottom-color: rgba(245, 166, 35, 0.3);
+}
+.amber-min-compare-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.amber-min-compare-before ul li {
+  font-family: 'Inter', sans-serif;
+  font-size: 17px;
+  line-height: 1.35;
+  color: #0A0B0E;
+  opacity: 0.65;
+  padding-left: 24px;
+  position: relative;
+  font-weight: 500;
+  text-decoration: line-through;
+}
+.amber-min-compare-before ul li::before {
+  content: '×';
+  position: absolute;
+  left: 0;
+  font-weight: 700;
+  opacity: 0.8;
+}
+.amber-min-compare-after ul li {
+  font-family: 'Inter', sans-serif;
+  font-size: 18px;
+  line-height: 1.35;
+  color: #F5A623;
+  padding-left: 24px;
+  position: relative;
+  font-weight: 600;
+}
+.amber-min-compare-after ul li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: #00D395;
+  font-weight: 700;
+}
+
+/* QUOTE */
+.amber-min-center-quote {
+  justify-content: center;
+  padding: 40px 0;
+}
+.amber-min-quote-mark {
+  font-family: 'Inter', sans-serif;
+  font-size: 240px;
+  font-weight: 900;
+  color: #0A0B0E;
+  line-height: 0.7;
+  height: 110px;
+  letter-spacing: -0.05em;
+}
+.amber-min-title-quote {
+  font-size: 90px;
+  line-height: 0.98;
+  margin-top: 20px;
+}
+.amber-min-quote-author {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 15px;
+  letter-spacing: 0.22em;
+  color: #0A0B0E;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-top: 32px;
+  opacity: 0.75;
+}
+
+/* ============================================================
+   UNIT POSTS · PUSH NOTIFICATION (iPhone lock screen)
+   ============================================================ */
+.amber-push-wrap {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0 80px 0;
+}
+.amber-push-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 20px;
+  letter-spacing: 0.28em;
+  color: #0A0B0E;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.amber-push-lockscreen {
+  width: 460px;
+  height: 660px;
+  background:
+    radial-gradient(ellipse at 50% 20%, rgba(245, 166, 35, 0.18) 0%, transparent 55%),
+    linear-gradient(180deg, #0a0503 0%, #1a0e02 50%, #0f0602 100%);
+  border-radius: 50px;
+  padding: 52px 26px 40px 26px;
+  box-shadow:
+    inset 0 0 0 2px #2a2a2e,
+    inset 0 0 0 14px #050506,
+    0 24px 48px rgba(10, 11, 14, 0.35);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+.amber-push-lockscreen::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 115px;
+  height: 32px;
+  background: #000;
+  border-radius: 18px;
+}
+.amber-push-time {
+  font-family: -apple-system, 'SF Pro Display', 'Inter', sans-serif;
+  font-size: 84px;
+  font-weight: 200;
+  color: rgba(255, 255, 255, 0.92);
+  letter-spacing: -0.03em;
+  margin-top: 56px;
+  line-height: 1;
+}
+.amber-push-date {
+  font-family: -apple-system, 'SF Pro Display', 'Inter', sans-serif;
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 500;
+  margin-top: 6px;
+  margin-bottom: 46px;
+}
+.amber-push-card {
+  width: 100%;
+  background: rgba(35, 30, 25, 0.72);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  padding: 16px 18px;
+  color: white;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+.amber-push-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.amber-push-card-icon {
+  width: 28px;
+  height: 28px;
+  background: #F5A623;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+.amber-push-card-icon img {
+  width: 100%;
+  height: 100%;
+  filter: invert(1);
+}
+.amber-push-card-meta {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: -apple-system, 'SF Pro Display', 'Inter', sans-serif;
+}
+.amber-push-card-app {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.88);
+  letter-spacing: 0.02em;
+}
+.amber-push-card-when {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+}
+.amber-push-card-title {
+  font-family: -apple-system, 'SF Pro Display', 'Inter', sans-serif;
+  font-size: 17px;
+  font-weight: 600;
+  color: white;
+  line-height: 1.25;
+  margin-bottom: 4px;
+}
+.amber-push-card-body {
+  font-family: -apple-system, 'SF Pro Display', 'Inter', sans-serif;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.3;
+}
+.amber-push-caption {
+  font-family: 'Inter', sans-serif;
+  font-size: 22px;
+  color: #0A0B0E;
+  opacity: 0.75;
+  line-height: 1.4;
+  text-align: center;
+  max-width: 720px;
+  margin: 0;
+}
+
+/* ============================================================
+   UNIT POSTS · MOVIMENTO (variação de ativo)
+   ============================================================ */
+.amber-mov-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.amber-mov-ticker {
+  font-family: 'Inter', sans-serif;
+  font-size: 120px;
+  font-weight: 800;
+  line-height: 0.95;
+  color: #0A0B0E;
+  letter-spacing: -0.05em;
+}
+.amber-mov-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 18px;
+  letter-spacing: 0.18em;
+  color: #0A0B0E;
+  opacity: 0.7;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.amber-mov-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 32px;
+  margin-top: 8px;
+  padding: 24px 0;
+  border-top: 1px solid rgba(10, 11, 14, 0.2);
+  border-bottom: 1px solid rgba(10, 11, 14, 0.2);
+}
+.amber-mov-price {
+  font-family: 'Inter', sans-serif;
+  font-size: 72px;
+  font-weight: 800;
+  line-height: 1;
+  color: #0A0B0E;
+  letter-spacing: -0.03em;
+}
+.amber-mov-change {
+  font-family: 'Inter', sans-serif;
+  font-size: 56px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.amber-mov-change.pos { color: #0a7a3f; }
+.amber-mov-change.neg { color: #a0211c; }
+.amber-mov-arrow {
+  font-size: 48px;
+}
+.amber-mov-meta {
+  display: flex;
+  gap: 14px;
+  margin-top: 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 15px;
+  letter-spacing: 0.12em;
+  color: #0A0B0E;
+  font-weight: 600;
+  opacity: 0.7;
+  flex-wrap: wrap;
+}
+.amber-mov-meta span {
+  padding: 10px 16px;
+  border: 1px solid rgba(10, 11, 14, 0.25);
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   UNIT POSTS · RANKING
+   ============================================================ */
+.amber-ranking-list {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 40px;
+  flex-shrink: 0;
+}
+.amber-ranking-item {
+  display: grid;
+  grid-template-columns: 70px 1fr auto auto;
+  gap: 20px;
+  align-items: center;
+  padding: 18px 24px;
+  background: rgba(10, 11, 14, 0.04);
+  border: 1px solid rgba(10, 11, 14, 0.2);
+  border-radius: 4px;
+}
+.amber-ranking-pos {
+  font-family: 'Inter', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  color: #0A0B0E;
+  opacity: 0.45;
+  letter-spacing: -0.02em;
+}
+.amber-ranking-ticker {
+  font-family: 'Inter', sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  color: #0A0B0E;
+  letter-spacing: -0.01em;
+}
+.amber-ranking-value {
+  font-family: 'Inter', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  color: #0a7a3f;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+.amber-ranking-extra {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: #0A0B0E;
+  opacity: 0.55;
+  letter-spacing: 0.08em;
+  font-weight: 600;
 }
 </style>
 

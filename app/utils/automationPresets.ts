@@ -176,7 +176,7 @@ Oportunidade de compra ou só sangueira? Comenta aí 👇
 📉 Fundamentos e histórico em redentia.com.br
 
 #b3 #bolsabrasileira #investimentos #trader #{rank.leader.ticker}`,
-  defaultSchedule: { cron: '0 21 * * 1-5', humanized: 'Dias úteis às 18:00 BRT' },
+  defaultSchedule: { cron: '0 18 * * 1-5', humanized: 'Dias úteis às 18:00 BRT' },
   buildMedia: (p) => {
     const src = urlWithParams(`https://creative.redentia.com.br/ranking/${side}`, {
       limit: p.top_n,
@@ -281,8 +281,8 @@ Comprou na queda ou fugiu a tempo? Comenta aí 👇
 
 #b3 #investimentos #acoes #{series.leader.ticker} #bolsabrasileira`,
   defaultSchedule: side === 'best'
-    ? { cron: '0 21 * * 5', humanized: 'Toda sexta às 18:00 BRT' }
-    : { cron: '0 10 * * 1', humanized: 'Toda segunda às 07:00 BRT' },
+    ? { cron: '0 18 * * 5', humanized: 'Toda sexta às 18:00 BRT' }
+    : { cron: '0 7 * * 1', humanized: 'Toda segunda às 07:00 BRT' },
   buildMedia: (p) => {
     const auto = side === 'best' ? 'best-week' : 'worst-week'
     const src = urlWithParams('https://creative.redentia.com.br/growth-race', {
@@ -399,7 +399,7 @@ Qual lado te surpreendeu mais? 👇
 📊 Análise completa em redentia.com.br
 
 #b3 #bolsabrasileira #investimentos #acoes #{top.leader.ticker}`,
-  defaultSchedule: { cron: '0 21 * * 1-5', humanized: 'Dias úteis às 18:00 BRT' },
+  defaultSchedule: { cron: '0 18 * * 1-5', humanized: 'Dias úteis às 18:00 BRT' },
   buildMedia: (p) => {
     const top = urlWithParams('https://creative.redentia.com.br/ranking/top', {
       limit: p.top_n, volume: p.min_volume,
@@ -477,7 +477,7 @@ Qual ativo te surpreendeu aqui? 👇
 📊 redentia.com.br · Dados ao vivo
 
 #b3 #bolsabrasileira #investimentos #dividendos #{week.leader.ticker}`,
-  defaultSchedule: { cron: '0 12 * * 6', humanized: 'Sábado às 09:00 BRT' },
+  defaultSchedule: { cron: '0 9 * * 6', humanized: 'Sábado às 09:00 BRT' },
   buildMedia: (p) => {
     const src = urlWithParams('https://creative.redentia.com.br/treemap-weekly', {
       per_side: p.per_side,

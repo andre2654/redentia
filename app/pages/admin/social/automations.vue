@@ -931,8 +931,9 @@ function humanizedScheduleOf(a: ISocialAutomation): string | null {
   if (everyMatch && hh === '*' && dow === '*') return `a cada ${everyMatch[1]} min`
   const m = Number(mm), h = Number(hh)
   if (Number.isNaN(m) || Number.isNaN(h)) return `cron: ${a.schedule}`
-  const brtH = ((h - 3) + 24) % 24
-  const time = `${String(brtH).padStart(2, '0')}:${String(m).padStart(2, '0')} BRT`
+  // Laravel scheduler runs in APP_TIMEZONE (America/Sao_Paulo), so
+  // the hour in the cron expression is already BRT — no conversion.
+  const time = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')} BRT`
   if (dow === '*') return `todo dia às ${time}`
   if (dow === '1-5') return `dias úteis às ${time}`
   return `cron: ${a.schedule}`
