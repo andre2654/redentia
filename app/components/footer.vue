@@ -49,6 +49,7 @@
             v-for="letra in alfabeto"
             :key="letra"
             :to="`/glossario?letra=${letra}`"
+            rel="nofollow"
             class="hover:text-secondary transition-colors"
           >
             {{ letra }}

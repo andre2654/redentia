@@ -3007,14 +3007,8 @@
                   class="font-mono-tab text-3xl font-bold tracking-tight md:text-4xl"
                   :style="{ color: brand.colors.text }"
                 >
-                  {{ tickerUpper }}
+                  {{ tickerUpper }} <span class="text-lg font-semibold md:text-xl" :style="{ color: brand.colors.text }">— {{ asset?.name || assetName }}</span>
                 </h1>
-                <p
-                  class="truncate text-lg font-semibold leading-tight md:text-xl"
-                  :style="{ color: brand.colors.text }"
-                >
-                  {{ asset?.name || assetName }}
-                </p>
                 <span
                   v-if="asset?.sector"
                   class="font-mono-tab text-[10px] uppercase tracking-[0.12em]"
@@ -3132,7 +3126,7 @@
                   class="font-mono-tab text-[11px] uppercase tracking-[0.12em]"
                   :style="{ color: brand.colors.textMuted }"
                 >
-                  &gt; HISTORICO DE COTACAO · {{ selectedTimeRange?.toString().toUpperCase() || 'PERIODO' }}
+                  &gt; HISTÓRICO DE COTAÇÃO · {{ selectedTimeRange?.toString().toUpperCase() || 'PERÍODO' }}
                 </span>
               </div>
               <MoleculesPeriodSelector
@@ -3179,7 +3173,7 @@
                 Indicadores fundamentalistas
               </h2>
               <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
-                &gt; METRICAS DE {{ tickerUpper }} · ULTIMA ATUALIZACAO DISPONIVEL
+                &gt; MÉTRICAS DE {{ tickerUpper }} · ÚLTIMA ATUALIZAÇÃO DISPONÍVEL
               </p>
             </div>
 
@@ -3299,7 +3293,7 @@
             Dividendos e proventos
           </h2>
           <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
-            &gt; HISTORICO DE PAGAMENTOS · PROBABILIDADE MENSAL
+            &gt; HISTÓRICO DE PAGAMENTOS · PROBABILIDADE MENSAL
           </p>
         </header>
 
@@ -3419,7 +3413,7 @@
             Demonstrações financeiras
           </h2>
           <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
-            &gt; ULTIMO TRIMESTRE DISPONIVEL · FLUXO DE CAIXA · BALANCO · DRE
+            &gt; ÚLTIMO TRIMESTRE DISPONÍVEL · FLUXO DE CAIXA · BALANÇO · DRE
           </p>
         </header>
 
@@ -3597,7 +3591,7 @@
             Sobre a empresa
           </h2>
           <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
-            &gt; DADOS INSTITUCIONAIS · SETOR · INDUSTRIA
+            &gt; DADOS INSTITUCIONAIS · SETOR · INDÚSTRIA
           </p>
         </header>
 
@@ -3637,7 +3631,7 @@
               </div>
               <div v-if="asset?.industry" class="flex flex-col gap-1 px-4 py-4" :style="{ backgroundColor: brand.colors.background }">
                 <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
-                  [INDUSTRIA]
+                  [INDÚSTRIA]
                 </span>
                 <span class="text-sm font-medium" :style="{ color: brand.colors.text }">{{ asset.industry }}</span>
               </div>
@@ -3679,7 +3673,7 @@
           <NuxtLink
             v-for="(item, idx) in [
               { text: `Vale investir em ${tickerUpper}?`, desc: 'Analise de viabilidade' },
-              { text: 'Qual o preço teto?', desc: 'Metodo Bazin' },
+              { text: 'Qual o preço teto?', desc: 'Método Bazin' },
               { text: 'Relatório completo', desc: 'Analise fundamentalista' },
             ]"
             :key="idx"
@@ -4715,29 +4709,29 @@ const yearChangeSentence = computed(() => {
 })
 
 const pageTitle = computed(() => {
-  // Ticker primeiro, mais curto e direto. Ideal para ranking em queries
-  // de uma unica palavra (ex: "bbas3"). Nome da empresa entra como
-  // sub-contexto; brand fica no tail so se tiver espaco.
+  // Ticker primeiro, mais curto e direto. Meta Seobility: < 580px.
+  // Formato anterior tinha 615px com preço + nome + 3 keywords; reduzido
+  // removendo "e Análise" e encurtando o nome da empresa quando possível.
   const price = formattedAssetPrice.value
-    ? ` · ${formattedAssetPrice.value}`
+    ? ` ${formattedAssetPrice.value}`
     : ''
-  return `${tickerUpper.value}${price}, ${assetName.value} | Cotação, Dividendos e Análise`
+  return `${tickerUpper.value}${price} · ${assetName.value} | Cotação e Dividendos`
 })
 
 const pageDescription = computed(() => {
-  // Comeca com o ticker (keyword principal) e o nome da empresa para
-  // casamento de entidade. Depois o preco/variacao do dia, o acumulado
-  // 12m e finalmente o CTA para o que a pagina oferece.
+  // Meta Seobility: max 1000px (antes: 1435px). Encurtado removendo
+  // redundâncias (nome da empresa já vem no title) e lista longa de
+  // keywords no final. Mantém ticker + preço + variação + CTA curto.
   const priceSegment = formattedAssetPrice.value
-    ? `cotação hoje ${formattedAssetPrice.value}`
-    : 'cotação em tempo real'
+    ? `hoje ${formattedAssetPrice.value}`
+    : 'em tempo real'
   const intradaySegment = dailyChangeSentence.value
     ? `, ${dailyChangeSentence.value}`
     : ''
   const yearSegment = yearChangeSentence.value
-    ? ` ${yearChangeSentence.value}`
+    ? ` ${yearChangeSentence.value}.`
     : ''
-  return `${tickerUpper.value} (${assetName.value}): ${priceSegment}${intradaySegment}.${yearSegment} Veja dividendos, P/L, dividend yield, indicadores fundamentalistas e análises com IA na ${brand.name}.`
+  return `${tickerUpper.value}: cotação ${priceSegment}${intradaySegment}.${yearSegment} Dividendos, indicadores e análise com IA na ${brand.name}.`
 })
 
 const canonicalUrl = computed(
@@ -4761,7 +4755,7 @@ const shareImage = computed(() => {
 const faqStructuredData = computed(() => {
   const ticker = tickerUpper.value
   const name = assetName.value
-  const price = formattedAssetPrice.value || 'variavel conforme o pregao'
+  const price = formattedAssetPrice.value || 'variável conforme o pregão'
   const sector = asset.value?.sector || asset.value?.industry_category || null
   const divLastPaid =
     (dividendsData.value && dividendsData.value.length > 0)
@@ -4770,28 +4764,28 @@ const faqStructuredData = computed(() => {
 
   const faqs: Array<{ q: string; a: string }> = [
     {
-      q: `O que e ${ticker}?`,
-      a: `${ticker} e o codigo de negociacao da ${name} na B3 (Bolsa de Valores brasileira).${sector ? ` A empresa atua no setor de ${sector}.` : ''} Esse ticker pode ser comprado atraves de qualquer corretora autorizada.`,
+      q: `O que é ${ticker}?`,
+      a: `${ticker} é o código de negociação da ${name} na B3 (Bolsa de Valores brasileira).${sector ? ` A empresa atua no setor de ${sector}.` : ''} Esse ticker pode ser comprado através de qualquer corretora autorizada.`,
     },
     {
-      q: `Qual a cotacao de ${ticker} hoje?`,
-      a: `A cotacao atual de ${ticker} (${name}) e ${price}.${dailyChangeSentence.value ? ' No dia, ' + dailyChangeSentence.value + '.' : ''} Os precos sao atualizados em tempo real durante o pregao da B3 (10h as 17h30).`,
+      q: `Qual a cotação de ${ticker} hoje?`,
+      a: `A cotação atual de ${ticker} (${name}) é ${price}.${dailyChangeSentence.value ? ' No dia, ' + dailyChangeSentence.value + '.' : ''} Os preços são atualizados em tempo real durante o pregão da B3 (10h às 17h30).`,
     },
     {
       q: `${ticker} paga dividendos?`,
       a: divLastPaid
-        ? `Sim, ${ticker} distribui dividendos aos acionistas. O ultimo pagamento registrado foi em ${String(divLastPaid.payment_date || '').slice(0, 10)}. Consulte o historico completo de dividendos, DY e MDI na pagina.`
-        : `Consulte o historico de dividendos, dividend yield e indicadores fundamentalistas de ${ticker} atualizados diariamente.`,
+        ? `Sim, ${ticker} distribui dividendos aos acionistas. O último pagamento registrado foi em ${String(divLastPaid.payment_date || '').slice(0, 10)}. Consulte o histórico completo de dividendos, DY e MDI na página.`
+        : `Consulte o histórico de dividendos, dividend yield e indicadores fundamentalistas de ${ticker} atualizados diariamente.`,
     },
     {
       q: `Como investir em ${ticker}?`,
-      a: `Para investir em ${ticker} voce precisa abrir conta em uma corretora autorizada a operar na B3, transferir recursos e comprar o ativo pelo home broker ou aplicativo da corretora. Lembre-se que investimento em renda variavel envolve riscos de perda de capital.`,
+      a: `Para investir em ${ticker} você precisa abrir conta em uma corretora autorizada a operar na B3, transferir recursos e comprar o ativo pelo home broker ou aplicativo da corretora. Lembre-se que investimento em renda variável envolve riscos de perda de capital.`,
     },
     {
       q: `Qual o setor de ${name}?`,
       a: sector
-        ? `A ${name} (${ticker}) atua no setor de ${sector} na classificacao setorial da B3.`
-        : `${name} (${ticker}) e negociada na B3. Consulte os indicadores fundamentalistas e a ficha da companhia na pagina do ativo.`,
+        ? `A ${name} (${ticker}) atua no setor de ${sector} na classificação setorial da B3.`
+        : `${name} (${ticker}) é negociada na B3. Consulte os indicadores fundamentalistas e a ficha da companhia na página do ativo.`,
     },
   ]
 

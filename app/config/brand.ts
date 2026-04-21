@@ -2357,11 +2357,11 @@ const redentia: BrandConfig = {
 
   seo: {
     title: 'Redentia, Ecossistema de investimentos com IA',
-    description: 'Mercado em tempo real, inteligencia sob demanda. Cotacoes, analises fundamentalistas, calculadoras e assessor com IA em um so lugar.',
+    description: 'Mercado em tempo real, inteligência sob demanda. Cotações, análises fundamentalistas, calculadoras e assessor com IA em um só lugar.',
     locale: 'pt_BR',
     lang: 'pt-BR',
     themeColor: '#0A0B0E',
-    keywords: ['redentia', 'ecossistema de investimentos', 'investimentos com IA', 'acoes', 'fiis', 'dividendos', 'analise fundamentalista', 'inteligencia artificial'],
+    keywords: ['redentia', 'ecossistema de investimentos', 'investimentos com IA', 'ações', 'fiis', 'dividendos', 'análise fundamentalista', 'inteligência artificial'],
   },
 
   company: {
@@ -2454,7 +2454,7 @@ const redentia: BrandConfig = {
     variant: 'terminal',
     badge: '[MARKET.LIVE]',
     title: 'Investir com\ninteligencia.',
-    subtitle: 'Mercado em tempo real, inteligencia sob demanda. Cotacoes, analises fundamentalistas, calculadoras e assessoria com IA, um ecossistema de investimentos em um so lugar.',
+    subtitle: 'Mercado em tempo real, inteligência sob demanda. Cotações, análises fundamentalistas, calculadoras e assessoria com IA, um ecossistema de investimentos em um só lugar.',
     founderQuote: '',
     ctaLabel: 'Comecar agora',
     ctaSecondaryLabel: 'Ja tenho conta',
