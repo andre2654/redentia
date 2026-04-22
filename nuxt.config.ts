@@ -194,6 +194,31 @@ export default defineNuxtConfig({
           priority: 0.9 as const,
           changefreq: 'monthly' as const,
         },
+        {
+          loc: '/guias/quanto-rende-500-por-mes-na-bolsa',
+          priority: 0.9 as const,
+          changefreq: 'monthly' as const,
+        },
+        {
+          loc: '/guias/petr4-vs-vale3-vs-itub4',
+          priority: 0.9 as const,
+          changefreq: 'monthly' as const,
+        },
+        {
+          loc: '/guias/acoes-fiis-dividendos-todo-mes',
+          priority: 0.9 as const,
+          changefreq: 'weekly' as const,
+        },
+        {
+          loc: '/guias/como-declarar-acoes-imposto-renda',
+          priority: 0.9 as const,
+          changefreq: 'monthly' as const,
+        },
+        {
+          loc: '/guias/fire-independencia-financeira-calculadora',
+          priority: 0.9 as const,
+          changefreq: 'monthly' as const,
+        },
 
         // Páginas institucionais
         {
