@@ -1473,6 +1473,100 @@ const rankingItems = computed(() => {
       </div>
 
       <!-- ============================================================
+           UNIT POST · EMBED GRID (6 widgets em mosaico)
+           ============================================================ -->
+      <div v-else-if="variant === 'redentia-embed-grid'" class="body amber-body amber-cover-min">
+        <div class="amber-min-top">
+          <img src="/brand/logo-full.svg" alt="Redentia" class="amber-min-logo" />
+          <div class="amber-min-pager">{{ pager || '02 — 05' }}</div>
+        </div>
+        <div class="amber-min-center amber-min-center-tight">
+          <div class="amber-min-eyebrow">{{ eyebrow || 'EMBED STUDIO' }}</div>
+          <h2 class="amber-min-title amber-min-title-md">
+            <template v-if="title">
+              <template v-for="(line, i) in renderMultiline(title)" :key="i">
+                <template v-if="splitHighlight(line).plain">{{ splitHighlight(line).plain }}</template><span v-if="splitHighlight(line).highlight" class="amber-min-italic">{{ splitHighlight(line).highlight }}</span>{{ splitHighlight(line).tail }}<br>
+              </template>
+            </template>
+            <template v-else>
+              6 widgets\n
+              <span class="amber-min-italic">prontos</span> pra colar.
+            </template>
+          </h2>
+          <p v-if="subtitle" class="amber-min-sub">{{ subtitle }}</p>
+        </div>
+        <div class="amber-embed-grid">
+          <div class="amber-embed-tile amber-embed-tile-tall">
+            <iframe src="/embed/ticker/big?ticker=PETR4&widget=1" class="amber-embed-iframe" scrolling="no" loading="eager"></iframe>
+            <div class="amber-embed-tile-label">TICKER BIG</div>
+          </div>
+          <div class="amber-embed-tile">
+            <iframe src="/embed/ticker/small?ticker=VALE3&widget=1" class="amber-embed-iframe" scrolling="no" loading="eager"></iframe>
+            <div class="amber-embed-tile-label">TICKER SMALL</div>
+          </div>
+          <div class="amber-embed-tile amber-embed-tile-wide">
+            <iframe src="/embed/grafico?ticker=PETR4&widget=1" class="amber-embed-iframe amber-embed-iframe-chart" scrolling="no" loading="eager"></iframe>
+            <div class="amber-embed-tile-label">GRÁFICO</div>
+          </div>
+          <div class="amber-embed-tile">
+            <iframe src="/embed/ranking/altas?widget=1" class="amber-embed-iframe" scrolling="no" loading="eager"></iframe>
+            <div class="amber-embed-tile-label">RANKING</div>
+          </div>
+          <div class="amber-embed-tile">
+            <iframe src="/embed/mapa-calor?widget=1" class="amber-embed-iframe" scrolling="no" loading="eager"></iframe>
+            <div class="amber-embed-tile-label">MAPA CALOR</div>
+          </div>
+          <div class="amber-embed-tile">
+            <iframe src="/embed/calculadora/juros-compostos?widget=1" class="amber-embed-iframe" scrolling="no" loading="eager"></iframe>
+            <div class="amber-embed-tile-label">CALCULADORA</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================
+           UNIT POST · EMBED SHOWCASE (1 widget grande + code snippet)
+           ============================================================ -->
+      <div v-else-if="variant === 'redentia-embed-showcase'" class="body amber-body amber-cover-min">
+        <div class="amber-min-top">
+          <img src="/brand/logo-full.svg" alt="Redentia" class="amber-min-logo" />
+          <div class="amber-min-pager">{{ pager || '03 — 05' }}</div>
+        </div>
+        <div class="amber-min-center amber-min-center-tight">
+          <div class="amber-min-eyebrow">{{ eyebrow || 'WIDGET' }}</div>
+          <h2 class="amber-min-title amber-min-title-md">
+            <template v-if="title">
+              <template v-for="(line, i) in renderMultiline(title)" :key="i">
+                <template v-if="splitHighlight(line).plain">{{ splitHighlight(line).plain }}</template><span v-if="splitHighlight(line).highlight" class="amber-min-italic">{{ splitHighlight(line).highlight }}</span>{{ splitHighlight(line).tail }}<br>
+              </template>
+            </template>
+          </h2>
+          <p v-if="subtitle" class="amber-min-sub">{{ subtitle }}</p>
+        </div>
+        <div class="amber-embed-preview">
+          <iframe :src="q('iframe_src', '/embed/ticker/big?ticker=PETR4&widget=1')" class="amber-embed-preview-iframe" scrolling="no" loading="eager"></iframe>
+        </div>
+        <div class="amber-embed-code">
+          <div class="amber-embed-code-head">
+            <span class="amber-embed-code-dots">
+              <span></span><span></span><span></span>
+            </span>
+            <span class="amber-embed-code-label">HTML · cole no seu site</span>
+            <span class="amber-embed-code-copy">↳ COPIAR</span>
+          </div>
+          <div class="amber-embed-code-body">
+            <span class="amber-embed-code-tag">&lt;iframe</span>
+            <span class="amber-embed-code-attr"> src=</span>
+            <span class="amber-embed-code-str">"{{ q('iframe_url', 'embed.redentia.com.br/ticker/big') }}"</span>
+            <span class="amber-embed-code-attr"> width=</span>
+            <span class="amber-embed-code-str">"420"</span>
+            <span class="amber-embed-code-attr"> height=</span>
+            <span class="amber-embed-code-str">"220"</span>
+            <span class="amber-embed-code-tag">&gt;&lt;/iframe&gt;</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================
            Fallback
            ============================================================ -->
       <div v-else class="body fallback-body">
@@ -3607,10 +3701,27 @@ const rankingItems = computed(() => {
 .card-redentia-push,
 .card-redentia-movimento,
 .card-redentia-ranking,
-.card-redentia-launch {
+.card-redentia-launch,
+.card-redentia-embed-grid,
+.card-redentia-embed-showcase {
   padding: 0 !important;
   overflow: hidden !important;
   position: relative;
+}
+.card-redentia-embed-grid,
+.card-redentia-embed-showcase {
+  background-color: #F5A623;
+  background-image:
+    linear-gradient(rgba(10, 11, 14, 0.11) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(10, 11, 14, 0.11) 1px, transparent 1px);
+  background-size: 54px 54px;
+  background-position: -1px -1px;
+}
+.card-redentia-embed-grid .header,
+.card-redentia-embed-grid .footer,
+.card-redentia-embed-showcase .header,
+.card-redentia-embed-showcase .footer {
+  display: none;
 }
 .card-redentia-push .header,
 .card-redentia-push .footer,
@@ -6632,6 +6743,147 @@ const rankingItems = computed(() => {
   font-weight: 700;
   color: #0A0B0E;
   letter-spacing: 0.06em;
+}
+
+/* ============================================================
+   UNIT POST · EMBED GRID (6 widgets tiles)
+   ============================================================ */
+.amber-embed-grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 12px;
+  margin-bottom: 40px;
+  flex-shrink: 0;
+}
+.amber-embed-tile {
+  background: #0A0B0E;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  height: 170px;
+  display: flex;
+  flex-direction: column;
+}
+.amber-embed-tile-wide {
+  grid-column: span 2;
+}
+.amber-embed-tile-tall {
+  grid-row: span 1;
+}
+.amber-embed-iframe {
+  border: 0;
+  width: 100%;
+  height: 100%;
+  background: #0A0B0E;
+}
+.amber-embed-iframe-chart {
+  height: 170px;
+}
+.amber-embed-tile-label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 6px 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: #F5A623;
+  font-weight: 700;
+  background: linear-gradient(180deg, transparent 0%, rgba(10, 11, 14, 0.85) 60%);
+  text-transform: uppercase;
+  text-align: right;
+}
+
+/* ============================================================
+   UNIT POST · EMBED SHOWCASE (1 widget + code)
+   ============================================================ */
+.amber-embed-preview {
+  position: relative;
+  z-index: 2;
+  margin: 8px 0 18px 0;
+  background: #0A0B0E;
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 260px;
+  flex-shrink: 0;
+  box-shadow: 0 16px 40px rgba(10, 11, 14, 0.25);
+}
+.amber-embed-preview-iframe {
+  border: 0;
+  width: 100%;
+  height: 240px;
+  background: transparent;
+}
+.amber-embed-code {
+  position: relative;
+  z-index: 2;
+  background: #0A0B0E;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(245, 166, 35, 0.25);
+  flex-shrink: 0;
+  margin-bottom: 24px;
+}
+.amber-embed-code-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(245, 166, 35, 0.06);
+  border-bottom: 1px solid rgba(245, 166, 35, 0.15);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  color: rgba(245, 166, 35, 0.65);
+  font-weight: 600;
+}
+.amber-embed-code-dots {
+  display: inline-flex;
+  gap: 6px;
+}
+.amber-embed-code-dots span {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: rgba(245, 166, 35, 0.2);
+}
+.amber-embed-code-dots span:first-child { background: #FF5F57; }
+.amber-embed-code-dots span:nth-child(2) { background: #FEBC2E; }
+.amber-embed-code-dots span:last-child { background: #28C840; }
+.amber-embed-code-label {
+  flex: 1;
+  text-transform: uppercase;
+}
+.amber-embed-code-copy {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  font-weight: 700;
+  color: #F5A623;
+}
+.amber-embed-code-body {
+  padding: 22px 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 15px;
+  line-height: 1.65;
+  color: #E8EAED;
+  word-break: break-all;
+}
+.amber-embed-code-tag {
+  color: #F5A623;
+  font-weight: 700;
+}
+.amber-embed-code-attr {
+  color: rgba(255, 224, 130, 0.85);
+}
+.amber-embed-code-str {
+  color: #00D395;
 }
 </style>
 
