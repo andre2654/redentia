@@ -37,6 +37,7 @@ const TOOL_SUBDOMAIN_PREFIXES = [
   'api.',
   'admin.',
   'estudo.',
+  'embed.',
 ]
 
 interface MainSiteOptions {
