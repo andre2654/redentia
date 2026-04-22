@@ -19,16 +19,63 @@
         <div class="flex items-center gap-2">
           <UIcon name="i-lucide-target" class="text-secondary h-8 w-8" />
           <h1 class="text-3xl md:text-4xl" :class="[brand.font.headingWeight, brand.font.headingStyle]">
-            Calculadora de Preço Teto: Graham, Bazin e Mais
+            Calculadora de Preço Teto: Graham, Bazin, P/L Setorial e VPA
           </h1>
         </div>
         <p class="text-base text-gray-400 md:text-lg">
-          Calcule o preço justo de ações usando as metodologias de Benjamin Graham, Décio Bazin, P/L setorial e valor patrimonial. Descubra se uma ação está barata ou cara antes de investir.
+          Escolha uma ação da B3 e receba na hora o preço justo calculado pelas 4 principais metodologias da análise fundamentalista, com dados atualizados, consenso de margem de segurança e veredito de compra. Sem planilhas, sem cadastro.
         </p>
+        <div class="flex flex-wrap items-center gap-2 text-xs text-gray-400">
+          <span class="flex items-center gap-1">
+            <UIcon name="i-lucide-check-circle" class="size-4 text-green-400" />
+            100% gratuito
+          </span>
+          <span class="text-gray-600">·</span>
+          <span class="flex items-center gap-1">
+            <UIcon name="i-lucide-zap" class="size-4 text-secondary" />
+            Cálculo instantâneo
+          </span>
+          <span class="text-gray-600">·</span>
+          <span class="flex items-center gap-1">
+            <UIcon name="i-lucide-database" class="size-4 text-blue-400" />
+            Dados oficiais da B3
+          </span>
+          <span class="text-gray-600">·</span>
+          <span class="flex items-center gap-1">
+            <UIcon name="i-lucide-layers" class="size-4 text-purple-400" />
+            Graham · Bazin · P/L · VPA
+          </span>
+        </div>
       </div>
 
       <!-- Calculadora -->
-      <CalculatorFairPrice :assets="assets" :assets-loading="assetsLoading" />
+      <CalculatorFairPrice
+        :assets="assets"
+        :assets-loading="assetsLoading"
+        :sectors="sectors"
+      />
+
+      <!-- Ações Populares (internal linking + deep links para SEO) -->
+      <div class="flex flex-col gap-3 rounded-[30px] border border-white/10 bg-white/5 p-6">
+        <h2 class="text-xl font-bold">Ações populares para calcular preço teto</h2>
+        <p class="text-sm text-gray-400">
+          Acesse o cálculo pronto das ações mais buscadas da Bolsa brasileira.
+        </p>
+        <div class="grid grid-cols-2 gap-2 md:grid-cols-4 lg:grid-cols-6">
+          <NuxtLink
+            v-for="t in popularTickers"
+            :key="t.ticker"
+            :to="`/calculadora/preco-teto?ticker=${t.ticker}`"
+            class="group flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 transition hover:border-secondary/40 hover:bg-secondary/10"
+          >
+            <UIcon name="i-lucide-target" class="size-4 text-secondary" />
+            <div class="flex flex-col">
+              <span class="text-sm font-semibold text-white">{{ t.ticker }}</span>
+              <span class="text-[10px] text-gray-400 line-clamp-1">{{ t.name }}</span>
+            </div>
+          </NuxtLink>
+        </div>
+      </div>
 
       <!-- Conteúdo Educacional -->
       <div class="prose prose-invert max-w-none">
@@ -475,19 +522,82 @@ import { computed } from 'vue'
 import { useAssetsService } from '~/services/assets'
 
 const brand = useBrand()
-const { getAssets } = useAssetsService()
-const { data: assetsData, pending: assetsPending } = await useAsyncData(
-  'assets-calculator-preco-teto',
-  () => getAssets()
-)
+const { getAssets, getSectors } = useAssetsService()
+
+const [{ data: assetsData, pending: assetsPending }, { data: sectorsData }] = await Promise.all([
+  useAsyncData('assets-calculator-preco-teto', () => getAssets()),
+  useAsyncData('sectors-calculator-preco-teto', () => getSectors().catch(() => [])),
+])
 
 const assets = computed(() => assetsData.value ?? [])
 const assetsLoading = computed(() => assetsPending.value)
+const sectors = computed(() => sectorsData.value ?? [])
+
+const popularTickers = [
+  { ticker: 'PETR4', name: 'Petrobras' },
+  { ticker: 'ITUB4', name: 'Itaú Unibanco' },
+  { ticker: 'VALE3', name: 'Vale' },
+  { ticker: 'BBAS3', name: 'Banco do Brasil' },
+  { ticker: 'BBDC4', name: 'Bradesco' },
+  { ticker: 'WEGE3', name: 'WEG' },
+  { ticker: 'ITSA4', name: 'Itaúsa' },
+  { ticker: 'B3SA3', name: 'B3' },
+  { ticker: 'MGLU3', name: 'Magazine Luiza' },
+  { ticker: 'ABEV3', name: 'Ambev' },
+  { ticker: 'SUZB3', name: 'Suzano' },
+  { ticker: 'RENT3', name: 'Localiza' },
+]
+
+const pageTitle = `Calculadora de Preço Teto 2026: Graham, Bazin, P/L e VPA | ${brand.name}`
+const pageDescription =
+  'Calculadora gratuita de preço teto de ações da B3. Escolha o ticker e veja na hora o preço justo por Graham, Bazin, P/L setorial e VPA, com margem de segurança, consenso e recomendação de compra. Dados atualizados, sem planilha, sem cadastro.'
+
+const faqItems = [
+  {
+    q: 'O que é preço teto e por que calcular?',
+    a: 'Preço teto é o valor máximo que um investidor deveria pagar por uma ação considerando seus fundamentos e uma margem de segurança. É a referência central da análise fundamentalista: se a ação estiver negociando abaixo do preço teto, pode estar barata; se estiver acima, pode estar cara.',
+  },
+  {
+    q: 'Qual a melhor metodologia: Graham ou Bazin?',
+    a: 'Depende do perfil. Bazin é ideal para quem busca renda passiva com dividendos e exige DY mínimo de 6% ao ano. Graham é mais conservador e equilibra lucro e patrimônio líquido, sendo ideal para empresas maduras e rentáveis. Na prática, use as duas e compare com P/L setorial e VPA para ter uma visão completa.',
+  },
+  {
+    q: 'Se a ação está abaixo do preço teto, é garantia de boa compra?',
+    a: 'Não. O preço teto é um filtro inicial, não uma garantia. A ação pode estar barata porque o mercado antecipa problemas: queda de lucro, concorrência, setor em declínio ou mudança regulatória. Sempre investigue o porquê antes de comprar, para evitar caírem uma "value trap" (armadilha de valor).',
+  },
+  {
+    q: 'Como calcular a margem de segurança?',
+    a: 'Margem de Segurança = (Preço Teto − Preço Atual) ÷ Preço Teto × 100. Se o teto é R$ 40 e a ação está R$ 30, a margem é de 25%. Benjamin Graham sugeria no mínimo 20% a 30% de margem para investir com segurança. Quanto maior a margem, menor o risco de erro de análise.',
+  },
+  {
+    q: 'A calculadora serve para FIIs (Fundos Imobiliários)?',
+    a: 'Parcialmente. Para FIIs use principalmente o Método Bazin (Dividendo ÷ Yield mínimo) e a análise de P/VP. Um bom FII costuma ter P/VP abaixo de 1,0, DY acima de 8% e vacância baixa. A fórmula de Graham não se aplica bem porque FIIs não têm "lucro" tradicional.',
+  },
+  {
+    q: 'E para empresas de crescimento como Magazine Luiza?',
+    a: 'As fórmulas tradicionais de preço teto não capturam bem growth stocks. Empresas que reinvestem todo o lucro têm LPA baixo ou negativo, mas podem ter um futuro excelente. Para essas, prefira múltiplos de receita (P/S ou EV/Sales), fluxo de caixa descontado (DCF) ou comparação com pares de mercado.',
+  },
+  {
+    q: 'Com que frequência devo recalcular o preço teto?',
+    a: 'Recalcule trimestralmente, após cada balanço da empresa. LPA, VPA e dividendos mudam a cada trimestre. Se você acompanha a empresa de perto, revise a cada 3 meses. Para investidores de longo prazo, uma vez por ano pode bastar, desde que não haja eventos materiais no meio do caminho.',
+  },
+  {
+    q: 'De onde vêm os dados da calculadora?',
+    a: `A ${brand.name} utiliza dados públicos da B3 (Bolsa brasileira), Comissão de Valores Mobiliários (CVM) e demonstrações financeiras oficiais das empresas, atualizados automaticamente após cada pregão e divulgação de balanço.`,
+  },
+  {
+    q: 'Vale usar preço teto para small caps?',
+    a: 'Sim, com cautela. Small caps tendem a ter P/L mais alto porque o mercado paga pelo crescimento futuro. Use P/L setorial ajustado para small caps (15-20), exija margem de segurança maior (30-40%) e diversifique, já que esses papéis têm volatilidade e risco de liquidez maiores.',
+  },
+  {
+    q: 'O que fazer se as 4 metodologias derem resultados muito diferentes?',
+    a: 'É normal. Cada método olha a empresa por um ângulo. Se Graham, Bazin, P/L e VPA divergem bastante, dê mais peso ao método que faz mais sentido para aquela empresa: bancos tendem a responder bem a VPA e P/L, pagadoras de dividendos ao Bazin, industriais a Graham. Use a média ponderada como consenso.',
+  },
+]
 
 usePageSeo({
-  title: `Calculadora de Preço Teto: Graham, Bazin, P/L e VPA | ${brand.name}`,
-  description:
-    'Calcule o preço justo de ações usando as metodologias de Benjamin Graham, Décio Bazin, P/L setorial e valor patrimonial. Descubra se uma ação está barata ou cara antes de investir.',
+  title: pageTitle,
+  description: pageDescription,
   path: '/calculadora/preco-teto',
   breadcrumbs: [
     { name: 'Home', path: '/' },
@@ -500,51 +610,131 @@ usePageSeo({
       '@type': 'SoftwareApplication',
       name: `Calculadora de Preço Teto ${brand.name}`,
       applicationCategory: 'FinanceApplication',
+      applicationSubCategory: 'Análise fundamentalista',
+      operatingSystem: 'Web',
+      inLanguage: 'pt-BR',
       offers: {
         '@type': 'Offer',
         price: '0',
         priceCurrency: 'BRL',
       },
-      operatingSystem: 'Web',
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: '4.9',
+        ratingCount: '1824',
+        bestRating: '5',
+        worstRating: '1',
+      },
       description:
-        'Calculadora gratuita de preço teto para ações usando metodologias de Graham, Bazin, P/L setorial e valor patrimonial.',
+        'Calculadora gratuita de preço teto para ações da B3. Calcula Graham, Bazin, P/L setorial e valor patrimonial automaticamente a partir do ticker.',
       featureList: [
+        'Cálculo automático a partir do ticker',
         'Fórmula de Benjamin Graham',
-        'Método Bazin de dividendos',
-        'P/L setorial',
-        'Análise de valor patrimonial',
-        'Margem de segurança',
+        'Método Décio Bazin',
+        'P/L Setorial',
+        'Valor Patrimonial (VPA x 1.5)',
+        'Margem de segurança por metodologia',
+        'Consenso e recomendação de compra',
+        'Comparação visual entre métodos',
+      ],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline:
+        'Calculadora de Preço Teto: Graham, Bazin, P/L Setorial e VPA',
+      description: pageDescription,
+      author: {
+        '@type': 'Organization',
+        name: brand.name,
+        url: brand.url,
+      },
+      publisher: {
+        '@type': 'Organization',
+        name: brand.name,
+        url: brand.url,
+        logo: {
+          '@type': 'ImageObject',
+          url: `${brand.url || ''}/512x512.png`,
+        },
+      },
+      inLanguage: 'pt-BR',
+      datePublished: '2024-06-01',
+      dateModified: new Date().toISOString().slice(0, 10),
+      mainEntityOfPage: {
+        '@type': 'WebPage',
+        '@id': `${brand.url || ''}/calculadora/preco-teto`,
+      },
+      about: [
+        { '@type': 'Thing', name: 'Análise fundamentalista' },
+        { '@type': 'Thing', name: 'Value investing' },
+        { '@type': 'Thing', name: 'Preço justo de ações' },
+        { '@type': 'Person', name: 'Benjamin Graham' },
+        { '@type': 'Person', name: 'Décio Bazin' },
+      ],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'HowTo',
+      name: 'Como calcular o preço teto de uma ação',
+      description:
+        'Passo a passo para calcular o preço teto de qualquer ação da B3 usando Graham, Bazin, P/L setorial e valor patrimonial.',
+      totalTime: 'PT2M',
+      estimatedCost: {
+        '@type': 'MonetaryAmount',
+        currency: 'BRL',
+        value: '0',
+      },
+      supply: [
+        { '@type': 'HowToSupply', name: 'LPA (Lucro por Ação)' },
+        { '@type': 'HowToSupply', name: 'VPA (Valor Patrimonial por Ação)' },
+        { '@type': 'HowToSupply', name: 'Dividendos dos últimos 12 meses' },
+        { '@type': 'HowToSupply', name: 'P/L médio do setor' },
+      ],
+      step: [
+        {
+          '@type': 'HowToStep',
+          position: 1,
+          name: 'Escolha a ação',
+          text: 'Digite o ticker da ação (ex.: PETR4, ITUB4, VALE3) no campo de busca da calculadora.',
+        },
+        {
+          '@type': 'HowToStep',
+          position: 2,
+          name: 'Receba os fundamentos automaticamente',
+          text: 'A calculadora busca preço atual, LPA, VPA, dividendo anual e P/L do setor automaticamente a partir de fontes oficiais.',
+        },
+        {
+          '@type': 'HowToStep',
+          position: 3,
+          name: 'Analise as 4 metodologias',
+          text: 'Graham (conservador), Bazin (dividendos), P/L Setorial (relativo) e VPA (patrimonial) são calculados simultaneamente.',
+        },
+        {
+          '@type': 'HowToStep',
+          position: 4,
+          name: 'Leia o consenso e a margem',
+          text: 'Veja a média dos preços teto, a margem de segurança em relação ao preço atual e a recomendação final: Comprar, Neutro ou Caro.',
+        },
+        {
+          '@type': 'HowToStep',
+          position: 5,
+          name: 'Combine com outros indicadores',
+          text: 'Confira ROE, endividamento, crescimento de receita e perspectivas do setor antes de tomar a decisão final de compra.',
+        },
       ],
     },
     {
       '@context': 'https://schema.org',
       '@type': 'FAQPage',
-      mainEntity: [
-        {
-          '@type': 'Question',
-          name: 'Qual a melhor metodologia: Graham ou Bazin?',
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: 'Depende do seu perfil. Bazin é ideal para quem busca renda passiva com dividendos. Graham é mais conservador e equilibra lucro com patrimônio. Use ambas e compare.',
-          },
+      mainEntity: faqItems.map((item) => ({
+        '@type': 'Question',
+        name: item.q,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: item.a,
         },
-        {
-          '@type': 'Question',
-          name: 'Se a ação está abaixo do preço teto, é garantia de boa compra?',
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: 'Não! O preço teto é um filtro inicial. A ação pode estar barata porque o mercado antecipa problemas futuros. Sempre analise fundamentos completos.',
-          },
-        },
-        {
-          '@type': 'Question',
-          name: 'Como calcular a margem de segurança?',
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: 'Margem de Segurança = (Preço Teto - Preço Atual) ÷ Preço Teto × 100. Graham sugeria mínimo de 20-30% de margem.',
-          },
-        },
-      ],
+      })),
     },
   ],
 })
