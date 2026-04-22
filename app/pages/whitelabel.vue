@@ -1134,9 +1134,30 @@ definePageMeta({
 })
 
 usePageSeo({
-  title: 'Redentia Whitelabel, sua marca em cima da nossa infra',
-  description: 'Plataforma white-label de investimentos: dados da B3, consolidador, IA, calculadoras e creative studio, com o seu logo, suas cores, seu domínio. Deploy em 1 semana.',
+  title: 'Plataforma White-label para Assessoria de Investimentos | Redentia',
+  description:
+    'Plataforma white-label pronta para assessorias, influencers e fintechs: dados da B3, consolidador, IA, calculadoras e creative studio com sua marca, seu domínio, suas cores. Deploy em 1 semana.',
   path: '/whitelabel',
+  breadcrumbs: [
+    { name: 'Início', path: '/' },
+    { name: 'White-label', path: '/whitelabel' },
+  ],
+  structuredData: [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Service',
+      name: 'Redentia White-label',
+      serviceType: 'Plataforma white-label de investimentos',
+      provider: { '@type': 'Organization', name: 'Redentia' },
+      areaServed: { '@type': 'Country', name: 'Brasil' },
+      description:
+        'Plataforma SaaS white-label para assessorias de investimento, influencers e fintechs operarem com marca própria em cima da infra Redentia.',
+      audience: {
+        '@type': 'BusinessAudience',
+        audienceType: 'Assessores de investimento, influencers financeiros, fintechs',
+      },
+    },
+  ],
 })
 </script>
 

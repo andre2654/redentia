@@ -970,8 +970,36 @@ definePageMeta({
 })
 
 usePageSeo({
-  title: 'Redentia API, Dados do mercado brasileiro via REST',
-  description: 'API REST para preços, fundamentos, dividendos e market commentaries do mercado brasileiro. Schemas estáveis, latência sub-50ms, 50+ endpoints.',
+  title: 'API de Cotações da B3: Preços, Fundamentos e Dividendos | Redentia',
+  description:
+    'API REST com dados da B3 em tempo real: cotações, fundamentos, dividendos, rankings e commentaries de IA. 50+ endpoints, latência sub-50ms, schemas estáveis. Plano free disponível, sem cartão.',
   path: '/api-portal',
+  breadcrumbs: [
+    { name: 'Início', path: '/' },
+    { name: 'API', path: '/api-portal' },
+  ],
+  structuredData: [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: 'Redentia API',
+      applicationCategory: 'DeveloperApplication',
+      operatingSystem: 'Web',
+      offers: [
+        { '@type': 'Offer', name: 'Free', price: '0', priceCurrency: 'BRL' },
+        { '@type': 'Offer', name: 'Startup', price: '99', priceCurrency: 'BRL' },
+        { '@type': 'Offer', name: 'Pro', price: '499', priceCurrency: 'BRL' },
+      ],
+      description:
+        'API REST para acessar dados da B3: preços de ações, FIIs, ETFs, fundamentos, dividendos e análises com IA.',
+      featureList: [
+        '50+ endpoints REST',
+        'Latência P50 sub-50ms',
+        '99.9% de uptime',
+        'Autenticação por API key',
+        'Rate limiting generoso',
+      ],
+    },
+  ],
 })
 </script>

@@ -97,6 +97,9 @@ const PRODUCT_SUBDOMAIN_HOSTS = new Set([
   'whitelabel.redentia.com.br',
   'whitelabel.localhost',
   'whitelabel.redentia.localhost',
+  'embed.redentia.com.br',
+  'embed.localhost',
+  'embed.redentia.localhost',
 ])
 
 function firstString(value: unknown): string | undefined {

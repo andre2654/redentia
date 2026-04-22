@@ -189,6 +189,11 @@ export default defineNuxtConfig({
           priority: 0.8 as const,
           changefreq: 'monthly' as const,
         },
+        {
+          loc: '/guias/widgets-financeiros-para-site',
+          priority: 0.9 as const,
+          changefreq: 'monthly' as const,
+        },
 
         // Páginas institucionais
         {
@@ -228,7 +233,12 @@ export default defineNuxtConfig({
         },
         {
           loc: '/api-portal',
-          priority: 0.7 as const,
+          priority: 0.8 as const,
+          changefreq: 'weekly' as const,
+        },
+        {
+          loc: '/creative',
+          priority: 0.8 as const,
           changefreq: 'weekly' as const,
         },
 
@@ -279,6 +289,22 @@ export default defineNuxtConfig({
           priority: 0.8 as const,
           changefreq: 'monthly' as const,
         },
+
+        // Embeds / Widgets — SEO-indexado (captura backlinks de quem embeda)
+        { loc: '/embed', priority: 0.9 as const, changefreq: 'weekly' as const },
+        { loc: '/embed/ticker/small', priority: 0.8 as const, changefreq: 'monthly' as const },
+        { loc: '/embed/ticker/big', priority: 0.8 as const, changefreq: 'monthly' as const },
+        { loc: '/embed/carousel', priority: 0.8 as const, changefreq: 'monthly' as const },
+        { loc: '/embed/ranking/altas', priority: 0.8 as const, changefreq: 'monthly' as const },
+        { loc: '/embed/ranking/baixas', priority: 0.8 as const, changefreq: 'monthly' as const },
+        { loc: '/embed/mapa-calor', priority: 0.8 as const, changefreq: 'monthly' as const },
+        { loc: '/embed/grafico', priority: 0.8 as const, changefreq: 'monthly' as const },
+        { loc: '/embed/calculadora/juros-compostos', priority: 0.8 as const, changefreq: 'monthly' as const },
+        { loc: '/embed/calculadora/dividend-yield', priority: 0.7 as const, changefreq: 'monthly' as const },
+        { loc: '/embed/calculadora/preco-teto', priority: 0.7 as const, changefreq: 'monthly' as const },
+        { loc: '/embed/calculadora/aposentadoria', priority: 0.7 as const, changefreq: 'monthly' as const },
+        { loc: '/embed/calculadora/quanto-investir', priority: 0.7 as const, changefreq: 'monthly' as const },
+        { loc: '/embed/calculadora/imposto-renda', priority: 0.7 as const, changefreq: 'monthly' as const },
       ]
 
       // Termos do glossário

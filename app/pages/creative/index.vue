@@ -410,9 +410,27 @@ definePageMeta({
 })
 
 usePageSeo({
-  title: 'Redentia Creative, Conteúdo pronto pro feed',
-  description: 'Templates de cards, rankings e animações com dados reais do mercado. Pronto pra print e postar nas redes sociais.',
+  title: 'Redentia Creative: Templates de Posts sobre Ações para Redes Sociais',
+  description:
+    'Templates prontos para Instagram, Twitter e LinkedIn com dados reais da B3 — growth races, rankings, spotlights de ativos e notificações. Tire print, customize e poste. 20+ formatos em 1080×1080 grátis.',
   path: '/creative',
-  robots: 'noindex',
+  breadcrumbs: [
+    { name: 'Início', path: '/' },
+    { name: 'Creative Studio', path: '/creative' },
+  ],
+  structuredData: [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: 'Redentia Creative — Templates para redes sociais',
+      description:
+        'Templates prontos com dados do mercado brasileiro para Instagram, LinkedIn e Twitter.',
+      about: [
+        { '@type': 'Thing', name: 'Template Instagram finanças' },
+        { '@type': 'Thing', name: 'Card ações B3 redes sociais' },
+        { '@type': 'Thing', name: 'Mockup post fundamentalista' },
+      ],
+    },
+  ],
 })
 </script>

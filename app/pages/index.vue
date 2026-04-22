@@ -4558,7 +4558,7 @@
             </h2>
           </div>
           <p class="max-w-sm text-sm leading-relaxed md:text-[15px]" :style="{ color: brand.colors.textMuted }">
-            Dois produtos abertos: a <span :style="{ color: brand.colors.text }">plataforma</span> que você está vendo é só uma das interfaces. Pegue os mesmos dados em JSON, ou em PNG pronto pro feed.
+            Três produtos abertos: a <span :style="{ color: brand.colors.text }">plataforma</span> que você está vendo é só uma das interfaces. Pegue os dados em JSON, em PNG pronto pro feed, ou em widget pra embedar no seu site.
           </p>
         </div>
       </div>
@@ -4790,6 +4790,126 @@
               }"
             >
               02
+            </div>
+          </div>
+        </div>
+      </a>
+
+      <!-- ============ PRODUCT 03, EMBED ============ -->
+      <a
+        href="https://embed.redentia.com.br"
+        target="_blank"
+        rel="noopener"
+        class="api-row group relative block border-t transition-colors"
+        :style="{ borderColor: `${brand.colors.border}60` }"
+      >
+        <div class="relative mx-auto grid max-w-7xl grid-cols-12 gap-6 px-6 py-16 md:gap-10 md:px-10 md:py-24">
+          <!-- Numero gigante outline -->
+          <div class="col-span-12 md:col-span-2">
+            <div
+              class="font-display select-none text-[120px] leading-[0.8] tracking-tighter md:text-[180px]"
+              :style="{
+                color: 'transparent',
+                WebkitTextStroke: `1.5px ${brand.colors.primary}50`,
+              }"
+            >
+              03
+            </div>
+          </div>
+
+          <!-- Conteudo -->
+          <div class="col-span-12 md:col-span-5 md:pl-4">
+            <div class="mb-5 flex flex-wrap items-center gap-3 font-mono-tab text-[10px] uppercase tracking-[0.2em]">
+              <span class="rounded-full px-2.5 py-1" :style="{ backgroundColor: brand.colors.primary, color: brand.colors.background }">
+                NEW · GRÁTIS
+              </span>
+              <span :style="{ color: brand.colors.textMuted }">REDENTIA.EMBED</span>
+            </div>
+
+            <h3
+              class="font-display text-[40px] leading-[0.95] tracking-tight md:text-[64px]"
+              :style="{ color: brand.colors.text }"
+            >
+              Os dados no
+              <span class="italic" :style="{ color: brand.colors.primary }">seu site.</span>
+            </h3>
+
+            <p class="mt-5 max-w-md text-[14px] leading-relaxed md:text-[15px]" :style="{ color: brand.colors.textMuted }">
+              Widgets gratuitos de cotações, rankings, mapas de calor e calculadoras pra embedar em blog, newsletter ou dashboard. Um iframe, zero cadastro, sempre atualizado em tempo real.
+            </p>
+
+            <!-- Stats inline -->
+            <div class="mt-8 grid max-w-md grid-cols-3 gap-px overflow-hidden rounded border" :style="{ borderColor: `${brand.colors.border}80`, backgroundColor: `${brand.colors.border}40` }">
+              <div class="flex flex-col gap-0.5 px-3 py-3" :style="{ backgroundColor: `${brand.colors.surface}` }">
+                <span class="font-mono-tab text-[20px] tabular-nums leading-none md:text-[24px]" :style="{ color: brand.colors.primary }">8</span>
+                <span class="font-mono-tab text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">WIDGETS</span>
+              </div>
+              <div class="flex flex-col gap-0.5 px-3 py-3" :style="{ backgroundColor: `${brand.colors.surface}` }">
+                <span class="font-mono-tab text-[20px] tabular-nums leading-none md:text-[24px]" :style="{ color: brand.colors.primary }">iframe</span>
+                <span class="font-mono-tab text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">HTML PADRÃO</span>
+              </div>
+              <div class="flex flex-col gap-0.5 px-3 py-3" :style="{ backgroundColor: `${brand.colors.surface}` }">
+                <span class="font-mono-tab text-[20px] tabular-nums leading-none md:text-[24px]" :style="{ color: brand.colors.primary }">0</span>
+                <span class="font-mono-tab text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">CADASTRO</span>
+              </div>
+            </div>
+
+            <div class="mt-10 inline-flex items-center gap-3 border-b pb-1 font-mono-tab text-[11px] uppercase tracking-[0.2em] transition-colors" :style="{ color: brand.colors.primary, borderColor: brand.colors.primary }">
+              <span>VER WIDGETS</span>
+              <span class="transition-transform group-hover:translate-x-2">→</span>
+            </div>
+          </div>
+
+          <!-- Iframe code mockup -->
+          <div class="col-span-12 md:col-span-5">
+            <div
+              class="terminal-window overflow-hidden rounded-lg border shadow-2xl"
+              :style="{
+                borderColor: `${brand.colors.border}`,
+                backgroundColor: `${brand.colors.background}F5`,
+                boxShadow: `0 30px 80px -30px ${brand.colors.primary}40, 0 0 0 1px ${brand.colors.border}40`,
+              }"
+            >
+              <div class="flex items-center justify-between border-b px-4 py-2.5" :style="{ borderColor: `${brand.colors.border}80`, backgroundColor: `${brand.colors.surface}80` }">
+                <div class="flex items-center gap-1.5">
+                  <span class="size-2.5 rounded-full" style="background: #ff5f57" />
+                  <span class="size-2.5 rounded-full" style="background: #febc2e" />
+                  <span class="size-2.5 rounded-full" style="background: #28c840" />
+                </div>
+                <span class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">~/blog/post-petr4.html</span>
+                <span class="font-mono-tab text-[10px]" :style="{ color: brand.colors.textMuted }">●●●</span>
+              </div>
+
+              <div class="px-5 py-4 font-mono-tab text-[12px] leading-[1.65] md:text-[13px]">
+                <div :style="{ color: brand.colors.textMuted }">
+                  <span :style="{ color: brand.colors.text }">&lt;!--</span> cotação PETR4 no meu blog <span :style="{ color: brand.colors.text }">--&gt;</span>
+                </div>
+                <div class="mt-3 rounded border-l-2 py-1 pl-3" :style="{ borderColor: brand.colors.primary, backgroundColor: `${brand.colors.primary}08` }">
+                  <div :style="{ color: brand.colors.text }">
+                    <span :style="{ color: brand.colors.primary }">&lt;iframe</span>
+                  </div>
+                  <div class="pl-4">
+                    <span :style="{ color: brand.colors.primary }">src</span><span :style="{ color: brand.colors.textMuted }">=</span><span :style="{ color: brand.colors.positive }">"https://embed.redentia.com.br/</span>
+                  </div>
+                  <div class="pl-8">
+                    <span :style="{ color: brand.colors.positive }">ticker/small?ticker=PETR4"</span>
+                  </div>
+                  <div class="pl-4">
+                    <span :style="{ color: brand.colors.primary }">width</span><span :style="{ color: brand.colors.textMuted }">=</span><span :style="{ color: brand.colors.positive }">"320"</span>
+                    <span :style="{ color: brand.colors.primary }"> height</span><span :style="{ color: brand.colors.textMuted }">=</span><span :style="{ color: brand.colors.positive }">"80"</span>
+                  </div>
+                  <div class="pl-4">
+                    <span :style="{ color: brand.colors.primary }">frameborder</span><span :style="{ color: brand.colors.textMuted }">=</span><span :style="{ color: brand.colors.positive }">"0"</span>
+                    <span :style="{ color: brand.colors.primary }"> loading</span><span :style="{ color: brand.colors.textMuted }">=</span><span :style="{ color: brand.colors.positive }">"lazy"</span><span :style="{ color: brand.colors.primary }">&gt;</span>
+                  </div>
+                  <div :style="{ color: brand.colors.primary }">&lt;/iframe&gt;</div>
+                </div>
+
+                <div class="mt-3 flex items-center gap-2 text-[11px]" :style="{ color: brand.colors.textMuted }">
+                  <span :style="{ color: brand.colors.positive }">✓</span>
+                  <span>cole, salve, publique. pronto.</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>

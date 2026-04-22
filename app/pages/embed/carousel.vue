@@ -1,0 +1,153 @@
+<script setup lang="ts">
+const route = useRoute()
+const brand = useBrand()
+
+definePageMeta({
+  layout: false,
+  isPublicRoute: true,
+  hideInstallAppBanner: true,
+})
+
+const tickersInput = ref(String(route.query.tickers || 'PETR4,VALE3,ITUB4,BBAS3,MGLU3'))
+const theme = ref<'dark' | 'light'>((route.query.theme as any) === 'light' ? 'light' : 'dark')
+
+const tickers = computed(() =>
+  tickersInput.value
+    .split(',')
+    .map((t) => t.trim().toUpperCase())
+    .filter(Boolean)
+)
+
+const { isWidgetMode, embedUrl, iframeCode, copied, copyIframe } = useEmbedPlayground({
+  path: '/carousel',
+  width: 900,
+  height: 100,
+  params: computed(() => ({ tickers: tickers.value.join(','), theme: theme.value })),
+  title: computed(() => `Carrossel de cotações: ${tickers.value.slice(0, 3).join(', ')}`),
+})
+
+const { getTickerDetails } = useAssetsService()
+const assets = ref<any[]>([])
+
+async function fetchAll() {
+  assets.value = await Promise.all(
+    tickers.value.map((t) => getTickerDetails(t).catch(() => null))
+  )
+}
+watch(tickers, () => fetchAll(), { immediate: true })
+
+const formatPrice = (v: number | null) =>
+  v == null ? '—' : new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v)
+const formatChange = (v: number) => (v >= 0 ? `+${Math.abs(v).toFixed(2)}%` : `-${Math.abs(v).toFixed(2)}%`)
+
+if (!isWidgetMode.value) {
+  usePageSeo({
+    title: `Carrossel de Cotações para Site: Widget Animado B3 | ${brand.name}`,
+    description:
+      'Carrossel horizontal com múltiplos tickers em tempo real. Escolha quais ações, FIIs ou ETFs exibir. Ideal para sites de conteúdo financeiro e dashboards.',
+    path: '/embed/carousel',
+    breadcrumbs: [
+      { name: 'Início', path: '/' },
+      { name: 'Widgets', path: '/embed' },
+      { name: 'Carrossel', path: '/embed/carousel' },
+    ],
+  })
+} else {
+  useSeoMeta({ robots: 'noindex,nofollow', title: `Carrossel · ${brand.name}` })
+}
+</script>
+
+<template>
+  <div v-if="isWidgetMode" class="embed-widget">
+    <div
+      class="flex h-full w-full gap-3 overflow-x-auto rounded-xl p-3"
+      :style="{
+        backgroundColor: theme === 'light' ? '#ffffff' : brand.colors.surface,
+        border: `1px solid ${theme === 'light' ? '#e5e7eb' : brand.colors.border}`,
+      }"
+    >
+      <NuxtLink
+        v-for="(a, i) in assets"
+        :key="i"
+        :to="a ? `https://www.redentia.com.br/asset/${String(a.ticker).toLowerCase()}` : '#'"
+        target="_blank"
+        rel="noopener"
+        class="flex shrink-0 items-center gap-2 rounded-lg px-3 py-2"
+        :style="{
+          backgroundColor: theme === 'light' ? '#f9fafb' : brand.colors.background,
+          border: `1px solid ${theme === 'light' ? '#e5e7eb' : brand.colors.border}`,
+        }"
+      >
+        <img v-if="a?.logo" :src="a.logo" :alt="a.ticker" class="size-6 shrink-0 rounded object-contain" loading="lazy" />
+        <div class="text-sm">
+          <div class="font-semibold" :style="{ color: theme === 'light' ? '#111' : brand.colors.text }">
+            {{ a?.ticker || tickers[i] }}
+          </div>
+          <div class="flex items-center gap-1.5 text-xs">
+            <span class="tabular-nums" :style="{ color: theme === 'light' ? '#111' : brand.colors.text }">
+              {{ formatPrice(a?.market_price ?? a?.last_price ?? null) }}
+            </span>
+            <span v-if="a" class="tabular-nums" :class="(a.change_percent ?? a.change ?? 0) >= 0 ? 'text-green-500' : 'text-red-500'">
+              {{ formatChange(a.change_percent ?? a.change ?? 0) }}
+            </span>
+          </div>
+        </div>
+      </NuxtLink>
+      <div class="flex shrink-0 items-center px-3 text-[9px] uppercase tracking-[0.15em] opacity-50" :style="{ color: theme === 'light' ? '#6b7280' : brand.colors.textMuted }">
+        redentia.com.br
+      </div>
+    </div>
+  </div>
+
+  <NuxtLayout v-else name="static" title="Widget Carrossel de Tickers">
+    <section class="flex flex-col gap-12 px-6 py-12 md:py-16">
+      <nav class="mx-auto flex w-full max-w-5xl items-center gap-2 text-sm text-gray-400">
+        <NuxtLink to="/" class="hover:text-white">Início</NuxtLink>
+        <UIcon name="i-lucide-chevron-right" class="size-4" />
+        <NuxtLink to="/embed" class="hover:text-white">Widgets</NuxtLink>
+        <UIcon name="i-lucide-chevron-right" class="size-4" />
+        <span class="text-white">Carrossel</span>
+      </nav>
+      <header class="mx-auto flex w-full max-w-5xl flex-col gap-4 text-center md:text-left">
+        <h1 class="text-3xl md:text-5xl" :class="[brand.font.headingWeight]" :style="{ color: brand.colors.text }">
+          Carrossel de Cotações da B3
+        </h1>
+        <p class="max-w-2xl text-base text-gray-400 md:text-lg">
+          Barra horizontal com múltiplos tickers atualizados em tempo real. Escolha até 20 ativos — ações, FIIs, ETFs ou combinações. Perfeito pra dashboards e headers de sites de conteúdo financeiro.
+        </p>
+      </header>
+      <div class="mx-auto grid w-full max-w-5xl gap-8 md:grid-cols-5">
+        <div class="flex flex-col gap-5 md:col-span-2">
+          <h2 class="text-xl font-semibold" :style="{ color: brand.colors.text }">Customizar</h2>
+          <div class="flex flex-col gap-2">
+            <label class="text-sm text-gray-400">Tickers (separados por vírgula)</label>
+            <UTextarea v-model="tickersInput" :rows="3" placeholder="PETR4,VALE3,ITUB4" />
+            <p class="text-xs text-gray-500">Exemplo: PETR4,VALE3,BBAS3,HGLG11,BOVA11</p>
+          </div>
+          <div class="flex flex-col gap-2">
+            <label class="text-sm text-gray-400">Tema</label>
+            <div class="flex gap-2">
+              <button type="button" class="flex-1 rounded-lg border px-4 py-2 text-sm transition" :class="theme === 'dark' ? 'border-secondary bg-secondary/10 text-secondary' : 'border-white/10 text-gray-400'" @click="theme = 'dark'">Escuro</button>
+              <button type="button" class="flex-1 rounded-lg border px-4 py-2 text-sm transition" :class="theme === 'light' ? 'border-secondary bg-secondary/10 text-secondary' : 'border-white/10 text-gray-400'" @click="theme = 'light'">Claro</button>
+            </div>
+          </div>
+          <div class="flex flex-col gap-2">
+            <label class="text-sm text-gray-400">Código iframe</label>
+            <div class="overflow-x-auto rounded-lg border p-4 font-mono text-xs" :style="{ backgroundColor: brand.colors.background, borderColor: brand.colors.border, color: brand.colors.text }"><code>{{ iframeCode }}</code></div>
+            <UButton :icon="copied ? 'i-lucide-check' : 'i-lucide-copy'" color="primary" block @click="copyIframe">{{ copied ? 'Copiado!' : 'Copiar código' }}</UButton>
+          </div>
+        </div>
+        <div class="flex flex-col gap-4 md:col-span-3">
+          <h2 class="text-xl font-semibold" :style="{ color: brand.colors.text }">Pré-visualização</h2>
+          <div class="flex min-h-[200px] items-center justify-center rounded-2xl border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: theme === 'light' ? '#f9fafb' : brand.colors.background }">
+            <iframe :src="embedUrl" width="100%" height="100" frameborder="0" loading="lazy" title="Carrossel de cotações" style="border:0;border-radius:12px;" />
+          </div>
+        </div>
+      </div>
+    </section>
+  </NuxtLayout>
+</template>
+
+<style scoped>
+.embed-widget { font-family: system-ui, -apple-system, sans-serif; }
+</style>
