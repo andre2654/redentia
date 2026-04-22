@@ -20,34 +20,8 @@
         />
       </div>
 
-      <!-- Header -->
-      <header
-        class="sticky top-0 z-40 border-b backdrop-blur-xl"
-        :style="{ borderColor: REDENTIA_COLORS.border, backgroundColor: `${REDENTIA_COLORS.background}CC` }"
-      >
-        <div class="mx-auto flex h-14 w-full max-w-6xl items-center gap-6 px-4 md:px-6">
-          <NuxtLink to="/creative" class="flex items-center gap-2">
-            <div
-              class="flex size-7 items-center justify-center rounded"
-              :style="{ backgroundColor: REDENTIA_COLORS.primary, color: REDENTIA_COLORS.background }"
-            >
-              <UIcon name="i-lucide-image" class="size-4" />
-            </div>
-            <span class="font-mono-tab text-[11px] font-bold uppercase tracking-[0.15em]" :style="{ color: REDENTIA_COLORS.text }">
-              REDENTIA<span :style="{ color: REDENTIA_COLORS.primary }">.CREATIVE</span>
-            </span>
-          </NuxtLink>
-          <div class="flex-1" />
-          <a
-            :href="mainSiteHref"
-            class="inline-flex items-center gap-2 font-mono-tab text-[11px] uppercase tracking-[0.15em] transition-colors hover:opacity-70"
-            :style="{ color: REDENTIA_COLORS.textMuted }"
-          >
-            <UIcon name="i-lucide-arrow-left" class="size-3" />
-            Voltar pro site
-          </a>
-        </div>
-      </header>
+      <!-- Header compartilhado — mesmo visual nas subpáginas do creative -->
+      <MoleculesSubdomainHeader product="creative" />
 
       <!-- HERO -->
       <section class="relative mx-auto max-w-6xl px-6 pb-12 pt-16 md:px-10 md:pb-20 md:pt-24">
@@ -280,11 +254,8 @@
 <script setup lang="ts">
 import { REDENTIA_COLORS, REDENTIA_FONTS } from '~/utils/redentiaCreativeColors'
 
-// Build the "Voltar pro site" href. When visited via
-// creative.redentia.com.br, this resolves to `https://redentia.com.br/`
-// so the browser actually hops to the main domain instead of doing an
-// SPA nav that leaves the user on `creative.redentia.com.br/`.
-const mainSiteHref = useMainSiteHref()
+// Header compartilhado (MoleculesSubdomainHeader) cuida do link "Voltar pro site"
+// via useMainSiteHref internamente, não precisa importar aqui.
 
 interface CreativeCard {
   slug: string

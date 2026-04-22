@@ -153,28 +153,17 @@ if (!isWidgetMode.value) {
     </div>
   </div>
 
-  <NuxtLayout v-else name="static" :title="sideIsAltas ? 'Widget Top Maiores Altas' : 'Widget Top Maiores Baixas'">
-    <section class="flex flex-col gap-12 px-6 py-12 md:py-16">
-      <nav class="mx-auto flex w-full max-w-5xl items-center gap-2 text-sm text-gray-400">
-        <NuxtLink to="/" class="hover:text-white">Início</NuxtLink>
-        <UIcon name="i-lucide-chevron-right" class="size-4" />
-        <NuxtLink to="/embed" class="hover:text-white">Widgets</NuxtLink>
-        <UIcon name="i-lucide-chevron-right" class="size-4" />
-        <span class="text-white">{{ sideIsAltas ? 'Top Altas' : 'Top Baixas' }}</span>
-      </nav>
+  <MoleculesEmbedPlaygroundShell
+    v-else
+    :breadcrumb="sideIsAltas ? 'Top Altas' : 'Top Baixas'"
+    :hero-title="sideIsAltas ? 'Top Maiores Altas da B3' : 'Top Maiores Baixas da B3'"
+    :hero-description="sideIsAltas
+      ? 'Widget com o ranking diário das ações que mais subiram na bolsa brasileira. Escolha entre ações, fundos imobiliários e ETFs. Atualização automática durante o pregão.'
+      : 'Widget com o ranking diário das ações que mais caíram na bolsa brasileira. Filtros por tipo de ativo. Ideal pra cobrir ambos os lados do mercado em matérias de finanças.'"
+    eyebrow-suffix="RANKING DIÁRIO B3"
+  >
 
-      <header class="mx-auto flex w-full max-w-5xl flex-col gap-4 text-center md:text-left">
-        <h1 class="text-3xl md:text-5xl" :class="[brand.font.headingWeight]" :style="{ color: brand.colors.text }">
-          {{ sideIsAltas ? 'Top Maiores Altas da B3' : 'Top Maiores Baixas da B3' }}
-        </h1>
-        <p class="max-w-2xl text-base text-gray-400 md:text-lg">
-          {{ sideIsAltas
-            ? 'Widget com o ranking diário das ações que mais subiram na bolsa brasileira. Escolha entre ações, fundos imobiliários e ETFs. Atualização automática durante o pregão.'
-            : 'Widget com o ranking diário das ações que mais caíram na bolsa brasileira. Filtros por tipo de ativo. Ideal pra cobrir ambos os lados do mercado em matérias de finanças.' }}
-        </p>
-      </header>
-
-      <div class="mx-auto grid w-full max-w-5xl gap-8 md:grid-cols-5">
+      <div class="grid gap-8 md:grid-cols-5">
         <div class="flex flex-col gap-5 md:col-span-2">
           <h2 class="text-xl font-semibold" :style="{ color: brand.colors.text }">Customizar</h2>
           <div class="flex flex-col gap-2">
@@ -211,7 +200,7 @@ if (!isWidgetMode.value) {
       </div>
 
       <!-- Cross-link entre altas e baixas -->
-      <div class="mx-auto w-full max-w-5xl">
+      <div>
         <div class="flex flex-wrap gap-3">
           <UButton
             v-if="sideIsAltas"
@@ -234,8 +223,7 @@ if (!isWidgetMode.value) {
           <UButton to="/embed" variant="outline" color="neutral" icon="i-lucide-layout-grid">Todos os widgets</UButton>
         </div>
       </div>
-    </section>
-  </NuxtLayout>
+  </MoleculesEmbedPlaygroundShell>
 </template>
 
 <style scoped>

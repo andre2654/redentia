@@ -145,26 +145,14 @@ if (!isWidgetMode.value) {
   </div>
 
   <!-- ==================== PLAYGROUND ==================== -->
-  <NuxtLayout v-else name="static" title="Widget Ticker Big">
-    <section class="flex flex-col gap-12 px-6 py-12 md:py-16">
-      <nav class="mx-auto flex w-full max-w-5xl items-center gap-2 text-sm text-gray-400">
-        <NuxtLink to="/" class="hover:text-white">Início</NuxtLink>
-        <UIcon name="i-lucide-chevron-right" class="size-4" />
-        <NuxtLink to="/embed" class="hover:text-white">Widgets</NuxtLink>
-        <UIcon name="i-lucide-chevron-right" class="size-4" />
-        <span class="text-white">Ticker Big</span>
-      </nav>
-
-      <header class="mx-auto flex w-full max-w-5xl flex-col gap-4 text-center md:text-left">
-        <h1 class="text-3xl md:text-5xl" :class="[brand.font.headingWeight]" :style="{ color: brand.colors.text }">
-          Widget Completo de Ação
-        </h1>
-        <p class="max-w-2xl text-base text-gray-400 md:text-lg">
-          Card grande com cotação, variação, dividend yield, P/L e setor. Ideal pra posts de análise fundamentalista, relatórios e newsletters sobre ações da B3.
-        </p>
-      </header>
-
-      <div class="mx-auto grid w-full max-w-5xl gap-8 md:grid-cols-5">
+  <MoleculesEmbedPlaygroundShell
+    v-else
+    breadcrumb="Ticker Big"
+    hero-title="Widget Completo de Ação"
+    hero-description="Card grande com cotação, variação, dividend yield, P/L e setor. Ideal pra posts de análise fundamentalista, relatórios e newsletters sobre ações da B3."
+    eyebrow-suffix="DY + P/L + SETOR"
+  >
+      <div class="grid gap-8 md:grid-cols-5">
         <div class="flex flex-col gap-5 md:col-span-2">
           <h2 class="text-xl font-semibold" :style="{ color: brand.colors.text }">Customizar</h2>
           <div class="flex flex-col gap-2">
@@ -196,8 +184,7 @@ if (!isWidgetMode.value) {
           </div>
         </div>
       </div>
-    </section>
-  </NuxtLayout>
+  </MoleculesEmbedPlaygroundShell>
 </template>
 
 <style scoped>

@@ -187,29 +187,15 @@ if (isWidgetMode.value) {
   </div>
 
   <!-- ==================== PLAYGROUND MODE (SEO page) ==================== -->
-  <NuxtLayout v-else name="static" title="Widget Ticker Small">
-    <section class="flex flex-col gap-12 px-6 py-12 md:py-16">
-      <!-- Breadcrumbs -->
-      <nav class="mx-auto flex w-full max-w-5xl items-center gap-2 text-sm text-gray-400">
-        <NuxtLink to="/" class="hover:text-white">Início</NuxtLink>
-        <UIcon name="i-lucide-chevron-right" class="size-4" />
-        <NuxtLink to="/embed" class="hover:text-white">Widgets</NuxtLink>
-        <UIcon name="i-lucide-chevron-right" class="size-4" />
-        <span class="text-white">Ticker Small</span>
-      </nav>
-
-      <!-- Header -->
-      <header class="mx-auto flex w-full max-w-5xl flex-col gap-4 text-center md:text-left">
-        <h1 class="text-3xl md:text-5xl" :class="[brand.font.headingWeight]" :style="{ color: brand.colors.text }">
-          Widget de Cotação Compacto
-        </h1>
-        <p class="max-w-2xl text-base text-gray-400 md:text-lg">
-          Card pequeno com logo, ticker, preço e variação do dia. Ideal pra sidebars de blogs, newsletters e sites de conteúdo financeiro. Dados em tempo real da B3, customizável, 100% gratuito.
-        </p>
-      </header>
-
+  <MoleculesEmbedPlaygroundShell
+    v-else
+    breadcrumb="Ticker Small"
+    hero-title="Widget de Cotação Compacto"
+    hero-description="Card pequeno com logo, ticker, preço e variação do dia. Ideal pra sidebars de blogs, newsletters e sites de conteúdo financeiro. Dados em tempo real da B3, customizável, 100% gratuito."
+    eyebrow-suffix="DADOS B3 · EM TEMPO REAL"
+  >
       <!-- Playground: preview + config -->
-      <div class="mx-auto grid w-full max-w-5xl gap-8 md:grid-cols-5">
+      <div class="grid gap-8 md:grid-cols-5">
         <!-- Config -->
         <div class="flex flex-col gap-5 md:col-span-2">
           <h2 class="text-xl font-semibold" :style="{ color: brand.colors.text }">Customizar</h2>
@@ -283,7 +269,7 @@ if (isWidgetMode.value) {
       </div>
 
       <!-- Feature list for SEO -->
-      <div class="mx-auto w-full max-w-5xl">
+      <div>
         <h2 class="mb-4 text-2xl font-semibold" :style="{ color: brand.colors.text }">
           Por que usar o widget de cotação da Redentia
         </h2>
@@ -308,7 +294,7 @@ if (isWidgetMode.value) {
       </div>
 
       <!-- Outros embeds -->
-      <div class="mx-auto w-full max-w-5xl">
+      <div>
         <h2 class="mb-4 text-xl font-semibold" :style="{ color: brand.colors.text }">
           Outros widgets
         </h2>
@@ -320,8 +306,7 @@ if (isWidgetMode.value) {
           <UButton to="/embed/calculadora/juros-compostos" variant="outline" color="neutral" icon="i-lucide-calculator">Calculadora</UButton>
         </div>
       </div>
-    </section>
-  </NuxtLayout>
+  </MoleculesEmbedPlaygroundShell>
 </template>
 
 <style scoped>

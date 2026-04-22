@@ -27,37 +27,8 @@
         />
       </div>
 
-      <!-- Header sticky (mesmo layout do creative) -->
-      <header
-        class="sticky top-0 z-40 border-b backdrop-blur-xl"
-        :style="{ borderColor: REDENTIA_COLORS.border, backgroundColor: `${REDENTIA_COLORS.background}CC` }"
-      >
-        <div class="mx-auto flex h-14 w-full max-w-6xl items-center gap-6 px-4 md:px-6">
-          <NuxtLink to="/embed" class="flex items-center gap-2">
-            <div
-              class="flex size-7 items-center justify-center rounded"
-              :style="{ backgroundColor: REDENTIA_COLORS.primary, color: REDENTIA_COLORS.background }"
-            >
-              <UIcon name="i-lucide-code-xml" class="size-4" />
-            </div>
-            <span
-              class="font-mono-tab text-[11px] font-bold uppercase tracking-[0.15em]"
-              :style="{ color: REDENTIA_COLORS.text }"
-            >
-              REDENTIA<span :style="{ color: REDENTIA_COLORS.primary }">.EMBED</span>
-            </span>
-          </NuxtLink>
-          <div class="flex-1" />
-          <a
-            :href="mainSiteHref"
-            class="inline-flex items-center gap-2 font-mono-tab text-[11px] uppercase tracking-[0.15em] transition-colors hover:opacity-70"
-            :style="{ color: REDENTIA_COLORS.textMuted }"
-          >
-            <UIcon name="i-lucide-arrow-left" class="size-3" />
-            Voltar pro site
-          </a>
-        </div>
-      </header>
+      <!-- Header compartilhado — mesmo visual nas subpáginas do embed -->
+      <MoleculesSubdomainHeader product="embed" />
 
       <!-- HERO (mesmo padrão do creative) -->
       <section class="relative mx-auto max-w-6xl px-6 pb-12 pt-16 md:px-10 md:pb-20 md:pt-24">
@@ -392,7 +363,7 @@ definePageMeta({
   hideInstallAppBanner: true,
 })
 
-const mainSiteHref = useMainSiteHref()
+// mainSiteHref agora vive dentro do MoleculesSubdomainHeader
 
 interface EmbedCard {
   slug: string

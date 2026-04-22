@@ -37,43 +37,57 @@
     <slot />
   </div>
 
-  <!-- PLAYGROUND MODE (default) — mesmo padrão dos embeds -->
-  <NuxtLayout v-else name="static" :title="creativeName">
-    <section class="flex flex-col gap-12 px-6 py-12 md:py-16">
-      <!-- Breadcrumbs -->
-      <nav class="mx-auto flex w-full max-w-5xl items-center gap-2 text-sm text-gray-400">
-        <NuxtLink to="/" class="hover:text-white">Início</NuxtLink>
-        <UIcon name="i-lucide-chevron-right" class="size-4" />
-        <NuxtLink to="/creative" class="hover:text-white">Creative Studio</NuxtLink>
-        <UIcon name="i-lucide-chevron-right" class="size-4" />
-        <span class="text-white">{{ creativeName }}</span>
-      </nav>
+  <!-- PLAYGROUND MODE (default) — layout api-portal + header do creative -->
+  <NuxtLayout v-else name="api-portal">
+    <div
+      class="relative min-h-screen"
+      :style="{ backgroundColor: REDENTIA_COLORS.background, color: REDENTIA_COLORS.text, fontFamily: REDENTIA_FONTS.body }"
+    >
+      <MoleculesSubdomainHeader product="creative" />
 
-      <!-- Hero -->
-      <header class="mx-auto flex w-full max-w-5xl flex-col gap-4 text-center md:text-left">
-        <span
-          class="font-mono-tab text-[10px] uppercase tracking-[0.18em]"
-          :style="{ color: brand.colors.primary }"
-        >
-          [ {{ creativeName }} ] · 1080 × 1080 · SCREENSHOT READY
-        </span>
-        <h1
-          class="text-3xl md:text-5xl"
-          :class="[brand.font.headingWeight]"
-          :style="{ color: brand.colors.text }"
-        >
-          {{ heroTitle || creativeName }}
-        </h1>
-        <p v-if="heroDescription" class="max-w-2xl text-base text-gray-400 md:text-lg">
-          {{ heroDescription }}
-        </p>
-      </header>
+      <section class="mx-auto flex max-w-6xl flex-col gap-12 px-6 py-12 md:px-10 md:py-16">
+        <!-- Breadcrumbs -->
+        <nav class="flex items-center gap-2 font-mono-tab text-[11px] uppercase tracking-[0.12em]" :style="{ color: REDENTIA_COLORS.textMuted }">
+          <NuxtLink to="/creative" class="transition-colors hover:opacity-70" :style="{ color: REDENTIA_COLORS.primary }">
+            Creative Studio
+          </NuxtLink>
+          <UIcon name="i-lucide-chevron-right" class="size-3" />
+          <span :style="{ color: REDENTIA_COLORS.text }">{{ creativeName }}</span>
+        </nav>
 
-      <!-- Playground grid -->
-      <div class="mx-auto grid w-full max-w-5xl gap-8 md:grid-cols-5">
+        <!-- Hero -->
+        <header class="flex flex-col gap-4">
+          <span
+            class="font-mono-tab text-[10px] uppercase tracking-[0.18em]"
+            :style="{ color: REDENTIA_COLORS.primary }"
+          >
+            [ {{ creativeName }} ] · 1080 × 1080 · SCREENSHOT READY
+          </span>
+          <h1
+            class="text-3xl md:text-5xl"
+            :style="{
+              color: REDENTIA_COLORS.text,
+              fontFamily: REDENTIA_FONTS.display,
+              lineHeight: '0.95',
+              letterSpacing: '-0.02em',
+            }"
+          >
+            {{ heroTitle || creativeName }}
+          </h1>
+          <p
+            v-if="heroDescription"
+            class="max-w-2xl text-base leading-relaxed md:text-lg"
+            :style="{ color: REDENTIA_COLORS.textMuted }"
+          >
+            {{ heroDescription }}
+          </p>
+        </header>
+
+        <!-- Playground grid -->
+        <div class="grid gap-8 md:grid-cols-5">
         <!-- LEFT: Config panel (2 cols) -->
         <div class="flex flex-col gap-5 md:col-span-2">
-          <h2 class="text-xl font-semibold" :style="{ color: brand.colors.text }">
+          <h2 class="text-xl font-semibold" :style="{ color: REDENTIA_COLORS.text }">
             Customizar
           </h2>
 
@@ -103,9 +117,9 @@
                   :key="t + i"
                   class="inline-flex items-center gap-2 rounded-full border px-3 py-1 font-mono-tab text-xs font-semibold"
                   :style="{
-                    borderColor: `${brand.colors.primary}66`,
-                    backgroundColor: `${brand.colors.primary}1a`,
-                    color: brand.colors.primary,
+                    borderColor: `${REDENTIA_COLORS.primary}66`,
+                    backgroundColor: `${REDENTIA_COLORS.primary}1a`,
+                    color: REDENTIA_COLORS.primary,
                   }"
                 >
                   {{ t }}
@@ -157,9 +171,9 @@
             <div
               class="overflow-x-auto rounded-lg border p-4 font-mono text-xs"
               :style="{
-                backgroundColor: brand.colors.background,
-                borderColor: brand.colors.border,
-                color: brand.colors.text,
+                backgroundColor: REDENTIA_COLORS.background,
+                borderColor: REDENTIA_COLORS.border,
+                color: REDENTIA_COLORS.text,
               }"
             >
               <code>{{ currentPath }}</code>
@@ -182,14 +196,14 @@
 
         <!-- RIGHT: Preview (3 cols) -->
         <div class="flex flex-col gap-4 md:col-span-3">
-          <h2 class="text-xl font-semibold" :style="{ color: brand.colors.text }">
+          <h2 class="text-xl font-semibold" :style="{ color: REDENTIA_COLORS.text }">
             Pré-visualização
           </h2>
           <div
             class="flex items-center justify-center rounded-2xl border p-4"
             :style="{
-              borderColor: brand.colors.border,
-              backgroundColor: brand.colors.background,
+              borderColor: REDENTIA_COLORS.border,
+              backgroundColor: REDENTIA_COLORS.background,
               minHeight: `${scaledSize + 40}px`,
             }"
           >
@@ -198,9 +212,9 @@
               :style="{
                 width: `${scaledSize}px`,
                 height: `${scaledSize}px`,
-                borderColor: brand.colors.border,
-                backgroundColor: brand.colors.background,
-                boxShadow: `0 30px 80px -30px ${brand.colors.primary}50`,
+                borderColor: REDENTIA_COLORS.border,
+                backgroundColor: REDENTIA_COLORS.background,
+                boxShadow: `0 30px 80px -30px ${REDENTIA_COLORS.primary}50`,
               }"
             >
               <div
@@ -221,7 +235,7 @@
 
       <!-- Outros creatives (cross-link, estilo embed playground) -->
       <div class="mx-auto w-full max-w-5xl">
-        <h2 class="mb-3 text-xl font-semibold" :style="{ color: brand.colors.text }">
+        <h2 class="mb-3 text-xl font-semibold" :style="{ color: REDENTIA_COLORS.text }">
           Outros creatives
         </h2>
         <div class="flex flex-wrap gap-2">
@@ -241,10 +255,13 @@
         </div>
       </div>
     </section>
+    </div>
   </NuxtLayout>
 </template>
 
 <script setup lang="ts">
+import { REDENTIA_COLORS, REDENTIA_FONTS } from '~/utils/redentiaCreativeColors'
+
 type ControlType = 'text' | 'tickers' | 'date' | 'select' | 'toggle'
 
 interface ControlOption {
@@ -279,7 +296,6 @@ defineEmits<{
 
 const route = useRoute()
 const router = useRouter()
-const brand = useBrand()
 
 const scale = computed(() => props.scale ?? 0.48)
 const scaledSize = computed(() => Math.round(1080 * scale.value))
