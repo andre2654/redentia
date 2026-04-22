@@ -1,14 +1,10 @@
 <template>
-  <NuxtLayout name="static" title="Guias de Investimento">
+  <NuxtLayout name="static" title="Como Investir na Bolsa: Guias, Dividendos e Análises">
     <div class="flex flex-col gap-8 px-6 py-8">
       <!-- Header -->
       <section class="flex flex-col gap-4">
-        <div class="flex items-center gap-2">
-          <UIcon name="i-lucide-newspaper" class="text-secondary h-8 w-8" />
-          <h1 class="text-3xl font-bold md:text-4xl">Blog da {{ brand.name }}</h1>
-        </div>
         <p class="text-base md:text-lg" :style="{ color: brand.colors.textMuted }">
-          Guias completos, tutoriais práticos e análises detalhadas sobre investimentos. Aprenda desde o básico até estratégias avançadas para dominar o mercado financeiro.
+          Aprenda a investir em ações, FIIs e dividendos da B3 com guias completos, análises dos maiores ativos, tutoriais práticos e dados de mercado em tempo real. Conteúdo gratuito da {{ brand.name }} para investidores de todos os níveis.
         </p>
       </section>
 
@@ -18,7 +14,7 @@
       >
         <div class="mb-4 flex items-center gap-2">
           <UIcon name="i-lucide-star" class="text-secondary h-5 w-5" />
-          <h2 class="text-secondary text-lg font-semibold">Artigo em Destaque</h2>
+          <h2 class="text-secondary text-lg font-semibold">Guia em Destaque para Investir</h2>
         </div>
         <NuxtLink
           to="/guias/como-investir-em-acoes-para-iniciantes"
@@ -57,9 +53,9 @@
               class="mb-1 text-[10px] font-medium uppercase tracking-[0.15em]"
               :style="{ color: brand.colors.textMuted }"
             >
-              Dados em tempo real
+              Dados da B3 em tempo real
             </p>
-            <h2 class="text-xl font-semibold">Ferramentas de Mercado</h2>
+            <h2 class="text-xl font-semibold">Ferramentas para Investir com Dados ao Vivo</h2>
           </div>
         </div>
         <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
@@ -106,7 +102,7 @@
 
       <!-- Categorias -->
       <section class="flex flex-col gap-4">
-        <h2 class="text-xl font-semibold">Filtrar por Categoria</h2>
+        <h2 class="text-xl font-semibold">Escolha o tipo de investimento</h2>
         <div class="flex flex-wrap gap-2">
           <UButton
             color="secondary"
@@ -177,7 +173,7 @@
       <section class="flex flex-col gap-6">
         <div class="flex items-center justify-between">
           <h2 class="text-xl font-semibold">
-            {{ guiasFiltrados.length }} artigo{{ guiasFiltrados.length !== 1 ? 's' : '' }} disponíve{{ guiasFiltrados.length !== 1 ? 'is' : 'l' }}
+            {{ guiasFiltrados.length }} guia{{ guiasFiltrados.length !== 1 ? 's' : '' }} para investir com mais segurança
           </h2>
         </div>
 
@@ -333,6 +329,20 @@ const ctaButtons = computed(() => {
   return buttons
 })
 
+const MONTH_MAP: Record<string, string> = {
+  jan: '01', fev: '02', mar: '03', abr: '04', mai: '05', jun: '06',
+  jul: '07', ago: '08', set: '09', out: '10', nov: '11', dez: '12',
+}
+
+function parseDateToIso(pt: string): string {
+  const parts = (pt || '').trim().toLowerCase().split(/\s+/)
+  if (parts.length !== 3) return '2026-01-01'
+  const day = parts[0].padStart(2, '0')
+  const month = MONTH_MAP[parts[1].slice(0, 3)] || '01'
+  const year = parts[2]
+  return `${year}-${month}-${day}`
+}
+
 const guias: Guia[] = [
   {
     slug: 'como-investir-em-acoes-para-iniciantes',
@@ -448,34 +458,56 @@ const guias: Guia[] = [
 
 // SEO
 usePageSeo({
-  title: `Blog de Investimentos: Guias e Tutoriais Completos | ${brand.name}`,
+  title: `Como Investir na Bolsa: Guias, Dividendos e Análises 2026 | ${brand.name}`,
   description:
-    'Artigos completos sobre ações, FIIs, dividendos e análises de ativos. Tutoriais práticos, guias passo a passo e estratégias para investidores de todos os níveis.',
+    'Guias completos para investir em ações, FIIs e dividendos da B3. Análises dos maiores ativos, dados de mercado em tempo real e tutoriais práticos para investidores iniciantes e avançados, 100% grátis.',
   path: '/guias',
+  breadcrumbs: [
+    { name: 'Home', path: '/' },
+    { name: 'Guias', path: '/guias' },
+  ],
   structuredData: [
     {
       '@context': 'https://schema.org',
       '@type': 'Blog',
-      name: `Blog da ${brand.name}`,
+      name: `Blog de Investimentos ${brand.name}`,
       description:
-        'Artigos educacionais sobre investimentos em ações, FIIs, dividendos e mercado financeiro',
-      breadcrumb: {
-        '@type': 'BreadcrumbList',
-        itemListElement: [
-          {
-            '@type': 'ListItem',
-            position: 1,
-            name: 'Home',
-            item: brand.url,
-          },
-          {
-            '@type': 'ListItem',
-            position: 2,
-            name: 'Blog',
-            item: `${brand.url}/guias`,
-          },
-        ],
+        'Artigos educacionais sobre como investir em ações, FIIs, dividendos e mercado financeiro brasileiro.',
+      inLanguage: 'pt-BR',
+      publisher: {
+        '@type': 'Organization',
+        name: brand.name,
+        url: brand.url,
+        logo: {
+          '@type': 'ImageObject',
+          url: `${brand.url || ''}/512x512.png`,
+        },
       },
+      blogPost: guias.map((g) => ({
+        '@type': 'BlogPosting',
+        headline: g.titulo,
+        description: g.descricao,
+        url: `${brand.url || ''}/guias/${g.slug}`,
+        datePublished: parseDateToIso(g.data),
+        dateModified: parseDateToIso(g.data),
+        articleSection: g.categoriaLabel,
+        author: {
+          '@type': 'Organization',
+          name: brand.name,
+        },
+      })),
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: `Guias para investir publicados pela ${brand.name}`,
+      numberOfItems: guias.length,
+      itemListElement: guias.map((g, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        url: `${brand.url || ''}/guias/${g.slug}`,
+        name: g.titulo,
+      })),
     },
   ],
 })

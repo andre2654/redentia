@@ -1424,6 +1424,55 @@ const rankingItems = computed(() => {
       </div>
 
       <!-- ============================================================
+           UNIT POST · FEATURE LAUNCH (calculadora, novo módulo, etc)
+           Big mockup + badge NOVIDADE + hero + CTA
+           ============================================================ -->
+      <div v-else-if="variant === 'redentia-launch'" class="body amber-body amber-cover-min">
+        <div class="amber-min-top">
+          <img src="/brand/logo-full.svg" alt="Redentia" class="amber-min-logo" />
+          <div class="amber-launch-badge">
+            <span class="amber-launch-badge-dot"></span>
+            {{ pager || 'NOVIDADE' }}
+          </div>
+        </div>
+
+        <div class="amber-launch-head">
+          <div class="amber-min-eyebrow">{{ eyebrow || 'LANÇAMENTO' }}</div>
+          <h1 class="amber-launch-title">
+            <template v-if="title">
+              <template v-for="(line, i) in renderMultiline(title)" :key="i">
+                <template v-if="splitHighlight(line).plain">{{ splitHighlight(line).plain }}</template><span v-if="splitHighlight(line).highlight" class="amber-min-italic">{{ splitHighlight(line).highlight }}</span>{{ splitHighlight(line).tail }}<br>
+              </template>
+            </template>
+          </h1>
+          <p v-if="subtitle" class="amber-launch-sub">{{ subtitle }}</p>
+        </div>
+
+        <div class="amber-launch-laptop">
+          <div class="laptop-frame">
+            <div class="laptop-bar">
+              <span class="laptop-dot laptop-dot-red"></span>
+              <span class="laptop-dot laptop-dot-yellow"></span>
+              <span class="laptop-dot laptop-dot-green"></span>
+              <div class="laptop-url">{{ q('iframe_url_label', 'redentia.com.br') }}</div>
+            </div>
+            <div class="laptop-screen-iframe-wrap">
+              <iframe :src="q('iframe_src', '/')" class="amber-min-laptop-iframe" loading="eager" scrolling="no"></iframe>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="marks.length > 0" class="amber-launch-chips">
+          <span v-for="(m, i) in marks" :key="i" class="amber-launch-chip">{{ m }}</span>
+        </div>
+
+        <div class="amber-launch-cta">
+          <img src="/brand/logo-icon.svg" alt="" class="amber-launch-cta-icon" />
+          <span class="amber-launch-cta-url">{{ url }}</span>
+        </div>
+      </div>
+
+      <!-- ============================================================
            Fallback
            ============================================================ -->
       <div v-else class="body fallback-body">
@@ -3557,7 +3606,8 @@ const rankingItems = computed(() => {
 }
 .card-redentia-push,
 .card-redentia-movimento,
-.card-redentia-ranking {
+.card-redentia-ranking,
+.card-redentia-launch {
   padding: 0 !important;
   overflow: hidden !important;
   position: relative;
@@ -3567,8 +3617,18 @@ const rankingItems = computed(() => {
 .card-redentia-movimento .header,
 .card-redentia-movimento .footer,
 .card-redentia-ranking .header,
-.card-redentia-ranking .footer {
+.card-redentia-ranking .footer,
+.card-redentia-launch .header,
+.card-redentia-launch .footer {
   display: none;
+}
+.card-redentia-launch {
+  background-color: #F5A623;
+  background-image:
+    linear-gradient(rgba(10, 11, 14, 0.11) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(10, 11, 14, 0.11) 1px, transparent 1px);
+  background-size: 54px 54px;
+  background-position: -1px -1px;
 }
 
 .amber-body {
@@ -6451,6 +6511,127 @@ const rankingItems = computed(() => {
   opacity: 0.55;
   letter-spacing: 0.08em;
   font-weight: 600;
+}
+
+/* ============================================================
+   UNIT POST · FEATURE LAUNCH
+   ============================================================ */
+.amber-launch-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  background: #0A0B0E;
+  color: #F5A623;
+  border-radius: 999px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  letter-spacing: 0.28em;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.amber-launch-badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #F5A623;
+  animation: amber-live-pulse 1.8s ease-in-out infinite;
+}
+.amber-launch-head {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 18px;
+  flex-shrink: 0;
+}
+.amber-launch-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 82px;
+  line-height: 0.98;
+  color: #0A0B0E;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  margin: 0;
+}
+.amber-launch-sub {
+  font-family: 'Inter', sans-serif;
+  font-size: 22px;
+  line-height: 1.45;
+  color: #0A0B0E;
+  opacity: 0.75;
+  margin: 0;
+  max-width: 820px;
+  font-weight: 500;
+}
+.amber-launch-laptop {
+  position: relative;
+  z-index: 2;
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: center;
+  filter: drop-shadow(0 24px 48px rgba(10, 11, 14, 0.3));
+  margin: 24px 0 20px 0;
+}
+.amber-launch-laptop .laptop-frame {
+  width: 920px;
+  height: 460px;
+  background: #0A0B0E;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 3px solid #0A0B0E;
+}
+.amber-launch-laptop .laptop-bar {
+  padding: 8px 14px;
+  min-height: 34px;
+  flex-shrink: 0;
+}
+.amber-launch-chips {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+}
+.amber-launch-chip {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 15px;
+  letter-spacing: 0.16em;
+  font-weight: 700;
+  padding: 10px 20px;
+  background: #0A0B0E;
+  color: #F5A623;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+.amber-launch-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 18px 0 0 0;
+  border-top: 1px solid rgba(10, 11, 14, 0.2);
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+}
+.amber-launch-cta-icon {
+  height: 32px;
+  width: auto;
+  filter: brightness(0);
+}
+.amber-launch-cta-url {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 22px;
+  font-weight: 700;
+  color: #0A0B0E;
+  letter-spacing: 0.06em;
 }
 </style>
 

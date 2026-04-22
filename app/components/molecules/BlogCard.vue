@@ -70,12 +70,26 @@ interface Props {
 const brand = useBrand()
 
 const props = withDefaults(defineProps<Props>(), {
-  data: '4 Jan 2026',
+  data: '04/01/2026',
   tempoLeitura: 8,
 })
 
+const MONTHS: Record<string, string> = {
+  jan: '01', fev: '02', mar: '03', abr: '04', mai: '05', jun: '06',
+  jul: '07', ago: '08', set: '09', out: '10', nov: '11', dez: '12',
+}
+
 const dataFormatada = computed(() => {
-  if (!props.data) return '4 Jan 2026'
-  return props.data
+  const raw = (props.data || '').trim()
+  if (!raw) return '04/01/2026'
+  if (/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(raw)) return raw
+  const parts = raw.toLowerCase().split(/\s+/)
+  if (parts.length === 3) {
+    const day = parts[0].padStart(2, '0')
+    const month = MONTHS[parts[1].slice(0, 3)] || '01'
+    const year = parts[2]
+    return `${day}/${month}/${year}`
+  }
+  return raw
 })
 </script>
