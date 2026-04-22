@@ -42,7 +42,8 @@ const { data: ranking } = await useAsyncData(
     try {
       const apiBase = String(useRuntimeConfig().public?.apiBaseUrl || '')
       const backendSide = sideIsAltas.value ? 'top' : 'bottom'
-      const backendType = tipo.value.toUpperCase() // STOCK, FII, ETF
+      const typeMap: Record<string, string> = { stock: 'STOCK', fii: 'REIT', etf: 'ETF' }
+      const backendType = typeMap[tipo.value] || 'STOCK'
       const endpoint = `${apiBase}/rankings/monthly-change?side=${backendSide}&type=${backendType}&limit=${limit.value}`
       const res = await $fetch<any>(endpoint)
       const items = Array.isArray(res) ? res : res?.data || []

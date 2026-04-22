@@ -30,26 +30,24 @@ const periodoToMode: Record<string, string> = {
   '1M': '1mo',
   '3M': '3mo',
   '6M': '6mo',
-  '1A': '1y',
+  '1A': '12mo',
   '5A': '5y',
 }
 
-// Histórico mapeado pro formato IChartDataPoint (date, value, timestamp)
-// que o AtomsGraphLine (componente oficial do site) espera.
 const { data: history } = await useAsyncData(
   `hist-${ticker.value}-${periodo.value}`,
   async () => {
     try {
       const apiBase = String(useRuntimeConfig().public?.apiBaseUrl || '')
-      const mode = periodoToMode[periodo.value] || '1y'
+      const mode = periodoToMode[periodo.value] || '12mo'
       const res = await $fetch<any>(
         `${apiBase}/tickers/${ticker.value}/prices?mode=${mode}`
       )
       const raw = Array.isArray(res) ? res : res?.data || []
       return raw
         .map((p: any) => {
-          const date = String(p.date || p.datetime || '')
-          const value = Number(p.close ?? p.price ?? p.adjusted_close ?? 0)
+          const date = String(p.price_at || p.date || p.datetime || '')
+          const value = Number(p.market_price ?? p.close ?? p.price ?? p.adjusted_close ?? 0)
           const timestamp = date ? new Date(date).getTime() : 0
           return { date, value, timestamp }
         })

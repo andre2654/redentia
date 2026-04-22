@@ -22,6 +22,28 @@ definePageMeta({
 const tipo = computed(() => String(route.params.tipo || 'juros-compostos').toLowerCase())
 const theme = ref<'dark' | 'light'>((route.query.theme as any) === 'light' ? 'light' : 'dark')
 
+// Carrega ativos + setores sob demanda só para os tipos que precisam (preco-teto, dividend-yield)
+const needsAssets = computed(() => tipo.value === 'preco-teto' || tipo.value === 'dividend-yield')
+const needsSectors = computed(() => tipo.value === 'preco-teto')
+
+const { getAssets, getSectors } = useAssetsService()
+
+const { data: assetsData, pending: assetsPending } = await useAsyncData(
+  () => `embed-calc-assets-${tipo.value}`,
+  () => (needsAssets.value ? getAssets() : Promise.resolve([])),
+  { watch: [tipo] },
+)
+
+const { data: sectorsData } = await useAsyncData(
+  () => `embed-calc-sectors-${tipo.value}`,
+  () => (needsSectors.value ? getSectors().catch(() => []) : Promise.resolve([])),
+  { watch: [tipo] },
+)
+
+const assets = computed(() => assetsData.value ?? [])
+const assetsLoading = computed(() => assetsPending.value)
+const sectors = computed(() => sectorsData.value ?? [])
+
 const { isWidgetMode, embedUrl, iframeCode, copied, copyIframe } = useEmbedPlayground({
   path: `/calculadora/${tipo.value}`,
   width: 480,
@@ -98,19 +120,31 @@ if (!isWidgetMode.value) {
       <h3 class="mb-3 text-sm font-bold uppercase tracking-wider" :style="{ color: theme === 'light' ? '#111' : brand.colors.text }">
         Calculadora · {{ tipoLabel }}
       </h3>
-      <div class="flex-1">
+      <div class="flex-1 overflow-auto">
         <CalculatorCompound v-if="tipo === 'juros-compostos'" />
+        <CalculatorDividendYield
+          v-else-if="tipo === 'dividend-yield'"
+          :assets="assets"
+          :assets-loading="assetsLoading"
+        />
+        <CalculatorFairPrice
+          v-else-if="tipo === 'preco-teto'"
+          :assets="assets"
+          :assets-loading="assetsLoading"
+          :sectors="sectors"
+        />
+        <CalculatorRetirement v-else-if="tipo === 'aposentadoria'" />
+        <CalculatorMonthlyInvestment v-else-if="tipo === 'quanto-investir'" />
+        <CalculatorIncomeTax v-else-if="tipo === 'imposto-renda'" />
         <div v-else class="flex h-full flex-col items-center justify-center gap-3 text-center" :style="{ color: theme === 'light' ? '#6b7280' : brand.colors.textMuted }">
           <UIcon name="i-lucide-construction" class="size-10" />
-          <p class="text-sm">Widget em construção.</p>
+          <p class="text-sm">Calculadora não encontrada.</p>
           <NuxtLink
-            :to="`https://www.redentia.com.br/calculadora/${tipo}`"
-            target="_blank"
-            rel="noopener"
+            to="/embed/calculadora/juros-compostos"
             class="text-sm font-semibold underline"
             :style="{ color: brand.colors.primary }"
           >
-            Abrir no site →
+            Ver juros compostos
           </NuxtLink>
         </div>
       </div>

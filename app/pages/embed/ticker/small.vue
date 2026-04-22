@@ -74,7 +74,7 @@ const embedUrl = computed(
 )
 const iframeCode = computed(
   () => `<iframe src="${embedUrl.value}"
-        width="320" height="80"
+        width="320" height="120"
         frameborder="0" loading="lazy"
         title="Cotação ${ticker.value} em tempo real"
         style="border:0;border-radius:12px;"></iframe>`
@@ -127,19 +127,65 @@ if (isWidgetMode.value) {
 
 <template>
   <!-- ==================== WIDGET MODE (iframe target) ==================== -->
-  <!-- Usa o componente oficial AtomsTickerEmbed (mesmo usado no site) -->
   <div
     v-if="isWidgetMode"
     class="embed-widget flex h-full w-full items-center justify-center p-3"
-    :class="theme === 'light' ? 'is-light' : 'is-dark'"
     :data-theme="theme"
   >
-    <div class="flex flex-col gap-2">
-      <AtomsTickerEmbed :ticker="ticker" size="lg" :show-change="true" />
-      <div class="text-center text-[9px] uppercase tracking-[0.15em] opacity-60">
+    <a
+      :href="`https://www.redentia.com.br/asset/${ticker.toLowerCase()}`"
+      target="_blank"
+      rel="noopener"
+      class="flex w-full max-w-full flex-col gap-1 rounded-lg border px-3 py-2 no-underline"
+      :style="{
+        backgroundColor: theme === 'light' ? '#ffffff' : brand.colors.surface,
+        borderColor: theme === 'light' ? '#e5e7eb' : brand.colors.border,
+      }"
+    >
+      <div class="flex items-center gap-2">
+        <img
+          v-if="logoUrl"
+          :src="logoUrl"
+          :alt="ticker"
+          class="size-6 rounded object-contain"
+        />
+        <div
+          v-else
+          class="flex size-6 items-center justify-center rounded text-[9px] font-bold"
+          :style="{
+            backgroundColor: theme === 'light' ? '#f3f4f6' : 'rgba(255,255,255,0.1)',
+            color: theme === 'light' ? '#6b7280' : brand.colors.textMuted,
+          }"
+        >
+          {{ ticker.slice(0, 2) }}
+        </div>
+        <span
+          class="text-sm font-bold tracking-wide"
+          :style="{ color: theme === 'light' ? '#111' : brand.colors.text }"
+        >
+          {{ ticker }}
+        </span>
+        <span
+          v-if="!loading"
+          class="ml-auto text-xs font-medium tabular-nums"
+          :class="changePositive ? 'text-green-500' : 'text-red-500'"
+        >
+          {{ formatChange(Number(change)) }}
+        </span>
+      </div>
+      <div
+        class="text-base font-bold tabular-nums"
+        :style="{ color: theme === 'light' ? '#111' : brand.colors.text }"
+      >
+        {{ loading ? 'R$ —' : formatPrice(price) }}
+      </div>
+      <div
+        class="text-[9px] uppercase tracking-[0.15em] opacity-60"
+        :style="{ color: theme === 'light' ? '#6b7280' : brand.colors.textMuted }"
+      >
         powered by redentia.com.br
       </div>
-    </div>
+    </a>
   </div>
 
   <!-- ==================== PLAYGROUND MODE (SEO page) ==================== -->
@@ -211,7 +257,7 @@ if (isWidgetMode.value) {
             <iframe
               :src="embedUrl"
               width="320"
-              height="80"
+              height="120"
               frameborder="0"
               loading="lazy"
               :title="`Cotação ${ticker}`"

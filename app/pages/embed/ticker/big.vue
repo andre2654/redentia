@@ -19,30 +19,58 @@ const { isWidgetMode, embedUrl, iframeCode, copied, copyIframe } = useEmbedPlayg
   title: computed(() => `Cotação ${ticker.value} em tempo real`),
 })
 
-const { getTickerDetails } = useAssetsService()
+const { getTickerDetails, getTickerFundamentus } = useAssetsService()
 const asset = ref<any>(null)
+const fundamentus = ref<any>(null)
 const loading = ref(true)
 
 async function fetchAsset(t: string) {
   loading.value = true
+  const safe = t.toUpperCase()
   try {
-    asset.value = (await getTickerDetails(t.toUpperCase())) || null
+    const [details, fund] = await Promise.all([
+      getTickerDetails(safe).catch(() => null),
+      getTickerFundamentus(safe).catch(() => null),
+    ])
+    asset.value = details || null
+    fundamentus.value = fund || null
   } catch {
     asset.value = null
+    fundamentus.value = null
   } finally {
     loading.value = false
   }
 }
 watch(ticker, (v) => fetchAsset(v), { immediate: true })
 
-const price = computed(() => asset.value?.market_price ?? asset.value?.last_price ?? null)
+const price = computed(() => {
+  const stats = (fundamentus.value as any)?.financial_data
+  return (
+    Number(stats?.current_price) ||
+    asset.value?.market_price ||
+    asset.value?.last_price ||
+    null
+  )
+})
 const change = computed(() => asset.value?.change_percent ?? asset.value?.change ?? 0)
 const changePositive = computed(() => (change.value ?? 0) >= 0)
 const assetName = computed(() => asset.value?.name || '')
 const logoUrl = computed(() => asset.value?.logo || null)
 const sector = computed(() => asset.value?.sector || null)
-const dy = computed(() => asset.value?.dividend_yield || null)
-const pl = computed(() => asset.value?.price_earnings_ratio || asset.value?.pe || null)
+const dy = computed(() => {
+  const raw = (fundamentus.value as any)?.key_statistics?.dividend_yield
+  const n = parseFloat(raw)
+  return Number.isFinite(n) && n > 0 ? n : null
+})
+const pl = computed(() => {
+  const stats = (fundamentus.value as any)?.key_statistics
+  const eps = parseFloat(stats?.trailing_eps)
+  const p = price.value
+  if (Number.isFinite(eps) && eps > 0 && p) return p / eps
+  const forward = parseFloat(stats?.forward_pe)
+  if (Number.isFinite(forward) && forward > 0) return forward
+  return null
+})
 
 const formatPrice = (v: number | null) =>
   v == null ? 'R$ —' : new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v)
@@ -79,7 +107,6 @@ if (!isWidgetMode.value) {
 
 <template>
   <!-- ==================== WIDGET MODE ==================== -->
-  <!-- Reusa AtomsTickerEmbed pro header + stats nativos Redentia -->
   <div v-if="isWidgetMode" class="embed-widget">
     <NuxtLink
       :to="`https://www.redentia.com.br/asset/${ticker.toLowerCase()}`"
@@ -91,8 +118,23 @@ if (!isWidgetMode.value) {
         border: `1px solid ${theme === 'light' ? '#e5e7eb' : brand.colors.border}`,
       }"
     >
-      <!-- Top: componente oficial AtomsTickerEmbed -->
-      <AtomsTickerEmbed :ticker="ticker" size="lg" :show-change="true" />
+      <!-- Header inline: logo + ticker + variação com cores controladas por tema -->
+      <div class="flex items-center gap-2">
+        <img v-if="logoUrl" :src="logoUrl" :alt="ticker" class="size-7 rounded object-contain" />
+        <div v-else class="flex size-7 items-center justify-center rounded bg-black/10 text-[10px] font-bold" :style="{ color: theme === 'light' ? '#6b7280' : brand.colors.textMuted }">
+          {{ ticker.slice(0, 2) }}
+        </div>
+        <span class="text-sm font-bold tracking-wide" :style="{ color: theme === 'light' ? '#111' : brand.colors.text }">
+          {{ ticker }}
+        </span>
+        <span
+          v-if="!loading"
+          class="text-xs font-medium tabular-nums"
+          :class="changePositive ? 'text-green-500' : 'text-red-500'"
+        >
+          {{ formatChange(Number(change)) }}
+        </span>
+      </div>
 
       <!-- Preço grande -->
       <div
