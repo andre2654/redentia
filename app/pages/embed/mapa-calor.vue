@@ -19,24 +19,29 @@ const { isWidgetMode, embedUrl, iframeCode, copied, copyIframe } = useEmbedPlayg
   title: computed(() => `Mapa de calor ${indice.value.toUpperCase()} hoje`),
 })
 
-// Fetch heatmap data — endpoint /api/heatmap retorna { data: [...] }
+// Fetch heatmap data via /api/heatmap (HeatmapController no backend).
 // Mapeia pro formato TreemapItem esperado pelo AtomsGraphTreemap.
 const { data: heatmapData } = await useAsyncData(
   `heatmap-${indice.value}`,
   async () => {
     try {
       const apiBase = String(useRuntimeConfig().public?.apiBaseUrl || '')
-      const res = await $fetch<any>(`${apiBase}/heatmap?index=${indice.value}&limit=30`)
+      const res = await $fetch<any>(
+        `${apiBase}/heatmap?index=${indice.value}&limit=30`
+      )
       const rows = Array.isArray(res) ? res : res?.data || []
-      return rows.map((it: any) => ({
-        symbol: String(it.ticker || it.symbol || '').toUpperCase(),
-        name: it.name || it.ticker,
-        price: Number(it.market_price ?? it.price ?? 0),
-        change: Number(it.change_percent ?? it.change ?? 0),
-        marketCap: Number(it.market_cap ?? 0),
-        sector: it.sector || undefined,
-        category: indice.value === 'ifix' ? ('fiis' as const) : ('acoes' as const),
-      }))
+      return rows
+        .map((it: any) => ({
+          symbol: String(it.ticker || it.symbol || '').toUpperCase(),
+          name: it.name || it.ticker || '',
+          price: Number(it.market_price ?? it.price ?? 0),
+          change: Number(it.change_percent ?? it.change ?? 0),
+          marketCap: Number(it.market_cap ?? 0),
+          sector: it.sector || undefined,
+          category:
+            indice.value === 'ifix' ? ('fiis' as const) : ('acoes' as const),
+        }))
+        .filter((x) => x.symbol)
     } catch {
       return []
     }
