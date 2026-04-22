@@ -127,63 +127,19 @@ if (isWidgetMode.value) {
 
 <template>
   <!-- ==================== WIDGET MODE (iframe target) ==================== -->
+  <!-- Usa o componente oficial AtomsTickerEmbed (mesmo usado no site) -->
   <div
     v-if="isWidgetMode"
-    class="embed-widget"
+    class="embed-widget flex h-full w-full items-center justify-center p-3"
     :class="theme === 'light' ? 'is-light' : 'is-dark'"
+    :data-theme="theme"
   >
-    <NuxtLink
-      :to="`https://www.redentia.com.br/asset/${ticker.toLowerCase()}`"
-      target="_blank"
-      rel="noopener"
-      class="block h-full w-full rounded-xl p-3"
-      :style="{
-        backgroundColor: theme === 'light' ? '#ffffff' : brand.colors.surface,
-        border: `1px solid ${theme === 'light' ? '#e5e7eb' : brand.colors.border}`,
-      }"
-    >
-      <div class="flex items-center gap-3">
-        <img
-          v-if="logoUrl"
-          :src="logoUrl"
-          :alt="ticker"
-          class="size-10 shrink-0 rounded-lg object-contain"
-          loading="lazy"
-        />
-        <div
-          v-else
-          class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-gray-200 text-xs font-bold text-gray-500"
-        >
-          {{ ticker.substring(0, 2) }}
-        </div>
-        <div class="min-w-0 flex-1">
-          <div class="flex items-baseline gap-2">
-            <span
-              class="font-semibold tracking-wide"
-              :style="{ color: theme === 'light' ? '#111' : brand.colors.text }"
-            >
-              {{ ticker }}
-            </span>
-            <span
-              v-if="!loading"
-              class="text-xs font-medium tabular-nums"
-              :class="changePositive ? 'text-green-500' : 'text-red-500'"
-            >
-              {{ formatChange(change) }}
-            </span>
-          </div>
-          <div
-            class="text-sm font-semibold tabular-nums"
-            :style="{ color: theme === 'light' ? '#111' : brand.colors.text }"
-          >
-            {{ loading ? '...' : formatPrice(price) }}
-          </div>
-        </div>
-      </div>
-      <div class="mt-2 text-[9px] uppercase tracking-[0.15em] opacity-60" :style="{ color: theme === 'light' ? '#6b7280' : brand.colors.textMuted }">
+    <div class="flex flex-col gap-2">
+      <AtomsTickerEmbed :ticker="ticker" size="lg" :show-change="true" />
+      <div class="text-center text-[9px] uppercase tracking-[0.15em] opacity-60">
         powered by redentia.com.br
       </div>
-    </NuxtLink>
+    </div>
   </div>
 
   <!-- ==================== PLAYGROUND MODE (SEO page) ==================== -->

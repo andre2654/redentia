@@ -79,6 +79,7 @@ if (!isWidgetMode.value) {
 
 <template>
   <!-- ==================== WIDGET MODE ==================== -->
+  <!-- Reusa AtomsTickerEmbed pro header + stats nativos Redentia -->
   <div v-if="isWidgetMode" class="embed-widget">
     <NuxtLink
       :to="`https://www.redentia.com.br/asset/${ticker.toLowerCase()}`"
@@ -90,40 +91,22 @@ if (!isWidgetMode.value) {
         border: `1px solid ${theme === 'light' ? '#e5e7eb' : brand.colors.border}`,
       }"
     >
-      <div class="flex items-start gap-3">
-        <img
-          v-if="logoUrl"
-          :src="logoUrl"
-          :alt="ticker"
-          class="size-12 shrink-0 rounded-lg object-contain"
-          loading="lazy"
-        />
-        <div
-          v-else
-          class="flex size-12 shrink-0 items-center justify-center rounded-lg bg-gray-200 text-sm font-bold text-gray-500"
-        >
-          {{ ticker.substring(0, 2) }}
-        </div>
-        <div class="min-w-0 flex-1">
-          <div class="flex items-baseline gap-2">
-            <span class="text-lg font-bold" :style="{ color: theme === 'light' ? '#111' : brand.colors.text }">
-              {{ ticker }}
-            </span>
-            <span v-if="!loading" class="text-xs font-medium tabular-nums" :class="changePositive ? 'text-green-500' : 'text-red-500'">
-              {{ formatChange(change) }}
-            </span>
-          </div>
-          <p class="truncate text-xs" :style="{ color: theme === 'light' ? '#6b7280' : brand.colors.textMuted }">
-            {{ loading ? '...' : assetName }}
-          </p>
-        </div>
-      </div>
+      <!-- Top: componente oficial AtomsTickerEmbed -->
+      <AtomsTickerEmbed :ticker="ticker" size="lg" :show-change="true" />
 
-      <div class="mt-3 text-2xl font-bold tabular-nums" :style="{ color: theme === 'light' ? '#111' : brand.colors.text }">
+      <!-- Preço grande -->
+      <div
+        class="mt-3 text-2xl font-bold tabular-nums"
+        :style="{ color: theme === 'light' ? '#111' : brand.colors.text }"
+      >
         {{ loading ? '—' : formatPrice(price) }}
       </div>
 
-      <div class="mt-3 grid grid-cols-3 gap-3 border-t pt-3" :style="{ borderColor: theme === 'light' ? '#e5e7eb' : brand.colors.border }">
+      <!-- Stats row com brand tokens -->
+      <div
+        class="mt-3 grid grid-cols-3 gap-3 border-t pt-3"
+        :style="{ borderColor: theme === 'light' ? '#e5e7eb' : brand.colors.border }"
+      >
         <div>
           <div class="text-[9px] uppercase tracking-wider" :style="{ color: theme === 'light' ? '#9ca3af' : brand.colors.textMuted }">DY</div>
           <div class="text-sm font-semibold" :style="{ color: theme === 'light' ? '#111' : brand.colors.text }">{{ formatPct(dy) }}</div>

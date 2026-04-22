@@ -26,6 +26,7 @@ const { isWidgetMode, embedUrl, iframeCode, copied, copyIframe } = useEmbedPlayg
   title: computed(() => `Carrossel de cotações: ${tickers.value.slice(0, 3).join(', ')}`),
 })
 
+// Monta `items` no formato exigido pelo AtomsTickerCarousel ({logo, ticker, change})
 const { getTickerDetails } = useAssetsService()
 const assets = ref<any[]>([])
 
@@ -36,9 +37,17 @@ async function fetchAll() {
 }
 watch(tickers, () => fetchAll(), { immediate: true })
 
-const formatPrice = (v: number | null) =>
-  v == null ? '—' : new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v)
 const formatChange = (v: number) => (v >= 0 ? `+${Math.abs(v).toFixed(2)}%` : `-${Math.abs(v).toFixed(2)}%`)
+
+const carouselItems = computed(() =>
+  assets.value
+    .filter((a) => a != null)
+    .map((a) => ({
+      logo: a.logo || '',
+      ticker: String(a.ticker).toUpperCase(),
+      change: formatChange(a.change_percent ?? a.change ?? 0),
+    }))
+)
 
 if (!isWidgetMode.value) {
   usePageSeo({
@@ -58,44 +67,22 @@ if (!isWidgetMode.value) {
 </script>
 
 <template>
-  <div v-if="isWidgetMode" class="embed-widget">
-    <div
-      class="flex h-full w-full gap-3 overflow-x-auto rounded-xl p-3"
-      :style="{
-        backgroundColor: theme === 'light' ? '#ffffff' : brand.colors.surface,
-        border: `1px solid ${theme === 'light' ? '#e5e7eb' : brand.colors.border}`,
-      }"
-    >
-      <NuxtLink
-        v-for="(a, i) in assets"
-        :key="i"
-        :to="a ? `https://www.redentia.com.br/asset/${String(a.ticker).toLowerCase()}` : '#'"
-        target="_blank"
-        rel="noopener"
-        class="flex shrink-0 items-center gap-2 rounded-lg px-3 py-2"
-        :style="{
-          backgroundColor: theme === 'light' ? '#f9fafb' : brand.colors.background,
-          border: `1px solid ${theme === 'light' ? '#e5e7eb' : brand.colors.border}`,
-        }"
-      >
-        <img v-if="a?.logo" :src="a.logo" :alt="a.ticker" class="size-6 shrink-0 rounded object-contain" loading="lazy" />
-        <div class="text-sm">
-          <div class="font-semibold" :style="{ color: theme === 'light' ? '#111' : brand.colors.text }">
-            {{ a?.ticker || tickers[i] }}
-          </div>
-          <div class="flex items-center gap-1.5 text-xs">
-            <span class="tabular-nums" :style="{ color: theme === 'light' ? '#111' : brand.colors.text }">
-              {{ formatPrice(a?.market_price ?? a?.last_price ?? null) }}
-            </span>
-            <span v-if="a" class="tabular-nums" :class="(a.change_percent ?? a.change ?? 0) >= 0 ? 'text-green-500' : 'text-red-500'">
-              {{ formatChange(a.change_percent ?? a.change ?? 0) }}
-            </span>
-          </div>
-        </div>
-      </NuxtLink>
-      <div class="flex shrink-0 items-center px-3 text-[9px] uppercase tracking-[0.15em] opacity-50" :style="{ color: theme === 'light' ? '#6b7280' : brand.colors.textMuted }">
-        redentia.com.br
-      </div>
+  <!-- Usa o componente oficial AtomsTickerCarousel do site Redentia -->
+  <div
+    v-if="isWidgetMode"
+    class="embed-widget flex h-full w-full flex-col gap-1 rounded-xl p-2"
+    :style="{
+      backgroundColor: theme === 'light' ? '#ffffff' : brand.colors.surface,
+      border: `1px solid ${theme === 'light' ? '#e5e7eb' : brand.colors.border}`,
+    }"
+  >
+    <AtomsTickerCarousel
+      :items="carouselItems"
+      :no-control="true"
+      :fade-color="theme === 'light' ? '#ffffff' : brand.colors.surface"
+    />
+    <div class="self-end pr-3 text-[9px] uppercase tracking-[0.15em] opacity-50" :style="{ color: theme === 'light' ? '#6b7280' : brand.colors.textMuted }">
+      redentia.com.br
     </div>
   </div>
 

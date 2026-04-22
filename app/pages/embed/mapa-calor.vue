@@ -20,13 +20,23 @@ const { isWidgetMode, embedUrl, iframeCode, copied, copyIframe } = useEmbedPlayg
 })
 
 // Fetch heatmap data — endpoint /api/heatmap retorna { data: [...] }
+// Mapeia pro formato TreemapItem esperado pelo AtomsGraphTreemap.
 const { data: heatmapData } = await useAsyncData(
   `heatmap-${indice.value}`,
   async () => {
     try {
       const apiBase = String(useRuntimeConfig().public?.apiBaseUrl || '')
       const res = await $fetch<any>(`${apiBase}/heatmap?index=${indice.value}&limit=30`)
-      return Array.isArray(res) ? res : res?.data || []
+      const rows = Array.isArray(res) ? res : res?.data || []
+      return rows.map((it: any) => ({
+        symbol: String(it.ticker || it.symbol || '').toUpperCase(),
+        name: it.name || it.ticker,
+        price: Number(it.market_price ?? it.price ?? 0),
+        change: Number(it.change_percent ?? it.change ?? 0),
+        marketCap: Number(it.market_cap ?? 0),
+        sector: it.sector || undefined,
+        category: indice.value === 'ifix' ? ('fiis' as const) : ('acoes' as const),
+      }))
     } catch {
       return []
     }
@@ -34,19 +44,7 @@ const { data: heatmapData } = await useAsyncData(
   { watch: [indice] }
 )
 
-const items = computed(() =>
-  (Array.isArray(heatmapData.value) ? heatmapData.value : []).slice(0, 30)
-)
-
-// Cor baseada na variação
-const cellColor = (change: number) => {
-  if (change >= 3) return '#16a34a'
-  if (change >= 1) return '#22c55e'
-  if (change >= 0) return '#4ade80'
-  if (change >= -1) return '#f87171'
-  if (change >= -3) return '#ef4444'
-  return '#dc2626'
-}
+const items = computed(() => (heatmapData.value ?? []))
 
 const indiceLabels: Record<string, string> = {
   ibovespa: 'Ibovespa',
@@ -72,41 +70,28 @@ if (!isWidgetMode.value) {
 </script>
 
 <template>
-  <div v-if="isWidgetMode" class="embed-widget">
-    <div
-      class="flex h-full w-full flex-col rounded-xl p-4"
-      :style="{
-        backgroundColor: theme === 'light' ? '#ffffff' : brand.colors.surface,
-        border: `1px solid ${theme === 'light' ? '#e5e7eb' : brand.colors.border}`,
-      }"
-    >
-      <div class="mb-3 flex items-center justify-between">
-        <h3 class="text-sm font-bold uppercase tracking-wider" :style="{ color: theme === 'light' ? '#111' : brand.colors.text }">
-          Mapa de Calor · {{ indiceLabels[indice] }}
-        </h3>
-        <span class="text-[10px] uppercase tracking-wider opacity-60" :style="{ color: theme === 'light' ? '#6b7280' : brand.colors.textMuted }">hoje</span>
-      </div>
+  <!-- Usa o componente oficial AtomsGraphTreemap -->
+  <div
+    v-if="isWidgetMode"
+    class="embed-widget flex h-full w-full flex-col gap-2 rounded-xl p-3"
+    :style="{
+      backgroundColor: theme === 'light' ? '#ffffff' : brand.colors.surface,
+      border: `1px solid ${theme === 'light' ? '#e5e7eb' : brand.colors.border}`,
+    }"
+  >
+    <div class="flex items-center justify-between px-1">
+      <h3 class="text-sm font-bold uppercase tracking-wider" :style="{ color: brand.colors.text }">
+        Mapa de Calor · {{ indiceLabels[indice] }}
+      </h3>
+      <span class="text-[10px] uppercase tracking-wider opacity-60" :style="{ color: brand.colors.textMuted }">hoje</span>
+    </div>
 
-      <div class="grid flex-1 grid-cols-6 gap-1">
-        <NuxtLink
-          v-for="(it, i) in items"
-          :key="i"
-          :to="`https://www.redentia.com.br/asset/${String(it.ticker || '').toLowerCase()}`"
-          target="_blank"
-          rel="noopener"
-          class="flex flex-col items-center justify-center rounded p-2 text-white transition hover:scale-105"
-          :style="{ backgroundColor: cellColor(it.change_percent ?? 0) }"
-        >
-          <span class="text-xs font-bold">{{ it.ticker }}</span>
-          <span class="text-[10px] tabular-nums opacity-90">
-            {{ (it.change_percent ?? 0) >= 0 ? '+' : '' }}{{ (it.change_percent ?? 0).toFixed(2) }}%
-          </span>
-        </NuxtLink>
-      </div>
+    <div class="flex-1">
+      <AtomsGraphTreemap :data="items" :height="420" :show-positive="true" :show-negative="true" />
+    </div>
 
-      <div class="mt-3 text-[9px] uppercase tracking-[0.15em] opacity-60" :style="{ color: theme === 'light' ? '#6b7280' : brand.colors.textMuted }">
-        redentia.com.br · dados B3
-      </div>
+    <div class="px-1 text-[9px] uppercase tracking-[0.15em] opacity-60" :style="{ color: brand.colors.textMuted }">
+      redentia.com.br · dados B3
     </div>
   </div>
 

@@ -34,6 +34,8 @@ const periodoToMode: Record<string, string> = {
   '5A': '5y',
 }
 
+// Histórico mapeado pro formato IChartDataPoint (date, value, timestamp)
+// que o AtomsGraphLine (componente oficial do site) espera.
 const { data: history } = await useAsyncData(
   `hist-${ticker.value}-${periodo.value}`,
   async () => {
@@ -44,11 +46,14 @@ const { data: history } = await useAsyncData(
         `${apiBase}/tickers/${ticker.value}/prices?mode=${mode}`
       )
       const raw = Array.isArray(res) ? res : res?.data || []
-      // Normaliza pontos: espera `{ date, close }` ou `{ date, price }`.
-      return raw.map((p: any) => ({
-        date: p.date || p.datetime,
-        close: p.close ?? p.price ?? p.adjusted_close ?? 0,
-      }))
+      return raw
+        .map((p: any) => {
+          const date = String(p.date || p.datetime || '')
+          const value = Number(p.close ?? p.price ?? p.adjusted_close ?? 0)
+          const timestamp = date ? new Date(date).getTime() : 0
+          return { date, value, timestamp }
+        })
+        .filter((p: any) => p.timestamp > 0 && p.value > 0)
     } catch {
       return []
     }
@@ -56,9 +61,7 @@ const { data: history } = await useAsyncData(
   { watch: [ticker, periodo] }
 )
 
-const seriesPoints = computed(() =>
-  Array.isArray(history.value) ? history.value.slice(-60) : []
-)
+const seriesPoints = computed(() => history.value ?? [])
 
 const { getTickerDetails } = useAssetsService()
 const asset = ref<any>(null)
@@ -66,8 +69,8 @@ watch(ticker, async (v) => {
   asset.value = (await getTickerDetails(v).catch(() => null)) || null
 }, { immediate: true })
 
-const startPrice = computed(() => seriesPoints.value[0]?.close || 0)
-const endPrice = computed(() => seriesPoints.value[seriesPoints.value.length - 1]?.close || 0)
+const startPrice = computed(() => seriesPoints.value[0]?.value || 0)
+const endPrice = computed(() => seriesPoints.value[seriesPoints.value.length - 1]?.value || 0)
 const pctChange = computed(() =>
   startPrice.value ? ((endPrice.value - startPrice.value) / startPrice.value) * 100 : 0
 )
@@ -90,54 +93,39 @@ if (!isWidgetMode.value) {
 </script>
 
 <template>
-  <div v-if="isWidgetMode" class="embed-widget">
-    <div
-      class="flex h-full w-full flex-col rounded-xl p-4"
-      :style="{
-        backgroundColor: theme === 'light' ? '#ffffff' : brand.colors.surface,
-        border: `1px solid ${theme === 'light' ? '#e5e7eb' : brand.colors.border}`,
-      }"
-    >
-      <div class="mb-2 flex items-center justify-between">
-        <div>
-          <div class="text-lg font-bold" :style="{ color: theme === 'light' ? '#111' : brand.colors.text }">
-            {{ ticker }}
-          </div>
-          <div class="text-xs" :style="{ color: theme === 'light' ? '#6b7280' : brand.colors.textMuted }">
-            {{ asset?.name || '' }}
-          </div>
-        </div>
-        <div class="text-right">
-          <div class="text-xs uppercase tracking-wider opacity-60" :style="{ color: theme === 'light' ? '#6b7280' : brand.colors.textMuted }">{{ periodo }}</div>
-          <div class="text-lg font-bold tabular-nums" :class="pctChange >= 0 ? 'text-green-500' : 'text-red-500'">
-            {{ pctChange >= 0 ? '+' : '' }}{{ pctChange.toFixed(2) }}%
-          </div>
+  <!-- Usa o componente oficial AtomsGraphLine (canvas zoom/pan/markers) -->
+  <div
+    v-if="isWidgetMode"
+    class="embed-widget flex h-full w-full flex-col gap-2 rounded-xl p-4"
+    :style="{
+      backgroundColor: theme === 'light' ? '#ffffff' : brand.colors.surface,
+      border: `1px solid ${theme === 'light' ? '#e5e7eb' : brand.colors.border}`,
+    }"
+  >
+    <div class="flex items-center justify-between">
+      <div>
+        <div class="text-lg font-bold" :style="{ color: brand.colors.text }">{{ ticker }}</div>
+        <div class="text-xs" :style="{ color: brand.colors.textMuted }">{{ asset?.name || '' }}</div>
+      </div>
+      <div class="text-right">
+        <div class="text-xs uppercase tracking-wider opacity-60" :style="{ color: brand.colors.textMuted }">{{ periodo }}</div>
+        <div class="text-lg font-bold tabular-nums" :class="pctChange >= 0 ? 'text-green-500' : 'text-red-500'">
+          {{ pctChange >= 0 ? '+' : '' }}{{ pctChange.toFixed(2) }}%
         </div>
       </div>
+    </div>
 
-      <div class="flex-1">
-        <svg v-if="seriesPoints.length" viewBox="0 0 600 300" preserveAspectRatio="none" class="h-full w-full">
-          <polyline
-            :points="seriesPoints.map((p, i) => {
-              const x = (i / (seriesPoints.length - 1)) * 600
-              const max = Math.max(...seriesPoints.map(pp => pp.close))
-              const min = Math.min(...seriesPoints.map(pp => pp.close))
-              const y = 300 - ((p.close - min) / (max - min)) * 280 - 10
-              return `${x},${y}`
-            }).join(' ')"
-            fill="none"
-            :stroke="pctChange >= 0 ? '#22c55e' : '#ef4444'"
-            stroke-width="2"
-          />
-        </svg>
-        <div v-else class="flex h-full items-center justify-center text-sm opacity-50" :style="{ color: theme === 'light' ? '#6b7280' : brand.colors.textMuted }">
-          Carregando histórico...
-        </div>
-      </div>
+    <div class="flex-1">
+      <AtomsGraphLine
+        :data="seriesPoints"
+        :show-legend="false"
+        :height="280"
+        :loading="!seriesPoints.length"
+      />
+    </div>
 
-      <div class="mt-2 text-[9px] uppercase tracking-[0.15em] opacity-60" :style="{ color: theme === 'light' ? '#6b7280' : brand.colors.textMuted }">
-        redentia.com.br
-      </div>
+    <div class="text-[9px] uppercase tracking-[0.15em] opacity-60" :style="{ color: brand.colors.textMuted }">
+      redentia.com.br
     </div>
   </div>
 

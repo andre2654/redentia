@@ -34,8 +34,8 @@ const { isWidgetMode, embedUrl, iframeCode, copied, copyIframe } = useEmbedPlayg
   ),
 })
 
-// Fetch ranking data do backend — usa /api/rankings/monthly-change com
-// side=top|bottom e type=STOCK|FII|ETF (já existe no Laravel).
+// Fetch ranking data do backend — /api/rankings/monthly-change.
+// Mapeia pro formato RankingRow esperado pelo MoleculesRankingTable.
 const { data: ranking } = await useAsyncData(
   `ranking-${side.value}-${tipo.value}`,
   async () => {
@@ -47,10 +47,15 @@ const { data: ranking } = await useAsyncData(
       const res = await $fetch<any>(endpoint)
       const items = Array.isArray(res) ? res : res?.data || []
       return items.map((it: any) => ({
-        ticker: it.ticker,
-        price: it.price ?? it.market_price ?? it.last_price,
-        change_percent: it.change_percent ?? it.monthly_change ?? it.change,
-        logo: it.logo,
+        ticker: String(it.ticker || '').toUpperCase(),
+        name: it.name || null,
+        logo: it.logo || null,
+        market_price: Number(it.price ?? it.market_price ?? it.last_price ?? 0),
+        change_percent: it.change_percent ?? it.monthly_change ?? it.change ?? 0,
+        market_cap: it.market_cap ?? 0,
+        dividend_yield: it.dividend_yield ?? null,
+        trailing_pe: it.trailing_pe ?? it.pe ?? null,
+        sector: it.sector ?? null,
       }))
     } catch {
       return []
@@ -61,9 +66,7 @@ const { data: ranking } = await useAsyncData(
 
 const items = computed(() => (Array.isArray(ranking.value) ? ranking.value : []).slice(0, limit.value))
 
-const formatPrice = (v: number | null) =>
-  v == null ? '—' : new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v)
-const formatChange = (v: number) => (v >= 0 ? `+${Math.abs(v).toFixed(2)}%` : `-${Math.abs(v).toFixed(2)}%`)
+// Formatação agora é responsabilidade do MoleculesRankingTable
 
 const seoTitle = computed(() =>
   sideIsAltas.value
@@ -97,59 +100,26 @@ if (!isWidgetMode.value) {
 </script>
 
 <template>
-  <div v-if="isWidgetMode" class="embed-widget">
-    <div
-      class="flex h-full w-full flex-col rounded-xl p-4"
-      :style="{
-        backgroundColor: theme === 'light' ? '#ffffff' : brand.colors.surface,
-        border: `1px solid ${theme === 'light' ? '#e5e7eb' : brand.colors.border}`,
-      }"
-    >
-      <div class="mb-3 flex items-center justify-between">
-        <h3 class="text-sm font-bold uppercase tracking-wider" :style="{ color: theme === 'light' ? '#111' : brand.colors.text }">
-          {{ sideIsAltas ? '▲ Maiores Altas' : '▼ Maiores Baixas' }}
-        </h3>
-        <span class="text-[10px] uppercase tracking-wider" :style="{ color: theme === 'light' ? '#6b7280' : brand.colors.textMuted }">
-          {{ tipo === 'stock' ? 'ações' : tipo === 'fii' ? 'fiis' : 'etfs' }}
-        </span>
-      </div>
+  <!-- Usa o componente oficial MoleculesRankingTable -->
+  <div v-if="isWidgetMode" class="embed-widget flex h-full w-full flex-col gap-2 p-2">
+    <div class="flex items-center justify-between px-2">
+      <h3 class="text-sm font-bold uppercase tracking-wider" :style="{ color: brand.colors.text }">
+        {{ sideIsAltas ? '▲ Maiores Altas' : '▼ Maiores Baixas' }}
+      </h3>
+      <span class="text-[10px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">
+        {{ tipo === 'stock' ? 'ações' : tipo === 'fii' ? 'fiis' : 'etfs' }}
+      </span>
+    </div>
 
-      <div class="flex-1 space-y-2">
-        <NuxtLink
-          v-for="(it, i) in items"
-          :key="i"
-          :to="`https://www.redentia.com.br/asset/${String(it.ticker || '').toLowerCase()}`"
-          target="_blank"
-          rel="noopener"
-          class="flex items-center justify-between gap-2 rounded-lg px-2 py-1.5"
-          :style="{
-            backgroundColor: i % 2 === 0 ? (theme === 'light' ? '#f9fafb' : brand.colors.background) : 'transparent',
-          }"
-        >
-          <div class="flex min-w-0 items-center gap-2">
-            <span class="w-6 shrink-0 text-xs tabular-nums opacity-50" :style="{ color: theme === 'light' ? '#6b7280' : brand.colors.textMuted }">
-              {{ (i + 1).toString().padStart(2, '0') }}
-            </span>
-            <img v-if="it.logo" :src="it.logo" :alt="it.ticker" class="size-5 shrink-0 rounded object-contain" loading="lazy" />
-            <span class="truncate text-sm font-semibold" :style="{ color: theme === 'light' ? '#111' : brand.colors.text }">
-              {{ it.ticker }}
-            </span>
-          </div>
-          <div class="flex items-center gap-2 text-xs">
-            <span class="tabular-nums" :style="{ color: theme === 'light' ? '#111' : brand.colors.text }">
-              {{ formatPrice(it.price) }}
-            </span>
-            <span class="w-16 text-right font-semibold tabular-nums" :class="sideIsAltas ? 'text-green-500' : 'text-red-500'">
-              {{ formatChange(it.change_percent ?? 0) }}
-            </span>
-          </div>
-        </NuxtLink>
-      </div>
+    <MoleculesRankingTable
+      :rows="items"
+      :columns="['change']"
+      :change-label="sideIsAltas ? 'Alta mês' : 'Baixa mês'"
+    />
 
-      <div class="mt-3 flex items-center justify-between text-[9px] uppercase tracking-[0.15em] opacity-60" :style="{ color: theme === 'light' ? '#6b7280' : brand.colors.textMuted }">
-        <span>B3 · Hoje</span>
-        <span>redentia.com.br</span>
-      </div>
+    <div class="flex items-center justify-between px-2 text-[9px] uppercase tracking-[0.15em] opacity-60" :style="{ color: brand.colors.textMuted }">
+      <span>B3 · Hoje</span>
+      <span>redentia.com.br</span>
     </div>
   </div>
 
