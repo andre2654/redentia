@@ -299,6 +299,8 @@ const avgPct = computed(() => {
 <template>
   <MoleculesCreativePreviewControls
     :creative-name="`RANKING · ${sideParam.toUpperCase()}`"
+    :hero-title="sideParam === 'top' ? 'Ranking Top Altas do Dia' : 'Ranking Top Baixas do Dia'"
+    :hero-description="sideParam === 'top' ? 'Card 1080×1080 com as maiores altas do pregão da B3, com logos, tickers, preços e variação. Atualizado em tempo real — tire print ao fim do pregão e poste.' : 'Card 1080×1080 com as maiores baixas do pregão da B3. Complementa o ranking de altas pra cobrir os dois lados do mercado em posts diários.'"
     :controls="previewControls"
     @reset="resetControls"
   >

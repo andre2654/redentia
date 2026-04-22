@@ -223,6 +223,8 @@ const changeSign = computed(() =>
 <template>
   <MoleculesCreativePreviewControls
     creative-name="ASSET SPOTLIGHT"
+    hero-title="Spotlight do Ativo"
+    hero-description="Card 1080×1080 com preço, variação, dividend yield, P/L e setor de qualquer ação ou FII da B3. Ideal pra destaque do dia no feed e posts de análise fundamentalista."
     :controls="previewControls"
     @reset="resetControls"
   >

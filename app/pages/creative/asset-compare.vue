@@ -252,6 +252,8 @@ const indicators = computed(() => [
 <template>
   <MoleculesCreativePreviewControls
     creative-name="ASSET COMPARE"
+    hero-title="Comparativo de 2 Ativos"
+    hero-description="Compare duas ações lado a lado: preço, variação, market cap, dividend yield e P/L. Ideal pra polêmicas do tipo 'PETR4 ou VALE3?' em posts com muito engajamento."
     :controls="previewControls"
     @reset="resetControls"
   >

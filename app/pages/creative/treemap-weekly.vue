@@ -307,6 +307,8 @@ const loserTopPct = computed(() => {
 <template>
   <MoleculesCreativePreviewControls
     creative-name="TREEMAP · SEMANAL"
+    hero-title="Treemap da Semana"
+    hero-description="Heatmap 1080×1080 com altas e baixas da semana lado a lado. Cada célula dimensionada pela variação acumulada em 7 dias, com cor proporcional ao tamanho do movimento. Perfeito pra resumos semanais."
     :controls="previewControls"
     @reset="resetControls"
   >

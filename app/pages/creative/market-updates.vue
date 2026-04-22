@@ -178,6 +178,8 @@ useHead(() => ({
 <template>
   <MoleculesCreativePreviewControls
     creative-name="MARKET UPDATE"
+    hero-title="Market Updates estilo Notificação"
+    hero-description="Card 1080×1080 mimetizando notificação de iPhone com update de mercado. Formato que chama muita atenção nos feeds do Instagram — ideal pra headlines curtos e alerts diários."
     :controls="previewControls"
     @reset="resetControls"
   >

@@ -1,32 +1,25 @@
 <!--
-  MoleculesCreativePreviewControls
+  MoleculesCreativePreviewControls — Playground-style
 
-  Wrapper used by every creative page (asset-spotlight, asset-compare,
-  growth-race, etc) to:
+  Wrapper used por cada creative page (asset-spotlight, asset-compare,
+  growth-race etc) pra:
 
-  1. Scale the 1080x1080 canvas DOWN so the human editor sees the whole
-     square at once on a normal browser window.
-  2. Render an inline control panel (right side) with the params each
-     creative supports, ticker selectors, dates, format toggles, reset.
-  3. Stay COMPLETELY out of the way when Puppeteer renders the creative
-     for n8n. Puppeteer hits the creative URL with a `?key=` query param;
-     when that's present (or when ?preview=raw), the wrapper renders only
-     the slot, no chrome.
+  1. Renderizar um playground no estilo embed.redentia.com.br com:
+     - Breadcrumbs (Início > Creative > Nome)
+     - Hero header (H1 + descrição)
+     - Grid 2:3 (config esquerda · preview direita)
+     - Botão "Copiar URL" prominente
+     - Cross-links pra outros creatives
+  2. Escalar o canvas 1080×1080 pro preview caber em telas normais.
+  3. Sumir do caminho quando Puppeteer renderiza (?key= ou ?preview=raw)
+     pro screenshot ficar limpo.
 
-  Usage:
-    <MoleculesCreativePreviewControls :controls="controls" @reset="onReset">
-      <div class="frame">...the 1080x1080 creative...</div>
-    </MoleculesCreativePreviewControls>
-
-  controls is an array describing each editable param. Two-way binding via
-  v-model on each control row would couple it tightly; instead each control
-  exposes a `value` getter + an `update` callback that mutates the URL query.
+  API mantida compatível com as creative pages existentes.
 -->
 
 <template>
+  <!-- RAW MODE (n8n / Puppeteer ou ?preview=raw) — passthrough 1080×1080 -->
   <div v-if="rawMode" class="raw-passthrough">
-    <!-- Floating toolbar above the canvas, hidden when ?key= is set
-         (Puppeteer renders) so the screenshot stays clean. -->
     <div v-if="!isPuppeteer" class="raw-toolbar">
       <button class="raw-btn raw-btn-back" @click="exitRaw" title="Voltar para o painel de controles">
         <UIcon name="i-lucide-arrow-left" class="size-3.5" />
@@ -43,150 +36,212 @@
     </div>
     <slot />
   </div>
-  <div v-else class="cpc-shell">
-    <!-- Top header bar -->
-    <header class="cpc-header">
-      <NuxtLink to="/creative" class="cpc-brand">
-        <UIcon name="i-lucide-arrow-left" class="size-3.5" />
-        <span class="cpc-brand-label">REDENTIA<span class="cpc-brand-accent">.CREATIVE</span></span>
-      </NuxtLink>
-      <div class="cpc-header-meta">
-        <span class="cpc-tag">[ {{ creativeName }} ]</span>
-        <span class="cpc-sep">·</span>
-        <span class="cpc-meta">1080 × 1080 px</span>
-      </div>
-      <div class="cpc-header-actions">
-        <button class="cpc-btn-ghost" @click="toggleRaw" :title="'Abrir versão raw (para screenshot)'">
-          <UIcon name="i-lucide-camera" class="size-3.5" />
-          Modo screenshot
-        </button>
-        <button class="cpc-btn-primary" @click="$emit('reset')">
-          <UIcon name="i-lucide-rotate-ccw" class="size-3.5" />
-          Resetar
-        </button>
-      </div>
-    </header>
 
-    <div class="cpc-body">
-      <!-- LEFT: scaled-down preview -->
-      <div class="cpc-preview-col">
-        <div class="cpc-preview-card">
-          <div class="cpc-preview-meta">
-            <span class="cpc-meta-dot" />
-            <span>PREVIEW · ESCALADO {{ Math.round(scale * 100) }}%</span>
-          </div>
-          <div class="cpc-canvas-wrap" :style="{ width: scaledSize + 'px', height: scaledSize + 'px' }">
-            <div class="cpc-canvas" :style="{ transform: `scale(${scale})` }">
-              <slot />
-            </div>
-          </div>
-          <div class="cpc-preview-footer">
-            <UIcon name="i-lucide-info" class="size-3" />
-            <span>Para capturar em alta resolução, clique em "Modo screenshot" acima</span>
-          </div>
-        </div>
-      </div>
+  <!-- PLAYGROUND MODE (default) — mesmo padrão dos embeds -->
+  <NuxtLayout v-else name="static" :title="creativeName">
+    <section class="flex flex-col gap-12 px-6 py-12 md:py-16">
+      <!-- Breadcrumbs -->
+      <nav class="mx-auto flex w-full max-w-5xl items-center gap-2 text-sm text-gray-400">
+        <NuxtLink to="/" class="hover:text-white">Início</NuxtLink>
+        <UIcon name="i-lucide-chevron-right" class="size-4" />
+        <NuxtLink to="/creative" class="hover:text-white">Creative Studio</NuxtLink>
+        <UIcon name="i-lucide-chevron-right" class="size-4" />
+        <span class="text-white">{{ creativeName }}</span>
+      </nav>
 
-      <!-- RIGHT: controls panel -->
-      <aside class="cpc-controls-col">
-        <div class="cpc-controls-card">
-          <div class="cpc-controls-header">
-            <span class="cpc-controls-eyebrow">[ CONTROLES ]</span>
-            <h3 class="cpc-controls-title">Edite os parâmetros</h3>
-            <p class="cpc-controls-sub">A pré-visualização atualiza ao vivo. Os valores ficam na URL, copie ela pra usar no n8n ou compartilhar.</p>
-          </div>
+      <!-- Hero -->
+      <header class="mx-auto flex w-full max-w-5xl flex-col gap-4 text-center md:text-left">
+        <span
+          class="font-mono-tab text-[10px] uppercase tracking-[0.18em]"
+          :style="{ color: brand.colors.primary }"
+        >
+          [ {{ creativeName }} ] · 1080 × 1080 · SCREENSHOT READY
+        </span>
+        <h1
+          class="text-3xl md:text-5xl"
+          :class="[brand.font.headingWeight]"
+          :style="{ color: brand.colors.text }"
+        >
+          {{ heroTitle || creativeName }}
+        </h1>
+        <p v-if="heroDescription" class="max-w-2xl text-base text-gray-400 md:text-lg">
+          {{ heroDescription }}
+        </p>
+      </header>
 
-          <div class="cpc-controls-list">
-            <div
-              v-for="ctrl in controls"
-              :key="ctrl.id"
-              class="cpc-control"
-            >
-              <label class="cpc-control-label">
-                {{ ctrl.label }}
-                <span v-if="ctrl.hint" class="cpc-control-hint">{{ ctrl.hint }}</span>
-              </label>
+      <!-- Playground grid -->
+      <div class="mx-auto grid w-full max-w-5xl gap-8 md:grid-cols-5">
+        <!-- LEFT: Config panel (2 cols) -->
+        <div class="flex flex-col gap-5 md:col-span-2">
+          <h2 class="text-xl font-semibold" :style="{ color: brand.colors.text }">
+            Customizar
+          </h2>
 
-              <!-- TEXT input (ticker, subtitle) -->
-              <input
-                v-if="ctrl.type === 'text'"
-                :value="ctrl.value"
-                :placeholder="ctrl.placeholder"
-                class="cpc-input"
-                @input="onInput(ctrl, ($event.target as HTMLInputElement).value)"
-              />
+          <div
+            v-for="ctrl in controls"
+            :key="ctrl.id"
+            class="flex flex-col gap-2"
+          >
+            <label class="flex items-baseline justify-between gap-2 text-sm text-gray-400">
+              <span class="font-semibold uppercase tracking-wider text-white">{{ ctrl.label }}</span>
+              <span v-if="ctrl.hint" class="text-xs text-gray-500">{{ ctrl.hint }}</span>
+            </label>
 
-              <!-- TICKERS list (multi) -->
-              <div v-else-if="ctrl.type === 'tickers'" class="cpc-tickers">
-                <div class="cpc-chips">
-                  <span
-                    v-for="(t, i) in (ctrl.value as string).split(',').filter(Boolean)"
-                    :key="t + i"
-                    class="cpc-chip"
-                  >
-                    {{ t.trim().toUpperCase() }}
-                    <button class="cpc-chip-x" @click="removeTicker(ctrl, i)">×</button>
-                  </span>
-                </div>
-                <div class="cpc-ticker-add">
-                  <input
-                    v-model="newTicker"
-                    placeholder="Add ticker (Enter)"
-                    class="cpc-input cpc-input-sm"
-                    @keydown.enter.prevent="addTicker(ctrl)"
-                  />
-                  <button class="cpc-btn-add" @click="addTicker(ctrl)">+</button>
-                </div>
+            <!-- TEXT -->
+            <UInput
+              v-if="ctrl.type === 'text'"
+              :model-value="String(ctrl.value ?? '')"
+              :placeholder="ctrl.placeholder"
+              @update:model-value="onInput(ctrl, String($event))"
+            />
+
+            <!-- TICKERS (multi, chips) -->
+            <div v-else-if="ctrl.type === 'tickers'" class="flex flex-col gap-2">
+              <div class="flex flex-wrap gap-2 empty:hidden">
+                <span
+                  v-for="(t, i) in tickerList(ctrl)"
+                  :key="t + i"
+                  class="inline-flex items-center gap-2 rounded-full border px-3 py-1 font-mono-tab text-xs font-semibold"
+                  :style="{
+                    borderColor: `${brand.colors.primary}66`,
+                    backgroundColor: `${brand.colors.primary}1a`,
+                    color: brand.colors.primary,
+                  }"
+                >
+                  {{ t }}
+                  <button type="button" class="opacity-70 hover:opacity-100" @click="removeTicker(ctrl, i)">×</button>
+                </span>
               </div>
-
-              <!-- DATE input -->
-              <input
-                v-else-if="ctrl.type === 'date'"
-                type="date"
-                :value="ctrl.value"
-                class="cpc-input"
-                @input="onInput(ctrl, ($event.target as HTMLInputElement).value)"
-              />
-
-              <!-- SELECT -->
-              <select
-                v-else-if="ctrl.type === 'select'"
-                :value="ctrl.value"
-                class="cpc-input"
-                @change="onInput(ctrl, ($event.target as HTMLSelectElement).value)"
-              >
-                <option v-for="opt in ctrl.options" :key="opt.value" :value="opt.value">
-                  {{ opt.label }}
-                </option>
-              </select>
-
-              <!-- TOGGLE / boolean -->
-              <label v-else-if="ctrl.type === 'toggle'" class="cpc-toggle">
-                <input
-                  type="checkbox"
-                  :checked="ctrl.value === 'true' || ctrl.value === true"
-                  @change="onInput(ctrl, ($event.target as HTMLInputElement).checked ? 'true' : 'false')"
+              <div class="flex gap-2">
+                <UInput
+                  v-model="newTicker"
+                  placeholder="Adicionar ticker (Enter)"
+                  class="flex-1"
+                  @keydown.enter.prevent="addTicker(ctrl)"
                 />
-                <span class="cpc-toggle-track" />
-                <span class="cpc-toggle-state">{{ (ctrl.value === 'true' || ctrl.value === true) ? 'ATIVO' : 'INATIVO' }}</span>
-              </label>
+                <UButton icon="i-lucide-plus" color="neutral" variant="outline" @click="addTicker(ctrl)" />
+              </div>
+            </div>
+
+            <!-- DATE -->
+            <UInput
+              v-else-if="ctrl.type === 'date'"
+              type="date"
+              :model-value="String(ctrl.value ?? '')"
+              @update:model-value="onInput(ctrl, String($event))"
+            />
+
+            <!-- SELECT -->
+            <USelect
+              v-else-if="ctrl.type === 'select'"
+              :model-value="String(ctrl.value ?? '')"
+              :items="(ctrl.options ?? []).map(o => ({ label: o.label, value: o.value }))"
+              @update:model-value="onInput(ctrl, String($event))"
+            />
+
+            <!-- TOGGLE -->
+            <div v-else-if="ctrl.type === 'toggle'" class="flex items-center gap-3">
+              <USwitch
+                :model-value="ctrl.value === 'true' || ctrl.value === true"
+                @update:model-value="onInput(ctrl, $event ? 'true' : 'false')"
+              />
+              <span class="font-mono-tab text-xs uppercase tracking-wider text-gray-400">
+                {{ (ctrl.value === 'true' || ctrl.value === true) ? 'Ativo' : 'Inativo' }}
+              </span>
             </div>
           </div>
 
-          <!-- Current URL display -->
-          <div class="cpc-url-block">
-            <div class="cpc-url-label">URL ATUAL</div>
-            <div class="cpc-url-row">
-              <code class="cpc-url-code">{{ currentPath }}</code>
-              <button class="cpc-btn-copy" @click="copyUrl" :title="copied ? 'Copiado!' : 'Copiar URL'">
-                <UIcon :name="copied ? 'i-lucide-check' : 'i-lucide-copy'" class="size-3.5" />
-              </button>
+          <!-- URL block + copy -->
+          <div class="flex flex-col gap-2 pt-2">
+            <label class="text-sm text-gray-400">URL atual (compartilhe no n8n ou com time)</label>
+            <div
+              class="overflow-x-auto rounded-lg border p-4 font-mono text-xs"
+              :style="{
+                backgroundColor: brand.colors.background,
+                borderColor: brand.colors.border,
+                color: brand.colors.text,
+              }"
+            >
+              <code>{{ currentPath }}</code>
             </div>
+            <UButton :icon="copied ? 'i-lucide-check' : 'i-lucide-copy'" color="primary" block @click="copyUrl">
+              {{ copied ? 'Copiado!' : 'Copiar URL' }}
+            </UButton>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex flex-wrap gap-2 pt-2">
+            <UButton icon="i-lucide-camera" color="primary" variant="soft" @click="toggleRaw">
+              Modo screenshot
+            </UButton>
+            <UButton icon="i-lucide-rotate-ccw" color="neutral" variant="outline" @click="$emit('reset')">
+              Resetar
+            </UButton>
           </div>
         </div>
-      </aside>
-    </div>
-  </div>
+
+        <!-- RIGHT: Preview (3 cols) -->
+        <div class="flex flex-col gap-4 md:col-span-3">
+          <h2 class="text-xl font-semibold" :style="{ color: brand.colors.text }">
+            Pré-visualização
+          </h2>
+          <div
+            class="flex items-center justify-center rounded-2xl border p-4"
+            :style="{
+              borderColor: brand.colors.border,
+              backgroundColor: brand.colors.background,
+              minHeight: `${scaledSize + 40}px`,
+            }"
+          >
+            <div
+              class="relative overflow-hidden rounded-xl border"
+              :style="{
+                width: `${scaledSize}px`,
+                height: `${scaledSize}px`,
+                borderColor: brand.colors.border,
+                backgroundColor: brand.colors.background,
+                boxShadow: `0 30px 80px -30px ${brand.colors.primary}50`,
+              }"
+            >
+              <div
+                class="absolute left-0 top-0"
+                style="width: 1080px; height: 1080px; transform-origin: top left;"
+                :style="{ transform: `scale(${scale})` }"
+              >
+                <slot />
+              </div>
+            </div>
+          </div>
+          <p class="flex items-center gap-1.5 text-xs text-gray-500">
+            <UIcon name="i-lucide-info" class="size-3" />
+            Preview escalado a {{ Math.round(scale * 100) }}%. Para capturar em alta resolução, clique em "Modo screenshot".
+          </p>
+        </div>
+      </div>
+
+      <!-- Outros creatives (cross-link, estilo embed playground) -->
+      <div class="mx-auto w-full max-w-5xl">
+        <h2 class="mb-3 text-xl font-semibold" :style="{ color: brand.colors.text }">
+          Outros creatives
+        </h2>
+        <div class="flex flex-wrap gap-2">
+          <UButton
+            v-for="link in otherCreatives"
+            :key="link.to"
+            :to="link.to"
+            variant="outline"
+            color="neutral"
+            :icon="link.icon"
+          >
+            {{ link.label }}
+          </UButton>
+          <UButton to="/creative" variant="outline" color="neutral" icon="i-lucide-layout-grid">
+            Todos os creatives
+          </UButton>
+        </div>
+      </div>
+    </section>
+  </NuxtLayout>
 </template>
 
 <script setup lang="ts">
@@ -213,6 +268,9 @@ const props = defineProps<{
   creativeName: string
   controls: PreviewControl[]
   scale?: number
+  /** Título opcional do hero; default usa creativeName */
+  heroTitle?: string
+  heroDescription?: string
 }>()
 
 defineEmits<{
@@ -221,22 +279,18 @@ defineEmits<{
 
 const route = useRoute()
 const router = useRouter()
+const brand = useBrand()
 
-const scale = computed(() => props.scale ?? 0.55)
+const scale = computed(() => props.scale ?? 0.48)
 const scaledSize = computed(() => Math.round(1080 * scale.value))
 
 const newTicker = ref('')
 const copied = ref(false)
 
 const rawMode = computed(() => {
-  // n8n / puppeteer always passes ?key=...
-  // Or human can request raw with ?preview=raw
   return !!route.query.key || route.query.preview === 'raw'
 })
 
-// Pure Puppeteer mode (?key=...), even the toolbar should disappear
-// so the headless screenshot is pristine. The ?preview=raw branch is
-// for HUMAN preview at full canvas size.
 const isPuppeteer = computed(() => !!route.query.key)
 
 function exitRaw() {
@@ -256,10 +310,17 @@ function onInput(ctrl: PreviewControl, value: string) {
   router.replace({ query: { ...route.query, [ctrl.param]: value } })
 }
 
+function tickerList(ctrl: PreviewControl): string[] {
+  return String(ctrl.value ?? '')
+    .split(',')
+    .map((x) => x.trim().toUpperCase())
+    .filter(Boolean)
+}
+
 function addTicker(ctrl: PreviewControl) {
   const t = newTicker.value.trim().toUpperCase()
   if (!t) return
-  const current = (ctrl.value as string).split(',').filter(Boolean).map(x => x.trim().toUpperCase())
+  const current = tickerList(ctrl)
   if (current.includes(t)) {
     newTicker.value = ''
     return
@@ -270,7 +331,7 @@ function addTicker(ctrl: PreviewControl) {
 }
 
 function removeTicker(ctrl: PreviewControl, idx: number) {
-  const current = (ctrl.value as string).split(',').filter(Boolean).map(x => x.trim().toUpperCase())
+  const current = tickerList(ctrl)
   current.splice(idx, 1)
   router.replace({ query: { ...route.query, [ctrl.param]: current.join(',') } })
 }
@@ -289,17 +350,35 @@ async function copyUrl() {
     // ignore
   }
 }
+
+// Lista curada de outros creatives para cross-link (replica o padrão
+// dos playgrounds de embed, que sempre têm links pro restante da
+// família no fim da página).
+const otherCreatives = computed(() => {
+  const all = [
+    { to: '/creative/asset-spotlight', label: 'Spotlight', icon: 'i-lucide-star' },
+    { to: '/creative/asset-compare', label: 'Comparativo', icon: 'i-lucide-split' },
+    { to: '/creative/growth-race', label: 'Growth Race', icon: 'i-lucide-trending-up' },
+    { to: '/creative/ranking/top', label: 'Top Altas', icon: 'i-lucide-trophy' },
+    { to: '/creative/ranking/bottom', label: 'Top Baixas', icon: 'i-lucide-trending-down' },
+    { to: '/creative/market-updates', label: 'Market Updates', icon: 'i-lucide-bell' },
+    { to: '/creative/treemap-weekly', label: 'Treemap 7D', icon: 'i-lucide-grid-2x2' },
+  ]
+  // Tira o atual da lista
+  return all.filter((l) => !route.path.startsWith(l.to)).slice(0, 4)
+})
 </script>
 
 <style scoped>
+/* ============================================================
+   RAW MODE — mantido idêntico pro Puppeteer não quebrar
+   ============================================================ */
 .raw-passthrough {
   position: relative;
   width: 1080px;
   height: 1080px;
 }
 
-/* Floating toolbar above the raw 1080x1080 canvas (only visible in
-   human preview, hidden when Puppeteer renders). */
 .raw-toolbar {
   position: fixed;
   top: 16px;
@@ -384,401 +463,4 @@ async function copyUrl() {
   background: rgba(245, 166, 35, 0.12);
   border-color: #F5A623;
 }
-
-.cpc-shell {
-  min-height: 100vh;
-  background: #0A0B0E;
-  color: #E8EAED;
-  font-family: 'Inter', system-ui, sans-serif;
-  font-feature-settings: 'ss01', 'cv11';
-}
-
-/* Header */
-.cpc-header {
-  position: sticky;
-  top: 0;
-  z-index: 30;
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  padding: 14px 28px;
-  border-bottom: 1px solid #2A2E39;
-  background: rgba(10, 11, 14, 0.85);
-  backdrop-filter: blur(20px);
-}
-
-.cpc-brand {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.15em;
-  color: #8B92A7;
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-.cpc-brand:hover { color: #E8EAED; }
-
-.cpc-brand-label { color: #E8EAED; }
-.cpc-brand-accent { color: #F5A623; }
-
-.cpc-header-meta {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  color: #8B92A7;
-}
-.cpc-tag { color: #F5A623; text-transform: uppercase; }
-.cpc-sep { color: #2A2E39; }
-
-.cpc-header-actions {
-  margin-left: auto;
-  display: flex;
-  gap: 10px;
-}
-
-.cpc-btn-primary,
-.cpc-btn-ghost {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  border-radius: 9999px;
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: transform 0.15s ease, background 0.15s ease;
-  border: 1px solid transparent;
-}
-
-.cpc-btn-primary {
-  background: #F5A623;
-  color: #0A0B0E;
-  font-weight: 600;
-  box-shadow: 0 8px 24px -8px rgba(245, 166, 35, 0.5);
-}
-.cpc-btn-primary:hover { transform: translateY(-1px); }
-
-.cpc-btn-ghost {
-  background: transparent;
-  color: #E8EAED;
-  border-color: #2A2E39;
-}
-.cpc-btn-ghost:hover { background: rgba(255,255,255,0.04); }
-
-/* Body layout */
-.cpc-body {
-  display: grid;
-  grid-template-columns: 1fr 380px;
-  gap: 28px;
-  padding: 28px;
-  align-items: start;
-}
-
-@media (max-width: 1100px) {
-  .cpc-body {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Preview column */
-.cpc-preview-col {
-  display: flex;
-  justify-content: center;
-}
-
-.cpc-preview-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-  padding: 24px;
-  border-radius: 20px;
-  border: 1px solid #2A2E39;
-  background: linear-gradient(180deg, rgba(20,22,28,0.6), rgba(10,11,14,0.6));
-}
-
-.cpc-preview-meta {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: #8B92A7;
-}
-
-.cpc-meta-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #00D395;
-  box-shadow: 0 0 10px #00D395;
-  animation: cpc-pulse 1.6s ease-in-out infinite;
-}
-
-@keyframes cpc-pulse {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 1; }
-}
-
-.cpc-canvas-wrap {
-  position: relative;
-  border-radius: 16px;
-  border: 1px solid #2A2E39;
-  background: #0A0B0E;
-  overflow: hidden;
-  box-shadow: 0 30px 80px -30px rgba(245, 166, 35, 0.3),
-              0 0 0 1px rgba(255, 255, 255, 0.02);
-}
-
-.cpc-canvas {
-  width: 1080px;
-  height: 1080px;
-  transform-origin: top left;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-.cpc-preview-footer {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  color: #8B92A7;
-}
-
-/* Controls panel */
-.cpc-controls-col {
-  position: sticky;
-  top: 80px;
-}
-
-.cpc-controls-card {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  padding: 24px;
-  border-radius: 20px;
-  border: 1px solid #2A2E39;
-  background: linear-gradient(180deg, rgba(20,22,28,0.6), rgba(10,11,14,0.6));
-}
-
-.cpc-controls-header {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding-bottom: 18px;
-  border-bottom: 1px solid #2A2E3980;
-}
-
-.cpc-controls-eyebrow {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: #F5A623;
-}
-
-.cpc-controls-title {
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  color: #E8EAED;
-  margin: 0;
-}
-
-.cpc-controls-sub {
-  font-size: 12px;
-  line-height: 1.5;
-  color: #8B92A7;
-  margin: 4px 0 0;
-}
-
-.cpc-controls-list {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.cpc-control {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.cpc-control-label {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 6px;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: #E8EAED;
-}
-
-.cpc-control-hint {
-  font-weight: 400;
-  text-transform: none;
-  letter-spacing: 0;
-  font-size: 11px;
-  color: #8B92A7;
-}
-
-.cpc-input {
-  width: 100%;
-  padding: 10px 14px;
-  border-radius: 10px;
-  border: 1px solid #2A2E39;
-  background: #0A0B0E;
-  color: #E8EAED;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
-  outline: none;
-  transition: border-color 0.15s ease, background 0.15s ease;
-}
-
-.cpc-input:hover { border-color: #3A3F4D; }
-.cpc-input:focus { border-color: #F5A623; background: rgba(245, 166, 35, 0.04); }
-
-.cpc-input-sm { padding: 7px 10px; font-size: 11px; }
-
-/* Tickers chips */
-.cpc-tickers { display: flex; flex-direction: column; gap: 8px; }
-.cpc-chips { display: flex; flex-wrap: wrap; gap: 6px; min-height: 22px; }
-.cpc-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px 4px 12px;
-  border-radius: 9999px;
-  background: rgba(245, 166, 35, 0.12);
-  border: 1px solid rgba(245, 166, 35, 0.4);
-  color: #F5A623;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-}
-.cpc-chip-x {
-  background: none;
-  border: none;
-  color: #F5A623;
-  cursor: pointer;
-  font-size: 14px;
-  line-height: 1;
-  padding: 0 2px;
-  opacity: 0.7;
-}
-.cpc-chip-x:hover { opacity: 1; }
-
-.cpc-ticker-add { display: flex; gap: 6px; }
-.cpc-ticker-add .cpc-input { flex: 1; }
-.cpc-btn-add {
-  width: 32px;
-  border-radius: 10px;
-  border: 1px solid #2A2E39;
-  background: #0A0B0E;
-  color: #F5A623;
-  cursor: pointer;
-  font-weight: 700;
-  font-size: 16px;
-  line-height: 1;
-}
-.cpc-btn-add:hover { background: rgba(245, 166, 35, 0.08); border-color: #F5A623; }
-
-/* Toggle */
-.cpc-toggle {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  user-select: none;
-}
-.cpc-toggle input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-.cpc-toggle-track {
-  position: relative;
-  width: 36px;
-  height: 20px;
-  border-radius: 9999px;
-  background: #2A2E39;
-  transition: background 0.2s ease;
-}
-.cpc-toggle-track::after {
-  content: '';
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: #E8EAED;
-  transition: transform 0.2s ease;
-}
-.cpc-toggle input:checked + .cpc-toggle-track { background: #F5A623; }
-.cpc-toggle input:checked + .cpc-toggle-track::after { transform: translateX(16px); background: #0A0B0E; }
-.cpc-toggle-state {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 0.12em;
-  color: #8B92A7;
-}
-
-/* URL block */
-.cpc-url-block {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 14px;
-  border-radius: 12px;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid #2A2E39;
-}
-.cpc-url-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: #8B92A7;
-}
-.cpc-url-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.cpc-url-code {
-  flex: 1;
-  display: block;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  color: #E8EAED;
-  word-break: break-all;
-  line-height: 1.4;
-}
-.cpc-btn-copy {
-  flex-shrink: 0;
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  border: 1px solid #2A2E39;
-  background: rgba(245, 166, 35, 0.1);
-  color: #F5A623;
-  cursor: pointer;
-}
-.cpc-btn-copy:hover { background: rgba(245, 166, 35, 0.2); }
 </style>

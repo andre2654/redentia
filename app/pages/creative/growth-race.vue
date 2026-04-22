@@ -705,6 +705,8 @@ function replay() {
 <template>
   <MoleculesCreativePreviewControls
     creative-name="GROWTH RACE"
+    hero-title="Growth Race Animado"
+    hero-description="Comparação animada de valorização histórica de múltiplos ativos, com logos como pontos no gráfico e datas passando no título. Perfeito pra Reels e Stories que mostram performance ao longo do tempo."
     :controls="previewControls"
     @reset="resetControls"
   >
