@@ -152,6 +152,24 @@
           >
             Análises
           </UButton>
+          <UButton
+            color="secondary"
+            :variant="filtroCategoria === 'planejamento' ? 'soft' : 'ghost'"
+            size="md"
+            icon="i-lucide-target"
+            @click="filtroCategoria = 'planejamento'"
+          >
+            Planejamento
+          </UButton>
+          <UButton
+            color="secondary"
+            :variant="filtroCategoria === 'ferramentas' ? 'soft' : 'ghost'"
+            size="md"
+            icon="i-lucide-wrench"
+            @click="filtroCategoria = 'ferramentas'"
+          >
+            Ferramentas
+          </UButton>
         </div>
       </section>
 
@@ -194,7 +212,13 @@
 <script setup lang="ts">
 const brand = useBrand()
 
-type CategoriaGuia = 'acoes' | 'fiis' | 'dividendos' | 'analises'
+type CategoriaGuia =
+  | 'acoes'
+  | 'fiis'
+  | 'dividendos'
+  | 'analises'
+  | 'planejamento'
+  | 'ferramentas'
 
 interface Guia {
   slug: string
@@ -359,6 +383,66 @@ const guias: Guia[] = [
     icon: 'i-lucide-rocket',
     data: '4 Jan 2026',
     tempoLeitura: 9,
+  },
+  {
+    slug: 'quanto-rende-500-por-mes-na-bolsa',
+    titulo: 'Quanto Rende R$ 500/Mês na Bolsa em 30 Anos?',
+    descricao: 'Simulação real: quanto R$ 500 por mês rendem em 5, 10, 20 e 30 anos. Três cenários (conservador, moderado, arrojado) com juros compostos e dividendos.',
+    categoria: 'planejamento',
+    categoriaLabel: 'Planejamento',
+    icon: 'i-lucide-piggy-bank',
+    data: '20 Abr 2026',
+    tempoLeitura: 7,
+  },
+  {
+    slug: 'petr4-vs-vale3-vs-itub4',
+    titulo: 'PETR4 vs VALE3 vs ITUB4: Qual é a Melhor?',
+    descricao: 'Comparação direta das 3 maiores ações da B3 em 2026: Petrobras, Vale e Itaú. Dividendos, P/L, histórico e qual combina com seu perfil.',
+    categoria: 'analises',
+    categoriaLabel: 'Análises',
+    icon: 'i-lucide-split',
+    data: '20 Abr 2026',
+    tempoLeitura: 9,
+  },
+  {
+    slug: 'acoes-fiis-dividendos-todo-mes',
+    titulo: '15 Ações e FIIs que Pagam Dividendos Todo Mês',
+    descricao: 'Lista curada de 15 ativos da B3 que pagam dividendos mensalmente: 10 FIIs de alta liquidez e 5 ações recorrentes. DY, ticker e calendário.',
+    categoria: 'dividendos',
+    categoriaLabel: 'Dividendos',
+    icon: 'i-lucide-calendar-check',
+    data: '20 Abr 2026',
+    tempoLeitura: 10,
+  },
+  {
+    slug: 'como-declarar-acoes-imposto-renda',
+    titulo: 'Como Declarar Ações no IR 2026: Guia Completo',
+    descricao: 'Como declarar ações, FIIs e dividendos no IR 2026: isenções, códigos da Receita, limite de R$ 20 mil, day vs swing trade e as 5 pegadinhas.',
+    categoria: 'acoes',
+    categoriaLabel: 'Ações',
+    icon: 'i-lucide-receipt',
+    data: '20 Abr 2026',
+    tempoLeitura: 12,
+  },
+  {
+    slug: 'fire-independencia-financeira-calculadora',
+    titulo: 'Quantos Anos Faltam Pra Você Se Aposentar? FIRE Brasil',
+    descricao: 'Movimento FIRE no Brasil: quanto acumular, regra dos 4%, Lean/Coast/Barista/Fat FIRE e como calcular a idade da sua independência financeira.',
+    categoria: 'planejamento',
+    categoriaLabel: 'Planejamento',
+    icon: 'i-lucide-flame',
+    data: '20 Abr 2026',
+    tempoLeitura: 11,
+  },
+  {
+    slug: 'widgets-financeiros-para-site',
+    titulo: 'Widgets Financeiros Grátis para Seu Site: Guia 2026',
+    descricao: 'Como adicionar cotações da B3, calculadoras, mapas de calor e rankings em qualquer blog, newsletter ou site — sem cadastro, em 2 minutos.',
+    categoria: 'ferramentas',
+    categoriaLabel: 'Ferramentas',
+    icon: 'i-lucide-code-xml',
+    data: '20 Abr 2026',
+    tempoLeitura: 8,
   },
 ]
 
