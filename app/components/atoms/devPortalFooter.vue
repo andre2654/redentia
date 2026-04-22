@@ -113,10 +113,11 @@ const route = useRoute()
 
 // Detect which "product" we're rendering inside so we can adapt the
 // brand label and the description.
-const productSlug = computed<'api' | 'creative' | 'whitelabel' | 'backoffice' | 'admin'>(() => {
+const productSlug = computed<'api' | 'creative' | 'embed' | 'whitelabel' | 'backoffice' | 'admin'>(() => {
   const p = route.path
   if (p.startsWith('/api-portal')) return 'api'
   if (p.startsWith('/creative')) return 'creative'
+  if (p.startsWith('/embed')) return 'embed'
   if (p.startsWith('/whitelabel')) return 'whitelabel'
   if (p.startsWith('/backoffice')) return 'backoffice'
   return 'api'
@@ -125,6 +126,7 @@ const productSlug = computed<'api' | 'creative' | 'whitelabel' | 'backoffice' | 
 const productLabel = computed(() => ({
   api: 'API',
   creative: 'CREATIVE',
+  embed: 'EMBED',
   whitelabel: 'WHITELABEL',
   backoffice: 'ADMIN',
   admin: 'ADMIN',
@@ -133,6 +135,7 @@ const productLabel = computed(() => ({
 const description = computed(() => ({
   api: 'A mesma inteligência que move a Redentia, agora em JSON. Endpoints REST para preços, fundamentos, dividendos e commentaries.',
   creative: 'Cards, rankings e mockups com dados reais, prontos pra tirar print e postar nas redes. PNG 1080×1080, sem fricção.',
+  embed: 'Widgets gratuitos de cotação, calculadoras e rankings prontos pra copiar e colar no seu site. Um iframe, zero cadastro.',
   whitelabel: 'A plataforma inteira sob a sua marca: dados, IA, design system, calculadoras e checklist do investidor.',
   backoffice: 'Painel administrativo da Redentia. Gerencie tenants, usuários, conteúdo e operação.',
   admin: 'Painel administrativo da Redentia. Gerencie tenants, usuários, conteúdo e operação.',
@@ -162,6 +165,14 @@ const crossLinks = computed(() => {
       title: 'creative.redentia.com.br',
       subtitle: 'Studio de criativos',
       href: 'https://creative.redentia.com.br',
+      external: true,
+    },
+    {
+      slug: 'embed',
+      tag: '[EMBED]',
+      title: 'embed.redentia.com.br',
+      subtitle: 'Widgets e iframes pro seu site',
+      href: 'https://embed.redentia.com.br',
       external: true,
     },
     {
