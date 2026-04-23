@@ -291,7 +291,7 @@
               <span :style="{ color: REDENTIA_COLORS.primary }">&lt;iframe</span>
             </div>
             <div class="pl-4">
-              <span :style="{ color: REDENTIA_COLORS.primary }">src</span><span :style="{ color: REDENTIA_COLORS.textMuted }">=</span><span :style="{ color: REDENTIA_COLORS.positive }">"https://embed.redentia.com.br/ticker/small?ticker=PETR4"</span>
+              <span :style="{ color: REDENTIA_COLORS.primary }">src</span><span :style="{ color: REDENTIA_COLORS.textMuted }">=</span><span :style="{ color: REDENTIA_COLORS.positive }">"https://www.redentia.com.br/embed/ticker/small?ticker=PETR4&widget=1"</span>
             </div>
             <div class="pl-4">
               <span :style="{ color: REDENTIA_COLORS.primary }">width</span><span :style="{ color: REDENTIA_COLORS.textMuted }">=</span><span :style="{ color: REDENTIA_COLORS.positive }">"320"</span>

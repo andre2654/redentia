@@ -1,13 +1,17 @@
 /**
- * Composable compartilhado para embeds do embed.redentia.com.br.
+ * Composable compartilhado para embeds.
  * Gerencia:
  *  - Detecção de modo widget (`?widget=1`) vs playground
- *  - Geração da URL iframe (apontando pro subdomínio embed.)
+ *  - Geração da URL iframe (usa o domínio principal + prefix /embed)
  *  - Copy-to-clipboard do código iframe
+ *
+ * NOTA: antes usávamos um subdomínio embed.redentia.com.br, mas esse
+ * subdomínio nunca foi configurado no DNS/Nginx. Agora usamos o domínio
+ * principal com prefix /embed, que funciona sem ops adicional.
  */
 
 interface EmbedPlaygroundOptions {
-  /** Path do embed, ex: '/ticker/small', '/carousel' */
+  /** Path do embed, ex: '/ticker/small', '/carousel' (com ou sem prefix /embed) */
   path: string
   /** Dimensões default do iframe */
   width: number
@@ -25,16 +29,17 @@ export function useEmbedPlayground(options: EmbedPlaygroundOptions) {
 
   const isWidgetMode = computed(() => route.query.widget === '1')
 
-  // URL base do subdomínio embed. Fallback pro redentia.com.br em dev.
   const embedOrigin = computed(() => {
     const raw = String(runtimeConfig.public?.siteUrl || brand.url || '').replace(/\/$/, '')
-    return raw.replace('https://www.', 'https://embed.').replace('http://www.', 'http://embed.')
+    return raw
   })
 
   const embedUrl = computed(() => {
     const merged = { ...options.params.value, widget: '1' }
     const qs = new URLSearchParams(merged).toString()
-    return `${embedOrigin.value}${options.path}?${qs}`
+    const normalizedPath = options.path.startsWith('/') ? options.path : `/${options.path}`
+    const fullPath = normalizedPath.startsWith('/embed/') ? normalizedPath : `/embed${normalizedPath}`
+    return `${embedOrigin.value}${fullPath}?${qs}`
   })
 
   const iframeCode = computed(

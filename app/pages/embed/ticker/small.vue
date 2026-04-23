@@ -64,13 +64,15 @@ const formatChange = (v: number) => {
 }
 
 // ==== Iframe code gen ====
+// Usa o domínio principal + prefix /embed. O subdomínio embed.redentia.com.br
+// nunca foi configurado, manter o path completo garante que o iframe funciona.
 const siteUrl = computed(() => {
   const raw = String(runtimeConfig.public?.siteUrl || brand.url || '').replace(/\/$/, '')
-  return raw.replace('https://www.', 'https://embed.').replace('http://www.', 'http://embed.')
+  return raw
 })
 const embedUrl = computed(
   () =>
-    `${siteUrl.value}/ticker/small?ticker=${ticker.value}&theme=${theme.value}&widget=1`
+    `${siteUrl.value}/embed/ticker/small?ticker=${ticker.value}&theme=${theme.value}&widget=1`
 )
 const iframeCode = computed(
   () => `<iframe src="${embedUrl.value}"
