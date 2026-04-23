@@ -3161,6 +3161,12 @@
           />
         </section>
 
+        <!-- Imprensa (notícias dos portais financeiros que citam o ticker) -->
+        <MoleculesNewsByTickerSection
+          v-if="brand.assetPage.showNews"
+          :ticker="tickerUpper"
+        />
+
         <!-- Fundamentals + Volatility side by side (terminal panels) -->
         <section class="grid grid-cols-1 gap-6 border-b py-8 lg:grid-cols-3" :style="{ borderColor: brand.colors.border }">
           <!-- Col 1-2: Fundamentals register -->

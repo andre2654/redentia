@@ -4125,6 +4125,9 @@
     </div>
 
 
+    <!-- News Section — feed de notícias de mercado (apenas Redentia por enquanto) -->
+    <MoleculesNewsSection v-if="showSection('news')" :style="{ order: sectionOrder('news') }" class="mt-6 px-4 md:px-6" />
+
     <!-- Metrics Section com contador gigante -->
     <MoleculesMetricsSection v-if="showSection('metrics') && !authStore.isAuthenticated" :style="{ order: sectionOrder('metrics') }" />
 

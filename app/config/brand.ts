@@ -193,6 +193,7 @@ interface BrandConfig {
     showChecklist: boolean
     showCompanyInfo: boolean
     showMarketCommentaries?: boolean
+    showNews?: boolean
     // Visual variant, 'default' keeps the terminal/card layout used by
     // Redentia. 'editorial' switches to the narrated column layout used
     // by Norte Capital (private-bank "letter from your advisor"). 'mentor'
@@ -509,7 +510,7 @@ interface BrandConfig {
   // A ordem no array define a ordem de exibicao na home.
   // Cada secao pode ser ativada/desativada individualmente.
   homeSections: Array<{
-    id: 'hero' | 'trustBar' | 'market' | 'categories' | 'guides' | 'metrics' | 'featureTabs' | 'marquee' | 'testimonials' | 'aiCta' | 'educational' | 'products' | 'wealthCalculator' | 'characters' | 'investorChecklist' | 'apiProduct' | 'creativeProduct'
+    id: 'hero' | 'trustBar' | 'market' | 'categories' | 'guides' | 'metrics' | 'featureTabs' | 'marquee' | 'testimonials' | 'aiCta' | 'educational' | 'products' | 'wealthCalculator' | 'characters' | 'investorChecklist' | 'apiProduct' | 'creativeProduct' | 'news'
     visible: boolean
   }>
 
@@ -2426,6 +2427,7 @@ const redentia: BrandConfig = {
     showFinancials: true,
     showChecklist: true,
     showCompanyInfo: true,
+    showNews: true,
   },
 
   social: {
@@ -2699,6 +2701,7 @@ const redentia: BrandConfig = {
     { id: 'hero', visible: true },
     { id: 'trustBar', visible: true },
     { id: 'market', visible: true },
+    { id: 'news', visible: true },
     { id: 'metrics', visible: true },
     { id: 'featureTabs', visible: false },
     { id: 'categories', visible: true },
