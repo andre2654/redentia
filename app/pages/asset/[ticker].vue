@@ -3265,25 +3265,29 @@
             </div>
           </div>
 
-          <!-- Col 3: Volatility panel -->
-          <div v-if="brand.assetPage.showVolatility" class="lg:col-span-1">
-            <div class="mb-4 flex flex-col gap-1">
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
-                [VOLATILITY.30D]
-              </span>
-              <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
-                Volatilidade
-              </h2>
-              <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
-                &gt; {{ volatilityPeriodLabel || 'JANELA DE 30 DIAS' }}
-              </p>
+          <!-- Col 3: Volatility + Analyst consensus panels -->
+          <div class="lg:col-span-1 flex flex-col gap-8">
+            <div v-if="brand.assetPage.showVolatility">
+              <div class="mb-4 flex flex-col gap-1">
+                <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
+                  [VOLATILITY.30D]
+                </span>
+                <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
+                  Volatilidade
+                </h2>
+                <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
+                  &gt; {{ volatilityPeriodLabel || 'JANELA DE 30 DIAS' }}
+                </p>
+              </div>
+              <div class="border p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+                <AtomsRiskMeter
+                  :risk="volatilityRisk"
+                  :period="volatilityPeriodLabel"
+                />
+              </div>
             </div>
-            <div class="border p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
-              <AtomsRiskMeter
-                :risk="volatilityRisk"
-                :period="volatilityPeriodLabel"
-              />
-            </div>
+
+            <MoleculesAnalystConsensusCard v-if="brand.assetPage.showNews" :ticker="tickerUpper" />
           </div>
         </section>
       </div>
