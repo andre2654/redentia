@@ -29,6 +29,45 @@ export function useEmbedPlayground(options: EmbedPlaygroundOptions) {
 
   const isWidgetMode = computed(() => route.query.widget === '1')
 
+  // Em widget mode, garantir que TODOS os cliques em links internos
+  // (/asset/XXX, etc) escapem do iframe e abram em nova aba no site
+  // principal. Duas camadas:
+  //  1. <base target="_blank"> — funciona para <a> nativos (carrossel, ranking)
+  //  2. Listener JS global — pega custom elements como <NuxtLink> que em
+  //     dev mode podem não virar <a> puro (treemap do heatmap). Também é
+  //     um safety net se o browser do site host remover o <base>.
+  if (isWidgetMode.value) {
+    useHead({
+      base: { target: '_blank' },
+    })
+
+    if (import.meta.client) {
+      onMounted(() => {
+        const origin = String(runtimeConfig.public?.siteUrl || brand.url || '').replace(/\/$/, '')
+        document.addEventListener(
+          'click',
+          (e) => {
+            const target = e.target as HTMLElement | null
+            if (!target) return
+            const el = target.closest('a, [href], [to]') as HTMLElement | null
+            if (!el) return
+            const rawHref = el.getAttribute('href') || el.getAttribute('to') || ''
+            if (!rawHref) return
+            // Só intercepta links pro site principal (asset, calculadora, guias etc)
+            const isInternalPath = rawHref.startsWith('/') && !rawHref.startsWith('//')
+            const url = isInternalPath ? `${origin}${rawHref}` : rawHref
+            // Se já for target=_blank ou já tiver aberto, não interfere
+            if ((el as HTMLAnchorElement).target === '_blank') return
+            e.preventDefault()
+            e.stopPropagation()
+            window.open(url, '_blank', 'noopener,noreferrer')
+          },
+          true,
+        )
+      })
+    }
+  }
+
   const embedOrigin = computed(() => {
     const raw = String(runtimeConfig.public?.siteUrl || brand.url || '').replace(/\/$/, '')
     return raw

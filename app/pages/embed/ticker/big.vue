@@ -108,11 +108,11 @@ if (!isWidgetMode.value) {
 <template>
   <!-- ==================== WIDGET MODE ==================== -->
   <div v-if="isWidgetMode" class="embed-widget">
-    <NuxtLink
-      :to="`https://www.redentia.com.br/asset/${ticker.toLowerCase()}`"
+    <a
+      :href="`https://www.redentia.com.br/asset/${ticker.toLowerCase()}`"
       target="_blank"
-      rel="noopener"
-      class="block h-full w-full rounded-xl p-5"
+      rel="noopener noreferrer"
+      class="block h-full w-full rounded-xl p-5 no-underline"
       :style="{
         backgroundColor: theme === 'light' ? '#ffffff' : brand.colors.surface,
         border: `1px solid ${theme === 'light' ? '#e5e7eb' : brand.colors.border}`,
@@ -166,7 +166,7 @@ if (!isWidgetMode.value) {
       <div class="mt-3 text-[9px] uppercase tracking-[0.15em] opacity-60" :style="{ color: theme === 'light' ? '#6b7280' : brand.colors.textMuted }">
         powered by redentia.com.br
       </div>
-    </NuxtLink>
+    </a>
   </div>
 
   <!-- ==================== PLAYGROUND ==================== -->

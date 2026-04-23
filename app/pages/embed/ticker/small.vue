@@ -124,6 +124,34 @@ if (isWidgetMode.value) {
     robots: 'noindex,nofollow',
     title: `${ticker.value} · ${brand.name}`,
   })
+  // Garante que cliques escapem do iframe e abram no site principal
+  useHead({
+    base: { target: '_blank' },
+  })
+
+  if (import.meta.client) {
+    onMounted(() => {
+      const origin = String(runtimeConfig.public?.siteUrl || brand.url || '').replace(/\/$/, '')
+      document.addEventListener(
+        'click',
+        (e) => {
+          const target = e.target as HTMLElement | null
+          if (!target) return
+          const el = target.closest('a, [href], [to]') as HTMLElement | null
+          if (!el) return
+          const rawHref = el.getAttribute('href') || el.getAttribute('to') || ''
+          if (!rawHref) return
+          const isInternalPath = rawHref.startsWith('/') && !rawHref.startsWith('//')
+          const url = isInternalPath ? `${origin}${rawHref}` : rawHref
+          if ((el as HTMLAnchorElement).target === '_blank') return
+          e.preventDefault()
+          e.stopPropagation()
+          window.open(url, '_blank', 'noopener,noreferrer')
+        },
+        true,
+      )
+    })
+  }
 }
 </script>
 
