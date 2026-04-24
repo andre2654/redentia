@@ -289,8 +289,11 @@
         </section>
       </template>
 
-      <div v-else class="text-[12px]" :style="{ color: C.textMuted }">
-        Não foi possível carregar os dados.
+      <div v-else class="flex flex-col gap-2 text-[12px]" :style="{ color: C.textMuted }">
+        <span>Não foi possível carregar os dados.</span>
+        <span v-if="errorMessage" class="font-mono-tab text-[11px]" :style="{ color: C.negative }">
+          {{ errorMessage }}
+        </span>
       </div>
     </div>
   </NuxtLayout>
@@ -389,18 +392,21 @@ interface DataHealthResponse {
 
 const config = useRuntimeConfig()
 const apiBase = config.public.apiBaseUrl as string
+const { authFetch } = useCustomFetch()
 
 const data = ref<DataHealthResponse | null>(null)
 const loading = ref(false)
+const errorMessage = ref<string | null>(null)
 
 async function refresh() {
   loading.value = true
+  errorMessage.value = null
   try {
-    data.value = await $fetch<DataHealthResponse>(`${apiBase}/admin/data-health`, {
-      credentials: 'include',
-    })
+    const resp = await authFetch<DataHealthResponse>(`${apiBase}/admin/data-health`)
+    data.value = resp?.data ?? null
   } catch (err) {
     console.error('data-health fetch failed', err)
+    errorMessage.value = (err as { message?: string })?.message ?? 'Falha ao carregar'
   } finally {
     loading.value = false
   }
