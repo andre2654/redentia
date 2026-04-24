@@ -140,12 +140,16 @@ const cc = useChartColors()
 
 const props = defineProps<{
   stock?: any
+  to?: string
 }>()
 
 const cfg = computed(() => brand.homePage.stockItem)
 
+// `to` override é usado pelos rankings de cripto na home (precisam apontar
+// pra /crypto/<id> em vez de /asset/<ticker>). Resto dos callers passa
+// apenas `stock` e pega o default.
 const tickerLink = computed(() =>
-  `/asset/${props.stock?.ticker?.toLowerCase?.() || props.stock?.ticker || ''}`
+  props.to ?? `/asset/${props.stock?.ticker?.toLowerCase?.() || props.stock?.ticker || ''}`
 )
 
 const tickerAbbrev = computed(() => (props.stock?.ticker || '').substring(0, 2))

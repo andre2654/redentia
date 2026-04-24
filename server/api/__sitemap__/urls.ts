@@ -97,5 +97,51 @@ export default defineSitemapEventHandler(async (e) => {
     console.log('[Sitemap] Usando ativos fallback:', urls.length)
   }
 
+  // Cripto — paginas /crypto/[symbol]. Top por rank fica no sitemap
+  // principal; resto entra com priority menor para deixar Google priorizar
+  // naturalmente pelas mais procuradas.
+  try {
+    const apiBase = process.env.NUXT_PUBLIC_API_BASE_URL || 'https://redentia-api.saraivada.com/api'
+    const cryptoResp = await $fetch<any>(`${apiBase}/crypto?limit=500`, { timeout: 30000 })
+    const coins = cryptoResp?.data ?? []
+    if (Array.isArray(coins) && coins.length) {
+      for (const coin of coins.slice(0, 300)) {
+        if (!coin.id) continue
+        const isTop20 = typeof coin.rank === 'number' && coin.rank <= 20
+        urls.push({
+          loc: `/crypto/${String(coin.id).toLowerCase()}`,
+          lastmod: now,
+          changefreq: isTop20 ? 'hourly' : 'daily',
+          priority: isTop20 ? 0.85 : 0.6,
+        })
+      }
+      console.log('[Sitemap] Cripto URLs adicionadas:', Math.min(coins.length, 300))
+    }
+  } catch (err) {
+    console.warn('[Sitemap] Falha ao buscar cripto (ignorando):', err)
+  }
+
+  // Tesouro Direto — todos os títulos ativos. Mudam pouco de estrutura, mas
+  // o preço atualiza diariamente, por isso weekly + priority media.
+  try {
+    const apiBase = process.env.NUXT_PUBLIC_API_BASE_URL || 'https://redentia-api.saraivada.com/api'
+    const tesouroResp = await $fetch<any>(`${apiBase}/tesouro`, { timeout: 30000 })
+    const items = tesouroResp?.items ?? tesouroResp?.data ?? []
+    if (Array.isArray(items) && items.length) {
+      for (const t of items) {
+        if (!t.slug) continue
+        urls.push({
+          loc: `/tesouro/${t.slug}`,
+          lastmod: now,
+          changefreq: 'daily',
+          priority: 0.7,
+        })
+      }
+      console.log('[Sitemap] Tesouro URLs adicionadas:', items.length)
+    }
+  } catch (err) {
+    console.warn('[Sitemap] Falha ao buscar tesouro (ignorando):', err)
+  }
+
   return urls
 })

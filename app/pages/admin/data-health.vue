@@ -255,6 +255,91 @@
           </div>
         </section>
 
+        <!-- Crypto (StatusInvest) -->
+        <section>
+          <h2 class="mb-3 font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: C.primary }">
+            [CRYPTO.STATUSINVEST]
+          </h2>
+          <div
+            class="mb-3 grid grid-cols-2 gap-px border md:grid-cols-4"
+            :style="{ borderColor: C.border, backgroundColor: C.border }"
+          >
+            <div class="flex flex-col gap-1 px-4 py-3" :style="{ backgroundColor: C.surface }">
+              <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">TOTAL</span>
+              <span class="text-[22px] font-semibold tabular-nums" :style="{ color: C.text }">{{ data.crypto.summary.total }}</span>
+            </div>
+            <div class="flex flex-col gap-1 px-4 py-3" :style="{ backgroundColor: C.surface }">
+              <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">COM PREÇO</span>
+              <span class="text-[22px] font-semibold tabular-nums" :style="{ color: cryptoCoverageColor(data.crypto.summary.with_price, data.crypto.summary.total) }">
+                {{ data.crypto.summary.with_price }}
+              </span>
+            </div>
+            <div class="flex flex-col gap-1 px-4 py-3" :style="{ backgroundColor: C.surface }">
+              <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">COM OHLC</span>
+              <span class="text-[22px] font-semibold tabular-nums" :style="{ color: C.text }">{{ data.crypto.summary.with_ohlc }}</span>
+            </div>
+            <div class="flex flex-col gap-1 px-4 py-3" :style="{ backgroundColor: C.surface }">
+              <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">ÚLT. REFRESH</span>
+              <span class="font-mono-tab text-[13px] font-semibold" :style="{ color: C.text }">{{ formatRelative(data.crypto.summary.newest_refresh) }}</span>
+            </div>
+          </div>
+
+          <div class="grid gap-6 lg:grid-cols-3">
+            <div class="flex flex-col gap-px border lg:col-span-1" :style="{ borderColor: C.border, backgroundColor: C.border }">
+              <div class="px-4 py-2 font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ backgroundColor: C.surface, color: C.textMuted }">
+                RAINBOW HISTORY
+              </div>
+              <div
+                v-for="rb in data.crypto.history_coverage"
+                :key="rb.coin_id"
+                class="flex items-center justify-between px-4 py-2"
+                :style="{ backgroundColor: C.surface }"
+              >
+                <span class="font-mono-tab text-[11px] uppercase" :style="{ color: C.text }">{{ rb.coin_id }}</span>
+                <div class="flex items-baseline gap-3">
+                  <span class="font-mono-tab text-[11px] tabular-nums" :style="{ color: C.text }">{{ rb.points }} pts</span>
+                  <span class="font-mono-tab text-[9px] uppercase tracking-[0.15em]" :style="{ color: C.textMuted }">
+                    {{ rb.first_date?.slice(0, 7) }} → {{ rb.last_date?.slice(0, 7) }}
+                  </span>
+                </div>
+              </div>
+              <div v-if="data.crypto.history_coverage.length === 0" class="px-4 py-3 font-mono-tab text-[10px]" :style="{ backgroundColor: C.surface, color: C.textMuted }">
+                Sem histórico ainda.
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-px border lg:col-span-2" :style="{ borderColor: C.border, backgroundColor: C.border }">
+              <div class="px-4 py-2 font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ backgroundColor: C.surface, color: C.textMuted }">
+                TOP POR RANK
+              </div>
+              <NuxtLink
+                v-for="sample in data.crypto.top_samples"
+                :key="sample.id"
+                :to="`/crypto/${sample.id}`"
+                class="flex items-center justify-between px-4 py-2 transition-opacity hover:opacity-80"
+                :style="{ backgroundColor: C.surface }"
+              >
+                <div class="flex items-baseline gap-3">
+                  <span class="font-mono-tab text-[10px] uppercase" :style="{ color: C.primary }">#{{ sample.rank }}</span>
+                  <span class="font-bold" :style="{ color: C.text }">{{ sample.symbol }}</span>
+                  <span class="truncate text-[11px]" :style="{ color: C.textMuted }">{{ sample.name }}</span>
+                </div>
+                <div class="flex items-baseline gap-3">
+                  <span v-if="sample.price_brl !== null" class="font-mono-tab text-[11px] tabular-nums" :style="{ color: C.text }">
+                    R$ {{ formatPrice(sample.price_brl) }}
+                  </span>
+                  <span v-if="sample.change_24h_pct !== null" class="font-mono-tab text-[10px] tabular-nums" :style="{ color: (sample.change_24h_pct ?? 0) >= 0 ? C.positive : C.negative }">
+                    {{ (sample.change_24h_pct ?? 0) >= 0 ? '+' : '' }}{{ (sample.change_24h_pct ?? 0).toFixed(2) }}%
+                  </span>
+                </div>
+              </NuxtLink>
+              <div v-if="data.crypto.top_samples.length === 0" class="px-4 py-3 font-mono-tab text-[10px]" :style="{ backgroundColor: C.surface, color: C.textMuted }">
+                Nenhuma moeda com rank populada ainda.
+              </div>
+            </div>
+          </div>
+        </section>
+
         <!-- Recent scrape samples -->
         <section>
           <h2 class="mb-3 font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: C.primary }">
@@ -371,6 +456,24 @@ interface NewsHeadline {
   tickers: string[] | null
 }
 
+interface CryptoHistoryCoverage {
+  coin_id: string
+  points: number
+  first_date: string | null
+  last_date: string | null
+}
+
+interface CryptoSample {
+  id: string
+  symbol: string
+  name: string
+  rank: number
+  price_brl: number | null
+  change_24h_pct: number | null
+  dominance_pct: number | null
+  refreshed_at: string | null
+}
+
 interface DataHealthResponse {
   scrape: {
     coverage: CoverageRow[]
@@ -386,6 +489,17 @@ interface DataHealthResponse {
     totals: { total: number; last_24h: number; last_7d: number; last_ingest: string | null }
     by_source: NewsBySource[]
     latest: NewsHeadline[]
+  }
+  crypto: {
+    summary: {
+      total: number
+      with_price: number
+      with_ohlc: number
+      oldest_refresh: string | null
+      newest_refresh: string | null
+    }
+    history_coverage: CryptoHistoryCoverage[]
+    top_samples: CryptoSample[]
   }
   generated_at: string
 }
@@ -418,6 +532,20 @@ const generatedAtLabel = computed(() => {
   if (!data.value?.generated_at) return 'agora'
   return formatRelative(data.value.generated_at)
 })
+
+function cryptoCoverageColor(have: number, total: number): string {
+  if (total === 0) return C.textMuted
+  const pct = (have / total) * 100
+  if (pct >= 95) return C.positive
+  if (pct >= 70) return C.primary
+  return C.negative
+}
+
+function formatPrice(v: number): string {
+  if (v >= 1000) return v.toLocaleString('pt-BR', { maximumFractionDigits: 0 })
+  if (v >= 1) return v.toLocaleString('pt-BR', { maximumFractionDigits: 2 })
+  return v.toLocaleString('pt-BR', { maximumFractionDigits: 6 })
+}
 
 function coverageColor(pct: number | null): string {
   if (pct === null) return C.textMuted

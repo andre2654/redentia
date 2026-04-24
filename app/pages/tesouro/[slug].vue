@@ -392,17 +392,54 @@ if (error.value || !data.value) {
   })
 }
 
-useHead(() => ({
-  title: `${data.value?.name ?? slug} · Tesouro Direto | Redentia`,
-  meta: [
-    {
-      name: 'description',
-      content: data.value
-        ? `Cotação, taxa e vencimento do ${data.value.name}. ${data.value.rate ?? ''}. Preço compra R$ ${data.value.price_buy?.toFixed(2) ?? '—'}.`
-        : '',
-    },
-  ],
-}))
+useHead(() => {
+  const t = data.value
+  const brandCtx = useBrand()
+  if (!t) return { title: `${slug} · Tesouro Direto | ${brandCtx.name}` }
+
+  const title = `${t.name} · Tesouro Direto | ${brandCtx.name}`
+  const priceLabel = t.price_buy != null
+    ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(t.price_buy)
+    : ''
+  const rate = t.rate || (t.rate_numeric != null ? `${t.rate_numeric.toFixed(2)}%` : '')
+  const maturity = t.maturity_date ? new Date(t.maturity_date).toLocaleDateString('pt-BR') : ''
+  const description = `Cotação, taxa e vencimento do ${t.name}. ` +
+    (rate ? `Taxa atual ${rate}. ` : '') +
+    (priceLabel ? `Preço de compra ${priceLabel}. ` : '') +
+    (maturity ? `Vencimento em ${maturity}.` : '')
+
+  const canonical = `${brandCtx.url}/tesouro/${t.slug}`
+  const structured = {
+    '@context': 'https://schema.org',
+    '@type': 'FinancialProduct',
+    name: t.name,
+    description,
+    category: 'Government Bond',
+    identifier: t.slug,
+    url: canonical,
+    offers: t.price_buy
+      ? { '@type': 'Offer', priceCurrency: 'BRL', price: String(t.price_buy), availability: 'https://schema.org/InStock' }
+      : undefined,
+    provider: { '@type': 'Organization', name: brandCtx.name, url: brandCtx.url },
+  }
+
+  return {
+    title,
+    meta: [
+      { name: 'description', content: description },
+      { property: 'og:title', content: title },
+      { property: 'og:description', content: description },
+      { property: 'og:url', content: canonical },
+      { property: 'og:type', content: 'article' },
+      { name: 'twitter:card', content: 'summary' },
+      { name: 'twitter:title', content: title },
+      { name: 'twitter:description', content: description },
+      { name: 'keywords', content: `${t.name}, Tesouro Direto, ${t.indexer ?? ''}, renda fixa, investimento, ${t.slug}` },
+    ],
+    link: [{ rel: 'canonical', href: canonical }],
+    script: [{ type: 'application/ld+json', innerHTML: JSON.stringify(structured) }],
+  }
+})
 
 const indexerLabel = computed(() => indexerBadge(data.value?.indexer ?? null))
 

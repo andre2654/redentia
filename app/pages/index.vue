@@ -3877,14 +3877,10 @@
           >
             [LIVE.MARKET]
           </span>
-          <h2
-            class="text-3xl leading-none md:text-4xl lg:text-5xl"
-            :class="[brand.font.headingWeight, brand.font.headingStyle]"
-            :style="{ color: brand.colors.text }"
-          >
+          <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
             {{ brand.homeTexts.marketTitle }}
           </h2>
-          <p class="font-mono-tab text-[11px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
+          <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
             &gt; {{ brand.homeTexts.marketSubtitle }}
           </p>
         </div>
@@ -4043,16 +4039,11 @@
         </UCarousel>
       </template>
 
-      <!-- Filtros Inteligentes — minimal terminal pills -->
-      <div class="flex flex-col gap-3 border-b px-4 py-5 md:px-6" :style="{ borderColor: brand.colors.border }">
-        <div class="flex items-center gap-2">
-          <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
-            [SMART.FILTERS]
-          </span>
-          <span class="font-mono-tab text-[10px] uppercase tracking-[0.14em]" :style="{ color: brand.colors.textMuted }">
-            &gt; ATALHOS
-          </span>
-        </div>
+      <!-- Filtros Inteligentes — minimal terminal pills (sem header; segue
+           direto depois do grid do mercado B3). Padding alinhado com o
+           header dos rankings (px-4 md:px-0) pra flush alinhar com
+           `Criptomoedas` e `Tesouro Direto` abaixo. -->
+      <div class="px-4 pb-3 md:px-0">
         <div class="flex flex-wrap items-center gap-px" :style="{ backgroundColor: brand.colors.border }">
           <NuxtLink
             v-for="filter in smartFilters"
@@ -4071,6 +4062,12 @@
           </NuxtLink>
         </div>
       </div>
+
+      <!-- Crypto rankings — depois dos filtros inteligentes pra manter o
+           ritmo: primeiro a grid do B3, depois atalhos, depois cripto,
+           depois tesouro. Só renderiza pra tenants que tão na variante
+           terminal (Redentia) porque o bloco tá dentro desse v-if. -->
+      <MoleculesCryptoRankings />
 
       <!-- Tesouro Direto — após rankings + filtros inteligentes -->
       <div class="px-4 md:px-6">

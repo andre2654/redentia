@@ -51,7 +51,7 @@
                 [ASSETS.SEARCH]
               </span>
               <span class="font-mono-tab text-[10px] uppercase tracking-[0.14em]" :style="{ color: brand.colors.textMuted }">
-                &gt; {{ totalCount }} ATIVOS · B3
+                &gt; {{ totalCount }} ATIVOS
               </span>
             </div>
             <button
@@ -255,17 +255,19 @@ import type { IAsset } from '~/types/asset'
 defineOptions({ inheritAttrs: false })
 
 import { useTesouroService, indexerBadge, type TesouroItem } from '~/services/tesouro'
+import { useCryptoService, type CryptoAssetItem } from '~/services/crypto'
 
 const brand = useBrand()
 const router = useRouter()
 const searchTerm = ref('')
 const { getAssets } = useAssetsService()
 const { listTesouros } = useTesouroService()
+const { listCryptos } = useCryptoService()
 const open = ref(false)
 const attrs = useAttrs()
 const inputRef = ref<HTMLInputElement | null>(null)
 const listRef = ref<HTMLElement | null>(null)
-const activeType = ref<'all' | 'STOCK' | 'REIT' | 'BDR' | 'ETF' | 'TESOURO'>('all')
+const activeType = ref<'all' | 'STOCK' | 'REIT' | 'BDR' | 'ETF' | 'TESOURO' | 'CRYPTO'>('all')
 const focusedIndex = ref(0)
 
 const props = defineProps<{ compact?: boolean }>()
@@ -307,11 +309,21 @@ const { data: tesouros, status: tesouroStatus, execute: executeTesouros } = awai
   { server: false, immediate: false, default: () => [] },
 )
 
+// Cripto é carregada lazy (quando o modal abre pela primeira vez), igual
+// aos outros. Usa limit=500 pra pegar as ~213 moedas do SI. O
+// `preventWithCache` interno do service já debounces requests repetidas.
+const { data: cryptos, status: cryptoStatus, execute: executeCryptos } = await useAsyncData<CryptoAssetItem[]>(
+  'search-cryptos',
+  () => listCryptos(500),
+  { server: false, immediate: false, default: () => [] },
+)
+
 watch(open, async (isOpen) => {
   if (isOpen) {
     const loads: Promise<unknown>[] = []
     if (status.value === 'idle') loads.push(execute())
     if (tesouroStatus.value === 'idle') loads.push(executeTesouros())
+    if (cryptoStatus.value === 'idle') loads.push(executeCryptos())
     if (loads.length) await Promise.all(loads)
     focusedIndex.value = 0
     await nextTick()
@@ -336,7 +348,7 @@ interface SearchItem {
   logo: string | null
   price: number
   changePercent: number | null
-  type: 'STOCK' | 'REIT' | 'BDR' | 'ETF' | 'TESOURO'
+  type: 'STOCK' | 'REIT' | 'BDR' | 'ETF' | 'TESOURO' | 'CRYPTO'
 }
 
 function toSearchItem(a: IAsset): SearchItem | null {
@@ -385,10 +397,30 @@ function tesouroToSearchItem(t: TesouroItem): SearchItem {
   }
 }
 
+/**
+ * Cripto usa `image` do StatusInvest como logo, `price_brl` como preço
+ * e `change_24h_pct` como variação diária. Link vai pra /crypto/<id>
+ * (id armazenado em lowercase pelo backend).
+ */
+function cryptoToSearchItem(c: CryptoAssetItem): SearchItem {
+  return {
+    id: `CRYPTO-${c.id}`,
+    ticker: c.symbol,
+    label: c.symbol,
+    name: c.name,
+    to: `/crypto/${c.id}`,
+    logo: c.image ?? null,
+    price: c.price_brl ?? 0,
+    changePercent: c.change_24h_pct,
+    type: 'CRYPTO',
+  }
+}
+
 const allItems = computed<SearchItem[]>(() => {
   const assets = (ativos.value ?? []).map(toSearchItem).filter((x): x is SearchItem => x !== null)
   const tes = (tesouros.value ?? []).map(tesouroToSearchItem)
-  return [...assets, ...tes]
+  const cry = (cryptos.value ?? []).map(cryptoToSearchItem)
+  return [...assets, ...tes, ...cry]
 })
 
 const totalCount = computed(() => allItems.value.length)
@@ -414,13 +446,14 @@ const typeTabs = computed(() => {
     { id: 'ETF' as const, label: 'ETFs', count: count('ETF') },
     { id: 'BDR' as const, label: 'BDRs', count: count('BDR') },
     { id: 'TESOURO' as const, label: 'TESOURO', count: count('TESOURO') },
+    { id: 'CRYPTO' as const, label: 'CRIPTO', count: count('CRYPTO') },
   ]
 })
 
 const GROUP_CAP = 8
 
 interface SearchGroup {
-  id: 'STOCK' | 'REIT' | 'BDR' | 'ETF' | 'TESOURO'
+  id: 'STOCK' | 'REIT' | 'BDR' | 'ETF' | 'TESOURO' | 'CRYPTO'
   bracket: string
   label: string
   items: SearchItem[]
@@ -435,6 +468,7 @@ const visibleGroups = computed<SearchGroup[]>(() => {
     { id: 'STOCK', bracket: 'STOCKS', label: 'Ações' },
     { id: 'REIT', bracket: 'FIIS', label: 'Fundos imobiliários' },
     { id: 'TESOURO', bracket: 'TESOURO', label: 'Tesouro Direto' },
+    { id: 'CRYPTO', bracket: 'CRIPTO', label: 'Criptomoedas' },
     { id: 'ETF', bracket: 'ETFS', label: 'ETFs' },
     { id: 'BDR', bracket: 'BDRS', label: 'BDRs' },
   ]

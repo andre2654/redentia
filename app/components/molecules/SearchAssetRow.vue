@@ -95,7 +95,7 @@ interface SearchItem {
   logo: string | null
   price: number
   changePercent: number | null
-  type: 'STOCK' | 'REIT' | 'BDR' | 'ETF' | 'TESOURO'
+  type: 'STOCK' | 'REIT' | 'BDR' | 'ETF' | 'TESOURO' | 'CRYPTO'
 }
 
 const props = defineProps<{
@@ -121,6 +121,7 @@ const typeBadge = computed(() => {
     ETF: 'ETF',
     BDR: 'BDR',
     TESOURO: 'TESOURO',
+    CRYPTO: 'CRIPTO',
   }
   return map[props.item.type] ?? props.item.type
 })
@@ -132,6 +133,7 @@ const typeColor = computed(() => {
     ETF: brand.colors.text,
     BDR: brand.colors.textMuted,
     TESOURO: brand.colors.primary,
+    CRYPTO: brand.colors.primary,
   }
   return map[props.item.type] ?? brand.colors.textMuted
 })
