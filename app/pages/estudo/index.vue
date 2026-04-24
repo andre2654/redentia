@@ -65,7 +65,7 @@
                 :style="{ backgroundColor: C.primary }"
               />
             </span>
-            [REDENT.ESTUDO]
+            Redent.IA Estudo
           </span>
           <span :style="{ color: C.border }">·</span>
           <span :style="{ color: C.textMuted }">MARKET RESEARCH · GRATUITO</span>
@@ -88,7 +88,7 @@
         <div class="mb-14 flex flex-wrap items-end justify-between gap-6">
           <div>
             <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
-              [CATÁLOGO · {{ String(ebooks.length).padStart(2, '0') }} EDIÇÕES]
+              Catálogo · {{ String(ebooks.length).padStart(2, '0') }} edições
             </span>
             <h2 class="mt-3 text-[32px] leading-tight tracking-tight md:text-[44px]" :style="{ color: C.text, fontFamily: F.display }">
               Edições disponíveis.
@@ -198,7 +198,7 @@
       <!-- Footer explicativo -->
       <section class="relative mx-auto max-w-4xl border-t px-6 py-16 text-center md:py-20" :style="{ borderColor: C.border }">
         <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
-          [SOBRE O FORMATO]
+          Sobre o formato
         </span>
         <h3 class="mx-auto mt-3 max-w-2xl text-[22px] leading-tight md:text-[32px]" :style="{ color: C.text, fontFamily: F.display }">
           Por que a gente publica isso <em :style="{ color: C.primary }">de graça.</em>

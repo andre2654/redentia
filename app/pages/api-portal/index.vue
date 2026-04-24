@@ -80,9 +80,8 @@
                 }"
                 @click="openLeadModal('free')"
               >
-                <span>[ PEGAR API KEY</span>
+                <span>Pegar API key</span>
                 <span class="inline-block transition-transform group-hover:translate-x-1">→</span>
-                <span>]</span>
               </button>
               <NuxtLink
                 to="/api-portal/docs"
@@ -210,7 +209,7 @@
         <div class="mx-auto max-w-6xl px-6 py-20 md:px-10 md:py-28">
           <div class="mb-12 text-center">
             <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
-              [ WHAT.YOU.GET ]
+              WHAT.YOU.GET
             </span>
             <h2
               class="font-display mt-4"
@@ -266,7 +265,7 @@
         <div class="mx-auto max-w-6xl px-6 py-20 md:px-10 md:py-28">
           <div class="mb-12 text-center">
             <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
-              [ LIVE.EXAMPLES ]
+              LIVE.EXAMPLES
             </span>
             <h2
               class="font-display mt-4"

@@ -7,7 +7,7 @@
           class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
           :style="{ color: brand.colors.primary }"
         >
-          [FII.SNAPSHOT]
+          Snapshot do FII
         </span>
         <h3
           class="text-lg font-semibold md:text-xl"
@@ -32,10 +32,7 @@
           class="flex flex-col gap-1.5 px-4 py-4"
           :style="{ backgroundColor: brand.colors.surface }"
         >
-          <div class="flex items-center justify-between">
-            <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
-              [{{ String(idx + 1).padStart(2, '0') }}]
-            </span>
+          <div class="flex items-center justify-end">
             <UTooltip v-if="cell.tooltip" :text="cell.tooltip" :delay-duration="0">
               <UIcon name="i-lucide-info" class="h-3 w-3 opacity-40" :style="{ color: brand.colors.textMuted }" />
             </UTooltip>
@@ -156,7 +153,7 @@
           class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
           :style="{ color: brand.colors.primary }"
         >
-          [FII.PROFILE]
+          Perfil do FII
         </span>
         <h3
           class="text-lg font-semibold md:text-xl"
@@ -181,9 +178,6 @@
           class="flex flex-col gap-1.5 px-4 py-4"
           :style="{ backgroundColor: brand.colors.surface }"
         >
-          <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
-            [{{ String(idx + 1).padStart(2, '0') }}]
-          </span>
           <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">
             {{ cell.label }}
           </span>
@@ -202,7 +196,7 @@
           class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
           :style="{ color: brand.colors.primary }"
         >
-          [AI.INTERPRETATIONS]
+          Interpretações IA
         </span>
         <span
           class="font-mono-tab text-[10px] uppercase tracking-[0.12em]"
@@ -221,12 +215,6 @@
           class="flex items-start gap-3 px-5 py-3"
           :style="{ backgroundColor: brand.colors.surface }"
         >
-          <span
-            class="font-mono-tab text-[9px] uppercase tracking-[0.18em] shrink-0 mt-[3px]"
-            :style="{ color: brand.colors.primary }"
-          >
-            [{{ String(idx + 1).padStart(2, '0') }}]
-          </span>
           <p class="text-sm leading-relaxed" :style="{ color: brand.colors.text }" v-html="line" />
         </div>
       </div>

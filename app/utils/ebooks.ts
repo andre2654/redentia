@@ -90,7 +90,7 @@ export const EBOOKS: readonly EbookMeta[] = [
   {
     slug: 'imperio-por-tras-do-feed',
     edition: 'Edição 01 · Abril 2026',
-    eyebrow: '[ESTUDO] · FINFLUENCERS BRASILEIROS · 2026',
+    eyebrow: 'Estudo · Finfluencers brasileiros · 2026',
     title: 'Panorama dos finfluencers',
     titleAccent: 'brasileiros.',
     plainTitle: 'Panorama dos finfluencers brasileiros',

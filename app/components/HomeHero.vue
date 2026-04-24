@@ -1521,10 +1521,7 @@
               @mouseenter="($event.currentTarget as HTMLElement).style.backgroundColor = brand.colors.surface"
               @mouseleave="($event.currentTarget as HTMLElement).style.backgroundColor = brand.colors.background"
             >
-              <div class="flex items-start justify-between">
-                <span class="font-academic-mono text-[11px] tabular-nums" :style="{ color: brand.colors.primary }">
-                  [{{ String(idx + 1).padStart(2, '0') }}]
-                </span>
+              <div class="flex items-start justify-end">
                 <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">
                   {{ item.kind }}
                 </span>
@@ -2050,9 +2047,6 @@
               class="flex flex-col gap-2 px-6 py-8 md:py-10"
               :style="{ backgroundColor: brand.colors.surface }"
             >
-              <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
-                [{{ String(idx + 1).padStart(2, '0') }}]
-              </span>
               <span
                 class="font-mentor-display tabular-nums"
                 :style="{
@@ -3291,7 +3285,7 @@
         <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4 md:px-10">
           <div class="flex items-center gap-4">
             <span class="hl-mono text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
-              [ HOLD. ]
+              Hold
             </span>
             <span class="hl-mono text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
               EDIÇÃO 01 · {{ holderEditionDate }}

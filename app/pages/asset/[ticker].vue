@@ -532,10 +532,7 @@
             @mouseenter="($event.currentTarget as HTMLElement).style.backgroundColor = brand.colors.surface"
             @mouseleave="($event.currentTarget as HTMLElement).style.backgroundColor = brand.colors.background"
           >
-            <div class="flex items-start justify-between">
-              <span class="font-academic-mono text-[11px] tabular-nums" :style="{ color: brand.colors.primary }">
-                [{{ String(idx + 1).padStart(2, '0') }}]
-              </span>
+            <div class="flex items-start justify-end">
               <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">
                 {{ item.kind }}
               </span>
@@ -760,9 +757,6 @@
                 class="flex flex-col gap-2 px-5 py-6"
                 :style="{ backgroundColor: brand.colors.background }"
               >
-                <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
-                  [{{ String(idx + 1).padStart(2, '0') }}]
-                </span>
                 <span
                   class="font-mentor-display tabular-nums"
                   :style="{
@@ -2426,7 +2420,7 @@
         <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4 md:px-10">
           <div class="flex items-center gap-4">
             <span class="hl-mono text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
-              [ HOLD. ]
+              Hold
             </span>
             <span class="hl-mono text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
               FICHA · {{ tickerUpper }} · {{ assetEditorialDate }}
@@ -3048,7 +3042,7 @@
                     :style="{ color: brand.colors.primary }"
                     translate="no"
                   >
-                    [{{ tickerUpper }}]
+                    {{ tickerUpper }}
                   </span>
                   <h1
                     class="font-mono-tab text-3xl font-bold leading-none tracking-tight md:text-4xl"
@@ -3155,12 +3149,6 @@
             <div class="mb-3 flex items-end justify-between gap-4">
               <div class="flex flex-col gap-1">
                 <span
-                  class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
-                  :style="{ color: brand.colors.primary }"
-                >
-                  [CHART.PRICE]
-                </span>
-                <span
                   class="font-mono-tab text-[11px] uppercase tracking-[0.12em]"
                   :style="{ color: brand.colors.textMuted }"
                 >
@@ -3212,9 +3200,6 @@
           <!-- Col 1-2: Fundamentals register -->
           <div v-if="brand.assetPage.showIndicators" class="lg:col-span-2">
             <div class="mb-4 flex flex-col gap-1">
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
-                [FUNDAMENTALS.SNAPSHOT]
-              </span>
               <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
                 Indicadores fundamentalistas
               </h2>
@@ -3244,10 +3229,7 @@
                 class="flex flex-col gap-1.5 px-4 py-4 transition-colors hover:brightness-110"
                 :style="{ backgroundColor: brand.colors.surface }"
               >
-                <div class="flex items-center justify-between">
-                  <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
-                    [{{ String(idx + 1).padStart(2, '0') }}]
-                  </span>
+                <div class="flex items-center justify-end">
                   <UTooltip v-if="item.tooltip" :text="item.tooltip" :delay-duration="0">
                     <UIcon name="i-lucide-info" class="h-3 w-3 opacity-40" :style="{ color: brand.colors.textMuted }" />
                   </UTooltip>
@@ -3268,7 +3250,7 @@
             <div v-if="!scrapeExtras && brand.assetPage.showSmartIndicators && (intelligentIndicators || isLoadingFundamentus)" class="mt-4">
               <div class="mb-2 flex items-center gap-2 font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
                 <IconAi class="h-3 w-3" :style="{ fill: brand.colors.primary }" />
-                <span>[AI.ANALYSIS]</span>
+                <span>Análise IA</span>
                 <span :style="{ color: brand.colors.textMuted }">&gt; METRICAS INTERPRETADAS</span>
               </div>
               <div
@@ -3291,9 +3273,6 @@
                   class="flex flex-col gap-1.5 px-4 py-4"
                   :style="{ backgroundColor: brand.colors.surface }"
                 >
-                  <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
-                    [{{ String(idx + 1).padStart(2, '0') }}]
-                  </span>
                   <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">
                     {{ item.label }}
                   </span>
@@ -3309,9 +3288,6 @@
           <div class="lg:col-span-1 flex flex-col gap-8">
             <div v-if="brand.assetPage.showVolatility">
               <div class="mb-4 flex flex-col gap-1">
-                <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
-                  [VOLATILITY.30D]
-                </span>
                 <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
                   Volatilidade
                 </h2>
@@ -3341,9 +3317,6 @@
           <div class="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2">
             <div v-if="brand.assetPage.showVolatility">
               <div class="mb-4 flex flex-col gap-1">
-                <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
-                  [VOLATILITY.30D]
-                </span>
                 <h3 class="text-lg font-semibold md:text-xl" :style="{ color: brand.colors.text }">
                   Volatilidade
                 </h3>
@@ -3368,9 +3341,6 @@
       <section v-if="(brand.assetPage.showDividendMap || brand.assetPage.showDividendChart) && !isEtf" class="border-b py-8" :style="{ borderColor: brand.colors.border }">
         <!-- Terminal header -->
         <header class="mb-6 flex flex-col gap-1">
-          <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
-            [DIVIDEND.CALENDAR]
-          </span>
           <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
             Dividendos e proventos
           </h2>
@@ -3386,7 +3356,7 @@
           <div class="flex items-center justify-between border-b px-5 py-3" :style="{ borderColor: brand.colors.border }">
             <div class="flex flex-col gap-0.5">
               <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
-                [DIVIDEND.HEATMAP]
+                Histórico de dividendos
               </span>
               <span class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
                 &gt; PROBABILIDADE MENSAL · BASELINE 10A
@@ -3431,7 +3401,7 @@
                 class="font-mono-tab text-[9px] uppercase tracking-[0.18em]"
                 :style="{ color: item.highlight ? brand.colors.primary : brand.colors.textMuted }"
               >
-                [{{ item.label }}]
+                {{ item.label }}
               </span>
 
               <!-- Percentage big mono -->
@@ -3490,9 +3460,6 @@
            (basket, not an operating company with DRE/balance) -->
       <section v-if="brand.assetPage.showFinancials && !isBdr && !isEtf" class="border-b py-8" :style="{ borderColor: brand.colors.border }">
         <header class="mb-6 flex flex-col gap-1">
-          <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
-            [FINANCIALS.LATEST]
-          </span>
           <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
             Demonstrações financeiras
           </h2>
@@ -3550,7 +3517,7 @@
             <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <div class="flex flex-col gap-1">
                 <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
-                  [QUALITY.CHECK]
+                  Qualidade
                 </span>
                 <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
                   Checklist Buy & Hold
@@ -3563,7 +3530,7 @@
               <!-- Score as terminal register -->
               <div v-if="!isLoadingFundamentus && activeChecklist.length" class="flex items-center gap-3 font-mono-tab">
                 <span class="text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
-                  [SCORE]
+                  Score
                 </span>
                 <span class="text-3xl font-bold tabular-nums" :style="{ color: brand.colors.positive }">
                   {{ activeChecklist.filter(i => i.status === 'pass').length }}
@@ -3671,9 +3638,6 @@
       <!-- Company profile -->
       <section v-if="brand.assetPage.showCompanyInfo" class="border-b py-8" :style="{ borderColor: brand.colors.border }">
         <header class="mb-6 flex flex-col gap-1">
-          <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
-            [COMPANY.PROFILE]
-          </span>
           <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
             Sobre a empresa
           </h2>
@@ -3712,19 +3676,19 @@
             <template v-else>
               <div v-if="asset?.sector" class="flex flex-col gap-1 px-4 py-4" :style="{ backgroundColor: brand.colors.background }">
                 <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
-                  [SETOR]
+                  Setor
                 </span>
                 <span class="text-sm font-medium" :style="{ color: brand.colors.text }">{{ asset.sector }}</span>
               </div>
               <div v-if="asset?.industry" class="flex flex-col gap-1 px-4 py-4" :style="{ backgroundColor: brand.colors.background }">
                 <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
-                  [INDÚSTRIA]
+                  Indústria
                 </span>
                 <span class="text-sm font-medium" :style="{ color: brand.colors.text }">{{ asset.industry }}</span>
               </div>
               <div v-if="asset?.website" class="flex flex-col gap-1 px-4 py-4" :style="{ backgroundColor: brand.colors.background }">
                 <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
-                  [WEBSITE]
+                  Website
                 </span>
                 <a
                   :href="asset.website"
@@ -3745,7 +3709,7 @@
       <section v-if="!authStore.isAuthenticated" class="border-t py-12" :style="{ borderColor: brand.colors.border }">
         <header class="mb-6 flex flex-col gap-1">
           <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
-            [AI.ASSISTANT]
+            Assistente IA
           </span>
           <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
             Dúvidas sobre <span class="italic" :style="{ color: brand.colors.primary }">{{ tickerUpper }}</span>?
@@ -3769,7 +3733,7 @@
             :style="{ backgroundColor: brand.colors.surface }"
           >
             <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
-              [Q.{{ String(idx + 1).padStart(2, '0') }}]
+              Pergunta {{ idx + 1 }}
             </span>
             <p class="text-base font-semibold leading-snug" :style="{ color: brand.colors.text }">
               <span :style="{ color: brand.colors.primary }">&gt;</span> {{ item.text }}

@@ -3,7 +3,7 @@
     <div class="mx-auto flex max-w-6xl flex-col gap-6">
       <header class="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">[TENANTS]</span>
+          <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">Tenants</span>
           <h1 class="mt-2 text-[28px] leading-tight md:text-[36px]" :style="{ color: C.text, fontFamily: F.display }">
             White-labels cadastrados.
           </h1>

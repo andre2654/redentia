@@ -3,7 +3,7 @@
     <div class="mx-auto flex max-w-6xl flex-col gap-8">
       <header class="flex flex-col gap-2">
         <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
-          [DASHBOARD]
+          Dashboard
         </span>
         <h1 class="text-[32px] leading-tight md:text-[40px]" :style="{ color: C.text, fontFamily: F.display }">
           Bem-vindo, {{ auth.me?.name?.split(' ')[0] || 'admin' }}.
@@ -46,7 +46,7 @@
           class="flex flex-col gap-2 rounded-sm border p-5 transition-colors hover:brightness-110"
           :style="{ borderColor: C.border, backgroundColor: C.surface }"
         >
-          <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">[AÇÃO RÁPIDA]</span>
+          <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">Ação rápida</span>
           <span class="text-[18px] font-semibold" :style="{ color: C.text }">Criar novo tenant</span>
           <span class="text-[13px]" :style="{ color: C.textMuted }">
             Clone do Redentia ou tenant em branco. Depois de criar, compartilhe
@@ -60,7 +60,7 @@
           class="flex flex-col gap-2 rounded-sm border p-5 transition-colors hover:brightness-110"
           :style="{ borderColor: C.border, backgroundColor: C.surface }"
         >
-          <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">[AÇÃO RÁPIDA]</span>
+          <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">Ação rápida</span>
           <span class="text-[18px] font-semibold" :style="{ color: C.text }">Abrir Postiz console</span>
           <span class="text-[13px]" :style="{ color: C.textMuted }">
             Conectar contas sociais (Instagram, Facebook, Threads, X) e compor posts avulsos.
@@ -71,7 +71,7 @@
       <!-- Status snapshot -->
       <section class="rounded-sm border p-5" :style="{ borderColor: C.border, backgroundColor: C.surface }">
         <h2 class="mb-3 font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
-          [SISTEMA]
+          Sistema
         </h2>
         <dl class="grid gap-2 text-[13px] md:grid-cols-2">
           <div class="flex items-center justify-between border-b pb-2" :style="{ borderColor: C.border }">

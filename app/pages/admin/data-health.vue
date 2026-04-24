@@ -3,7 +3,7 @@
     <div class="mx-auto flex max-w-6xl flex-col gap-8">
       <header class="flex flex-col gap-2">
         <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: C.primary }">
-          [DATA.HEALTH]
+          Saúde dos dados
         </span>
         <h1 class="text-[32px] leading-tight md:text-[40px]" :style="{ color: C.text, fontFamily: F.display }">
           Saúde dos pipelines
@@ -35,7 +35,7 @@
         <!-- Coverage by asset type -->
         <section>
           <h2 class="mb-3 font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: C.primary }">
-            [SCRAPE.COVERAGE]
+            Cobertura dos scrapers
           </h2>
           <div
             class="grid grid-cols-1 gap-px border md:grid-cols-2 lg:grid-cols-4"
@@ -47,10 +47,7 @@
               class="flex flex-col gap-2 px-5 py-4"
               :style="{ backgroundColor: C.surface }"
             >
-              <div class="flex items-center justify-between">
-                <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
-                  [{{ String(idx + 1).padStart(2, '0') }}]
-                </span>
+              <div class="flex items-center justify-end">
                 <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: coverageColor(row.coverage_pct) }">
                   {{ row.coverage_pct !== null ? `${row.coverage_pct}%` : '-' }}
                 </span>
@@ -75,7 +72,7 @@
         <!-- Tesouro Direto -->
         <section>
           <h2 class="mb-3 font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: C.primary }">
-            [TESOURO.DIRETO]
+            Tesouro Direto
           </h2>
           <div class="grid gap-6 lg:grid-cols-3">
             <div
@@ -150,7 +147,7 @@
         <!-- Last scrape runs -->
         <section>
           <h2 class="mb-3 font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: C.primary }">
-            [SCRAPE.LAST_RUNS]
+            Últimas execuções
           </h2>
           <div class="border overflow-hidden" :style="{ borderColor: C.border }">
             <table class="w-full font-mono-tab text-[11px]">
@@ -187,7 +184,7 @@
         <!-- News feed -->
         <section>
           <h2 class="mb-3 font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: C.primary }">
-            [NEWS.FEED]
+            Feed de notícias
           </h2>
           <div
             class="mb-3 grid grid-cols-2 gap-px border md:grid-cols-4"
@@ -260,7 +257,7 @@
         <!-- Crypto (StatusInvest) -->
         <section>
           <h2 class="mb-3 font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: C.primary }">
-            [CRYPTO.STATUSINVEST]
+            Status Invest (cripto)
           </h2>
           <div
             class="mb-3 grid grid-cols-2 gap-px border md:grid-cols-4"
@@ -345,7 +342,7 @@
         <!-- Recent scrape samples -->
         <section>
           <h2 class="mb-3 font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: C.primary }">
-            [SCRAPE.LAST_SAMPLES]
+            Últimas amostras
           </h2>
           <div
             class="grid grid-cols-1 gap-px border md:grid-cols-2 lg:grid-cols-5"

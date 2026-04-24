@@ -81,7 +81,7 @@
                     :style="{ color: brand.colors.primary }"
                     translate="no"
                   >
-                    [{{ indexerLabel }}]
+                    {{ indexerLabel }}
                   </span>
                   <h1
                     class="font-mono-tab text-3xl font-bold leading-none tracking-tight md:text-4xl"
@@ -182,9 +182,6 @@
         <!-- Price register bigger version -->
         <section class="border-b py-8" :style="{ borderColor: brand.colors.border }">
           <header class="mb-4 flex flex-col gap-1">
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
-              [PRICES.TODAY]
-            </span>
             <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
               Preços do Tesouro Nacional
             </h2>
@@ -197,14 +194,12 @@
             :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }"
           >
             <div class="flex flex-col gap-2 px-6 py-5" :style="{ backgroundColor: brand.colors.surface }">
-              <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">[01]</span>
               <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">COMPRA</span>
               <span class="font-mono-tab text-3xl font-bold tabular-nums md:text-4xl" :style="{ color: brand.colors.positive }">
                 {{ formatMoney(data?.price_buy) }}
               </span>
             </div>
             <div class="flex flex-col gap-2 px-6 py-5" :style="{ backgroundColor: brand.colors.surface }">
-              <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">[02]</span>
               <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">VENDA</span>
               <span class="font-mono-tab text-3xl font-bold tabular-nums md:text-4xl" :style="{ color: brand.colors.text }">
                 {{ formatMoney(data?.price_sell) }}
@@ -217,9 +212,6 @@
         <section class="border-b py-8" :style="{ borderColor: brand.colors.border }">
           <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div class="flex flex-col gap-1">
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
-                [CHART.{{ chartMode === 'rate' ? 'RATE' : 'PRICE' }}]
-              </span>
               <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
                 {{ chartMode === 'rate' ? 'Histórico de rentabilidade' : 'Histórico de cotação' }}
               </h2>
@@ -268,7 +260,7 @@
           <header class="mb-4 flex items-center gap-2">
             <IconAi class="h-3 w-3" :style="{ fill: brand.colors.primary }" />
             <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
-              [AI.INTERPRETATIONS]
+              Interpretações IA
             </span>
             <span class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
               &gt; LEITURA DO TÍTULO
@@ -281,12 +273,6 @@
               class="flex items-start gap-3 px-5 py-3"
               :style="{ backgroundColor: brand.colors.surface }"
             >
-              <span
-                class="font-mono-tab text-[9px] uppercase tracking-[0.18em] shrink-0 mt-[3px]"
-                :style="{ color: brand.colors.primary }"
-              >
-                [{{ String(idx + 1).padStart(2, '0') }}]
-              </span>
               <p class="text-sm leading-relaxed" :style="{ color: brand.colors.text }" v-html="line" />
             </div>
           </div>
@@ -296,7 +282,7 @@
         <section v-if="!authStore.isAuthenticated" class="border-b py-12" :style="{ borderColor: brand.colors.border }">
           <header class="mb-6 flex flex-col gap-1">
             <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
-              [AI.ASSISTANT]
+              Assistente IA
             </span>
             <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
               Dúvidas sobre <span class="italic" :style="{ color: brand.colors.primary }">este título</span>?
@@ -315,7 +301,7 @@
               :style="{ backgroundColor: brand.colors.surface }"
             >
               <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
-                [Q.{{ String(idx + 1).padStart(2, '0') }}]
+                Pergunta {{ idx + 1 }}
               </span>
               <p class="text-base font-semibold leading-snug" :style="{ color: brand.colors.text }">
                 <span :style="{ color: brand.colors.primary }">&gt;</span> {{ item.text }}

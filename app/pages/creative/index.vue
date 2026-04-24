@@ -31,7 +31,7 @@
               <span class="absolute inline-flex size-1.5 motion-safe:animate-ping rounded-full opacity-75" :style="{ backgroundColor: REDENTIA_COLORS.primary }" />
               <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: REDENTIA_COLORS.primary }" />
             </span>
-            [CREATIVE.STUDIO]
+            Creative Studio
           </span>
           <span :style="{ color: REDENTIA_COLORS.border }">·</span>
           <span :style="{ color: REDENTIA_COLORS.textMuted }">SOCIAL READY · 1080×1080</span>
@@ -54,21 +54,21 @@
             :style="{ borderColor: REDENTIA_COLORS.border, color: REDENTIA_COLORS.text, backgroundColor: `${REDENTIA_COLORS.surface}80` }"
           >
             <UIcon name="i-lucide-camera" class="size-3" :style="{ color: REDENTIA_COLORS.primary }" />
-            [ SCREENSHOT READY ]
+            Screenshot ready
           </span>
           <span
             class="inline-flex items-center gap-2 rounded border px-3 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
             :style="{ borderColor: REDENTIA_COLORS.border, color: REDENTIA_COLORS.text, backgroundColor: `${REDENTIA_COLORS.surface}80` }"
           >
             <UIcon name="i-lucide-database" class="size-3" :style="{ color: REDENTIA_COLORS.primary }" />
-            [ DADOS EM TEMPO REAL ]
+            Dados em tempo real
           </span>
           <span
             class="inline-flex items-center gap-2 rounded border px-3 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
             :style="{ borderColor: REDENTIA_COLORS.border, color: REDENTIA_COLORS.text, backgroundColor: `${REDENTIA_COLORS.surface}80` }"
           >
             <UIcon name="i-lucide-instagram" class="size-3" :style="{ color: REDENTIA_COLORS.primary }" />
-            [ POST · STORY · REELS ]
+            Post · Story · Reels
           </span>
         </div>
       </section>
@@ -208,7 +208,7 @@
         <div class="mx-auto max-w-4xl px-6 py-16 md:px-10 md:py-24">
           <div class="mb-12 text-center">
             <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: REDENTIA_COLORS.primary }">
-              [ COMO USAR ]
+              Como usar
             </span>
             <h2
               class="mt-4"

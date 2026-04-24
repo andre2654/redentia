@@ -8,9 +8,6 @@
 <template>
   <section v-if="items.length" class="pt-2">
     <header class="mb-6 flex flex-col gap-1 px-4 md:px-0">
-      <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }" translate="no">
-        [CRYPTO.MERCADO]
-      </span>
       <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
         Criptomoedas
       </h2>
@@ -53,7 +50,7 @@
             />
             <div class="flex flex-col">
               <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }" translate="no">
-                [{{ hero.symbol.toUpperCase() }}.HERO]
+                Destaque
               </span>
               <span class="text-lg font-semibold" :style="{ color: brand.colors.text }">
                 {{ hero.name }}

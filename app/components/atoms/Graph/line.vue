@@ -1,8 +1,15 @@
 <template>
   <div
-    class="graph relative flex h-full w-full flex-col gap-6"
+    class="graph relative flex h-full w-full flex-col gap-4"
     @mouseleave="onRootMouseLeave"
   >
+    <!-- Toolbar slot: parents inject period selector, chart-type toggle,
+         screenshot button, etc. Rendered as a flex row so chips/buttons
+         align naturally; hidden when nothing's provided. -->
+    <div v-if="$slots.toolbar" class="flex flex-wrap items-center gap-2">
+      <slot name="toolbar" />
+    </div>
+
     <!-- Container do gráfico -->
     <div
       ref="chartContainerRef"
@@ -33,6 +40,28 @@
         :options="chartOptions"
         :plugins="localPlugins"
       />
+
+      <!-- Prev-close pill: replaces canvas fillText for crisp typography
+           at any DPR and allows brand fonts. Hidden while hovering so the
+           hover tooltip takes focus. -->
+      <div
+        v-if="prevClosePillPos && prevClosePillPos.visible"
+        class="pointer-events-none absolute z-[4] inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono-tab text-[10px] tabular-nums backdrop-blur"
+        :style="{
+          left: `${prevClosePillPos.right - 12}px`,
+          top: `${prevClosePillPos.y}px`,
+          transform: 'translate(-100%, -50%)',
+          borderColor: cc.border,
+          backgroundColor: cc.loadingBg,
+          color: cc.textMuted,
+        }"
+        aria-hidden="true"
+      >
+        <span>Fech. anterior</span>
+        <span :style="{ color: cc.labelColor }" translate="no">
+          {{ currency }} {{ Number(prevClosePillPos.value).toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+        </span>
+      </div>
 
       <!-- Marker overlay (HTML icons positioned above chart points) -->
       <div class="pointer-events-none absolute inset-0 z-[5]">
@@ -447,6 +476,16 @@ interface MarkerPosition {
   items: IChartMarker[]
 }
 const markerPositions = ref<MarkerPosition[]>([])
+
+// Position + value of the "prev close" dashed line label. Populated by the
+// closingDeltaFill plugin on every draw; consumed by an absolutely
+// positioned HTML pill in the template so typography stays crisp on HiDPI.
+const prevClosePillPos = ref<{
+  y: number
+  right: number
+  value: number
+  visible: boolean
+} | null>(null)
 
 // Popover state
 const activeMarkerIdx = ref<number | null>(null)
@@ -1658,8 +1697,8 @@ const hoverLinePlugin: Plugin<'line'> = {
 
           // Linha tracejada
           ctx.beginPath()
-          ctx.setLineDash([5, 5])
-          ctx.lineWidth = 1.5
+          ctx.setLineDash([3, 4])
+          ctx.lineWidth = 1
           ctx.strokeStyle = cc.crosshairColor
           ctx.moveTo(left, yPosition)
           ctx.lineTo(right, yPosition)
@@ -1667,15 +1706,14 @@ const hoverLinePlugin: Plugin<'line'> = {
           ctx.setLineDash([])
           ctx.closePath()
 
-          if (!isHovering.value) {
-            const formattedValue = formatCurrency(currentValue)
-            const text = `Fech. anterior: ${formattedValue}`
-
-            ctx.font = '12px sans-serif'
-            ctx.textAlign = 'right'
-            ctx.textBaseline = 'middle'
-            ctx.fillStyle = 'rgba(148, 163, 184, 1)'
-            ctx.fillText(text, right - 12, yPosition)
+          // Prev-close pill position is computed here and consumed by the
+          // HTML overlay outside the canvas (see template). Keeps typography
+          // crisp at any DPR vs. canvas fillText which rasterizes blurry.
+          prevClosePillPos.value = {
+            y: yPosition,
+            right: right,
+            value: currentValue,
+            visible: !isHovering.value,
           }
 
           ctx.restore()
@@ -2109,8 +2147,8 @@ const chartData = computed(() => {
         segment: {
           borderColor: (ctx: any) => dynamicLineColor(ctx.p1DataIndex, true),
         },
-        backgroundColor: () => 'rgba(34, 197, 94, 0.08)',
-        borderWidth: 1.5,
+        backgroundColor: () => 'rgba(34, 197, 94, 0.06)',
+        borderWidth: 1.25,
         fill: false,
         clip: false,
         borderColor: (ctx: any) =>
@@ -2122,7 +2160,7 @@ const chartData = computed(() => {
         pointBorderWidth: 0,
         pointHoverBorderWidth: 0,
         pointHoverBorderColor: 'transparent',
-        tension: props.loading ? 0.5 : 0.1,
+        tension: props.loading ? 0.5 : 0.25,
       },
     ],
   }
@@ -2160,7 +2198,7 @@ const chartOptions = computed(() => {
           color: cc.gridColor,
           drawBorder: false,
           drawTicks: false,
-          lineWidth: 0.5,
+          lineWidth: 0.4,
           tickLength: 0,
           tickWidth: 0,
         },
@@ -2170,8 +2208,8 @@ const chartOptions = computed(() => {
           autoSkipPadding: 8,
           maxRotation: 45,
           minRotation: 0,
-          font: { size: 13 },
-          maxTicksLimit: 15,
+          font: { size: 11, family: `${brand.font.family}, system-ui, sans-serif` },
+          maxTicksLimit: 6,
           padding: 20,
         },
       },
@@ -2183,14 +2221,14 @@ const chartOptions = computed(() => {
           color: cc.tickColorMuted,
           drawBorder: false,
           drawTicks: false,
-          lineWidth: 0.5,
+          lineWidth: 0.4,
           tickLength: 0,
           tickWidth: 0,
         },
         ticks: {
           display: false,
           maxTicksLimit: 5,
-          font: { size: 13 },
+          font: { size: 11, family: `${brand.font.family}, system-ui, sans-serif` },
           callback: (v: string | number) =>
             `${props.currency} ${Number(v).toLocaleString(props.locale, {
               minimumFractionDigits: 0,

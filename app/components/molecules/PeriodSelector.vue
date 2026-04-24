@@ -126,7 +126,7 @@ onBeforeUnmount(() => {
           class="h-3 w-3 motion-safe:animate-spin"
           aria-hidden="true"
         />
-        <span translate="no">[{{ activeLabel.toUpperCase() }}]</span>
+        <span translate="no">{{ activeLabel.toUpperCase() }}</span>
         <UIcon
           name="i-lucide-chevron-down"
           class="h-3 w-3 transition-transform duration-200"

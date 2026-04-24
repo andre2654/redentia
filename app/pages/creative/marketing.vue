@@ -99,7 +99,7 @@ const rankingRows = [
 
       <!-- 01 · TERMINAL HOOK, amber eyebrow + big serif headline + curl box -->
       <div v-if="variant === 'terminal-hook'" class="body center-col">
-        <span class="eyebrow">[ {{ eyebrow || 'NEW RELEASE' }} ]</span>
+        <span class="eyebrow">{{ eyebrow || 'NEW RELEASE' }}</span>
         <h1 class="serif-huge">
           {{ title || 'O mercado brasileiro,' }}
           <br />
@@ -121,7 +121,7 @@ const rankingRows = [
 
       <!-- 02 · STAT BIG, single huge number -->
       <div v-else-if="variant === 'stat-big'" class="body center">
-        <span class="eyebrow">[ {{ eyebrow || 'DATA' }} ]</span>
+        <span class="eyebrow">{{ eyebrow || 'DATA' }}</span>
         <div class="stat-huge">{{ stat || '25K+' }}</div>
         <div class="stat-label">{{ statLabel || 'ATIVOS MONITORADOS EM TEMPO REAL' }}</div>
         <div class="sub-small">{{ subtitle || 'Ações · FIIs · ETFs · BDRs · Índices' }}</div>
@@ -129,7 +129,7 @@ const rankingRows = [
 
       <!-- 03 · QUOTE CARD -->
       <div v-else-if="variant === 'quote-card'" class="body center-col">
-        <span class="eyebrow">[ {{ eyebrow || 'TESTEMUNHO' }} ]</span>
+        <span class="eyebrow">{{ eyebrow || 'TESTEMUNHO' }}</span>
         <div class="quote-mark">"</div>
         <div class="quote-text">
           {{ title || 'Eu desliguei o scraper que quebrava toda semana. Migrei pra Redentia em uma sprint e esqueci o assunto.' }}
@@ -147,7 +147,7 @@ const rankingRows = [
 
       <!-- 04 · BEFORE-AFTER split -->
       <div v-else-if="variant === 'before-after'" class="body no-center">
-        <span class="eyebrow">[ {{ eyebrow || 'ANTES → DEPOIS' }} ]</span>
+        <span class="eyebrow">{{ eyebrow || 'ANTES → DEPOIS' }}</span>
         <div class="ba-grid">
           <div class="ba-side ba-before">
             <div class="ba-label">ANTES</div>
@@ -166,7 +166,7 @@ const rankingRows = [
 
       <!-- 05 · FEATURE GRID (4 features 2x2) -->
       <div v-else-if="variant === 'feature-grid'" class="body center-col">
-        <span class="eyebrow">[ {{ eyebrow || 'O QUE VOCÊ GANHA' }} ]</span>
+        <span class="eyebrow">{{ eyebrow || 'O QUE VOCÊ GANHA' }}</span>
         <h2 class="serif-mid">{{ title || 'Tudo em um lugar só.' }}</h2>
         <div class="fg-grid">
           <div class="fg-item">
@@ -194,7 +194,7 @@ const rankingRows = [
 
       <!-- 06 · PRICE DUEL (vs competitor) -->
       <div v-else-if="variant === 'price-duel'" class="body center-col">
-        <span class="eyebrow">[ {{ eyebrow || 'MATH' }} ]</span>
+        <span class="eyebrow">{{ eyebrow || 'MATH' }}</span>
         <h2 class="serif-mid">{{ title || 'Faça a conta.' }}</h2>
         <div class="pd-grid">
           <div class="pd-side pd-them">
@@ -223,7 +223,7 @@ const rankingRows = [
 
       <!-- 07 · CODE PREVIEW, big curl box -->
       <div v-else-if="variant === 'code-preview'" class="body no-center">
-        <span class="eyebrow">[ {{ eyebrow || 'DEVS' }} ]</span>
+        <span class="eyebrow">{{ eyebrow || 'DEVS' }}</span>
         <h2 class="serif-mid">{{ title || 'Menos parsing. Mais produto.' }}</h2>
         <div class="code-box">
           <div class="code-hdr">
@@ -248,7 +248,7 @@ const rankingRows = [
 
       <!-- 08 · TENANTS GALLERY (5 whitelabel) -->
       <div v-else-if="variant === 'tenants-gallery'" class="body center-col">
-        <span class="eyebrow">[ {{ eyebrow || 'WHITE LABEL' }} ]</span>
+        <span class="eyebrow">{{ eyebrow || 'WHITE LABEL' }}</span>
         <h2 class="serif-mid">{{ title || '5 marcas. 1 infra.' }}</h2>
         <div class="tg-grid">
           <div class="tg-item" style="background:#0A0B0E">
@@ -275,7 +275,7 @@ const rankingRows = [
 
       <!-- 09 · GROWTH HYPE, big stat + gain indicator -->
       <div v-else-if="variant === 'growth-hype'" class="body center">
-        <span class="eyebrow">[ {{ eyebrow || 'PREGÃO' }} ]</span>
+        <span class="eyebrow">{{ eyebrow || 'PREGÃO' }}</span>
         <div class="gh-ticker">{{ title || 'PETR4' }}</div>
         <div class="gh-change amber">{{ stat || '+19,63%' }}</div>
         <div class="gh-period">{{ statLabel || 'NA SEMANA' }}</div>
@@ -284,7 +284,7 @@ const rankingRows = [
 
       <!-- 10 · MYTH BUSTER -->
       <div v-else-if="variant === 'myth-buster'" class="body no-center">
-        <span class="eyebrow">[ {{ eyebrow || 'MITO vs VERDADE' }} ]</span>
+        <span class="eyebrow">{{ eyebrow || 'MITO vs VERDADE' }}</span>
         <div class="mb-grid">
           <div class="mb-side mb-myth">
             <div class="mb-label">MITO</div>
@@ -300,7 +300,7 @@ const rankingRows = [
 
       <!-- 11 · STEP LIST, 3 steps -->
       <div v-else-if="variant === 'step-list'" class="body no-center">
-        <span class="eyebrow">[ {{ eyebrow || '3 PASSOS' }} ]</span>
+        <span class="eyebrow">{{ eyebrow || '3 PASSOS' }}</span>
         <h2 class="serif-mid">{{ title || 'Como funciona.' }}</h2>
         <ol class="sl-list">
           <li><span class="sl-num">1</span><span class="sl-text">{{ subtitle?.split('|')[0] || 'Crie sua conta grátis (sem cartão).' }}</span></li>
@@ -312,7 +312,7 @@ const rankingRows = [
 
       <!-- 12 · TICKER SPOTLIGHT -->
       <div v-else-if="variant === 'ticker-spotlight'" class="body center-col">
-        <span class="eyebrow">[ {{ eyebrow || 'DESTAQUE DO DIA' }} ]</span>
+        <span class="eyebrow">{{ eyebrow || 'DESTAQUE DO DIA' }}</span>
         <div class="ts-ticker">{{ title || 'VALE3' }}</div>
         <div class="ts-name">{{ subtitle || 'VALE ON · MINERAÇÃO' }}</div>
         <div class="ts-price">{{ stat || 'R$ 85,59' }}</div>
@@ -322,7 +322,7 @@ const rankingRows = [
 
       <!-- 13 · RANKING MINI (5-item leaderboard) -->
       <div v-else-if="variant === 'ranking-mini'" class="body no-center">
-        <span class="eyebrow">[ {{ eyebrow || 'RANKING · TOP 5' }} ]</span>
+        <span class="eyebrow">{{ eyebrow || 'RANKING · TOP 5' }}</span>
         <h2 class="serif-mid">{{ title || 'Maiores altas da semana' }}</h2>
         <div class="rm-list">
           <div class="rm-row" v-for="(row, i) in rankingRows" :key="i">
@@ -337,7 +337,7 @@ const rankingRows = [
 
       <!-- 14 · QUESTION HOOK, huge question -->
       <div v-else-if="variant === 'question-hook'" class="body center-col">
-        <span class="eyebrow">[ {{ eyebrow || 'PERGUNTA QUE NINGUÉM FAZ' }} ]</span>
+        <span class="eyebrow">{{ eyebrow || 'PERGUNTA QUE NINGUÉM FAZ' }}</span>
         <h1 class="serif-huge">
           {{ title || 'Quanto tempo' }}
           <br />
@@ -359,7 +359,7 @@ const rankingRows = [
 
       <!-- 16 · REDENTIA DIFF, 3 differentials -->
       <div v-else-if="variant === 'redentia-diff'" class="body no-center">
-        <span class="eyebrow">[ {{ eyebrow || 'O QUE NOS TORNA DIFERENTES' }} ]</span>
+        <span class="eyebrow">{{ eyebrow || 'O QUE NOS TORNA DIFERENTES' }}</span>
         <h2 class="serif-mid">{{ title || 'A única que é 100% brasileira.' }}</h2>
         <div class="rd-list">
           <div class="rd-item"><span class="rd-num amber">01</span>Dados direto da B3, não de scraping</div>
@@ -371,7 +371,7 @@ const rankingRows = [
 
       <!-- 17 · API BETA announcement -->
       <div v-else-if="variant === 'api-beta'" class="body no-center">
-        <span class="eyebrow amber">[ PUBLIC BETA ]</span>
+        <span class="eyebrow amber">PUBLIC BETA</span>
         <h1 class="serif-huge mid">
           {{ title || 'Redentia API' }}
           <br />
@@ -388,7 +388,7 @@ const rankingRows = [
 
       <!-- 18 · WHITELABEL CASE -->
       <div v-else-if="variant === 'wl-case'" class="body no-center">
-        <span class="eyebrow">[ {{ eyebrow || 'CASE WHITELABEL' }} ]</span>
+        <span class="eyebrow">{{ eyebrow || 'CASE WHITELABEL' }}</span>
         <h2 class="serif-mid">
           {{ title || 'Do briefing ao ar' }}
           <span class="italic amber">em 7 dias.</span>
@@ -405,7 +405,7 @@ const rankingRows = [
 
       <!-- 19 · CREATIVE PROMO -->
       <div v-else-if="variant === 'creative-promo'" class="body center-col">
-        <span class="eyebrow">[ {{ eyebrow || 'CREATIVE STUDIO' }} ]</span>
+        <span class="eyebrow">{{ eyebrow || 'CREATIVE STUDIO' }}</span>
         <h1 class="serif-huge">
           {{ title || 'Conteúdo pronto' }}
           <br />
@@ -422,7 +422,7 @@ const rankingRows = [
 
       <!-- 20 · MANIFESTO, big text block -->
       <div v-else-if="variant === 'manifesto'" class="body no-center">
-        <span class="eyebrow">[ {{ eyebrow || 'MANIFESTO' }} ]</span>
+        <span class="eyebrow">{{ eyebrow || 'MANIFESTO' }}</span>
         <div class="mf-text">
           {{ title || 'Todo investidor brasileiro merece uma plataforma que fala a língua dele. Que entende que PIX é instantâneo, que JCP é tributado, que BDRs pagam dividendo em USD mas a conta é BRL.' }}
         </div>

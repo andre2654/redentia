@@ -22,7 +22,7 @@
           class="h-px flex-1 max-w-[60px]"
           :style="{ backgroundColor: brand.colors.border }"
         />
-        <span :style="{ color: brand.colors.primary }">[CAPABILITIES]</span>
+        <span :style="{ color: brand.colors.primary }">Recursos</span>
         <span :style="{ color: brand.colors.textMuted }">, {{ brand.trustBar.text }}</span>
         <span
           class="h-px flex-1 max-w-[60px]"
@@ -48,13 +48,7 @@
           @mouseenter="hovered = idx"
           @mouseleave="hovered = -1"
         >
-          <div class="flex w-full items-start justify-between">
-            <span
-              class="font-mono-tab text-[9px] uppercase tracking-[0.2em]"
-              :style="{ color: brand.colors.primary }"
-            >
-              [{{ String(idx + 1).padStart(2, '0') }}]
-            </span>
+          <div class="flex w-full items-start justify-end">
             <UIcon
               :name="pillarIcons[idx % pillarIcons.length]"
               class="size-4 transition-colors"

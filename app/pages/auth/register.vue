@@ -19,18 +19,6 @@
 
       <div class="relative mx-auto flex max-w-5xl flex-col items-center gap-14 md:flex-row md:items-start md:gap-16">
         <div class="flex flex-1 flex-col gap-6">
-          <div class="flex items-center gap-3 font-mono-tab text-[10px] uppercase tracking-[0.18em]">
-            <span class="flex items-center gap-1.5" :style="{ color: brand.colors.primary }">
-              <span class="relative flex size-1.5">
-                <span class="absolute inline-flex size-1.5 motion-safe:animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.primary }" />
-                <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
-              </span>
-              [REGISTER.TERMINAL]
-            </span>
-            <span :style="{ color: brand.colors.border }">·</span>
-            <span :style="{ color: brand.colors.textMuted }">NEW SESSION</span>
-          </div>
-
           <h1
             class="font-display"
             :style="{ color: brand.colors.text, fontSize: 'clamp(2.5rem, 5vw, 4rem)', lineHeight: '0.95' }"
@@ -75,10 +63,7 @@
           :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.surface}E6` }"
           @submit="onSubmit"
         >
-          <div class="flex items-center justify-between border-b pb-4" :style="{ borderColor: brand.colors.border }">
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
-              [SIGNUP.FORM]
-            </span>
+          <div class="flex items-center justify-end border-b pb-4" :style="{ borderColor: brand.colors.border }">
             <span class="font-mono-tab text-[10px]" :style="{ color: brand.colors.textMuted }">v2.1 · INIT</span>
           </div>
 
@@ -135,7 +120,7 @@
 
           <UFormField name="advisor_code">
             <template #label>
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">&gt; ADVISOR_CODE [OPT]</span>
+              <span class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">&gt; Código do assessor (opcional)</span>
             </template>
             <AtomsFormInput v-model="state.advisor_code" type="text" placeholder="ex: ABC123" size="lg" class="w-full" />
           </UFormField>
@@ -143,7 +128,7 @@
           <AtomsPasswordStrengthBlock :requirements="requirements" :score="score" :text="text" :color="color" />
 
           <AtomsButton type="submit" color="secondary" size="lg" class="w-full justify-center font-mono-tab text-xs tracking-[0.15em]">
-            [ CRIAR SESSÃO ]
+            Criar sessão
           </AtomsButton>
 
           <div class="flex items-center justify-between border-t pt-4" :style="{ borderColor: brand.colors.border }">
@@ -836,7 +821,7 @@
       <div class="border-b" :style="{ borderColor: brand.colors.border }">
         <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4 md:px-10">
           <div class="flex items-center gap-4 text-[10px] uppercase tracking-[0.18em]" style="font-family: 'JetBrains Mono', monospace;">
-            <span :style="{ color: brand.colors.primary }">[ HOLD. ]</span>
+            <span :style="{ color: brand.colors.primary }">Hold</span>
             <span :style="{ color: brand.colors.textMuted }">CADASTRO · NOVO HOLDER</span>
           </div>
           <span class="text-[10px] uppercase tracking-[0.18em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: brand.colors.textMuted }">

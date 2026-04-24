@@ -11,7 +11,7 @@
     <header class="mb-5 flex flex-col gap-1 px-4 md:px-0">
       <div class="flex items-center gap-2 font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
         <span class="inline-flex h-1.5 w-1.5 rounded-full motion-safe:animate-pulse" :style="{ backgroundColor: brand.colors.primary }" aria-hidden="true" />
-        <span :style="{ color: brand.colors.primary }" translate="no">[NEWS.FEED]</span>
+        <span :style="{ color: brand.colors.primary }">Notícias</span>
         <span aria-hidden="true">·</span>
         <span>{{ sources.length }} FONTES</span>
         <span v-if="lastUpdated" aria-hidden="true">·</span>
@@ -156,7 +156,7 @@
     <!-- OTHERS: compact list with thumbnail for low-coverage + untagged -->
     <div v-if="otherArticles.length > 0" class="px-4 md:px-0">
       <div class="mb-3 flex items-center gap-2 font-mono-tab text-[10px] uppercase tracking-[0.18em]">
-        <span :style="{ color: brand.colors.textMuted }" translate="no">[OUTRAS]</span>
+        <span :style="{ color: brand.colors.textMuted }">Outras</span>
         <span aria-hidden="true" :style="{ color: brand.colors.border }">·</span>
         <span :style="{ color: brand.colors.textMuted }">DEMAIS MANCHETES</span>
       </div>

@@ -97,7 +97,7 @@
         <!-- Begin -->
         <div class="mb-6">
           <div class="mb-2 px-2 font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
-            [ COMEÇANDO ]
+            Começando
           </div>
           <ul class="flex flex-col gap-0.5">
             <li>
@@ -119,7 +119,7 @@
         <!-- Endpoints grouped by category -->
         <div>
           <div class="mb-2 px-2 font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
-            [ ENDPOINTS ]
+            Endpoints
           </div>
           <div
             v-for="cat in categories"

@@ -15,8 +15,6 @@
         class="flex flex-wrap items-center gap-x-3 gap-y-1 border-b px-4 py-2 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
         :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted, backgroundColor: brand.colors.surface }"
       >
-        <span :style="{ color: brand.colors.primary }">[SEARCH.ENGINE]</span>
-        <span :style="{ color: brand.colors.border }">·</span>
         <span>{{ isCryptoMode ? 'CRYPTO' : isTesouroMode ? 'TESOURO DIRETO' : 'B3' }}</span>
         <span :style="{ color: brand.colors.border }">·</span>
         <span class="tabular-nums">{{ isCryptoMode ? cryptoItems.length : isTesouroMode ? tesouroItems.length : allAssets.length }} UNIVERSE</span>
@@ -36,9 +34,6 @@
 
       <!-- Hero title -->
       <div class="border-b px-4 py-8 md:py-12" :style="{ borderColor: brand.colors.border }">
-        <div class="font-mono-tab text-[10px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
-          [QUERY.INTERFACE]
-        </div>
         <h1
           class="mt-2 text-3xl font-bold tracking-tight md:text-5xl"
           :class="brand.font.headingWeight"
@@ -100,7 +95,7 @@
           class="flex items-center gap-2 border-b px-4 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.18em]"
           :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted, backgroundColor: brand.colors.surface }"
         >
-          <span :style="{ color: brand.colors.primary }">[FILTERS.PANEL]</span>
+          <span :style="{ color: brand.colors.primary }">Filtros</span>
           <span :style="{ color: brand.colors.border }">·</span>
           <span>RANGE + GROUP + MDI</span>
         </div>
@@ -109,7 +104,7 @@
           <!-- Market cap -->
           <div class="border-b p-4 xl:border-b-0 xl:border-r" :style="{ borderColor: brand.colors.border }">
             <div class="mb-2 flex items-baseline justify-between font-mono-tab text-[10px] uppercase tracking-[0.12em]">
-              <span :style="{ color: brand.colors.primary }">[MCAP]</span>
+              <span :style="{ color: brand.colors.primary }">Market Cap</span>
               <span :style="{ color: brand.colors.textMuted }">R$</span>
             </div>
             <div class="mb-2 font-mono-tab tabular-nums text-[12px]" :style="{ color: brand.colors.text }">
@@ -123,7 +118,7 @@
           <!-- Price -->
           <div class="border-b p-4 xl:border-b-0 xl:border-r" :style="{ borderColor: brand.colors.border }">
             <div class="mb-2 flex items-baseline justify-between font-mono-tab text-[10px] uppercase tracking-[0.12em]">
-              <span :style="{ color: brand.colors.primary }">[PRICE]</span>
+              <span :style="{ color: brand.colors.primary }">Preço</span>
               <span :style="{ color: brand.colors.textMuted }">R$</span>
             </div>
             <div class="mb-2 font-mono-tab tabular-nums text-[12px]" :style="{ color: brand.colors.text }">
@@ -140,7 +135,7 @@
           <!-- Change -->
           <div class="border-b p-4 xl:border-b-0 xl:border-r" :style="{ borderColor: brand.colors.border }">
             <div class="mb-2 flex items-baseline justify-between font-mono-tab text-[10px] uppercase tracking-[0.12em]">
-              <span :style="{ color: brand.colors.primary }">[CHG%]</span>
+              <span :style="{ color: brand.colors.primary }">Variação</span>
               <span :style="{ color: brand.colors.textMuted }">INTRADAY</span>
             </div>
             <div class="mb-2 font-mono-tab tabular-nums text-[12px]" :style="{ color: brand.colors.text }">
@@ -161,7 +156,7 @@
           <!-- Group -->
           <div class="p-4">
             <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.primary }">
-              [GROUP]
+              Tipo
             </div>
             <div class="flex flex-col gap-2">
               <label class="inline-flex cursor-pointer items-center gap-2 font-mono-tab text-[11px] uppercase tracking-wide">
@@ -190,14 +185,14 @@
           class="flex items-center gap-2 border-b px-4 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.18em]"
           :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted, backgroundColor: brand.colors.surface }"
         >
-          <span :style="{ color: brand.colors.primary }">[MDI.MODULE]</span>
+          <span :style="{ color: brand.colors.primary }">MDI</span>
           <span :style="{ color: brand.colors.border }">·</span>
           <span>MONTHLY DIVIDEND INDEX</span>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3">
           <div class="border-b p-4 md:border-b-0 md:border-r" :style="{ borderColor: brand.colors.border }">
             <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.primary }">
-              [MDI.OCCURRENCE]
+              Ocorrências
             </div>
             <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: brand.colors.textMuted }">
               &gt; MES COM MAIOR RECORRENCIA DE DIVIDENDOS
@@ -212,7 +207,7 @@
           </div>
           <div class="border-b p-4 md:border-b-0 md:border-r" :style="{ borderColor: brand.colors.border }">
             <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.primary }">
-              [MDI.STAR]
+              Mês destaque
             </div>
             <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: brand.colors.textMuted }">
               &gt; MES DE MAIOR PROBABILIDADE DE PAGAMENTO
@@ -227,7 +222,7 @@
           </div>
           <div class="p-4">
             <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.primary }">
-              [MDI.DATA]
+              Filtro MDI
             </div>
             <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: brand.colors.textMuted }">
               &gt; FILTRAR SO ATIVOS COM HISTORICO MDI
@@ -249,7 +244,7 @@
           class="flex items-center gap-2 border-b px-4 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.18em]"
           :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted, backgroundColor: brand.colors.surface }"
         >
-          <span :style="{ color: brand.colors.primary }">[TESOURO.MODULE]</span>
+          <span :style="{ color: brand.colors.primary }">Tesouro</span>
           <span :style="{ color: brand.colors.border }">·</span>
           <span>RENDA FIXA GOVERNAMENTAL</span>
         </div>
@@ -257,7 +252,7 @@
           <!-- Mode toggle -->
           <div class="border-b p-4 md:border-b-0 md:border-r" :style="{ borderColor: brand.colors.border }">
             <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.primary }">
-              [TESOURO.MODE]
+              Modo
             </div>
             <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: brand.colors.textMuted }">
               &gt; EXIBIR TÍTULOS DO TESOURO DIRETO
@@ -276,7 +271,7 @@
           <!-- Indexer picker -->
           <div class="border-b p-4 md:border-b-0 md:border-r" :style="{ borderColor: brand.colors.border }">
             <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.primary }">
-              [TESOURO.INDEXER]
+              Indexador
             </div>
             <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: brand.colors.textMuted }">
               &gt; ESCOLHA O INDEXADOR
@@ -303,7 +298,7 @@
           <!-- Info -->
           <div class="p-4">
             <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.primary }">
-              [TESOURO.INFO]
+              Informações
             </div>
             <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: brand.colors.textMuted }">
               <template v-if="isTesouroMode">
@@ -326,7 +321,7 @@
           class="flex items-center gap-2 border-b px-4 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.18em]"
           :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted, backgroundColor: brand.colors.surface }"
         >
-          <span :style="{ color: brand.colors.primary }">[CRYPTO.MODULE]</span>
+          <span :style="{ color: brand.colors.primary }">Cripto</span>
           <span :style="{ color: brand.colors.border }">·</span>
           <span>CRIPTOMOEDAS GLOBAIS</span>
         </div>
@@ -334,7 +329,7 @@
           <!-- Mode toggle -->
           <div class="border-b p-4 md:border-b-0 md:border-r" :style="{ borderColor: brand.colors.border }">
             <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.primary }">
-              [CRYPTO.MODE]
+              Modo
             </div>
             <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: brand.colors.textMuted }">
               &gt; EXIBIR UNIVERSO DE CRIPTOATIVOS
@@ -353,7 +348,7 @@
           <!-- Sort picker -->
           <div class="border-b p-4 md:border-b-0 md:border-r" :style="{ borderColor: brand.colors.border }">
             <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.primary }">
-              [CRYPTO.SORT]
+              Ordenação
             </div>
             <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: brand.colors.textMuted }">
               &gt; ORDENAR POR
@@ -380,7 +375,7 @@
           <!-- Info -->
           <div class="p-4">
             <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.primary }">
-              [CRYPTO.INFO]
+              Informações
             </div>
             <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: brand.colors.textMuted }">
               <template v-if="isCryptoMode">
@@ -400,10 +395,6 @@
           class="flex flex-wrap items-center gap-2 border-b px-4 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.18em]"
           :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted, backgroundColor: brand.colors.surface }"
         >
-          <span :style="{ color: brand.colors.primary }">
-            [{{ isCryptoMode ? `CRYPTO.${cryptoSort}` : isTesouroMode ? `TESOURO.${activeTesouroIndexer?.key}` : 'RESULTS.TABLE' }}]
-          </span>
-          <span :style="{ color: brand.colors.border }">·</span>
           <span class="tabular-nums" :style="{ color: brand.colors.text }">
             {{ resultsCount }} {{ isCryptoMode ? 'ATIVOS' : isTesouroMode ? 'TÍTULOS' : 'MATCHES' }}
           </span>
@@ -537,7 +528,7 @@
             class="flex flex-col items-center justify-center gap-2 border-b px-4 py-16 font-mono-tab text-[11px] uppercase tracking-[0.15em]"
             :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted }"
           >
-            <span :style="{ color: brand.colors.primary }">[EMPTY.SET]</span>
+            <span :style="{ color: brand.colors.primary }">Sem resultados</span>
             <span>NENHUM ATIVO CRIPTO</span>
           </div>
         </template>
@@ -605,7 +596,7 @@
             class="flex flex-col items-center justify-center gap-2 border-b px-4 py-16 font-mono-tab text-[11px] uppercase tracking-[0.15em]"
             :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted }"
           >
-            <span :style="{ color: brand.colors.primary }">[EMPTY.SET]</span>
+            <span :style="{ color: brand.colors.primary }">Sem resultados</span>
             <span>NENHUM TÍTULO NESTA CATEGORIA</span>
           </div>
         </template>
@@ -691,7 +682,7 @@
             class="flex flex-col items-center justify-center gap-2 border-b px-4 py-16 font-mono-tab text-[11px] uppercase tracking-[0.15em]"
             :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted }"
           >
-            <span :style="{ color: brand.colors.primary }">[EMPTY.SET]</span>
+            <span :style="{ color: brand.colors.primary }">Sem resultados</span>
             <span>NENHUM ATIVO CASA COM OS FILTROS ATUAIS</span>
           </div>
         </template>
@@ -778,7 +769,7 @@
               class="font-mono-tab text-[10px] uppercase tracking-[0.22em]"
               :style="{ color: brand.colors.primary }"
             >
-              [SEARCH.ENGINE]
+              Busca
             </span>
             <span
               v-else
@@ -873,7 +864,7 @@
                   :class="terminalVariant ? 'font-mono-tab' : ''"
                   :style="{ color: terminalVariant ? primaryStrong : secondaryMuted }"
                 >
-                  <template v-if="terminalVariant">[FILTERS.PANEL]</template>
+                  <template v-if="terminalVariant">Filtros</template>
                   <template v-else>Filtros avançados</template>
                 </span>
                 <h2 class="text-2xl font-semibold" :style="{ color: brand.colors.text }">Personalize sua análise</h2>
@@ -1113,7 +1104,7 @@
                   :class="terminalVariant ? 'font-mono-tab tracking-[0.22em]' : ''"
                   :style="{ color: terminalVariant ? primaryStrong : secondaryMuted }"
                 >
-                  <template v-if="terminalVariant">[RESULTS.GRID]</template>
+                  <template v-if="terminalVariant">Resultados</template>
                   <template v-else>Resultados</template>
                 </span>
                 <h2 class="flex items-center gap-2 text-xl font-semibold sm:text-2xl">

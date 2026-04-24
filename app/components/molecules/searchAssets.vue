@@ -47,9 +47,6 @@
         >
           <div class="flex items-center justify-between px-5 py-3">
             <div class="flex items-center gap-2">
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
-                [ASSETS.SEARCH]
-              </span>
               <span class="font-mono-tab text-[10px] uppercase tracking-[0.14em]" :style="{ color: brand.colors.textMuted }">
                 &gt; {{ totalCount }} ATIVOS
               </span>
@@ -146,7 +143,7 @@
               >
                 <div class="flex items-center gap-2">
                   <span class="font-mono-tab text-[10px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
-                    [{{ group.bracket }}]
+                    {{ group.bracket }}
                   </span>
                   <span class="font-mono-tab text-[10px] uppercase tracking-[0.14em]" :style="{ color: brand.colors.textMuted }">
                     {{ group.label }}

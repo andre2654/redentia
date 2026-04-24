@@ -9,9 +9,7 @@
       class="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1 border px-3 py-2 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
       :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted, backgroundColor: brand.colors.surface }"
     >
-      <span :style="{ color: brand.colors.primary }">[MOVES.TIMELINE]</span>
-      <span :style="{ color: brand.colors.border }">·</span>
-      <span :style="{ color: brand.colors.text }">MOVIMENTOS NOTAVEIS</span>
+      <span :style="{ color: brand.colors.text }">Movimentos notáveis</span>
       <span :style="{ color: brand.colors.border }">·</span>
       <span>AI · ANTHROPIC</span>
       <span class="ml-auto flex items-center gap-3">
@@ -119,7 +117,6 @@
             <span></span>
             <div class="pt-1">
               <div class="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono-tab text-[10px] uppercase tracking-[0.12em]">
-                <span :style="{ color: brand.colors.primary }">[COMMENTARY]</span>
                 <span v-if="extractPriceNumber(item) !== null" :style="{ color: brand.colors.text }">
                   PRICE {{ formatPrice(item) }}
                 </span>
@@ -143,7 +140,7 @@
                 :style="{ borderColor: brand.colors.border }"
               >
                 <div class="mb-1.5 text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
-                  [SOURCES] · {{ item.sources.length }}
+                  Fontes · {{ item.sources.length }}
                 </div>
                 <ul class="flex flex-col gap-1">
                   <li v-for="src in item.sources" :key="src.url">

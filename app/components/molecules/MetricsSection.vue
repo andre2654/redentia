@@ -29,7 +29,7 @@
           class="relative inline-block size-1.5 rounded-full"
           :style="{ backgroundColor: brand.colors.primary }"
         />
-        <span :style="{ color: brand.colors.primary }">[RESPONSE.TIME]</span>
+        <span :style="{ color: brand.colors.primary }">Tempo de resposta</span>
         <span :style="{ color: brand.colors.border }">-</span>
         <span :style="{ color: brand.colors.textMuted }">{{ brand.metrics.sectionSubtitle }}</span>
       </div>
@@ -81,13 +81,6 @@
           :class="idx > 0 && 'border-l md:border-l'"
           :style="{ borderColor: brand.colors.border }"
         >
-          <!-- Mono label with bracket -->
-          <span
-            class="font-mono-tab text-[9px] uppercase tracking-[0.18em]"
-            :style="{ color: brand.colors.primary }"
-          >
-            [{{ String(idx + 1).padStart(2, '0') }}]
-          </span>
           <span
             class="font-mono-tab text-2xl font-bold tabular-nums md:text-3xl"
             :style="{ color: brand.colors.text }"

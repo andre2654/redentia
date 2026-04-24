@@ -3,7 +3,7 @@
     <!-- Header terminal-styled -->
     <header class="mb-6 flex flex-col gap-1 px-4 md:px-0">
       <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
-        [TESOURO.DIRETO]
+        Tesouro Direto
       </span>
       <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
         Tesouro Direto
@@ -36,7 +36,7 @@
             <UIcon name="i-lucide-landmark" class="h-3 w-3" :style="{ color: item.color }" />
             <div class="flex flex-col">
               <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: item.color }">
-                [TD.{{ item.key }}]
+                TD {{ item.key }}
               </span>
               <h3 class="font-mono-tab text-[11px] font-semibold uppercase tracking-wider" :style="{ color: brand.colors.text }">
                 {{ item.label }} / {{ item.title }}

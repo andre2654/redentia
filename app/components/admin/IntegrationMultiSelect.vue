@@ -10,7 +10,7 @@
       class="rounded-sm border px-3 py-2.5"
       :style="{ borderColor: C.negative, color: C.negative }"
     >
-      <div class="font-mono-tab text-[10px] uppercase tracking-[0.15em]">[ POSTIZ NÃO CONFIGURADO ]</div>
+      <div class="font-mono-tab text-[10px] uppercase tracking-[0.15em]">Postiz não configurado</div>
       <div class="mt-1 text-[12px]" :style="{ color: C.text }">
         Defina <code>POSTIZ_ENABLED=true</code>, <code>POSTIZ_API_URL</code> e <code>POSTIZ_API_KEY</code> no <code>.env</code> do backend.
         Enquanto isso, a automação vai rodar em modo stub (não publica de verdade).

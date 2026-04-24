@@ -7,7 +7,7 @@
           class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
           :style="{ color: brand.colors.primary }"
         >
-          [VALUATION]
+          Valuation
         </span>
         <h3
           class="text-lg font-semibold md:text-xl"
@@ -32,10 +32,7 @@
           class="flex flex-col gap-1.5 px-4 py-4"
           :style="{ backgroundColor: brand.colors.surface }"
         >
-          <div class="flex items-center justify-between">
-            <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
-              [{{ String(idx + 1).padStart(2, '0') }}]
-            </span>
+          <div class="flex items-center justify-end">
             <UTooltip v-if="cell.tooltip" :text="cell.tooltip" :delay-duration="0">
               <UIcon name="i-lucide-info" class="h-3 w-3 opacity-40" :style="{ color: brand.colors.textMuted }" />
             </UTooltip>
@@ -57,7 +54,7 @@
           class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
           :style="{ color: brand.colors.primary }"
         >
-          [ENDIVIDAMENTO]
+          Endividamento
         </span>
         <h3
           class="text-lg font-semibold md:text-xl"
@@ -123,10 +120,7 @@
             class="flex flex-col gap-1.5 px-4 py-4"
             :style="{ backgroundColor: brand.colors.surface }"
           >
-            <div class="flex items-center justify-between">
-              <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
-                [{{ String(idx + 1).padStart(2, '0') }}]
-              </span>
+            <div class="flex items-center justify-end">
               <UTooltip v-if="cell.tooltip" :text="cell.tooltip" :delay-duration="0">
                 <UIcon name="i-lucide-info" class="h-3 w-3 opacity-40" :style="{ color: brand.colors.textMuted }" />
               </UTooltip>
@@ -151,7 +145,7 @@
             class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
             :style="{ color: brand.colors.primary }"
           >
-            [EFICIÊNCIA]
+            Eficiência
           </span>
           <h3
             class="text-lg font-semibold md:text-xl"
@@ -177,9 +171,6 @@
             :style="{ backgroundColor: brand.colors.surface }"
           >
             <div class="flex items-center gap-3 flex-1 min-w-0">
-              <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em] shrink-0" :style="{ color: brand.colors.primary }">
-                [{{ String(idx + 1).padStart(2, '0') }}]
-              </span>
               <span class="font-mono-tab text-[11px] uppercase tracking-wider shrink-0" :style="{ color: brand.colors.textMuted }">
                 {{ m.label }}
               </span>
@@ -210,7 +201,7 @@
             class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
             :style="{ color: brand.colors.primary }"
           >
-            [RENTABILIDADE]
+            Rentabilidade
           </span>
           <h3
             class="text-lg font-semibold md:text-xl"
@@ -271,10 +262,7 @@
             class="flex flex-col gap-1 px-3 py-3"
             :style="{ backgroundColor: brand.colors.surface }"
           >
-            <div class="flex items-center justify-between">
-              <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
-                [{{ String(idx + 1).padStart(2, '0') }}]
-              </span>
+            <div class="flex items-center justify-end">
               <UTooltip v-if="cell.tooltip" :text="cell.tooltip" :delay-duration="0">
                 <UIcon name="i-lucide-info" class="h-3 w-3 opacity-40" :style="{ color: brand.colors.textMuted }" />
               </UTooltip>
@@ -296,7 +284,7 @@
             class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
             :style="{ color: brand.colors.primary }"
           >
-            [CRESCIMENTO]
+            Crescimento
           </span>
           <h3
             class="text-lg font-semibold md:text-xl"
@@ -316,10 +304,7 @@
           :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }"
         >
           <div class="flex flex-col gap-2 px-5 py-5" :style="{ backgroundColor: brand.colors.surface }">
-            <div class="flex items-center justify-between">
-              <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
-                [01]
-              </span>
+            <div class="flex items-center justify-end">
               <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">
                 RECEITAS
               </span>
@@ -341,10 +326,7 @@
             </div>
           </div>
           <div class="flex flex-col gap-2 px-5 py-5" :style="{ backgroundColor: brand.colors.surface }">
-            <div class="flex items-center justify-between">
-              <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
-                [02]
-              </span>
+            <div class="flex items-center justify-end">
               <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">
                 LUCROS
               </span>
@@ -377,7 +359,7 @@
           class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
           :style="{ color: brand.colors.primary }"
         >
-          [AI.INTERPRETATIONS]
+          Interpretações IA
         </span>
         <span
           class="font-mono-tab text-[10px] uppercase tracking-[0.12em]"
@@ -396,12 +378,6 @@
           class="flex items-start gap-3 px-5 py-3"
           :style="{ backgroundColor: brand.colors.surface }"
         >
-          <span
-            class="font-mono-tab text-[9px] uppercase tracking-[0.18em] shrink-0 mt-[3px]"
-            :style="{ color: brand.colors.primary }"
-          >
-            [{{ String(idx + 1).padStart(2, '0') }}]
-          </span>
           <p
             class="text-sm leading-relaxed"
             :style="{ color: brand.colors.text }"

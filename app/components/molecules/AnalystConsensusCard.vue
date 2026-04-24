@@ -8,7 +8,7 @@
         class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
         :style="{ color: brand.colors.primary }"
       >
-        [CONSENSUS.ANALYSTS]
+        Consenso de analistas
       </span>
       <h2
         class="text-xl font-semibold md:text-2xl"
@@ -35,12 +35,6 @@
           :style="{ backgroundColor: brand.colors.surface }"
         >
           <span
-            class="font-mono-tab text-[9px] uppercase tracking-[0.18em]"
-            :style="{ color: brand.colors.primary }"
-          >
-            [01]
-          </span>
-          <span
             class="font-mono-tab text-[10px] uppercase tracking-wider"
             :style="{ color: brand.colors.textMuted }"
           >
@@ -58,12 +52,6 @@
           class="flex flex-col gap-1.5 px-4 py-4"
           :style="{ backgroundColor: brand.colors.surface }"
         >
-          <span
-            class="font-mono-tab text-[9px] uppercase tracking-[0.18em]"
-            :style="{ color: brand.colors.primary }"
-          >
-            [02]
-          </span>
           <span
             class="font-mono-tab text-[10px] uppercase tracking-wider"
             :style="{ color: brand.colors.textMuted }"

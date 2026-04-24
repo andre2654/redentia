@@ -4,7 +4,7 @@
       <header class="flex flex-wrap items-end justify-between gap-4">
         <div>
           <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
-            [SOCIAL · AUTOMAÇÕES]
+            Social · Automações
           </span>
           <h1 class="mt-2 text-[28px] leading-tight md:text-[36px]" :style="{ color: C.text, fontFamily: F.display }">
             Ações recorrentes.
@@ -148,7 +148,7 @@
         <div class="flex items-center justify-between border-b px-5 py-4" :style="{ borderColor: C.border }">
           <div class="flex items-center gap-3">
             <span class="font-mono-tab text-[11px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
-              [{{ wizardMode === 'create' ? 'NOVA AUTOMAÇÃO' : 'EDITAR AUTOMAÇÃO' }}]
+              {{ wizardMode === 'create' ? 'Nova automação' : 'Editar automação' }}
             </span>
             <span
               v-if="draft.preset"
@@ -165,7 +165,7 @@
         <div v-if="step === 1" class="flex flex-col gap-5 p-5 md:p-6">
           <div>
             <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">
-              [ PASSO 1 DE 2 ]
+              Passo 1 de 2
             </span>
             <h2 class="mt-1 text-[24px]" :style="{ color: C.text, fontFamily: F.display }">
               O que essa automação vai postar?
@@ -263,7 +263,7 @@
               <div class="flex items-center gap-2">
                 <UIcon name="i-lucide-tag" class="size-3.5" :style="{ color: C.primary }" />
                 <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
-                  [ IDENTIFICAÇÃO ]
+                  Identificação
                 </span>
               </div>
               <label class="flex flex-col gap-1.5">
@@ -294,7 +294,7 @@
               <div class="flex items-center gap-2">
                 <UIcon name="i-lucide-image" class="size-3.5" :style="{ color: C.primary }" />
                 <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
-                  [ CONTEÚDO DA IMAGEM ]
+                  Conteúdo da imagem
                 </span>
               </div>
               <div class="grid gap-3 md:grid-cols-2">
@@ -336,7 +336,7 @@
               <div class="flex items-center gap-2">
                 <UIcon name="i-lucide-sliders-horizontal" class="size-3.5" :style="{ color: C.primary }" />
                 <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
-                  [ DADOS E FILTROS ]
+                  Dados e filtros
                 </span>
               </div>
               <div class="grid gap-3 md:grid-cols-2">
@@ -381,7 +381,7 @@
               <div class="flex items-center gap-2">
                 <UIcon name="i-lucide-message-square-text" class="size-3.5" :style="{ color: C.primary }" />
                 <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
-                  [ LEGENDA DO POST ]
+                  Legenda do post
                 </span>
               </div>
               <textarea
@@ -415,7 +415,7 @@
               <div class="flex items-center gap-2">
                 <UIcon name="i-lucide-calendar-clock" class="size-3.5" :style="{ color: C.primary }" />
                 <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
-                  [ AGENDAMENTO ]
+                  Agendamento
                 </span>
               </div>
               <AdminSchedulePicker v-model="draft.schedule" />
@@ -430,7 +430,7 @@
               <div class="flex items-center gap-2">
                 <UIcon name="i-lucide-send" class="size-3.5" :style="{ color: C.primary }" />
                 <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
-                  [ ONDE PUBLICAR ]
+                  Onde publicar
                 </span>
               </div>
               <AdminIntegrationMultiSelect v-model="draft.integrations" />
@@ -482,7 +482,7 @@
             <div class="flex items-center gap-2">
               <UIcon name="i-lucide-braces" class="size-3.5" :style="{ color: C.primary }" />
               <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
-                [ VARIÁVEIS ]
+                Variáveis
               </span>
             </div>
             <p class="text-[11px] leading-snug" :style="{ color: C.textMuted }">

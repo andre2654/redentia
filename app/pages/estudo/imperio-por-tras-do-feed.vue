@@ -230,7 +230,7 @@
                     class="inline-block border px-2 py-1 font-mono-tab text-[9px] uppercase tracking-[0.15em]"
                     :style="{ borderColor: C.border, color: C.textMuted }"
                   >
-                    [ESTUDO] · FINFLUENCERS
+                    Estudo · Finfluencers
                   </span>
                 </div>
 
@@ -300,7 +300,7 @@
           <div class="mb-14 flex flex-col gap-3 md:flex-row md:items-end md:justify-between md:gap-10">
             <div>
               <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
-                [RADAR FINFLUENCE · BR 2026]
+                Radar Finfluence · BR 2026
               </span>
               <h2 class="mt-3 text-[36px] leading-tight tracking-tight md:text-[52px]" :style="{ color: C.text, fontFamily: F.display }">
                 33 nomes, <em :style="{ color: C.primary }">8 territórios.</em>
@@ -352,7 +352,7 @@
       <section class="relative mx-auto max-w-5xl px-6 py-20 md:px-10 md:py-28">
         <div class="border-l-2 pl-8 md:pl-12" :style="{ borderColor: C.primary }">
           <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
-            [TESE CENTRAL]
+            Tese central
           </span>
           <blockquote
             class="mt-4 text-[26px] font-light leading-[1.3] tracking-tight md:text-[36px] lg:text-[44px]"
@@ -371,7 +371,7 @@
         <div class="grid gap-14 lg:grid-cols-[0.9fr_1.3fr] lg:gap-20">
           <div>
             <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
-              [AUDIÊNCIA]
+              Audiência
             </span>
             <h2 class="mt-3 text-[36px] leading-tight tracking-tight md:text-[52px]" :style="{ color: C.text, fontFamily: F.display }">
               Para quem é <em :style="{ color: C.primary }">este estudo.</em>
@@ -387,12 +387,6 @@
               class="flex items-start gap-4 py-5 first:pt-0 last:pb-0"
               :style="{ borderColor: C.border }"
             >
-              <span
-                class="mt-1 font-mono-tab text-[10px] uppercase tracking-[0.18em]"
-                :style="{ color: C.primary }"
-              >
-                [0{{ idx + 1 }}]
-              </span>
               <p class="flex-1 text-[15px] leading-[1.6]" :style="{ color: C.text }">{{ who }}</p>
             </li>
           </ul>
@@ -405,7 +399,7 @@
           <div class="mb-14 flex flex-col gap-3 md:flex-row md:items-end md:justify-between md:gap-10">
             <div>
               <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
-                [SUMÁRIO · 08 CAPÍTULOS]
+                Sumário · 08 capítulos
               </span>
               <h2 class="mt-3 text-[36px] leading-tight tracking-tight md:text-[52px]" :style="{ color: C.text, fontFamily: F.display }">
                 O que você vai <em :style="{ color: C.primary }">encontrar.</em>
@@ -451,7 +445,7 @@
       <section class="relative mx-auto max-w-6xl px-6 py-20 md:px-10 md:py-28">
         <div class="mb-14 max-w-2xl">
           <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
-            [PRÉVIA · 3 INSIGHTS]
+            Prévia · 3 insights
           </span>
           <h2 class="mt-3 text-[36px] leading-tight tracking-tight md:text-[52px]" :style="{ color: C.text, fontFamily: F.display }">
             O que ninguém <em :style="{ color: C.primary }">diz em conferência.</em>
@@ -467,7 +461,7 @@
           >
             <div class="md:w-[280px]">
               <div class="mb-2 font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">
-                [INSIGHT {{ String(idx + 1).padStart(2, '0') }}]
+                Insight {{ String(idx + 1).padStart(2, '0') }}
               </div>
               <div
                 class="mb-3 text-[48px] leading-none tracking-tight md:text-[64px]"
@@ -494,7 +488,7 @@
           <div class="grid gap-10 md:grid-cols-[0.7fr_1.3fr] md:gap-14">
             <div>
               <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
-                [METODOLOGIA]
+                Metodologia
               </span>
               <h3 class="mt-3 text-[22px] leading-tight" :style="{ color: C.text, fontFamily: F.display }">
                 Fontes primárias.
@@ -532,7 +526,7 @@
         <div class="mx-auto max-w-5xl px-6 py-20 md:px-10 md:py-28">
           <div class="mb-14 max-w-3xl">
             <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
-              [PERGUNTAS FREQUENTES]
+              Perguntas frequentes
             </span>
             <h2 class="mt-3 text-[36px] leading-tight tracking-tight md:text-[52px]" :style="{ color: C.text, fontFamily: F.display }">
               O que <em :style="{ color: C.primary }">todo mundo pergunta.</em>
@@ -572,7 +566,7 @@
         <div class="mx-auto max-w-4xl px-6 py-20 md:px-10 md:py-28">
           <div class="mb-12 text-center">
             <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
-              [ACESSO GRATUITO]
+              Acesso gratuito
             </span>
             <h2 class="mt-3 text-[36px] leading-tight tracking-tight md:text-[56px]" :style="{ color: C.text, fontFamily: F.display }">
               Receba o PDF <em :style="{ color: C.primary }">agora.</em>
@@ -645,7 +639,7 @@
               <UIcon v-else name="i-lucide-download" class="size-4" />
               <span v-if="success">LINK ENVIADO, CONFIRA SEU EMAIL</span>
               <span v-else-if="submitting">ENVIANDO...</span>
-              <span v-else>[ENTER] BAIXAR O PDF</span>
+              <span v-else>Baixar o PDF</span>
             </button>
 
             <p class="text-center font-mono-tab text-[10px] uppercase leading-[1.6] tracking-[0.15em]" :style="{ color: C.textMuted }">
@@ -685,7 +679,7 @@
           <div class="grid gap-10 md:grid-cols-[1fr_1fr] md:gap-16">
             <div>
               <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
-                [OFERECIMENTO]
+                Oferecimento
               </span>
               <h3 class="mt-3 text-[28px] leading-tight tracking-tight md:text-[36px]" :style="{ color: C.text, fontFamily: F.display }">
                 Redentia é o <em :style="{ color: C.primary }">ecossistema de investimentos com IA</em> que nasceu deste estudo.

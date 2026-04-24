@@ -46,7 +46,7 @@
                   :style="{ backgroundColor: marketStatus.color }"
                 />
               </span>
-              <span translate="no">[{{ marketStatus.label }}]</span>
+              <span translate="no">{{ marketStatus.label }}</span>
             </span>
             <span :style="{ color: brand.colors.border }" aria-hidden="true">·</span>
             <span :style="{ color: brand.colors.textMuted }" translate="no">B3 · BOLSA BRASILEIRA</span>
@@ -64,7 +64,7 @@
                 :style="{ color: brand.colors.primary }"
                 translate="no"
               >
-                [IBOVESPA]
+                IBOVESPA
               </span>
               <p
                 class="font-mono-tab text-3xl font-bold tabular-nums sm:text-4xl md:text-5xl"
@@ -84,7 +84,7 @@
                 :style="{ color: brand.colors.primary }"
                 translate="no"
               >
-                [IFIX]
+                IFIX
               </span>
               <p
                 class="font-mono-tab text-3xl font-bold tabular-nums sm:text-4xl md:text-5xl"
@@ -114,7 +114,7 @@
               :style="{ color: brand.colors.primary }"
               translate="no"
             >
-              [IBOV.CHART]
+              IBOV.CHART
             </span>
             <p
               class="font-mono-tab text-3xl font-bold tabular-nums md:text-4xl"
@@ -160,7 +160,7 @@
             class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
             :style="{ color: brand.colors.primary }"
           >
-            [LIVE.MARKET]
+            LIVE.MARKET
           </span>
           <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
             {{ brand.homeTexts.marketTitle }}
@@ -257,7 +257,7 @@
                 <UIcon name="i-lucide-trending-up" class="h-3 w-3" :style="{ color: brand.colors.positive }" aria-hidden="true" />
                 <div class="flex flex-col">
                   <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.positive }" translate="no">
-                    [TOP.{{ (item.key || '').toString().toUpperCase() }}]
+                    TOP {{ (item.key || '').toString().toUpperCase() }}
                   </span>
                   <h3 class="font-mono-tab text-[11px] font-semibold uppercase tracking-wider" :style="{ color: brand.colors.text }">{{ item.label }} / MAIORES ALTAS</h3>
                 </div>
@@ -304,7 +304,7 @@
                 <UIcon name="i-lucide-trending-down" class="h-3 w-3" :style="{ color: brand.colors.negative }" aria-hidden="true" />
                 <div class="flex flex-col">
                   <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.negative }" translate="no">
-                    [BOT.{{ (item.key || '').toString().toUpperCase() }}]
+                    BOT {{ (item.key || '').toString().toUpperCase() }}
                   </span>
                   <h3 class="font-mono-tab text-[11px] font-semibold uppercase tracking-wider" :style="{ color: brand.colors.text }">{{ item.label }} / MAIORES BAIXAS</h3>
                 </div>
@@ -452,7 +452,7 @@
     <section v-if="showSection('guides')" :style="{ order: sectionOrder('guides'), borderColor: brand.colors.border }" class="mt-12 border-t px-4 pt-12 md:px-0">
       <header class="mb-6 flex flex-col gap-1">
         <div class="flex items-center gap-2 font-mono-tab text-[10px] uppercase tracking-[0.18em]">
-          <span :style="{ color: brand.colors.primary }" translate="no">[GUIDES.INDEX]</span>
+          <span :style="{ color: brand.colors.primary }" translate="no">GUIDES.INDEX</span>
           <span aria-hidden="true" :style="{ color: brand.colors.border }">·</span>
           <span :style="{ color: brand.colors.textMuted }">{{ guidesHero.length + guidesMedium.length + guidesTiles.length }} ESTUDOS DISPONÍVEIS</span>
         </div>
@@ -493,7 +493,7 @@
               :style="{ color: brand.colors.primary }"
               translate="no"
             >
-              [ESTUDO.DESTAQUE] · {{ guidesHero[0].categoria.toUpperCase() }}
+              ESTUDO.DESTAQUE · {{ guidesHero[0].categoria.toUpperCase() }}
             </span>
             <div
               class="flex size-10 items-center justify-center rounded-full transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-300 group-hover:translate-x-1 group-hover:translate-y-[-1px]"
@@ -557,13 +557,6 @@
             >
               <UIcon :name="guide.icon" class="size-5" />
             </div>
-            <span
-              class="font-mono-tab text-[9px] uppercase tracking-[0.15em]"
-              :style="{ color: brand.colors.textMuted }"
-              translate="no"
-            >
-              [{{ String(idx + 1).padStart(2, '0') }}]
-            </span>
           </div>
 
           <h3
@@ -792,7 +785,7 @@
                   <span class="absolute inline-flex size-1.5 motion-safe:animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.primary }" />
                   <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
                 </span>
-                [DEVELOPERS.SHIPPED]
+                DEVELOPERS.SHIPPED
               </span>
               <span :style="{ color: brand.colors.border }">/</span>
               <span :style="{ color: brand.colors.textMuted }">2026.04 · BUILD 2</span>

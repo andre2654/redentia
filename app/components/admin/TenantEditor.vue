@@ -3,7 +3,7 @@
     <header class="flex items-center justify-between gap-4">
       <div>
         <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
-          [{{ isNew ? 'NOVO TENANT' : 'EDITAR TENANT' }}]
+          {{ isNew ? 'Novo tenant' : 'Editar tenant' }}
         </span>
         <h1 class="mt-2 text-[28px] leading-tight md:text-[36px]" :style="{ color: C.text, fontFamily: F.display }">
           {{ form.name || form.slug || 'Tenant sem nome' }}

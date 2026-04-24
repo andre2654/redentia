@@ -4,7 +4,7 @@
       <header class="flex flex-wrap items-end justify-between gap-4">
         <div>
           <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
-            [SOCIAL · PERFIS MONITORADOS]
+            Social · Perfis monitorados
           </span>
           <h1 class="mt-2 text-[28px] leading-tight md:text-[36px]" :style="{ color: C.text, fontFamily: F.display }">
             Quem a gente fica de olho.
@@ -117,7 +117,7 @@
       >
         <div class="mb-4 flex items-center justify-between">
           <h2 class="font-mono-tab text-[11px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
-            [{{ editorMode === 'create' ? 'NOVO' : 'EDITAR' }} PERFIL]
+            {{ editorMode === 'create' ? 'Novo' : 'Editar' }} perfil
           </h2>
           <button type="button" class="font-mono-tab text-[12px]" :style="{ color: C.textMuted }" @click="closeEditor">✕</button>
         </div>

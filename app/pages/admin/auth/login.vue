@@ -17,7 +17,7 @@
           <UIcon name="i-lucide-shield" class="size-6" />
         </div>
         <div class="font-mono-tab text-[11px] uppercase tracking-[0.2em]" :style="{ color: C.primary }">
-          [REDENT.ADMIN]
+          Admin
         </div>
         <h1 class="mt-3 text-[32px] leading-tight" :style="{ color: C.text, fontFamily: F.display }">
           Acesso restrito.
@@ -76,7 +76,7 @@
           <UIcon v-if="submitting" name="i-lucide-loader-2" class="size-4 motion-safe:animate-spin" />
           <UIcon v-else name="i-lucide-log-in" class="size-4" />
           <span v-if="submitting">VALIDANDO</span>
-          <span v-else>[ENTER] ENTRAR</span>
+          <span v-else>Entrar</span>
         </button>
       </form>
     </section>

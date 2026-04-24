@@ -470,7 +470,7 @@ const rankingItems = computed(() => {
       </div>
 
       <div v-else-if="variant === 'jargon-redentia'" class="body jargon-body jargon-redentia">
-        <div class="jargon-eyebrow">[ REDENTIA.MERCADO ]</div>
+        <div class="jargon-eyebrow">REDENTIA.MERCADO</div>
         <div class="jargon-quote">
           Investir com<br>
           <span class="italic-amber">inteligência.</span>
@@ -572,7 +572,7 @@ const rankingItems = computed(() => {
       <div v-else-if="variant === 'tenant-showcase-redentia'" class="body tenant-body tenant-redentia">
         <div class="tenant-status-line">
           <span class="status-dot-live">●</span>
-          [MARKET.LIVE] · B3 · SESSÃO ABERTA · REDENTIA v2.1
+          MARKET.LIVE · B3 · SESSÃO ABERTA · REDENTIA v2.1
         </div>
         <div class="tenant-hero-grid">
           <div class="tenant-hero-text">
@@ -592,7 +592,7 @@ const rankingItems = computed(() => {
            Big number + ticker wall showing coverage
            ============================================================ -->
       <div v-else-if="variant === 'data-coverage'" class="body data-body">
-        <div class="data-eyebrow">[ COBERTURA ]</div>
+        <div class="data-eyebrow">COBERTURA</div>
         <div class="data-coverage-headline">
           <div class="data-big-number">1.316</div>
           <div class="data-big-sublabel">TICKERS NA B3, TODOS COBERTOS</div>
@@ -609,7 +609,7 @@ const rankingItems = computed(() => {
            VARIANT · DATA TIMELINE, 15+ years of history
            ============================================================ -->
       <div v-else-if="variant === 'data-timeline'" class="body data-body">
-        <div class="data-eyebrow">[ HISTÓRICO DESDE 2009 ]</div>
+        <div class="data-eyebrow">HISTÓRICO DESDE 2009</div>
         <h2 class="data-title">
           15+ anos de dados da B3 na<br>
           <span class="data-amber">ponta do dedo.</span>
@@ -628,7 +628,7 @@ const rankingItems = computed(() => {
            VARIANT · DATA SECURITY SHIELD
            ============================================================ -->
       <div v-else-if="variant === 'data-security'" class="body data-body data-security">
-        <div class="data-eyebrow">[ SEGURANÇA & PRIVACIDADE ]</div>
+        <div class="data-eyebrow">SEGURANÇA & PRIVACIDADE</div>
         <h2 class="data-title">
           Seus dados são<br>
           <span class="data-amber">seus.</span>
@@ -662,7 +662,7 @@ const rankingItems = computed(() => {
            VARIANT · AI CHAT MOCKUP
            ============================================================ -->
       <div v-else-if="variant === 'ai-chat'" class="body ai-body">
-        <div class="ai-eyebrow">[ ASSESSORIA COM IA ]</div>
+        <div class="ai-eyebrow">ASSESSORIA COM IA</div>
         <h2 class="ai-title">
           A IA da Redentia responde<br>
           em <span class="data-amber">3 segundos.</span>
@@ -692,7 +692,7 @@ const rankingItems = computed(() => {
            VARIANT · STATS ROW, 4 big stats horizontally
            ============================================================ -->
       <div v-else-if="variant === 'stats-row'" class="body stats-body">
-        <div class="stats-eyebrow">[ NÚMEROS QUE IMPORTAM ]</div>
+        <div class="stats-eyebrow">NÚMEROS QUE IMPORTAM</div>
         <h2 class="stats-title">Por que os devs e investidores<br>brasileiros estão <span class="data-amber">migrando.</span></h2>
         <div class="stats-grid">
           <div class="stats-item">
@@ -722,7 +722,7 @@ const rankingItems = computed(() => {
            VARIANT · WHY NORMAL PERSON, consolidator before/after
            ============================================================ -->
       <div v-else-if="variant === 'why-consolidator'" class="body why-body">
-        <div class="why-eyebrow">[ POR QUE REDENTIA ]</div>
+        <div class="why-eyebrow">POR QUE REDENTIA</div>
         <h2 class="why-title">
           Sua carteira em<br>
           <span class="data-amber">5 corretoras.</span>
@@ -756,7 +756,7 @@ const rankingItems = computed(() => {
            VARIANT · CALCULATORS SHOWCASE, 8 calcs grid
            ============================================================ -->
       <div v-else-if="variant === 'calculators'" class="body calc-body">
-        <div class="calc-eyebrow">[ FERRAMENTAS ]</div>
+        <div class="calc-eyebrow">FERRAMENTAS</div>
         <h2 class="calc-title">
           8 calculadoras grátis.<br>
           <span class="data-amber">Zero cadastro.</span>
@@ -803,7 +803,7 @@ const rankingItems = computed(() => {
            VARIANT · OPEN FINANCE
            ============================================================ -->
       <div v-else-if="variant === 'open-finance'" class="body of-body">
-        <div class="of-eyebrow">[ INTEGRAÇÃO BANCÁRIA ]</div>
+        <div class="of-eyebrow">INTEGRAÇÃO BANCÁRIA</div>
         <h2 class="of-title">
           Open Finance<br>
           <span class="data-amber">nativo.</span>
@@ -844,14 +844,14 @@ const rankingItems = computed(() => {
            VARIANT · 5 TENANTS GRID WITH LIVE PREVIEW
            ============================================================ -->
       <div v-else-if="variant === '5-tenants-real'" class="body tenants-real-body">
-        <div class="tenants-real-eyebrow">[ REDENTIA WHITELABEL · 5 MARCAS NO AR ]</div>
+        <div class="tenants-real-eyebrow">REDENTIA WHITELABEL · 5 MARCAS NO AR</div>
         <h2 class="tenants-real-title">
           Um backend.<br>
           <span class="data-amber">Cinco identidades.</span>
         </h2>
         <div class="tenants-real-grid">
           <div class="tenant-real-card" style="background: #0A0B0E; border-color: #F5A623">
-            <div class="trc-eyebrow" style="color: #F5A623">[ TERMINAL ]</div>
+            <div class="trc-eyebrow" style="color: #F5A623">TERMINAL</div>
             <div class="trc-title" style="font-family: 'Instrument Serif'; color: #E8EAED">Investir com <i style="color:#F5A623">inteligência.</i></div>
             <div class="trc-brand" style="color: #F5A623">REDENTIA</div>
           </div>
@@ -876,7 +876,7 @@ const rankingItems = computed(() => {
             <div class="trc-brand" style="color: #FACC15; font-family: 'Poppins'; font-weight: 800">Me Poupe!</div>
           </div>
           <div class="tenant-real-card tenant-real-card-next">
-            <div class="trc-eyebrow" style="color: #F5A623">[ SUA MARCA ]</div>
+            <div class="trc-eyebrow" style="color: #F5A623">SUA MARCA</div>
             <div class="trc-title" style="font-family: 'Instrument Serif'; color: #E8EAED">O próximo <i style="color:#F5A623">é você.</i></div>
             <div class="trc-brand" style="color: #F5A623">DEPLOY EM 1 SEMANA</div>
           </div>
@@ -887,7 +887,7 @@ const rankingItems = computed(() => {
            VARIANT · AI INTELLIGENT, features list
            ============================================================ -->
       <div v-else-if="variant === 'intelligent'" class="body int-body">
-        <div class="int-eyebrow">[ INTELIGÊNCIA ARTIFICIAL ]</div>
+        <div class="int-eyebrow">INTELIGÊNCIA ARTIFICIAL</div>
         <h2 class="int-title">
           A primeira IA do Brasil<br>
           que <span class="data-amber">realmente sabe</span><br>
@@ -905,7 +905,7 @@ const rankingItems = computed(() => {
            VARIANT · GLOBE REACH / BRAZIL FIRST
            ============================================================ -->
       <div v-else-if="variant === 'brazil-first'" class="body br-body">
-        <div class="br-eyebrow">[ BRAZIL FIRST ]</div>
+        <div class="br-eyebrow">BRAZIL FIRST</div>
         <div class="br-flag">🇧🇷</div>
         <h2 class="br-title">
           Feita no Brasil, <br>

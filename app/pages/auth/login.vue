@@ -21,18 +21,6 @@
       <div class="relative mx-auto flex max-w-5xl flex-col items-center gap-14 md:flex-row md:items-start md:gap-16">
         <!-- Left: terminal branding -->
         <div class="flex flex-1 flex-col gap-6">
-          <div class="flex items-center gap-3 font-mono-tab text-[10px] uppercase tracking-[0.18em]">
-            <span class="flex items-center gap-1.5" :style="{ color: brand.colors.primary }">
-              <span class="relative flex size-1.5">
-                <span class="absolute inline-flex size-1.5 motion-safe:animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.primary }" />
-                <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
-              </span>
-              [LOGIN.TERMINAL]
-            </span>
-            <span :style="{ color: brand.colors.border }">·</span>
-            <span :style="{ color: brand.colors.textMuted }">{{ brand.name.toUpperCase() }} v2.1</span>
-          </div>
-
           <h1
             class="font-display"
             :style="{ color: brand.colors.text, fontSize: 'clamp(2.5rem, 5vw, 4rem)', lineHeight: '0.95' }"
@@ -77,10 +65,7 @@
           :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.surface}E6` }"
           @submit="onSubmit"
         >
-          <div class="flex items-center justify-between border-b pb-4" :style="{ borderColor: brand.colors.border }">
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
-              [AUTH.INPUT]
-            </span>
+          <div class="flex items-center justify-end border-b pb-4" :style="{ borderColor: brand.colors.border }">
             <span class="font-mono-tab text-[10px]" :style="{ color: brand.colors.textMuted }">ENC · TLS</span>
           </div>
 
@@ -99,7 +84,7 @@
           </UFormField>
 
           <AtomsButton type="submit" color="secondary" size="lg" class="mt-2 w-full justify-center font-mono-tab text-xs tracking-[0.15em]">
-            [ AUTENTICAR ]
+            Autenticar
           </AtomsButton>
 
           <div class="flex items-center justify-between border-t pt-4" :style="{ borderColor: brand.colors.border }">
@@ -600,7 +585,7 @@
       <div class="border-b" :style="{ borderColor: brand.colors.border }">
         <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4 md:px-10">
           <div class="flex items-center gap-4 font-mono text-[10px] uppercase tracking-[0.18em]" style="font-family: 'JetBrains Mono', monospace;">
-            <span :style="{ color: brand.colors.primary }">[ HOLD. ]</span>
+            <span :style="{ color: brand.colors.primary }">Hold</span>
             <span :style="{ color: brand.colors.textMuted }">ACESSO · {{ brand.founder.name.toUpperCase() }}</span>
           </div>
           <span class="font-mono text-[10px] uppercase tracking-[0.18em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: brand.colors.textMuted }">

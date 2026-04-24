@@ -3,7 +3,7 @@
     <div class="mx-auto flex max-w-5xl flex-col gap-6">
       <header>
         <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
-          [SOCIAL · POSTS]
+          Social · Posts
         </span>
         <h1 class="mt-2 text-[28px] leading-tight md:text-[36px]" :style="{ color: C.text, fontFamily: F.display }">
           Composer, contas e agendamento.
@@ -41,7 +41,7 @@
         :style="{ backgroundColor: C.primary, color: C.background }"
       >
         <div class="flex flex-col gap-1">
-          <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]">[ABRIR POSTIZ]</span>
+          <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]">Abrir Postiz</span>
           <span class="text-[20px] font-semibold">postiz.saraivada.com</span>
           <span class="font-mono-tab text-[10px] uppercase tracking-[0.15em] opacity-70">
             ABRE EM NOVA ABA · LOGIN SEPARADO NA PRIMEIRA VEZ
@@ -53,7 +53,7 @@
       <!-- API key instructions -->
       <section class="rounded-sm border p-5" :style="{ borderColor: C.border, backgroundColor: C.surface }">
         <h2 class="mb-3 font-mono-tab text-[11px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
-          [CONECTAR AUTOMAÇÕES]
+          Conectar automações
         </h2>
         <ol class="flex list-decimal flex-col gap-2 pl-5 text-[13px]" :style="{ color: C.textMuted }">
           <li>Entre no Postiz, conecte pelo menos uma conta social (Instagram / X / Threads / FB).</li>

@@ -92,7 +92,7 @@
                     :style="{ color: brand.colors.primary }"
                     translate="no"
                   >
-                    [{{ (crypto?.symbol ?? symbol).toString().toUpperCase() }}] · #{{ crypto?.rank ?? '—' }}
+                    {{ (crypto?.symbol ?? symbol).toString().toUpperCase() }} · #{{ crypto?.rank ?? '—' }}
                   </span>
                   <h1
                     class="font-mono-tab text-3xl font-bold leading-none tracking-tight md:text-4xl"
@@ -204,9 +204,6 @@
         <section class="border-b py-8" :style="{ borderColor: brand.colors.border }">
           <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div class="flex flex-col gap-1">
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
-                [CHART.{{ chartMode === 'rainbow' ? 'RAINBOW' : 'PRICE' }}]
-              </span>
               <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
                 {{ chartMode === 'rainbow' ? 'Rainbow chart · escala log projetada' : 'Histórico de cotação' }}
               </h2>
@@ -273,9 +270,6 @@
         <!-- Tokenomics -->
         <section class="border-b py-8" :style="{ borderColor: brand.colors.border }">
           <div class="mb-4 flex flex-col gap-1">
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
-              [TOKENOMICS]
-            </span>
             <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
               Tokenomics
             </h2>
@@ -298,9 +292,6 @@
         <!-- Indicadores de Mercado -->
         <section class="border-b py-8" :style="{ borderColor: brand.colors.border }">
           <div class="mb-4 flex flex-col gap-1">
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
-              [MARKET.INDICATORS]
-            </span>
             <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
               Indicadores de mercado
             </h2>
@@ -323,9 +314,6 @@
         <!-- Resumo diário -->
         <section v-if="hasOhlc" class="border-b py-8" :style="{ borderColor: brand.colors.border }">
           <div class="mb-4 flex flex-col gap-1">
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
-              [DAILY.SUMMARY]
-            </span>
             <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
               Resumo diário
             </h2>
@@ -348,9 +336,6 @@
         <!-- 52 semanas / Valorização -->
         <section class="border-b py-8" :style="{ borderColor: brand.colors.border }">
           <div class="mb-4 flex flex-col gap-1">
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
-              [52W.WINDOW]
-            </span>
             <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
               Faixa de 52 semanas
             </h2>
