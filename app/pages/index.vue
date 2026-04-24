@@ -3741,7 +3741,7 @@
     <MoleculesInvestorChecklist v-if="showSection('investorChecklist') && brand.investorChecklist && !authStore.isAuthenticated" :style="{ order: sectionOrder('investorChecklist') }" />
 
     <!-- Seção de Mercado ao Vivo (Prioridade) -->
-    <div v-if="showSection('market') && brand.hero.variant === 'terminal'" :style="{ order: sectionOrder('market') }" class="flex h-auto flex-col gap-4 pt-10">
+    <div v-if="showSection('market')" :style="{ order: sectionOrder('market') }" class="flex h-auto flex-col gap-4 pt-10">
       <div class="flex flex-col gap-8">
         <div class="flex flex-col gap-6 px-4 md:px-0">
           <!-- Terminal-style market status line -->
