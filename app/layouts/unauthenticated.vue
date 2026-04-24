@@ -1,8 +1,16 @@
 <template>
   <div
     class="flex min-h-screen flex-col"
-    :style="{ backgroundColor: brand.colors.background }"
+    :style="{ backgroundColor: brand.colors.background, paddingLeft: 'env(safe-area-inset-left)', paddingRight: 'env(safe-area-inset-right)' }"
   >
+    <!-- Skip link: visible only on focus, jumps screen-reader/keyboard users past the ticker+nav -->
+    <a
+      href="#main-content"
+      class="sr-only fixed left-4 top-4 z-[100] rounded-md px-4 py-2 font-semibold shadow-lg focus:not-sr-only focus:outline-none focus:ring-2 focus:ring-offset-2"
+      :style="{ backgroundColor: brand.colors.primary, color: brand.colors.background }"
+    >
+      Pular para o conteúdo principal
+    </a>
     <MoleculesMobileMenuOverlay v-model:open="menuMobileActive" mode="public" />
     <header
       class="z-20 flex items-center justify-between gap-6 border-b px-8 py-4"
@@ -10,6 +18,7 @@
       :style="{
         background: headerBg || (brand.colors.background + 'E6'),
         borderColor: hexWithAlpha(brand.colors.border, 'CC'),
+        paddingTop: 'max(1rem, env(safe-area-inset-top))',
       }"
     >
       <!-- Logo + Menu mobile -->
@@ -241,7 +250,11 @@
       </div>
     </header>
 
-    <main class="md:py-4">
+    <main
+      id="main-content"
+      class="md:px-4 md:py-4"
+      :style="{ scrollMarginTop: '80px' }"
+    >
       <slot />
     </main>
   </div>

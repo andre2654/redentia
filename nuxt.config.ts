@@ -9,11 +9,31 @@ export default defineNuxtConfig({
   modules: [
     '@nuxt/ui',
     '@nuxt/eslint',
+    '@nuxt/image',
     '@pinia/nuxt',
     '@pinia-plugin-persistedstate/nuxt',
     '@vite-pwa/nuxt',
     '@nuxtjs/sitemap',
   ],
+
+  // @nuxt/image config. External hosts we serve logos/thumbnails from
+  // must be whitelisted so IPX can optimize them; anything outside the
+  // list falls back to the raw URL.
+  image: {
+    format: ['webp'],
+    quality: 80,
+    domains: [
+      'statusinvest.com.br',
+      'media.infomoney.com.br',
+      'imagens.mtimes.com.br',
+      'www.seudinheiro.com',
+      'braziljournal.com',
+      'www.moneytimes.com.br',
+      'www.suno.com.br',
+      'suno.com.br',
+      'valorinveste.globo.com',
+    ],
+  },
   // @nuxt/icon comes bundled with @nuxt/ui. By default it resolves
   // lucide icons via a remote fetch to api.iconify.design — that
   // fetch times out in SSR (1500ms default) for icons that aren't

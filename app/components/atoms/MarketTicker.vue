@@ -5,8 +5,9 @@
       borderColor: brand.colors.border,
       backgroundColor: brand.colors.surface,
     }"
-    role="marquee"
-    aria-label="Cotacoes ao vivo"
+    role="region"
+    aria-label="Cotações ao vivo"
+    aria-live="off"
   >
     <!-- Fixed label on the left (stays put while the tape scrolls) -->
     <div
@@ -17,9 +18,9 @@
         color: brand.colors.primary,
       }"
     >
-      <span class="relative flex size-1.5">
+      <span class="relative flex size-1.5" aria-hidden="true">
         <span
-          class="absolute inline-flex size-1.5 animate-ping rounded-full opacity-75"
+          class="absolute inline-flex size-1.5 rounded-full opacity-75 motion-safe:animate-ping"
           :style="{ backgroundColor: brand.colors.primary }"
         />
         <span
@@ -27,7 +28,7 @@
           :style="{ backgroundColor: brand.colors.primary }"
         />
       </span>
-      LIVE
+      <span translate="no">LIVE</span>
     </div>
 
     <!-- Scrolling tape, duplicated twice for seamless loop -->
@@ -106,14 +107,14 @@ const tapeItems = ref<TapeItem[]>([
   { symbol: 'IFIX', value: '3.410', change: 0.49 },
   { symbol: 'USD', value: '5,08', change: -0.34 },
   { symbol: 'EUR', value: '5,56', change: -0.21 },
-  { symbol: 'PETR4', value: 'R$ 38,45', change: 2.18 },
-  { symbol: 'VALE3', value: 'R$ 62,12', change: -1.05 },
-  { symbol: 'ITUB4', value: 'R$ 31,78', change: 0.67 },
-  { symbol: 'BBAS3', value: 'R$ 28,90', change: -0.42 },
-  { symbol: 'MGLU3', value: 'R$ 12,45', change: 4.85 },
-  { symbol: 'WEGE3', value: 'R$ 52,30', change: 1.24 },
-  { symbol: 'BBDC4', value: 'R$ 14,22', change: -0.85 },
-  { symbol: 'B3SA3', value: 'R$ 11,08', change: 0.33 },
+  { symbol: 'PETR4', value: 'R$\u00A038,45', change: 2.18 },
+  { symbol: 'VALE3', value: 'R$\u00A062,12', change: -1.05 },
+  { symbol: 'ITUB4', value: 'R$\u00A031,78', change: 0.67 },
+  { symbol: 'BBAS3', value: 'R$\u00A028,90', change: -0.42 },
+  { symbol: 'MGLU3', value: 'R$\u00A012,45', change: 4.85 },
+  { symbol: 'WEGE3', value: 'R$\u00A052,30', change: 1.24 },
+  { symbol: 'BBDC4', value: 'R$\u00A014,22', change: -0.85 },
+  { symbol: 'B3SA3', value: 'R$\u00A011,08', change: 0.33 },
 ])
 
 // Try to fetch real data if the backend is up, but don't block render
@@ -124,7 +125,7 @@ onMounted(async () => {
     if (Array.isArray(top) && top.length >= 6) {
       tapeItems.value = top.slice(0, 12).map((t: any) => ({
         symbol: t.ticker || t.symbol || '',
-        value: `R$ ${Number(t.market_price || 0).toFixed(2).replace('.', ',')}`,
+        value: `R$\u00A0${Number(t.market_price || 0).toFixed(2).replace('.', ',')}`,
         change: Number(t.change_percent || 0),
       }))
     }

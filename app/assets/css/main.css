@@ -17,6 +17,17 @@ body {
   color: var(--brand-text, white);
 }
 
+/* Balance wrapping for display headings so hero titles don't break
+   with a single orphan word on the last line. text-wrap: balance
+   is supported on all modern engines; older ones fall back to
+   default wrapping silently. */
+h1, h2 {
+  text-wrap: balance;
+}
+p {
+  text-wrap: pretty;
+}
+
 /* ================================================================
    Custom scrollbar — tenant-aware
    ================================================================

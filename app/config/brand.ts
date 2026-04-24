@@ -2698,21 +2698,26 @@ const redentia: BrandConfig = {
   // `categories` (both lead to /acoes, /fiis, /etfs, etc). This shaves
   // ~600px of vertical scroll on desktop and ~1000px on mobile.
   homeSections: [
+    // Header nav already links every category page (/acoes, /fiis, /etfs,
+    // /bdrs), so the on-page "categories" block would just duplicate nav
+    // links without adding new info — kept hidden to reduce visual noise.
+    // `aiCta` sits at the end so the last thing users see before the
+    // footer is the Assessoria IA call to action.
     { id: 'hero', visible: true },
     { id: 'trustBar', visible: true },
     { id: 'market', visible: true },
     { id: 'news', visible: true },
     { id: 'metrics', visible: true },
     { id: 'featureTabs', visible: false },
-    { id: 'categories', visible: true },
-    { id: 'aiCta', visible: true },
+    { id: 'categories', visible: false },
+    { id: 'guides', visible: true },
     { id: 'apiProduct', visible: true },
     { id: 'creativeProduct', visible: false },
     { id: 'educational', visible: false },
     { id: 'products', visible: false },
-    { id: 'guides', visible: true },
     { id: 'testimonials', visible: true },
     { id: 'marquee', visible: false },
+    { id: 'aiCta', visible: true },
   ],
 
   educational: {
