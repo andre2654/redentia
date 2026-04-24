@@ -1,5 +1,5 @@
 <template>
-  <NuxtLayout>
+  <NuxtLayout :name="layoutName">
     <div class="relative z-10 flex flex-col px-4 pt-4">
       <div class="flex flex-col">
         <!-- Terminal status bar — mesma linguagem da asset page -->
@@ -266,6 +266,10 @@ const route = useRoute()
 const brand = useBrand()
 const authStore = useAuthStore()
 const slug = String(route.params.slug)
+
+const layoutName = computed(() =>
+  authStore.isAuthenticated ? 'default' : 'unauthenticated'
+)
 
 const { getTesouro } = useTesouroService()
 
