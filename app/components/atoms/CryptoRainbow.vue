@@ -186,19 +186,20 @@ const props = withDefaults(defineProps<{
 
 const currencyLabel = computed(() => (props.currency === 'USD' ? '$' : 'R$'))
 
-// Canonical rainbow palette — most bearish to most bullish. Offsets are in
-// log10(price) space so on a log y-axis each band is a parallel stripe
-// around the regression line.
+// Canonical rainbow bands — from StephanAkkerman/bitcoin-rainbow-chart reference.
+// Offsets are in ln(price) space. The regression line passes through the
+// "Accumulate" band (i=2), so the rainbow is shifted upward relative to fit.
+// Band width = 0.3 (ln), i_decrease = 1.5, 9 bands: (i - 1.5) * 0.3 for i ∈ [0,8].
 const BANDS = [
-  { from: -9,    to: -0.40, color: '#2a60a0', label: 'Fire sale' },
-  { from: -0.40, to: -0.25, color: '#3c8ac0', label: 'Buy' },
-  { from: -0.25, to: -0.10, color: '#6bbf4e', label: 'Accumulate' },
-  { from: -0.10, to:  0.05, color: '#c4de4a', label: 'Still cheap' },
-  { from:  0.05, to:  0.20, color: '#fde74c', label: 'HODL' },
-  { from:  0.20, to:  0.35, color: '#f7a41a', label: 'Bubble forming' },
-  { from:  0.35, to:  0.50, color: '#e84c3d', label: 'FOMO' },
-  { from:  0.50, to:  0.65, color: '#c0392b', label: 'Sell. Seriously.' },
-  { from:  0.65, to:  9,    color: '#6e1a17', label: 'Max bubble' },
+  { from: -9,    to: -0.45, color: '#4472c4', label: 'Fire sale' },
+  { from: -0.45, to: -0.15, color: '#54989f', label: 'Buy' },
+  { from: -0.15, to:  0.15, color: '#63be7b', label: 'Accumulate' },
+  { from:  0.15, to:  0.45, color: '#b1d580', label: 'Still cheap' },
+  { from:  0.45, to:  0.75, color: '#feeb84', label: 'HODL' },
+  { from:  0.75, to:  1.05, color: '#f6b45a', label: 'Bubble forming' },
+  { from:  1.05, to:  1.35, color: '#ed7d31', label: 'FOMO Intensifies' },
+  { from:  1.35, to:  1.65, color: '#d64018', label: 'Sell. Seriously' },
+  { from:  1.65, to:  9,    color: '#c00200', label: 'Max bubble' },
 ] as const
 
 const VIEW_W = 1200
@@ -210,10 +211,9 @@ const MARGIN_B = 28
 
 const hoverX = ref<number | null>(null)
 
-// Least-squares regression in (ln(days+1), log10(price)). We project every
-// point used for the regression AND the future window up to the next-next
-// halving, so the rainbow visibly extends into the future. Start from the
-// first point's day=1.
+// Least-squares regression in (ln(days+1), ln(price)). Matches the canonical
+// Trolololo / StephanAkkerman rainbow-chart formulation: y = a*ln(x+1) + c.
+// Day 1 is the first historical point; we project up to the next-next halving.
 const regression = computed(() => {
   const pts = props.points.filter((p) => p.price > 0)
   if (pts.length < 30) return null
@@ -224,8 +224,8 @@ const regression = computed(() => {
   const n = pts.length
   for (const p of pts) {
     const days = Math.max(1, Math.round((p.timestamp - firstTs) / 86400000) + 1)
-    const x = Math.log(days)
-    const y = Math.log10(p.price)
+    const x = Math.log(days)    // ln(days)
+    const y = Math.log(p.price) // ln(price)
     sumX += x; sumY += y
     sumXY += x * y
     sumXX += x * x
@@ -252,36 +252,34 @@ const renderWindow = computed(() => {
   return { startTs, endTs, startYear, endYear }
 })
 
-// Y domain: fit to the projected band extremes at the right edge, clipped
-// to something sane (no need to show $1B on the chart when the max band at
-// 2032 is already in the low millions). We also ensure the earliest data
-// point fits in view.
+// Y domain in ln(price) space. Fits observed range AND projected band
+// extremes at start/end of render window. Band offsets: fit-0.45 (bottom of
+// Fire sale visible) to fit+1.95 (top of Max bubble).
 const yDomain = computed<{ min: number; max: number } | null>(() => {
   const r = regression.value
   const w = renderWindow.value
   if (!r || !w) return null
 
-  // Price fit at first and last render X
   const endX = Math.log(Math.max(1, (w.endTs - r.firstTs) / 86400000 + 1))
   const fitEnd = r.m * endX + r.b
 
-  let minLog = Infinity
-  let maxLog = -Infinity
+  let minLn = Infinity
+  let maxLn = -Infinity
   for (const p of r.pts) {
-    const lp = Math.log10(p.price)
-    if (lp < minLog) minLog = lp
-    if (lp > maxLog) maxLog = lp
+    const lp = Math.log(p.price)
+    if (lp < minLn) minLn = lp
+    if (lp > maxLn) maxLn = lp
   }
 
-  // Upper bound: whichever is higher — observed max OR projected top band at end
-  const projectedTop = fitEnd + 0.65   // top band cap
-  const topLog = Math.max(maxLog, projectedTop) + 0.15
-  // Lower bound: observed min minus one band, but not worse than fit-0.8 at start
+  // Upper bound: top of Max bubble band (fit + 1.95) at end of render window
+  const projectedTop = fitEnd + 1.95
+  const topLn = Math.max(maxLn, projectedTop) + 0.3
+  // Lower bound: bottom of Fire sale band (fit - 0.75) at start of render window
   const startX = Math.log(1)
   const fitStart = r.m * startX + r.b
-  const projectedBot = fitStart - 0.4
-  const botLog = Math.min(minLog, projectedBot) - 0.2
-  return { min: botLog, max: topLog }
+  const projectedBot = fitStart - 0.75
+  const botLn = Math.min(minLn, projectedBot) - 0.4
+  return { min: botLn, max: topLn }
 })
 
 // Project a timestamp + log10(price) → (x, y) within the viewBox.
@@ -296,7 +294,7 @@ function projectY(logPrice: number): number {
   return VIEW_H - MARGIN_B - frac * (VIEW_H - MARGIN_T - MARGIN_B)
 }
 
-// Fit log10(price) for a given timestamp based on the regression.
+// Fit ln(price) for a given timestamp based on the regression.
 function fitLog(timestamp: number): number {
   const r = regression.value!
   const days = Math.max(1, (timestamp - r.firstTs) / 86400000 + 1)
@@ -348,7 +346,7 @@ const priceLinePath = computed(() => {
   for (let i = 0; i < r.pts.length; i++) {
     const p = r.pts[i]!
     const x = projectTs(p.timestamp)
-    const y = projectY(Math.log10(p.price))
+    const y = projectY(Math.log(p.price))
     coords.push(`${i === 0 ? 'M' : 'L'}${x.toFixed(2)} ${y.toFixed(2)}`)
   }
   return coords.join(' ')
@@ -358,25 +356,27 @@ const lastPoint = computed(() => {
   const r = regression.value
   if (!r || !renderWindow.value || !yDomain.value) return null
   const p = r.pts[r.pts.length - 1]!
-  return { x: projectTs(p.timestamp), y: projectY(Math.log10(p.price)) }
+  return { x: projectTs(p.timestamp), y: projectY(Math.log(p.price)) }
 })
 
 const currentZone = computed(() => {
   const r = regression.value
   if (!r) return null
   const last = r.pts[r.pts.length - 1]!
-  const residual = Math.log10(last.price) - fitLog(last.timestamp)
+  const residual = Math.log(last.price) - fitLog(last.timestamp)
   return BANDS.find((b) => residual >= b.from && residual < b.to) ?? null
 })
 
-// Y ticks: powers of 10 inside [domain.min, domain.max].
+// Y ticks: powers of 10 inside [domain.min, domain.max]. Domain is in ln,
+// so we convert: ln(10^p) = p * ln(10).
+const LN10 = Math.log(10)
 const yTicks = computed(() => {
   const d = yDomain.value
   if (!d) return []
-  const lo = Math.ceil(d.min)
-  const hi = Math.floor(d.max)
+  const lo = Math.ceil(d.min / LN10)
+  const hi = Math.floor(d.max / LN10)
   const out: { value: number; y: number }[] = []
-  for (let p = lo; p <= hi; p++) out.push({ value: Math.pow(10, p), y: projectY(p) })
+  for (let p = lo; p <= hi; p++) out.push({ value: Math.pow(10, p), y: projectY(p * LN10) })
   return out
 })
 
@@ -409,12 +409,14 @@ const halvingMarkers = computed(() => {
 // to that date.
 const svgEl = ref<SVGSVGElement | null>(null)
 
+// SVG uses preserveAspectRatio="none" + viewBox=VIEW_WxVIEW_H, so viewBox X
+// maps linearly to container X. Mouse pixel → viewBox X is just ratio * VIEW_W.
 function onMove(ev: MouseEvent) {
   const el = svgEl.value
   if (!el) return
   const rect = el.getBoundingClientRect()
   const ratio = (ev.clientX - rect.left) / rect.width
-  hoverX.value = MARGIN_L + ratio * (VIEW_W - MARGIN_L - MARGIN_R)
+  hoverX.value = ratio * VIEW_W
 }
 function onTouch(ev: TouchEvent) {
   const touch = ev.touches[0]
@@ -423,7 +425,7 @@ function onTouch(ev: TouchEvent) {
   if (!el) return
   const rect = el.getBoundingClientRect()
   const ratio = (touch.clientX - rect.left) / rect.width
-  hoverX.value = MARGIN_L + ratio * (VIEW_W - MARGIN_L - MARGIN_R)
+  hoverX.value = ratio * VIEW_W
 }
 
 const hoverInfo = computed(() => {
@@ -444,14 +446,20 @@ const hoverInfo = computed(() => {
     const idx = binarySearchNearest(r.pts, ts)
     const p = r.pts[idx]!
     priceUsd = p.price
-    priceY = projectY(Math.log10(p.price))
+    priceY = projectY(Math.log(p.price))
   }
 
-  const bands = BANDS.slice().reverse().map((b) => ({
-    label: b.label,
-    color: b.color,
-    price: Math.pow(10, fit + (b.to + b.from) / 2),
-  }))
+  const bands = BANDS.slice().reverse().map((b) => {
+    // Clamp infinite extremes so the tooltip shows a meaningful price for the
+    // Fire sale / Max bubble bands (their from/to use ±9 as "open" limits).
+    const lo = Math.max(b.from, -2)
+    const hi = Math.min(b.to, 3)
+    return {
+      label: b.label,
+      color: b.color,
+      price: Math.exp(fit + (lo + hi) / 2),
+    }
+  })
 
   const date = new Date(ts)
   const dateLabel = `${String(date.getUTCMonth() + 1).padStart(2, '0')}/${date.getUTCFullYear()}`
