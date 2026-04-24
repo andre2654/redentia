@@ -3020,11 +3020,12 @@
               </svg>
             </div>
 
-            <!-- Content grid: identity | price | stats -->
-            <div class="relative grid gap-6 p-6 md:grid-cols-12 md:items-center md:gap-8 md:p-8">
-              <!-- Col 1: Identity -->
-              <div class="flex items-center gap-4 md:col-span-4">
-                <USkeleton v-if="isLoadingAsset" class="size-14 rounded-xl md:size-16" />
+            <!-- Content grid. Mobile: compact top row (logo + ticker + price)
+                 + discreet stats below. Desktop: 3-col balanced grid. -->
+            <div class="relative flex flex-col gap-4 p-4 md:grid md:grid-cols-12 md:items-center md:gap-8 md:p-8">
+              <!-- Top row mobile, Col 1-2 desktop: Identity + Price -->
+              <div class="flex items-center gap-3 md:col-span-8 md:gap-4">
+                <USkeleton v-if="isLoadingAsset" class="size-10 rounded-lg md:size-16 md:rounded-xl" />
                 <NuxtImg
                   v-else-if="resolvedLogo"
                   :src="resolvedLogo"
@@ -3034,41 +3035,58 @@
                   loading="eager"
                   fetchpriority="high"
                   decoding="async"
-                  class="size-14 shrink-0 rounded-xl object-cover md:size-16"
+                  class="size-10 shrink-0 rounded-lg object-cover md:size-16 md:rounded-xl"
                 />
-                <div class="flex min-w-0 flex-col gap-1">
-                  <span
-                    class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
-                    :style="{ color: brand.colors.primary }"
-                    translate="no"
-                  >
-                    {{ tickerUpper }}
-                  </span>
-                  <h1
-                    class="font-mono-tab text-3xl font-bold leading-none tracking-tight md:text-4xl"
-                    :style="{ color: brand.colors.text }"
-                    translate="no"
-                  >
-                    {{ tickerUpper }}
-                  </h1>
-                  <span
-                    class="line-clamp-1 text-sm font-semibold md:text-base"
-                    :style="{ color: `${brand.colors.text}CC` }"
-                  >
-                    {{ asset?.name || assetName }}
-                  </span>
-                  <span
-                    v-if="asset?.sector"
-                    class="font-mono-tab text-[10px] uppercase tracking-[0.12em]"
-                    :style="{ color: brand.colors.textMuted }"
-                  >
-                    &gt; {{ asset.sector }}
-                  </span>
+                <div class="flex min-w-0 flex-1 items-center gap-3 md:flex-col md:items-start md:gap-1">
+                  <!-- Ticker: compact on mobile (inline with price), prominent on desktop -->
+                  <div class="flex min-w-0 flex-col">
+                    <h1
+                      class="font-mono-tab text-lg font-bold leading-tight tracking-tight md:text-4xl"
+                      :style="{ color: brand.colors.text }"
+                      translate="no"
+                    >
+                      {{ tickerUpper }}
+                    </h1>
+                    <span
+                      class="line-clamp-1 text-[11px] font-medium md:text-base md:font-semibold"
+                      :style="{ color: `${brand.colors.text}99` }"
+                    >
+                      {{ asset?.name || assetName }}
+                    </span>
+                    <span
+                      v-if="asset?.sector"
+                      class="hidden font-mono-tab text-[10px] uppercase tracking-[0.12em] md:block"
+                      :style="{ color: brand.colors.textMuted }"
+                    >
+                      &gt; {{ asset.sector }}
+                    </span>
+                  </div>
+
+                  <!-- Mobile-only inline price at the right end of the header row -->
+                  <div class="ml-auto flex flex-col items-end gap-0.5 text-right md:hidden">
+                    <USkeleton v-if="isLoadingAsset" class="h-6 w-20" />
+                    <template v-else>
+                      <span
+                        class="font-mono-tab text-xl font-bold leading-none tabular-nums"
+                        :style="{ color: brand.colors.text }"
+                        translate="no"
+                      >
+                        R$&nbsp;{{ formatPriceNumber(asset?.market_price) }}
+                      </span>
+                      <span
+                        class="font-mono-tab text-[11px] font-semibold tabular-nums"
+                        :style="{ color: heroAccent }"
+                        translate="no"
+                      >
+                        {{ isPositive ? '+' : '' }}{{ Number(asset?.change_percent || 0).toFixed(2) }}%
+                      </span>
+                    </template>
+                  </div>
                 </div>
               </div>
 
-              <!-- Col 2: Price + change badge -->
-              <div class="flex flex-col gap-2 md:col-span-4">
+              <!-- Desktop-only price block (hidden on mobile, shown in header row above) -->
+              <div class="hidden flex-col gap-2 md:col-span-4 md:flex">
                 <USkeleton v-if="isLoadingAsset" class="h-14 w-48" />
                 <template v-else>
                   <div class="flex items-baseline gap-1.5">
@@ -3115,10 +3133,11 @@
                 </template>
               </div>
 
-              <!-- Col 3: Session stats (compact pill grid) -->
-              <div class="md:col-span-4">
+              <!-- Stats row. Mobile: horizontal scroll, tiny text, border-t
+                   separator from price row. Desktop: unchanged 3-col. -->
+              <div class="md:col-span-12 md:border-t-0 md:pt-0 border-t pt-3" :style="{ borderColor: brand.colors.border }">
                 <div
-                  class="grid grid-cols-3 gap-x-4 gap-y-3 font-mono-tab"
+                  class="grid grid-cols-3 gap-x-3 gap-y-2 font-mono-tab md:grid-cols-6 md:gap-x-4 md:gap-y-3"
                 >
                   <div
                     v-for="stat in sessionStats"
@@ -3126,13 +3145,13 @@
                     class="flex flex-col gap-0.5"
                   >
                     <span
-                      class="text-[9px] uppercase tracking-[0.15em]"
+                      class="text-[9px] uppercase tracking-[0.12em]"
                       :style="{ color: brand.colors.textMuted }"
                     >
                       {{ stat.label }}
                     </span>
                     <span
-                      class="text-[13px] font-semibold tabular-nums"
+                      class="text-[12px] font-semibold tabular-nums md:text-[13px]"
                       :style="{ color: stat.accent || brand.colors.text }"
                       translate="no"
                     >
@@ -3144,23 +3163,8 @@
             </div>
           </div>
 
-          <!-- Chart with terminal-styled header -->
-          <div class="mt-8">
-            <div class="mb-3 flex items-end justify-between gap-4">
-              <div class="flex flex-col gap-1">
-                <span
-                  class="font-mono-tab text-[11px] uppercase tracking-[0.12em]"
-                  :style="{ color: brand.colors.textMuted }"
-                >
-                  &gt; HISTÓRICO DE COTAÇÃO · {{ selectedTimeRange?.toString().toUpperCase() || 'PERÍODO' }}
-                </span>
-              </div>
-              <MoleculesPeriodSelector
-                v-model="selectedTimeRange"
-                :loading="isLoadingChart"
-                class="max-md:w-full"
-              />
-            </div>
+          <!-- Chart with unified toolbar -->
+          <div ref="assetChartRef" class="mt-8">
             <AtomsGraphLine
               :data="chartData"
               :legend="chartLabel"
@@ -3168,9 +3172,77 @@
               :loading="isLoadingChart"
               :markers="chartMarkers"
               @marker-click="onMarkerClick"
-            />
+            >
+              <template #toolbar>
+                <AtomsGraphToolbar
+                  :show-fullscreen="true"
+                  @screenshot="assetScreenshotRef?.open()"
+                  @fullscreen="assetFullscreenRef?.open()"
+                >
+                  <template #extras>
+                    <span
+                      class="font-mono-tab text-[11px] uppercase tracking-[0.12em]"
+                      :style="{ color: brand.colors.textMuted }"
+                    >
+                      Histórico de cotação
+                    </span>
+                  </template>
+                  <template #period>
+                    <MoleculesPeriodSelector
+                      v-model="selectedTimeRange"
+                      :loading="isLoadingChart"
+                    />
+                  </template>
+                </AtomsGraphToolbar>
+              </template>
+            </AtomsGraphLine>
           </div>
         </section>
+
+        <!-- Screenshot modal -->
+        <AtomsGraphScreenshotModal
+          ref="assetScreenshotRef"
+          :title="tickerUpper"
+          :subtitle="asset?.name || assetName"
+          :price-label="`R$ ${formatPriceNumber(asset?.market_price)}`"
+          :change-label="`${isPositive ? '+' : ''}${Number(asset?.change_percent || 0).toFixed(2)}%`"
+          :is-positive="isPositive"
+          :avatar-text="tickerUpper.slice(0, 2)"
+          :capture-target="() => (assetChartRef as any)?.querySelector?.('[data-chart-capture-root]') ?? null"
+        />
+
+        <!-- Fullscreen chart dialog -->
+        <AtomsGraphFullscreenDialog
+          ref="assetFullscreenRef"
+          :title="`${tickerUpper} — ${asset?.name || assetName}`"
+          :subtitle="asset?.sector || 'Ações B3'"
+          :change-label="`${isPositive ? '+' : ''}${Number(asset?.change_percent || 0).toFixed(2)}%`"
+          :is-positive="isPositive"
+        >
+          <template #chart="{ expandedHeight }">
+            <AtomsGraphLine
+              :data="chartData"
+              :legend="chartLabel"
+              :height="expandedHeight"
+              :loading="isLoadingChart"
+              :markers="chartMarkers"
+            >
+              <template #toolbar>
+                <AtomsGraphToolbar
+                  :show-fullscreen="false"
+                  :show-screenshot="false"
+                >
+                  <template #period>
+                    <MoleculesPeriodSelector
+                      v-model="selectedTimeRange"
+                      :loading="isLoadingChart"
+                    />
+                  </template>
+                </AtomsGraphToolbar>
+              </template>
+            </AtomsGraphLine>
+          </template>
+        </AtomsGraphFullscreenDialog>
 
         <!-- Market Commentaries (AI-generated news/analysis) -->
         <section
@@ -5561,6 +5633,11 @@ const isForeignOrFii = computed(() => isFii.value || isBdr.value || isEtf.value)
  *   - ETF   : basket metrics (52w range, ratio, volume) instead of fundamentals
  *   - STOCK : classic VOL · M.CAP · DY · P/L · P/VP · ROE
  */
+// Chart screenshot + toolbar refs
+const assetChartRef = ref<HTMLElement | null>(null)
+const assetScreenshotRef = ref<{ open: () => void; close: () => void } | null>(null)
+const assetFullscreenRef = ref<{ open: () => void; close: () => void } | null>(null)
+
 // Hero dashboard card state: gradient tint + accent color + sparkline
 const isPositive = computed(() => Number(asset.value?.change_percent ?? 0) >= 0)
 const heroAccent = computed(() => (isPositive.value ? brand.colors.positive : brand.colors.negative))

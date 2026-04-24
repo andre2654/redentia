@@ -63,12 +63,13 @@
               </svg>
             </div>
 
-            <!-- Grid: identity | price | stats -->
-            <div class="relative grid gap-6 p-6 md:grid-cols-12 md:items-center md:gap-8 md:p-8">
-              <!-- Col 1: Identity -->
-              <div class="flex items-center gap-4 md:col-span-4">
+            <!-- Content grid. Mobile: compact top row (logo + symbol + price)
+                 + discreet stats below. Desktop: 3-col balanced grid. -->
+            <div class="relative flex flex-col gap-4 p-4 md:grid md:grid-cols-12 md:items-center md:gap-8 md:p-8">
+              <!-- Top row mobile, Col 1 desktop: Identity -->
+              <div class="flex items-center gap-3 md:col-span-4 md:gap-4">
                 <div
-                  class="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-xl md:size-16"
+                  class="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-lg md:size-16 md:rounded-xl"
                   :style="{ backgroundColor: `${brand.colors.text}08` }"
                 >
                   <NuxtImg
@@ -86,32 +87,52 @@
                     {{ crypto?.symbol.slice(0, 3).toUpperCase() }}
                   </span>
                 </div>
-                <div class="flex min-w-0 flex-col gap-1">
-                  <span
-                    class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
-                    :style="{ color: brand.colors.primary }"
-                    translate="no"
-                  >
-                    {{ (crypto?.symbol ?? symbol).toString().toUpperCase() }} · #{{ crypto?.rank ?? '—' }}
-                  </span>
-                  <h1
-                    class="font-mono-tab text-3xl font-bold leading-none tracking-tight md:text-4xl"
-                    :style="{ color: brand.colors.text }"
-                    translate="no"
-                  >
-                    {{ (crypto?.symbol ?? symbol).toString().toUpperCase() }}
-                  </h1>
-                  <span
-                    class="line-clamp-1 text-sm font-semibold md:text-base"
-                    :style="{ color: `${brand.colors.text}CC` }"
-                  >
-                    {{ crypto?.name ?? symbol }}
-                  </span>
+                <div class="flex min-w-0 flex-1 items-center gap-3 md:flex-col md:items-start md:gap-1">
+                  <div class="flex min-w-0 flex-col">
+                    <span
+                      class="hidden font-mono-tab text-[10px] uppercase tracking-[0.2em] md:block"
+                      :style="{ color: brand.colors.primary }"
+                      translate="no"
+                    >
+                      {{ (crypto?.symbol ?? symbol).toString().toUpperCase() }} · #{{ crypto?.rank ?? '—' }}
+                    </span>
+                    <h1
+                      class="font-mono-tab text-lg font-bold leading-tight tracking-tight md:text-4xl md:leading-none"
+                      :style="{ color: brand.colors.text }"
+                      translate="no"
+                    >
+                      {{ (crypto?.symbol ?? symbol).toString().toUpperCase() }}
+                    </h1>
+                    <span
+                      class="line-clamp-1 text-[11px] font-medium md:text-base md:font-semibold"
+                      :style="{ color: `${brand.colors.text}99` }"
+                    >
+                      {{ crypto?.name ?? symbol }}
+                    </span>
+                  </div>
+
+                  <!-- Mobile-only inline price at the right end of the header row -->
+                  <div class="ml-auto flex flex-col items-end gap-0.5 text-right md:hidden">
+                    <span
+                      class="font-mono-tab text-xl font-bold leading-none tabular-nums"
+                      :style="{ color: brand.colors.text }"
+                      translate="no"
+                    >
+                      R$&nbsp;{{ formatPriceNumberCrypto((crypto as any)?.price_brl ?? null) }}
+                    </span>
+                    <span
+                      class="font-mono-tab text-[11px] font-semibold tabular-nums"
+                      :style="{ color: cryptoAccent }"
+                      translate="no"
+                    >
+                      {{ cryptoIsPositive ? '+' : '' }}{{ Number(crypto?.change_24h_pct ?? 0).toFixed(2) }}%
+                    </span>
+                  </div>
                 </div>
               </div>
 
-              <!-- Col 2: Price + 24h badge -->
-              <div class="flex flex-col gap-2 md:col-span-4">
+              <!-- Col 2 desktop: Price + 24h badge (hidden mobile) -->
+              <div class="hidden flex-col gap-2 md:col-span-4 md:flex">
                 <div class="flex items-baseline gap-1.5">
                   <span
                     class="font-mono-tab text-xs opacity-70"
@@ -167,30 +188,31 @@
                 </div>
               </div>
 
-              <!-- Col 3: Stats grid -->
-              <div class="md:col-span-4">
-                <div class="grid grid-cols-2 gap-x-4 gap-y-3 font-mono-tab">
+              <!-- Stats row. Mobile: compact grid, tiny text, border-t
+                   separator from price row. Desktop: unchanged col-span-4. -->
+              <div class="border-t pt-3 md:col-span-4 md:border-t-0 md:pt-0" :style="{ borderColor: brand.colors.border }">
+                <div class="grid grid-cols-2 gap-x-3 gap-y-2 font-mono-tab md:gap-x-4 md:gap-y-3">
                   <div class="flex flex-col gap-0.5">
-                    <span class="text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">HIGH 24H</span>
-                    <span class="text-[13px] font-semibold tabular-nums" :style="{ color: brand.colors.positive }" translate="no">
+                    <span class="text-[9px] uppercase tracking-[0.12em] md:tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">HIGH 24H</span>
+                    <span class="text-[12px] font-semibold tabular-nums md:text-[13px]" :style="{ color: brand.colors.positive }" translate="no">
                       {{ formatBrl((crypto?.ohlc as any)?.high_brl ?? null) }}
                     </span>
                   </div>
                   <div class="flex flex-col gap-0.5">
-                    <span class="text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">LOW 24H</span>
-                    <span class="text-[13px] font-semibold tabular-nums" :style="{ color: brand.colors.negative }" translate="no">
+                    <span class="text-[9px] uppercase tracking-[0.12em] md:tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">LOW 24H</span>
+                    <span class="text-[12px] font-semibold tabular-nums md:text-[13px]" :style="{ color: brand.colors.negative }" translate="no">
                       {{ formatBrl((crypto?.ohlc as any)?.low_brl ?? null) }}
                     </span>
                   </div>
                   <div class="flex flex-col gap-0.5">
-                    <span class="text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">MKT CAP</span>
-                    <span class="text-[13px] font-semibold tabular-nums" :style="{ color: brand.colors.text }" translate="no">
+                    <span class="text-[9px] uppercase tracking-[0.12em] md:tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">MKT CAP</span>
+                    <span class="text-[12px] font-semibold tabular-nums md:text-[13px]" :style="{ color: brand.colors.text }" translate="no">
                       {{ formatBrl((crypto as any)?.market_cap_brl ?? null, { compact: true }) }}
                     </span>
                   </div>
                   <div class="flex flex-col gap-0.5">
-                    <span class="text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">VOL 24H</span>
-                    <span class="text-[13px] font-semibold tabular-nums" :style="{ color: brand.colors.text }" translate="no">
+                    <span class="text-[9px] uppercase tracking-[0.12em] md:tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">VOL 24H</span>
+                    <span class="text-[12px] font-semibold tabular-nums md:text-[13px]" :style="{ color: brand.colors.text }" translate="no">
                       {{ formatBrl((crypto as any)?.volume_24h_brl ?? null, { compact: true }) }}
                     </span>
                   </div>
@@ -202,70 +224,159 @@
 
         <!-- Chart section (price ou rainbow, toggle no mesmo padrão do tesouro) -->
         <section class="border-b py-8" :style="{ borderColor: brand.colors.border }">
-          <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-            <div class="flex flex-col gap-1">
-              <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
-                {{ chartMode === 'rainbow' ? 'Rainbow chart · escala log projetada' : 'Histórico de cotação' }}
-              </h2>
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
-                <template v-if="chartMode === 'rainbow'">
-                  &gt; BANDAS DE REGRESSÃO LOGARÍTMICA · {{ rainbowStartYear }} → 2032 · HALVINGS MARCADOS · PASSE O MOUSE PARA VER O PREÇO DE CADA BANDA
-                </template>
-                <template v-else>
-                  &gt; SÉRIE DIÁRIA · BRL · {{ selectedChartRange.toUpperCase() }}
-                </template>
-              </span>
-            </div>
-            <div class="flex flex-col gap-2 md:flex-row md:items-center">
-              <div
-                v-if="crypto?.has_rainbow"
-                class="flex items-center gap-px border font-mono-tab text-[10px] uppercase tracking-[0.15em]"
-                :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }"
-              >
-                <button
-                  v-for="opt in chartModeOptions"
-                  :key="opt.value"
-                  :aria-label="`Mudar gráfico para ${opt.label}`"
-                  type="button"
-                  class="px-3 py-2 transition-colors"
-                  :style="{
-                    backgroundColor: chartMode === opt.value ? brand.colors.primary : brand.colors.surface,
-                    color: chartMode === opt.value ? brand.colors.background : brand.colors.textMuted,
-                  }"
-                  @click="chartMode = opt.value"
-                >
-                  {{ opt.label }}
-                </button>
+          <div ref="cryptoChartRef" class="mt-0">
+            <!-- Rainbow mode: toolbar sibling above (AtomsCryptoRainbow não tem slot #toolbar) -->
+            <template v-if="chartMode === 'rainbow' && crypto?.has_rainbow">
+              <div class="mb-4">
+                <AtomsGraphToolbar @screenshot="cryptoScreenshotRef?.open()">
+                  <template #extras>
+                    <span
+                      class="font-mono-tab text-[11px] uppercase tracking-[0.12em]"
+                      :style="{ color: brand.colors.textMuted }"
+                    >
+                      Rainbow chart
+                    </span>
+                    <div
+                      class="inline-flex items-center border font-mono-tab text-[10px] uppercase tracking-[0.15em]"
+                      :style="{ borderColor: brand.colors.border }"
+                      role="group"
+                      aria-label="Modo do gráfico"
+                    >
+                      <button
+                        v-for="opt in chartModeOptions"
+                        :key="opt.value"
+                        :aria-label="`Mudar gráfico para ${opt.label}`"
+                        :aria-pressed="chartMode === opt.value"
+                        type="button"
+                        class="inline-flex h-8 items-center justify-center px-3 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset"
+                        :style="{
+                          backgroundColor: chartMode === opt.value ? brand.colors.primary : 'transparent',
+                          color: chartMode === opt.value ? brand.colors.background : brand.colors.textMuted,
+                        }"
+                        @click="chartMode = opt.value"
+                      >
+                        {{ opt.label }}
+                      </button>
+                    </div>
+                  </template>
+                </AtomsGraphToolbar>
               </div>
-              <MoleculesPeriodSelector
-                v-if="chartMode === 'price'"
-                v-model="selectedChartRange"
-                :options="chartRangeOptions"
-                :loading="isLoadingChart"
-                class="max-md:w-full"
+              <AtomsCryptoRainbow
+                :points="rainbowPoints"
+                :coin-id="crypto.id"
+                :height="480"
+                currency="BRL"
               />
-            </div>
+            </template>
+
+            <!-- Price mode: toolbar vai dentro do slot #toolbar do AtomsGraphLine -->
+            <template v-else>
+              <AtomsGraphLine
+                :data="chartData"
+                :legend="chartLegend"
+                :height="320"
+                :loading="isLoadingChart"
+                currency="R$"
+              >
+                <template #toolbar>
+                  <AtomsGraphToolbar
+                    :show-fullscreen="true"
+                    @screenshot="cryptoScreenshotRef?.open()"
+                    @fullscreen="cryptoFullscreenRef?.open()"
+                  >
+                    <template #extras>
+                      <span
+                        class="font-mono-tab text-[11px] uppercase tracking-[0.12em]"
+                        :style="{ color: brand.colors.textMuted }"
+                      >
+                        Histórico de cotação
+                      </span>
+                      <div
+                        v-if="crypto?.has_rainbow"
+                        class="inline-flex items-center border font-mono-tab text-[10px] uppercase tracking-[0.15em]"
+                        :style="{ borderColor: brand.colors.border }"
+                        role="group"
+                        aria-label="Modo do gráfico"
+                      >
+                        <button
+                          v-for="opt in chartModeOptions"
+                          :key="opt.value"
+                          :aria-label="`Mudar gráfico para ${opt.label}`"
+                          :aria-pressed="chartMode === opt.value"
+                          type="button"
+                          class="inline-flex h-8 items-center justify-center px-3 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset"
+                          :style="{
+                            backgroundColor: chartMode === opt.value ? brand.colors.primary : 'transparent',
+                            color: chartMode === opt.value ? brand.colors.background : brand.colors.textMuted,
+                          }"
+                          @click="chartMode = opt.value"
+                        >
+                          {{ opt.label }}
+                        </button>
+                      </div>
+                    </template>
+                    <template #period>
+                      <MoleculesPeriodSelector
+                        v-model="selectedChartRange"
+                        :options="chartRangeOptions"
+                        :loading="isLoadingChart"
+                      />
+                    </template>
+                  </AtomsGraphToolbar>
+                </template>
+              </AtomsGraphLine>
+              <p v-if="!isLoadingChart && chartData.length === 0" class="mt-4 text-sm" :style="{ color: brand.colors.textMuted }">
+                Histórico não disponível para essa cripto. Hoje só BTC, ETH e SOL têm série histórica completa.
+              </p>
+            </template>
           </div>
-          <AtomsCryptoRainbow
-            v-if="chartMode === 'rainbow' && crypto?.has_rainbow"
-            :points="rainbowPoints"
-            :coin-id="crypto.id"
-            :height="480"
-            currency="BRL"
-          />
-          <template v-else>
+        </section>
+
+        <!-- Screenshot modal -->
+        <AtomsGraphScreenshotModal
+          ref="cryptoScreenshotRef"
+          :title="(crypto?.symbol ?? symbol).toString().toUpperCase()"
+          :subtitle="crypto?.name ?? symbol"
+          :price-label="`R$ ${formatPriceNumberCrypto((crypto as any)?.price_brl ?? null)}`"
+          :change-label="`${cryptoIsPositive ? '+' : ''}${Number(crypto?.change_24h_pct ?? 0).toFixed(2)}%`"
+          :is-positive="cryptoIsPositive"
+          :avatar-text="(crypto?.symbol ?? symbol).toString().slice(0, 3).toUpperCase()"
+          :capture-target="() => (cryptoChartRef as any)?.querySelector?.('[data-chart-capture-root]') ?? null"
+        />
+
+        <!-- Fullscreen chart dialog -->
+        <AtomsGraphFullscreenDialog
+          ref="cryptoFullscreenRef"
+          :title="crypto?.name ?? symbol"
+          :subtitle="(crypto?.symbol?.toUpperCase() ?? symbol) + (crypto?.rank ? ' · #' + crypto.rank : '')"
+          :change-label="`${cryptoIsPositive ? '+' : ''}${Number(crypto?.change_24h_pct || 0).toFixed(2)}%`"
+          :is-positive="cryptoIsPositive"
+        >
+          <template #chart="{ expandedHeight }">
             <AtomsGraphLine
               :data="chartData"
               :legend="chartLegend"
-              :height="320"
+              :height="expandedHeight"
               :loading="isLoadingChart"
               currency="R$"
-            />
-            <p v-if="!isLoadingChart && chartData.length === 0" class="mt-4 text-sm" :style="{ color: brand.colors.textMuted }">
-              Histórico não disponível para essa cripto. Hoje só BTC, ETH e SOL têm série histórica completa.
-            </p>
+            >
+              <template #toolbar>
+                <AtomsGraphToolbar
+                  :show-fullscreen="false"
+                  :show-screenshot="false"
+                >
+                  <template #period>
+                    <MoleculesPeriodSelector
+                      v-model="selectedChartRange"
+                      :options="chartRangeOptions"
+                      :loading="isLoadingChart"
+                    />
+                  </template>
+                </AtomsGraphToolbar>
+              </template>
+            </AtomsGraphLine>
           </template>
-        </section>
+        </AtomsGraphFullscreenDialog>
 
         <!-- Tokenomics -->
         <section class="border-b py-8" :style="{ borderColor: brand.colors.border }">
@@ -481,6 +592,11 @@ const selectedChartRange = ref<CryptoPriceRange>('1y')
 const rawPrices = ref<Awaited<ReturnType<typeof getCryptoPrices>>>([])
 const fullPrices = ref<Awaited<ReturnType<typeof getCryptoPrices>>>([])
 const isLoadingChart = ref(false)
+
+// Chart container ref + screenshot modal ref (toolbar integration)
+const cryptoChartRef = ref<HTMLElement | null>(null)
+const cryptoScreenshotRef = ref<{ open: () => void; close: () => void } | null>(null)
+const cryptoFullscreenRef = ref<{ open: () => void; close: () => void } | null>(null)
 
 const chartData = computed<IChartDataPoint[]>(() =>
   rawPrices.value

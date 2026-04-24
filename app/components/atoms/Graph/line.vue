@@ -10,9 +10,12 @@
       <slot name="toolbar" />
     </div>
 
-    <!-- Container do gráfico -->
+    <!-- Container do gráfico. `data-chart-capture-root` marks the element
+         that screenshot modals should target — it excludes the toolbar
+         above, keeping only the plotting area in the exported PNG. -->
     <div
       ref="chartContainerRef"
+      data-chart-capture-root
       :style="{ height: `${height}px` }"
       class="relative w-full rounded-lg"
     >
@@ -475,7 +478,10 @@ interface MarkerPosition {
   y: number
   items: IChartMarker[]
 }
-const markerPositions = ref<MarkerPosition[]>([])
+// shallowRef: marker positions are reassigned wholesale on every chart
+// draw (never mutated in place), so deep reactivity would just burn
+// cycles walking through objects that never trigger watchers anyway.
+const markerPositions = shallowRef<MarkerPosition[]>([])
 
 // Position + value of the "prev close" dashed line label. Populated by the
 // closingDeltaFill plugin on every draw; consumed by an absolutely
@@ -617,7 +623,9 @@ const isHovering = computed({
 })
 
 /* ========== Dados de loading ========== */
-const loadingData = ref<IChartDataPoint[]>([])
+// shallowRef: loading data is reassigned on each frame (generateLoadingData
+// returns a new array); no in-place mutations. Skips deep reactivity cost.
+const loadingData = shallowRef<IChartDataPoint[]>([])
 const loadingAnimationFrame: Ref<number | null> = ref(null)
 const loadingTimeoutId: Ref<NodeJS.Timeout | null> = ref(null)
 

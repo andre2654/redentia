@@ -61,12 +61,13 @@
               </svg>
             </div>
 
-            <!-- Grid: identity | rate | stats -->
-            <div class="relative grid gap-6 p-6 md:grid-cols-12 md:items-center md:gap-8 md:p-8">
-              <!-- Col 1: Indexer badge + name -->
-              <div class="flex items-center gap-4 md:col-span-4">
+            <!-- Content grid. Mobile: compact top row (badge + indexer + rate)
+                 + discreet stats below. Desktop: 3-col balanced grid. -->
+            <div class="relative flex flex-col gap-4 p-4 md:grid md:grid-cols-12 md:items-center md:gap-8 md:p-8">
+              <!-- Top row mobile, Col 1 desktop: Indexer badge + name -->
+              <div class="flex items-center gap-3 md:col-span-4 md:gap-4">
                 <div
-                  class="flex size-14 shrink-0 items-center justify-center rounded-xl border font-mono-tab text-sm font-bold md:size-16"
+                  class="flex size-10 shrink-0 items-center justify-center rounded-lg border font-mono-tab text-[11px] font-bold md:size-16 md:rounded-xl md:text-sm"
                   :style="{
                     borderColor: indexerColor,
                     color: indexerColor,
@@ -75,38 +76,58 @@
                 >
                   {{ indexerLabel }}
                 </div>
-                <div class="flex min-w-0 flex-col gap-1">
-                  <span
-                    class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
-                    :style="{ color: brand.colors.primary }"
-                    translate="no"
-                  >
-                    {{ indexerLabel }}
-                  </span>
-                  <h1
-                    class="font-mono-tab text-3xl font-bold leading-none tracking-tight md:text-4xl"
-                    :style="{ color: brand.colors.text }"
-                    translate="no"
-                  >
-                    {{ indexerLabel }}
-                  </h1>
-                  <span
-                    class="line-clamp-1 text-sm font-semibold md:text-base"
-                    :style="{ color: `${brand.colors.text}CC` }"
-                  >
-                    {{ prettyName(data?.name ?? slug) }}
-                  </span>
-                  <span
-                    class="font-mono-tab text-[10px] uppercase tracking-[0.12em]"
-                    :style="{ color: brand.colors.textMuted }"
-                  >
-                    &gt; RENDA FIXA · {{ formatMaturityLong(data?.maturity_date) }}
-                  </span>
+                <div class="flex min-w-0 flex-1 items-center gap-3 md:flex-col md:items-start md:gap-1">
+                  <div class="flex min-w-0 flex-col">
+                    <span
+                      class="hidden font-mono-tab text-[10px] uppercase tracking-[0.2em] md:block"
+                      :style="{ color: brand.colors.primary }"
+                      translate="no"
+                    >
+                      {{ indexerLabel }}
+                    </span>
+                    <h1
+                      class="font-mono-tab text-lg font-bold leading-tight tracking-tight md:text-4xl md:leading-none"
+                      :style="{ color: brand.colors.text }"
+                      translate="no"
+                    >
+                      {{ indexerLabel }}
+                    </h1>
+                    <span
+                      class="line-clamp-1 text-[11px] font-medium md:text-base md:font-semibold"
+                      :style="{ color: `${brand.colors.text}99` }"
+                    >
+                      {{ prettyName(data?.name ?? slug) }}
+                    </span>
+                    <span
+                      class="hidden font-mono-tab text-[10px] uppercase tracking-[0.12em] md:block"
+                      :style="{ color: brand.colors.textMuted }"
+                    >
+                      &gt; RENDA FIXA · {{ formatMaturityLong(data?.maturity_date) }}
+                    </span>
+                  </div>
+
+                  <!-- Mobile-only inline rate at the right end of the header row -->
+                  <div class="ml-auto flex flex-col items-end gap-0.5 text-right md:hidden">
+                    <span
+                      class="font-mono-tab text-xl font-bold leading-none tabular-nums"
+                      :style="{ color: brand.colors.text }"
+                      translate="no"
+                    >
+                      {{ data?.rate ?? '—' }}<span class="text-[11px] opacity-70">%</span>
+                    </span>
+                    <span
+                      class="font-mono-tab text-[11px] font-semibold tabular-nums"
+                      :style="{ color: indexerColor }"
+                      translate="no"
+                    >
+                      PRAZO {{ yearsToMaturity }}
+                    </span>
+                  </div>
                 </div>
               </div>
 
-              <!-- Col 2: Taxa bruta (hero) -->
-              <div class="flex flex-col gap-2 md:col-span-4">
+              <!-- Col 2 desktop: Taxa bruta hero (hidden mobile) -->
+              <div class="hidden flex-col gap-2 md:col-span-4 md:flex">
                 <div class="flex items-baseline gap-1.5">
                   <span
                     class="font-mono-tab text-5xl font-bold leading-none tabular-nums md:text-6xl"
@@ -146,30 +167,31 @@
                 </div>
               </div>
 
-              <!-- Col 3: Stats grid -->
-              <div class="md:col-span-4">
-                <div class="grid grid-cols-2 gap-x-4 gap-y-3 font-mono-tab">
+              <!-- Stats row. Mobile: compact grid, tiny text, border-t
+                   separator from price row. Desktop: unchanged col-span-4. -->
+              <div class="border-t pt-3 md:col-span-4 md:border-t-0 md:pt-0" :style="{ borderColor: brand.colors.border }">
+                <div class="grid grid-cols-2 gap-x-3 gap-y-2 font-mono-tab md:gap-x-4 md:gap-y-3">
                   <div class="flex flex-col gap-0.5">
-                    <span class="text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">COMPRA</span>
-                    <span class="text-[13px] font-semibold tabular-nums" :style="{ color: brand.colors.positive }" translate="no">
+                    <span class="text-[9px] uppercase tracking-[0.12em] md:tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">COMPRA</span>
+                    <span class="text-[12px] font-semibold tabular-nums md:text-[13px]" :style="{ color: brand.colors.positive }" translate="no">
                       {{ formatMoney(data?.price_buy) }}
                     </span>
                   </div>
                   <div class="flex flex-col gap-0.5">
-                    <span class="text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">VENDA</span>
-                    <span class="text-[13px] font-semibold tabular-nums" :style="{ color: brand.colors.text }" translate="no">
+                    <span class="text-[9px] uppercase tracking-[0.12em] md:tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">VENDA</span>
+                    <span class="text-[12px] font-semibold tabular-nums md:text-[13px]" :style="{ color: brand.colors.text }" translate="no">
                       {{ formatMoney(data?.price_sell) }}
                     </span>
                   </div>
                   <div class="flex flex-col gap-0.5">
-                    <span class="text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">VENCIMENTO</span>
-                    <span class="text-[13px] font-semibold tabular-nums" :style="{ color: brand.colors.text }" translate="no">
+                    <span class="text-[9px] uppercase tracking-[0.12em] md:tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">VENCIMENTO</span>
+                    <span class="text-[12px] font-semibold tabular-nums md:text-[13px]" :style="{ color: brand.colors.text }" translate="no">
                       {{ maturityShort }}
                     </span>
                   </div>
                   <div class="flex flex-col gap-0.5">
-                    <span class="text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">INDEXADOR</span>
-                    <span class="text-[13px] font-semibold tabular-nums" :style="{ color: indexerColor }" translate="no">
+                    <span class="text-[9px] uppercase tracking-[0.12em] md:tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">INDEXADOR</span>
+                    <span class="text-[12px] font-semibold tabular-nums md:text-[13px]" :style="{ color: indexerColor }" translate="no">
                       {{ indexerLabel }}
                     </span>
                   </div>
@@ -210,50 +232,106 @@
 
         <!-- Price history chart -->
         <section class="border-b py-8" :style="{ borderColor: brand.colors.border }">
-          <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-            <div class="flex flex-col gap-1">
-              <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
-                {{ chartMode === 'rate' ? 'Histórico de rentabilidade' : 'Histórico de cotação' }}
-              </h2>
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
-                &gt; SÉRIE DIÁRIA · {{ chartMode === 'rate' ? 'TAXA DE VENDA (% A.A.)' : 'VALOR DE VENDA' }} · {{ selectedChartRange.toUpperCase() }}
-              </span>
-            </div>
-            <div class="flex flex-col gap-2 md:flex-row md:items-center">
-              <div
-                class="flex items-center gap-px border font-mono-tab text-[10px] uppercase tracking-[0.15em]"
-                :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }"
-              >
-                <button
-                  v-for="opt in chartModeOptions"
-                  :key="opt.value"
-                  type="button"
-                  class="px-3 py-2 transition-colors"
-                  :style="{
-                    backgroundColor: chartMode === opt.value ? brand.colors.primary : brand.colors.surface,
-                    color: chartMode === opt.value ? brand.colors.background : brand.colors.textMuted,
-                  }"
-                  @click="chartMode = opt.value"
+          <div ref="tesouroChartRef" class="mt-0">
+            <AtomsGraphLine
+              :data="chartData"
+              :legend="chartLegend"
+              :height="320"
+              :loading="isLoadingChart"
+              :currency="chartMode === 'rate' ? '%' : 'R$'"
+            >
+              <template #toolbar>
+                <AtomsGraphToolbar
+                  :show-fullscreen="true"
+                  @screenshot="tesouroScreenshotRef?.open()"
+                  @fullscreen="tesouroFullscreenRef?.open()"
                 >
-                  {{ opt.label }}
-                </button>
-              </div>
-              <MoleculesPeriodSelector
-                v-model="selectedChartRange"
-                :options="chartRangeOptions"
-                :loading="isLoadingChart"
-                class="max-md:w-full"
-              />
-            </div>
+                  <template #extras>
+                    <span
+                      class="font-mono-tab text-[11px] uppercase tracking-[0.12em]"
+                      :style="{ color: brand.colors.textMuted }"
+                    >
+                      {{ chartMode === 'rate' ? 'Histórico de rentabilidade' : 'Histórico de cotação' }}
+                    </span>
+                    <div
+                      class="inline-flex items-center border font-mono-tab text-[10px] uppercase tracking-[0.15em]"
+                      :style="{ borderColor: brand.colors.border }"
+                      role="group"
+                      aria-label="Eixo do gráfico"
+                    >
+                      <button
+                        v-for="opt in chartModeOptions"
+                        :key="opt.value"
+                        :aria-label="`Mudar eixo para ${opt.label}`"
+                        :aria-pressed="chartMode === opt.value"
+                        type="button"
+                        class="inline-flex h-8 items-center justify-center px-3 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset"
+                        :style="{
+                          backgroundColor: chartMode === opt.value ? brand.colors.primary : 'transparent',
+                          color: chartMode === opt.value ? brand.colors.background : brand.colors.textMuted,
+                        }"
+                        @click="chartMode = opt.value"
+                      >
+                        {{ opt.label }}
+                      </button>
+                    </div>
+                  </template>
+                  <template #period>
+                    <MoleculesPeriodSelector
+                      v-model="selectedChartRange"
+                      :options="chartRangeOptions"
+                      :loading="isLoadingChart"
+                    />
+                  </template>
+                </AtomsGraphToolbar>
+              </template>
+            </AtomsGraphLine>
           </div>
-          <AtomsGraphLine
-            :data="chartData"
-            :legend="chartLegend"
-            :height="320"
-            :loading="isLoadingChart"
-            :currency="chartMode === 'rate' ? '%' : 'R$'"
-          />
         </section>
+
+        <!-- Screenshot modal -->
+        <AtomsGraphScreenshotModal
+          ref="tesouroScreenshotRef"
+          :title="indexerLabel"
+          :subtitle="prettyName(data?.name ?? slug)"
+          :price-label="`${data?.rate ?? '—'}%`"
+          :is-positive="true"
+          :avatar-text="indexerLabel.slice(0, 3)"
+          :capture-target="() => (tesouroChartRef as any)?.querySelector?.('[data-chart-capture-root]') ?? null"
+        />
+
+        <!-- Fullscreen chart dialog -->
+        <AtomsGraphFullscreenDialog
+          ref="tesouroFullscreenRef"
+          :title="`${indexerLabel} — ${prettyName(data?.name ?? slug)}`"
+          :subtitle="'Renda fixa · ' + formatMaturityLong(data?.maturity_date)"
+          :is-positive="true"
+        >
+          <template #chart="{ expandedHeight }">
+            <AtomsGraphLine
+              :data="chartData"
+              :legend="chartLegend"
+              :height="expandedHeight"
+              :loading="isLoadingChart"
+              :currency="chartMode === 'rate' ? '%' : 'R$'"
+            >
+              <template #toolbar>
+                <AtomsGraphToolbar
+                  :show-fullscreen="false"
+                  :show-screenshot="false"
+                >
+                  <template #period>
+                    <MoleculesPeriodSelector
+                      v-model="selectedChartRange"
+                      :options="chartRangeOptions"
+                      :loading="isLoadingChart"
+                    />
+                  </template>
+                </AtomsGraphToolbar>
+              </template>
+            </AtomsGraphLine>
+          </template>
+        </AtomsGraphFullscreenDialog>
 
         <!-- AI Interpretation -->
         <section v-if="interpretations.length" class="border-b py-8" :style="{ borderColor: brand.colors.border }">
@@ -378,6 +456,11 @@ const chartModeOptions = [
 
 const selectedChartRange = ref<TesouroPriceRange>('1y')
 const chartMode = ref<'price' | 'rate'>('price')
+
+// Chart container ref + screenshot modal ref (toolbar integration)
+const tesouroChartRef = ref<HTMLElement | null>(null)
+const tesouroScreenshotRef = ref<{ open: () => void; close: () => void } | null>(null)
+const tesouroFullscreenRef = ref<{ open: () => void; close: () => void } | null>(null)
 
 // Raw series kept as-is; chartData is a derived projection onto the selected
 // axis (sell_price when mode=price, sell_rate when mode=rate). Swapping modes

@@ -142,6 +142,9 @@ defineExpose({ open })
 
 <style scoped>
 .confirm-dialog {
+  /* Viewport-centered regardless of browser engine. */
+  margin: auto;
+  inset: 0;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
 }
 .confirm-dialog[open] {
