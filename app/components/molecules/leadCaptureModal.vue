@@ -185,14 +185,14 @@
             <button
               type="submit"
               :disabled="state === 'loading'"
-              class="flex w-full items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-bold transition-all hover:-translate-y-0.5 disabled:opacity-50"
+              class="flex w-full items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-bold transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-0.5 disabled:opacity-50"
               :style="{
                 backgroundColor: brand.colors.primary,
                 color: brand.colors.background,
                 boxShadow: `0 12px 40px -12px ${brand.colors.primary}80`,
               }"
             >
-              <UIcon v-if="state === 'loading'" name="i-lucide-loader-2" class="size-4 animate-spin" />
+              <UIcon v-if="state === 'loading'" name="i-lucide-loader-2" class="size-4 motion-safe:animate-spin" />
               <UIcon v-else :name="source === 'whitelabel' ? 'i-lucide-send' : 'i-lucide-key'" class="size-4" />
               {{ state === 'loading' ? 'Enviando...' : (source === 'whitelabel' ? 'Enviar contato' : 'Solicitar API Key') }}
             </button>

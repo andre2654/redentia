@@ -16,7 +16,7 @@
       <div
         v-for="i in totalBars"
         :key="i"
-        class="h-full flex-1 rounded-full transition-all duration-500"
+        class="h-full flex-1 rounded-full transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-500"
         :style="{
           backgroundColor: getBarColor(i),
           opacity: i <= activeBars ? 1 : 0.15,

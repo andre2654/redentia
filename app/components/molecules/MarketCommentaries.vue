@@ -20,7 +20,7 @@
           class="inline-flex items-center gap-1.5"
           :style="{ color: brand.colors.primary }"
         >
-          <span class="h-1.5 w-1.5 animate-pulse rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
+          <span class="h-1.5 w-1.5 motion-safe:animate-pulse rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
           INGESTING {{ backfillStatus.current }}/{{ backfillStatus.total }}
         </span>
         <span v-if="commentaries.length > 0" class="tabular-nums">
@@ -62,6 +62,7 @@
           <!-- Collapsed row -->
           <button
             type="button"
+            :aria-expanded="!!expanded[item.id]"
             class="grid w-full cursor-pointer items-center px-3 py-2 text-left transition-colors hover:bg-[var(--hover-bg,rgba(255,255,255,0.03))]"
             :class="highlightedDate === item.date && 'mc-terminal-highlight'"
             :style="{
@@ -220,14 +221,14 @@
           backgroundColor: brand.colors.surface + 'ee',
         }"
       >
-        <span class="h-1 w-1 animate-pulse rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
+        <span class="h-1 w-1 motion-safe:animate-pulse rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
         Analisando {{ backfillStatus.current }}/{{ backfillStatus.total }} eventos
         <div
           class="h-px flex-1 overflow-hidden"
           :style="{ backgroundColor: brand.colors.border }"
         >
           <div
-            class="h-full transition-all duration-500"
+            class="h-full transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-500"
             :style="{
               width: `${Math.min(100, Math.round((backfillStatus.current / Math.max(1, backfillStatus.total)) * 100))}%`,
               backgroundColor: brand.colors.primary,

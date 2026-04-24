@@ -9,7 +9,7 @@
         >
           <span class="flex items-center gap-1.5" :style="{ color: brand.colors.primary }">
             <span class="relative flex size-1.5">
-              <span class="absolute inline-flex size-1.5 animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.primary }" />
+              <span class="absolute inline-flex size-1.5 motion-safe:animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.primary }" />
               <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
             </span>
             [CRYPTO.QUOTE]
@@ -131,6 +131,7 @@
                 <button
                   v-for="opt in chartModeOptions"
                   :key="opt.value"
+                  :aria-label="`Mudar gráfico para ${opt.label}`"
                   type="button"
                   class="px-3 py-2 transition-colors"
                   :style="{

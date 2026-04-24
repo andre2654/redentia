@@ -24,7 +24,7 @@
           color="secondary"
           size="lg"
           icon="i-lucide-bell-ring"
-          class="hover:shadow-secondary/50 max-md:w-full transition-all hover:scale-105 hover:shadow-xl"
+          class="hover:shadow-secondary/50 max-md:w-full transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:scale-105 hover:shadow-xl"
           @click="handleRequestPermission"
         >
           {{ brand.notifications.ctaButton }}

@@ -149,7 +149,7 @@
             v-for="relacionado in termosRelacionados"
             :key="relacionado.slug"
             :to="`/glossario/${relacionado.slug}`"
-            class="group flex items-center justify-between brand-card-md border p-4 transition-all hover:opacity-80"
+            class="group flex items-center justify-between brand-card-md border p-4 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:opacity-80"
             :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
           >
             <div class="flex flex-col gap-1">

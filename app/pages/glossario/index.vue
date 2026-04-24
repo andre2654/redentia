@@ -119,7 +119,7 @@
             v-for="termo in termosFiltrados"
             :key="termo.slug"
             :to="`/glossario/${termo.slug}`"
-            class="group brand-card border p-5 transition-all hover:opacity-80"
+            class="group brand-card border p-5 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:opacity-80"
             :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
           >
             <div class="flex flex-col gap-3">

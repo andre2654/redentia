@@ -63,7 +63,7 @@
             v-for="tool in marketTools"
             :key="tool.to"
             :to="tool.to"
-            class="group flex items-start gap-3 rounded-2xl border p-4 transition-all hover:border-white/20"
+            class="group flex items-start gap-3 rounded-2xl border p-4 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-white/20"
             :style="{
               borderColor: brand.colors.border,
               backgroundColor: brand.colors.surface,

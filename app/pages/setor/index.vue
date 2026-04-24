@@ -31,7 +31,7 @@
       </div>
 
       <div v-if="pending" class="flex items-center justify-center py-16">
-        <UIcon name="i-lucide-loader" class="size-6 animate-spin" />
+        <UIcon name="i-lucide-loader" class="size-6 motion-safe:animate-spin" />
       </div>
 
       <div v-else class="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
@@ -39,7 +39,7 @@
           v-for="sector in sectors"
           :key="sector.slug"
           :to="`/setor/${sector.slug}/comparativo`"
-          class="group flex items-center justify-between gap-3 rounded-xl border px-5 py-4 transition-all hover:border-white/20"
+          class="group flex items-center justify-between gap-3 rounded-xl border px-5 py-4 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-white/20"
           :style="{
             borderColor: brand.colors.border,
             backgroundColor: brand.colors.surface,

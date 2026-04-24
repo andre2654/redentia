@@ -275,7 +275,7 @@
             v-for="cat in categories"
             :key="cat.id"
             :to="cat.endpoints[0] ? `/api-portal/docs/${cat.endpoints[0].slug}` : '/api-portal/docs'"
-            class="group flex items-center gap-4 rounded-lg border p-4 transition-all hover:-translate-y-0.5"
+            class="group flex items-center gap-4 rounded-lg border p-4 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-0.5"
             :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.surface}40` }"
           >
             <UIcon :name="cat.icon" class="size-5" :style="{ color: brand.colors.primary }" />

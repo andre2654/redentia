@@ -1,7 +1,7 @@
 <template>
   <NuxtLayout name="admin-panel">
     <div v-if="loading" class="flex items-center gap-3 text-[14px]" :style="{ color: C.textMuted }">
-      <UIcon name="i-lucide-loader-2" class="size-5 animate-spin" /> Carregando tenant…
+      <UIcon name="i-lucide-loader-2" class="size-5 motion-safe:animate-spin" /> Carregando tenant…
     </div>
     <AdminTenantEditor
       v-else-if="tenant"

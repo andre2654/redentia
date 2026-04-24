@@ -88,7 +88,7 @@
                 v-html="highlightedPath"
               />
               <button
-                class="inline-flex items-center gap-1.5 rounded border-2 px-3 py-1.5 font-mono-tab text-[10px] font-bold uppercase tracking-[0.15em] transition-all hover:-translate-y-0.5"
+                class="inline-flex items-center gap-1.5 rounded border-2 px-3 py-1.5 font-mono-tab text-[10px] font-bold uppercase tracking-[0.15em] transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-0.5"
                 :style="{
                   backgroundColor: brand.colors.primary,
                   color: brand.colors.background,
@@ -97,7 +97,7 @@
                 @click="mockSend"
                 :disabled="sending"
               >
-                <UIcon v-if="sending" name="i-lucide-loader-2" class="size-3 animate-spin" />
+                <UIcon v-if="sending" name="i-lucide-loader-2" class="size-3 motion-safe:animate-spin" />
                 <UIcon v-else name="i-lucide-send" class="size-3" />
                 {{ sending ? 'Sending...' : 'Send' }}
               </button>

@@ -74,7 +74,7 @@
       </div>
 
       <div v-if="loading" class="flex justify-center py-12">
-        <UIcon name="i-lucide-loader-2" class="h-8 w-8 animate-spin text-secondary" />
+        <UIcon name="i-lucide-loader-2" class="h-8 w-8 motion-safe:animate-spin text-secondary" />
       </div>
 
       <div v-else-if="tab === 'profile'" class="rounded-xl border border-white/10 bg-white/5 p-6">
@@ -138,7 +138,7 @@
       <div v-else-if="tab === 'portfolio'" class="rounded-xl border border-white/10 bg-white/5 p-6">
         <h3 class="mb-4 text-sm font-semibold text-white">Carteira do investidor</h3>
         <div v-if="portfolioLoading" class="flex justify-center py-8">
-          <UIcon name="i-lucide-loader-2" class="h-6 w-6 animate-spin text-secondary" />
+          <UIcon name="i-lucide-loader-2" class="h-6 w-6 motion-safe:animate-spin text-secondary" />
         </div>
         <div v-else-if="!portfolioPositions.length" class="py-6 text-center text-sm text-white/50">
           O investidor ainda não importou nenhuma carteira.

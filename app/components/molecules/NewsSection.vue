@@ -99,7 +99,7 @@
 
             <!-- Top-right: arrow indicator on hover -->
             <div
-              class="absolute right-3 top-3 flex size-7 items-center justify-center rounded-full opacity-0 transition-all duration-300 group-hover:opacity-100"
+              class="absolute right-3 top-3 flex size-7 items-center justify-center rounded-full opacity-0 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-300 group-hover:opacity-100"
               :style="{ backgroundColor: brand.colors.primary, color: brand.colors.background }"
               aria-hidden="true"
             >
@@ -129,17 +129,17 @@
                 :href="item.url"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="secondary-link group flex items-center justify-between gap-3 px-4 py-2.5 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset"
+                class="secondary-link group flex items-center justify-between gap-3 px-4 py-2.5 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset"
                 :style="{ '--hover-bg': `${brand.colors.primary}10` } as Record<string, string>"
               >
                 <h4
-                  class="line-clamp-1 flex-1 text-xs leading-snug transition-all duration-200 group-hover:translate-x-1 group-hover:text-secondary"
+                  class="line-clamp-1 flex-1 text-xs leading-snug transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-200 group-hover:translate-x-1 group-hover:text-secondary"
                   :style="{ color: brand.colors.text }"
                 >
                   {{ item.title }}
                 </h4>
                 <span
-                  class="inline-flex shrink-0 items-center gap-1 font-mono-tab text-[10px] uppercase tabular-nums tracking-[0.12em] transition-all duration-200"
+                  class="inline-flex shrink-0 items-center gap-1 font-mono-tab text-[10px] uppercase tabular-nums tracking-[0.12em] transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-200"
                   :style="{ color: brand.colors.textMuted }"
                   translate="no"
                 >
@@ -167,7 +167,7 @@
             :href="item.url"
             target="_blank"
             rel="noopener noreferrer"
-            class="other-link group relative flex items-stretch gap-3 p-3 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset"
+            class="other-link group relative flex items-stretch gap-3 p-3 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset"
           >
             <div class="relative size-16 shrink-0 overflow-hidden rounded-md" :style="{ backgroundColor: brand.colors.border }">
               <NuxtImg
@@ -214,7 +214,7 @@
                 </span>
                 <UIcon
                   name="i-lucide-arrow-up-right"
-                  class="size-3 opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:opacity-100"
+                  class="size-3 opacity-0 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-200 group-hover:translate-x-0.5 group-hover:opacity-100"
                   :style="{ color: brand.colors.primary }"
                   aria-hidden="true"
                 />

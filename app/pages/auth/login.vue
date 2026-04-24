@@ -24,7 +24,7 @@
           <div class="flex items-center gap-3 font-mono-tab text-[10px] uppercase tracking-[0.18em]">
             <span class="flex items-center gap-1.5" :style="{ color: brand.colors.primary }">
               <span class="relative flex size-1.5">
-                <span class="absolute inline-flex size-1.5 animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.primary }" />
+                <span class="absolute inline-flex size-1.5 motion-safe:animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.primary }" />
                 <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
               </span>
               [LOGIN.TERMINAL]
@@ -88,7 +88,7 @@
             <template #label>
               <span class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">&gt; USER_ID</span>
             </template>
-            <AtomsFormInput v-model="state.login" type="text" placeholder="investidor@brasil.b3" size="lg" class="w-full" />
+            <AtomsFormInput v-model="state.login" type="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="investidor@brasil.b3" size="lg" class="w-full" />
           </UFormField>
 
           <UFormField name="password">
@@ -157,7 +157,7 @@
             <template #label>
               <span class="font-small-caps text-[10px]" :style="{ color: brand.colors.textMuted }">Usuário</span>
             </template>
-            <AtomsFormInput v-model="state.login" type="text" placeholder="Seu usuário" size="lg" class="w-full" />
+            <AtomsFormInput v-model="state.login" type="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="Seu usuário" size="lg" class="w-full" />
           </UFormField>
 
           <UFormField name="password">
@@ -248,7 +248,7 @@
             <template #label>
               <span class="font-mentor-eyebrow" :style="{ color: brand.colors.text }">Usuário</span>
             </template>
-            <AtomsFormInput v-model="state.login" type="text" placeholder="Como você se identifica" size="lg" class="w-full" />
+            <AtomsFormInput v-model="state.login" type="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="Como você se identifica" size="lg" class="w-full" />
           </UFormField>
 
           <UFormField name="password">
@@ -335,7 +335,7 @@
               <template #label>
                 <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">Usuário</span>
               </template>
-              <AtomsFormInput v-model="state.login" type="text" placeholder="Seu login de estudo" size="lg" class="w-full" />
+              <AtomsFormInput v-model="state.login" type="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="Seu login de estudo" size="lg" class="w-full" />
             </UFormField>
 
             <UFormField name="password">
@@ -421,7 +421,7 @@
             <template #label>
               <span class="font-showtime-label" :style="{ color: `${brand.colors.text}80` }">SEU USUÁRIO</span>
             </template>
-            <AtomsFormInput v-model="state.login" type="text" placeholder="Como você entrou da última vez" size="lg" class="w-full" />
+            <AtomsFormInput v-model="state.login" type="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="Como você entrou da última vez" size="lg" class="w-full" />
           </UFormField>
 
           <UFormField name="password">
@@ -481,7 +481,7 @@
             }"
           >
             <span class="relative flex size-1.5">
-              <span class="absolute inline-flex size-1.5 animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.background }" />
+              <span class="absolute inline-flex size-1.5 motion-safe:animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.background }" />
               <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: brand.colors.background }" />
             </span>
             <span class="text-[11px] font-bold uppercase tracking-[0.15em]">CABEÇA FRIA</span>
@@ -557,7 +557,7 @@
           </div>
 
           <UFormField name="login">
-            <AtomsFormInput v-model="state.login" type="text" placeholder="Usuário ou e-mail" size="lg" class="w-full" />
+            <AtomsFormInput v-model="state.login" type="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="Usuário ou e-mail" size="lg" class="w-full" />
           </UFormField>
 
           <UFormField name="password">
@@ -566,7 +566,7 @@
 
           <button
             type="submit"
-            class="group mt-3 inline-flex w-full items-center justify-center gap-3 rounded-full px-6 py-4 text-[13px] font-bold transition-all hover:-translate-y-0.5"
+            class="group mt-3 inline-flex w-full items-center justify-center gap-3 rounded-full px-6 py-4 text-[13px] font-bold transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-0.5"
             :style="{
               backgroundColor: brand.colors.primary,
               color: brand.colors.background,
@@ -666,7 +666,7 @@
                   Usuário
                 </span>
               </template>
-              <AtomsFormInput v-model="state.login" type="text" placeholder="Seu usuário" size="lg" class="w-full" />
+              <AtomsFormInput v-model="state.login" type="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="Seu usuário" size="lg" class="w-full" />
             </UFormField>
 
             <UFormField name="password">
@@ -680,7 +680,7 @@
 
             <button
               type="submit"
-              class="mt-4 inline-flex w-full items-center justify-center gap-3 px-6 py-4 text-[12px] font-bold uppercase tracking-[0.18em] transition-all hover:-translate-y-0.5"
+              class="mt-4 inline-flex w-full items-center justify-center gap-3 px-6 py-4 text-[12px] font-bold uppercase tracking-[0.18em] transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-0.5"
               :style="{
                 backgroundColor: brand.colors.primary,
                 color: brand.colors.text,
@@ -755,7 +755,7 @@
           </div>
 
           <UFormField name="login">
-            <AtomsFormInput v-model="state.login" type="text" placeholder="Usuário" size="lg" class="w-full" />
+            <AtomsFormInput v-model="state.login" type="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="Usuário" size="lg" class="w-full" />
           </UFormField>
 
           <UFormField name="password">

@@ -33,10 +33,10 @@
     </button>
 
     <Transition
-      enter-active-class="transition-all duration-200 ease-out"
+      enter-active-class="transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-200 ease-out"
       enter-from-class="max-h-0 opacity-0"
       enter-to-class="max-h-[800px] opacity-100"
-      leave-active-class="transition-all duration-150 ease-in"
+      leave-active-class="transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-150 ease-in"
       leave-from-class="max-h-[800px] opacity-100"
       leave-to-class="max-h-0 opacity-0"
     >

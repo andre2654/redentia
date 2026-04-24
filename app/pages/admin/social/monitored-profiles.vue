@@ -17,7 +17,7 @@
         </div>
         <button
           type="button"
-          class="inline-flex items-center gap-2 rounded-sm px-4 py-2.5 font-mono-tab text-[11px] font-bold uppercase tracking-[0.15em] transition-all hover:opacity-90"
+          class="inline-flex items-center gap-2 rounded-sm px-4 py-2.5 font-mono-tab text-[11px] font-bold uppercase tracking-[0.15em] transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:opacity-90"
           :style="{ backgroundColor: C.primary, color: C.background }"
           @click="openEditor(null)"
         >
@@ -31,7 +31,7 @@
       </div>
 
       <div v-if="loading" class="py-8 text-center" :style="{ color: C.textMuted }">
-        <UIcon name="i-lucide-loader-2" class="size-5 animate-spin" />
+        <UIcon name="i-lucide-loader-2" class="size-5 motion-safe:animate-spin" />
       </div>
 
       <div
@@ -44,14 +44,15 @@
 
       <div v-else class="overflow-hidden rounded-sm border" :style="{ borderColor: C.border }">
         <table class="w-full text-left">
+          <caption class="sr-only">Perfis de redes sociais monitorados</caption>
           <thead class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted, backgroundColor: C.surface }">
             <tr>
-              <th class="px-4 py-3">PLATAFORMA</th>
-              <th class="px-4 py-3">HANDLE</th>
-              <th class="px-4 py-3">NOME</th>
-              <th class="px-4 py-3 text-center">STATUS</th>
-              <th class="px-4 py-3">TEMPLATE</th>
-              <th class="px-4 py-3 text-right">AÇÕES</th>
+              <th scope="col" class="px-4 py-3">PLATAFORMA</th>
+              <th scope="col" class="px-4 py-3">HANDLE</th>
+              <th scope="col" class="px-4 py-3">NOME</th>
+              <th scope="col" class="px-4 py-3 text-center">STATUS</th>
+              <th scope="col" class="px-4 py-3">TEMPLATE</th>
+              <th scope="col" class="px-4 py-3 text-right">AÇÕES</th>
             </tr>
           </thead>
           <tbody>
@@ -61,7 +62,7 @@
               class="border-t" :style="{ borderColor: C.border, backgroundColor: C.surface }"
             >
               <td class="px-4 py-3 font-mono-tab text-[11px] uppercase" :style="{ color: C.primary }">{{ p.platform }}</td>
-              <td class="px-4 py-3 font-mono-tab text-[12px]" :style="{ color: C.text }">{{ p.handle }}</td>
+              <th scope="row" class="px-4 py-3 font-mono-tab text-[12px] font-normal text-left" :style="{ color: C.text }">{{ p.handle }}</th>
               <td class="px-4 py-3 text-[13px]" :style="{ color: C.text }">{{ p.display_name || '—' }}</td>
               <td class="px-4 py-3 text-center">
                 <button
@@ -191,6 +192,7 @@
         </form>
       </div>
     </div>
+    <MoleculesConfirmDialog ref="confirmDialogRef" />
   </NuxtLayout>
 </template>
 
@@ -206,6 +208,7 @@ const items = ref<IMonitoredProfile[]>([])
 const loading = ref(true)
 const error = ref<string | null>(null)
 const busyIds = reactive(new Set<number>())
+const confirmDialogRef = ref<{ open: (opts: { title: string; description?: string; confirmLabel?: string; cancelLabel?: string; variant?: 'destructive' | 'default' }) => Promise<boolean> } | null>(null)
 
 const editorOpen = ref(false)
 const editorMode = ref<'create' | 'edit'>('create')
@@ -295,7 +298,14 @@ async function handleToggle(p: IMonitoredProfile) {
 }
 
 async function handleDelete(p: IMonitoredProfile) {
-  if (!confirm(`Remover o perfil "${p.handle}" (${p.platform})?`)) return
+  const ok = await confirmDialogRef.value?.open({
+    title: `Remover o perfil "${p.handle}"?`,
+    description: `Plataforma: ${p.platform}.`,
+    confirmLabel: 'Remover',
+    cancelLabel: 'Cancelar',
+    variant: 'destructive',
+  })
+  if (!ok) return
   busyIds.add(p.id)
   try {
     await service.remove(p.id)

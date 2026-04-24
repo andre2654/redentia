@@ -27,7 +27,7 @@
             color="secondary"
             size="xl"
             icon="i-lucide-message-circle"
-            class="hover:shadow-secondary/50 px-6 transition-all hover:scale-105 hover:shadow-2xl"
+            class="hover:shadow-secondary/50 px-6 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:scale-105 hover:shadow-2xl"
             @click="redirectToLogin"
           >
             {{ brand.voice.ctaPrimary }}
@@ -66,7 +66,7 @@
                 <!-- Assessor inteligente (IA) sempre em primeiro -->
                 <button
                   type="button"
-                  class="group flex w-full cursor-pointer items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-all duration-200"
+                  class="group flex w-full cursor-pointer items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-200"
                   :class="selectedContact === null
                     ? 'border-secondary/30 bg-secondary/10 text-secondary'
                     : 'border-transparent hover:bg-secondary/5'"
@@ -89,7 +89,7 @@
                   </div>
                 </button>
                 <div v-if="investorsLoading" class="flex justify-center py-8">
-                  <UIcon name="i-lucide-loader-2" class="h-5 w-5 animate-spin text-secondary" />
+                  <UIcon name="i-lucide-loader-2" class="h-5 w-5 motion-safe:animate-spin text-secondary" />
                 </div>
                 <div v-else-if="filteredInvestors.length === 0" class="px-3 py-6 text-center text-xs leading-relaxed" :style="{ color: brand.colors.textMuted }">
                   {{ contactSearch ? 'Nenhum contato encontrado.' : 'Nenhum investidor vinculado. Compartilhe seu código nas configurações.' }}
@@ -98,7 +98,7 @@
                   v-for="inv in filteredInvestors"
                   :key="inv.id"
                   type="button"
-                  class="group flex w-full cursor-pointer items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-all duration-200"
+                  class="group flex w-full cursor-pointer items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-200"
                   :class="selectedContact?.id === inv.id
                     ? 'border-secondary/30 bg-secondary/10 text-secondary'
                     : 'border-transparent hover:bg-secondary/5'"
@@ -172,7 +172,7 @@
           <div v-if="showAdvisorTab" class="mt-5 flex flex-wrap gap-2 px-2 xl:mt-6">
             <button
               type="button"
-              class="group flex w-full min-w-0 cursor-pointer items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-all duration-200 sm:w-auto"
+              class="group flex w-full min-w-0 cursor-pointer items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-200 sm:w-auto"
               :class="activeTab === 'ia'
                 ? 'border-secondary/30 bg-secondary/10 text-secondary'
                 : 'border-transparent hover:bg-secondary/5'"
@@ -195,7 +195,7 @@
             </button>
             <button
               type="button"
-              class="group flex w-full min-w-0 cursor-pointer items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-all duration-200 sm:w-auto"
+              class="group flex w-full min-w-0 cursor-pointer items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-200 sm:w-auto"
               :class="activeTab === 'advisor'
                 ? 'border-secondary/30 bg-secondary/10 text-secondary'
                 : 'border-transparent hover:bg-secondary/5'"

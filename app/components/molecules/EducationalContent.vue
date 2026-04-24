@@ -20,7 +20,7 @@
           :href="item.url"
           target="_blank"
           rel="noopener"
-          class="group flex flex-col overflow-hidden rounded-2xl border transition-all duration-300"
+          class="group flex flex-col overflow-hidden rounded-2xl border transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-300"
           :style="{
             borderColor: brand.colors.border,
             backgroundColor: brand.colors.surface,

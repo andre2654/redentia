@@ -117,7 +117,7 @@
 
       <!-- Table -->
       <div v-if="pending" class="flex items-center justify-center py-16">
-        <UIcon name="i-lucide-loader" class="size-6 animate-spin" />
+        <UIcon name="i-lucide-loader" class="size-6 motion-safe:animate-spin" />
       </div>
       <div
         v-else-if="!sector"

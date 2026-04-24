@@ -19,7 +19,7 @@
           <button
             v-for="(suggestion, idx) in suggestions"
             :key="idx"
-            class="suggestion-btn group flex w-full items-center gap-3 rounded-xl border px-4 py-3.5 text-left text-[13px] font-medium transition-all duration-200"
+            class="suggestion-btn group flex w-full items-center gap-3 rounded-xl border px-4 py-3.5 text-left text-[13px] font-medium transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-200"
             :style="{ borderColor: brand.colors.border, color: brand.colors.text }"
             @click="sendSuggestion(suggestion)"
           >
@@ -27,7 +27,7 @@
               <UIcon :name="suggestionIcons[idx % suggestionIcons.length]" class="size-4 text-secondary" />
             </div>
             <span>{{ suggestion }}</span>
-            <UIcon name="i-lucide-arrow-right" class="ml-auto size-4 opacity-0 transition-all group-hover:translate-x-0.5 group-hover:opacity-60" />
+            <UIcon name="i-lucide-arrow-right" class="ml-auto size-4 opacity-0 transition-[transform,opacity,box-shadow,background-color,border-color,filter] group-hover:translate-x-0.5 group-hover:opacity-60" />
           </button>
         </div>
       </div>

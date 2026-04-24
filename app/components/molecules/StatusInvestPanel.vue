@@ -185,7 +185,7 @@
               </span>
               <div class="flex-1 h-1" :style="{ backgroundColor: brand.colors.border }">
                 <div
-                  class="h-full transition-all"
+                  class="h-full transition-[transform,opacity,box-shadow,background-color,border-color,filter]"
                   :style="{
                     width: `${Math.min(Math.max(Number(m.value ?? 0), 0), 100)}%`,
                     backgroundColor: m.color,

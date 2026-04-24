@@ -30,7 +30,7 @@
             {{ card.label }}
           </span>
           <span class="text-[24px] font-semibold leading-none tracking-tight" :style="{ color: C.text }">
-            <UIcon v-if="loading" name="i-lucide-loader-2" class="size-5 animate-spin" />
+            <UIcon v-if="loading" name="i-lucide-loader-2" class="size-5 motion-safe:animate-spin" />
             <template v-else>{{ card.value }}</template>
           </span>
           <span class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: C.textMuted }">

@@ -328,7 +328,7 @@
         <div class="grid gap-4 sm:grid-cols-2">
           <NuxtLink
             to="/guias/melhores-fiis-para-investir-em-2026"
-            class="group flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-4 transition-all hover:border-secondary/30"
+            class="group flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-4 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-secondary/30"
           >
             <UIcon name="i-lucide-building-2" class="text-secondary h-6 w-6" />
             <div class="flex-1">
@@ -340,7 +340,7 @@
 
           <NuxtLink
             to="/guias/como-investir-em-acoes-para-iniciantes"
-            class="group flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-4 transition-all hover:border-secondary/30"
+            class="group flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-4 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-secondary/30"
           >
             <UIcon name="i-lucide-trending-up" class="text-secondary h-6 w-6" />
             <div class="flex-1">

@@ -17,7 +17,7 @@
           v-for="char in config.items"
           :key="char.name"
           :to="char.ctaLink"
-          class="group relative flex flex-col overflow-hidden border transition-all brand-card"
+          class="group relative flex flex-col overflow-hidden border transition-[transform,opacity,box-shadow,background-color,border-color,filter] brand-card"
           :class="cardClass(char.personality)"
           :style="cardStyle(char)"
         >

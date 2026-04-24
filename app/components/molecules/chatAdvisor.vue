@@ -58,7 +58,7 @@
         </div>
       </div>
       <div v-if="loading" class="flex justify-center py-6">
-        <UIcon name="i-lucide-loader-2" class="h-6 w-6 animate-spin text-secondary" />
+        <UIcon name="i-lucide-loader-2" class="h-6 w-6 motion-safe:animate-spin text-secondary" />
       </div>
       <div
         v-if="!loading && messages.length === 0"

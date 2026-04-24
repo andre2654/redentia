@@ -10,7 +10,7 @@
         </div>
         <NuxtLink
           to="/admin/tenants/new"
-          class="inline-flex items-center gap-2 rounded-sm px-4 py-2.5 font-mono-tab text-[11px] font-bold uppercase tracking-[0.15em] transition-all hover:opacity-90"
+          class="inline-flex items-center gap-2 rounded-sm px-4 py-2.5 font-mono-tab text-[11px] font-bold uppercase tracking-[0.15em] transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:opacity-90"
           :style="{ backgroundColor: C.primary, color: C.background }"
         >
           <UIcon name="i-lucide-plus" class="size-4" />
@@ -43,20 +43,21 @@
       <!-- Table -->
       <div class="overflow-hidden rounded-sm border" :style="{ borderColor: C.border }">
         <table class="w-full text-left">
+          <caption class="sr-only">Lista de tenants</caption>
           <thead class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted, backgroundColor: C.surface }">
             <tr>
-              <th class="px-4 py-3">SLUG</th>
-              <th class="px-4 py-3">NOME</th>
-              <th class="px-4 py-3">DOMÍNIO</th>
-              <th class="px-4 py-3 text-center">STATUS</th>
-              <th class="px-4 py-3">ATUALIZADO</th>
-              <th class="px-4 py-3 text-right">AÇÕES</th>
+              <th scope="col" class="px-4 py-3">SLUG</th>
+              <th scope="col" class="px-4 py-3">NOME</th>
+              <th scope="col" class="px-4 py-3">DOMÍNIO</th>
+              <th scope="col" class="px-4 py-3 text-center">STATUS</th>
+              <th scope="col" class="px-4 py-3 tabular-nums">ATUALIZADO</th>
+              <th scope="col" class="px-4 py-3 text-right">AÇÕES</th>
             </tr>
           </thead>
           <tbody>
             <tr v-if="loading">
               <td colspan="6" class="p-8 text-center" :style="{ color: C.textMuted }">
-                <UIcon name="i-lucide-loader-2" class="size-5 animate-spin" />
+                <UIcon name="i-lucide-loader-2" class="size-5 motion-safe:animate-spin" />
               </td>
             </tr>
             <tr v-else-if="items.length === 0">
@@ -72,7 +73,7 @@
               :style="{ borderColor: C.border, backgroundColor: C.surface }"
             >
               <td class="px-4 py-3 font-mono-tab text-[12px]" :style="{ color: C.primary }">{{ t.slug }}</td>
-              <td class="px-4 py-3 text-[13px]" :style="{ color: C.text }">{{ t.name }}</td>
+              <th scope="row" class="px-4 py-3 text-[13px] font-normal text-left" :style="{ color: C.text }">{{ t.name }}</th>
               <td class="px-4 py-3 text-[12px]" :style="{ color: C.textMuted }">{{ t.domain || '—' }}</td>
               <td class="px-4 py-3 text-center">
                 <button
@@ -88,7 +89,7 @@
                   {{ t.is_active ? 'ATIVO' : 'INATIVO' }}
                 </button>
               </td>
-              <td class="px-4 py-3 text-[12px]" :style="{ color: C.textMuted }">
+              <td class="px-4 py-3 text-[12px] tabular-nums" :style="{ color: C.textMuted }">
                 {{ formatDate(t.updated_at) }}
               </td>
               <td class="px-4 py-3 text-right">
@@ -123,6 +124,7 @@
         {{ error }}
       </div>
     </div>
+    <MoleculesConfirmDialog ref="confirmDialogRef" />
   </NuxtLayout>
 </template>
 
@@ -138,6 +140,7 @@ const error = ref<string | null>(null)
 const search = ref('')
 const activeFilter = ref<'' | 'true' | 'false'>('')
 const busyIds = reactive(new Set<number>())
+const confirmDialogRef = ref<{ open: (opts: { title: string; description?: string; confirmLabel?: string; cancelLabel?: string; variant?: 'destructive' | 'default' }) => Promise<boolean> } | null>(null)
 
 async function refresh() {
   loading.value = true
@@ -188,7 +191,14 @@ async function handleDuplicate(t: any) {
 }
 
 async function handleDelete(t: any) {
-  if (!confirm(`Deletar o tenant "${t.name}" (${t.slug})? Essa ação não pode ser desfeita.`)) return
+  const ok = await confirmDialogRef.value?.open({
+    title: `Deletar o tenant "${t.name}"?`,
+    description: `Slug: ${t.slug}. Essa ação não pode ser desfeita.`,
+    confirmLabel: 'Deletar',
+    cancelLabel: 'Cancelar',
+    variant: 'destructive',
+  })
+  if (!ok) return
   busyIds.add(t.id)
   try {
     await tenantsService.remove(t.id)

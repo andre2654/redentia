@@ -58,7 +58,7 @@
           v-for="item in mainNav"
           :key="item.to"
           :to="item.to"
-          class="flex items-center gap-3 rounded-sm border border-transparent px-3 py-2 text-[13px] transition-all"
+          class="flex items-center gap-3 rounded-sm border border-transparent px-3 py-2 text-[13px] transition-[transform,opacity,box-shadow,background-color,border-color,filter]"
           :style="navStyle(item.to, false)"
         >
           <UIcon :name="item.icon" class="size-4" />
@@ -73,7 +73,7 @@
           v-for="item in socialNav"
           :key="item.to"
           :to="item.to"
-          class="flex items-center gap-3 rounded-sm border border-transparent px-3 py-2 text-[13px] transition-all"
+          class="flex items-center gap-3 rounded-sm border border-transparent px-3 py-2 text-[13px] transition-[transform,opacity,box-shadow,background-color,border-color,filter]"
           :style="navStyle(item.to, item.exact)"
         >
           <UIcon :name="item.icon" class="size-4" />

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="group flex flex-col gap-2 rounded-xl border p-4 transition-all"
+    class="group flex flex-col gap-2 rounded-xl border p-4 transition-[transform,opacity,box-shadow,background-color,border-color,filter]"
     :style="{
       borderColor: brand.colors.border,
       backgroundColor: brand.colors.surface,

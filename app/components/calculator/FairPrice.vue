@@ -23,13 +23,13 @@
             :class="{ 'opacity-100': isSearchFocused }"
           />
           <div
-            class="relative flex items-center gap-3 rounded-2xl border bg-white/5 px-4 py-3 backdrop-blur transition-all"
+            class="relative flex items-center gap-3 rounded-2xl border bg-white/5 px-4 py-3 backdrop-blur transition-[transform,opacity,box-shadow,background-color,border-color,filter]"
             :class="isSearchFocused ? 'border-secondary/50 bg-white/10 shadow-lg shadow-secondary/10' : 'border-white/10'"
           >
             <UIcon
               :name="assetsLoading ? 'i-lucide-loader-circle' : 'i-lucide-search'"
               class="size-5 shrink-0 text-gray-400"
-              :class="{ 'animate-spin': assetsLoading }"
+              :class="{ 'motion-safe:animate-spin': assetsLoading }"
             />
             <input
               v-model="searchTerm"
@@ -108,7 +108,7 @@
                 </span>
                 <UIcon
                   name="i-lucide-arrow-right"
-                  class="size-4 shrink-0 text-gray-600 transition-all group-hover:translate-x-0.5 group-hover:text-secondary"
+                  class="size-4 shrink-0 text-gray-600 transition-[transform,opacity,box-shadow,background-color,border-color,filter] group-hover:translate-x-0.5 group-hover:text-secondary"
                 />
               </button>
             </div>
@@ -195,7 +195,7 @@
         v-if="isFetching"
         class="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-4 text-sm text-gray-300"
       >
-        <UIcon name="i-lucide-loader-circle" class="size-5 animate-spin text-secondary" />
+        <UIcon name="i-lucide-loader-circle" class="size-5 motion-safe:animate-spin text-secondary" />
         Buscando fundamentos e calculando todas as metodologias...
       </div>
 

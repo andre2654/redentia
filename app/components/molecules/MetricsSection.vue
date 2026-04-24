@@ -46,7 +46,7 @@
       </h2>
 
       <!-- The hero metric: response time in seconds, mono, monumental -->
-      <div ref="counterRef" class="mt-16 md:mt-20">
+      <div ref="counterRef" aria-live="polite" class="mt-16 md:mt-20">
         <div class="flex items-baseline justify-center gap-2">
           <span
             class="font-mono-tab block text-7xl font-bold tabular-nums sm:text-8xl md:text-[160px] md:leading-[0.85] lg:text-[200px]"

@@ -4,7 +4,7 @@
       <!-- Hero Section -->
       <div class="flex flex-col gap-4">
         <div class="flex items-center gap-2">
-          <UIcon name="i-lucide-rocket" class="text-secondary h-8 w-8" />
+          <UIcon name="i-lucide-rocket" aria-hidden="true" class="text-secondary h-8 w-8" />
           <h1 class="text-3xl md:text-4xl" :class="[brand.font.headingWeight, brand.font.headingStyle]">
             Small Caps: Ações de Empresas Pequenas
           </h1>
@@ -227,7 +227,7 @@
       <div class="border-t border-white/10 pt-8">
         <NuxtLink
           to="/search?mc_max=2000000000&group=stocks"
-          class="group mx-auto flex max-w-2xl items-center justify-between brand-card border border-secondary/30 bg-secondary/10 p-6 transition-all hover:border-secondary/50 hover:bg-secondary/20"
+          class="group mx-auto flex max-w-2xl items-center justify-between brand-card border border-secondary/30 bg-secondary/10 p-6 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-secondary/50 hover:bg-secondary/20"
         >
           <div class="flex flex-col gap-1">
             <h3 class="text-xl font-bold group-hover:text-secondary transition-colors">
@@ -239,6 +239,7 @@
           </div>
           <UIcon
             name="i-lucide-arrow-right"
+            aria-hidden="true"
             class="text-secondary h-8 w-8 transition-transform group-hover:translate-x-2"
           />
         </NuxtLink>

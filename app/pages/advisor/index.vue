@@ -42,7 +42,7 @@
 
       <!-- Lista -->
       <div v-if="loading" class="flex justify-center py-12">
-        <UIcon name="i-lucide-loader-2" class="h-8 w-8 animate-spin text-secondary" />
+        <UIcon name="i-lucide-loader-2" class="h-8 w-8 motion-safe:animate-spin text-secondary" />
       </div>
       <div v-else-if="error" class="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
         {{ error }}

@@ -90,7 +90,7 @@
                 >
                   <UIcon
                     name="i-lucide-loader-2"
-                    class="size-5 animate-spin text-white"
+                    class="size-5 motion-safe:animate-spin text-white"
                   />
                 </div>
               </div>

@@ -4,7 +4,7 @@
       <!-- Hero Section -->
       <div class="flex flex-col gap-4">
         <div class="flex items-center gap-2">
-          <UIcon name="i-lucide-building-2" class="text-secondary h-8 w-8" />
+          <UIcon name="i-lucide-building-2" aria-hidden="true" class="text-secondary h-8 w-8" />
           <h1 class="text-3xl md:text-4xl" :class="[brand.font.headingWeight, brand.font.headingStyle]">
             Fundos Imobiliários (FIIs)
           </h1>
@@ -46,7 +46,7 @@
         <div class="grid gap-4 md:grid-cols-2">
           <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 flex items-center gap-2 font-semibold text-secondary">
-              <UIcon name="i-lucide-building" class="h-5 w-5" />
+              <UIcon name="i-lucide-building" aria-hidden="true" class="h-5 w-5" />
               Fundos de Tijolo
             </h4>
             <p class="mb-3 text-sm text-gray-300">
@@ -63,7 +63,7 @@
 
           <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 flex items-center gap-2 font-semibold text-secondary">
-              <UIcon name="i-lucide-file-text" class="h-5 w-5" />
+              <UIcon name="i-lucide-file-text" aria-hidden="true" class="h-5 w-5" />
               Fundos de Papel
             </h4>
             <p class="mb-3 text-sm text-gray-300">
@@ -79,7 +79,7 @@
 
           <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 flex items-center gap-2 font-semibold text-secondary">
-              <UIcon name="i-lucide-layers" class="h-5 w-5" />
+              <UIcon name="i-lucide-layers" aria-hidden="true" class="h-5 w-5" />
               Fundos de Fundos (FOFs)
             </h4>
             <p class="text-sm text-gray-300">
@@ -90,7 +90,7 @@
 
           <div class="brand-card border border-white/10 bg-white/5 p-5">
             <h4 class="mb-2 flex items-center gap-2 font-semibold text-secondary">
-              <UIcon name="i-lucide-combine" class="h-5 w-5" />
+              <UIcon name="i-lucide-combine" aria-hidden="true" class="h-5 w-5" />
               Fundos Híbridos
             </h4>
             <p class="text-sm text-gray-300">
@@ -139,7 +139,7 @@
         <div class="grid gap-4 md:grid-cols-2">
           <div class="brand-card border border-white/10 bg-white/5 p-5">
             <div class="mb-2 flex items-center gap-2">
-              <UIcon name="i-lucide-coins" class="text-primary h-5 w-5" />
+              <UIcon name="i-lucide-coins" aria-hidden="true" class="text-primary h-5 w-5" />
               <h4 class="font-semibold">Renda Passiva Mensal</h4>
             </div>
             <p class="text-sm text-gray-300">
@@ -150,7 +150,7 @@
 
           <div class="brand-card border border-white/10 bg-white/5 p-5">
             <div class="mb-2 flex items-center gap-2">
-              <UIcon name="i-lucide-shield-check" class="text-primary h-5 w-5" />
+              <UIcon name="i-lucide-shield-check" aria-hidden="true" class="text-primary h-5 w-5" />
               <h4 class="font-semibold">Isenção de IR</h4>
             </div>
             <p class="text-sm text-gray-300">
@@ -161,7 +161,7 @@
 
           <div class="brand-card border border-white/10 bg-white/5 p-5">
             <div class="mb-2 flex items-center gap-2">
-              <UIcon name="i-lucide-zap" class="text-primary h-5 w-5" />
+              <UIcon name="i-lucide-zap" aria-hidden="true" class="text-primary h-5 w-5" />
               <h4 class="font-semibold">Alta Liquidez</h4>
             </div>
             <p class="text-sm text-gray-300">
@@ -172,7 +172,7 @@
 
           <div class="brand-card border border-white/10 bg-white/5 p-5">
             <div class="mb-2 flex items-center gap-2">
-              <UIcon name="i-lucide-trending-up" class="text-primary h-5 w-5" />
+              <UIcon name="i-lucide-trending-up" aria-hidden="true" class="text-primary h-5 w-5" />
               <h4 class="font-semibold">Acessibilidade</h4>
             </div>
             <p class="text-sm text-gray-300">
@@ -261,7 +261,7 @@
         <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div class="flex-1">
             <div class="mb-3 flex items-center gap-2">
-              <UIcon name="i-lucide-target" class="text-secondary h-8 w-8" />
+              <UIcon name="i-lucide-target" aria-hidden="true" class="text-secondary h-8 w-8" />
               <h2 class="text-2xl font-bold">Monte sua Carteira de FIIs</h2>
             </div>
             <p class="mb-4 text-gray-300">
@@ -320,7 +320,7 @@
       <div class="border-t border-white/10 pt-8">
         <NuxtLink
           to="/search?group=reits"
-          class="group mx-auto flex max-w-2xl items-center justify-between rounded-2xl border border-secondary/30 bg-secondary/10 p-6 transition-all hover:border-secondary/50 hover:bg-secondary/20"
+          class="group mx-auto flex max-w-2xl items-center justify-between rounded-2xl border border-secondary/30 bg-secondary/10 p-6 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-secondary/50 hover:bg-secondary/20"
         >
           <div class="flex flex-col gap-1">
             <h3 class="text-xl font-bold group-hover:text-secondary transition-colors">
@@ -332,6 +332,7 @@
           </div>
           <UIcon
             name="i-lucide-arrow-right"
+            aria-hidden="true"
             class="text-secondary h-8 w-8 transition-transform group-hover:translate-x-2"
           />
         </NuxtLink>

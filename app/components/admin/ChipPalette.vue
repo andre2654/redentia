@@ -18,7 +18,7 @@
       class="rounded-sm border p-4 text-center font-mono-tab text-[10px]"
       :style="{ borderColor: C.border, color: C.textMuted }"
     >
-      <UIcon name="i-lucide-loader-2" class="size-4 animate-spin" />
+      <UIcon name="i-lucide-loader-2" class="size-4 motion-safe:animate-spin" />
     </div>
     <div
       v-else-if="!catalog.length"

@@ -33,7 +33,7 @@
       <section v-if="phase === 'input'" key="input" class="relative z-10 flex min-h-[80vh] flex-col items-center justify-center px-6">
         <div class="w-full max-w-xl text-center">
           <div class="bld-reveal mb-6 inline-flex items-center gap-2 rounded-full border border-white/[.06] bg-white/[.02] px-5 py-2">
-            <span class="h-1.5 w-1.5 animate-pulse rounded-full" :style="{ backgroundColor: primaryColor }" />
+            <span class="h-1.5 w-1.5 motion-safe:animate-pulse rounded-full" :style="{ backgroundColor: primaryColor }" />
             <span class="text-[10px] font-medium uppercase tracking-[.25em] text-white/30">IA generativa</span>
           </div>
           <h1 class="bld-reveal bld-d1 mb-5 text-5xl font-extrabold leading-[1.05] tracking-tight md:text-7xl">
@@ -41,15 +41,15 @@
           </h1>
           <p class="bld-reveal bld-d2 mx-auto mb-14 max-w-sm text-sm leading-relaxed text-white/30">Nome da marca + uma cor. A IA constroi o resto em tempo real.</p>
           <div class="bld-reveal bld-d3 mb-5">
-            <input v-model="brandName" type="text" placeholder="Nome da sua marca" class="w-full rounded-2xl border border-white/[.06] bg-white/[.02] px-6 py-5 text-center text-xl font-medium text-white outline-none transition-all duration-500 placeholder:text-white/15 focus:border-white/10 focus:bg-white/[.04]" :style="{ boxShadow: brandName ? `0 0 60px ${primaryColor}08` : 'none' }" @keyup.enter="brandName.trim() && startBuild()" />
+            <input v-model="brandName" type="text" placeholder="Nome da sua marca" class="w-full rounded-2xl border border-white/[.06] bg-white/[.02] px-6 py-5 text-center text-xl font-medium text-white outline-none transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-500 placeholder:text-white/15 focus:border-white/10 focus:bg-white/[.04]" :style="{ boxShadow: brandName ? `0 0 60px ${primaryColor}08` : 'none' }" @keyup.enter="brandName.trim() && startBuild()" />
           </div>
           <div class="bld-reveal bld-d3 mb-12">
             <div class="flex flex-wrap items-center justify-center gap-2.5">
-              <button v-for="c in colorPresets" :key="c.hex" class="h-10 w-10 rounded-full transition-all duration-300 hover:scale-110" :class="primaryColor === c.hex ? 'scale-110 ring-2 ring-white/80 ring-offset-2 ring-offset-[#030305]' : ''" :style="{ backgroundColor: c.hex }" @click="primaryColor = c.hex" />
+              <button v-for="c in colorPresets" :key="c.hex" class="h-10 w-10 rounded-full transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-300 hover:scale-110" :class="primaryColor === c.hex ? 'scale-110 ring-2 ring-white/80 ring-offset-2 ring-offset-[#030305]' : ''" :style="{ backgroundColor: c.hex }" @click="primaryColor = c.hex" />
               <label class="relative flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-dashed border-white/10 transition hover:border-white/20"><UIcon name="i-lucide-pipette" class="size-3.5 text-white/25" /><input type="color" v-model="primaryColor" class="absolute inset-0 cursor-pointer opacity-0" /></label>
             </div>
           </div>
-          <button :disabled="!brandName.trim()" class="bld-reveal bld-d4 group relative inline-flex items-center gap-3 rounded-2xl px-12 py-5 text-sm font-semibold uppercase tracking-wider text-white transition-all duration-500 hover:scale-[1.04] disabled:pointer-events-none disabled:opacity-20" :style="{ backgroundColor: primaryColor }" @click="startBuild">
+          <button :disabled="!brandName.trim()" class="bld-reveal bld-d4 group relative inline-flex items-center gap-3 rounded-2xl px-12 py-5 text-sm font-semibold uppercase tracking-wider text-white transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-500 hover:scale-[1.04] disabled:pointer-events-none disabled:opacity-20" :style="{ backgroundColor: primaryColor }" @click="startBuild">
             <div class="absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" :style="{ boxShadow: `0 0 80px ${primaryColor}50, inset 0 0 30px ${primaryColor}30` }" />
             <span class="relative">Gerar plataforma</span><UIcon name="i-lucide-sparkles" class="relative size-4 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110" />
           </button>
@@ -77,7 +77,7 @@
               </div>
               <div v-if="terminalTyping" class="flex gap-3"><span class="shrink-0 select-none" :style="{ color: `${primaryColor}60` }">❯</span><span class="bld-cursor text-white/25">_</span></div>
             </div>
-            <div class="h-0.5 w-full bg-white/[.03]"><div class="h-full rounded-r-full transition-all duration-500 ease-linear" :style="{ width: terminalProgress + '%', backgroundColor: primaryColor }" /></div>
+            <div class="h-0.5 w-full bg-white/[.03]"><div class="h-full rounded-r-full transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-500 ease-linear" :style="{ width: terminalProgress + '%', backgroundColor: primaryColor }" /></div>
           </div>
         </div>
       </section>
@@ -94,7 +94,7 @@
             <div class="flex items-center gap-4">
               <!-- Progress ring -->
               <div class="relative h-14 w-14">
-                <svg class="h-14 w-14 -rotate-90" viewBox="0 0 56 56"><circle cx="28" cy="28" r="24" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="2.5" /><circle cx="28" cy="28" r="24" fill="none" :stroke="primaryColor" stroke-width="2.5" stroke-linecap="round" :stroke-dasharray="150.8" :stroke-dashoffset="150.8 - (150.8 * (currentStep + 1) / buildSteps.length)" class="transition-all duration-1000 ease-out" /></svg>
+                <svg class="h-14 w-14 -rotate-90" viewBox="0 0 56 56"><circle cx="28" cy="28" r="24" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="2.5" /><circle cx="28" cy="28" r="24" fill="none" :stroke="primaryColor" stroke-width="2.5" stroke-linecap="round" :stroke-dasharray="150.8" :stroke-dashoffset="150.8 - (150.8 * (currentStep + 1) / buildSteps.length)" class="transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-1000 ease-out" /></svg>
                 <span class="absolute inset-0 flex items-center justify-center text-[11px] font-bold tabular-nums" :style="{ color: primaryColor }">{{ Math.round(((currentStep + 1) / buildSteps.length) * 100) }}%</span>
               </div>
               <div>
@@ -104,7 +104,7 @@
             </div>
             <!-- Step pills -->
             <div class="hidden items-center gap-1 md:flex">
-              <div v-for="(step, i) in buildSteps" :key="i" class="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-medium transition-all duration-500" :class="i === currentStep ? 'bg-white/[.06] text-white' : i < currentStep ? 'text-emerald-400/60' : 'text-white/10'">
+              <div v-for="(step, i) in buildSteps" :key="i" class="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[10px] font-medium transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-500" :class="i === currentStep ? 'bg-white/[.06] text-white' : i < currentStep ? 'text-emerald-400/60' : 'text-white/10'">
                 <UIcon v-if="i < currentStep" name="i-lucide-check" class="size-3" />
                 <UIcon v-else :name="step.icon" class="size-3" />
                 {{ step.label }}
@@ -113,7 +113,7 @@
           </div>
 
           <!-- ===== PREVIEW: FULL DASHBOARD MOCKUP ===== -->
-          <div class="overflow-hidden rounded-2xl border border-white/[.06] transition-all duration-1000" :style="{ boxShadow: `0 30px 120px ${primaryColor}08` }">
+          <div class="overflow-hidden rounded-2xl border border-white/[.06] transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-1000" :style="{ boxShadow: `0 30px 120px ${primaryColor}08` }">
             <!-- Browser chrome -->
             <div class="flex items-center gap-2 border-b border-white/[.03] bg-white/[.015] px-4 py-2">
               <span class="h-2 w-2 rounded-full bg-white/10" /><span class="h-2 w-2 rounded-full bg-white/10" /><span class="h-2 w-2 rounded-full bg-white/10" />
@@ -122,21 +122,21 @@
             </div>
 
             <!-- Dashboard body -->
-            <div class="relative flex min-h-[520px] transition-all duration-1000 md:min-h-[580px]" :style="{ backgroundColor: currentStep >= 1 ? brand.colors.background : '#08080a' }">
+            <div class="relative flex min-h-[520px] transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-1000 md:min-h-[580px]" :style="{ backgroundColor: currentStep >= 1 ? brand.colors.background : '#08080a' }">
               <!-- Bloom glow -->
               <div class="absolute inset-0 transition-opacity duration-[2s]" :style="{ opacity: currentStep >= 1 ? 0.3 : 0, background: `radial-gradient(ellipse at 15% 20%, ${primaryColor}18, transparent 55%), radial-gradient(ellipse at 85% 80%, ${primaryColor}08, transparent 50%)` }" />
 
               <!-- ===== SIDEBAR ===== -->
               <div
-                class="relative hidden w-52 shrink-0 border-r p-4 transition-all duration-1000 md:block"
+                class="relative hidden w-52 shrink-0 border-r p-4 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-1000 md:block"
                 :style="{ borderColor: currentStep >= 1 ? (brand.colors.border || '#1a1a1a') : '#0e0e10', backgroundColor: currentStep >= 1 ? `${brand.colors.surface || '#0a0a0a'}80` : '#09090b' }"
               >
                 <!-- Logo -->
-                <div class="mb-6 flex items-center gap-2.5 transition-all duration-700" :style="{ opacity: currentStep >= 3 ? 1 : 0.15 }">
-                  <div class="flex h-8 w-8 items-center justify-center rounded-lg text-xs font-bold text-white transition-all duration-700" :style="{ backgroundColor: currentStep >= 1 ? brand.colors.primary : '#151515' }">
+                <div class="mb-6 flex items-center gap-2.5 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-700" :style="{ opacity: currentStep >= 3 ? 1 : 0.15 }">
+                  <div class="flex h-8 w-8 items-center justify-center rounded-lg text-xs font-bold text-white transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-700" :style="{ backgroundColor: currentStep >= 1 ? brand.colors.primary : '#151515' }">
                     {{ currentStep >= 3 ? brandName.charAt(0).toUpperCase() : '?' }}
                   </div>
-                  <span class="text-xs font-semibold transition-all duration-700" :class="currentStep >= 2 ? 'bld-text-focus' : ''" :style="{ fontFamily: currentStep >= 2 ? `'${brand.font.family}', sans-serif` : 'inherit' }">
+                  <span class="text-xs font-semibold transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-700" :class="currentStep >= 2 ? 'bld-text-focus' : ''" :style="{ fontFamily: currentStep >= 2 ? `'${brand.font.family}', sans-serif` : 'inherit' }">
                     {{ currentStep >= 3 ? brandName : scrambledName }}
                   </span>
                 </div>
@@ -145,7 +145,7 @@
                   <div
                     v-for="(item, i) in sidebarItems"
                     :key="item.label"
-                    class="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[11px] transition-all duration-700"
+                    class="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[11px] transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-700"
                     :style="{
                       opacity: currentStep >= 3 ? 1 : 0.06,
                       transform: currentStep >= 3 ? 'translateX(0)' : 'translateX(-8px)',
@@ -160,7 +160,7 @@
                 </div>
                 <!-- AI CTA card at bottom -->
                 <div
-                  class="absolute bottom-4 left-4 right-4 rounded-xl border p-3 transition-all duration-700"
+                  class="absolute bottom-4 left-4 right-4 rounded-xl border p-3 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-700"
                   :style="{
                     opacity: currentStep >= 5 ? 1 : 0,
                     transform: currentStep >= 5 ? 'translateY(0)' : 'translateY(12px)',
@@ -182,11 +182,11 @@
               <div class="relative flex-1 overflow-hidden p-5 md:p-8">
                 <!-- Top bar: greeting + search -->
                 <div class="mb-6 flex items-center justify-between">
-                  <div class="transition-all duration-700" :style="{ opacity: currentStep >= 3 ? 1 : 0.1 }">
+                  <div class="transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-700" :style="{ opacity: currentStep >= 3 ? 1 : 0.1 }">
                     <p class="text-xs" :style="{ color: brand.colors.textMuted }">Bem-vindo ao</p>
                     <h3 class="text-lg font-bold" :style="{ fontFamily: currentStep >= 2 ? `'${brand.font.family}', sans-serif` : 'inherit', color: brand.colors.text }">{{ currentStep >= 3 ? brandName : '•••••' }}</h3>
                   </div>
-                  <div class="flex h-8 w-48 items-center gap-2 rounded-lg border px-3 transition-all duration-700" :style="{ borderColor: currentStep >= 1 ? (brand.colors.border || '#1a1a1a') : '#111', opacity: currentStep >= 3 ? 0.6 : 0.05, backgroundColor: currentStep >= 1 ? (brand.colors.inputBg || '#050505') : '#0a0a0a' }">
+                  <div class="flex h-8 w-48 items-center gap-2 rounded-lg border px-3 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-700" :style="{ borderColor: currentStep >= 1 ? (brand.colors.border || '#1a1a1a') : '#111', opacity: currentStep >= 3 ? 0.6 : 0.05, backgroundColor: currentStep >= 1 ? (brand.colors.inputBg || '#050505') : '#0a0a0a' }">
                     <UIcon name="i-lucide-search" class="size-3 text-white/20" />
                     <span class="text-[10px] text-white/15">Buscar ativos...</span>
                   </div>
@@ -194,7 +194,7 @@
 
                 <!-- IBOV / IFIX indicators -->
                 <div class="mb-5 flex gap-4">
-                  <div v-for="(idx, i) in indices" :key="idx.name" class="flex items-center gap-3 rounded-xl border px-4 py-2.5 transition-all duration-700" :style="{ borderColor: currentStep >= 1 ? (brand.colors.border || '#1a1a1a') : '#111', backgroundColor: currentStep >= 1 ? (brand.colors.surface || '#0a0a0a') : '#0b0b0d', opacity: currentStep >= 4 ? 1 : 0.08, transform: currentStep >= 4 ? 'translateY(0)' : 'translateY(6px)', transitionDelay: `${i * 100}ms` }">
+                  <div v-for="(idx, i) in indices" :key="idx.name" class="flex items-center gap-3 rounded-xl border px-4 py-2.5 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-700" :style="{ borderColor: currentStep >= 1 ? (brand.colors.border || '#1a1a1a') : '#111', backgroundColor: currentStep >= 1 ? (brand.colors.surface || '#0a0a0a') : '#0b0b0d', opacity: currentStep >= 4 ? 1 : 0.08, transform: currentStep >= 4 ? 'translateY(0)' : 'translateY(6px)', transitionDelay: `${i * 100}ms` }">
                     <div>
                       <p class="text-[9px] font-bold uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">{{ idx.name }}</p>
                       <p class="text-sm font-bold tabular-nums">{{ idx.value }}</p>
@@ -204,7 +204,7 @@
                 </div>
 
                 <!-- Ticker marquee -->
-                <div class="mb-6 overflow-hidden rounded-xl border transition-all duration-700" :style="{ borderColor: currentStep >= 1 ? (brand.colors.border || '#1a1a1a') : '#111', opacity: currentStep >= 4 ? 1 : 0.05, height: currentStep >= 4 ? '40px' : '0px' }">
+                <div class="mb-6 overflow-hidden rounded-xl border transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-700" :style="{ borderColor: currentStep >= 1 ? (brand.colors.border || '#1a1a1a') : '#111', opacity: currentStep >= 4 ? 1 : 0.05, height: currentStep >= 4 ? '40px' : '0px' }">
                   <div class="flex h-full items-center gap-6 px-4" :class="currentStep >= 4 ? 'bld-marquee' : ''">
                     <div v-for="t in marqueeItems" :key="t.s" class="flex shrink-0 items-center gap-2 text-[10px]">
                       <span class="font-bold" :style="{ color: brand.colors.text }">{{ t.s }}</span>
@@ -221,7 +221,7 @@
                 <!-- Main grid: Chart + Portfolio -->
                 <div class="grid grid-cols-1 gap-4 md:grid-cols-5">
                   <!-- Chart card (3 cols) -->
-                  <div class="col-span-3 rounded-xl border p-4 transition-all duration-700" :style="{ borderColor: currentStep >= 1 ? (brand.colors.border || '#1a1a1a') : '#111', backgroundColor: currentStep >= 1 ? (brand.colors.surface || '#0a0a0a') : '#0b0b0d', opacity: currentStep >= 4 ? 1 : 0.05, transform: currentStep >= 4 ? 'scale(1)' : 'scale(0.97)' }">
+                  <div class="col-span-3 rounded-xl border p-4 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-700" :style="{ borderColor: currentStep >= 1 ? (brand.colors.border || '#1a1a1a') : '#111', backgroundColor: currentStep >= 1 ? (brand.colors.surface || '#0a0a0a') : '#0b0b0d', opacity: currentStep >= 4 ? 1 : 0.05, transform: currentStep >= 4 ? 'scale(1)' : 'scale(0.97)' }">
                     <div class="mb-3 flex items-center justify-between">
                       <p class="text-[10px] font-bold uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">IBOVESPA</p>
                       <div class="flex gap-1">
@@ -255,7 +255,7 @@
                     <div
                       v-for="(asset, i) in portfolioAssets"
                       :key="asset.ticker"
-                      class="flex items-center gap-3 rounded-xl border px-3 py-2.5 transition-all duration-700"
+                      class="flex items-center gap-3 rounded-xl border px-3 py-2.5 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-700"
                       :style="{
                         borderColor: currentStep >= 1 ? (brand.colors.border || '#1a1a1a') : '#111',
                         backgroundColor: currentStep >= 1 ? (brand.colors.surface || '#0a0a0a') : '#0b0b0d',
@@ -273,7 +273,7 @@
                         <!-- Allocation bar -->
                         <div class="mt-1 h-1 overflow-hidden rounded-full bg-white/[.04]">
                           <div
-                            class="h-full rounded-full transition-all duration-1000"
+                            class="h-full rounded-full transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-1000"
                             :style="{
                               width: currentStep >= 4 ? `${asset.alloc}%` : '0%',
                               backgroundColor: brand.colors.primary,
@@ -287,7 +287,7 @@
 
                     <!-- Dividends mini card -->
                     <div
-                      class="rounded-xl border p-3 transition-all duration-700"
+                      class="rounded-xl border p-3 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-700"
                       :style="{
                         borderColor: currentStep >= 1 ? (brand.colors.border || '#1a1a1a') : '#111',
                         backgroundColor: currentStep >= 1 ? (brand.colors.surface || '#0a0a0a') : '#0b0b0d',
@@ -301,7 +301,7 @@
                         <span class="text-[9px]" :style="{ color: brand.colors.textMuted }">,32</span>
                       </div>
                       <div class="mt-2 flex gap-1">
-                        <div v-for="(m, i) in dividendBars" :key="i" class="flex-1 rounded-sm transition-all duration-700" :style="{ height: `${m}px`, backgroundColor: `${brand.colors.primary}${i === 4 ? '90' : '30'}`, transitionDelay: `${i * 80}ms` }" />
+                        <div v-for="(m, i) in dividendBars" :key="i" class="flex-1 rounded-sm transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-700" :style="{ height: `${m}px`, backgroundColor: `${brand.colors.primary}${i === 4 ? '90' : '30'}`, transitionDelay: `${i * 80}ms` }" />
                       </div>
                     </div>
                   </div>
@@ -319,7 +319,7 @@
                       <p class="text-[10px] font-semibold" :style="{ color: brand.colors.text }">PETR4 subiu 2.34%</p>
                       <p class="text-[8px]" :style="{ color: brand.colors.textMuted }">Atualizacao em tempo real</p>
                     </div>
-                    <span class="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <span class="h-2 w-2 rounded-full bg-emerald-400 motion-safe:animate-pulse" />
                   </div>
                 </Transition>
               </div>
@@ -368,7 +368,7 @@
           </div>
 
           <div class="bld-reveal bld-d4 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-            <button class="group relative inline-flex items-center gap-3 rounded-2xl px-12 py-5 text-sm font-semibold uppercase tracking-wider text-white transition-all duration-500 hover:scale-[1.04]" :style="{ backgroundColor: primaryColor }" @click="showContactModal = true">
+            <button class="group relative inline-flex items-center gap-3 rounded-2xl px-12 py-5 text-sm font-semibold uppercase tracking-wider text-white transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-500 hover:scale-[1.04]" :style="{ backgroundColor: primaryColor }" @click="showContactModal = true">
               <div class="absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" :style="{ boxShadow: `0 0 80px ${primaryColor}50, inset 0 0 30px ${primaryColor}30` }" />
               <UIcon name="i-lucide-rocket" class="relative size-4" /><span class="relative">Quero essa plataforma</span>
             </button>

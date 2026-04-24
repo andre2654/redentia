@@ -59,6 +59,7 @@
 
     <button
       v-if="!noControl"
+      :aria-label="isPaused ? 'Tocar carrossel' : 'Pausar carrossel'"
       class="hover:opacity-100"
       @click="isPaused = !isPaused"
     >

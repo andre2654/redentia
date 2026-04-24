@@ -55,6 +55,7 @@
               </span>
             </div>
             <button
+              aria-label="Fechar busca"
               type="button"
               class="flex h-7 w-7 items-center justify-center transition-opacity hover:opacity-70"
               :style="{ color: brand.colors.textMuted }"
@@ -73,7 +74,9 @@
             <input
               ref="inputRef"
               v-model="searchTerm"
-              type="text"
+              type="search"
+              aria-label="Buscar ativos"
+              autocomplete="off"
               placeholder="Digite ticker (PETR4, HGLG11) ou nome da empresa…"
               class="min-w-0 flex-1 bg-transparent font-mono-tab text-lg tracking-wide focus:outline-none"
               :style="{ color: brand.colors.text, '--placeholder-color': brand.colors.textMuted }"
@@ -82,10 +85,11 @@
               @keydown.enter.prevent="openFocused"
             >
             <span v-if="status === 'pending'" class="flex-shrink-0">
-              <UIcon name="i-lucide-loader-2" class="h-4 w-4 animate-spin" :style="{ color: brand.colors.primary }" />
+              <UIcon name="i-lucide-loader-2" class="h-4 w-4 motion-safe:animate-spin" :style="{ color: brand.colors.primary }" />
             </span>
             <button
               v-else-if="searchTerm"
+              aria-label="Limpar busca"
               class="flex h-6 w-6 flex-shrink-0 items-center justify-center border transition-opacity hover:opacity-70"
               :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted }"
               @click="searchTerm = ''"
@@ -95,12 +99,20 @@
           </div>
 
           <!-- Filter chips (type tabs) -->
-          <div class="flex items-center gap-px overflow-x-auto border-t" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }">
+          <div
+            role="tablist"
+            aria-label="Filtrar por tipo de ativo"
+            class="flex items-center gap-px overflow-x-auto border-t"
+            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }"
+          >
             <button
               v-for="tab in typeTabs"
               :key="tab.id"
               type="button"
-              class="flex items-center gap-2 px-4 py-2.5 font-mono-tab text-[10px] uppercase tracking-[0.18em] transition-all"
+              role="tab"
+              :aria-selected="activeType === tab.id"
+              :tabindex="activeType === tab.id ? 0 : -1"
+              class="flex items-center gap-2 px-4 py-2.5 font-mono-tab text-[10px] uppercase tracking-[0.18em] transition-[transform,opacity,box-shadow,background-color,border-color,filter]"
               :style="{
                 backgroundColor: activeType === tab.id ? brand.colors.surface : brand.colors.background,
                 color: activeType === tab.id ? brand.colors.primary : brand.colors.textMuted,
@@ -120,7 +132,11 @@
         </header>
 
         <!-- Results -->
-        <div ref="listRef" class="min-h-0 flex-1 overflow-y-auto">
+        <div
+          ref="listRef"
+          aria-live="polite"
+          class="min-h-0 flex-1 overflow-y-auto"
+        >
           <!-- Group per type when "all", single flat list when a type is selected -->
           <template v-if="activeType === 'all'">
             <div v-for="group in visibleGroups" :key="group.id" class="mb-2">
@@ -286,7 +302,7 @@ const triggerUi = computed(() => {
     }
   }
   return {
-    base: `w-full text-left justify-start ${mutedText} ${surfaceBg} rounded-2xl px-4 transition-all`,
+    base: `w-full text-left justify-start ${mutedText} ${surfaceBg} rounded-2xl px-4 transition-[transform,opacity,box-shadow,background-color,border-color,filter]`,
     label: 'font-normal',
     icon: iconColor,
   }

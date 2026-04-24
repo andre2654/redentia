@@ -19,7 +19,7 @@
         v-if="message.status && !message.content && !message.structuredData"
         class="flex items-center gap-2 text-sm text-[rgb(var(--brand-overlay)_/_0.7)]"
       >
-        <UIcon name="i-lucide-loader-2" class="h-4 w-4 animate-spin" />
+        <UIcon name="i-lucide-loader-2" class="h-4 w-4 motion-safe:animate-spin" />
         {{ message.status }}
       </div>
 

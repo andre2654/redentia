@@ -17,7 +17,7 @@
           v-for="step in config.steps"
           :key="step.number"
           :to="step.ctaLink"
-          class="group relative flex items-start gap-4 border p-4 transition-all brand-card-sm md:items-center md:gap-5 md:p-5"
+          class="group relative flex items-start gap-4 border p-4 transition-[transform,opacity,box-shadow,background-color,border-color,filter] brand-card-sm md:items-center md:gap-5 md:p-5"
           :style="stepStyle(step.status)"
         >
           <!-- Step number -->

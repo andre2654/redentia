@@ -38,7 +38,7 @@
               :href="item.url"
               target="_blank"
               rel="noopener noreferrer"
-              class="group relative flex gap-4 rounded-2xl border p-4 transition-all duration-300 hover:border-secondary/40"
+              class="group relative flex gap-4 rounded-2xl border p-4 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-300 hover:border-secondary/40"
               :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
             >
               <!-- Cover Image -->
@@ -103,8 +103,8 @@
               </div>
 
               <!-- Arrow -->
-              <div class="absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-full opacity-0 transition-all group-hover:opacity-100" :style="{ backgroundColor: brand.colors.border }">
-                <UIcon name="i-lucide-arrow-up-right" class="h-3 w-3" :style="{ color: brand.colors.textMuted }" />
+              <div class="absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-full opacity-0 transition-[transform,opacity,box-shadow,background-color,border-color,filter] group-hover:opacity-100" :style="{ backgroundColor: brand.colors.border }">
+                <UIcon name="i-lucide-arrow-up-right" aria-hidden="true" class="h-3 w-3" :style="{ color: brand.colors.textMuted }" />
               </div>
             </a>
           </div>

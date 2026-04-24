@@ -26,6 +26,8 @@
               :min="16"
               :max="50"
               :step="1"
+              :aria-label="config.labels.ageSlider"
+              :aria-valuetext="`${startAge} anos`"
               class="slider w-full"
             />
             <div class="mt-1 flex justify-between text-xs" :style="{ color: brand.colors.textMuted }">
@@ -46,6 +48,8 @@
               :min="100"
               :max="10000"
               :step="100"
+              :aria-label="config.labels.monthlySlider"
+              :aria-valuetext="formatCurrency(monthlyAmount)"
               class="slider w-full"
             />
             <div class="mt-1 flex justify-between text-xs" :style="{ color: brand.colors.textMuted }">
@@ -60,7 +64,7 @@
             color="secondary"
             size="lg"
             icon="i-lucide-calculator"
-            class="mt-2 w-full transition-all hover:scale-[1.02]"
+            class="mt-2 w-full transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:scale-[1.02]"
           >
             {{ config.ctaText }}
           </UButton>
@@ -100,11 +104,11 @@
           <div class="flex flex-col gap-2">
             <div class="flex items-center gap-3">
               <span class="w-20 text-right text-xs font-medium" :style="{ color: brand.colors.text }">{{ startAge }} anos</span>
-              <div class="h-6 brand-card-sm transition-all duration-500" :style="{ width: '100%', backgroundColor: brand.colors.primary }" />
+              <div class="h-6 brand-card-sm transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-500" :style="{ width: '100%', backgroundColor: brand.colors.primary }" />
             </div>
             <div class="flex items-center gap-3">
               <span class="w-20 text-right text-xs font-medium" :style="{ color: brand.colors.textMuted }">{{ config.compareAge }} anos</span>
-              <div class="h-6 brand-card-sm transition-all duration-500" :style="{ width: comparisonBarWidth, backgroundColor: brand.colors.negative }" />
+              <div class="h-6 brand-card-sm transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-500" :style="{ width: comparisonBarWidth, backgroundColor: brand.colors.negative }" />
             </div>
           </div>
         </div>
@@ -173,8 +177,12 @@ function formatNumber(value: number): string {
   height: 6px;
   border-radius: 3px;
   background: var(--brand-border);
-  outline: none;
   cursor: pointer;
+}
+
+.slider:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 4px;
 }
 
 .slider::-webkit-slider-thumb {
@@ -187,6 +195,10 @@ function formatNumber(value: number): string {
   cursor: pointer;
   box-shadow: 0 2px 8px rgb(var(--brand-overlay) / 0.2);
   transition: transform 150ms;
+}
+
+.slider:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px rgb(var(--brand-overlay) / 0.4), 0 2px 8px rgb(var(--brand-overlay) / 0.2);
 }
 
 .slider::-webkit-slider-thumb:hover {

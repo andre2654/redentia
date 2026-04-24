@@ -57,7 +57,7 @@
           <span class="flex items-center gap-1.5" :style="{ color: C.primary }">
             <span class="relative flex size-1.5">
               <span
-                class="absolute inline-flex size-1.5 animate-ping rounded-full opacity-75"
+                class="absolute inline-flex size-1.5 motion-safe:animate-ping rounded-full opacity-75"
                 :style="{ backgroundColor: C.primary }"
               />
               <span
@@ -104,7 +104,7 @@
             v-for="ebook in ebooks"
             :key="ebook.slug"
             :to="`/estudo/${ebook.slug}`"
-            class="group grid gap-8 rounded-sm border p-6 transition-all hover:brightness-110 md:grid-cols-[0.6fr_1.4fr] md:p-10"
+            class="group grid gap-8 rounded-sm border p-6 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:brightness-110 md:grid-cols-[0.6fr_1.4fr] md:p-10"
             :style="{ borderColor: C.border, backgroundColor: C.surface }"
           >
             <!-- Mini cover, real image when available, CSS mockup fallback -->

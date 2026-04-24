@@ -13,20 +13,21 @@
           Atualizado em {{ generatedAtLabel }}.
         </p>
         <button
+          aria-label="Atualizar dados"
           type="button"
           class="mt-1 w-fit border px-3 py-1 font-mono-tab text-[10px] uppercase tracking-[0.18em] transition-opacity hover:opacity-75"
           :style="{ borderColor: C.primary, color: C.primary }"
           :disabled="loading"
           @click="refresh()"
         >
-          <UIcon :name="loading ? 'i-lucide-loader-2' : 'i-lucide-refresh-cw'" class="mr-1 h-3 w-3" :class="{ 'animate-spin': loading }" />
+          <UIcon :name="loading ? 'i-lucide-loader-2' : 'i-lucide-refresh-cw'" class="mr-1 h-3 w-3" :class="{ 'motion-safe:animate-spin': loading }" />
           ATUALIZAR
         </button>
       </header>
 
       <!-- Loading state -->
       <div v-if="loading && !data" class="flex items-center gap-2 text-[12px]" :style="{ color: C.textMuted }">
-        <UIcon name="i-lucide-loader-2" class="h-4 w-4 animate-spin" />
+        <UIcon name="i-lucide-loader-2" class="h-4 w-4 motion-safe:animate-spin" />
         Carregando dados...
       </div>
 
@@ -153,13 +154,14 @@
           </h2>
           <div class="border overflow-hidden" :style="{ borderColor: C.border }">
             <table class="w-full font-mono-tab text-[11px]">
+              <caption class="sr-only">Últimas execuções de scrape por ticker com duração, superfícies hidratadas e status</caption>
               <thead :style="{ backgroundColor: C.surface, color: C.textMuted }">
                 <tr>
-                  <th class="px-4 py-2 text-left font-normal uppercase tracking-[0.18em]">TICKER</th>
-                  <th class="px-4 py-2 text-left font-normal uppercase tracking-[0.18em]">QUANDO</th>
-                  <th class="px-4 py-2 text-right font-normal uppercase tracking-[0.18em]">DURAÇÃO</th>
-                  <th class="px-4 py-2 text-right font-normal uppercase tracking-[0.18em]">SURFACES</th>
-                  <th class="px-4 py-2 text-left font-normal uppercase tracking-[0.18em]">STATUS</th>
+                  <th scope="col" class="px-4 py-2 text-left font-normal uppercase tracking-[0.18em]">TICKER</th>
+                  <th scope="col" class="px-4 py-2 text-left font-normal uppercase tracking-[0.18em]">QUANDO</th>
+                  <th scope="col" class="px-4 py-2 text-right font-normal uppercase tracking-[0.18em] tabular-nums">DURAÇÃO</th>
+                  <th scope="col" class="px-4 py-2 text-right font-normal uppercase tracking-[0.18em] tabular-nums">SURFACES</th>
+                  <th scope="col" class="px-4 py-2 text-left font-normal uppercase tracking-[0.18em]">STATUS</th>
                 </tr>
               </thead>
               <tbody>
@@ -169,7 +171,7 @@
                   class="border-t"
                   :style="{ borderColor: C.border, backgroundColor: C.surface }"
                 >
-                  <td class="px-4 py-2 font-bold" :style="{ color: C.text }">{{ run.ticker }}</td>
+                  <th scope="row" class="px-4 py-2 font-bold text-left" :style="{ color: C.text }">{{ run.ticker }}</th>
                   <td class="px-4 py-2" :style="{ color: C.textMuted }">{{ formatRelative(run.started_at) }}</td>
                   <td class="px-4 py-2 text-right tabular-nums" :style="{ color: C.textMuted }">{{ run.duration_ms }}ms</td>
                   <td class="px-4 py-2 text-right tabular-nums" :style="{ color: C.text }">{{ run.fields_hydrated }}</td>

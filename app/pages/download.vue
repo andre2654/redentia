@@ -57,7 +57,7 @@
             :style="{ borderColor: `${brand.colors.primary}50`, backgroundColor: `${brand.colors.primary}10` }"
           >
             <span class="relative flex size-1.5">
-              <span class="absolute inline-flex size-1.5 animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.primary }" />
+              <span class="absolute inline-flex size-1.5 motion-safe:animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.primary }" />
               <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
             </span>
             <span class="text-[11px] font-medium uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
@@ -85,7 +85,7 @@
           <!-- CTAs -->
           <div class="mb-10 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
             <button
-              class="group inline-flex items-center gap-3 rounded-full px-8 py-4 text-[14px] font-semibold transition-all hover:-translate-y-0.5"
+              class="group inline-flex items-center gap-3 rounded-full px-8 py-4 text-[14px] font-semibold transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-0.5"
               :style="{
                 backgroundColor: brand.colors.primary,
                 color: brand.colors.background,
@@ -276,7 +276,7 @@
           <div
             v-for="(benefit, idx) in benefits"
             :key="benefit.title"
-            class="group flex flex-col gap-5 rounded-3xl border p-8 md:p-10 transition-all hover:-translate-y-1"
+            class="group flex flex-col gap-5 rounded-3xl border p-8 md:p-10 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-1"
             :style="{
               borderColor: brand.colors.border,
               backgroundColor: idx === 1 ? `${brand.colors.primary}08` : brand.colors.background,
@@ -329,7 +329,7 @@
           <button
             v-for="p in platforms"
             :key="p.id"
-            class="inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-[13px] font-medium transition-all"
+            class="inline-flex items-center gap-2 rounded-full border px-5 py-2.5 text-[13px] font-medium transition-[transform,opacity,box-shadow,background-color,border-color,filter]"
             :class="{ 'shadow-lg': activePlatform === p.id }"
             :style="{
               borderColor: activePlatform === p.id ? brand.colors.primary : brand.colors.border,
@@ -374,7 +374,7 @@
 
           <div v-if="activePlatform === 'android' || activePlatform === 'desktop'" class="mt-10 flex justify-center">
             <button
-              class="group inline-flex items-center gap-3 rounded-full px-8 py-4 text-[13px] font-semibold transition-all hover:-translate-y-0.5"
+              class="group inline-flex items-center gap-3 rounded-full px-8 py-4 text-[13px] font-semibold transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-0.5"
               :style="{
                 backgroundColor: brand.colors.primary,
                 color: brand.colors.background,

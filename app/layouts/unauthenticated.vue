@@ -64,7 +64,7 @@
             <span class="relative">
               {{ group.label.toLowerCase() }}
               <span
-                class="absolute -bottom-0.5 left-0 h-px transition-all duration-300 ease-out"
+                class="absolute -bottom-0.5 left-0 h-px transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-300 ease-out"
                 :style="{
                   width: openedMenu === group.key ? '100%' : '0%',
                   backgroundColor: brand.colors.primary,
@@ -125,7 +125,7 @@
                   >
                     <span>{{ item.label }}</span>
                     <span
-                      class="-mr-1 translate-x-[-4px] opacity-0 transition-all duration-200 group-hover/item:translate-x-0 group-hover/item:opacity-100"
+                      class="-mr-1 translate-x-[-4px] opacity-0 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-200 group-hover/item:translate-x-0 group-hover/item:opacity-100"
                       :style="{ color: brand.colors.primary }"
                     >→</span>
                   </NuxtLink>
@@ -145,7 +145,7 @@
                 >
                   <span>{{ item.label }}</span>
                   <span
-                    class="translate-x-[-4px] opacity-0 transition-all duration-200 group-hover/item:translate-x-0 group-hover/item:opacity-100"
+                    class="translate-x-[-4px] opacity-0 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-200 group-hover/item:translate-x-0 group-hover/item:opacity-100"
                     :style="{ color: brand.colors.primary }"
                   >→</span>
                 </NuxtLink>
@@ -162,7 +162,7 @@
             <template #trigger>
               <button
                 type="button"
-                class="group/search flex w-60 items-center gap-2.5 rounded-md border px-3 py-1.5 transition-all duration-200"
+                class="group/search flex w-60 items-center gap-2.5 rounded-md border px-3 py-1.5 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-200"
                 :style="{
                   borderColor: brand.colors.border,
                   backgroundColor: 'transparent',
@@ -206,7 +206,7 @@
           >
             <span class="relative flex size-1.5">
               <span
-                class="absolute inline-flex size-1.5 animate-ping rounded-full opacity-60"
+                class="absolute inline-flex size-1.5 motion-safe:animate-ping rounded-full opacity-60"
                 :style="{ backgroundColor: brand.colors.secondary }"
               />
               <span
@@ -220,7 +220,7 @@
           <!-- Entrar — single prominent CTA with sliding arrow -->
           <NuxtLink
             to="/auth/login"
-            class="group flex items-center gap-2 rounded-md px-4 py-2 text-[13px] font-medium tracking-[0.02em] transition-all"
+            class="group flex items-center gap-2 rounded-md px-4 py-2 text-[13px] font-medium tracking-[0.02em] transition-[transform,opacity,box-shadow,background-color,border-color,filter]"
             :style="{
               backgroundColor: brand.colors.primary,
               color: brand.colors.background,

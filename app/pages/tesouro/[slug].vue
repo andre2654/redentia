@@ -9,7 +9,7 @@
         >
           <span class="flex items-center gap-1.5" :style="{ color: brand.colors.primary }">
             <span class="relative flex size-1.5">
-              <span class="absolute inline-flex size-1.5 animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.primary }" />
+              <span class="absolute inline-flex size-1.5 motion-safe:animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.primary }" />
               <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
             </span>
             [TESOURO.QUOTE]
@@ -282,7 +282,7 @@
             <UButton
               to="/auth/login"
               size="xl"
-              class="group w-full font-mono-tab font-semibold uppercase tracking-wider transition-all hover:opacity-90 sm:w-auto"
+              class="group w-full font-mono-tab font-semibold uppercase tracking-wider transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:opacity-90 sm:w-auto"
               :style="{ backgroundColor: brand.colors.primary, color: brand.colors.background }"
             >
               <template #leading>

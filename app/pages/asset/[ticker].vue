@@ -168,12 +168,13 @@
           </div>
 
           <table class="w-full border-t font-academic-body text-[13px]" :style="{ borderColor: brand.colors.text }">
+            <caption class="sr-only">Indicadores fundamentalistas do ativo com valores e leitura AUVP</caption>
             <thead>
               <tr class="border-b" :style="{ borderColor: brand.colors.border }">
-                <th class="font-academic-label w-14 py-3 text-left" :style="{ color: brand.colors.textMuted }">§</th>
-                <th class="font-academic-label py-3 text-left" :style="{ color: brand.colors.textMuted }">Indicador</th>
-                <th class="font-academic-label py-3 text-right" :style="{ color: brand.colors.textMuted }">Valor</th>
-                <th class="hidden font-academic-label py-3 text-right md:table-cell" :style="{ color: brand.colors.textMuted }">Leitura AUVP</th>
+                <th scope="col" class="font-academic-label w-14 py-3 text-left" :style="{ color: brand.colors.textMuted }">§</th>
+                <th scope="col" class="font-academic-label py-3 text-left" :style="{ color: brand.colors.textMuted }">Indicador</th>
+                <th scope="col" class="font-academic-label py-3 text-right tabular-nums" :style="{ color: brand.colors.textMuted }">Valor</th>
+                <th scope="col" class="hidden font-academic-label py-3 text-right md:table-cell" :style="{ color: brand.colors.textMuted }">Leitura AUVP</th>
               </tr>
             </thead>
             <tbody v-if="basicIndicators">
@@ -188,7 +189,7 @@
                     2.{{ idx + 1 }}
                   </span>
                 </td>
-                <td class="py-3">
+                <th scope="row" class="py-3 font-normal text-left">
                   <div class="flex flex-col">
                     <span class="font-academic-display text-[15px]" :style="{ color: brand.colors.text }">
                       {{ row.label }}
@@ -197,8 +198,8 @@
                       {{ row.code }}
                     </span>
                   </div>
-                </td>
-                <td class="py-3 text-right align-top">
+                </th>
+                <td class="py-3 text-right align-top tabular-nums">
                   <span class="font-academic-mono tabular-nums text-lg" :style="{ color: brand.colors.primary }">
                     {{ row.value || '-' }}
                   </span>
@@ -249,6 +250,7 @@
               </span>
             </div>
             <table class="mt-3 w-full font-academic-body text-[12px]">
+              <caption class="sr-only">Fluxo de caixa do último trimestre</caption>
               <tbody>
                 <tr
                   v-for="(item, idx) in cashFlowItems.slice(0, 5)"
@@ -256,12 +258,12 @@
                   class="border-b"
                   :style="{ borderColor: brand.colors.border }"
                 >
-                  <td class="py-2 pr-2">
+                  <th scope="row" class="py-2 pr-2 font-normal text-left">
                     <span class="font-academic-body text-[12px]" :style="{ color: brand.colors.text }">
                       {{ item.label }}
                     </span>
-                  </td>
-                  <td class="py-2 text-right">
+                  </th>
+                  <td class="py-2 text-right tabular-nums">
                     <span class="font-academic-mono tabular-nums" :style="{ color: Number(item.rawValue || 0) >= 0 ? brand.colors.text : brand.colors.primary }">
                       {{ item.value }}
                     </span>
@@ -279,6 +281,7 @@
               </span>
             </div>
             <table class="mt-3 w-full font-academic-body text-[12px]">
+              <caption class="sr-only">Balanço patrimonial do último trimestre</caption>
               <tbody>
                 <tr
                   v-for="(item, idx) in balanceItems.slice(0, 5)"
@@ -286,12 +289,12 @@
                   class="border-b"
                   :style="{ borderColor: brand.colors.border }"
                 >
-                  <td class="py-2 pr-2">
+                  <th scope="row" class="py-2 pr-2 font-normal text-left">
                     <span class="font-academic-body text-[12px]" :style="{ color: brand.colors.text }">
                       {{ item.label }}
                     </span>
-                  </td>
-                  <td class="py-2 text-right">
+                  </th>
+                  <td class="py-2 text-right tabular-nums">
                     <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.text }">
                       {{ item.value }}
                     </span>
@@ -309,6 +312,7 @@
               </span>
             </div>
             <table class="mt-3 w-full font-academic-body text-[12px]">
+              <caption class="sr-only">Demonstração do resultado do exercício do último trimestre</caption>
               <tbody>
                 <tr
                   v-for="(item, idx) in incomeItems.slice(0, 5)"
@@ -316,12 +320,12 @@
                   class="border-b"
                   :style="{ borderColor: brand.colors.border }"
                 >
-                  <td class="py-2 pr-2">
+                  <th scope="row" class="py-2 pr-2 font-normal text-left">
                     <span class="font-academic-body text-[12px]" :style="{ color: brand.colors.text }">
                       {{ item.label }}
                     </span>
-                  </td>
-                  <td class="py-2 text-right">
+                  </th>
+                  <td class="py-2 text-right tabular-nums">
                     <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.text }">
                       {{ item.value }}
                     </span>
@@ -355,11 +359,12 @@
           </div>
 
           <table class="w-full border-t font-academic-body text-[13px]" :style="{ borderColor: brand.colors.text }">
+            <caption class="sr-only">Histórico dos últimos pagamentos de proventos registrados</caption>
             <thead>
               <tr class="border-b" :style="{ borderColor: brand.colors.border }">
-                <th class="font-academic-label py-3 text-left" :style="{ color: brand.colors.textMuted }">Data pagamento</th>
-                <th class="font-academic-label py-3 text-left" :style="{ color: brand.colors.textMuted }">Tipo</th>
-                <th class="font-academic-label py-3 text-right" :style="{ color: brand.colors.textMuted }">Valor por cota</th>
+                <th scope="col" class="font-academic-label py-3 text-left tabular-nums" :style="{ color: brand.colors.textMuted }">Data pagamento</th>
+                <th scope="col" class="font-academic-label py-3 text-left" :style="{ color: brand.colors.textMuted }">Tipo</th>
+                <th scope="col" class="font-academic-label py-3 text-right tabular-nums" :style="{ color: brand.colors.textMuted }">Valor por cota</th>
               </tr>
             </thead>
             <tbody>
@@ -369,11 +374,11 @@
                 class="border-b"
                 :style="{ borderColor: brand.colors.border }"
               >
-                <td class="py-3">
+                <th scope="row" class="py-3 font-normal text-left tabular-nums">
                   <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.text }">
                     {{ d.paymentDate }}
                   </span>
-                </td>
+                </th>
                 <td class="py-3">
                   <span
                     class="font-academic-label"
@@ -382,7 +387,7 @@
                     {{ d.label || 'Provento' }}
                   </span>
                 </td>
-                <td class="py-3 text-right">
+                <td class="py-3 text-right tabular-nums">
                   <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.text }">
                     R$ {{ d.rate }}
                   </span>
@@ -1644,7 +1649,7 @@
               }"
             >
               <span class="relative flex size-1.5">
-                <span class="absolute inline-flex size-1.5 animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.background }" />
+                <span class="absolute inline-flex size-1.5 motion-safe:animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.background }" />
                 <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: brand.colors.background }" />
               </span>
               <span class="text-[10px] font-bold uppercase tracking-[0.15em]">CABEÇA FRIA · {{ tickerUpper }}</span>
@@ -2291,7 +2296,7 @@
           <div class="grid gap-5 md:grid-cols-3">
             <NuxtLink
               to="/calculadora/preco-teto"
-              class="group flex flex-col gap-4 rounded-3xl border p-8 transition-all hover:-translate-y-1"
+              class="group flex flex-col gap-4 rounded-3xl border p-8 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-1"
               :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.surface}80` }"
             >
               <div class="flex size-12 items-center justify-center rounded-2xl" :style="{ backgroundColor: `${brand.colors.primary}20`, color: brand.colors.primary }">
@@ -2310,7 +2315,7 @@
 
             <NuxtLink
               to="/calculadora/juros-compostos"
-              class="group flex flex-col gap-4 rounded-3xl border p-8 transition-all hover:-translate-y-1"
+              class="group flex flex-col gap-4 rounded-3xl border p-8 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-1"
               :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.surface}80` }"
             >
               <div class="flex size-12 items-center justify-center rounded-2xl" :style="{ backgroundColor: `${brand.colors.primary}20`, color: brand.colors.primary }">
@@ -2329,7 +2334,7 @@
 
             <NuxtLink
               to="/help"
-              class="group flex flex-col gap-4 rounded-3xl border p-8 transition-all hover:-translate-y-1"
+              class="group flex flex-col gap-4 rounded-3xl border p-8 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-1"
               :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.surface}80` }"
             >
               <div class="flex size-12 items-center justify-center rounded-2xl" :style="{ backgroundColor: `${brand.colors.primary}20`, color: brand.colors.primary }">
@@ -2966,7 +2971,7 @@
         >
           <span class="flex items-center gap-1.5" :style="{ color: brand.colors.primary }">
             <span class="relative flex size-1.5">
-              <span class="absolute inline-flex size-1.5 animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.primary }" />
+              <span class="absolute inline-flex size-1.5 motion-safe:animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.primary }" />
               <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
             </span>
             [TICKER.QUOTE]
@@ -3347,7 +3352,7 @@
               </span>
             </div>
             <div v-if="isLoadingDividends" class="flex items-center gap-2 font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">
-              <UIcon name="i-lucide-loader-2" class="h-3 w-3 animate-spin" />
+              <UIcon name="i-lucide-loader-2" class="h-3 w-3 motion-safe:animate-spin" />
               ANALISANDO
             </div>
             <span
@@ -3399,7 +3404,7 @@
               <!-- Tiny bar indicator at the bottom, horizontal, width = percentage -->
               <div class="mt-auto h-[3px] w-full" :style="{ backgroundColor: brand.colors.border }">
                 <div
-                  class="h-full transition-all"
+                  class="h-full transition-[transform,opacity,box-shadow,background-color,border-color,filter]"
                   :style="{
                     width: `${Math.min(100, Math.max(0, item.percentage))}%`,
                     backgroundColor: monthCellAccent(item),
@@ -3545,7 +3550,7 @@
               <div
                 v-for="item in activeChecklist"
                 :key="item.id"
-                class="group flex items-center gap-3 brand-card border p-3 transition-all"
+                class="group flex items-center gap-3 brand-card border p-3 transition-[transform,opacity,box-shadow,background-color,border-color,filter]"
                 :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
               >
                 <!-- Status Icon -->
@@ -3742,7 +3747,7 @@
           <UButton
             to="/auth/login"
             size="xl"
-            class="group w-full font-mono-tab font-semibold uppercase tracking-wider transition-all hover:opacity-90 sm:w-auto"
+            class="group w-full font-mono-tab font-semibold uppercase tracking-wider transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:opacity-90 sm:w-auto"
             :style="{
               backgroundColor: brand.colors.primary,
               color: brand.colors.background,

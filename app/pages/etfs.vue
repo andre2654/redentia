@@ -4,7 +4,7 @@
       <!-- Hero Section -->
       <div class="flex flex-col gap-4">
         <div class="flex items-center gap-2">
-          <UIcon name="i-lucide-bar-chart-3" class="text-secondary h-8 w-8" />
+          <UIcon name="i-lucide-bar-chart-3" aria-hidden="true" class="text-secondary h-8 w-8" />
           <h1 class="text-3xl md:text-4xl" :class="[brand.font.headingWeight, brand.font.headingStyle]">
             ETFs: Fundos de Índice
           </h1>
@@ -154,36 +154,37 @@
         <h3 class="text-xl font-semibold">ETF vs Fundo de Ações</h3>
         <div class="overflow-x-auto">
           <table class="w-full text-sm">
+            <caption class="sr-only">Comparativo entre ETF e Fundo de Ações por característica</caption>
             <thead>
               <tr class="border-b border-white/10">
-                <th class="p-3 text-left">Característica</th>
-                <th class="p-3 text-left">ETF</th>
-                <th class="p-3 text-left">Fundo de Ações</th>
+                <th scope="col" class="p-3 text-left">Característica</th>
+                <th scope="col" class="p-3 text-left">ETF</th>
+                <th scope="col" class="p-3 text-left">Fundo de Ações</th>
               </tr>
             </thead>
             <tbody class="text-gray-300">
               <tr class="border-b border-white/10">
-                <td class="p-3">Taxa de administração</td>
-                <td class="p-3 text-secondary">0,20-0,80%</td>
-                <td class="p-3">1,5-3%</td>
+                <th scope="row" class="p-3 font-normal text-left">Taxa de administração</th>
+                <td class="p-3 text-secondary tabular-nums">0,20-0,80%</td>
+                <td class="p-3 tabular-nums">1,5-3%</td>
               </tr>
               <tr class="border-b border-white/10">
-                <td class="p-3">Objetivo</td>
+                <th scope="row" class="p-3 font-normal text-left">Objetivo</th>
                 <td class="p-3 text-secondary">Replicar índice</td>
                 <td class="p-3">Superar índice</td>
               </tr>
               <tr class="border-b border-white/10">
-                <td class="p-3">Liquidez</td>
+                <th scope="row" class="p-3 font-normal text-left">Liquidez</th>
                 <td class="p-3 text-secondary">Imediata (como ação)</td>
                 <td class="p-3">D+4 ou mais</td>
               </tr>
               <tr class="border-b border-white/10">
-                <td class="p-3">Transparência</td>
+                <th scope="row" class="p-3 font-normal text-left">Transparência</th>
                 <td class="p-3 text-secondary">Total</td>
                 <td class="p-3">Parcial</td>
               </tr>
               <tr>
-                <td class="p-3">Come-cotas</td>
+                <th scope="row" class="p-3 font-normal text-left">Come-cotas</th>
                 <td class="p-3 text-secondary">Isento</td>
                 <td class="p-3">Sim (maio e nov)</td>
               </tr>
@@ -224,7 +225,7 @@
       <div class="border-t border-white/10 pt-8">
         <NuxtLink
           to="/search?group=etfs"
-          class="group mx-auto flex max-w-2xl items-center justify-between brand-card border border-secondary/30 bg-secondary/10 p-6 transition-all hover:border-secondary/50 hover:bg-secondary/20"
+          class="group mx-auto flex max-w-2xl items-center justify-between brand-card border border-secondary/30 bg-secondary/10 p-6 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-secondary/50 hover:bg-secondary/20"
         >
           <div class="flex flex-col gap-1">
             <h3 class="text-xl font-bold group-hover:text-secondary transition-colors">
@@ -236,6 +237,7 @@
           </div>
           <UIcon
             name="i-lucide-arrow-right"
+            aria-hidden="true"
             class="text-secondary h-8 w-8 transition-transform group-hover:translate-x-2"
           />
         </NuxtLink>

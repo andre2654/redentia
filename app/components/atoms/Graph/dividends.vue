@@ -22,7 +22,7 @@
             { key: 'max', label: 'Máx' },
           ]"
           :key="period.key"
-          class="rounded-md px-3 py-1.5 text-xs font-medium transition-all"
+          class="rounded-md px-3 py-1.5 text-xs font-medium transition-[transform,opacity,box-shadow,background-color,border-color,filter]"
           :style="selectedTimeRange === period.key
             ? { backgroundColor: brand.colors.surfaceHover, color: brand.colors.text }
             : { color: brand.colors.textMuted }"
@@ -44,7 +44,7 @@
             class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 rounded-lg"
             :style="{ backgroundColor: cc.loadingBg }"
           >
-            <UIcon name="i-lucide-loader-2" class="h-6 w-6 animate-spin" :style="{ color: brand.colors.textMuted }" />
+            <UIcon name="i-lucide-loader-2" class="h-6 w-6 motion-safe:animate-spin" :style="{ color: brand.colors.textMuted }" />
             <span class="text-sm" :style="{ color: brand.colors.textMuted }">Carregando...</span>
           </div>
 

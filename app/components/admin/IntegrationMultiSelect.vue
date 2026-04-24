@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col gap-2">
     <div v-if="loading" class="flex items-center gap-2 rounded-sm border px-3 py-2.5" :style="{ borderColor: C.border, color: C.textMuted }">
-      <UIcon name="i-lucide-loader-2" class="size-3.5 animate-spin" />
+      <UIcon name="i-lucide-loader-2" class="size-3.5 motion-safe:animate-spin" />
       <span class="font-mono-tab text-[11px]">Buscando integrações do Postiz…</span>
     </div>
 
@@ -76,7 +76,7 @@
         :style="{ color: C.textMuted }"
         @click="refresh(true)"
       >
-        <UIcon name="i-lucide-refresh-cw" class="size-3" :class="refreshing ? 'animate-spin' : ''" />
+        <UIcon name="i-lucide-refresh-cw" class="size-3" :class="refreshing ? 'motion-safe:animate-spin' : ''" />
         ATUALIZAR
       </button>
     </div>

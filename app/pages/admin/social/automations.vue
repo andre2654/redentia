@@ -16,7 +16,7 @@
         </div>
         <button
           type="button"
-          class="inline-flex items-center gap-2 rounded-sm px-4 py-2.5 font-mono-tab text-[11px] font-bold uppercase tracking-[0.15em] transition-all hover:opacity-90"
+          class="inline-flex items-center gap-2 rounded-sm px-4 py-2.5 font-mono-tab text-[11px] font-bold uppercase tracking-[0.15em] transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:opacity-90"
           :style="{ backgroundColor: C.primary, color: C.background }"
           @click="openWizard(null)"
         >
@@ -30,7 +30,7 @@
       </div>
 
       <div v-if="loading" class="py-10 text-center" :style="{ color: C.textMuted }">
-        <UIcon name="i-lucide-loader-2" class="size-5 animate-spin" />
+        <UIcon name="i-lucide-loader-2" class="size-5 motion-safe:animate-spin" />
       </div>
 
       <div
@@ -179,7 +179,7 @@
               v-for="p in AUTOMATION_PRESETS"
               :key="p.id"
               type="button"
-              class="group flex flex-col items-start gap-3 rounded-sm border p-4 text-left transition-all hover:-translate-y-0.5"
+              class="group flex flex-col items-start gap-3 rounded-sm border p-4 text-left transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-0.5"
               :style="draft.preset?.id === p.id
                 ? { borderColor: C.primary, backgroundColor: `${C.primary}10` }
                 : { borderColor: C.border, backgroundColor: C.surface }"
@@ -542,6 +542,7 @@
         </div>
       </div>
     </div>
+    <MoleculesConfirmDialog ref="confirmDialogRef" />
   </NuxtLayout>
 </template>
 
@@ -568,6 +569,7 @@ const items = ref<ISocialAutomation[]>([])
 const loading = ref(true)
 const error = ref<string | null>(null)
 const busyIds = reactive(new Set<number>())
+const confirmDialogRef = ref<{ open: (opts: { title: string; description?: string; confirmLabel?: string; cancelLabel?: string; variant?: 'destructive' | 'default' }) => Promise<boolean> } | null>(null)
 
 async function refresh() {
   loading.value = true
@@ -902,7 +904,14 @@ async function handleRunNow(a: ISocialAutomation) {
 }
 
 async function handleDelete(a: ISocialAutomation) {
-  if (!confirm(`Deletar a automação "${a.title}"?`)) return
+  const ok = await confirmDialogRef.value?.open({
+    title: `Deletar a automação "${a.title}"?`,
+    description: 'Esta ação não pode ser desfeita.',
+    confirmLabel: 'Deletar',
+    cancelLabel: 'Cancelar',
+    variant: 'destructive',
+  })
+  if (!ok) return
   busyIds.add(a.id)
   try {
     await service.remove(a.id)

@@ -82,7 +82,7 @@
               <span class="flex items-center gap-1.5" :style="{ color: C.primary }">
                 <span class="relative flex size-1.5">
                   <span
-                    class="absolute inline-flex size-1.5 animate-ping rounded-full opacity-75"
+                    class="absolute inline-flex size-1.5 motion-safe:animate-ping rounded-full opacity-75"
                     :style="{ backgroundColor: C.primary }"
                   />
                   <span
@@ -157,7 +157,7 @@
             <!-- Inline CTA: anchor to form -->
             <a
               href="#baixar"
-              class="group inline-flex items-center gap-3 rounded-sm px-6 py-4 font-mono-tab text-[12px] font-bold uppercase tracking-[0.15em] transition-all hover:opacity-90"
+              class="group inline-flex items-center gap-3 rounded-sm px-6 py-4 font-mono-tab text-[12px] font-bold uppercase tracking-[0.15em] transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:opacity-90"
               :style="{ backgroundColor: C.primary, color: C.background }"
             >
               [F1] BAIXAR O ESTUDO AGORA
@@ -637,10 +637,10 @@
             <button
               type="submit"
               :disabled="submitting || success"
-              class="mt-2 inline-flex items-center justify-center gap-3 rounded-sm px-6 py-4 font-mono-tab text-[12px] font-bold uppercase tracking-[0.15em] transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+              class="mt-2 inline-flex items-center justify-center gap-3 rounded-sm px-6 py-4 font-mono-tab text-[12px] font-bold uppercase tracking-[0.15em] transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
               :style="{ backgroundColor: C.primary, color: C.background }"
             >
-              <UIcon v-if="submitting" name="i-lucide-loader-2" class="size-4 animate-spin" />
+              <UIcon v-if="submitting" name="i-lucide-loader-2" class="size-4 motion-safe:animate-spin" />
               <UIcon v-else-if="success" name="i-lucide-check" class="size-4" />
               <UIcon v-else name="i-lucide-download" class="size-4" />
               <span v-if="success">LINK ENVIADO, CONFIRA SEU EMAIL</span>
@@ -668,7 +668,7 @@
             <a
               :href="ebook.downloadHref"
               :download="`redentia-${ebook.slug}.pdf`"
-              class="group inline-flex items-center gap-3 rounded-sm px-6 py-3 font-mono-tab text-[12px] font-bold uppercase tracking-[0.15em] transition-all hover:opacity-90"
+              class="group inline-flex items-center gap-3 rounded-sm px-6 py-3 font-mono-tab text-[12px] font-bold uppercase tracking-[0.15em] transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:opacity-90"
               :style="{ backgroundColor: C.primary, color: C.background }"
             >
               <UIcon name="i-lucide-download" class="size-4" />

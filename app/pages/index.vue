@@ -386,7 +386,7 @@
               v-for="cat in brand.homePage.categories"
               :key="cat.to"
               :to="cat.to"
-              class="group flex flex-col gap-3 border p-6 transition-all brand-card"
+              class="group flex flex-col gap-3 border p-6 transition-[transform,opacity,box-shadow,background-color,border-color,filter] brand-card"
               :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
             >
               <div class="flex items-center gap-3">
@@ -411,7 +411,7 @@
               v-for="cat in brand.homePage.categories"
               :key="cat.to"
               :to="cat.to"
-              class="group flex flex-col items-center gap-4 border p-8 text-center transition-all brand-card"
+              class="group flex flex-col items-center gap-4 border p-8 text-center transition-[transform,opacity,box-shadow,background-color,border-color,filter] brand-card"
               :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
             >
               <div class="bg-secondary/20 p-4 brand-pill">
@@ -496,7 +496,7 @@
               [ESTUDO.DESTAQUE] · {{ guidesHero[0].categoria.toUpperCase() }}
             </span>
             <div
-              class="flex size-10 items-center justify-center rounded-full transition-all duration-300 group-hover:translate-x-1 group-hover:translate-y-[-1px]"
+              class="flex size-10 items-center justify-center rounded-full transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-300 group-hover:translate-x-1 group-hover:translate-y-[-1px]"
               :style="{ backgroundColor: brand.colors.primary, color: brand.colors.background }"
               aria-hidden="true"
             >
@@ -551,7 +551,7 @@
         >
           <div class="flex items-start justify-between gap-3">
             <div
-              class="flex size-10 shrink-0 items-center justify-center rounded-lg transition-all duration-300 group-hover:scale-110"
+              class="flex size-10 shrink-0 items-center justify-center rounded-lg transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-300 group-hover:scale-110"
               :style="{ backgroundColor: `${brand.colors.primary}14`, color: brand.colors.primary }"
               aria-hidden="true"
             >
@@ -579,7 +579,7 @@
               {{ guide.tempoLeitura }}&nbsp;MIN
               <UIcon
                 name="i-lucide-arrow-up-right"
-                class="size-3 opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:opacity-100"
+                class="size-3 opacity-0 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-200 group-hover:translate-x-0.5 group-hover:opacity-100"
                 :style="{ color: brand.colors.primary }"
                 aria-hidden="true"
               />
@@ -597,7 +597,7 @@
           :aria-label="`Abrir ${guide.titulo}`"
         >
           <div
-            class="flex size-8 shrink-0 items-center justify-center rounded-md transition-all duration-300 group-hover:scale-110"
+            class="flex size-8 shrink-0 items-center justify-center rounded-md transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-300 group-hover:scale-110"
             :style="{ backgroundColor: `${brand.colors.primary}14`, color: brand.colors.primary }"
             aria-hidden="true"
           >
@@ -620,7 +620,7 @@
           </div>
           <UIcon
             name="i-lucide-arrow-up-right"
-            class="size-3.5 shrink-0 opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:opacity-100"
+            class="size-3.5 shrink-0 opacity-0 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-200 group-hover:translate-x-0.5 group-hover:opacity-100"
             :style="{ color: brand.colors.primary }"
             aria-hidden="true"
           />
@@ -675,7 +675,7 @@
             v-for="(item, idx) in brand.homeTexts.aiCtaQuestions"
             :key="idx"
             to="/auth/login"
-            class="group flex flex-col gap-4 border p-5 transition-all duration-200 brand-card"
+            class="group flex flex-col gap-4 border p-5 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-200 brand-card"
             :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
           >
             <div class="flex items-center justify-between">
@@ -732,7 +732,7 @@
               color="secondary"
               size="xl"
               icon="i-lucide-message-circle"
-              class="group w-full transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-secondary/25 sm:w-auto"
+              class="group w-full transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-secondary/25 sm:w-auto"
             >
               {{ brand.ai.ctaButton }}
               <template #trailing>
@@ -789,7 +789,7 @@
             <div class="flex items-center gap-3 font-mono-tab text-[10px] uppercase tracking-[0.22em]">
               <span class="flex items-center gap-1.5" :style="{ color: brand.colors.primary }">
                 <span class="relative flex size-1.5">
-                  <span class="absolute inline-flex size-1.5 animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.primary }" />
+                  <span class="absolute inline-flex size-1.5 motion-safe:animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.primary }" />
                   <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
                 </span>
                 [DEVELOPERS.SHIPPED]
@@ -935,7 +935,7 @@
 
                 <div class="mt-3 flex items-center gap-2">
                   <span :style="{ color: brand.colors.positive }">$</span>
-                  <span class="inline-block h-3 w-1.5 animate-pulse" :style="{ backgroundColor: brand.colors.primary }" />
+                  <span class="inline-block h-3 w-1.5 motion-safe:animate-pulse" :style="{ backgroundColor: brand.colors.primary }" />
                 </div>
               </div>
             </div>

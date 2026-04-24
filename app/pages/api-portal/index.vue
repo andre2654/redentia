@@ -31,7 +31,7 @@
         <div class="mb-10 flex flex-wrap items-center gap-3 font-mono-tab text-[10px] uppercase tracking-[0.18em]">
           <span class="flex items-center gap-1.5" :style="{ color: brand.colors.primary }">
             <span class="relative flex size-1.5">
-              <span class="absolute inline-flex size-1.5 animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.primary }" />
+              <span class="absolute inline-flex size-1.5 motion-safe:animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.primary }" />
               <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
             </span>
             REDENTIA.API
@@ -71,7 +71,7 @@
             <!-- CTAs -->
             <div class="mb-12 flex flex-col items-start gap-4 sm:flex-row sm:items-center">
               <button
-                class="group inline-flex items-center gap-3 rounded border-2 px-8 py-4 font-mono-tab text-[11px] uppercase tracking-[0.2em] transition-all hover:-translate-y-0.5"
+                class="group inline-flex items-center gap-3 rounded border-2 px-8 py-4 font-mono-tab text-[11px] uppercase tracking-[0.2em] transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-0.5"
                 :style="{
                   backgroundColor: brand.colors.primary,
                   color: brand.colors.background,
@@ -86,7 +86,7 @@
               </button>
               <NuxtLink
                 to="/api-portal/docs"
-                class="inline-flex items-center gap-2 rounded border px-8 py-4 font-mono-tab text-[11px] uppercase tracking-[0.2em] transition-all hover:opacity-80"
+                class="inline-flex items-center gap-2 rounded border px-8 py-4 font-mono-tab text-[11px] uppercase tracking-[0.2em] transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:opacity-80"
                 :style="{ borderColor: brand.colors.border, color: brand.colors.text }"
               >
                 &gt; ler_docs
@@ -139,7 +139,7 @@
                   <span class="ml-2">LIVE.REQUEST</span>
                 </div>
                 <span class="hidden sm:flex sm:items-center sm:gap-1.5">
-                  <span class="size-1.5 animate-pulse rounded-full" :style="{ backgroundColor: brand.colors.positive }" />
+                  <span class="size-1.5 motion-safe:animate-pulse rounded-full" :style="{ backgroundColor: brand.colors.positive }" />
                   200 OK · 42ms
                 </span>
               </div>
@@ -475,7 +475,7 @@
               </ul>
 
               <button
-                class="mt-auto inline-flex w-full items-center justify-center gap-2 rounded-lg px-5 py-3 font-mono-tab text-[11px] uppercase tracking-[0.15em] transition-all hover:opacity-90"
+                class="mt-auto inline-flex w-full items-center justify-center gap-2 rounded-lg px-5 py-3 font-mono-tab text-[11px] uppercase tracking-[0.15em] transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:opacity-90"
                 :style="{
                   backgroundColor: plan.popular ? brand.colors.primary : 'transparent',
                   color: plan.popular ? brand.colors.background : brand.colors.text,

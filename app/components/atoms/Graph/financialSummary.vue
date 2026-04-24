@@ -1,6 +1,6 @@
 <template>
   <section
-    class="financial-card flex h-full flex-col overflow-hidden rounded-xl border transition-all"
+    class="financial-card flex h-full flex-col overflow-hidden rounded-xl border transition-[transform,opacity,box-shadow,background-color,border-color,filter]"
     :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
   >
     <!-- Header -->
@@ -21,7 +21,7 @@
         v-if="props.isLoading"
         class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2"
       >
-        <UIcon name="i-lucide-loader-2" class="h-5 w-5 animate-spin" :style="{ color: brand.colors.textMuted }" />
+        <UIcon name="i-lucide-loader-2" class="h-5 w-5 motion-safe:animate-spin" :style="{ color: brand.colors.textMuted }" />
         <span class="text-xs" :style="{ color: brand.colors.textMuted }">Carregando...</span>
       </div>
 

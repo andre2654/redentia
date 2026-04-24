@@ -16,7 +16,7 @@
           v-for="ranking in rankings"
           :key="ranking.to"
           :to="ranking.to"
-          class="group flex flex-col gap-3 rounded-2xl border p-6 transition-all hover:border-white/20"
+          class="group flex flex-col gap-3 rounded-2xl border p-6 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-white/20"
           :style="{
             borderColor: brand.colors.border,
             backgroundColor: brand.colors.surface,

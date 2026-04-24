@@ -34,7 +34,7 @@
           </nav>
           <div class="flex-1" />
           <button
-            class="inline-flex items-center gap-2 rounded-full border-2 px-5 py-2 text-[12px] font-medium transition-all hover:-translate-y-0.5"
+            class="inline-flex items-center gap-2 rounded-full border-2 px-5 py-2 text-[12px] font-medium transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-0.5"
             :style="{
               backgroundColor: C.primary,
               color: C.background,
@@ -65,7 +65,7 @@
           <div class="mb-10 flex justify-center lg:justify-start">
             <div class="inline-flex items-center gap-2.5 rounded-full border px-4 py-1.5" :style="{ borderColor: `${C.primary}40`, backgroundColor: `${C.primary}08` }">
               <span class="relative flex size-1.5">
-                <span class="absolute inline-flex size-1.5 animate-ping rounded-full opacity-75" :style="{ backgroundColor: C.primary }" />
+                <span class="absolute inline-flex size-1.5 motion-safe:animate-ping rounded-full opacity-75" :style="{ backgroundColor: C.primary }" />
                 <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: C.primary }" />
               </span>
               <span class="text-[11px] font-medium uppercase tracking-[0.2em]" :style="{ color: C.primary }">
@@ -95,7 +95,7 @@
           <!-- CTAs -->
           <div class="mb-10 flex flex-col items-center gap-4 sm:flex-row lg:justify-start">
             <button
-              class="group inline-flex items-center gap-3 rounded-full px-8 py-4 text-[14px] font-semibold transition-all hover:-translate-y-0.5"
+              class="group inline-flex items-center gap-3 rounded-full px-8 py-4 text-[14px] font-semibold transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-0.5"
               :style="{
                 backgroundColor: C.primary,
                 color: C.background,
@@ -233,7 +233,7 @@
               :href="tenant.url"
               :target="tenant.url.startsWith('http') ? '_blank' : undefined"
               :rel="tenant.url.startsWith('http') ? 'noopener' : undefined"
-              class="tenant-tile group relative block overflow-hidden rounded-2xl border transition-all hover:-translate-y-1"
+              class="tenant-tile group relative block overflow-hidden rounded-2xl border transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-1"
               :class="bentoSpan(idx)"
               :style="{
                 borderColor: `${C.border}`,
@@ -323,7 +323,7 @@
                       {{ tenant.domain }}
                     </div>
                   </div>
-                  <div class="flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[10px] font-medium uppercase tracking-[0.15em] backdrop-blur-sm transition-all group-hover:translate-x-1" :style="{ color: tenant.accent, borderColor: `${tenant.accent}40`, backgroundColor: `${tenant.bg}80` }">
+                  <div class="flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[10px] font-medium uppercase tracking-[0.15em] backdrop-blur-sm transition-[transform,opacity,box-shadow,background-color,border-color,filter] group-hover:translate-x-1" :style="{ color: tenant.accent, borderColor: `${tenant.accent}40`, backgroundColor: `${tenant.bg}80` }">
                     {{ tenant.slug === 'your-brand' ? 'Reservar' : 'Visitar' }} →
                   </div>
                 </div>
@@ -361,7 +361,7 @@
             <div
               v-for="(feat, idx) in features"
               :key="feat.title"
-              class="group relative flex flex-col gap-4 overflow-hidden rounded-2xl border p-7 transition-all hover:-translate-y-1"
+              class="group relative flex flex-col gap-4 overflow-hidden rounded-2xl border p-7 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-1"
               :style="{
                 borderColor: `${C.border}`,
                 backgroundColor: idx % 4 === 0 ? `${C.primary}08` : C.background,
@@ -607,7 +607,7 @@
               </ul>
 
               <button
-                class="mt-auto inline-flex w-full items-center justify-center gap-2 rounded-lg px-5 py-3 text-[13px] font-semibold transition-all hover:opacity-90"
+                class="mt-auto inline-flex w-full items-center justify-center gap-2 rounded-lg px-5 py-3 text-[13px] font-semibold transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:opacity-90"
                 :style="{
                   backgroundColor: plan.popular ? C.primary : 'transparent',
                   color: plan.popular ? C.background : C.text,
@@ -678,7 +678,7 @@
 
         <div class="relative mx-auto max-w-4xl px-6 py-28 text-center md:px-10 md:py-36">
           <div class="mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-[11px] font-medium uppercase tracking-[0.18em]" :style="{ borderColor: `${C.primary}50`, backgroundColor: `${C.primary}10`, color: C.primary }">
-            <span class="size-1.5 animate-pulse rounded-full" :style="{ backgroundColor: C.primary }" />
+            <span class="size-1.5 motion-safe:animate-pulse rounded-full" :style="{ backgroundColor: C.primary }" />
             Vagas pra abril · 2 slots
           </div>
           <h2
@@ -697,7 +697,7 @@
           </p>
           <div class="mt-12 flex flex-col items-center justify-center gap-5 sm:flex-row">
             <button
-              class="group inline-flex items-center gap-3 rounded-full px-10 py-5 text-[15px] font-semibold transition-all hover:-translate-y-0.5"
+              class="group inline-flex items-center gap-3 rounded-full px-10 py-5 text-[15px] font-semibold transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-0.5"
               :style="{
                 backgroundColor: C.primary,
                 color: C.background,

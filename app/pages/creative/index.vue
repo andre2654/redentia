@@ -28,7 +28,7 @@
         <div class="mb-8 flex flex-wrap items-center gap-3 font-mono-tab text-[10px] uppercase tracking-[0.18em]">
           <span class="flex items-center gap-1.5" :style="{ color: REDENTIA_COLORS.primary }">
             <span class="relative flex size-1.5">
-              <span class="absolute inline-flex size-1.5 animate-ping rounded-full opacity-75" :style="{ backgroundColor: REDENTIA_COLORS.primary }" />
+              <span class="absolute inline-flex size-1.5 motion-safe:animate-ping rounded-full opacity-75" :style="{ backgroundColor: REDENTIA_COLORS.primary }" />
               <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: REDENTIA_COLORS.primary }" />
             </span>
             [CREATIVE.STUDIO]
@@ -103,7 +103,7 @@
               v-for="creative in creatives"
               :key="creative.slug"
               :to="creative.to"
-              class="group relative flex flex-col overflow-hidden rounded-lg border transition-all hover:-translate-y-1"
+              class="group relative flex flex-col overflow-hidden rounded-lg border transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-1"
               :style="{
                 borderColor: REDENTIA_COLORS.border,
                 backgroundColor: `${REDENTIA_COLORS.surface}E6`,

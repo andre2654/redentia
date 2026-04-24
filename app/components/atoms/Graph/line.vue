@@ -19,7 +19,7 @@
           aria-live="polite"
         >
           <span
-            class="h-3 w-3 animate-spin rounded-full border"
+            class="h-3 w-3 motion-safe:animate-spin rounded-full border"
             :style="{ borderColor: cc.tickColorMuted, borderTopColor: cc.labelColor }"
           />
           <span>Carregando…</span>

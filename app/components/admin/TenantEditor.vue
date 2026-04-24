@@ -102,10 +102,10 @@
         <button
           type="submit"
           :disabled="submitting || !!configError"
-          class="inline-flex items-center gap-2 rounded-sm px-5 py-2.5 font-mono-tab text-[11px] font-bold uppercase tracking-[0.15em] transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+          class="inline-flex items-center gap-2 rounded-sm px-5 py-2.5 font-mono-tab text-[11px] font-bold uppercase tracking-[0.15em] transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
           :style="{ backgroundColor: C.primary, color: C.background }"
         >
-          <UIcon v-if="submitting" name="i-lucide-loader-2" class="size-4 animate-spin" />
+          <UIcon v-if="submitting" name="i-lucide-loader-2" class="size-4 motion-safe:animate-spin" />
           <UIcon v-else :name="isNew ? 'i-lucide-plus' : 'i-lucide-save'" class="size-4" />
           {{ isNew ? '[CRIAR TENANT]' : '[SALVAR ALTERAÇÕES]' }}
         </button>

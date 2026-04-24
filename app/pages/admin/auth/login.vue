@@ -70,10 +70,10 @@
         <button
           type="submit"
           :disabled="submitting"
-          class="mt-2 inline-flex items-center justify-center gap-3 rounded-sm px-6 py-4 font-mono-tab text-[12px] font-bold uppercase tracking-[0.15em] transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+          class="mt-2 inline-flex items-center justify-center gap-3 rounded-sm px-6 py-4 font-mono-tab text-[12px] font-bold uppercase tracking-[0.15em] transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
           :style="{ backgroundColor: C.primary, color: C.background }"
         >
-          <UIcon v-if="submitting" name="i-lucide-loader-2" class="size-4 animate-spin" />
+          <UIcon v-if="submitting" name="i-lucide-loader-2" class="size-4 motion-safe:animate-spin" />
           <UIcon v-else name="i-lucide-log-in" class="size-4" />
           <span v-if="submitting">VALIDANDO</span>
           <span v-else>[ENTER] ENTRAR</span>

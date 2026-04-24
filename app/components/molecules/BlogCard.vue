@@ -1,7 +1,7 @@
 <template>
   <NuxtLink
     :to="to"
-    class="group flex flex-col overflow-hidden rounded-2xl border transition-all hover:border-secondary/30"
+    class="group flex flex-col overflow-hidden rounded-2xl border transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-secondary/30"
     :style="{
       borderColor: brand.colors.border,
       backgroundImage: `linear-gradient(to bottom right, ${brand.colors.surfaceHover}, transparent)`,

@@ -1,7 +1,7 @@
 <template>
   <NuxtLink
     :to="`/asset/${ticker.toLowerCase()}`"
-    class="group inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-2 py-2 transition-all hover:border-secondary/30 hover:bg-secondary/10"
+    class="group inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-2 py-2 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-secondary/30 hover:bg-secondary/10"
     :class="sizeClasses"
   >
     <!-- Logo -->

@@ -59,22 +59,27 @@
         <span class="text-[11px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
           &gt; QUERY
         </span>
+        <label for="global-search-input-terminal" class="sr-only">Buscar por ticker ou nome da companhia</label>
         <input
           id="global-search-input-terminal"
           v-model="globalFilter"
-          type="text"
-          placeholder="BUSCAR POR TICKER OU NOME DA COMPANHIA..."
-          class="flex-1 bg-transparent py-1 font-mono-tab text-[14px] uppercase tracking-wide outline-none placeholder:opacity-40"
+          type="search"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="BUSCAR POR TICKER OU NOME DA COMPANHIA…"
+          class="flex-1 bg-transparent py-1 font-mono-tab text-[14px] uppercase tracking-wide outline-none placeholder:opacity-40 focus-visible:ring-2 focus-visible:ring-offset-1"
           :style="{ color: brand.colors.text, caretColor: brand.colors.primary }"
         />
-        <span
+        <button
           v-if="globalFilter.length > 0"
-          class="inline-flex cursor-pointer items-center gap-1 text-[11px] uppercase tracking-wide opacity-70 hover:opacity-100"
+          type="button"
+          class="inline-flex cursor-pointer items-center gap-1 text-[11px] uppercase tracking-wide opacity-70 hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
           :style="{ color: brand.colors.textMuted }"
+          aria-label="Limpar busca"
           @click="globalFilter = ''"
         >
           CLEAR ×
-        </span>
+        </button>
         <span class="hidden items-center gap-1 text-[10px] lg:flex" :style="{ color: brand.colors.textMuted }">
           <kbd class="border px-1.5 py-0.5 font-mono-tab" :style="{ borderColor: brand.colors.border }">⌘</kbd>
           <kbd class="border px-1.5 py-0.5 font-mono-tab" :style="{ borderColor: brand.colors.border }">K</kbd>
@@ -1140,7 +1145,7 @@
                     v-for="asset in paginatedData"
                     :key="asset.ticker || asset.stock"
                     :to="`/asset/${String(asset.ticker || asset.stock || '').toLowerCase()}`"
-                    class="group flex flex-col gap-3 brand-card border p-4 transition-all active:scale-[0.99] sm:gap-4 sm:p-5"
+                    class="group flex flex-col gap-3 brand-card border p-4 transition-[transform,opacity,box-shadow,background-color,border-color,filter] active:scale-[0.99] sm:gap-4 sm:p-5"
                     :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
                   >
                     <div class="flex items-center justify-between gap-2">

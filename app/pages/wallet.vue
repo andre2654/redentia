@@ -27,7 +27,7 @@
         </p>
 
         <div v-if="loading" class="flex justify-center py-12">
-          <UIcon name="i-lucide-loader-2" class="h-8 w-8 animate-spin text-secondary" />
+          <UIcon name="i-lucide-loader-2" class="h-8 w-8 motion-safe:animate-spin text-secondary" />
         </div>
         <div v-else-if="!positions.length" class="rounded-xl border px-6 py-12 text-center" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
           <p :style="{ color: brand.colors.textMuted }">Nenhuma posição. Importe uma planilha XLSX no formato da sua corretora.</p>
@@ -43,26 +43,27 @@
         <div v-else class="flex flex-col gap-4">
           <div class="overflow-x-auto rounded-xl border" :style="{ borderColor: brand.colors.border }">
             <table class="w-full text-left text-sm">
+              <caption class="sr-only">Posições da carteira com quantidade, preço médio e valor total</caption>
               <thead class="border-b" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
                 <tr>
-                  <th class="px-4 py-3 font-medium" :style="{ color: brand.colors.text }">Ticker</th>
-                  <th class="px-4 py-3 font-medium" :style="{ color: brand.colors.text }">Quantidade</th>
-                  <th class="px-4 py-3 font-medium" :style="{ color: brand.colors.text }">Preço médio</th>
-                  <th class="px-4 py-3 font-medium" :style="{ color: brand.colors.text }">Valor total</th>
+                  <th scope="col" class="px-4 py-3 font-medium" :style="{ color: brand.colors.text }">Ticker</th>
+                  <th scope="col" class="px-4 py-3 text-right font-medium" :style="{ color: brand.colors.text }">Quantidade</th>
+                  <th scope="col" class="px-4 py-3 text-right font-medium" :style="{ color: brand.colors.text }">Preço médio</th>
+                  <th scope="col" class="px-4 py-3 text-right font-medium" :style="{ color: brand.colors.text }">Valor total</th>
                 </tr>
               </thead>
               <tbody class="divide-y" :style="{ '--tw-divide-color': brand.colors.border }">
                 <tr v-for="p in positions" :key="p.ticker" :style="{ color: brand.colors.text }">
-                  <td class="px-4 py-3 font-medium">{{ p.ticker }}</td>
-                  <td class="px-4 py-3">{{ formatNumber(p.quantity) }}</td>
-                  <td class="px-4 py-3">{{ formatBRL(p.average_price) }}</td>
-                  <td class="px-4 py-3">{{ formatBRL(p.quantity * p.average_price) }}</td>
+                  <th scope="row" class="px-4 py-3 text-left font-medium" translate="no">{{ p.ticker }}</th>
+                  <td class="px-4 py-3 text-right tabular-nums">{{ formatNumber(p.quantity) }}</td>
+                  <td class="px-4 py-3 text-right tabular-nums">{{ formatBRL(p.average_price) }}</td>
+                  <td class="px-4 py-3 text-right tabular-nums">{{ formatBRL(p.quantity * p.average_price) }}</td>
                 </tr>
               </tbody>
               <tfoot class="border-t font-medium" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
                 <tr>
-                  <td colspan="3" class="px-4 py-3" :style="{ color: brand.colors.text }">Total</td>
-                  <td class="px-4 py-3" :style="{ color: brand.colors.text }">{{ formatBRL(totalValue) }}</td>
+                  <th scope="row" colspan="3" class="px-4 py-3 text-left font-medium" :style="{ color: brand.colors.text }">Total</th>
+                  <td class="px-4 py-3 text-right tabular-nums" :style="{ color: brand.colors.text }">{{ formatBRL(totalValue) }}</td>
                 </tr>
               </tfoot>
             </table>
@@ -73,7 +74,7 @@
         <div class="flex flex-col gap-8 border-b p-6">
           <h2 class="text-[18px] font-bold">Composição</h2>
           <div v-if="compositionLoading" class="flex justify-center py-8">
-            <UIcon name="i-lucide-loader-2" class="h-6 w-6 animate-spin text-secondary" />
+            <UIcon name="i-lucide-loader-2" class="h-6 w-6 motion-safe:animate-spin text-secondary" />
           </div>
           <div v-else class="flex items-center justify-center gap-7 max-lg:flex-col">
             <AtomsGraphBar

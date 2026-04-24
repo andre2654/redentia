@@ -52,7 +52,7 @@
         </NuxtLink>
         <NuxtLink
           to="/api-portal/auth/register"
-          class="inline-flex items-center gap-2 rounded border-2 px-4 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.18em] transition-all hover:-translate-y-0.5"
+          class="inline-flex items-center gap-2 rounded border-2 px-4 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.18em] transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-0.5"
           :style="{
             backgroundColor: brand.colors.primary,
             color: brand.colors.background,
@@ -79,7 +79,9 @@
         >
           <UIcon name="i-lucide-search" class="size-3.5" />
           <input
-            type="text"
+            type="search"
+            aria-label="Pesquisar documentação"
+            autocomplete="off"
             placeholder="Pesquisar..."
             class="flex-1 bg-transparent outline-none"
             :style="{ color: brand.colors.text }"
@@ -125,6 +127,7 @@
             class="mb-2"
           >
             <button
+              :aria-expanded="expandedCategories.has(cat.id)"
               @click="toggleCategory(cat.id)"
               class="flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-[13px] transition-colors hover:opacity-80"
               :style="{ color: brand.colors.text }"

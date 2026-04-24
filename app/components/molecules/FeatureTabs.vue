@@ -11,11 +11,18 @@
       </div>
 
       <!-- Tabs -->
-      <div class="mb-8 flex flex-wrap justify-center gap-2 md:gap-3">
+      <div
+        role="tablist"
+        aria-label="Perfis de investidor"
+        class="mb-8 flex flex-wrap justify-center gap-2 md:gap-3"
+      >
         <button
           v-for="tab in tabs"
           :key="tab.id"
-          class="rounded-full px-4 py-2 text-sm font-medium transition-all md:px-6 md:text-base"
+          role="tab"
+          :aria-selected="activeTab === tab.id"
+          :tabindex="activeTab === tab.id ? 0 : -1"
+          class="rounded-full px-4 py-2 text-sm font-medium transition-[transform,opacity,box-shadow,background-color,border-color,filter] md:px-6 md:text-base"
           :class="activeTab === tab.id
             ? 'bg-secondary'
             : 'border'"
@@ -32,7 +39,7 @@
           v-for="feature in activeFeatures"
           :key="feature.title"
           :to="feature.to"
-          class="group flex flex-col gap-4 rounded-2xl border p-6 transition-all hover:border-secondary/30"
+          class="group flex flex-col gap-4 rounded-2xl border p-6 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-secondary/30"
           :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
         >
           <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary/20">

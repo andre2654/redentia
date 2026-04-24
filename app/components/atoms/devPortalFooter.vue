@@ -42,7 +42,7 @@
           <!-- Status pill -->
           <div class="mt-5 inline-flex items-center gap-2 rounded-full border px-3 py-1 font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ borderColor: `${brand.colors.border}`, color: brand.colors.textMuted }">
             <span class="relative flex size-1.5">
-              <span class="absolute inline-flex size-1.5 animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.positive }" />
+              <span class="absolute inline-flex size-1.5 motion-safe:animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.positive }" />
               <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: brand.colors.positive }" />
             </span>
             <span :style="{ color: brand.colors.positive }">ALL SYSTEMS</span>
