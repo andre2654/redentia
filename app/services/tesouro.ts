@@ -25,6 +25,8 @@ export interface TesouroPricePoint {
   price_at: string
   buy_price: number
   sell_price: number
+  buy_rate: number | null
+  sell_rate: number | null
 }
 
 interface TesouroPricesResponse {

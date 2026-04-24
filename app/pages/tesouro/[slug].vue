@@ -167,27 +167,48 @@
           <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div class="flex flex-col gap-1">
               <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
-                [CHART.PRICE]
+                [CHART.{{ chartMode === 'rate' ? 'RATE' : 'PRICE' }}]
               </span>
               <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
-                Histórico de cotação
+                {{ chartMode === 'rate' ? 'Histórico de rentabilidade' : 'Histórico de cotação' }}
               </h2>
               <span class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
-                &gt; SÉRIE DIÁRIA · VALOR DE VENDA · {{ selectedChartRange.toUpperCase() }}
+                &gt; SÉRIE DIÁRIA · {{ chartMode === 'rate' ? 'TAXA DE VENDA (% A.A.)' : 'VALOR DE VENDA' }} · {{ selectedChartRange.toUpperCase() }}
               </span>
             </div>
-            <MoleculesPeriodSelector
-              v-model="selectedChartRange"
-              :options="chartRangeOptions"
-              :loading="isLoadingChart"
-              class="max-md:w-full"
-            />
+            <div class="flex flex-col gap-2 md:flex-row md:items-center">
+              <div
+                class="flex items-center gap-px border font-mono-tab text-[10px] uppercase tracking-[0.15em]"
+                :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }"
+              >
+                <button
+                  v-for="opt in chartModeOptions"
+                  :key="opt.value"
+                  type="button"
+                  class="px-3 py-2 transition-colors"
+                  :style="{
+                    backgroundColor: chartMode === opt.value ? brand.colors.primary : brand.colors.surface,
+                    color: chartMode === opt.value ? brand.colors.background : brand.colors.textMuted,
+                  }"
+                  @click="chartMode = opt.value"
+                >
+                  {{ opt.label }}
+                </button>
+              </div>
+              <MoleculesPeriodSelector
+                v-model="selectedChartRange"
+                :options="chartRangeOptions"
+                :loading="isLoadingChart"
+                class="max-md:w-full"
+              />
+            </div>
           </div>
           <AtomsGraphLine
             :data="chartData"
             :legend="chartLegend"
             :height="320"
             :loading="isLoadingChart"
+            :currency="chartMode === 'rate' ? '%' : 'R$'"
           />
         </section>
 
@@ -313,26 +334,48 @@ const chartRangeOptions = [
   { label: 'Tudo', value: 'full' },
 ]
 
+const chartModeOptions = [
+  { label: 'Preço', value: 'price' as const },
+  { label: 'Taxa', value: 'rate' as const },
+]
+
 const selectedChartRange = ref<TesouroPriceRange>('1y')
-const chartData = ref<IChartDataPoint[]>([])
+const chartMode = ref<'price' | 'rate'>('price')
+
+// Raw series kept as-is; chartData is a derived projection onto the selected
+// axis (sell_price when mode=price, sell_rate when mode=rate). Swapping modes
+// doesn't require a refetch.
+const rawPrices = ref<Awaited<ReturnType<typeof getTesouroPrices>>>([])
 const isLoadingChart = ref(false)
 
+const chartData = computed<IChartDataPoint[]>(() => {
+  return rawPrices.value
+    .map((p) => {
+      const value = chartMode.value === 'rate' ? p.sell_rate : p.sell_price
+      if (value === null) return null
+      return {
+        date: p.price_at,
+        value,
+        timestamp: new Date(p.price_at).getTime(),
+      }
+    })
+    .filter((p): p is IChartDataPoint => p !== null)
+})
+
 const chartLegend = computed<IChartLegendItem[]>(() => [
-  { label: 'Valor de venda', color: brand.colors.positive },
+  {
+    label: chartMode.value === 'rate' ? 'Taxa de venda (% a.a.)' : 'Valor de venda',
+    color: brand.colors.positive,
+  },
 ])
 
 async function fetchChartData() {
   isLoadingChart.value = true
   try {
-    const points = await getTesouroPrices(slug, selectedChartRange.value)
-    chartData.value = points.map((p) => ({
-      date: p.price_at,
-      value: p.sell_price,
-      timestamp: new Date(p.price_at).getTime(),
-    }))
+    rawPrices.value = await getTesouroPrices(slug, selectedChartRange.value)
   } catch (err) {
     console.error('tesouro chart fetch failed', err)
-    chartData.value = []
+    rawPrices.value = []
   } finally {
     isLoadingChart.value = false
   }
