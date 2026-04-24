@@ -154,24 +154,6 @@
         </div>
       </div>
 
-      <!-- Footer: source + timestamp -->
-      <div
-        class="flex items-center justify-between border-t px-4 py-3 font-mono-tab text-[9px] uppercase tracking-[0.18em]"
-        :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted }"
-      >
-        <span>FONTE · {{ sourceLabel }}</span>
-        <a
-          v-if="showAllUrl"
-          :href="showAllUrl"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="inline-flex items-center gap-1 transition-opacity hover:opacity-75"
-          :style="{ color: brand.colors.primary }"
-        >
-          VER FONTE
-          <UIcon name="i-lucide-arrow-up-right" class="size-3" />
-        </a>
-      </div>
     </div>
   </section>
 </template>
@@ -223,20 +205,6 @@ const { data } = await useAsyncData(
 )
 
 const ticker = computed(() => props.ticker)
-
-const showAllUrl = computed(() => {
-  if (!data.value) return null
-  if (data.value.source === 'tradingview') {
-    return `https://www.tradingview.com/symbols/BMFBOVESPA-${data.value.ticker}/`
-  }
-  return null
-})
-
-const sourceLabel = computed(() => {
-  if (!data.value) return ''
-  if (data.value.source === 'tradingview') return 'TRADINGVIEW'
-  return data.value.source.toUpperCase()
-})
 
 const coverageLabel = computed(() => {
   const count = data.value?.breakdown?.analyst_count

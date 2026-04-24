@@ -3161,7 +3161,7 @@
 
         <!-- Fundamentals + Volatility side by side (terminal panels) —
              only when scrape_extras is NOT available (otherwise the new
-             StatusInvestPanel below covers these indicators + more). -->
+             fundamentals panel below covers these indicators + more). -->
         <section v-if="!scrapeExtras" class="grid grid-cols-1 gap-6 border-b py-8 lg:grid-cols-3" :style="{ borderColor: brand.colors.border }">
           <!-- Col 1-2: Fundamentals register -->
           <div v-if="brand.assetPage.showIndicators" class="lg:col-span-2">
@@ -3285,7 +3285,7 @@
           </div>
         </section>
 
-        <!-- StatusInvest rich panels — FII or stock variant based on asset_type -->
+        <!-- Fundamentals rich panels — FII / ETF / stock variant by asset_type -->
         <section v-if="scrapeExtras" class="border-b py-8" :style="{ borderColor: brand.colors.border }">
           <MoleculesStatusInvestFiiPanel v-if="scrapeExtras.asset_type === 'fii'" :extras="scrapeExtras" />
           <MoleculesStatusInvestEtfPanel v-else-if="scrapeExtras.asset_type === 'etf'" :extras="scrapeExtras" />

@@ -143,7 +143,7 @@ const cards = computed(() => [
   { to: '/admin/tenants', label: 'TENANTS', value: String(tenantsCount.value), sub: 'CADASTRADOS', icon: 'i-lucide-building-2' },
   { to: '/admin/social/automations', label: 'AUTOMAÇÕES', value: `${automationsActive.value}/${automationsTotal.value}`, sub: 'ATIVAS/TOTAL', icon: 'i-lucide-zap' },
   { to: '/admin/social/monitored-profiles', label: 'PERFIS MONITORADOS', value: `${profilesEnabled.value}/${profilesCount.value}`, sub: 'ATIVOS/TOTAL', icon: 'i-lucide-eye' },
-  { to: '/admin/social/posts', label: 'POSTIZ', value: '↗', sub: 'CONSOLE EXTERNO', icon: 'i-lucide-image' },
+  { to: '/admin/data-health', label: 'DATA HEALTH', value: '↗', sub: 'SCRAPE · NEWS · TESOURO', icon: 'i-lucide-activity' },
 ])
 </script>
 

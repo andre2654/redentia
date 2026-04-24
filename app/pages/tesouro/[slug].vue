@@ -150,9 +150,6 @@
           <UIcon name="i-lucide-arrow-left" class="h-3 w-3" />
           VOLTAR À HOME
         </NuxtLink>
-        <span class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">
-          FONTE · STATUSINVEST
-        </span>
       </div>
     </main>
   </div>

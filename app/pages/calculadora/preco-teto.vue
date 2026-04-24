@@ -232,7 +232,7 @@
             <div>
               <h4 class="font-semibold">Reúna os Dados da Ação</h4>
               <p class="text-sm text-gray-300">
-                Acesse o site de RI da empresa ou plataformas como Status Invest, Fundamentus ou a própria B3. Você precisa de: LPA, VPA, dividendos dos últimos 12 meses e P/L médio do setor.
+                Use a própria página do ativo aqui na Redentia ou o site de RI da empresa. Você precisa de: LPA, VPA, dividendos dos últimos 12 meses e P/L médio do setor.
               </p>
             </div>
           </div>
@@ -399,7 +399,7 @@
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
             <p class="mt-3 text-sm text-gray-300">
-              Sites como Status Invest, Fundamentus e EconomaticaExcel mostram P/L por setor. Ou faça manualmente: pegue 5-10 empresas do mesmo setor, veja o P/L de cada, e calcule a média. Exemplos de P/L médio: Bancos (8-12), Energia (10-14), Varejo (12-18), Tecnologia (20-30), Seguradoras (8-10). Setores cíclicos tendem a ter P/L mais baixo, setores de crescimento mais alto.
+              Use a ferramenta de busca da Redentia: filtre por setor e pegue o P/L de 5-10 empresas comparáveis, depois calcule a média. Exemplos de P/L médio: Bancos (8-12), Energia (10-14), Varejo (12-18), Tecnologia (20-30), Seguradoras (8-10). Setores cíclicos tendem a ter P/L mais baixo, setores de crescimento mais alto.
             </p>
           </details>
 
