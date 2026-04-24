@@ -188,10 +188,16 @@ watch(
   () => { imgError.value = false },
 )
 onMounted(() => {
-  const el = imgRef.value
-  if (el && el.complete && el.naturalWidth === 0) {
-    imgError.value = true
+  const check = () => {
+    const el = imgRef.value
+    if (el && el.complete && el.naturalWidth === 0) {
+      imgError.value = true
+    }
   }
+  // checa no próximo tick (DOM já pintou) + depois de 1.5s (timeout pra
+  // 404 lenta que não dispara @error por alguma razão de cache/hydration).
+  nextTick(check)
+  setTimeout(check, 1500)
 })
 
 function normalizeText(text: string) {

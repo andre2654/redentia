@@ -13,101 +13,86 @@
       </p>
     </header>
 
-    <!-- Indexer filter chips -->
-    <div class="mb-4 flex items-center gap-px overflow-x-auto px-4 md:px-0" :style="{ backgroundColor: brand.colors.border }">
-      <button
-        v-for="chip in indexerChips"
-        :key="chip.id"
-        type="button"
-        class="flex items-center gap-2 px-4 py-2 font-mono-tab text-[10px] uppercase tracking-[0.18em] transition-all"
-        :style="{
-          backgroundColor: activeIndexer === chip.id ? brand.colors.surface : brand.colors.background,
-          color: activeIndexer === chip.id ? brand.colors.primary : brand.colors.textMuted,
-          borderBottom: activeIndexer === chip.id ? `1px solid ${brand.colors.primary}` : '1px solid transparent',
-        }"
-        @click="activeIndexer = chip.id"
-      >
-        <span>{{ chip.label }}</span>
-        <span class="tabular-nums" :style="{ color: activeIndexer === chip.id ? brand.colors.text : brand.colors.textMuted }">
-          {{ chip.count }}
-        </span>
-      </button>
-    </div>
-
-    <!-- Grid of titles -->
-    <div v-if="isLoading" class="grid gap-px border md:grid-cols-2 lg:grid-cols-3" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }">
-      <div v-for="i in 6" :key="`sk-${i}`" class="p-5" :style="{ backgroundColor: brand.colors.surface }">
-        <USkeleton class="h-20 w-full" />
+    <!-- Loading state -->
+    <div v-if="isLoading" class="grid gap-px border md:grid-cols-2 lg:grid-cols-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }">
+      <div v-for="i in 4" :key="`sk-${i}`" class="p-5" :style="{ backgroundColor: brand.colors.surface }">
+        <USkeleton class="h-48 w-full" />
       </div>
     </div>
 
-    <div
+    <!-- Carousel: 1 col mobile / 3 md / 4 xl (same pattern as ranking) -->
+    <UCarousel
       v-else
-      class="grid gap-px border md:grid-cols-2 lg:grid-cols-3"
-      :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }"
+      v-slot="{ item }"
+      class="w-full"
+      loop
+      :items="indexerSlides"
+      :ui="{ item: 'basis-1/1 md:basis-1/3 xl:basis-1/4', container: 'bg-transparent' }"
     >
-      <NuxtLink
-        v-for="item in visibleItems"
-        :key="item.slug"
-        :to="`/tesouro/${item.slug}`"
-        class="group flex flex-col gap-3 px-5 py-4 transition-colors"
-        :style="{ backgroundColor: brand.colors.surface }"
-      >
-        <!-- Header row: badge + maturity -->
-        <div class="flex items-center justify-between">
-          <span
-            class="font-mono-tab text-[9px] uppercase tracking-[0.2em] px-1.5 py-0.5"
-            :style="{
-              color: indexerColor(item.indexer),
-              border: `1px solid ${indexerColor(item.indexer)}40`,
-            }"
+      <div class="flex w-full flex-col gap-2 px-2 py-4">
+        <!-- Header: badge + category name + VIEW ALL -->
+        <div class="mb-3 flex items-center justify-between border-b pb-2" :style="{ borderColor: brand.colors.border }">
+          <div class="flex items-center gap-2">
+            <UIcon name="i-lucide-landmark" class="h-3 w-3" :style="{ color: item.color }" />
+            <div class="flex flex-col">
+              <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: item.color }">
+                [TD.{{ item.key }}]
+              </span>
+              <h3 class="font-mono-tab text-[11px] font-semibold uppercase tracking-wider" :style="{ color: brand.colors.text }">
+                {{ item.label }} / {{ item.title }}
+              </h3>
+            </div>
+          </div>
+          <NuxtLink
+            :to="{ path: '/search', query: item.query }"
+            class="flex items-center gap-1 font-mono-tab text-[10px] uppercase tracking-[0.12em] transition-colors hover:opacity-80"
+            :style="{ color: brand.colors.textMuted }"
           >
-            {{ indexerBadge(item.indexer) }}
-          </span>
-          <span class="font-mono-tab text-[10px] uppercase tracking-[0.15em] tabular-nums" :style="{ color: brand.colors.textMuted }">
-            VENC · {{ formatMaturity(item.maturity_date) }}
-          </span>
+            VIEW ALL
+            <UIcon name="i-lucide-arrow-right" class="h-3 w-3" />
+          </NuxtLink>
         </div>
 
-        <!-- Title name -->
-        <h3 class="font-semibold leading-tight" :style="{ color: brand.colors.text }">
-          {{ prettyName(item.name) }}
-        </h3>
+        <!-- Vertical list of 5 titles -->
+        <div class="flex flex-col">
+          <NuxtLink
+            v-for="title in item.items.slice(0, 5)"
+            :key="title.slug"
+            :to="`/tesouro/${title.slug}`"
+            class="group flex items-center justify-between gap-3 border-b py-2.5 transition-colors"
+            :style="{ borderColor: brand.colors.border }"
+            @mouseenter="$event.currentTarget.style.backgroundColor = brand.colors.textMuted + '0D'"
+            @mouseleave="$event.currentTarget.style.backgroundColor = 'transparent'"
+          >
+            <div class="flex min-w-0 flex-1 flex-col">
+              <span class="truncate text-sm font-medium" :style="{ color: brand.colors.text }">
+                {{ prettyName(title.name) }}
+              </span>
+              <span class="font-mono-tab text-[10px] uppercase tracking-wider tabular-nums" :style="{ color: brand.colors.textMuted }">
+                VENC · {{ formatMaturity(title.maturity_date) }}
+              </span>
+            </div>
+            <div class="flex flex-shrink-0 flex-col items-end">
+              <span class="font-mono-tab text-sm font-bold tabular-nums" :style="{ color: brand.colors.primary }">
+                {{ formatRate(title) }}
+              </span>
+              <span class="font-mono-tab text-[10px] tabular-nums" :style="{ color: brand.colors.textMuted }">
+                {{ formatMoney(title.price_buy) }}
+              </span>
+            </div>
+          </NuxtLink>
 
-        <!-- Rate (big highlight) -->
-        <div class="flex items-end justify-between gap-4">
-          <div class="flex flex-col">
-            <span class="font-mono-tab text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">
-              TAXA
-            </span>
-            <span class="font-mono-tab text-lg font-bold tabular-nums" :style="{ color: brand.colors.primary }">
-              {{ formatRate(item) }}
-            </span>
-          </div>
-          <div class="flex flex-col items-end">
-            <span class="font-mono-tab text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">
-              COMPRA
-            </span>
-            <span class="font-mono-tab text-sm font-bold tabular-nums" :style="{ color: brand.colors.text }">
-              {{ formatMoney(item.price_buy) }}
-            </span>
+          <!-- Empty state -->
+          <div
+            v-if="!item.items.length"
+            class="py-6 text-center font-mono-tab text-[10px] uppercase tracking-wider"
+            :style="{ color: brand.colors.textMuted }"
+          >
+            &gt; Sem títulos
           </div>
         </div>
-      </NuxtLink>
-    </div>
-
-    <!-- Show more button when truncated -->
-    <div v-if="!isLoading && filteredItems.length > limit" class="mt-4 flex justify-center">
-      <button
-        type="button"
-        class="flex items-center gap-2 border px-5 py-2 font-mono-tab text-[10px] uppercase tracking-[0.2em] transition-opacity hover:opacity-75"
-        :style="{ borderColor: brand.colors.primary, color: brand.colors.primary }"
-        @click="expanded = !expanded"
-      >
-        {{ expanded ? '&gt; MOSTRAR MENOS' : `&gt; VER TODOS OS ${filteredItems.length} TÍTULOS` }}
-        <UIcon :name="expanded ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'" class="h-3 w-3" />
-      </button>
-    </div>
+      </div>
+    </UCarousel>
   </section>
 </template>
 
@@ -115,10 +100,6 @@
 import { indexerBadge, useTesouroService, type TesouroItem } from '~/services/tesouro'
 
 const brand = useBrand()
-const activeIndexer = ref<'all' | 'IPCA' | 'SELIC' | 'PREFIXADO' | 'IGPM'>('all')
-const expanded = ref(false)
-const limit = 6
-
 const { listTesouros } = useTesouroService()
 
 const items = ref<TesouroItem[]>([])
@@ -134,41 +115,19 @@ onMounted(async () => {
   }
 })
 
-const indexerChips = computed(() => {
+const indexerSlides = computed(() => {
   const all = items.value ?? []
-  const countBy = (frag: string) =>
-    all.filter((i) => i.indexer?.toLowerCase().includes(frag.toLowerCase())).length
+  const by = (frag: string) => all.filter((i) => i.indexer?.toLowerCase().includes(frag.toLowerCase()))
   return [
-    { id: 'all' as const, label: 'TUDO', count: all.length },
-    { id: 'IPCA' as const, label: 'IPCA+', count: countBy('ipca') },
-    { id: 'SELIC' as const, label: 'SELIC', count: countBy('selic') },
-    { id: 'PREFIXADO' as const, label: 'PRÉ', count: countBy('prefixado') },
-    { id: 'IGPM' as const, label: 'IGPM+', count: countBy('igpm') },
+    { key: 'IPCA', label: 'IPCA+', title: 'Indexados à inflação', color: brand.colors.primary, items: by('ipca'), query: { indexer: 'IPCA' } },
+    { key: 'SELIC', label: 'SELIC', title: 'Pós-fixados', color: brand.colors.positive, items: by('selic'), query: { indexer: 'SELIC' } },
+    { key: 'PREFIXADO', label: 'PRÉ', title: 'Taxa fixa', color: brand.colors.text, items: by('prefixado'), query: { indexer: 'PREFIXADO' } },
+    { key: 'IGPM', label: 'IGPM+', title: 'Indexados ao IGPM', color: brand.colors.textMuted, items: by('igpm'), query: { indexer: 'IGPM' } },
   ]
-})
-
-const filteredItems = computed(() => {
-  const all = items.value ?? []
-  if (activeIndexer.value === 'all') return all
-  const token = activeIndexer.value.toLowerCase()
-  return all.filter((i) => i.indexer?.toLowerCase().includes(token))
-})
-
-const visibleItems = computed(() => {
-  return expanded.value ? filteredItems.value : filteredItems.value.slice(0, limit)
 })
 
 function prettyName(raw: string): string {
   return raw.replace('Tesouro ', '').replace(/\s+\|.*$/, '')
-}
-
-function indexerColor(indexer: string | null): string {
-  const b = indexerBadge(indexer)
-  if (b === 'IPCA+') return brand.colors.primary
-  if (b === 'SELIC') return brand.colors.positive
-  if (b === 'PRÉ') return brand.colors.text
-  if (b === 'IGPM+') return brand.colors.textMuted
-  return brand.colors.textMuted
 }
 
 function formatRate(item: TesouroItem): string {
@@ -177,8 +136,7 @@ function formatRate(item: TesouroItem): string {
     .replace('IPCA +', 'IPCA+')
     .replace('IGPM +', 'IGPM+')
     .replace(/SELIC\s*\+\s*/, 'SELIC+')
-    .replace(/\s+/g, ' ')
-    .replace(',', ',') + '%'
+    .replace(/\s+/g, ' ') + '%'
 }
 
 function formatMoney(v: number | null): string {
@@ -186,7 +144,7 @@ function formatMoney(v: number | null): string {
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'BRL',
-    maximumFractionDigits: 2,
+    maximumFractionDigits: 0,
   }).format(v)
 }
 
@@ -194,7 +152,7 @@ function formatMaturity(iso: string | null): string {
   if (!iso) return '—'
   try {
     const d = new Date(iso)
-    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+    return d.toLocaleDateString('pt-BR', { month: '2-digit', year: '2-digit' })
   } catch {
     return iso
   }

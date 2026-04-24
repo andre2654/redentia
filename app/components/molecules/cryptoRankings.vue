@@ -39,7 +39,7 @@
           </div>
         </div>
         <NuxtLink
-          :to="{ path: '/crypto/btc' }"
+          :to="{ path: '/search', query: { crypto: '1', sort: 'MCAP' } }"
           class="flex items-center gap-1 font-mono-tab text-[10px] uppercase tracking-[0.12em] transition-colors hover:opacity-80"
           :style="{ color: brand.colors.textMuted }"
         >
@@ -78,7 +78,7 @@
           </div>
         </div>
         <NuxtLink
-          :to="{ path: '/crypto/btc' }"
+          :to="{ path: '/search', query: { crypto: '1', sort: 'UP' } }"
           class="flex items-center gap-1 font-mono-tab text-[10px] uppercase tracking-[0.12em] transition-colors hover:opacity-80"
           :style="{ color: brand.colors.textMuted }"
         >

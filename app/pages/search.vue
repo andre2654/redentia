@@ -17,13 +17,13 @@
       >
         <span :style="{ color: brand.colors.primary }">[SEARCH.ENGINE]</span>
         <span :style="{ color: brand.colors.border }">·</span>
-        <span>B3</span>
+        <span>{{ isCryptoMode ? 'CRYPTO' : isTesouroMode ? 'TESOURO DIRETO' : 'B3' }}</span>
         <span :style="{ color: brand.colors.border }">·</span>
-        <span class="tabular-nums">{{ allAssets.length }} UNIVERSE</span>
+        <span class="tabular-nums">{{ isCryptoMode ? cryptoItems.length : isTesouroMode ? tesouroItems.length : allAssets.length }} UNIVERSE</span>
         <span :style="{ color: brand.colors.border }">·</span>
         <span class="tabular-nums" :style="{ color: brand.colors.text }">{{ resultsCount }} RESULTS</span>
-        <span :style="{ color: brand.colors.border }">·</span>
-        <span class="tabular-nums" :style="{ color: activeFiltersCount > 0 ? brand.colors.primary : brand.colors.textMuted }">
+        <span v-if="!isTesouroMode && !isCryptoMode" :style="{ color: brand.colors.border }">·</span>
+        <span v-if="!isTesouroMode && !isCryptoMode" class="tabular-nums" :style="{ color: activeFiltersCount > 0 ? brand.colors.primary : brand.colors.textMuted }">
           {{ activeFiltersCount }} FILTERS
         </span>
         <span class="ml-auto flex items-center gap-3">
@@ -86,8 +86,11 @@
         <AtomsTickerCarousel class="px-4" no-control />
       </div>
 
-      <!-- FILTERS PANEL: 4-col grid, tight, no rounded corners -->
-      <div class="border-b" :style="{ borderColor: brand.colors.border }">
+      <!-- FILTERS PANEL: 4-col grid, tight, no rounded corners (disabled in tesouro mode) -->
+      <div
+        class="border-b transition-opacity"
+        :style="{ borderColor: brand.colors.border, opacity: (isTesouroMode || isCryptoMode) ? 0.4 : 1, pointerEvents: (isTesouroMode || isCryptoMode) ? 'none' : 'auto' }"
+      >
         <div
           class="flex items-center gap-2 border-b px-4 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.18em]"
           :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted, backgroundColor: brand.colors.surface }"
@@ -157,15 +160,15 @@
             </div>
             <div class="flex flex-col gap-2">
               <label class="inline-flex cursor-pointer items-center gap-2 font-mono-tab text-[11px] uppercase tracking-wide">
-                <input v-model="showStock" type="checkbox" class="accent-current" :disabled="assetsLoading" />
+                <input v-model="showStock" type="checkbox" class="accent-current" :disabled="assetsLoading || isTesouroMode || isCryptoMode" />
                 <span :style="{ color: brand.colors.text }">STOCK</span>
               </label>
               <label class="inline-flex cursor-pointer items-center gap-2 font-mono-tab text-[11px] uppercase tracking-wide">
-                <input v-model="showReit" type="checkbox" class="accent-current" :disabled="assetsLoading" />
+                <input v-model="showReit" type="checkbox" class="accent-current" :disabled="assetsLoading || isTesouroMode || isCryptoMode" />
                 <span :style="{ color: brand.colors.text }">REIT</span>
               </label>
               <label class="inline-flex cursor-pointer items-center gap-2 font-mono-tab text-[11px] uppercase tracking-wide">
-                <input v-model="showBdr" type="checkbox" class="accent-current" :disabled="assetsLoading" />
+                <input v-model="showBdr" type="checkbox" class="accent-current" :disabled="assetsLoading || isTesouroMode || isCryptoMode" />
                 <span :style="{ color: brand.colors.text }">BDR</span>
               </label>
             </div>
@@ -173,8 +176,11 @@
         </div>
       </div>
 
-      <!-- MDI ROW: 3 columns -->
-      <div class="border-b" :style="{ borderColor: brand.colors.border }">
+      <!-- MDI ROW: 3 columns (disabled in tesouro mode) -->
+      <div
+        class="border-b transition-opacity"
+        :style="{ borderColor: brand.colors.border, opacity: (isTesouroMode || isCryptoMode) ? 0.4 : 1, pointerEvents: (isTesouroMode || isCryptoMode) ? 'none' : 'auto' }"
+      >
         <div
           class="flex items-center gap-2 border-b px-4 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.18em]"
           :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted, backgroundColor: brand.colors.surface }"
@@ -229,24 +235,220 @@
         </div>
       </div>
 
+      <!-- TESOURO.MODULE: toggle + indexer picker (disabled in crypto mode) -->
+      <div
+        class="border-b transition-opacity"
+        :style="{ borderColor: brand.colors.border, opacity: isCryptoMode ? 0.4 : 1, pointerEvents: isCryptoMode ? 'none' : 'auto' }"
+      >
+        <div
+          class="flex items-center gap-2 border-b px-4 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.18em]"
+          :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted, backgroundColor: brand.colors.surface }"
+        >
+          <span :style="{ color: brand.colors.primary }">[TESOURO.MODULE]</span>
+          <span :style="{ color: brand.colors.border }">·</span>
+          <span>RENDA FIXA GOVERNAMENTAL</span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3">
+          <!-- Mode toggle -->
+          <div class="border-b p-4 md:border-b-0 md:border-r" :style="{ borderColor: brand.colors.border }">
+            <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.primary }">
+              [TESOURO.MODE]
+            </div>
+            <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: brand.colors.textMuted }">
+              &gt; EXIBIR TÍTULOS DO TESOURO DIRETO
+            </p>
+            <NuxtLink
+              :to="isTesouroMode ? { path: '/search' } : { path: '/search', query: { indexer: 'IPCA' } }"
+              class="inline-flex cursor-pointer items-center gap-2 font-mono-tab text-[11px] uppercase tracking-wide"
+            >
+              <input type="checkbox" class="accent-current pointer-events-none" :checked="isTesouroMode" readonly />
+              <span :style="{ color: brand.colors.text }">
+                {{ isTesouroMode ? 'TESOURO ATIVO' : 'ATIVAR TESOURO' }}
+              </span>
+            </NuxtLink>
+          </div>
+
+          <!-- Indexer picker -->
+          <div class="border-b p-4 md:border-b-0 md:border-r" :style="{ borderColor: brand.colors.border }">
+            <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.primary }">
+              [TESOURO.INDEXER]
+            </div>
+            <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: brand.colors.textMuted }">
+              &gt; ESCOLHA O INDEXADOR
+            </p>
+            <div
+              class="flex flex-wrap items-center gap-px"
+              :style="{ opacity: isTesouroMode ? 1 : 0.4, pointerEvents: isTesouroMode ? 'auto' : 'none', backgroundColor: brand.colors.border }"
+            >
+              <NuxtLink
+                v-for="chip in tesouroIndexers"
+                :key="chip.key"
+                :to="{ path: '/search', query: { indexer: chip.key } }"
+                class="flex items-center gap-2 px-3 py-1.5 font-mono-tab text-[11px] uppercase tracking-wide transition-colors"
+                :style="{
+                  backgroundColor: tesouroIndexer === chip.key ? brand.colors.surface : brand.colors.background,
+                  color: tesouroIndexer === chip.key ? chip.color : brand.colors.textMuted,
+                }"
+              >
+                <span>{{ chip.label }}</span>
+              </NuxtLink>
+            </div>
+          </div>
+
+          <!-- Info -->
+          <div class="p-4">
+            <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.primary }">
+              [TESOURO.INFO]
+            </div>
+            <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: brand.colors.textMuted }">
+              <template v-if="isTesouroMode">
+                &gt; EXIBINDO {{ tesouroItems.length }} TÍTULOS · FILTROS DE AÇÃO DESABILITADOS
+              </template>
+              <template v-else>
+                &gt; ATIVE PARA LISTAR TÍTULOS PÚBLICOS · ATUALIZAÇÃO DIÁRIA
+              </template>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- CRYPTO.MODULE: toggle + sort picker (disabled in tesouro mode) -->
+      <div
+        class="border-b transition-opacity"
+        :style="{ borderColor: brand.colors.border, opacity: isTesouroMode ? 0.4 : 1, pointerEvents: isTesouroMode ? 'none' : 'auto' }"
+      >
+        <div
+          class="flex items-center gap-2 border-b px-4 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.18em]"
+          :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted, backgroundColor: brand.colors.surface }"
+        >
+          <span :style="{ color: brand.colors.primary }">[CRYPTO.MODULE]</span>
+          <span :style="{ color: brand.colors.border }">·</span>
+          <span>CRIPTOMOEDAS GLOBAIS</span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3">
+          <!-- Mode toggle -->
+          <div class="border-b p-4 md:border-b-0 md:border-r" :style="{ borderColor: brand.colors.border }">
+            <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.primary }">
+              [CRYPTO.MODE]
+            </div>
+            <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: brand.colors.textMuted }">
+              &gt; EXIBIR UNIVERSO DE CRIPTOATIVOS
+            </p>
+            <NuxtLink
+              :to="isCryptoMode ? { path: '/search' } : { path: '/search', query: { crypto: '1' } }"
+              class="inline-flex cursor-pointer items-center gap-2 font-mono-tab text-[11px] uppercase tracking-wide"
+            >
+              <input type="checkbox" class="accent-current pointer-events-none" :checked="isCryptoMode" readonly />
+              <span :style="{ color: brand.colors.text }">
+                {{ isCryptoMode ? 'CRYPTO ATIVO' : 'ATIVAR CRYPTO' }}
+              </span>
+            </NuxtLink>
+          </div>
+
+          <!-- Sort picker -->
+          <div class="border-b p-4 md:border-b-0 md:border-r" :style="{ borderColor: brand.colors.border }">
+            <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.primary }">
+              [CRYPTO.SORT]
+            </div>
+            <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: brand.colors.textMuted }">
+              &gt; ORDENAR POR
+            </p>
+            <div
+              class="flex flex-wrap items-center gap-px"
+              :style="{ opacity: isCryptoMode ? 1 : 0.4, pointerEvents: isCryptoMode ? 'auto' : 'none', backgroundColor: brand.colors.border }"
+            >
+              <NuxtLink
+                v-for="opt in cryptoSortOptions"
+                :key="opt.key"
+                :to="{ path: '/search', query: { crypto: '1', sort: opt.key } }"
+                class="flex items-center gap-2 px-3 py-1.5 font-mono-tab text-[11px] uppercase tracking-wide transition-colors"
+                :style="{
+                  backgroundColor: cryptoSort === opt.key ? brand.colors.surface : brand.colors.background,
+                  color: cryptoSort === opt.key ? brand.colors.primary : brand.colors.textMuted,
+                }"
+              >
+                <span>{{ opt.label }}</span>
+              </NuxtLink>
+            </div>
+          </div>
+
+          <!-- Info -->
+          <div class="p-4">
+            <div class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.primary }">
+              [CRYPTO.INFO]
+            </div>
+            <p class="mb-3 font-mono-tab text-[10px] uppercase leading-relaxed" :style="{ color: brand.colors.textMuted }">
+              <template v-if="isCryptoMode">
+                &gt; EXIBINDO {{ cryptoItems.length }} ATIVOS · BRL · ATUALIZAÇÃO A CADA 15 MIN
+              </template>
+              <template v-else>
+                &gt; ATIVE PARA LISTAR O TOP 200 · PREÇO EM BRL E USD
+              </template>
+            </p>
+          </div>
+        </div>
+      </div>
+
       <!-- RESULTS TABLE -->
       <div>
         <div
           class="flex flex-wrap items-center gap-2 border-b px-4 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.18em]"
           :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted, backgroundColor: brand.colors.surface }"
         >
-          <span :style="{ color: brand.colors.primary }">[RESULTS.TABLE]</span>
+          <span :style="{ color: brand.colors.primary }">
+            [{{ isCryptoMode ? `CRYPTO.${cryptoSort}` : isTesouroMode ? `TESOURO.${activeTesouroIndexer?.key}` : 'RESULTS.TABLE' }}]
+          </span>
           <span :style="{ color: brand.colors.border }">·</span>
-          <span class="tabular-nums" :style="{ color: brand.colors.text }">{{ resultsCount }} MATCHES</span>
-          <span :style="{ color: brand.colors.border }">·</span>
-          <span>PAGE {{ currentPage }} / {{ totalPages }}</span>
+          <span class="tabular-nums" :style="{ color: brand.colors.text }">
+            {{ resultsCount }} {{ isCryptoMode ? 'ATIVOS' : isTesouroMode ? 'TÍTULOS' : 'MATCHES' }}
+          </span>
+          <template v-if="!isTesouroMode && !isCryptoMode">
+            <span :style="{ color: brand.colors.border }">·</span>
+            <span>PAGE {{ currentPage }} / {{ totalPages }}</span>
+          </template>
           <span class="ml-auto" :style="{ color: brand.colors.textMuted }">
-            CLICK ROW TO OPEN ASSET
+            {{ isCryptoMode ? 'CLICK ROW TO OPEN CRYPTO' : isTesouroMode ? 'CLICK ROW TO OPEN TITLE' : 'CLICK ROW TO OPEN ASSET' }}
           </span>
         </div>
 
-        <!-- Column header -->
+        <!-- Column header: CRYPTO -->
         <div
+          v-if="isCryptoMode"
+          class="hidden md:grid gap-2 border-b px-4 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.18em]"
+          :style="{
+            borderColor: brand.colors.border,
+            color: brand.colors.textMuted,
+            gridTemplateColumns: '0.5fr 1fr 2fr 1fr 1fr 1.2fr',
+          }"
+        >
+          <span>#</span>
+          <span>SYMBOL</span>
+          <span>NAME</span>
+          <span class="text-right">PRICE</span>
+          <span class="text-right">%CHG 24H</span>
+          <span class="text-right">MCAP</span>
+        </div>
+
+        <!-- Column header: TESOURO -->
+        <div
+          v-else-if="isTesouroMode"
+          class="hidden md:grid gap-2 border-b px-4 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.18em]"
+          :style="{
+            borderColor: brand.colors.border,
+            color: brand.colors.textMuted,
+            gridTemplateColumns: '1fr 2.5fr 1fr 1.2fr 1.2fr',
+          }"
+        >
+          <span>INDEXER</span>
+          <span>TITULO</span>
+          <span class="text-right">VENCIMENTO</span>
+          <span class="text-right">TAXA</span>
+          <span class="text-right">COMPRA</span>
+        </div>
+
+        <!-- Column header: EQUITY -->
+        <div
+          v-else
           class="hidden md:grid gap-2 border-b px-4 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.18em]"
           :style="{
             borderColor: brand.colors.border,
@@ -262,8 +464,149 @@
           <span class="text-right">MDI</span>
         </div>
 
-        <!-- Loading skeleton -->
-        <div v-if="assetsLoading" class="divide-y" :style="{ '--divide-color': brand.colors.border }">
+        <!-- CRYPTO MODE: loading + rows -->
+        <template v-if="isCryptoMode">
+          <div v-if="cryptoLoading">
+            <div
+              v-for="i in 8"
+              :key="`cr-sk-${i}`"
+              class="grid gap-2 border-b px-4 py-2.5 font-mono-tab tabular-nums"
+              :style="{
+                borderColor: brand.colors.border,
+                gridTemplateColumns: '0.5fr 1fr 2fr 1fr 1fr 1.2fr',
+              }"
+            >
+              <USkeleton class="h-4 w-8" />
+              <USkeleton class="h-4 w-16" />
+              <USkeleton class="h-4 w-40" />
+              <USkeleton class="h-4 w-20 justify-self-end" />
+              <USkeleton class="h-4 w-14 justify-self-end" />
+              <USkeleton class="h-4 w-20 justify-self-end" />
+            </div>
+          </div>
+          <div v-else-if="filteredCryptoItems.length">
+            <NuxtLink
+              v-for="coin in filteredCryptoItems"
+              :key="coin.id"
+              :to="`/crypto/${coin.symbol.toLowerCase()}`"
+              class="grid items-center gap-2 border-b px-4 py-2 font-mono-tab text-[12px] tabular-nums transition-colors hover:bg-[var(--row-hover)]"
+              :style="{
+                borderColor: brand.colors.border,
+                gridTemplateColumns: '0.5fr 1fr 2fr 1fr 1fr 1.2fr',
+                textDecoration: 'none',
+                color: brand.colors.text,
+                '--row-hover': hexWithAlpha(brand.colors.primary, '14'),
+              }"
+            >
+              <span :style="{ color: brand.colors.textMuted }">{{ coin.rank ?? '—' }}</span>
+              <span class="flex items-center gap-2">
+                <img
+                  v-if="coin.image"
+                  :src="coin.image"
+                  :alt="coin.symbol"
+                  class="h-5 w-5 shrink-0 object-contain"
+                />
+                <span class="truncate font-bold" :style="{ color: brand.colors.primary }">
+                  {{ coin.symbol }}
+                </span>
+              </span>
+              <span class="truncate text-[11px] uppercase" :style="{ color: brand.colors.text }">
+                {{ coin.name }}
+              </span>
+              <span class="text-right">
+                {{ formatCurrencyBRL(coin.price_brl) }}
+              </span>
+              <span
+                class="text-right"
+                :style="{ color: (coin.change_24h_pct ?? 0) >= 0 ? positiveColor : negativeColor }"
+              >
+                {{ (coin.change_24h_pct ?? 0) >= 0 ? '+' : '' }}{{ (coin.change_24h_pct ?? 0).toFixed(2) }}%
+              </span>
+              <span class="text-right">
+                {{ formatCurrencyBRL(coin.market_cap_brl) }}
+              </span>
+            </NuxtLink>
+          </div>
+          <div
+            v-else
+            class="flex flex-col items-center justify-center gap-2 border-b px-4 py-16 font-mono-tab text-[11px] uppercase tracking-[0.15em]"
+            :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted }"
+          >
+            <span :style="{ color: brand.colors.primary }">[EMPTY.SET]</span>
+            <span>NENHUM ATIVO CRIPTO</span>
+          </div>
+        </template>
+
+        <!-- TESOURO MODE: loading + rows -->
+        <template v-else-if="isTesouroMode">
+          <div v-if="tesouroLoading">
+            <div
+              v-for="i in 8"
+              :key="`td-sk-${i}`"
+              class="grid gap-2 border-b px-4 py-2.5 font-mono-tab tabular-nums"
+              :style="{
+                borderColor: brand.colors.border,
+                gridTemplateColumns: '1fr 2.5fr 1fr 1.2fr 1.2fr',
+              }"
+            >
+              <USkeleton class="h-4 w-16" />
+              <USkeleton class="h-4 w-48" />
+              <USkeleton class="h-4 w-20 justify-self-end" />
+              <USkeleton class="h-4 w-16 justify-self-end" />
+              <USkeleton class="h-4 w-20 justify-self-end" />
+            </div>
+          </div>
+          <div v-else-if="filteredTesouroItems.length">
+            <NuxtLink
+              v-for="title in filteredTesouroItems"
+              :key="title.slug"
+              :to="`/tesouro/${title.slug}`"
+              class="grid items-center gap-2 border-b px-4 py-2 font-mono-tab text-[12px] tabular-nums transition-colors hover:bg-[var(--row-hover)]"
+              :style="{
+                borderColor: brand.colors.border,
+                gridTemplateColumns: '1fr 2.5fr 1fr 1.2fr 1.2fr',
+                textDecoration: 'none',
+                color: brand.colors.text,
+                '--row-hover': hexWithAlpha(brand.colors.primary, '14'),
+              }"
+            >
+              <span class="flex items-center">
+                <span
+                  class="inline-flex items-center px-1.5 py-0.5 text-[10px] uppercase tracking-[0.15em]"
+                  :style="{
+                    color: activeTesouroIndexer?.color,
+                    border: `1px solid ${activeTesouroIndexer?.color}40`,
+                  }"
+                >
+                  {{ activeTesouroIndexer?.label }}
+                </span>
+              </span>
+              <span class="truncate text-[11px] uppercase" :style="{ color: brand.colors.text }">
+                {{ prettyTesouroName(title.name) }}
+              </span>
+              <span class="text-right" :style="{ color: brand.colors.textMuted }">
+                {{ formatTesouroMaturity(title.maturity_date) }}
+              </span>
+              <span class="text-right font-bold" :style="{ color: brand.colors.primary }">
+                {{ formatTesouroRate(title) }}
+              </span>
+              <span class="text-right">
+                {{ formatCurrencyBRL(title.price_buy) }}
+              </span>
+            </NuxtLink>
+          </div>
+          <div
+            v-else
+            class="flex flex-col items-center justify-center gap-2 border-b px-4 py-16 font-mono-tab text-[11px] uppercase tracking-[0.15em]"
+            :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted }"
+          >
+            <span :style="{ color: brand.colors.primary }">[EMPTY.SET]</span>
+            <span>NENHUM TÍTULO NESTA CATEGORIA</span>
+          </div>
+        </template>
+
+        <!-- EQUITY MODE: loading + rows -->
+        <div v-else-if="assetsLoading" class="divide-y" :style="{ '--divide-color': brand.colors.border }">
           <div
             v-for="i in 8"
             :key="`tsk-${i}`"
@@ -282,7 +625,7 @@
           </div>
         </div>
 
-        <!-- Rows -->
+        <!-- EQUITY MODE: Rows -->
         <template v-else>
           <div v-if="paginatedData.length">
             <NuxtLink
@@ -348,9 +691,9 @@
           </div>
         </template>
 
-        <!-- Pagination -->
+        <!-- Pagination (equity only) -->
         <div
-          v-if="!assetsLoading && resultsCount > itemsPerPage"
+          v-if="!isTesouroMode && !isCryptoMode && !assetsLoading && resultsCount > itemsPerPage"
           class="flex flex-wrap items-center gap-3 px-4 py-3 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
           :style="{ color: brand.colors.textMuted }"
         >
@@ -906,6 +1249,8 @@
 
 <script setup lang="ts">
 import type { AssetMdiEntry, IAsset } from '~/types/asset'
+import { useTesouroService, type TesouroItem } from '~/services/tesouro'
+import { useCryptoService, type CryptoAssetItem } from '~/services/crypto'
 
 definePageMeta({
   isPublicRoute: true,
@@ -1420,7 +1765,148 @@ const filteredData = computed(() => {
   })
 })
 
-const resultsCount = computed(() => filteredData.value.length)
+// TESOURO DIRETO mode: activated when route has ?indexer=IPCA|SELIC|PREFIXADO|IGPM
+const { listTesouros: loadTesouros } = useTesouroService()
+
+const tesouroIndexers = computed(() => [
+  { key: 'IPCA', label: 'IPCA+', title: 'Indexados à inflação', color: brand.colors.primary },
+  { key: 'SELIC', label: 'SELIC', title: 'Pós-fixados', color: brand.colors.positive },
+  { key: 'PREFIXADO', label: 'PRÉ', title: 'Taxa fixa', color: brand.colors.text },
+  { key: 'IGPM', label: 'IGPM+', title: 'Indexados ao IGPM', color: brand.colors.textMuted },
+])
+
+const tesouroIndexer = computed<string | null>(() => {
+  const q = route.query.indexer
+  if (typeof q !== 'string') return null
+  const upper = q.toUpperCase()
+  return tesouroIndexers.value.some((t) => t.key === upper) ? upper : null
+})
+
+const isTesouroMode = computed(() => tesouroIndexer.value !== null)
+
+const activeTesouroIndexer = computed(() =>
+  tesouroIndexers.value.find((t) => t.key === tesouroIndexer.value) ?? null
+)
+
+const tesouroItems = ref<TesouroItem[]>([])
+const tesouroLoading = ref(false)
+
+async function fetchTesouro() {
+  if (!isTesouroMode.value) {
+    tesouroItems.value = []
+    return
+  }
+  tesouroLoading.value = true
+  try {
+    tesouroItems.value = await loadTesouros(tesouroIndexer.value || undefined)
+  } catch {
+    tesouroItems.value = []
+  } finally {
+    tesouroLoading.value = false
+  }
+}
+
+watch(tesouroIndexer, fetchTesouro, { immediate: true })
+
+const filteredTesouroItems = computed(() => {
+  const q = globalFilter.value?.toLowerCase().trim()
+  if (!q) return tesouroItems.value
+  return tesouroItems.value.filter(
+    (t) => t.name.toLowerCase().includes(q) || (t.indexer || '').toLowerCase().includes(q),
+  )
+})
+
+function formatTesouroMaturity(iso: string | null): string {
+  if (!iso) return '—'
+  try {
+    const d = new Date(iso)
+    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+  } catch {
+    return iso
+  }
+}
+
+function formatTesouroRate(item: TesouroItem): string {
+  if (!item.rate) return '-'
+  return item.rate
+    .replace('IPCA +', 'IPCA+')
+    .replace('IGPM +', 'IGPM+')
+    .replace(/SELIC\s*\+\s*/, 'SELIC+')
+    .replace(/\s+/g, ' ') + '%'
+}
+
+function prettyTesouroName(raw: string): string {
+  return raw.replace('Tesouro ', '').replace(/\s+\|.*$/, '')
+}
+
+// CRYPTO mode: activated when route has ?crypto=1
+const { listCryptos: loadCryptos } = useCryptoService()
+
+const cryptoSortOptions = computed(() => [
+  { key: 'RANK', label: 'RANK' },
+  { key: 'MCAP', label: 'MCAP' },
+  { key: 'UP', label: '24H+' },
+  { key: 'DOWN', label: '24H-' },
+])
+
+const cryptoSort = computed<string>(() => {
+  const q = route.query.sort
+  if (typeof q !== 'string') return 'RANK'
+  const upper = q.toUpperCase()
+  return cryptoSortOptions.value.some((o) => o.key === upper) ? upper : 'RANK'
+})
+
+const isCryptoMode = computed(() => route.query.crypto === '1')
+
+const cryptoItems = ref<CryptoAssetItem[]>([])
+const cryptoLoading = ref(false)
+
+async function fetchCryptos() {
+  if (!isCryptoMode.value) {
+    cryptoItems.value = []
+    return
+  }
+  cryptoLoading.value = true
+  try {
+    cryptoItems.value = await loadCryptos(200)
+  } catch {
+    cryptoItems.value = []
+  } finally {
+    cryptoLoading.value = false
+  }
+}
+
+watch(isCryptoMode, fetchCryptos, { immediate: true })
+
+const filteredCryptoItems = computed(() => {
+  let arr = [...cryptoItems.value]
+  const q = globalFilter.value?.toLowerCase().trim()
+  if (q) {
+    arr = arr.filter(
+      (c) => c.symbol.toLowerCase().includes(q) || c.name.toLowerCase().includes(q),
+    )
+  }
+  switch (cryptoSort.value) {
+    case 'MCAP':
+      arr.sort((a, b) => (b.market_cap_brl ?? 0) - (a.market_cap_brl ?? 0))
+      break
+    case 'UP':
+      arr.sort((a, b) => (b.change_24h_pct ?? -Infinity) - (a.change_24h_pct ?? -Infinity))
+      break
+    case 'DOWN':
+      arr.sort((a, b) => (a.change_24h_pct ?? Infinity) - (b.change_24h_pct ?? Infinity))
+      break
+    default:
+      arr.sort((a, b) => (a.rank ?? 9999) - (b.rank ?? 9999))
+  }
+  return arr
+})
+
+const resultsCount = computed(() => {
+  if (isCryptoMode.value) return filteredCryptoItems.value.length
+  if (isTesouroMode.value) return filteredTesouroItems.value.length
+  return filteredData.value.length
+})
 
 const itemsPerPage = ref(12)
 const currentPage = ref(1)

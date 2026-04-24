@@ -3743,7 +3743,7 @@
     <!-- Seção de Mercado ao Vivo (Prioridade) -->
     <div v-if="showSection('market') && brand.hero.variant === 'terminal'" :style="{ order: sectionOrder('market') }" class="flex h-auto flex-col gap-4 pt-10">
       <div class="flex flex-col gap-8">
-        <div class="flex flex-col gap-6 px-6">
+        <div class="flex flex-col gap-6 px-4 md:px-0">
           <!-- Terminal-style market status line -->
           <div class="flex flex-wrap items-center gap-3 font-mono-tab text-[10px] uppercase tracking-[0.18em]">
             <span
@@ -3820,7 +3820,7 @@
       </div>
 
       <div class="flex w-full flex-col">
-        <div class="flex w-full items-end justify-between gap-4 p-6 pb-0">
+        <div class="flex w-full items-end justify-between gap-4 px-4 pt-6 md:px-0">
           <div class="flex flex-col gap-1">
             <span
               class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
@@ -3869,7 +3869,7 @@
       </div>
 
 
-      <div class="flex items-end justify-between gap-4 px-6 pt-8">
+      <div class="flex items-end justify-between gap-4 px-4 pt-8 md:px-0">
         <div class="flex flex-col gap-1">
           <span
             class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
@@ -4070,14 +4070,14 @@
       <MoleculesCryptoRankings />
 
       <!-- Tesouro Direto — após rankings + filtros inteligentes -->
-      <div class="px-4 md:px-6">
+      <div class="px-4 md:px-0">
         <MoleculesTesouroSection />
       </div>
     </div>
 
 
     <!-- News Section — feed de notícias de mercado (apenas Redentia por enquanto) -->
-    <MoleculesNewsSection v-if="showSection('news')" :style="{ order: sectionOrder('news') }" class="mt-6 px-4 md:px-6" />
+    <MoleculesNewsSection v-if="showSection('news')" :style="{ order: sectionOrder('news') }" class="mt-6 px-4 md:px-0" />
 
     <!-- Metrics Section com contador gigante -->
     <MoleculesMetricsSection v-if="showSection('metrics') && !authStore.isAuthenticated" :style="{ order: sectionOrder('metrics') }" />
