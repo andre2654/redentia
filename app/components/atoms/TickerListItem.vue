@@ -8,12 +8,15 @@
     @mouseleave="$event.currentTarget.style.backgroundColor = 'transparent'"
   >
     <img
-      v-if="cfg.showLogo && hasLogo"
+      v-if="cfg.showLogo && hasLogo && !imgError"
+      ref="imgRef"
       width="32"
       height="32"
       class="h-8 w-8 flex-shrink-0 rounded-lg object-cover"
       :src="stock?.logo"
       :alt="logoAlt"
+      @error="imgError = true"
+      @load="imgError = false"
     />
     <div
       v-else-if="cfg.showLogo"
@@ -31,6 +34,7 @@
       </span>
       <span v-if="cfg.showName" class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">{{ stock?.ticker }}</span>
     </div>
+    <!-- /default variant end -->
 
     <div class="flex flex-shrink-0 flex-col items-end">
       <span class="font-mono-tab text-sm font-medium tabular-nums" :style="{ color: brand.colors.text }">
@@ -172,6 +176,23 @@ const changeColor = computed(() => {
 })
 
 const hasLogo = computed(() => !isPlaceholderLogo(props.stock?.logo))
+
+// Fallback visual quando a URL do logo 404a. O @error vai disparar na
+// maioria dos casos, mas se a imagem já tiver falhado antes do listener
+// ser atacheado (ex.: hidratação SSR de um 404 cacheado), checamos também
+// no onMounted.
+const imgError = ref(false)
+const imgRef = ref<HTMLImageElement | null>(null)
+watch(
+  () => [props.stock?.ticker, props.stock?.logo],
+  () => { imgError.value = false },
+)
+onMounted(() => {
+  const el = imgRef.value
+  if (el && el.complete && el.naturalWidth === 0) {
+    imgError.value = true
+  }
+})
 
 function normalizeText(text: string) {
   return text?.replace(/\s+/g, ' ')
