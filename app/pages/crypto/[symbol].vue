@@ -2,102 +2,199 @@
   <NuxtLayout :name="layoutName">
     <div class="relative z-10 flex flex-col px-4 pt-4">
       <div class="flex flex-col">
-        <!-- Terminal status bar -->
-        <div
-          class="-mx-4 mb-4 flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-t px-4 py-2 font-mono-tab text-[10px] uppercase tracking-[0.18em]"
-          :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
-        >
-          <span class="flex items-center gap-1.5" :style="{ color: brand.colors.primary }">
-            <span class="relative flex size-1.5">
-              <span class="absolute inline-flex size-1.5 motion-safe:animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.primary }" />
-              <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
-            </span>
-            [CRYPTO.QUOTE]
-          </span>
-          <span :style="{ color: brand.colors.border }">·</span>
-          <span :style="{ color: brand.colors.text }">{{ crypto?.symbol }}</span>
-          <span :style="{ color: brand.colors.border }">·</span>
-          <span class="truncate max-w-[320px]" :style="{ color: brand.colors.textMuted }">{{ crypto?.name ?? symbol }}</span>
-          <span :style="{ color: brand.colors.border }">·</span>
-          <span v-if="refreshedLabel" :style="{ color: brand.colors.border }">·</span>
-          <span v-if="refreshedLabel" :style="{ color: brand.colors.textMuted }">UPDATE {{ refreshedLabel }}</span>
-        </div>
-
-        <!-- Hero -->
+        <!-- Hero Dashboard Card: ambient gradient + sparkline -->
         <section class="border-b pb-8" :style="{ borderColor: brand.colors.border }">
-          <div class="grid gap-6 md:grid-cols-12 md:items-end">
-            <div class="flex items-center gap-4 md:col-span-5">
-              <div
-                class="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden border"
-                :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
-              >
-                <img
-                  v-if="crypto?.image"
-                  :src="crypto.image"
-                  :alt="crypto.symbol"
-                  class="h-full w-full object-contain"
-                >
-                <span v-else class="font-mono-tab text-sm font-bold" :style="{ color: brand.colors.primary }">
-                  {{ crypto?.symbol.slice(0, 3).toUpperCase() }}
-                </span>
-              </div>
-              <div class="flex min-w-0 flex-col gap-1">
-                <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
-                  [SYMBOL] #{{ crypto?.rank ?? '—' }}
-                </span>
-                <h1 class="font-mono-tab text-3xl font-bold tracking-tight md:text-4xl" :style="{ color: brand.colors.text }">
-                  {{ crypto?.symbol }}
-                </h1>
-                <span class="text-sm" :style="{ color: brand.colors.textMuted }">{{ crypto?.name }}</span>
-              </div>
-            </div>
-
-            <div class="flex flex-col gap-1 md:col-span-4">
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
-                [PRICE.BRL]
-              </span>
-              <span class="font-mono-tab text-4xl font-bold tabular-nums md:text-5xl" :style="{ color: brand.colors.primary }">
-                {{ formatBrl((crypto as any)?.price_brl ?? null) }}
-              </span>
-              <span class="font-mono-tab text-[11px] tabular-nums" :style="{ color: brand.colors.textMuted }">
-                ≈ {{ formatUsd(crypto?.price_usd ?? null) }} USD
-              </span>
-              <div class="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono-tab text-[11px] tabular-nums">
-                <span>
-                  <span :style="{ color: brand.colors.textMuted }">24H: </span>
-                  <span :style="{ color: pctColor(crypto?.change_24h_pct) }">{{ formatPct(crypto?.change_24h_pct) }}</span>
-                </span>
-                <span>
-                  <span :style="{ color: brand.colors.textMuted }">7D: </span>
-                  <span :style="{ color: pctColor(crypto?.change_7d_pct) }">{{ formatPct(crypto?.change_7d_pct) }}</span>
-                </span>
-                <span>
-                  <span :style="{ color: brand.colors.textMuted }">30D: </span>
-                  <span :style="{ color: pctColor(crypto?.change_30d_pct) }">{{ formatPct(crypto?.change_30d_pct) }}</span>
-                </span>
-              </div>
-            </div>
-
-            <!-- Session stats -->
+          <div
+            class="crypto-hero-card relative overflow-hidden rounded-2xl border"
+            :style="{
+              borderColor: brand.colors.border,
+              backgroundColor: brand.colors.surface,
+            }"
+          >
+            <!-- Ambient gradient based on 24h change -->
             <div
-              class="grid grid-cols-2 gap-px border font-mono-tab md:col-span-3"
-              :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }"
-            >
-              <div class="flex flex-col gap-1 px-3 py-2" :style="{ backgroundColor: brand.colors.surface }">
-                <span class="text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">HIGH 24H</span>
-                <span class="text-sm font-semibold tabular-nums" :style="{ color: brand.colors.positive }">{{ formatBrl((crypto?.ohlc as any)?.high_brl ?? null) }}</span>
+              class="pointer-events-none absolute inset-0"
+              :style="{
+                background: cryptoIsPositive
+                  ? `radial-gradient(ellipse at 80% 0%, ${brand.colors.positive}1F, transparent 55%), radial-gradient(ellipse at 15% 100%, ${brand.colors.positive}14, transparent 60%)`
+                  : `radial-gradient(ellipse at 80% 0%, ${brand.colors.negative}1F, transparent 55%), radial-gradient(ellipse at 15% 100%, ${brand.colors.negative}14, transparent 60%)`,
+              }"
+              aria-hidden="true"
+            />
+            <div
+              class="pointer-events-none absolute inset-0 opacity-[0.04]"
+              :style="{
+                backgroundImage: `linear-gradient(${brand.colors.text} 1px, transparent 1px), linear-gradient(90deg, ${brand.colors.text} 1px, transparent 1px)`,
+                backgroundSize: '48px 48px',
+              }"
+              aria-hidden="true"
+            />
+
+            <!-- Top-right mini sparkline -->
+            <div class="absolute right-5 top-5 hidden items-center gap-2 md:flex" aria-hidden="true">
+              <span
+                class="font-mono-tab text-[9px] uppercase tracking-[0.18em]"
+                :style="{ color: brand.colors.textMuted }"
+              >
+                30D
+              </span>
+              <svg
+                v-if="cryptoSparkline.points.length > 1"
+                :viewBox="`0 0 ${cryptoSparkline.width} ${cryptoSparkline.height}`"
+                preserveAspectRatio="none"
+                class="h-8 w-28"
+              >
+                <defs>
+                  <linearGradient :id="`crypto-spark-${crypto?.symbol ?? 'na'}`" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" :stop-color="cryptoAccent" stop-opacity="0.35" />
+                    <stop offset="100%" :stop-color="cryptoAccent" stop-opacity="0" />
+                  </linearGradient>
+                </defs>
+                <path :d="cryptoSparkline.area" :fill="`url(#crypto-spark-${crypto?.symbol ?? 'na'})`" />
+                <path
+                  :d="cryptoSparkline.line"
+                  fill="none"
+                  :stroke="cryptoAccent"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  vector-effect="non-scaling-stroke"
+                />
+              </svg>
+            </div>
+
+            <!-- Grid: identity | price | stats -->
+            <div class="relative grid gap-6 p-6 md:grid-cols-12 md:items-center md:gap-8 md:p-8">
+              <!-- Col 1: Identity -->
+              <div class="flex items-center gap-4 md:col-span-4">
+                <div
+                  class="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-xl md:size-16"
+                  :style="{ backgroundColor: `${brand.colors.text}08` }"
+                >
+                  <NuxtImg
+                    v-if="crypto?.image"
+                    :src="crypto.image"
+                    :alt="`Logo ${crypto.name ?? crypto.symbol}`"
+                    width="64"
+                    height="64"
+                    loading="eager"
+                    fetchpriority="high"
+                    decoding="async"
+                    class="h-full w-full object-contain"
+                  />
+                  <span v-else class="font-mono-tab text-sm font-bold" :style="{ color: brand.colors.primary }">
+                    {{ crypto?.symbol.slice(0, 3).toUpperCase() }}
+                  </span>
+                </div>
+                <div class="flex min-w-0 flex-col gap-1">
+                  <span
+                    class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
+                    :style="{ color: brand.colors.primary }"
+                    translate="no"
+                  >
+                    [{{ (crypto?.symbol ?? symbol).toString().toUpperCase() }}] · #{{ crypto?.rank ?? '—' }}
+                  </span>
+                  <h1
+                    class="font-mono-tab text-3xl font-bold leading-none tracking-tight md:text-4xl"
+                    :style="{ color: brand.colors.text }"
+                    translate="no"
+                  >
+                    {{ (crypto?.symbol ?? symbol).toString().toUpperCase() }}
+                  </h1>
+                  <span
+                    class="line-clamp-1 text-sm font-semibold md:text-base"
+                    :style="{ color: `${brand.colors.text}CC` }"
+                  >
+                    {{ crypto?.name ?? symbol }}
+                  </span>
+                </div>
               </div>
-              <div class="flex flex-col gap-1 px-3 py-2" :style="{ backgroundColor: brand.colors.surface }">
-                <span class="text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">LOW 24H</span>
-                <span class="text-sm font-semibold tabular-nums" :style="{ color: brand.colors.negative }">{{ formatBrl((crypto?.ohlc as any)?.low_brl ?? null) }}</span>
+
+              <!-- Col 2: Price + 24h badge -->
+              <div class="flex flex-col gap-2 md:col-span-4">
+                <div class="flex items-baseline gap-1.5">
+                  <span
+                    class="font-mono-tab text-xs opacity-70"
+                    :style="{ color: brand.colors.textMuted }"
+                    translate="no"
+                  >
+                    R$
+                  </span>
+                  <span
+                    class="font-mono-tab text-5xl font-bold leading-none tabular-nums md:text-6xl"
+                    :style="{ color: brand.colors.text }"
+                    translate="no"
+                  >
+                    {{ formatPriceNumberCrypto((crypto as any)?.price_brl ?? null) }}
+                  </span>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <span
+                    class="inline-flex items-center gap-1 rounded-full px-3 py-1.5 font-mono-tab text-sm font-semibold tabular-nums"
+                    :style="{
+                      backgroundColor: `${cryptoAccent}1F`,
+                      color: cryptoAccent,
+                    }"
+                    translate="no"
+                  >
+                    <UIcon
+                      :name="cryptoIsPositive ? 'i-lucide-arrow-up-right' : 'i-lucide-arrow-down-right'"
+                      class="size-3.5"
+                      aria-hidden="true"
+                    />
+                    {{ cryptoIsPositive ? '+' : '' }}{{ Number(crypto?.change_24h_pct ?? 0).toFixed(2) }}%
+                  </span>
+                  <span
+                    class="font-mono-tab text-[10px] uppercase tracking-[0.15em]"
+                    :style="{ color: brand.colors.textMuted }"
+                    translate="no"
+                  >
+                    <template v-if="crypto?.price_usd != null">24H · ≈ {{ formatUsd(crypto.price_usd) }}</template>
+                    <template v-else>24H</template>
+                  </span>
+                </div>
+                <!-- Secondary pct deltas -->
+                <div class="flex flex-wrap items-center gap-3 font-mono-tab text-[11px] tabular-nums">
+                  <span>
+                    <span :style="{ color: brand.colors.textMuted }" translate="no">7D </span>
+                    <span :style="{ color: pctColor(crypto?.change_7d_pct) }" translate="no">{{ formatPct(crypto?.change_7d_pct) }}</span>
+                  </span>
+                  <span :style="{ color: brand.colors.border }" aria-hidden="true">·</span>
+                  <span>
+                    <span :style="{ color: brand.colors.textMuted }" translate="no">30D </span>
+                    <span :style="{ color: pctColor(crypto?.change_30d_pct) }" translate="no">{{ formatPct(crypto?.change_30d_pct) }}</span>
+                  </span>
+                </div>
               </div>
-              <div class="flex flex-col gap-1 px-3 py-2" :style="{ backgroundColor: brand.colors.surface }">
-                <span class="text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">MKT CAP</span>
-                <span class="text-sm font-semibold tabular-nums" :style="{ color: brand.colors.text }">{{ formatBrl((crypto as any)?.market_cap_brl ?? null, { compact: true }) }}</span>
-              </div>
-              <div class="flex flex-col gap-1 px-3 py-2" :style="{ backgroundColor: brand.colors.surface }">
-                <span class="text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">VOL 24H</span>
-                <span class="text-sm font-semibold tabular-nums" :style="{ color: brand.colors.text }">{{ formatBrl((crypto as any)?.volume_24h_brl ?? null, { compact: true }) }}</span>
+
+              <!-- Col 3: Stats grid -->
+              <div class="md:col-span-4">
+                <div class="grid grid-cols-2 gap-x-4 gap-y-3 font-mono-tab">
+                  <div class="flex flex-col gap-0.5">
+                    <span class="text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">HIGH 24H</span>
+                    <span class="text-[13px] font-semibold tabular-nums" :style="{ color: brand.colors.positive }" translate="no">
+                      {{ formatBrl((crypto?.ohlc as any)?.high_brl ?? null) }}
+                    </span>
+                  </div>
+                  <div class="flex flex-col gap-0.5">
+                    <span class="text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">LOW 24H</span>
+                    <span class="text-[13px] font-semibold tabular-nums" :style="{ color: brand.colors.negative }" translate="no">
+                      {{ formatBrl((crypto?.ohlc as any)?.low_brl ?? null) }}
+                    </span>
+                  </div>
+                  <div class="flex flex-col gap-0.5">
+                    <span class="text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">MKT CAP</span>
+                    <span class="text-[13px] font-semibold tabular-nums" :style="{ color: brand.colors.text }" translate="no">
+                      {{ formatBrl((crypto as any)?.market_cap_brl ?? null, { compact: true }) }}
+                    </span>
+                  </div>
+                  <div class="flex flex-col gap-0.5">
+                    <span class="text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">VOL 24H</span>
+                    <span class="text-[13px] font-semibold tabular-nums" :style="{ color: brand.colors.text }" translate="no">
+                      {{ formatBrl((crypto as any)?.volume_24h_brl ?? null, { compact: true }) }}
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -587,6 +684,46 @@ function pctColor(v: number | null | undefined): string {
 function formatCompact(v: number | null | undefined): string {
   if (v === null || v === undefined || !Number.isFinite(v)) return '—'
   return new Intl.NumberFormat('en-US', { notation: 'compact', maximumFractionDigits: 2 }).format(v)
+}
+
+// Hero dashboard card: gradient tint + accent + sparkline (last 30 points)
+const cryptoIsPositive = computed(() => Number(crypto.value?.change_24h_pct ?? 0) >= 0)
+const cryptoAccent = computed(() =>
+  cryptoIsPositive.value ? brand.colors.positive : brand.colors.negative,
+)
+
+const cryptoSparkline = computed(() => {
+  const full = chartData.value || []
+  const slice = full.slice(-30)
+  const points = slice.map((p) => p.value).filter((v): v is number => Number.isFinite(v))
+  const width = 120
+  const height = 32
+  if (points.length < 2) return { points, width, height, line: '', area: '' }
+  const min = Math.min(...points)
+  const max = Math.max(...points)
+  const range = max - min || 1
+  const stepX = width / (points.length - 1)
+  const coords = points.map((v, i) => {
+    const x = i * stepX
+    const y = height - ((v - min) / range) * height
+    return `${x.toFixed(2)},${y.toFixed(2)}`
+  })
+  const line = `M ${coords.join(' L ')}`
+  const area = `${line} L ${width},${height} L 0,${height} Z`
+  return { points, width, height, line, area }
+})
+
+// Display-optimized formatter for the giant hero price (splits BRL sign
+// from the number so we can tabular-nums the number and use smaller
+// weight on the "R$" prefix).
+function formatPriceNumberCrypto(v: number | null | undefined): string {
+  if (v === null || v === undefined || !Number.isFinite(v)) return '—'
+  // For very small prices (altcoins), show more decimals
+  const fractionDigits = v < 1 ? 6 : v < 100 ? 2 : 2
+  return new Intl.NumberFormat('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: fractionDigits,
+  }).format(v)
 }
 
 definePageMeta({ isPublicRoute: true })

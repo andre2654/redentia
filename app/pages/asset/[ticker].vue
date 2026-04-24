@@ -2964,146 +2964,187 @@
     <!-- ========== DEFAULT VARIANT (Redentia, Bloomberg terminal) ========== -->
     <div v-else class="relative z-10 flex flex-col px-4 pt-4">
       <div class="flex flex-col">
-        <!-- Terminal status bar, pinned context line for the asset -->
-        <div
-          class="-mx-4 mb-4 flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-t px-4 py-2 font-mono-tab text-[10px] uppercase tracking-[0.18em]"
-          :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
-        >
-          <span class="flex items-center gap-1.5" :style="{ color: brand.colors.primary }">
-            <span class="relative flex size-1.5">
-              <span class="absolute inline-flex size-1.5 motion-safe:animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.primary }" />
-              <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
-            </span>
-            [TICKER.QUOTE]
-          </span>
-          <span :style="{ color: brand.colors.border }">·</span>
-          <span :style="{ color: brand.colors.text }">{{ tickerUpper }}</span>
-          <span v-if="asset?.name" :style="{ color: brand.colors.border }">·</span>
-          <span v-if="asset?.name" class="truncate max-w-[240px]" :style="{ color: brand.colors.textMuted }">{{ asset.name }}</span>
-          <span :style="{ color: brand.colors.border }">·</span>
-          <span :style="{ color: brand.colors.textMuted }">B3 · BOLSA BRASILEIRA</span>
-          <span v-if="lastUpdateLabel" :style="{ color: brand.colors.border }">·</span>
-          <span v-if="lastUpdateLabel" :style="{ color: brand.colors.textMuted }">UPDATE {{ lastUpdateLabel }}</span>
-        </div>
-
-        <!-- Hero Section do Ativo, 3-column terminal layout -->
+        <!-- Hero Dashboard Card: ambient gradient + 3-col grid + sparkline -->
         <section class="border-b pb-8" :style="{ borderColor: brand.colors.border }">
-          <div class="grid gap-6 md:grid-cols-12 md:items-end">
-            <!-- Col 1: Ticker + company name (serif display) -->
-            <div class="flex items-center gap-4 md:col-span-4">
-              <USkeleton
-                v-if="isLoadingAsset"
-                class="h-16 w-16 rounded-xl"
-              />
-              <img
-                v-else-if="resolvedLogo"
-                :src="resolvedLogo"
-                :alt="`Logo de ${assetName}`"
-                class="h-16 w-16 rounded-xl object-cover"
-              />
-              <div class="flex min-w-0 flex-col gap-1">
-                <span
-                  class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
-                  :style="{ color: brand.colors.primary }"
-                >
-                  [SYMBOL]
-                </span>
-                <h1
-                  class="font-mono-tab text-3xl font-bold tracking-tight md:text-4xl"
-                  :style="{ color: brand.colors.text }"
-                >
-                  {{ tickerUpper }} <span class="text-lg font-semibold md:text-xl" :style="{ color: brand.colors.text }">— {{ asset?.name || assetName }}</span>
-                </h1>
-                <span
-                  v-if="asset?.sector"
-                  class="font-mono-tab text-[10px] uppercase tracking-[0.12em]"
-                  :style="{ color: brand.colors.textMuted }"
-                >
-                  &gt; {{ asset.sector }}
-                </span>
+          <div
+            class="asset-hero-card relative overflow-hidden rounded-2xl border"
+            :style="{
+              borderColor: brand.colors.border,
+              backgroundColor: brand.colors.surface,
+            }"
+          >
+            <!-- Ambient gradient: green/red tint based on today's change -->
+            <div
+              class="pointer-events-none absolute inset-0"
+              :style="{
+                background: isPositive
+                  ? `radial-gradient(ellipse at 80% 0%, ${brand.colors.positive}1F, transparent 55%), radial-gradient(ellipse at 15% 100%, ${brand.colors.positive}14, transparent 60%)`
+                  : `radial-gradient(ellipse at 80% 0%, ${brand.colors.negative}1F, transparent 55%), radial-gradient(ellipse at 15% 100%, ${brand.colors.negative}14, transparent 60%)`,
+              }"
+              aria-hidden="true"
+            />
+            <!-- Grid texture overlay -->
+            <div
+              class="pointer-events-none absolute inset-0 opacity-[0.04]"
+              :style="{
+                backgroundImage: `linear-gradient(${brand.colors.text} 1px, transparent 1px), linear-gradient(90deg, ${brand.colors.text} 1px, transparent 1px)`,
+                backgroundSize: '48px 48px',
+              }"
+              aria-hidden="true"
+            />
+
+            <!-- Top-right mini sparkline (7d peek) -->
+            <div class="absolute right-5 top-5 hidden items-center gap-2 md:flex" aria-hidden="true">
+              <span
+                class="font-mono-tab text-[9px] uppercase tracking-[0.18em]"
+                :style="{ color: brand.colors.textMuted }"
+              >
+                30D
+              </span>
+              <svg
+                v-if="heroSparkline.points.length > 1"
+                :viewBox="`0 0 ${heroSparkline.width} ${heroSparkline.height}`"
+                preserveAspectRatio="none"
+                class="h-8 w-28"
+              >
+                <defs>
+                  <linearGradient :id="`asset-spark-${tickerUpper}`" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" :stop-color="heroAccent" stop-opacity="0.35" />
+                    <stop offset="100%" :stop-color="heroAccent" stop-opacity="0" />
+                  </linearGradient>
+                </defs>
+                <path :d="heroSparkline.area" :fill="`url(#asset-spark-${tickerUpper})`" />
+                <path
+                  :d="heroSparkline.line"
+                  fill="none"
+                  :stroke="heroAccent"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  vector-effect="non-scaling-stroke"
+                />
+              </svg>
+            </div>
+
+            <!-- Content grid: identity | price | stats -->
+            <div class="relative grid gap-6 p-6 md:grid-cols-12 md:items-center md:gap-8 md:p-8">
+              <!-- Col 1: Identity -->
+              <div class="flex items-center gap-4 md:col-span-4">
+                <USkeleton v-if="isLoadingAsset" class="size-14 rounded-xl md:size-16" />
+                <NuxtImg
+                  v-else-if="resolvedLogo"
+                  :src="resolvedLogo"
+                  :alt="`Logo de ${assetName}`"
+                  width="64"
+                  height="64"
+                  loading="eager"
+                  fetchpriority="high"
+                  decoding="async"
+                  class="size-14 shrink-0 rounded-xl object-cover md:size-16"
+                />
+                <div class="flex min-w-0 flex-col gap-1">
+                  <span
+                    class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
+                    :style="{ color: brand.colors.primary }"
+                    translate="no"
+                  >
+                    [{{ tickerUpper }}]
+                  </span>
+                  <h1
+                    class="font-mono-tab text-3xl font-bold leading-none tracking-tight md:text-4xl"
+                    :style="{ color: brand.colors.text }"
+                    translate="no"
+                  >
+                    {{ tickerUpper }}
+                  </h1>
+                  <span
+                    class="line-clamp-1 text-sm font-semibold md:text-base"
+                    :style="{ color: `${brand.colors.text}CC` }"
+                  >
+                    {{ asset?.name || assetName }}
+                  </span>
+                  <span
+                    v-if="asset?.sector"
+                    class="font-mono-tab text-[10px] uppercase tracking-[0.12em]"
+                    :style="{ color: brand.colors.textMuted }"
+                  >
+                    &gt; {{ asset.sector }}
+                  </span>
+                </div>
               </div>
-            </div>
 
-            <!-- Col 2: Price + change (monumental mono) -->
-            <div class="flex flex-col gap-1 md:col-span-4">
-              <span
-                class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
-                :style="{ color: brand.colors.primary }"
-              >
-                [LAST.PRICE]
-              </span>
-              <USkeleton v-if="isLoadingAsset" class="h-14 w-[200px]" />
-              <template v-else>
-                <div class="flex items-baseline gap-2">
-                  <span
-                    class="font-mono-tab text-[10px] font-normal opacity-60"
-                    :style="{ color: brand.colors.textMuted }"
-                  >
-                    R$
-                  </span>
-                  <span
-                    class="font-mono-tab text-5xl font-bold tabular-nums md:text-6xl"
-                    :style="{
-                      color: asset?.change_percent >= 0 ? brand.colors.positive : brand.colors.negative,
-                    }"
-                  >
-                    {{ formatPriceNumber(asset?.market_price) }}
-                  </span>
-                </div>
-                <div class="flex items-center gap-3 font-mono-tab text-sm">
-                  <span
-                    class="flex items-center gap-1 tabular-nums"
-                    :style="{
-                      color: asset?.change_percent >= 0 ? brand.colors.positive : brand.colors.negative,
-                    }"
-                  >
-                    <UIcon
-                      :name="asset?.change_percent >= 0 ? 'i-lucide-arrow-up-right' : 'i-lucide-arrow-down-right'"
-                      class="h-3 w-3"
-                    />
-                    {{ asset?.change_percent >= 0 ? '+' : '' }}{{ Number(asset?.change_percent || 0).toFixed(2) }}%
-                  </span>
-                  <span :style="{ color: brand.colors.border }">·</span>
-                  <span
-                    class="text-[11px] uppercase tracking-[0.12em]"
-                    :style="{ color: brand.colors.textMuted }"
-                  >
-                    HOJE
-                  </span>
-                </div>
-              </template>
-            </div>
+              <!-- Col 2: Price + change badge -->
+              <div class="flex flex-col gap-2 md:col-span-4">
+                <USkeleton v-if="isLoadingAsset" class="h-14 w-48" />
+                <template v-else>
+                  <div class="flex items-baseline gap-1.5">
+                    <span
+                      class="font-mono-tab text-xs opacity-70"
+                      :style="{ color: brand.colors.textMuted }"
+                      translate="no"
+                    >
+                      R$
+                    </span>
+                    <span
+                      class="font-mono-tab text-5xl font-bold leading-none tabular-nums md:text-6xl"
+                      :style="{ color: brand.colors.text }"
+                      translate="no"
+                    >
+                      {{ formatPriceNumber(asset?.market_price) }}
+                    </span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span
+                      class="inline-flex items-center gap-1 rounded-full px-3 py-1.5 font-mono-tab text-sm font-semibold tabular-nums"
+                      :style="{
+                        backgroundColor: `${heroAccent}1F`,
+                        color: heroAccent,
+                      }"
+                      translate="no"
+                    >
+                      <UIcon
+                        :name="isPositive ? 'i-lucide-arrow-up-right' : 'i-lucide-arrow-down-right'"
+                        class="size-3.5"
+                        aria-hidden="true"
+                      />
+                      {{ isPositive ? '+' : '' }}{{ Number(asset?.change_percent || 0).toFixed(2) }}%
+                    </span>
+                    <span
+                      class="font-mono-tab text-[10px] uppercase tracking-[0.15em]"
+                      :style="{ color: brand.colors.textMuted }"
+                      translate="no"
+                    >
+                      <template v-if="lastUpdateLabel">HOJE · {{ lastUpdateLabel }}</template>
+                      <template v-else>HOJE</template>
+                    </span>
+                  </div>
+                </template>
+              </div>
 
-            <!-- Col 3: Quick stats (tabular data cell) -->
-            <div class="flex flex-col gap-1 md:col-span-4">
-              <span
-                class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
-                :style="{ color: brand.colors.primary }"
-              >
-                [SESSION.STATS]
-              </span>
-              <div
-                class="grid grid-cols-3 gap-px border font-mono-tab text-[11px]"
-                :style="{
-                  borderColor: brand.colors.border,
-                  backgroundColor: brand.colors.border,
-                }"
-              >
+              <!-- Col 3: Session stats (compact pill grid) -->
+              <div class="md:col-span-4">
                 <div
-                  v-for="stat in sessionStats"
-                  :key="stat.label"
-                  class="flex flex-col gap-0.5 px-3 py-2"
-                  :style="{ backgroundColor: brand.colors.surface }"
+                  class="grid grid-cols-3 gap-x-4 gap-y-3 font-mono-tab"
                 >
-                  <span class="text-[9px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">
-                    {{ stat.label }}
-                  </span>
-                  <span
-                    class="font-semibold tabular-nums"
-                    :style="{ color: stat.accent || brand.colors.text }"
+                  <div
+                    v-for="stat in sessionStats"
+                    :key="stat.label"
+                    class="flex flex-col gap-0.5"
                   >
-                    {{ stat.value || '-' }}
-                  </span>
+                    <span
+                      class="text-[9px] uppercase tracking-[0.15em]"
+                      :style="{ color: brand.colors.textMuted }"
+                    >
+                      {{ stat.label }}
+                    </span>
+                    <span
+                      class="text-[13px] font-semibold tabular-nums"
+                      :style="{ color: stat.accent || brand.colors.text }"
+                      translate="no"
+                    >
+                      {{ stat.value || '—' }}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -5556,6 +5597,33 @@ const isForeignOrFii = computed(() => isFii.value || isBdr.value || isEtf.value)
  *   - ETF   : basket metrics (52w range, ratio, volume) instead of fundamentals
  *   - STOCK : classic VOL · M.CAP · DY · P/L · P/VP · ROE
  */
+// Hero dashboard card state: gradient tint + accent color + sparkline
+const isPositive = computed(() => Number(asset.value?.change_percent ?? 0) >= 0)
+const heroAccent = computed(() => (isPositive.value ? brand.colors.positive : brand.colors.negative))
+
+// Build a normalized sparkline path from the last 30 days of chart data
+const heroSparkline = computed(() => {
+  const full = chartData.value || []
+  // Take the last ~30 points (or whatever's available if shorter)
+  const slice = full.slice(-30)
+  const points = slice.map((p) => p.value).filter((v): v is number => Number.isFinite(v))
+  const width = 120
+  const height = 32
+  if (points.length < 2) return { points, width, height, line: '', area: '' }
+  const min = Math.min(...points)
+  const max = Math.max(...points)
+  const range = max - min || 1
+  const stepX = width / (points.length - 1)
+  const coords = points.map((v, i) => {
+    const x = i * stepX
+    const y = height - ((v - min) / range) * height
+    return `${x.toFixed(2)},${y.toFixed(2)}`
+  })
+  const line = `M ${coords.join(' L ')}`
+  const area = `${line} L ${width},${height} L 0,${height} Z`
+  return { points, width, height, line, area }
+})
+
 const sessionStats = computed(() => {
   const extras = scrapeExtras.value
 

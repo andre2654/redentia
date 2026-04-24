@@ -2,126 +2,177 @@
   <NuxtLayout :name="layoutName">
     <div class="relative z-10 flex flex-col px-4 pt-4">
       <div class="flex flex-col">
-        <!-- Terminal status bar — mesma linguagem da asset page -->
-        <div
-          class="-mx-4 mb-4 flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-t px-4 py-2 font-mono-tab text-[10px] uppercase tracking-[0.18em]"
-          :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
-        >
-          <span class="flex items-center gap-1.5" :style="{ color: brand.colors.primary }">
-            <span class="relative flex size-1.5">
-              <span class="absolute inline-flex size-1.5 motion-safe:animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.primary }" />
-              <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
-            </span>
-            [TESOURO.QUOTE]
-          </span>
-          <span :style="{ color: brand.colors.border }">·</span>
-          <span :style="{ color: brand.colors.text }">{{ indexerLabel }}</span>
-          <span :style="{ color: brand.colors.border }">·</span>
-          <span class="truncate max-w-[320px]" :style="{ color: brand.colors.textMuted }">{{ data?.name ?? slug }}</span>
-          <span :style="{ color: brand.colors.border }">·</span>
-          <span :style="{ color: brand.colors.textMuted }">TESOURO NACIONAL · BR</span>
-          <span v-if="refreshedLabel" :style="{ color: brand.colors.border }">·</span>
-          <span v-if="refreshedLabel" :style="{ color: brand.colors.textMuted }">UPDATE {{ refreshedLabel }}</span>
-        </div>
-
-        <!-- Hero Section 3-col: identidade · taxa bruta · session stats -->
+        <!-- Hero Dashboard Card: ambient amber glow (tesouro sempre é "neutro") -->
         <section class="border-b pb-8" :style="{ borderColor: brand.colors.border }">
-          <div class="grid gap-6 md:grid-cols-12 md:items-end">
-            <!-- Col 1: indexer badge + nome -->
-            <div class="flex items-center gap-4 md:col-span-4">
-              <div
-                class="flex h-16 w-16 shrink-0 items-center justify-center border font-mono-tab text-sm font-bold"
-                :style="{
-                  borderColor: indexerColor,
-                  color: indexerColor,
-                  backgroundColor: brand.colors.surface,
-                }"
+          <div
+            class="tesouro-hero-card relative overflow-hidden rounded-2xl border"
+            :style="{
+              borderColor: brand.colors.border,
+              backgroundColor: brand.colors.surface,
+            }"
+          >
+            <!-- Ambient gradient: indexer color tint (IPCA+ = amber, SELIC = primary, PRE = neutral) -->
+            <div
+              class="pointer-events-none absolute inset-0"
+              :style="{
+                background: `radial-gradient(ellipse at 80% 0%, ${indexerColor}1F, transparent 55%), radial-gradient(ellipse at 15% 100%, ${indexerColor}14, transparent 60%)`,
+              }"
+              aria-hidden="true"
+            />
+            <div
+              class="pointer-events-none absolute inset-0 opacity-[0.04]"
+              :style="{
+                backgroundImage: `linear-gradient(${brand.colors.text} 1px, transparent 1px), linear-gradient(90deg, ${brand.colors.text} 1px, transparent 1px)`,
+                backgroundSize: '48px 48px',
+              }"
+              aria-hidden="true"
+            />
+
+            <!-- Top-right mini sparkline (price history) -->
+            <div class="absolute right-5 top-5 hidden items-center gap-2 md:flex" aria-hidden="true">
+              <span
+                class="font-mono-tab text-[9px] uppercase tracking-[0.18em]"
+                :style="{ color: brand.colors.textMuted }"
               >
-                {{ indexerLabel }}
-              </div>
-              <div class="flex min-w-0 flex-col gap-1">
-                <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
-                  [SYMBOL]
-                </span>
-                <h1
-                  class="font-mono-tab text-3xl font-bold tracking-tight md:text-4xl"
-                  :style="{ color: brand.colors.text }"
-                >
-                  {{ indexerLabel }} <span class="text-lg font-semibold md:text-xl" :style="{ color: brand.colors.text }">— {{ prettyName(data?.name ?? slug) }}</span>
-                </h1>
-                <span class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
-                  &gt; RENDA FIXA · {{ formatMaturityLong(data?.maturity_date) }}
-                </span>
-              </div>
+                HISTÓRICO
+              </span>
+              <svg
+                v-if="tesouroSparkline.points.length > 1"
+                :viewBox="`0 0 ${tesouroSparkline.width} ${tesouroSparkline.height}`"
+                preserveAspectRatio="none"
+                class="h-8 w-28"
+              >
+                <defs>
+                  <linearGradient :id="`tesouro-spark-${slug}`" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" :stop-color="indexerColor" stop-opacity="0.35" />
+                    <stop offset="100%" :stop-color="indexerColor" stop-opacity="0" />
+                  </linearGradient>
+                </defs>
+                <path :d="tesouroSparkline.area" :fill="`url(#tesouro-spark-${slug})`" />
+                <path
+                  :d="tesouroSparkline.line"
+                  fill="none"
+                  :stroke="indexerColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  vector-effect="non-scaling-stroke"
+                />
+              </svg>
             </div>
 
-            <!-- Col 2: Taxa bruta (gigante, mono) -->
-            <div class="flex flex-col gap-1 md:col-span-4">
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
-                [GROSS.RATE]
-              </span>
-              <div class="flex items-baseline gap-2">
-                <span
-                  class="font-mono-tab text-5xl font-bold tabular-nums md:text-6xl"
-                  :style="{ color: brand.colors.primary }"
+            <!-- Grid: identity | rate | stats -->
+            <div class="relative grid gap-6 p-6 md:grid-cols-12 md:items-center md:gap-8 md:p-8">
+              <!-- Col 1: Indexer badge + name -->
+              <div class="flex items-center gap-4 md:col-span-4">
+                <div
+                  class="flex size-14 shrink-0 items-center justify-center rounded-xl border font-mono-tab text-sm font-bold md:size-16"
+                  :style="{
+                    borderColor: indexerColor,
+                    color: indexerColor,
+                    backgroundColor: `${indexerColor}10`,
+                  }"
                 >
-                  {{ data?.rate ?? '—' }}
-                </span>
-                <span
-                  class="font-mono-tab text-[10px] font-normal opacity-60"
-                  :style="{ color: brand.colors.textMuted }"
-                >
-                  % A.A.
-                </span>
-              </div>
-              <div class="flex items-center gap-3 font-mono-tab text-sm">
-                <span class="flex items-center gap-1 tabular-nums" :style="{ color: brand.colors.text }">
-                  <UIcon name="i-lucide-calendar" class="h-3 w-3" />
-                  PRAZO {{ yearsToMaturity }}
-                </span>
-                <span v-if="data?.reference_rate !== null" :style="{ color: brand.colors.border }">·</span>
-                <span
-                  v-if="data?.reference_rate !== null"
-                  class="text-[11px] uppercase tracking-[0.12em]"
-                  :style="{ color: brand.colors.textMuted }"
-                >
-                  {{ data?.reference_rate_label ?? 'REF' }} {{ data?.reference_rate?.toFixed(2) }}%
-                </span>
-              </div>
-            </div>
-
-            <!-- Col 3: Session stats -->
-            <div class="flex flex-col gap-1 md:col-span-4">
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
-                [PRICE.SESSION]
-              </span>
-              <div
-                class="grid grid-cols-2 gap-px border font-mono-tab text-[11px]"
-                :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }"
-              >
-                <div class="flex flex-col gap-0.5 px-3 py-2" :style="{ backgroundColor: brand.colors.surface }">
-                  <span class="text-[9px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">COMPRA</span>
-                  <span class="font-semibold tabular-nums" :style="{ color: brand.colors.positive }">
-                    {{ formatMoney(data?.price_buy) }}
-                  </span>
+                  {{ indexerLabel }}
                 </div>
-                <div class="flex flex-col gap-0.5 px-3 py-2" :style="{ backgroundColor: brand.colors.surface }">
-                  <span class="text-[9px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">VENDA</span>
-                  <span class="font-semibold tabular-nums" :style="{ color: brand.colors.text }">
-                    {{ formatMoney(data?.price_sell) }}
+                <div class="flex min-w-0 flex-col gap-1">
+                  <span
+                    class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
+                    :style="{ color: brand.colors.primary }"
+                    translate="no"
+                  >
+                    [{{ indexerLabel }}]
                   </span>
-                </div>
-                <div class="flex flex-col gap-0.5 px-3 py-2" :style="{ backgroundColor: brand.colors.surface }">
-                  <span class="text-[9px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">VENC</span>
-                  <span class="font-semibold tabular-nums" :style="{ color: brand.colors.text }">
-                    {{ maturityShort }}
-                  </span>
-                </div>
-                <div class="flex flex-col gap-0.5 px-3 py-2" :style="{ backgroundColor: brand.colors.surface }">
-                  <span class="text-[9px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">INDEX</span>
-                  <span class="font-semibold tabular-nums" :style="{ color: brand.colors.primary }">
+                  <h1
+                    class="font-mono-tab text-3xl font-bold leading-none tracking-tight md:text-4xl"
+                    :style="{ color: brand.colors.text }"
+                    translate="no"
+                  >
                     {{ indexerLabel }}
+                  </h1>
+                  <span
+                    class="line-clamp-1 text-sm font-semibold md:text-base"
+                    :style="{ color: `${brand.colors.text}CC` }"
+                  >
+                    {{ prettyName(data?.name ?? slug) }}
                   </span>
+                  <span
+                    class="font-mono-tab text-[10px] uppercase tracking-[0.12em]"
+                    :style="{ color: brand.colors.textMuted }"
+                  >
+                    &gt; RENDA FIXA · {{ formatMaturityLong(data?.maturity_date) }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Col 2: Taxa bruta (hero) -->
+              <div class="flex flex-col gap-2 md:col-span-4">
+                <div class="flex items-baseline gap-1.5">
+                  <span
+                    class="font-mono-tab text-5xl font-bold leading-none tabular-nums md:text-6xl"
+                    :style="{ color: brand.colors.text }"
+                    translate="no"
+                  >
+                    {{ data?.rate ?? '—' }}
+                  </span>
+                  <span
+                    class="font-mono-tab text-xs opacity-70"
+                    :style="{ color: brand.colors.textMuted }"
+                    translate="no"
+                  >
+                    %&nbsp;A.A.
+                  </span>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <span
+                    class="inline-flex items-center gap-1 rounded-full px-3 py-1.5 font-mono-tab text-sm font-semibold tabular-nums"
+                    :style="{
+                      backgroundColor: `${indexerColor}1F`,
+                      color: indexerColor,
+                    }"
+                    translate="no"
+                  >
+                    <UIcon name="i-lucide-calendar" class="size-3.5" aria-hidden="true" />
+                    PRAZO {{ yearsToMaturity }}
+                  </span>
+                  <span
+                    v-if="data?.reference_rate != null"
+                    class="font-mono-tab text-[10px] uppercase tracking-[0.15em]"
+                    :style="{ color: brand.colors.textMuted }"
+                    translate="no"
+                  >
+                    {{ data?.reference_rate_label ?? 'REF' }} {{ data.reference_rate.toFixed(2) }}%
+                  </span>
+                </div>
+              </div>
+
+              <!-- Col 3: Stats grid -->
+              <div class="md:col-span-4">
+                <div class="grid grid-cols-2 gap-x-4 gap-y-3 font-mono-tab">
+                  <div class="flex flex-col gap-0.5">
+                    <span class="text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">COMPRA</span>
+                    <span class="text-[13px] font-semibold tabular-nums" :style="{ color: brand.colors.positive }" translate="no">
+                      {{ formatMoney(data?.price_buy) }}
+                    </span>
+                  </div>
+                  <div class="flex flex-col gap-0.5">
+                    <span class="text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">VENDA</span>
+                    <span class="text-[13px] font-semibold tabular-nums" :style="{ color: brand.colors.text }" translate="no">
+                      {{ formatMoney(data?.price_sell) }}
+                    </span>
+                  </div>
+                  <div class="flex flex-col gap-0.5">
+                    <span class="text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">VENCIMENTO</span>
+                    <span class="text-[13px] font-semibold tabular-nums" :style="{ color: brand.colors.text }" translate="no">
+                      {{ maturityShort }}
+                    </span>
+                  </div>
+                  <div class="flex flex-col gap-0.5">
+                    <span class="text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">INDEXADOR</span>
+                    <span class="text-[13px] font-semibold tabular-nums" :style="{ color: indexerColor }" translate="no">
+                      {{ indexerLabel }}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -369,6 +420,28 @@ const chartLegend = computed<IChartLegendItem[]>(() => [
   },
 ])
 
+// Hero dashboard sparkline (last 30 points)
+const tesouroSparkline = computed(() => {
+  const full = chartData.value || []
+  const slice = full.slice(-30)
+  const points = slice.map((p) => p.value).filter((v): v is number => Number.isFinite(v))
+  const width = 120
+  const height = 32
+  if (points.length < 2) return { points, width, height, line: '', area: '' }
+  const min = Math.min(...points)
+  const max = Math.max(...points)
+  const range = max - min || 1
+  const stepX = width / (points.length - 1)
+  const coords = points.map((v, i) => {
+    const x = i * stepX
+    const y = height - ((v - min) / range) * height
+    return `${x.toFixed(2)},${y.toFixed(2)}`
+  })
+  const line = `M ${coords.join(' L ')}`
+  const area = `${line} L ${width},${height} L 0,${height} Z`
+  return { points, width, height, line, area }
+})
+
 async function fetchChartData() {
   isLoadingChart.value = true
   try {
@@ -394,7 +467,7 @@ if (error.value || !data.value) {
 
 useHead(() => {
   const t = data.value
-  const brandCtx = useBrand()
+  const brandCtx = brand
   if (!t) return { title: `${slug} · Tesouro Direto | ${brandCtx.name}` }
 
   const title = `${t.name} · Tesouro Direto | ${brandCtx.name}`
