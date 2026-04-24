@@ -78,42 +78,68 @@
     >
       <!-- User Profile Card -->
       <div class="brand-card flex-shrink-0 border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
-        <div class="flex items-center gap-3">
-          <div class="relative">
-            <UAvatar :alt="authStore.me?.name || 'Usuário'" size="lg" class="ring-2 ring-secondary/30" />
-            <div class="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 bg-green-500" :style="{ borderColor: brand.colors.background }" />
+        <template v-if="authStore.isAuthenticated">
+          <div class="flex items-center gap-3">
+            <div class="relative">
+              <UAvatar :alt="authStore.me?.name || 'Usuário'" size="lg" class="ring-2 ring-secondary/30" />
+              <div class="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 bg-green-500" :style="{ borderColor: brand.colors.background }" />
+            </div>
+            <div class="flex flex-1 flex-col">
+              <span class="font-medium" :style="{ color: brand.colors.text }">
+                {{ authStore.me?.name || 'Usuário' }}
+              </span>
+              <span class="flex items-center gap-1 text-xs" :style="{ color: brand.colors.textMuted }">
+                <UIcon name="i-lucide-sparkles" class="h-3 w-3 text-secondary" />
+                {{ brand.sidebar.planLabel }}
+              </span>
+            </div>
           </div>
-          <div class="flex flex-1 flex-col">
-            <span class="font-medium" :style="{ color: brand.colors.text }">
-              {{ authStore.me?.name || 'Usuário' }}
-            </span>
-            <span class="flex items-center gap-1 text-xs" :style="{ color: brand.colors.textMuted }">
-              <UIcon name="i-lucide-sparkles" class="h-3 w-3 text-secondary" />
-              {{ brand.sidebar.planLabel }}
-            </span>
+          <div class="mt-4 flex items-center gap-2 border-t pt-4" :style="{ borderColor: brand.colors.border }">
+            <button
+              class="flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs transition"
+              :style="{ backgroundColor: brand.colors.surface, color: brand.colors.textMuted }"
+              @click="interfaceStore.toggleRevealAmount"
+            >
+              <UIcon
+                :name="interfaceStore.revealAmount ? 'i-lucide-eye-off' : 'i-lucide-eye'"
+                class="h-4 w-4"
+              />
+              {{ interfaceStore.revealAmount ? brand.nav.hide : brand.nav.show }}
+            </button>
+            <button
+              class="flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs transition hover:bg-red-500/10 hover:text-red-400"
+              :style="{ backgroundColor: brand.colors.surface, color: brand.colors.textMuted }"
+              @click="makeLogout"
+            >
+              <UIcon name="i-lucide-log-out" class="h-4 w-4" />
+              {{ brand.nav.logout }}
+            </button>
           </div>
-        </div>
-        <div class="mt-4 flex items-center gap-2 border-t pt-4" :style="{ borderColor: brand.colors.border }">
-          <button
-            class="flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs transition"
-            :style="{ backgroundColor: brand.colors.surface, color: brand.colors.textMuted }"
-            @click="interfaceStore.toggleRevealAmount"
-          >
-            <UIcon
-              :name="interfaceStore.revealAmount ? 'i-lucide-eye-off' : 'i-lucide-eye'"
-              class="h-4 w-4"
-            />
-            {{ interfaceStore.revealAmount ? brand.nav.hide : brand.nav.show }}
-          </button>
-          <button
-            class="flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs transition hover:bg-red-500/10 hover:text-red-400"
-            :style="{ backgroundColor: brand.colors.surface, color: brand.colors.textMuted }"
-            @click="makeLogout"
-          >
-            <UIcon name="i-lucide-log-out" class="h-4 w-4" />
-            {{ brand.nav.logout }}
-          </button>
-        </div>
+        </template>
+        <template v-else>
+          <div class="flex items-center gap-3">
+            <BrandLogo variant="icon" class="h-9 w-9" />
+            <div class="flex flex-1 flex-col">
+              <span class="text-[10px] uppercase tracking-[0.25em]" :style="{ color: brand.colors.textMuted }">
+                {{ brand.name }}
+              </span>
+              <span class="text-base font-semibold" :style="{ color: brand.colors.text }">
+                {{ brand.subtitle }}
+              </span>
+            </div>
+          </div>
+          <div class="mt-4 border-t pt-4" :style="{ borderColor: brand.colors.border }">
+            <UButton
+              to="/auth/login"
+              color="secondary"
+              size="md"
+              block
+              class="rounded-full font-medium"
+            >
+              {{ brand.nav.login }}
+            </UButton>
+          </div>
+        </template>
       </div>
 
       <!-- Search -->
