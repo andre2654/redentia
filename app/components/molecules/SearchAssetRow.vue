@@ -13,16 +13,16 @@
          image fails to load (common for FII tickers where Brapi returns
          an HTML 404 page instead of an SVG) -->
     <div
-      class="flex h-10 w-10 shrink-0 items-center justify-center border"
+      class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden border"
       :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
     >
       <img
         v-if="item.logo && !imgFailed"
         :src="item.logo"
         :alt="item.ticker"
-        class="h-full w-full object-contain p-1"
-        width="40"
-        height="40"
+        class="h-full w-full object-contain"
+        width="48"
+        height="48"
         loading="lazy"
         @error="imgFailed = true"
       >
