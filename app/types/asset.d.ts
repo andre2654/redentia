@@ -39,9 +39,143 @@ export interface IAsset {
   mdi?: AssetMdiEntry[]
 }
 
+export interface ScrapeExtrasEtf {
+  asset_type: 'etf'
+  etf: {
+    price: number | null
+    change_12m: number | null
+    min_price_52_weeks: number | null
+    max_price_52_weeks: number | null
+    num_shareholders: number | null
+    volume: number | null
+    ratio: number | null
+    lot_size: number | null
+    market: string | null
+    isin_code: string | null
+    book_name: string | null
+    cnpj: string | null
+    fund_start_date: string | null
+    trading_name: string | null
+  }
+  identity: {
+    company_name: string | null
+    sector: string | null
+    subsector: string | null
+    segment: string | null
+    cnpj: string | null
+    website: string | null
+    logo: string | null
+  }
+  refreshed_at: string | null
+}
+
+export interface ScrapeExtrasFii {
+  asset_type: 'fii'
+  fii: {
+    dividend_yield_12m: number | null
+    price_to_book: number | null
+    book_value_per_share: number | null
+    cash_and_equivalents: number | null
+    num_shareholders: number | null
+    monthly_income_avg_24m: number | null
+    ifix_share: number | null
+    change_12m: number | null
+    price: number | null
+    min_price_52_weeks: number | null
+    max_price_52_weeks: number | null
+    anbima_segment: string | null
+    anbima_type: string | null
+    trading_name: string | null
+    cnpj: string | null
+    fund_start_date: string | null
+    fund_duration: string | null
+  }
+  identity: {
+    company_name: string | null
+    sector: string | null
+    subsector: string | null
+    segment: string | null
+    cnpj: string | null
+    website: string | null
+    logo: string | null
+  }
+  refreshed_at: string | null
+}
+
+// StatusInvest-scraped extras — rich metrics not in Brapi's shape.
+// Null when the ticker hasn't been scraped yet.
+export interface ScrapeExtrasStock {
+  asset_type?: 'stock'
+  valuation: {
+    dividend_yield: number | null
+    price_to_earnings: number | null
+    peg_ratio: number | null
+    price_to_book: number | null
+    ev_ebitda: number | null
+    ev_ebit: number | null
+    price_to_ebitda: number | null
+    price_to_ebit: number | null
+    book_value_per_share: number | null
+    price_to_assets: number | null
+    earnings_per_share: number | null
+    price_to_sales: number | null
+    price_to_working_capital: number | null
+    price_to_net_current_assets: number | null
+    enterprise_value: number | null
+    market_cap: number | null
+  }
+  leverage: {
+    net_debt: number | null
+    gross_debt: number | null
+    cash_and_equivalents: number | null
+    net_debt_to_ebit: number | null
+    net_debt_to_ebitda: number | null
+    net_debt_to_equity: number | null
+    liabilities_to_assets: number | null
+    equity_to_assets: number | null
+    current_ratio: number | null
+  }
+  growth: {
+    revenue_cagr_5y: number | null
+    earnings_cagr_5y: number | null
+  }
+  quality: {
+    return_on_invested_capital: number | null
+    return_on_equity: number | null
+    return_on_assets: number | null
+    gross_margin: number | null
+    ebit_margin: number | null
+    ebitda_margin: number | null
+    net_margin: number | null
+    asset_turnover: number | null
+    listing_segment: string | null
+  }
+  market: {
+    free_float: number | null
+    max_price_52_weeks: number | null
+    min_price_52_weeks: number | null
+    price: number | null
+    shares_outstanding: number | null
+  }
+  identity: {
+    company_name: string | null
+    sector: string | null
+    subsector: string | null
+    segment: string | null
+    cnpj: string | null
+    website: string | null
+    logo: string | null
+  }
+  refreshed_at: string | null
+}
+
+// Union — the backend discriminates with `asset_type`.
+export type ScrapeExtras = ScrapeExtrasStock | ScrapeExtrasFii | ScrapeExtrasEtf
+
 // Interface para resposta da API getTickerFundamentus
 export interface FundamentusApiResponse {
   ticker: string
+  scrape_extras: ScrapeExtras | null
   key_statistics: {
     ticker: string
     updated_at: string

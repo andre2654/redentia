@@ -167,12 +167,7 @@ const changeColor = computed(() => {
   return (props.stock?.change_percent ?? 0) >= 0 ? cc.positive : cc.negative
 })
 
-const hasLogo = computed(() => {
-  return (
-    props.stock?.logo &&
-    props.stock?.logo !== 'https://icons.brapi.dev/icons/BRAPI.svg'
-  )
-})
+const hasLogo = computed(() => !isPlaceholderLogo(props.stock?.logo))
 
 function normalizeText(text: string) {
   return text?.replace(/\s+/g, ' ')

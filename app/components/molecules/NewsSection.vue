@@ -68,7 +68,7 @@
       </div>
     </header>
 
-    <div v-if="filteredArticles.length > 0" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div v-if="filteredArticles.length > 0" class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
       <a
         v-for="item in filteredArticles.slice(0, displayLimit)"
         :key="item.id"

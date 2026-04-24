@@ -146,8 +146,11 @@ export const useAssetsService = () => {
     ticker: string
   ): Promise<FundamentusApiResponse> {
     const url = `${API}/fundamentals/${ticker}/overview`
+    // Bump the cache key whenever the response shape changes (new fields added
+    // to scrape_extras etc.) — otherwise browsers that cached the old shape
+    // in sessionStorage keep rendering "-" for the new fields for up to 60s.
     const resp = await preventWithCache(
-      url,
+      `${url}#shape=v3`,
       async () => await $fetch<FundamentusApiResponse>(url, { method: 'GET' })
     )
     return unwrapValue<FundamentusApiResponse>(resp)

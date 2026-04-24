@@ -644,8 +644,8 @@
           <!-- Vertical orange strip on right edge -->
           <div class="absolute right-0 top-0 h-full w-1" :style="{ backgroundColor: brand.colors.primary }" />
           <img
-            v-if="asset?.logo && !isLoadingAsset"
-            :src="asset.logo"
+            v-if="resolvedLogo && !isLoadingAsset"
+            :src="resolvedLogo"
             :alt="`${assetName}`"
             class="mb-6 h-20 w-20 rounded-2xl object-cover shadow-2xl"
           />
@@ -1026,11 +1026,11 @@
           <div class="mb-4 flex items-center gap-3">
             <USkeleton v-if="isLoadingAsset" class="size-14 rounded-2xl" />
             <div
-              v-else-if="asset?.logo"
+              v-else-if="resolvedLogo"
               class="flex size-14 items-center justify-center overflow-hidden rounded-2xl p-1"
               :style="{ backgroundColor: brand.colors.surface, border: `2px solid ${brand.colors.primary}40` }"
             >
-              <img :src="asset.logo" :alt="assetName" class="size-full object-contain" />
+              <img :src="resolvedLogo" :alt="assetName" class="size-full object-contain" />
             </div>
             <span class="font-showtime-label" :style="{ color: brand.colors.primary }">
               {{ (asset?.type || 'AÇÃO').toString().toUpperCase() === 'REIT' ? 'FUNDO IMOBILIÁRIO' : 'AÇÃO' }} · {{ tickerUpper }}
@@ -1667,8 +1667,8 @@
             <!-- Logo + ticker row -->
             <div class="mb-6 flex items-center gap-5">
               <img
-                v-if="asset?.logo"
-                :src="asset.logo"
+                v-if="resolvedLogo"
+                :src="resolvedLogo"
                 :alt="tickerUpper"
                 class="size-20 rounded-2xl object-cover"
                 :style="{ backgroundColor: brand.colors.surface, border: `2px solid ${brand.colors.border}` }"
@@ -2451,8 +2451,8 @@
             <!-- Logo + ticker -->
             <div class="flex items-end gap-6">
               <img
-                v-if="asset?.logo"
-                :src="asset.logo"
+                v-if="resolvedLogo"
+                :src="resolvedLogo"
                 :alt="tickerUpper"
                 class="h-24 w-24 shrink-0 object-cover md:h-28 md:w-28"
                 :style="{ backgroundColor: brand.colors.surface, border: `2px solid ${brand.colors.border}` }"
@@ -2991,8 +2991,8 @@
                 class="h-16 w-16 rounded-xl"
               />
               <img
-                v-else-if="asset?.logo"
-                :src="asset.logo"
+                v-else-if="resolvedLogo"
+                :src="resolvedLogo"
                 :alt="`Logo de ${assetName}`"
                 class="h-16 w-16 rounded-xl object-cover"
               />
@@ -3084,29 +3084,21 @@
                   backgroundColor: brand.colors.border,
                 }"
               >
-                <div class="flex flex-col gap-0.5 px-3 py-2" :style="{ backgroundColor: brand.colors.surface }">
-                  <span class="text-[9px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">VOL</span>
-                  <span class="font-semibold tabular-nums" :style="{ color: brand.colors.text }">{{ formatVolumeShort(currentVolume) }}</span>
-                </div>
-                <div class="flex flex-col gap-0.5 px-3 py-2" :style="{ backgroundColor: brand.colors.surface }">
-                  <span class="text-[9px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">M.CAP</span>
-                  <span class="font-semibold tabular-nums" :style="{ color: brand.colors.text }">{{ formatMarketCapShort(asset?.market_cap) }}</span>
-                </div>
-                <div class="flex flex-col gap-0.5 px-3 py-2" :style="{ backgroundColor: brand.colors.surface }">
-                  <span class="text-[9px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">DY</span>
-                  <span class="font-semibold tabular-nums" :style="{ color: brand.colors.primary }">{{ formatDyShort(basicIndicators?.dividendYield) }}</span>
-                </div>
-                <div class="flex flex-col gap-0.5 px-3 py-2" :style="{ backgroundColor: brand.colors.surface }">
-                  <span class="text-[9px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">P/L</span>
-                  <span class="font-semibold tabular-nums" :style="{ color: brand.colors.text }">{{ basicIndicators?.pl || '-' }}</span>
-                </div>
-                <div class="flex flex-col gap-0.5 px-3 py-2" :style="{ backgroundColor: brand.colors.surface }">
-                  <span class="text-[9px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">P/VP</span>
-                  <span class="font-semibold tabular-nums" :style="{ color: brand.colors.text }">{{ basicIndicators?.pvpa || '-' }}</span>
-                </div>
-                <div class="flex flex-col gap-0.5 px-3 py-2" :style="{ backgroundColor: brand.colors.surface }">
-                  <span class="text-[9px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">ROE</span>
-                  <span class="font-semibold tabular-nums" :style="{ color: brand.colors.text }">{{ basicIndicators?.roe || '-' }}</span>
+                <div
+                  v-for="stat in sessionStats"
+                  :key="stat.label"
+                  class="flex flex-col gap-0.5 px-3 py-2"
+                  :style="{ backgroundColor: brand.colors.surface }"
+                >
+                  <span class="text-[9px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">
+                    {{ stat.label }}
+                  </span>
+                  <span
+                    class="font-semibold tabular-nums"
+                    :style="{ color: stat.accent || brand.colors.text }"
+                  >
+                    {{ stat.value || '-' }}
+                  </span>
                 </div>
               </div>
             </div>
@@ -3167,8 +3159,10 @@
           :ticker="tickerUpper"
         />
 
-        <!-- Fundamentals + Volatility side by side (terminal panels) -->
-        <section class="grid grid-cols-1 gap-6 border-b py-8 lg:grid-cols-3" :style="{ borderColor: brand.colors.border }">
+        <!-- Fundamentals + Volatility side by side (terminal panels) —
+             only when scrape_extras is NOT available (otherwise the new
+             StatusInvestPanel below covers these indicators + more). -->
+        <section v-if="!scrapeExtras" class="grid grid-cols-1 gap-6 border-b py-8 lg:grid-cols-3" :style="{ borderColor: brand.colors.border }">
           <!-- Col 1-2: Fundamentals register -->
           <div v-if="brand.assetPage.showIndicators" class="lg:col-span-2">
             <div class="mb-4 flex flex-col gap-1">
@@ -3224,8 +3218,8 @@
               &gt; DATA UNAVAILABLE
             </div>
 
-            <!-- Smart indicators register (AI analysis) -->
-            <div v-if="brand.assetPage.showSmartIndicators && (intelligentIndicators || isLoadingFundamentus)" class="mt-4">
+            <!-- Smart indicators register (AI analysis) — only when scrape is missing -->
+            <div v-if="!scrapeExtras && brand.assetPage.showSmartIndicators && (intelligentIndicators || isLoadingFundamentus)" class="mt-4">
               <div class="mb-2 flex items-center gap-2 font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
                 <IconAi class="h-3 w-3" :style="{ fill: brand.colors.primary }" />
                 <span>[AI.ANALYSIS]</span>
@@ -3287,13 +3281,45 @@
               </div>
             </div>
 
-            <MoleculesAnalystConsensusCard v-if="brand.assetPage.showNews" :ticker="tickerUpper" />
+            <MoleculesAnalystConsensusCard v-if="brand.assetPage.showNews && !isForeignOrFii" :ticker="tickerUpper" />
+          </div>
+        </section>
+
+        <!-- StatusInvest rich panels — FII or stock variant based on asset_type -->
+        <section v-if="scrapeExtras" class="border-b py-8" :style="{ borderColor: brand.colors.border }">
+          <MoleculesStatusInvestFiiPanel v-if="scrapeExtras.asset_type === 'fii'" :extras="scrapeExtras" />
+          <MoleculesStatusInvestEtfPanel v-else-if="scrapeExtras.asset_type === 'etf'" :extras="scrapeExtras" />
+          <MoleculesStatusInvestPanel v-else :extras="scrapeExtras" />
+
+          <!-- Volatility + Analyst consensus side by side (only when scrape panel is shown) -->
+          <div class="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <div v-if="brand.assetPage.showVolatility">
+              <div class="mb-4 flex flex-col gap-1">
+                <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
+                  [VOLATILITY.30D]
+                </span>
+                <h3 class="text-lg font-semibold md:text-xl" :style="{ color: brand.colors.text }">
+                  Volatilidade
+                </h3>
+                <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
+                  &gt; {{ volatilityPeriodLabel || 'JANELA DE 30 DIAS' }}
+                </p>
+              </div>
+              <div class="border p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+                <AtomsRiskMeter
+                  :risk="volatilityRisk"
+                  :period="volatilityPeriodLabel"
+                />
+              </div>
+            </div>
+
+            <MoleculesAnalystConsensusCard v-if="brand.assetPage.showNews && !isForeignOrFii" :ticker="tickerUpper" />
           </div>
         </section>
       </div>
 
       <!-- Dividends -->
-      <section v-if="brand.assetPage.showDividendMap || brand.assetPage.showDividendChart" class="border-b py-8" :style="{ borderColor: brand.colors.border }">
+      <section v-if="(brand.assetPage.showDividendMap || brand.assetPage.showDividendChart) && !isEtf" class="border-b py-8" :style="{ borderColor: brand.colors.border }">
         <!-- Terminal header -->
         <header class="mb-6 flex flex-col gap-1">
           <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
@@ -3303,12 +3329,13 @@
             Dividendos e proventos
           </h2>
           <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
-            &gt; HISTÓRICO DE PAGAMENTOS · PROBABILIDADE MENSAL
+            &gt; HISTÓRICO DE PAGAMENTOS{{ isForeignOrFii ? '' : ' · PROBABILIDADE MENSAL' }}
           </p>
         </header>
 
-        <!-- MDI Card, terminal dividend heatmap -->
-        <div v-if="brand.assetPage.showDividendMap" class="mb-8 border" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+        <!-- MDI Card, terminal dividend heatmap — stock-only; FIIs distribute
+             monthly, BDRs irregularly, so probability-by-month is noise there -->
+        <div v-if="brand.assetPage.showDividendMap && !isForeignOrFii" class="mb-8 border" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
           <!-- Header: mono label + reference -->
           <div class="flex items-center justify-between border-b px-5 py-3" :style="{ borderColor: brand.colors.border }">
             <div class="flex flex-col gap-0.5">
@@ -3413,8 +3440,9 @@
         />
       </section>
 
-      <!-- Financial Statements -->
-      <section v-if="brand.assetPage.showFinancials" class="border-b py-8" :style="{ borderColor: brand.colors.border }">
+      <!-- Financial Statements — hidden for BDRs (foreign company) and ETFs
+           (basket, not an operating company with DRE/balance) -->
+      <section v-if="brand.assetPage.showFinancials && !isBdr && !isEtf" class="border-b py-8" :style="{ borderColor: brand.colors.border }">
         <header class="mb-6 flex flex-col gap-1">
           <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
             [FINANCIALS.LATEST]
@@ -3423,7 +3451,7 @@
             Demonstrações financeiras
           </h2>
           <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
-            &gt; ÚLTIMO TRIMESTRE DISPONÍVEL · FLUXO DE CAIXA · BALANÇO · DRE
+            &gt; ÚLTIMO TRIMESTRE DISPONÍVEL{{ isFii ? ' · BALANÇO · DRE' : ' · FLUXO DE CAIXA · BALANÇO · DRE' }}
           </p>
         </header>
 
@@ -3434,9 +3462,11 @@
             incomeItems.length ||
             isLoadingFundamentus
           "
-          class="grid gap-4 lg:grid-cols-3"
+          class="grid gap-4"
+          :class="isFii ? 'lg:grid-cols-2' : 'lg:grid-cols-3'"
         >
           <AtomsGraphFinancialSummary
+            v-if="!isFii"
             title="Fluxo de Caixa"
             icon="i-lucide-arrow-right-left"
             :items="cashFlowItems"
@@ -3465,8 +3495,9 @@
         </div>
       </section>
 
-      <!-- Buy & Hold Checklist -->
-      <section v-if="brand.assetPage.showChecklist" class="border-b py-8" :style="{ borderColor: brand.colors.border }">
+      <!-- Buy & Hold Checklist — stock, FII, or BDR variant. ETFs don't
+           have per-fund fundamentals that map to these criteria. -->
+      <section v-if="brand.assetPage.showChecklist && !isEtf" class="border-b py-8" :style="{ borderColor: brand.colors.border }">
         <div class="border p-6" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
           <!-- Header terminal-style -->
           <header class="mb-6">
@@ -3484,16 +3515,16 @@
               </div>
 
               <!-- Score as terminal register -->
-              <div v-if="!isLoadingFundamentus && buyAndHoldChecklist.length" class="flex items-center gap-3 font-mono-tab">
+              <div v-if="!isLoadingFundamentus && activeChecklist.length" class="flex items-center gap-3 font-mono-tab">
                 <span class="text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
                   [SCORE]
                 </span>
                 <span class="text-3xl font-bold tabular-nums" :style="{ color: brand.colors.positive }">
-                  {{ buyAndHoldChecklist.filter(i => i.status === 'pass').length }}
+                  {{ activeChecklist.filter(i => i.status === 'pass').length }}
                 </span>
                 <span class="text-xl tabular-nums" :style="{ color: brand.colors.textMuted }">/</span>
                 <span class="text-xl tabular-nums" :style="{ color: brand.colors.text }">
-                  {{ buyAndHoldChecklist.length }}
+                  {{ activeChecklist.length }}
                 </span>
               </div>
             </div>
@@ -3508,11 +3539,11 @@
           </div>
           <template v-else>
             <div
-              v-if="buyAndHoldChecklist.length"
+              v-if="activeChecklist.length"
               class="grid gap-2 md:grid-cols-2"
             >
               <div
-                v-for="item in buyAndHoldChecklist"
+                v-for="item in activeChecklist"
                 :key="item.id"
                 class="group flex items-center gap-3 brand-card border p-3 transition-all"
                 :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
@@ -3609,8 +3640,8 @@
           <div class="flex items-start gap-5">
             <USkeleton v-if="isLoadingAsset" class="h-16 w-16 flex-shrink-0 rounded-xl" />
             <img
-              v-else-if="asset?.logo"
-              :src="asset.logo"
+              v-else-if="resolvedLogo"
+              :src="resolvedLogo"
               :alt="`Logo de ${assetName}`"
               class="h-16 w-16 flex-shrink-0 rounded-xl object-cover"
             />
@@ -5501,6 +5532,84 @@ function formatIndicator(
 }
 
 // Computed para indicadores básicos com safeguards
+const scrapeExtras = computed(() => {
+  return (fundamentusData.value as any)?.scrape_extras ?? null
+})
+
+const isFii = computed(() => scrapeExtras.value?.asset_type === 'fii')
+const isBdr = computed(() => scrapeExtras.value?.asset_type === 'bdr')
+const isEtf = computed(() => scrapeExtras.value?.asset_type === 'etf')
+// Gates stock-only sections (DRE/Balance/consensus/heatmap). BDRs/FIIs/ETFs
+// don't have the Brazilian company financials the stock layout assumes.
+const isForeignOrFii = computed(() => isFii.value || isBdr.value || isEtf.value)
+
+/**
+ * Top-of-page 6-cell register. Picks relevant metrics by asset type:
+ *   - FII   : VPA / cotistas / rendimento mensal
+ *   - BDR   : same layout as stock but ROE/margins come from the scrape
+ *             (Brazilian KeyStatistic model is empty for BDR tickers)
+ *   - ETF   : basket metrics (52w range, ratio, volume) instead of fundamentals
+ *   - STOCK : classic VOL · M.CAP · DY · P/L · P/VP · ROE
+ */
+const sessionStats = computed(() => {
+  const extras = scrapeExtras.value
+
+  // ----- FII -----
+  if (extras?.asset_type === 'fii') {
+    const f = extras.fii
+    return [
+      { label: 'VOL', value: formatVolumeShort(currentVolume.value) },
+      { label: 'COTISTAS', value: f.num_shareholders !== null ? Intl.NumberFormat('pt-BR', { notation: 'compact', maximumFractionDigits: 1 }).format(f.num_shareholders) : '-' },
+      { label: 'DY', value: f.dividend_yield_12m !== null ? `${f.dividend_yield_12m.toFixed(2)}%` : '-', accent: brand.colors.primary },
+      { label: 'VPA', value: f.book_value_per_share !== null ? `R$ ${f.book_value_per_share.toFixed(2)}` : '-' },
+      { label: 'P/VP', value: f.price_to_book !== null ? f.price_to_book.toFixed(2) : '-' },
+      { label: 'REND.MENSAL', value: f.monthly_income_avg_24m !== null ? `R$ ${f.monthly_income_avg_24m.toFixed(2)}` : '-' },
+    ]
+  }
+
+  // ----- ETF -----
+  if (extras?.asset_type === 'etf') {
+    const e = extras.etf
+    return [
+      { label: 'VOL', value: formatVolumeShort(e.volume ?? currentVolume.value) },
+      { label: 'COTISTAS', value: e.num_shareholders !== null ? Intl.NumberFormat('pt-BR', { notation: 'compact', maximumFractionDigits: 1 }).format(e.num_shareholders) : '-' },
+      { label: 'VAR.12M', value: e.change_12m !== null ? `${e.change_12m >= 0 ? '+' : ''}${e.change_12m.toFixed(2)}%` : '-', accent: e.change_12m !== null ? (e.change_12m >= 0 ? brand.colors.positive : brand.colors.negative) : undefined },
+      { label: 'MIN.52W', value: e.min_price_52_weeks !== null ? `R$ ${e.min_price_52_weeks.toFixed(2)}` : '-' },
+      { label: 'MÁX.52W', value: e.max_price_52_weeks !== null ? `R$ ${e.max_price_52_weeks.toFixed(2)}` : '-' },
+      { label: 'RATIO', value: e.ratio !== null ? String(e.ratio) : '-' },
+    ]
+  }
+
+  // ----- BDR -----
+  if (extras?.asset_type === 'bdr') {
+    const v = extras.valuation
+    const q = extras.quality
+    return [
+      { label: 'VOL', value: formatVolumeShort(currentVolume.value) },
+      { label: 'M.CAP', value: formatMarketCapShort(v.market_cap) },
+      { label: 'DY', value: v.dividend_yield !== null ? `${v.dividend_yield.toFixed(2)}%` : '-', accent: brand.colors.primary },
+      { label: 'P/L', value: v.price_to_earnings !== null ? v.price_to_earnings.toFixed(2) : '-' },
+      { label: 'P/VP', value: v.price_to_book !== null ? v.price_to_book.toFixed(2) : '-' },
+      { label: 'ROE', value: q.return_on_equity !== null ? `${q.return_on_equity.toFixed(1)}%` : '-' },
+    ]
+  }
+
+  // ----- STOCK (default) -----
+  return [
+    { label: 'VOL', value: formatVolumeShort(currentVolume.value) },
+    { label: 'M.CAP', value: formatMarketCapShort((asset.value as { market_cap?: number } | undefined)?.market_cap) },
+    { label: 'DY', value: formatDyShort(basicIndicators.value?.dividendYield), accent: brand.colors.primary },
+    { label: 'P/L', value: basicIndicators.value?.pl || '-' },
+    { label: 'P/VP', value: basicIndicators.value?.pvpa || '-' },
+    { label: 'ROE', value: basicIndicators.value?.roe || '-' },
+  ]
+})
+
+const resolvedLogo = computed<string | null>(() => {
+  const scrape = scrapeExtras.value?.identity?.logo ?? null
+  return resolveLogo(scrape, (asset.value as { logo?: string | null })?.logo ?? null)
+})
+
 const basicIndicators = computed(() => {
   if (!fundamentusData.value) return null
   const stats = fundamentusData.value.key_statistics
@@ -5779,6 +5888,249 @@ const buyAndHoldChecklist = computed<ChecklistItem[]>(() => {
   })
 
   return items
+})
+
+/**
+ * FII-specific checklist. FIIs are income vehicles, not operating companies —
+ * criteria focus on yield consistency, governance indicators (shareholder
+ * count, IFIX membership) and capital preservation (P/VP, recent drawdown)
+ * rather than margins and debt-to-equity.
+ */
+const fiiChecklist = computed<ChecklistItem[]>(() => {
+  const items: ChecklistItem[] = []
+  const extras = scrapeExtras.value
+  if (!extras || extras.asset_type !== 'fii') return items
+  const f = extras.fii
+
+  const toStatus = (v: boolean | null): ChecklistStatus =>
+    v === true ? 'pass' : v === false ? 'fail' : 'unknown'
+
+  items.push({
+    id: 'fii-dy',
+    label: 'Dividend Yield 12M acima de 7%',
+    status: toStatus(f.dividend_yield_12m !== null ? f.dividend_yield_12m >= 7 : null),
+    detail: f.dividend_yield_12m !== null ? `DY: ${f.dividend_yield_12m.toFixed(2)}%` : null,
+    tooltip: 'Referência histórica do mercado brasileiro de FIIs (~8% a.a.).',
+  })
+
+  items.push({
+    id: 'fii-pvp',
+    label: 'P/VP entre 0,85 e 1,10',
+    status: toStatus(
+      f.price_to_book !== null ? f.price_to_book >= 0.85 && f.price_to_book <= 1.1 : null,
+    ),
+    detail: f.price_to_book !== null ? `P/VP: ${f.price_to_book.toFixed(2)}` : null,
+    tooltip: 'Faixa equilibrada entre preço e patrimônio. Abaixo vira desconto; acima, ágio.',
+  })
+
+  items.push({
+    id: 'fii-monthly-income',
+    label: 'Distribui proventos mensalmente',
+    status: toStatus(f.monthly_income_avg_24m !== null ? f.monthly_income_avg_24m > 0 : null),
+    detail:
+      f.monthly_income_avg_24m !== null
+        ? `Média 24M: R$ ${f.monthly_income_avg_24m.toFixed(2)}/cota`
+        : null,
+    tooltip: 'FIIs de renda devem distribuir pelo menos 95% do resultado.',
+  })
+
+  // Count unique months with payments in the 12-month window ending this
+  // month. The cutoff is set to the first day of 11 months ago so the set
+  // covers exactly 12 distinct (year, month) buckets.
+  const now = new Date()
+  const cutoff = new Date(now.getFullYear(), now.getMonth() - 11, 1)
+  const paidMonths = new Set<string>()
+  dividendsData.value.forEach((record) => {
+    const raw = record.payment_date ? new Date(record.payment_date) : null
+    if (!raw || Number.isNaN(raw.getTime()) || raw < cutoff) return
+    paidMonths.add(`${raw.getFullYear()}-${raw.getMonth()}`)
+  })
+  const monthsPaid = Math.min(paidMonths.size, 12)
+  const paid11of12 = dividendsData.value.length > 0 ? monthsPaid >= 11 : null
+
+  items.push({
+    id: 'fii-dividends-12m',
+    label: 'Pagou em 11+ dos últimos 12 meses',
+    status: toStatus(paid11of12),
+    detail: dividendsData.value.length > 0 ? `${monthsPaid}/12 meses` : 'Histórico indisponível',
+    tooltip: 'Fundos de qualidade distribuem quase todos os meses sem interromper.',
+  })
+
+  items.push({
+    id: 'fii-shareholders',
+    label: 'Mais de 10 mil cotistas',
+    status: toStatus(f.num_shareholders !== null ? f.num_shareholders >= 10_000 : null),
+    detail:
+      f.num_shareholders !== null
+        ? `${f.num_shareholders.toLocaleString('pt-BR')} cotistas`
+        : null,
+    tooltip: 'Pulverização adequada sugere liquidez e governança mais saudáveis.',
+  })
+
+  items.push({
+    id: 'fii-ifix',
+    label: 'Faz parte do IFIX',
+    status: toStatus(f.ifix_share !== null ? f.ifix_share > 0 : null),
+    detail:
+      f.ifix_share !== null ? `Participação: ${f.ifix_share.toFixed(2)}%` : 'Fora do IFIX',
+    tooltip: 'Inclusão no IFIX indica filtros mínimos de liquidez e volume.',
+  })
+
+  items.push({
+    id: 'fii-change-12m',
+    label: 'Variação 12M acima de -20%',
+    status: toStatus(f.change_12m !== null ? f.change_12m > -20 : null),
+    detail:
+      f.change_12m !== null
+        ? `${f.change_12m >= 0 ? '+' : ''}${f.change_12m.toFixed(1)}%`
+        : null,
+    tooltip: 'Evita fundos em forte tendência de queda recente.',
+  })
+
+  // Fund age from start date ("DD/MM/YYYY").
+  let yearsOld: number | null = null
+  if (f.fund_start_date) {
+    const m = f.fund_start_date.match(/(\d{2})\/(\d{2})\/(\d{4})/)
+    if (m) yearsOld = now.getFullYear() - parseInt(m[3], 10)
+  }
+  items.push({
+    id: 'fii-age',
+    label: 'Fundo com mais de 5 anos',
+    status: toStatus(yearsOld !== null ? yearsOld >= 5 : null),
+    detail: yearsOld !== null ? `${yearsOld} anos de histórico` : null,
+    tooltip: 'Fundos mais antigos têm histórico de gestão e de distribuições mais confiável.',
+  })
+
+  return items
+})
+
+/**
+ * BDR-specific checklist. BDRs are Brazilian receipts for foreign stocks —
+ * we lean on the StatusInvest scrape values (which for BDRs cover P/L,
+ * P/VP, margins and growth) rather than the Brazil-only KeyStatistic model.
+ * Governance badges and 5y Brazilian dividend history don't apply.
+ */
+const bdrChecklist = computed<ChecklistItem[]>(() => {
+  const items: ChecklistItem[] = []
+  const extras = scrapeExtras.value
+  if (!extras || extras.asset_type !== 'bdr') return items
+
+  const toStatus = (v: boolean | null): ChecklistStatus =>
+    v === true ? 'pass' : v === false ? 'fail' : 'unknown'
+
+  const val = extras.valuation
+  const q = extras.quality
+  const lev = extras.leverage
+  const g = extras.growth
+  const mkt = extras.market
+
+  // P/L — broader tolerance than Brazilian stocks because foreign tech
+  // usually trades at higher multiples. Flag below 30.
+  items.push({
+    id: 'bdr-pl',
+    label: 'P/L abaixo de 30',
+    status: toStatus(val.price_to_earnings !== null ? val.price_to_earnings > 0 && val.price_to_earnings < 30 : null),
+    detail: val.price_to_earnings !== null ? `P/L: ${val.price_to_earnings.toFixed(2)}` : null,
+    tooltip: 'Múltiplo preço/lucro. Até 30 é razoável para empresas maduras e tech consolidadas.',
+  })
+
+  // ROE — foreign big-caps normally exceed 15%.
+  items.push({
+    id: 'bdr-roe',
+    label: 'ROE acima de 15%',
+    status: toStatus(q.return_on_equity !== null ? q.return_on_equity >= 15 : null),
+    detail: q.return_on_equity !== null ? `ROE: ${q.return_on_equity.toFixed(1)}%` : null,
+    tooltip: 'Retorno sobre patrimônio. Empresas globais de qualidade costumam superar 15%.',
+  })
+
+  // ROIC — key quality metric.
+  items.push({
+    id: 'bdr-roic',
+    label: 'ROIC acima de 10%',
+    status: toStatus(q.return_on_invested_capital !== null ? q.return_on_invested_capital >= 10 : null),
+    detail: q.return_on_invested_capital !== null ? `ROIC: ${q.return_on_invested_capital.toFixed(1)}%` : null,
+    tooltip: 'Retorno sobre capital investido. Acima de 10% indica que o capital gera valor acima do custo típico.',
+  })
+
+  // Net margin positive — foreign companies paying dividends tend to be
+  // profitable; flag negative as risky.
+  items.push({
+    id: 'bdr-net-margin',
+    label: 'Margem líquida positiva',
+    status: toStatus(q.net_margin !== null ? q.net_margin > 0 : null),
+    detail: q.net_margin !== null ? `Margem: ${q.net_margin.toFixed(1)}%` : null,
+    tooltip: 'Verifica se a empresa é lucrativa considerando o último exercício.',
+  })
+
+  // Revenue CAGR 5y positive — ensures the business is growing.
+  items.push({
+    id: 'bdr-revenue-growth',
+    label: 'Receita crescendo (CAGR 5A)',
+    status: toStatus(g.revenue_cagr_5y !== null ? g.revenue_cagr_5y > 0 : null),
+    detail: g.revenue_cagr_5y !== null ? `CAGR: ${g.revenue_cagr_5y.toFixed(1)}%/ano` : null,
+    tooltip: 'Crescimento composto da receita nos últimos 5 anos.',
+  })
+
+  // Debt / equity — below 2 is considered healthy for foreign large-caps.
+  items.push({
+    id: 'bdr-leverage',
+    label: 'Dív.Líquida/EBITDA abaixo de 3x',
+    status: toStatus(lev.net_debt_to_ebitda !== null ? lev.net_debt_to_ebitda < 3 : null),
+    detail: lev.net_debt_to_ebitda !== null ? `${lev.net_debt_to_ebitda.toFixed(2)}x` : null,
+    tooltip: 'Alavancagem saudável: dívida líquida que é quitada em menos de 3 anos de geração de caixa.',
+  })
+
+  // Dividend Yield > 0 — BDR passes if it distributes any dividend.
+  items.push({
+    id: 'bdr-dy',
+    label: 'Empresa distribui dividendos',
+    status: toStatus(val.dividend_yield !== null ? val.dividend_yield > 0 : null),
+    detail: val.dividend_yield !== null ? `DY: ${val.dividend_yield.toFixed(2)}%` : 'Sem pagamentos registrados',
+    tooltip: 'BDRs repassam proventos da empresa estrangeira, geralmente trimestrais ou anuais.',
+  })
+
+  // Liquidity proxy: free float > 20% + big market cap.
+  const bigMarketCap = val.market_cap !== null ? val.market_cap >= 10_000_000_000 : null
+  items.push({
+    id: 'bdr-size',
+    label: 'Market Cap acima de US$ 10 bi (aprox)',
+    status: toStatus(bigMarketCap),
+    detail:
+      val.market_cap !== null
+        ? `MC equivalente: R$ ${formatNumberToShort(val.market_cap)}`
+        : 'Market cap indisponível',
+    tooltip: 'Large-caps têm liquidez consistente e cobertura global de analistas.',
+  })
+
+  // Price stability — penalize very recent drops over 30% in 52w.
+  const priceVs52wMin =
+    mkt.min_price_52_weeks !== null && mkt.price !== null && mkt.min_price_52_weeks > 0
+      ? (mkt.price - mkt.min_price_52_weeks) / mkt.min_price_52_weeks
+      : null
+  items.push({
+    id: 'bdr-price-52w',
+    label: 'Preço atual sobre mínima 52s',
+    status: toStatus(priceVs52wMin !== null ? priceVs52wMin > 0 : null),
+    detail:
+      priceVs52wMin !== null
+        ? `${priceVs52wMin >= 0 ? '+' : ''}${(priceVs52wMin * 100).toFixed(1)}% sobre mín.`
+        : null,
+    tooltip: 'Evita ativos no fundo absoluto da janela de 52 semanas (potencial sinal de problema).',
+  })
+
+  return items
+})
+
+/**
+ * Render the correct checklist depending on asset type.
+ *   - FII       -> yield/governance/age criteria specific to real estate funds
+ *   - BDR       -> scrape-based checks (P/L, ROE, ROIC, growth, leverage)
+ *   - Stock     -> classic AUVP Buy & Hold criteria (KeyStatistic + dividends)
+ */
+const activeChecklist = computed(() => {
+  if (isFii.value) return fiiChecklist.value
+  if (isBdr.value) return bdrChecklist.value
+  return buyAndHoldChecklist.value
 })
 
 function formatNumberToShort(value: number): string {

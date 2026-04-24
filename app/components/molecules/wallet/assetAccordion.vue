@@ -356,10 +356,19 @@ const columns = ref([
     },
     cell: ({ row }) => {
       return h('div', { class: 'flex items-center gap-2' }, [
-        h('img', {
-          src: row.original.logo,
-          class: 'pointer-events-none h-6 w-6 select-none rounded object-cover',
-        }),
+        !isPlaceholderLogo(row.original.logo)
+          ? h('img', {
+              src: row.original.logo,
+              class: 'pointer-events-none h-6 w-6 select-none rounded object-cover',
+            })
+          : h(
+              'div',
+              {
+                class:
+                  'flex h-6 w-6 items-center justify-center rounded border font-mono-tab text-[8px] font-bold',
+              },
+              (row.original.ticker || '').slice(0, 2),
+            ),
         h('span', { class: 'text-[14px] font-medium' }, row.original.ticker),
       ])
     },

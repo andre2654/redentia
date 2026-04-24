@@ -20,6 +20,7 @@
           :class="['flex items-center gap-2', big ? 'px-8 py-3' : 'px-6 py-2']"
         >
           <img
+            v-if="!isPlaceholderLogo(item.logo)"
             :src="item.logo"
             :alt="item?.ticker ? `Logo do ativo ${item.ticker}` : 'Logo do ativo'"
             :class="[
@@ -27,6 +28,16 @@
               big ? 'h-10 w-10' : 'h-6 w-6',
             ]"
           />
+          <div
+            v-else
+            :class="[
+              'flex items-center justify-center rounded border font-mono-tab font-bold',
+              big ? 'h-10 w-10 text-[10px]' : 'h-6 w-6 text-[8px]',
+            ]"
+            :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted, backgroundColor: brand.colors.surface }"
+          >
+            {{ (item?.ticker || '').slice(0, 2) }}
+          </div>
           <span
             :class="[
               'select-none font-medium',

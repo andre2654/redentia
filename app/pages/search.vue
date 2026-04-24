@@ -1559,9 +1559,6 @@ function getAssetChange(asset: IAsset) {
 }
 
 function getAssetLogo(asset: IAsset) {
-  if (asset.logo && asset.logo !== 'https://icons.brapi.dev/icons/BRAPI.svg') {
-    return asset.logo
-  }
-  return null
+  return resolveLogo(null, asset.logo)
 }
 </script>

@@ -3868,6 +3868,7 @@
         />
       </div>
 
+
       <div class="flex items-end justify-between gap-4 px-6 pt-8">
         <div class="flex flex-col gap-1">
           <span
@@ -4042,85 +4043,38 @@
         </UCarousel>
       </template>
 
-      <!-- Filtros Inteligentes -->
-      <div class="flex flex-col gap-4 px-6 py-6">
-        <div class="flex items-center gap-3">
-          <UIcon name="i-lucide-sparkles" class="h-5 w-5" :style="{ color: brand.colors.primary }" />
-          <h2 class="text-lg font-semibold" :style="{ color: brand.colors.text }">{{ brand.homeTexts.filtersTitle }}</h2>
+      <!-- Filtros Inteligentes — minimal terminal pills -->
+      <div class="flex flex-col gap-3 border-b px-4 py-5 md:px-6" :style="{ borderColor: brand.colors.border }">
+        <div class="flex items-center gap-2">
+          <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
+            [SMART.FILTERS]
+          </span>
+          <span class="font-mono-tab text-[10px] uppercase tracking-[0.14em]" :style="{ color: brand.colors.textMuted }">
+            &gt; ATALHOS
+          </span>
         </div>
-        <div class="flex flex-wrap gap-2">
+        <div class="flex flex-wrap items-center gap-px" :style="{ backgroundColor: brand.colors.border }">
           <NuxtLink
-            :to="{ path: '/search', query: { p_max: 20 } }"
-            class="brand-pill border px-4 py-2 text-sm transition-all"
-            :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.text}08`, color: brand.colors.textMuted }"
+            v-for="filter in smartFilters"
+            :key="filter.label"
+            :to="{ path: '/search', query: filter.query }"
+            class="group inline-flex items-center gap-2 px-3 py-1.5 font-mono-tab text-[11px] transition-all hover:brightness-110"
+            :style="{ backgroundColor: brand.colors.surface, color: brand.colors.text }"
           >
-            Preço até R$ 20
-          </NuxtLink>
-          <NuxtLink
-            :to="{ path: '/search', query: { mc_max: 2000000000 } }"
-            class="brand-pill border px-4 py-2 text-sm transition-all"
-            :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.text}08`, color: brand.colors.textMuted }"
-          >
-            Small Caps (MC ≤ R$ 2 bi)
-          </NuxtLink>
-          <NuxtLink
-            :to="{ path: '/search', query: { ch_min: 0 } }"
-            class="brand-pill border px-4 py-2 text-sm transition-all"
-            :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.text}08`, color: brand.colors.textMuted }"
-          >
-            <span class="flex items-center gap-1.5">
-              <UIcon name="i-lucide-trending-up" class="h-3.5 w-3.5" :style="{ color: brand.colors.positive }" />
-              Alta no dia
-            </span>
-          </NuxtLink>
-          <NuxtLink
-            :to="{ path: '/search', query: { ch_max: 0 } }"
-            class="brand-pill border px-4 py-2 text-sm transition-all"
-            :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.text}08`, color: brand.colors.textMuted }"
-          >
-            <span class="flex items-center gap-1.5">
-              <UIcon name="i-lucide-trending-down" class="h-3.5 w-3.5" :style="{ color: brand.colors.negative }" />
-              Queda no dia
-            </span>
-          </NuxtLink>
-          <NuxtLink
-            :to="{ path: '/search', query: { stock: 0, bdr: 0 } }"
-            class="brand-pill border px-4 py-2 text-sm transition-all"
-            :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.text}08`, color: brand.colors.textMuted }"
-          >
-            <span class="flex items-center gap-1.5">
-              <UIcon name="i-lucide-building-2" class="h-3.5 w-3.5" :style="{ color: brand.colors.secondary }" />
-              Somente FIIs
-            </span>
-          </NuxtLink>
-          <NuxtLink
-            :to="{ path: '/search', query: { stock: 0, reit: 0 } }"
-            class="brand-pill border px-4 py-2 text-sm transition-all"
-            :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.text}08`, color: brand.colors.textMuted }"
-          >
-            <span class="flex items-center gap-1.5">
-              <UIcon name="i-lucide-globe" class="h-3.5 w-3.5" :style="{ color: brand.colors.secondary }" />
-              Somente BDRs
-            </span>
-          </NuxtLink>
-          <NuxtLink
-            :to="{ path: '/search', query: { p_min: 10, p_max: 50 } }"
-            class="brand-pill border px-4 py-2 text-sm transition-all"
-            :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.text}08`, color: brand.colors.textMuted }"
-          >
-            Preço R$ 10 - R$ 50
-          </NuxtLink>
-          <NuxtLink
-            :to="{ path: '/search', query: { dy_min: 6 } }"
-            class="brand-pill border px-4 py-2 text-sm transition-all"
-            :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.text}08`, color: brand.colors.textMuted }"
-          >
-            <span class="flex items-center gap-1.5">
-              <UIcon name="i-lucide-coins" class="h-3.5 w-3.5" :style="{ color: brand.colors.primary }" />
-              DY acima de 6%
-            </span>
+            <UIcon
+              v-if="filter.icon"
+              :name="filter.icon"
+              class="h-3 w-3 shrink-0"
+              :style="{ color: filter.color ?? brand.colors.textMuted }"
+            />
+            <span>{{ filter.label }}</span>
           </NuxtLink>
         </div>
+      </div>
+
+      <!-- Tesouro Direto — após rankings + filtros inteligentes -->
+      <div class="px-4 md:px-6">
+        <MoleculesTesouroSection />
       </div>
     </div>
 
@@ -5758,6 +5712,21 @@ function sliceRanking(items: any[] | undefined) {
   if (!items) return []
   return items.slice(0, brand.homePage.rankingCard.itemsPerCategory)
 }
+
+/**
+ * Pre-wired search shortcuts shown in the `[SMART.FILTERS]` grid. Each
+ * entry maps to an URL query that the /search page parses natively.
+ */
+const smartFilters = computed(() => [
+  { kicker: 'PREÇO BAIXO', label: 'Até R$ 20', icon: 'i-lucide-tag', color: brand.colors.textMuted, query: { p_max: 20 } },
+  { kicker: 'SMALL CAPS', label: 'MC ≤ R$ 2 bi', icon: 'i-lucide-coins', color: brand.colors.textMuted, query: { mc_max: 2_000_000_000 } },
+  { kicker: 'ALTA HOJE', label: 'Maiores altas', icon: 'i-lucide-trending-up', color: brand.colors.positive, query: { ch_min: 0 } },
+  { kicker: 'QUEDA HOJE', label: 'Maiores quedas', icon: 'i-lucide-trending-down', color: brand.colors.negative, query: { ch_max: 0 } },
+  { kicker: 'APENAS FIIs', label: 'Fundos imobiliários', icon: 'i-lucide-building-2', color: brand.colors.primary, query: { stock: 0, bdr: 0 } },
+  { kicker: 'APENAS BDRs', label: 'Ações no exterior', icon: 'i-lucide-globe', color: brand.colors.primary, query: { stock: 0, reit: 0 } },
+  { kicker: 'FAIXA', label: 'R$ 10 a R$ 50', icon: 'i-lucide-dollar-sign', color: brand.colors.textMuted, query: { p_min: 10, p_max: 50 } },
+  { kicker: 'DIVIDENDOS', label: 'DY acima de 6%', icon: 'i-lucide-percent', color: brand.colors.primary, query: { dy_min: 6 } },
+])
 
 const categoryGridCols = computed(() => {
   const cols = brand.homePage.categoryCard.columns
