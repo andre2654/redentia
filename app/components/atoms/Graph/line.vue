@@ -1058,20 +1058,19 @@ const datasetStats = computed<{
   return { min, max, first, last }
 })
 
-const averageDataValue = computed<number | null>(() => {
-  if (!isDataValid.value || !Array.isArray(props.data) || !props.data.length) {
+/**
+ * Previous close — the second-to-last point of the series. This is the
+ * reference line drawn across the chart so users can see how the latest
+ * close moved versus the prior day. Falls back to null on a one-point
+ * series (nothing to compare against).
+ */
+const prevCloseValue = computed<number | null>(() => {
+  if (!isDataValid.value || !Array.isArray(props.data) || props.data.length < 2) {
     return null
   }
 
-  const sum = props.data.reduce((acc, item) => {
-    if (!item || typeof item.value !== 'number' || Number.isNaN(item.value)) {
-      return acc
-    }
-    return acc + item.value
-  }, 0)
-
-  const average = sum / props.data.length
-  return Number.isFinite(average) ? average : null
+  const prev = props.data[props.data.length - 2]?.value
+  return typeof prev === 'number' && Number.isFinite(prev) ? prev : null
 })
 
 const closingLineValue = computed<number | null>(() => {
@@ -1087,8 +1086,8 @@ const closingLineValue = computed<number | null>(() => {
     const parsedLegend = parseNumericValue(legendValue ?? null)
     if (parsedLegend !== null) return parsedLegend
 
-    const average = averageDataValue.value
-    if (average !== null) return average
+    const prevClose = prevCloseValue.value
+    if (prevClose !== null) return prevClose
 
     const stats = datasetStats.value
     if (!stats) return null
@@ -1650,7 +1649,7 @@ const hoverLinePlugin: Plugin<'line'> = {
         props.data.length > 0 &&
         hasReferenceVariation.value
       ) {
-        const currentValue = averageDataValue.value
+        const currentValue = prevCloseValue.value
         if (currentValue === null) return
         const yPosition = yScale.getPixelForValue(currentValue)
 
@@ -1670,7 +1669,7 @@ const hoverLinePlugin: Plugin<'line'> = {
 
           if (!isHovering.value) {
             const formattedValue = formatCurrency(currentValue)
-            const text = `Média: ${formattedValue}`
+            const text = `Fech. anterior: ${formattedValue}`
 
             ctx.font = '12px sans-serif'
             ctx.textAlign = 'right'
