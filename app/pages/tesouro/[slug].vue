@@ -162,6 +162,35 @@
           </div>
         </section>
 
+        <!-- Price history chart -->
+        <section class="border-b py-8" :style="{ borderColor: brand.colors.border }">
+          <div class="mb-4 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+            <div class="flex flex-col gap-1">
+              <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
+                [CHART.PRICE]
+              </span>
+              <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
+                Histórico de cotação
+              </h2>
+              <span class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
+                &gt; SÉRIE DIÁRIA · VALOR DE VENDA · {{ selectedChartRange.toUpperCase() }}
+              </span>
+            </div>
+            <MoleculesPeriodSelector
+              v-model="selectedChartRange"
+              :options="chartRangeOptions"
+              :loading="isLoadingChart"
+              class="max-md:w-full"
+            />
+          </div>
+          <AtomsGraphLine
+            :data="chartData"
+            :legend="chartLegend"
+            :height="320"
+            :loading="isLoadingChart"
+          />
+        </section>
+
         <!-- AI Interpretation -->
         <section v-if="interpretations.length" class="border-b py-8" :style="{ borderColor: brand.colors.border }">
           <header class="mb-4 flex items-center gap-2">
@@ -260,7 +289,8 @@
 </template>
 
 <script setup lang="ts">
-import { indexerBadge, useTesouroService } from '~/services/tesouro'
+import { indexerBadge, useTesouroService, type TesouroPriceRange } from '~/services/tesouro'
+import type { IChartDataPoint, IChartLegendItem } from '~/types/chart'
 
 const route = useRoute()
 const brand = useBrand()
@@ -271,9 +301,45 @@ const layoutName = computed(() =>
   authStore.isAuthenticated ? 'default' : 'unauthenticated'
 )
 
-const { getTesouro } = useTesouroService()
+const { getTesouro, getTesouroPrices } = useTesouroService()
 
 const { data, error } = await useAsyncData(`tesouro-${slug}`, () => getTesouro(slug))
+
+const chartRangeOptions = [
+  { label: '30D', value: '30d' },
+  { label: '6M', value: '6m' },
+  { label: '1A', value: '1y' },
+  { label: '5A', value: '5y' },
+  { label: 'Tudo', value: 'full' },
+]
+
+const selectedChartRange = ref<TesouroPriceRange>('1y')
+const chartData = ref<IChartDataPoint[]>([])
+const isLoadingChart = ref(false)
+
+const chartLegend = computed<IChartLegendItem[]>(() => [
+  { label: 'Valor de venda', color: brand.colors.positive },
+])
+
+async function fetchChartData() {
+  isLoadingChart.value = true
+  try {
+    const points = await getTesouroPrices(slug, selectedChartRange.value)
+    chartData.value = points.map((p) => ({
+      date: p.price_at,
+      value: p.sell_price,
+      timestamp: new Date(p.price_at).getTime(),
+    }))
+  } catch (err) {
+    console.error('tesouro chart fetch failed', err)
+    chartData.value = []
+  } finally {
+    isLoadingChart.value = false
+  }
+}
+
+watch(selectedChartRange, () => { fetchChartData() })
+onMounted(() => { fetchChartData() })
 
 if (error.value || !data.value) {
   throw createError({

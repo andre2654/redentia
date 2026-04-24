@@ -21,6 +21,19 @@ interface TesouroDetailResponse {
   data: TesouroItem
 }
 
+export interface TesouroPricePoint {
+  price_at: string
+  buy_price: number
+  sell_price: number
+}
+
+interface TesouroPricesResponse {
+  data: TesouroPricePoint[]
+  meta: { slug: string; range: string; count: number }
+}
+
+export type TesouroPriceRange = '30d' | '6m' | '1y' | '5y' | 'full'
+
 export function useTesouroService() {
   const config = useRuntimeConfig()
   const API = config.public.apiBaseUrl as string
@@ -46,7 +59,22 @@ export function useTesouroService() {
     }
   }
 
-  return { listTesouros, getTesouro }
+  async function getTesouroPrices(
+    slug: string,
+    range: TesouroPriceRange = '1y',
+  ): Promise<TesouroPricePoint[]> {
+    const url = `${API}/tesouro/${slug}/prices?range=${range}`
+    try {
+      const resp = await preventWithCache(`${url}#shape=v1`, async () =>
+        $fetch<TesouroPricesResponse>(url, { method: 'GET' }),
+      )
+      return resp?.data ?? []
+    } catch {
+      return []
+    }
+  }
+
+  return { listTesouros, getTesouro, getTesouroPrices }
 }
 
 /**
