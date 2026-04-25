@@ -16,6 +16,21 @@ export default defineNuxtConfig({
     '@nuxtjs/sitemap',
   ],
 
+  // Override the storage backend for `@nuxtjs/color-mode` (registered
+  // by `@nuxt/ui`). Default is `localStorage`, which the SSR plugin
+  // cannot read — so the server always renders with `colorMode.value
+  // = 'system'` and the brand palette ends up dark for everyone.
+  // When the user actually has `light` saved, the client tries to
+  // re-render with the light palette but Vue's hydration logs a
+  // warning ("DOM will not be rectified") and leaves the dark
+  // `:style` attributes in place. Switching to a cookie lets the
+  // server read the preference, render the correct palette inline,
+  // and produce SSR HTML that matches what the client expects.
+  colorMode: {
+    storage: 'cookie',
+    storageKey: 'nuxt-color-mode',
+  },
+
   // @nuxt/image config. External hosts we serve logos/thumbnails from
   // must be whitelisted so IPX can optimize them; anything outside the
   // list falls back to the raw URL.
