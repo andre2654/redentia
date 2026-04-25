@@ -497,9 +497,33 @@ export function useChatStream(opts: UseChatStreamOptions) {
       if ((err as Error).name === 'AbortError') {
         assistant.status = 'complete'
       } else {
+        // Diagnostic console output — `fetch()` throws on CORS, DNS,
+        // connection-reset and other pre-response failures. The
+        // browser strips the cause to a single useless string ("Failed
+        // to fetch"), so we have to enrich here.
+        const e = err as Error
+        const isFailedToFetch =
+          e.name === 'TypeError' && /Failed to fetch|Load failed|NetworkError/i.test(e.message)
+        const totalAttachmentBytes = attachments.reduce(
+          (s, a) => s + (a.content?.length ?? 0),
+          0,
+        )
+        // eslint-disable-next-line no-console
+        console.error('[useChatStream] fetch threw', {
+          name: e.name,
+          message: e.message,
+          attachmentCount: attachments.length,
+          attachmentBytesApprox: totalAttachmentBytes,
+          hadToken: !!useAuthStore().token,
+        })
+        const friendly = isFailedToFetch
+          ? totalAttachmentBytes > 5_000_000
+            ? 'Os arquivos são pesados demais para a rede. Tente reduzir ou remover algum.'
+            : 'Não consegui falar com o servidor. Verifique sua conexão e tente de novo.'
+          : `Erro: ${e.message}`
         assistant.status = 'error'
-        assistant.error = String(err)
-        error.value = String(err)
+        assistant.error = friendly
+        error.value = friendly
       }
     } finally {
       isStreaming.value = false
