@@ -14,7 +14,10 @@
     chat-service also rejects anonymous /stream POSTs.
 -->
 <template>
-  <!-- Unauthenticated: marketing CTA card, indexable by SEO bots -->
+  <!-- Unauthenticated: premium product preview matching the MAX
+       chat visual identity. Animated gradient ring + halo + showcase
+       chips + premium CTA. Stays inside the unauthenticated layout
+       so SEO/header chrome is preserved. -->
   <NuxtLayout
     v-if="!authStore.isAuthenticated"
     name="unauthenticated"
@@ -22,42 +25,124 @@
     :hide-footer="false"
   >
     <h1 class="sr-only">Assessoria com IA | {{ brand.name }}</h1>
-    <div class="flex h-full w-full items-center justify-center px-5 py-10 md:px-8">
+
+    <div
+      class="chat-unauth-stage relative flex min-h-[calc(100vh-10rem)] w-full items-center justify-center overflow-hidden px-5 py-12 md:px-8 md:py-16"
+    >
+      <!-- Ambient radial gradient — same visual vocabulary as the
+           MAX chat shell. Decorative, aria-hidden. -->
       <div
-        class="flex w-full max-w-2xl flex-col items-center gap-6 brand-card p-8 text-center backdrop-blur-xl md:p-12"
-        :style="{ backgroundColor: brand.colors.surface, color: brand.colors.text }"
+        class="pointer-events-none absolute inset-0"
+        :style="{
+          background: `radial-gradient(ellipse 70% 45% at 50% 0%, color-mix(in srgb, ${brand.colors.primary} 18%, transparent) 0%, transparent 65%), radial-gradient(ellipse 60% 40% at 50% 100%, color-mix(in srgb, ${brand.colors.primary} 12%, transparent) 0%, transparent 65%)`,
+        }"
+        aria-hidden="true"
+      />
+
+      <!-- Animated top accent line — echoes the MAX layout's
+           "you're inside premium" cue. -->
+      <div
+        class="chat-unauth-topline pointer-events-none absolute inset-x-0 top-0 h-[2px]"
+        :style="{ '--topline-c': brand.colors.primary } as any"
+        aria-hidden="true"
+      />
+
+      <!-- Hero card with animated gradient ring -->
+      <article
+        class="chat-unauth-card relative flex w-full max-w-2xl flex-col items-center gap-7 rounded-[28px] px-6 py-10 text-center backdrop-blur-md md:px-10 md:py-12"
+        :style="{
+          backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 92%, transparent)`,
+          color: brand.colors.text,
+          boxShadow: `0 24px 80px -24px color-mix(in srgb, ${brand.colors.primary} 35%, transparent), 0 0 0 1px color-mix(in srgb, ${brand.colors.border} 40%, transparent)`,
+          '--ring-c1': brand.colors.primary,
+          '--ring-c2': `color-mix(in srgb, ${brand.colors.primary} 30%, ${brand.colors.text})`,
+          '--ring-c3': `color-mix(in srgb, ${brand.colors.primary} 80%, ${brand.colors.background})`,
+        } as any"
       >
-        <BrandLogo variant="full" mode="auto" class="h-10 w-auto" />
+        <!-- MAX accent pill at top -->
+        <span
+          class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-mono-tab text-[10px] font-bold uppercase tracking-[0.2em]"
+          :style="{
+            background: `linear-gradient(135deg, ${brand.colors.primary} 0%, color-mix(in srgb, ${brand.colors.primary} 70%, ${brand.colors.text}) 100%)`,
+            color: brand.colors.background,
+            boxShadow: `0 6px 16px -4px color-mix(in srgb, ${brand.colors.primary} 50%, transparent)`,
+          }"
+        >
+          <UIcon name="i-lucide-sparkles" class="size-3" aria-hidden="true" />
+          Redentia MAX disponível
+        </span>
+
+        <!-- Brand lockup — full art -->
+        <BrandLogo variant="full" mode="auto" class="h-10 w-auto md:h-12" />
+
+        <!-- Heading + subtitle -->
         <div class="flex flex-col gap-3">
           <h2
-            class="font-display text-[28px] font-semibold leading-tight tracking-tight md:text-[36px]"
+            class="font-display text-[30px] font-semibold leading-[1.05] tracking-tight md:text-[42px]"
+            :style="{ color: brand.colors.text }"
           >
-            {{ brand.ai?.welcomeTitle ?? 'Assessoria com IA' }}
+            {{ brand.ai?.welcomeTitle ?? 'Conversar com a inteligência da Redentia' }}
           </h2>
           <p
             class="text-[14px] leading-relaxed md:text-[16px]"
             :style="{ color: brand.colors.textMuted }"
           >
-            {{ brand.ai?.welcomeSubtitle ?? 'Faça login para conversar com a inteligência da Redentia. Análise de ativos, comparativos, montagem de carteira e validação de meta — tudo em um só lugar.' }}
+            {{ brand.ai?.welcomeSubtitle ?? 'Análise multi-passo, validação cruzada, framework de carteira de 9 camadas. Cada número checado via tools antes de virar resposta.' }}
           </p>
         </div>
-        <UButton
-          color="secondary"
-          size="xl"
-          icon="i-lucide-message-circle"
-          class="hover:shadow-secondary/50 px-6 transition-[transform,box-shadow,filter] hover:scale-[1.03] hover:shadow-2xl"
+
+        <!-- Showcase chips — preview of what's behind the wall.
+             role="list" + aria-hidden because they're not actionable
+             when unauthenticated; the CTA below is the real entry. -->
+        <ul
+          class="grid w-full grid-cols-1 gap-2 md:grid-cols-2"
+          aria-label="Exemplos do que você pode perguntar"
+        >
+          <li
+            v-for="(q, i) in showcase"
+            :key="i"
+            class="chat-unauth-chip flex items-start gap-3 rounded-2xl px-4 py-3.5 text-left text-[13px] leading-snug md:text-[14px]"
+            :style="{
+              backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 75%, transparent)`,
+              border: `1px solid color-mix(in srgb, ${brand.colors.border} 35%, transparent)`,
+              color: `color-mix(in srgb, ${brand.colors.text} 88%, transparent)`,
+            }"
+          >
+            <UIcon
+              :name="q.icon"
+              class="mt-0.5 size-4 shrink-0"
+              :style="{ color: brand.colors.primary }"
+              aria-hidden="true"
+            />
+            <span class="min-w-0 flex-1">{{ q.question }}</span>
+          </li>
+        </ul>
+
+        <!-- Primary CTA — gradient with sparkle + arrow.
+             Real <button> for keyboard accessibility + focus-visible. -->
+        <button
+          type="button"
+          class="chat-unauth-cta inline-flex items-center gap-2 rounded-full px-7 py-3 text-[15px] font-semibold transition-[transform,filter,box-shadow]"
+          :style="{
+            background: `linear-gradient(135deg, ${brand.colors.primary} 0%, color-mix(in srgb, ${brand.colors.primary} 70%, ${brand.colors.text}) 100%)`,
+            color: brand.colors.background,
+            boxShadow: `0 16px 32px -10px color-mix(in srgb, ${brand.colors.primary} 60%, transparent), inset 0 1px 0 0 color-mix(in srgb, white 30%, transparent)`,
+          }"
           @click="redirectToLogin"
         >
+          <UIcon name="i-lucide-sparkles" class="size-4" aria-hidden="true" />
           {{ brand.voice?.ctaPrimary ?? 'Entrar para conversar' }}
-        </UButton>
+          <UIcon name="i-lucide-arrow-right" class="size-4" aria-hidden="true" />
+        </button>
+
+        <!-- Sub-line — reassurance, not boilerplate -->
         <p
-          v-if="brand.ai?.ctaFeatures?.length"
-          class="text-[12px] sm:text-[13px]"
-          :style="{ color: brand.colors.textMuted }"
+          class="font-mono-tab text-[10.5px] uppercase tracking-[0.18em]"
+          :style="{ color: `color-mix(in srgb, ${brand.colors.textMuted} 70%, transparent)` }"
         >
-          {{ brand.ai.ctaFeatures.join(' • ') }}
+          {{ brand.ai?.ctaFeatures?.join(' · ') ?? 'Acesso gratuito · Sem cartão · Resposta em segundos' }}
         </p>
-      </div>
+      </article>
     </div>
   </NuxtLayout>
 
@@ -300,6 +385,16 @@ function redirectToLogin() {
   navigateTo('/auth/login?redirect=/help')
 }
 
+// Showcase chips — preview of what the chat does. Mirrors the MAX
+// starter chips so the unauthenticated visitor sees the full
+// product surface they're locked out of, not generic copy.
+const showcase = [
+  { question: 'Monte uma carteira para R$ 500 mil em 15 anos', icon: 'i-lucide-layers' },
+  { question: 'Stress test: minha carteira aguenta crash do S&P 500?', icon: 'i-lucide-shield-alert' },
+  { question: 'Compare PETR4, VALE3 e ITUB4 em valuation e dividendos', icon: 'i-lucide-bar-chart-3' },
+  { question: 'R$ 10 mi em 18 anos: que CAGR exige? É factível?', icon: 'i-lucide-target' },
+] as const
+
 /**
  * Returns Authorization: Bearer ${token} when the user is logged in.
  * Forwarded to the chat-service so identity is resolved against
@@ -338,3 +433,117 @@ watch(
   },
 )
 </script>
+
+<style scoped>
+/* ============================================================
+   Premium hero card — animated gradient ring (rotating conic).
+   Same visual vocabulary as the MAX composer so the unauth
+   experience reads as a premium product preview, not an empty
+   state. Pure CSS, no JS, GPU-friendly.
+   ============================================================ */
+.chat-unauth-card {
+  position: relative;
+  isolation: isolate;
+}
+
+.chat-unauth-card::before {
+  content: '';
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--unauth-ring-angle, 0deg),
+    var(--ring-c1, currentColor),
+    var(--ring-c2, currentColor),
+    var(--ring-c3, currentColor),
+    var(--ring-c2, currentColor),
+    var(--ring-c1, currentColor)
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  z-index: -1;
+  animation: chat-unauth-ring-rotate 8s linear infinite;
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+@keyframes chat-unauth-ring-rotate {
+  from { --unauth-ring-angle: 0deg; }
+  to   { --unauth-ring-angle: 360deg; }
+}
+
+@property --unauth-ring-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+/* Top accent line — gentle shine that pans across the page top */
+.chat-unauth-topline {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--topline-c, currentColor) 30%,
+    var(--topline-c, currentColor) 70%,
+    transparent 100%
+  );
+  background-size: 220% 100%;
+  background-position: -100% 0;
+  animation: chat-unauth-topline-shine 9s ease-in-out infinite;
+  opacity: 0.55;
+}
+
+@keyframes chat-unauth-topline-shine {
+  0%, 100% { background-position: -100% 0; }
+  50%      { background-position: 200% 0; }
+}
+
+/* CTA button hover/active — explicit transitions, no `transition: all` */
+.chat-unauth-cta:hover {
+  filter: brightness(1.07) saturate(1.1);
+  transform: translateY(-1px);
+}
+.chat-unauth-cta:active {
+  transform: translateY(0);
+}
+
+/* Showcase chip subtle hover */
+.chat-unauth-chip {
+  transition: background-color 200ms ease, border-color 200ms ease;
+}
+.chat-unauth-chip:hover {
+  background-color: color-mix(in srgb, currentColor 5%, transparent) !important;
+  border-color: color-mix(in srgb, currentColor 14%, transparent) !important;
+}
+
+/* Focus-visible for the CTA — the only interactive element here */
+.chat-unauth-cta:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--brand-primary, currentColor) 80%, white);
+  outline-offset: 4px;
+  border-radius: 9999px;
+}
+
+/* touch-action: manipulation on every interactive */
+.chat-unauth-cta,
+.chat-unauth-chip {
+  touch-action: manipulation;
+}
+
+/* Honor reduced motion — kill the rotation + shimmer */
+@media (prefers-reduced-motion: reduce) {
+  .chat-unauth-card::before,
+  .chat-unauth-topline {
+    animation: none !important;
+  }
+  .chat-unauth-cta:hover {
+    transform: none;
+  }
+}
+</style>
