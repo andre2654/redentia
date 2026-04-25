@@ -16,8 +16,11 @@
     <div
       ref="chartContainerRef"
       data-chart-capture-root
-      :style="{ height: `${height}px` }"
-      class="relative w-full rounded-lg"
+      :style="{
+        '--chart-h': `${height}px`,
+        '--chart-h-mobile': `${mobileHeight ?? height}px`,
+      } as any"
+      class="relative w-full rounded-lg h-[var(--chart-h-mobile)] md:h-[var(--chart-h)]"
     >
       <!-- Estado de carregamento (não-invasivo) -->
       <Transition name="fade">
@@ -410,7 +413,16 @@ interface Props {
   data: IChartDataPoint[]
   colors?: string[]
   legend?: IChartLegendItem[]
+  /**
+   * Desktop height in pixels. Always wins on screens ≥ 768px (md
+   * breakpoint).
+   */
   height?: number
+  /**
+   * Optional mobile height in pixels. Applied on screens < 768px.
+   * When omitted, falls back to `height` (no responsive change).
+   */
+  mobileHeight?: number
   showLegend?: boolean
   loading?: boolean
   locale?: string
