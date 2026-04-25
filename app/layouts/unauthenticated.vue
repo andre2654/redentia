@@ -157,45 +157,6 @@
 
         <!-- Right-side actions -->
         <div class="ml-auto flex items-center gap-5">
-          <!-- Search — refined custom trigger (Linear/Notion-inspired) -->
-          <MoleculesSearchAssets>
-            <template #trigger>
-              <button
-                type="button"
-                class="group/search flex w-60 items-center gap-2.5 rounded-md border px-3 py-1.5 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-200"
-                :style="{
-                  borderColor: brand.colors.border,
-                  backgroundColor: 'transparent',
-                }"
-                @mouseenter="($event.currentTarget as HTMLElement).style.borderColor = hexWithAlpha(brand.colors.text, '33'); ($event.currentTarget as HTMLElement).style.backgroundColor = hexWithAlpha(brand.colors.text, '04')"
-                @mouseleave="($event.currentTarget as HTMLElement).style.borderColor = brand.colors.border; ($event.currentTarget as HTMLElement).style.backgroundColor = 'transparent'"
-                @click="(e: MouseEvent) => { const modal = (e.currentTarget as HTMLElement)?.closest('[data-search-trigger]'); /* no-op, UModal auto-trigger */ }"
-              >
-                <UIcon
-                  name="i-lucide-search"
-                  class="h-3.5 w-3.5 transition-colors"
-                  :style="{ color: brand.colors.textMuted }"
-                />
-                <span
-                  class="flex-1 text-left text-[12.5px] tracking-[0.01em] transition-colors"
-                  :style="{ color: brand.colors.textMuted }"
-                >
-                  Buscar ativos
-                </span>
-                <span
-                  class="flex items-center gap-0.5 rounded border px-1.5 py-px font-mono text-[10px] tabular-nums transition-colors"
-                  :style="{
-                    borderColor: hexWithAlpha(brand.colors.border, 'AA'),
-                    color: hexWithAlpha(brand.colors.textMuted, 'AA'),
-                  }"
-                >
-                  <span>⌘</span>
-                  <span>K</span>
-                </span>
-              </button>
-            </template>
-          </MoleculesSearchAssets>
-
           <!-- IA CTA — understated text link with pulse dot -->
           <NuxtLink
             to="/help"
@@ -257,6 +218,8 @@
     >
       <slot />
     </main>
+    <!-- Global floating quick search (public layout) -->
+    <MoleculesQuickSearch />
   </div>
   <Footer />
 </template>

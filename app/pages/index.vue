@@ -100,10 +100,6 @@
           </div>
         </div>
 
-        <MoleculesSearchAssets
-          class="w-full rounded-none py-4 md:rounded-full"
-          :style="{ backgroundColor: `${brand.colors.text}10` }"
-        />
       </div>
 
       <div class="flex w-full flex-col">

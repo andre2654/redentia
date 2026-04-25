@@ -55,12 +55,6 @@
 
       <div class="flex-1 overflow-y-auto px-6 pb-10">
         <div class="flex flex-col gap-8">
-          <MoleculesSearchAssets
-            v-if="showSearch"
-            class="w-full rounded-full border py-4 backdrop-blur"
-            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
-          />
-
           <template v-if="isAuthenticated">
             <div class="flex flex-col gap-2">
               <NuxtLink
@@ -245,10 +239,6 @@ const props = defineProps({
     type: String as PropType<'auto' | 'auth' | 'public'>,
     default: 'auto',
   },
-  showSearch: {
-    type: Boolean,
-    default: true,
-  },
 })
 
 const brand = useBrand()
@@ -281,14 +271,6 @@ const publicLinks = computed(() => {
 
 function closeMenu() {
   open.value = false
-}
-
-function focusSearch() {
-  if (!props.showSearch) {
-    router.push('/search')
-    closeMenu()
-    return
-  }
 }
 
 async function handleLogout() {

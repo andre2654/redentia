@@ -52,111 +52,45 @@
           {{ brand.hero.subtitle }}
         </p>
 
-        <!-- Terminal command bar: the "product shot", simulated REPL input -->
-        <div
-          class="mx-auto mb-8 max-w-2xl overflow-hidden rounded-lg border backdrop-blur-sm"
+        <!-- Replica of the floating QuickSearch pill. It's purely
+             decorative — clicking it dispatches ⌘K which opens the
+             real global search. We mirror the same visuals (rounded
+             full, translucent surface, search icon, ⌘K kbd) so users
+             learn what the floating pill is by recognising it here. -->
+        <button
+          type="button"
+          class="qs-replica mx-auto mb-10 flex w-full max-w-md items-center gap-2 rounded-full border px-4 py-3 text-left transition-[border-color,box-shadow,background-color] focus-visible:outline-none"
           :style="{
-            borderColor: brand.colors.border,
-            backgroundColor: `${brand.colors.surface}E6`,
+            borderColor: `color-mix(in srgb, ${brand.colors.border} 70%, transparent)`,
+            backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 85%, transparent)`,
+            color: brand.colors.text,
           }"
+          aria-label="Abrir busca rápida"
+          @click="openQuickSearch"
         >
-          <!-- Terminal header bar -->
-          <div
-            class="flex items-center justify-between border-b px-4 py-2 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
+          <UIcon
+            name="i-lucide-search"
+            class="size-4 shrink-0"
+            :style="{ color: brand.colors.textMuted }"
+            aria-hidden="true"
+          />
+          <span class="flex-1 truncate text-sm" :style="{ color: brand.colors.textMuted }">
+            Buscar ativos
+          </span>
+          <kbd
+            class="font-mono-tab inline-flex shrink-0 items-center gap-1 rounded-md border px-2 py-0.5 text-[10px] tabular-nums"
             :style="{
-              borderColor: brand.colors.border,
-              backgroundColor: brand.colors.background,
+              borderColor: `color-mix(in srgb, ${brand.colors.border} 70%, transparent)`,
               color: brand.colors.textMuted,
+              backgroundColor: brand.colors.background,
             }"
+            aria-hidden="true"
           >
-            <div class="flex items-center gap-2">
-              <div class="flex gap-1.5">
-                <span class="size-2 rounded-full opacity-60" :style="{ backgroundColor: brand.colors.negative }" />
-                <span class="size-2 rounded-full opacity-60" :style="{ backgroundColor: brand.colors.primary }" />
-                <span class="size-2 rounded-full opacity-60" :style="{ backgroundColor: brand.colors.positive }" />
-              </div>
-              <span class="ml-2">REDENTIA.MERCADO</span>
-            </div>
-            <span class="hidden sm:inline">~/mercado/brasil</span>
-          </div>
-          <!-- Prompt line with typewriter placeholder -->
-          <div class="flex items-center gap-3 px-5 py-5">
-            <span class="font-mono-tab text-sm" :style="{ color: brand.colors.primary }">&gt;</span>
-            <!-- Typewriter prompt, identical structure on SSR and client to
-                 avoid hydration mismatches. `typedPrompt` starts empty (SSR sees
-                 just the caret), then animates after mount. -->
-            <span
-              class="flex-1 truncate font-mono-tab text-sm"
-              :style="{ color: brand.colors.text }"
-            >
-              <span>{{ isMounted ? typedPrompt : 'Pergunte sobre qualquer ativo…' }}</span>
-              <span v-if="isMounted" class="terminal-caret" aria-hidden="true"></span>
-            </span>
-            <kbd
-              class="hidden shrink-0 rounded border px-2 py-0.5 font-mono-tab text-[10px] sm:inline-block"
-              :style="{
-                borderColor: brand.colors.border,
-                color: brand.colors.textMuted,
-                backgroundColor: brand.colors.background,
-              }"
-            >ENTER</kbd>
-          </div>
-        </div>
+            <span>{{ shortcutModifier }}</span>
+            <span>K</span>
+          </kbd>
+        </button>
 
-        <!-- CTAs styled as keyboard function keys -->
-        <div class="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-3">
-          <UButton
-            to="/auth/register"
-            size="xl"
-            class="group w-full px-8 font-mono-tab font-semibold uppercase tracking-wider transition-[transform,opacity,box-shadow] duration-300 hover:opacity-90 focus-visible:ring-2 focus-visible:ring-offset-2 sm:w-auto"
-            :style="{
-              backgroundColor: brand.colors.primary,
-              color: brand.colors.background,
-            }"
-          >
-            <template #leading>
-              <span class="font-mono-tab text-[10px] opacity-70" aria-hidden="true">[F1]</span>
-            </template>
-            {{ brand.hero.ctaLabel }}
-          </UButton>
-          <UButton
-            to="/auth/login"
-            variant="outline"
-            size="xl"
-            class="w-full border font-mono-tab font-medium uppercase tracking-wider transition-[background-color,transform] hover:bg-white/5 focus-visible:ring-2 focus-visible:ring-offset-2 sm:w-auto"
-            :style="{
-              color: brand.colors.text,
-              borderColor: `${brand.colors.text}25`,
-            }"
-          >
-            <template #leading>
-              <span class="font-mono-tab text-[10px] opacity-70" aria-hidden="true">[F2]</span>
-            </template>
-            {{ brand.hero.ctaSecondaryLabel }}
-          </UButton>
-        </div>
-
-        <!-- Trust indicators as terminal chips with mono labels -->
-        <div class="mt-12 flex flex-wrap items-center justify-center gap-2 font-mono-tab sm:gap-3">
-          <div
-            v-for="(indicator, idx) in brand.hero.trustIndicators"
-            :key="indicator"
-            class="inline-flex items-center gap-2 rounded border px-3 py-1.5"
-            :style="{
-              borderColor: brand.colors.border,
-              backgroundColor: `${brand.colors.surface}80`,
-            }"
-          >
-            <UIcon
-              :name="trustIndicatorStyles[idx % trustIndicatorStyles.length].icon"
-              class="size-3"
-              :style="{ color: brand.colors.primary }"
-            />
-            <span class="text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
-              {{ indicator }}
-            </span>
-          </div>
-        </div>
       </div>
     </section>
 
@@ -3755,43 +3689,29 @@ const trustIndicatorStyles = [
   { bg: 'bg-secondary/20', text: 'text-secondary', icon: 'i-lucide-credit-card' },
 ]
 
-// Typewriter effect for the terminal prompt in the hero. Cycles through
-// example queries a user might type, mimicking a REPL / command palette.
-const promptExamples = [
-  'Qual o preco teto de PETR4?',
-  'Quais FIIs pagam mais dividendos?',
-  'Como montar uma carteira de R$\u00A010.000?',
-  'ITUB4 esta cara ou barata agora?',
-  'Me mostre os melhores DY da bolsa',
-]
-const typedPrompt = ref('')
-if (import.meta.client) {
-  let exampleIdx = 0
-  let charIdx = 0
-  let direction: 'typing' | 'pausing' | 'deleting' = 'typing'
-  const tick = () => {
-    const current = promptExamples[exampleIdx] || ''
-    if (direction === 'typing') {
-      charIdx++
-      typedPrompt.value = current.slice(0, charIdx)
-      if (charIdx >= current.length) {
-        direction = 'pausing'
-        setTimeout(() => { direction = 'deleting'; tick() }, 2200)
-        return
-      }
-      setTimeout(tick, 55 + Math.random() * 50)
-    } else if (direction === 'deleting') {
-      charIdx--
-      typedPrompt.value = current.slice(0, charIdx)
-      if (charIdx <= 0) {
-        exampleIdx = (exampleIdx + 1) % promptExamples.length
-        direction = 'typing'
-      }
-      setTimeout(tick, 25)
-    }
+// Keyboard shortcut hint matches the platform. Defaults to '⌘' so the
+// SSR and initial client paint align; a tiny mounted-time check
+// switches it to 'Ctrl' on non-Mac platforms.
+const shortcutModifier = ref('⌘')
+onMounted(() => {
+  if (typeof navigator !== 'undefined' && !/Mac|iP(hone|ad)/.test(navigator.platform)) {
+    shortcutModifier.value = 'Ctrl'
   }
-  // Kick off after a small delay so the page paints first
-  onMounted(() => { setTimeout(tick, 600) })
+})
+
+// Triggers the global QuickSearch by dispatching a synthetic ⌘K. The
+// QuickSearch component listens for that exact key combo on document,
+// so we don't need any shared state or imperative ref plumbing.
+function openQuickSearch() {
+  if (typeof document === 'undefined') return
+  document.dispatchEvent(
+    new KeyboardEvent('keydown', {
+      key: 'k',
+      metaKey: true,
+      ctrlKey: true,
+      bubbles: true,
+    }),
+  )
 }
 
 // ==========================================================
@@ -4485,6 +4405,34 @@ const holderPositions = [
 </script>
 
 <style scoped>
+/* ========== TERMINAL HERO — QuickSearch pill replica ==========
+   Mirrors the real floating QuickSearch pill: rounded-full glass
+   surface, primary border on hover, soft glow ring. Hovering it
+   gives the same affordance the real pill has so users intuit
+   that clicking opens a real search. */
+.qs-replica {
+  cursor: pointer;
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  box-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.4);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease;
+}
+.qs-replica:hover {
+  border-color: var(--brand-primary, #f5b301) !important;
+  box-shadow:
+    0 12px 32px -12px rgba(0, 0, 0, 0.4),
+    0 0 0 3px color-mix(in srgb, var(--brand-primary, #f5b301) 25%, transparent);
+}
+.qs-replica:focus-visible {
+  border-color: var(--brand-primary, #f5b301) !important;
+  box-shadow:
+    0 12px 32px -12px rgba(0, 0, 0, 0.4),
+    0 0 0 3px color-mix(in srgb, var(--brand-primary, #f5b301) 25%, transparent);
+}
+
 /* ========== PLAYBOOK HERO (Saraiva Invest) ========== */
 .playbook-hero {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;

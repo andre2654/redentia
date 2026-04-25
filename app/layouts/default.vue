@@ -24,40 +24,19 @@
     >
       <UIcon name="i-si-dashboard-vert-fill" class="text-secondary size-5" />
     </NuxtLink>
-    <template v-if="isAppInstalled">
-      <!-- NOTE: MoleculesSearchAssets does not inherit attrs on its root (inheritAttrs: false),
-           so we wrap it to make the flex item grow. -->
-      <div
-        class="flex-1 min-w-0"
-      >
-        <MoleculesSearchAssets
-          :compact="false"
-          aria-label="Buscar ativos"
-          class="w-full h-12 rounded-2xl border transition"
-          :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.text }"
-        />
-      </div>
-    </template>
-    <template v-else>
-      <MoleculesSearchAssets
-        :compact="true"
-        aria-label="Buscar ativos"
-        class="h-12 w-12 rounded-full border transition"
-        :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.text }"
+    <NuxtLink
+      v-if="!isAppInstalled"
+      to="/download"
+      active-class="border-secondary/60 bg-secondary/10"
+      class="flex flex-1 items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm font-medium transition"
+      :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.text }"
+    >
+      <BrandLogo
+        variant="icon"
+        class="h-5" :style="{ filter: `drop-shadow(0 4px 10px rgb(var(--brand-overlay) / 0.2))` }"
       />
-      <NuxtLink
-        to="/download"
-        active-class="border-secondary/60 bg-secondary/10"
-        class="flex flex-1 items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm font-medium transition"
-        :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.text }"
-      >
-        <BrandLogo
-          variant="icon"
-          class="h-5" :style="{ filter: `drop-shadow(0 4px 10px rgb(var(--brand-overlay) / 0.2))` }"
-        />
-        {{ brand.nav.downloadApp }}
-      </NuxtLink>
-    </template>
+      {{ brand.nav.downloadApp }}
+    </NuxtLink>
   </div>
 
   <!-- Layout, both wrapper + sidebar carry an explicit brand background so
@@ -96,17 +75,6 @@
           {{ brand.header.title }}
         </span>
       </NuxtLink>
-
-      <!-- Search — flat, no card chrome -->
-      <div v-if="!hideSearchBar" class="flex-shrink-0 px-3 pb-2 pt-2">
-        <MoleculesSearchAssets
-          class="w-full rounded-md px-3 py-2 text-[13px] transition-colors"
-          :style="{
-            backgroundColor: `color-mix(in srgb, ${brand.colors.text} 5%, transparent)`,
-            color: brand.colors.text,
-          }"
-        />
-      </div>
 
       <!-- Primary AI CTA — moved up to mirror Perplexity's "New Thread"
            placement. Subtle accent, no gradient wash. -->
@@ -350,6 +318,8 @@
       </div>
     </div>
   </div>
+
+  <MoleculesQuickSearch />
 
   <Footer v-if="!hideFooter" />
 </template>
