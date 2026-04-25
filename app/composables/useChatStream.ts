@@ -330,7 +330,20 @@ export function useChatStream(opts: UseChatStreamOptions) {
       // hard-auth gate returns 401.
       const authStore = useAuthStore()
       const authHeader = authStore.token ? { Authorization: `Bearer ${authStore.token}` } : {}
-      const response = await fetch('/api/chat/stream', {
+
+      // Endpoint resolution. Production browsers can hit the chat-service
+      // directly — chat-service CORS already allow-lists *.vercel.app,
+      // *.redentia.com.br, *.saraivada.com. Going direct avoids the
+      // Vercel serverless function buffering / timing out long SSE
+      // streams. Toggle via `NUXT_PUBLIC_CHAT_DIRECT_URL` (set in Vercel
+      // env to e.g. https://redentia-api.saraivada.com/chat to force
+      // direct mode in production).
+      const cfg = useRuntimeConfig()
+      const directUrl = (cfg.public as { chatDirectUrl?: string }).chatDirectUrl
+      const url =
+        import.meta.client && directUrl ? `${directUrl}/stream` : '/api/chat/stream'
+
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -353,10 +366,26 @@ export function useChatStream(opts: UseChatStreamOptions) {
 
       if (!response.ok) {
         const text = await response.text().catch(() => '')
-        const code = response.status === 429 ? 'rate_limited' : 'http_error'
+        let backendMessage: string | undefined
+        try {
+          const parsed = JSON.parse(text) as { error?: string; message?: string }
+          backendMessage = parsed.message ?? parsed.error
+        } catch {
+          backendMessage = text.slice(0, 300) || undefined
+        }
+        const friendly = humanizeChatError(response.status, backendMessage, !!authStore.token)
+        // Surface the full diagnostic in the console for the dev/preview
+        // pane — easier to debug than a generic toast.
+        // eslint-disable-next-line no-console
+        console.error('[useChatStream] request failed', {
+          url,
+          status: response.status,
+          backendMessage,
+          hadToken: !!authStore.token,
+        })
         assistant.status = 'error'
-        assistant.error = code
-        error.value = `${response.status}: ${text.slice(0, 200)}`
+        assistant.error = friendly
+        error.value = friendly
         isStreaming.value = false
         return
       }
@@ -393,6 +422,29 @@ export function useChatStream(opts: UseChatStreamOptions) {
       isStreaming.value = false
       abortController = null
     }
+  }
+
+  /**
+   * Translate an HTTP failure into a user-friendly message. We
+   * intentionally show the *real* status when we don't recognise
+   * it — a generic "http_error" string makes debugging miserable.
+   */
+  function humanizeChatError(
+    status: number,
+    backendMessage: string | undefined,
+    hadToken: boolean,
+  ): string {
+    if (status === 401 || status === 419) {
+      return hadToken
+        ? 'Sua sessão expirou. Faça login novamente.'
+        : 'Faça login para conversar com a IA.'
+    }
+    if (status === 403) return 'Você não tem permissão para acessar esta conversa.'
+    if (status === 404) return 'Conversa não encontrada.'
+    if (status === 429) return backendMessage ?? 'Limite de mensagens atingido. Tente em alguns minutos.'
+    if (status >= 500) return 'O serviço de IA está temporariamente indisponível. Tente novamente.'
+    if (backendMessage) return `Erro ${status}: ${backendMessage}`
+    return `Erro ${status} ao falar com a IA.`
   }
 
   /**

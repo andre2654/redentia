@@ -447,6 +447,13 @@ export default defineNuxtConfig({
       firebaseVapidKey: process.env.NUXT_PUBLIC_FIREBASE_VAPID_KEY,
       metaPixelId: process.env.NUXT_PUBLIC_META_PIXEL_ID || '',
       metaAccessToken: process.env.NUXT_PUBLIC_META_ACCESS_TOKEN || '',
+      // When set, the browser hits the chat-service directly instead of
+      // going through Nuxt's /api/chat proxy. The proxy runs on Vercel
+      // serverless functions which buffer and time-out long SSE streams.
+      // The chat-service CORS already allow-lists *.vercel.app +
+      // *.redentia.com.br + *.saraivada.com so direct browser calls work.
+      // Set to e.g. https://redentia-api.saraivada.com/chat in Vercel env.
+      chatDirectUrl: process.env.NUXT_PUBLIC_CHAT_DIRECT_URL || '',
     },
   },
   routeRules: (() => {
