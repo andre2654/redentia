@@ -465,9 +465,51 @@ export default defineNuxtConfig({
     // host automatically (no config needed).
     // ============================================================
 
-    return {}
+    return {
+      // Forward /api/chat/* to the chat-service microservice.
+      //
+      // Production (Vercel): the Frontend lives on Vercel and the
+      // chat-service lives on the VPS, fronted by Nginx at
+      // https://redentia-api.saraivada.com/chat/*. Nitro proxies the
+      // request server-to-server, so CORS is a non-issue. The Nginx
+      // /chat/ location strips the prefix, so /api/chat/stream lands
+      // at chat-service /stream, /api/chat/sessions at /sessions, etc.
+      //
+      // Override via NUXT_CHAT_SERVICE_URL for staging or local
+      // tunnels. Local dev uses nitro.devProxy below (localhost:3200).
+      '/api/chat/**': {
+        proxy: `${process.env.NUXT_CHAT_SERVICE_URL ?? 'https://redentia-api.saraivada.com/chat'}/**`,
+      },
+    }
   })(),
+  // Dev-time proxy: forwards browser fetches of /api/chat/* to the
+  // chat-service. Defaults to the live VPS endpoint so `bun run dev`
+  // works out of the box without a local chat-service. Override with
+  // NUXT_CHAT_SERVICE_URL=http://localhost:3200 when iterating on the
+  // microservice locally.
+  //
+  // Nitro/h3 strips the matched key from the request before appending
+  // it to `target`, so /api/chat/stream → ${target}/stream.
+  nitro: {
+    devProxy: {
+      '/api/chat': {
+        target: process.env.NUXT_CHAT_SERVICE_URL ?? 'https://redentia-api.saraivada.com/chat',
+        changeOrigin: true,
+        // SSE-friendly: don't buffer the response
+        ws: true,
+      },
+    },
+  },
   components: [
+    // Chat v2 components — flat naming (ChatV2Layout, ChatV2Message, etc.)
+    // so the directory structure stays organized but template authoring
+    // doesn't need the long `MoleculesChatV2…` prefix.
+    {
+      path: '~/components/molecules/chat-v2',
+      pathPrefix: false,
+      prefix: 'ChatV2',
+      extensions: ['vue'],
+    },
     {
       path: '~/components',
       extensions: ['vue'],

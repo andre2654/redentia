@@ -93,12 +93,10 @@
             :title="compositionInsight?.title"
             :message="compositionInsight?.message"
           />
-          <MoleculesChat class="w-full" route-path="/help" />
+          <!-- Embedded AI chat removed — use the dedicated /help page
+               (QuickSearch redirects there). One chat surface only. -->
         </div>
       </template>
-      <div v-else-if="!loading" class="mt-12 flex flex-col items-center gap-12">
-        <MoleculesChat class="w-full" route-path="/help" />
-      </div>
     </div>
   </NuxtLayout>
 </template>

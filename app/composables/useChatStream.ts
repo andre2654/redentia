@@ -1,0 +1,557 @@
+/**
+ * useChatStream — composable that talks to the new chat microservice.
+ *
+ * Manages a single chat session: opens an SSE stream to /api/chat/stream,
+ * parses typed events and exposes them as reactive state for the UI.
+ *
+ * Usage:
+ *   const { messages, sources, isStreaming, send, stop, citations,
+ *           assetCards, artifacts, followups, error } = useChatStream({
+ *     tenantSlug: 'redentia',
+ *     focusMode: ref('fundamentalista'),
+ *     deepMode: ref(false),
+ *     routeContext: computed(...),
+ *   })
+ */
+import { computed, reactive, ref, watch } from 'vue'
+import type { Ref } from 'vue'
+
+// ---- Types ------------------------------------------------------
+export type ChatRole = 'user' | 'assistant'
+
+export interface ChatCitationSource {
+  url?: string
+  title?: string
+  publishedAt?: string
+  publisher?: string
+  type?: string
+}
+
+export interface ChatCitation {
+  id: number
+  source: ChatCitationSource
+  range?: [number, number]
+}
+
+export interface ChatAssetCard {
+  ticker: string
+  assetClass: 'STOCK' | 'FII' | 'ETF' | 'BDR' | 'CRYPTO' | 'TESOURO'
+  snapshot: Record<string, unknown>
+}
+
+export interface ChatToolCall {
+  callId: string
+  name: string
+  args: Record<string, unknown>
+  status: 'running' | 'success' | 'error'
+  result?: unknown
+  error?: string
+  durationMs?: number
+}
+
+export interface ChatArtifact {
+  id: string
+  type: 'spreadsheet' | 'report' | 'comparison' | 'portfolio'
+  title: string
+  filename?: string
+  downloadUrl?: string
+  content?: string
+}
+
+// ---- Inline form (rendered after the assistant message) ----------
+export type ChatFormFieldKind =
+  | 'text'
+  | 'textarea'
+  | 'number'
+  | 'currency'
+  | 'radio'
+  | 'select'
+  | 'checkbox'
+
+export interface ChatFormOption {
+  value: string
+  label: string
+  hint?: string
+}
+
+export interface ChatFormQuestion {
+  id: string
+  label: string
+  kind: ChatFormFieldKind
+  options?: Array<string | ChatFormOption>
+  placeholder?: string
+  hint?: string
+  required?: boolean
+  min?: number
+  max?: number
+  maxLength?: number
+}
+
+export interface ChatForm {
+  formId: string
+  title?: string
+  intro?: string
+  questions: ChatFormQuestion[]
+  submitLabel: string
+  submitted?: boolean
+}
+
+export interface ChatMessageMeta {
+  /**
+   * 'form_response' marks a user message that came from an InlineForm
+   * submission. The UI renders it as a compact field/value card
+   * instead of a big heading-style question. The text body still
+   * contains the markdown serialisation that gets sent to the LLM.
+   */
+  kind?: 'form_response' | 'free_text'
+  formId?: string
+  fields?: Array<{ id: string; label: string; value: string }>
+  formTitle?: string
+}
+
+export type ChatTier = 'basic' | 'max'
+
+export interface ChatMessage {
+  id: string
+  role: ChatRole
+  content: string
+  citations: ChatCitation[]
+  assetCards: ChatAssetCard[]
+  toolCalls: ChatToolCall[]
+  artifacts: ChatArtifact[]
+  forms: ChatForm[]
+  status: 'streaming' | 'complete' | 'error'
+  followups?: string[]
+  /** Public tier label — "Redentia Basic" or "Redentia MAX". Replaces
+   *  the old `model` field that leaked the actual provider name. */
+  tier?: ChatTier
+  tierLabel?: string
+  createdAt: string
+  error?: string
+  meta?: ChatMessageMeta
+}
+
+export interface UseChatStreamOptions {
+  tenantSlug: string
+  tier?: Ref<ChatTier>
+  routeContext?: Ref<{ type: 'asset' | 'crypto' | 'tesouro' | 'home' | null; ticker?: string } | null>
+  initialSessionId?: string
+}
+
+export function useChatStream(opts: UseChatStreamOptions) {
+  const messages = ref<ChatMessage[]>([])
+  const isStreaming = ref(false)
+  const error = ref<string | null>(null)
+  const sessionId = ref<string | null>(opts.initialSessionId ?? null)
+  let abortController: AbortController | null = null
+
+  // ---- Helpers --------------------------------------------------
+  function pushUser(content: string, meta?: ChatMessageMeta) {
+    messages.value.push({
+      id: crypto.randomUUID(),
+      role: 'user',
+      content,
+      citations: [],
+      assetCards: [],
+      toolCalls: [],
+      artifacts: [],
+      forms: [],
+      status: 'complete',
+      createdAt: new Date().toISOString(),
+      meta,
+    })
+  }
+
+  function startAssistant(): ChatMessage {
+    const m: ChatMessage = reactive({
+      id: crypto.randomUUID(),
+      role: 'assistant',
+      content: '',
+      citations: [],
+      assetCards: [],
+      toolCalls: [],
+      artifacts: [],
+      forms: [],
+      status: 'streaming',
+      createdAt: new Date().toISOString(),
+    }) as ChatMessage
+    messages.value.push(m)
+    return m
+  }
+
+  // ---- Stop -----------------------------------------------------
+  function stop() {
+    if (abortController) {
+      abortController.abort()
+      abortController = null
+    }
+    isStreaming.value = false
+  }
+
+  // ---- Reset ----------------------------------------------------
+  function reset() {
+    stop()
+    messages.value = []
+    error.value = null
+    sessionId.value = null
+  }
+
+  /**
+   * Returns `Authorization: Bearer ${token}` when the user is logged in.
+   * The chat-service validates the token via Laravel /api/auth/me;
+   * without it, the request hits the hard-auth gate and 401s.
+   */
+  function authHeaders(): Record<string, string> {
+    const authStore = useAuthStore()
+    return authStore.token ? { Authorization: `Bearer ${authStore.token}` } : {}
+  }
+
+  // ---- Load history --------------------------------------------
+  async function loadSession(id: string) {
+    try {
+      const r = await $fetch<{
+        session: { id: string; tier?: string }
+        messages: Array<{
+          id: string
+          role: string
+          content: string | null
+          citations: ChatCitation[]
+          artifacts: ChatArtifact[]
+          createdAt: string
+          tool_name?: string | null
+        }>
+      }>(`/api/chat/sessions/${id}`, {
+        headers: { ...authHeaders(), ...chatClientIdHeaders() },
+      })
+      // Restore the tier into the picker — sessions are sticky per
+      // tier. If the session was created in MAX, the whole chat
+      // visual stays MAX.
+      const restored = r.session.tier === 'max' ? 'max' : 'basic'
+      if (opts.tier) opts.tier.value = restored as ChatTier
+      sessionId.value = r.session.id
+      // Group consecutive same-role messages and collapse assistant
+      // blocks to a single message. Two cases this fixes:
+      //   1. Legacy: N assistant rows with identical content (one per
+      //      parallel tool call).
+      //   2. Multi-iter: the LLM frequently repeats its intro across
+      //      tool-call iterations — iter0="Perfeito.", iter1=
+      //      "Perfeito. + full portfolio". We keep ONLY the longest
+      //      text in the block (it almost always supersedes the
+      //      shorter ones). Tool messages are filtered out earlier.
+      const visible = r.messages.filter((m) => m.role === 'user' || m.role === 'assistant')
+      const collapsed: typeof visible = []
+      let i = 0
+      while (i < visible.length) {
+        const role = visible[i]!.role
+        let j = i
+        while (j < visible.length && visible[j]!.role === role) j++
+        const block = visible.slice(i, j)
+        if (role === 'user') {
+          collapsed.push(...block)
+        } else {
+          // assistant block — keep only the longest non-empty content
+          const withContent = block.filter((m) => (m.content ?? '').trim().length > 0)
+          if (withContent.length > 0) {
+            const longest = withContent.reduce((a, b) =>
+              (b.content ?? '').length > (a.content ?? '').length ? b : a,
+            )
+            collapsed.push(longest)
+          }
+        }
+        i = j
+      }
+      messages.value = collapsed.map((m) => {
+        // Detect legacy form-response user messages saved before we
+        // started persisting `meta`. Pattern is `**Title**\n- **a**: x\n- **b**: y`.
+        let meta: ChatMessageMeta | undefined
+        if (m.role === 'user') {
+          meta = detectLegacyFormResponse(m.content ?? '')
+        }
+        return {
+          id: m.id,
+          role: m.role as ChatRole,
+          content: m.content ?? '',
+          citations: m.citations ?? [],
+          assetCards: [],
+          toolCalls: [],
+          artifacts: m.artifacts ?? [],
+          forms: [],
+          status: 'complete' as const,
+          createdAt: m.createdAt,
+          meta,
+        }
+      })
+    } catch (err) {
+      error.value = String(err)
+    }
+  }
+
+  // ---- Send -----------------------------------------------------
+  /**
+   * Send a message to the chat-service. Accepts either a plain string
+   * (regular user typing) or a structured payload (form submission,
+   * etc) that carries metadata used by the renderer to lay out the
+   * user message differently.
+   */
+  async function send(
+    payload:
+      | string
+      | {
+          text: string
+          formId?: string
+          fields?: Array<{ id: string; label: string; value: string }>
+          formTitle?: string
+        },
+  ) {
+    if (isStreaming.value) return
+    const message = typeof payload === 'string' ? payload : payload.text
+    if (!message.trim()) return
+    const meta: ChatMessageMeta | undefined =
+      typeof payload === 'string'
+        ? undefined
+        : {
+            kind: payload.formId ? 'form_response' : 'free_text',
+            formId: payload.formId,
+            fields: payload.fields,
+            formTitle: payload.formTitle,
+          }
+
+    error.value = null
+    pushUser(message, meta)
+    const assistant = startAssistant()
+    isStreaming.value = true
+
+    abortController = new AbortController()
+
+    try {
+      // Forward the user's Sanctum token so the chat-service can
+      // validate identity via Laravel /api/auth/me. Without this the
+      // Bun server treats the request as anonymous and the new
+      // hard-auth gate returns 401.
+      const authStore = useAuthStore()
+      const authHeader = authStore.token ? { Authorization: `Bearer ${authStore.token}` } : {}
+      const response = await fetch('/api/chat/stream', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'text/event-stream',
+          ...authHeader,
+          ...chatClientIdHeaders(),
+        },
+        credentials: 'include',
+        signal: abortController.signal,
+        body: JSON.stringify({
+          // omit sessionId entirely on first send — backend Zod schema
+          // accepts `string | undefined`, NOT null
+          sessionId: sessionId.value ?? undefined,
+          message,
+          tenantSlug: opts.tenantSlug,
+          tier: opts.tier?.value ?? 'basic',
+          routeContext: opts.routeContext?.value ?? undefined,
+        }),
+      })
+
+      if (!response.ok) {
+        const text = await response.text().catch(() => '')
+        const code = response.status === 429 ? 'rate_limited' : 'http_error'
+        assistant.status = 'error'
+        assistant.error = code
+        error.value = `${response.status}: ${text.slice(0, 200)}`
+        isStreaming.value = false
+        return
+      }
+
+      const reader = response.body?.getReader()
+      if (!reader) throw new Error('No body reader')
+      const decoder = new TextDecoder()
+      let buffer = ''
+
+      while (true) {
+        const { value, done } = await reader.read()
+        if (done) break
+        buffer += decoder.decode(value, { stream: true })
+
+        // SSE framing: events are separated by blank lines (\n\n).
+        let idx
+        while ((idx = buffer.indexOf('\n\n')) !== -1) {
+          const raw = buffer.slice(0, idx)
+          buffer = buffer.slice(idx + 2)
+          handleSSEFrame(assistant, raw)
+        }
+      }
+
+      assistant.status = 'complete'
+    } catch (err) {
+      if ((err as Error).name === 'AbortError') {
+        assistant.status = 'complete'
+      } else {
+        assistant.status = 'error'
+        assistant.error = String(err)
+        error.value = String(err)
+      }
+    } finally {
+      isStreaming.value = false
+      abortController = null
+    }
+  }
+
+  /**
+   * Sniff a markdown-bullet user message ("**Title**\n- **a**: x ...")
+   * and turn it into form_response metadata so old sessions render
+   * with the compact pill instead of as a giant heading.
+   */
+  function detectLegacyFormResponse(content: string): ChatMessageMeta | undefined {
+    if (!content) return undefined
+    const lines = content.split('\n').map((l) => l.trim()).filter(Boolean)
+    if (lines.length < 3) return undefined
+    const titleMatch = lines[0]?.match(/^\*\*(.+?)\*\*$/)
+    if (!titleMatch) return undefined
+    const fields: Array<{ id: string; label: string; value: string }> = []
+    for (let i = 1; i < lines.length; i++) {
+      const m = lines[i]?.match(/^-\s*\*\*(.+?)\*\*:\s*(.+)$/)
+      if (!m) continue
+      fields.push({
+        id: m[1]!.toLowerCase().replace(/[^a-z0-9]+/g, '_').slice(0, 40),
+        label: m[1]!,
+        value: m[2]!,
+      })
+    }
+    if (fields.length < 3) return undefined
+    return {
+      kind: 'form_response',
+      formTitle: titleMatch[1],
+      fields,
+    }
+  }
+
+  function handleSSEFrame(assistant: ChatMessage, raw: string) {
+    let eventName = 'message'
+    const dataLines: string[] = []
+    for (const line of raw.split('\n')) {
+      if (line.startsWith(':')) continue // comment/heartbeat
+      if (line.startsWith('event:')) eventName = line.slice(6).trim()
+      else if (line.startsWith('data:')) dataLines.push(line.slice(5).trim())
+    }
+    if (dataLines.length === 0) return
+    const dataStr = dataLines.join('\n')
+    let data: any
+    try {
+      data = JSON.parse(dataStr)
+    } catch {
+      return
+    }
+    handleEvent(assistant, eventName, data)
+  }
+
+  function handleEvent(assistant: ChatMessage, name: string, data: any) {
+    switch (name) {
+      case 'session.start':
+        if (!sessionId.value) sessionId.value = data.sessionId
+        assistant.id = data.messageId ?? assistant.id
+        // Preserve only the public tier identity. Don't store the
+        // raw `data.model` — we never want to display the provider
+        // name in the UI.
+        if (data.tier === 'basic' || data.tier === 'max') {
+          assistant.tier = data.tier
+        }
+        if (typeof data.tierLabel === 'string') {
+          assistant.tierLabel = data.tierLabel
+        }
+        break
+      case 'text.delta':
+        assistant.content += data.content ?? ''
+        break
+      case 'tool.start': {
+        assistant.toolCalls.push({
+          callId: data.callId,
+          name: data.name,
+          args: data.args ?? {},
+          status: 'running',
+        })
+        break
+      }
+      case 'tool.result': {
+        const tc = assistant.toolCalls.find((t) => t.callId === data.callId)
+        if (tc) {
+          tc.status = data.error ? 'error' : 'success'
+          tc.result = data.result
+          tc.error = data.error
+          tc.durationMs = data.durationMs
+        }
+        break
+      }
+      case 'citation.add':
+        assistant.citations.push(data)
+        break
+      case 'asset.card':
+        assistant.assetCards.push(data)
+        break
+      case 'artifact.start':
+        assistant.artifacts.push({
+          id: data.id,
+          type: data.type,
+          title: data.title,
+          filename: data.filename,
+          downloadUrl: data.downloadUrl,
+        })
+        break
+      case 'artifact.delta': {
+        const art = assistant.artifacts.find((a) => a.id === data.id)
+        if (art) art.content = (art.content ?? '') + (data.content ?? '')
+        break
+      }
+      case 'artifact.end':
+        // no-op for now
+        break
+      case 'form.show': {
+        // Backend rendered a structured questionnaire — the UI shows
+        // real inputs (radio/select/text) instead of markdown bullets.
+        const form: ChatForm = {
+          formId: data.formId,
+          title: data.title,
+          intro: data.intro,
+          questions: Array.isArray(data.questions) ? data.questions : [],
+          submitLabel: data.submitLabel ?? 'Enviar respostas',
+          submitted: false,
+        }
+        assistant.forms.push(form)
+        break
+      }
+      case 'followups':
+        assistant.followups = data.suggestions
+        break
+      case 'message.end':
+        assistant.status = 'complete'
+        break
+      case 'error':
+        assistant.status = 'error'
+        assistant.error = data.message
+        error.value = data.message
+        break
+    }
+  }
+
+  // ---- Computed conveniences -----------------------------------
+  const lastAssistant = computed(() => {
+    for (let i = messages.value.length - 1; i >= 0; i--) {
+      const m = messages.value[i]
+      if (m && m.role === 'assistant') return m
+    }
+    return null
+  })
+
+  const sources = computed(() => lastAssistant.value?.citations ?? [])
+
+  return {
+    messages,
+    isStreaming,
+    sessionId,
+    error,
+    sources,
+    lastAssistant,
+    send,
+    stop,
+    reset,
+    loadSession,
+  }
+}

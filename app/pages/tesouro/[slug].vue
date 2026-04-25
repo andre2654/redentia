@@ -412,13 +412,9 @@
           </div>
         </section>
 
-        <MoleculesChat
-          v-else
-          class="w-full"
-          :suggestions="chatSuggestions"
-          route-path="/tesouro"
-          :ticker="slug"
-        />
+        <!-- Embedded AI chat removed — use the dedicated /help page
+             (CTA above redirects via QuickSearch). -->
+        <div v-else />
       </div>
     </div>
   </NuxtLayout>

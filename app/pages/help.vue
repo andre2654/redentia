@@ -1,350 +1,340 @@
+<!--
+  /help — full-screen Redentia chat (Perplexity-style takeover).
+
+  Single canonical AI chat surface. Replaces both the legacy /help
+  (which previously hosted MoleculesChat + MoleculesChatAdvisor with
+  tabs) and the interim /chat page. QuickSearch and any other entry
+  point should now redirect here with `?q=` for auto-send.
+
+  Auth model:
+  - Public route (SEO-indexable). Unauthenticated users see a CTA
+    card that points them to /auth/login?redirect=/help.
+  - Sending a message requires authentication — the composer is
+    only mounted when authStore.isAuthenticated is true. Server-side
+    chat-service also rejects anonymous /stream POSTs.
+-->
 <template>
+  <!-- Unauthenticated: marketing CTA card, indexable by SEO bots -->
   <NuxtLayout
-    :name="layoutName"
-    title="Assessoria"
-    :hide-footer="authStore.isAuthenticated"
+    v-if="!authStore.isAuthenticated"
+    name="unauthenticated"
+    title="Assessoria com IA"
+    :hide-footer="false"
   >
     <h1 class="sr-only">Assessoria com IA | {{ brand.name }}</h1>
-    <div class="flex h-full w-full flex-col gap-4 pb-4 pt-4 xl:pt-5">
+    <div class="flex h-full w-full items-center justify-center px-5 py-10 md:px-8">
       <div
-        v-if="!authStore.isAuthenticated"
-        class="flex h-full w-full items-center justify-center"
+        class="flex w-full max-w-2xl flex-col items-center gap-6 brand-card p-8 text-center backdrop-blur-xl md:p-12"
+        :style="{ backgroundColor: brand.colors.surface, color: brand.colors.text }"
       >
-        <div
-          class="flex h-full min-h-screen w-full flex-col items-center justify-center gap-5 brand-card p-8 text-center backdrop-blur-xl"
-          :style="{ backgroundColor: brand.colors.surface, color: brand.colors.text }"
-        >
-          <div class="flex flex-col items-center gap-4">
-            <IconAi class="fill-secondary h-12" />
-            <h2 class="text-2xl font-semibold sm:text-3xl">
-              {{ brand.ai.welcomeTitle }}
-            </h2>
-            <p class="max-w-xl text-sm sm:text-base" :style="{ color: brand.colors.textMuted }">
-              {{ brand.ai.welcomeSubtitle }}
-            </p>
-          </div>
-          <UButton
-            color="secondary"
-            size="xl"
-            icon="i-lucide-message-circle"
-            class="hover:shadow-secondary/50 px-6 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:scale-105 hover:shadow-2xl"
-            @click="redirectToLogin"
+        <BrandLogo variant="full" mode="auto" class="h-10 w-auto" />
+        <div class="flex flex-col gap-3">
+          <h2
+            class="font-display text-[28px] font-semibold leading-tight tracking-tight md:text-[36px]"
           >
-            {{ brand.voice.ctaPrimary }}
-          </UButton>
-          <p class="text-xs sm:text-sm" :style="{ color: brand.colors.textMuted }">
-            {{ brand.ai.ctaFeatures.join(' • ') }}
+            {{ brand.ai?.welcomeTitle ?? 'Assessoria com IA' }}
+          </h2>
+          <p
+            class="text-[14px] leading-relaxed md:text-[16px]"
+            :style="{ color: brand.colors.textMuted }"
+          >
+            {{ brand.ai?.welcomeSubtitle ?? 'Faça login para conversar com a inteligência da Redentia. Análise de ativos, comparativos, montagem de carteira e validação de meta — tudo em um só lugar.' }}
           </p>
         </div>
+        <UButton
+          color="secondary"
+          size="xl"
+          icon="i-lucide-message-circle"
+          class="hover:shadow-secondary/50 px-6 transition-[transform,box-shadow,filter] hover:scale-[1.03] hover:shadow-2xl"
+          @click="redirectToLogin"
+        >
+          {{ brand.voice?.ctaPrimary ?? 'Entrar para conversar' }}
+        </UButton>
+        <p
+          v-if="brand.ai?.ctaFeatures?.length"
+          class="text-[12px] sm:text-[13px]"
+          :style="{ color: brand.colors.textMuted }"
+        >
+          {{ brand.ai.ctaFeatures.join(' • ') }}
+        </p>
       </div>
-      <template v-else>
-        <!-- Layout estilo WhatsApp: lista à esquerda + chat à direita (só para assessor) -->
-        <template v-if="isAdvisor">
-          <div class="mt-5 flex min-h-0 flex-1 flex-col overflow-hidden md:flex-row xl:mt-6">
-            <!-- Sidebar contatos (estilo alinhado à sidebar do layout) -->
-            <aside class="contacts-sidebar flex max-h-[45vh] w-full flex-col border-r md:max-h-none md:w-[320px] md:min-w-[280px] md:max-w-[360px]" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
-              <div class="shrink-0 px-3 pt-4 pb-3">
-                <span class="mb-2 block px-1 text-[10px] font-medium uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">
-                  Meus contatos
-                </span>
-                <div class="relative">
-                  <UIcon
-                    name="i-lucide-search"
-                    class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2"
-                    :style="{ color: brand.colors.textMuted }"
-                  />
-                  <input
-                    v-model="contactSearch"
-                    type="text"
-                    placeholder="Buscar por nome ou e-mail"
-                    class="w-full rounded-xl border py-2.5 pl-9 pr-3 text-sm transition focus:outline-none focus:ring-0"
-                    :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.text }"
-                  />
-                </div>
-              </div>
-              <div class="contacts-list flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto px-2 pb-3">
-                <!-- Assessor inteligente (IA) sempre em primeiro -->
-                <button
-                  type="button"
-                  class="group flex w-full cursor-pointer items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-200"
-                  :class="selectedContact === null
-                    ? 'border-secondary/30 bg-secondary/10 text-secondary'
-                    : 'border-transparent hover:bg-secondary/5'"
-                  :style="selectedContact === null ? {} : { color: brand.colors.textMuted }"
-                  @click="selectedContact = null"
-                >
-                  <div
-                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
-                    :class="selectedContact === null ? 'bg-secondary/20' : 'bg-secondary/5 group-hover:bg-secondary/10'"
-                  >
-                    <IconAi class="h-5 w-5" :class="selectedContact === null ? 'fill-secondary' : 'opacity-60 group-hover:opacity-80'" :style="selectedContact === null ? {} : { fill: brand.colors.textMuted }" />
-                  </div>
-                  <div class="min-w-0 flex-1">
-                    <p class="truncate text-sm font-medium">
-                      {{ brand.ai.name }}
-                    </p>
-                    <p class="truncate text-xs" :style="{ color: brand.colors.textMuted }">
-                      {{ brand.nav.mobileAiLabel }}
-                    </p>
-                  </div>
-                </button>
-                <div v-if="investorsLoading" class="flex justify-center py-8">
-                  <UIcon name="i-lucide-loader-2" class="h-5 w-5 motion-safe:animate-spin text-secondary" />
-                </div>
-                <div v-else-if="filteredInvestors.length === 0" class="px-3 py-6 text-center text-xs leading-relaxed" :style="{ color: brand.colors.textMuted }">
-                  {{ contactSearch ? 'Nenhum contato encontrado.' : 'Nenhum investidor vinculado. Compartilhe seu código nas configurações.' }}
-                </div>
-                <button
-                  v-for="inv in filteredInvestors"
-                  :key="inv.id"
-                  type="button"
-                  class="group flex w-full cursor-pointer items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-200"
-                  :class="selectedContact?.id === inv.id
-                    ? 'border-secondary/30 bg-secondary/10 text-secondary'
-                    : 'border-transparent hover:bg-secondary/5'"
-                  :style="selectedContact === null ? {} : { color: brand.colors.textMuted }"
-                  @click="selectedContact = { id: inv.id, name: inv.name ?? 'Investidor', approval_status: inv.approval_status }"
-                >
-                  <div
-                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-sm font-medium"
-                    :class="selectedContact?.id === inv.id ? 'bg-secondary/20 text-secondary' : 'bg-secondary/5 group-hover:bg-secondary/10'"
-                    :style="selectedContact?.id === inv.id ? {} : { color: brand.colors.textMuted }"
-                  >
-                    {{ (inv.name ?? '?').charAt(0).toUpperCase() }}
-                  </div>
-                  <div class="min-w-0 flex-1">
-                    <p class="truncate text-sm font-medium">
-                      {{ inv.name ?? 'Investidor' }}
-                    </p>
-                    <p v-if="inv.email" class="truncate text-xs" :style="{ color: brand.colors.textMuted }">
-                      {{ inv.email }}
-                    </p>
-                  </div>
-                  <span
-                    v-if="inv.approval_status === 'pending'"
-                    class="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium"
-                    :style="{ backgroundColor: brand.colors.neutral + '26', color: brand.colors.neutral }"
-                  >
-                    Pendente
-                  </span>
-                </button>
-              </div>
-            </aside>
-            <!-- Área do chat: contato selecionado ou IA -->
-            <main class="min-h-0 flex-1">
-              <div
-                v-if="selectedContact && selectedContact.approval_status === 'pending'"
-                class="flex h-full min-h-[300px] flex-col items-center justify-center gap-3 brand-card p-6 text-center"
-                :style="{ backgroundColor: brand.colors.surface, color: brand.colors.text }"
-              >
-                <UIcon name="i-lucide-user-clock" class="h-12 w-12" :style="{ color: brand.colors.neutral }" />
-                <p class="text-sm font-medium">Aprove este investidor para conversar</p>
-                <p class="max-w-xs text-[13px]" :style="{ color: brand.colors.textMuted }">
-                  O vínculo está pendente. Aprove em <NuxtLink to="/advisor" class="underline text-secondary">Área do assessor</NuxtLink> para trocar mensagens.
-                </p>
-              </div>
-              <MoleculesChatAdvisor
-                v-else-if="selectedContact"
-                :other-user-id="selectedContact.id"
-                :other-user-name="selectedContact.name"
-                :my-id="advisorMyId"
-                :investor-detail-href="`/advisor/investors/${selectedContact.id}`"
-                class="h-full min-h-[300px] w-full"
-              />
-              <MoleculesChat
-                v-else
-                class="h-full w-full" :style="{ color: brand.colors.text }"
-                :suggestions="[
-                  'Me dê um relatório completo sobre a Petrobras',
-                  'Tenho R$ 100,00 para investir, qual ação comprar?',
-                  'Como está o mercado hoje?',
-                ]"
-                :textarea-container-style="{ backgroundColor: brand.colors.surfaceHover }"
-                :messages="messages"
-                route-path="/help"
-              />
-            </main>
-          </div>
-        </template>
-
-        <!-- Investidor: abas IA vs assessor + chat (estilo igual ao item Assessor inteligente) -->
-        <template v-else>
-          <div v-if="showAdvisorTab" class="mt-5 flex flex-wrap gap-2 px-2 xl:mt-6">
-            <button
-              type="button"
-              class="group flex w-full min-w-0 cursor-pointer items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-200 sm:w-auto"
-              :class="activeTab === 'ia'
-                ? 'border-secondary/30 bg-secondary/10 text-secondary'
-                : 'border-transparent hover:bg-secondary/5'"
-              @click="activeTab = 'ia'"
-            >
-              <div
-                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
-                :class="activeTab === 'ia' ? 'bg-secondary/20' : 'bg-secondary/5 group-hover:bg-secondary/10'"
-              >
-                <IconAi class="h-5 w-5" :class="activeTab === 'ia' ? 'fill-secondary' : 'opacity-60 group-hover:opacity-80'" :style="activeTab === 'ia' ? {} : { fill: brand.colors.textMuted }" />
-              </div>
-              <div class="min-w-0 flex-1">
-                <p class="truncate text-sm font-medium">
-                  Assessor inteligente
-                </p>
-                <p class="truncate text-xs" :style="{ color: brand.colors.textMuted }">
-                  Assistente com IA
-                </p>
-              </div>
-            </button>
-            <button
-              type="button"
-              class="group flex w-full min-w-0 cursor-pointer items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-200 sm:w-auto"
-              :class="activeTab === 'advisor'
-                ? 'border-secondary/30 bg-secondary/10 text-secondary'
-                : 'border-transparent hover:bg-secondary/5'"
-              @click="activeTab = 'advisor'"
-            >
-              <div
-                class="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-lg"
-                :class="activeTab === 'advisor' ? 'ring-2 ring-secondary/30' : 'bg-secondary/5 group-hover:bg-secondary/10'"
-              >
-                <UAvatar
-                  :alt="advisorName"
-                  size="sm"
-                  class="h-9 w-9"
-                />
-              </div>
-              <div class="min-w-0 flex-1">
-                <p class="truncate text-sm font-medium">
-                  Conversar com {{ advisorName }}
-                </p>
-                <p class="truncate text-xs" :style="{ color: brand.colors.textMuted }">
-                  Seu assessor
-                </p>
-              </div>
-            </button>
-          </div>
-          <div class="min-h-0 flex-1" :class="{ 'mt-4': showAdvisorTab }">
-            <MoleculesChat
-              v-if="!showAdvisorTab || activeTab === 'ia'"
-              class="h-full w-full" :style="{ color: brand.colors.text }"
-              :suggestions="[
-                'Me dê um relatório completo sobre a Petrobras',
-                'Tenho R$ 100,00 para investir, qual ação comprar?',
-                'Como está o mercado hoje?',
-              ]"
-              :textarea-container-style="{ backgroundColor: brand.colors.surfaceHover }"
-              :messages="messages"
-              route-path="/help"
-            />
-          <MoleculesChatAdvisor
-            v-else-if="advisorId && advisorName"
-            :other-user-id="advisorId"
-            :other-user-name="advisorName"
-            :my-id="myId"
-            class="h-full min-h-[400px] w-full"
-          />
-          </div>
-        </template>
-      </template>
     </div>
   </NuxtLayout>
+
+  <!-- Authenticated: Perplexity-style takeover (no layout chrome) -->
+  <ChatV2Layout
+    v-else
+    :sidebar-open="sidebarOpen"
+    :artifact-open="artifactOpen"
+    :tier="tier"
+    @close-sidebar="sidebarOpen = false"
+    @close-artifact="artifactOpen = false"
+  >
+    <template #sidebar>
+      <ChatV2Sidebar
+        :sessions="sessionList"
+        :active-id="chat.sessionId.value"
+        @new="onNewConversation"
+        @select="onSelectSession"
+        @delete="onDeleteSession"
+      />
+    </template>
+
+    <template #thread>
+      <div class="relative flex h-full min-w-0 flex-1 flex-col">
+        <!-- Mobile-only top bar -->
+        <div
+          class="absolute inset-x-0 top-0 z-10 flex items-center justify-between gap-3 px-4 py-3 xl:hidden"
+        >
+          <button
+            type="button"
+            class="flex size-9 items-center justify-center rounded-full backdrop-blur-md transition-colors"
+            :style="{
+              backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 70%, transparent)`,
+              border: `1px solid color-mix(in srgb, ${brand.colors.border} 40%, transparent)`,
+              color: brand.colors.text,
+            }"
+            aria-label="Abrir conversas"
+            @click="sidebarOpen = true"
+          >
+            <UIcon name="i-lucide-panel-left" class="size-4" />
+          </button>
+
+          <NuxtLink
+            to="/"
+            class="flex size-9 items-center justify-center rounded-full backdrop-blur-md transition-colors"
+            :style="{
+              backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 70%, transparent)`,
+              border: `1px solid color-mix(in srgb, ${brand.colors.border} 40%, transparent)`,
+              color: brand.colors.text,
+            }"
+            aria-label="Voltar para a home"
+          >
+            <UIcon name="i-lucide-x" class="size-4" />
+          </NuxtLink>
+        </div>
+
+        <!-- Desktop close button (top-right) -->
+        <NuxtLink
+          to="/"
+          class="absolute right-5 top-5 z-10 hidden size-9 items-center justify-center rounded-full transition-colors xl:flex"
+          :style="{ color: brand.colors.textMuted }"
+          aria-label="Fechar chat"
+        >
+          <UIcon name="i-lucide-x" class="size-4" />
+        </NuxtLink>
+
+        <!-- Thread or empty state -->
+        <ChatV2Thread
+          v-if="chat.messages.value.length > 0"
+          :messages="chat.messages.value"
+          @send-followup="onSendFollowup"
+          @open-artifact="onOpenArtifact"
+        />
+        <ChatV2EmptyState
+          v-else
+          :tier="tier"
+          @start="onStarterChip"
+        />
+
+        <!-- Composer -->
+        <ChatV2Input
+          v-model:tier="tier"
+          :disabled="chat.isStreaming.value"
+          :is-streaming="chat.isStreaming.value"
+          :tier-locked="chat.messages.value.length > 0"
+          @send="onSend"
+          @stop="chat.stop"
+        />
+      </div>
+    </template>
+
+    <template #artifact>
+      <ChatV2ArtifactPanel
+        v-if="activeArtifact"
+        :artifact="activeArtifact"
+        @close="onCloseArtifact"
+      />
+    </template>
+  </ChatV2Layout>
 </template>
 
 <script setup lang="ts">
-const brand = useBrand()
-const authStore = useAuthStore()
-const { getInvestors } = useAdvisorService()
-
-const messages = ref<IChatMessage[]>([
-  {
-    id: '1',
-    content: 'Olá, como posso ajudar você hoje?',
-    type: 'bot',
-    timestamp: new Date(),
-  },
-])
-
-const activeTab = ref<'ia' | 'advisor'>('ia')
-
-const isAdvisor = computed(() => authStore.me?.role === 'advisor')
-
-const selectedContact = ref<{ id: number; name: string; approval_status?: string } | null>(null)
-const advisorMyId = computed(() => Number(authStore.me?.id) || 0)
-
-const investors = ref<Array<{ id: number; name?: string; email?: string; approval_status?: string }>>([])
-const investorsLoading = ref(false)
-const contactSearch = ref('')
-
-const filteredInvestors = computed(() => {
-  const q = contactSearch.value.trim().toLowerCase()
-  if (!q) return investors.value
-  return investors.value.filter(
-    (inv) =>
-      (inv.name ?? '').toLowerCase().includes(q) ||
-      (inv.email ?? '').toLowerCase().includes(q)
-  )
-})
-
-async function loadInvestors() {
-  if (!isAdvisor.value) return
-  investorsLoading.value = true
-  try {
-    const resp = await getInvestors()
-    investors.value = resp.investors ?? []
-  } catch {
-    investors.value = []
-  } finally {
-    investorsLoading.value = false
-  }
-}
-
-watch(isAdvisor, (v) => { if (v) loadInvestors() }, { immediate: true })
-
-const showAdvisorTab = computed(
-  () =>
-    authStore.me?.role === 'investor' &&
-    authStore.me?.approval_status === 'approved' &&
-    !!authStore.me?.advisor_id &&
-    !!authStore.me?.advisor
-)
-
-const advisorId = computed(() => authStore.me?.advisor_id ?? 0)
-const advisorName = computed(() => authStore.me?.advisor?.name ?? 'Assessor')
-const myId = computed(() => Number(authStore.me?.id) || 0)
+import { computed, onMounted, ref, watch } from 'vue'
+import type { ChatArtifact } from '~/composables/useChatStream'
 
 definePageMeta({
+  // Public route — Authenticated users get the chat takeover; the
+  // unauthenticated branch above renders inside the standard layout
+  // for SEO purposes. We disable Nuxt's layout system globally so
+  // the takeover can own 100% of the viewport when logged in.
   isPublicRoute: true,
+  layout: false,
 })
 
-const layoutName = computed(() =>
-  authStore.isAuthenticated ? 'default' : 'unauthenticated'
+const route = useRoute()
+const brand = useBrand()
+const authStore = useAuthStore()
+
+// ---- State ------------------------------------------------------
+const tier = ref<'basic' | 'max'>('basic')
+const sidebarOpen = ref(false)
+const artifactOpen = ref(false)
+const activeArtifact = ref<ChatArtifact | null>(null)
+const sessionList = ref<Array<{ id: string; title: string | null; createdAt: string; tier?: 'basic' | 'max' }>>([])
+
+const routeContext = computed<{ type: 'asset' | 'crypto' | 'tesouro' | 'home' | null; ticker?: string } | null>(
+  () => null,
 )
+
+const chat = useChatStream({
+  tenantSlug: brand.slug ?? 'redentia',
+  tier,
+  routeContext,
+})
 
 usePageSeo({
   title: `Assessoria com IA | ${brand.name}`,
   description:
-    `Converse com a assistente inteligente da ${brand.name}, tire dúvidas sobre investimentos e receba recomendações personalizadas com tecnologia de IA.`,
+    `Converse com a IA da ${brand.name}: tire dúvidas sobre investimentos, monte sua carteira com framework de 9 camadas, valide metas, compare ativos.`,
   path: '/help',
 })
+
+// ---- Load session list ------------------------------------------
+async function refreshSessionList() {
+  if (!authStore.isAuthenticated) {
+    sessionList.value = []
+    return
+  }
+  try {
+    const r = await $fetch<{
+      sessions: Array<{
+        id: string
+        title: string | null
+        createdAt?: string
+        created_at?: string
+        tier?: string
+      }>
+    }>('/api/chat/sessions', {
+      headers: { ...authHeaders(), ...chatClientIdHeaders() },
+    })
+    sessionList.value = (r.sessions ?? []).map((s) => ({
+      id: s.id,
+      title: s.title,
+      createdAt: s.createdAt ?? s.created_at ?? new Date().toISOString(),
+      tier: s.tier === 'max' ? 'max' : 'basic',
+    }))
+  } catch {
+    sessionList.value = []
+  }
+}
+
+// ---- Handlers ---------------------------------------------------
+function onSend(message: string) {
+  if (!authStore.isAuthenticated) {
+    redirectToLogin()
+    return
+  }
+  void chat.send(message).then(refreshSessionList)
+}
+
+function onSendFollowup(
+  message:
+    | string
+    | {
+        text: string
+        formId?: string
+        fields?: Array<{ id: string; label: string; value: string }>
+        formTitle?: string
+      },
+) {
+  if (!authStore.isAuthenticated) {
+    redirectToLogin()
+    return
+  }
+  void chat.send(message)
+}
+
+function onStarterChip(message: string) {
+  if (!authStore.isAuthenticated) {
+    redirectToLogin()
+    return
+  }
+  void chat.send(message).then(refreshSessionList)
+}
+
+async function onNewConversation() {
+  chat.reset()
+  sidebarOpen.value = false
+}
+
+async function onSelectSession(id: string) {
+  await chat.loadSession(id)
+  sidebarOpen.value = false
+}
+
+async function onDeleteSession(id: string) {
+  try {
+    await $fetch(`/api/chat/sessions/${id}`, {
+      method: 'DELETE',
+      headers: { ...authHeaders(), ...chatClientIdHeaders() },
+    })
+    await refreshSessionList()
+    if (chat.sessionId.value === id) chat.reset()
+  } catch {
+    /* ignore */
+  }
+}
+
+function onOpenArtifact(artifact: ChatArtifact) {
+  activeArtifact.value = artifact
+  artifactOpen.value = true
+}
+
+function onCloseArtifact() {
+  artifactOpen.value = false
+  activeArtifact.value = null
+}
 
 function redirectToLogin() {
   navigateTo('/auth/login?redirect=/help')
 }
-</script>
 
-<style scoped>
-.contacts-list {
-  scrollbar-gutter: stable;
+/**
+ * Returns Authorization: Bearer ${token} when the user is logged in.
+ * Forwarded to the chat-service so identity is resolved against
+ * Laravel /api/auth/me. The page itself gates rendering on
+ * authStore.isAuthenticated, but these calls also fire from inside
+ * the gate so the helper stays trivially safe to call.
+ */
+function authHeaders(): Record<string, string> {
+  return authStore.token ? { Authorization: `Bearer ${authStore.token}` } : {}
 }
-.contacts-list::-webkit-scrollbar {
-  width: 6px;
-}
-.contacts-list::-webkit-scrollbar-track {
-  background: transparent;
-}
-.contacts-list::-webkit-scrollbar-thumb {
-  background: var(--ui-border);
-  border-radius: 3px;
-}
-.contacts-list::-webkit-scrollbar-thumb:hover {
-  background: var(--ui-text-muted);
-}
-</style>
+
+// ---- Auto-send `?q=` --------------------------------------------
+// QuickSearch and other entry points push the user here with the
+// query in the URL. If logged in, dispatch immediately. If not,
+// the auth gate above shows; the query is preserved through the
+// login redirect (via `redirect=/help` keeping the original URL
+// in history).
+onMounted(async () => {
+  if (!authStore.isAuthenticated) return
+  await refreshSessionList()
+  const q = String(route.query.q ?? '').trim()
+  if (q) {
+    window.history.replaceState({}, '', '/help')
+    void chat.send(q).then(refreshSessionList)
+  }
+})
+
+watch(
+  () => route.query.q,
+  (q) => {
+    if (!authStore.isAuthenticated) return
+    if (typeof q === 'string' && q.trim()) {
+      window.history.replaceState({}, '', '/help')
+      void chat.send(q).then(refreshSessionList)
+    }
+  },
+)
+</script>

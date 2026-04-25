@@ -2,7 +2,7 @@
   <Transition name="fade">
     <div
       v-if="open"
-      class="fixed inset-0 z-50 flex flex-col"
+      class="fixed inset-0 z-[60] flex flex-col"
       :style="{ backgroundColor: brand.colors.background, color: brand.colors.text }"
     >
       <div class="flex items-center justify-between px-6 pb-6 pt-10">

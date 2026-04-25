@@ -221,8 +221,9 @@
     >
       <slot />
     </main>
-    <!-- Global floating quick search (public layout) -->
-    <MoleculesQuickSearch />
+    <!-- Global floating quick search (public layout) — hidden on
+         /help where the page is its own search/chat surface. -->
+    <MoleculesQuickSearch v-if="$route.path !== '/help'" />
   </div>
   <Footer />
 </template>

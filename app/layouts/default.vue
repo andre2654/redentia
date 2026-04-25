@@ -1,43 +1,6 @@
 <template>
   <MoleculesMobileMenuOverlay v-model:open="menuMobileActive" mode="auth" />
 
-  <!-- Menu mobile -->
-  <div
-    class="fixed bottom-0 left-0 right-0 z-20 mx-auto flex w-full items-center justify-center gap-3 border-t px-4 py-4 backdrop-blur-2xl xl:hidden"
-    :style="{ background: brand.colors.background, borderColor: brand.colors.border, color: brand.colors.text, boxShadow: brand.theme?.mode === 'dark' ? '0 -18px 40px rgba(0,0,0,0.55)' : 'none' }"
-  >
-    <button
-      type="button"
-      aria-label="Abrir menu"
-      class="flex h-12 w-12 items-center justify-center rounded-full border transition"
-      :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.text }"
-      @click="menuMobileActive = true"
-    >
-      <UIcon name="i-lucide-menu" class="text-secondary size-5" />
-    </button>
-    <NuxtLink
-      to="/"
-      aria-label="Visão geral"
-      active-class="border-secondary/60 bg-secondary/10"
-      class="flex h-12 w-12 items-center justify-center rounded-full border transition"
-      :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.text }"
-    >
-      <UIcon name="i-si-dashboard-vert-fill" class="text-secondary size-5" />
-    </NuxtLink>
-    <NuxtLink
-      v-if="!isAppInstalled"
-      to="/download"
-      active-class="border-secondary/60 bg-secondary/10"
-      class="flex flex-1 items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm font-medium transition"
-      :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.text }"
-    >
-      <BrandLogo
-        variant="icon"
-        class="h-5" :style="{ filter: `drop-shadow(0 4px 10px rgb(var(--brand-overlay) / 0.2))` }"
-      />
-      {{ brand.nav.downloadApp }}
-    </NuxtLink>
-  </div>
 
   <!-- Layout, both wrapper + sidebar carry an explicit brand background so
        the whole shell flips together via Vue reactivity. Without this, the
@@ -282,7 +245,7 @@
       <header
         v-bind="headerProps"
         ref="header"
-        class="sticky top-0 z-20 flex min-h-[60px] w-full items-center justify-between gap-4 p-0 backdrop-blur-xl xl:rounded-[25px]"
+        class="sticky top-0 z-20 flex min-h-[60px] w-full items-center justify-between gap-4 px-4 pt-3 backdrop-blur-xl xl:px-0 xl:pt-0 xl:rounded-[25px]"
       >
         <slot name="header-branding">
           <div class="flex items-center gap-5">
@@ -326,7 +289,38 @@
     </div>
   </div>
 
-  <MoleculesQuickSearch />
+  <!-- The floating QuickSearch pill is hidden on /help — the chat page
+       has its own dedicated composer and the two would overlap. -->
+  <MoleculesQuickSearch v-if="route.path !== '/help'" />
+
+  <!-- Floating hamburger button (mobile only) — anchored at the same
+       baseline as the QuickSearch pill so they read as paired, but
+       living in its own fixed-position context so it can't break the
+       QuickSearch backdrop / Transition logic.
+       Pairs with the global CSS rule below that adds left-padding to
+       the QuickSearch root on mobile, reserving space so the pill
+       shifts right and the two don't overlap.
+       Hidden on /help — the chat takeover owns its own drawer. -->
+  <div
+    v-if="route.path !== '/help'"
+    class="floating-menu-anchor pointer-events-none fixed bottom-4 left-3 z-50 md:bottom-6 xl:hidden"
+    :style="{ paddingBottom: 'env(safe-area-inset-bottom)' }"
+  >
+    <button
+      type="button"
+      aria-label="Abrir menu"
+      class="floating-menu-btn pointer-events-auto flex size-11 items-center justify-center rounded-full backdrop-blur-md transition-[background-color,border-color,transform]"
+      :style="{
+        backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 92%, transparent)`,
+        border: `1px solid color-mix(in srgb, ${brand.colors.border} 65%, transparent)`,
+        color: brand.colors.text,
+        boxShadow: '0 6px 20px -8px rgba(0, 0, 0, 0.28)',
+      }"
+      @click="menuMobileActive = true"
+    >
+      <UIcon name="i-lucide-menu" class="size-5" />
+    </button>
+  </div>
 
   <Footer v-if="!hideFooter" />
 </template>
@@ -414,3 +408,33 @@ async function makeLogout() {
   router.push('/auth/login')
 }
 </script>
+
+<style scoped>
+.floating-menu-btn:hover {
+  filter: brightness(1.05);
+}
+.floating-menu-btn:active {
+  transform: scale(0.96);
+}
+@media (prefers-reduced-motion: reduce) {
+  .floating-menu-btn:active {
+    transform: none;
+  }
+}
+</style>
+
+<!--
+  Non-scoped: reserves the left-edge space the menu button needs on
+  mobile, by adding extra padding to the QuickSearch root. The
+  `flex justify-center` inside QS then re-centers within the
+  remaining width, so the pill aligns to the right of the menu
+  button without overlapping. Reverts to default on xl+ (desktop has
+  the sidebar instead of the hamburger).
+-->
+<style>
+@media (max-width: 1279px) {
+  .quick-search-root {
+    padding-left: 4rem; /* button width (44px) + gap (12px) ≈ 56px → round to 64 */
+  }
+}
+</style>

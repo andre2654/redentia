@@ -561,8 +561,10 @@ const panelBorder = computed(() => `color-mix(in srgb, ${brand.colors.border} 50
 const pillBg = computed(() => `${brand.colors.surface}D9`) // ~85%
 const pillBorder = computed(() => `color-mix(in srgb, ${brand.colors.border} 70%, transparent)`)
 
-// Chips inherit the same translucent vibe but at chip scale.
-const chipBg = computed(() => `${brand.colors.surface}B3`) // ~70%
+// Solid chip surface — translucent + the global backdrop blur was
+// double-stacking and made the chip area look soupy. Opaque reads
+// cleaner.
+const chipBg = computed(() => brand.colors.surface)
 const chipBorder = computed(() => `color-mix(in srgb, ${brand.colors.border} 70%, transparent)`)
 
 // Default to '⌘' on both server and client so the initial markup matches,
@@ -1500,8 +1502,9 @@ watch(open, (val) => {
    keyboard nav and mouse hover both feel responsive.
    ============================================================ */
 .qs-chips {
-  backdrop-filter: blur(12px) saturate(140%);
-  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  /* No backdrop-filter — chips already sit on top of the global
+     QuickSearch backdrop. Stacking another blur layer here muddied
+     the icons + label text. */
 }
 
 .qs-chip {

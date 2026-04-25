@@ -1,5 +1,5 @@
 import { getMarketData } from './market'
-import { generateMarketAlertMessage } from './agent'
+import { generateMarketAlertMessage } from './marketAlertMessage'
 import { useFirebaseAdmin } from './firebaseAdmin'
 
 export const triggerMarketAlert = async (token?: string) => {

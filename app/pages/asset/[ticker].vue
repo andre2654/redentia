@@ -3844,20 +3844,10 @@
         </div>
       </section>
 
-      <MoleculesChat
-        v-else
-        class="w-full"
-        :suggestions="[
-          'Me dê um relatório completo sobre a ação',
-          'Por que devo investir neste ativo?',
-          // caindo ou subindo, dependendo da variacao
-          `Porque está ${ticker} ${
-            dailyChangePercent && dailyChangePercent >= 0 ? 'subindo' : 'caindo'
-          }`,
-        ]"
-        route-path="/ticker"
-        :ticker="ticker"
-      />
+      <!-- Embedded AI chat removed — the page-level CTA above
+           (Botão "Tire suas dúvidas com IA") now redirects to the
+           dedicated /help chat surface via QuickSearch. -->
+      <div v-else />
     </div>
   </NuxtLayout>
 </template>

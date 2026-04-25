@@ -73,7 +73,7 @@
             <template #label>
               <span class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">&gt; USER_ID</span>
             </template>
-            <AtomsFormInput v-model="state.login" type="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="investidor@brasil.b3" size="lg" class="w-full" />
+            <AtomsFormInput v-model="state.login" type="text" autocomplete="username" spellcheck="false" placeholder="investidor@brasil.b3" size="lg" class="w-full" />
           </UFormField>
 
           <UFormField name="password">
@@ -142,7 +142,7 @@
             <template #label>
               <span class="font-small-caps text-[10px]" :style="{ color: brand.colors.textMuted }">Usuário</span>
             </template>
-            <AtomsFormInput v-model="state.login" type="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="Seu usuário" size="lg" class="w-full" />
+            <AtomsFormInput v-model="state.login" type="text" autocomplete="username" spellcheck="false" placeholder="Seu usuário" size="lg" class="w-full" />
           </UFormField>
 
           <UFormField name="password">
@@ -233,7 +233,7 @@
             <template #label>
               <span class="font-mentor-eyebrow" :style="{ color: brand.colors.text }">Usuário</span>
             </template>
-            <AtomsFormInput v-model="state.login" type="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="Como você se identifica" size="lg" class="w-full" />
+            <AtomsFormInput v-model="state.login" type="text" autocomplete="username" spellcheck="false" placeholder="Como você se identifica" size="lg" class="w-full" />
           </UFormField>
 
           <UFormField name="password">
@@ -320,7 +320,7 @@
               <template #label>
                 <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">Usuário</span>
               </template>
-              <AtomsFormInput v-model="state.login" type="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="Seu login de estudo" size="lg" class="w-full" />
+              <AtomsFormInput v-model="state.login" type="text" autocomplete="username" spellcheck="false" placeholder="Seu login de estudo" size="lg" class="w-full" />
             </UFormField>
 
             <UFormField name="password">
@@ -406,7 +406,7 @@
             <template #label>
               <span class="font-showtime-label" :style="{ color: `${brand.colors.text}80` }">SEU USUÁRIO</span>
             </template>
-            <AtomsFormInput v-model="state.login" type="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="Como você entrou da última vez" size="lg" class="w-full" />
+            <AtomsFormInput v-model="state.login" type="text" autocomplete="username" spellcheck="false" placeholder="Como você entrou da última vez" size="lg" class="w-full" />
           </UFormField>
 
           <UFormField name="password">
@@ -542,7 +542,7 @@
           </div>
 
           <UFormField name="login">
-            <AtomsFormInput v-model="state.login" type="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="Usuário ou e-mail" size="lg" class="w-full" />
+            <AtomsFormInput v-model="state.login" type="text" autocomplete="username" spellcheck="false" placeholder="Usuário ou e-mail" size="lg" class="w-full" />
           </UFormField>
 
           <UFormField name="password">
@@ -651,7 +651,7 @@
                   Usuário
                 </span>
               </template>
-              <AtomsFormInput v-model="state.login" type="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="Seu usuário" size="lg" class="w-full" />
+              <AtomsFormInput v-model="state.login" type="text" autocomplete="username" spellcheck="false" placeholder="Seu usuário" size="lg" class="w-full" />
             </UFormField>
 
             <UFormField name="password">
@@ -740,7 +740,7 @@
           </div>
 
           <UFormField name="login">
-            <AtomsFormInput v-model="state.login" type="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="Usuário" size="lg" class="w-full" />
+            <AtomsFormInput v-model="state.login" type="text" autocomplete="username" spellcheck="false" placeholder="Usuário" size="lg" class="w-full" />
           </UFormField>
 
           <UFormField name="password">
