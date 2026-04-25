@@ -84,18 +84,47 @@ function googleFontsUrl(googleSpec: string): string {
 export default defineNuxtPlugin(() => {
   const brand = useBrand()
   // `useColorMode` is auto-imported by @nuxtjs/color-mode (transitive
-  // dep of @nuxt/ui). It already handles cookie persistence, the
-  // <html class="dark|light"> class, anti-flash on first paint, and
-  // `prefers-color-scheme` reactivity — we just consume `value`
+  // dep of @nuxt/ui). It handles cookie/localStorage persistence,
+  // the <html class="dark|light"> class, anti-flash on first paint,
+  // and `prefers-color-scheme` reactivity — we just consume `value`
   // (resolved 'dark'|'light') to drive the brand palette swap.
   const colorMode = useColorMode()
 
+  // Seed the colorMode reactive state from the anti-flash helper as
+  // early as possible on the client. The default storage is
+  // localStorage, which the SSR plugin can't read — so the SSR
+  // payload arrives with `unknown: true` and `value: 'system'`. The
+  // anti-flash inline script (the one that adds the `dark`/`light`
+  // class to <html>) populates `window.__NUXT_COLOR_MODE__` BEFORE
+  // any plugin runs; reading from it here lets us resolve the user's
+  // actual preference on the very first watchEffect tick instead of
+  // waiting for `app:mounted` (which fires *after* the first paint
+  // and would otherwise cause a brief flash of the SSR palette).
+  if (import.meta.client) {
+    const helper = (window as any).__NUXT_COLOR_MODE__
+    if (helper && (colorMode as any).unknown) {
+      colorMode.preference = helper.preference
+      colorMode.value = helper.value
+      ;(colorMode as any).unknown = false
+    }
+  }
+
   // Apply the resolved color-mode by merging tenant-specific theme
   // overrides over the canonical (default) palette. Runs on the
-  // server (so SSR matches the user's cookie preference) AND on the
+  // server (so SSR matches the brand's default mode) AND on the
   // client (so toggling at runtime swaps the palette reactively).
   watchEffect(() => {
-    const resolved = colorMode.value === 'light' ? 'light' : 'dark'
+    // Resolve mode with three fallbacks: explicit colorMode value,
+    // explicit colorMode preference (covers the 'system' SSR case
+    // when value hasn't propagated yet), then the brand default.
+    let resolved: 'dark' | 'light'
+    if (colorMode.value === 'dark' || colorMode.value === 'light') {
+      resolved = colorMode.value
+    } else if (colorMode.preference === 'dark' || colorMode.preference === 'light') {
+      resolved = colorMode.preference
+    } else {
+      resolved = brand.defaultMode === 'light' ? 'light' : 'dark'
+    }
     const canonical = (brands as Record<string, typeof defaultBrand>)[brand.slug] ?? defaultBrand
     const baseColors = canonical.colors
     const overrides = canonical.themes?.[resolved]
@@ -119,6 +148,24 @@ export default defineNuxtPlugin(() => {
     // resolved mode (instead of the static config value, which may be
     // 'both' for tenants that ship both variants).
     brand.theme.mode = resolved
+
+    // Force-clean the <html> class to a single mode token. Required
+    // because:
+    //   1. The anti-flash inline script writes either 'dark' or
+    //      'light' on first paint (based on localStorage), but does
+    //      NOT remove the opposite token if it's already there.
+    //   2. @nuxtjs/color-mode's plugin watcher only fires on
+    //      `value` changes, so initial paint can leave both classes
+    //      coexisting.
+    //   3. Mixing 'dark light' breaks Tailwind's `dark:` variant
+    //      and yields a half-light/half-dark page (which is the
+    //      exact "F5 buga tudo" symptom).
+    if (import.meta.client) {
+      const html = document.documentElement
+      const other = resolved === 'light' ? 'dark' : 'light'
+      if (html.classList.contains(other)) html.classList.remove(other)
+      if (!html.classList.contains(resolved)) html.classList.add(resolved)
+    }
   })
 
   useHead({
