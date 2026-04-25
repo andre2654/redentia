@@ -133,17 +133,20 @@ export interface ChatMessageMeta {
   formTitle?: string
   /**
    * Attachment metadata that survives across reloads. The actual
-   * content (PDF bytes, spreadsheet payloads, etc.) is intentionally
-   * NOT persisted — only shape/preview info needed to render chips.
+   * content (PDF bytes, spreadsheet payloads, base64 images, even
+   * extracted text) is **never** persisted — only the bare shape
+   * needed to render the chips: filename, MIME, size, kind. The
+   * server keeps the same contract (see `attachmentMetaForPersistence`
+   * in chat-service/src/lib/attachments.ts).
    */
   attachments?: Array<{
     id?: string
     name: string
     mime: string
     size: number
-    kind: ChatAttachmentKind
-    /** Short snippet (text files only) shown when the user expands the chip. */
-    preview?: string
+    kind: ChatAttachmentKind | 'error'
+    /** When parsing failed, the human-readable reason. */
+    error?: string
   }>
 }
 
@@ -257,6 +260,7 @@ export function useChatStream(opts: UseChatStreamOptions) {
           artifacts: ChatArtifact[]
           createdAt: string
           tool_name?: string | null
+          meta?: ChatMessageMeta | null
         }>
       }>(`/api/chat/sessions/${id}`, {
         headers: { ...authHeaders(), ...chatClientIdHeaders() },
@@ -299,11 +303,21 @@ export function useChatStream(opts: UseChatStreamOptions) {
         i = j
       }
       messages.value = collapsed.map((m) => {
-        // Detect legacy form-response user messages saved before we
-        // started persisting `meta`. Pattern is `**Title**\n- **a**: x\n- **b**: y`.
+        // Prefer the persisted `meta` from the server (form-response
+        // marker, attachment chips, etc). Fall back to legacy
+        // markdown-bullet sniffing for old rows that predate the
+        // `meta` column.
         let meta: ChatMessageMeta | undefined
         if (m.role === 'user') {
-          meta = detectLegacyFormResponse(m.content ?? '')
+          const persisted = m.meta as ChatMessageMeta | null | undefined
+          if (
+            persisted &&
+            (persisted.kind || persisted.fields || persisted.attachments?.length)
+          ) {
+            meta = persisted
+          } else {
+            meta = detectLegacyFormResponse(m.content ?? '')
+          }
         }
         return {
           id: m.id,
@@ -371,8 +385,6 @@ export function useChatStream(opts: UseChatStreamOptions) {
                     mime: a.mime,
                     size: a.size,
                     kind: a.kind,
-                    preview:
-                      a.kind === 'text' ? a.content.slice(0, 240) : undefined,
                   }))
                 : undefined,
           }
