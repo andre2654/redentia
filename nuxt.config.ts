@@ -488,7 +488,10 @@ export default defineNuxtConfig({
       title: brand.seo.title,
       htmlAttrs: {
         lang: brand.seo.lang,
-        class: brand.theme.mode === 'light' ? '' : 'dark',
+        // The `dark` class is set by the anti-flash inline script (see
+        // `script` below) before first paint, then kept in sync by the
+        // brand plugin via `useHead`. We don't set it here so SSR and
+        // the script don't fight each other.
       },
       viewport: 'width=device-width, initial-scale=1',
       charset: 'utf-8',

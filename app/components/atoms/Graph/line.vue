@@ -2255,6 +2255,7 @@ const chartOptions = computed(() => {
         fontSize: 13,
         xLabelColor: cc.labelColor,
         yLabelColor: cc.labelColor,
+        xOverlayTextColor: cc.labelColor,
         xLabelOffset: 5,
         yLabelOffset: 0,
         drawYAxisLine: false,

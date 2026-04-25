@@ -4,8 +4,12 @@
     :style="{ backgroundColor: brand.colors.surface }"
   >
     <div class="flex items-center gap-2">
+      <!-- The wrapping pill is always the primary→secondary gradient
+           regardless of theme, so we force the dark-surface asset
+           (a light-coloured icon) for both modes. -->
       <BrandLogo
         variant="icon"
+        mode="dark"
         class="to-secondary from-primary h-7 w-7 rounded-full bg-gradient-to-r p-1"
       />
       <div class="flex flex-col">

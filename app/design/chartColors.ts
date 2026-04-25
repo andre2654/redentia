@@ -10,31 +10,38 @@ export const ChartColors = {
 
 /**
  * Brand-aware chart colors. Use inside setup() or computed().
+ *
+ * Returns an object with GETTERS so every property read re-evaluates
+ * against the current brand state. This is required for live theme
+ * switching: when `brand.theme.mode` flips between 'dark' and 'light',
+ * inline styles that read `cc.labelColor` on each render get the new
+ * value, and Chart.js options re-evaluate when the chart is re-built.
  */
 export function useChartColors() {
   const brand = useBrand()
+  const isLight = () => brand.theme.mode === 'light'
   return {
-    positive: brand.colors.positive,
-    negative: brand.colors.negative,
-    secondary: brand.colors.secondary,
-    neutral: brand.colors.neutral,
-    primary: brand.colors.primary,
-    text: brand.colors.text,
-    textMuted: brand.colors.textMuted,
-    border: brand.colors.border,
-    surface: brand.colors.surface,
-    background: brand.colors.background,
+    get positive() { return brand.colors.positive },
+    get negative() { return brand.colors.negative },
+    get secondary() { return brand.colors.secondary },
+    get neutral() { return brand.colors.neutral },
+    get primary() { return brand.colors.primary },
+    get text() { return brand.colors.text },
+    get textMuted() { return brand.colors.textMuted },
+    get border() { return brand.colors.border },
+    get surface() { return brand.colors.surface },
+    get background() { return brand.colors.background },
     // Grid/tick helpers for light vs dark mode
-    gridColor: brand.theme.mode === 'light' ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.04)',
-    tickColor: brand.theme.mode === 'light' ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.3)',
-    tickColorMuted: brand.theme.mode === 'light' ? 'rgba(0, 0, 0, 0.25)' : 'rgba(255, 255, 255, 0.2)',
-    labelColor: brand.theme.mode === 'light' ? 'rgba(0, 0, 0, 0.6)' : 'rgba(255, 255, 255, 0.7)',
-    tooltipBg: brand.theme.mode === 'light' ? 'rgba(255, 255, 255, 0.95)' : 'rgba(0, 0, 0, 0.9)',
-    tooltipBorder: brand.colors.border,
-    tooltipText: brand.colors.text,
-    tooltipTextMuted: brand.colors.textMuted,
-    loadingBg: brand.theme.mode === 'light' ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.4)',
-    crosshairColor: brand.theme.mode === 'light' ? 'rgba(0, 0, 0, 0.3)' : 'rgba(255, 255, 255, 0.3)',
+    get gridColor() { return isLight() ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.04)' },
+    get tickColor() { return isLight() ? 'rgba(0, 0, 0, 0.4)' : 'rgba(255, 255, 255, 0.3)' },
+    get tickColorMuted() { return isLight() ? 'rgba(0, 0, 0, 0.25)' : 'rgba(255, 255, 255, 0.2)' },
+    get labelColor() { return isLight() ? 'rgba(0, 0, 0, 0.6)' : 'rgba(255, 255, 255, 0.7)' },
+    get tooltipBg() { return isLight() ? 'rgba(255, 255, 255, 0.95)' : 'rgba(0, 0, 0, 0.9)' },
+    get tooltipBorder() { return brand.colors.border },
+    get tooltipText() { return brand.colors.text },
+    get tooltipTextMuted() { return brand.colors.textMuted },
+    get loadingBg() { return isLight() ? 'rgba(255, 255, 255, 0.6)' : 'rgba(0, 0, 0, 0.4)' },
+    get crosshairColor() { return isLight() ? 'rgba(0, 0, 0, 0.3)' : 'rgba(255, 255, 255, 0.3)' },
   }
 }
 

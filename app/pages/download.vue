@@ -192,7 +192,10 @@
                       class="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-md"
                       :style="{ backgroundColor: brand.colors.primary }"
                     >
-                      <BrandLogo variant="icon" class="size-5" />
+                      <!-- Pill is always primary regardless of theme, so
+                           force the dark-surface variant which is the
+                           light-coloured icon. -->
+                      <BrandLogo variant="icon" mode="dark" class="size-5" />
                     </div>
                     <div class="min-w-0 flex-1">
                       <div class="flex items-center justify-between gap-2">
@@ -221,7 +224,10 @@
                       class="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-md"
                       :style="{ backgroundColor: brand.colors.primary }"
                     >
-                      <BrandLogo variant="icon" class="size-5" />
+                      <!-- Pill is always primary regardless of theme, so
+                           force the dark-surface variant which is the
+                           light-coloured icon. -->
+                      <BrandLogo variant="icon" mode="dark" class="size-5" />
                     </div>
                     <div class="min-w-0 flex-1">
                       <div class="flex items-center justify-between gap-2">

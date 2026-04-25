@@ -95,10 +95,19 @@
           </div>
 
           <div class="relative z-10 w-full p-4 transition-transform duration-300 group-hover:translate-y-[-2px]">
-            <h3 class="line-clamp-3 text-sm font-semibold leading-snug text-white">
+            <!-- Inline color: the text sits on a hardcoded dark
+                 gradient overlay (`from-black/85`), so it must be
+                 white regardless of light/dark theme. Tailwind's
+                 `text-white` was being overridden by a brand color
+                 token in light mode, hence the explicit hex. -->
+            <h3 class="line-clamp-3 text-sm font-semibold leading-snug" style="color: #ffffff">
               {{ item.title }}
             </h3>
-            <span class="mt-1.5 block font-mono-tab text-[10px] uppercase tracking-[0.12em] text-white/70" translate="no">
+            <span
+              class="mt-1.5 block font-mono-tab text-[10px] uppercase tracking-[0.12em]"
+              style="color: rgba(255, 255, 255, 0.7)"
+              translate="no"
+            >
               {{ formatRelativeTime(item.published_at) }}
             </span>
           </div>

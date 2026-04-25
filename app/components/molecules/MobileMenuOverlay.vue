@@ -55,6 +55,13 @@
 
       <div class="flex-1 overflow-y-auto px-6 pb-10">
         <div class="flex flex-col gap-8">
+          <!-- Color mode toggle, available to both authenticated
+               and public users so they can flip themes from any
+               device size. -->
+          <div class="flex items-center justify-center">
+            <AtomsColorModeToggle size="labeled" />
+          </div>
+
           <template v-if="isAuthenticated">
             <div class="flex flex-col gap-2">
               <NuxtLink

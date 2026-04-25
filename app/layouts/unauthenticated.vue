@@ -157,6 +157,9 @@
 
         <!-- Right-side actions -->
         <div class="ml-auto flex items-center gap-5">
+          <!-- Color mode toggle (Auto / Light / Dark) -->
+          <AtomsColorModeToggle />
+
           <!-- IA CTA — understated text link with pulse dot -->
           <NuxtLink
             to="/help"

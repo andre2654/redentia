@@ -51,6 +51,19 @@ interface BrandColors {
   gradient: { from: string; via: string; to: string }
 }
 
+/**
+ * Optional dark/light theme variants. When present, the active palette
+ * is resolved at runtime by `useColorMode()` based on the user's
+ * preference (or `prefers-color-scheme`). Tenants without `themes`
+ * keep the legacy single `colors` block — fully backward compatible.
+ *
+ * Each variant can be a partial: missing fields fall back to `colors`.
+ */
+type BrandThemeVariants = {
+  dark?: Partial<BrandColors>
+  light?: Partial<BrandColors>
+}
+
 interface BrandConfig {
   // === IDENTIDADE ===
   name: string
@@ -101,6 +114,15 @@ interface BrandConfig {
   logo: {
     icon: string
     full: string
+    // Optional mode-specific logos. When defined they override the
+    // generic `icon`/`full` for that mode and the BrandLogo component
+    // skips the coloured background pill entirely (the asset itself
+    // is designed to read on the matching surface). Tenants without
+    // these keep the legacy single-asset behaviour.
+    iconDark?: string
+    iconLight?: string
+    fullDark?: string
+    fullLight?: string
     favicon: string
     faviconIco: string
     faviconSvg: string
@@ -444,6 +466,18 @@ interface BrandConfig {
     animation: 'smooth' | 'snappy' | 'none'     // intensidade de animacoes
     backgroundPattern: 'none' | 'grid' | 'dots' | 'gradient' | 'noise'  // textura de fundo
   }
+
+  // === DARK / LIGHT THEME VARIANTS (opcional) ===
+  // Quando presente, `useColorMode()` resolve a paleta ativa em runtime.
+  // Cada variante e um Partial<BrandColors>: campos ausentes caem no
+  // bloco `colors` raiz (que continua sendo o default). Tenants sem
+  // `themes` mantem o comportamento legacy (single palette).
+  themes?: BrandThemeVariants
+
+  // Modo padrao do tenant — usado no SSR antes do cookie/localStorage
+  // ser lido. Se `theme.mode` ja e 'dark' ou 'light', usa-o; caso
+  // contrario ('both'), cai aqui. Default 'dark'.
+  defaultMode?: 'dark' | 'light'
 
   // === PERSONAGENS / MASCOTES DA MARCA (opcional) ===
   characters?: {
@@ -2347,6 +2381,16 @@ const redentia: BrandConfig = {
   logo: {
     icon: '/brand/logo-icon.svg',
     full: '/brand/logo-full.svg',
+    // Mode-specific assets. The file-name prefix describes the
+    // colour of the artwork itself: `dark-*` is dark-on-transparent
+    // (for cream/light surfaces), `light-*` is light-on-transparent
+    // (for charcoal/dark surfaces). The icon variants are square
+    // mark-only (no wordmark) for compact contexts like favicons,
+    // download banners, mobile nav buttons, etc.
+    iconLight: '/brand/redentia/dark-logo-icon.png',
+    iconDark: '/brand/redentia/light-logo-icon.png',
+    fullLight: '/brand/redentia/dark-logo.png',
+    fullDark: '/brand/redentia/light-logo.png',
     favicon: '/brand/favicon.png',
     faviconIco: '/brand/favicon.ico',
     faviconSvg: '/brand/favicon.svg',
@@ -2691,6 +2735,40 @@ const redentia: BrandConfig = {
     borderRadius: 'rounded',
     animation: 'smooth',
     backgroundPattern: 'gradient',
+  },
+
+  // Light/dark variants. The root `colors` block is the canonical
+  // Redentia dark palette; `themes.light` overrides only the surface
+  // and text tones — primary/secondary/positive/negative stay
+  // identical so the brand identity reads the same on both modes.
+  defaultMode: 'dark',
+  themes: {
+    light: {
+      // Brand identity — keep the warm yellow-orange but slightly
+      // darken `secondary` so it has enough contrast on cream surfaces.
+      primary: '#D8881A',
+      secondary: '#F5A623',
+      tertiary: '#FFFFFF',
+      // P&L colors — bumped contrast for readability on white.
+      positive: '#0AAE7C',
+      negative: '#E0353D',
+      neutral: '#5A6378',
+      // Surfaces — soft cream/white stack with low-contrast borders.
+      background: '#FAFAFB',
+      surface: '#FFFFFF',
+      surfaceHover: '#F2F4F7',
+      border: '#E4E7EC',
+      // Text — near-black for primary, muted slate for secondary.
+      text: '#0F1116',
+      textMuted: '#5A6378',
+      // Inputs match surfaces.
+      inputBg: '#FFFFFF',
+      inputBgHover: '#F8F9FB',
+      inputBorder: '#D5DAE3',
+      // Gradient stays warm-yellow but a touch deeper so it carries
+      // weight against the white background.
+      gradient: { from: '#D8881A', via: '#F5A623', to: '#FFC555' },
+    },
   },
 
   // Home section order + visibility. Trimmed down from the original 8

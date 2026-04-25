@@ -106,12 +106,20 @@
               <UIcon name="i-lucide-arrow-up-right" class="size-3.5" />
             </div>
 
-            <!-- Bottom: headline + time -->
+            <!-- Bottom: headline + time
+                 Inline white color: this text rides on a hardcoded
+                 dark gradient overlay so it must stay white regardless
+                 of the active theme. Tailwind `text-white` was being
+                 overridden by the brand text token in light mode. -->
             <div class="relative z-10 w-full p-4 transition-transform duration-300 group-hover:translate-y-[-2px]">
-              <h3 class="line-clamp-2 text-sm font-semibold leading-snug text-white">
+              <h3 class="line-clamp-2 text-sm font-semibold leading-snug" style="color: #ffffff">
                 {{ cluster.articles[0].title }}
               </h3>
-              <span class="mt-1 block font-mono-tab text-[10px] uppercase tracking-[0.12em] text-white/70" translate="no">
+              <span
+                class="mt-1 block font-mono-tab text-[10px] uppercase tracking-[0.12em]"
+                style="color: rgba(255, 255, 255, 0.7)"
+                translate="no"
+              >
                 {{ formatRelativeTime(cluster.articles[0].published_at) }}
               </span>
             </div>

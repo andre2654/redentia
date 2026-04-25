@@ -1,0 +1,92 @@
+<!--
+  ColorModeToggle — 3-state segmented pill (Auto / Light / Dark).
+
+  Backed by `useColorMode()` from @nuxtjs/color-mode (transitively
+  installed via @nuxt/ui). The module handles cookie persistence,
+  the <html class="dark|light"> class, anti-flash on first paint
+  and `prefers-color-scheme` reactivity automatically — this
+  component just sets `colorMode.preference`.
+
+  Visual: a single rounded-full surface with three icon-only
+  segments. The active segment gets a primary-tinted background.
+  Hover lifts the background tint slightly.
+
+  Two sizes:
+  - "compact" (default) — icon-only, fits sidebars and headers.
+  - "labeled" — adds short labels next to icons; for settings pages.
+-->
+<template>
+  <div
+    class="qs-mode-toggle inline-flex items-center gap-0.5 rounded-full border p-0.5"
+    :style="{
+      borderColor: `color-mix(in srgb, ${brand.colors.border} 70%, transparent)`,
+      backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 70%, transparent)`,
+    }"
+    role="radiogroup"
+    aria-label="Tema (claro, escuro ou automático)"
+  >
+    <button
+      v-for="option in options"
+      :key="option.value"
+      type="button"
+      role="radio"
+      :aria-checked="preference === option.value"
+      :aria-label="option.label"
+      :title="option.label"
+      class="qs-mode-segment inline-flex items-center justify-center gap-1.5 rounded-full transition-[background-color,color]"
+      :class="[
+        size === 'labeled' ? 'px-2.5 py-1 text-[12px]' : 'size-7',
+        preference === option.value ? 'qs-mode-segment-active' : '',
+      ]"
+      :style="preference === option.value
+        ? {
+            backgroundColor: `${brand.colors.primary}26`,
+            color: brand.colors.text,
+          }
+        : { color: brand.colors.textMuted }"
+      @click="setPreference(option.value)"
+    >
+      <UIcon :name="option.icon" class="size-3.5 shrink-0" aria-hidden="true" />
+      <span v-if="size === 'labeled'">{{ option.label }}</span>
+    </button>
+  </div>
+</template>
+
+<script setup lang="ts">
+type Preference = 'system' | 'dark' | 'light'
+
+defineProps<{
+  size?: 'compact' | 'labeled'
+}>()
+
+const brand = useBrand()
+// `useColorMode` is auto-imported by @nuxtjs/color-mode and exposes
+// a reactive `preference` ref-like (system/dark/light) plus a
+// resolved `value` getter we don't need here.
+const colorMode = useColorMode()
+
+const preference = computed<Preference>(() => {
+  const p = colorMode.preference
+  if (p === 'dark' || p === 'light') return p
+  return 'system'
+})
+
+function setPreference(next: Preference) {
+  colorMode.preference = next
+}
+
+const options: Array<{ value: Preference; label: string; icon: string }> = [
+  { value: 'system', label: 'Auto', icon: 'i-lucide-monitor' },
+  { value: 'light', label: 'Claro', icon: 'i-lucide-sun' },
+  { value: 'dark', label: 'Escuro', icon: 'i-lucide-moon' },
+]
+</script>
+
+<style scoped>
+.qs-mode-segment:hover {
+  background-color: color-mix(in srgb, currentColor 8%, transparent);
+}
+.qs-mode-segment-active:hover {
+  background-color: color-mix(in srgb, var(--brand-primary, #f5b301) 22%, transparent) !important;
+}
+</style>

@@ -1,4 +1,4 @@
-import { brand as defaultBrand } from '~/config/brand'
+import { brand as defaultBrand, brands } from '~/config/brand'
 
 const borderRadiusMap = {
   sharp: { sm: '4px', md: '8px', lg: '12px', xl: '16px', full: '9999px' },
@@ -83,11 +83,45 @@ function googleFontsUrl(googleSpec: string): string {
 
 export default defineNuxtPlugin(() => {
   const brand = useBrand()
+  // `useColorMode` is auto-imported by @nuxtjs/color-mode (transitive
+  // dep of @nuxt/ui). It already handles cookie persistence, the
+  // <html class="dark|light"> class, anti-flash on first paint, and
+  // `prefers-color-scheme` reactivity — we just consume `value`
+  // (resolved 'dark'|'light') to drive the brand palette swap.
+  const colorMode = useColorMode()
+
+  // Apply the resolved color-mode by merging tenant-specific theme
+  // overrides over the canonical (default) palette. Runs on the
+  // server (so SSR matches the user's cookie preference) AND on the
+  // client (so toggling at runtime swaps the palette reactively).
+  watchEffect(() => {
+    const resolved = colorMode.value === 'light' ? 'light' : 'dark'
+    const canonical = (brands as Record<string, typeof defaultBrand>)[brand.slug] ?? defaultBrand
+    const baseColors = canonical.colors
+    const overrides = canonical.themes?.[resolved]
+
+    // Merge: start from the canonical palette, then layer the mode
+    // overrides (a Partial<BrandColors>) on top. We always rebuild the
+    // gradient because it's a nested object that wouldn't merge via
+    // Object.assign alone.
+    Object.assign(brand.colors, baseColors)
+    if (overrides) {
+      Object.assign(brand.colors, overrides)
+      brand.colors.gradient = {
+        ...baseColors.gradient,
+        ...(overrides.gradient ?? {}),
+      }
+    } else {
+      brand.colors.gradient = { ...baseColors.gradient }
+    }
+
+    // Keep `theme.mode` in sync so any consumer reading it gets the
+    // resolved mode (instead of the static config value, which may be
+    // 'both' for tenants that ship both variants).
+    brand.theme.mode = resolved
+  })
 
   useHead({
-    htmlAttrs: {
-      class: computed(() => brand.theme.mode === 'light' ? '' : 'dark'),
-    },
     style: [
       {
         innerHTML: computed(() => buildCssVars(brand)),

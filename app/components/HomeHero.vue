@@ -59,7 +59,7 @@
              learn what the floating pill is by recognising it here. -->
         <button
           type="button"
-          class="qs-replica mx-auto mb-10 flex w-full max-w-md items-center gap-2 rounded-full border px-4 py-3 text-left transition-[border-color,box-shadow,background-color] focus-visible:outline-none"
+          class="qs-replica mx-auto flex w-full max-w-md items-center gap-2 rounded-full border px-4 py-3 text-left transition-[border-color,box-shadow,background-color] focus-visible:outline-none"
           :style="{
             borderColor: `color-mix(in srgb, ${brand.colors.border} 70%, transparent)`,
             backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 85%, transparent)`,
@@ -3682,12 +3682,6 @@ onMounted(() => { isMounted.value = true })
 // ==========================================================
 // TERMINAL HERO (Redentia, Bloomberg-reimagined)
 // ==========================================================
-
-const trustIndicatorStyles = [
-  { bg: 'bg-secondary/20', text: 'text-secondary', icon: 'i-lucide-shield-check' },
-  { bg: 'bg-primary/20', text: 'text-primary', icon: 'i-lucide-zap' },
-  { bg: 'bg-secondary/20', text: 'text-secondary', icon: 'i-lucide-credit-card' },
-]
 
 // Keyboard shortcut hint matches the platform. Defaults to '⌘' so the
 // SSR and initial client paint align; a tiny mounted-time check

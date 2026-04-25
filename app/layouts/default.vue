@@ -219,6 +219,13 @@
       <!-- Flex spacer so the user row docks at the bottom -->
       <div class="flex-1" />
 
+      <!-- Color mode toggle, sitting just above the user row so it's
+           always reachable without taking up vertical space inside the
+           main user card. -->
+      <div class="flex flex-shrink-0 justify-center px-3 pb-1.5">
+        <AtomsColorModeToggle />
+      </div>
+
       <!-- User row — inline, no bordered card. Avatar + name + plan,
            plus two icon-only action buttons (eye toggle, logout). -->
       <div
