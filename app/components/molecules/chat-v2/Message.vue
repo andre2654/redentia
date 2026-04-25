@@ -64,10 +64,45 @@
     <!-- USER — REGULAR QUESTION (heading style) -->
     <div
       v-else-if="message.role === 'user'"
-      class="chat-question font-display text-[26px] font-semibold leading-tight tracking-tight md:text-[32px]"
-      :style="{ color: brand.colors.text }"
+      class="flex flex-col gap-3"
     >
-      {{ message.content }}
+      <!-- Attachments -->
+      <ul
+        v-if="message.meta?.attachments && message.meta.attachments.length > 0"
+        class="flex flex-wrap gap-1.5"
+        :aria-label="`${message.meta.attachments.length} arquivo(s) anexado(s)`"
+      >
+        <li
+          v-for="att in message.meta.attachments"
+          :key="att.id ?? att.name"
+          class="chat-attach-chip-static inline-flex max-w-full items-center gap-2 rounded-xl px-2.5 py-1.5 text-[12px]"
+          :style="{
+            backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 70%, transparent)`,
+            border: `1px solid color-mix(in srgb, ${brand.colors.border} 45%, transparent)`,
+            color: brand.colors.text,
+          }"
+        >
+          <UIcon
+            :name="attachIconStatic(att)"
+            class="size-3.5 shrink-0"
+            :style="{ color: brand.colors.primary }"
+          />
+          <span class="max-w-[200px] truncate">{{ att.name }}</span>
+          <span
+            class="shrink-0 font-mono-tab text-[10px] uppercase tracking-[0.12em]"
+            :style="{ color: brand.colors.textMuted }"
+          >
+            {{ humanSizeStatic(att.size) }}
+          </span>
+        </li>
+      </ul>
+      <div
+        v-if="message.content"
+        class="chat-question font-display text-[26px] font-semibold leading-tight tracking-tight md:text-[32px]"
+        :style="{ color: brand.colors.text }"
+      >
+        {{ message.content }}
+      </div>
     </div>
 
     <!-- ASSISTANT TURN -->
@@ -295,6 +330,29 @@ function tierLabelFromTier(tier: 'basic' | 'max' | undefined): string | undefine
   if (tier === 'max') return 'Redentia MAX'
   if (tier === 'basic') return 'Redentia Basic'
   return undefined
+}
+
+// ---- Attachment chip helpers ------------------------------------
+// Mirrors the Input.vue helpers but type-narrowed for the persisted
+// shape (no `content` field; we only have name/mime/size/kind/preview).
+function attachIconStatic(att: { kind?: string; mime: string }): string {
+  if (att.kind === 'image' || att.mime.startsWith('image/')) return 'i-lucide-image'
+  if (att.mime === 'application/pdf') return 'i-lucide-file-text'
+  if (
+    att.mime.includes('spreadsheet') ||
+    att.mime.includes('excel') ||
+    att.mime.includes('numbers')
+  )
+    return 'i-lucide-table'
+  if (att.mime === 'text/markdown') return 'i-lucide-file-code'
+  if (att.mime === 'application/json') return 'i-lucide-braces'
+  return 'i-lucide-file'
+}
+
+function humanSizeStatic(bytes: number): string {
+  if (!Number.isFinite(bytes) || bytes < 1024) return `${bytes ?? 0}B`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)}KB`
+  return `${(bytes / 1024 / 1024).toFixed(1)}MB`
 }
 
 const renderedMarkdown = computed(() => renderMarkdown(props.message.content))

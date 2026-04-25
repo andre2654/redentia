@@ -246,7 +246,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
-import type { ChatArtifact } from '~/composables/useChatStream'
+import type { ChatArtifact, ChatAttachment } from '~/composables/useChatStream'
 
 definePageMeta({
   // Public route — Authenticated users get the chat takeover; the
@@ -315,9 +315,15 @@ async function refreshSessionList() {
 }
 
 // ---- Handlers ---------------------------------------------------
-function onSend(message: string) {
+function onSend(message: string, attachments: ChatAttachment[] = []) {
   if (!authStore.isAuthenticated) {
     redirectToLogin()
+    return
+  }
+  if (attachments.length > 0) {
+    void chat
+      .send({ text: message, attachments })
+      .then(refreshSessionList)
     return
   }
   void chat.send(message).then(refreshSessionList)

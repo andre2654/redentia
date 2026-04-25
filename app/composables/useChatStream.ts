@@ -58,6 +58,30 @@ export interface ChatArtifact {
   content?: string
 }
 
+/**
+ * File the user dropped/picked into the composer. Sent verbatim to the
+ * chat-service, which decodes the base64, parses by MIME, and feeds the
+ * extracted text (or vision blob, for images) into the LLM context for
+ * the current turn.
+ *
+ * `kind` is a coarse classification chosen by the browser:
+ *   - `'text'`  → already-decoded UTF-8 in `content` (txt, md, csv).
+ *   - `'binary'`→ base64-encoded bytes in `content` (pdf, xlsx, numbers).
+ *   - `'image'` → base64-encoded image bytes in `content` (jpeg/png/webp/gif).
+ *
+ * `content` is capped client-side. The backend caps too (defence in depth).
+ */
+export type ChatAttachmentKind = 'text' | 'binary' | 'image'
+
+export interface ChatAttachment {
+  id: string
+  name: string
+  mime: string
+  size: number
+  kind: ChatAttachmentKind
+  content: string
+}
+
 // ---- Inline form (rendered after the assistant message) ----------
 export type ChatFormFieldKind =
   | 'text'
@@ -107,6 +131,20 @@ export interface ChatMessageMeta {
   formId?: string
   fields?: Array<{ id: string; label: string; value: string }>
   formTitle?: string
+  /**
+   * Attachment metadata that survives across reloads. The actual
+   * content (PDF bytes, spreadsheet payloads, etc.) is intentionally
+   * NOT persisted — only shape/preview info needed to render chips.
+   */
+  attachments?: Array<{
+    id?: string
+    name: string
+    mime: string
+    size: number
+    kind: ChatAttachmentKind
+    /** Short snippet (text files only) shown when the user expands the chip. */
+    preview?: string
+  }>
 }
 
 export type ChatTier = 'basic' | 'max'
@@ -290,8 +328,15 @@ export function useChatStream(opts: UseChatStreamOptions) {
   /**
    * Send a message to the chat-service. Accepts either a plain string
    * (regular user typing) or a structured payload (form submission,
-   * etc) that carries metadata used by the renderer to lay out the
-   * user message differently.
+   * file attachments, etc) that carries metadata used by the renderer
+   * to lay out the user message differently.
+   *
+   * When `attachments` is provided, each entry is forwarded verbatim
+   * to the backend which decodes it, runs the MIME-appropriate parser
+   * (pdf-parse, ExcelJS, plain decode), and injects the extracted
+   * content into the LLM input for this turn only. Image attachments
+   * are forwarded as data URLs and the agent constructs an OpenAI
+   * multimodal message.
    */
   async function send(
     payload:
@@ -301,11 +346,15 @@ export function useChatStream(opts: UseChatStreamOptions) {
           formId?: string
           fields?: Array<{ id: string; label: string; value: string }>
           formTitle?: string
+          attachments?: ChatAttachment[]
         },
   ) {
     if (isStreaming.value) return
     const message = typeof payload === 'string' ? payload : payload.text
-    if (!message.trim()) return
+    const attachments = typeof payload === 'string' ? [] : (payload.attachments ?? [])
+    // Allow empty `message` if the user only attached files (the LLM
+    // will be instructed to summarise/inspect the attachment).
+    if (!message.trim() && attachments.length === 0) return
     const meta: ChatMessageMeta | undefined =
       typeof payload === 'string'
         ? undefined
@@ -314,6 +363,18 @@ export function useChatStream(opts: UseChatStreamOptions) {
             formId: payload.formId,
             fields: payload.fields,
             formTitle: payload.formTitle,
+            attachments:
+              attachments.length > 0
+                ? attachments.map((a) => ({
+                    id: a.id,
+                    name: a.name,
+                    mime: a.mime,
+                    size: a.size,
+                    kind: a.kind,
+                    preview:
+                      a.kind === 'text' ? a.content.slice(0, 240) : undefined,
+                  }))
+                : undefined,
           }
 
     error.value = null
@@ -361,6 +422,16 @@ export function useChatStream(opts: UseChatStreamOptions) {
           tenantSlug: opts.tenantSlug,
           tier: opts.tier?.value ?? 'basic',
           routeContext: opts.routeContext?.value ?? undefined,
+          attachments:
+            attachments.length > 0
+              ? attachments.map((a) => ({
+                  name: a.name,
+                  mime: a.mime,
+                  size: a.size,
+                  kind: a.kind,
+                  content: a.content,
+                }))
+              : undefined,
         }),
       })
 

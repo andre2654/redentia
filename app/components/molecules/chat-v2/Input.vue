@@ -41,9 +41,30 @@
 
     <div
       class="chat-composer pointer-events-auto relative mx-auto flex max-w-3xl flex-col gap-2 px-5 pb-3 pt-4 transition-all duration-300"
-      :class="['chat-composer', isMax ? 'is-max' : 'is-basic']"
+      :class="['chat-composer', isMax ? 'is-max' : 'is-basic', dragOver ? 'is-drag-over' : '']"
       :style="composerStyle"
+      @dragenter.prevent="onDragEnter"
+      @dragover.prevent="onDragOver"
+      @dragleave.prevent="onDragLeave"
+      @drop.prevent="onDrop"
     >
+      <!-- Drag-drop overlay -->
+      <Transition name="chat-drop-overlay">
+        <div
+          v-if="dragOver"
+          class="chat-drop-overlay pointer-events-none absolute inset-0 flex items-center justify-center rounded-[28px] text-[14px] font-semibold"
+          :style="{
+            backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`,
+            border: `2px dashed ${brand.colors.primary}`,
+            color: brand.colors.primary,
+            zIndex: 5,
+          }"
+          aria-hidden="true"
+        >
+          <UIcon name="i-lucide-upload-cloud" class="mr-2 size-5" />
+          Solte para anexar
+        </div>
+      </Transition>
       <!-- Animated gradient ring (rendered via ::before on .is-max) -->
 
       <!-- MAX watermark badge — top-right inside the pill -->
@@ -62,6 +83,59 @@
         </span>
       </Transition>
 
+      <!-- Attachment chips (above the textarea) -->
+      <ul
+        v-if="attachments.length > 0"
+        class="flex flex-wrap gap-1.5 pb-1"
+        :aria-label="`${attachments.length} arquivo(s) anexado(s)`"
+      >
+        <li
+          v-for="att in attachments"
+          :key="att.id"
+          class="chat-attach-chip group inline-flex max-w-full items-center gap-2 rounded-xl px-2.5 py-1.5 text-[12px]"
+          :style="{
+            backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 70%, transparent)`,
+            border: `1px solid color-mix(in srgb, ${brand.colors.border} 45%, transparent)`,
+            color: brand.colors.text,
+          }"
+        >
+          <UIcon
+            :name="attachIcon(att)"
+            class="size-3.5 shrink-0"
+            :style="{ color: brand.colors.primary }"
+          />
+          <span class="max-w-[180px] truncate">{{ att.name }}</span>
+          <span
+            class="shrink-0 font-mono-tab text-[10px] uppercase tracking-[0.12em]"
+            :style="{ color: brand.colors.textMuted }"
+          >
+            {{ humanSize(att.size) }}
+          </span>
+          <button
+            type="button"
+            class="ml-1 inline-flex size-4 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-black/10"
+            :aria-label="`Remover ${att.name}`"
+            @click="removeAttachment(att.id)"
+          >
+            <UIcon name="i-lucide-x" class="size-3" />
+          </button>
+        </li>
+      </ul>
+
+      <!-- Per-attachment error (file too big / unsupported / parse failure) -->
+      <div
+        v-if="attachError"
+        role="alert"
+        class="rounded-lg px-3 py-1.5 text-[11.5px]"
+        :style="{
+          backgroundColor: `color-mix(in srgb, ${brand.colors.negative} 8%, transparent)`,
+          border: `1px solid color-mix(in srgb, ${brand.colors.negative} 30%, transparent)`,
+          color: brand.colors.negative,
+        }"
+      >
+        {{ attachError }}
+      </div>
+
       <!-- Textarea row -->
       <div class="flex items-start gap-3">
         <textarea
@@ -77,11 +151,40 @@
           @focus="focused = true"
           @blur="focused = false"
           @keydown.enter.exact.prevent="onEnter"
+          @paste="onPaste"
         />
       </div>
 
-      <!-- Bottom row: tier picker + spacer + send/stop -->
+      <!-- Bottom row: attach + tier picker + spacer + send/stop -->
       <div class="flex flex-wrap items-center gap-2">
+        <!-- Hidden file input — paperclip button triggers it -->
+        <input
+          ref="fileInputRef"
+          type="file"
+          multiple
+          :accept="acceptString"
+          class="hidden"
+          @change="onFilePickerChange"
+        />
+        <button
+          type="button"
+          :disabled="disabled || attachments.length >= MAX_ATTACHMENTS"
+          class="chat-attach-btn mb-0.5 flex size-9 shrink-0 items-center justify-center rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+          :style="{
+            backgroundColor: `color-mix(in srgb, ${brand.colors.text} 5%, transparent)`,
+            color: brand.colors.textMuted,
+          }"
+          :title="
+            attachments.length >= MAX_ATTACHMENTS
+              ? `Máximo ${MAX_ATTACHMENTS} arquivos por mensagem`
+              : 'Anexar arquivo (PDF, XLSX, TXT, MD, imagens)'
+          "
+          aria-label="Anexar arquivo"
+          @click="fileInputRef?.click()"
+        >
+          <UIcon name="i-lucide-paperclip" class="size-4" />
+        </button>
+
         <div
           class="chat-tier-group inline-flex items-center gap-0.5 rounded-full p-0.5"
           :style="{
@@ -183,6 +286,7 @@
 
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue'
+import type { ChatAttachment, ChatAttachmentKind } from '~/composables/useChatStream'
 
 export type ChatTier = 'basic' | 'max'
 
@@ -201,7 +305,7 @@ const props = defineProps<{
 const tier = defineModel<ChatTier>('tier', { default: 'basic' })
 
 const emit = defineEmits<{
-  send: [message: string]
+  send: [message: string, attachments: ChatAttachment[]]
   stop: []
 }>()
 
@@ -238,7 +342,205 @@ const placeholder = computed(() =>
     : 'Pergunte sobre qualquer ativo, faça simulações…',
 )
 
-const canSend = computed(() => value.value.trim().length > 0 && !props.disabled)
+// =============================================================
+// Attachments
+// =============================================================
+const fileInputRef = ref<HTMLInputElement | null>(null)
+const attachments = ref<ChatAttachment[]>([])
+const attachError = ref<string | null>(null)
+const dragOver = ref(false)
+let dragDepth = 0
+
+const MAX_ATTACHMENTS = 5
+const MAX_FILE_BYTES = 10 * 1024 * 1024 // 10 MB per file
+const MAX_TOTAL_BYTES = 20 * 1024 * 1024 // 20 MB total
+const MAX_TEXT_CHARS = 200_000 // Truncate big text files client-side
+
+// MIME → kind classification. Anything not in this map is rejected.
+const MIME_TO_KIND: Record<string, ChatAttachmentKind> = {
+  'text/plain': 'text',
+  'text/markdown': 'text',
+  'text/csv': 'text',
+  'text/x-markdown': 'text',
+  'application/json': 'text',
+  'application/pdf': 'binary',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'binary',
+  'application/vnd.ms-excel': 'binary',
+  'application/vnd.apple.numbers': 'binary',
+  'application/x-iwork-numbers-sffnumbers': 'binary',
+  'application/zip': 'binary', // .numbers shows up as zip on some browsers
+  'image/png': 'image',
+  'image/jpeg': 'image',
+  'image/webp': 'image',
+  'image/gif': 'image',
+  'image/heic': 'image',
+}
+
+// Used by the <input type="file" accept="..."> attribute.
+const acceptString =
+  '.txt,.md,.markdown,.csv,.json,.pdf,.xlsx,.xls,.numbers,image/png,image/jpeg,image/webp,image/gif,image/heic'
+
+function classifyByName(name: string, fallbackMime: string): { mime: string; kind: ChatAttachmentKind } | null {
+  const ext = name.split('.').pop()?.toLowerCase() ?? ''
+  // Prefer the extension over the browser-supplied MIME because Safari
+  // tags .numbers files as application/octet-stream.
+  if (ext === 'pdf') return { mime: 'application/pdf', kind: 'binary' }
+  if (ext === 'xlsx' || ext === 'xls')
+    return { mime: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', kind: 'binary' }
+  if (ext === 'numbers') return { mime: 'application/vnd.apple.numbers', kind: 'binary' }
+  if (ext === 'txt') return { mime: 'text/plain', kind: 'text' }
+  if (ext === 'md' || ext === 'markdown') return { mime: 'text/markdown', kind: 'text' }
+  if (ext === 'csv') return { mime: 'text/csv', kind: 'text' }
+  if (ext === 'json') return { mime: 'application/json', kind: 'text' }
+  if (ext === 'png') return { mime: 'image/png', kind: 'image' }
+  if (ext === 'jpg' || ext === 'jpeg') return { mime: 'image/jpeg', kind: 'image' }
+  if (ext === 'webp') return { mime: 'image/webp', kind: 'image' }
+  if (ext === 'gif') return { mime: 'image/gif', kind: 'image' }
+  if (ext === 'heic') return { mime: 'image/heic', kind: 'image' }
+  // Fall back to MIME map for files without a sensible extension.
+  const k = MIME_TO_KIND[fallbackMime]
+  return k ? { mime: fallbackMime, kind: k } : null
+}
+
+function humanSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes}B`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)}KB`
+  return `${(bytes / 1024 / 1024).toFixed(1)}MB`
+}
+
+function attachIcon(att: ChatAttachment): string {
+  if (att.kind === 'image') return 'i-lucide-image'
+  if (att.mime === 'application/pdf') return 'i-lucide-file-text'
+  if (att.mime.includes('spreadsheet') || att.mime.includes('excel') || att.mime.includes('numbers'))
+    return 'i-lucide-table'
+  if (att.mime === 'text/markdown') return 'i-lucide-file-code'
+  if (att.mime === 'application/json') return 'i-lucide-braces'
+  return 'i-lucide-file'
+}
+
+function readAsText(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader()
+    r.onload = () => resolve(typeof r.result === 'string' ? r.result : '')
+    r.onerror = () => reject(r.error ?? new Error('read failed'))
+    r.readAsText(file)
+  })
+}
+
+function readAsBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader()
+    r.onload = () => {
+      const result = r.result as string
+      // FileReader returns "data:<mime>;base64,<...>"; we want only the
+      // base64 payload — the backend already knows the MIME from the
+      // attachment record.
+      const idx = result.indexOf(',')
+      resolve(idx >= 0 ? result.slice(idx + 1) : result)
+    }
+    r.onerror = () => reject(r.error ?? new Error('read failed'))
+    r.readAsDataURL(file)
+  })
+}
+
+async function ingestFile(file: File) {
+  attachError.value = null
+  if (attachments.value.length >= MAX_ATTACHMENTS) {
+    attachError.value = `Máximo de ${MAX_ATTACHMENTS} arquivos por mensagem.`
+    return
+  }
+  if (file.size > MAX_FILE_BYTES) {
+    attachError.value = `${file.name} passa de 10MB. Reduza o arquivo.`
+    return
+  }
+  const totalAfter = attachments.value.reduce((s, a) => s + a.size, 0) + file.size
+  if (totalAfter > MAX_TOTAL_BYTES) {
+    attachError.value = 'Total de anexos passa de 20MB. Remova algum.'
+    return
+  }
+  const cls = classifyByName(file.name, file.type || '')
+  if (!cls) {
+    attachError.value = `Formato de "${file.name}" não suportado. Use PDF, XLSX, TXT, MD, CSV, JSON ou imagem.`
+    return
+  }
+  try {
+    const content =
+      cls.kind === 'text' ? (await readAsText(file)).slice(0, MAX_TEXT_CHARS) : await readAsBase64(file)
+    attachments.value.push({
+      id: `att_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+      name: file.name,
+      mime: cls.mime,
+      size: file.size,
+      kind: cls.kind,
+      content,
+    })
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error('[Input] file read failed', err)
+    attachError.value = `Não consegui ler "${file.name}".`
+  }
+}
+
+async function ingestFiles(files: FileList | File[]) {
+  // Sequential — keeps the per-file cap easy to reason about and lets us
+  // stop early when the total cap is hit.
+  for (const f of Array.from(files)) {
+    if (attachments.value.length >= MAX_ATTACHMENTS) break
+    await ingestFile(f)
+  }
+}
+
+function removeAttachment(id: string) {
+  attachments.value = attachments.value.filter((a) => a.id !== id)
+  attachError.value = null
+}
+
+async function onFilePickerChange(e: Event) {
+  const input = e.target as HTMLInputElement
+  if (input.files) await ingestFiles(input.files)
+  input.value = '' // allow re-selecting the same file
+}
+
+function onDragEnter(e: DragEvent) {
+  if (!e.dataTransfer || !Array.from(e.dataTransfer.types ?? []).includes('Files')) return
+  dragDepth++
+  dragOver.value = true
+}
+function onDragOver(e: DragEvent) {
+  if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy'
+}
+function onDragLeave() {
+  dragDepth--
+  if (dragDepth <= 0) {
+    dragDepth = 0
+    dragOver.value = false
+  }
+}
+async function onDrop(e: DragEvent) {
+  dragDepth = 0
+  dragOver.value = false
+  if (e.dataTransfer?.files) await ingestFiles(e.dataTransfer.files)
+}
+
+async function onPaste(e: ClipboardEvent) {
+  const items = e.clipboardData?.items
+  if (!items) return
+  const files: File[] = []
+  for (const item of Array.from(items)) {
+    if (item.kind === 'file') {
+      const f = item.getAsFile()
+      if (f) files.push(f)
+    }
+  }
+  if (files.length > 0) {
+    e.preventDefault()
+    await ingestFiles(files)
+  }
+}
+
+const canSend = computed(
+  () => (value.value.trim().length > 0 || attachments.value.length > 0) && !props.disabled,
+)
 
 const composerStyle = computed(() => {
   if (isMax.value) {
@@ -337,7 +639,12 @@ async function onEnter(e: KeyboardEvent) {
 function submit() {
   if (!canSend.value) return
   const message = value.value.trim()
-  emit('send', message)
+  // Snapshot the chips, then clear — emit after so the parent gets a
+  // stable list and our reactive ref doesn't double-fire.
+  const files = attachments.value.slice()
+  attachments.value = []
+  attachError.value = null
+  emit('send', message, files)
   value.value = ''
   nextTick(() => autosize())
 }
