@@ -78,9 +78,15 @@ export default defineNuxtConfig({
     build: {
       rollupOptions: {
         output: {
+          // Only client-side chunks are listed here. Don't reference
+          // `isomorphic-dompurify` — it's loaded via dynamic import()
+          // inside Message.vue, which makes Vite emit it as its own
+          // lazy chunk. Listing it in manualChunks would force-include
+          // it in this initial bundle on every page (unnecessary
+          // weight) and complicates the SSR stub above.
           manualChunks: {
             'chart': ['chart.js', 'vue-chartjs'],
-            'markdown': ['marked', 'isomorphic-dompurify'],
+            'markdown': ['marked'],
             'firebase': ['firebase/app', 'firebase/messaging'],
           },
         },
@@ -505,6 +511,21 @@ export default defineNuxtConfig({
         // SSE-friendly: don't buffer the response
         ws: true,
       },
+    },
+    // Keep `isomorphic-dompurify` (and its `jsdom` transitive dep) OUT
+    // of the SSR bundle. The package fails to load on Vercel's
+    // serverless runtime because parse5 became ESM-only while jsdom
+    // still uses require(), producing a hard 500 on every /help SSR.
+    // We import it dynamically client-side in chat-v2/Message.vue, so
+    // the SSR build never actually USES it — we just need to make sure
+    // it never gets resolved at runtime in Node either. The empty
+    // virtual-stub alias below short-circuits any stray import path
+    // that survives tree-shaking; the runtime DOMPurify import in
+    // Message.vue is gated by `if (import.meta.client)` so it falls
+    // through to the empty stub on SSR and never runs.
+    alias: {
+      'isomorphic-dompurify': 'unenv/runtime/mock/empty',
+      'jsdom': 'unenv/runtime/mock/empty',
     },
   },
   components: [
