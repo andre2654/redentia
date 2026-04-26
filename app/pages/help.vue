@@ -421,6 +421,17 @@ async function onNewConversation() {
 }
 
 async function onSelectSession(id: string) {
+  // CRITICAL: if a stream is in flight, abort it before swapping
+  // sessions. Switching mid-stream leaves the SSE reader trying to
+  // mutate a message that's about to be replaced by loadSession() —
+  // which corrupts the new conversation (the still-running tool
+  // events from the OLD turn land on the NEW history). Calling
+  // stop() flips the AbortController and the stream cleans up.
+  if (chat.isStreaming.value) {
+    chat.stop()
+  }
+  // Clear local UI state for the previous session so we don't carry
+  // over stale "pending decision" cards or in-flight forms.
   await chat.loadSession(id)
   sidebarOpen.value = false
 }

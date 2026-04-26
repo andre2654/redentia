@@ -281,6 +281,21 @@ export function useChatStream(opts: UseChatStreamOptions) {
           tool_name?: string | null
           meta?: ChatMessageMeta | null
         }>
+        decisions?: Array<{
+          id: string
+          sessionId: string | null
+          sourceMessageId: string | null
+          type: 'buy' | 'sell' | 'rebalance' | 'hold' | 'allocate'
+          ticker: string | null
+          targetAmount: string | null
+          targetPrice: string | null
+          triggerCondition: string | null
+          thesis: string
+          invalidator: string | null
+          status: string
+          goalId: string | null
+          scheduledReviews: string[] | null
+        }>
       }>(`/api/chat/sessions/${id}`, {
         headers: { ...authHeaders(), ...chatClientIdHeaders() },
       })
@@ -321,6 +336,30 @@ export function useChatStream(opts: UseChatStreamOptions) {
         }
         i = j
       }
+      // Index decisions by source_message_id so we can re-attach them
+      // to their assistant message on reload. Only `pending` decisions
+      // get rendered as actionable cards — anything already
+      // accepted/cancelled stays in the sidebar journal but not
+      // re-asked here.
+      const decisionsByMessage = new Map<string, ChatDecisionCardData[]>()
+      for (const d of r.decisions ?? []) {
+        if (d.status !== 'pending' || !d.sourceMessageId) continue
+        const list = decisionsByMessage.get(d.sourceMessageId) ?? []
+        list.push({
+          decisionId: d.id,
+          type: d.type,
+          ticker: d.ticker,
+          thesis: d.thesis,
+          invalidator: d.invalidator,
+          triggerCondition: d.triggerCondition,
+          targetAmount: d.targetAmount ? parseFloat(d.targetAmount) : null,
+          targetPrice: d.targetPrice ? parseFloat(d.targetPrice) : null,
+          goalId: d.goalId,
+          reviewDates: d.scheduledReviews ?? [],
+        })
+        decisionsByMessage.set(d.sourceMessageId, list)
+      }
+
       messages.value = collapsed.map((m) => {
         // Prefer the persisted `meta` from the server (form-response
         // marker, attachment chips, etc). Fall back to legacy
@@ -347,7 +386,7 @@ export function useChatStream(opts: UseChatStreamOptions) {
           toolCalls: [],
           artifacts: m.artifacts ?? [],
           forms: [],
-          decisions: [],
+          decisions: decisionsByMessage.get(m.id) ?? [],
           status: 'complete' as const,
           createdAt: m.createdAt,
           meta,
