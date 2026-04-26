@@ -1,18 +1,18 @@
 <!--
-  Composer pill — premium tier-aware design.
+  Composer pill — tier-aware, restraint-first.
 
-  Two visual modes:
+  Restraint pass (audit follow-up):
+  - Removed animated 6s conic gradient ring on MAX. Replaced with a
+    flat 1px brand-tinted border so MAX still reads as distinct but
+    nothing moves.
+  - Removed radial halo blur behind the pill (24px filter on every
+    paint). Tier identity now lives in a single subtle border tone.
+  - Removed "MAX" badge gradient + sparkle. Tier identifier is the
+    pill toggle below — no need for a redundant decoration on top.
+  - Send button gradient flattened to a solid brand fill.
 
-  - **Basic**: clean, neutral, fast-feeling. Subtle border, single-tone
-    surface. Reads as "default tool".
-
-  - **MAX**: PREMIUM. The whole pill transforms — animated gradient
-    border that slowly rotates, soft inner glow tinted to brand
-    primary, "MAX" watermark inside, sparkle send button, slightly
-    elevated shadow. Feels expensive without being cartoonish.
-
-  The toggle is the only knob — old focus_mode chips and the
-  "Profunda" toggle are gone. Backend auto-detects intent.
+  Basic and MAX now share the same shape; only border colour and
+  send-button intensity change. Speed of paint > visual signature.
 -->
 <template>
   <div class="chat-composer-wrap pointer-events-none absolute inset-x-0 bottom-0 z-10 px-5 pt-10 md:px-8" :style="{ paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom, 0px))' }">
@@ -25,23 +25,9 @@
       aria-hidden="true"
     />
 
-    <!-- Gradient halo behind the pill (only visible on MAX) -->
-    <Transition name="chat-max-halo">
-      <div
-        v-if="isMax"
-        class="chat-max-halo pointer-events-none absolute inset-x-0 bottom-3 mx-auto max-w-3xl"
-        :style="{
-          height: '120px',
-          background: `radial-gradient(ellipse 70% 100% at 50% 100%, ${brand.colors.primary}26 0%, transparent 70%)`,
-          filter: 'blur(24px)',
-        }"
-        aria-hidden="true"
-      />
-    </Transition>
-
     <div
-      class="chat-composer pointer-events-auto relative mx-auto flex max-w-3xl flex-col gap-2 px-5 pb-3 pt-4 transition-all duration-300"
-      :class="['chat-composer', isMax ? 'is-max' : 'is-basic', dragOver ? 'is-drag-over' : '']"
+      class="chat-composer pointer-events-auto relative mx-auto flex max-w-3xl flex-col gap-2 px-5 pb-3 pt-4 transition-[border-color,box-shadow] duration-200"
+      :class="[isMax ? 'is-max' : 'is-basic', dragOver ? 'is-drag-over' : '']"
       :style="composerStyle"
       @dragenter.prevent="onDragEnter"
       @dragover.prevent="onDragOver"
@@ -54,8 +40,8 @@
           v-if="dragOver"
           class="chat-drop-overlay pointer-events-none absolute inset-0 flex items-center justify-center rounded-[28px] text-[14px] font-semibold"
           :style="{
-            backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`,
-            border: `2px dashed ${brand.colors.primary}`,
+            backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 12%, transparent)`,
+            border: `1.5px dashed ${brand.colors.primary}`,
             color: brand.colors.primary,
             zIndex: 5,
           }"
@@ -64,23 +50,6 @@
           <UIcon name="i-lucide-upload-cloud" class="mr-2 size-5" />
           Solte para anexar
         </div>
-      </Transition>
-      <!-- Animated gradient ring (rendered via ::before on .is-max) -->
-
-      <!-- MAX watermark badge — top-right inside the pill -->
-      <Transition name="chat-max-badge">
-        <span
-          v-if="isMax"
-          class="chat-max-badge pointer-events-none absolute right-4 top-3 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-[0.18em]"
-          :style="{
-            background: `linear-gradient(135deg, ${brand.colors.primary} 0%, color-mix(in srgb, ${brand.colors.primary} 60%, ${brand.colors.text}) 100%)`,
-            color: brand.colors.background,
-            boxShadow: `0 4px 12px -4px ${brand.colors.primary}66`,
-          }"
-        >
-          <UIcon name="i-lucide-sparkles" class="size-2.5" />
-          MAX
-        </span>
       </Transition>
 
       <!-- Attachment chips (above the textarea) -->
@@ -144,7 +113,6 @@
           rows="1"
           :placeholder="placeholder"
           class="chat-textarea min-h-[28px] max-h-[200px] flex-1 resize-none border-0 bg-transparent text-[16px] leading-relaxed outline-none"
-          :class="isMax ? 'pr-16' : ''"
           :style="{ color: brand.colors.text }"
           :disabled="disabled"
           @input="autosize"
@@ -543,28 +511,23 @@ const canSend = computed(
 )
 
 const composerStyle = computed(() => {
-  if (isMax.value) {
-    return {
-      // Solid surface — gradient border lives in ::before via CSS
-      backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 96%, transparent)`,
-      borderRadius: '28px',
-      // Halo + lifted shadow tinted with brand primary
-      boxShadow: focused.value
-        ? `0 18px 60px -12px color-mix(in srgb, ${brand.colors.primary} 42%, transparent), 0 0 0 4px color-mix(in srgb, ${brand.colors.primary} 18%, transparent)`
-        : `0 12px 48px -16px color-mix(in srgb, ${brand.colors.primary} 30%, transparent)`,
-      // CSS vars consumed by the ::before gradient ring
-      '--ring-c1': brand.colors.primary,
-      '--ring-c2': `color-mix(in srgb, ${brand.colors.primary} 30%, ${brand.colors.text})`,
-      '--ring-c3': `color-mix(in srgb, ${brand.colors.primary} 80%, ${brand.colors.background})`,
-    } as Record<string, string>
-  }
+  // Single shape, two tones. Border colour and focus ring tint vary
+  // by tier; everything else (radius, shadow, surface) is shared so
+  // there's no decorative motion between modes.
+  const borderColor = isMax.value
+    ? `color-mix(in srgb, ${brand.colors.primary} ${focused.value ? 70 : 45}%, transparent)`
+    : focused.value
+      ? brand.colors.primary
+      : `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`
+  const ringTint = focused.value
+    ? `0 0 0 3px color-mix(in srgb, ${brand.colors.primary} ${isMax.value ? 18 : 14}%, transparent)`
+    : ''
+  const baseShadow = '0 8px 30px -16px rgba(0,0,0,0.18)'
   return {
-    backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 95%, transparent)`,
+    backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 96%, transparent)`,
     borderRadius: '28px',
-    border: `1px solid ${focused.value ? brand.colors.primary : `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`}`,
-    boxShadow: focused.value
-      ? `0 12px 40px -8px rgba(0,0,0,0.18), 0 0 0 4px color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`
-      : '0 12px 40px -16px rgba(0,0,0,0.18)',
+    border: `1px solid ${borderColor}`,
+    boxShadow: ringTint ? `${baseShadow}, ${ringTint}` : baseShadow,
   } as Record<string, string>
 })
 
@@ -574,6 +537,9 @@ function onTierClick(value: ChatTier) {
 }
 
 function tierBtnStyle(value: ChatTier) {
+  // One shape, two tones — flat fill, no gradients, no inset shadows.
+  // Active state: solid surface + 1px brand border for MAX, solid
+  // surface for Basic. Inactive: text-muted only.
   const active = tier.value === value
   if (!active) {
     return {
@@ -582,30 +548,24 @@ function tierBtnStyle(value: ChatTier) {
   }
   if (value === 'max') {
     return {
-      background: `linear-gradient(135deg, color-mix(in srgb, ${brand.colors.primary} 18%, ${brand.colors.surface}) 0%, color-mix(in srgb, ${brand.colors.primary} 8%, ${brand.colors.surface}) 100%)`,
+      backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 12%, ${brand.colors.surface})`,
       color: brand.colors.primary,
-      boxShadow: `0 1px 2px color-mix(in srgb, ${brand.colors.primary} 30%, transparent), inset 0 0 0 1px color-mix(in srgb, ${brand.colors.primary} 35%, transparent)`,
+      boxShadow: `inset 0 0 0 1px color-mix(in srgb, ${brand.colors.primary} 35%, transparent)`,
     } as Record<string, string>
   }
   return {
     backgroundColor: brand.colors.surface,
     color: brand.colors.text,
-    boxShadow: `0 1px 2px color-mix(in srgb, ${brand.colors.text} 10%, transparent)`,
+    boxShadow: `inset 0 0 0 1px color-mix(in srgb, ${brand.colors.border} 60%, transparent)`,
   } as Record<string, string>
 }
 
 const sendButtonStyle = computed(() => {
+  // Solid fill, no gradient. Disabled state uses muted border tone.
   if (!canSend.value) {
     return {
       backgroundColor: `color-mix(in srgb, ${brand.colors.border} 70%, transparent)`,
       color: brand.colors.textMuted,
-    } as Record<string, string>
-  }
-  if (isMax.value) {
-    return {
-      background: `linear-gradient(135deg, ${brand.colors.primary} 0%, color-mix(in srgb, ${brand.colors.primary} 70%, ${brand.colors.text}) 100%)`,
-      color: brand.colors.background,
-      boxShadow: `0 6px 16px -4px color-mix(in srgb, ${brand.colors.primary} 50%, transparent), inset 0 1px 0 0 color-mix(in srgb, white 30%, transparent)`,
     } as Record<string, string>
   }
   return {
@@ -673,90 +633,11 @@ watch(value, () => {
   filter: brightness(1.06);
 }
 
-/* ============================================================
-   MAX MODE — animated gradient ring around the composer pill.
-   Implementation: a pseudo-element that sits BEHIND the pill,
-   rotates a conic gradient slowly, and is masked to a thin
-   1.5px ring via two background-clip layers. Pure CSS, no JS.
-   ============================================================ */
-.chat-composer.is-max {
-  position: relative;
-  isolation: isolate;
-}
-
-.chat-composer.is-max::before {
-  content: '';
-  position: absolute;
-  inset: -1.5px;
-  border-radius: inherit;
-  padding: 1.5px;
-  background: conic-gradient(
-    from var(--ring-angle, 0deg),
-    var(--ring-c1, currentColor),
-    var(--ring-c2, currentColor),
-    var(--ring-c3, currentColor),
-    var(--ring-c2, currentColor),
-    var(--ring-c1, currentColor)
-  );
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  z-index: -1;
-  animation: chat-ring-rotate 6s linear infinite;
-  pointer-events: none;
-}
-
-@keyframes chat-ring-rotate {
-  from { --ring-angle: 0deg; }
-  to   { --ring-angle: 360deg; }
-}
-
-@property --ring-angle {
-  syntax: '<angle>';
-  inherits: false;
-  initial-value: 0deg;
-}
-
-/* Subtle lift on focus when MAX */
-.chat-composer.is-max:has(.chat-textarea:focus) {
-  transform: translateY(-1px);
-}
-
+/* MAX mode — quiet visual identity:
+     - 1px brand-tinted border (set inline via composerStyle)
+     - subtle focus ring (color-mix tint)
+   No animations, no halo, no rotating gradient. */
 .chat-send-max:not(:disabled):hover {
-  filter: brightness(1.10) saturate(1.10);
-}
-
-/* Halo + badge transitions */
-.chat-max-halo-enter-active,
-.chat-max-halo-leave-active {
-  transition: opacity 320ms ease;
-}
-.chat-max-halo-enter-from,
-.chat-max-halo-leave-to {
-  opacity: 0;
-}
-
-.chat-max-badge-enter-active,
-.chat-max-badge-leave-active {
-  transition:
-    opacity 220ms ease,
-    transform 220ms cubic-bezier(0.2, 0.7, 0.3, 1);
-}
-.chat-max-badge-enter-from,
-.chat-max-badge-leave-to {
-  opacity: 0;
-  transform: translateY(-4px) scale(0.92);
-}
-
-/* Reduced-motion: kill the ring rotation */
-@media (prefers-reduced-motion: reduce) {
-  .chat-composer.is-max::before {
-    animation: none;
-  }
+  filter: brightness(1.06);
 }
 </style>

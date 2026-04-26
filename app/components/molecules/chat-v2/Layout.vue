@@ -1,13 +1,14 @@
 <!--
   ChatV2Layout — minimalist 3-pane shell.
 
-  Design notes:
-  - No visible borders between panes; separation comes from
-    background tone alone (sidebar slightly tinted from base bg).
-  - Subtle radial gradient + noise on the main thread surface.
-  - On mobile, the layout collapses to a single full-bleed pane;
-    sidebar slides in from the left as a 90vw sheet, artifact
-    slides up from the bottom as a 90vh sheet.
+  Restraint pass (audit follow-up):
+  - Removed animated MAX top-line shine (8s infinite). Replaced
+    with a flat 1px brand-tinted hairline. Tier identity now lives
+    in tone (background tint), not motion.
+  - Removed dual-layer radial halo for MAX. Single subtle radial
+    is enough — the audit found the ambient blob was contributing
+    cumulative muddiness without carrying information.
+  - Sidebar / artifact panes use one neutral tint (no per-tier mix).
 -->
 <template>
   <div
@@ -15,22 +16,25 @@
     :class="tier === 'max' ? 'is-max' : 'is-basic'"
     :style="{ backgroundColor: brand.colors.background, color: brand.colors.text }"
   >
-    <!-- Ambient gradient — Basic = subtle, MAX = richer with primary tint -->
+    <!-- Ambient gradient — single subtle radial, tier-agnostic.
+         Decorative only; pointer-events-none so nothing blocks the
+         actual content. -->
     <div
-      class="pointer-events-none absolute inset-0 transition-opacity duration-500"
+      class="pointer-events-none absolute inset-0"
       :style="{
-        backgroundImage: tier === 'max'
-          ? `radial-gradient(ellipse 90% 55% at 50% 0%, ${brand.colors.primary}1F 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 50% 100%, ${brand.colors.primary}14 0%, transparent 60%)`
-          : `radial-gradient(ellipse 80% 50% at 50% 0%, ${brand.colors.primary}0F 0%, transparent 60%)`,
+        backgroundImage: `radial-gradient(ellipse 80% 50% at 50% 0%, ${brand.colors.primary}10 0%, transparent 60%)`,
       }"
       aria-hidden="true"
     />
 
-    <!-- MAX-only top accent line — a thin animated gradient bar that
-         signals "you're inside Redentia MAX" without being intrusive -->
+    <!-- MAX-only top hairline — flat 1px line, no animation.
+         Communicates tier identity through colour alone. -->
     <div
       v-if="tier === 'max'"
-      class="chat-max-topline pointer-events-none absolute inset-x-0 top-0 h-[2px]"
+      class="pointer-events-none absolute inset-x-0 top-0 h-px"
+      :style="{
+        backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 70%, transparent)`,
+      }"
       aria-hidden="true"
     />
 
@@ -133,30 +137,6 @@ const brand = useBrand()
 </script>
 
 <style scoped>
-/* MAX top accent — animated gradient line spanning the full width */
-.chat-max-topline {
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    var(--brand-primary, #f59e0b) 20%,
-    color-mix(in srgb, var(--brand-primary, #f59e0b) 60%, currentColor) 50%,
-    var(--brand-primary, #f59e0b) 80%,
-    transparent 100%
-  );
-  background-size: 200% 100%;
-  animation: chat-max-shine 8s linear infinite;
-  opacity: 0.55;
-}
-
-@keyframes chat-max-shine {
-  from { background-position: -100% 0; }
-  to   { background-position: 100% 0; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .chat-max-topline { animation: none; }
-}
-
 .chat-sheet-left-enter-active,
 .chat-sheet-left-leave-active,
 .chat-sheet-bottom-enter-active,

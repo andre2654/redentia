@@ -26,16 +26,10 @@
   >
     <span class="flex min-w-0 items-center gap-2.5">
       <span
-        class="goal-status-dot relative inline-flex size-2 shrink-0 rounded-full"
+        class="inline-flex size-2 shrink-0 rounded-full"
         :style="{ backgroundColor: statusColor }"
         aria-hidden="true"
-      >
-        <span
-          v-if="goal.status === 'at_risk'"
-          class="absolute inset-0 rounded-full"
-          :style="{ backgroundColor: statusColor, animation: 'goal-pulse 2.4s cubic-bezier(0,0,.2,1) infinite' }"
-        />
-      </span>
+      />
       <span class="min-w-0 flex-1">
         <span class="flex items-baseline gap-1.5">
           <span v-if="goal.emoji" aria-hidden="true">{{ goal.emoji }}</span>
@@ -156,22 +150,7 @@ const cardStyle = computed(() => {
   box-shadow: 0 0 0 2px var(--brand-primary, #f5a300);
 }
 
-@keyframes goal-pulse {
-  0% {
-    transform: scale(1);
-    opacity: 0.5;
-  }
-  80%,
-  100% {
-    transform: scale(2.6);
-    opacity: 0;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .goal-status-dot > * {
-    animation: none !important;
-  }
   .goal-progress-fill {
     transition: none !important;
   }

@@ -47,24 +47,16 @@
       @mouseleave="hover = false"
     >
       <span class="flex min-w-0 items-center gap-2.5">
-        <!-- Status dot: pulses while any tool is running, solid otherwise. -->
+        <!-- Status dot: solid running tone (brand) vs. solid done tone
+             (textMuted). No animation — the panel auto-expands when
+             work starts, which is the "something's happening" signal. -->
         <span
-          class="chat-research-dot relative inline-flex size-2 shrink-0 rounded-full"
-          :class="anyRunning ? 'is-running' : 'is-done'"
+          class="inline-flex size-2 shrink-0 rounded-full"
           :style="{
             backgroundColor: anyRunning ? brand.colors.primary : brand.colors.textMuted,
           }"
           aria-hidden="true"
-        >
-          <span
-            v-if="anyRunning"
-            class="absolute inset-0 rounded-full"
-            :style="{
-              backgroundColor: brand.colors.primary,
-              animation: 'chat-research-ping 1.6s cubic-bezier(0,0,.2,1) infinite',
-            }"
-          />
-        </span>
+        />
         <span
           class="font-mono-tab text-[10.5px] uppercase tracking-[0.18em]"
           :style="{ color: brand.colors.textMuted }"
@@ -340,24 +332,6 @@ watch(
 </script>
 
 <style scoped>
-@keyframes chat-research-ping {
-  0% {
-    transform: scale(1);
-    opacity: 0.8;
-  }
-  80%,
-  100% {
-    transform: scale(2.4);
-    opacity: 0;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .chat-research-dot.is-running > * {
-    animation: none !important;
-  }
-}
-
 /* Touch optimisation — eliminate the iOS double-tap delay and the
    default tap highlight (we render our own hover/focus states). */
 .chat-research-trigger {

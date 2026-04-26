@@ -1,29 +1,29 @@
 <!--
-  Sidebar — Linear minimalism with Stripe-grade polish.
+  Sidebar — Linear minimalism, restraint pass.
 
   Design philosophy:
-  - One screen of pixels you'd hang on a wall. Nothing decorative
-    that doesn't communicate. But every essential gets a touch of
-    craft: a hairline horizon, a soft active glow, a subtle ⌘K
-    kbd cap, a sparkle that actually sparkles.
-  - Single accent color, single weight scale. The active row uses a
-    2px left bar + a faint primary tint behind it (~5%) — hierarchy
-    without volume.
+  - One screen of pixels. Hierarchy through space + weight, never
+    through animation or layered tints.
+  - Single accent color, single weight scale. Active row uses a 2px
+    left bar + a faint primary tint (~5%) — hierarchy without volume.
   - Hover reveals secondary affordances (date, delete). Default
     state is title-only.
-  - MAX is a glyph next to the title with a soft radial glow — not a
-    pill. The glyph itself sells the tier.
+  - MAX = a small solid dot next to the title, no animation, no
+    radial glow. Tier identity through tone.
   - Dates collapse to relative ("3h", "2d", "12 jan"). tabular-nums.
 
-  WIG compliance:
-  - aria-label on every icon-only control
-  - focus-visible outline on every interactive
-  - explicit transition properties (no `transition: all`)
-  - touch-action: manipulation
-  - prefers-reduced-motion guard
-  - min-w-0 on flex children with truncating text
-  - `…` ellipsis, tabular-nums, Intl for long-tail dates
-  - <nav>, <h3>, aria-current, aria-hidden on decorative
+  Restraint pass (audit follow-up):
+  - Removed the breathing radial dot animation (4s loop on every
+    MAX row in the list).
+  - Removed the active-MAX shimmer sweep (4.8s loop with mix-blend-
+    mode: screen — expensive on lower-end hardware).
+  - Removed the active-MAX top hairline gradient. Active state is
+    one signal: the left accent bar.
+  - Kept the ambient radial gradient — it's a single static paint,
+    no animation, communicates "this is a sidebar pane" even on
+    devices without scrollbar styling.
+
+  WIG compliance unchanged.
 -->
 <template>
   <div class="chat-sidebar flex h-full min-h-0 flex-col">
@@ -126,6 +126,13 @@
       v-if="showGoalsAndDecisions"
       class="chat-overlay-sections relative flex-shrink-0"
     >
+      <ChatV2AlertsSection
+        v-if="alertsState.alerts.value.length > 0"
+        :alerts="alertsState.alerts.value"
+        @select="(a) => $emit('select-alert', a)"
+        @dismiss="(id) => alertsState.dismiss(id)"
+        @dismiss-all="() => alertsState.dismissAll()"
+      />
       <ChatV2GoalsSection
         :goals="goalsState.goals.value"
         :loading="goalsState.loading.value"
@@ -138,6 +145,11 @@
         :hit-rate="decisionsState.hitRate.value"
         :loading="decisionsState.loading.value"
         @select="(d) => $emit('select-decision', d)"
+      />
+      <ChatV2WatchlistSection
+        :watches="watchlistState.watches.value"
+        :loading="watchlistState.loading.value"
+        @select="(w) => $emit('select-watch', w)"
       />
       <div
         class="chat-horizon mx-4 mb-1 mt-1 h-px"
@@ -469,85 +481,23 @@ onUnmounted(() => window.removeEventListener('keydown', onKey))
   background-color: color-mix(in srgb, currentColor 10%, transparent);
 }
 
-/* MAX dot subtle breathe — barely-perceptible glow on inactive rows.
-   Communicates "this conversation is MAX" without an icon. */
-.chat-sess-dot::after {
-  content: '';
-  position: absolute;
-  inset: -3px;
-  border-radius: 9999px;
-  background: radial-gradient(
-    circle,
-    color-mix(in srgb, var(--brand-primary, currentColor) 45%, transparent) 0%,
-    transparent 70%
-  );
-  opacity: 0.4;
-  animation: chat-max-breathe 4s ease-in-out infinite;
-  pointer-events: none;
-}
-@keyframes chat-max-breathe {
-  0%,
-  100% { opacity: 0.25; transform: scale(0.85); }
-  50%  { opacity: 0.95; transform: scale(1.25); }
-}
+/* MAX dot — solid colored dot, no animation. Tier identity through
+   tone, not motion. The audit flagged 7+ simultaneous animations on
+   load; killing the breathing dot is the cheapest cumulative win. */
 
-/* Active + MAX row — animated horizontal shimmer that sweeps slowly
-   across the gradient pad. This is the "incrível" detail: the row
-   gently shines, signalling premium tier without an icon or pill. */
-.is-active.is-max .chat-sess-pad::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    color-mix(in srgb, var(--brand-primary, currentColor) 22%, transparent) 45%,
-    color-mix(in srgb, var(--brand-primary, currentColor) 35%, transparent) 50%,
-    color-mix(in srgb, var(--brand-primary, currentColor) 22%, transparent) 55%,
-    transparent 100%
-  );
-  background-size: 220% 100%;
-  background-position: -100% 0;
-  animation: chat-max-shimmer 4.8s ease-in-out infinite;
-  pointer-events: none;
-  mix-blend-mode: screen;
-}
-@keyframes chat-max-shimmer {
-  0%   { background-position: -120% 0; opacity: 0; }
-  20%  { opacity: 1; }
-  80%  { opacity: 1; }
-  100% { background-position: 220% 0; opacity: 0; }
-}
+/* Active + MAX row uses the same active treatment as Basic; the row's
+   left accent bar (rendered inline) is enough to signal selection.
+   No shimmer sweep, no top-edge gradient hairline. */
 
-/* Active + MAX — a hairline at the top edge of the row, like a card
-   accent. Adds depth without a heavy border. */
-.is-active.is-max .chat-sess::before {
-  content: '';
-  position: absolute;
-  inset: 0 8px auto 8px;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    color-mix(in srgb, var(--brand-primary, currentColor) 60%, transparent) 25%,
-    color-mix(in srgb, var(--brand-primary, currentColor) 60%, transparent) 75%,
-    transparent 100%
-  );
-  pointer-events: none;
-  border-radius: 1px;
-}
-
-/* Honor reduced motion */
+/* Honor reduced motion — kept for the few legitimate transitions
+   that remain (search clear, hover/focus). */
 @media (prefers-reduced-motion: reduce) {
   .chat-new,
   .chat-sess,
   .chat-search,
   .chat-search-clear,
-  .chat-sess-del,
-  .chat-sess-dot::after,
-  .is-active.is-max .chat-sess-pad::after {
+  .chat-sess-del {
     transition: none !important;
-    animation: none !important;
   }
   .chat-new .iconify {
     transition: none !important;

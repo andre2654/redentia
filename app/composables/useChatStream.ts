@@ -74,6 +74,73 @@ export interface ChatDecisionCardData {
   reviewDates: string[]
 }
 
+/** Pre-execution payload — mirrors `preexec.show` SSE event. The
+ *  PreExecuteCard component renders the inline checklist + confirm
+ *  buttons. */
+export interface ChatPreExecuteData {
+  decisionId: string
+  decisionType: 'buy' | 'sell' | 'rebalance' | 'hold' | 'allocate'
+  ticker?: string | null
+  thesis: string
+  invalidator?: string | null
+  triggerCondition?: string | null
+  targetAmount?: number | null
+  targetPrice?: number | null
+  currentPrice?: number | null
+  triggerHit: boolean
+  goalStillValid?: boolean | null
+  goalName?: string | null
+  daysSinceCreated: number
+  cooldownAdvised: boolean
+  items: Array<{
+    id: string
+    label: string
+    detail?: string
+    severity: 'info' | 'warning' | 'critical'
+  }>
+}
+
+/** Scenario simulation payload — mirrors `scenario.show` SSE event.
+ *  The ScenarioCard renders the side-by-side projections. */
+export interface ChatScenarioData {
+  goalId?: string | null
+  goalName?: string | null
+  baseline: {
+    expectedCagr: number
+    requiredCagr: number | null
+    projectedAmount: number
+    status: string
+    explanation: string
+    progressFraction: number
+    monthsTotal: number
+    monthsElapsed: number
+  }
+  results: Array<{
+    label: string
+    detail: string
+    after: {
+      projectedAmount: number
+      status: string
+      explanation: string
+    }
+    effectiveCagr: number
+    projectedDelta: number
+    statusChanged: boolean
+  }>
+}
+
+/** Watchlist alert payload — mirrors `alert.fired` SSE event. */
+export interface ChatAlertData {
+  alertId: string
+  source: 'watchlist' | 'agent' | 'system'
+  kind: string
+  severity: 'info' | 'warning' | 'critical'
+  ticker?: string | null
+  title: string
+  body: string
+  data?: Record<string, unknown>
+}
+
 /**
  * File the user dropped/picked into the composer. Sent verbatim to the
  * chat-service, which decodes the base64, parses by MIME, and feeds the
@@ -178,6 +245,9 @@ export interface ChatMessage {
   artifacts: ChatArtifact[]
   forms: ChatForm[]
   decisions: ChatDecisionCardData[]
+  preExecutes: ChatPreExecuteData[]
+  scenarios: ChatScenarioData[]
+  alerts: ChatAlertData[]
   status: 'streaming' | 'complete' | 'error'
   followups?: string[]
   /** Public tier label — "Redentia Basic" or "Redentia MAX". Replaces
@@ -215,6 +285,9 @@ export function useChatStream(opts: UseChatStreamOptions) {
       artifacts: [],
       forms: [],
       decisions: [],
+      preExecutes: [],
+      scenarios: [],
+      alerts: [],
       status: 'complete',
       createdAt: new Date().toISOString(),
       meta,
@@ -232,6 +305,9 @@ export function useChatStream(opts: UseChatStreamOptions) {
       artifacts: [],
       forms: [],
       decisions: [],
+      preExecutes: [],
+      scenarios: [],
+      alerts: [],
       status: 'streaming',
       createdAt: new Date().toISOString(),
     }) as ChatMessage
@@ -387,6 +463,9 @@ export function useChatStream(opts: UseChatStreamOptions) {
           artifacts: m.artifacts ?? [],
           forms: [],
           decisions: decisionsByMessage.get(m.id) ?? [],
+          preExecutes: [],
+          scenarios: [],
+          alerts: [],
           status: 'complete' as const,
           createdAt: m.createdAt,
           meta,
@@ -868,6 +947,48 @@ export function useChatStream(opts: UseChatStreamOptions) {
           applyServerEvent()
         } catch {
           /* same as above */
+        }
+        break
+      }
+      case 'preexec.show': {
+        // Pre-execution copilot — agent built a checklist for a pending
+        // decision. Render an inline PreExecuteCard with the items.
+        const p = data as ChatPreExecuteData
+        assistant.preExecutes.push(p)
+        break
+      }
+      case 'scenario.show': {
+        // What-if cenários — agent ran a simulation. Render an inline
+        // ScenarioCard with baseline + per-scenario projections.
+        const s = data as ChatScenarioData
+        assistant.scenarios.push(s)
+        break
+      }
+      case 'alert.fired': {
+        // Watchlist alert (cron) OR agent-inline insight. Append to
+        // the current message (so it shows up under the answer) and
+        // prepend to the global inbox so the sidebar bell badge
+        // updates without polling.
+        const a = data as ChatAlertData
+        assistant.alerts.push(a)
+        try {
+          const alertsStore = useAlerts()
+          alertsStore.prepend({
+            id: a.alertId,
+            source: a.source,
+            kind: a.kind,
+            severity: a.severity,
+            ticker: a.ticker ?? null,
+            title: a.title,
+            body: a.body,
+            data: a.data ?? {},
+            sessionId: sessionId.value,
+            decisionId: null,
+            readAt: null,
+            createdAt: new Date().toISOString(),
+          })
+        } catch {
+          /* composable unavailable in tests */
         }
         break
       }
