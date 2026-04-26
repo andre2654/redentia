@@ -120,45 +120,52 @@
       aria-hidden="true"
     />
 
-    <!-- Goals + Decisions: anchored sections that always sit above
-         the chronological history. Goals shown when authenticated. -->
-    <div
+    <!-- Painel button — single consolidated entry point for goals,
+         decisions, watchlist, alerts and the memory audit view. The
+         four standalone sidebar sections used to live here; folding
+         them into a tabbed drawer cut the sidebar from ~5 stacked
+         blocks down to one row, which removes most of the "muito na
+         tela" feedback.
+
+         Tail badge counts pending items (alerts.unread + decisions
+         pending + active alerts) so the user can see at a glance if
+         something needs attention without opening the drawer. -->
+    <button
       v-if="showGoalsAndDecisions"
-      class="chat-overlay-sections relative flex-shrink-0"
+      type="button"
+      class="chat-panel-btn group relative mx-2 mb-1 flex items-center gap-2.5 rounded-md px-3 py-1.5 text-left text-[13px] transition-[background-color,color]"
+      :style="{ color: `color-mix(in srgb, ${brand.colors.text} 78%, transparent)` }"
+      :aria-label="`Abrir painel${panelPendingCount > 0 ? `, ${panelPendingCount} pendente(s)` : ''}`"
+      @click="$emit('open-panel')"
     >
-      <ChatV2AlertsSection
-        v-if="alertsState.alerts.value.length > 0"
-        :alerts="alertsState.alerts.value"
-        @select="(a) => $emit('select-alert', a)"
-        @dismiss="(id) => alertsState.dismiss(id)"
-        @dismiss-all="() => alertsState.dismissAll()"
-      />
-      <ChatV2GoalsSection
-        :goals="goalsState.goals.value"
-        :loading="goalsState.loading.value"
-        :active-goal-id="activeGoalId ?? null"
-        @new-goal="$emit('new-goal')"
-        @select="(g) => $emit('select-goal', g)"
-      />
-      <ChatV2DecisionsSection
-        :decisions="decisionsState.decisions.value"
-        :hit-rate="decisionsState.hitRate.value"
-        :loading="decisionsState.loading.value"
-        @select="(d) => $emit('select-decision', d)"
-      />
-      <ChatV2WatchlistSection
-        :watches="watchlistState.watches.value"
-        :loading="watchlistState.loading.value"
-        @select="(w) => $emit('select-watch', w)"
-      />
-      <div
-        class="chat-horizon mx-4 mb-1 mt-1 h-px"
-        :style="{
-          backgroundImage: `linear-gradient(90deg, transparent 0%, color-mix(in srgb, ${brand.colors.border} 70%, transparent) 50%, transparent 100%)`,
-        }"
+      <UIcon
+        name="i-lucide-layout-grid"
+        class="size-3.5 shrink-0"
         aria-hidden="true"
       />
-    </div>
+      <span>Painel</span>
+      <span
+        v-if="panelSummaryParts.length > 0"
+        class="ml-auto truncate font-mono-tab text-[10.5px] tabular-nums"
+        :style="{ color: brand.colors.textMuted }"
+        aria-hidden="true"
+      >{{ panelSummaryParts.join(' · ') }}</span>
+      <span
+        v-if="panelPendingCount > 0"
+        class="ml-1 inline-flex size-1.5 shrink-0 rounded-full"
+        :style="{ backgroundColor: brand.colors.primary }"
+        aria-hidden="true"
+      />
+    </button>
+
+    <div
+      v-if="showGoalsAndDecisions"
+      class="chat-horizon mx-4 mb-1 mt-1 h-px shrink-0"
+      :style="{
+        backgroundImage: `linear-gradient(90deg, transparent 0%, color-mix(in srgb, ${brand.colors.border} 70%, transparent) 50%, transparent 100%)`,
+      }"
+      aria-hidden="true"
+    />
 
     <!-- Threads -->
     <nav
@@ -302,28 +309,23 @@ interface Session {
 const props = defineProps<{
   sessions: Session[]
   activeId: string | null
-  /** When true, the Goals + Decisions sections render above the chat
-   *  history. Disabled for anonymous users (those features require a
-   *  persistent identity). */
+  /** When true, the consolidated Painel button is rendered above the
+   *  chat history. Disabled for anonymous users (the panel features
+   *  all require a persistent identity). */
   showGoalsAndDecisions?: boolean
-  activeGoalId?: string | null
 }>()
 
 defineEmits<{
   new: []
   select: [id: string]
   delete: [id: string]
-  'new-goal': []
-  'select-goal': [goal: { id: string }]
-  'select-decision': [decision: { id: string; sessionId: string | null }]
-  'select-watch': [watch: { id: string; ticker: string }]
-  'select-alert': [alert: { id: string; ticker: string | null; sessionId: string | null }]
+  'open-panel': []
 }>()
 
-// Goals + decisions + watchlist + alerts composables. Accessed
-// lazily — only refreshed when the gated section is enabled, so an
-// anonymous render doesn't pay the network cost for sections it
-// can't show anyway.
+// Goals + decisions + watchlist + alerts composables. The lists no
+// longer live in the sidebar (they moved to the PanelDrawer), but we
+// still refresh them here so the panel button can show an up-to-date
+// summary "1 meta · 4 dec · 0 alerta" + a pending-count dot.
 const goalsState = useGoals()
 const decisionsState = useDecisions()
 const watchlistState = useWatchlist()
@@ -335,6 +337,32 @@ onMounted(() => {
     void watchlistState.refresh()
     void alertsState.refresh()
   }
+})
+
+const panelSummaryParts = computed<string[]>(() => {
+  const parts: string[] = []
+  const goals = goalsState.goals.value.length
+  if (goals > 0) parts.push(`${goals} meta${goals === 1 ? '' : 's'}`)
+  const pendingDecisions = decisionsState.decisions.value.filter(
+    (d) => d.status === 'pending' || d.status === 'accepted',
+  ).length
+  if (pendingDecisions > 0) parts.push(`${pendingDecisions} dec`)
+  const watches = watchlistState.watches.value.length
+  if (watches > 0) parts.push(`${watches} watch`)
+  const alerts = alertsState.alerts.value.length
+  if (alerts > 0) parts.push(`${alerts} alert`)
+  return parts
+})
+
+const panelPendingCount = computed(() => {
+  // The "needs your attention" dot fires when there are pending
+  // decisions OR unread alerts — those are the two states that
+  // benefit from the user opening the panel sooner rather than later.
+  const pendingDecisions = decisionsState.decisions.value.filter(
+    (d) => d.status === 'pending',
+  ).length
+  const unreadAlerts = alertsState.alerts.value.filter((a) => a.readAt == null).length
+  return pendingDecisions + unreadAlerts
 })
 
 const brand = useBrand()
