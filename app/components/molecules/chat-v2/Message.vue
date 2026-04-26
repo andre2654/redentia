@@ -107,60 +107,12 @@
 
     <!-- ASSISTANT TURN -->
     <div v-else class="flex flex-col gap-7 md:gap-8">
-      <!-- ===== Pesquisa: Fontes + Tools combinados, colapsáveis ===== -->
-      <section
-        v-if="message.citations.length > 0 || message.toolCalls.length > 0"
-        class="chat-research"
-      >
-        <button
-          type="button"
-          class="chat-research-header flex w-full items-center justify-between gap-3 rounded-lg px-1 py-1 text-left transition-colors"
-          @click="researchOpen = !researchOpen"
-        >
-          <div class="flex items-center gap-2">
-            <UIcon
-              :name="researchOpen ? 'i-lucide-chevron-down' : 'i-lucide-chevron-right'"
-              class="size-3.5 shrink-0 transition-transform"
-              :style="{ color: brand.colors.textMuted }"
-            />
-            <span
-              class="font-mono-tab text-[10.5px] uppercase tracking-[0.16em]"
-              :style="{ color: brand.colors.textMuted }"
-            >
-              Pesquisa
-              <template v-if="message.citations.length > 0">
-                · {{ message.citations.length }} fontes
-              </template>
-              <template v-if="message.toolCalls.length > 0">
-                · {{ message.toolCalls.length }} {{ message.toolCalls.length === 1 ? 'ferramenta' : 'ferramentas' }}
-              </template>
-            </span>
-          </div>
-          <span
-            v-if="!researchOpen && researchPreview"
-            class="line-clamp-1 max-w-[60%] text-[12px]"
-            :style="{ color: brand.colors.textMuted }"
-          >
-            {{ researchPreview }}
-          </span>
-        </button>
-
-        <div v-if="researchOpen" class="mt-3 flex flex-col gap-4">
-          <!-- Tools -->
-          <div v-if="message.toolCalls.length > 0" class="flex flex-wrap gap-1.5">
-            <ChatV2ToolCallCard
-              v-for="tc in message.toolCalls"
-              :key="tc.callId"
-              :tool-call="tc"
-            />
-          </div>
-          <!-- Fontes -->
-          <ChatV2SourceRail
-            v-if="message.citations.length > 0"
-            :citations="message.citations"
-          />
-        </div>
-      </section>
+      <!-- ===== Pesquisa: agora um único componente self-contained ===== -->
+      <ChatV2ResearchPanel
+        v-if="message.toolCalls.length > 0 || message.citations.length > 0"
+        :tool-calls="message.toolCalls"
+        :citations="message.citations"
+      />
 
       <!-- ===== Resposta ===== -->
       <section v-if="message.content || message.status === 'streaming'">
@@ -273,7 +225,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { marked } from 'marked'
 import type { ChatMessage, ChatArtifact } from '~/composables/useChatStream'
 
@@ -320,37 +272,12 @@ defineEmits<{
 
 const brand = useBrand()
 
-// Research section starts collapsed by default — keeps the thread
-// minimal. Auto-opens while a tool is still running so the user sees
-// progress in real time.
-const researchOpen = ref(false)
-
 // User-form-response pill: collapsed by default, click to see all answers.
 const formResponseOpen = ref(false)
 
-// One-line preview shown next to "Pesquisa" when collapsed: the most
-// relevant tool currently running, or the title of the first source.
-const researchPreview = computed(() => {
-  const running = props.message.toolCalls.find((t) => t.status === 'running')
-  if (running) return `Executando ${running.name.replaceAll('_', ' ')}…`
-  const firstCite = props.message.citations[0]
-  if (firstCite?.source?.title) return firstCite.source.title
-  if (props.message.toolCalls.length > 0) {
-    return props.message.toolCalls.map((t) => t.name.split('_')[0]).slice(0, 3).join(' · ')
-  }
-  return ''
-})
-
-// Auto-open while any tool is still running so the user sees the
-// progress without having to expand it manually. Once everything is
-// done it stays closed (user can expand by clicking).
-watch(
-  () => props.message.toolCalls.some((t) => t.status === 'running'),
-  (anyRunning) => {
-    if (anyRunning) researchOpen.value = true
-  },
-  { immediate: true },
-)
+// (Research panel state was extracted into ChatV2ResearchPanel — it
+// owns its own open/closed state, group-by-family logic, and live
+// progress text. This component now only routes data into it.)
 
 // Public tier label — REDENTIA BASIC / REDENTIA MAX. Used as the
 // model-badge in the "Resposta" header. We deliberately don't show

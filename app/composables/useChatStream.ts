@@ -478,21 +478,63 @@ export function useChatStream(opts: UseChatStreamOptions) {
       const decoder = new TextDecoder()
       let buffer = ''
 
-      while (true) {
-        const { value, done } = await reader.read()
-        if (done) break
-        buffer += decoder.decode(value, { stream: true })
-
-        // SSE framing: events are separated by blank lines (\n\n).
-        let idx
-        while ((idx = buffer.indexOf('\n\n')) !== -1) {
-          const raw = buffer.slice(0, idx)
-          buffer = buffer.slice(idx + 2)
-          handleSSEFrame(assistant, raw)
+      // Stream-stall detection on the client side. The agent sends
+      // `: keepalive` SSE comments every 25s; if more than ~40s pass
+      // without ANY bytes arriving, the connection is silently
+      // broken (Cloudflare cut, server crash, ISP middlebox). We
+      // abort and mark the message as errored instead of leaving
+      // the spinner running forever.
+      let lastByteAt = Date.now()
+      const stallTimer = setInterval(() => {
+        if (Date.now() - lastByteAt > 40_000 && abortController) {
+          // eslint-disable-next-line no-console
+          console.warn('[useChatStream] no bytes for 40s — assuming stalled, aborting')
+          abortController.abort()
         }
+      }, 5_000)
+
+      // Track whether the server emitted message.end before the
+      // reader closed. If we hit `done` without it, the connection
+      // was cut mid-flight (server crash, proxy drop, etc.) — flag
+      // as recoverable error rather than silently marking complete.
+      let sawMessageEnd = false
+      const handleFrame = (raw: string) => {
+        // peek for a message.end event so we can flip the flag
+        if (raw.includes('event: message.end')) sawMessageEnd = true
+        handleSSEFrame(assistant, raw)
       }
 
-      assistant.status = 'complete'
+      try {
+        while (true) {
+          const { value, done } = await reader.read()
+          if (done) break
+          lastByteAt = Date.now()
+          buffer += decoder.decode(value, { stream: true })
+
+          // SSE framing: events are separated by blank lines (\n\n).
+          let idx
+          while ((idx = buffer.indexOf('\n\n')) !== -1) {
+            const raw = buffer.slice(0, idx)
+            buffer = buffer.slice(idx + 2)
+            handleFrame(raw)
+          }
+        }
+      } finally {
+        clearInterval(stallTimer)
+      }
+
+      if (!sawMessageEnd && !error.value) {
+        // The reader closed cleanly but we never saw the terminating
+        // `message.end` — likely an upstream stall or proxy drop.
+        // Surface as a recoverable error so the user knows to retry.
+        const friendly =
+          'A resposta foi interrompida antes de terminar. Tente reenviar a pergunta.'
+        assistant.status = 'error'
+        assistant.error = friendly
+        error.value = friendly
+      } else {
+        assistant.status = 'complete'
+      }
     } catch (err) {
       if ((err as Error).name === 'AbortError') {
         assistant.status = 'complete'

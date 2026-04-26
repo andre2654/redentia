@@ -7,7 +7,20 @@
 -->
 <template>
   <div ref="scrollRef" class="chat-thread relative flex-1 overflow-y-auto">
-    <div class="mx-auto max-w-3xl px-5 pb-44 pt-10 md:px-8 md:pb-48 md:pt-14">
+    <!--
+      Bottom padding has to clear the floating composer regardless of
+      its rendered height. The composer can swell from ~96 px (empty,
+      Basic) to ~260 px (MAX, multiple attachments, MAX-disclaimer
+      sub-line). We pad generously (`pb-56` mobile / `pb-60` desktop)
+      and add `env(safe-area-inset-bottom)` so the iPhone home
+      indicator never crops the last line of the response.
+    -->
+    <div
+      class="mx-auto max-w-3xl px-5 pt-10 md:px-8 md:pt-14"
+      :style="{
+        paddingBottom: 'calc(13rem + env(safe-area-inset-bottom, 0px))',
+      }"
+    >
       <div class="flex flex-col">
         <ChatV2Message
           v-for="(m, i) in messages"
