@@ -160,15 +160,10 @@
         :sessions="sessionList"
         :active-id="chat.sessionId.value"
         :show-goals-and-decisions="authStore.isAuthenticated"
-        :active-goal-id="activeGoalId"
         @new="onNewConversation"
         @select="onSelectSession"
         @delete="onDeleteSession"
-        @new-goal="goalSetupOpen = true"
-        @select-goal="onSelectGoal"
-        @select-decision="onSelectDecision"
-        @select-watch="onSelectWatch"
-        @select-alert="onSelectAlertSidebar"
+        @open-panel="onOpenPanel"
       />
     </template>
 
@@ -216,21 +211,12 @@
           <UIcon name="i-lucide-x" class="size-4" />
         </NuxtLink>
 
-        <!-- Goal badge — sits above the thread when the active session
-             is anchored to a goal. Mobile-friendly: takes full width
-             with safe-area padding from the parent container. -->
-        <div
-          v-if="activeGoal"
-          class="goal-badge-slot pointer-events-auto absolute inset-x-0 top-3 z-[5] mx-auto flex justify-center px-5 md:top-5 xl:top-6"
-        >
-          <ChatV2GoalBadge
-            :goal="activeGoal"
-            @open-detail="activeGoal && openGoalDetail(activeGoal.id)"
-            @unlink="onUnlinkGoal"
-          />
-        </div>
-
         <!-- Thread or empty state -->
+        <!-- Goal badge intentionally removed — the active goal is
+             accessible via the Painel sidebar button + drawer; a
+             separate pill on top of every conversation was redundant
+             chrome. -->
+
         <ChatV2Thread
           v-if="chat.messages.value.length > 0"
           :messages="chat.messages.value"
@@ -285,14 +271,27 @@
     @archived="onGoalArchived"
   />
 
-  <!-- Decision detail drawer — opens from the sidebar Decisions section
-       OR from clicking the inline DecisionCard's "Ver detalhes" link. -->
+  <!-- Decision detail drawer — opens from the Painel drawer's Decisões
+       tab OR from clicking the inline DecisionCard's "Ver detalhes". -->
   <ChatV2DecisionDetailDrawer
     :open="decisionDetailOpen"
     :decision="decisionDetailDecision"
     @close="closeDecisionDetail"
     @removed="onDecisionRemoved"
     @go-to-session="onJumpToDecisionSession"
+  />
+
+  <!-- Painel drawer — single audit / overview surface for goals,
+       decisions, watchlist, alerts, and the agent memory. Replaces
+       the old four sidebar sections. -->
+  <ChatV2PanelDrawer
+    :open="panelOpen"
+    :initial-tab="panelInitialTab"
+    @close="panelOpen = false"
+    @new-goal="onNewGoalFromPanel"
+    @select-goal="onSelectGoalFromPanel"
+    @select-decision="onSelectDecisionFromPanel"
+    @select-alert="onSelectAlertFromPanel"
   />
 </template>
 
@@ -328,6 +327,12 @@ const goalDetailOpen = ref(false)
 const goalDetailId = ref<string | null>(null)
 const decisionDetailOpen = ref(false)
 const decisionDetailId = ref<string | null>(null)
+// Painel drawer — consolidated overview / audit. Stays out of the
+// sidebar; opens on demand. `panelInitialTab` lets us route the user
+// straight to a relevant tab (e.g. open Memória from a "ver minha
+// memória" follow-up button — TODO).
+const panelOpen = ref(false)
+const panelInitialTab = ref<'goals' | 'decisions' | 'watchlist' | 'alerts' | 'memory'>('goals')
 const { goals, refresh: refreshGoals, linkSession, unlinkSession, findById: findGoalById } = useGoals()
 const {
   refresh: refreshDecisions,
@@ -349,14 +354,17 @@ const chat = useChatStream({
   routeContext,
 })
 
-// Now that `chat` exists, derive goal anchoring state.
+// Goal anchoring state — kept around so the goal-link side effect of
+// `onSelectGoal` (auto-anchor when clicking a goal in the panel
+// drawer if the active session has none yet) keeps working. The
+// previous goal badge above the conversation is gone, so we no
+// longer materialise the goal object itself in the template.
 const activeGoalId = computed<string | null>(() => {
   const sid = chat.sessionId.value
   if (!sid) return null
   const session = sessionList.value.find((s) => s.id === sid)
   return session?.goalId ?? null
 })
-const activeGoal = computed(() => goals.value.find((g) => g.id === activeGoalId.value) ?? null)
 
 usePageSeo({
   title: `Assessoria com IA | ${brand.name}`,
@@ -638,25 +646,44 @@ async function onJumpToDecisionSession(sessionId: string) {
 const watchlistState = useWatchlist()
 const alertsState = useAlerts()
 
-function onSelectWatch(watch: { id: string; ticker: string }) {
-  // Sidebar click on a watchlist row — for now, send a pre-built
-  // follow-up that asks the AI to refresh the analysis on this
-  // ticker. Later this could open a dedicated drawer.
-  if (!authStore.isAuthenticated) return
-  void chat.send(
-    `Atualize a análise de ${watch.ticker}. Quero ver preço atual, fundamentos e se a tese ainda vale.`,
-  )
+// ---- Painel drawer handlers ------------------------------------
+function onOpenPanel() {
+  // Default to the tab with pending items; otherwise Metas.
+  const pendingDec = useDecisions().decisions.value.filter(
+    (d) => d.status === 'pending',
+  ).length
+  const unreadAlerts = alertsState.alerts.value.filter((a) => a.readAt == null).length
+  if (unreadAlerts > 0) panelInitialTab.value = 'alerts'
+  else if (pendingDec > 0) panelInitialTab.value = 'decisions'
+  else panelInitialTab.value = 'goals'
+  panelOpen.value = true
 }
 
-function onSelectAlertSidebar(alert: { id: string; ticker: string | null; sessionId: string | null }) {
-  // Mark as read; if the alert links to a session, jump there.
+function onNewGoalFromPanel() {
+  panelOpen.value = false
+  goalSetupOpen.value = true
+}
+
+function onSelectGoalFromPanel(goal: { id: string }) {
+  panelOpen.value = false
+  // Same behaviour as the old sidebar click: open the goal detail
+  // drawer; if the active session has no goal, anchor it.
+  void onSelectGoal(goal)
+}
+
+function onSelectDecisionFromPanel(decision: { id: string; sessionId: string | null }) {
+  panelOpen.value = false
+  decisionDetailId.value = decision.id
+  decisionDetailOpen.value = true
+}
+
+function onSelectAlertFromPanel(alert: { id: string; ticker: string | null; sessionId: string | null }) {
+  panelOpen.value = false
   void alertsState.markRead(alert.id)
   if (alert.sessionId) {
     void onSelectSession(alert.sessionId)
     return
   }
-  // No session linked — drop the user into a new turn referencing
-  // the ticker so the agent can pick up the thread.
   if (alert.ticker) {
     void chat.send(
       `Recebi um alerta de watchlist para ${alert.ticker}. Pode me explicar o que mudou e se devo agir?`,
