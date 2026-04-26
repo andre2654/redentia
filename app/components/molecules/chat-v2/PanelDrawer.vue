@@ -779,7 +779,8 @@ function formatMemoryValue(v: unknown): string {
     return '—'
   }
 }
-function formatDate(iso: string): string {
+function formatDate(iso: string | null | undefined): string {
+  if (!iso) return '—'
   try {
     return new Intl.DateTimeFormat('pt-BR', {
       day: '2-digit',
@@ -787,7 +788,7 @@ function formatDate(iso: string): string {
       year: '2-digit',
     }).format(new Date(iso))
   } catch {
-    return iso.slice(0, 10)
+    return typeof iso === 'string' ? iso.slice(0, 10) : '—'
   }
 }
 
@@ -804,8 +805,11 @@ const DIVISIONS: Array<{ amount: number; unit: Intl.RelativeTimeFormatUnit }> = 
   { amount: 12, unit: 'month' },
   { amount: Number.POSITIVE_INFINITY, unit: 'year' },
 ]
-function formatRelative(iso: string): string {
-  const seconds = (Date.now() - new Date(iso).getTime()) / 1000
+function formatRelative(iso: string | null | undefined): string {
+  if (!iso) return '—'
+  const time = new Date(iso).getTime()
+  if (!Number.isFinite(time)) return '—'
+  const seconds = (Date.now() - time) / 1000
   if (seconds < 5) return 'agora'
   let duration = seconds
   for (const d of DIVISIONS) {
