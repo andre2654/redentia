@@ -384,35 +384,124 @@
                     class="font-mono-tab text-[10px] uppercase tracking-[0.18em]"
                     :style="{ color: brand.colors.textMuted }"
                   >{{ memoryKindLabel(kind) }} · {{ rows.length }}</h4>
-                  <ul class="flex flex-col gap-px">
+                  <ul class="flex flex-col gap-1">
                     <li
                       v-for="m in rows"
                       :key="m.id"
-                      class="audit-mem-row flex items-start gap-3 rounded-md px-2 py-2"
+                      class="audit-mem-row flex flex-col gap-1.5 rounded-md px-3 py-2.5"
                     >
-                      <span class="flex min-w-0 flex-1 flex-col gap-0.5">
-                        <span
-                          class="font-mono-tab truncate text-[11px]"
-                          :style="{ color: brand.colors.text }"
-                        >{{ m.key }}</span>
-                        <span
-                          class="break-words text-[12px] leading-snug"
-                          :style="{ color: `color-mix(in srgb, ${brand.colors.text} 80%, transparent)` }"
-                        >{{ formatMemoryValue(m.value) }}</span>
-                        <span
-                          class="font-mono-tab text-[10px] tabular-nums"
+                      <header class="flex items-start gap-3">
+                        <span class="flex min-w-0 flex-1 flex-col gap-0.5">
+                          <span
+                            class="font-mono-tab truncate text-[11px]"
+                            :style="{ color: brand.colors.text }"
+                          >{{ humanizeKey(m.key) }}</span>
+                          <span
+                            class="font-mono-tab text-[10px] tabular-nums"
+                            :style="{ color: brand.colors.textMuted }"
+                          >{{ formatDate(m.updatedAt) }}<span v-if="m.confidence != null"> · conf {{ m.confidence }}</span></span>
+                        </span>
+                        <button
+                          v-if="memoryNeedsExpand(m.value)"
+                          type="button"
+                          class="audit-row-action inline-flex size-6 shrink-0 items-center justify-center rounded-full transition-colors"
                           :style="{ color: brand.colors.textMuted }"
-                        >{{ formatDate(m.updatedAt) }} · conf {{ m.confidence }}</span>
-                      </span>
-                      <button
-                        type="button"
-                        class="audit-row-action inline-flex size-6 shrink-0 items-center justify-center rounded-full transition-colors"
-                        :style="{ color: brand.colors.textMuted }"
-                        :aria-label="`Esquecer ${m.key}`"
-                        @click="memoriesState.remove(m.id)"
-                      >
-                        <UIcon name="i-lucide-trash-2" class="size-3" />
-                      </button>
+                          :aria-label="memoryExpanded.has(m.id) ? 'Recolher' : 'Ver detalhes'"
+                          @click="toggleMemoryExpand(m.id)"
+                        >
+                          <UIcon
+                            :name="memoryExpanded.has(m.id) ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
+                            class="size-3.5"
+                          />
+                        </button>
+                        <button
+                          type="button"
+                          class="audit-row-action inline-flex size-6 shrink-0 items-center justify-center rounded-full transition-colors"
+                          :style="{ color: brand.colors.textMuted }"
+                          :aria-label="`Esquecer ${m.key}`"
+                          @click="memoriesState.remove(m.id)"
+                        >
+                          <UIcon name="i-lucide-trash-2" class="size-3" />
+                        </button>
+                      </header>
+
+                      <!-- Body — pretty-printed by shape. Falls back to
+                           compact preview when collapsed; full key/value
+                           list when expanded. -->
+                      <div class="flex flex-col gap-1">
+                        <!-- Plain string / number / boolean — one line. -->
+                        <p
+                          v-if="memoryShape(m.value) === 'scalar'"
+                          class="text-[12.5px] leading-snug"
+                          :style="{ color: brand.colors.text }"
+                        >{{ formatScalar(m.value) }}</p>
+
+                        <!-- Markdown / long text — show first 2 lines as
+                             plain text; expand button reveals the full
+                             content (still as plain text — we don't run
+                             markdown here on purpose, this is an audit
+                             surface, not a render). -->
+                        <p
+                          v-else-if="memoryShape(m.value) === 'markdown'"
+                          class="break-words whitespace-pre-line text-[12.5px] leading-snug"
+                          :style="{
+                            color: brand.colors.text,
+                            display: '-webkit-box',
+                            '-webkit-line-clamp': memoryExpanded.has(m.id) ? 'unset' : '3',
+                            '-webkit-box-orient': 'vertical',
+                            overflow: memoryExpanded.has(m.id) ? 'visible' : 'hidden',
+                          } as Record<string, string>"
+                        >{{ extractMarkdown(m.value) }}</p>
+
+                        <!-- Object — definition list. Collapsed shows
+                             top-N rows; expanded shows everything. -->
+                        <dl
+                          v-else-if="memoryShape(m.value) === 'object'"
+                          class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1"
+                        >
+                          <template
+                            v-for="entry in objectEntries(m.value, memoryExpanded.has(m.id))"
+                            :key="entry.key"
+                          >
+                            <dt
+                              class="font-mono-tab text-[10.5px] uppercase tracking-[0.12em] pt-px"
+                              :style="{ color: brand.colors.textMuted }"
+                            >{{ humanizeKey(entry.key) }}</dt>
+                            <dd
+                              class="break-words text-[12px] leading-snug"
+                              :style="{ color: brand.colors.text }"
+                            >{{ entry.formatted }}</dd>
+                          </template>
+                          <template
+                            v-if="!memoryExpanded.has(m.id) && objectEntryCount(m.value) > MEMORY_PREVIEW_FIELDS"
+                          >
+                            <dd
+                              class="col-span-2 text-[11px] italic"
+                              :style="{ color: brand.colors.textMuted }"
+                            >+ {{ objectEntryCount(m.value) - MEMORY_PREVIEW_FIELDS }} campo(s)</dd>
+                          </template>
+                        </dl>
+
+                        <!-- Array — bullet list of formatted items. -->
+                        <ul
+                          v-else-if="memoryShape(m.value) === 'array'"
+                          class="flex flex-col gap-0.5 text-[12px]"
+                          :style="{ color: brand.colors.text }"
+                        >
+                          <li
+                            v-for="(item, idx) in arrayItems(m.value, memoryExpanded.has(m.id))"
+                            :key="idx"
+                            class="leading-snug"
+                          >· {{ item }}</li>
+                        </ul>
+
+                        <!-- Empty / null. -->
+                        <p
+                          v-else
+                          class="text-[12px]"
+                          :style="{ color: brand.colors.textMuted }"
+                        >—</p>
+                      </div>
                     </li>
                   </ul>
                 </div>
@@ -482,7 +571,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from 'vue'
+import { computed, nextTick, reactive, ref, watch } from 'vue'
 import type { GoalStatus, ChatGoal } from '~/composables/useGoals'
 import type { ChatDecision, DecisionType } from '~/composables/useDecisions'
 import type { ChatAlert } from '~/composables/useAlerts'
@@ -769,15 +858,152 @@ function memoryKindLabel(kind: string): string {
     } as Record<string, string>
   )[kind] ?? kind
 }
-function formatMemoryValue(v: unknown): string {
-  if (v == null) return '—'
-  if (typeof v === 'string') return v
-  if (typeof v === 'number' || typeof v === 'boolean') return String(v)
-  try {
-    return JSON.stringify(v).slice(0, 240)
-  } catch {
-    return '—'
+// ---- Memory pretty-printer -------------------------------------
+//
+// Memories are stored as arbitrary JSONB blobs (the `save_memory` tool
+// accepts any value). To audit them comfortably, we detect shape and
+// route to the right renderer instead of dumping `JSON.stringify`.
+//
+// Rules:
+//   - scalar (string/number/boolean) → one-line text
+//   - markdown-ish (object with summary / markdown / explanation
+//     fields, or a string with newlines) → plain-text excerpt with
+//     expand toggle
+//   - object → definition list (humanised keys, formatted values)
+//   - array → bullet list
+//
+// `memoryExpanded` is a per-row toggle so the user can drill in
+// without losing the rest of the list.
+
+const MEMORY_PREVIEW_FIELDS = 3
+const MEMORY_PREVIEW_ARRAY_ITEMS = 3
+const MEMORY_LONG_STRING_THRESHOLD = 220
+
+const memoryExpanded = reactive(new Set<string>())
+
+function toggleMemoryExpand(id: string): void {
+  if (memoryExpanded.has(id)) memoryExpanded.delete(id)
+  else memoryExpanded.add(id)
+}
+
+type MemoryShape = 'scalar' | 'markdown' | 'object' | 'array' | 'empty'
+
+function memoryShape(v: unknown): MemoryShape {
+  if (v == null) return 'empty'
+  if (typeof v === 'string') {
+    return v.length > MEMORY_LONG_STRING_THRESHOLD || v.includes('\n')
+      ? 'markdown'
+      : 'scalar'
   }
+  if (typeof v === 'number' || typeof v === 'boolean') return 'scalar'
+  if (Array.isArray(v)) return 'array'
+  if (typeof v === 'object') {
+    // Detect shapes that read better as markdown excerpts than as a
+    // key-value list — when the object's primary payload is a long
+    // text field (summary, markdown, explanation, body, content),
+    // treat the whole row as markdown.
+    const obj = v as Record<string, unknown>
+    const longField = ['summary', 'markdown', 'explanation', 'body', 'content']
+      .map((k) => obj[k])
+      .find((val) => typeof val === 'string' && (val.length > MEMORY_LONG_STRING_THRESHOLD || val.includes('\n')))
+    if (longField != null) return 'markdown'
+    return 'object'
+  }
+  return 'empty'
+}
+
+function memoryNeedsExpand(v: unknown): boolean {
+  const shape = memoryShape(v)
+  if (shape === 'markdown') {
+    const text = extractMarkdown(v)
+    return text.length > 180 || text.split('\n').length > 3
+  }
+  if (shape === 'object') return objectEntryCount(v) > MEMORY_PREVIEW_FIELDS
+  if (shape === 'array') return Array.isArray(v) && v.length > MEMORY_PREVIEW_ARRAY_ITEMS
+  if (shape === 'scalar' && typeof v === 'string') return v.length > 180
+  return false
+}
+
+function formatScalar(v: unknown): string {
+  if (typeof v === 'string') return v
+  if (typeof v === 'number') {
+    return Number.isInteger(v) ? String(v) : v.toLocaleString('pt-BR')
+  }
+  if (typeof v === 'boolean') return v ? 'sim' : 'não'
+  return '—'
+}
+
+function extractMarkdown(v: unknown): string {
+  if (typeof v === 'string') return v
+  if (v && typeof v === 'object') {
+    const obj = v as Record<string, unknown>
+    for (const key of ['summary', 'markdown', 'explanation', 'body', 'content']) {
+      const value = obj[key]
+      if (typeof value === 'string' && value.length > 0) return value
+    }
+  }
+  return ''
+}
+
+function objectEntryCount(v: unknown): number {
+  if (!v || typeof v !== 'object' || Array.isArray(v)) return 0
+  return Object.keys(v as Record<string, unknown>).length
+}
+
+function objectEntries(
+  v: unknown,
+  expanded: boolean,
+): Array<{ key: string; formatted: string }> {
+  if (!v || typeof v !== 'object' || Array.isArray(v)) return []
+  const entries = Object.entries(v as Record<string, unknown>)
+    // Drop keys that are noise on the audit surface.
+    .filter(([k]) => !HIDDEN_OBJECT_KEYS.has(k))
+  const visible = expanded ? entries : entries.slice(0, MEMORY_PREVIEW_FIELDS)
+  return visible.map(([key, value]) => ({
+    key,
+    formatted: formatObjectValue(value),
+  }))
+}
+
+function arrayItems(v: unknown, expanded: boolean): string[] {
+  if (!Array.isArray(v)) return []
+  const visible = expanded ? v : v.slice(0, MEMORY_PREVIEW_ARRAY_ITEMS)
+  return visible.map((item) => formatObjectValue(item))
+}
+
+const HIDDEN_OBJECT_KEYS = new Set(['decisionId', 'mime'])
+
+function formatObjectValue(v: unknown): string {
+  if (v == null) return '—'
+  if (typeof v === 'string') {
+    if (v.length > 160) return v.slice(0, 160) + '…'
+    return v
+  }
+  if (typeof v === 'number') {
+    return Number.isInteger(v) ? String(v) : v.toLocaleString('pt-BR', { maximumFractionDigits: 2 })
+  }
+  if (typeof v === 'boolean') return v ? 'sim' : 'não'
+  if (Array.isArray(v)) {
+    if (v.length === 0) return '[ vazio ]'
+    return `[ ${v.length} ${v.length === 1 ? 'item' : 'itens'} ]`
+  }
+  if (typeof v === 'object') {
+    const keys = Object.keys(v as Record<string, unknown>)
+    if (keys.length === 0) return '{ vazio }'
+    return `{ ${keys.length} ${keys.length === 1 ? 'campo' : 'campos'} }`
+  }
+  return '—'
+}
+
+/** Cosmetic: turn `executed_vale3_74c08059` → `executed vale3 74c08059`,
+ *  `last_calc_at` → `Last Calc At`. The raw key reads like a slug;
+ *  spaces+title-case make the audit surface skim-friendly. */
+function humanizeKey(key: string): string {
+  return key
+    .replace(/[_-]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase()
 }
 function formatDate(iso: string | null | undefined): string {
   if (!iso) return '—'
@@ -910,12 +1136,17 @@ function confirmClearMemories() {
   padding: 4px 2px;
 }
 
-.audit-mem-row,
+.audit-mem-row {
+  background-color: color-mix(in srgb, currentColor 3%, transparent);
+  border: 1px solid color-mix(in srgb, currentColor 5%, transparent);
+}
+.audit-mem-row:hover {
+  background-color: color-mix(in srgb, currentColor 5%, transparent);
+}
 .audit-act-row,
 .audit-row-static {
   background-color: transparent;
 }
-.audit-mem-row:hover,
 .audit-act-row:hover,
 .audit-row-static:hover {
   background-color: color-mix(in srgb, currentColor 4%, transparent);
