@@ -361,11 +361,27 @@ export function useChatStream(opts: UseChatStreamOptions) {
           fields?: Array<{ id: string; label: string; value: string }>
           formTitle?: string
           attachments?: ChatAttachment[]
+          /** Internal: marks this call as the silent retry after a
+           *  401-then-refreshed handshake. Prevents the retry from
+           *  itself triggering yet another refresh on a real
+           *  401-token-expired (which would loop). */
+          _isRetry?: boolean
         },
   ) {
     if (isStreaming.value) return
     const message = typeof payload === 'string' ? payload : payload.text
     const attachments = typeof payload === 'string' ? [] : (payload.attachments ?? [])
+    const payloadHasBeenRetried =
+      typeof payload === 'string' ? false : payload._isRetry === true
+    // Helper to re-issue the same payload after a successful silent
+    // refresh — flips the `_isRetry` flag so this retry doesn't loop
+    // if the chat-service rejects again.
+    const retrySend = async () => {
+      const retried = typeof payload === 'string'
+        ? { text: payload, _isRetry: true }
+        : { ...payload, _isRetry: true }
+      return send(retried)
+    }
     // Allow empty `message` if the user only attached files (the LLM
     // will be instructed to summarise/inspect the attachment).
     if (!message.trim() && attachments.length === 0) return
@@ -456,6 +472,47 @@ export function useChatStream(opts: UseChatStreamOptions) {
         } catch {
           backendMessage = text.slice(0, 300) || undefined
         }
+
+        // 401 auto-recovery — when the chat-service rejects the token
+        // (Sanctum expired, Laravel reissued tokens, etc.), give the
+        // user one transparent retry: refresh the local token by
+        // calling Laravel's /api/auth/me ourselves. If that succeeds,
+        // the auth store re-stores the (still-valid) token and we
+        // re-send the message. If /me also rejects, only THEN do we
+        // surface "sessão expirou".
+        if (response.status === 401 && authStore.token && !payloadHasBeenRetried) {
+          // eslint-disable-next-line no-console
+          console.warn('[useChatStream] got 401 — attempting silent token refresh')
+          try {
+            const meResponse = await $fetch<{ user?: { id?: number; name?: string } } | { data?: { user?: unknown } }>(
+              '/api/auth/me',
+              {
+                method: 'GET',
+                headers: { Authorization: `Bearer ${authStore.token}` },
+                baseURL: useRuntimeConfig().public.apiBaseUrl as string,
+              },
+            ).catch(() => null)
+            if (meResponse) {
+              // Token still valid at Laravel — chat-service was just
+              // out of sync. Retry once.
+              isStreaming.value = false
+              // Drop the placeholder assistant message we created up
+              // front so the retry doesn't leave a ghost row.
+              const idx = messages.value.findIndex((m) => m.id === assistant.id)
+              if (idx >= 0) messages.value.splice(idx, 1)
+              return await retrySend()
+            }
+            // /me also said 401 → token actually expired. Clear and
+            // bounce to login.
+            // eslint-disable-next-line no-console
+            console.warn('[useChatStream] /me also rejected — token expired, clearing')
+            authStore.clearAuthData()
+          } catch (e) {
+            // eslint-disable-next-line no-console
+            console.warn('[useChatStream] /me refresh attempt errored', e)
+          }
+        }
+
         const friendly = humanizeChatError(response.status, backendMessage, !!authStore.token)
         // Surface the full diagnostic in the console for the dev/preview
         // pane — easier to debug than a generic toast.

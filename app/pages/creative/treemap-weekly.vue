@@ -223,7 +223,7 @@ function worst(row: WeightedItem<any>[], shortSide: number): number {
 // the two panels as close as possible to the hero subtitle so the
 // heatmap dominates the frame instead of floating below empty space.
 const PANEL_W = 1000
-const PANEL_H = 290
+const PANEL_H = 320
 
 function toCells(items: MoverRow[]) {
   // Weight is |pct|+floor so even tiny movers (like B3SA3 at -0.10%)
@@ -332,18 +332,15 @@ const loserTopPct = computed(() => {
         </div>
       </div>
 
-      <!-- Hero: centered serif headline + date subtitle. -->
+      <!-- Hero: centered serif headline (date subtitle removed — was
+           overlapping with the gainers panel because the panel grew to
+           fill more vertical space and the headline already fills the
+           horizontal). -->
       <div class="hero">
         <h1 class="hero-title">
           {{ title.split(' ').slice(0, -1).join(' ') || 'Raio-X da' }}
           <em>{{ title.split(' ').slice(-1)[0] || 'semana' }}</em>
         </h1>
-        <div class="hero-sub">
-          <span v-if="data?.window.start && data?.window.end">
-            {{ fmtShortDate(data.window.start) }} → {{ fmtPeriod(data.window.end) }}
-          </span>
-          <span v-else>{{ today }}</span>
-        </div>
       </div>
 
       <!-- GAINERS panel -->
@@ -485,22 +482,16 @@ const loserTopPct = computed(() => {
 }
 .hero-title {
   font-family: 'Instrument Serif', serif;
-  font-size: 128px; line-height: 0.92; letter-spacing: -0.03em;
+  /* Was 128px; reduced to 96px so the headline doesn't dominate the
+     entire upper third of the canvas — leaves more room for the
+     gainers panel directly below. */
+  font-size: 96px; line-height: 0.95; letter-spacing: -0.03em;
   font-weight: 400; color: #FFFFFF;
   margin: 0;
 }
 .hero-title em {
   font-style: italic;
   color: #F5A623;
-}
-.hero-sub {
-  display: block;
-  margin-top: 24px;
-  font-family: 'Inter', system-ui, sans-serif;
-  font-size: 34px; font-weight: 300;
-  letter-spacing: 0.22em;
-  color: rgba(255,255,255,0.72);
-  font-variant-numeric: tabular-nums;
 }
 
 /* Panels — stacked vertical. Each fills almost the full width
