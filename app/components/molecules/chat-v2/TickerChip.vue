@@ -1,27 +1,30 @@
 <!--
   TickerChip — live ticker pill for chat surfaces.
 
-  Renders [logo] TICKER · R$ price [(was R$ x · ↘ -8%)]
-                                  ↑ optional snapshot at mention time
+  Renders [logo] TICKER  R$ price  ±delta%
+                                   ↑ optional, when material
 
   Subscribes to `useTickerSnapshots` on mount; live price + delta
   refresh every 60s in the background through a single batched
   request (one call per chat regardless of chip count).
 
-  Two density modes:
-    - `default` — full chip with logo + name + price + delta. Used in
-      DecisionCard, AlertCard, the chat answer.
-    - `compact` — just ticker + price (no logo, no delta). Used in
-      tight spaces like the Watchlist sidebar list.
+  Density modes:
+    - `default` — full chip with logo + ticker + price + delta. Used in
+      DecisionCard, AlertCard, the chat answer (markdown auto-detect).
+      Also the prose chip — we now always show the logo so the
+      ticker has a recognizable brand mark next to it.
+    - `compact` — sidebar-tight rows. Smaller logo, tighter padding,
+      delta hidden. Used in the Painel drawer's Decisions list and
+      Watchlist list.
 
-  When a `priceWhenMentioned` is provided (decision snapshotPrice,
-  watchlist snapshotPrice, etc.), the chip shows BOTH that historical
-  price AND the live price + delta vs. mention. Otherwise it shows
-  only the live price.
+  When a `priceWhenMentioned` is provided (decision target_price,
+  watchlist snapshot_price, etc.), the delta switches to
+  "mention vs live" — more meaningful in chat than today's intra-day
+  move ("PETR4 caiu 8% desde que falamos disso").
 
-  Click → opens the asset page (`/assets/[ticker]`) for further drill-
-  in. Falls back gracefully when the chat-service or fundamentals-
-  scraper is unreachable: chip stays as a static label.
+  Click → opens the asset page (`/assets/[ticker]`) in a new tab.
+  Falls back gracefully when chat-service is unreachable: chip stays
+  as a static label with the ticker text + initials avatar.
 -->
 <template>
   <component
@@ -29,61 +32,66 @@
     :href="clickable ? href : undefined"
     :target="clickable ? '_blank' : undefined"
     rel="noopener"
-    class="ticker-chip group inline-flex items-center gap-1.5 rounded-full px-1.5 py-0.5 align-middle text-[12px] leading-none transition-[background-color,box-shadow]"
+    class="ticker-chip group inline-flex shrink-0 items-center align-middle leading-none transition-[background-color,box-shadow,border-color]"
+    :class="[
+      density === 'compact' ? 'ticker-chip--compact' : 'ticker-chip--default',
+    ]"
     :style="chipStyle"
     :aria-label="ariaLabel"
   >
-    <!-- Logo or initials fallback -->
+    <!-- Logo / initials avatar — always shown now (user feedback:
+         "coloca o icone do papel tambem"). The avatar carries:
+           1. The brand mark (real logo from fundamentals-scraper)
+           2. A subtle white inner border so the logo pops on dark
+              backgrounds without needing a heavy outline
+           3. A two-letter initials fallback when no logo is available
+              (or the image errors out) — never an empty circle. -->
     <span
-      v-if="density === 'default'"
-      class="ticker-chip-logo inline-flex size-5 shrink-0 items-center justify-center overflow-hidden rounded-full"
-      :style="{
-        backgroundColor: `color-mix(in srgb, ${brand.colors.text} 6%, transparent)`,
-      }"
+      class="ticker-chip-logo inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full"
+      :style="logoStyle"
       aria-hidden="true"
     >
       <img
-        v-if="snapshot?.logo"
+        v-if="snapshot?.logo && !logoFailed"
         :src="snapshot.logo"
-        :alt="''"
-        width="20"
-        height="20"
+        alt=""
+        :width="logoSize"
+        :height="logoSize"
         loading="lazy"
         class="size-full object-cover"
         @error="onLogoError"
       />
       <span
         v-else
-        class="font-mono-tab text-[8.5px] font-bold tracking-tight"
-        :style="{ color: brand.colors.textMuted }"
+        class="font-mono-tab font-bold tracking-tight"
+        :style="{
+          color: brand.colors.textMuted,
+          fontSize: density === 'compact' ? '8px' : '9px',
+        }"
       >{{ initials }}</span>
     </span>
 
-    <!-- Ticker -->
+    <!-- Ticker label -->
     <span
-      class="font-mono-tab font-semibold tracking-tight tabular-nums"
+      class="ticker-chip-label font-mono-tab font-semibold tracking-tight"
       :style="{ color: brand.colors.text }"
     >{{ ticker.toUpperCase() }}</span>
 
-    <!-- Live price -->
+    <!-- Live price + (optional) delta -->
     <template v-if="livePrice != null">
       <span
-        class="font-mono-tab tabular-nums"
-        :style="{
-          color: livePriceColor,
-        }"
+        class="ticker-chip-price font-mono-tab tabular-nums"
+        :style="{ color: livePriceColor }"
       >{{ formatPrice(livePrice) }}</span>
-      <!-- Delta: prefer mention-vs-live when we know both, else
-           today's 1d change. -->
       <span
-        v-if="density === 'default' && deltaPct != null"
-        class="font-mono-tab text-[10.5px] tabular-nums"
+        v-if="density === 'default' && deltaPct != null && Math.abs(deltaPct) >= 0.01"
+        class="ticker-chip-delta font-mono-tab tabular-nums"
         :style="{ color: deltaColor }"
       >{{ formatDelta(deltaPct) }}</span>
     </template>
     <span
       v-else
-      class="font-mono-tab text-[10.5px]"
+      class="ticker-chip-loading font-mono-tab"
       :style="{ color: brand.colors.textMuted }"
     >…</span>
   </component>
@@ -97,8 +105,8 @@ const props = withDefaults(
     ticker: string
     /**
      * Price recorded when the chat first mentioned the ticker (e.g. a
-     * decision's snapshotPriceAtCreate, a watchlist's snapshotPrice).
-     * When provided, the delta switches to "vs mention".
+     * decision's target_price, a watchlist's snapshot_price). When
+     * provided, the delta switches to "mention vs live".
      */
     priceWhenMentioned?: number | null
     /** Visual density. */
@@ -119,7 +127,6 @@ const tickers = useTickerSnapshots()
 // Subscribe on mount, drop on unmount.
 onMounted(() => tickers.subscribe(props.ticker))
 onBeforeUnmount(() => tickers.unsubscribe(props.ticker))
-// If the prop changes, re-subscribe.
 watch(
   () => props.ticker,
   (next, prev) => {
@@ -131,12 +138,6 @@ watch(
 const snapshot = computed(() => tickers.get(props.ticker))
 const livePrice = computed(() => snapshot.value?.price ?? null)
 
-/**
- * Delta percent the chip displays. When `priceWhenMentioned` is
- * known, we use mention-vs-live (more meaningful in chat context —
- * "PETR4 caiu 8% desde que falamos"). Otherwise we fall back to the
- * 1d change from the snapshot (intra-day move).
- */
 const deltaPct = computed<number | null>(() => {
   const live = livePrice.value
   if (live == null) return null
@@ -153,8 +154,8 @@ const deltaColor = computed(() => {
 })
 
 const livePriceColor = computed(() => {
-  // Tint the live price subtly when the move from mention is
-  // material (>2%). Inside that band the price stays neutral so the
+  // Subtle: tint the live price only when the mention-vs-live move is
+  // material (> 2%). Inside that band the price stays neutral so the
   // eye doesn't get pulled by every micro-move.
   const delta = deltaPct.value
   if (delta == null || Math.abs(delta) < 2) return brand.colors.text
@@ -164,9 +165,6 @@ const livePriceColor = computed(() => {
 const initials = computed(() => props.ticker.slice(0, 2).toUpperCase())
 
 const href = computed(() => {
-  // Map to the existing asset page route. Crypto tickers get
-  // /crypto/<ticker>; tesouro gets /tesouro/<slug>; stocks/FIIs/ETFs
-  // share /assets/<ticker>.
   const t = props.ticker.toUpperCase()
   if (/^(BTC|ETH|SOL|BNB|XRP|ADA|DOGE|USDC|USDT)/i.test(t)) return `/crypto/${t}`
   if (t.toLowerCase().startsWith('tesouro-')) return `/tesouro/${t.toLowerCase()}`
@@ -202,24 +200,88 @@ function formatDelta(delta: number): string {
   return `${sign}${abs.toFixed(abs < 10 ? 1 : 0)}%`
 }
 
+const logoSize = computed(() => (props.density === 'compact' ? 16 : 20))
+
 const chipStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.text} 4%, transparent)`,
-  border: `1px solid color-mix(in srgb, ${brand.colors.border} 35%, transparent)`,
+  backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 80%, transparent)`,
+  border: `1px solid color-mix(in srgb, ${brand.colors.border} 45%, transparent)`,
   color: brand.colors.text,
   textDecoration: 'none',
 }))
+
+const logoStyle = computed(() => {
+  // Inner ring effect: a 1px white-mix highlight at the very edge so
+  // the logo reads as a "minted" badge instead of a flat circle.
+  // Subtle on dark backgrounds; invisible on light. The ring sits
+  // INSIDE the logo via inset box-shadow so the outer chip border
+  // stays clean.
+  const size = props.density === 'compact' ? '16px' : '20px'
+  return {
+    width: size,
+    height: size,
+    backgroundColor: `color-mix(in srgb, ${brand.colors.text} 8%, transparent)`,
+    boxShadow: `inset 0 0 0 1px color-mix(in srgb, ${brand.colors.text} 8%, transparent)`,
+  }
+})
 </script>
 
 <style scoped>
 .ticker-chip {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  border-radius: 9999px;
+  white-space: nowrap;
 }
+
+/* ----- Default density (chat answer / cards) -----
+   Tighter horizontally than before so the chip reads as a single
+   pill, not a row of separated pieces. The leading logo replaces
+   the previous "left padding" — it sits flush against the left
+   edge with 2px insets only. */
+.ticker-chip--default {
+  padding: 2px 9px 2px 2px;
+  gap: 6px;
+  font-size: 12px;
+}
+.ticker-chip--default .ticker-chip-label {
+  font-size: 12px;
+}
+.ticker-chip--default .ticker-chip-price {
+  font-size: 11.5px;
+}
+.ticker-chip--default .ticker-chip-delta {
+  font-size: 10.5px;
+}
+
+/* ----- Compact density (sidebar lists) -----
+   Same shape, smaller logo and tighter vertical rhythm. Delta is
+   hidden via the v-if upstream. */
+.ticker-chip--compact {
+  padding: 1px 7px 1px 1px;
+  gap: 5px;
+  font-size: 11px;
+}
+.ticker-chip--compact .ticker-chip-label {
+  font-size: 11px;
+}
+.ticker-chip--compact .ticker-chip-price {
+  font-size: 10.5px;
+}
+
 .ticker-chip:hover {
-  background-color: color-mix(in srgb, currentColor 8%, transparent);
+  background-color: color-mix(in srgb, currentColor 6%, transparent) !important;
+  border-color: color-mix(in srgb, currentColor 18%, transparent) !important;
 }
 .ticker-chip:focus-visible {
   outline: none;
   box-shadow: 0 0 0 2px var(--brand-primary, #f5a300);
+}
+
+/* Vertically centre-align the pill on the text baseline so it sits
+   nicely inline in markdown prose without pushing the line height
+   around. */
+.ticker-chip {
+  position: relative;
+  top: -1px;
 }
 </style>

@@ -126,7 +126,12 @@ export function useTickerProse() {
       const inLink = !!span.closest('a')
       const vnode = createVNode(TickerChip, {
         ticker,
-        density: 'compact',
+        // Prose chips now use the full pill (logo + ticker + price + delta).
+        // The compact density is reserved for tight sidebar rows where a
+        // 16px logo + truncated info is the right trade-off; in flowing
+        // text the recognizable brand mark + price help the eye anchor
+        // on the asset.
+        density: 'default',
         clickable: !inLink,
       })
       vnode.appContext = instance.appContext
