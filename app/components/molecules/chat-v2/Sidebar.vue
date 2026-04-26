@@ -120,47 +120,69 @@
       aria-hidden="true"
     />
 
-    <!-- Painel button — single consolidated entry point for goals,
-         decisions, watchlist, alerts and the memory audit view. The
-         four standalone sidebar sections used to live here; folding
-         them into a tabbed drawer cut the sidebar from ~5 stacked
-         blocks down to one row, which removes most of the "muito na
-         tela" feedback.
+    <!-- "Guardado" — compact category counters. Each row reflects the
+         actual count and is clickable: it opens the audit drawer
+         scrolled to that section. The tail count uses tabular-nums
+         so the digit doesn't dance; a tiny dot signals pending
+         action (pending decision, unread alert).
 
-         Tail badge counts pending items (alerts.unread + decisions
-         pending + active alerts) so the user can see at a glance if
-         something needs attention without opening the drawer. -->
-    <button
+         Below the counters, "Ver auditoria" opens the same drawer
+         but scrolled to "Memória" + activity log — for users who
+         want to inspect everything the agent has access to. -->
+    <section
       v-if="showGoalsAndDecisions"
-      type="button"
-      class="chat-panel-btn group relative mx-2 mb-1 flex items-center gap-2.5 rounded-md px-3 py-1.5 text-left text-[13px] transition-[background-color,color]"
-      :style="{ color: `color-mix(in srgb, ${brand.colors.text} 78%, transparent)` }"
-      :aria-label="`Abrir painel${panelPendingCount > 0 ? `, ${panelPendingCount} pendente(s)` : ''}`"
-      @click="$emit('open-panel')"
+      class="chat-stash flex flex-col px-2 pb-1 pt-2"
+      :aria-labelledby="stashHeadingId"
     >
-      <UIcon
-        name="i-lucide-layout-grid"
-        class="size-3.5 shrink-0"
-        aria-hidden="true"
-      />
-      <span>Painel</span>
-      <span
-        v-if="panelSummaryParts.length > 0"
-        class="ml-auto truncate font-mono-tab text-[10.5px] tabular-nums"
+      <h3
+        :id="stashHeadingId"
+        class="font-mono-tab mb-1 px-2 text-[10px] uppercase tracking-[0.18em]"
         :style="{ color: brand.colors.textMuted }"
-        aria-hidden="true"
-      >{{ panelSummaryParts.join(' · ') }}</span>
-      <span
-        v-if="panelPendingCount > 0"
-        class="ml-1 inline-flex size-1.5 shrink-0 rounded-full"
-        :style="{ backgroundColor: brand.colors.primary }"
-        aria-hidden="true"
-      />
-    </button>
+      >Guardado</h3>
+      <ul class="flex flex-col">
+        <li v-for="row in stashRows" :key="row.section">
+          <button
+            type="button"
+            class="chat-stash-row flex w-full items-center gap-2 rounded-md px-2 py-1 text-left text-[12.5px] transition-colors"
+            :style="{ color: brand.colors.text }"
+            :aria-label="`${row.label}: ${row.count}${row.pending ? ', com pendência' : ''}`"
+            @click="$emit('open-panel', row.section)"
+          >
+            <span
+              class="size-1.5 shrink-0 rounded-full"
+              :style="{
+                backgroundColor: row.pending
+                  ? brand.colors.primary
+                  : `color-mix(in srgb, ${brand.colors.text} 25%, transparent)`,
+              }"
+              aria-hidden="true"
+            />
+            <span>{{ row.label }}</span>
+            <span
+              class="ml-auto font-mono-tab tabular-nums text-[11.5px]"
+              :style="{
+                color: row.count > 0 ? brand.colors.text : brand.colors.textMuted,
+                fontWeight: row.count > 0 ? '500' : '400',
+              }"
+            >{{ row.count }}</span>
+          </button>
+        </li>
+      </ul>
+      <button
+        type="button"
+        class="chat-audit-btn mt-1 flex items-center justify-between gap-2 rounded-md px-2 py-1 text-left text-[12px] transition-colors"
+        :style="{ color: brand.colors.textMuted }"
+        aria-label="Abrir auditoria completa — logs, atividade, memória de longo prazo"
+        @click="$emit('open-panel', 'memory')"
+      >
+        <span>Ver auditoria</span>
+        <UIcon name="i-lucide-arrow-right" class="size-3" aria-hidden="true" />
+      </button>
+    </section>
 
     <div
       v-if="showGoalsAndDecisions"
-      class="chat-horizon mx-4 mb-1 mt-1 h-px shrink-0"
+      class="chat-horizon mx-4 mb-1 mt-2 h-px shrink-0"
       :style="{
         backgroundImage: `linear-gradient(90deg, transparent 0%, color-mix(in srgb, ${brand.colors.border} 70%, transparent) 50%, transparent 100%)`,
       }"
@@ -315,17 +337,18 @@ const props = defineProps<{
   showGoalsAndDecisions?: boolean
 }>()
 
+type PanelSection = 'goals' | 'decisions' | 'watchlist' | 'alerts' | 'memory' | 'activity'
+
 defineEmits<{
   new: []
   select: [id: string]
   delete: [id: string]
-  'open-panel': []
+  'open-panel': [section: PanelSection]
 }>()
 
-// Goals + decisions + watchlist + alerts composables. The lists no
-// longer live in the sidebar (they moved to the PanelDrawer), but we
-// still refresh them here so the panel button can show an up-to-date
-// summary "1 meta · 4 dec · 0 alerta" + a pending-count dot.
+// Goals + decisions + watchlist + alerts composables. We refresh
+// them here so the "Guardado" counters in the sidebar stay in sync;
+// the actual lists are rendered inside the audit drawer.
 const goalsState = useGoals()
 const decisionsState = useDecisions()
 const watchlistState = useWatchlist()
@@ -339,30 +362,49 @@ onMounted(() => {
   }
 })
 
-const panelSummaryParts = computed<string[]>(() => {
-  const parts: string[] = []
-  const goals = goalsState.goals.value.length
-  if (goals > 0) parts.push(`${goals} meta${goals === 1 ? '' : 's'}`)
-  const pendingDecisions = decisionsState.decisions.value.filter(
-    (d) => d.status === 'pending' || d.status === 'accepted',
-  ).length
-  if (pendingDecisions > 0) parts.push(`${pendingDecisions} dec`)
-  const watches = watchlistState.watches.value.length
-  if (watches > 0) parts.push(`${watches} watch`)
-  const alerts = alertsState.alerts.value.length
-  if (alerts > 0) parts.push(`${alerts} alert`)
-  return parts
-})
+const stashHeadingId = `chat-stash-${Math.random().toString(36).slice(2, 8)}`
 
-const panelPendingCount = computed(() => {
-  // The "needs your attention" dot fires when there are pending
-  // decisions OR unread alerts — those are the two states that
-  // benefit from the user opening the panel sooner rather than later.
+interface StashRow {
+  section: PanelSection
+  label: string
+  count: number
+  /** Subset that needs attention — drives the "pending" dot. */
+  pending: boolean
+}
+
+const stashRows = computed<StashRow[]>(() => {
   const pendingDecisions = decisionsState.decisions.value.filter(
     (d) => d.status === 'pending',
   ).length
   const unreadAlerts = alertsState.alerts.value.filter((a) => a.readAt == null).length
-  return pendingDecisions + unreadAlerts
+  return [
+    {
+      section: 'goals',
+      label: 'Metas',
+      count: goalsState.goals.value.length,
+      pending: false,
+    },
+    {
+      section: 'decisions',
+      label: 'Decisões',
+      count: decisionsState.decisions.value.filter(
+        (d) => d.status === 'pending' || d.status === 'accepted',
+      ).length,
+      pending: pendingDecisions > 0,
+    },
+    {
+      section: 'watchlist',
+      label: 'Watchlist',
+      count: watchlistState.watches.value.length,
+      pending: false,
+    },
+    {
+      section: 'alerts',
+      label: 'Alertas',
+      count: alertsState.alerts.value.length,
+      pending: unreadAlerts > 0,
+    },
+  ]
 })
 
 const brand = useBrand()
@@ -455,7 +497,9 @@ onUnmounted(() => window.removeEventListener('keydown', onKey))
 .chat-sess,
 .chat-search,
 .chat-search-clear,
-.chat-sess-del {
+.chat-sess-del,
+.chat-stash-row,
+.chat-audit-btn {
   touch-action: manipulation;
 }
 
@@ -464,7 +508,9 @@ onUnmounted(() => window.removeEventListener('keydown', onKey))
 .chat-sess:focus-visible,
 .chat-search-input:focus-visible,
 .chat-search-clear:focus-visible,
-.chat-sess-del:focus-visible {
+.chat-sess-del:focus-visible,
+.chat-stash-row:focus-visible,
+.chat-audit-btn:focus-visible {
   outline: 2px solid var(--brand-primary, currentColor);
   outline-offset: 2px;
   border-radius: 6px;
@@ -478,6 +524,14 @@ onUnmounted(() => window.removeEventListener('keydown', onKey))
 
 .chat-sess:hover {
   background-color: color-mix(in srgb, currentColor 5%, transparent);
+}
+
+.chat-stash-row:hover,
+.chat-audit-btn:hover {
+  background-color: color-mix(in srgb, currentColor 5%, transparent);
+}
+.chat-audit-btn:hover {
+  color: var(--brand-text, currentColor);
 }
 
 .chat-search:focus-within {

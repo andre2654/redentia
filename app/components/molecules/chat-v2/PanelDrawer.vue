@@ -1,154 +1,152 @@
 <!--
-  PanelDrawer — unified audit / overview surface.
+  PanelDrawer — audit drawer.
 
-  Replaces the four standalone sidebar sections (Goals, Decisions,
-  Watchlist, Alerts). Each lives in a tab; a fifth tab "Memória" is
-  the audit view of everything `save_memory` ever wrote about the
-  user.
+  Single comprehensive view of everything the chat agent has access
+  to. Replaces the four standalone sidebar sections (Goals, Decisions,
+  Watchlist, Alerts) and adds long-term Memory + recent Activity.
 
-  Design notes:
-  - Right-side drawer on desktop (xl+), full-height bottom sheet on
-    mobile. Same pattern used by GoalDetailDrawer / DecisionDetailDrawer
-    so the user already knows the gestures (ESC, click outside, swipe).
-  - Tab strip uses a flat hairline; active tab carries a 2px brand
-    underline. No background pills, no rounded chips.
-  - Each tab body is a minimal list — same row shape across tabs:
-    leading dot/icon, two-line text, trailing meta. Divergence only
-    where semantics demand it (e.g. memory rows expose a value JSON
-    block; alerts get severity + dismiss CTA).
-  - Counts in the tab labels use tabular-nums.
+  Layout (mirrors GoalDetailDrawer / DecisionDetailDrawer so the user
+  already knows the gestures):
+    Desktop  → right-side drawer, 480px, slides in from right
+    Mobile   → bottom sheet, ~92vh, slides in from bottom with handle
+
+  Body uses anchored sections (one scroll) instead of tabs. The sticky
+  segmented nav at top jumps to each section. Single column, no
+  nested cards, status colour only in the leading dot.
+
+  Sections, in order:
+    1. Metas
+    2. Decisões
+    3. Watchlist
+    4. Alertas
+    5. Memória de longo prazo
+    6. Atividade recente
 
   WIG compliance:
   - role="dialog", labelled by H2; ESC + click-outside both close
-  - Tabs use role="tablist"/role="tab"; arrow-keys cycle (delegated)
-  - Focus trap enters the drawer on open, returns on close
+  - Section anchors use real <a href="#audit-X"> so middle-click + key
+    nav work as expected
+  - aria-current on the active anchor as the user scrolls
   - Honours prefers-reduced-motion
 -->
 <template>
   <Teleport to="body">
-    <Transition name="panel-fade">
+    <Transition name="audit-overlay">
       <div
         v-if="open"
-        class="panel-overlay fixed inset-0 z-[60]"
+        class="audit-backdrop fixed inset-0 z-[80] flex items-end justify-end md:items-stretch"
+        :style="{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }"
+        role="presentation"
+        @keydown.esc="$emit('close')"
         @click.self="$emit('close')"
       >
-        <Transition name="panel-slide" appear>
+        <Transition name="audit-panel" appear>
           <aside
             v-if="open"
-            ref="drawerRef"
-            class="panel-drawer fixed bottom-0 right-0 top-0 flex w-full flex-col xl:w-[440px]"
-            :style="drawerStyle"
+            ref="dialogRef"
+            class="audit-panel relative flex h-[92vh] w-full flex-col md:h-full md:max-w-[480px]"
             role="dialog"
             aria-modal="true"
-            aria-labelledby="panel-title"
-            tabindex="-1"
+            :aria-labelledby="titleId"
+            :style="panelStyle"
             @keydown.esc.stop="$emit('close')"
           >
+            <!-- Mobile drag handle (visual only) -->
+            <span
+              class="mx-auto mt-3 inline-block h-1 w-12 rounded-full md:hidden"
+              :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.text} 18%, transparent)` }"
+              aria-hidden="true"
+            />
+
             <!-- Header -->
             <header
-              class="flex items-center justify-between gap-3 px-5 pb-3 pt-5"
-              :style="{
-                borderBottom: `1px solid color-mix(in srgb, ${brand.colors.border} 35%, transparent)`,
-              }"
+              class="relative flex items-start justify-between gap-3 px-5 pb-3 pt-5 md:px-6 md:pt-6"
             >
-              <h2
-                id="panel-title"
-                class="font-display text-[18px] font-semibold tracking-tight"
-                :style="{ color: brand.colors.text }"
-              >
-                Painel
-              </h2>
+              <div class="flex flex-col gap-0.5">
+                <span
+                  class="font-mono-tab text-[10px] uppercase tracking-[0.18em]"
+                  :style="{ color: brand.colors.textMuted }"
+                >Auditoria</span>
+                <h2
+                  :id="titleId"
+                  class="text-balance text-[20px] font-semibold leading-tight tracking-tight"
+                  :style="{ color: brand.colors.text }"
+                >Tudo que a IA guarda</h2>
+              </div>
               <button
                 type="button"
-                class="panel-close inline-flex size-8 items-center justify-center rounded-full transition-colors"
+                class="audit-close inline-flex size-8 items-center justify-center rounded-full transition-colors"
                 :style="{ color: brand.colors.textMuted }"
-                aria-label="Fechar painel"
+                aria-label="Fechar auditoria"
                 @click="$emit('close')"
               >
                 <UIcon name="i-lucide-x" class="size-4" />
               </button>
             </header>
 
-            <!-- Tabs -->
+            <!-- Sticky section nav -->
             <nav
-              role="tablist"
-              aria-label="Seções do painel"
-              class="flex shrink-0 items-stretch gap-0 overflow-x-auto px-3"
+              aria-label="Seções da auditoria"
+              class="audit-nav sticky top-0 z-[1] flex shrink-0 items-stretch overflow-x-auto px-5 md:px-6"
               :style="{
+                backgroundColor: brand.colors.surface,
                 borderBottom: `1px solid color-mix(in srgb, ${brand.colors.border} 35%, transparent)`,
               }"
             >
-              <button
-                v-for="t in tabs"
-                :key="t.id"
-                type="button"
-                role="tab"
-                :aria-selected="activeTab === t.id"
-                :aria-controls="`panel-tabpanel-${t.id}`"
-                :id="`panel-tab-${t.id}`"
-                class="panel-tab relative flex shrink-0 items-center gap-1.5 px-3 py-2.5 text-[12.5px] transition-colors"
-                :style="tabStyle(t.id)"
-                @click="setTab(t.id)"
+              <a
+                v-for="s in sections"
+                :key="s.id"
+                :href="`#audit-${s.id}`"
+                :aria-current="initialSection === s.id ? 'true' : undefined"
+                class="audit-nav-link relative shrink-0 px-3 py-2.5 text-[12px] transition-colors"
+                :style="navLinkStyle(s.id)"
+                @click="onNavClick($event, s.id)"
               >
-                <span>{{ t.label }}</span>
+                {{ s.label }}
                 <span
-                  v-if="t.count > 0"
-                  class="font-mono-tab text-[10.5px] tabular-nums"
+                  v-if="s.count > 0"
+                  class="ml-1 font-mono-tab tabular-nums text-[10.5px]"
                   :style="{ color: brand.colors.textMuted }"
-                >· {{ t.count }}</span>
-                <span
-                  v-if="activeTab === t.id"
-                  class="absolute inset-x-3 bottom-0 h-[2px] rounded-t-full"
-                  :style="{ backgroundColor: brand.colors.primary }"
-                  aria-hidden="true"
-                />
-              </button>
+                >{{ s.count }}</span>
+              </a>
             </nav>
 
-            <!-- Body -->
+            <!-- Body — single scroll, anchored sections -->
             <div
-              role="tabpanel"
-              :id="`panel-tabpanel-${activeTab}`"
-              :aria-labelledby="`panel-tab-${activeTab}`"
-              class="panel-body flex-1 overflow-y-auto px-5 py-4"
+              ref="bodyRef"
+              class="audit-body flex-1 overflow-y-auto px-5 pb-10 pt-4 md:px-6"
+              @scroll.passive="onScroll"
             >
-              <!-- ============================ Metas ============================ -->
-              <section v-if="activeTab === 'goals'" class="flex flex-col gap-2">
-                <button
-                  type="button"
-                  class="panel-cta-row flex items-center gap-2 rounded-lg px-3 py-2 text-left text-[12.5px] transition-colors"
-                  :style="{
-                    color: brand.colors.text,
-                    border: `1px dashed color-mix(in srgb, ${brand.colors.border} 60%, transparent)`,
-                  }"
-                  @click="$emit('new-goal')"
-                >
-                  <UIcon
-                    name="i-lucide-plus"
-                    class="size-3.5"
+              <!-- ============ Metas ============ -->
+              <section
+                id="audit-goals"
+                ref="el_goals"
+                class="audit-section flex flex-col gap-2"
+                :aria-labelledby="`audit-h-goals`"
+              >
+                <header class="audit-section-header">
+                  <h3 :id="`audit-h-goals`">Metas</h3>
+                  <button
+                    type="button"
+                    class="audit-section-action"
                     :style="{ color: brand.colors.primary }"
-                  />
-                  Nova meta
-                </button>
+                    @click="$emit('new-goal')"
+                  >+ nova</button>
+                </header>
                 <p
-                  v-if="goalsState.goals.value.length === 0 && !goalsState.loading.value"
-                  class="px-1 pt-2 text-[12px]"
+                  v-if="goalsState.goals.value.length === 0"
+                  class="audit-empty"
                   :style="{ color: brand.colors.textMuted }"
-                >
-                  Sem metas ainda. Defina a primeira para ancorar conversas a um objetivo concreto.
-                </p>
-                <ul v-else class="flex flex-col gap-1">
-                  <li
-                    v-for="g in goalsState.goals.value"
-                    :key="g.id"
-                  >
+                >Sem metas ainda. Defina a primeira para ancorar conversas a um objetivo concreto.</p>
+                <ul v-else class="flex flex-col gap-px">
+                  <li v-for="g in goalsState.goals.value" :key="g.id">
                     <button
                       type="button"
-                      class="panel-row group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors"
+                      class="audit-row group flex w-full items-center gap-3 rounded-md px-2 py-2 text-left transition-colors"
                       @click="$emit('select-goal', g)"
                     >
                       <span
-                        class="size-2 shrink-0 rounded-full"
+                        class="size-1.5 shrink-0 rounded-full"
                         :style="{ backgroundColor: goalStatusColor(g.status) }"
                         aria-hidden="true"
                       />
@@ -156,11 +154,9 @@
                         <span
                           class="truncate text-[13px] font-medium"
                           :style="{ color: brand.colors.text }"
-                        >
-                          <span v-if="g.emoji" class="mr-1">{{ g.emoji }}</span>{{ g.name }}
-                        </span>
+                        >{{ g.emoji ? `${g.emoji} ` : '' }}{{ g.name }}</span>
                         <span
-                          class="font-mono-tab truncate text-[11px] uppercase tracking-[0.14em]"
+                          class="font-mono-tab text-[10.5px] uppercase tracking-[0.14em]"
                           :style="{ color: brand.colors.textMuted }"
                         >{{ goalStatusLabel(g.status) }}</span>
                       </span>
@@ -173,24 +169,30 @@
                 </ul>
               </section>
 
-              <!-- ========================== Decisões =========================== -->
-              <section v-if="activeTab === 'decisions'" class="flex flex-col gap-2">
+              <!-- ============ Decisões ============ -->
+              <section
+                id="audit-decisions"
+                ref="el_decisions"
+                class="audit-section flex flex-col gap-2"
+                :aria-labelledby="`audit-h-decisions`"
+              >
+                <header class="audit-section-header">
+                  <h3 :id="`audit-h-decisions`">Decisões</h3>
+                </header>
                 <p
                   v-if="decisionsState.decisions.value.length === 0"
-                  class="px-1 pt-2 text-[12px]"
+                  class="audit-empty"
                   :style="{ color: brand.colors.textMuted }"
-                >
-                  Nenhuma decisão registrada — peça pra IA propor uma compra ou venda em formato decisão.
-                </p>
-                <ul v-else class="flex flex-col gap-1">
+                >Nenhuma decisão registrada — peça pra IA propor uma compra/venda em formato decisão.</p>
+                <ul v-else class="flex flex-col gap-px">
                   <li v-for="d in decisionsState.decisions.value" :key="d.id">
                     <button
                       type="button"
-                      class="panel-row flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors"
+                      class="audit-row flex w-full items-center gap-3 rounded-md px-2 py-2 text-left transition-colors"
                       @click="$emit('select-decision', d)"
                     >
                       <span
-                        class="size-2 shrink-0 rounded-full"
+                        class="size-1.5 shrink-0 rounded-full"
                         :style="{ backgroundColor: decisionTypeColor(d.type) }"
                         aria-hidden="true"
                       />
@@ -212,7 +214,7 @@
                         >{{ d.thesis }}</span>
                       </span>
                       <span
-                        class="font-mono-tab shrink-0 text-[10.5px] uppercase tracking-[0.14em]"
+                        class="font-mono-tab shrink-0 text-[10px] uppercase tracking-[0.14em]"
                         :style="{ color: brand.colors.textMuted }"
                       >{{ d.status }}</span>
                     </button>
@@ -220,23 +222,27 @@
                 </ul>
               </section>
 
-              <!-- ========================= Watchlist =========================== -->
-              <section v-if="activeTab === 'watchlist'" class="flex flex-col gap-2">
+              <!-- ============ Watchlist ============ -->
+              <section
+                id="audit-watchlist"
+                ref="el_watchlist"
+                class="audit-section flex flex-col gap-2"
+                :aria-labelledby="`audit-h-watchlist`"
+              >
+                <header class="audit-section-header">
+                  <h3 :id="`audit-h-watchlist`">Watchlist</h3>
+                </header>
                 <p
                   v-if="watchlistState.watches.value.length === 0"
-                  class="px-1 pt-2 text-[12px]"
+                  class="audit-empty"
                   :style="{ color: brand.colors.textMuted }"
-                >
-                  Watchlist proativa vazia. Peça à IA para monitorar um ticker com condição.
-                </p>
-                <ul v-else class="flex flex-col gap-1">
+                >Vazia. Peça à IA para monitorar um ativo (ex.: "monitorar PETR4 e me avisar se cair 8%").</p>
+                <ul v-else class="flex flex-col gap-px">
                   <li v-for="w in watchlistState.watches.value" :key="w.id">
-                    <div
-                      class="panel-row-static flex items-center gap-3 rounded-lg px-3 py-2.5"
-                    >
+                    <div class="audit-row-static flex items-center gap-3 rounded-md px-2 py-2">
                       <span class="flex min-w-0 flex-1 flex-col">
                         <span
-                          class="font-mono-tab truncate text-[12.5px] font-bold tracking-tight"
+                          class="font-mono-tab text-[12.5px] font-bold tracking-tight"
                           :style="{ color: brand.colors.text }"
                         >{{ w.ticker }}</span>
                         <span
@@ -246,14 +252,14 @@
                         >{{ w.note }}</span>
                       </span>
                       <span
-                        class="font-mono-tab shrink-0 text-[10.5px] tabular-nums"
+                        class="font-mono-tab shrink-0 text-[10px] tabular-nums"
                         :style="{ color: brand.colors.textMuted }"
-                      >{{ (w.conditions?.length ?? 0) }} cond.</span>
+                      >{{ (w.conditions?.length ?? 0) }} cond</span>
                       <button
                         type="button"
-                        class="panel-row-action inline-flex size-6 items-center justify-center rounded-full transition-colors"
+                        class="audit-row-action inline-flex size-6 items-center justify-center rounded-full transition-colors"
                         :style="{ color: brand.colors.textMuted }"
-                        :aria-label="`Remover ${w.ticker} da watchlist`"
+                        :aria-label="`Remover ${w.ticker}`"
                         @click="watchlistState.remove(w.id)"
                       >
                         <UIcon name="i-lucide-x" class="size-3" />
@@ -263,28 +269,39 @@
                 </ul>
               </section>
 
-              <!-- ========================== Alertas ============================ -->
-              <section v-if="activeTab === 'alerts'" class="flex flex-col gap-2">
+              <!-- ============ Alertas ============ -->
+              <section
+                id="audit-alerts"
+                ref="el_alerts"
+                class="audit-section flex flex-col gap-2"
+                :aria-labelledby="`audit-h-alerts`"
+              >
+                <header class="audit-section-header">
+                  <h3 :id="`audit-h-alerts`">Alertas</h3>
+                  <button
+                    v-if="alertsState.alerts.value.length > 0"
+                    type="button"
+                    class="audit-section-action"
+                    :style="{ color: brand.colors.textMuted }"
+                    @click="alertsState.dismissAll()"
+                  >limpar tudo</button>
+                </header>
                 <p
                   v-if="alertsState.alerts.value.length === 0"
-                  class="px-1 pt-2 text-[12px]"
+                  class="audit-empty"
                   :style="{ color: brand.colors.textMuted }"
-                >
-                  Nenhum alerta ativo. Adicione condições à watchlist para receber notificações.
-                </p>
-                <ul v-else class="flex flex-col gap-1">
+                >Sem alertas ativos.</p>
+                <ul v-else class="flex flex-col gap-px">
                   <li v-for="a in alertsState.alerts.value" :key="a.id">
-                    <div
-                      class="panel-row-static flex items-start gap-3 rounded-lg px-3 py-2.5"
-                    >
+                    <div class="audit-row-static flex items-start gap-3 rounded-md px-2 py-2">
                       <span
-                        class="mt-1.5 size-2 shrink-0 rounded-full"
+                        class="mt-1.5 size-1.5 shrink-0 rounded-full"
                         :style="{ backgroundColor: alertSeverityColor(a.severity) }"
                         aria-hidden="true"
                       />
                       <span class="flex min-w-0 flex-1 flex-col">
                         <span
-                          class="truncate text-[12.5px] font-medium"
+                          class="text-[12.5px] font-medium"
                           :style="{ color: brand.colors.text }"
                         >{{ a.title }}</span>
                         <span
@@ -294,7 +311,7 @@
                       </span>
                       <button
                         type="button"
-                        class="panel-row-action inline-flex size-6 items-center justify-center rounded-full transition-colors"
+                        class="audit-row-action inline-flex size-6 shrink-0 items-center justify-center rounded-full transition-colors"
                         :style="{ color: brand.colors.textMuted }"
                         aria-label="Dispensar alerta"
                         @click="alertsState.dismiss(a.id)"
@@ -306,65 +323,54 @@
                 </ul>
               </section>
 
-              <!-- ========================= Memória ============================= -->
-              <section v-if="activeTab === 'memory'" class="flex flex-col gap-3">
-                <header class="flex items-center justify-between gap-2">
-                  <p
-                    class="text-[12px] leading-snug"
-                    :style="{ color: brand.colors.textMuted }"
-                  >
-                    Tudo que a IA sabe sobre você. Veja, audite, remova o que não fizer sentido.
-                  </p>
+              <!-- ============ Memória ============ -->
+              <section
+                id="audit-memory"
+                ref="el_memory"
+                class="audit-section flex flex-col gap-2"
+                :aria-labelledby="`audit-h-memory`"
+              >
+                <header class="audit-section-header">
+                  <h3 :id="`audit-h-memory`">Memória de longo prazo</h3>
                   <button
                     v-if="memoriesState.memories.value.length > 0"
                     type="button"
-                    class="panel-clear shrink-0 rounded-full px-2.5 py-1 text-[10.5px] transition-colors"
-                    :style="{
-                      color: brand.colors.negative,
-                      border: `1px solid color-mix(in srgb, ${brand.colors.negative} 30%, transparent)`,
-                    }"
+                    class="audit-section-action"
+                    :style="{ color: brand.colors.negative }"
                     @click="confirmClearMemories"
-                  >
-                    {{ memoryClearStage === 'arm' ? 'Confirmar limpeza' : 'Limpar tudo' }}
-                  </button>
+                  >{{ memoryClearStage === 'arm' ? 'confirmar' : 'limpar tudo' }}</button>
                 </header>
-
+                <p
+                  class="text-[11px] leading-snug"
+                  :style="{ color: brand.colors.textMuted }"
+                >Tudo que a IA aprendeu sobre você através das conversas. Audite e remova o que não quiser que ela use.</p>
                 <p
                   v-if="memoriesState.loading.value && memoriesState.memories.value.length === 0"
-                  class="px-1 text-[12px]"
+                  class="audit-empty"
                   :style="{ color: brand.colors.textMuted }"
                 >Carregando…</p>
-
                 <p
                   v-else-if="memoriesState.memories.value.length === 0"
-                  class="px-1 text-[12px]"
+                  class="audit-empty"
                   :style="{ color: brand.colors.textMuted }"
-                >
-                  Vazio. Conforme você conversa, fatos relevantes (perfil, preferências, decisões) ficam aqui.
-                </p>
+                >Nada salvo. Conforme conversa, fatos relevantes (perfil, preferências, decisões) ficam aqui.</p>
 
                 <div
                   v-for="[kind, rows] in memoryGroupedEntries"
                   :key="kind"
-                  class="flex flex-col gap-1"
+                  class="flex flex-col gap-1 pt-1"
                 >
-                  <h3
+                  <h4
                     class="font-mono-tab text-[10px] uppercase tracking-[0.18em]"
                     :style="{ color: brand.colors.textMuted }"
-                  >
-                    {{ memoryKindLabel(kind) }}
-                    <span class="tabular-nums">· {{ rows.length }}</span>
-                  </h3>
-                  <ul class="flex flex-col gap-1">
+                  >{{ memoryKindLabel(kind) }} · {{ rows.length }}</h4>
+                  <ul class="flex flex-col gap-px">
                     <li
                       v-for="m in rows"
                       :key="m.id"
-                      class="panel-memory-row group flex items-start gap-3 rounded-lg px-3 py-2"
-                      :style="{
-                        backgroundColor: `color-mix(in srgb, ${brand.colors.text} 3%, transparent)`,
-                      }"
+                      class="audit-mem-row flex items-start gap-3 rounded-md px-2 py-2"
                     >
-                      <div class="flex min-w-0 flex-1 flex-col gap-0.5">
+                      <span class="flex min-w-0 flex-1 flex-col gap-0.5">
                         <span
                           class="font-mono-tab truncate text-[11px]"
                           :style="{ color: brand.colors.text }"
@@ -377,12 +383,12 @@
                           class="font-mono-tab text-[10px] tabular-nums"
                           :style="{ color: brand.colors.textMuted }"
                         >{{ formatDate(m.updatedAt) }} · conf {{ m.confidence }}</span>
-                      </div>
+                      </span>
                       <button
                         type="button"
-                        class="panel-row-action inline-flex size-6 shrink-0 items-center justify-center rounded-full transition-colors"
+                        class="audit-row-action inline-flex size-6 shrink-0 items-center justify-center rounded-full transition-colors"
                         :style="{ color: brand.colors.textMuted }"
-                        :aria-label="`Esquecer memória ${m.key}`"
+                        :aria-label="`Esquecer ${m.key}`"
                         @click="memoriesState.remove(m.id)"
                       >
                         <UIcon name="i-lucide-trash-2" class="size-3" />
@@ -390,6 +396,64 @@
                     </li>
                   </ul>
                 </div>
+              </section>
+
+              <!-- ============ Atividade ============ -->
+              <section
+                id="audit-activity"
+                ref="el_activity"
+                class="audit-section flex flex-col gap-2"
+                :aria-labelledby="`audit-h-activity`"
+              >
+                <header class="audit-section-header">
+                  <h3 :id="`audit-h-activity`">Atividade recente</h3>
+                  <span
+                    class="font-mono-tab text-[10px] uppercase tracking-[0.14em]"
+                    :style="{ color: brand.colors.textMuted }"
+                  >{{ activityState.events.value.length }}</span>
+                </header>
+                <p
+                  class="text-[11px] leading-snug"
+                  :style="{ color: brand.colors.textMuted }"
+                >Eventos recentes registrados pela IA — cálculos rodados, alertas, mudanças de status, novas memórias.</p>
+                <p
+                  v-if="activityState.loading.value && activityState.events.value.length === 0"
+                  class="audit-empty"
+                  :style="{ color: brand.colors.textMuted }"
+                >Carregando…</p>
+                <p
+                  v-else-if="activityState.events.value.length === 0"
+                  class="audit-empty"
+                  :style="{ color: brand.colors.textMuted }"
+                >Sem atividade recente.</p>
+                <ul v-else class="flex flex-col gap-px">
+                  <li v-for="e in activityState.events.value" :key="e.id">
+                    <div class="audit-act-row flex items-start gap-3 rounded-md px-2 py-1.5">
+                      <span
+                        class="mt-1.5 size-1.5 shrink-0 rounded-full"
+                        :style="{ backgroundColor: activityKindColor(e.kind) }"
+                        aria-hidden="true"
+                      />
+                      <span class="flex min-w-0 flex-1 flex-col">
+                        <span class="flex items-baseline gap-2">
+                          <span
+                            class="truncate text-[12.5px]"
+                            :style="{ color: brand.colors.text }"
+                          >{{ e.summary }}</span>
+                          <span
+                            v-if="e.detail"
+                            class="font-mono-tab truncate text-[10.5px]"
+                            :style="{ color: brand.colors.textMuted }"
+                          >{{ e.detail }}</span>
+                        </span>
+                        <span
+                          class="font-mono-tab text-[10px] tabular-nums"
+                          :style="{ color: brand.colors.textMuted }"
+                        >{{ formatRelative(e.at) }}</span>
+                      </span>
+                    </div>
+                  </li>
+                </ul>
               </section>
             </div>
           </aside>
@@ -401,16 +465,16 @@
 
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue'
-import type { GoalStatus } from '~/composables/useGoals'
-import type { ChatGoal } from '~/composables/useGoals'
+import type { GoalStatus, ChatGoal } from '~/composables/useGoals'
 import type { ChatDecision, DecisionType } from '~/composables/useDecisions'
 import type { ChatAlert } from '~/composables/useAlerts'
+import type { ActivityEvent, ActivityKind } from '~/composables/useActivity'
 
-type TabId = 'goals' | 'decisions' | 'watchlist' | 'alerts' | 'memory'
+type SectionId = 'goals' | 'decisions' | 'watchlist' | 'alerts' | 'memory' | 'activity'
 
 const props = defineProps<{
   open: boolean
-  initialTab?: TabId
+  initialSection?: SectionId
 }>()
 
 const emit = defineEmits<{
@@ -427,10 +491,35 @@ const decisionsState = useDecisions()
 const watchlistState = useWatchlist()
 const alertsState = useAlerts()
 const memoriesState = useMemories()
+const activityState = useActivity()
 
-const activeTab = ref<TabId>(props.initialTab ?? 'goals')
-const drawerRef = ref<HTMLElement | null>(null)
+const titleId = `audit-title-${Math.random().toString(36).slice(2, 8)}`
+const dialogRef = ref<HTMLElement | null>(null)
+const bodyRef = ref<HTMLElement | null>(null)
+const el_goals = ref<HTMLElement | null>(null)
+const el_decisions = ref<HTMLElement | null>(null)
+const el_watchlist = ref<HTMLElement | null>(null)
+const el_alerts = ref<HTMLElement | null>(null)
+const el_memory = ref<HTMLElement | null>(null)
+const el_activity = ref<HTMLElement | null>(null)
+
 const memoryClearStage = ref<'idle' | 'arm'>('idle')
+const visibleSection = ref<SectionId>('goals')
+
+const sections = computed<Array<{ id: SectionId; label: string; count: number }>>(() => [
+  { id: 'goals', label: 'Metas', count: goalsState.goals.value.length },
+  {
+    id: 'decisions',
+    label: 'Decisões',
+    count: decisionsState.decisions.value.filter(
+      (d) => d.status === 'pending' || d.status === 'accepted',
+    ).length,
+  },
+  { id: 'watchlist', label: 'Watch', count: watchlistState.watches.value.length },
+  { id: 'alerts', label: 'Alertas', count: alertsState.alerts.value.length },
+  { id: 'memory', label: 'Memória', count: memoriesState.memories.value.length },
+  { id: 'activity', label: 'Atividade', count: activityState.events.value.length },
+])
 
 watch(
   () => props.open,
@@ -439,59 +528,96 @@ watch(
       memoryClearStage.value = 'idle'
       return
     }
-    if (props.initialTab) activeTab.value = props.initialTab
+    // Refresh all backing data on open. Each composable short-circuits
+    // its own concurrent-refresh case so we don't fire duplicate calls.
+    void goalsState.refresh()
+    void decisionsState.refresh()
+    void watchlistState.refresh()
+    void alertsState.refresh()
+    void memoriesState.refresh()
+    void activityState.refresh()
     await nextTick()
-    drawerRef.value?.focus()
-    // Refresh whichever tab the drawer opens to so the data is fresh.
-    refreshActiveTab()
+    dialogRef.value?.focus()
+    if (props.initialSection) {
+      visibleSection.value = props.initialSection
+      scrollToSection(props.initialSection)
+    } else {
+      visibleSection.value = 'goals'
+    }
   },
 )
 
-watch(activeTab, () => {
-  refreshActiveTab()
-})
-
-function refreshActiveTab() {
-  if (activeTab.value === 'memory') void memoriesState.refresh()
-  if (activeTab.value === 'goals') void goalsState.refresh()
-  if (activeTab.value === 'decisions') void decisionsState.refresh()
-  if (activeTab.value === 'watchlist') void watchlistState.refresh()
-  if (activeTab.value === 'alerts') void alertsState.refresh()
+function scrollToSection(id: SectionId) {
+  const map: Record<SectionId, ReturnType<typeof ref> | null> = {
+    goals: el_goals,
+    decisions: el_decisions,
+    watchlist: el_watchlist,
+    alerts: el_alerts,
+    memory: el_memory,
+    activity: el_activity,
+  } as Record<SectionId, ReturnType<typeof ref> | null>
+  const el = (map[id] as { value: HTMLElement | null } | null)?.value
+  const body = bodyRef.value
+  if (!el || !body) return
+  body.scrollTo({
+    top: el.offsetTop - body.offsetTop - 8,
+    behavior: 'smooth',
+  })
 }
 
-function setTab(id: TabId) {
-  activeTab.value = id
+function onNavClick(e: Event, id: SectionId) {
+  e.preventDefault()
+  visibleSection.value = id
+  scrollToSection(id)
 }
 
-const tabs = computed(() => [
-  { id: 'goals' as const, label: 'Metas', count: goalsState.goals.value.length },
-  {
-    id: 'decisions' as const,
-    label: 'Decisões',
-    count: decisionsState.decisions.value.filter(
-      (d) => d.status === 'pending' || d.status === 'accepted',
-    ).length,
-  },
-  { id: 'watchlist' as const, label: 'Watch', count: watchlistState.watches.value.length },
-  { id: 'alerts' as const, label: 'Alertas', count: alertsState.alerts.value.length },
-  { id: 'memory' as const, label: 'Memória', count: memoriesState.memories.value.length },
-])
+function onScroll() {
+  // Track which section the user is currently looking at so the nav
+  // can highlight it. Cheap O(n=6) check on every scroll tick — no
+  // throttling needed.
+  const body = bodyRef.value
+  if (!body) return
+  const order: Array<{ id: SectionId; ref: { value: HTMLElement | null } }> = [
+    { id: 'goals', ref: el_goals as { value: HTMLElement | null } },
+    { id: 'decisions', ref: el_decisions as { value: HTMLElement | null } },
+    { id: 'watchlist', ref: el_watchlist as { value: HTMLElement | null } },
+    { id: 'alerts', ref: el_alerts as { value: HTMLElement | null } },
+    { id: 'memory', ref: el_memory as { value: HTMLElement | null } },
+    { id: 'activity', ref: el_activity as { value: HTMLElement | null } },
+  ]
+  const threshold = body.scrollTop + 80
+  for (let i = order.length - 1; i >= 0; i--) {
+    const el = order[i]!.ref.value
+    if (el && el.offsetTop - body.offsetTop <= threshold) {
+      visibleSection.value = order[i]!.id
+      return
+    }
+  }
+}
 
-const drawerStyle = computed(() => ({
+const panelStyle = computed(() => ({
   backgroundColor: brand.colors.surface,
   color: brand.colors.text,
   paddingBottom: 'env(safe-area-inset-bottom, 0px)',
   borderLeft: `1px solid color-mix(in srgb, ${brand.colors.border} 35%, transparent)`,
+  boxShadow: '-16px 0 40px -16px rgba(0, 0, 0, 0.45)',
 }))
 
-function tabStyle(id: TabId): Record<string, string> {
-  if (activeTab.value === id) {
-    return { color: brand.colors.text, fontWeight: '500' }
+function navLinkStyle(id: SectionId): Record<string, string> {
+  if (visibleSection.value === id) {
+    return {
+      color: brand.colors.text,
+      borderBottom: `2px solid ${brand.colors.primary}`,
+      fontWeight: '500',
+    }
   }
-  return { color: brand.colors.textMuted }
+  return {
+    color: brand.colors.textMuted,
+    borderBottom: '2px solid transparent',
+  }
 }
 
-// ---- Helpers (mirror the small bits the sidebar sections used) ----
+// ---- Helpers ----------------------------------------------------
 
 function goalStatusColor(status: GoalStatus | null | string): string {
   if (status === 'hit') return brand.colors.positive ?? brand.colors.primary
@@ -534,10 +660,16 @@ function alertSeverityColor(s: ChatAlert['severity']): string {
   if (s === 'warning') return brand.colors.primary
   return brand.colors.textMuted
 }
+function activityKindColor(k: ActivityKind): string {
+  if (k === 'alert_fired') return brand.colors.primary
+  if (k === 'decision_created' || k === 'decision_updated') return brand.colors.primary
+  return brand.colors.textMuted
+}
 
 const memoryGroupedEntries = computed(() =>
   Array.from(memoriesState.byKind.value.entries()).sort(
-    (a, b) => MEMORY_KIND_ORDER.indexOf(a[0]) - MEMORY_KIND_ORDER.indexOf(b[0]),
+    (a, b) =>
+      MEMORY_KIND_ORDER.indexOf(a[0]) - MEMORY_KIND_ORDER.indexOf(b[0]),
   ),
 )
 const MEMORY_KIND_ORDER = [
@@ -565,7 +697,7 @@ function formatMemoryValue(v: unknown): string {
   if (typeof v === 'string') return v
   if (typeof v === 'number' || typeof v === 'boolean') return String(v)
   try {
-    return JSON.stringify(v, null, 2).slice(0, 280)
+    return JSON.stringify(v).slice(0, 240)
   } catch {
     return '—'
   }
@@ -582,6 +714,31 @@ function formatDate(iso: string): string {
   }
 }
 
+const RELATIVE = new Intl.RelativeTimeFormat('pt-BR', {
+  numeric: 'auto',
+  style: 'narrow',
+})
+const DIVISIONS: Array<{ amount: number; unit: Intl.RelativeTimeFormatUnit }> = [
+  { amount: 60, unit: 'second' },
+  { amount: 60, unit: 'minute' },
+  { amount: 24, unit: 'hour' },
+  { amount: 7, unit: 'day' },
+  { amount: 4.34524, unit: 'week' },
+  { amount: 12, unit: 'month' },
+  { amount: Number.POSITIVE_INFINITY, unit: 'year' },
+]
+function formatRelative(iso: string): string {
+  const seconds = (Date.now() - new Date(iso).getTime()) / 1000
+  if (seconds < 5) return 'agora'
+  let duration = seconds
+  for (const d of DIVISIONS) {
+    if (Math.abs(duration) < d.amount)
+      return RELATIVE.format(-Math.round(duration), d.unit)
+    duration /= d.amount
+  }
+  return RELATIVE.format(-Math.round(duration), 'year')
+}
+
 function confirmClearMemories() {
   if (memoryClearStage.value === 'idle') {
     memoryClearStage.value = 'arm'
@@ -596,91 +753,141 @@ function confirmClearMemories() {
 </script>
 
 <style scoped>
-.panel-overlay {
-  background-color: color-mix(in srgb, black 32%, transparent);
+.audit-backdrop {
   backdrop-filter: blur(2px);
 }
-.panel-drawer {
+.audit-panel {
   isolation: isolate;
-  box-shadow: -16px 0 40px -16px rgba(0, 0, 0, 0.45);
 }
-.panel-tab,
-.panel-row,
-.panel-row-action,
-.panel-cta-row,
-.panel-clear,
-.panel-close {
+.audit-close,
+.audit-row,
+.audit-row-action,
+.audit-section-action,
+.audit-nav-link {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
-.panel-tab:hover {
-  color: var(--brand-text, currentColor);
+.audit-close:hover,
+.audit-row-action:hover {
+  background-color: color-mix(in srgb, currentColor 12%, transparent);
 }
-.panel-tab:focus-visible,
-.panel-row:focus-visible,
-.panel-row-action:focus-visible,
-.panel-cta-row:focus-visible,
-.panel-clear:focus-visible,
-.panel-close:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px var(--brand-primary, #f5a300);
-  border-radius: 8px;
-}
-.panel-row:hover,
-.panel-cta-row:hover {
+.audit-row:hover {
   background-color: color-mix(in srgb, currentColor 5%, transparent);
 }
-.panel-row-action:hover,
-.panel-close:hover {
-  background-color: color-mix(in srgb, currentColor 10%, transparent);
+.audit-nav-link:hover {
+  color: var(--brand-text, currentColor);
 }
-.panel-clear:hover {
+.audit-nav-link:focus-visible,
+.audit-row:focus-visible,
+.audit-row-action:focus-visible,
+.audit-section-action:focus-visible,
+.audit-close:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--brand-primary, #f5a300);
+  border-radius: 6px;
+}
+.audit-section-action {
+  font-size: 11px;
+  text-transform: lowercase;
+  letter-spacing: 0.04em;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: background-color 160ms ease;
+}
+.audit-section-action:hover {
   background-color: color-mix(in srgb, currentColor 6%, transparent);
 }
 
-.panel-fade-enter-active,
-.panel-fade-leave-active {
-  transition: opacity 220ms ease;
+.audit-section {
+  scroll-margin-top: 60px;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 8%, transparent);
 }
-.panel-fade-enter-from,
-.panel-fade-leave-to {
+.audit-section:last-child {
+  border-bottom: none;
+}
+.audit-section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.audit-section-header h3 {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0;
+  color: var(--brand-text, currentColor);
+}
+.audit-empty {
+  font-size: 12px;
+  line-height: 1.5;
+  padding: 4px 2px;
+}
+
+.audit-mem-row,
+.audit-act-row,
+.audit-row-static {
+  background-color: transparent;
+}
+.audit-mem-row:hover,
+.audit-act-row:hover,
+.audit-row-static:hover {
+  background-color: color-mix(in srgb, currentColor 4%, transparent);
+}
+
+/* Body scroll polish */
+.audit-body {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, currentColor 14%, transparent) transparent;
+  overscroll-behavior: contain;
+}
+.audit-body::-webkit-scrollbar {
+  width: 6px;
+}
+.audit-body::-webkit-scrollbar-thumb {
+  background-color: color-mix(in srgb, currentColor 12%, transparent);
+  border-radius: 3px;
+}
+
+/* Drawer transitions — same timings as GoalDetailDrawer so the user
+   gets a consistent feel across the audit / detail drawers. */
+.audit-overlay-enter-active,
+.audit-overlay-leave-active {
+  transition: opacity 200ms ease;
+}
+.audit-overlay-enter-from,
+.audit-overlay-leave-to {
   opacity: 0;
 }
 
-.panel-slide-enter-active,
-.panel-slide-leave-active {
+.audit-panel-enter-active,
+.audit-panel-leave-active {
   transition: transform 280ms cubic-bezier(0.2, 0.7, 0.3, 1);
 }
-.panel-slide-enter-from,
-.panel-slide-leave-to {
-  transform: translateX(100%);
+@media (min-width: 768px) {
+  .audit-panel-enter-from,
+  .audit-panel-leave-to {
+    transform: translateX(100%);
+  }
 }
-@media (max-width: 1279px) {
-  .panel-slide-enter-from,
-  .panel-slide-leave-to {
+@media (max-width: 767px) {
+  .audit-panel-enter-from,
+  .audit-panel-leave-to {
     transform: translateY(100%);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .panel-fade-enter-active,
-  .panel-fade-leave-active,
-  .panel-slide-enter-active,
-  .panel-slide-leave-active {
+  .audit-overlay-enter-active,
+  .audit-overlay-leave-active,
+  .audit-panel-enter-active,
+  .audit-panel-leave-active {
     transition: none;
   }
-}
-
-.panel-body {
-  scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, currentColor 14%, transparent) transparent;
-  overscroll-behavior: contain;
-}
-.panel-body::-webkit-scrollbar {
-  width: 6px;
-}
-.panel-body::-webkit-scrollbar-thumb {
-  background-color: color-mix(in srgb, currentColor 12%, transparent);
-  border-radius: 3px;
 }
 </style>

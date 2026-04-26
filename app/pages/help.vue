@@ -281,12 +281,13 @@
     @go-to-session="onJumpToDecisionSession"
   />
 
-  <!-- Painel drawer — single audit / overview surface for goals,
-       decisions, watchlist, alerts, and the agent memory. Replaces
-       the old four sidebar sections. -->
+  <!-- Audit drawer — replaces the old four sidebar sections. Single
+       scrollable view of metas / decisões / watch / alertas / memória
+       de longo prazo / atividade recente. `initial-section` is set
+       by the sidebar click. -->
   <ChatV2PanelDrawer
     :open="panelOpen"
-    :initial-tab="panelInitialTab"
+    :initial-section="panelInitialSection"
     @close="panelOpen = false"
     @new-goal="onNewGoalFromPanel"
     @select-goal="onSelectGoalFromPanel"
@@ -327,12 +328,15 @@ const goalDetailOpen = ref(false)
 const goalDetailId = ref<string | null>(null)
 const decisionDetailOpen = ref(false)
 const decisionDetailId = ref<string | null>(null)
-// Painel drawer — consolidated overview / audit. Stays out of the
-// sidebar; opens on demand. `panelInitialTab` lets us route the user
-// straight to a relevant tab (e.g. open Memória from a "ver minha
-// memória" follow-up button — TODO).
+// Audit drawer — single comprehensive view of everything the agent
+// has access to (goals, decisions, watchlist, alerts, long-term
+// memory, recent activity). The sidebar shows compact counters per
+// section and routes the click through `initial-section` so the
+// drawer scrolls to the right block.
 const panelOpen = ref(false)
-const panelInitialTab = ref<'goals' | 'decisions' | 'watchlist' | 'alerts' | 'memory'>('goals')
+const panelInitialSection = ref<
+  'goals' | 'decisions' | 'watchlist' | 'alerts' | 'memory' | 'activity'
+>('goals')
 const { goals, refresh: refreshGoals, linkSession, unlinkSession, findById: findGoalById } = useGoals()
 const {
   refresh: refreshDecisions,
@@ -646,16 +650,11 @@ async function onJumpToDecisionSession(sessionId: string) {
 const watchlistState = useWatchlist()
 const alertsState = useAlerts()
 
-// ---- Painel drawer handlers ------------------------------------
-function onOpenPanel() {
-  // Default to the tab with pending items; otherwise Metas.
-  const pendingDec = useDecisions().decisions.value.filter(
-    (d) => d.status === 'pending',
-  ).length
-  const unreadAlerts = alertsState.alerts.value.filter((a) => a.readAt == null).length
-  if (unreadAlerts > 0) panelInitialTab.value = 'alerts'
-  else if (pendingDec > 0) panelInitialTab.value = 'decisions'
-  else panelInitialTab.value = 'goals'
+// ---- Audit drawer handlers --------------------------------------
+function onOpenPanel(
+  section: 'goals' | 'decisions' | 'watchlist' | 'alerts' | 'memory' | 'activity' = 'goals',
+) {
+  panelInitialSection.value = section
   panelOpen.value = true
 }
 
