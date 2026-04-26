@@ -31,26 +31,35 @@
 -->
 <template>
   <Teleport to="body">
-    <Transition name="audit-overlay">
-      <div
-        v-if="open"
-        class="audit-backdrop fixed inset-0 z-[80] flex items-end justify-end md:items-stretch"
-        :style="{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }"
-        role="presentation"
-        @keydown.esc="$emit('close')"
-        @click.self="$emit('close')"
-      >
-        <Transition name="audit-panel" appear>
-          <aside
-            v-if="open"
-            ref="dialogRef"
-            class="audit-panel relative flex h-[92vh] w-full flex-col md:h-full md:max-w-[480px]"
-            role="dialog"
-            aria-modal="true"
-            :aria-labelledby="titleId"
-            :style="panelStyle"
-            @keydown.esc.stop="$emit('close')"
-          >
+    <div v-if="open" class="audit-mount fixed inset-0 z-[80]" @keydown.esc="$emit('close')">
+      <!-- Backdrop is its own button sibling (NOT a parent of the
+           panel). This avoids the @click.self pattern that fires
+           when the click that OPENED the drawer ends up on the
+           backdrop element after layout settles — which is what was
+           closing the drawer on the very first click. -->
+      <Transition name="audit-overlay">
+        <button
+          v-if="open"
+          type="button"
+          class="audit-backdrop fixed inset-0"
+          :style="{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }"
+          aria-label="Fechar auditoria"
+          tabindex="-1"
+          @click="$emit('close')"
+        />
+      </Transition>
+      <Transition name="audit-panel" appear>
+        <aside
+          v-if="open"
+          ref="dialogRef"
+          class="audit-panel fixed bottom-0 right-0 top-auto flex h-[92vh] w-full flex-col md:bottom-auto md:top-0 md:h-full md:max-w-[480px]"
+          role="dialog"
+          aria-modal="true"
+          :aria-labelledby="titleId"
+          :style="panelStyle"
+          tabindex="-1"
+          @click.stop
+        >
             <!-- Mobile drag handle (visual only) -->
             <span
               class="mx-auto mt-3 inline-block h-1 w-12 rounded-full md:hidden"
@@ -456,10 +465,9 @@
                 </ul>
               </section>
             </div>
-          </aside>
-        </Transition>
-      </div>
-    </Transition>
+        </aside>
+      </Transition>
+    </div>
   </Teleport>
 </template>
 
