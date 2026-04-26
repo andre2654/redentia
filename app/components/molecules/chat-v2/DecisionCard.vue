@@ -233,14 +233,13 @@ const revisitsLabel = computed(() => {
     .join(' · ')
 })
 
-const cardStyle = computed(() => {
-  const tint = typeColor.value
-  return {
-    backgroundColor: `color-mix(in srgb, ${tint} 5%, ${brand.colors.surface})`,
-    border: `1px solid color-mix(in srgb, ${tint} 18%, ${brand.colors.border})`,
-    boxShadow: `0 4px 16px -8px color-mix(in srgb, ${tint} 30%, transparent)`,
-  } as Record<string, string>
-})
+// Quiet card surface — neutral background + neutral hairline. Type
+// identity lives in the icon + label; the wrapper stays out of the
+// way so the inline card doesn't compete with the answer text above.
+const cardStyle = computed(() => ({
+  backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 70%, transparent)`,
+  border: `1px solid color-mix(in srgb, ${brand.colors.border} 55%, transparent)`,
+}))
 
 const primaryBtnStyle = computed(() => ({
   backgroundColor: brand.colors.primary,

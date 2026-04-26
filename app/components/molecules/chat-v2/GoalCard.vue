@@ -47,7 +47,7 @@
       </span>
       <span
         class="font-mono-tab shrink-0 text-[12.5px] tabular-nums"
-        :style="{ color: statusColor }"
+        :style="{ color: brand.colors.text }"
       >
         {{ progressPct }}%
       </span>
@@ -122,11 +122,14 @@ const ariaLabel = computed(
 )
 
 const cardStyle = computed(() => {
+  // Active state — flat 6% bg + hairline border in the status hue.
+  // Dropped the previous double box-shadow (1px ring + 14px glow)
+  // that made the card read as a glowing alert on the sidebar; the
+  // status dot + bar are signal enough.
   if (props.active) {
     return {
-      backgroundColor: `color-mix(in srgb, ${statusColor.value} 14%, transparent)`,
-      border: `1px solid color-mix(in srgb, ${statusColor.value} 30%, transparent)`,
-      boxShadow: `0 0 0 1px color-mix(in srgb, ${statusColor.value} 22%, transparent), 0 4px 14px -8px color-mix(in srgb, ${statusColor.value} 60%, transparent)`,
+      backgroundColor: `color-mix(in srgb, ${statusColor.value} 6%, transparent)`,
+      border: `1px solid color-mix(in srgb, ${statusColor.value} 18%, transparent)`,
     } as Record<string, string>
   }
   return {

@@ -216,31 +216,28 @@
                  MAX gets a richer gradient AND an animated shimmer
                  sweeping across (the shimmer lives in CSS as a
                  ::before on .is-active.is-max). -->
+            <!-- Active row pad — flat 5% tint, no gradient, no per-tier
+                 mix. Selection is communicated by the bar + the bg
+                 alone, not by a graded fade. -->
             <span
               v-if="activeId === session.id"
               class="chat-sess-pad pointer-events-none absolute inset-x-2 inset-y-0.5 overflow-hidden rounded-md"
               :style="{
-                background: session.tier === 'max'
-                  ? `linear-gradient(90deg, color-mix(in srgb, ${brand.colors.primary} 14%, transparent) 0%, color-mix(in srgb, ${brand.colors.primary} 4%, transparent) 60%, transparent 100%)`
-                  : `linear-gradient(90deg, color-mix(in srgb, ${brand.colors.primary} 8%, transparent) 0%, transparent 80%)`,
+                backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 5%, transparent)`,
               }"
               aria-hidden="true"
             />
-            <!-- Left accent bar — heavier glow when MAX -->
+            <!-- Left accent bar — solid 2px brand fill. No box-shadow
+                 glow (was 6-10px in the previous pass; the audit flagged
+                 it as one of the loudest pieces of decoration on the
+                 sidebar). -->
             <span
               v-if="activeId === session.id"
               class="chat-sess-bar pointer-events-none absolute left-0 top-1/2 h-4 -translate-y-1/2 rounded-r-full"
-              :style="session.tier === 'max'
-                ? {
-                    width: '2.5px',
-                    background: `linear-gradient(180deg, ${brand.colors.primary} 0%, color-mix(in srgb, ${brand.colors.primary} 70%, ${brand.colors.text}) 100%)`,
-                    boxShadow: `0 0 10px color-mix(in srgb, ${brand.colors.primary} 80%, transparent)`,
-                  }
-                : {
-                    width: '2px',
-                    backgroundColor: brand.colors.primary,
-                    boxShadow: `0 0 6px color-mix(in srgb, ${brand.colors.primary} 60%, transparent)`,
-                  }"
+              :style="{
+                width: '2px',
+                backgroundColor: brand.colors.primary,
+              }"
               aria-hidden="true"
             />
             <button
@@ -253,16 +250,12 @@
               :data-tier="session.tier"
               @click="$emit('select', session.id)"
             >
-              <!-- Tier marker — a tiny glowing dot for MAX, only on
-                   inactive rows. Active row gets the full gradient
-                   treatment instead, so the dot would be redundant. -->
+              <!-- Tier marker — solid dot, no glow. Inactive rows only;
+                   active rows get the bar + tinted pad as the cue. -->
               <span
                 v-if="session.tier === 'max' && activeId !== session.id"
-                class="chat-sess-dot relative size-1.5 shrink-0 rounded-full"
-                :style="{
-                  backgroundColor: brand.colors.primary,
-                  boxShadow: `0 0 6px color-mix(in srgb, ${brand.colors.primary} 70%, transparent)`,
-                }"
+                class="size-1.5 shrink-0 rounded-full"
+                :style="{ backgroundColor: brand.colors.primary }"
                 aria-label="Conversa Redentia MAX"
               />
               <span class="min-w-0 flex-1 truncate">

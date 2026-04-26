@@ -45,7 +45,7 @@
         >· {{ progressPct }}%</span>
         <span
           class="font-mono-tab shrink-0 text-[10.5px] uppercase tracking-[0.12em]"
-          :style="{ color: statusColor }"
+          :style="{ color: brand.colors.textMuted }"
         >· {{ statusLabel }}</span>
       </button>
       <button
@@ -115,9 +115,14 @@ const statusLabel = computed(() => {
   }
 })
 
+// Quiet badge — neutral surface, hairline border. Status lives in the
+// dot + the label colour, not in the wrapper. Earlier the wrapper was
+// tinted with the status colour at 8/22% which made the badge feel
+// like a glowing pill on top of the conversation; restraint pass
+// pulls that back so the eye lands on the goal name first.
 const badgeStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${statusColor.value} 8%, transparent)`,
-  border: `1px solid color-mix(in srgb, ${statusColor.value} 22%, transparent)`,
+  backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 60%, transparent)`,
+  border: `1px solid color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
 }))
 </script>
 

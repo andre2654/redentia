@@ -79,9 +79,14 @@
           />
           <span class="flex min-w-0 flex-1 flex-col">
             <span class="flex items-baseline gap-1.5">
+              <!-- Type label is neutral; the dot to the left already
+                   carries the semantic colour (buy=positive, sell=
+                   negative, rebalance/allocate=primary). Coloured
+                   labels added a second axis of visual signal that
+                   read as redundant + noisy on the sidebar. -->
               <span
                 class="font-mono-tab shrink-0 text-[10px] uppercase tracking-[0.14em]"
-                :style="{ color: typeColor(d.type) }"
+                :style="{ color: brand.colors.textMuted }"
               >{{ typeLabel(d.type) }}</span>
               <span
                 v-if="d.ticker"
