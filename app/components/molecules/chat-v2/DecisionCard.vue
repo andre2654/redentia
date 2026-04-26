@@ -29,17 +29,17 @@
       >
         <UIcon :name="typeIcon" class="size-4" />
       </span>
-      <div class="flex min-w-0 flex-1 flex-col gap-0.5">
-        <span class="flex items-baseline gap-1.5">
+      <div class="flex min-w-0 flex-1 flex-col gap-1">
+        <span class="flex flex-wrap items-center gap-1.5">
           <span
             class="font-mono-tab text-[10px] uppercase tracking-[0.16em]"
             :style="{ color: typeColor }"
           >{{ typeLabel }}</span>
-          <span
+          <ChatV2TickerChip
             v-if="decision.ticker"
-            class="text-[14px] font-semibold tabular-nums"
-            :style="{ color: brand.colors.text }"
-          >{{ decision.ticker }}</span>
+            :ticker="decision.ticker"
+            :price-when-mentioned="decision.targetPrice ?? null"
+          />
         </span>
         <p
           v-if="primarySubtext"

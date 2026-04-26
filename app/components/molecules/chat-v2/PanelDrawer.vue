@@ -216,17 +216,18 @@
                         :style="{ backgroundColor: decisionTypeColor(d.type) }"
                         aria-hidden="true"
                       />
-                      <span class="flex min-w-0 flex-1 flex-col">
-                        <span class="flex items-baseline gap-1.5">
+                      <span class="flex min-w-0 flex-1 flex-col gap-0.5">
+                        <span class="flex flex-wrap items-center gap-1.5">
                           <span
                             class="font-mono-tab text-[10px] uppercase tracking-[0.14em]"
                             :style="{ color: brand.colors.textMuted }"
                           >{{ decisionTypeLabel(d.type) }}</span>
-                          <span
+                          <ChatV2TickerChip
                             v-if="d.ticker"
-                            class="truncate text-[12.5px] font-semibold tabular-nums"
-                            :style="{ color: brand.colors.text }"
-                          >{{ d.ticker }}</span>
+                            :ticker="d.ticker"
+                            :price-when-mentioned="parseDecisionPrice(d.targetPrice)"
+                            density="compact"
+                          />
                         </span>
                         <span
                           class="truncate text-[11px]"
@@ -257,17 +258,17 @@
                   class="audit-empty"
                   :style="{ color: brand.colors.textMuted }"
                 >Vazia. Peça à IA para monitorar um ativo (ex.: "monitorar PETR4 e me avisar se cair 8%").</p>
-                <ul v-else class="flex flex-col gap-px">
+                <ul v-else class="flex flex-col gap-1">
                   <li v-for="w in watchlistState.watches.value" :key="w.id">
                     <div class="audit-row-static flex items-center gap-3 rounded-md px-2 py-2">
-                      <span class="flex min-w-0 flex-1 flex-col">
-                        <span
-                          class="font-mono-tab text-[12.5px] font-bold tracking-tight"
-                          :style="{ color: brand.colors.text }"
-                        >{{ w.ticker }}</span>
+                      <span class="flex min-w-0 flex-1 flex-col gap-0.5">
+                        <ChatV2TickerChip
+                          :ticker="w.ticker"
+                          :price-when-mentioned="w.snapshotPrice ?? null"
+                        />
                         <span
                           v-if="w.note"
-                          class="truncate text-[11px]"
+                          class="truncate pl-1 text-[11px]"
                           :style="{ color: brand.colors.textMuted }"
                         >{{ w.note }}</span>
                       </span>
@@ -810,6 +811,14 @@ function decisionTypeColor(t: DecisionType): string {
   if (t === 'rebalance' || t === 'allocate') return brand.colors.primary
   return brand.colors.textMuted
 }
+/** ChatDecision returns numeric fields as strings (Drizzle numeric).
+ *  Convert + sanity-check before passing to TickerChip's price prop. */
+function parseDecisionPrice(raw: string | null | undefined): number | null {
+  if (raw == null) return null
+  const n = typeof raw === 'string' ? parseFloat(raw) : (raw as number)
+  return Number.isFinite(n) && n > 0 ? n : null
+}
+
 function decisionTypeLabel(t: DecisionType): string {
   return (
     {
