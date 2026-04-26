@@ -77,6 +77,25 @@ const TOOL_META: Record<
   view_watchlist: { label: 'Lendo carteira', emoji: '⭐', argKeys: [] },
   set_price_alert: { label: 'Criando alerta', emoji: '🔔', argKeys: ['ticker'] },
   generate_spreadsheet: { label: 'Gerando planilha', emoji: '📋', argKeys: ['filename'] },
+  // Portfolio architect (Camadas 2/3/5/6)
+  validate_goal: { label: 'Validando meta', emoji: '🎯', argKeys: [] },
+  macro_snapshot: { label: 'Cenário macro', emoji: '🌎', argKeys: [] },
+  verify_asset_composition: { label: 'Verificando composição', emoji: '🔍', argKeys: ['ticker'] },
+  portfolio_expected_return: { label: 'Retorno esperado da carteira', emoji: '📐', argKeys: [] },
+  // Memory tools
+  save_memory: { label: 'Salvando na memória', emoji: '🧠', argKeys: ['key'] },
+  list_memories: { label: 'Lendo memória', emoji: '🧠', argKeys: [] },
+  forget_memory: { label: 'Esquecendo', emoji: '🧠', argKeys: ['key'] },
+  // Forms
+  ask_form: { label: 'Solicitando formulário', emoji: '📝', argKeys: [] },
+  // Web search (OpenRouter :online)
+  web_search: { label: 'Pesquisando na web', emoji: '🌐', argKeys: ['query'] },
+  // Pseudo-tools emitted by the agent itself for status visibility.
+  // Not in the actual tool registry — they're synthetic events that
+  // re-use the tool-card UI to keep the user informed during long
+  // server-side phases (auto-research, synthesis, audit).
+  synthesizing_analysis: { label: 'Sintetizando análise', emoji: '✍️', argKeys: [] },
+  auditing_response: { label: 'Auditando resposta', emoji: '🛡️', argKeys: [] },
 }
 
 const meta = computed(() => TOOL_META[props.toolCall.name] ?? { label: props.toolCall.name, emoji: '🔧', argKeys: [] })
