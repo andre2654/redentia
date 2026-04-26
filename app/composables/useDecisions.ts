@@ -132,6 +132,12 @@ export function useDecisions() {
     return r.decision
   }
 
+  async function remove(id: string): Promise<void> {
+    await fetchJson<{ ok: true }>(`/decisions/${id}`, { method: 'DELETE' })
+    _decisions.value = _decisions.value.filter((d) => d.id !== id)
+    void refresh()
+  }
+
   function applyServerEvent(): void {
     void refresh()
   }
@@ -158,6 +164,7 @@ export function useDecisions() {
     refresh,
     setStatus,
     setOutcome,
+    remove,
     applyServerEvent,
     findById: (id: string | null | undefined) =>
       id ? _decisions.value.find((d) => d.id === id) ?? null : null,

@@ -352,6 +352,13 @@ function toggleCheckbox(id: string, value: string) {
 // Cheap currency formatter: keeps digits + a single comma, groups
 // thousands with dots. The displayed value stays in the input so the
 // user sees BRL style; the raw number is reconstructed at submit time.
+//
+// Subtle: we MUST strip leading zeros from the integer part. Without
+// this, "10000" typed character-by-character produces successive
+// states like "1,00", "10,00", "100,00", "1.000,00", "10.000,00" —
+// fine. But when the user EDITS by deleting (or pastes "100"), the
+// digits string can begin with "0"s ("0010000") and the formatter
+// renders "00.100,00", which looks like a typo.
 function onCurrencyInput(e: Event, id: string) {
   const el = e.target as HTMLInputElement
   const digits = el.value.replace(/\D/g, '')
@@ -359,8 +366,11 @@ function onCurrencyInput(e: Event, id: string) {
     answers.value[id] = ''
     return
   }
-  // Treat last 2 digits as cents
-  const intPart = digits.slice(0, -2) || '0'
+  // Last 2 digits are cents; everything before is the integer part.
+  // Strip leading zeros from the integer part, but keep at least one
+  // digit so "0,50" is still shown for cent-only amounts.
+  const rawInt = digits.slice(0, -2)
+  const intPart = (rawInt.replace(/^0+/, '') || '0')
   const cents = digits.slice(-2).padStart(2, '0')
   const grouped = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
   el.value = `${grouped},${cents}`

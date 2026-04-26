@@ -278,6 +278,16 @@
     @close="closeGoalDetail"
     @archived="onGoalArchived"
   />
+
+  <!-- Decision detail drawer — opens from the sidebar Decisions section
+       OR from clicking the inline DecisionCard's "Ver detalhes" link. -->
+  <ChatV2DecisionDetailDrawer
+    :open="decisionDetailOpen"
+    :decision="decisionDetailDecision"
+    @close="closeDecisionDetail"
+    @removed="onDecisionRemoved"
+    @go-to-session="onJumpToDecisionSession"
+  />
 </template>
 
 <script setup lang="ts">
@@ -310,9 +320,15 @@ const sessionList = ref<Array<{ id: string; title: string | null; createdAt: str
 const goalSetupOpen = ref(false)
 const goalDetailOpen = ref(false)
 const goalDetailId = ref<string | null>(null)
+const decisionDetailOpen = ref(false)
+const decisionDetailId = ref<string | null>(null)
 const { goals, refresh: refreshGoals, linkSession, unlinkSession, findById: findGoalById } = useGoals()
-const { refresh: refreshDecisions } = useDecisions()
+const {
+  refresh: refreshDecisions,
+  findById: findDecisionById,
+} = useDecisions()
 const goalDetailGoal = computed(() => findGoalById(goalDetailId.value))
+const decisionDetailDecision = computed(() => findDecisionById(decisionDetailId.value))
 // Active goal id is computed AFTER `chat` is initialised below — we
 // declare the refs early but bind the actual session.id reactivity
 // after the composable is available.
@@ -583,10 +599,33 @@ async function onGoalCreated(goal: { id: string }) {
 }
 
 function onSelectDecision(d: { id: string; sessionId: string | null }) {
-  // Jump to the conversation where the decision was created.
-  if (d.sessionId) {
-    void onSelectSession(d.sessionId)
-  }
+  // Click on a decision row in the sidebar opens the detail drawer.
+  // Jump-to-session happens via the drawer's "Abrir conversa" button —
+  // single-click jump-to-session was confusing when the user just
+  // wanted to read the thesis without losing the current chat.
+  decisionDetailId.value = d.id
+  decisionDetailOpen.value = true
+}
+
+function closeDecisionDetail() {
+  decisionDetailOpen.value = false
+  setTimeout(() => {
+    if (!decisionDetailOpen.value) decisionDetailId.value = null
+  }, 320)
+}
+
+function onDecisionRemoved(_id: string) {
+  // Decision is already gone from the cache (composable handled it).
+  // Refresh sessionList in case the active session showed a card that
+  // referenced this decision so it disappears too.
+  void refreshSessionList()
+}
+
+async function onJumpToDecisionSession(sessionId: string) {
+  closeDecisionDetail()
+  // Reuse the standard session-switch path so the in-flight stream
+  // (if any) gets aborted cleanly before loading the new conversation.
+  await onSelectSession(sessionId)
 }
 
 // Refresh goals + decisions caches whenever auth flips on so logged-in
