@@ -156,6 +156,49 @@
         />
       </section>
 
+      <!-- ===== Pre-execution checklists (co-piloto) ===== -->
+      <section
+        v-if="(message.preExecutes ?? []).length > 0"
+        class="flex flex-col gap-3"
+        aria-label="Checklists pré-execução"
+      >
+        <ChatV2PreExecuteCard
+          v-for="p in (message.preExecutes ?? [])"
+          :key="p.decisionId"
+          :data="p"
+          @confirm="(id) => $emit('confirm-execution', id)"
+          @cancel="(id) => $emit('cancel-pre-execute', id)"
+        />
+      </section>
+
+      <!-- ===== What-if scenario cards ===== -->
+      <section
+        v-if="(message.scenarios ?? []).length > 0"
+        class="flex flex-col gap-3"
+        aria-label="Cenários simulados"
+      >
+        <ChatV2ScenarioCard
+          v-for="(s, idx) in (message.scenarios ?? [])"
+          :key="`${s.goalId ?? 'free'}-${idx}`"
+          :data="s"
+        />
+      </section>
+
+      <!-- ===== Watchlist alerts (inline) ===== -->
+      <section
+        v-if="(message.alerts ?? []).length > 0"
+        class="flex flex-col gap-2"
+        aria-label="Alertas"
+      >
+        <ChatV2AlertCard
+          v-for="a in (message.alerts ?? [])"
+          :key="a.alertId"
+          :alert="alertToFull(a)"
+          @select="(full) => $emit('select-alert', full)"
+          @dismiss="(id) => $emit('dismiss-alert', id)"
+        />
+      </section>
+
       <!-- ===== Asset cards ===== -->
       <section v-if="message.assetCards.length > 0" class="flex flex-col gap-2">
         <ChatV2AssetCard
@@ -241,7 +284,12 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { marked } from 'marked'
-import type { ChatMessage, ChatArtifact } from '~/composables/useChatStream'
+import type {
+  ChatMessage,
+  ChatArtifact,
+  ChatAlertData,
+} from '~/composables/useChatStream'
+import type { ChatAlert } from '~/composables/useAlerts'
 
 // DOMPurify sanitization runs **only on the client**. The
 // `isomorphic-dompurify` package transitively pulls in `jsdom` for
@@ -282,7 +330,32 @@ const props = defineProps<{
 defineEmits<{
   'send-followup': [message: string]
   'open-artifact': [artifact: ChatArtifact]
+  'confirm-execution': [decisionId: string]
+  'cancel-pre-execute': [decisionId: string]
+  'select-alert': [alert: ChatAlert]
+  'dismiss-alert': [id: string]
 }>()
+
+/** Adapt the lightweight inline alert payload (from `alert.fired`) to
+ *  the full ChatAlert shape that AlertCard expects. The inline event
+ *  doesn't carry readAt/sessionId/createdAt — we synthesize them so
+ *  the card renders without breaking the prop contract. */
+function alertToFull(a: ChatAlertData): ChatAlert {
+  return {
+    id: a.alertId,
+    source: a.source,
+    kind: a.kind,
+    severity: a.severity,
+    ticker: a.ticker ?? null,
+    title: a.title,
+    body: a.body,
+    data: a.data ?? {},
+    sessionId: null,
+    decisionId: null,
+    readAt: null,
+    createdAt: new Date().toISOString(),
+  }
+}
 
 const brand = useBrand()
 

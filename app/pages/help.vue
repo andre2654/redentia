@@ -167,6 +167,8 @@
         @new-goal="goalSetupOpen = true"
         @select-goal="onSelectGoal"
         @select-decision="onSelectDecision"
+        @select-watch="onSelectWatch"
+        @select-alert="onSelectAlertSidebar"
       />
     </template>
 
@@ -234,6 +236,10 @@
           :messages="chat.messages.value"
           @send-followup="onSendFollowup"
           @open-artifact="onOpenArtifact"
+          @confirm-execution="onConfirmExecution"
+          @cancel-pre-execute="onCancelPreExecute"
+          @select-alert="onSelectAlertInline"
+          @dismiss-alert="onDismissAlert"
         />
         <ChatV2EmptyState
           v-else
@@ -628,14 +634,80 @@ async function onJumpToDecisionSession(sessionId: string) {
   await onSelectSession(sessionId)
 }
 
-// Refresh goals + decisions caches whenever auth flips on so logged-in
-// users see their state without an extra navigation.
+// ---- Watchlist + alerts handlers --------------------------------
+const watchlistState = useWatchlist()
+const alertsState = useAlerts()
+
+function onSelectWatch(watch: { id: string; ticker: string }) {
+  // Sidebar click on a watchlist row — for now, send a pre-built
+  // follow-up that asks the AI to refresh the analysis on this
+  // ticker. Later this could open a dedicated drawer.
+  if (!authStore.isAuthenticated) return
+  void chat.send(
+    `Atualize a análise de ${watch.ticker}. Quero ver preço atual, fundamentos e se a tese ainda vale.`,
+  )
+}
+
+function onSelectAlertSidebar(alert: { id: string; ticker: string | null; sessionId: string | null }) {
+  // Mark as read; if the alert links to a session, jump there.
+  void alertsState.markRead(alert.id)
+  if (alert.sessionId) {
+    void onSelectSession(alert.sessionId)
+    return
+  }
+  // No session linked — drop the user into a new turn referencing
+  // the ticker so the agent can pick up the thread.
+  if (alert.ticker) {
+    void chat.send(
+      `Recebi um alerta de watchlist para ${alert.ticker}. Pode me explicar o que mudou e se devo agir?`,
+    )
+  }
+}
+
+function onSelectAlertInline(alert: { id: string; ticker: string | null }) {
+  // Inline AlertCard click — same behaviour as sidebar minus session
+  // jump (we're already in the source session by definition).
+  void alertsState.markRead(alert.id)
+  if (alert.ticker) {
+    void chat.send(
+      `Vamos olhar de perto ${alert.ticker} — o alerta acabou de disparar. Análise rápida.`,
+    )
+  }
+}
+
+function onDismissAlert(id: string) {
+  void alertsState.dismiss(id)
+}
+
+// ---- Pre-execution co-pilot handlers ----------------------------
+function onConfirmExecution(decisionId: string) {
+  // The user has checked all critical items and clicked "Executei".
+  // We don't need to call the tool ourselves — the cleaner UX is to
+  // let the agent confirm, persist the snapshot, and write the
+  // memory entry. We just nudge it with a structured message.
+  if (!authStore.isAuthenticated) return
+  void chat.send(
+    `Confirmo: executei a operação. Por favor, chame confirm_execution para a decisão ${decisionId}.`,
+  )
+}
+
+function onCancelPreExecute(_decisionId: string) {
+  // User backed out — no backend mutation needed. The decision
+  // stays in `pending` so they can retry later. Just close the
+  // card by removing it from the message client-side.
+  // (Actually keeping it is fine; the user can re-check next time.)
+}
+
+// Refresh goals + decisions + watchlist + alerts caches whenever
+// auth flips on so logged-in users see state without extra nav.
 watch(
   () => authStore.isAuthenticated,
   (auth) => {
     if (auth) {
       void refreshGoals()
       void refreshDecisions()
+      void watchlistState.refresh()
+      void alertsState.refresh()
     }
   },
   { immediate: true },

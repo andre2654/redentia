@@ -323,16 +323,24 @@ defineEmits<{
   'new-goal': []
   'select-goal': [goal: { id: string }]
   'select-decision': [decision: { id: string; sessionId: string | null }]
+  'select-watch': [watch: { id: string; ticker: string }]
+  'select-alert': [alert: { id: string; ticker: string | null; sessionId: string | null }]
 }>()
 
-// Goals + decisions composables — accessed lazily (only when feature
-// is enabled) so anonymous renders don't pay the import cost.
+// Goals + decisions + watchlist + alerts composables. Accessed
+// lazily — only refreshed when the gated section is enabled, so an
+// anonymous render doesn't pay the network cost for sections it
+// can't show anyway.
 const goalsState = useGoals()
 const decisionsState = useDecisions()
+const watchlistState = useWatchlist()
+const alertsState = useAlerts()
 onMounted(() => {
   if (props.showGoalsAndDecisions) {
     void goalsState.refresh()
     void decisionsState.refresh()
+    void watchlistState.refresh()
+    void alertsState.refresh()
   }
 })
 

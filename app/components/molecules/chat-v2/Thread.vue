@@ -30,6 +30,10 @@
           :class="i > 0 ? 'mt-12 md:mt-16' : ''"
           @send-followup="$emit('send-followup', $event)"
           @open-artifact="$emit('open-artifact', $event)"
+          @confirm-execution="$emit('confirm-execution', $event)"
+          @cancel-pre-execute="$emit('cancel-pre-execute', $event)"
+          @select-alert="$emit('select-alert', $event)"
+          @dismiss-alert="$emit('dismiss-alert', $event)"
         />
       </div>
     </div>
@@ -57,6 +61,7 @@
 <script setup lang="ts">
 import { nextTick, onMounted, ref, watch } from 'vue'
 import type { ChatMessage, ChatArtifact } from '~/composables/useChatStream'
+import type { ChatAlert } from '~/composables/useAlerts'
 
 const props = defineProps<{
   messages: ChatMessage[]
@@ -74,6 +79,10 @@ defineEmits<{
         },
   ]
   'open-artifact': [artifact: ChatArtifact]
+  'confirm-execution': [decisionId: string]
+  'cancel-pre-execute': [decisionId: string]
+  'select-alert': [alert: ChatAlert]
+  'dismiss-alert': [id: string]
 }>()
 
 const brand = useBrand()
