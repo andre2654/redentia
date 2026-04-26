@@ -495,16 +495,18 @@ const loserTopPct = computed(() => {
 }
 
 /* Panels — stacked vertical. Each fills almost the full width
-   (40px side gutters). 34px gap under the subtitle, 50px gap
-   between the two panels so the altas vs baixas separation reads
-   clearly instead of feeling like one big continuous block. */
+   (40px side gutters). With the hero subtitle removed and title
+   reduced to 96px, panel-top moves up from 300→220 and each panel
+   grows from 290→320 frame height. 40px gap between altas/baixas
+   keeps the green/red contrast reading as two distinct sections
+   instead of one continuous block. */
 .panel {
   position: absolute; left: 40px; right: 40px;
-  height: 330px;
+  height: 360px;
   z-index: 2;
 }
-.panel-top { top: 300px; }
-.panel-bottom { top: 680px; }
+.panel-top { top: 220px; }
+.panel-bottom { top: 620px; }
 
 .panel-head {
   display: flex; align-items: baseline;
@@ -549,7 +551,7 @@ const loserTopPct = computed(() => {
 
 .panel-frame {
   position: relative;
-  width: 1000px; height: 290px;
+  width: 1000px; height: 320px;
   border: 1px solid rgba(255,255,255,0.08);
   background: rgba(20, 22, 28, 0.4);
   border-radius: 8px;
