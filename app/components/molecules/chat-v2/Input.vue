@@ -25,6 +25,15 @@
       aria-hidden="true"
     />
 
+    <!-- Thinking indicator — Manus-style. Sits literally above the
+         composer pill, sharing the same horizontal max-width so it
+         reads as the same surface. Only renders when streaming. -->
+    <ChatV2ThinkingIndicator
+      v-if="isStreaming && streamingMessage"
+      :reasoning="streamingMessage.reasoning ?? ''"
+      :tool-calls="streamingMessage.toolCalls ?? []"
+    />
+
     <div
       class="chat-composer pointer-events-auto relative mx-auto flex max-w-3xl flex-col gap-2 px-5 pb-3 pt-4 transition-[border-color,box-shadow] duration-200"
       :class="[isMax ? 'is-max' : 'is-basic', dragOver ? 'is-drag-over' : '']"
@@ -254,7 +263,11 @@
 
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue'
-import type { ChatAttachment, ChatAttachmentKind } from '~/composables/useChatStream'
+import type {
+  ChatAttachment,
+  ChatAttachmentKind,
+  ChatMessage,
+} from '~/composables/useChatStream'
 
 export type ChatTier = 'basic' | 'max'
 
@@ -268,6 +281,13 @@ const props = defineProps<{
    * the other is dimmed and click-disabled).
    */
   tierLocked?: boolean
+  /**
+   * The active assistant message (the one currently being streamed),
+   * passed in so the ThinkingIndicator that lives directly above the
+   * composer pill can read live reasoning + tool-call state without
+   * having to subscribe through the layout.
+   */
+  streamingMessage?: ChatMessage | null
 }>()
 
 const tier = defineModel<ChatTier>('tier', { default: 'basic' })

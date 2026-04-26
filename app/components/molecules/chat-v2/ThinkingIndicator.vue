@@ -1,37 +1,53 @@
 <!--
-  ThinkingIndicator — Manus-style floating pill that hovers just above
-  the composer while the assistant is streaming a response. Tells the
-  user what the agent is currently doing in one short sentence and
-  expands on click to show the recent activity timeline.
+  ThinkingIndicator — Manus-style "thinking" surface that lives
+  literally above the composer pill (rendered as a sibling inside
+  Input.vue's composer-wrap, NOT a separate floating element).
 
-  Visible only while the last assistant message is `streaming`. When
-  the message completes, the pill animates down and unmounts so the
-  composer area returns to its rest state.
+  Visual identity (Manus reference):
 
-  Lives at the same DOM level as Input.vue (rendered as a sibling in
-  help.vue's thread template), positioned via `position: absolute;
-  bottom: <composer height + gap>;` so it tracks the composer.
+    ┌──────────────────────────────────────────────┐
+    │ ● Pensando · Verificando dividendos · 3 ▾   │  ← collapsed pill
+    └──────────────────────────────────────────────┘
+    ┌──────────────────────────────────────────────┐
+    │  Composer pill (textarea + tier picker + ↑) │
+    └──────────────────────────────────────────────┘
 
-  Visual restraint:
-  - Single hairline border + low-opacity surface tint, no glow.
+  Click to expand → reveals two stacked sections directly above the
+  pill (still attached, no floating overlay):
+
+    ┌──────────────────────────────────────────────┐
+    │ ● Pensando · …                            ▴ │
+    │ ─────────────────────────────────────────── │
+    │  Reasoning stream (italic, live):           │
+    │  "Olhando as memórias, vejo que…"           │
+    │ ─────────────────────────────────────────── │
+    │  Last 6 actions:                            │
+    │   ● Buscando notícias · "PETR4 dividendos"  │
+    │   ● Verificando dividendos · VALE3          │
+    │   ✓ Memória · perfil_risco                  │
+    └──────────────────────────────────────────────┘
+
+  Width matches the composer's `max-w-3xl`; corner radii match the
+  pill above (rounded-[24px]). Border + surface tone mirror the
+  composer so the two read as one connected surface — the pill at
+  the bottom is the input, the one above is the live thinking.
+
+  Restraint:
   - One accent: the leading status dot.
-  - Numbers (count of running ops, elapsed time) use tabular-nums.
-  - One animation: the dot pulses ONLY while running (subtle
-    opacity-only, no scale, honours reduced-motion).
+  - One animation: the dot pulses opacity ONLY while a tool is
+    running (no scale, honours reduced-motion).
+  - Reasoning stream auto-scrolls to bottom while updating.
 -->
 <template>
-  <Transition name="thinking-fade">
+  <Transition name="thinking-mount">
     <div
-      v-if="visible"
-      class="thinking-indicator pointer-events-auto absolute inset-x-0 z-20 mx-auto flex max-w-3xl flex-col"
-      :style="{
-        bottom: 'calc(7rem + env(safe-area-inset-bottom, 0px))',
-      }"
+      v-if="hasContent"
+      class="thinking-shell pointer-events-auto relative mx-auto mb-2 flex max-w-3xl flex-col overflow-hidden rounded-[24px] transition-[border-color,box-shadow] duration-200"
+      :style="shellStyle"
     >
       <button
         type="button"
-        class="thinking-toggle relative flex items-center gap-2.5 self-center rounded-full px-3 py-1.5 text-left transition-[background-color,box-shadow]"
-        :style="toggleStyle"
+        class="thinking-toggle flex items-center gap-2.5 px-5 py-2.5 text-left transition-colors"
         :aria-expanded="open"
         :aria-controls="bodyId"
         @click="open = !open"
@@ -45,7 +61,7 @@
         <span
           class="font-mono-tab text-[10.5px] uppercase tracking-[0.18em]"
           :style="{ color: brand.colors.textMuted }"
-        >{{ anyRunning ? 'Pensando' : 'Concluindo' }}</span>
+        >Pensando</span>
         <span
           v-if="currentVerb"
           class="truncate text-[12px]"
@@ -56,49 +72,96 @@
           class="font-mono-tab text-[10.5px] tabular-nums"
           :style="{ color: brand.colors.textMuted }"
         >· {{ runningCount }}</span>
-        <UIcon
-          :name="open ? 'i-lucide-chevron-down' : 'i-lucide-chevron-up'"
-          class="size-3 shrink-0"
-          :style="{ color: brand.colors.textMuted }"
-          aria-hidden="true"
-        />
+        <span class="ml-auto flex items-center gap-1">
+          <UIcon
+            :name="open ? 'i-lucide-chevron-down' : 'i-lucide-chevron-up'"
+            class="size-3.5"
+            :style="{ color: brand.colors.textMuted }"
+            aria-hidden="true"
+          />
+        </span>
       </button>
 
       <Transition name="thinking-body">
-        <ul
-          v-if="open && timeline.length > 0"
+        <div
+          v-if="open"
           :id="bodyId"
-          class="thinking-body mt-1.5 flex flex-col gap-px self-center rounded-xl px-3 py-2 text-[11.5px]"
-          :style="bodyStyle"
+          class="thinking-body flex flex-col gap-2 px-5 pb-3"
+          :style="{
+            borderTop: `1px solid color-mix(in srgb, ${brand.colors.border} 35%, transparent)`,
+          }"
         >
-          <li
-            v-for="entry in timeline.slice(-6)"
-            :key="entry.callId"
-            class="flex items-center gap-2"
+          <!-- Live reasoning — italic, line-clamp-6 by default,
+               auto-scrolls to bottom as new chunks arrive. -->
+          <div
+            v-if="reasoning"
+            ref="reasoningRef"
+            class="thinking-reasoning whitespace-pre-line break-words pt-2 text-[12.5px] italic leading-relaxed"
+            :style="{
+              color: `color-mix(in srgb, ${brand.colors.text} 80%, transparent)`,
+              maxHeight: '12em',
+              overflowY: 'auto',
+            }"
+          >{{ reasoning }}</div>
+
+          <!-- Recent actions — last 6, with status dot + family
+               label + arg preview. -->
+          <ul
+            v-if="recentActions.length > 0"
+            class="flex flex-col gap-px"
+            :style="{
+              borderTop: reasoning
+                ? `1px solid color-mix(in srgb, ${brand.colors.border} 30%, transparent)`
+                : undefined,
+              paddingTop: reasoning ? '8px' : '4px',
+            }"
+            aria-label="Ações recentes"
           >
-            <span
-              class="inline-flex size-1.5 shrink-0 rounded-full"
-              :style="{ backgroundColor: entryStatusColor(entry) }"
-              aria-hidden="true"
-            />
-            <span
-              class="truncate"
-              :style="{ color: brand.colors.text }"
-            >{{ describeEntry(entry) }}</span>
-          </li>
-        </ul>
+            <li
+              v-for="entry in recentActions"
+              :key="entry.callId"
+              class="flex items-center gap-2 text-[11.5px]"
+            >
+              <span
+                class="inline-flex size-1.5 shrink-0 rounded-full"
+                :style="{ backgroundColor: entryStatusColor(entry) }"
+                aria-hidden="true"
+              />
+              <span
+                class="truncate"
+                :style="{ color: brand.colors.text }"
+              >{{ describeEntry(entry) }}</span>
+              <span
+                v-if="entry.durationMs != null"
+                class="ml-auto font-mono-tab text-[10px] tabular-nums"
+                :style="{ color: brand.colors.textMuted }"
+              >{{ formatDuration(entry.durationMs) }}</span>
+            </li>
+          </ul>
+
+          <p
+            v-if="!reasoning && recentActions.length === 0"
+            class="py-2 text-[12px] italic"
+            :style="{ color: brand.colors.textMuted }"
+          >Sintetizando análise…</p>
+        </div>
       </Transition>
     </div>
   </Transition>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import type { ChatToolCall } from '~/composables/useChatStream'
 
 const props = defineProps<{
+  /**
+   * Reasoning / chain-of-thought text accumulated so far on the
+   * active assistant message. Empty until a `reasoning.delta` event
+   * arrives.
+   */
+  reasoning: string
   toolCalls: ChatToolCall[]
-  streaming: boolean
 }>()
 
 const brand = useBrand()
@@ -107,26 +170,28 @@ const { familyForTool } = useToolFamilies()
 const bodyId = `thinking-body-${Math.random().toString(36).slice(2, 8)}`
 const open = ref(false)
 
-const visible = computed(() => props.streaming)
+const reasoningRef = ref<HTMLElement | null>(null)
+
+// Mount the indicator only when there's something to show — either
+// streamed reasoning or at least one tool call. Avoids a blank pill
+// flickering at the start of a turn before any chunk arrives.
+const hasContent = computed(
+  () => props.reasoning.length > 0 || props.toolCalls.length > 0,
+)
 
 const anyRunning = computed(() => props.toolCalls.some((c) => c.status === 'running'))
-
 const runningCount = computed(
   () => props.toolCalls.filter((c) => c.status === 'running').length,
 )
 
-/**
- * The "what am I doing right now" string. Picks the family of the
- * most recently started running call; falls back to the most recent
- * completed call's family while the model is post-tool-thinking.
- */
+/** Single-line description for the collapsed pill. Uses the most
+ *  recent running call's family verb; falls back to the most recent
+ *  completion's family verb (with " · concluído"). */
 const currentVerb = computed(() => {
-  // Prefer a running call so the user sees the live action
   for (let i = props.toolCalls.length - 1; i >= 0; i--) {
     const c = props.toolCalls[i]!
     if (c.status === 'running') return familyForTool(c.name).verb
   }
-  // No running call — show the most recent completion as context
   for (let i = props.toolCalls.length - 1; i >= 0; i--) {
     const c = props.toolCalls[i]!
     if (c.status === 'success' || c.status === 'error') {
@@ -136,12 +201,20 @@ const currentVerb = computed(() => {
   return null
 })
 
-const timeline = computed<ChatToolCall[]>(() => props.toolCalls)
+const recentActions = computed(() => props.toolCalls.slice(-6))
 
-const dotColor = computed(() => {
-  if (anyRunning.value) return brand.colors.primary
-  return `color-mix(in srgb, ${brand.colors.text} 40%, transparent)`
-})
+const dotColor = computed(() =>
+  anyRunning.value
+    ? brand.colors.primary
+    : `color-mix(in srgb, ${brand.colors.text} 40%, transparent)`,
+)
+
+const shellStyle = computed(() => ({
+  backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 92%, transparent)`,
+  border: `1px solid color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+  color: brand.colors.text,
+  boxShadow: '0 4px 18px -10px rgba(0, 0, 0, 0.18)',
+}))
 
 function entryStatusColor(entry: ChatToolCall): string {
   if (entry.status === 'running') return brand.colors.primary
@@ -162,38 +235,44 @@ function describeEntry(entry: ChatToolCall): string {
   return family.label
 }
 
-const toggleStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 92%, transparent)`,
-  border: `1px solid color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
-  color: brand.colors.text,
-  backdropFilter: 'blur(6px)',
-  boxShadow: '0 8px 24px -12px rgba(0, 0, 0, 0.18)',
-}))
+function formatDuration(ms: number): string {
+  if (ms < 1000) return `${Math.round(ms)}ms`
+  const s = ms / 1000
+  if (s < 10) return `${s.toFixed(1)}s`
+  return `${Math.round(s)}s`
+}
 
-const bodyStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 92%, transparent)`,
-  border: `1px solid color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
-  color: brand.colors.text,
-  backdropFilter: 'blur(6px)',
-  boxShadow: '0 8px 24px -12px rgba(0, 0, 0, 0.18)',
-  minWidth: '260px',
-  maxWidth: 'min(420px, calc(100vw - 32px))',
-}))
+// Auto-scroll the reasoning area to the bottom as new chunks come in
+// — feels live without being jumpy. Only scrolls when the user has
+// already opened the body AND the area is overflowing.
+watch(
+  () => props.reasoning,
+  () => {
+    if (!open.value) return
+    void nextTick(() => {
+      const el = reasoningRef.value
+      if (!el) return
+      el.scrollTop = el.scrollHeight
+    })
+  },
+)
 </script>
 
 <style scoped>
+.thinking-shell {
+  isolation: isolate;
+}
 .thinking-toggle {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
-.thinking-toggle:focus-visible {
-  outline: none;
-  box-shadow:
-    0 0 0 2px var(--brand-primary, #f5a300),
-    0 8px 24px -12px rgba(0, 0, 0, 0.18);
-}
 .thinking-toggle:hover {
   background-color: color-mix(in srgb, currentColor 4%, transparent);
+}
+.thinking-toggle:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--brand-primary, #f5a300);
+  border-radius: 24px;
 }
 
 .thinking-dot.is-running {
@@ -210,32 +289,48 @@ const bodyStyle = computed(() => ({
   }
 }
 
-.thinking-fade-enter-active,
-.thinking-fade-leave-active {
+.thinking-mount-enter-active,
+.thinking-mount-leave-active {
   transition: opacity 220ms ease, transform 220ms ease;
 }
-.thinking-fade-enter-from,
-.thinking-fade-leave-to {
+.thinking-mount-enter-from,
+.thinking-mount-leave-to {
   opacity: 0;
   transform: translateY(6px);
 }
 
 .thinking-body-enter-active,
 .thinking-body-leave-active {
-  transition: opacity 160ms ease, transform 160ms ease;
+  transition: opacity 160ms ease, max-height 220ms ease;
 }
 .thinking-body-enter-from,
 .thinking-body-leave-to {
   opacity: 0;
-  transform: translateY(-4px);
+  max-height: 0;
+}
+.thinking-body-enter-to,
+.thinking-body-leave-from {
+  max-height: 24em;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .thinking-fade-enter-active,
-  .thinking-fade-leave-active,
+  .thinking-mount-enter-active,
+  .thinking-mount-leave-active,
   .thinking-body-enter-active,
   .thinking-body-leave-active {
     transition: none;
   }
+}
+
+.thinking-reasoning {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, currentColor 14%, transparent) transparent;
+}
+.thinking-reasoning::-webkit-scrollbar {
+  width: 4px;
+}
+.thinking-reasoning::-webkit-scrollbar-thumb {
+  background-color: color-mix(in srgb, currentColor 12%, transparent);
+  border-radius: 2px;
 }
 </style>

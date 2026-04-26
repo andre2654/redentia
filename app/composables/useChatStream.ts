@@ -239,6 +239,13 @@ export interface ChatMessage {
   id: string
   role: ChatRole
   content: string
+  /**
+   * Reasoning / chain-of-thought from the model, when emitted via the
+   * `reasoning.delta` SSE event. NOT persisted across reloads — only
+   * the visible `content` is. Used by the floating ThinkingIndicator
+   * to render the "thinking…" stream live during the turn.
+   */
+  reasoning: string
   citations: ChatCitation[]
   assetCards: ChatAssetCard[]
   toolCalls: ChatToolCall[]
@@ -288,6 +295,7 @@ export function useChatStream(opts: UseChatStreamOptions) {
       preExecutes: [],
       scenarios: [],
       alerts: [],
+      reasoning: '',
       status: 'complete',
       createdAt: new Date().toISOString(),
       meta,
@@ -308,6 +316,7 @@ export function useChatStream(opts: UseChatStreamOptions) {
       preExecutes: [],
       scenarios: [],
       alerts: [],
+      reasoning: '',
       status: 'streaming',
       createdAt: new Date().toISOString(),
     }) as ChatMessage
@@ -856,6 +865,11 @@ export function useChatStream(opts: UseChatStreamOptions) {
         break
       case 'text.delta':
         assistant.content += data.content ?? ''
+        break
+      case 'reasoning.delta':
+        // Reasoning / chain-of-thought stream — routed to the
+        // floating ThinkingIndicator, NOT into the answer markdown.
+        assistant.reasoning += data.content ?? ''
         break
       case 'tool.start': {
         assistant.toolCalls.push({
