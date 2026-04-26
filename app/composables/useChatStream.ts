@@ -58,6 +58,22 @@ export interface ChatArtifact {
   content?: string
 }
 
+/** Decision-card payload — mirrors the backend SSE `decision.created`
+ *  event. Rendered inline beneath the answer text by the
+ *  ChatV2DecisionCard component. */
+export interface ChatDecisionCardData {
+  decisionId: string
+  type: 'buy' | 'sell' | 'rebalance' | 'hold' | 'allocate'
+  ticker?: string | null
+  thesis: string
+  invalidator?: string | null
+  triggerCondition?: string | null
+  targetAmount?: number | null
+  targetPrice?: number | null
+  goalId?: string | null
+  reviewDates: string[]
+}
+
 /**
  * File the user dropped/picked into the composer. Sent verbatim to the
  * chat-service, which decodes the base64, parses by MIME, and feeds the
@@ -161,6 +177,7 @@ export interface ChatMessage {
   toolCalls: ChatToolCall[]
   artifacts: ChatArtifact[]
   forms: ChatForm[]
+  decisions: ChatDecisionCardData[]
   status: 'streaming' | 'complete' | 'error'
   followups?: string[]
   /** Public tier label — "Redentia Basic" or "Redentia MAX". Replaces
@@ -197,6 +214,7 @@ export function useChatStream(opts: UseChatStreamOptions) {
       toolCalls: [],
       artifacts: [],
       forms: [],
+      decisions: [],
       status: 'complete',
       createdAt: new Date().toISOString(),
       meta,
@@ -213,6 +231,7 @@ export function useChatStream(opts: UseChatStreamOptions) {
       toolCalls: [],
       artifacts: [],
       forms: [],
+      decisions: [],
       status: 'streaming',
       createdAt: new Date().toISOString(),
     }) as ChatMessage
@@ -328,6 +347,7 @@ export function useChatStream(opts: UseChatStreamOptions) {
           toolCalls: [],
           artifacts: m.artifacts ?? [],
           forms: [],
+          decisions: [],
           status: 'complete' as const,
           createdAt: m.createdAt,
           meta,
@@ -786,6 +806,32 @@ export function useChatStream(opts: UseChatStreamOptions) {
         assistant.error = data.message
         error.value = data.message
         break
+      case 'goal.update': {
+        // The agent created/updated a goal anchored to this session.
+        // Refresh the local goals cache so the GoalBadge + sidebar
+        // GoalsSection update without a manual reload.
+        try {
+          const { applyServerEvent } = useGoals()
+          applyServerEvent({ goalId: (data as { goalId: string }).goalId })
+        } catch {
+          /* composables can be unavailable in some test contexts */
+        }
+        break
+      }
+      case 'decision.created': {
+        // Append the decision to the current assistant message so the
+        // DecisionCard renders inline, AND refresh the global cache
+        // so the sidebar DecisionsSection shows the new pending item.
+        const d = data as ChatDecisionCardData
+        assistant.decisions.push(d)
+        try {
+          const { applyServerEvent } = useDecisions()
+          applyServerEvent()
+        } catch {
+          /* same as above */
+        }
+        break
+      }
     }
   }
 

@@ -120,6 +120,34 @@
       aria-hidden="true"
     />
 
+    <!-- Goals + Decisions: anchored sections that always sit above
+         the chronological history. Goals shown when authenticated. -->
+    <div
+      v-if="showGoalsAndDecisions"
+      class="chat-overlay-sections relative flex-shrink-0"
+    >
+      <ChatV2GoalsSection
+        :goals="goalsState.goals.value"
+        :loading="goalsState.loading.value"
+        :active-goal-id="activeGoalId ?? null"
+        @new-goal="$emit('new-goal')"
+        @select="(g) => $emit('select-goal', g)"
+      />
+      <ChatV2DecisionsSection
+        :decisions="decisionsState.decisions.value"
+        :hit-rate="decisionsState.hitRate.value"
+        :loading="decisionsState.loading.value"
+        @select="(d) => $emit('select-decision', d)"
+      />
+      <div
+        class="chat-horizon mx-4 mb-1 mt-1 h-px"
+        :style="{
+          backgroundImage: `linear-gradient(90deg, transparent 0%, color-mix(in srgb, ${brand.colors.border} 70%, transparent) 50%, transparent 100%)`,
+        }"
+        aria-hidden="true"
+      />
+    </div>
+
     <!-- Threads -->
     <nav
       class="chat-threads relative flex-1 overflow-y-auto pb-6 pt-2"
@@ -269,13 +297,32 @@ interface Session {
 const props = defineProps<{
   sessions: Session[]
   activeId: string | null
+  /** When true, the Goals + Decisions sections render above the chat
+   *  history. Disabled for anonymous users (those features require a
+   *  persistent identity). */
+  showGoalsAndDecisions?: boolean
+  activeGoalId?: string | null
 }>()
 
 defineEmits<{
   new: []
   select: [id: string]
   delete: [id: string]
+  'new-goal': []
+  'select-goal': [goal: { id: string }]
+  'select-decision': [decision: { id: string; sessionId: string | null }]
 }>()
+
+// Goals + decisions composables — accessed lazily (only when feature
+// is enabled) so anonymous renders don't pay the import cost.
+const goalsState = useGoals()
+const decisionsState = useDecisions()
+onMounted(() => {
+  if (props.showGoalsAndDecisions) {
+    void goalsState.refresh()
+    void decisionsState.refresh()
+  }
+})
 
 const brand = useBrand()
 const searchQuery = ref('')

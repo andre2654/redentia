@@ -142,6 +142,20 @@
         />
       </section>
 
+      <!-- ===== Decision cards (one per register_decision call) ===== -->
+      <section
+        v-if="(message.decisions ?? []).length > 0"
+        class="flex flex-col gap-3"
+        aria-label="Recomendações registradas"
+      >
+        <ChatV2DecisionCard
+          v-for="d in (message.decisions ?? [])"
+          :key="d.decisionId"
+          :decision="d"
+          @ask-alt="$emit('send-followup', `Pode propor uma alternativa para a recomendação de ${d.type === 'sell' ? 'venda' : d.type === 'buy' ? 'compra' : 'rebalance'} de ${d.ticker ?? 'ativo'}? Mantém a tese mas tente outro caminho.`)"
+        />
+      </section>
+
       <!-- ===== Asset cards ===== -->
       <section v-if="message.assetCards.length > 0" class="flex flex-col gap-2">
         <ChatV2AssetCard
@@ -329,6 +343,11 @@ function renderMarkdown(text: string): string {
   // Pass options inline (instead of marked.setOptions at module level)
   // to avoid a "marked is not defined" Vite/setup ordering bug.
   // GFM = tables, strikethrough, autolinks. breaks = single \n → <br>.
+  // Note: we deliberately DO NOT strip artifact URLs here. The agent
+  // hides the download URL from the LLM's tool-result context (so
+  // it can't accidentally repeat the link as prose), but if the LLM
+  // genuinely wants to link to something — even an artifact — the
+  // frontend must respect it.
   const rawHtml = marked.parse(text, { async: false, gfm: true, breaks: true }) as string
   // domPurify is null during SSR and during the brief window between
   // mount and the dynamic import resolving — fall through with the raw

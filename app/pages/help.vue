@@ -159,9 +159,14 @@
       <ChatV2Sidebar
         :sessions="sessionList"
         :active-id="chat.sessionId.value"
+        :show-goals-and-decisions="authStore.isAuthenticated"
+        :active-goal-id="activeGoalId"
         @new="onNewConversation"
         @select="onSelectSession"
         @delete="onDeleteSession"
+        @new-goal="goalSetupOpen = true"
+        @select-goal="onSelectGoal"
+        @select-decision="onSelectDecision"
       />
     </template>
 
@@ -209,6 +214,20 @@
           <UIcon name="i-lucide-x" class="size-4" />
         </NuxtLink>
 
+        <!-- Goal badge — sits above the thread when the active session
+             is anchored to a goal. Mobile-friendly: takes full width
+             with safe-area padding from the parent container. -->
+        <div
+          v-if="activeGoal"
+          class="goal-badge-slot pointer-events-auto absolute inset-x-0 top-3 z-[5] mx-auto flex justify-center px-5 md:top-5 xl:top-6"
+        >
+          <ChatV2GoalBadge
+            :goal="activeGoal"
+            @open-detail="goalSetupOpen = false /* TODO: detail drawer */"
+            @unlink="onUnlinkGoal"
+          />
+        </div>
+
         <!-- Thread or empty state -->
         <ChatV2Thread
           v-if="chat.messages.value.length > 0"
@@ -242,6 +261,14 @@
       />
     </template>
   </ChatV2Layout>
+
+  <!-- Goal setup modal — Teleports itself to body, so it can live
+       outside the layout slots. -->
+  <ChatV2GoalSetupModal
+    :open="goalSetupOpen"
+    @close="goalSetupOpen = false"
+    @created="onGoalCreated"
+  />
 </template>
 
 <script setup lang="ts">
@@ -266,7 +293,17 @@ const tier = ref<'basic' | 'max'>('basic')
 const sidebarOpen = ref(false)
 const artifactOpen = ref(false)
 const activeArtifact = ref<ChatArtifact | null>(null)
-const sessionList = ref<Array<{ id: string; title: string | null; createdAt: string; tier?: 'basic' | 'max' }>>([])
+const sessionList = ref<Array<{ id: string; title: string | null; createdAt: string; tier?: 'basic' | 'max'; goalId?: string | null }>>([])
+
+// ---- Goals + Decisions ------------------------------------------
+// Goals/Decisions only make sense when authenticated. Composables are
+// safe to call regardless (they short-circuit when no auth token).
+const goalSetupOpen = ref(false)
+const { goals, refresh: refreshGoals, linkSession, unlinkSession } = useGoals()
+const { refresh: refreshDecisions } = useDecisions()
+// Active goal id is computed AFTER `chat` is initialised below — we
+// declare the refs early but bind the actual session.id reactivity
+// after the composable is available.
 
 const routeContext = computed<{ type: 'asset' | 'crypto' | 'tesouro' | 'home' | null; ticker?: string } | null>(
   () => null,
@@ -277,6 +314,15 @@ const chat = useChatStream({
   tier,
   routeContext,
 })
+
+// Now that `chat` exists, derive goal anchoring state.
+const activeGoalId = computed<string | null>(() => {
+  const sid = chat.sessionId.value
+  if (!sid) return null
+  const session = sessionList.value.find((s) => s.id === sid)
+  return session?.goalId ?? null
+})
+const activeGoal = computed(() => goals.value.find((g) => g.id === activeGoalId.value) ?? null)
 
 usePageSeo({
   title: `Assessoria com IA | ${brand.name}`,
@@ -299,6 +345,8 @@ async function refreshSessionList() {
         createdAt?: string
         created_at?: string
         tier?: string
+        goalId?: string | null
+        goal_id?: string | null
       }>
     }>('/api/chat/sessions', {
       headers: { ...authHeaders(), ...chatClientIdHeaders() },
@@ -308,6 +356,7 @@ async function refreshSessionList() {
       title: s.title,
       createdAt: s.createdAt ?? s.created_at ?? new Date().toISOString(),
       tier: s.tier === 'max' ? 'max' : 'basic',
+      goalId: s.goalId ?? s.goal_id ?? null,
     }))
   } catch {
     sessionList.value = []
@@ -437,6 +486,73 @@ watch(
       void chat.send(q).then(refreshSessionList)
     }
   },
+)
+
+// ---- Goals + Decisions handlers ----------------------------------
+async function onSelectGoal(goal: { id: string }) {
+  // Anchor the *current* conversation to the chosen goal. If no
+  // session yet (user clicked a goal before sending), we just pre-set
+  // the next session that gets created.
+  const sid = chat.sessionId.value
+  if (!sid) {
+    // Optimistic — open the setup modal closed already; just inform.
+    goals.value // touch reactivity
+    return
+  }
+  try {
+    await linkSession(goal.id, sid)
+    // Update local sessionList row so the goal badge appears immediately.
+    sessionList.value = sessionList.value.map((s) =>
+      s.id === sid ? { ...s, goalId: goal.id } : s,
+    )
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error('[help] link goal failed', err)
+  }
+}
+
+async function onUnlinkGoal() {
+  const sid = chat.sessionId.value
+  const gid = activeGoalId.value
+  if (!sid || !gid) return
+  try {
+    await unlinkSession(gid, sid)
+    sessionList.value = sessionList.value.map((s) =>
+      s.id === sid ? { ...s, goalId: null } : s,
+    )
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error('[help] unlink goal failed', err)
+  }
+}
+
+async function onGoalCreated(goal: { id: string }) {
+  await refreshGoals()
+  // If there's an active session, anchor immediately so the badge
+  // shows up without an extra click.
+  if (chat.sessionId.value) {
+    await onSelectGoal({ id: goal.id })
+  }
+}
+
+function onSelectDecision(d: { id: string; sessionId: string | null }) {
+  // Jump to the conversation where the decision was created.
+  if (d.sessionId) {
+    void onSelectSession(d.sessionId)
+  }
+}
+
+// Refresh goals + decisions caches whenever auth flips on so logged-in
+// users see their state without an extra navigation.
+watch(
+  () => authStore.isAuthenticated,
+  (auth) => {
+    if (auth) {
+      void refreshGoals()
+      void refreshDecisions()
+    }
+  },
+  { immediate: true },
 )
 </script>
 
