@@ -101,7 +101,7 @@
             v-if="c.error"
             class="truncate text-[10.5px]"
             :style="{ color: brand.colors.negative }"
-          >· {{ c.error.slice(0, 60) }}</span>
+          >· {{ humanizeError(c.error) }}</span>
           <span
             v-if="c.durationMs != null"
             class="ml-auto font-mono-tab text-[10px] tabular-nums"
@@ -214,6 +214,44 @@ function arrayArg(args: Record<string, unknown>, key: string): string[] | null {
 }
 function prettyName(toolName: string): string {
   return toolName.replace(/_/g, ' ')
+}
+
+/**
+ * Turn a raw tool error into a short human-readable label for the
+ * action group's expanded list. We see three flavours in the wild:
+ *   - `[ { "received": "div dividend", "code": "invalid_enum_value", ... } ]`
+ *     A Zod validation array. Pull the first issue, prefer its
+ *     `message`, else use the path + received pair.
+ *   - `Error: 401 forbidden` — runtime errors from the tool body.
+ *     Strip the leading "Error: " prefix.
+ *   - Anything else — pass through, hard-truncated to 60 chars.
+ *
+ * The full error stays in the tool result that the LLM sees; this is
+ * purely about not dumping JSON in the UI.
+ */
+function humanizeError(raw: string): string {
+  if (!raw) return 'erro'
+  const stripped = raw.replace(/^Error:\s*/i, '').trim()
+  if (stripped.startsWith('[') || stripped.startsWith('{')) {
+    try {
+      const parsed = JSON.parse(stripped)
+      const issue = Array.isArray(parsed) ? parsed[0] : parsed
+      if (issue && typeof issue === 'object') {
+        const obj = issue as Record<string, unknown>
+        const msg = typeof obj.message === 'string' ? obj.message : null
+        const code = typeof obj.code === 'string' ? obj.code : null
+        const received = obj.received != null ? String(obj.received) : null
+        if (msg) return msg.slice(0, 80)
+        if (code === 'invalid_enum_value' && received) {
+          return `valor inválido: "${received.slice(0, 40)}"`
+        }
+        if (code) return code.replace(/_/g, ' ')
+      }
+    } catch {
+      /* fall through */
+    }
+  }
+  return stripped.slice(0, 60)
 }
 </script>
 
