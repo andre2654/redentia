@@ -233,6 +233,17 @@
           @start="onStarterChip"
         />
 
+        <!-- Thinking indicator — Manus-style floating pill that hovers
+             above the composer while the assistant is streaming. Shows
+             current activity ("Verificando dividendos · 3") and
+             expands on click to a recent-action timeline. Mounts ONLY
+             during streaming, unmounts cleanly when the message ends. -->
+        <ChatV2ThinkingIndicator
+          v-if="chat.isStreaming.value && chat.lastAssistant.value"
+          :tool-calls="chat.lastAssistant.value.toolCalls"
+          :streaming="chat.isStreaming.value"
+        />
+
         <!-- Composer -->
         <ChatV2Input
           v-model:tier="tier"

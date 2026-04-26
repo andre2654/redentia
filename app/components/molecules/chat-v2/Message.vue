@@ -106,13 +106,25 @@
     </div>
 
     <!-- ASSISTANT TURN -->
-    <div v-else class="flex flex-col gap-7 md:gap-8">
-      <!-- ===== Pesquisa: agora um único componente self-contained ===== -->
-      <ChatV2ResearchPanel
-        v-if="message.toolCalls.length > 0 || message.citations.length > 0"
+    <div v-else class="flex flex-col gap-5 md:gap-6">
+      <!-- ===== Action groups (Manus-style) =====
+           Replaces the previous monolithic ResearchPanel. Tools are
+           bundled by family ("Verificando dividendos (6)", "Buscando
+           notícias (3)") in execution order, each in its own self-
+           collapsing card. Tools that have a dedicated visual surface
+           (decisions, scenarios, goals, forms, artifacts) are filtered
+           OUT of this list — they render as their own cards below. -->
+      <ChatV2ActionGroupList
+        v-if="message.toolCalls.length > 0"
         :tool-calls="message.toolCalls"
-        :citations="message.citations"
       />
+
+      <!-- Citations are still surfaced through SourceRail elsewhere
+           when present; we no longer wrap them inside the research
+           panel. (Citations array carries `[N]` chip metadata; the
+           old ResearchPanel had a "Fontes" tab that is now redundant
+           because each citation is already an inline chip in the
+           markdown.) -->
 
       <!-- ===== Resposta ===== -->
       <section v-if="message.content || message.status === 'streaming'">
