@@ -31,35 +31,46 @@
 -->
 <template>
   <Teleport to="body">
-    <div v-if="open" class="audit-mount fixed inset-0 z-[80]" @keydown.esc="$emit('close')">
-      <!-- Backdrop is its own button sibling (NOT a parent of the
-           panel). This avoids the @click.self pattern that fires
-           when the click that OPENED the drawer ends up on the
-           backdrop element after layout settles — which is what was
-           closing the drawer on the very first click. -->
-      <Transition name="audit-overlay">
-        <button
-          v-if="open"
-          type="button"
-          class="audit-backdrop fixed inset-0"
-          :style="{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }"
-          aria-label="Fechar auditoria"
-          tabindex="-1"
-          @click="$emit('close')"
-        />
-      </Transition>
-      <Transition name="audit-panel" appear>
-        <aside
-          v-if="open"
-          ref="dialogRef"
-          class="audit-panel fixed bottom-0 right-0 top-auto flex h-[92vh] w-full flex-col md:bottom-auto md:top-0 md:h-full md:max-w-[480px]"
-          role="dialog"
-          aria-modal="true"
-          :aria-labelledby="titleId"
-          :style="panelStyle"
-          tabindex="-1"
-          @click.stop
-        >
+    <div
+      v-if="open"
+      class="audit-mount fixed inset-0 z-[80]"
+      @keydown.esc="onCloseRequest"
+    >
+      <!-- Backdrop sibling — single dim layer, clickable to close
+           AFTER the open-guard window. The guard is what fixed the
+           "abre e fecha sozinho" bug: the synthesised click that
+           opened the drawer was being captured by the freshly-
+           mounted backdrop in some browsers (touch + touchpad
+           especially), firing close() the same tick. We now ignore
+           any close request that arrives within 320ms of `open`
+           flipping to true — same length as the panel slide-in
+           transition, so the user can't physically click that fast
+           anyway. -->
+      <button
+        type="button"
+        class="audit-backdrop fixed inset-0 transition-opacity duration-200"
+        :style="{
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          opacity: backdropMounted ? 1 : 0,
+          pointerEvents: openGuard ? 'none' : 'auto',
+        }"
+        aria-label="Fechar auditoria"
+        tabindex="-1"
+        @click="onCloseRequest"
+      />
+      <aside
+        ref="dialogRef"
+        class="audit-panel fixed bottom-0 right-0 top-auto flex h-[92vh] w-full flex-col transition-transform duration-300 md:bottom-auto md:top-0 md:h-full md:max-w-[480px]"
+        role="dialog"
+        aria-modal="true"
+        :aria-labelledby="titleId"
+        :style="{
+          ...panelStyle,
+          transform: panelMounted ? 'translateY(0) translateX(0)' : panelOffsetTransform,
+        }"
+        tabindex="-1"
+        @click.stop
+      >
             <!-- Mobile drag handle (visual only) -->
             <span
               class="mx-auto mt-3 inline-block h-1 w-12 rounded-full md:hidden"
@@ -87,7 +98,7 @@
                 class="audit-close inline-flex size-8 items-center justify-center rounded-full transition-colors"
                 :style="{ color: brand.colors.textMuted }"
                 aria-label="Fechar auditoria"
-                @click="$emit('close')"
+                @click="onCloseRequest"
               >
                 <UIcon name="i-lucide-x" class="size-4" />
               </button>
@@ -466,7 +477,6 @@
               </section>
             </div>
         </aside>
-      </Transition>
     </div>
   </Teleport>
 </template>
@@ -514,6 +524,37 @@ const el_activity = ref<HTMLElement | null>(null)
 const memoryClearStage = ref<'idle' | 'arm'>('idle')
 const visibleSection = ref<SectionId>('goals')
 
+// Manual entrance state — replaces <Transition> wrappers because
+// nesting two Transitions inside Teleport was producing a flicker /
+// auto-close on first open in some browsers. We toggle these on the
+// next animation frame after `open` flips to true so CSS transitions
+// from `opacity:0` and `transform:100%` run cleanly without racing
+// against Vue's synchronous mount.
+const backdropMounted = ref(false)
+const panelMounted = ref(false)
+
+// Anti-spurious-close window. Any close request that arrives within
+// this window after open is ignored. The window is just longer than
+// the slide-in transition (300ms) so a real user click on the
+// backdrop has to be a deliberate post-animation click.
+const openGuard = ref(false)
+let openGuardTimer: ReturnType<typeof setTimeout> | null = null
+
+const panelOffsetTransform = computed(() => {
+  // Bottom sheet on mobile (< 768px), right drawer on md+. We compute
+  // here instead of media-querying in CSS because the transform
+  // initial value has to flip together with the responsive layout.
+  if (typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches) {
+    return 'translateX(100%)'
+  }
+  return 'translateY(100%)'
+})
+
+function onCloseRequest() {
+  if (openGuard.value) return
+  emit('close')
+}
+
 const sections = computed<Array<{ id: SectionId; label: string; count: number }>>(() => [
   { id: 'goals', label: 'Metas', count: goalsState.goals.value.length },
   {
@@ -534,8 +575,24 @@ watch(
   async (isOpen) => {
     if (!isOpen) {
       memoryClearStage.value = 'idle'
+      backdropMounted.value = false
+      panelMounted.value = false
+      openGuard.value = false
+      if (openGuardTimer) {
+        clearTimeout(openGuardTimer)
+        openGuardTimer = null
+      }
       return
     }
+    // Arm the close guard so a stray click that opened the drawer
+    // can't immediately fire close on the freshly-mounted backdrop.
+    openGuard.value = true
+    if (openGuardTimer) clearTimeout(openGuardTimer)
+    openGuardTimer = setTimeout(() => {
+      openGuard.value = false
+      openGuardTimer = null
+    }, 320)
+
     // Refresh all backing data on open. Each composable short-circuits
     // its own concurrent-refresh case so we don't fire duplicate calls.
     void goalsState.refresh()
@@ -545,13 +602,25 @@ watch(
     void memoriesState.refresh()
     void activityState.refresh()
     await nextTick()
-    dialogRef.value?.focus()
-    if (props.initialSection) {
-      visibleSection.value = props.initialSection
-      scrollToSection(props.initialSection)
-    } else {
-      visibleSection.value = 'goals'
-    }
+    // Two animation frames: first to ensure the element exists in
+    // the DOM with its `enter-from` state (opacity 0, off-screen
+    // transform), second to apply the `enter-to` state so the CSS
+    // transition runs cleanly. requestAnimationFrame is the standard
+    // primitive for this; doing it via Vue Transition was racing
+    // with Teleport in some browsers.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        backdropMounted.value = true
+        panelMounted.value = true
+        dialogRef.value?.focus()
+        if (props.initialSection) {
+          visibleSection.value = props.initialSection
+          scrollToSection(props.initialSection)
+        } else {
+          visibleSection.value = 'goals'
+        }
+      })
+    })
   },
 )
 
@@ -862,40 +931,19 @@ function confirmClearMemories() {
   border-radius: 3px;
 }
 
-/* Drawer transitions — same timings as GoalDetailDrawer so the user
-   gets a consistent feel across the audit / detail drawers. */
-.audit-overlay-enter-active,
-.audit-overlay-leave-active {
-  transition: opacity 200ms ease;
-}
-.audit-overlay-enter-from,
-.audit-overlay-leave-to {
-  opacity: 0;
-}
-
-.audit-panel-enter-active,
-.audit-panel-leave-active {
-  transition: transform 280ms cubic-bezier(0.2, 0.7, 0.3, 1);
-}
-@media (min-width: 768px) {
-  .audit-panel-enter-from,
-  .audit-panel-leave-to {
-    transform: translateX(100%);
-  }
-}
-@media (max-width: 767px) {
-  .audit-panel-enter-from,
-  .audit-panel-leave-to {
-    transform: translateY(100%);
-  }
-}
+/* Drawer transitions are now driven by inline `transition-opacity`
+   and `transition-transform` classes on the elements themselves
+   (toggled via `backdropMounted` / `panelMounted` refs in the
+   script). Vue's <Transition> wrapper was racing with Teleport on
+   first open, occasionally leaving the elements in their `enter-from`
+   state and emitting a stray close. Doing it manually with two
+   requestAnimationFrame frames + bound styles is more verbose but
+   reliably runs across browsers. */
 
 @media (prefers-reduced-motion: reduce) {
-  .audit-overlay-enter-active,
-  .audit-overlay-leave-active,
-  .audit-panel-enter-active,
-  .audit-panel-leave-active {
-    transition: none;
+  .audit-backdrop,
+  .audit-panel {
+    transition: none !important;
   }
 }
 </style>
