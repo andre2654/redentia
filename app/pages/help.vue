@@ -223,7 +223,7 @@
         >
           <ChatV2GoalBadge
             :goal="activeGoal"
-            @open-detail="goalSetupOpen = false /* TODO: detail drawer */"
+            @open-detail="activeGoal && openGoalDetail(activeGoal.id)"
             @unlink="onUnlinkGoal"
           />
         </div>
@@ -269,6 +269,15 @@
     @close="goalSetupOpen = false"
     @created="onGoalCreated"
   />
+
+  <!-- Goal detail drawer — opens when the user clicks a goal in the
+       sidebar OR clicks the goal badge above the conversation. -->
+  <ChatV2GoalDetailDrawer
+    :open="goalDetailOpen"
+    :goal="goalDetailGoal"
+    @close="closeGoalDetail"
+    @archived="onGoalArchived"
+  />
 </template>
 
 <script setup lang="ts">
@@ -299,8 +308,11 @@ const sessionList = ref<Array<{ id: string; title: string | null; createdAt: str
 // Goals/Decisions only make sense when authenticated. Composables are
 // safe to call regardless (they short-circuit when no auth token).
 const goalSetupOpen = ref(false)
-const { goals, refresh: refreshGoals, linkSession, unlinkSession } = useGoals()
+const goalDetailOpen = ref(false)
+const goalDetailId = ref<string | null>(null)
+const { goals, refresh: refreshGoals, linkSession, unlinkSession, findById: findGoalById } = useGoals()
 const { refresh: refreshDecisions } = useDecisions()
+const goalDetailGoal = computed(() => findGoalById(goalDetailId.value))
 // Active goal id is computed AFTER `chat` is initialised below — we
 // declare the refs early but bind the actual session.id reactivity
 // after the composable is available.
@@ -490,25 +502,49 @@ watch(
 
 // ---- Goals + Decisions handlers ----------------------------------
 async function onSelectGoal(goal: { id: string }) {
-  // Anchor the *current* conversation to the chosen goal. If no
-  // session yet (user clicked a goal before sending), we just pre-set
-  // the next session that gets created.
+  // Clicking a goal in the sidebar opens the detail drawer. Anchoring
+  // the conversation to a goal happens via an explicit "Ancorar nesta
+  // conversa" button inside the drawer (not yet wired — short-cut: if
+  // the conversation has no goal anchored, anchor it on click; if it
+  // already has one, just open detail).
+  goalDetailId.value = goal.id
+  goalDetailOpen.value = true
+
   const sid = chat.sessionId.value
-  if (!sid) {
-    // Optimistic — open the setup modal closed already; just inform.
-    goals.value // touch reactivity
-    return
+  if (sid && !activeGoalId.value) {
+    try {
+      await linkSession(goal.id, sid)
+      sessionList.value = sessionList.value.map((s) =>
+        s.id === sid ? { ...s, goalId: goal.id } : s,
+      )
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('[help] link goal failed', err)
+    }
   }
-  try {
-    await linkSession(goal.id, sid)
-    // Update local sessionList row so the goal badge appears immediately.
-    sessionList.value = sessionList.value.map((s) =>
-      s.id === sid ? { ...s, goalId: goal.id } : s,
-    )
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.error('[help] link goal failed', err)
-  }
+}
+
+function closeGoalDetail() {
+  goalDetailOpen.value = false
+  // Keep `goalDetailId` until close transition finishes so the drawer
+  // doesn't flash empty during the slide-out animation.
+  setTimeout(() => {
+    if (!goalDetailOpen.value) goalDetailId.value = null
+  }, 320)
+}
+
+function onGoalArchived(goalId: string) {
+  // If the archived goal was anchored to the active session, drop the
+  // local anchor immediately so the badge disappears without waiting
+  // for a refresh.
+  sessionList.value = sessionList.value.map((s) =>
+    s.goalId === goalId ? { ...s, goalId: null } : s,
+  )
+}
+
+function openGoalDetail(goalId: string) {
+  goalDetailId.value = goalId
+  goalDetailOpen.value = true
 }
 
 async function onUnlinkGoal() {
