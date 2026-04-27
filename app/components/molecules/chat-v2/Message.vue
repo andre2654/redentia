@@ -446,6 +446,12 @@ const answerRef = ref<HTMLElement | null>(null)
 const tickerProse = useTickerProse()
 const proposalProse = useProposalProse({
   proposals: () => props.message.proposals ?? [],
+  // Suppress the fallback chip row while the message is still
+  // streaming — wait for the `{{propose}}` marker to actually arrive
+  // in the text stream so the chip mounts inline from the start
+  // instead of flashing at the bottom and snapping into place a tick
+  // later.
+  isStreaming: () => props.message.status === 'streaming',
   onConfirm: (p) => emit('confirm-proposal', p),
   onSkip: (p) => emit('skip-proposal', p),
 })
@@ -515,13 +521,18 @@ watch(
   { flush: 'post', immediate: true },
 )
 // Re-run the proposal mount step whenever the underlying proposals
-// list changes (new proposal arrives via SSE) — the markdown HTML
-// itself is stable but `{{propose}}` markers may now have data to
-// bind to that they didn't before. Watching `.length` is enough; the
-// chip props read the reactive proposal object so state flips
-// (pending → confirmed) re-render automatically without re-mount.
+// list changes (new proposal arrives via SSE) OR the message status
+// transitions (streaming → complete). The streaming flag gates the
+// fallback chip row — flipping to complete is what allows the
+// fallback to render in case the model forgot the `{{propose}}`
+// marker. The chip props read the reactive proposal object so state
+// flips (pending → confirmed) re-render automatically without
+// re-mount.
 watch(
-  () => (props.message.proposals ?? []).length,
+  [
+    () => (props.message.proposals ?? []).length,
+    () => props.message.status,
+  ],
   () => {
     void nextTick(() => proposalProse.mountIn(answerRef.value))
   },

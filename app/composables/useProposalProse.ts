@@ -82,6 +82,15 @@ interface UseProposalProseOpts {
    *  message. Order matches the order the model wrote `{{propose}}`
    *  markers in the prose. */
   proposals: () => ChatProposalData[]
+  /** Whether the current message is still being streamed. While true,
+   *  the composable WAITS for the matching `{{propose}}` marker to
+   *  arrive in the prose before rendering the chip — otherwise we
+   *  briefly render a block-level fallback at the bottom of the
+   *  message and then "snap" the chip into place once the text
+   *  catches up, which looks janky. False (post-stream) flips on the
+   *  fallback so chips never silently disappear if the model forgot
+   *  the marker. */
+  isStreaming?: () => boolean
   onConfirm: (proposal: ChatProposalData) => void
   onSkip: (proposal: ChatProposalData) => void
 }
@@ -120,36 +129,64 @@ export function useProposalProse(opts: UseProposalProseOpts) {
       mountedSpans.add(span)
     })
 
-    // 2. If there are MORE proposals than markers, the model forgot to
-    //    write the marker. Append fallback chips at the end of the
-    //    answer wrapper so the user still sees the affordance.
+    // 2. Reconcile fallback row.
+    //    - During streaming: NEVER render the fallback. The marker may
+    //      still be on its way in the text stream — showing a chip at
+    //      the bottom and then snapping it inline a tick later looks
+    //      janky.
+    //    - Post-stream: if there are MORE proposals than markers, the
+    //      model forgot the marker → fallback at the end of the wrapper.
+    //    - If all proposals matched markers, remove any existing
+    //      fallback host so it doesn't linger after the text arrives.
     const extras = proposals.slice(placeholders.length)
-    if (extras.length > 0) {
-      // Reuse a single trailing host so re-renders don't pile up.
-      let host = root.querySelector<HTMLElement>('.proposal-fallback-row')
-      if (!host) {
-        host = document.createElement('div')
-        host.className = 'proposal-fallback-row mt-2 flex flex-wrap items-center gap-1.5'
-        root.appendChild(host)
-      }
-      // Wipe + repopulate (cheap, list is short).
-      host.innerHTML = ''
-      fallbackHosts.add(host)
-      extras.forEach((proposal) => {
-        const slot = document.createElement('span')
-        slot.className = 'proposal-mount'
-        host!.appendChild(slot)
-        const vnode = createVNode(ActionProposalChip, {
-          proposal,
-          onConfirm: () => opts.onConfirm(proposal),
-          onSkip: () => opts.onSkip(proposal),
+    const streaming = opts.isStreaming?.() ?? false
+    const existingHost = root.querySelector<HTMLElement>('.proposal-fallback-row')
+
+    if (extras.length === 0 || streaming) {
+      // No fallback needed (or not yet) — wipe any pre-existing host
+      // we created on a previous mountIn pass. This is the path that
+      // fires when the `{{propose}}` marker finally arrives in the
+      // streamed text and binds to the proposal that was previously
+      // hosted in the fallback row.
+      if (existingHost) {
+        existingHost.querySelectorAll<HTMLElement>('.proposal-mount').forEach((slot) => {
+          render(null, slot)
+          mountedSpans.delete(slot)
         })
-        vnode.appContext = instance.appContext
-        render(vnode, slot)
-        slot.dataset.mounted = '1'
-        mountedSpans.add(slot)
-      })
+        existingHost.remove()
+        fallbackHosts.delete(existingHost)
+      }
+      return
     }
+
+    // Reuse a single trailing host so re-renders don't pile up.
+    let host = existingHost
+    if (!host) {
+      host = document.createElement('div')
+      host.className = 'proposal-fallback-row mt-2 flex flex-wrap items-center gap-1.5'
+      root.appendChild(host)
+    }
+    // Wipe + repopulate (cheap, list is short).
+    host.querySelectorAll<HTMLElement>('.proposal-mount').forEach((slot) => {
+      render(null, slot)
+      mountedSpans.delete(slot)
+    })
+    host.innerHTML = ''
+    fallbackHosts.add(host)
+    extras.forEach((proposal) => {
+      const slot = document.createElement('span')
+      slot.className = 'proposal-mount'
+      host!.appendChild(slot)
+      const vnode = createVNode(ActionProposalChip, {
+        proposal,
+        onConfirm: () => opts.onConfirm(proposal),
+        onSkip: () => opts.onSkip(proposal),
+      })
+      vnode.appContext = instance.appContext
+      render(vnode, slot)
+      slot.dataset.mounted = '1'
+      mountedSpans.add(slot)
+    })
   }
 
   function cleanup(): void {
