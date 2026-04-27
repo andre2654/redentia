@@ -472,6 +472,39 @@ export function useChatStream(opts: UseChatStreamOptions) {
         decisionsByMessage.set(d.sourceMessageId, list)
       }
 
+      // Build a map of proposal-state markers from previous user
+      // messages. After the user clicks Confirmar / Pular, the
+      // frontend sends a follow-up like `✓ Confirmado: chame X com
+      // {...} (proposta abc12345)` or `✗ Pulei a proposta abc12345
+      // (...)`. On reload we scan these to flip persisted proposals
+      // out of the default `pending` state.
+      const proposalStateByPrefix = new Map<string, 'confirmed' | 'skipped'>()
+      const CONFIRM_RE = /✓\s*Confirmado.*?proposta\s+([0-9a-f-]+)/i
+      const SKIP_RE = /✗\s*Pulei\s+a\s+proposta\s+([0-9a-f-]+)/i
+      for (const m of r.messages ?? []) {
+        if (m.role !== 'user' || typeof m.content !== 'string') continue
+        const cMatch = CONFIRM_RE.exec(m.content)
+        if (cMatch?.[1]) {
+          proposalStateByPrefix.set(cMatch[1].toLowerCase(), 'confirmed')
+          continue
+        }
+        const sMatch = SKIP_RE.exec(m.content)
+        if (sMatch?.[1]) {
+          proposalStateByPrefix.set(sMatch[1].toLowerCase(), 'skipped')
+        }
+      }
+      function resolveProposalState(proposalId: string): ChatProposalData['state'] {
+        const id = proposalId.toLowerCase()
+        // Try full-id and any prefix length (we send the first 8 chars
+        // back in the marker, so that's the common case — but a future
+        // bump to 12 / full uuid wouldn't break this).
+        if (proposalStateByPrefix.has(id)) return proposalStateByPrefix.get(id)!
+        for (const [prefix, state] of proposalStateByPrefix) {
+          if (id.startsWith(prefix) || prefix.startsWith(id)) return state
+        }
+        return 'pending'
+      }
+
       messages.value = collapsed.map((m) => {
         // Prefer the persisted `meta` from the server (form-response
         // marker, attachment chips, etc). Fall back to legacy
@@ -502,7 +535,10 @@ export function useChatStream(opts: UseChatStreamOptions) {
           preExecutes: [],
           scenarios: [],
           alerts: [],
-          proposals: [],
+          // Hydrate persisted proposals (saved on the assistant
+          // message's meta.proposals during the original turn) and
+          // resolve their state from later user confirm/skip markers.
+          proposals: hydrateProposals(m, resolveProposalState),
           status: 'complete' as const,
           createdAt: m.createdAt,
           meta,
@@ -826,6 +862,40 @@ export function useChatStream(opts: UseChatStreamOptions) {
     if (status >= 500) return 'O serviço de IA está temporariamente indisponível. Tente novamente.'
     if (backendMessage) return `Erro ${status}: ${backendMessage}`
     return `Erro ${status} ao falar com a IA.`
+  }
+
+  /**
+   * Read `meta.proposals` from a persisted assistant message and
+   * inflate it back into `ChatProposalData[]` with state resolved
+   * from any later user confirm/skip markers in the same conversation.
+   * Returns `[]` for non-assistant rows, missing meta, or malformed
+   * payloads — the chip simply doesn't appear in those cases.
+   */
+  function hydrateProposals(
+    m: { id: string; role: string; meta: unknown },
+    resolveState: (proposalId: string) => ChatProposalData['state'],
+  ): ChatProposalData[] {
+    if (m.role !== 'assistant') return []
+    const meta = m.meta as { proposals?: Array<Record<string, unknown>> } | null | undefined
+    const list = meta?.proposals
+    if (!Array.isArray(list)) return []
+    return list
+      .map((p): ChatProposalData | null => {
+        const id = typeof p.proposalId === 'string' ? p.proposalId : null
+        const kind = typeof p.kind === 'string' ? p.kind : null
+        const label = typeof p.label === 'string' ? p.label : null
+        if (!id || !kind || !label) return null
+        return {
+          proposalId: id,
+          kind: kind as ChatProposalKind,
+          label,
+          description:
+            typeof p.description === 'string' ? p.description : null,
+          args: (p.args as Record<string, unknown>) ?? {},
+          state: resolveState(id),
+        }
+      })
+      .filter((p): p is ChatProposalData => p !== null)
   }
 
   /**
