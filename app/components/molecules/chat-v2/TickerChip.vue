@@ -165,10 +165,14 @@ const livePriceColor = computed(() => {
 const initials = computed(() => props.ticker.slice(0, 2).toUpperCase())
 
 const href = computed(() => {
+  // The real Nuxt routes are singular — `/asset/[ticker]`,
+  // `/crypto/[ticker]`, `/tesouro/[slug]` (was `/assets/` here,
+  // which 404'd). Tested against pages/asset/, pages/crypto/,
+  // pages/tesouro/.
   const t = props.ticker.toUpperCase()
   if (/^(BTC|ETH|SOL|BNB|XRP|ADA|DOGE|USDC|USDT)/i.test(t)) return `/crypto/${t}`
   if (t.toLowerCase().startsWith('tesouro-')) return `/tesouro/${t.toLowerCase()}`
-  return `/assets/${t}`
+  return `/asset/${t}`
 })
 
 const ariaLabel = computed(() => {
