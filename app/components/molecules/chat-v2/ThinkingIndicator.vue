@@ -47,7 +47,7 @@
     >
       <button
         type="button"
-        class="thinking-toggle flex items-center gap-2.5 px-5 py-2.5 text-left transition-colors"
+        class="thinking-toggle flex w-full items-center gap-2.5 px-5 py-2.5 text-left transition-colors"
         :aria-expanded="open"
         :aria-controls="bodyId"
         @click="open = !open"
@@ -59,27 +59,28 @@
           aria-hidden="true"
         />
         <span
-          class="font-mono-tab text-[10.5px] uppercase tracking-[0.18em]"
+          class="font-mono-tab shrink-0 text-[10.5px] uppercase tracking-[0.18em]"
           :style="{ color: brand.colors.textMuted }"
         >Pensando</span>
+        <!-- Live reasoning preview — the tail of the model's
+             chain-of-thought, faded so it reads as "ambient noise"
+             rather than competing with the answer. When no reasoning
+             has streamed yet, fall back to the active tool family
+             verb so the pill never feels empty mid-turn. -->
         <span
-          v-if="currentVerb"
-          class="truncate text-[12px]"
-          :style="{ color: brand.colors.text }"
-        >· {{ currentVerb }}</span>
-        <span
-          v-if="runningCount > 0"
-          class="font-mono-tab text-[10.5px] tabular-nums"
+          v-if="pillBody"
+          class="thinking-preview min-w-0 flex-1 truncate text-[12px]"
+          :style="{
+            color: brand.colors.text,
+            opacity: pillBody.faded ? 0.55 : 1,
+          }"
+        >· {{ pillBody.text }}</span>
+        <UIcon
+          :name="open ? 'i-lucide-chevron-down' : 'i-lucide-chevron-up'"
+          class="ml-auto size-3.5 shrink-0"
           :style="{ color: brand.colors.textMuted }"
-        >· {{ runningCount }}</span>
-        <span class="ml-auto flex items-center gap-1">
-          <UIcon
-            :name="open ? 'i-lucide-chevron-down' : 'i-lucide-chevron-up'"
-            class="size-3.5"
-            :style="{ color: brand.colors.textMuted }"
-            aria-hidden="true"
-          />
-        </span>
+          aria-hidden="true"
+        />
       </button>
 
       <Transition name="thinking-body">
@@ -197,6 +198,37 @@ const currentVerb = computed(() => {
     if (c.status === 'success' || c.status === 'error') {
       return `${familyForTool(c.name).verb} · concluído`
     }
+  }
+  return null
+})
+
+/**
+ * Tail of the live reasoning stream, normalised for display in the
+ * pill: collapse whitespace, strip leading/trailing markdown emphasis
+ * markers (`_`, `*`), keep at most ~140 chars with a leading ellipsis
+ * when truncated. The reasoning grows monotonically during a turn;
+ * showing the tail = showing what the model is thinking RIGHT NOW.
+ */
+const reasoningPreview = computed<string | null>(() => {
+  const raw = props.reasoning?.replace(/[_*`>#]+/g, '').trim()
+  if (!raw) return null
+  const collapsed = raw.replace(/\s+/g, ' ').trim()
+  if (collapsed.length <= 140) return collapsed
+  return '… ' + collapsed.slice(-140)
+})
+
+/**
+ * Pill body — the bit between the "Pensando" label and the chevron.
+ * Prefers the live reasoning tail (faded, ambient); falls back to
+ * the active tool family verb so the pill never goes blank between
+ * reasoning chunks (basic tier without extended thinking, etc).
+ */
+const pillBody = computed<{ text: string; faded: boolean } | null>(() => {
+  if (reasoningPreview.value) {
+    return { text: reasoningPreview.value, faded: true }
+  }
+  if (currentVerb.value) {
+    return { text: currentVerb.value, faded: false }
   }
   return null
 })
