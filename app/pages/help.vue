@@ -309,6 +309,7 @@
     @new-goal="onNewGoalFromPanel"
     @select-goal="onSelectGoalFromPanel"
     @select-decision="onSelectDecisionFromPanel"
+    @chat-prompt="onChatPromptFromPanel"
   />
 
   <!-- Notifications drawer — opens from the bell button at the top
@@ -717,6 +718,18 @@ function onSelectDecisionFromPanel(decision: { id: string; sessionId: string | n
   panelOpen.value = false
   decisionDetailId.value = decision.id
   decisionDetailOpen.value = true
+}
+
+/**
+ * Smart-action shortcut from any audit card (Repensar tese, Achar
+ * caminhos para meta inviável, Revisar watch, Contraproposta, …).
+ * Closes the drawer + dispatches the pre-built prompt as a regular
+ * user turn so the answer streams in the active conversation.
+ */
+function onChatPromptFromPanel(text: string) {
+  panelOpen.value = false
+  if (!authStore.isAuthenticated || !text.trim()) return
+  void chat.send(text)
 }
 
 function onSelectAlertFromBell(alert: { id: string; ticker: string | null; sessionId: string | null }) {

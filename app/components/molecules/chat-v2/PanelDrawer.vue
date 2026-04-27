@@ -1,33 +1,30 @@
 <!--
-  PanelDrawer — audit drawer.
+  PanelDrawer — audit / "everything the AI has access to" workspace.
 
-  Single comprehensive view of everything the chat agent has access
-  to. Replaces the four standalone sidebar sections (Goals, Decisions,
-  Watchlist, Alerts) and adds long-term Memory + recent Activity.
+  Refactor goals (user feedback "experiência muito ruim, refazer
+  toda a experiência ali"):
+    - Wider canvas: 640px on desktop (was 480px) so cards can breathe.
+    - Settings-panel layout: vertical nav on the left, focused content
+      on the right. One section visible at a time — no more anchored-
+      scroll where the next section bleeds into view.
+    - Each tab is a standalone view with its own header (title +
+      count + primary action), filter / search where it earns it,
+      empty state with copy that tells the user how to populate it,
+      and richer card density.
+    - Mobile (< md): the nav collapses to horizontal scrollable tabs
+      at the top, the body fills the rest of the height.
 
-  Layout (mirrors GoalDetailDrawer / DecisionDetailDrawer so the user
-  already knows the gestures):
-    Desktop  → right-side drawer, 480px, slides in from right
-    Mobile   → bottom sheet, ~92vh, slides in from bottom with handle
+  Tabs (alerts moved to the dedicated NotificationsDrawer earlier):
 
-  Body uses anchored sections (one scroll) instead of tabs. The sticky
-  segmented nav at top jumps to each section. Single column, no
-  nested cards, status colour only in the leading dot.
+    - Metas      → goal cards with status + progress + projected
+    - Decisões   → status filter pills + hit-rate stat + thesis cards
+    - Watch      → ticker cards with their condition list inline
+    - Memória    → search + kind filter chips + pretty-printed values
+    - Atividade  → day-relative grouping with kind filter
 
-  Sections, in order:
-    1. Metas
-    2. Decisões
-    3. Watchlist
-    4. Alertas
-    5. Memória de longo prazo
-    6. Atividade recente
-
-  WIG compliance:
-  - role="dialog", labelled by H2; ESC + click-outside both close
-  - Section anchors use real <a href="#audit-X"> so middle-click + key
-    nav work as expected
-  - aria-current on the active anchor as the user scrolls
-  - Honours prefers-reduced-motion
+  Same Teleport + manual-rAF transition pattern as before (avoids
+  the auto-close race we hit when nesting Vue Transitions inside
+  Teleport on first open).
 -->
 <template>
   <Teleport to="body">
@@ -36,16 +33,6 @@
       class="audit-mount fixed inset-0 z-[80]"
       @keydown.esc="onCloseRequest"
     >
-      <!-- Backdrop sibling — single dim layer, clickable to close
-           AFTER the open-guard window. The guard is what fixed the
-           "abre e fecha sozinho" bug: the synthesised click that
-           opened the drawer was being captured by the freshly-
-           mounted backdrop in some browsers (touch + touchpad
-           especially), firing close() the same tick. We now ignore
-           any close request that arrives within 320ms of `open`
-           flipping to true — same length as the panel slide-in
-           transition, so the user can't physically click that fast
-           anyway. -->
       <button
         type="button"
         class="audit-backdrop fixed inset-0 transition-opacity duration-200"
@@ -60,7 +47,7 @@
       />
       <aside
         ref="dialogRef"
-        class="audit-panel fixed bottom-0 right-0 top-auto flex h-[92vh] w-full flex-col transition-transform duration-300 md:bottom-auto md:top-0 md:h-full md:max-w-[480px]"
+        class="audit-panel fixed bottom-0 right-0 top-auto flex h-[92vh] w-full flex-col transition-transform duration-300 md:bottom-auto md:top-0 md:h-full md:max-w-[640px]"
         role="dialog"
         aria-modal="true"
         :aria-labelledby="titleId"
@@ -71,454 +58,731 @@
         tabindex="-1"
         @click.stop
       >
-            <!-- Mobile drag handle (visual only) -->
+        <!-- Mobile drag handle -->
+        <span
+          class="mx-auto mt-3 inline-block h-1 w-12 rounded-full md:hidden"
+          :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.text} 18%, transparent)` }"
+          aria-hidden="true"
+        />
+
+        <!-- Header -->
+        <header
+          class="flex shrink-0 items-start justify-between gap-3 px-5 pb-4 pt-5 md:px-7 md:pt-6"
+        >
+          <div class="flex flex-col gap-1">
             <span
-              class="mx-auto mt-3 inline-block h-1 w-12 rounded-full md:hidden"
-              :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.text} 18%, transparent)` }"
-              aria-hidden="true"
-            />
+              class="font-mono-tab text-[10.5px] uppercase tracking-[0.2em]"
+              :style="{ color: brand.colors.textMuted }"
+            >Auditoria</span>
+            <h2
+              :id="titleId"
+              class="font-display text-[22px] font-semibold leading-tight tracking-tight"
+              :style="{ color: brand.colors.text }"
+            >Tudo que a IA guarda</h2>
+          </div>
+          <button
+            type="button"
+            class="audit-close inline-flex size-8 items-center justify-center rounded-full transition-colors"
+            :style="{ color: brand.colors.textMuted }"
+            aria-label="Fechar auditoria"
+            @click="onCloseRequest"
+          >
+            <UIcon name="i-lucide-x" class="size-4" />
+          </button>
+        </header>
 
-            <!-- Header -->
-            <header
-              class="relative flex items-start justify-between gap-3 px-5 pb-3 pt-5 md:px-6 md:pt-6"
+        <!-- Mobile tab strip -->
+        <nav
+          class="audit-mobilenav flex shrink-0 items-center gap-1 overflow-x-auto px-5 pb-2 md:hidden"
+          aria-label="Seções da auditoria"
+        >
+          <button
+            v-for="t in tabs"
+            :key="t.id"
+            type="button"
+            :aria-current="activeTab === t.id ? 'page' : undefined"
+            class="audit-mobilenav-btn shrink-0 rounded-full px-3 py-1.5 text-[12px] transition-colors"
+            :style="mobileNavStyle(t.id)"
+            @click="setTab(t.id)"
+          >
+            {{ t.label }}
+            <span
+              v-if="t.count > 0"
+              class="font-mono-tab ml-1 tabular-nums text-[10px]"
+              :style="{ color: 'inherit', opacity: 0.7 }"
+            >{{ t.count }}</span>
+          </button>
+        </nav>
+
+        <!-- Body — desktop has the sidebar + content split; mobile is
+             content-only because the strip above already serves nav. -->
+        <div
+          class="audit-body flex min-h-0 flex-1"
+          :style="{
+            borderTop: `1px solid color-mix(in srgb, ${brand.colors.border} 35%, transparent)`,
+          }"
+        >
+          <!-- Desktop sidebar nav -->
+          <nav
+            class="audit-sidenav hidden w-[150px] shrink-0 flex-col gap-px py-3 md:flex"
+            :style="{
+              borderRight: `1px solid color-mix(in srgb, ${brand.colors.border} 30%, transparent)`,
+            }"
+            aria-label="Seções da auditoria"
+          >
+            <button
+              v-for="t in tabs"
+              :key="t.id"
+              type="button"
+              :aria-current="activeTab === t.id ? 'page' : undefined"
+              class="audit-sidenav-btn group flex items-center gap-2 px-4 py-2 text-left text-[12.5px] transition-colors"
+              :style="sideNavStyle(t.id)"
+              @click="setTab(t.id)"
             >
-              <div class="flex flex-col gap-0.5">
-                <span
-                  class="font-mono-tab text-[10px] uppercase tracking-[0.18em]"
-                  :style="{ color: brand.colors.textMuted }"
-                >Auditoria</span>
-                <h2
-                  :id="titleId"
-                  class="text-balance text-[20px] font-semibold leading-tight tracking-tight"
-                  :style="{ color: brand.colors.text }"
-                >Tudo que a IA guarda</h2>
+              <UIcon
+                :name="t.icon"
+                class="size-3.5 shrink-0"
+                :style="{ color: 'currentColor', opacity: activeTab === t.id ? 1 : 0.7 }"
+                aria-hidden="true"
+              />
+              <span class="min-w-0 flex-1 truncate">{{ t.label }}</span>
+              <span
+                v-if="t.count > 0"
+                class="font-mono-tab text-[10.5px] tabular-nums"
+                :style="{
+                  color: 'inherit',
+                  opacity: activeTab === t.id ? 0.85 : 0.55,
+                }"
+              >{{ t.count }}</span>
+            </button>
+          </nav>
+
+          <!-- Section content -->
+          <div
+            ref="bodyRef"
+            class="audit-content flex-1 overflow-y-auto px-5 py-5 md:px-6"
+          >
+            <!-- ============ Metas ============ -->
+            <section v-if="activeTab === 'goals'" class="flex flex-col gap-4">
+              <header class="flex items-baseline justify-between gap-3">
+                <div class="flex flex-col gap-0.5">
+                  <h3
+                    class="text-[15px] font-semibold leading-tight"
+                    :style="{ color: brand.colors.text }"
+                  >Metas</h3>
+                  <p
+                    class="font-mono-tab text-[10.5px] uppercase tracking-[0.16em]"
+                    :style="{ color: brand.colors.textMuted }"
+                  >{{ goalsState.goals.value.length }} {{ goalsState.goals.value.length === 1 ? 'meta' : 'metas' }}</p>
+                </div>
+                <button
+                  type="button"
+                  class="text-[11.5px] transition-colors"
+                  :style="primaryActionStyle"
+                  @click="onNewGoal"
+                >+ Nova meta</button>
+              </header>
+              <div
+                v-if="goalsState.goals.value.length === 0"
+                class="empty"
+                :style="emptyStyle"
+              >
+                <UIcon name="i-lucide-target" class="size-7" :style="{ color: brand.colors.textMuted }" aria-hidden="true" />
+                <p class="empty-title" :style="{ color: brand.colors.text }">Sem metas definidas</p>
+                <p class="empty-body" :style="{ color: brand.colors.textMuted }">
+                  Crie a primeira para que cada recomendação da IA passe a ser avaliada contra ela. Aposentadoria, FIRE, reserva de emergência — qualquer objetivo concreto.
+                </p>
+                <button type="button" class="empty-cta" :style="ctaStyle" @click="onNewGoal">
+                  Definir primeira meta
+                </button>
               </div>
-              <button
-                type="button"
-                class="audit-close inline-flex size-8 items-center justify-center rounded-full transition-colors"
-                :style="{ color: brand.colors.textMuted }"
-                aria-label="Fechar auditoria"
-                @click="onCloseRequest"
-              >
-                <UIcon name="i-lucide-x" class="size-4" />
-              </button>
-            </header>
-
-            <!-- Sticky section nav -->
-            <nav
-              aria-label="Seções da auditoria"
-              class="audit-nav sticky top-0 z-[1] flex shrink-0 items-stretch overflow-x-auto px-5 md:px-6"
-              :style="{
-                backgroundColor: brand.colors.surface,
-                borderBottom: `1px solid color-mix(in srgb, ${brand.colors.border} 35%, transparent)`,
-              }"
-            >
-              <a
-                v-for="s in sections"
-                :key="s.id"
-                :href="`#audit-${s.id}`"
-                :aria-current="initialSection === s.id ? 'true' : undefined"
-                class="audit-nav-link relative shrink-0 px-3 py-2.5 text-[12px] transition-colors"
-                :style="navLinkStyle(s.id)"
-                @click="onNavClick($event, s.id)"
-              >
-                {{ s.label }}
-                <span
-                  v-if="s.count > 0"
-                  class="ml-1 font-mono-tab tabular-nums text-[10.5px]"
-                  :style="{ color: brand.colors.textMuted }"
-                >{{ s.count }}</span>
-              </a>
-            </nav>
-
-            <!-- Body — single scroll, anchored sections -->
-            <div
-              ref="bodyRef"
-              class="audit-body flex-1 overflow-y-auto px-5 pb-10 pt-4 md:px-6"
-              @scroll.passive="onScroll"
-            >
-              <!-- ============ Metas ============ -->
-              <section
-                id="audit-goals"
-                ref="el_goals"
-                class="audit-section flex flex-col gap-2"
-                :aria-labelledby="`audit-h-goals`"
-              >
-                <header class="audit-section-header">
-                  <h3 :id="`audit-h-goals`">Metas</h3>
-                  <button
-                    type="button"
-                    class="audit-section-action"
-                    :style="{ color: brand.colors.primary }"
-                    @click="$emit('new-goal')"
-                  >+ nova</button>
-                </header>
-                <p
-                  v-if="goalsState.goals.value.length === 0"
-                  class="audit-empty"
-                  :style="{ color: brand.colors.textMuted }"
-                >Sem metas ainda. Defina a primeira para ancorar conversas a um objetivo concreto.</p>
-                <ul v-else class="flex flex-col gap-px">
-                  <li v-for="g in goalsState.goals.value" :key="g.id">
+              <ul v-else class="flex flex-col gap-2">
+                <li v-for="g in goalsState.goals.value" :key="g.id">
+                  <article
+                    class="goal-card flex w-full flex-col gap-2 rounded-xl px-3.5 py-3"
+                    :style="cardStyle"
+                  >
                     <button
                       type="button"
-                      class="audit-row group flex w-full items-center gap-3 rounded-md px-2 py-2 text-left transition-colors"
-                      @click="$emit('select-goal', g)"
+                      class="goal-card-body flex w-full items-stretch gap-3 text-left"
+                      @click="emit('select-goal', g)"
                     >
                       <span
-                        class="size-1.5 shrink-0 rounded-full"
-                        :style="{ backgroundColor: goalStatusColor(g.status) }"
+                        class="flex size-9 shrink-0 items-center justify-center rounded-lg text-[16px]"
+                        :style="{
+                          backgroundColor: `color-mix(in srgb, ${goalStatusColor(g.status)} 12%, transparent)`,
+                        }"
                         aria-hidden="true"
-                      />
-                      <span class="flex min-w-0 flex-1 flex-col">
-                        <span
-                          class="truncate text-[13px] font-medium"
-                          :style="{ color: brand.colors.text }"
-                        >{{ g.emoji ? `${g.emoji} ` : '' }}{{ g.name }}</span>
+                      >{{ g.emoji ?? '🎯' }}</span>
+                      <div class="flex min-w-0 flex-1 flex-col gap-1.5">
+                        <header class="flex items-baseline justify-between gap-3">
+                          <span
+                            class="truncate text-[14px] font-semibold leading-tight"
+                            :style="{ color: brand.colors.text }"
+                          >{{ g.name }}</span>
+                          <span
+                            class="font-mono-tab shrink-0 text-[12px] tabular-nums"
+                            :style="{ color: brand.colors.text }"
+                          >{{ goalProgress(g) }}%</span>
+                        </header>
+                        <div class="flex items-center gap-2">
+                          <span
+                            class="inline-flex size-1.5 shrink-0 rounded-full"
+                            :style="{ backgroundColor: goalStatusColor(g.status) }"
+                            aria-hidden="true"
+                          />
+                          <span
+                            class="font-mono-tab text-[10.5px] uppercase tracking-[0.14em]"
+                            :style="{ color: brand.colors.textMuted }"
+                          >{{ goalStatusLabel(g.status) }}</span>
+                          <span
+                            class="text-[11px]"
+                            :style="{ color: brand.colors.textMuted }"
+                          >· até {{ formatDate(g.targetDate) }}</span>
+                        </div>
+                        <div
+                          class="relative h-[3px] w-full overflow-hidden rounded-full"
+                          :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.text} 6%, transparent)` }"
+                          aria-hidden="true"
+                        >
+                          <span
+                            class="absolute inset-y-0 left-0 origin-left rounded-full transition-transform duration-500"
+                            :style="{
+                              backgroundColor: goalStatusColor(g.status),
+                              width: '100%',
+                              transform: `scaleX(${goalProgress(g) / 100})`,
+                            }"
+                          />
+                        </div>
+                      </div>
+                    </button>
+                    <!-- Smart actions — context-aware: an unfeasible
+                         goal surfaces "Achar caminhos" front-and-
+                         center; healthy goals just have "Conversar". -->
+                    <footer
+                      class="flex flex-wrap items-center gap-1.5 pt-1"
+                      :style="{ borderTop: `1px solid color-mix(in srgb, ${brand.colors.border} 25%, transparent)` }"
+                    >
+                      <button
+                        v-if="g.status === 'unfeasible' || g.status === 'at_risk'"
+                        type="button"
+                        class="action-pill action-pill-primary"
+                        :style="actionPillStyle(true)"
+                        @click="findGoalSolutionsPrompt(g)"
+                      >
+                        <UIcon name="i-lucide-sparkles" class="size-3" aria-hidden="true" />
+                        Achar caminhos
+                      </button>
+                      <button
+                        type="button"
+                        class="action-pill"
+                        :style="actionPillStyle(false)"
+                        @click="discussGoalPrompt(g)"
+                      >
+                        Conversar sobre
+                      </button>
+                      <button
+                        type="button"
+                        class="action-pill ml-auto"
+                        :style="actionPillStyle(false)"
+                        @click="emit('select-goal', g)"
+                      >
+                        Detalhes
+                      </button>
+                    </footer>
+                  </article>
+                </li>
+              </ul>
+            </section>
+
+            <!-- ============ Decisões ============ -->
+            <section v-else-if="activeTab === 'decisions'" class="flex flex-col gap-4">
+              <header class="flex flex-wrap items-baseline justify-between gap-3">
+                <div class="flex flex-col gap-0.5">
+                  <h3
+                    class="text-[15px] font-semibold leading-tight"
+                    :style="{ color: brand.colors.text }"
+                  >Decisões</h3>
+                  <p
+                    class="font-mono-tab text-[10.5px] uppercase tracking-[0.16em]"
+                    :style="{ color: brand.colors.textMuted }"
+                  >{{ decisionsState.decisions.value.length }} {{ decisionsState.decisions.value.length === 1 ? 'decisão' : 'decisões' }}</p>
+                </div>
+                <span
+                  v-if="decisionsState.hitRate.value.total > 0"
+                  :style="hitRatePillStyle"
+                >
+                  {{ Math.round((decisionsState.hitRate.value.rate ?? 0) * 100) }}% hit
+                  <span :style="{ color: brand.colors.textMuted, marginLeft: '4px' }">
+                    · {{ decisionsState.hitRate.value.hits }}/{{ decisionsState.hitRate.value.total }}
+                  </span>
+                </span>
+              </header>
+
+              <!-- Status filter pills -->
+              <div
+                v-if="decisionsState.decisions.value.length > 0"
+                class="flex flex-wrap items-center gap-1.5"
+                role="tablist"
+                aria-label="Filtrar por status"
+              >
+                <button
+                  v-for="f in decisionFilters"
+                  :key="f.id"
+                  type="button"
+                  role="tab"
+                  :aria-selected="decisionFilter === f.id"
+                  class="filter-pill"
+                  :style="filterPillStyle(decisionFilter === f.id)"
+                  @click="decisionFilter = f.id"
+                >
+                  {{ f.label }}
+                  <span class="font-mono-tab ml-1 tabular-nums text-[10px]" :style="{ opacity: 0.7 }">{{ f.count }}</span>
+                </button>
+              </div>
+
+              <div
+                v-if="filteredDecisions.length === 0"
+                class="empty"
+                :style="emptyStyle"
+              >
+                <UIcon name="i-lucide-check-square" class="size-7" :style="{ color: brand.colors.textMuted }" aria-hidden="true" />
+                <p class="empty-title" :style="{ color: brand.colors.text }">
+                  {{ decisionsState.decisions.value.length === 0 ? 'Sem decisões registradas' : 'Nenhuma decisão neste filtro' }}
+                </p>
+                <p class="empty-body" :style="{ color: brand.colors.textMuted }">
+                  Decisões prescritivas (compra, venda, rebalance) que a IA registra ficam aqui — com tese, invalidador e revisita automática em +30/+90/+180 dias.
+                </p>
+              </div>
+              <ul v-else class="flex flex-col gap-2">
+                <li v-for="d in filteredDecisions" :key="d.id">
+                  <article
+                    class="decision-card flex w-full flex-col gap-2 rounded-xl px-3.5 py-3"
+                    :style="cardStyle"
+                  >
+                    <button
+                      type="button"
+                      class="decision-card-body flex w-full flex-col gap-2 text-left"
+                      @click="emit('select-decision', d)"
+                    >
+                      <header class="flex flex-wrap items-center gap-2">
                         <span
                           class="font-mono-tab text-[10.5px] uppercase tracking-[0.14em]"
                           :style="{ color: brand.colors.textMuted }"
-                        >{{ goalStatusLabel(g.status) }}</span>
-                      </span>
-                      <span
-                        class="font-mono-tab shrink-0 text-[12px] tabular-nums"
-                        :style="{ color: brand.colors.text }"
-                      >{{ goalProgress(g) }}%</span>
-                    </button>
-                  </li>
-                </ul>
-              </section>
-
-              <!-- ============ Decisões ============ -->
-              <section
-                id="audit-decisions"
-                ref="el_decisions"
-                class="audit-section flex flex-col gap-2"
-                :aria-labelledby="`audit-h-decisions`"
-              >
-                <header class="audit-section-header">
-                  <h3 :id="`audit-h-decisions`">Decisões</h3>
-                </header>
-                <p
-                  v-if="decisionsState.decisions.value.length === 0"
-                  class="audit-empty"
-                  :style="{ color: brand.colors.textMuted }"
-                >Nenhuma decisão registrada — peça pra IA propor uma compra/venda em formato decisão.</p>
-                <ul v-else class="flex flex-col gap-px">
-                  <li v-for="d in decisionsState.decisions.value" :key="d.id">
-                    <button
-                      type="button"
-                      class="audit-row flex w-full items-center gap-3 rounded-md px-2 py-2 text-left transition-colors"
-                      @click="$emit('select-decision', d)"
-                    >
-                      <span
-                        class="size-1.5 shrink-0 rounded-full"
-                        :style="{ backgroundColor: decisionTypeColor(d.type) }"
-                        aria-hidden="true"
-                      />
-                      <span class="flex min-w-0 flex-1 flex-col gap-0.5">
-                        <span class="flex flex-wrap items-center gap-1.5">
-                          <span
-                            class="font-mono-tab text-[10px] uppercase tracking-[0.14em]"
-                            :style="{ color: brand.colors.textMuted }"
-                          >{{ decisionTypeLabel(d.type) }}</span>
-                          <ChatV2TickerChip
-                            v-if="d.ticker"
-                            :ticker="d.ticker"
-                            :price-when-mentioned="parseDecisionPrice(d.targetPrice)"
-                            density="compact"
-                          />
-                        </span>
-                        <span
-                          class="truncate text-[11px]"
-                          :style="{ color: brand.colors.textMuted }"
-                        >{{ d.thesis }}</span>
-                      </span>
-                      <span
-                        class="font-mono-tab shrink-0 text-[10px] uppercase tracking-[0.14em]"
-                        :style="{ color: brand.colors.textMuted }"
-                      >{{ d.status }}</span>
-                    </button>
-                  </li>
-                </ul>
-              </section>
-
-              <!-- ============ Watchlist ============ -->
-              <section
-                id="audit-watchlist"
-                ref="el_watchlist"
-                class="audit-section flex flex-col gap-2"
-                :aria-labelledby="`audit-h-watchlist`"
-              >
-                <header class="audit-section-header">
-                  <h3 :id="`audit-h-watchlist`">Watchlist</h3>
-                </header>
-                <p
-                  v-if="watchlistState.watches.value.length === 0"
-                  class="audit-empty"
-                  :style="{ color: brand.colors.textMuted }"
-                >Vazia. Peça à IA para monitorar um ativo (ex.: "monitorar PETR4 e me avisar se cair 8%").</p>
-                <ul v-else class="flex flex-col gap-1">
-                  <li v-for="w in watchlistState.watches.value" :key="w.id">
-                    <div class="audit-row-static flex items-center gap-3 rounded-md px-2 py-2">
-                      <span class="flex min-w-0 flex-1 flex-col gap-0.5">
+                        >{{ decisionTypeLabel(d.type) }}</span>
                         <ChatV2TickerChip
-                          :ticker="w.ticker"
-                          :price-when-mentioned="w.snapshotPrice ?? null"
+                          v-if="d.ticker"
+                          :ticker="d.ticker"
+                          :price-when-mentioned="parseDecisionPrice(d.targetPrice)"
+                          density="compact"
                         />
                         <span
-                          v-if="w.note"
-                          class="truncate pl-1 text-[11px]"
-                          :style="{ color: brand.colors.textMuted }"
-                        >{{ w.note }}</span>
-                      </span>
-                      <span
-                        class="font-mono-tab shrink-0 text-[10px] tabular-nums"
+                          class="font-mono-tab ml-auto text-[10px] uppercase tracking-[0.14em]"
+                          :style="{ color: decisionStatusColor(d.status) }"
+                        >{{ d.status }}</span>
+                      </header>
+                      <p
+                        class="line-clamp-2 text-[12.5px] leading-snug"
+                        :style="{ color: brand.colors.text }"
+                      >{{ d.thesis }}</p>
+                      <p
+                        v-if="d.invalidator"
+                        class="text-[11px] leading-snug"
                         :style="{ color: brand.colors.textMuted }"
-                      >{{ (w.conditions?.length ?? 0) }} cond</span>
+                      >Invalidador: <span :style="{ color: brand.colors.text }">{{ d.invalidator }}</span></p>
+                    </button>
+
+                    <!-- Smart actions row -->
+                    <footer
+                      class="flex flex-wrap items-center gap-1.5 pt-1"
+                      :style="{ borderTop: `1px solid color-mix(in srgb, ${brand.colors.border} 25%, transparent)` }"
+                    >
                       <button
                         type="button"
-                        class="audit-row-action inline-flex size-6 items-center justify-center rounded-full transition-colors"
+                        class="action-pill action-pill-primary"
+                        :style="actionPillStyle(true)"
+                        @click="rethinkDecisionPrompt(d)"
+                      >
+                        <UIcon name="i-lucide-refresh-ccw" class="size-3" aria-hidden="true" />
+                        Repensar tese
+                      </button>
+                      <button
+                        type="button"
+                        class="action-pill"
+                        :style="actionPillStyle(false)"
+                        @click="counterProposalOpen = counterProposalOpen === d.id ? null : d.id"
+                      >
+                        <UIcon name="i-lucide-arrow-left-right" class="size-3" aria-hidden="true" />
+                        Contraproposta
+                      </button>
+                      <button
+                        type="button"
+                        class="action-pill ml-auto"
+                        :style="actionPillStyle(false)"
+                        @click="emit('select-decision', d)"
+                      >
+                        Detalhes
+                      </button>
+                    </footer>
+
+                    <!-- Inline counter-proposal mini-form -->
+                    <div
+                      v-if="counterProposalOpen === d.id"
+                      class="counter-proposal flex flex-col gap-2 rounded-lg p-2.5"
+                      :style="{
+                        backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 6%, transparent)`,
+                        border: `1px solid color-mix(in srgb, ${brand.colors.primary} 22%, transparent)`,
+                      }"
+                    >
+                      <label
+                        class="font-mono-tab text-[10px] uppercase tracking-[0.16em]"
+                        :style="{ color: brand.colors.textMuted }"
+                      >Sua contraproposta</label>
+                      <textarea
+                        v-model="counterProposalDraft[d.id]"
+                        rows="2"
+                        placeholder="Ex.: ao invés de comprar PETR4 a 32, esperar 28 — risco/retorno melhora porque…"
+                        class="counter-proposal-input min-w-0 resize-none border-0 bg-transparent text-[12.5px] leading-snug outline-none"
+                        :style="{ color: brand.colors.text }"
+                      />
+                      <div class="flex items-center justify-end gap-1.5">
+                        <button
+                          type="button"
+                          class="action-pill"
+                          :style="actionPillStyle(false)"
+                          @click="counterProposalOpen = null"
+                        >Cancelar</button>
+                        <button
+                          type="button"
+                          class="action-pill action-pill-primary"
+                          :style="actionPillStyle(true)"
+                          :disabled="!counterProposalDraft[d.id]?.trim()"
+                          @click="submitCounterProposal(d)"
+                        >
+                          <UIcon name="i-lucide-arrow-up" class="size-3" aria-hidden="true" />
+                          Enviar pra IA
+                        </button>
+                      </div>
+                    </div>
+                  </article>
+                </li>
+              </ul>
+            </section>
+
+            <!-- ============ Watchlist ============ -->
+            <section v-else-if="activeTab === 'watchlist'" class="flex flex-col gap-4">
+              <header class="flex items-baseline justify-between gap-3">
+                <div class="flex flex-col gap-0.5">
+                  <h3
+                    class="text-[15px] font-semibold leading-tight"
+                    :style="{ color: brand.colors.text }"
+                  >Watchlist</h3>
+                  <p
+                    class="font-mono-tab text-[10.5px] uppercase tracking-[0.16em]"
+                    :style="{ color: brand.colors.textMuted }"
+                  >{{ watchlistState.watches.value.length }} {{ watchlistState.watches.value.length === 1 ? 'ativo' : 'ativos' }}</p>
+                </div>
+              </header>
+              <div
+                v-if="watchlistState.watches.value.length === 0"
+                class="empty"
+                :style="emptyStyle"
+              >
+                <UIcon name="i-lucide-eye" class="size-7" :style="{ color: brand.colors.textMuted }" aria-hidden="true" />
+                <p class="empty-title" :style="{ color: brand.colors.text }">Watchlist proativa vazia</p>
+                <p class="empty-body" :style="{ color: brand.colors.textMuted }">
+                  Peça à IA para monitorar um ativo com condição: "monitora PETR4 e me avisa se cair 8%". O cron sweep avalia a cada 30 min.
+                </p>
+              </div>
+              <ul v-else class="flex flex-col gap-2">
+                <li v-for="w in watchlistState.watches.value" :key="w.id">
+                  <article class="watch-card flex flex-col gap-2 rounded-xl px-3.5 py-3" :style="cardStyle">
+                    <header class="flex items-center gap-2">
+                      <ChatV2TickerChip
+                        :ticker="w.ticker"
+                        :price-when-mentioned="w.snapshotPrice ?? null"
+                      />
+                      <span
+                        v-if="w.note"
+                        class="truncate text-[11.5px]"
+                        :style="{ color: brand.colors.textMuted }"
+                      >{{ w.note }}</span>
+                      <button
+                        type="button"
+                        class="watch-remove ml-auto inline-flex size-6 shrink-0 items-center justify-center rounded-full transition-colors"
                         :style="{ color: brand.colors.textMuted }"
                         :aria-label="`Remover ${w.ticker}`"
                         @click="watchlistState.remove(w.id)"
                       >
                         <UIcon name="i-lucide-x" class="size-3" />
                       </button>
-                    </div>
-                  </li>
-                </ul>
-              </section>
+                    </header>
+                    <ul
+                      v-if="w.conditions && w.conditions.length > 0"
+                      class="flex flex-col gap-1 pt-1"
+                      :style="{ borderTop: `1px solid color-mix(in srgb, ${brand.colors.border} 25%, transparent)` }"
+                    >
+                      <li
+                        v-for="(c, idx) in w.conditions"
+                        :key="idx"
+                        class="flex items-center gap-2 text-[11.5px]"
+                      >
+                        <span
+                          class="inline-flex size-1 shrink-0 rounded-full"
+                          :style="{ backgroundColor: brand.colors.primary }"
+                          aria-hidden="true"
+                        />
+                        <span :style="{ color: brand.colors.text }">{{ describeWatchCondition(c) }}</span>
+                      </li>
+                    </ul>
+                    <p
+                      v-else
+                      class="text-[11px] italic"
+                      :style="{ color: brand.colors.textMuted }"
+                    >Sem condições — não dispara alertas.</p>
+                    <footer
+                      class="flex items-center gap-1.5 pt-1"
+                      :style="{ borderTop: `1px solid color-mix(in srgb, ${brand.colors.border} 25%, transparent)` }"
+                    >
+                      <button
+                        type="button"
+                        class="action-pill"
+                        :style="actionPillStyle(false)"
+                        @click="reviewWatchPrompt(w.ticker)"
+                      >
+                        <UIcon name="i-lucide-search" class="size-3" aria-hidden="true" />
+                        Revisar tese
+                      </button>
+                    </footer>
+                  </article>
+                </li>
+              </ul>
+            </section>
 
-              <!--
-                Alertas section removed — it now lives in its own
-                dedicated NotificationsDrawer accessible via the bell
-                button at the top of the chat.
-              -->
-
-              <!-- ============ Memória ============ -->
-              <section
-                id="audit-memory"
-                ref="el_memory"
-                class="audit-section flex flex-col gap-2"
-                :aria-labelledby="`audit-h-memory`"
-              >
-                <header class="audit-section-header">
-                  <h3 :id="`audit-h-memory`">Memória de longo prazo</h3>
-                  <button
-                    v-if="memoriesState.memories.value.length > 0"
-                    type="button"
-                    class="audit-section-action"
-                    :style="{ color: brand.colors.negative }"
-                    @click="confirmClearMemories"
-                  >{{ memoryClearStage === 'arm' ? 'confirmar' : 'limpar tudo' }}</button>
-                </header>
-                <p
-                  class="text-[11px] leading-snug"
-                  :style="{ color: brand.colors.textMuted }"
-                >Tudo que a IA aprendeu sobre você através das conversas. Audite e remova o que não quiser que ela use.</p>
-                <p
-                  v-if="memoriesState.loading.value && memoriesState.memories.value.length === 0"
-                  class="audit-empty"
-                  :style="{ color: brand.colors.textMuted }"
-                >Carregando…</p>
-                <p
-                  v-else-if="memoriesState.memories.value.length === 0"
-                  class="audit-empty"
-                  :style="{ color: brand.colors.textMuted }"
-                >Nada salvo. Conforme conversa, fatos relevantes (perfil, preferências, decisões) ficam aqui.</p>
-
-                <div
-                  v-for="[kind, rows] in memoryGroupedEntries"
-                  :key="kind"
-                  class="flex flex-col gap-1 pt-1"
-                >
-                  <h4
-                    class="font-mono-tab text-[10px] uppercase tracking-[0.18em]"
+            <!-- ============ Memória ============ -->
+            <section v-else-if="activeTab === 'memory'" class="flex flex-col gap-4">
+              <header class="flex flex-wrap items-baseline justify-between gap-3">
+                <div class="flex flex-col gap-0.5">
+                  <h3
+                    class="text-[15px] font-semibold leading-tight"
+                    :style="{ color: brand.colors.text }"
+                  >Memória de longo prazo</h3>
+                  <p
+                    class="font-mono-tab text-[10.5px] uppercase tracking-[0.16em]"
                     :style="{ color: brand.colors.textMuted }"
-                  >{{ memoryKindLabel(kind) }} · {{ rows.length }}</h4>
-                  <ul class="flex flex-col gap-1">
+                  >{{ memoriesState.memories.value.length }} {{ memoriesState.memories.value.length === 1 ? 'fato' : 'fatos' }}</p>
+                </div>
+                <button
+                  v-if="memoriesState.memories.value.length > 0"
+                  type="button"
+                  class="text-[10.5px] transition-colors"
+                  :style="{
+                    color: brand.colors.negative,
+                    border: `1px solid color-mix(in srgb, ${brand.colors.negative} 28%, transparent)`,
+                    borderRadius: '999px',
+                    padding: '4px 10px',
+                  }"
+                  @click="confirmClearMemories"
+                >{{ memoryClearStage === 'arm' ? 'Confirmar limpeza' : 'Limpar tudo' }}</button>
+              </header>
+
+              <p
+                v-if="memoriesState.memories.value.length > 0"
+                class="text-[11.5px] leading-snug"
+                :style="{ color: brand.colors.textMuted }"
+              >Tudo que a IA aprendeu sobre você. Esses fatos são injetados no prompt em toda nova mensagem — audite, edite ou remova o que não fizer sentido.</p>
+
+              <!-- Search + filter -->
+              <div
+                v-if="memoriesState.memories.value.length > 4"
+                class="flex flex-col gap-2"
+              >
+                <label
+                  class="flex items-center gap-2 rounded-lg px-3 py-2"
+                  :style="{
+                    backgroundColor: `color-mix(in srgb, ${brand.colors.text} 4%, transparent)`,
+                    border: `1px solid color-mix(in srgb, ${brand.colors.border} 35%, transparent)`,
+                  }"
+                >
+                  <UIcon name="i-lucide-search" class="size-3.5 shrink-0" :style="{ color: brand.colors.textMuted }" />
+                  <input
+                    v-model="memorySearch"
+                    type="text"
+                    placeholder="Buscar memórias…"
+                    autocomplete="off"
+                    spellcheck="false"
+                    class="min-w-0 flex-1 border-0 bg-transparent text-[12.5px] outline-none"
+                    :style="{ color: brand.colors.text }"
+                  />
+                  <button
+                    v-if="memorySearch"
+                    type="button"
+                    class="shrink-0 rounded-full p-0.5 transition-colors"
+                    :style="{ color: brand.colors.textMuted }"
+                    aria-label="Limpar busca"
+                    @click="memorySearch = ''"
+                  >
+                    <UIcon name="i-lucide-x" class="size-3" />
+                  </button>
+                </label>
+                <div class="flex flex-wrap gap-1.5">
+                  <button
+                    v-for="kind in memoryKindFilters"
+                    :key="kind.id"
+                    type="button"
+                    class="filter-pill"
+                    :style="filterPillStyle(memoryKindFilter === kind.id)"
+                    @click="memoryKindFilter = kind.id"
+                  >
+                    {{ kind.label }}
+                    <span class="font-mono-tab ml-1 tabular-nums text-[10px]" :style="{ opacity: 0.7 }">{{ kind.count }}</span>
+                  </button>
+                </div>
+              </div>
+
+              <div v-if="filteredMemories.length === 0" class="empty" :style="emptyStyle">
+                <UIcon name="i-lucide-brain" class="size-7" :style="{ color: brand.colors.textMuted }" aria-hidden="true" />
+                <p class="empty-title" :style="{ color: brand.colors.text }">
+                  {{ memoriesState.memories.value.length === 0 ? 'Memória vazia' : 'Nada bate com a busca' }}
+                </p>
+                <p
+                  v-if="memoriesState.memories.value.length === 0"
+                  class="empty-body"
+                  :style="{ color: brand.colors.textMuted }"
+                >
+                  Conforme você conversa, fatos relevantes (perfil, preferências, decisões, fatos) ficam guardados aqui e voltam a contextualizar a IA em conversas futuras.
+                </p>
+              </div>
+
+              <div v-else class="flex flex-col gap-3">
+                <article
+                  v-for="[kind, rows] in filteredMemoryGroups"
+                  :key="kind"
+                  class="memory-group flex flex-col rounded-xl"
+                  :style="memoryGroupStyle"
+                >
+                  <header class="flex items-baseline justify-between gap-2 px-3 pt-2.5">
+                    <h4
+                      class="font-mono-tab text-[10.5px] uppercase tracking-[0.18em]"
+                      :style="{ color: brand.colors.textMuted }"
+                    >{{ memoryKindLabel(kind) }}</h4>
+                    <span
+                      class="font-mono-tab text-[10.5px] tabular-nums"
+                      :style="{ color: brand.colors.textMuted }"
+                    >{{ rows.length }}</span>
+                  </header>
+                  <ul class="flex flex-col gap-px pb-1.5 pt-1">
                     <li
                       v-for="m in rows"
                       :key="m.id"
-                      class="audit-mem-row flex flex-col gap-1.5 rounded-md px-3 py-2.5"
+                      class="memory-row flex items-start gap-2 px-3 py-2"
                     >
-                      <header class="flex items-start gap-3">
-                        <span class="flex min-w-0 flex-1 flex-col gap-0.5">
-                          <span
-                            class="font-mono-tab truncate text-[11px]"
-                            :style="{ color: brand.colors.text }"
-                          >{{ humanizeKey(m.key) }}</span>
+                      <div class="flex min-w-0 flex-1 flex-col gap-0.5">
+                        <span
+                          class="font-mono-tab truncate text-[10.5px]"
+                          :style="{ color: brand.colors.text }"
+                        >{{ humanizeKey(m.key) }}</span>
+                        <span
+                          class="break-words text-[12.5px] leading-snug"
+                          :style="{ color: `color-mix(in srgb, ${brand.colors.text} 88%, transparent)` }"
+                        >{{ formatMemoryValue(m.value) }}</span>
+                        <span
+                          class="font-mono-tab pt-0.5 text-[10px] tabular-nums"
+                          :style="{ color: brand.colors.textMuted }"
+                        >{{ formatDate(m.updatedAt) }} · conf {{ m.confidence }}</span>
+                      </div>
+                      <button
+                        type="button"
+                        class="memory-delete inline-flex size-6 shrink-0 items-center justify-center rounded-full transition-colors"
+                        :style="{ color: brand.colors.textMuted }"
+                        :aria-label="`Esquecer ${m.key}`"
+                        @click="memoriesState.remove(m.id)"
+                      >
+                        <UIcon name="i-lucide-trash-2" class="size-3" />
+                      </button>
+                    </li>
+                  </ul>
+                </article>
+              </div>
+            </section>
+
+            <!-- ============ Atividade ============ -->
+            <section v-else-if="activeTab === 'activity'" class="flex flex-col gap-4">
+              <header class="flex items-baseline justify-between gap-3">
+                <div class="flex flex-col gap-0.5">
+                  <h3
+                    class="text-[15px] font-semibold leading-tight"
+                    :style="{ color: brand.colors.text }"
+                  >Atividade recente</h3>
+                  <p
+                    class="font-mono-tab text-[10.5px] uppercase tracking-[0.16em]"
+                    :style="{ color: brand.colors.textMuted }"
+                  >{{ activityState.events.value.length }} {{ activityState.events.value.length === 1 ? 'evento' : 'eventos' }}</p>
+                </div>
+              </header>
+
+              <div
+                v-if="activityState.events.value.length === 0 && !activityState.loading.value"
+                class="empty"
+                :style="emptyStyle"
+              >
+                <UIcon name="i-lucide-activity" class="size-7" :style="{ color: brand.colors.textMuted }" aria-hidden="true" />
+                <p class="empty-title" :style="{ color: brand.colors.text }">Sem atividade recente</p>
+                <p class="empty-body" :style="{ color: brand.colors.textMuted }">
+                  Eventos da IA — tools rodadas, mudanças de status de decisão, alertas disparados, novas memórias — aparecem aqui em ordem cronológica.
+                </p>
+              </div>
+
+              <p
+                v-else-if="activityState.loading.value && activityState.events.value.length === 0"
+                class="text-[12px]"
+                :style="{ color: brand.colors.textMuted }"
+              >Carregando…</p>
+
+              <div v-else class="flex flex-col gap-4">
+                <div
+                  v-for="group in activityGroups"
+                  :key="group.label"
+                  class="flex flex-col gap-1"
+                >
+                  <h4
+                    class="font-mono-tab px-2 text-[10.5px] uppercase tracking-[0.18em]"
+                    :style="{ color: brand.colors.textMuted }"
+                  >{{ group.label }} · {{ group.events.length }}</h4>
+                  <ul class="flex flex-col gap-px">
+                    <li v-for="e in group.events" :key="e.id">
+                      <div class="activity-row flex items-start gap-2.5 rounded-md px-2 py-1.5">
+                        <span
+                          class="mt-1 inline-flex size-1.5 shrink-0 rounded-full"
+                          :style="{ backgroundColor: activityKindColor(e.kind) }"
+                          aria-hidden="true"
+                        />
+                        <div class="flex min-w-0 flex-1 flex-col">
+                          <div class="flex items-baseline gap-2">
+                            <span
+                              class="truncate text-[12.5px]"
+                              :style="{ color: brand.colors.text }"
+                            >{{ e.summary }}</span>
+                            <span
+                              v-if="e.detail"
+                              class="font-mono-tab truncate text-[10.5px]"
+                              :style="{ color: brand.colors.textMuted }"
+                            >{{ e.detail }}</span>
+                          </div>
                           <span
                             class="font-mono-tab text-[10px] tabular-nums"
                             :style="{ color: brand.colors.textMuted }"
-                          >{{ formatDate(m.updatedAt) }}<span v-if="m.confidence != null"> · conf {{ m.confidence }}</span></span>
-                        </span>
-                        <button
-                          v-if="memoryNeedsExpand(m.value)"
-                          type="button"
-                          class="audit-row-action inline-flex size-6 shrink-0 items-center justify-center rounded-full transition-colors"
-                          :style="{ color: brand.colors.textMuted }"
-                          :aria-label="memoryExpanded.has(m.id) ? 'Recolher' : 'Ver detalhes'"
-                          @click="toggleMemoryExpand(m.id)"
-                        >
-                          <UIcon
-                            :name="memoryExpanded.has(m.id) ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
-                            class="size-3.5"
-                          />
-                        </button>
-                        <button
-                          type="button"
-                          class="audit-row-action inline-flex size-6 shrink-0 items-center justify-center rounded-full transition-colors"
-                          :style="{ color: brand.colors.textMuted }"
-                          :aria-label="`Esquecer ${m.key}`"
-                          @click="memoriesState.remove(m.id)"
-                        >
-                          <UIcon name="i-lucide-trash-2" class="size-3" />
-                        </button>
-                      </header>
-
-                      <!-- Body — pretty-printed by shape. Falls back to
-                           compact preview when collapsed; full key/value
-                           list when expanded. -->
-                      <div class="flex flex-col gap-1">
-                        <!-- Plain string / number / boolean — one line. -->
-                        <p
-                          v-if="memoryShape(m.value) === 'scalar'"
-                          class="text-[12.5px] leading-snug"
-                          :style="{ color: brand.colors.text }"
-                        >{{ formatScalar(m.value) }}</p>
-
-                        <!-- Markdown / long text — show first 2 lines as
-                             plain text; expand button reveals the full
-                             content (still as plain text — we don't run
-                             markdown here on purpose, this is an audit
-                             surface, not a render). -->
-                        <p
-                          v-else-if="memoryShape(m.value) === 'markdown'"
-                          class="break-words whitespace-pre-line text-[12.5px] leading-snug"
-                          :style="{
-                            color: brand.colors.text,
-                            display: '-webkit-box',
-                            '-webkit-line-clamp': memoryExpanded.has(m.id) ? 'unset' : '3',
-                            '-webkit-box-orient': 'vertical',
-                            overflow: memoryExpanded.has(m.id) ? 'visible' : 'hidden',
-                          } as Record<string, string>"
-                        >{{ extractMarkdown(m.value) }}</p>
-
-                        <!-- Object — definition list. Collapsed shows
-                             top-N rows; expanded shows everything. -->
-                        <dl
-                          v-else-if="memoryShape(m.value) === 'object'"
-                          class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1"
-                        >
-                          <template
-                            v-for="entry in objectEntries(m.value, memoryExpanded.has(m.id))"
-                            :key="entry.key"
-                          >
-                            <dt
-                              class="font-mono-tab text-[10.5px] uppercase tracking-[0.12em] pt-px"
-                              :style="{ color: brand.colors.textMuted }"
-                            >{{ humanizeKey(entry.key) }}</dt>
-                            <dd
-                              class="break-words text-[12px] leading-snug"
-                              :style="{ color: brand.colors.text }"
-                            >{{ entry.formatted }}</dd>
-                          </template>
-                          <template
-                            v-if="!memoryExpanded.has(m.id) && objectEntryCount(m.value) > MEMORY_PREVIEW_FIELDS"
-                          >
-                            <dd
-                              class="col-span-2 text-[11px] italic"
-                              :style="{ color: brand.colors.textMuted }"
-                            >+ {{ objectEntryCount(m.value) - MEMORY_PREVIEW_FIELDS }} campo(s)</dd>
-                          </template>
-                        </dl>
-
-                        <!-- Array — bullet list of formatted items. -->
-                        <ul
-                          v-else-if="memoryShape(m.value) === 'array'"
-                          class="flex flex-col gap-0.5 text-[12px]"
-                          :style="{ color: brand.colors.text }"
-                        >
-                          <li
-                            v-for="(item, idx) in arrayItems(m.value, memoryExpanded.has(m.id))"
-                            :key="idx"
-                            class="leading-snug"
-                          >· {{ item }}</li>
-                        </ul>
-
-                        <!-- Empty / null. -->
-                        <p
-                          v-else
-                          class="text-[12px]"
-                          :style="{ color: brand.colors.textMuted }"
-                        >—</p>
+                          >{{ formatRelative(e.at) }}</span>
+                        </div>
                       </div>
                     </li>
                   </ul>
                 </div>
-              </section>
-
-              <!-- ============ Atividade ============ -->
-              <section
-                id="audit-activity"
-                ref="el_activity"
-                class="audit-section flex flex-col gap-2"
-                :aria-labelledby="`audit-h-activity`"
-              >
-                <header class="audit-section-header">
-                  <h3 :id="`audit-h-activity`">Atividade recente</h3>
-                  <span
-                    class="font-mono-tab text-[10px] uppercase tracking-[0.14em]"
-                    :style="{ color: brand.colors.textMuted }"
-                  >{{ activityState.events.value.length }}</span>
-                </header>
-                <p
-                  class="text-[11px] leading-snug"
-                  :style="{ color: brand.colors.textMuted }"
-                >Eventos recentes registrados pela IA — cálculos rodados, alertas, mudanças de status, novas memórias.</p>
-                <p
-                  v-if="activityState.loading.value && activityState.events.value.length === 0"
-                  class="audit-empty"
-                  :style="{ color: brand.colors.textMuted }"
-                >Carregando…</p>
-                <p
-                  v-else-if="activityState.events.value.length === 0"
-                  class="audit-empty"
-                  :style="{ color: brand.colors.textMuted }"
-                >Sem atividade recente.</p>
-                <ul v-else class="flex flex-col gap-px">
-                  <li v-for="e in activityState.events.value" :key="e.id">
-                    <div class="audit-act-row flex items-start gap-3 rounded-md px-2 py-1.5">
-                      <span
-                        class="mt-1.5 size-1.5 shrink-0 rounded-full"
-                        :style="{ backgroundColor: activityKindColor(e.kind) }"
-                        aria-hidden="true"
-                      />
-                      <span class="flex min-w-0 flex-1 flex-col">
-                        <span class="flex items-baseline gap-2">
-                          <span
-                            class="truncate text-[12.5px]"
-                            :style="{ color: brand.colors.text }"
-                          >{{ e.summary }}</span>
-                          <span
-                            v-if="e.detail"
-                            class="font-mono-tab truncate text-[10.5px]"
-                            :style="{ color: brand.colors.textMuted }"
-                          >{{ e.detail }}</span>
-                        </span>
-                        <span
-                          class="font-mono-tab text-[10px] tabular-nums"
-                          :style="{ color: brand.colors.textMuted }"
-                        >{{ formatRelative(e.at) }}</span>
-                      </span>
-                    </div>
-                  </li>
-                </ul>
-              </section>
-            </div>
-        </aside>
+              </div>
+            </section>
+          </div>
+        </div>
+      </aside>
     </div>
   </Teleport>
 </template>
@@ -528,6 +792,7 @@ import { computed, nextTick, reactive, ref, watch } from 'vue'
 import type { GoalStatus, ChatGoal } from '~/composables/useGoals'
 import type { ChatDecision, DecisionType } from '~/composables/useDecisions'
 import type { ActivityEvent, ActivityKind } from '~/composables/useActivity'
+import type { WatchCondition } from '~/composables/useWatchlist'
 
 type SectionId = 'goals' | 'decisions' | 'watchlist' | 'memory' | 'activity'
 
@@ -541,6 +806,14 @@ const emit = defineEmits<{
   'new-goal': []
   'select-goal': [goal: ChatGoal]
   'select-decision': [decision: ChatDecision]
+  /**
+   * Smart-action shortcut: each card surfaces opinionated CTAs that
+   * send a pre-built prompt to the chat ("repensar tese", "achar
+   * solução para meta inviável", etc.). The parent (help.vue) closes
+   * the drawer and dispatches the prompt through the regular
+   * `chat.send(...)` path so the response shows up as a normal turn.
+   */
+  'chat-prompt': [text: string]
 }>()
 
 const brand = useBrand()
@@ -553,35 +826,28 @@ const activityState = useActivity()
 const titleId = `audit-title-${Math.random().toString(36).slice(2, 8)}`
 const dialogRef = ref<HTMLElement | null>(null)
 const bodyRef = ref<HTMLElement | null>(null)
-const el_goals = ref<HTMLElement | null>(null)
-const el_decisions = ref<HTMLElement | null>(null)
-const el_watchlist = ref<HTMLElement | null>(null)
-const el_memory = ref<HTMLElement | null>(null)
-const el_activity = ref<HTMLElement | null>(null)
+const activeTab = ref<SectionId>('goals')
 
+const decisionFilter = ref<'all' | 'pending' | 'accepted' | 'executed' | 'reviewed'>('all')
+const memorySearch = ref('')
+const memoryKindFilter = ref<string>('all')
 const memoryClearStage = ref<'idle' | 'arm'>('idle')
-const visibleSection = ref<SectionId>('goals')
 
-// Manual entrance state — replaces <Transition> wrappers because
-// nesting two Transitions inside Teleport was producing a flicker /
-// auto-close on first open in some browsers. We toggle these on the
-// next animation frame after `open` flips to true so CSS transitions
-// from `opacity:0` and `transform:100%` run cleanly without racing
-// against Vue's synchronous mount.
+/**
+ * Per-decision counter-proposal state. Map keyed by decision id —
+ * stores the pending text + an `open` flag so the inline mini-form
+ * only appears for the row the user clicked, and persists their
+ * draft across drawer open/close cycles.
+ */
+const counterProposalDraft = reactive<Record<string, string>>({})
+const counterProposalOpen = ref<string | null>(null)
+
 const backdropMounted = ref(false)
 const panelMounted = ref(false)
-
-// Anti-spurious-close window. Any close request that arrives within
-// this window after open is ignored. The window is just longer than
-// the slide-in transition (300ms) so a real user click on the
-// backdrop has to be a deliberate post-animation click.
 const openGuard = ref(false)
 let openGuardTimer: ReturnType<typeof setTimeout> | null = null
 
 const panelOffsetTransform = computed(() => {
-  // Bottom sheet on mobile (< 768px), right drawer on md+. We compute
-  // here instead of media-querying in CSS because the transform
-  // initial value has to flip together with the responsive layout.
   if (typeof window !== 'undefined' && window.matchMedia('(min-width: 768px)').matches) {
     return 'translateX(100%)'
   }
@@ -592,19 +858,28 @@ function onCloseRequest() {
   if (openGuard.value) return
   emit('close')
 }
+function onNewGoal() {
+  emit('new-goal')
+}
 
-const sections = computed<Array<{ id: SectionId; label: string; count: number }>>(() => [
-  { id: 'goals', label: 'Metas', count: goalsState.goals.value.length },
+interface Tab {
+  id: SectionId
+  label: string
+  icon: string
+  count: number
+}
+
+const tabs = computed<Tab[]>(() => [
+  { id: 'goals', label: 'Metas', icon: 'i-lucide-target', count: goalsState.goals.value.length },
   {
     id: 'decisions',
     label: 'Decisões',
-    count: decisionsState.decisions.value.filter(
-      (d) => d.status === 'pending' || d.status === 'accepted',
-    ).length,
+    icon: 'i-lucide-check-square',
+    count: decisionsState.decisions.value.length,
   },
-  { id: 'watchlist', label: 'Watch', count: watchlistState.watches.value.length },
-  { id: 'memory', label: 'Memória', count: memoriesState.memories.value.length },
-  { id: 'activity', label: 'Atividade', count: activityState.events.value.length },
+  { id: 'watchlist', label: 'Watch', icon: 'i-lucide-eye', count: watchlistState.watches.value.length },
+  { id: 'memory', label: 'Memória', icon: 'i-lucide-brain', count: memoriesState.memories.value.length },
+  { id: 'activity', label: 'Atividade', icon: 'i-lucide-activity', count: activityState.events.value.length },
 ])
 
 watch(
@@ -621,8 +896,6 @@ watch(
       }
       return
     }
-    // Arm the close guard so a stray click that opened the drawer
-    // can't immediately fire close on the freshly-mounted backdrop.
     openGuard.value = true
     if (openGuardTimer) clearTimeout(openGuardTimer)
     openGuardTimer = setTimeout(() => {
@@ -630,81 +903,30 @@ watch(
       openGuardTimer = null
     }, 320)
 
-    // Refresh all backing data on open. Each composable short-circuits
-    // its own concurrent-refresh case so we don't fire duplicate calls.
     void goalsState.refresh()
     void decisionsState.refresh()
     void watchlistState.refresh()
     void memoriesState.refresh()
     void activityState.refresh()
     await nextTick()
-    // Two animation frames: first to ensure the element exists in
-    // the DOM with its `enter-from` state (opacity 0, off-screen
-    // transform), second to apply the `enter-to` state so the CSS
-    // transition runs cleanly. requestAnimationFrame is the standard
-    // primitive for this; doing it via Vue Transition was racing
-    // with Teleport in some browsers.
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         backdropMounted.value = true
         panelMounted.value = true
         dialogRef.value?.focus()
-        if (props.initialSection) {
-          visibleSection.value = props.initialSection
-          scrollToSection(props.initialSection)
-        } else {
-          visibleSection.value = 'goals'
-        }
+        if (props.initialSection) activeTab.value = props.initialSection
+        else activeTab.value = 'goals'
       })
     })
   },
 )
 
-function scrollToSection(id: SectionId) {
-  const map: Record<SectionId, ReturnType<typeof ref> | null> = {
-    goals: el_goals,
-    decisions: el_decisions,
-    watchlist: el_watchlist,
-    memory: el_memory,
-    activity: el_activity,
-  } as Record<SectionId, ReturnType<typeof ref> | null>
-  const el = (map[id] as { value: HTMLElement | null } | null)?.value
-  const body = bodyRef.value
-  if (!el || !body) return
-  body.scrollTo({
-    top: el.offsetTop - body.offsetTop - 8,
-    behavior: 'smooth',
-  })
+function setTab(id: SectionId) {
+  activeTab.value = id
+  bodyRef.value?.scrollTo({ top: 0 })
 }
 
-function onNavClick(e: Event, id: SectionId) {
-  e.preventDefault()
-  visibleSection.value = id
-  scrollToSection(id)
-}
-
-function onScroll() {
-  // Track which section the user is currently looking at so the nav
-  // can highlight it. Cheap O(n=6) check on every scroll tick — no
-  // throttling needed.
-  const body = bodyRef.value
-  if (!body) return
-  const order: Array<{ id: SectionId; ref: { value: HTMLElement | null } }> = [
-    { id: 'goals', ref: el_goals as { value: HTMLElement | null } },
-    { id: 'decisions', ref: el_decisions as { value: HTMLElement | null } },
-    { id: 'watchlist', ref: el_watchlist as { value: HTMLElement | null } },
-    { id: 'memory', ref: el_memory as { value: HTMLElement | null } },
-    { id: 'activity', ref: el_activity as { value: HTMLElement | null } },
-  ]
-  const threshold = body.scrollTop + 80
-  for (let i = order.length - 1; i >= 0; i--) {
-    const el = order[i]!.ref.value
-    if (el && el.offsetTop - body.offsetTop <= threshold) {
-      visibleSection.value = order[i]!.id
-      return
-    }
-  }
-}
+// ---- Style helpers ----------------------------------------------
 
 const panelStyle = computed(() => ({
   backgroundColor: brand.colors.surface,
@@ -714,21 +936,134 @@ const panelStyle = computed(() => ({
   boxShadow: '-16px 0 40px -16px rgba(0, 0, 0, 0.45)',
 }))
 
-function navLinkStyle(id: SectionId): Record<string, string> {
-  if (visibleSection.value === id) {
-    return {
-      color: brand.colors.text,
-      borderBottom: `2px solid ${brand.colors.primary}`,
-      fontWeight: '500',
-    }
-  }
+function sideNavStyle(id: SectionId): Record<string, string> {
+  const isActive = activeTab.value === id
   return {
-    color: brand.colors.textMuted,
-    borderBottom: '2px solid transparent',
+    color: isActive ? brand.colors.text : brand.colors.textMuted,
+    backgroundColor: isActive
+      ? `color-mix(in srgb, ${brand.colors.primary} 8%, transparent)`
+      : 'transparent',
+    borderLeft: isActive ? `2px solid ${brand.colors.primary}` : '2px solid transparent',
+    fontWeight: isActive ? '500' : '400',
   }
 }
 
-// ---- Helpers ----------------------------------------------------
+function mobileNavStyle(id: SectionId): Record<string, string> {
+  const isActive = activeTab.value === id
+  return {
+    color: isActive ? brand.colors.text : brand.colors.textMuted,
+    backgroundColor: isActive
+      ? `color-mix(in srgb, ${brand.colors.primary} 12%, transparent)`
+      : 'transparent',
+    border: `1px solid color-mix(in srgb, ${brand.colors.border} ${isActive ? 50 : 30}%, transparent)`,
+    fontWeight: isActive ? '500' : '400',
+  }
+}
+
+const cardStyle = computed(() => ({
+  backgroundColor: `color-mix(in srgb, ${brand.colors.text} 3%, transparent)`,
+  border: `1px solid color-mix(in srgb, ${brand.colors.border} 35%, transparent)`,
+  color: brand.colors.text,
+}))
+
+const emptyStyle = computed(() => ({
+  display: 'flex',
+  flexDirection: 'column' as const,
+  alignItems: 'center',
+  textAlign: 'center' as const,
+  gap: '10px',
+  padding: '40px 24px 36px',
+  borderRadius: '16px',
+  backgroundColor: `color-mix(in srgb, ${brand.colors.text} 2%, transparent)`,
+  border: `1px dashed color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+}))
+
+const ctaStyle = computed(() => ({
+  marginTop: '4px',
+  padding: '8px 18px',
+  borderRadius: '999px',
+  backgroundColor: brand.colors.primary,
+  color: brand.colors.background,
+  fontSize: '12.5px',
+  fontWeight: '500',
+  border: 'none',
+  cursor: 'pointer',
+}))
+
+const memoryGroupStyle = computed(() => ({
+  border: `1px solid color-mix(in srgb, ${brand.colors.border} 30%, transparent)`,
+  backgroundColor: `color-mix(in srgb, ${brand.colors.text} 2%, transparent)`,
+}))
+
+const hitRatePillStyle = computed(() => ({
+  display: 'inline-flex',
+  alignItems: 'center',
+  fontSize: '11px',
+  fontFamily: 'var(--font-mono-tab, monospace)',
+  fontVariantNumeric: 'tabular-nums',
+  color: brand.colors.text,
+  padding: '4px 10px',
+  borderRadius: '999px',
+  backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 10%, transparent)`,
+}))
+
+const primaryActionStyle = computed(() => ({
+  color: brand.colors.primary,
+  border: `1px solid color-mix(in srgb, ${brand.colors.primary} 35%, transparent)`,
+  borderRadius: '999px',
+  padding: '4px 10px',
+  backgroundColor: 'transparent',
+  cursor: 'pointer',
+}))
+
+function actionPillStyle(primary: boolean): Record<string, string> {
+  // Pill button used in the smart-action footers. Primary = brand-
+  // tinted background + brand text; default = neutral border-only.
+  if (primary) {
+    return {
+      backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`,
+      border: `1px solid color-mix(in srgb, ${brand.colors.primary} 30%, transparent)`,
+      color: brand.colors.primary,
+      padding: '4px 10px',
+      borderRadius: '999px',
+      fontSize: '11px',
+      fontWeight: '500',
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: '4px',
+      cursor: 'pointer',
+    }
+  }
+  return {
+    backgroundColor: 'transparent',
+    border: `1px solid color-mix(in srgb, ${brand.colors.border} 35%, transparent)`,
+    color: brand.colors.textMuted,
+    padding: '4px 10px',
+    borderRadius: '999px',
+    fontSize: '11px',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '4px',
+    cursor: 'pointer',
+  }
+}
+
+function filterPillStyle(active: boolean): Record<string, string> {
+  return {
+    backgroundColor: active
+      ? `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`
+      : 'transparent',
+    border: `1px solid color-mix(in srgb, ${brand.colors.border} ${active ? 55 : 35}%, transparent)`,
+    color: active ? brand.colors.text : brand.colors.textMuted,
+    padding: '4px 10px',
+    borderRadius: '999px',
+    fontSize: '11.5px',
+    transition: 'background-color 160ms ease, border-color 160ms ease',
+    cursor: 'pointer',
+  }
+}
+
+// ---- Goals helpers ----------------------------------------------
 
 function goalStatusColor(status: GoalStatus | null | string): string {
   if (status === 'hit') return brand.colors.positive ?? brand.colors.primary
@@ -740,7 +1075,7 @@ function goalStatusColor(status: GoalStatus | null | string): string {
 function goalStatusLabel(status: GoalStatus | null | string): string {
   if (status === 'hit') return 'Atingida'
   if (status === 'on_track') return 'No caminho'
-  if (status === 'at_risk') return 'Atenção'
+  if (status === 'at_risk') return 'Em risco'
   if (status === 'unfeasible') return 'Inviável'
   return '—'
 }
@@ -749,19 +1084,41 @@ function goalProgress(g: ChatGoal): number {
   const current = parseFloat(g.currentAmount)
   return Math.round(Math.min(1, Math.max(0, current / Math.max(1, target))) * 100)
 }
-function decisionTypeColor(t: DecisionType): string {
-  if (t === 'buy') return brand.colors.positive ?? brand.colors.primary
-  if (t === 'sell') return brand.colors.negative
-  if (t === 'rebalance' || t === 'allocate') return brand.colors.primary
-  return brand.colors.textMuted
-}
-/** ChatDecision returns numeric fields as strings (Drizzle numeric).
- *  Convert + sanity-check before passing to TickerChip's price prop. */
-function parseDecisionPrice(raw: string | null | undefined): number | null {
-  if (raw == null) return null
-  const n = typeof raw === 'string' ? parseFloat(raw) : (raw as number)
-  return Number.isFinite(n) && n > 0 ? n : null
-}
+
+// ---- Decisions helpers ------------------------------------------
+
+const decisionFilters = computed(() => {
+  const all = decisionsState.decisions.value
+  return [
+    { id: 'all' as const, label: 'Todas', count: all.length },
+    {
+      id: 'pending' as const,
+      label: 'Pendentes',
+      count: all.filter((d) => d.status === 'pending').length,
+    },
+    {
+      id: 'accepted' as const,
+      label: 'Aceitas',
+      count: all.filter((d) => d.status === 'accepted').length,
+    },
+    {
+      id: 'executed' as const,
+      label: 'Executadas',
+      count: all.filter((d) => d.status === 'executed').length,
+    },
+    {
+      id: 'reviewed' as const,
+      label: 'Revisadas',
+      count: all.filter((d) => d.status === 'reviewed').length,
+    },
+  ]
+})
+
+const filteredDecisions = computed(() => {
+  const f = decisionFilter.value
+  if (f === 'all') return decisionsState.decisions.value
+  return decisionsState.decisions.value.filter((d) => d.status === f)
+})
 
 function decisionTypeLabel(t: DecisionType): string {
   return (
@@ -774,26 +1131,85 @@ function decisionTypeLabel(t: DecisionType): string {
     } as Record<string, string>
   )[t] ?? t
 }
-function activityKindColor(k: ActivityKind): string {
-  if (k === 'alert_fired') return brand.colors.primary
-  if (k === 'decision_created' || k === 'decision_updated') return brand.colors.primary
+
+function decisionStatusColor(status: string): string {
+  if (status === 'pending') return brand.colors.primary
+  if (status === 'executed') return brand.colors.positive ?? brand.colors.primary
+  if (status === 'cancelled' || status === 'expired') return brand.colors.negative
   return brand.colors.textMuted
 }
 
-const memoryGroupedEntries = computed(() =>
-  Array.from(memoriesState.byKind.value.entries()).sort(
-    (a, b) =>
-      MEMORY_KIND_ORDER.indexOf(a[0]) - MEMORY_KIND_ORDER.indexOf(b[0]),
-  ),
-)
-const MEMORY_KIND_ORDER = [
-  'profile',
-  'preference',
-  'goal',
-  'decision',
-  'open_thread',
-  'fact',
-]
+function parseDecisionPrice(raw: string | null | undefined): number | null {
+  if (raw == null) return null
+  const n = typeof raw === 'string' ? parseFloat(raw) : (raw as number)
+  return Number.isFinite(n) && n > 0 ? n : null
+}
+
+// ---- Watchlist helpers ------------------------------------------
+
+function describeWatchCondition(c: WatchCondition): string {
+  switch (c.kind) {
+    case 'price_drop_pct':
+      return `Cai ${c.pct}% em ${c.window ?? '7d'}`
+    case 'price_rise_pct':
+      return `Sobe ${c.pct}% em ${c.window ?? '7d'}`
+    case 'price_below':
+      return `Preço abaixo de R$ ${c.value?.toLocaleString('pt-BR', { maximumFractionDigits: 2 })}`
+    case 'price_above':
+      return `Preço acima de R$ ${c.value?.toLocaleString('pt-BR', { maximumFractionDigits: 2 })}`
+    case 'dy_above':
+      return `DY acima de ${(c.value ?? 0) * 100}%`
+    case 'pe_below':
+      return `P/L abaixo de ${c.value}`
+    case 'news_material':
+      return 'Notícia material'
+    default:
+      return c.kind
+  }
+}
+
+// ---- Memory helpers ---------------------------------------------
+
+const memoryKindFilters = computed(() => {
+  const counts = new Map<string, number>()
+  for (const m of memoriesState.memories.value) {
+    counts.set(m.kind, (counts.get(m.kind) ?? 0) + 1)
+  }
+  const all = memoriesState.memories.value.length
+  const out: Array<{ id: string; label: string; count: number }> = [
+    { id: 'all', label: 'Todas', count: all },
+  ]
+  for (const kind of MEMORY_KIND_ORDER) {
+    const count = counts.get(kind) ?? 0
+    if (count > 0) out.push({ id: kind, label: memoryKindLabel(kind), count })
+  }
+  return out
+})
+
+const filteredMemories = computed(() => {
+  const q = memorySearch.value.trim().toLowerCase()
+  return memoriesState.memories.value.filter((m) => {
+    if (memoryKindFilter.value !== 'all' && m.kind !== memoryKindFilter.value) return false
+    if (!q) return true
+    if (m.key.toLowerCase().includes(q)) return true
+    return formatMemoryValue(m.value).toLowerCase().includes(q)
+  })
+})
+
+const filteredMemoryGroups = computed(() => {
+  const groups = new Map<string, typeof filteredMemories.value>()
+  for (const m of filteredMemories.value) {
+    const list = groups.get(m.kind) ?? []
+    list.push(m)
+    groups.set(m.kind, list)
+  }
+  return Array.from(groups.entries()).sort(
+    ([a], [b]) => MEMORY_KIND_ORDER.indexOf(a) - MEMORY_KIND_ORDER.indexOf(b),
+  )
+})
+
+const MEMORY_KIND_ORDER = ['profile', 'preference', 'goal', 'decision', 'open_thread', 'fact']
+
 function memoryKindLabel(kind: string): string {
   return (
     {
@@ -806,192 +1222,38 @@ function memoryKindLabel(kind: string): string {
     } as Record<string, string>
   )[kind] ?? kind
 }
-// ---- Memory pretty-printer -------------------------------------
-//
-// Memories are stored as arbitrary JSONB blobs (the `save_memory` tool
-// accepts any value). To audit them comfortably, we detect shape and
-// route to the right renderer instead of dumping `JSON.stringify`.
-//
-// Rules:
-//   - scalar (string/number/boolean) → one-line text
-//   - markdown-ish (object with summary / markdown / explanation
-//     fields, or a string with newlines) → plain-text excerpt with
-//     expand toggle
-//   - object → definition list (humanised keys, formatted values)
-//   - array → bullet list
-//
-// `memoryExpanded` is a per-row toggle so the user can drill in
-// without losing the rest of the list.
 
-const MEMORY_PREVIEW_FIELDS = 3
-const MEMORY_PREVIEW_ARRAY_ITEMS = 3
-const MEMORY_LONG_STRING_THRESHOLD = 220
-
-const memoryExpanded = reactive(new Set<string>())
-
-function toggleMemoryExpand(id: string): void {
-  if (memoryExpanded.has(id)) memoryExpanded.delete(id)
-  else memoryExpanded.add(id)
-}
-
-type MemoryShape = 'scalar' | 'markdown' | 'object' | 'array' | 'empty'
-
-function memoryShape(v: unknown): MemoryShape {
-  if (v == null) return 'empty'
-  if (typeof v === 'string') {
-    return v.length > MEMORY_LONG_STRING_THRESHOLD || v.includes('\n')
-      ? 'markdown'
-      : 'scalar'
+function formatMemoryValue(v: unknown): string {
+  if (v == null) return '—'
+  if (typeof v === 'string') return v.length > 240 ? v.slice(0, 240) + '…' : v
+  if (typeof v === 'number') return Number.isInteger(v) ? String(v) : v.toLocaleString('pt-BR')
+  if (typeof v === 'boolean') return v ? 'sim' : 'não'
+  if (Array.isArray(v)) {
+    return v.length === 0 ? '[ vazio ]' : `[ ${v.length} ${v.length === 1 ? 'item' : 'itens'} ]`
   }
-  if (typeof v === 'number' || typeof v === 'boolean') return 'scalar'
-  if (Array.isArray(v)) return 'array'
   if (typeof v === 'object') {
-    // Detect shapes that read better as markdown excerpts than as a
-    // key-value list — when the object's primary payload is a long
-    // text field (summary, markdown, explanation, body, content),
-    // treat the whole row as markdown.
-    const obj = v as Record<string, unknown>
-    const longField = ['summary', 'markdown', 'explanation', 'body', 'content']
-      .map((k) => obj[k])
-      .find((val) => typeof val === 'string' && (val.length > MEMORY_LONG_STRING_THRESHOLD || val.includes('\n')))
-    if (longField != null) return 'markdown'
-    return 'object'
+    const entries = Object.entries(v as Record<string, unknown>)
+    if (entries.length === 0) return '{ vazio }'
+    return entries
+      .slice(0, 3)
+      .map(([k, val]) => `${humanizeKey(k)}: ${formatScalar(val)}`)
+      .join(' · ')
   }
-  return 'empty'
-}
-
-function memoryNeedsExpand(v: unknown): boolean {
-  const shape = memoryShape(v)
-  if (shape === 'markdown') {
-    const text = extractMarkdown(v)
-    return text.length > 180 || text.split('\n').length > 3
-  }
-  if (shape === 'object') return objectEntryCount(v) > MEMORY_PREVIEW_FIELDS
-  if (shape === 'array') return Array.isArray(v) && v.length > MEMORY_PREVIEW_ARRAY_ITEMS
-  if (shape === 'scalar' && typeof v === 'string') return v.length > 180
-  return false
+  return '—'
 }
 
 function formatScalar(v: unknown): string {
-  if (typeof v === 'string') return v
-  if (typeof v === 'number') {
-    return Number.isInteger(v) ? String(v) : v.toLocaleString('pt-BR')
-  }
-  if (typeof v === 'boolean') return v ? 'sim' : 'não'
-  return '—'
-}
-
-function extractMarkdown(v: unknown): string {
-  if (typeof v === 'string') return v
-  if (v && typeof v === 'object') {
-    const obj = v as Record<string, unknown>
-    for (const key of ['summary', 'markdown', 'explanation', 'body', 'content']) {
-      const value = obj[key]
-      if (typeof value === 'string' && value.length > 0) return value
-    }
-  }
-  return ''
-}
-
-function objectEntryCount(v: unknown): number {
-  if (!v || typeof v !== 'object' || Array.isArray(v)) return 0
-  return Object.keys(v as Record<string, unknown>).length
-}
-
-function objectEntries(
-  v: unknown,
-  expanded: boolean,
-): Array<{ key: string; formatted: string }> {
-  if (!v || typeof v !== 'object' || Array.isArray(v)) return []
-  const entries = Object.entries(v as Record<string, unknown>)
-    // Drop keys that are noise on the audit surface.
-    .filter(([k]) => !HIDDEN_OBJECT_KEYS.has(k))
-  const visible = expanded ? entries : entries.slice(0, MEMORY_PREVIEW_FIELDS)
-  return visible.map(([key, value]) => ({
-    key,
-    formatted: formatObjectValue(value),
-  }))
-}
-
-function arrayItems(v: unknown, expanded: boolean): string[] {
-  if (!Array.isArray(v)) return []
-  const visible = expanded ? v : v.slice(0, MEMORY_PREVIEW_ARRAY_ITEMS)
-  return visible.map((item) => formatObjectValue(item))
-}
-
-const HIDDEN_OBJECT_KEYS = new Set(['decisionId', 'mime'])
-
-function formatObjectValue(v: unknown): string {
   if (v == null) return '—'
-  if (typeof v === 'string') {
-    if (v.length > 160) return v.slice(0, 160) + '…'
-    return v
-  }
-  if (typeof v === 'number') {
-    return Number.isInteger(v) ? String(v) : v.toLocaleString('pt-BR', { maximumFractionDigits: 2 })
-  }
+  if (typeof v === 'string') return v.length > 60 ? v.slice(0, 60) + '…' : v
+  if (typeof v === 'number') return Number.isInteger(v) ? String(v) : v.toLocaleString('pt-BR')
   if (typeof v === 'boolean') return v ? 'sim' : 'não'
-  if (Array.isArray(v)) {
-    if (v.length === 0) return '[ vazio ]'
-    return `[ ${v.length} ${v.length === 1 ? 'item' : 'itens'} ]`
-  }
-  if (typeof v === 'object') {
-    const keys = Object.keys(v as Record<string, unknown>)
-    if (keys.length === 0) return '{ vazio }'
-    return `{ ${keys.length} ${keys.length === 1 ? 'campo' : 'campos'} }`
-  }
-  return '—'
+  if (Array.isArray(v)) return `[${v.length}]`
+  if (typeof v === 'object') return '{…}'
+  return String(v)
 }
 
-/** Cosmetic: turn `executed_vale3_74c08059` → `executed vale3 74c08059`,
- *  `last_calc_at` → `Last Calc At`. The raw key reads like a slug;
- *  spaces+title-case make the audit surface skim-friendly. */
 function humanizeKey(key: string): string {
-  return key
-    .replace(/[_-]+/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .toLowerCase()
-}
-function formatDate(iso: string | null | undefined): string {
-  if (!iso) return '—'
-  try {
-    return new Intl.DateTimeFormat('pt-BR', {
-      day: '2-digit',
-      month: 'short',
-      year: '2-digit',
-    }).format(new Date(iso))
-  } catch {
-    return typeof iso === 'string' ? iso.slice(0, 10) : '—'
-  }
-}
-
-const RELATIVE = new Intl.RelativeTimeFormat('pt-BR', {
-  numeric: 'auto',
-  style: 'narrow',
-})
-const DIVISIONS: Array<{ amount: number; unit: Intl.RelativeTimeFormatUnit }> = [
-  { amount: 60, unit: 'second' },
-  { amount: 60, unit: 'minute' },
-  { amount: 24, unit: 'hour' },
-  { amount: 7, unit: 'day' },
-  { amount: 4.34524, unit: 'week' },
-  { amount: 12, unit: 'month' },
-  { amount: Number.POSITIVE_INFINITY, unit: 'year' },
-]
-function formatRelative(iso: string | null | undefined): string {
-  if (!iso) return '—'
-  const time = new Date(iso).getTime()
-  if (!Number.isFinite(time)) return '—'
-  const seconds = (Date.now() - time) / 1000
-  if (seconds < 5) return 'agora'
-  let duration = seconds
-  for (const d of DIVISIONS) {
-    if (Math.abs(duration) < d.amount)
-      return RELATIVE.format(-Math.round(duration), d.unit)
-    duration /= d.amount
-  }
-  return RELATIVE.format(-Math.round(duration), 'year')
+  return key.replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim()
 }
 
 function confirmClearMemories() {
@@ -1005,6 +1267,144 @@ function confirmClearMemories() {
   void memoriesState.clearAll()
   memoryClearStage.value = 'idle'
 }
+
+// ---- Activity helpers -------------------------------------------
+
+interface ActivityGroup {
+  label: string
+  events: ActivityEvent[]
+}
+
+const activityGroups = computed<ActivityGroup[]>(() => {
+  const buckets: Record<string, ActivityEvent[]> = {
+    Hoje: [],
+    Ontem: [],
+    'Esta semana': [],
+    'Mais antigos': [],
+  }
+  const now = new Date()
+  const todayKey = now.toDateString()
+  const yesterday = new Date(now)
+  yesterday.setDate(yesterday.getDate() - 1)
+  const yesterdayKey = yesterday.toDateString()
+  const weekAgo = now.getTime() - 7 * 24 * 60 * 60 * 1000
+
+  for (const e of activityState.events.value) {
+    const at = new Date(e.at)
+    const key = at.toDateString()
+    if (key === todayKey) buckets.Hoje!.push(e)
+    else if (key === yesterdayKey) buckets.Ontem!.push(e)
+    else if (at.getTime() >= weekAgo) buckets['Esta semana']!.push(e)
+    else buckets['Mais antigos']!.push(e)
+  }
+  return (['Hoje', 'Ontem', 'Esta semana', 'Mais antigos'] as const)
+    .filter((label) => buckets[label]!.length > 0)
+    .map((label) => ({ label, events: buckets[label]! }))
+})
+
+function activityKindColor(k: ActivityKind): string {
+  if (k === 'alert_fired') return brand.colors.primary
+  if (k === 'decision_created' || k === 'decision_updated') return brand.colors.primary
+  return brand.colors.textMuted
+}
+
+// ---- Smart-action prompts ---------------------------------------
+//
+// Each card surfaces 1-2 opinionated CTAs that send a structured
+// message to the chat. The agent picks them up as a regular user
+// turn and runs the appropriate tools (simulate_scenario,
+// validate_goal, recalculate_goal, etc.). The drawer closes so
+// the user lands on the conversation watching the answer stream.
+
+function dispatchPrompt(text: string): void {
+  emit('chat-prompt', text)
+}
+
+function rethinkDecisionPrompt(d: ChatDecision): void {
+  const tickerStr = d.ticker ? ` ${d.ticker}` : ''
+  const text =
+    `Repensa essa decisão: ${decisionTypeLabel(d.type)}${tickerStr}. ` +
+    `A tese registrada foi "${d.thesis}"` +
+    (d.invalidator ? ` e o invalidador "${d.invalidator}". ` : '. ') +
+    `O cenário mudou desde então? Cheque preço atual, fundamentos, macro e me diga se mantenho, ajusto o gatilho ou cancelo. Roda simulate_scenario se a meta tiver sido afetada.`
+  dispatchPrompt(text)
+}
+
+function submitCounterProposal(d: ChatDecision): void {
+  const draft = counterProposalDraft[d.id]?.trim()
+  if (!draft) return
+  const tickerStr = d.ticker ? ` (${d.ticker})` : ''
+  const text =
+    `Tenho uma contraproposta para a decisão de ${decisionTypeLabel(d.type)}${tickerStr}. ` +
+    `Tese original: "${d.thesis}". ` +
+    `Minha contraproposta: ${draft}. ` +
+    `Avalie: o que é mais robusto, qual o trade-off em risco/retorno, e me dê uma recomendação clara.`
+  dispatchPrompt(text)
+  delete counterProposalDraft[d.id]
+  counterProposalOpen.value = null
+}
+
+function findGoalSolutionsPrompt(g: ChatGoal): void {
+  const text =
+    `A meta "${g.name}" está classificada como ${goalStatusLabel(g.status)}. ` +
+    `Liste os 3-4 caminhos viáveis pra fechar (aumentar aporte mensal, estender prazo, reduzir alvo, aceitar mais risco/equity, perfil empreendedor, etc.) ` +
+    `e simule simulate_scenario para CADA um pra mostrar o impacto. Recomenda o mais realista pro meu perfil.`
+  dispatchPrompt(text)
+}
+
+function discussGoalPrompt(g: ChatGoal): void {
+  const text =
+    `Conversemos sobre a meta "${g.name}". Status atual: ${goalStatusLabel(g.status)}, progresso ${goalProgress(g)}%. ` +
+    `Faz uma análise do plano: o aporte está correto, o CAGR realista bate com a alocação, há ajustes de curto prazo necessários?`
+  dispatchPrompt(text)
+}
+
+function reviewWatchPrompt(ticker: string): void {
+  const text =
+    `Revise minha watchlist em ${ticker}. Preço atual, mudanças desde que adicionei, eventos materiais recentes. ` +
+    `As condições que defini ainda fazem sentido ou devo ajustar?`
+  dispatchPrompt(text)
+}
+
+// ---- Date helpers -----------------------------------------------
+
+function formatDate(iso: string | null | undefined): string {
+  if (!iso) return '—'
+  try {
+    return new Intl.DateTimeFormat('pt-BR', {
+      day: '2-digit',
+      month: 'short',
+      year: '2-digit',
+    }).format(new Date(iso))
+  } catch {
+    return typeof iso === 'string' ? iso.slice(0, 10) : '—'
+  }
+}
+
+const RELATIVE_DIVISIONS: Array<{ amount: number; unit: Intl.RelativeTimeFormatUnit }> = [
+  { amount: 60, unit: 'second' },
+  { amount: 60, unit: 'minute' },
+  { amount: 24, unit: 'hour' },
+  { amount: 7, unit: 'day' },
+  { amount: 4.34524, unit: 'week' },
+  { amount: 12, unit: 'month' },
+  { amount: Number.POSITIVE_INFINITY, unit: 'year' },
+]
+const RTF = new Intl.RelativeTimeFormat('pt-BR', { numeric: 'auto', style: 'short' })
+
+function formatRelative(iso: string | null | undefined): string {
+  if (!iso) return '—'
+  const time = new Date(iso).getTime()
+  if (!Number.isFinite(time)) return '—'
+  const seconds = (Date.now() - time) / 1000
+  if (seconds < 5) return 'agora'
+  let duration = seconds
+  for (const d of RELATIVE_DIVISIONS) {
+    if (Math.abs(duration) < d.amount) return RTF.format(-Math.round(duration), d.unit)
+    duration /= d.amount
+  }
+  return RTF.format(-Math.round(duration), 'year')
+}
 </script>
 
 <style scoped>
@@ -1015,113 +1415,87 @@ function confirmClearMemories() {
   isolation: isolate;
 }
 .audit-close,
-.audit-row,
-.audit-row-action,
-.audit-section-action,
-.audit-nav-link {
+.audit-sidenav-btn,
+.audit-mobilenav-btn,
+.goal-card,
+.goal-card-body,
+.decision-card,
+.decision-card-body,
+.watch-remove,
+.memory-delete,
+.activity-row,
+.empty-cta,
+.filter-pill,
+.action-pill {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
 }
-.audit-close:hover,
-.audit-row-action:hover {
-  background-color: color-mix(in srgb, currentColor 12%, transparent);
-}
-.audit-row:hover {
-  background-color: color-mix(in srgb, currentColor 5%, transparent);
-}
-.audit-nav-link:hover {
-  color: var(--brand-text, currentColor);
-}
-.audit-nav-link:focus-visible,
-.audit-row:focus-visible,
-.audit-row-action:focus-visible,
-.audit-section-action:focus-visible,
-.audit-close:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 2px var(--brand-primary, #f5a300);
-  border-radius: 6px;
-}
-.audit-section-action {
-  font-size: 11px;
-  text-transform: lowercase;
-  letter-spacing: 0.04em;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  padding: 2px 6px;
-  border-radius: 4px;
-  transition: background-color 160ms ease;
-}
-.audit-section-action:hover {
+.action-pill:hover:not(:disabled) {
+  filter: brightness(1.06);
   background-color: color-mix(in srgb, currentColor 6%, transparent);
 }
-
-.audit-section {
-  scroll-margin-top: 60px;
-  padding-top: 16px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid color-mix(in srgb, currentColor 8%, transparent);
+.action-pill-primary:hover:not(:disabled) {
+  filter: brightness(1.04);
 }
-.audit-section:last-child {
-  border-bottom: none;
+.action-pill:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
-.audit-section-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 8px;
+.counter-proposal-input::placeholder {
+  color: color-mix(in srgb, currentColor 50%, transparent);
 }
-.audit-section-header h3 {
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  margin: 0;
-  color: var(--brand-text, currentColor);
+.audit-close:hover,
+.watch-remove:hover,
+.memory-delete:hover {
+  background-color: color-mix(in srgb, currentColor 12%, transparent);
 }
-.audit-empty {
-  font-size: 12px;
-  line-height: 1.5;
-  padding: 4px 2px;
+.goal-card:hover,
+.decision-card:hover,
+.activity-row:hover {
+  background-color: color-mix(in srgb, currentColor 6%, transparent) !important;
 }
-
-.audit-mem-row {
-  background-color: color-mix(in srgb, currentColor 3%, transparent);
-  border: 1px solid color-mix(in srgb, currentColor 5%, transparent);
-}
-.audit-mem-row:hover {
+.audit-sidenav-btn:hover {
   background-color: color-mix(in srgb, currentColor 5%, transparent);
 }
-.audit-act-row,
-.audit-row-static {
-  background-color: transparent;
+.empty-cta:hover {
+  filter: brightness(1.06);
 }
-.audit-act-row:hover,
-.audit-row-static:hover {
-  background-color: color-mix(in srgb, currentColor 4%, transparent);
+.audit-close:focus-visible,
+.audit-sidenav-btn:focus-visible,
+.audit-mobilenav-btn:focus-visible,
+.goal-card:focus-visible,
+.decision-card:focus-visible,
+.watch-remove:focus-visible,
+.memory-delete:focus-visible,
+.empty-cta:focus-visible,
+.filter-pill:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--brand-primary, #f5a300);
+  border-radius: 8px;
 }
 
-/* Body scroll polish */
-.audit-body {
+.empty .empty-title {
+  font-size: 13.5px;
+  font-weight: 500;
+}
+.empty .empty-body {
+  font-size: 12px;
+  line-height: 1.5;
+  max-width: 320px;
+}
+
+.audit-content {
   scrollbar-width: thin;
   scrollbar-color: color-mix(in srgb, currentColor 14%, transparent) transparent;
   overscroll-behavior: contain;
 }
-.audit-body::-webkit-scrollbar {
+.audit-content::-webkit-scrollbar {
   width: 6px;
 }
-.audit-body::-webkit-scrollbar-thumb {
+.audit-content::-webkit-scrollbar-thumb {
   background-color: color-mix(in srgb, currentColor 12%, transparent);
   border-radius: 3px;
 }
-
-/* Drawer transitions are now driven by inline `transition-opacity`
-   and `transition-transform` classes on the elements themselves
-   (toggled via `backdropMounted` / `panelMounted` refs in the
-   script). Vue's <Transition> wrapper was racing with Teleport on
-   first open, occasionally leaving the elements in their `enter-from`
-   state and emitting a stray close. Doing it manually with two
-   requestAnimationFrame frames + bound styles is more verbose but
-   reliably runs across browsers. */
 
 @media (prefers-reduced-motion: reduce) {
   .audit-backdrop,
