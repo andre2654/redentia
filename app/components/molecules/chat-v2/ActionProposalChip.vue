@@ -1,15 +1,15 @@
 <script setup lang="ts">
 /**
- * ActionProposalChip — pílula INLINE confirmável (replacement do
- * ActionProposalCard, que era um cartão block-level).
+ * ActionProposalChip — pílula INLINE confirmável.
  *
- * Visual: `[bell] Ativar Watchlist` — pequenininho, encaixa direto na
- * prose como se fosse um TickerChip. Click abre UPopover com a
- * descrição + Confirmar / Pular. Após o clique, o chip vira um chip
- * estático "Ativada" / "Pulado" (mesmo formato, sem popover).
+ * Visualmente espelhada no TickerChip (default density): mesma altura,
+ * mesmo padding, mesma família de cores via `useBrand`, mesmo
+ * `top: -1px` pra alinhar na baseline da prose. A diferença é que
+ * o leading não é um logo circular de ativo, é um ícone temático
+ * (sino pra watchlist, bandeira pra meta, etc.).
  *
- * Mounted dinamicamente pelo useProposalProse a cada `{{propose}}`
- * marker que o modelo escrever na prosa.
+ * Click → UPopover com descrição + Confirmar / Pular. Após o clique,
+ * vira chip estático "Ativada" / "Pulado".
  */
 import { computed } from 'vue'
 import type { ChatProposalData, ChatProposalKind } from '~/composables/useChatStream'
@@ -22,6 +22,8 @@ const emit = defineEmits<{
   (e: 'confirm'): void
   (e: 'skip'): void
 }>()
+
+const brand = useBrand()
 
 type Affordance = {
   icon: string
@@ -67,6 +69,29 @@ const isConfirmed = computed(() => props.proposal.state === 'confirmed')
 const aff = computed<Affordance>(
   () => affordanceByKind[props.proposal.kind] ?? affordanceByKind.save_memory,
 )
+
+// Brand-aware inline styles, espelhados no TickerChip
+const chipStyle = computed(() => ({
+  backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 80%, transparent)`,
+  border: `1px solid color-mix(in srgb, ${brand.colors.border} 45%, transparent)`,
+  color: brand.colors.text,
+  textDecoration: 'none',
+}))
+
+const confirmedStyle = computed(() => ({
+  backgroundColor: `color-mix(in srgb, ${brand.colors.positive ?? brand.colors.primary} 14%, transparent)`,
+  border: `1px solid color-mix(in srgb, ${brand.colors.positive ?? brand.colors.primary} 35%, transparent)`,
+  color: brand.colors.positive ?? brand.colors.primary,
+}))
+
+const skippedStyle = computed(() => ({
+  backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 60%, transparent)`,
+  border: `1px solid color-mix(in srgb, ${brand.colors.border} 35%, transparent)`,
+  color: brand.colors.textMuted,
+  opacity: 0.85,
+}))
+
+const iconColor = computed(() => brand.colors.primary)
 
 // ---- Args summary (popover) -----------------------------------
 function formatArgsSummary(
@@ -126,10 +151,13 @@ function onSkip() {
   <UPopover v-if="isPending" mode="click">
     <button
       type="button"
-      class="proposal-chip inline-flex items-center gap-1 rounded-full border align-middle whitespace-nowrap focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+      class="proposal-chip group inline-flex shrink-0 items-center align-middle leading-none transition-[background-color,box-shadow,border-color]"
+      :style="chipStyle"
     >
-      <UIcon :name="aff.icon" class="proposal-chip-icon" />
-      <span class="proposal-chip-label">{{ aff.cta }}</span>
+      <UIcon :name="aff.icon" class="proposal-chip-icon" :style="{ color: iconColor }" />
+      <span class="proposal-chip-label font-medium" :style="{ color: brand.colors.text }">
+        {{ aff.cta }}
+      </span>
     </button>
 
     <template #content>
@@ -167,62 +195,58 @@ function onSkip() {
 
   <span
     v-else
-    class="proposal-chip proposal-chip--static inline-flex items-center gap-1 rounded-full border align-middle whitespace-nowrap"
-    :class="isConfirmed ? 'proposal-chip--confirmed' : 'proposal-chip--skipped'"
+    class="proposal-chip proposal-chip--static inline-flex shrink-0 items-center align-middle leading-none"
+    :style="isConfirmed ? confirmedStyle : skippedStyle"
   >
     <UIcon
       :name="isConfirmed ? 'i-heroicons-check-circle-20-solid' : 'i-heroicons-x-mark-20-solid'"
       class="proposal-chip-icon"
     />
-    <span class="proposal-chip-label">{{ isConfirmed ? 'Ativada' : 'Pulado' }}</span>
+    <span class="proposal-chip-label font-medium">
+      {{ isConfirmed ? 'Ativada' : 'Pulado' }}
+    </span>
   </span>
 </template>
 
 <style scoped>
+/* Espelha o ticker-chip default density: mesma altura, mesmo padding,
+   mesmo gap, mesmo font-size. A única diferença é que o leading é um
+   ícone (não uma logo circular), então o padding é simétrico. */
 .proposal-chip {
+  border-radius: 9999px;
+  white-space: nowrap;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  padding: 2px 9px;
+  gap: 6px;
   font-size: 12px;
-  line-height: 1;
-  padding: 3px 8px 3px 6px;
-  background-color: color-mix(in srgb, var(--ui-bg-elevated) 50%, transparent);
-  border-color: var(--ui-border);
-  color: var(--ui-text);
-  transition: background-color 120ms, border-color 120ms;
-  vertical-align: baseline;
+  cursor: pointer;
+  background: transparent;
+  position: relative;
+  top: -1px;
 }
 
-.proposal-chip:hover:not(.proposal-chip--static) {
-  background-color: color-mix(in srgb, var(--ui-bg-elevated) 90%, transparent);
-  border-color: color-mix(in srgb, var(--ui-primary) 50%, var(--ui-border));
-}
-
-.proposal-chip-icon {
-  width: 12px;
-  height: 12px;
-  color: var(--ui-primary);
-  flex: none;
+.proposal-chip--static {
+  cursor: default;
 }
 
 .proposal-chip-label {
-  font-weight: 500;
+  font-size: 12px;
 }
 
-.proposal-chip--confirmed {
-  background-color: color-mix(in srgb, var(--ui-success) 12%, transparent);
-  color: color-mix(in srgb, var(--ui-success) 80%, var(--ui-text));
-  border-color: color-mix(in srgb, var(--ui-success) 35%, var(--ui-border));
+.proposal-chip-icon {
+  width: 13px;
+  height: 13px;
+  flex: none;
 }
 
-.proposal-chip--confirmed .proposal-chip-icon {
-  color: var(--ui-success);
+.proposal-chip:hover:not(.proposal-chip--static) {
+  background-color: color-mix(in srgb, currentColor 6%, transparent) !important;
+  border-color: color-mix(in srgb, currentColor 18%, transparent) !important;
 }
 
-.proposal-chip--skipped {
-  background-color: color-mix(in srgb, var(--ui-bg-elevated) 50%, transparent);
-  color: var(--ui-text-muted);
-  opacity: 0.75;
-}
-
-.proposal-chip--skipped .proposal-chip-icon {
-  color: var(--ui-text-muted);
+.proposal-chip:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--brand-primary, #f5a300);
 }
 </style>
