@@ -70,10 +70,12 @@ const aff = computed<Affordance>(
   () => affordanceByKind[props.proposal.kind] ?? affordanceByKind.save_memory,
 )
 
-// Brand-aware inline styles, espelhados no TickerChip
+// Brand-aware inline styles. Mais destaque que o ticker-chip: tint
+// primário no bg + borda primária visível, mas mantendo as mesmas
+// dimensões/padding/altura do TickerChip default.
 const chipStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 80%, transparent)`,
-  border: `1px solid color-mix(in srgb, ${brand.colors.border} 45%, transparent)`,
+  backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 10%, ${brand.colors.surface})`,
+  border: `1px solid color-mix(in srgb, ${brand.colors.primary} 35%, transparent)`,
   color: brand.colors.text,
   textDecoration: 'none',
 }))
@@ -89,6 +91,22 @@ const skippedStyle = computed(() => ({
   border: `1px solid color-mix(in srgb, ${brand.colors.border} 35%, transparent)`,
   color: brand.colors.textMuted,
   opacity: 0.85,
+}))
+
+// Mini-circle wrapper around the icon — mesma forma/tamanho do logo
+// do TickerChip (20px), pra igualar a altura total do chip e dar
+// destaque visual (a "marca" da proposta).
+const iconBadgeStyle = computed(() => ({
+  width: '20px',
+  height: '20px',
+  backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 22%, transparent)`,
+  boxShadow: `inset 0 0 0 1px color-mix(in srgb, ${brand.colors.primary} 30%, transparent)`,
+}))
+
+const iconBadgeStaticStyle = computed(() => ({
+  width: '20px',
+  height: '20px',
+  backgroundColor: `color-mix(in srgb, currentColor 18%, transparent)`,
 }))
 
 const iconColor = computed(() => brand.colors.primary)
@@ -151,11 +169,17 @@ function onSkip() {
   <UPopover v-if="isPending" mode="click">
     <button
       type="button"
-      class="proposal-chip group inline-flex shrink-0 items-center align-middle leading-none transition-[background-color,box-shadow,border-color]"
+      class="proposal-chip proposal-chip--accent group inline-flex shrink-0 items-center align-middle leading-none transition-[background-color,box-shadow,border-color]"
       :style="chipStyle"
     >
-      <UIcon :name="aff.icon" class="proposal-chip-icon" :style="{ color: iconColor }" />
-      <span class="proposal-chip-label font-medium" :style="{ color: brand.colors.text }">
+      <span
+        class="proposal-chip-badge inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full"
+        :style="iconBadgeStyle"
+        aria-hidden="true"
+      >
+        <UIcon :name="aff.icon" class="proposal-chip-icon" :style="{ color: iconColor }" />
+      </span>
+      <span class="proposal-chip-label font-semibold" :style="{ color: brand.colors.text }">
         {{ aff.cta }}
       </span>
     </button>
@@ -198,11 +222,17 @@ function onSkip() {
     class="proposal-chip proposal-chip--static inline-flex shrink-0 items-center align-middle leading-none"
     :style="isConfirmed ? confirmedStyle : skippedStyle"
   >
-    <UIcon
-      :name="isConfirmed ? 'i-heroicons-check-circle-20-solid' : 'i-heroicons-x-mark-20-solid'"
-      class="proposal-chip-icon"
-    />
-    <span class="proposal-chip-label font-medium">
+    <span
+      class="proposal-chip-badge inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full"
+      :style="iconBadgeStaticStyle"
+      aria-hidden="true"
+    >
+      <UIcon
+        :name="isConfirmed ? 'i-heroicons-check-circle-20-solid' : 'i-heroicons-x-mark-20-solid'"
+        class="proposal-chip-icon"
+      />
+    </span>
+    <span class="proposal-chip-label font-semibold">
       {{ isConfirmed ? 'Ativada' : 'Pulado' }}
     </span>
   </span>
@@ -210,14 +240,15 @@ function onSkip() {
 
 <style scoped>
 /* Espelha o ticker-chip default density: mesma altura, mesmo padding,
-   mesmo gap, mesmo font-size. A única diferença é que o leading é um
-   ícone (não uma logo circular), então o padding é simétrico. */
+   mesmo gap, mesmo font-size. O badge circular do ícone (20px) fica
+   flush à esquerda igual a logo do TickerChip — daí o padding-left
+   é só 2px. */
 .proposal-chip {
   border-radius: 9999px;
   white-space: nowrap;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
-  padding: 2px 9px;
+  padding: 2px 10px 2px 2px;
   gap: 6px;
   font-size: 12px;
   cursor: pointer;
@@ -234,15 +265,19 @@ function onSkip() {
   font-size: 12px;
 }
 
+/* Ícone dentro do badge circular — tamanho parecido com a inicial da
+   logo do TickerChip (~13px num círculo de 20px). */
 .proposal-chip-icon {
   width: 13px;
   height: 13px;
   flex: none;
 }
 
-.proposal-chip:hover:not(.proposal-chip--static) {
-  background-color: color-mix(in srgb, currentColor 6%, transparent) !important;
-  border-color: color-mix(in srgb, currentColor 18%, transparent) !important;
+.proposal-chip--accent:hover {
+  background-color: color-mix(in srgb, var(--brand-primary, #f5a300) 18%, transparent) !important;
+  border-color: color-mix(in srgb, var(--brand-primary, #f5a300) 55%, transparent) !important;
+  box-shadow: 0 1px 0 0 color-mix(in srgb, var(--brand-primary, #f5a300) 25%, transparent),
+    0 0 0 3px color-mix(in srgb, var(--brand-primary, #f5a300) 12%, transparent);
 }
 
 .proposal-chip:focus-visible {
