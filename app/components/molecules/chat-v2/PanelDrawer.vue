@@ -290,59 +290,11 @@
                 </ul>
               </section>
 
-              <!-- ============ Alertas ============ -->
-              <section
-                id="audit-alerts"
-                ref="el_alerts"
-                class="audit-section flex flex-col gap-2"
-                :aria-labelledby="`audit-h-alerts`"
-              >
-                <header class="audit-section-header">
-                  <h3 :id="`audit-h-alerts`">Alertas</h3>
-                  <button
-                    v-if="alertsState.alerts.value.length > 0"
-                    type="button"
-                    class="audit-section-action"
-                    :style="{ color: brand.colors.textMuted }"
-                    @click="alertsState.dismissAll()"
-                  >limpar tudo</button>
-                </header>
-                <p
-                  v-if="alertsState.alerts.value.length === 0"
-                  class="audit-empty"
-                  :style="{ color: brand.colors.textMuted }"
-                >Sem alertas ativos.</p>
-                <ul v-else class="flex flex-col gap-px">
-                  <li v-for="a in alertsState.alerts.value" :key="a.id">
-                    <div class="audit-row-static flex items-start gap-3 rounded-md px-2 py-2">
-                      <span
-                        class="mt-1.5 size-1.5 shrink-0 rounded-full"
-                        :style="{ backgroundColor: alertSeverityColor(a.severity) }"
-                        aria-hidden="true"
-                      />
-                      <span class="flex min-w-0 flex-1 flex-col">
-                        <span
-                          class="text-[12.5px] font-medium"
-                          :style="{ color: brand.colors.text }"
-                        >{{ a.title }}</span>
-                        <span
-                          class="text-[11px] leading-snug"
-                          :style="{ color: brand.colors.textMuted }"
-                        >{{ a.body }}</span>
-                      </span>
-                      <button
-                        type="button"
-                        class="audit-row-action inline-flex size-6 shrink-0 items-center justify-center rounded-full transition-colors"
-                        :style="{ color: brand.colors.textMuted }"
-                        aria-label="Dispensar alerta"
-                        @click="alertsState.dismiss(a.id)"
-                      >
-                        <UIcon name="i-lucide-x" class="size-3" />
-                      </button>
-                    </div>
-                  </li>
-                </ul>
-              </section>
+              <!--
+                Alertas section removed — it now lives in its own
+                dedicated NotificationsDrawer accessible via the bell
+                button at the top of the chat.
+              -->
 
               <!-- ============ Memória ============ -->
               <section
@@ -575,10 +527,9 @@
 import { computed, nextTick, reactive, ref, watch } from 'vue'
 import type { GoalStatus, ChatGoal } from '~/composables/useGoals'
 import type { ChatDecision, DecisionType } from '~/composables/useDecisions'
-import type { ChatAlert } from '~/composables/useAlerts'
 import type { ActivityEvent, ActivityKind } from '~/composables/useActivity'
 
-type SectionId = 'goals' | 'decisions' | 'watchlist' | 'alerts' | 'memory' | 'activity'
+type SectionId = 'goals' | 'decisions' | 'watchlist' | 'memory' | 'activity'
 
 const props = defineProps<{
   open: boolean
@@ -590,14 +541,12 @@ const emit = defineEmits<{
   'new-goal': []
   'select-goal': [goal: ChatGoal]
   'select-decision': [decision: ChatDecision]
-  'select-alert': [alert: ChatAlert]
 }>()
 
 const brand = useBrand()
 const goalsState = useGoals()
 const decisionsState = useDecisions()
 const watchlistState = useWatchlist()
-const alertsState = useAlerts()
 const memoriesState = useMemories()
 const activityState = useActivity()
 
@@ -607,7 +556,6 @@ const bodyRef = ref<HTMLElement | null>(null)
 const el_goals = ref<HTMLElement | null>(null)
 const el_decisions = ref<HTMLElement | null>(null)
 const el_watchlist = ref<HTMLElement | null>(null)
-const el_alerts = ref<HTMLElement | null>(null)
 const el_memory = ref<HTMLElement | null>(null)
 const el_activity = ref<HTMLElement | null>(null)
 
@@ -655,7 +603,6 @@ const sections = computed<Array<{ id: SectionId; label: string; count: number }>
     ).length,
   },
   { id: 'watchlist', label: 'Watch', count: watchlistState.watches.value.length },
-  { id: 'alerts', label: 'Alertas', count: alertsState.alerts.value.length },
   { id: 'memory', label: 'Memória', count: memoriesState.memories.value.length },
   { id: 'activity', label: 'Atividade', count: activityState.events.value.length },
 ])
@@ -688,7 +635,6 @@ watch(
     void goalsState.refresh()
     void decisionsState.refresh()
     void watchlistState.refresh()
-    void alertsState.refresh()
     void memoriesState.refresh()
     void activityState.refresh()
     await nextTick()
@@ -719,7 +665,6 @@ function scrollToSection(id: SectionId) {
     goals: el_goals,
     decisions: el_decisions,
     watchlist: el_watchlist,
-    alerts: el_alerts,
     memory: el_memory,
     activity: el_activity,
   } as Record<SectionId, ReturnType<typeof ref> | null>
@@ -748,7 +693,6 @@ function onScroll() {
     { id: 'goals', ref: el_goals as { value: HTMLElement | null } },
     { id: 'decisions', ref: el_decisions as { value: HTMLElement | null } },
     { id: 'watchlist', ref: el_watchlist as { value: HTMLElement | null } },
-    { id: 'alerts', ref: el_alerts as { value: HTMLElement | null } },
     { id: 'memory', ref: el_memory as { value: HTMLElement | null } },
     { id: 'activity', ref: el_activity as { value: HTMLElement | null } },
   ]
@@ -829,11 +773,6 @@ function decisionTypeLabel(t: DecisionType): string {
       allocate: 'Alocar',
     } as Record<string, string>
   )[t] ?? t
-}
-function alertSeverityColor(s: ChatAlert['severity']): string {
-  if (s === 'critical') return brand.colors.negative
-  if (s === 'warning') return brand.colors.primary
-  return brand.colors.textMuted
 }
 function activityKindColor(k: ActivityKind): string {
   if (k === 'alert_fired') return brand.colors.primary

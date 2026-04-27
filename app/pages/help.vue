@@ -187,6 +187,11 @@
             <UIcon name="i-lucide-panel-left" class="size-4" />
           </button>
 
+          <ChatV2NotificationBell
+            :unread-count="alertsState.unreadCount.value"
+            @open="notificationsOpen = true"
+          />
+
           <NuxtLink
             to="/"
             class="flex size-9 items-center justify-center rounded-full backdrop-blur-md transition-colors"
@@ -201,15 +206,21 @@
           </NuxtLink>
         </div>
 
-        <!-- Desktop close button (top-right) -->
-        <NuxtLink
-          to="/"
-          class="absolute right-5 top-5 z-10 hidden size-9 items-center justify-center rounded-full transition-colors xl:flex"
-          :style="{ color: brand.colors.textMuted }"
-          aria-label="Fechar chat"
-        >
-          <UIcon name="i-lucide-x" class="size-4" />
-        </NuxtLink>
+        <!-- Desktop top-right cluster: bell + close -->
+        <div class="absolute right-5 top-5 z-10 hidden items-center gap-2 xl:flex">
+          <ChatV2NotificationBell
+            :unread-count="alertsState.unreadCount.value"
+            @open="notificationsOpen = true"
+          />
+          <NuxtLink
+            to="/"
+            class="flex size-9 items-center justify-center rounded-full transition-colors"
+            :style="{ color: brand.colors.textMuted }"
+            aria-label="Fechar chat"
+          >
+            <UIcon name="i-lucide-x" class="size-4" />
+          </NuxtLink>
+        </div>
 
         <!-- Thread or empty state -->
         <!-- Goal badge intentionally removed — the active goal is
@@ -286,10 +297,11 @@
     @go-to-session="onJumpToDecisionSession"
   />
 
-  <!-- Audit drawer — replaces the old four sidebar sections. Single
-       scrollable view of metas / decisões / watch / alertas / memória
-       de longo prazo / atividade recente. `initial-section` is set
-       by the sidebar click. -->
+  <!-- Audit drawer — single scrollable view of metas / decisões /
+       watch / memória / atividade. The Alertas section moved to its
+       own NotificationsDrawer (see below) — alerts are time-sensitive
+       and deserve a dedicated quick-access surface, not a tab buried
+       inside an audit panel. -->
   <ChatV2PanelDrawer
     :open="panelOpen"
     :initial-section="panelInitialSection"
@@ -297,7 +309,21 @@
     @new-goal="onNewGoalFromPanel"
     @select-goal="onSelectGoalFromPanel"
     @select-decision="onSelectDecisionFromPanel"
-    @select-alert="onSelectAlertFromPanel"
+  />
+
+  <!-- Notifications drawer — opens from the bell button at the top
+       of the chat. Routes alert clicks the same way the old Painel
+       Alertas tab did (jump to source session, or seed a follow-up
+       turn referencing the ticker). -->
+  <ChatV2NotificationsDrawer
+    :open="notificationsOpen"
+    :alerts="alertsState.alerts.value"
+    :loading="alertsState.loading.value"
+    @close="notificationsOpen = false"
+    @select="onSelectAlertFromBell"
+    @dismiss="(id) => alertsState.dismiss(id)"
+    @dismiss-all="() => alertsState.dismissAll()"
+    @mark-read="(id) => alertsState.markRead(id)"
   />
 </template>
 
@@ -340,8 +366,13 @@ const decisionDetailId = ref<string | null>(null)
 // drawer scrolls to the right block.
 const panelOpen = ref(false)
 const panelInitialSection = ref<
-  'goals' | 'decisions' | 'watchlist' | 'alerts' | 'memory' | 'activity'
+  'goals' | 'decisions' | 'watchlist' | 'memory' | 'activity'
 >('goals')
+
+// Notifications drawer — separate from the audit panel. Bell button
+// at the top of the chat opens this; bell shows unread badge driven
+// by alertsState.unreadCount.
+const notificationsOpen = ref(false)
 const { goals, refresh: refreshGoals, linkSession, unlinkSession, findById: findGoalById } = useGoals()
 const {
   refresh: refreshDecisions,
@@ -659,6 +690,13 @@ const alertsState = useAlerts()
 function onOpenPanel(
   section: 'goals' | 'decisions' | 'watchlist' | 'alerts' | 'memory' | 'activity' = 'goals',
 ) {
+  // The audit panel no longer hosts an Alertas section — clicks
+  // from the sidebar's Alertas counter are redirected to the
+  // notifications drawer.
+  if (section === 'alerts') {
+    notificationsOpen.value = true
+    return
+  }
   panelInitialSection.value = section
   panelOpen.value = true
 }
@@ -681,8 +719,8 @@ function onSelectDecisionFromPanel(decision: { id: string; sessionId: string | n
   decisionDetailOpen.value = true
 }
 
-function onSelectAlertFromPanel(alert: { id: string; ticker: string | null; sessionId: string | null }) {
-  panelOpen.value = false
+function onSelectAlertFromBell(alert: { id: string; ticker: string | null; sessionId: string | null }) {
+  notificationsOpen.value = false
   void alertsState.markRead(alert.id)
   if (alert.sessionId) {
     void onSelectSession(alert.sessionId)
