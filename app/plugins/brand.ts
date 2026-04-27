@@ -211,14 +211,21 @@ export default defineNuxtPlugin({
     // brand.colors == SSR's :style attrs == DOM. Zero mismatch.
     const ssrMode = brand.defaultMode === 'light' ? 'light' : 'dark'
     applyMode(ssrMode)
-    // Defer the actual resolved mode until AFTER Vue's hydration
-    // completes. Using `app:mounted` (instead of nextTick) guarantees
-    // we're past hydration — nextTick can fire mid-hydration in
-    // Vue 3 and the reactive update gets dropped on the floor for
-    // already-painted components.
+    // Defer the resolved mode until WELL AFTER hydration's first
+    // render flush. Empirically observed: even `app:mounted` fires
+    // too early for inline `:style` bindings to pick up the change —
+    // Vue's reactive update lands but the DOM mutation gets eaten,
+    // leaving SSR's `style="background-color:#0A0B0E"` frozen on
+    // the wrapper. Two RAFs past app:mounted is the safe spot;
+    // hydration is fully done, the first paint has flushed, and
+    // mutations now propagate through Vue's normal effect scheduler.
     nuxtApp.hook('app:mounted', () => {
-      const resolved = resolveMode()
-      if (resolved !== ssrMode) applyMode(resolved)
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const resolved = resolveMode()
+          if (resolved !== ssrMode) applyMode(resolved)
+        })
+      })
     })
   } else {
     applyMode(resolveMode())
