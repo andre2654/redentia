@@ -185,14 +185,37 @@ export default defineNuxtPlugin({
       ;(colorMode as any).unknown = false
     }
   }
-  // Server AND client: apply the resolved mode synchronously so the
-  // brand state is correct BEFORE any component renders. With
-  // `storage: 'cookie'` configured for `@nuxtjs/color-mode`, the SSR
-  // plugin reads the user's preference from the cookie and seeds
-  // `colorMode.preference` accordingly — `resolveMode()` then returns
-  // the right value on both sides, eliminating the SSR/client
-  // mismatch that was leaving stale dark `:style` attributes around.
-  applyMode(resolveMode())
+
+  // Server: pick the best mode we can resolve from the cookie.
+  // Client: the resolution rule depends on whether SSR could match.
+  //
+  //   - preference='dark' or preference='light' → SSR knew it, both
+  //     sides agree, apply synchronously on client too. No mismatch.
+  //
+  //   - preference='system' → SSR can't read prefers-color-scheme, so
+  //     it rendered with `defaultMode`. The client now KNOWS the
+  //     actual resolved mode (from the anti-flash helper). If we apply
+  //     it synchronously here, brand.colors mutates BEFORE Vue
+  //     hydrates — SSR DOM has the defaultMode :style, JS has the
+  //     resolved palette, hydration warns and leaves the SSR styles
+  //     intact (Vue 3 doesn't rectify mismatched inline :style on
+  //     hydration). Half the page ends up showing the wrong palette.
+  //
+  //     Fix: on system preference, FIRST sync to defaultMode (match
+  //     SSR), let Vue hydrate cleanly, THEN apply the resolved mode
+  //     in nextTick. The reactive update propagates to inline :style
+  //     bindings after hydration completes — they DO update on
+  //     post-hydration mutations.
+  if (import.meta.client && colorMode.preference === 'system') {
+    const ssrMode = brand.defaultMode === 'light' ? 'light' : 'dark'
+    applyMode(ssrMode)
+    nextTick(() => {
+      const resolved = resolveMode()
+      if (resolved !== ssrMode) applyMode(resolved)
+    })
+  } else {
+    applyMode(resolveMode())
+  }
 
   // ----------------------------------------------------------------
   // Runtime watcher — applies subsequent mode changes (toggle, OS
