@@ -158,7 +158,6 @@ export function useProposalProse(opts: UseProposalProseOpts) {
     //    - If all proposals matched markers, remove any existing
     //      fallback host so it doesn't linger after the text arrives.
     const extras = proposals.slice(placeholders.length)
-    const streaming = opts.isStreaming?.() ?? false
     const existingHost = root.querySelector<HTMLElement>('.proposal-fallback-row')
 
     if (extras.length === 0 || streaming) {
