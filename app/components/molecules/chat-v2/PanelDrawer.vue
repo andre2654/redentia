@@ -471,7 +471,7 @@
 
             <!-- ============ Watchlist ============ -->
             <section v-else-if="activeTab === 'watchlist'" class="flex flex-col gap-4">
-              <header class="flex items-baseline justify-between gap-3">
+              <header class="flex flex-wrap items-center justify-between gap-3">
                 <div class="flex flex-col gap-0.5">
                   <h3
                     class="text-[15px] font-semibold leading-tight"
@@ -482,17 +482,160 @@
                     :style="{ color: brand.colors.textMuted }"
                   >{{ watchlistState.watches.value.length }} {{ watchlistState.watches.value.length === 1 ? 'ativo' : 'ativos' }}</p>
                 </div>
+                <div class="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    class="action-pill"
+                    :style="actionPillStyle(false)"
+                    @click="manualWatchOpen = !manualWatchOpen"
+                  >
+                    <UIcon name="i-lucide-plus" class="size-3" aria-hidden="true" />
+                    Manual
+                  </button>
+                  <button
+                    type="button"
+                    class="action-pill action-pill-primary"
+                    :style="actionPillStyle(true)"
+                    @click="askAiToSuggestWatchlist"
+                  >
+                    <UIcon name="i-lucide-sparkles" class="size-3" aria-hidden="true" />
+                    Com IA
+                  </button>
+                </div>
               </header>
+
+              <!-- Manual form — inline expansion below the header.
+                   User picks ticker + 1..N conditions, submit calls
+                   the watchlist composable's `upsert` and closes the
+                   form. No external modal — keeps everything in the
+                   drawer's flow. -->
               <div
-                v-if="watchlistState.watches.value.length === 0"
+                v-if="manualWatchOpen"
+                class="manual-watch-form flex flex-col gap-3 rounded-xl p-3.5"
+                :style="{
+                  backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 5%, transparent)`,
+                  border: `1px solid color-mix(in srgb, ${brand.colors.primary} 22%, transparent)`,
+                }"
+              >
+                <div class="flex flex-col gap-2 md:flex-row">
+                  <label class="manual-watch-field flex-1">
+                    <span class="manual-watch-label" :style="{ color: brand.colors.textMuted }">Ticker</span>
+                    <input
+                      v-model="manualWatchTicker"
+                      type="text"
+                      placeholder="PETR4, VALE3, KNRI11…"
+                      autocomplete="off"
+                      spellcheck="false"
+                      class="manual-watch-input"
+                      :style="manualInputStyle"
+                      @keydown.enter.prevent="submitManualWatch"
+                    />
+                  </label>
+                  <label class="manual-watch-field flex-1">
+                    <span class="manual-watch-label" :style="{ color: brand.colors.textMuted }">Nota (opcional)</span>
+                    <input
+                      v-model="manualWatchNote"
+                      type="text"
+                      placeholder="Ex.: tese de dividendos"
+                      class="manual-watch-input"
+                      :style="manualInputStyle"
+                    />
+                  </label>
+                </div>
+
+                <div class="flex flex-col gap-1.5">
+                  <span class="manual-watch-label" :style="{ color: brand.colors.textMuted }">Condições de alerta</span>
+                  <div
+                    v-for="(c, idx) in manualWatchConditions"
+                    :key="idx"
+                    class="manual-watch-cond flex flex-wrap items-center gap-1.5"
+                  >
+                    <select
+                      v-model="c.kind"
+                      class="manual-watch-input shrink-0"
+                      :style="{ ...manualInputStyle, minWidth: '160px' }"
+                    >
+                      <option v-for="o in conditionKindOptions" :key="o.value" :value="o.value">{{ o.label }}</option>
+                    </select>
+                    <input
+                      v-if="conditionWantsNumber(c.kind)"
+                      v-model.number="c.value"
+                      type="number"
+                      step="0.1"
+                      :placeholder="conditionValuePlaceholder(c.kind)"
+                      class="manual-watch-input shrink-0"
+                      :style="{ ...manualInputStyle, width: '100px' }"
+                    />
+                    <select
+                      v-if="c.kind === 'price_drop_pct' || c.kind === 'price_rise_pct'"
+                      v-model="c.window"
+                      class="manual-watch-input shrink-0"
+                      :style="{ ...manualInputStyle, minWidth: '80px' }"
+                    >
+                      <option value="1d">1d</option>
+                      <option value="7d">7d</option>
+                      <option value="30d">30d</option>
+                    </select>
+                    <button
+                      type="button"
+                      class="manual-watch-remove inline-flex size-6 items-center justify-center rounded-full transition-colors"
+                      :style="{ color: brand.colors.textMuted }"
+                      :aria-label="`Remover condição ${idx + 1}`"
+                      @click="removeManualWatchCondition(idx)"
+                    >
+                      <UIcon name="i-lucide-x" class="size-3" />
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    class="self-start text-[11px] transition-colors"
+                    :style="{
+                      color: brand.colors.primary,
+                      padding: '4px 0',
+                    }"
+                    @click="addManualWatchCondition"
+                  >+ Adicionar condição</button>
+                </div>
+
+                <div class="flex items-center justify-end gap-1.5 pt-1">
+                  <button
+                    type="button"
+                    class="action-pill"
+                    :style="actionPillStyle(false)"
+                    @click="cancelManualWatch"
+                  >Cancelar</button>
+                  <button
+                    type="button"
+                    class="action-pill action-pill-primary"
+                    :style="actionPillStyle(true)"
+                    :disabled="!manualWatchValid || manualWatchSubmitting"
+                    @click="submitManualWatch"
+                  >
+                    {{ manualWatchSubmitting ? 'Salvando…' : 'Adicionar à watchlist' }}
+                  </button>
+                </div>
+              </div>
+
+              <div
+                v-if="watchlistState.watches.value.length === 0 && !manualWatchOpen"
                 class="empty"
                 :style="emptyStyle"
               >
                 <UIcon name="i-lucide-eye" class="size-7" :style="{ color: brand.colors.textMuted }" aria-hidden="true" />
                 <p class="empty-title" :style="{ color: brand.colors.text }">Watchlist proativa vazia</p>
                 <p class="empty-body" :style="{ color: brand.colors.textMuted }">
-                  Peça à IA para monitorar um ativo com condição: "monitora PETR4 e me avisa se cair 8%". O cron sweep avalia a cada 30 min.
+                  Adicione um ativo manualmente, ou peça pra IA sugerir o que faz sentido pra sua carteira. O cron sweep avalia a cada 30 min e dispara notificação quando uma condição bate.
                 </p>
+                <div class="flex items-center gap-1.5">
+                  <button type="button" class="action-pill" :style="actionPillStyle(false)" @click="manualWatchOpen = true">
+                    <UIcon name="i-lucide-plus" class="size-3" aria-hidden="true" />
+                    Adicionar manual
+                  </button>
+                  <button type="button" class="action-pill action-pill-primary" :style="actionPillStyle(true)" @click="askAiToSuggestWatchlist">
+                    <UIcon name="i-lucide-sparkles" class="size-3" aria-hidden="true" />
+                    Sugerir com IA
+                  </button>
+                </div>
               </div>
               <ul v-else class="flex flex-col gap-2">
                 <li v-for="w in watchlistState.watches.value" :key="w.id">
@@ -841,6 +984,23 @@ const memoryClearStage = ref<'idle' | 'arm'>('idle')
  */
 const counterProposalDraft = reactive<Record<string, string>>({})
 const counterProposalOpen = ref<string | null>(null)
+
+// Manual "add to watchlist" form state — lives next to the
+// Watchlist tab header so the user can spin up a new watch with
+// any number of conditions (price drop, price below, DY threshold,
+// etc.) without leaving the drawer.
+interface ManualWatchCondition {
+  kind: WatchCondition['kind']
+  value?: number | null
+  window?: '1d' | '7d' | '30d'
+}
+const manualWatchOpen = ref(false)
+const manualWatchTicker = ref('')
+const manualWatchNote = ref('')
+const manualWatchConditions = reactive<ManualWatchCondition[]>([
+  { kind: 'price_drop_pct', value: 8, window: '7d' },
+])
+const manualWatchSubmitting = ref(false)
 
 const backdropMounted = ref(false)
 const panelMounted = ref(false)
@@ -1359,6 +1519,113 @@ function discussGoalPrompt(g: ChatGoal): void {
   dispatchPrompt(text)
 }
 
+// ---- Manual watchlist form --------------------------------------
+
+const conditionKindOptions: Array<{ value: WatchCondition['kind']; label: string }> = [
+  { value: 'price_drop_pct', label: 'Cair %' },
+  { value: 'price_rise_pct', label: 'Subir %' },
+  { value: 'price_below', label: 'Preço abaixo de R$' },
+  { value: 'price_above', label: 'Preço acima de R$' },
+  { value: 'dy_above', label: 'DY acima de %' },
+  { value: 'pe_below', label: 'P/L abaixo de' },
+  { value: 'news_material', label: 'Notícia material' },
+]
+
+function conditionWantsNumber(kind: WatchCondition['kind']): boolean {
+  return kind !== 'news_material'
+}
+function conditionValuePlaceholder(kind: WatchCondition['kind']): string {
+  if (kind === 'price_drop_pct' || kind === 'price_rise_pct') return '8'
+  if (kind === 'price_below' || kind === 'price_above') return '32,40'
+  if (kind === 'dy_above') return '8'
+  if (kind === 'pe_below') return '6'
+  return ''
+}
+
+const manualWatchValid = computed(() => {
+  if (!manualWatchTicker.value.trim()) return false
+  // At least one condition with a usable value (or the news_material
+  // condition, which doesn't take a numeric value).
+  return manualWatchConditions.some((c) => {
+    if (c.kind === 'news_material') return true
+    return typeof c.value === 'number' && Number.isFinite(c.value) && c.value > 0
+  })
+})
+
+function addManualWatchCondition() {
+  manualWatchConditions.push({ kind: 'price_below', value: null })
+}
+function removeManualWatchCondition(idx: number) {
+  manualWatchConditions.splice(idx, 1)
+  if (manualWatchConditions.length === 0) {
+    manualWatchConditions.push({ kind: 'price_drop_pct', value: 8, window: '7d' })
+  }
+}
+function cancelManualWatch() {
+  manualWatchOpen.value = false
+  manualWatchTicker.value = ''
+  manualWatchNote.value = ''
+  manualWatchConditions.splice(0, manualWatchConditions.length, {
+    kind: 'price_drop_pct',
+    value: 8,
+    window: '7d',
+  })
+}
+
+async function submitManualWatch() {
+  if (!manualWatchValid.value || manualWatchSubmitting.value) return
+  manualWatchSubmitting.value = true
+  try {
+    // Sanitize for the upsert call. dy_above expects a decimal
+    // (0.08), but the form takes a percentage (8) so the user types
+    // what they read on the screen. Convert here.
+    const conditions: WatchCondition[] = manualWatchConditions
+      .filter((c) => {
+        if (c.kind === 'news_material') return true
+        return typeof c.value === 'number' && Number.isFinite(c.value) && c.value > 0
+      })
+      .map((c) => {
+        if (c.kind === 'price_drop_pct' || c.kind === 'price_rise_pct') {
+          return { kind: c.kind, pct: c.value as number, window: c.window ?? '7d' }
+        }
+        if (c.kind === 'dy_above') {
+          return { kind: 'dy_above', value: (c.value as number) / 100 }
+        }
+        if (c.kind === 'news_material') {
+          return { kind: 'news_material' }
+        }
+        return { kind: c.kind, value: c.value as number }
+      })
+    await watchlistState.upsert({
+      ticker: manualWatchTicker.value.trim().toUpperCase(),
+      note: manualWatchNote.value.trim() || null,
+      conditions,
+    })
+    cancelManualWatch()
+  } catch {
+    /* watchlist composable already logs; keep the form open so the
+       user can retry. */
+  } finally {
+    manualWatchSubmitting.value = false
+  }
+}
+
+function askAiToSuggestWatchlist() {
+  const text =
+    'Quero adicionar algo à minha watchlist proativa. Olhe minha carteira atual em "fatos" da memória, sugira 2-3 ativos que faria sentido eu monitorar dado o meu perfil e mandato, com condições específicas pra cada um (queda %, preço gatilho, DY, etc.). Use a tool set_watch pra cadastrar a primeira que eu confirmar e me explica brevemente cada escolha.'
+  dispatchPrompt(text)
+}
+
+const manualInputStyle = computed(() => ({
+  backgroundColor: `color-mix(in srgb, ${brand.colors.text} 4%, transparent)`,
+  border: `1px solid color-mix(in srgb, ${brand.colors.border} 35%, transparent)`,
+  color: brand.colors.text,
+  fontSize: '12.5px',
+  padding: '6px 10px',
+  borderRadius: '8px',
+  outline: 'none',
+}))
+
 function reviewWatchPrompt(ticker: string): void {
   const text =
     `Revise minha watchlist em ${ticker}. Preço atual, mudanças desde que adicionei, eventos materiais recentes. ` +
@@ -1443,6 +1710,29 @@ function formatRelative(iso: string | null | undefined): string {
 }
 .counter-proposal-input::placeholder {
   color: color-mix(in srgb, currentColor 50%, transparent);
+}
+
+.manual-watch-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.manual-watch-label {
+  font-family: var(--font-mono-tab, monospace);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+}
+.manual-watch-input::placeholder {
+  color: color-mix(in srgb, currentColor 45%, transparent);
+}
+.manual-watch-input:focus-visible {
+  border-color: color-mix(in srgb, var(--brand-primary, #f5a300) 50%, transparent) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-primary, #f5a300) 14%, transparent);
+}
+.manual-watch-remove:hover {
+  background-color: color-mix(in srgb, currentColor 12%, transparent);
 }
 .audit-close:hover,
 .watch-remove:hover,
