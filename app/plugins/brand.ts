@@ -106,14 +106,37 @@ export default defineNuxtPlugin({
   // finally the brand's defaultMode. Used for both the synchronous
   // pre-render mutation AND the runtime watcher.
   // ----------------------------------------------------------------
+  // A tenant is "multi-mode" when its config has a `themes` block with
+  // a `light` (or future `dark`) variant. Single-mode tenants only
+  // ship one palette and CAN'T render in the opposite mode — the
+  // colorMode toggle becomes a visual lie if we honor it. So we lock
+  // the resolved mode to the tenant's `defaultMode` whenever
+  // `themes` is missing. Source of truth: the canonical brand from
+  // `brands` map (NOT the live reactive `brand`, since we mutate
+  // brand.theme.mode below and that creates a feedback loop).
+  function getCanonicalBrand(): typeof defaultBrand {
+    return (brands as Record<string, typeof defaultBrand>)[brand.slug] ?? defaultBrand
+  }
+  function tenantSupportsMultiMode(): boolean {
+    const canonical = getCanonicalBrand()
+    return !!(canonical.themes && (canonical.themes.light || canonical.themes.dark))
+  }
+
   function resolveMode(): 'dark' | 'light' {
+    // Single-mode tenant — pinned to its defaultMode regardless of OS
+    // / cookie / toggle. Prevents the F5-with-system-color bug where
+    // the OS resolves to 'light' but the tenant only has dark
+    // colors → mismatched <html class>, color-scheme, and :style.
+    if (!tenantSupportsMultiMode()) {
+      return getCanonicalBrand().defaultMode === 'light' ? 'light' : 'dark'
+    }
     if (colorMode.value === 'dark' || colorMode.value === 'light') return colorMode.value
     if (colorMode.preference === 'dark' || colorMode.preference === 'light') return colorMode.preference
     return brand.defaultMode === 'light' ? 'light' : 'dark'
   }
 
   function applyMode(resolved: 'dark' | 'light') {
-    const canonical = (brands as Record<string, typeof defaultBrand>)[brand.slug] ?? defaultBrand
+    const canonical = getCanonicalBrand()
     const baseColors = canonical.colors
     const overrides = canonical.themes?.[resolved]
     Object.assign(brand.colors, baseColors)

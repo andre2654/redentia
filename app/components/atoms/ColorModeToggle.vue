@@ -17,6 +17,7 @@
 -->
 <template>
   <div
+    v-if="supportsMultiMode"
     class="qs-mode-toggle inline-flex items-center gap-0.5 rounded-full border p-0.5"
     :style="{
       borderColor: `color-mix(in srgb, ${brand.colors.border} 70%, transparent)`,
@@ -64,6 +65,15 @@ const brand = useBrand()
 // a reactive `preference` ref-like (system/dark/light) plus a
 // resolved `value` getter we don't need here.
 const colorMode = useColorMode()
+
+// Hide the toggle for tenants that ship a single palette. Otherwise
+// the user can pick "Auto / Light" but the tenant's brand stays dark
+// (no light variant) — confusing UX. Multi-mode is identified by
+// presence of `brand.themes` (light or dark variant).
+const brandThemes = (brand as { themes?: { light?: object; dark?: object } }).themes
+const supportsMultiMode = computed(() =>
+  !!(brandThemes && (brandThemes.light || brandThemes.dark)),
+)
 
 const preference = computed<Preference>(() => {
   const p = colorMode.preference
