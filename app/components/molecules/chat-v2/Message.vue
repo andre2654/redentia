@@ -222,20 +222,13 @@
         />
       </section>
 
-      <!-- ===== Action proposals (pílula confirmável) ===== -->
-      <section
-        v-if="(message.proposals ?? []).length > 0"
-        class="flex flex-col gap-1"
-        aria-label="Sugestões de ação"
-      >
-        <ChatV2ActionProposalCard
-          v-for="p in (message.proposals ?? [])"
-          :key="p.proposalId"
-          :proposal="p"
-          @confirm="(prop) => $emit('confirm-proposal', prop)"
-          @skip="(prop) => $emit('skip-proposal', prop)"
-        />
-      </section>
+      <!-- Action proposals: rendered INLINE inside the prose by
+           useProposalProse (replaces `{{propose}}` markers with
+           ActionProposalChip components). If the model forgets the
+           marker, the composable appends a fallback chip row at the
+           end of the answer wrapper. No block-level card here — the
+           user explicitly wanted the affordance to feel as light as a
+           ticker chip. -->
 
       <!-- ===== Watchlist alerts (inline) ===== -->
       <section
@@ -345,11 +338,15 @@ import type {
 } from '~/composables/useChatStream'
 import type { ChatAlert } from '~/composables/useAlerts'
 import { ensureTickerProseSetup, useTickerProse } from '~/composables/useTickerProse'
+import { ensureProposalProseSetup, useProposalProse } from '~/composables/useProposalProse'
 
 // Register the marked ticker extension once (idempotent). Must run
 // before the first `renderMarkdown` call so PETR4 / VALE3 / KNRI11
 // in the prose are wrapped as `.ticker-mount` placeholders.
 ensureTickerProseSetup()
+// Same idea for `{{propose}}` markers — replaced by inline
+// ActionProposalChip components after the markdown is rendered.
+ensureProposalProseSetup()
 
 // DOMPurify sanitization runs **only on the client**. The
 // `isomorphic-dompurify` package transitively pulls in `jsdom` for
@@ -387,7 +384,7 @@ const props = defineProps<{
   isLast: boolean
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   'send-followup': [message: string]
   'open-artifact': [artifact: ChatArtifact]
   'confirm-execution': [decisionId: string]
@@ -447,6 +444,11 @@ const isWaitingForFirstChunk = computed(
 // `const` bindings are in TDZ until their declaration line.
 const answerRef = ref<HTMLElement | null>(null)
 const tickerProse = useTickerProse()
+const proposalProse = useProposalProse({
+  proposals: () => props.message.proposals ?? [],
+  onConfirm: (p) => emit('confirm-proposal', p),
+  onSkip: (p) => emit('skip-proposal', p),
+})
 
 // (Research panel state was extracted into ChatV2ResearchPanel — it
 // owns its own open/closed state, group-by-family logic, and live
@@ -505,11 +507,30 @@ const renderedMarkdown = computed(() => {
 watch(
   () => renderedMarkdown.value,
   () => {
-    void nextTick(() => tickerProse.mountIn(answerRef.value))
+    void nextTick(() => {
+      tickerProse.mountIn(answerRef.value)
+      proposalProse.mountIn(answerRef.value)
+    })
   },
   { flush: 'post', immediate: true },
 )
-onBeforeUnmount(() => tickerProse.cleanup())
+// Re-run the proposal mount step whenever the underlying proposals
+// list changes (new proposal arrives via SSE) — the markdown HTML
+// itself is stable but `{{propose}}` markers may now have data to
+// bind to that they didn't before. Watching `.length` is enough; the
+// chip props read the reactive proposal object so state flips
+// (pending → confirmed) re-render automatically without re-mount.
+watch(
+  () => (props.message.proposals ?? []).length,
+  () => {
+    void nextTick(() => proposalProse.mountIn(answerRef.value))
+  },
+  { flush: 'post' },
+)
+onBeforeUnmount(() => {
+  tickerProse.cleanup()
+  proposalProse.cleanup()
+})
 
 function renderMarkdown(text: string): string {
   if (!text) return ''
