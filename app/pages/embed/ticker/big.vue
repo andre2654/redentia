@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const route = useRoute()
 const brand = useBrand()
+const failedLogos = useFailedLogos()
 
 definePageMeta({
   layout: false,
@@ -120,7 +121,7 @@ if (!isWidgetMode.value) {
     >
       <!-- Header inline: logo + ticker + variação com cores controladas por tema -->
       <div class="flex items-center gap-2">
-        <img v-if="logoUrl" :src="logoUrl" :alt="ticker" class="size-7 rounded object-contain" />
+        <img v-if="logoUrl && !failedLogos.isFailed(logoUrl)" :src="logoUrl" :alt="ticker" class="size-7 rounded object-contain" @error="failedLogos.markFailed(logoUrl)" />
         <div v-else class="flex size-7 items-center justify-center rounded bg-black/10 text-[10px] font-bold" :style="{ color: theme === 'light' ? '#6b7280' : brand.colors.textMuted }">
           {{ ticker.slice(0, 2) }}
         </div>

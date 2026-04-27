@@ -8,15 +8,14 @@
     @mouseleave="$event.currentTarget.style.backgroundColor = 'transparent'"
   >
     <img
-      v-if="cfg.showLogo && hasLogo && !imgError"
+      v-if="cfg.showLogo && hasLogo && !logoBroken"
       ref="imgRef"
       width="32"
       height="32"
       class="h-8 w-8 flex-shrink-0 rounded-lg object-cover"
       :src="stock?.logo"
       :alt="logoAlt"
-      @error="imgError = true"
-      @load="imgError = false"
+      @error="markBrokenLogo"
     />
     <div
       v-else-if="cfg.showLogo"
@@ -62,13 +61,14 @@
     @mouseleave="$event.currentTarget.style.backgroundColor = 'transparent'"
   >
     <img
-      v-if="cfg.showLogo && hasLogo"
+      v-if="cfg.showLogo && hasLogo && !logoBroken"
       :width="logoSizePx"
       :height="logoSizePx"
       class="flex-shrink-0 rounded-xl border object-cover"
       :style="{ width: `${logoSizePx}px`, height: `${logoSizePx}px`, borderColor: brand.colors.border }"
       :src="stock?.logo"
       :alt="logoAlt"
+      @error="markBrokenLogo"
     />
     <div
       v-else-if="cfg.showLogo"
@@ -177,25 +177,24 @@ const changeColor = computed(() => {
 
 const hasLogo = computed(() => !isPlaceholderLogo(props.stock?.logo))
 
-// Fallback visual quando a URL do logo 404a. O @error vai disparar na
-// maioria dos casos, mas se a imagem já tiver falhado antes do listener
-// ser atacheado (ex.: hidratação SSR de um 404 cacheado), checamos também
-// no onMounted.
-const imgError = ref(false)
+// Centralized broken-logo registry — once a URL 404s anywhere on the
+// app, every component that renders it skips straight to the initials
+// fallback for the rest of the session (sessionStorage-backed). The
+// onMounted check below catches the SSR-hydrated case where the @error
+// event already fired before the listener attached.
+const failedLogos = useFailedLogos()
+const logoBroken = computed(() => failedLogos.isFailed(props.stock?.logo))
+function markBrokenLogo(): void {
+  failedLogos.markFailed(props.stock?.logo)
+}
 const imgRef = ref<HTMLImageElement | null>(null)
-watch(
-  () => [props.stock?.ticker, props.stock?.logo],
-  () => { imgError.value = false },
-)
 onMounted(() => {
   const check = () => {
     const el = imgRef.value
     if (el && el.complete && el.naturalWidth === 0) {
-      imgError.value = true
+      markBrokenLogo()
     }
   }
-  // checa no próximo tick (DOM já pintou) + depois de 1.5s (timeout pra
-  // 404 lenta que não dispara @error por alguma razão de cache/hydration).
   nextTick(check)
   setTimeout(check, 1500)
 })

@@ -20,13 +20,14 @@
           :class="['flex items-center gap-2', big ? 'px-8 py-3' : 'px-6 py-2']"
         >
           <img
-            v-if="!isPlaceholderLogo(item.logo)"
+            v-if="!isPlaceholderLogo(item.logo) && !failedLogos.isFailed(item.logo)"
             :src="item.logo"
             :alt="item?.ticker ? `Logo do ativo ${item.ticker}` : 'Logo do ativo'"
             :class="[
               'select-none rounded object-cover',
               big ? 'h-10 w-10' : 'h-6 w-6',
             ]"
+            @error="failedLogos.markFailed(item.logo)"
           />
           <div
             v-else
@@ -77,6 +78,7 @@
 import { ref, computed, watch } from 'vue'
 
 const brand = useBrand()
+const failedLogos = useFailedLogos()
 
 interface CarouselItem {
   logo: string

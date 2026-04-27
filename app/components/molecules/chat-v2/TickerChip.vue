@@ -39,37 +39,17 @@
     :style="chipStyle"
     :aria-label="ariaLabel"
   >
-    <!-- Logo / initials avatar — always shown now (user feedback:
-         "coloca o icone do papel tambem"). The avatar carries:
-           1. The brand mark (real logo from fundamentals-scraper)
-           2. A subtle white inner border so the logo pops on dark
-              backgrounds without needing a heavy outline
-           3. A two-letter initials fallback when no logo is available
-              (or the image errors out) — never an empty circle. -->
-    <span
-      class="ticker-chip-logo inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full"
-      :style="logoStyle"
-      aria-hidden="true"
-    >
-      <img
-        v-if="snapshot?.logo && !logoFailed"
-        :src="snapshot.logo"
-        alt=""
-        :width="logoSize"
-        :height="logoSize"
-        loading="lazy"
-        class="size-full object-cover"
-        @error="onLogoError"
-      />
-      <span
-        v-else
-        class="font-mono-tab font-bold tracking-tight"
-        :style="{
-          color: brand.colors.textMuted,
-          fontSize: density === 'compact' ? '8px' : '9px',
-        }"
-      >{{ initials }}</span>
-    </span>
+    <!-- Logo / initials avatar — uses the global TickerLogo component
+         which centralizes the broken-URL fallback. When a logo URL
+         404s anywhere, every chip across the app remembers (via
+         useFailedLogos) and renders initials directly without trying
+         to fetch the broken image again. -->
+    <AtomsTickerLogo
+      :ticker="ticker"
+      :logo="snapshot?.logo"
+      :size="logoSize"
+      class="ticker-chip-logo"
+    />
 
     <!-- Ticker label -->
     <span
@@ -162,8 +142,6 @@ const livePriceColor = computed(() => {
   return delta > 0 ? (brand.colors.positive ?? brand.colors.primary) : brand.colors.negative
 })
 
-const initials = computed(() => props.ticker.slice(0, 2).toUpperCase())
-
 const href = computed(() => {
   // The real Nuxt routes are singular — `/asset/[ticker]`,
   // `/crypto/[ticker]`, `/tesouro/[slug]` (was `/assets/` here,
@@ -184,11 +162,6 @@ const ariaLabel = computed(() => {
   }
   return parts.join(', ')
 })
-
-const logoFailed = ref(false)
-function onLogoError(): void {
-  logoFailed.value = true
-}
 
 function formatPrice(value: number): string {
   if (value < 1) {
@@ -212,21 +185,6 @@ const chipStyle = computed(() => ({
   color: brand.colors.text,
   textDecoration: 'none',
 }))
-
-const logoStyle = computed(() => {
-  // Inner ring effect: a 1px white-mix highlight at the very edge so
-  // the logo reads as a "minted" badge instead of a flat circle.
-  // Subtle on dark backgrounds; invisible on light. The ring sits
-  // INSIDE the logo via inset box-shadow so the outer chip border
-  // stays clean.
-  const size = props.density === 'compact' ? '16px' : '20px'
-  return {
-    width: size,
-    height: size,
-    backgroundColor: `color-mix(in srgb, ${brand.colors.text} 8%, transparent)`,
-    boxShadow: `inset 0 0 0 1px color-mix(in srgb, ${brand.colors.text} 8%, transparent)`,
-  }
-})
 </script>
 
 <style scoped>

@@ -17,12 +17,13 @@
       :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.text} 6%, transparent)` }"
     >
       <NuxtImg
-        v-if="logo"
+        v-if="logo && !failedLogos.isFailed(logo)"
         :src="logo"
         alt=""
         width="40"
         height="40"
         class="size-full object-cover"
+        @error="failedLogos.markFailed(logo)"
       />
       <span v-else class="font-mono-tab text-[10px] font-bold" :style="{ color: brand.colors.primary }">
         {{ card.ticker.slice(0, 3) }}
@@ -58,6 +59,7 @@ const props = defineProps<{
 }>()
 
 const brand = useBrand()
+const failedLogos = useFailedLogos()
 
 const logo = computed(() => (props.card.snapshot.logo as string | undefined) ?? undefined)
 const name = computed(() => (props.card.snapshot.name as string | undefined) ?? props.card.ticker)

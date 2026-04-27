@@ -69,12 +69,16 @@ const { getTickerDetails } = useAssetsService()
 
 const assetData = ref<IAsset | null>(null)
 const loading = ref(true)
-const imageError = ref(false)
 
-// URL do logo com fallback
+// Logo failures are tracked in a global registry so the same broken
+// URL across multiple TickerEmbeds never re-tries — and survives
+// component remounts during SPA navigation.
+const failedLogos = useFailedLogos()
+
 const logoUrl = computed(() => {
-  if (imageError.value) return null
-  return assetData.value?.logo || null
+  const url = assetData.value?.logo || null
+  if (!url || failedLogos.isFailed(url)) return null
+  return url
 })
 
 // Valor da variação
@@ -85,7 +89,7 @@ const changeValue = computed(() => {
 })
 
 function handleImageError() {
-  imageError.value = true
+  failedLogos.markFailed(assetData.value?.logo)
 }
 
 // Classes baseadas no tamanho

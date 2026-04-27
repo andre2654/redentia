@@ -9,6 +9,7 @@
 
 const route = useRoute()
 const brand = useBrand()
+const failedLogos = useFailedLogos()
 const runtimeConfig = useRuntimeConfig()
 
 const isWidgetMode = computed(() => route.query.widget === '1')
@@ -174,10 +175,11 @@ if (isWidgetMode.value) {
     >
       <div class="flex items-center gap-2">
         <img
-          v-if="logoUrl"
+          v-if="logoUrl && !failedLogos.isFailed(logoUrl)"
           :src="logoUrl"
           :alt="ticker"
           class="size-6 rounded object-contain"
+          @error="failedLogos.markFailed(logoUrl)"
         />
         <div
           v-else

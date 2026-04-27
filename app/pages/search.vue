@@ -497,10 +497,11 @@
               <span :style="{ color: brand.colors.textMuted }">{{ coin.rank ?? '—' }}</span>
               <span class="flex items-center gap-2">
                 <img
-                  v-if="coin.image"
+                  v-if="coin.image && !failedLogos.isFailed(coin.image)"
                   :src="coin.image"
                   :alt="coin.symbol"
                   class="h-5 w-5 shrink-0 object-contain"
+                  @error="failedLogos.markFailed(coin.image)"
                 />
                 <span class="truncate font-bold" :style="{ color: brand.colors.primary }">
                   {{ coin.symbol }}
@@ -644,6 +645,7 @@
                   :alt="asset.ticker || asset.stock"
                   class="h-5 w-5 shrink-0 border object-cover"
                   :style="{ borderColor: brand.colors.border }"
+                  @error="markAssetLogoFailed(asset)"
                 />
                 <span class="truncate font-bold" :style="{ color: brand.colors.primary }">
                   {{ asset.ticker || asset.stock }}
@@ -1147,6 +1149,7 @@
                           :alt="asset.ticker || asset.stock"
                           class="h-10 w-10 shrink-0 rounded-xl border object-cover sm:h-11 sm:w-11"
                           :style="{ borderColor: brand.colors.border }"
+                          @error="markAssetLogoFailed(asset)"
                         />
                         <BrandLogo
                           v-else
@@ -2040,7 +2043,13 @@ function getAssetChange(asset: IAsset) {
   return 0
 }
 
+const failedLogos = useFailedLogos()
 function getAssetLogo(asset: IAsset) {
-  return resolveLogo(null, asset.logo)
+  const url = resolveLogo(null, asset.logo)
+  if (!url || failedLogos.isFailed(url)) return null
+  return url
+}
+function markAssetLogoFailed(asset: IAsset) {
+  failedLogos.markFailed(asset.logo)
 }
 </script>
