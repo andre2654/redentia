@@ -885,6 +885,18 @@ export function useChatStream(opts: UseChatStreamOptions) {
         const kind = typeof p.kind === 'string' ? p.kind : null
         const label = typeof p.label === 'string' ? p.label : null
         if (!id || !kind || !label) return null
+        // State precedence:
+        //   1. Persisted state on the meta payload itself — set when
+        //      the action ran directly (e.g. set_watch was called
+        //      explicitly and the chip was emitted as 'confirmed' from
+        //      the start).
+        //   2. Confirm/skip marker scanned from later user messages
+        //      (the propose_action → confirm flow).
+        //   3. Default 'pending'.
+        const persistedState =
+          p.state === 'confirmed' || p.state === 'skipped' || p.state === 'pending'
+            ? (p.state as ChatProposalData['state'])
+            : null
         return {
           proposalId: id,
           kind: kind as ChatProposalKind,
@@ -892,7 +904,7 @@ export function useChatStream(opts: UseChatStreamOptions) {
           description:
             typeof p.description === 'string' ? p.description : null,
           args: (p.args as Record<string, unknown>) ?? {},
-          state: resolveState(id),
+          state: persistedState ?? resolveState(id),
         }
       })
       .filter((p): p is ChatProposalData => p !== null)
@@ -1082,8 +1094,10 @@ export function useChatStream(opts: UseChatStreamOptions) {
         // Renderiza inline como pílula com botão "Confirmar" / "Pular";
         // o clique em Confirmar dispara `confirmProposal` no help.vue, que
         // manda a próxima mensagem `✓ Confirmado: chame <kind> com <args>`.
-        const p = data as Omit<ChatProposalData, 'state'>
-        assistant.proposals.push({ ...p, state: 'pending' })
+        // Quando state já vem como 'confirmed' (caso de set_watch direto),
+        // o chip nasce como "Ativada" — só ack, sem popover.
+        const p = data as ChatProposalData & { state?: ChatProposalData['state'] }
+        assistant.proposals.push({ ...p, state: p.state ?? 'pending' })
         break
       }
       case 'alert.fired': {
