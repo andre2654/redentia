@@ -206,30 +206,21 @@ export default defineNuxtPlugin({
   //     in nextTick. The reactive update propagates to inline :style
   //     bindings after hydration completes — they DO update on
   //     post-hydration mutations.
+  // Migration safeguard: if a legacy cookie still says
+  // `preference=system`, translate it to a concrete `light` / `dark`
+  // RIGHT NOW based on the OS, then write that back to the cookie
+  // (via `colorMode.preference =`). Subsequent F5s read the concrete
+  // value — eliminates the SSR/client palette mismatch this plugin
+  // used to dance around. New ColorModeToggle clicks already store
+  // concrete values, so this branch only matters for users with old
+  // cookies from before that fix shipped.
   if (import.meta.client && colorMode.preference === 'system') {
-    // Match SSR's defaultMode synchronously so Vue hydration finds
-    // brand.colors == SSR's :style attrs == DOM. Zero mismatch.
-    const ssrMode = brand.defaultMode === 'light' ? 'light' : 'dark'
-    applyMode(ssrMode)
-    // Defer the resolved mode until WELL AFTER hydration's first
-    // render flush. Empirically observed: even `app:mounted` fires
-    // too early for inline `:style` bindings to pick up the change —
-    // Vue's reactive update lands but the DOM mutation gets eaten,
-    // leaving SSR's `style="background-color:#0A0B0E"` frozen on
-    // the wrapper. Two RAFs past app:mounted is the safe spot;
-    // hydration is fully done, the first paint has flushed, and
-    // mutations now propagate through Vue's normal effect scheduler.
-    nuxtApp.hook('app:mounted', () => {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          const resolved = resolveMode()
-          if (resolved !== ssrMode) applyMode(resolved)
-        })
-      })
-    })
-  } else {
-    applyMode(resolveMode())
+    const osDark =
+      typeof window.matchMedia === 'function'
+      && window.matchMedia('(prefers-color-scheme: dark)').matches
+    colorMode.preference = osDark ? 'dark' : 'light'
   }
+  applyMode(resolveMode())
 
   // ----------------------------------------------------------------
   // Runtime watcher — applies subsequent mode changes (toggle, OS

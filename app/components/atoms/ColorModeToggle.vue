@@ -82,6 +82,21 @@ const preference = computed<Preference>(() => {
 })
 
 function setPreference(next: Preference) {
+  if (next === 'system') {
+    // Translate "Auto" to the current OS preference IMMEDIATELY,
+    // storing it as a concrete `light` or `dark`. Avoids the
+    // hydration-mismatch bug we had when preference stayed as
+    // 'system' — SSR couldn't read prefers-color-scheme so it
+    // rendered with defaultMode, while the client resolved to OS
+    // pref. With this, the cookie always holds a concrete value
+    // and SSR/client agree on every F5.
+    const osDark =
+      typeof window !== 'undefined'
+      && typeof window.matchMedia === 'function'
+      && window.matchMedia('(prefers-color-scheme: dark)').matches
+    colorMode.preference = osDark ? 'dark' : 'light'
+    return
+  }
   colorMode.preference = next
 }
 

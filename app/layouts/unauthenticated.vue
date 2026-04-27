@@ -7,9 +7,8 @@
        The CSS var, on the other hand, is updated by useHead's <style>
        tag innerHTML and DOES propagate post-hydration. -->
   <div
-    :key="brand.theme.mode"
     class="flex min-h-screen flex-col"
-    style="background-color: var(--brand-background); padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right);"
+    :style="{ backgroundColor: brand.colors.background, paddingLeft: 'env(safe-area-inset-left)', paddingRight: 'env(safe-area-inset-right)' }"
   >
     <!-- Skip link: visible only on focus, jumps screen-reader/keyboard users past the ticker+nav -->
     <a
