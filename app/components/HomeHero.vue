@@ -2802,11 +2802,12 @@
                   <div class="flex items-center gap-3 min-w-0">
                     <span class="text-[10px] font-bold tabular-nums w-4" :style="{ color: brand.colors.textMuted }">{{ i + 1 }}</span>
                     <NuxtImg
-                      v-if="stock?.logo"
+                      v-if="stock?.logo && !failedLogos.isFailed(stock.logo)"
                       :src="stock.logo"
                       :alt="stock?.ticker"
                       class="size-7 rounded-md object-cover"
                       :style="{ backgroundColor: brand.colors.background }"
+                      @error="failedLogos.markFailed(stock.logo)"
                     />
                     <div
                       v-else
@@ -2864,11 +2865,12 @@
                   <div class="flex items-center gap-3 min-w-0">
                     <span class="text-[10px] font-bold tabular-nums w-4" :style="{ color: brand.colors.textMuted }">{{ i + 1 }}</span>
                     <NuxtImg
-                      v-if="stock?.logo"
+                      v-if="stock?.logo && !failedLogos.isFailed(stock.logo)"
                       :src="stock.logo"
                       :alt="stock?.ticker"
                       class="size-7 rounded-md object-cover"
                       :style="{ backgroundColor: brand.colors.background }"
+                      @error="failedLogos.markFailed(stock.logo)"
                     />
                     <div
                       v-else
@@ -2925,11 +2927,12 @@
                   <div class="flex items-center gap-3 min-w-0">
                     <span class="text-[10px] font-bold tabular-nums w-4" :style="{ color: brand.colors.textMuted }">{{ i + 1 }}</span>
                     <NuxtImg
-                      v-if="reit?.logo"
+                      v-if="reit?.logo && !failedLogos.isFailed(reit.logo)"
                       :src="reit.logo"
                       :alt="reit?.ticker"
                       class="size-7 rounded-md object-cover"
                       :style="{ backgroundColor: brand.colors.background }"
+                      @error="failedLogos.markFailed(reit.logo)"
                     />
                     <div
                       v-else
@@ -3671,6 +3674,7 @@ import type { IAsset } from '~/types/asset'
 import { useFormat } from '~/composables/useFormat'
 
 const brand = useBrand()
+const failedLogos = useFailedLogos()
 const fmt = useFormat()
 
 // Gate for client-only renders (typewriter + market ticker), avoids

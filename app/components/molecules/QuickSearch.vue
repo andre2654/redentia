@@ -59,7 +59,7 @@
             @click="commitStagedSuggestion"
           >
             <NuxtImg
-              v-if="stagedSuggestion.logo"
+              v-if="stagedSuggestion.logo && !failedLogos.isFailed(stagedSuggestion.logo)"
               :src="stagedSuggestion.logo"
               alt=""
               width="18"
@@ -67,6 +67,7 @@
               loading="lazy"
               decoding="async"
               class="size-[18px] shrink-0 rounded-full object-cover"
+              @error="failedLogos.markFailed(stagedSuggestion.logo)"
             />
             <UIcon
               v-else-if="stagedSuggestion.icon"
@@ -140,7 +141,7 @@
             @mouseenter="setFocus(chip.groupType, 0)"
           >
             <NuxtImg
-              v-if="chip.logo"
+              v-if="chip.logo && !failedLogos.isFailed(chip.logo)"
               :src="chip.logo"
               :alt="''"
               role="presentation"
@@ -149,6 +150,7 @@
               loading="lazy"
               decoding="async"
               class="size-4 rounded-full object-cover"
+              @error="failedLogos.markFailed(chip.logo)"
             />
             <span class="font-mono-tab tracking-tight" translate="no">{{ chip.ticker }}</span>
           </NuxtLink>
@@ -294,7 +296,7 @@
                         }"
                       >
                         <NuxtImg
-                          v-if="item.logo"
+                          v-if="item.logo && !failedLogos.isFailed(item.logo)"
                           :src="item.logo"
                           :alt="''"
                           role="presentation"
@@ -303,6 +305,7 @@
                           loading="lazy"
                           decoding="async"
                           class="size-full object-cover"
+                          @error="failedLogos.markFailed(item.logo)"
                         />
                         <span
                           v-else
@@ -457,7 +460,7 @@
                 @click.stop.prevent="onSuggestionClick"
               >
                 <NuxtImg
-                  v-if="currentSuggestion.logo"
+                  v-if="currentSuggestion.logo && !failedLogos.isFailed(currentSuggestion.logo)"
                   :src="currentSuggestion.logo"
                   alt=""
                   width="18"
@@ -465,6 +468,7 @@
                   loading="lazy"
                   decoding="async"
                   class="size-[18px] shrink-0 rounded-full object-cover"
+                  @error="failedLogos.markFailed(currentSuggestion.logo)"
                 />
                 <UIcon
                   v-else-if="currentSuggestion.icon"
@@ -538,6 +542,7 @@ interface Group {
 }
 
 const brand = useBrand()
+const failedLogos = useFailedLogos()
 const open = ref(false)
 const searchTerm = ref('')
 const focusedKey = ref<string | null>(null)
