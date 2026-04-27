@@ -459,8 +459,8 @@
                           :disabled="!counterProposalDraft[d.id]?.trim()"
                           @click="submitCounterProposal(d)"
                         >
-                          <UIcon name="i-lucide-arrow-up" class="size-3" aria-hidden="true" />
-                          Enviar pra IA
+                          <UIcon name="i-lucide-sparkles" class="size-3" aria-hidden="true" />
+                          Enviar para Redentia MAX
                         </button>
                       </div>
                     </div>
