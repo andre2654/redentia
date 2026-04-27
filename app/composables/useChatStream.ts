@@ -129,6 +129,30 @@ export interface ChatScenarioData {
   }>
 }
 
+/** Action-proposal payload — mirrors `action.propose` SSE event.
+ *  Rendered inline as a confirmable pill (ActionProposalCard) inside
+ *  the assistant message. The user clicks "Confirmar" to send a
+ *  follow-up message instructing the agent to execute the underlying
+ *  tool, or "Pular" to dismiss. Until the user acts, `state` is
+ *  'pending'; on confirm the frontend flips it to 'confirmed' so the
+ *  card collapses and stops being interactive. */
+export type ChatProposalKind =
+  | 'set_watch'
+  | 'define_goal'
+  | 'register_decision'
+  | 'simulate_scenario'
+  | 'generate_spreadsheet'
+  | 'save_memory'
+
+export interface ChatProposalData {
+  proposalId: string
+  kind: ChatProposalKind
+  label: string
+  description?: string | null
+  args: Record<string, unknown>
+  state: 'pending' | 'confirmed' | 'skipped'
+}
+
 /** Watchlist alert payload — mirrors `alert.fired` SSE event. */
 export interface ChatAlertData {
   alertId: string
@@ -255,6 +279,7 @@ export interface ChatMessage {
   preExecutes: ChatPreExecuteData[]
   scenarios: ChatScenarioData[]
   alerts: ChatAlertData[]
+  proposals: ChatProposalData[]
   status: 'streaming' | 'complete' | 'error'
   followups?: string[]
   /** Public tier label — "Redentia Basic" or "Redentia MAX". Replaces
@@ -295,6 +320,7 @@ export function useChatStream(opts: UseChatStreamOptions) {
       preExecutes: [],
       scenarios: [],
       alerts: [],
+      proposals: [],
       reasoning: '',
       status: 'complete',
       createdAt: new Date().toISOString(),
@@ -316,6 +342,7 @@ export function useChatStream(opts: UseChatStreamOptions) {
       preExecutes: [],
       scenarios: [],
       alerts: [],
+      proposals: [],
       reasoning: '',
       status: 'streaming',
       createdAt: new Date().toISOString(),
@@ -475,6 +502,7 @@ export function useChatStream(opts: UseChatStreamOptions) {
           preExecutes: [],
           scenarios: [],
           alerts: [],
+          proposals: [],
           status: 'complete' as const,
           createdAt: m.createdAt,
           meta,
@@ -978,6 +1006,16 @@ export function useChatStream(opts: UseChatStreamOptions) {
         assistant.scenarios.push(s)
         break
       }
+      case 'action.propose': {
+        // Proposta interativa — o agent sugeriu uma ação stateful (set_watch,
+        // define_goal, etc.) e quer confirmação do usuário antes de executar.
+        // Renderiza inline como pílula com botão "Confirmar" / "Pular";
+        // o clique em Confirmar dispara `confirmProposal` no help.vue, que
+        // manda a próxima mensagem `✓ Confirmado: chame <kind> com <args>`.
+        const p = data as Omit<ChatProposalData, 'state'>
+        assistant.proposals.push({ ...p, state: 'pending' })
+        break
+      }
       case 'alert.fired': {
         // Watchlist alert (cron) OR agent-inline insight. Append to
         // the current message (so it shows up under the answer) and
@@ -1020,6 +1058,21 @@ export function useChatStream(opts: UseChatStreamOptions) {
 
   const sources = computed(() => lastAssistant.value?.citations ?? [])
 
+  /** Update a proposal's state (called by the page after the user
+   *  clicks Confirmar / Pular on an ActionProposalCard). The card
+   *  collapses + locks once flipped. */
+  function markProposal(proposalId: string, state: 'confirmed' | 'skipped') {
+    for (let i = messages.value.length - 1; i >= 0; i--) {
+      const m = messages.value[i]
+      if (!m || m.role !== 'assistant') continue
+      const p = m.proposals.find((x) => x.proposalId === proposalId)
+      if (p) {
+        p.state = state
+        return
+      }
+    }
+  }
+
   return {
     messages,
     isStreaming,
@@ -1031,5 +1084,6 @@ export function useChatStream(opts: UseChatStreamOptions) {
     stop,
     reset,
     loadSession,
+    markProposal,
   }
 }

@@ -237,6 +237,8 @@
           @cancel-pre-execute="onCancelPreExecute"
           @select-alert="onSelectAlertInline"
           @dismiss-alert="onDismissAlert"
+          @confirm-proposal="onConfirmProposal"
+          @skip-proposal="onSkipProposal"
         />
         <ChatV2EmptyState
           v-else
@@ -330,7 +332,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
-import type { ChatArtifact, ChatAttachment } from '~/composables/useChatStream'
+import type { ChatArtifact, ChatAttachment, ChatProposalData } from '~/composables/useChatStream'
 
 definePageMeta({
   // Public route — Authenticated users get the chat takeover; the
@@ -778,6 +780,30 @@ function onCancelPreExecute(_decisionId: string) {
   // stays in `pending` so they can retry later. Just close the
   // card by removing it from the message client-side.
   // (Actually keeping it is fine; the user can re-check next time.)
+}
+
+// ---- Action proposal handlers ----------------------------------
+// Triggered when the user clicks Confirmar / Pular on an inline
+// ActionProposalCard (rendered for every `action.propose` SSE event).
+// Confirmar → flip the card state + send a structured follow-up
+// telling the agent to call the underlying tool with the original
+// args on the next turn. Pular → flip + send a brief acknowledgement
+// so the agent doesn't repropose the same action mid-conversation.
+function onConfirmProposal(proposal: ChatProposalData) {
+  if (!authStore.isAuthenticated) return
+  chat.markProposal(proposal.proposalId, 'confirmed')
+  const argsJson = JSON.stringify(proposal.args ?? {})
+  void chat.send(
+    `✓ Confirmado: chame ${proposal.kind} com ${argsJson}. (proposta ${proposal.proposalId.slice(0, 8)})`,
+  )
+}
+
+function onSkipProposal(proposal: ChatProposalData) {
+  chat.markProposal(proposal.proposalId, 'skipped')
+  if (!authStore.isAuthenticated) return
+  void chat.send(
+    `✗ Pulei a proposta ${proposal.proposalId.slice(0, 8)} (${proposal.kind}). Não precisa repetir essa sugestão agora.`,
+  )
 }
 
 // Refresh goals + decisions + watchlist + alerts caches whenever

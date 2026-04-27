@@ -34,6 +34,8 @@
           @cancel-pre-execute="$emit('cancel-pre-execute', $event)"
           @select-alert="$emit('select-alert', $event)"
           @dismiss-alert="$emit('dismiss-alert', $event)"
+          @confirm-proposal="$emit('confirm-proposal', $event)"
+          @skip-proposal="$emit('skip-proposal', $event)"
         />
       </div>
     </div>
@@ -60,7 +62,7 @@
 
 <script setup lang="ts">
 import { nextTick, onMounted, ref, watch } from 'vue'
-import type { ChatMessage, ChatArtifact } from '~/composables/useChatStream'
+import type { ChatMessage, ChatArtifact, ChatProposalData } from '~/composables/useChatStream'
 import type { ChatAlert } from '~/composables/useAlerts'
 
 const props = defineProps<{
@@ -83,6 +85,8 @@ defineEmits<{
   'cancel-pre-execute': [decisionId: string]
   'select-alert': [alert: ChatAlert]
   'dismiss-alert': [id: string]
+  'confirm-proposal': [proposal: ChatProposalData]
+  'skip-proposal': [proposal: ChatProposalData]
 }>()
 
 const brand = useBrand()

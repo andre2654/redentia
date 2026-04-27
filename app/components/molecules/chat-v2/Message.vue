@@ -222,6 +222,21 @@
         />
       </section>
 
+      <!-- ===== Action proposals (pílula confirmável) ===== -->
+      <section
+        v-if="(message.proposals ?? []).length > 0"
+        class="flex flex-col gap-1"
+        aria-label="Sugestões de ação"
+      >
+        <ChatV2ActionProposalCard
+          v-for="p in (message.proposals ?? [])"
+          :key="p.proposalId"
+          :proposal="p"
+          @confirm="(prop) => $emit('confirm-proposal', prop)"
+          @skip="(prop) => $emit('skip-proposal', prop)"
+        />
+      </section>
+
       <!-- ===== Watchlist alerts (inline) ===== -->
       <section
         v-if="(message.alerts ?? []).length > 0"
@@ -326,6 +341,7 @@ import type {
   ChatMessage,
   ChatArtifact,
   ChatAlertData,
+  ChatProposalData,
 } from '~/composables/useChatStream'
 import type { ChatAlert } from '~/composables/useAlerts'
 import { ensureTickerProseSetup, useTickerProse } from '~/composables/useTickerProse'
@@ -378,6 +394,8 @@ defineEmits<{
   'cancel-pre-execute': [decisionId: string]
   'select-alert': [alert: ChatAlert]
   'dismiss-alert': [id: string]
+  'confirm-proposal': [proposal: ChatProposalData]
+  'skip-proposal': [proposal: ChatProposalData]
 }>()
 
 /** Adapt the lightweight inline alert payload (from `alert.fired`) to
