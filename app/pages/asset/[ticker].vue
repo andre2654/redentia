@@ -647,10 +647,11 @@
           <!-- Vertical orange strip on right edge -->
           <div class="absolute right-0 top-0 h-full w-1" :style="{ backgroundColor: brand.colors.primary }" />
           <img
-            v-if="resolvedLogo && !isLoadingAsset"
+            v-if="resolvedLogo && !isLoadingAsset && !failedLogos.isFailed(resolvedLogo)"
             :src="resolvedLogo"
             :alt="`${assetName}`"
             class="mb-6 h-20 w-20 rounded-2xl object-cover shadow-2xl"
+            @error="failedLogos.markFailed(resolvedLogo)"
           />
           <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
             O ATIVO
@@ -1030,7 +1031,18 @@
               class="flex size-14 items-center justify-center overflow-hidden rounded-2xl p-1"
               :style="{ backgroundColor: brand.colors.surface, border: `2px solid ${brand.colors.primary}40` }"
             >
-              <img :src="resolvedLogo" :alt="assetName" class="size-full object-contain" />
+              <img
+                v-if="!failedLogos.isFailed(resolvedLogo)"
+                :src="resolvedLogo"
+                :alt="assetName"
+                class="size-full object-contain"
+                @error="failedLogos.markFailed(resolvedLogo)"
+              />
+              <span
+                v-else
+                class="font-mono-tab text-xs font-bold"
+                :style="{ color: brand.colors.textMuted }"
+              >{{ tickerUpper.slice(0, 2) }}</span>
             </div>
             <span class="font-showtime-label" :style="{ color: brand.colors.primary }">
               {{ (asset?.type || 'AÇÃO').toString().toUpperCase() === 'REIT' ? 'FUNDO IMOBILIÁRIO' : 'AÇÃO' }} · {{ tickerUpper }}
@@ -1667,11 +1679,12 @@
             <!-- Logo + ticker row -->
             <div class="mb-6 flex items-center gap-5">
               <img
-                v-if="resolvedLogo"
+                v-if="resolvedLogo && !failedLogos.isFailed(resolvedLogo)"
                 :src="resolvedLogo"
                 :alt="tickerUpper"
                 class="size-20 rounded-2xl object-cover"
                 :style="{ backgroundColor: brand.colors.surface, border: `2px solid ${brand.colors.border}` }"
+                @error="failedLogos.markFailed(resolvedLogo)"
               />
               <div
                 v-else
@@ -2451,11 +2464,12 @@
             <!-- Logo + ticker -->
             <div class="flex items-end gap-6">
               <img
-                v-if="resolvedLogo"
+                v-if="resolvedLogo && !failedLogos.isFailed(resolvedLogo)"
                 :src="resolvedLogo"
                 :alt="tickerUpper"
                 class="h-24 w-24 shrink-0 object-cover md:h-28 md:w-28"
                 :style="{ backgroundColor: brand.colors.surface, border: `2px solid ${brand.colors.border}` }"
+                @error="failedLogos.markFailed(resolvedLogo)"
               />
               <div
                 v-else
@@ -3028,7 +3042,7 @@
               <div class="flex items-center gap-3 md:col-span-8 md:gap-4">
                 <USkeleton v-if="isLoadingAsset" class="size-10 rounded-lg md:size-16 md:rounded-xl" />
                 <NuxtImg
-                  v-else-if="resolvedLogo"
+                  v-else-if="resolvedLogo && !failedLogos.isFailed(resolvedLogo)"
                   :src="resolvedLogo"
                   :alt="`Logo de ${assetName}`"
                   width="64"
@@ -3037,7 +3051,18 @@
                   fetchpriority="high"
                   decoding="async"
                   class="size-10 shrink-0 rounded-lg object-cover md:size-16 md:rounded-xl"
+                  @error="failedLogos.markFailed(resolvedLogo)"
                 />
+                <div
+                  v-else-if="!isLoadingAsset"
+                  class="flex size-10 shrink-0 items-center justify-center rounded-lg md:size-16 md:rounded-xl"
+                  :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.text} 8%, transparent)`, color: brand.colors.textMuted }"
+                  aria-hidden="true"
+                >
+                  <span class="font-mono-tab text-xs font-bold md:text-base">
+                    {{ tickerUpper.slice(0, 2) }}
+                  </span>
+                </div>
                 <div class="flex min-w-0 flex-1 items-center gap-3 md:flex-col md:items-start md:gap-1">
                   <!-- Ticker: compact on mobile (inline with price), prominent on desktop -->
                   <div class="flex min-w-0 flex-col">
@@ -3724,11 +3749,20 @@
           <div class="flex items-start gap-5">
             <USkeleton v-if="isLoadingAsset" class="h-16 w-16 flex-shrink-0 rounded-xl" />
             <img
-              v-else-if="resolvedLogo"
+              v-else-if="resolvedLogo && !failedLogos.isFailed(resolvedLogo)"
               :src="resolvedLogo"
               :alt="`Logo de ${assetName}`"
               class="h-16 w-16 flex-shrink-0 rounded-xl object-cover"
+              @error="failedLogos.markFailed(resolvedLogo)"
             />
+            <div
+              v-else-if="!isLoadingAsset"
+              class="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-xl"
+              :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.text} 8%, transparent)`, color: brand.colors.textMuted }"
+              aria-hidden="true"
+            >
+              <span class="font-mono-tab text-base font-bold">{{ tickerUpper.slice(0, 2) }}</span>
+            </div>
             <div class="flex flex-1 flex-col gap-1">
               <USkeleton v-if="isLoadingAsset" class="h-6 w-48" />
               <template v-else>
@@ -3862,6 +3896,7 @@ import type {
 import { generateChartConfig } from '~/helpers/utils'
 
 const brand = useBrand()
+const failedLogos = useFailedLogos()
 const authStore = useAuthStore()
 const route = useRoute()
 const {
