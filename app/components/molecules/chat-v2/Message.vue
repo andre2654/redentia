@@ -138,7 +138,32 @@
           class="chat-answer text-[16.5px] leading-[1.7]"
           :style="{ color: brand.colors.text }"
         >
+          <!-- Cold-start placeholder — between "user sent" and "first
+               reasoning / tool / content chunk arrives" the answer area
+               used to show only a blinking yellow cursor, which read as
+               "frozen" to users. This pill makes the wait state legible:
+               pulsing brand-tinted dot + "Pensando…" italic so the
+               whole thing has obvious motion. Disappears the moment
+               anything starts streaming, then the regular answer flow
+               takes over. -->
+          <div
+            v-if="isWaitingForFirstChunk"
+            class="chat-thinking-inline flex items-center gap-2.5 py-1"
+            role="status"
+            aria-live="polite"
+          >
+            <span
+              class="chat-thinking-pulse inline-flex size-2 shrink-0 rounded-full"
+              :style="{ backgroundColor: brand.colors.primary }"
+              aria-hidden="true"
+            />
+            <span
+              class="text-[14px] italic"
+              :style="{ color: brand.colors.textMuted }"
+            >Pensando…</span>
+          </div>
           <ChatV2StreamingText
+            v-else
             :content="renderedMarkdown"
             :streaming="message.status === 'streaming'"
           />
@@ -381,6 +406,23 @@ const brand = useBrand()
 // User-form-response pill: collapsed by default, click to see all answers.
 const formResponseOpen = ref(false)
 
+/**
+ * True between "user sent the message" and "first chunk arrived" —
+ * either reasoning, a tool call, or actual answer content. While
+ * this is true the answer slot shows a "Pensando…" pill instead of
+ * an empty box with a blinking cursor (which read as frozen).
+ *
+ * Becomes false the moment anything streams; the regular answer
+ * flow takes over from there.
+ */
+const isWaitingForFirstChunk = computed(
+  () =>
+    props.message.status === 'streaming' &&
+    !props.message.content &&
+    (props.message.toolCalls?.length ?? 0) === 0 &&
+    !(props.message.reasoning ?? ''),
+)
+
 // Wrapper ref for the assistant answer DIV. The watcher that mounts
 // `<TickerChip>` instances into the rendered prose lives at the
 // bottom of this script (after `renderedMarkdown` is declared) since
@@ -577,6 +619,22 @@ function artifactLabel(type: ChatArtifact['type']): string {
 
 .chat-question {
   word-break: break-word;
+}
+
+/* Cold-start "Pensando…" pulse — opacity-only animation so it stays
+   compositor-friendly. Fades from 1 → 0.4 → 1 every 1.4s; honours
+   prefers-reduced-motion by falling back to a static dot. */
+.chat-thinking-pulse {
+  animation: chat-thinking-pulse-keys 1.4s ease-in-out infinite;
+}
+@keyframes chat-thinking-pulse-keys {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.4; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chat-thinking-pulse {
+    animation: none;
+  }
 }
 
 .chat-artifact-card:hover {

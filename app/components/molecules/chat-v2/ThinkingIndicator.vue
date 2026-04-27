@@ -39,9 +39,18 @@
   - Reasoning stream auto-scrolls to bottom while updating.
 -->
 <template>
-  <Transition name="thinking-mount">
+  <!--
+    The pill mounts whenever the parent (Input.vue) decides we're
+    streaming — it doesn't hide itself when reasoning + tool calls are
+    still empty. That cold-start visibility is what was missing
+    before: the user used to see only a blinking yellow cursor in
+    the answer area and a pill that wouldn't appear until the first
+    chunk arrived (300ms+). Now the pill is up immediately with a
+    pulsing dot + "Pensando" label, so the chat reads as alive even
+    before the first byte of content streams.
+  -->
+  <Transition name="thinking-mount" appear>
     <div
-      v-if="hasContent"
       class="thinking-shell pointer-events-auto relative mx-auto mb-2 flex max-w-3xl flex-col overflow-hidden rounded-[24px] transition-[border-color,box-shadow] duration-200"
       :style="shellStyle"
     >
@@ -52,10 +61,14 @@
         :aria-controls="bodyId"
         @click="open = !open"
       >
+        <!-- Dot pulses for the entire lifetime of the pill — the
+             parent only mounts us while streaming, so any time we're
+             on screen the chat is alive. Was previously gated on
+             `anyRunning` (a tool-call check) which left the dot
+             static between phases of work. -->
         <span
-          class="thinking-dot inline-flex size-2 shrink-0 rounded-full"
-          :class="anyRunning ? 'is-running' : 'is-idle'"
-          :style="{ backgroundColor: dotColor }"
+          class="thinking-dot is-running inline-flex size-2 shrink-0 rounded-full"
+          :style="{ backgroundColor: brand.colors.primary }"
           aria-hidden="true"
         />
         <span
@@ -173,18 +186,6 @@ const open = ref(false)
 
 const reasoningRef = ref<HTMLElement | null>(null)
 
-// Mount the indicator only when there's something to show — either
-// streamed reasoning or at least one tool call. Avoids a blank pill
-// flickering at the start of a turn before any chunk arrives.
-const hasContent = computed(
-  () => props.reasoning.length > 0 || props.toolCalls.length > 0,
-)
-
-const anyRunning = computed(() => props.toolCalls.some((c) => c.status === 'running'))
-const runningCount = computed(
-  () => props.toolCalls.filter((c) => c.status === 'running').length,
-)
-
 /** Single-line description for the collapsed pill. Uses the most
  *  recent running call's family verb; falls back to the most recent
  *  completion's family verb (with " · concluído"). */
@@ -234,12 +235,6 @@ const pillBody = computed<{ text: string; faded: boolean } | null>(() => {
 })
 
 const recentActions = computed(() => props.toolCalls.slice(-6))
-
-const dotColor = computed(() =>
-  anyRunning.value
-    ? brand.colors.primary
-    : `color-mix(in srgb, ${brand.colors.text} 40%, transparent)`,
-)
 
 const shellStyle = computed(() => ({
   backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 92%, transparent)`,
