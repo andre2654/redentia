@@ -91,7 +91,7 @@ export default defineNuxtPlugin({
   // client cannot reconcile (Vue 3 hydration leaves SSR DOM as-is on
   // mismatch in non-rectifying mode).
   enforce: 'post',
-  setup() {
+  setup(nuxtApp) {
     const brand = useBrand()
   // `useColorMode` is auto-imported by @nuxtjs/color-mode (transitive
   // dep of @nuxt/ui). It handles cookie/localStorage persistence,
@@ -207,9 +207,16 @@ export default defineNuxtPlugin({
   //     bindings after hydration completes — they DO update on
   //     post-hydration mutations.
   if (import.meta.client && colorMode.preference === 'system') {
+    // Match SSR's defaultMode synchronously so Vue hydration finds
+    // brand.colors == SSR's :style attrs == DOM. Zero mismatch.
     const ssrMode = brand.defaultMode === 'light' ? 'light' : 'dark'
     applyMode(ssrMode)
-    nextTick(() => {
+    // Defer the actual resolved mode until AFTER Vue's hydration
+    // completes. Using `app:mounted` (instead of nextTick) guarantees
+    // we're past hydration — nextTick can fire mid-hydration in
+    // Vue 3 and the reactive update gets dropped on the floor for
+    // already-painted components.
+    nuxtApp.hook('app:mounted', () => {
       const resolved = resolveMode()
       if (resolved !== ssrMode) applyMode(resolved)
     })
