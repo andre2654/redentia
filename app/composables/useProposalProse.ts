@@ -108,12 +108,31 @@ export function useProposalProse(opts: UseProposalProseOpts) {
     const placeholders = Array.from(root.querySelectorAll<HTMLElement>('.proposal-mount'))
 
     // 1. Bind every marker in document order to proposals[i].
+    const streaming = opts.isStreaming?.() ?? false
     placeholders.forEach((span, idx) => {
       const proposal = proposals[idx]
       if (!proposal) {
-        // Extra marker without a matching proposal — hide it so the
-        // raw `{{propose}}` text doesn't leak.
-        span.style.display = 'none'
+        // Extra marker without a matching proposal. Two cases:
+        //   a) Mid-stream: proposal might still be on the way — hide
+        //      the span quietly, the next mountIn pass will catch it.
+        //   b) Stream complete: model wrote `{{propose}}` without
+        //      ever calling propose_action. Strip the span AND
+        //      collapse adjacent whitespace so the prose reads
+        //      cleanly — otherwise we'd leave double-spaces or odd
+        //      mid-sentence gaps where the chip should have been.
+        if (streaming) {
+          span.style.display = 'none'
+        } else {
+          const prev = span.previousSibling
+          const next = span.nextSibling
+          if (prev?.nodeType === 3) {
+            prev.textContent = (prev.textContent ?? '').replace(/\s+$/, '')
+          }
+          if (next?.nodeType === 3) {
+            next.textContent = (next.textContent ?? '').replace(/^\s+/, ' ')
+          }
+          span.remove()
+        }
         return
       }
       if (span.dataset.mounted === '1') return
