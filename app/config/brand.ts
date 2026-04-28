@@ -256,7 +256,7 @@ interface BrandConfig {
 
   // HERO (pagina inicial, visitante nao logado)
   hero: {
-    variant: 'centered' | 'split' | 'minimal' | 'institutional' | 'editorial' | 'terminal' | 'mentor' | 'research' | 'showtime' | 'playbook' | 'holder' | 'quiet'  // layout do hero: centered (premium), split (founder), minimal (data-first), institutional (assessoria/escritorio), editorial (narrated private-bank letter, Norte Capital), terminal (Bloomberg-reimagined, Redentia v2), mentor (aspirational book-cover, Primo Rico), research (academic paper / AUVP study notebook, Investidor Sardinha), showtime (TV show / pop magazine, Me Poupe!), playbook (calm method + author photo + bold sticker accents, Saraiva Invest), holder (sentencious editorial portrait + giant chunky condensed wordmark + serif manifesto, Holder, the conviction-driven pseudonymous buy-and-hold archetype), quiet (Redentia premium fintech editorial, lightness as luxury, weight 300 display, amber-tinted shadows, conservative radii, tabular numerals, white-OR-dark, sussurro)
+    variant: 'centered' | 'split' | 'minimal' | 'institutional' | 'editorial' | 'terminal' | 'mentor' | 'research' | 'showtime' | 'playbook' | 'holder' | 'quiet' | 'radiograph'  // layout do hero: centered (premium), split (founder), minimal (data-first), institutional (assessoria/escritorio), editorial (narrated private-bank letter, Norte Capital), terminal (Bloomberg-reimagined, Redentia v2), mentor (aspirational book-cover, Primo Rico), research (academic paper / AUVP study notebook, Investidor Sardinha), showtime (TV show / pop magazine, Me Poupe!), playbook (calm method + author photo + bold sticker accents, Saraiva Invest), holder (sentencious editorial portrait + giant chunky condensed wordmark + serif manifesto, Holder, the conviction-driven pseudonymous buy-and-hold archetype), quiet (Redentia premium fintech editorial, lightness as luxury, weight 300 display, amber-tinted shadows, conservative radii, tabular numerals, white-OR-dark, sussurro), radiograph (Redentia v3 reposicionada, headline de resultado + input de tickers embutido na primeira dobra + Redent Score demo card como visual; foco em B2C self-directed, esconde B2B na home)
     badge: string                // texto do badge animado no topo
     title: string                // headline principal (pode usar HTML)
     subtitle: string             // subtitulo
@@ -266,6 +266,7 @@ interface BrandConfig {
     ctaIcon: string              // icone do botao principal
     trustIndicators: string[]    // textos dos indicadores de confianca
     image?: string               // imagem do founder/brand no hero (ex: foto da Nathalia no split)
+    eyebrow?: string             // overline acima do headline (ex: "PLATAFORMA DE IA PARA SUA CARTEIRA"), usado pela variant radiograph
   }
 
   // HEADER (barra superior quando logado)
@@ -544,7 +545,7 @@ interface BrandConfig {
   // A ordem no array define a ordem de exibicao na home.
   // Cada secao pode ser ativada/desativada individualmente.
   homeSections: Array<{
-    id: 'hero' | 'trustBar' | 'market' | 'categories' | 'guides' | 'metrics' | 'featureTabs' | 'marquee' | 'testimonials' | 'aiCta' | 'educational' | 'products' | 'wealthCalculator' | 'characters' | 'investorChecklist' | 'apiProduct' | 'creativeProduct' | 'news'
+    id: 'hero' | 'trustBar' | 'market' | 'categories' | 'guides' | 'metrics' | 'featureTabs' | 'marquee' | 'testimonials' | 'aiCta' | 'educational' | 'products' | 'wealthCalculator' | 'characters' | 'investorChecklist' | 'apiProduct' | 'creativeProduct' | 'news' | 'radiograph'
     visible: boolean
   }>
 
@@ -2493,19 +2494,23 @@ const redentia: BrandConfig = {
   },
 
   hero: {
-    // 'quiet' is Redentia's current variant, premium fintech editorial,
-    // lightness como luxo (weight 300 display), sombras com tint amber,
-    // radii conservadores 4-8px, tabular numerals. Disjuncto do 'terminal'.
-    // Marker {em}...{/em} no title destaca trecho em amber italico.
-    variant: 'quiet',
-    badge: '[MARKET.LIVE]',
-    title: 'Investir com {em}inteligencia{/em}.',
-    subtitle: 'Mercado em tempo real, inteligência sob demanda. Cotações, análises fundamentalistas, calculadoras e assessoria com IA, um ecossistema de investimentos em um só lugar.',
+    // 'radiograph' eh o reposicionamento Redentia v3: headline de RESULTADO
+    // ("descubra os riscos escondidos da sua carteira em 2 min") + input de
+    // tickers embutido na primeira dobra + Redent Score demo no card visual.
+    // Anteriormente era 'quiet' (manifesto generico). Mudamos porque pesquisa
+    // de growth indicava que copy de "ecossistema de investimentos" e
+    // "tudo em um lugar" converte mal vs copy de outcome direto.
+    // Inspirado em PortfolioPilot, Seeking Alpha, Fiscal.ai, Addepar.
+    variant: 'radiograph',
+    badge: '[CARTEIRA.LIVE]',
+    title: 'Descubra os riscos escondidos da sua {em}carteira{/em} em 2 minutos.',
+    subtitle: 'Adicione seus ativos e a Redent.IA cruza fundamentos, noticias, dividendos, concentracao e mercado para mostrar o que esta bom, o que esta ruim e o que mudou.',
     founderQuote: '',
-    ctaLabel: 'Comecar agora',
-    ctaSecondaryLabel: 'Ja tenho conta',
+    ctaLabel: 'Analisar minha carteira gratis',
+    ctaSecondaryLabel: 'Ver exemplo de analise',
     ctaIcon: 'i-lucide-sparkles',
-    trustIndicators: ['Criptografado', 'Sempre gratis', 'Dados em tempo real'],
+    eyebrow: 'PLATAFORMA DE IA PARA SUA CARTEIRA',
+    trustIndicators: ['Sem cadastro', 'Resultado em 2 min', 'Sempre gratis'],
   },
 
   header: {
@@ -2776,26 +2781,29 @@ const redentia: BrandConfig = {
   // `categories` (both lead to /acoes, /fiis, /etfs, etc). This shaves
   // ~600px of vertical scroll on desktop and ~1000px on mobile.
   homeSections: [
-    // Header nav already links every category page (/acoes, /fiis, /etfs,
-    // /bdrs), so the on-page "categories" block would just duplicate nav
-    // links without adding new info — kept hidden to reduce visual noise.
-    // `aiCta` sits at the end so the last thing users see before the
-    // footer is the Assessoria IA call to action.
+    // Reposicionamento Redentia v3: home foca exclusivamente B2C self-directed.
+    // B2B sai pra paginas dedicadas (/whitelabel, /api-portal, /assessores).
+    // Ordem otimizada para conversao: hero com input → market live (prova de
+    // dado real) → news (relevancia diaria) → guides (educacao) → testimonials.
+    // Removidos: metrics ("Velocidade como diferencial" hero metric, virou
+    // distrativo apos hero do raio-x), apiProduct, aiCta (B2B), trustBar
+    // (redundante com trust signals do hero), creativeProduct (B2B/marketing).
     { id: 'hero', visible: true },
-    { id: 'trustBar', visible: true },
     { id: 'market', visible: true },
     { id: 'news', visible: true },
-    { id: 'metrics', visible: true },
+    { id: 'guides', visible: true },
+    { id: 'testimonials', visible: true },
+    { id: 'metrics', visible: false },
     { id: 'featureTabs', visible: false },
     { id: 'categories', visible: false },
-    { id: 'guides', visible: true },
-    { id: 'apiProduct', visible: true },
+    { id: 'apiProduct', visible: false },
     { id: 'creativeProduct', visible: false },
     { id: 'educational', visible: false },
     { id: 'products', visible: false },
-    { id: 'testimonials', visible: true },
     { id: 'marquee', visible: false },
-    { id: 'aiCta', visible: true },
+    { id: 'aiCta', visible: false },
+    { id: 'trustBar', visible: false },
+    { id: 'radiograph', visible: false },
   ],
 
   educational: {

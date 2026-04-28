@@ -1,8 +1,22 @@
 <template>
   <div>
-    <!-- ========== HERO: QUIET (Redentia premium, lightness as luxury) ========== -->
-    <!-- Disjuncto do terminal. Weight 300, sombras com tint amber, headings warm,
-         radii 4-8px, light + dark adaptativo. Componente isolado. -->
+    <!-- ========== HERO: RADIOGRAPH (Redentia v3 reposicionada) ========== -->
+    <!-- Headline de RESULTADO + input de tickers embutido na primeira dobra
+         + Redent Score demo card como visual. Foco em B2C self-directed.
+         B2B sai pra paginas dedicadas (/whitelabel, /api-portal, /assessores). -->
+    <HomeHeroRadiograph
+      v-if="brand.hero.variant === 'radiograph'"
+      :ibov-series="ibovSeries"
+      :ibov-last-price="ibovLastPrice"
+      :ibov-indicator="ibovIndicator"
+      :ibov-variation-color="ibovVariationColor"
+      :ifix-last-price="ifixLastPrice"
+      :ifix-indicator="ifixIndicator"
+    />
+
+    <!-- ========== HERO: QUIET (Redentia v2 premium, lightness as luxury) ========== -->
+    <!-- Mantida para tenants white-label que querem o manifesto generico
+         "Investir com inteligencia". Redentia base migrou para 'radiograph'. -->
     <HomeHeroQuiet
       v-if="brand.hero.variant === 'quiet'"
       :ibov-series="ibovSeries"
