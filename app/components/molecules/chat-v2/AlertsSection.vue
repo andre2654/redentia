@@ -18,7 +18,7 @@
     <header class="mb-1.5 flex items-center justify-between gap-2 px-2">
       <h3
         class="font-mono-tab text-[10px] uppercase tracking-[0.18em]"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
       >
         Alertas
         <span class="tabular-nums">· {{ alerts.length }}</span>
@@ -27,7 +27,7 @@
         v-if="unread > 0"
         type="button"
         class="alerts-clear rounded-sm px-1 text-[10px] transition-colors"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
         @click="$emit('dismiss-all')"
       >
         Limpar
@@ -55,8 +55,8 @@
               class="truncate text-[12.5px]"
               :style="{
                 color: alert.readAt
-                  ? `color-mix(in srgb, ${brand.colors.text} 70%, transparent)`
-                  : brand.colors.text,
+                  ? `color-mix(in srgb, var(--brand-text) 70%, transparent)`
+                  : 'var(--brand-text)',
                 fontWeight: alert.readAt ? '400' : '500',
               }"
             >
@@ -64,21 +64,21 @@
             </span>
             <span
               class="truncate text-[11px]"
-              :style="{ color: brand.colors.textMuted }"
+              :style="{ color: 'var(--brand-text-muted)' }"
             >
               {{ alert.body }}
             </span>
           </span>
           <span
             class="alerts-time mt-0.5 shrink-0 font-mono-tab text-[10px] tabular-nums"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
           >
             {{ relativeTime(alert.createdAt) }}
           </span>
           <button
             type="button"
             class="alerts-dismiss absolute right-1 top-1 hidden size-5 items-center justify-center rounded-full transition-colors group-hover/alert:flex group-focus-within/alert:flex"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
             :aria-label="`Dispensar alerta ${alert.title}`"
             @click.stop="$emit('dismiss', alert.id)"
           >

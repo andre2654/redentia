@@ -23,13 +23,13 @@
       <div class="flex flex-col gap-3">
         <h1
           class="font-display text-[34px] font-semibold leading-[1.05] tracking-tight md:text-[42px]"
-          :style="{ color: brand.colors.text }"
+          :style="{ color: 'var(--brand-text)' }"
         >
           {{ heading }}
         </h1>
         <p
           class="text-[15px] leading-relaxed md:text-[16px]"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
         >
           {{ subtitle }}
         </p>
@@ -43,23 +43,23 @@
           type="button"
           class="chat-starter group relative flex items-start gap-3 rounded-2xl px-4 py-3.5 text-left text-[14px] leading-snug transition-[background-color,border-color,transform]"
           :style="{
-            backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 50%, transparent)`,
-            border: `1px solid color-mix(in srgb, ${brand.colors.border} 30%, transparent)`,
-            color: brand.colors.text,
+            backgroundColor: `color-mix(in srgb, var(--brand-surface) 50%, transparent)`,
+            border: `1px solid color-mix(in srgb, var(--brand-border) 30%, transparent)`,
+            color: 'var(--brand-text)',
           }"
           @click="$emit('start', q.question)"
         >
           <UIcon
             :name="q.icon ?? 'i-lucide-sparkles'"
             class="mt-0.5 size-4 shrink-0"
-            :style="{ color: brand.colors.primary }"
+            :style="{ color: 'var(--brand-primary)' }"
             aria-hidden="true"
           />
           <span class="line-clamp-2 flex-1">{{ q.question }}</span>
           <UIcon
             :name="tier === 'max' ? 'i-lucide-sparkles' : 'i-lucide-arrow-up-right'"
             class="size-3.5 shrink-0 opacity-0 transition-opacity group-hover:opacity-60"
-            :style="{ color: tier === 'max' ? brand.colors.primary : brand.colors.textMuted }"
+            :style="{ color: tier === 'max' ? brand.colors.primary : 'var(--brand-text-muted)' }"
             aria-hidden="true"
           />
         </button>
@@ -70,8 +70,8 @@
         class="font-mono-tab text-[10.5px] uppercase tracking-[0.18em] transition-colors"
         :style="{
           color: tier === 'max'
-            ? `color-mix(in srgb, ${brand.colors.primary} 80%, transparent)`
-            : `color-mix(in srgb, ${brand.colors.textMuted} 70%, transparent)`,
+            ? `color-mix(in srgb, var(--brand-primary) 80%, transparent)`
+            : `color-mix(in srgb, var(--brand-text-muted) 70%, transparent)`,
         }"
       >
         <template v-if="tier === 'max'">Redentia MAX · análise rigorosa</template>

@@ -31,23 +31,23 @@
         <span
           id="scenario-title"
           class="font-mono-tab text-[10px] uppercase tracking-[0.18em]"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
         >Cenários · {{ data.results.length }}</span>
         <h3
           v-if="data.goalName"
           class="text-[15px] font-semibold leading-tight"
-          :style="{ color: brand.colors.text }"
+          :style="{ color: 'var(--brand-text)' }"
         >{{ data.goalName }}</h3>
       </div>
       <div class="flex items-center gap-2 text-right">
         <div class="flex flex-col gap-0">
           <span
             class="font-mono-tab text-[10px] uppercase tracking-[0.16em]"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
           >Hoje</span>
           <span
             class="font-mono-tab text-[15px] font-semibold tabular-nums"
-            :style="{ color: brand.colors.text }"
+            :style="{ color: 'var(--brand-text)' }"
           >{{ formatBRL(data.baseline.projectedAmount) }}</span>
         </div>
         <span
@@ -78,11 +78,11 @@
         <header class="flex items-baseline justify-between gap-3">
           <h4
             class="text-[13.5px] font-semibold leading-tight"
-            :style="{ color: brand.colors.text }"
+            :style="{ color: 'var(--brand-text)' }"
           >{{ r.label }}</h4>
           <span
             class="shrink-0 font-mono-tab text-[10.5px] uppercase tracking-[0.14em]"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
           >{{ scenarioBadgeLabel(r) }}</span>
         </header>
 
@@ -100,7 +100,7 @@
           >{{ formatDelta(r.projectedDelta) }}</span>
           <span
             class="font-mono-tab text-[10.5px] uppercase tracking-[0.16em]"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
           >vs hoje</span>
         </div>
 
@@ -109,16 +109,16 @@
           <div class="flex items-center gap-2">
             <span
               class="w-14 shrink-0 font-mono-tab text-[10px] uppercase tracking-[0.14em]"
-              :style="{ color: brand.colors.textMuted }"
+              :style="{ color: 'var(--brand-text-muted)' }"
             >Hoje</span>
             <div
               class="relative h-1.5 flex-1 overflow-hidden rounded-full"
-              :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.text} 6%, transparent)` }"
+              :style="{ backgroundColor: `color-mix(in srgb, var(--brand-text) 6%, transparent)` }"
             >
               <span
                 class="scenario-bar absolute inset-y-0 left-0 origin-left rounded-full"
                 :style="{
-                  backgroundColor: brand.colors.textMuted,
+                  backgroundColor: 'var(--brand-text-muted)',
                   width: '100%',
                   transform: `scaleX(${barFractions(r).baseline})`,
                   transition: 'transform 600ms cubic-bezier(0.2, 0.7, 0.3, 1)',
@@ -127,17 +127,17 @@
             </div>
             <span
               class="w-24 shrink-0 text-right font-mono-tab text-[11px] tabular-nums"
-              :style="{ color: brand.colors.textMuted }"
+              :style="{ color: 'var(--brand-text-muted)' }"
             >{{ formatBRLCompact(data.baseline.projectedAmount) }}</span>
           </div>
           <div class="flex items-center gap-2">
             <span
               class="w-14 shrink-0 font-mono-tab text-[10px] uppercase tracking-[0.14em]"
-              :style="{ color: brand.colors.textMuted }"
+              :style="{ color: 'var(--brand-text-muted)' }"
             >Cenário</span>
             <div
               class="relative h-1.5 flex-1 overflow-hidden rounded-full"
-              :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.text} 6%, transparent)` }"
+              :style="{ backgroundColor: `color-mix(in srgb, var(--brand-text) 6%, transparent)` }"
             >
               <span
                 class="scenario-bar absolute inset-y-0 left-0 origin-left rounded-full"
@@ -152,7 +152,7 @@
             </div>
             <span
               class="w-24 shrink-0 text-right font-mono-tab text-[11px] font-semibold tabular-nums"
-              :style="{ color: brand.colors.text }"
+              :style="{ color: 'var(--brand-text)' }"
             >{{ formatBRLCompact(r.after.projectedAmount) }}</span>
           </div>
         </div>
@@ -160,11 +160,11 @@
         <!-- Footer: status morph OR cagr fact + scenario detail -->
         <footer
           class="flex flex-wrap items-center justify-between gap-2 border-t pt-2"
-          :style="{ borderColor: `color-mix(in srgb, ${brand.colors.text} 6%, transparent)` }"
+          :style="{ borderColor: `color-mix(in srgb, var(--brand-text) 6%, transparent)` }"
         >
           <p
             class="text-[11px] leading-snug"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
           >{{ r.detail }}</p>
           <div class="flex items-center gap-2">
             <span
@@ -177,9 +177,9 @@
                   :style="{ backgroundColor: baselineStatusColor }"
                   aria-hidden="true"
                 />
-                <span :style="{ color: brand.colors.textMuted }">{{ statusLabel(data.baseline.status) }}</span>
+                <span :style="{ color: 'var(--brand-text-muted)' }">{{ statusLabel(data.baseline.status) }}</span>
               </span>
-              <UIcon name="i-lucide-arrow-right" class="size-3" :style="{ color: brand.colors.textMuted }" aria-hidden="true" />
+              <UIcon name="i-lucide-arrow-right" class="size-3" :style="{ color: 'var(--brand-text-muted)' }" aria-hidden="true" />
               <span class="inline-flex items-center gap-1">
                 <span
                   class="inline-flex size-1.5 rounded-full"
@@ -192,7 +192,7 @@
             <span
               v-else
               class="inline-flex items-center gap-1.5 font-mono-tab text-[10.5px] uppercase tracking-[0.14em]"
-              :style="{ color: brand.colors.textMuted }"
+              :style="{ color: 'var(--brand-text-muted)' }"
             >
               <span
                 class="inline-flex size-1.5 rounded-full"

@@ -1,11 +1,11 @@
 <template>
-  <section class="border-y py-16" :style="{ borderColor: brand.colors.border }">
+  <section class="border-y py-16" :style="{ borderColor: 'var(--brand-border)' }">
     <div class="mx-auto max-w-6xl px-6">
       <div class="mb-10 text-center">
-        <p class="mb-2 text-xs uppercase tracking-[0.2em]" :style="{ color: brand.colors.textMuted }">
+        <p class="mb-2 text-xs uppercase tracking-[0.2em]" :style="{ color: 'var(--brand-text-muted)' }">
           Para cada perfil
         </p>
-        <h2 class="text-2xl font-bold md:text-3xl" :style="{ color: brand.colors.text }">
+        <h2 class="text-2xl font-bold md:text-3xl" :style="{ color: 'var(--brand-text)' }">
           Ferramentas para todo tipo de investidor
         </h2>
       </div>
@@ -26,7 +26,7 @@
           :class="activeTab === tab.id
             ? 'bg-secondary'
             : 'border'"
-          :style="activeTab === tab.id ? { color: brand.colors.background } : { borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.textMuted }"
+          :style="activeTab === tab.id ? { color: 'var(--brand-background)' } : { borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', color: 'var(--brand-text-muted)' }"
           @click="activeTab = tab.id"
         >
           {{ tab.label }}
@@ -40,16 +40,16 @@
           :key="feature.title"
           :to="feature.to"
           class="group flex flex-col gap-4 rounded-2xl border p-6 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-secondary/30"
-          :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+          :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
         >
           <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary/20">
             <UIcon :name="feature.icon" class="h-6 w-6 text-secondary" />
           </div>
           <div>
-            <h3 class="mb-2 text-lg font-bold group-hover:text-secondary" :style="{ color: brand.colors.text }">
+            <h3 class="mb-2 text-lg font-bold group-hover:text-secondary" :style="{ color: 'var(--brand-text)' }">
               {{ feature.title }}
             </h3>
-            <p class="text-sm" :style="{ color: brand.colors.textMuted }">
+            <p class="text-sm" :style="{ color: 'var(--brand-text-muted)' }">
               {{ feature.description }}
             </p>
           </div>

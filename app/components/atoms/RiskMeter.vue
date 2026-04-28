@@ -2,8 +2,8 @@
   <div class="flex flex-col gap-2">
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-2">
-        <UIcon name="i-lucide-activity" class="h-5 w-5" :style="{ color: brand.colors.textMuted }" />
-        <span class="text-sm font-medium" :style="{ color: brand.colors.textMuted }">
+        <UIcon name="i-lucide-activity" class="h-5 w-5" :style="{ color: 'var(--brand-text-muted)' }" />
+        <span class="text-sm font-medium" :style="{ color: 'var(--brand-text-muted)' }">
           Volatilidade {{ period ? `(${period})` : '(Risco)' }}
         </span>
       </div>
@@ -27,7 +27,7 @@
 
     <div
       class="flex justify-between text-[10px] font-medium uppercase tracking-wider"
-      :style="{ color: brand.colors.textMuted }"
+      :style="{ color: 'var(--brand-text-muted)' }"
     >
       <span>Baixo</span>
       <span>Médio</span>

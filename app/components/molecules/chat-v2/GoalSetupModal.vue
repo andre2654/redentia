@@ -35,7 +35,7 @@
           <header class="flex items-start gap-3">
             <span
               class="flex size-10 shrink-0 items-center justify-center rounded-full"
-              :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 16%, transparent)`, color: brand.colors.primary }"
+              :style="{ backgroundColor: `color-mix(in srgb, var(--brand-primary) 16%, transparent)`, color: 'var(--brand-primary)' }"
               aria-hidden="true"
             >
               <UIcon name="i-lucide-target" class="size-5" />
@@ -44,13 +44,13 @@
               <h2
                 :id="titleId"
                 class="text-balance text-[18px] font-semibold leading-tight tracking-tight"
-                :style="{ color: brand.colors.text }"
+                :style="{ color: 'var(--brand-text)' }"
               >
                 Nova meta financeira
               </h2>
               <p
                 class="text-pretty text-[12.5px]"
-                :style="{ color: brand.colors.textMuted }"
+                :style="{ color: 'var(--brand-text-muted)' }"
               >
                 Toda recomendação na conversa ancorada será avaliada contra esta meta.
               </p>
@@ -58,7 +58,7 @@
             <button
               type="button"
               class="goal-modal-close size-8 shrink-0 rounded-full transition-colors"
-              :style="{ color: brand.colors.textMuted }"
+              :style="{ color: 'var(--brand-text-muted)' }"
               aria-label="Fechar"
               @click="close"
             >
@@ -89,7 +89,7 @@
 
             <!-- Name -->
             <div class="flex flex-col gap-1.5">
-              <label for="goal-name" class="text-[12px] font-medium" :style="{ color: brand.colors.text }">
+              <label for="goal-name" class="text-[12px] font-medium" :style="{ color: 'var(--brand-text)' }">
                 Nome
               </label>
               <input
@@ -111,7 +111,7 @@
             <!-- Target amount + date — two columns on desktop -->
             <div class="flex flex-col gap-3 md:flex-row md:gap-3">
               <div class="flex flex-1 flex-col gap-1.5">
-                <label for="goal-target-amount" class="text-[12px] font-medium" :style="{ color: brand.colors.text }">
+                <label for="goal-target-amount" class="text-[12px] font-medium" :style="{ color: 'var(--brand-text)' }">
                   Valor alvo
                 </label>
                 <div class="goal-input-with-prefix">
@@ -132,7 +132,7 @@
                 <p v-if="errors.targetAmount" class="goal-error" role="alert">{{ errors.targetAmount }}</p>
               </div>
               <div class="flex flex-1 flex-col gap-1.5">
-                <label for="goal-target-date" class="text-[12px] font-medium" :style="{ color: brand.colors.text }">
+                <label for="goal-target-date" class="text-[12px] font-medium" :style="{ color: 'var(--brand-text)' }">
                   Data alvo
                 </label>
                 <input
@@ -151,7 +151,7 @@
             <!-- Current + Monthly — two columns on desktop -->
             <div class="flex flex-col gap-3 md:flex-row md:gap-3">
               <div class="flex flex-1 flex-col gap-1.5">
-                <label for="goal-current" class="text-[12px] font-medium" :style="{ color: brand.colors.text }">
+                <label for="goal-current" class="text-[12px] font-medium" :style="{ color: 'var(--brand-text)' }">
                   Patrimônio atual
                 </label>
                 <div class="goal-input-with-prefix">
@@ -171,7 +171,7 @@
                 </div>
               </div>
               <div class="flex flex-1 flex-col gap-1.5">
-                <label for="goal-monthly" class="text-[12px] font-medium" :style="{ color: brand.colors.text }">
+                <label for="goal-monthly" class="text-[12px] font-medium" :style="{ color: 'var(--brand-text)' }">
                   Aporte mensal
                 </label>
                 <div class="goal-input-with-prefix">

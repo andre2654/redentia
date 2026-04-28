@@ -20,23 +20,23 @@
     <div
       v-else-if="cfg.showLogo"
       class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg"
-      :style="{ backgroundColor: brand.colors.textMuted + '1A' }"
+      :style="{ backgroundColor: 'var(--brand-text-muted)' + '1A' }"
     >
-      <span class="text-[10px] font-bold" :style="{ color: brand.colors.textMuted }">
+      <span class="text-[10px] font-bold" :style="{ color: 'var(--brand-text-muted)' }">
         {{ tickerAbbrev }}
       </span>
     </div>
 
     <div class="flex min-w-0 flex-1 flex-col">
-      <span class="truncate text-sm font-medium" :style="{ color: brand.colors.text }">
+      <span class="truncate text-sm font-medium" :style="{ color: 'var(--brand-text)' }">
         {{ cfg.showName ? normalizeText(stock?.name) : stock?.ticker }}
       </span>
-      <span v-if="cfg.showName" class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">{{ stock?.ticker }}</span>
+      <span v-if="cfg.showName" class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: 'var(--brand-text-muted)' }">{{ stock?.ticker }}</span>
     </div>
     <!-- /default variant end -->
 
     <div class="flex flex-shrink-0 flex-col items-end">
-      <span class="font-mono-tab text-sm font-medium tabular-nums" :style="{ color: brand.colors.text }">
+      <span class="font-mono-tab text-sm font-medium tabular-nums" :style="{ color: 'var(--brand-text)' }">
         R$ {{ formatPrice(stock?.market_price) }}
       </span>
       <span
@@ -65,7 +65,7 @@
       :width="logoSizePx"
       :height="logoSizePx"
       class="flex-shrink-0 rounded-xl border object-cover"
-      :style="{ width: `${logoSizePx}px`, height: `${logoSizePx}px`, borderColor: brand.colors.border }"
+      :style="{ width: `${logoSizePx}px`, height: `${logoSizePx}px`, borderColor: 'var(--brand-border)' }"
       :src="stock?.logo"
       :alt="logoAlt"
       @error="markBrokenLogo"
@@ -73,22 +73,22 @@
     <div
       v-else-if="cfg.showLogo"
       class="flex flex-shrink-0 items-center justify-center rounded-xl"
-      :style="{ width: `${logoSizePx}px`, height: `${logoSizePx}px`, backgroundColor: brand.colors.textMuted + '1A' }"
+      :style="{ width: `${logoSizePx}px`, height: `${logoSizePx}px`, backgroundColor: 'var(--brand-text-muted)' + '1A' }"
     >
-      <span class="text-xs font-bold" :style="{ color: brand.colors.textMuted }">
+      <span class="text-xs font-bold" :style="{ color: 'var(--brand-text-muted)' }">
         {{ tickerAbbrev }}
       </span>
     </div>
 
     <div class="flex min-w-0 flex-1 flex-col">
-      <span class="truncate text-sm font-medium" :style="{ color: brand.colors.text }">
+      <span class="truncate text-sm font-medium" :style="{ color: 'var(--brand-text)' }">
         {{ normalizeText(stock?.name) }}
       </span>
-      <span class="text-xs" :style="{ color: brand.colors.textMuted }">{{ stock?.ticker }}</span>
+      <span class="text-xs" :style="{ color: 'var(--brand-text-muted)' }">{{ stock?.ticker }}</span>
     </div>
 
     <div class="flex flex-shrink-0 flex-col items-end">
-      <span class="text-sm font-medium tabular-nums" :style="{ color: brand.colors.text }">
+      <span class="text-sm font-medium tabular-nums" :style="{ color: 'var(--brand-text)' }">
         R$ {{ formatPrice(stock?.market_price) }}
       </span>
       <span
@@ -109,16 +109,16 @@
     @mouseleave="$event.currentTarget.style.backgroundColor = 'transparent'"
   >
     <div class="flex min-w-0 flex-1 flex-col">
-      <span class="text-sm font-semibold tabular-nums" :style="{ color: brand.colors.text }">
+      <span class="text-sm font-semibold tabular-nums" :style="{ color: 'var(--brand-text)' }">
         {{ stock?.ticker }}
       </span>
-      <span v-if="cfg.showName" class="truncate text-xs" :style="{ color: brand.colors.textMuted }">
+      <span v-if="cfg.showName" class="truncate text-xs" :style="{ color: 'var(--brand-text-muted)' }">
         {{ normalizeText(stock?.name) }}
       </span>
     </div>
 
     <div class="flex flex-shrink-0 items-center gap-3">
-      <span class="text-sm font-medium tabular-nums" :style="{ color: brand.colors.text }">
+      <span class="text-sm font-medium tabular-nums" :style="{ color: 'var(--brand-text)' }">
         R$ {{ formatPrice(stock?.market_price) }}
       </span>
       <div class="flex flex-col items-end">
@@ -128,7 +128,7 @@
         >
           {{ stock?.change_percent >= 0 ? '+' : '' }}{{ formatChange(stock?.change_percent) }}%
         </span>
-        <span class="text-[10px] tabular-nums" :style="{ color: brand.colors.textMuted }">
+        <span class="text-[10px] tabular-nums" :style="{ color: 'var(--brand-text-muted)' }">
           {{ stock?.change_percent >= 0 ? '+' : '' }}R$ {{ formatAbsChange(stock?.market_price, stock?.change_percent) }}
         </span>
       </div>

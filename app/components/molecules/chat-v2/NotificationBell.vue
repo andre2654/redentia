@@ -27,9 +27,9 @@
     type="button"
     class="notification-bell relative inline-flex size-9 items-center justify-center rounded-full backdrop-blur-md transition-colors"
     :style="{
-      backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 70%, transparent)`,
-      border: `1px solid color-mix(in srgb, ${brand.colors.border} 40%, transparent)`,
-      color: brand.colors.text,
+      backgroundColor: `color-mix(in srgb, var(--brand-surface) 70%, transparent)`,
+      border: `1px solid color-mix(in srgb, var(--brand-border) 40%, transparent)`,
+      color: 'var(--brand-text)',
     }"
     :aria-label="ariaLabel"
     @click="$emit('open')"
@@ -39,8 +39,8 @@
       v-if="unreadCount > 0"
       class="notification-bell-badge font-mono-tab absolute -right-1 -top-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[9.5px] font-bold tabular-nums leading-none"
       :style="{
-        backgroundColor: brand.colors.primary,
-        color: brand.colors.background,
+        backgroundColor: 'var(--brand-primary)',
+        color: 'var(--brand-background)',
       }"
       aria-hidden="true"
     >{{ displayCount }}</span>

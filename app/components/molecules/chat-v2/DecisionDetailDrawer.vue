@@ -39,7 +39,7 @@
             <!-- Mobile drag handle -->
             <span
               class="mx-auto mt-3 inline-block h-1 w-12 rounded-full md:hidden"
-              :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.text} 18%, transparent)` }"
+              :style="{ backgroundColor: `color-mix(in srgb, var(--brand-text) 18%, transparent)` }"
               aria-hidden="true"
             />
 
@@ -75,7 +75,7 @@
                 <h2
                   :id="titleId"
                   class="text-balance text-[20px] font-semibold leading-tight tracking-tight"
-                  :style="{ color: brand.colors.text }"
+                  :style="{ color: 'var(--brand-text)' }"
                 >
                   <span v-if="decision.ticker" class="tabular-nums">{{ decision.ticker }}</span>
                   <span v-else>{{ typeLabel }}</span>
@@ -83,13 +83,13 @@
                 <p
                   v-if="snapshotSubtext"
                   class="font-mono-tab text-[11px] tabular-nums"
-                  :style="{ color: brand.colors.textMuted }"
+                  :style="{ color: 'var(--brand-text-muted)' }"
                 >{{ snapshotSubtext }}</p>
               </div>
               <button
                 type="button"
                 class="dec-drawer-close size-9 shrink-0 rounded-full transition-colors"
-                :style="{ color: brand.colors.textMuted }"
+                :style="{ color: 'var(--brand-text-muted)' }"
                 aria-label="Fechar"
                 @click="close"
               >
@@ -104,17 +104,17 @@
                 <div
                   class="rounded-2xl px-4 py-3"
                   :style="{
-                    backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 6%, transparent)`,
-                    border: `1px solid color-mix(in srgb, ${brand.colors.primary} 18%, transparent)`,
+                    backgroundColor: `color-mix(in srgb, var(--brand-primary) 6%, transparent)`,
+                    border: `1px solid color-mix(in srgb, var(--brand-primary) 18%, transparent)`,
                   }"
                 >
                   <p
                     class="font-mono-tab mb-1 text-[10px] uppercase tracking-[0.16em]"
-                    :style="{ color: brand.colors.primary }"
+                    :style="{ color: 'var(--brand-primary)' }"
                   >Tese</p>
                   <p
                     class="text-pretty text-[13px] leading-relaxed"
-                    :style="{ color: brand.colors.text }"
+                    :style="{ color: 'var(--brand-text)' }"
                   >{{ decision.thesis }}</p>
                 </div>
                 <div
@@ -131,24 +131,24 @@
                   >Invalidador</p>
                   <p
                     class="text-pretty text-[13px] leading-relaxed"
-                    :style="{ color: brand.colors.text }"
+                    :style="{ color: 'var(--brand-text)' }"
                   >{{ decision.invalidator }}</p>
                 </div>
                 <div
                   v-if="decision.triggerCondition"
                   class="rounded-2xl px-4 py-3"
                   :style="{
-                    backgroundColor: `color-mix(in srgb, ${brand.colors.text} 4%, transparent)`,
-                    border: `1px solid color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+                    backgroundColor: `color-mix(in srgb, var(--brand-text) 4%, transparent)`,
+                    border: `1px solid color-mix(in srgb, var(--brand-border) 50%, transparent)`,
                   }"
                 >
                   <p
                     class="font-mono-tab mb-1 text-[10px] uppercase tracking-[0.16em]"
-                    :style="{ color: brand.colors.textMuted }"
+                    :style="{ color: 'var(--brand-text-muted)' }"
                   >Gatilho</p>
                   <p
                     class="text-pretty text-[13px] leading-relaxed"
-                    :style="{ color: brand.colors.text }"
+                    :style="{ color: 'var(--brand-text)' }"
                   >{{ decision.triggerCondition }}</p>
                 </div>
               </section>
@@ -189,7 +189,7 @@
               >
                 <h3
                   class="font-mono-tab mb-2 text-[10px] uppercase tracking-[0.18em]"
-                  :style="{ color: brand.colors.textMuted }"
+                  :style="{ color: 'var(--brand-text-muted)' }"
                 >Revisitas</h3>
                 <ol class="flex flex-col gap-3">
                   <li
@@ -197,17 +197,17 @@
                     :key="r.at"
                     class="rounded-2xl px-4 py-3"
                     :style="{
-                      backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 50%, transparent)`,
-                      border: `1px solid color-mix(in srgb, ${brand.colors.border} 40%, transparent)`,
+                      backgroundColor: `color-mix(in srgb, var(--brand-surface) 50%, transparent)`,
+                      border: `1px solid color-mix(in srgb, var(--brand-border) 40%, transparent)`,
                     }"
                   >
                     <p
                       class="font-mono-tab mb-1 text-[10px] uppercase tracking-[0.16em]"
-                      :style="{ color: brand.colors.textMuted }"
+                      :style="{ color: 'var(--brand-text-muted)' }"
                     >{{ formatDate(r.at) }}</p>
                     <p
                       class="text-pretty text-[12.5px] leading-relaxed"
-                      :style="{ color: brand.colors.text }"
+                      :style="{ color: 'var(--brand-text)' }"
                     >{{ r.ai_summary }}</p>
                   </li>
                   <li
@@ -216,18 +216,18 @@
                     class="flex items-center gap-2 rounded-2xl px-4 py-2"
                     :style="{
                       backgroundColor: 'transparent',
-                      border: `1px dashed color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+                      border: `1px dashed color-mix(in srgb, var(--brand-border) 50%, transparent)`,
                     }"
                   >
                     <UIcon
                       name="i-lucide-calendar-clock"
                       class="size-3.5 shrink-0"
-                      :style="{ color: brand.colors.textMuted }"
+                      :style="{ color: 'var(--brand-text-muted)' }"
                       aria-hidden="true"
                     />
                     <p
                       class="font-mono-tab text-[10.5px] tabular-nums"
-                      :style="{ color: brand.colors.textMuted }"
+                      :style="{ color: 'var(--brand-text-muted)' }"
                     >Revisita programada · {{ formatDate(d) }} ({{ daysUntil(d) }})</p>
                   </li>
                 </ol>
@@ -246,14 +246,14 @@
                 <p
                   v-if="decision.outcomeNotes"
                   class="text-pretty text-[12.5px] leading-relaxed"
-                  :style="{ color: brand.colors.text }"
+                  :style="{ color: 'var(--brand-text)' }"
                 >{{ decision.outcomeNotes }}</p>
               </section>
 
               <!-- Audit trail -->
               <p
                 class="font-mono-tab text-[10.5px] tabular-nums"
-                :style="{ color: brand.colors.textMuted }"
+                :style="{ color: 'var(--brand-text-muted)' }"
               >
                 Registrada {{ formatDate(decision.createdAt) }}
                 <template v-if="decision.executionDate">· executada {{ formatDate(decision.executionDate) }}</template>

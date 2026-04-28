@@ -1,95 +1,65 @@
 <template>
-  <section
-    class="relative overflow-hidden border-y py-20 md:py-28"
-    :style="{
-      borderColor: brand.colors.border,
-      background: `linear-gradient(to bottom, ${brand.colors.surface}40 0%, ${brand.colors.background}00 100%)`,
-    }"
-  >
-    <!-- Amber ambient glow behind the big number -->
+  <section class="relative overflow-hidden border-y py-20 md:py-28" style="border-color: var(--border-subtle);">
+    <!-- Ambient amber radial discreto centralizado (sem grid terminal) -->
     <div class="pointer-events-none absolute inset-0">
       <div
-        class="absolute left-1/2 top-1/2 h-[520px] w-[780px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl opacity-50"
-        :style="{ background: `radial-gradient(ellipse at center, ${brand.colors.primary}33, transparent 70%)` }"
-      />
-      <!-- Tight grid overlay -->
-      <div
-        class="absolute inset-0 opacity-[0.035]"
-        :style="{
-          backgroundImage: `linear-gradient(${brand.colors.text} 1px, transparent 1px), linear-gradient(90deg, ${brand.colors.text} 1px, transparent 1px)`,
-          backgroundSize: '32px 32px',
-        }"
+        class="absolute left-1/2 top-1/2 h-[520px] w-[780px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl"
+        style="background: radial-gradient(ellipse at center, color-mix(in srgb, var(--brand-primary) 16%, transparent), transparent 70%);"
       />
     </div>
 
     <div class="relative mx-auto max-w-6xl px-6 text-center">
-      <!-- Terminal label with blinking dot and brackets -->
-      <div class="mb-6 flex items-center justify-center gap-3 font-mono-tab text-[10px] uppercase tracking-[0.22em]">
-        <span
-          class="relative inline-block size-1.5 rounded-full"
-          :style="{ backgroundColor: brand.colors.primary }"
-        />
-        <span :style="{ color: brand.colors.primary }">Tempo de resposta</span>
-        <span :style="{ color: brand.colors.border }">-</span>
-        <span :style="{ color: brand.colors.textMuted }">{{ brand.metrics.sectionSubtitle }}</span>
-      </div>
+      <!-- Eyebrow quiet -->
+      <p class="eyebrow mb-5">Tempo de resposta</p>
+      <p class="mb-8 text-[14px] leading-relaxed" style="color: var(--text-body);">{{ brand.metrics.sectionSubtitle }}</p>
 
-      <!-- Headline, matches the guides section ("Conhecimento que gera
-           resultados") so the whole unauthenticated home shares one display
-           voice instead of mixing Instrument Serif with the body sans. -->
+      <!-- Headline quiet: weight 300 com "." amber pontual -->
       <h2
-        class="mx-auto mt-2 max-w-3xl text-4xl leading-[1.05] md:text-6xl lg:text-7xl"
-        :class="[brand.font.headingWeight, brand.font.headingStyle]"
-        :style="{ color: brand.colors.text }"
+        class="mx-auto mt-2 max-w-3xl font-light leading-[1.02] text-[44px] md:text-[72px] lg:text-[88px]"
+        style="color: var(--text-heading); letter-spacing: -0.025em;"
       >
-        {{ brand.metrics.sectionTitle.split('.')[0] }}<span class="italic" :style="{ color: brand.colors.primary }">.</span>
+        {{ brand.metrics.sectionTitle.split('.')[0] }}<span style="color: var(--brand-primary);">.</span>
       </h2>
 
-      <!-- The hero metric: response time in seconds, mono, monumental -->
+      <!-- Hero metric: weight 300 quiet, sem mono nem font-bold -->
       <div ref="counterRef" aria-live="polite" class="mt-16 md:mt-20">
         <div class="flex items-baseline justify-center gap-2">
           <span
-            class="font-mono-tab block text-7xl font-bold tabular-nums sm:text-8xl md:text-[160px] md:leading-[0.85] lg:text-[200px]"
-            :style="{
-              color: brand.colors.text,
-              textShadow: `0 0 100px ${brand.colors.primary}40`,
-            }"
+            class="block font-light tabular-nums text-7xl sm:text-8xl md:text-[160px] md:leading-[0.85] lg:text-[200px]"
+            style="color: var(--text-heading); letter-spacing: -0.04em;"
           >
             ~{{ displayValue }}
           </span>
           <span
-            class="font-mono-tab text-4xl font-bold md:text-6xl lg:text-7xl"
-            :style="{ color: brand.colors.primary }"
+            class="font-light text-4xl md:text-6xl lg:text-7xl"
+            style="color: var(--brand-primary); letter-spacing: -0.02em;"
           >
             s
           </span>
         </div>
-        <p
-          class="font-mono-tab mx-auto mt-6 max-w-xl text-[11px] uppercase tracking-[0.15em] md:text-xs"
-          :style="{ color: brand.colors.textMuted }"
-        >
-          &gt; {{ brand.metrics.counterLabel }}
+        <p class="mx-auto mt-6 max-w-xl text-[13px] leading-relaxed" style="color: var(--text-muted);">
+          {{ brand.metrics.counterLabel }}
         </p>
       </div>
 
-      <!-- Stats row as "terminal register", mono labels, tabular values -->
-      <div class="mt-20 grid grid-cols-2 gap-0 border md:grid-cols-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+      <!-- Stats grid quiet: card com border subtle, valor weight 300 grande -->
+      <div class="mt-20 grid grid-cols-2 gap-0 rounded-lg border md:grid-cols-4" style="border-color: var(--border-subtle); background-color: var(--bg-elevated);">
         <div
           v-for="(stat, idx) in brand.metrics.stats"
           :key="stat.label"
-          class="flex flex-col items-start gap-2 px-5 py-6 text-left"
+          class="flex flex-col items-start gap-1.5 px-6 py-7 text-left"
           :class="idx > 0 && 'border-l md:border-l'"
-          :style="{ borderColor: brand.colors.border }"
+          style="border-color: var(--border-subtle);"
         >
           <span
-            class="font-mono-tab text-2xl font-bold tabular-nums md:text-3xl"
-            :style="{ color: brand.colors.text }"
+            class="font-light tabular-nums text-[26px] md:text-[32px]"
+            style="color: var(--text-heading); letter-spacing: -0.025em;"
           >
             {{ stat.value }}
           </span>
           <span
-            class="text-[11px] leading-tight"
-            :style="{ color: brand.colors.textMuted }"
+            class="text-[12px] leading-snug"
+            style="color: var(--text-body);"
           >
             {{ stat.label }}
           </span>

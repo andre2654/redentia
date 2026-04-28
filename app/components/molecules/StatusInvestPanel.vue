@@ -5,39 +5,39 @@
       <header class="mb-4 flex flex-col gap-1">
         <span
           class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
-          :style="{ color: brand.colors.primary }"
+          :style="{ color: 'var(--brand-primary)' }"
         >
           Valuation
         </span>
         <h3
           class="text-lg font-semibold md:text-xl"
-          :style="{ color: brand.colors.text }"
+          :style="{ color: 'var(--brand-text)' }"
         >
           Indicadores de valuation
         </h3>
         <p
           class="font-mono-tab text-[10px] uppercase tracking-[0.12em]"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
         >
           &gt; O QUANTO A AÇÃO ESTÁ CARA OU BARATA
         </p>
       </header>
       <div
         class="grid grid-cols-2 gap-px border md:grid-cols-4 lg:grid-cols-6"
-        :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }"
+        :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-border)' }"
       >
         <div
           v-for="(cell, idx) in valuationCells"
           :key="cell.label"
           class="flex flex-col gap-1.5 px-4 py-4"
-          :style="{ backgroundColor: brand.colors.surface }"
+          :style="{ backgroundColor: 'var(--brand-surface)' }"
         >
           <div class="flex items-center justify-end">
             <UTooltip v-if="cell.tooltip" :text="cell.tooltip" :delay-duration="0">
-              <UIcon name="i-lucide-info" class="h-3 w-3 opacity-40" :style="{ color: brand.colors.textMuted }" />
+              <UIcon name="i-lucide-info" class="h-3 w-3 opacity-40" :style="{ color: 'var(--brand-text-muted)' }" />
             </UTooltip>
           </div>
-          <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">
+          <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: 'var(--brand-text-muted)' }">
             {{ cell.label }}
           </span>
           <span class="font-mono-tab text-lg font-bold tabular-nums" :style="{ color: cell.accent || brand.colors.text }">
@@ -52,30 +52,30 @@
       <header class="mb-4 flex flex-col gap-1">
         <span
           class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
-          :style="{ color: brand.colors.primary }"
+          :style="{ color: 'var(--brand-primary)' }"
         >
           Endividamento
         </span>
         <h3
           class="text-lg font-semibold md:text-xl"
-          :style="{ color: brand.colors.text }"
+          :style="{ color: 'var(--brand-text)' }"
         >
           Indicadores de endividamento
         </h3>
         <p
           class="font-mono-tab text-[10px] uppercase tracking-[0.12em]"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
         >
           &gt; O QUANTO A EMPRESA DEVE E SUA CAPACIDADE DE PAGAR
         </p>
       </header>
       <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <!-- Debt health bar (col 1) -->
-        <div class="border p-5 lg:col-span-1" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+        <div class="border p-5 lg:col-span-1" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
           <div class="mb-3 flex items-center justify-between">
             <span
               class="font-mono-tab text-[10px] uppercase tracking-[0.18em]"
-              :style="{ color: brand.colors.textMuted }"
+              :style="{ color: 'var(--brand-text-muted)' }"
             >
               DÍV.LÍQUIDA/EBITDA
             </span>
@@ -100,10 +100,10 @@
           </div>
 
           <div class="flex items-baseline justify-between">
-            <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
+            <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: 'var(--brand-text-muted)' }">
               SAUDÁVEL · 0–2x
             </span>
-            <span class="font-mono-tab text-2xl font-bold tabular-nums" :style="{ color: brand.colors.text }">
+            <span class="font-mono-tab text-2xl font-bold tabular-nums" :style="{ color: 'var(--brand-text)' }">
               {{ formatRatio(extras.leverage.net_debt_to_ebitda) }}
             </span>
           </div>
@@ -112,23 +112,23 @@
         <!-- Leverage register (col 2-3) -->
         <div
           class="grid grid-cols-2 gap-px border md:grid-cols-3 lg:col-span-2"
-          :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }"
+          :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-border)' }"
         >
           <div
             v-for="(cell, idx) in leverageCells"
             :key="cell.label"
             class="flex flex-col gap-1.5 px-4 py-4"
-            :style="{ backgroundColor: brand.colors.surface }"
+            :style="{ backgroundColor: 'var(--brand-surface)' }"
           >
             <div class="flex items-center justify-end">
               <UTooltip v-if="cell.tooltip" :text="cell.tooltip" :delay-duration="0">
-                <UIcon name="i-lucide-info" class="h-3 w-3 opacity-40" :style="{ color: brand.colors.textMuted }" />
+                <UIcon name="i-lucide-info" class="h-3 w-3 opacity-40" :style="{ color: 'var(--brand-text-muted)' }" />
               </UTooltip>
             </div>
-            <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">
+            <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: 'var(--brand-text-muted)' }">
               {{ cell.label }}
             </span>
-            <span class="font-mono-tab text-lg font-bold tabular-nums" :style="{ color: brand.colors.text }">
+            <span class="font-mono-tab text-lg font-bold tabular-nums" :style="{ color: 'var(--brand-text)' }">
               {{ cell.value }}
             </span>
           </div>
@@ -143,38 +143,38 @@
         <header class="mb-4 flex flex-col gap-1">
           <span
             class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
-            :style="{ color: brand.colors.primary }"
+            :style="{ color: 'var(--brand-primary)' }"
           >
             Eficiência
           </span>
           <h3
             class="text-lg font-semibold md:text-xl"
-            :style="{ color: brand.colors.text }"
+            :style="{ color: 'var(--brand-text)' }"
           >
             Margens operacionais
           </h3>
           <p
             class="font-mono-tab text-[10px] uppercase tracking-[0.12em]"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
           >
             &gt; QUANTO SOBRA DE CADA REAL VENDIDO
           </p>
         </header>
         <div
           class="flex flex-col gap-px border"
-          :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }"
+          :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-border)' }"
         >
           <div
             v-for="(m, idx) in marginCascade"
             :key="m.label"
             class="flex items-center justify-between gap-4 px-4 py-3"
-            :style="{ backgroundColor: brand.colors.surface }"
+            :style="{ backgroundColor: 'var(--brand-surface)' }"
           >
             <div class="flex items-center gap-3 flex-1 min-w-0">
-              <span class="font-mono-tab text-[11px] uppercase tracking-wider shrink-0" :style="{ color: brand.colors.textMuted }">
+              <span class="font-mono-tab text-[11px] uppercase tracking-wider shrink-0" :style="{ color: 'var(--brand-text-muted)' }">
                 {{ m.label }}
               </span>
-              <div class="flex-1 h-1" :style="{ backgroundColor: brand.colors.border }">
+              <div class="flex-1 h-1" :style="{ backgroundColor: 'var(--brand-border)' }">
                 <div
                   class="h-full transition-[transform,opacity,box-shadow,background-color,border-color,filter]"
                   :style="{
@@ -186,7 +186,7 @@
             </div>
             <span
               class="font-mono-tab text-base font-bold tabular-nums shrink-0"
-              :style="{ color: brand.colors.text }"
+              :style="{ color: 'var(--brand-text)' }"
             >
               {{ formatPercent(m.value) }}
             </span>
@@ -199,19 +199,19 @@
         <header class="mb-4 flex flex-col gap-1">
           <span
             class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
-            :style="{ color: brand.colors.primary }"
+            :style="{ color: 'var(--brand-primary)' }"
           >
             Rentabilidade
           </span>
           <h3
             class="text-lg font-semibold md:text-xl"
-            :style="{ color: brand.colors.text }"
+            :style="{ color: 'var(--brand-text)' }"
           >
             Retorno sobre capital
           </h3>
           <p
             class="font-mono-tab text-[10px] uppercase tracking-[0.12em]"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
           >
             &gt; O QUE A EMPRESA GERA COM O DINHEIRO INVESTIDO
           </p>
@@ -220,14 +220,14 @@
         <!-- ROIC hero -->
         <div
           class="mb-3 border p-5"
-          :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+          :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
         >
           <div class="flex items-center justify-between">
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
+            <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: 'var(--brand-text-muted)' }">
               ROIC · CAPITAL INVESTIDO
             </span>
             <UTooltip text="Quanto a empresa gera de retorno para cada real investido. Acima de 10% é considerado bom." :delay-duration="0">
-              <UIcon name="i-lucide-info" class="h-3 w-3 opacity-40" :style="{ color: brand.colors.textMuted }" />
+              <UIcon name="i-lucide-info" class="h-3 w-3 opacity-40" :style="{ color: 'var(--brand-text-muted)' }" />
             </UTooltip>
           </div>
           <span
@@ -236,8 +236,8 @@
           >
             {{ formatPercent(extras.quality.return_on_invested_capital) }}
           </span>
-          <div v-if="governanceLabel" class="mt-3 flex items-center justify-between border-t pt-3" :style="{ borderColor: brand.colors.border }">
-            <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
+          <div v-if="governanceLabel" class="mt-3 flex items-center justify-between border-t pt-3" :style="{ borderColor: 'var(--brand-border)' }">
+            <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: 'var(--brand-text-muted)' }">
               GOVERNANÇA
             </span>
             <UTooltip :text="governanceTooltip" :delay-duration="0">
@@ -254,23 +254,23 @@
         <!-- ROE/ROA/Giro register -->
         <div
           class="grid grid-cols-3 gap-px border"
-          :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }"
+          :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-border)' }"
         >
           <div
             v-for="(cell, idx) in profitabilityCells"
             :key="cell.label"
             class="flex flex-col gap-1 px-3 py-3"
-            :style="{ backgroundColor: brand.colors.surface }"
+            :style="{ backgroundColor: 'var(--brand-surface)' }"
           >
             <div class="flex items-center justify-end">
               <UTooltip v-if="cell.tooltip" :text="cell.tooltip" :delay-duration="0">
-                <UIcon name="i-lucide-info" class="h-3 w-3 opacity-40" :style="{ color: brand.colors.textMuted }" />
+                <UIcon name="i-lucide-info" class="h-3 w-3 opacity-40" :style="{ color: 'var(--brand-text-muted)' }" />
               </UTooltip>
             </div>
-            <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">
+            <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: 'var(--brand-text-muted)' }">
               {{ cell.label }}
             </span>
-            <span class="font-mono-tab text-base font-bold tabular-nums" :style="{ color: brand.colors.text }">
+            <span class="font-mono-tab text-base font-bold tabular-nums" :style="{ color: 'var(--brand-text)' }">
               {{ cell.value }}
             </span>
           </div>
@@ -282,30 +282,30 @@
         <header class="mb-4 flex flex-col gap-1">
           <span
             class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
-            :style="{ color: brand.colors.primary }"
+            :style="{ color: 'var(--brand-primary)' }"
           >
             Crescimento
           </span>
           <h3
             class="text-lg font-semibold md:text-xl"
-            :style="{ color: brand.colors.text }"
+            :style="{ color: 'var(--brand-text)' }"
           >
             Crescimento 5 anos
           </h3>
           <p
             class="font-mono-tab text-[10px] uppercase tracking-[0.12em]"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
           >
             &gt; TAXA ANUAL MÉDIA COMPOSTA (CAGR)
           </p>
         </header>
         <div
           class="flex flex-col gap-px border"
-          :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }"
+          :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-border)' }"
         >
-          <div class="flex flex-col gap-2 px-5 py-5" :style="{ backgroundColor: brand.colors.surface }">
+          <div class="flex flex-col gap-2 px-5 py-5" :style="{ backgroundColor: 'var(--brand-surface)' }">
             <div class="flex items-center justify-end">
-              <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">
+              <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: 'var(--brand-text-muted)' }">
                 RECEITAS
               </span>
             </div>
@@ -315,7 +315,7 @@
             >
               {{ formatPercent(extras.growth.revenue_cagr_5y) }}
             </span>
-            <div class="h-1.5 w-full" :style="{ backgroundColor: brand.colors.border }">
+            <div class="h-1.5 w-full" :style="{ backgroundColor: 'var(--brand-border)' }">
               <div
                 class="h-full"
                 :style="{
@@ -325,9 +325,9 @@
               />
             </div>
           </div>
-          <div class="flex flex-col gap-2 px-5 py-5" :style="{ backgroundColor: brand.colors.surface }">
+          <div class="flex flex-col gap-2 px-5 py-5" :style="{ backgroundColor: 'var(--brand-surface)' }">
             <div class="flex items-center justify-end">
-              <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">
+              <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: 'var(--brand-text-muted)' }">
                 LUCROS
               </span>
             </div>
@@ -337,7 +337,7 @@
             >
               {{ formatPercent(extras.growth.earnings_cagr_5y) }}
             </span>
-            <div class="h-1.5 w-full" :style="{ backgroundColor: brand.colors.border }">
+            <div class="h-1.5 w-full" :style="{ backgroundColor: 'var(--brand-border)' }">
               <div
                 class="h-full"
                 :style="{
@@ -354,33 +354,33 @@
     <!-- AI INTERPRETATIONS -->
     <div v-if="interpretations.length">
       <header class="mb-4 flex items-center gap-2">
-        <IconAi class="h-3 w-3" :style="{ fill: brand.colors.primary }" />
+        <IconAi class="h-3 w-3" :style="{ fill: 'var(--brand-primary)' }" />
         <span
           class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
-          :style="{ color: brand.colors.primary }"
+          :style="{ color: 'var(--brand-primary)' }"
         >
           Interpretações IA
         </span>
         <span
           class="font-mono-tab text-[10px] uppercase tracking-[0.12em]"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
         >
           &gt; LEITURA DOS NÚMEROS
         </span>
       </header>
       <div
         class="flex flex-col gap-px border"
-        :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }"
+        :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-border)' }"
       >
         <div
           v-for="(line, idx) in interpretations"
           :key="idx"
           class="flex items-start gap-3 px-5 py-3"
-          :style="{ backgroundColor: brand.colors.surface }"
+          :style="{ backgroundColor: 'var(--brand-surface)' }"
         >
           <p
             class="text-sm leading-relaxed"
-            :style="{ color: brand.colors.text }"
+            :style="{ color: 'var(--brand-text)' }"
             v-html="line"
           />
         </div>

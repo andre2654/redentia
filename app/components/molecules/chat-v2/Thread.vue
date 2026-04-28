@@ -46,9 +46,9 @@
         type="button"
         class="absolute bottom-44 left-1/2 z-20 flex size-9 -translate-x-1/2 items-center justify-center rounded-full backdrop-blur-md transition-colors"
         :style="{
-          backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 80%, transparent)`,
-          color: brand.colors.text,
-          border: `1px solid color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+          backgroundColor: `color-mix(in srgb, var(--brand-surface) 80%, transparent)`,
+          color: 'var(--brand-text)',
+          border: `1px solid color-mix(in srgb, var(--brand-border) 50%, transparent)`,
           boxShadow: '0 8px 20px -8px rgba(0,0,0,0.25)',
         }"
         aria-label="Rolar para o final"

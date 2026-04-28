@@ -6,12 +6,44 @@
          hydration mismatches when Pinia persisted state hydrates from localStorage
          only on the client. -->
     <ClientOnly>
-      <HomeHero v-if="showSection('hero') && !authStore.isAuthenticated" :style="{ order: sectionOrder('hero') }" />
+      <HomeHero
+        v-if="showSection('hero') && !authStore.isAuthenticated"
+        :style="{ order: sectionOrder('hero') }"
+        :ibov-series="ibovChartData"
+        :ibov-last-price="ibovLastPrice"
+        :ibov-indicator="ibovIndicator"
+        :ibov-variation-color="ibovVariationColor"
+        :ifix-last-price="ifixLastPrice"
+        :ifix-indicator="ifixIndicator"
+      />
     </ClientOnly>
 
-
-    <!-- Social Proof - Logos de corretoras -->
-    <MoleculesTrustedBy v-if="showSection('trustBar') && !authStore.isAuthenticated" :style="{ order: sectionOrder('trustBar') }" />
+    <!-- BRIDGE: conector visual entre o hero e a secao seguinte (mercado).
+         Linha vertical amber decrescente + eyebrow "Mercado ao vivo" +
+         chevron com bounce sutil. Aparece em DOM order logo apos o hero
+         (sem order explicito → default 0, mesmo do hero, resolve por DOM). -->
+    <div
+      v-if="!authStore.isAuthenticated"
+      class="qs-bridge relative flex items-center justify-center pt-6 pb-2 md:pt-8 md:pb-3"
+      aria-hidden="true"
+    >
+      <!-- Linha vertical fading no centro -->
+      <div
+        class="absolute left-1/2 top-0 h-[60%] w-px -translate-x-1/2"
+        :style="{ background: `linear-gradient(180deg, color-mix(in srgb, ${brand.colors.primary} 30%, transparent), transparent 100%)` }"
+      />
+      <!-- Cluster: eyebrow + chevron animado -->
+      <div class="relative flex flex-col items-center gap-1.5 px-4" :style="{ backgroundColor: 'var(--bg-base)' }">
+        <span class="text-[10px] font-medium uppercase tracking-[0.18em]" :style="{ color: 'var(--text-muted)' }">
+          Mercado ao vivo
+        </span>
+        <UIcon
+          name="i-lucide-chevron-down"
+          class="size-4 motion-safe:animate-bounce"
+          :style="{ color: 'var(--brand-primary)', animationDuration: '2.4s' }"
+        />
+      </div>
+    </div>
 
     <!-- Calculadora de Impacto / Poder do Tempo -->
     <MoleculesWealthProjection v-if="showSection('wealthCalculator') && brand.wealthCalculator && !authStore.isAuthenticated" :style="{ order: sectionOrder('wealthCalculator') }" />
@@ -22,205 +54,273 @@
     <!-- Checklist / Roteiro do Investidor -->
     <MoleculesInvestorChecklist v-if="showSection('investorChecklist') && brand.investorChecklist && !authStore.isAuthenticated" :style="{ order: sectionOrder('investorChecklist') }" />
 
-    <!-- Seção de Mercado ao Vivo (Prioridade) -->
-    <div v-if="showSection('market')" :style="{ order: sectionOrder('market') }" class="flex h-auto flex-col gap-4 pt-10">
-      <div class="flex flex-col gap-8">
-        <div class="flex flex-col gap-6 px-4 md:px-0">
-          <!-- Terminal-style market status line -->
-          <div class="flex flex-wrap items-center gap-3 font-mono-tab text-[10px] uppercase tracking-[0.18em]" role="status" aria-live="polite">
-            <span
-              class="flex items-center gap-1.5"
-              :style="{ color: marketStatus.color }"
-            >
-              <span
-                class="relative flex size-1.5"
-                aria-hidden="true"
-              >
-                <span
-                  v-if="marketStatus.animate"
-                  class="absolute inline-flex size-1.5 rounded-full opacity-75 motion-safe:animate-ping"
-                  :style="{ backgroundColor: marketStatus.color }"
-                />
-                <span
-                  class="relative inline-flex size-1.5 rounded-full"
-                  :style="{ backgroundColor: marketStatus.color }"
-                />
-              </span>
-              <span translate="no">{{ marketStatus.label }}</span>
-            </span>
-            <span :style="{ color: brand.colors.border }" aria-hidden="true">·</span>
-            <span :style="{ color: brand.colors.textMuted }" translate="no">B3 · BOLSA BRASILEIRA</span>
-            <span v-if="marketStatus.lastUpdate" :style="{ color: brand.colors.border }" aria-hidden="true">·</span>
-            <span v-if="marketStatus.lastUpdate" :style="{ color: brand.colors.textMuted }" translate="no">
-              UPDATE {{ marketStatus.lastUpdate }}
-            </span>
-          </div>
-
-          <!-- Index readouts as terminal cells, mono, large, tabular -->
-          <div class="flex flex-wrap gap-8 md:gap-12">
-            <div class="flex flex-col gap-1">
-              <span
-                class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
-                :style="{ color: brand.colors.primary }"
-                translate="no"
-              >
-                IBOVESPA
-              </span>
-              <p
-                class="font-mono-tab text-3xl font-bold tabular-nums sm:text-4xl md:text-5xl"
-                :style="{ color: ibovVariationColor }"
-                aria-label="Variação do IBOVESPA"
-              >
-                {{ ibovIndicator }}
-              </p>
-              <p class="font-mono-tab text-[11px] tabular-nums" :style="{ color: brand.colors.textMuted }" translate="no">
-                {{ fmt.number(ibovLastPrice) }} PTS
-              </p>
-            </div>
-
-            <div class="flex flex-col gap-1">
-              <span
-                class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
-                :style="{ color: brand.colors.primary }"
-                translate="no"
-              >
-                IFIX
-              </span>
-              <p
-                class="font-mono-tab text-3xl font-bold tabular-nums sm:text-4xl md:text-5xl"
-                :style="{ color: ifixVariationColor }"
-                aria-label="Variação do IFIX"
-              >
-                {{ ifixIndicator }}
-              </p>
-              <p class="font-mono-tab text-[11px] tabular-nums" :style="{ color: brand.colors.textMuted }" translate="no">
-                {{ fmt.number(ifixLastPrice) }} PTS
-              </p>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <div class="flex w-full flex-col">
-        <div class="flex w-full items-end justify-between gap-4 px-4 pt-6 md:px-0">
-          <div class="flex flex-col gap-1">
-            <span
-              class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
-              :style="{ color: brand.colors.primary }"
-              translate="no"
-            >
-              IBOV.CHART
-            </span>
-            <p
-              class="font-mono-tab text-3xl font-bold tabular-nums md:text-4xl"
-              :style="{ color: brand.colors.text }"
-              aria-label="Cotação atual do IBOV"
-              translate="no"
-            >
-              {{ fmt.brl(ibovLastPrice) }}
-            </p>
-          </div>
-          <MoleculesPeriodSelector
-            v-model="selectedTimeRange"
-            :loading="loading"
+    <!-- Seção de Mercado ao Vivo — quiet style (lightness as luxury). -->
+    <div v-if="showSection('market')" :style="{ order: sectionOrder('market') }" class="flex h-auto flex-col gap-6 pt-12 md:pt-16">
+      <!-- Editorial data band: ambient amber radial + floating chart/ticker card -->
+      <div class="relative flex flex-col gap-10">
+        <!-- Move 2: ambient amber radial glow (offset top-center, behind data) -->
+        <div
+          class="pointer-events-none absolute inset-x-0 -top-16 -z-10 h-[640px] overflow-hidden"
+          aria-hidden="true"
+        >
+          <div
+            class="mx-auto h-full w-[110%] max-w-[1280px] -translate-y-8"
+            :style="{ background: `radial-gradient(ellipse 60% 80% at 50% 0%, color-mix(in srgb, ${brand.colors.primary} 28%, transparent), transparent 65%)`, filter: 'blur(160px)' }"
           />
         </div>
-        <AtomsGraphLine
-          :data="ibovChartData"
-          :legend="ibovChartLabel"
-          :height="350"
-          :loading="loading"
-        />
-      </div>
 
-      <!-- Ticker Carousel com bordas sutis -->
-      <div class="border-y py-4" :style="{ borderColor: brand.colors.border }">
-        <AtomsTickerCarousel
-          class="w-full max-md:hidden"
-          big
-          no-control
-          :items="tickerCarouselItems"
-        />
-        <AtomsTickerCarousel
-          class="w-full md:hidden"
-          no-control
-          :items="tickerCarouselItems"
-        />
-      </div>
+        <!-- BENTO LAYOUT: IBOV grande (col 1-8 × row 1-2) + 4 ticker cards
+             menores (PETR4, VALE3, AAPL34, TSLA34) num 2x2 a direita. Mobile
+             colapsa em coluna unica com IBOV no topo + 2x2 abaixo. -->
+        <div class="market-bento grid grid-cols-2 gap-4 px-4 md:grid-cols-12 md:grid-rows-2 md:px-0">
+          <!-- Move 3: chart + ticker rail unificados em card flutuante premium
+               Header e palette adaptados do hero card (live preview) — peach gradient
+               interno, "Ao vivo · {clock}" + B3 pill, asset name + big number + change pill,
+               linha "Hoje, ... pts" no estilo do quiet hero.
+               Bento: span 2 cols (mobile) / 8 cols + 2 rows (md+). -->
+          <article
+            class="ibov-editorial-card relative col-span-2 overflow-hidden rounded-2xl border transition-shadow duration-300 md:col-span-8 md:row-span-2"
+          style="background: var(--bg-elevated); border-color: var(--border-subtle); box-shadow: var(--shadow-card);"
+        >
+          <!-- Atmospheric peach radial bg, top-right offset (mesma direção do hero) -->
+          <div
+            class="pointer-events-none absolute inset-0"
+            aria-hidden="true"
+            :style="{
+              background: `radial-gradient(ellipse 70% 60% at 90% -10%, color-mix(in srgb, ${brand.colors.primary} 22%, transparent), transparent 65%)`,
+            }"
+          />
+          <!-- Sutil rose secundário, bottom-left, equilibra a composição -->
+          <div
+            class="pointer-events-none absolute inset-0"
+            aria-hidden="true"
+            :style="{
+              background: `radial-gradient(ellipse 50% 50% at 5% 110%, color-mix(in srgb, ${brand.colors.primary} 10%, transparent), transparent 60%)`,
+            }"
+          />
 
+          <!-- Chart header (hero card style) + chart -->
+          <div class="relative flex w-full flex-col gap-5 px-5 pb-5 pt-6 md:px-7 md:pb-6 md:pt-7">
+            <!-- Status line: dot Ao vivo · clock + B3 pill -->
+            <header class="flex items-center justify-between gap-3">
+              <div class="flex items-center gap-2 text-[13px]" style="color: var(--text-muted);">
+                <span class="relative flex size-2" aria-hidden="true">
+                  <span
+                    v-if="marketStatus.animate"
+                    class="absolute inline-flex h-full w-full rounded-full opacity-70 motion-safe:animate-ping"
+                    :style="{ backgroundColor: marketStatus.color }"
+                  />
+                  <span class="relative inline-flex size-2 rounded-full" :style="{ backgroundColor: marketStatus.color }" />
+                </span>
+                <span class="font-medium" style="color: var(--text-body);" translate="no">{{ marketStatus.label }}</span>
+                <span style="color: var(--text-muted);" aria-hidden="true">·</span>
+                <span class="tabular-nums" style="color: var(--text-muted);" translate="no">{{ ibovClock || '—' }}</span>
+              </div>
+              <span
+                class="rounded-md px-2 py-0.5 text-[11px] font-medium tabular-nums"
+                style="background: color-mix(in srgb, var(--text-heading) 6%, transparent); color: var(--text-label);"
+                translate="no"
+              >B3</span>
+            </header>
 
-      <div class="flex items-end justify-between gap-4 px-4 pt-8 md:px-0">
-        <div class="flex flex-col gap-1">
-          <span
-            class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
-            :style="{ color: brand.colors.primary }"
+            <!-- Asset name + ticker -->
+            <div class="flex items-baseline gap-2">
+              <h3 class="text-[16px] font-medium" style="color: var(--text-heading);" translate="no">Ibovespa</h3>
+              <span class="text-[14px]" style="color: var(--text-muted);" translate="no">IBOV</span>
+            </div>
+
+            <!-- Big number + change pill + period selector (right) -->
+            <div class="flex w-full flex-wrap items-end justify-between gap-4">
+              <div class="flex flex-col gap-1.5">
+                <div class="flex items-center gap-3">
+                  <p
+                    class="font-light leading-none tabular-nums text-[36px] md:text-[56px]"
+                    style="color: var(--text-heading); letter-spacing: -0.03em;"
+                    aria-label="Cotação atual do IBOV"
+                    translate="no"
+                  >
+                    {{ fmt.brl(ibovLastPrice) }}
+                  </p>
+                  <span
+                    class="rounded-md px-2 py-1 text-[12px] font-medium tabular-nums"
+                    :style="{
+                      backgroundColor: `color-mix(in srgb, ${ibovVariationColor} 16%, transparent)`,
+                      color: ibovVariationColor,
+                    }"
+                    translate="no"
+                  >{{ ibovIndicator }}</span>
+                </div>
+                <p
+                  v-if="ibovDeltaPtsFormatted"
+                  class="text-[12px]"
+                  style="color: var(--text-muted);"
+                  translate="no"
+                >
+                  Hoje, <span class="tabular-nums" :style="{ color: ibovVariationColor }">{{ ibovDeltaPtsFormatted }}</span>
+                </p>
+              </div>
+              <MoleculesPeriodSelector
+                v-model="selectedTimeRange"
+                :loading="loading"
+              />
+            </div>
+
+            <AtomsGraphLine
+              :data="ibovChartData"
+              :legend="ibovChartLabel"
+              :height="350"
+              :loading="loading"
+            />
+          </div>
+
+          <!-- Ticker rail: footer interno do card, divisor superior sutil -->
+          <div class="border-t py-4" style="border-color: var(--border-subtle); background: color-mix(in srgb, var(--bg-overlay, var(--bg-elevated)) 60%, transparent);">
+            <AtomsTickerCarousel
+              class="w-full max-md:hidden"
+              big
+              no-control
+              :items="tickerCarouselItems"
+            />
+            <AtomsTickerCarousel
+              class="w-full md:hidden"
+              no-control
+              :items="tickerCarouselItems"
+            />
+          </div>
+        </article>
+
+          <!-- Mini bento ticker cards (PETR4, VALE3, AAPL34, TSLA34).
+               Cada um span col-2 row-1 (md+), mobile span col-1 row-1 (col-span-1 = 1 das 2 cols mobile).
+               Layout interno: header com logo+ticker+nome / preco grande / change pill+sparkline. -->
+          <NuxtLink
+            v-for="ticker in bentoTickers"
+            :key="ticker.code"
+            :to="`/asset/${ticker.code.toLowerCase()}`"
+            class="bento-ticker group relative col-span-1 overflow-hidden rounded-2xl border transition-all hover:-translate-y-0.5 md:col-span-2 md:row-span-1"
+            :style="{
+              background: 'var(--bg-elevated)',
+              borderColor: 'var(--border-subtle)',
+              boxShadow: 'var(--shadow-card)',
+            }"
           >
-            LIVE.MARKET
-          </span>
-          <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
+            <!-- Accent radial sutil tinted pela direcao -->
+            <div
+              class="pointer-events-none absolute inset-0"
+              aria-hidden="true"
+              :style="{
+                background: `radial-gradient(ellipse 70% 60% at 90% -20%, color-mix(in srgb, ${ticker.change >= 0 ? brand.colors.positive : brand.colors.negative} 14%, transparent), transparent 65%)`,
+              }"
+            />
+            <div class="relative flex h-full flex-col justify-between gap-3 p-4">
+              <!-- Top: logo + ticker + nome -->
+              <header class="flex items-center gap-2.5">
+                <div
+                  class="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-md border"
+                  :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
+                >
+                  <img
+                    v-if="ticker.logo"
+                    :src="ticker.logo"
+                    :alt="`Logo ${ticker.code}`"
+                    class="size-full object-cover"
+                    @error="$event.target.style.display='none'"
+                  />
+                  <span
+                    v-else
+                    class="font-mono-tab text-[9px] font-bold"
+                    :style="{ color: 'var(--text-muted)' }"
+                  >{{ ticker.code.slice(0, 2) }}</span>
+                </div>
+                <div class="flex min-w-0 flex-1 flex-col gap-0.5">
+                  <span class="truncate text-[14px] font-medium leading-none" :style="{ color: 'var(--text-heading)' }" translate="no">{{ ticker.code }}</span>
+                  <span class="truncate text-[10px]" :style="{ color: 'var(--text-muted)' }">{{ ticker.name }}</span>
+                </div>
+              </header>
+
+              <!-- Mini sparkline SVG: amber stroke + soft fill que segue a direcao -->
+              <svg
+                viewBox="0 0 120 32"
+                preserveAspectRatio="none"
+                class="h-8 w-full"
+                aria-hidden="true"
+              >
+                <defs>
+                  <linearGradient :id="`bento-fill-${ticker.code}`" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" :stop-color="ticker.change >= 0 ? brand.colors.positive : brand.colors.negative" stop-opacity="0.18" />
+                    <stop offset="100%" :stop-color="ticker.change >= 0 ? brand.colors.positive : brand.colors.negative" stop-opacity="0" />
+                  </linearGradient>
+                </defs>
+                <path
+                  :d="bentoSparklineArea(ticker.sparkline)"
+                  :fill="`url(#bento-fill-${ticker.code})`"
+                />
+                <path
+                  :d="bentoSparklineLine(ticker.sparkline)"
+                  fill="none"
+                  :stroke="ticker.change >= 0 ? brand.colors.positive : brand.colors.negative"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  vector-effect="non-scaling-stroke"
+                />
+              </svg>
+
+              <!-- Bottom: preco grande + change pill -->
+              <div class="flex items-end justify-between gap-2">
+                <p
+                  class="font-light leading-none tabular-nums text-[20px]"
+                  :style="{ color: 'var(--text-heading)', letterSpacing: '-0.02em' }"
+                  translate="no"
+                >{{ ticker.price }}</p>
+                <span
+                  class="rounded-md px-1.5 py-0.5 text-[11px] font-medium tabular-nums"
+                  :style="{
+                    backgroundColor: `color-mix(in srgb, ${ticker.change >= 0 ? brand.colors.positive : brand.colors.negative} 14%, transparent)`,
+                    color: ticker.change >= 0 ? brand.colors.positive : brand.colors.negative,
+                  }"
+                  translate="no"
+                >{{ ticker.change >= 0 ? '+' : '' }}{{ ticker.change.toFixed(2) }}%</span>
+              </div>
+            </div>
+          </NuxtLink>
+        </div>
+      </div>
+
+
+      <div class="flex items-end justify-between gap-4 px-4 pt-10 md:px-0">
+        <div class="flex flex-col gap-2">
+          <span class="eyebrow">Mercado ao vivo</span>
+          <h2 class="font-light leading-tight text-[28px] md:text-[36px]" style="color: var(--text-heading); letter-spacing: -0.025em;">
             {{ brand.homeTexts.marketTitle }}
           </h2>
-          <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
-            &gt; {{ brand.homeTexts.marketSubtitle }}
+          <p class="text-[14px] leading-relaxed" style="color: var(--text-body);">
+            {{ brand.homeTexts.marketSubtitle }}
           </p>
         </div>
-        <!-- View toggle as terminal-style segmented control -->
-        <div class="flex items-center gap-0 border font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ borderColor: brand.colors.border }" role="group" aria-label="Modo de visualização dos rankings">
-          <button
-            type="button"
-            class="flex cursor-pointer items-center gap-1.5 px-3 py-2 transition-[background-color,color] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
-            :style="!showMap ? { backgroundColor: brand.colors.primary, color: brand.colors.background } : { color: brand.colors.textMuted }"
-            :aria-pressed="!showMap"
-            aria-label="Visualização em lista"
-            @click="showMap = false"
-          >
-            <UIcon name="i-lucide-list" class="h-3 w-3" aria-hidden="true" />
-            <span class="max-sm:hidden">LIST</span>
-          </button>
-          <button
-            type="button"
-            class="flex cursor-pointer items-center gap-1.5 border-l px-3 py-2 transition-[background-color,color] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
-            :style="showMap ? { backgroundColor: brand.colors.primary, color: brand.colors.background, borderColor: brand.colors.border } : { color: brand.colors.textMuted, borderColor: brand.colors.border }"
-            :aria-pressed="showMap"
-            aria-label="Visualização em mapa de calor"
-            @click="showMap = true"
-          >
-            <UIcon name="i-lucide-grid-2x2" class="h-3 w-3" aria-hidden="true" />
-            <span class="max-sm:hidden">MAP</span>
-          </button>
-        </div>
+        <!-- View toggle: padrao oficial AtomsSegmented (design/IDENTITY.md secao 3.3) -->
+        <AtomsSegmented
+          v-model="viewMode"
+          :options="[
+            { value: 'list', label: 'List', icon: 'i-lucide-list', ariaLabel: 'Visualização em lista' },
+            { value: 'map', label: 'Map', icon: 'i-lucide-grid-2x2', ariaLabel: 'Visualização em mapa de calor' },
+          ]"
+          aria-label="Modo de visualização dos rankings"
+          hide-label-on-mobile
+        />
       </div>
 
       <div v-if="showMap" class="mb-6 flex flex-col">
-        <div class="mx-auto mb-5 mt-6 flex items-center gap-1 rounded-lg p-1 max-md:mx-6" :style="{ borderColor: brand.colors.border, border: `1px solid ${brand.colors.border}`, backgroundColor: `${brand.colors.text}05` }" role="group" aria-label="Filtro do mapa de calor">
-          <button
-            type="button"
-            class="cursor-pointer rounded-md px-3 py-1.5 text-xs font-medium transition-[background-color,color] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
-            :style="treemapFilter === 'all' ? { backgroundColor: `${brand.colors.text}15`, color: brand.colors.text } : { color: brand.colors.textMuted }"
-            :aria-pressed="treemapFilter === 'all'"
-            @click="treemapFilter = 'all'"
-          >
-            Todos
-          </button>
-          <button
-            type="button"
-            class="cursor-pointer rounded-md px-3 py-1.5 text-xs font-medium transition-[background-color,color] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
-            :style="treemapFilter === 'positive' ? { backgroundColor: `${brand.colors.text}15`, color: brand.colors.text } : { color: brand.colors.textMuted }"
-            :aria-pressed="treemapFilter === 'positive'"
-            @click="treemapFilter = 'positive'"
-          >
-            Altas
-          </button>
-          <button
-            type="button"
-            class="cursor-pointer rounded-md px-3 py-1.5 text-xs font-medium transition-[background-color,color] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
-            :style="treemapFilter === 'negative' ? { backgroundColor: `${brand.colors.text}15`, color: brand.colors.text } : { color: brand.colors.textMuted }"
-            :aria-pressed="treemapFilter === 'negative'"
-            @click="treemapFilter = 'negative'"
-          >
-            Baixas
-          </button>
+        <!-- Treemap filter: AtomsSegmented oficial (design/IDENTITY.md secao 3.3) -->
+        <div class="mx-auto mb-5 mt-6 max-md:mx-6">
+          <AtomsSegmented
+            v-model="treemapFilter"
+            :options="[
+              { value: 'all', label: 'Todos' },
+              { value: 'positive', label: 'Altas' },
+              { value: 'negative', label: 'Baixas' },
+            ]"
+            aria-label="Filtro do mapa de calor"
+          />
         </div>
         <AtomsGraphTreemap
           :data="stocksData"
@@ -247,24 +347,22 @@
             :class="rankingCardClass"
             :style="rankingCardStyle(brand.colors.positive)"
           >
-            <!-- Header, terminal register style -->
-            <div class="mb-3 flex items-center justify-between border-b pb-2" :style="{ borderColor: brand.colors.border }">
-              <div class="flex items-center gap-2">
-                <UIcon name="i-lucide-trending-up" class="h-3 w-3" :style="{ color: brand.colors.positive }" aria-hidden="true" />
-                <div class="flex flex-col">
-                  <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.positive }" translate="no">
-                    TOP {{ (item.key || '').toString().toUpperCase() }}
-                  </span>
-                  <h3 class="font-mono-tab text-[11px] font-semibold uppercase tracking-wider" :style="{ color: brand.colors.text }">{{ item.label }} / MAIORES ALTAS</h3>
-                </div>
+            <!-- Header quiet: eyebrow positive sutil + h3 normal weight, ver todos como link inline -->
+            <div class="mb-4 flex items-end justify-between border-b pb-3" style="border-color: var(--border-subtle);">
+              <div class="flex flex-col gap-1">
+                <span class="inline-flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-positive)' }" translate="no">
+                  <UIcon name="i-lucide-trending-up" class="h-3 w-3" aria-hidden="true" />
+                  Maiores altas
+                </span>
+                <h3 class="text-[15px] font-medium leading-tight" style="color: var(--text-heading);">{{ item.label }}</h3>
               </div>
               <NuxtLink
                 :to="{ path: '/search', query: rankingLinkQueries.top[item.key] }"
-                class="flex items-center gap-1 font-mono-tab text-[10px] uppercase tracking-[0.12em] transition-colors hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
-                :style="{ color: brand.colors.textMuted }"
+                class="inline-flex items-center gap-1 text-[12px] font-medium transition-colors hover:underline"
+                :style="{ color: 'var(--brand-primary)' }"
                 :aria-label="`Ver todos ${item.label} em alta`"
               >
-                <span aria-hidden="true">VER TUDO</span>
+                <span>Ver todos</span>
                 <UIcon name="i-lucide-arrow-right" class="h-3 w-3" aria-hidden="true" />
               </NuxtLink>
             </div>
@@ -294,24 +392,22 @@
             :class="rankingCardClass"
             :style="rankingCardStyle(brand.colors.negative)"
           >
-            <!-- Header, terminal register style -->
-            <div class="mb-3 flex items-center justify-between border-b pb-2" :style="{ borderColor: brand.colors.border }">
-              <div class="flex items-center gap-2">
-                <UIcon name="i-lucide-trending-down" class="h-3 w-3" :style="{ color: brand.colors.negative }" aria-hidden="true" />
-                <div class="flex flex-col">
-                  <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.negative }" translate="no">
-                    BOT {{ (item.key || '').toString().toUpperCase() }}
-                  </span>
-                  <h3 class="font-mono-tab text-[11px] font-semibold uppercase tracking-wider" :style="{ color: brand.colors.text }">{{ item.label }} / MAIORES BAIXAS</h3>
-                </div>
+            <!-- Header quiet: eyebrow negative sutil + h3 normal, ver todos link -->
+            <div class="mb-4 flex items-end justify-between border-b pb-3" style="border-color: var(--border-subtle);">
+              <div class="flex flex-col gap-1">
+                <span class="inline-flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-negative)' }" translate="no">
+                  <UIcon name="i-lucide-trending-down" class="h-3 w-3" aria-hidden="true" />
+                  Maiores baixas
+                </span>
+                <h3 class="text-[15px] font-medium leading-tight" style="color: var(--text-heading);">{{ item.label }}</h3>
               </div>
               <NuxtLink
                 :to="{ path: '/search', query: rankingLinkQueries.bottom[item.key] }"
-                class="flex items-center gap-1 font-mono-tab text-[10px] uppercase tracking-[0.12em] transition-colors hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
-                :style="{ color: brand.colors.textMuted }"
+                class="inline-flex items-center gap-1 text-[12px] font-medium transition-colors hover:underline"
+                :style="{ color: 'var(--brand-primary)' }"
                 :aria-label="`Ver todos ${item.label} em queda`"
               >
-                <span aria-hidden="true">VER TUDO</span>
+                <span>Ver todos</span>
                 <UIcon name="i-lucide-arrow-right" class="h-3 w-3" aria-hidden="true" />
               </NuxtLink>
             </div>
@@ -342,8 +438,126 @@
     </div>
 
 
+    <!-- QuickSearch showcase: banner largo + altura modesta vendendo a busca
+         inteligente. Demonstra o ⌘K rotacionando queries reais com results
+         vivos. Edge-to-edge na largura (escapa do main padding via -mx-4).
+         Posicionado logo antes das noticias — bridge abaixo conecta as 2. -->
+    <section
+      v-if="!authStore.isAuthenticated"
+      class="qs-showcase relative overflow-hidden border-t md:-mx-4"
+      :style="{
+        order: (sectionOrder('news') ?? 0) - 1,
+        borderColor: 'var(--border-subtle)',
+        background: `linear-gradient(180deg, transparent 0%, color-mix(in srgb, ${brand.colors.primary} 5%, transparent) 50%, color-mix(in srgb, ${brand.colors.primary} 3%, transparent) 100%)`,
+      }"
+    >
+      <!-- Radial subtle accent atras -->
+      <div
+        class="pointer-events-none absolute inset-0"
+        aria-hidden="true"
+        :style="{ background: `radial-gradient(ellipse 50% 80% at 70% 50%, color-mix(in srgb, ${brand.colors.primary} 10%, transparent), transparent 65%)` }"
+      />
+
+      <div class="relative mx-auto grid max-w-6xl items-center gap-8 px-6 py-7 md:grid-cols-12 md:gap-12 md:py-9">
+        <!-- Left: copy -->
+        <div class="md:col-span-5">
+          <p class="mb-3 text-[11px] font-medium uppercase tracking-[0.18em]" :style="{ color: 'var(--brand-primary)' }">
+            Busca inteligente
+          </p>
+          <h2 class="text-[28px] font-light leading-tight tracking-[-0.025em] md:text-[34px]" :style="{ color: 'var(--text-heading)' }">
+            Encontre qualquer coisa,
+            <em class="font-['Instrument_Serif'] italic" :style="{ color: 'var(--brand-primary)' }">em segundos.</em>
+          </h2>
+          <p class="mt-3 text-[14px] leading-relaxed md:text-[15px]" :style="{ color: 'var(--text-body)' }">
+            Um ticker, um fundo, uma dúvida. Pergunte do jeito que você pensa, e a busca entende: ações, FIIs, ETFs, cripto, tesouro, e até conceitos do mercado.
+          </p>
+          <div class="mt-5 inline-flex items-center gap-2 text-[12px]" :style="{ color: 'var(--text-muted)' }">
+            <span>Aperte</span>
+            <kbd
+              class="inline-flex items-center gap-0.5 rounded-md border px-2 py-0.5 font-mono-tab text-[11px]"
+              :style="{ borderColor: 'var(--border-default)', backgroundColor: 'var(--bg-overlay)', color: 'var(--text-body)' }"
+            >
+              <span>{{ qsShortcutModifier }}</span>
+              <span>K</span>
+            </kbd>
+            <span>de qualquer página</span>
+          </div>
+        </div>
+
+        <!-- Right: QuickSearch demo (mockup live) -->
+        <div class="md:col-span-7">
+          <div
+            class="qs-mock relative rounded-2xl border p-2 backdrop-blur-md"
+            :style="{
+              borderColor: 'var(--border-subtle)',
+              backgroundColor: 'color-mix(in srgb, var(--bg-elevated) 94%, transparent)',
+              boxShadow: `0 30px 60px -25px color-mix(in srgb, ${brand.colors.primary} 24%, transparent), 0 8px 24px -12px rgba(0,0,0,0.08)`,
+            }"
+          >
+            <!-- Search input com query rotacionando -->
+            <div class="flex items-center gap-3 rounded-xl px-4 py-3" :style="{ backgroundColor: 'var(--bg-input)', border: '1px solid var(--border-subtle)' }">
+              <UIcon name="i-lucide-search" class="size-4 shrink-0" :style="{ color: 'var(--text-muted)' }" />
+              <span class="flex-1 truncate text-[14px]" :style="{ color: 'var(--text-heading)' }" translate="no">
+                {{ qsCurrentDemo.query }}<span class="qs-cursor" :style="{ backgroundColor: 'var(--brand-primary)' }" aria-hidden="true" />
+              </span>
+              <kbd
+                class="inline-flex shrink-0 items-center gap-0.5 rounded-md border px-2 py-0.5 font-mono-tab text-[10px]"
+                :style="{ borderColor: 'var(--border-default)', backgroundColor: 'var(--bg-overlay)', color: 'var(--text-muted)' }"
+                aria-hidden="true"
+              >
+                <span>{{ qsShortcutModifier }}</span>
+                <span>K</span>
+              </kbd>
+            </div>
+
+            <!-- Results animados, troca conforme a query -->
+            <Transition name="qs-results" mode="out-in">
+              <ul :key="qsActiveDemoIdx" class="mt-2 flex flex-col gap-0.5 px-1 py-1">
+                <li
+                  v-for="result in qsCurrentDemo.results.slice(0, 2)"
+                  :key="result.title"
+                  class="flex items-center gap-3 rounded-lg px-3 py-2 transition-colors"
+                  :style="{ backgroundColor: result.highlight ? `color-mix(in srgb, ${brand.colors.primary} 8%, transparent)` : 'transparent' }"
+                >
+                  <span
+                    class="flex size-7 shrink-0 items-center justify-center rounded-md text-[11px] font-medium"
+                    :style="{
+                      backgroundColor: `color-mix(in srgb, ${result.color} 14%, transparent)`,
+                      color: result.color,
+                    }"
+                  >{{ result.icon }}</span>
+                  <div class="flex min-w-0 flex-1 flex-col">
+                    <span class="truncate text-[13px] font-medium leading-none" :style="{ color: 'var(--text-heading)' }" translate="no">{{ result.title }}</span>
+                    <span class="mt-1 truncate text-[11px]" :style="{ color: 'var(--text-muted)' }">{{ result.subtitle }}</span>
+                  </div>
+                  <span
+                    v-if="result.value"
+                    class="font-mono-tab text-[12px] tabular-nums"
+                    :style="{ color: result.valueColor || 'var(--text-body)' }"
+                    translate="no"
+                  >{{ result.value }}</span>
+                </li>
+              </ul>
+            </Transition>
+
+            <!-- Footer mock: hint + atalho enter -->
+            <div class="mt-1 flex items-center justify-between border-t px-3 py-2 text-[11px]" :style="{ borderColor: 'var(--border-subtle)', color: 'var(--text-muted)' }">
+              <span class="inline-flex items-center gap-1.5">
+                <UIcon name="i-lucide-sparkles" class="size-3" :style="{ color: 'var(--brand-primary)' }" />
+                Resultados ao vivo, sem digitar a página inteira
+              </span>
+              <span class="inline-flex items-center gap-1">
+                <kbd class="rounded border px-1.5 py-0.5 font-mono-tab text-[10px]" :style="{ borderColor: 'var(--border-default)', backgroundColor: 'var(--bg-overlay)' }">↵</kbd>
+                <span>abrir</span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- News Section — feed de notícias de mercado (apenas Redentia por enquanto) -->
-    <MoleculesNewsSection v-if="showSection('news')" :style="{ order: sectionOrder('news') }" class="mt-6 px-4 md:px-0" />
+    <MoleculesNewsSection v-if="showSection('news')" :style="{ order: sectionOrder('news') }" class="px-4 md:px-0" />
 
     <!-- Metrics Section com contador gigante -->
     <MoleculesMetricsSection v-if="showSection('metrics') && !authStore.isAuthenticated" :style="{ order: sectionOrder('metrics') }" />
@@ -445,18 +659,14 @@
     </section>
 
     <!-- Seção Blog / Guias Educacionais - Bento grid editorial -->
-    <section v-if="showSection('guides')" :style="{ order: sectionOrder('guides'), borderColor: brand.colors.border }" class="mt-12 border-t px-4 pt-12 md:px-0">
-      <header class="mb-6 flex flex-col gap-1">
-        <div class="flex items-center gap-2 font-mono-tab text-[10px] uppercase tracking-[0.18em]">
-          <span :style="{ color: brand.colors.primary }" translate="no">GUIDES.INDEX</span>
-          <span aria-hidden="true" :style="{ color: brand.colors.border }">·</span>
-          <span :style="{ color: brand.colors.textMuted }">{{ guidesHero.length + guidesMedium.length + guidesTiles.length }} ESTUDOS DISPONÍVEIS</span>
-        </div>
-        <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
+    <section v-if="showSection('guides')" :style="{ order: sectionOrder('guides') }" class="px-4 pt-12 md:px-0">
+      <header class="mb-8 flex flex-col gap-2">
+        <span class="eyebrow">Guias e estudos</span>
+        <h2 class="font-light leading-tight text-[28px] md:text-[36px]" style="color: var(--text-heading); letter-spacing: -0.025em;">
           {{ brand.homeTexts.guidesTitle }}
         </h2>
-        <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
-          &gt; 1 ESTUDO EM DESTAQUE · 4 TRILHAS ATIVAS · FERRAMENTAS RÁPIDAS
+        <p class="text-[14px] leading-relaxed" style="color: var(--text-body);">
+          {{ guidesHero.length + guidesMedium.length + guidesTiles.length }} estudos disponíveis, 4 trilhas ativas e ferramentas para aprofundar.
         </p>
       </header>
 
@@ -475,25 +685,14 @@
             :style="{ background: `radial-gradient(ellipse at 80% 20%, ${brand.colors.primary}22, transparent 60%), radial-gradient(ellipse at 20% 90%, ${brand.colors.primary}10, transparent 55%)` }"
             aria-hidden="true"
           />
-          <!-- Grid texture -->
-          <div
-            class="pointer-events-none absolute inset-0 opacity-[0.05]"
-            :style="{ backgroundImage: `linear-gradient(${brand.colors.text} 1px, transparent 1px), linear-gradient(90deg, ${brand.colors.text} 1px, transparent 1px)`, backgroundSize: '48px 48px' }"
-            aria-hidden="true"
-          />
-
-          <!-- Top row: kicker + arrow -->
+          <!-- Top row: eyebrow categoria + arrow circle -->
           <div class="relative flex items-start justify-between gap-4">
-            <span
-              class="inline-flex items-center gap-2 font-mono-tab text-[10px] uppercase tracking-[0.18em]"
-              :style="{ color: brand.colors.primary }"
-              translate="no"
-            >
-              ESTUDO.DESTAQUE · {{ guidesHero[0].categoria.toUpperCase() }}
+            <span class="eyebrow" translate="no">
+              Estudo em destaque · {{ guidesHero[0].categoria }}
             </span>
             <div
-              class="flex size-10 items-center justify-center rounded-full transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-300 group-hover:translate-x-1 group-hover:translate-y-[-1px]"
-              :style="{ backgroundColor: brand.colors.primary, color: brand.colors.background }"
+              class="flex size-10 items-center justify-center rounded-md transition-all duration-200 group-hover:translate-x-1 group-hover:-translate-y-px"
+              style="background-color: var(--brand-primary); color: #1A0A2E;"
               aria-hidden="true"
             >
               <UIcon name="i-lucide-arrow-up-right" class="size-5" />
@@ -503,36 +702,36 @@
           <!-- Middle: icon + title + description -->
           <div class="relative flex flex-col gap-5">
             <div
-              class="flex size-16 items-center justify-center rounded-2xl md:size-20"
-              :style="{ backgroundColor: `${brand.colors.primary}1A`, color: brand.colors.primary }"
+              class="flex size-14 items-center justify-center rounded-lg md:size-16"
+              style="background-color: color-mix(in srgb, var(--brand-primary) 14%, transparent); color: var(--brand-primary);"
               aria-hidden="true"
             >
-              <UIcon :name="guidesHero[0].icon" class="size-8 md:size-10" />
+              <UIcon :name="guidesHero[0].icon" class="size-7 md:size-8" />
             </div>
             <div class="flex flex-col gap-3">
               <h3
-                class="text-2xl font-bold leading-tight tracking-tight sm:text-3xl md:text-4xl"
-                :style="{ color: brand.colors.text }"
+                class="font-light leading-[1.1] text-[28px] sm:text-[32px] md:text-[40px]"
+                style="color: var(--text-heading); letter-spacing: -0.025em;"
               >
                 {{ guidesHero[0].titulo }}
               </h3>
               <p
-                class="max-w-xl text-sm leading-relaxed md:text-base"
-                :style="{ color: `${brand.colors.text}B3` }"
+                class="max-w-xl text-[15px] leading-relaxed md:text-[16px]"
+                style="color: var(--text-body);"
               >
                 {{ guidesHero[0].descricao }}
               </p>
             </div>
           </div>
 
-          <!-- Bottom metadata -->
-          <div class="relative flex items-center gap-4 font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">
+          <!-- Bottom metadata: caption sem mono -->
+          <div class="relative flex items-center gap-3 text-[12px]" style="color: var(--text-muted);">
             <span class="inline-flex items-center gap-1.5" translate="no">
               <UIcon name="i-lucide-clock" class="size-3" aria-hidden="true" />
-              {{ guidesHero[0].tempoLeitura }}&nbsp;MIN LEITURA
+              {{ guidesHero[0].tempoLeitura }} min de leitura
             </span>
             <span aria-hidden="true">·</span>
-            <span translate="no">ATUALIZADO 04&nbsp;JAN&nbsp;2026</span>
+            <span translate="no">Atualizado 04 jan 2026</span>
           </div>
         </NuxtLink>
 
@@ -556,16 +755,16 @@
           </div>
 
           <h3
-            class="line-clamp-2 text-base font-semibold leading-snug transition-colors group-hover:text-secondary"
-            :style="{ color: brand.colors.text }"
+            class="line-clamp-2 text-[15px] font-medium leading-snug transition-colors"
+            style="color: var(--text-heading);"
           >
             {{ guide.titulo }}
           </h3>
 
-          <div class="flex items-center justify-between gap-2 font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
-            <span translate="no">{{ guide.categoria.toUpperCase() }}</span>
+          <div class="flex items-center justify-between gap-2 text-[12px]" style="color: var(--text-muted);">
+            <span translate="no">{{ guide.categoria }}</span>
             <span class="inline-flex items-center gap-1" translate="no">
-              {{ guide.tempoLeitura }}&nbsp;MIN
+              {{ guide.tempoLeitura }} min
               <UIcon
                 name="i-lucide-arrow-up-right"
                 class="size-3 opacity-0 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-200 group-hover:translate-x-0.5 group-hover:opacity-100"
@@ -594,17 +793,17 @@
           </div>
           <div class="flex min-w-0 flex-1 flex-col gap-0.5">
             <h4
-              class="line-clamp-1 text-xs font-semibold leading-snug transition-colors group-hover:text-secondary"
-              :style="{ color: brand.colors.text }"
+              class="line-clamp-1 text-[13px] font-medium leading-snug transition-colors"
+              style="color: var(--text-heading);"
             >
               {{ guide.titulo }}
             </h4>
             <span
-              class="font-mono-tab text-[9px] uppercase tracking-[0.12em]"
-              :style="{ color: brand.colors.textMuted }"
+              class="text-[11px]"
+              style="color: var(--text-muted);"
               translate="no"
             >
-              {{ guide.tempoLeitura }}&nbsp;MIN · {{ guide.categoria.toUpperCase() }}
+              {{ guide.tempoLeitura }} min · {{ guide.categoria }}
             </span>
           </div>
           <UIcon
@@ -616,22 +815,17 @@
         </NuxtLink>
       </div>
 
-      <!-- CTA: ver todos -->
-      <div class="mt-6 flex justify-center">
+      <!-- CTA: ver todos — quiet ghost button (rounded-md, sem mono, sem uppercase) -->
+      <div class="mt-8 flex justify-center">
         <NuxtLink
           to="/guias"
-          class="group inline-flex items-center gap-2 rounded-full border px-5 py-2.5 font-mono-tab text-[11px] font-semibold uppercase tracking-[0.15em] transition-colors hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-          :style="{
-            borderColor: brand.colors.border,
-            color: brand.colors.text,
-            backgroundColor: brand.colors.surface,
-          }"
+          class="group quiet-btn-ghost"
         >
-          <UIcon name="i-lucide-book-open" class="size-3.5" aria-hidden="true" />
+          <UIcon name="i-lucide-book-open" class="size-4" aria-hidden="true" />
           <span>Ver todos os guias</span>
           <UIcon
             name="i-lucide-arrow-right"
-            class="size-3.5 transition-transform group-hover:translate-x-0.5"
+            class="size-4 transition-transform group-hover:translate-x-0.5"
             aria-hidden="true"
           />
         </NuxtLink>
@@ -1279,6 +1473,8 @@ const {
   getTopReits,
   getTopBDRs,
   getIndiceHistoricPrices,
+  getTickerDetails,
+  assetHistoricPrices,
 } = useAssetsService()
 
 const loading = ref(false)
@@ -1316,6 +1512,16 @@ const showMap = computed<boolean>({
   },
   set(value) {
     replaceQuery({ view: value ? 'map' : undefined })
+  },
+})
+
+// Adapter para AtomsSegmented que usa string discriminada em vez de boolean.
+const viewMode = computed<'list' | 'map'>({
+  get() {
+    return showMap.value ? 'map' : 'list'
+  },
+  set(value) {
+    showMap.value = value === 'map'
   },
 })
 
@@ -1718,6 +1924,204 @@ const ifixVariationColor = computed(() => {
   return stats.variation > 0 ? brand.colors.positive : brand.colors.negative
 })
 
+// QuickSearch showcase: queries rotacionando com results coerentes pra
+// vender a busca inteligente. Auto-cycle a cada 3.2s, pausa em hover.
+const qsShortcutModifier = computed(() => {
+  if (typeof navigator === 'undefined') return '⌘'
+  return /Mac|iPod|iPhone|iPad/.test(navigator.platform) ? '⌘' : 'Ctrl'
+})
+
+interface QsResult {
+  icon: string
+  color: string
+  title: string
+  subtitle: string
+  value?: string
+  valueColor?: string
+  highlight?: boolean
+}
+
+interface QsDemo {
+  query: string
+  results: QsResult[]
+}
+
+const qsDemos = computed<QsDemo[]>(() => [
+  {
+    query: 'PETR4',
+    results: [
+      { icon: '◉', color: brand.colors.positive, title: 'PETR4', subtitle: 'Petrobras PN · Petróleo & Gás', value: 'R$ 38,42 +2.84%', valueColor: brand.colors.positive, highlight: true },
+      { icon: '◯', color: brand.colors.primary, title: 'PETR3', subtitle: 'Petrobras ON', value: 'R$ 41,10 +2.61%', valueColor: brand.colors.positive },
+      { icon: '▦', color: 'var(--text-muted)', title: 'PETR.US', subtitle: 'Petrobras BDR · NYSE', value: 'US$ 14,82', valueColor: 'var(--text-body)' },
+    ],
+  },
+  {
+    query: 'Quem subiu hoje?',
+    results: [
+      { icon: '↑', color: brand.colors.positive, title: 'GOAU4', subtitle: 'Metalúrgica Gerdau', value: '+3,70%', valueColor: brand.colors.positive, highlight: true },
+      { icon: '↑', color: brand.colors.positive, title: 'GGBR4', subtitle: 'Gerdau PN', value: '+3,50%', valueColor: brand.colors.positive },
+      { icon: '↑', color: brand.colors.positive, title: 'PLPL3', subtitle: 'Plano & Plano', value: '+3,47%', valueColor: brand.colors.positive },
+    ],
+  },
+  {
+    query: 'Tesouro IPCA+ 2035',
+    results: [
+      { icon: '⊞', color: brand.colors.primary, title: 'Tesouro IPCA+ 2035', subtitle: 'Renda fixa · Atrelado à inflação', value: 'IPCA + 6,52%', valueColor: brand.colors.primary, highlight: true },
+      { icon: '⊞', color: brand.colors.primary, title: 'Tesouro IPCA+ 2029', subtitle: 'Renda fixa · Curto prazo', value: 'IPCA + 6,31%' },
+      { icon: '⊞', color: brand.colors.primary, title: 'Tesouro IPCA+ 2045', subtitle: 'Renda fixa · Longo prazo', value: 'IPCA + 6,68%' },
+    ],
+  },
+  {
+    query: 'Como diversificar carteira?',
+    results: [
+      { icon: '✦', color: brand.colors.primary, title: 'Pergunte à IA Redentia', subtitle: 'Resposta personalizada com sua carteira', value: 'Abrir →', valueColor: brand.colors.primary, highlight: true },
+      { icon: '📖', color: 'var(--text-muted)', title: 'Guia: Diversificação', subtitle: 'Conceito · 8 min de leitura' },
+      { icon: '🧮', color: 'var(--text-muted)', title: 'Calculadora de alocação', subtitle: 'Ferramenta · Distribua por classe' },
+    ],
+  },
+  {
+    query: 'Maiores dividendos',
+    results: [
+      { icon: '◑', color: brand.colors.positive, title: 'BBSE3', subtitle: 'BB Seguridade · DY 12 meses', value: '8,42%', valueColor: brand.colors.positive, highlight: true },
+      { icon: '◑', color: brand.colors.positive, title: 'TAEE11', subtitle: 'Taesa · Geração de energia', value: '7,98%', valueColor: brand.colors.positive },
+      { icon: '◑', color: brand.colors.positive, title: 'CMIG4', subtitle: 'Cemig · Energia elétrica', value: '7,64%', valueColor: brand.colors.positive },
+    ],
+  },
+])
+
+const qsActiveDemoIdx = ref(0)
+const qsCurrentDemo = computed<QsDemo>(() => qsDemos.value[qsActiveDemoIdx.value])
+let qsTimer: ReturnType<typeof setInterval> | null = null
+onMounted(() => {
+  qsTimer = setInterval(() => {
+    qsActiveDemoIdx.value = (qsActiveDemoIdx.value + 1) % qsDemos.value.length
+  }, 3200)
+})
+onBeforeUnmount(() => {
+  if (qsTimer) clearInterval(qsTimer)
+})
+
+// Bento mini-tickers: dados REAIS via useAsyncData. 4 fetches paralelos
+// (details + 1mo history) por ticker, com fallback gracioso pra zero se
+// o backend falhar pra algum dos 4. Roda no SSR.
+interface BentoTickerData {
+  code: string
+  name: string
+  price: number
+  change: number
+  sparkline: number[]
+}
+
+const BENTO_CODES = ['PETR4', 'VALE3', 'AAPL34', 'TSLA34'] as const
+const BENTO_FALLBACK_NAMES: Record<string, string> = {
+  PETR4: 'Petrobras PN',
+  VALE3: 'Vale ON',
+  AAPL34: 'Apple BDR',
+  TSLA34: 'Tesla BDR',
+}
+
+const { data: bentoTickerRaw } = await useAsyncData<BentoTickerData[]>(
+  'bento-tickers',
+  async () => {
+    const results = await Promise.all(
+      BENTO_CODES.map(async (code) => {
+        try {
+          const [details, history] = await Promise.all([
+            getTickerDetails(code).catch(() => null),
+            assetHistoricPrices(code, '1mo').catch(() => null),
+          ])
+          const d: any = details || {}
+          const price = coerceNumber(d.market_price ?? d.close)
+          const change = coerceNumber(d.change_percent ?? d.change)
+          const name = (d.name as string) || BENTO_FALLBACK_NAMES[code] || code
+          const histArr = Array.isArray(history) ? history : []
+          const points = histArr
+            .map((p: any) => coerceNumber(p?.market_price ?? p?.close))
+            .filter((v: number) => Number.isFinite(v) && v > 0)
+          // Sample ~15 points pra sparkline (mantem forma da curva sem ruido).
+          let sparkline: number[] = points
+          if (points.length > 15) {
+            const step = (points.length - 1) / 14
+            sparkline = Array.from({ length: 15 }, (_, i) => points[Math.round(i * step)])
+          }
+          if (sparkline.length < 2) sparkline = [price || 50, price || 50]
+          return { code, name, price, change, sparkline }
+        } catch {
+          return {
+            code,
+            name: BENTO_FALLBACK_NAMES[code] || code,
+            price: 0,
+            change: 0,
+            sparkline: [50, 50],
+          }
+        }
+      })
+    )
+    return results
+  }
+)
+
+const bentoTickers = computed(() =>
+  (bentoTickerRaw.value || []).map((t) => ({
+    code: t.code,
+    name: t.name,
+    price: t.price > 0
+      ? `R$ ${t.price.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+      : '—',
+    change: t.change,
+    logo: `https://icons.brapi.dev/icons/${t.code}.svg`,
+    sparkline: t.sparkline,
+  }))
+)
+
+// Helpers SVG sparkline para os bento tickers (viewBox 120×32).
+function bentoSparklineLine(pts: number[]): string {
+  if (!pts.length) return ''
+  const min = Math.min(...pts)
+  const max = Math.max(...pts)
+  const range = max - min || 1
+  const stepX = 120 / (pts.length - 1)
+  const pad = 3
+  return pts.map((v, i) => {
+    const x = i * stepX
+    const y = 32 - pad - ((v - min) / range) * (32 - pad * 2)
+    return `${i === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`
+  }).join(' ')
+}
+function bentoSparklineArea(pts: number[]): string {
+  const line = bentoSparklineLine(pts)
+  if (!line) return ''
+  const last = (pts.length - 1) * (120 / (pts.length - 1))
+  return `${line} L ${last.toFixed(1)} 32 L 0 32 Z`
+}
+
+// Live clock para o card editorial (HH:MM em America/Sao_Paulo, atualiza a cada 30s)
+const ibovClock = ref('')
+function updateIbovClock() {
+  const d = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }))
+  ibovClock.value = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+}
+let ibovClockTimer: ReturnType<typeof setInterval> | null = null
+onMounted(() => {
+  updateIbovClock()
+  ibovClockTimer = setInterval(updateIbovClock, 30_000)
+})
+onBeforeUnmount(() => {
+  if (ibovClockTimer) clearInterval(ibovClockTimer)
+})
+
+// Delta intradiario do IBOV em pontos (ultimo - penultimo) para a linha "Hoje, ... pts"
+const ibovDeltaPtsFormatted = computed(() => {
+  const series = homeMarketData.value?.ibovSeries
+  if (!Array.isArray(series) || series.length < 2) return ''
+  const last = coerceNumber(series[series.length - 1].market_price)
+  const prev = coerceNumber(series[series.length - 2].market_price)
+  const delta = last - prev
+  if (!Number.isFinite(delta)) return ''
+  const sign = delta >= 0 ? '+' : ''
+  return `${sign}${fmt.number(Math.round(delta))} pts`
+})
+
 const chatSuggestions = [
   'Qual a diferença entre ações e FIIs?',
   'Como funcionam os dividendos?',
@@ -1728,11 +2132,18 @@ const chatSuggestions = [
 ]
 
 const tickerCarouselItems = computed(() =>
-  topAssets.value.top.stocks.slice(0, 40).map((asset) => ({
-    logo: asset.logo || '/default-logo.png',
-    ticker: asset.ticker,
-    change: `${coerceNumber(asset.change_percent ?? asset.change).toFixed(2)}%`,
-  }))
+  topAssets.value.top.stocks.slice(0, 40).map((asset) => {
+    const priceNum = coerceNumber(asset.market_price ?? asset.close)
+    const price = priceNum > 0
+      ? `R$ ${priceNum.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+      : ''
+    return {
+      logo: asset.logo || '/default-logo.png',
+      ticker: asset.ticker,
+      change: `${coerceNumber(asset.change_percent ?? asset.change).toFixed(2)}%`,
+      price,
+    }
+  })
 )
 
 watchEffect(() => {
@@ -1849,6 +2260,35 @@ definePageMeta({
 </script>
 
 <style scoped>
+/* QuickSearch showcase ====================================================
+   - cursor blink ao lado da query mock
+   - results entry transition (fade + slide) na troca de demo */
+.qs-cursor {
+  display: inline-block;
+  width: 1px;
+  height: 14px;
+  margin-left: 2px;
+  vertical-align: middle;
+  animation: qs-cursor-blink 1s steps(2) infinite;
+}
+@keyframes qs-cursor-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+.qs-results-enter-active,
+.qs-results-leave-active {
+  transition: opacity 280ms ease, transform 280ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.qs-results-enter-from {
+  opacity: 0;
+  transform: translateY(6px);
+}
+.qs-results-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
 .carousel-container {
   box-shadow: 0px 0px 80px 0px rgba(55, 77, 60, 0.6);
 }

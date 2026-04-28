@@ -8,9 +8,9 @@
           :key="`row1-${index}`"
           class="mx-2 inline-flex items-center rounded-full border px-4 py-2 text-sm transition-colors"
           :style="{
-            color: brand.colors.textMuted,
-            borderColor: brand.colors.border,
-            backgroundColor: brand.colors.surface,
+            color: 'var(--brand-text-muted)',
+            borderColor: 'var(--brand-border)',
+            backgroundColor: 'var(--brand-surface)',
           }"
           @mouseenter="($event.currentTarget as HTMLElement).style.color = brand.colors.text; ($event.currentTarget as HTMLElement).style.backgroundColor = brand.colors.surfaceHover"
           @mouseleave="($event.currentTarget as HTMLElement).style.color = brand.colors.textMuted; ($event.currentTarget as HTMLElement).style.backgroundColor = brand.colors.surface"
@@ -28,9 +28,9 @@
           :key="`row2-${index}`"
           class="mx-2 inline-flex items-center rounded-full border px-4 py-2 text-sm transition-colors"
           :style="{
-            color: brand.colors.textMuted,
-            borderColor: brand.colors.border,
-            backgroundColor: brand.colors.surface,
+            color: 'var(--brand-text-muted)',
+            borderColor: 'var(--brand-border)',
+            backgroundColor: 'var(--brand-surface)',
           }"
           @mouseenter="($event.currentTarget as HTMLElement).style.color = brand.colors.text; ($event.currentTarget as HTMLElement).style.backgroundColor = brand.colors.surfaceHover"
           @mouseleave="($event.currentTarget as HTMLElement).style.color = brand.colors.textMuted; ($event.currentTarget as HTMLElement).style.backgroundColor = brand.colors.surface"
@@ -48,9 +48,9 @@
           :key="`row3-${index}`"
           class="mx-2 inline-flex items-center rounded-full border px-4 py-2 text-sm transition-colors"
           :style="{
-            color: brand.colors.textMuted,
-            borderColor: brand.colors.border,
-            backgroundColor: brand.colors.surface,
+            color: 'var(--brand-text-muted)',
+            borderColor: 'var(--brand-border)',
+            backgroundColor: 'var(--brand-surface)',
           }"
           @mouseenter="($event.currentTarget as HTMLElement).style.color = brand.colors.text; ($event.currentTarget as HTMLElement).style.backgroundColor = brand.colors.surfaceHover"
           @mouseleave="($event.currentTarget as HTMLElement).style.color = brand.colors.textMuted; ($event.currentTarget as HTMLElement).style.backgroundColor = brand.colors.surface"

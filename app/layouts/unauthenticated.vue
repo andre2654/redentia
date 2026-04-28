@@ -188,15 +188,15 @@
             <span class="tracking-[0.01em]">{{ brand.nav.headerAI }}</span>
           </NuxtLink>
 
-          <!-- Entrar — single prominent CTA with sliding arrow -->
+          <!-- Entrar — primary CTA quiet style. Radius 6px, weight 500.
+               Texto fixado em #1A0A2E (deep aubergine, contraste >= 7:1
+               sobre amber em qualquer tenant). Hover via filter brightness
+               para preservar saturacao da marca. Focus ring amber. -->
           <NuxtLink
             to="/auth/login"
-            class="group flex items-center gap-2 rounded-md px-4 py-2 text-[13px] font-medium tracking-[0.02em] transition-[transform,opacity,box-shadow,background-color,border-color,filter]"
-            :style="{
-              backgroundColor: brand.colors.primary,
-              color: brand.colors.background,
-            }"
-            @mouseenter="($event.currentTarget as HTMLElement).style.filter = 'brightness(1.08)'"
+            class="group inline-flex items-center gap-2 rounded-md px-5 py-2 text-[14px] font-medium leading-none transition-all duration-200 focus-visible:outline-none focus-visible:shadow-[var(--shadow-ring-focus)] active:translate-y-px"
+            style="background-color: var(--brand-primary); color: #1A0A2E;"
+            @mouseenter="($event.currentTarget as HTMLElement).style.filter = 'brightness(0.92)'"
             @mouseleave="($event.currentTarget as HTMLElement).style.filter = 'brightness(1)'"
           >
             <span>{{ brand.nav.login }}</span>

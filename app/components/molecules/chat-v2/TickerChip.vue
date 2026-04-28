@@ -54,7 +54,7 @@
     <!-- Ticker label -->
     <span
       class="ticker-chip-label font-mono-tab font-semibold tracking-tight"
-      :style="{ color: brand.colors.text }"
+      :style="{ color: 'var(--brand-text)' }"
     >{{ ticker.toUpperCase() }}</span>
 
     <!-- Live price + (optional) delta -->

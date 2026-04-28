@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-2xl border p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+  <div class="rounded-2xl border p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
     <UProgress
       :model-value="score"
       :max="requirements.length"
@@ -9,8 +9,8 @@
     />
 
     <div class="mt-4 flex flex-col gap-3 text-sm font-medium">
-      <span class="text-center text-[13px] font-light" :style="{ color: brand.colors.text }">{{ text }}</span>
-      <span class="text-[13px] font-extralight" :style="{ color: brand.colors.textMuted }">
+      <span class="text-center text-[13px] font-light" :style="{ color: 'var(--brand-text)' }">{{ text }}</span>
+      <span class="text-[13px] font-extralight" :style="{ color: 'var(--brand-text-muted)' }">
         Sua senha precisa ter:
       </span>
     </div>
@@ -20,7 +20,7 @@
         v-for="req in requirements"
         :key="req.text"
         class="flex items-center gap-2"
-        :style="{ color: req.met ? brand.colors.primary : brand.colors.textMuted }"
+        :style="{ color: req.met ? brand.colors.primary : 'var(--brand-text-muted)' }"
       >
         <UIcon
           :name="req.met ? 'i-lucide-circle-check' : 'i-lucide-circle-x'"

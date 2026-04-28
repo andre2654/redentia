@@ -12,7 +12,7 @@
     </span>
     <span
       class="inline-flex items-center gap-1 text-[10px] uppercase tracking-wide"
-      :style="{ color: brand.colors.textMuted }"
+      :style="{ color: 'var(--brand-text-muted)' }"
     >
       <span
         class="inline-block size-1.5 rounded-full"

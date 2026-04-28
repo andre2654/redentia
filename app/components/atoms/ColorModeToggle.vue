@@ -18,11 +18,8 @@
 <template>
   <div
     v-if="supportsMultiMode"
-    class="qs-mode-toggle inline-flex items-center gap-0.5 rounded-full border p-0.5"
-    :style="{
-      borderColor: `color-mix(in srgb, ${brand.colors.border} 70%, transparent)`,
-      backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 70%, transparent)`,
-    }"
+    class="qs-mode-toggle inline-flex items-center gap-0.5 rounded-md border p-0.5"
+    style="border-color: var(--border-default); background-color: var(--bg-input);"
     role="radiogroup"
     aria-label="Tema (claro, escuro ou automático)"
   >
@@ -34,17 +31,17 @@
       :aria-checked="preference === option.value"
       :aria-label="option.label"
       :title="option.label"
-      class="qs-mode-segment inline-flex items-center justify-center gap-1.5 rounded-full transition-[background-color,color]"
+      class="qs-mode-segment inline-flex items-center justify-center gap-1.5 rounded-[4px] transition-all duration-150 focus-visible:outline-none focus-visible:shadow-[var(--shadow-ring-focus)]"
       :class="[
-        size === 'labeled' ? 'px-2.5 py-1 text-[12px]' : 'size-7',
+        size === 'labeled' ? 'px-2.5 py-1 text-[12px] font-medium' : 'size-7',
         preference === option.value ? 'qs-mode-segment-active' : '',
       ]"
       :style="preference === option.value
         ? {
-            backgroundColor: `${brand.colors.primary}26`,
-            color: brand.colors.text,
+            backgroundColor: 'var(--brand-primary)',
+            color: '#1A0A2E',
           }
-        : { color: brand.colors.textMuted }"
+        : { backgroundColor: 'transparent', color: 'var(--text-body)' }"
       @click="setPreference(option.value)"
     >
       <UIcon :name="option.icon" class="size-3.5 shrink-0" aria-hidden="true" />
@@ -108,10 +105,11 @@ const options: Array<{ value: Preference; label: string; icon: string }> = [
 </script>
 
 <style scoped>
-.qs-mode-segment:hover {
-  background-color: color-mix(in srgb, currentColor 8%, transparent);
+.qs-mode-segment:not(.qs-mode-segment-active):hover {
+  background-color: var(--bg-overlay) !important;
+  color: var(--text-heading) !important;
 }
 .qs-mode-segment-active:hover {
-  background-color: color-mix(in srgb, var(--brand-primary, #f5b301) 22%, transparent) !important;
+  filter: brightness(0.92);
 }
 </style>

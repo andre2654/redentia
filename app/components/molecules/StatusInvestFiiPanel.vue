@@ -5,39 +5,39 @@
       <header class="mb-4 flex flex-col gap-1">
         <span
           class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
-          :style="{ color: brand.colors.primary }"
+          :style="{ color: 'var(--brand-primary)' }"
         >
           Snapshot do FII
         </span>
         <h3
           class="text-lg font-semibold md:text-xl"
-          :style="{ color: brand.colors.text }"
+          :style="{ color: 'var(--brand-text)' }"
         >
           Indicadores do fundo
         </h3>
         <p
           class="font-mono-tab text-[10px] uppercase tracking-[0.12em]"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
         >
           &gt; RENDIMENTO · VALOR PATRIMONIAL · LIQUIDEZ
         </p>
       </header>
       <div
         class="grid grid-cols-2 gap-px border md:grid-cols-3 lg:grid-cols-6"
-        :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }"
+        :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-border)' }"
       >
         <div
           v-for="(cell, idx) in snapshotCells"
           :key="cell.label"
           class="flex flex-col gap-1.5 px-4 py-4"
-          :style="{ backgroundColor: brand.colors.surface }"
+          :style="{ backgroundColor: 'var(--brand-surface)' }"
         >
           <div class="flex items-center justify-end">
             <UTooltip v-if="cell.tooltip" :text="cell.tooltip" :delay-duration="0">
-              <UIcon name="i-lucide-info" class="h-3 w-3 opacity-40" :style="{ color: brand.colors.textMuted }" />
+              <UIcon name="i-lucide-info" class="h-3 w-3 opacity-40" :style="{ color: 'var(--brand-text-muted)' }" />
             </UTooltip>
           </div>
-          <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">
+          <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: 'var(--brand-text-muted)' }">
             {{ cell.label }}
           </span>
           <span
@@ -55,14 +55,14 @@
       <!-- DY hero -->
       <div
         class="flex flex-col justify-between border p-5 lg:col-span-1"
-        :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+        :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
       >
         <div class="flex items-center justify-between">
-          <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
+          <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: 'var(--brand-text-muted)' }">
             DIVIDEND YIELD · 12M
           </span>
           <UTooltip text="Rendimento distribuído nos últimos 12 meses sobre o preço atual da cota. É o retorno que você recebe em forma de dividendos." :delay-duration="0">
-            <UIcon name="i-lucide-info" class="h-3 w-3 opacity-40" :style="{ color: brand.colors.textMuted }" />
+            <UIcon name="i-lucide-info" class="h-3 w-3 opacity-40" :style="{ color: 'var(--brand-text-muted)' }" />
           </UTooltip>
         </div>
         <span
@@ -74,12 +74,12 @@
         <div
           v-if="fii.monthly_income_avg_24m !== null"
           class="flex items-center justify-between border-t pt-3"
-          :style="{ borderColor: brand.colors.border }"
+          :style="{ borderColor: 'var(--brand-border)' }"
         >
-          <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
+          <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: 'var(--brand-text-muted)' }">
             MÉDIA MENSAL · 24M
           </span>
-          <span class="font-mono-tab text-base font-bold tabular-nums" :style="{ color: brand.colors.text }">
+          <span class="font-mono-tab text-base font-bold tabular-nums" :style="{ color: 'var(--brand-text)' }">
             {{ formatMoneyBR(fii.monthly_income_avg_24m) }}
           </span>
         </div>
@@ -88,14 +88,14 @@
       <!-- P/VP hero -->
       <div
         class="flex flex-col justify-between border p-5 lg:col-span-1"
-        :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+        :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
       >
         <div class="flex items-center justify-between">
-          <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
+          <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: 'var(--brand-text-muted)' }">
             P/VP
           </span>
           <UTooltip text="Preço da cota dividido pelo valor patrimonial por cota. Abaixo de 1,00 indica que o fundo negocia abaixo do patrimônio." :delay-duration="0">
-            <UIcon name="i-lucide-info" class="h-3 w-3 opacity-40" :style="{ color: brand.colors.textMuted }" />
+            <UIcon name="i-lucide-info" class="h-3 w-3 opacity-40" :style="{ color: 'var(--brand-text-muted)' }" />
           </UTooltip>
         </div>
         <span
@@ -106,40 +106,40 @@
         </span>
         <div
           class="flex items-center justify-between border-t pt-3"
-          :style="{ borderColor: brand.colors.border }"
+          :style="{ borderColor: 'var(--brand-border)' }"
         >
-          <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
+          <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: 'var(--brand-text-muted)' }">
             VPA
           </span>
-          <span class="font-mono-tab text-base font-bold tabular-nums" :style="{ color: brand.colors.text }">
+          <span class="font-mono-tab text-base font-bold tabular-nums" :style="{ color: 'var(--brand-text)' }">
             {{ formatMoneyBR(fii.book_value_per_share) }}
           </span>
         </div>
       </div>
 
       <!-- Liquidez + Cotistas -->
-      <div class="lg:col-span-1 flex flex-col gap-px border" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }">
-        <div class="flex flex-col gap-1 px-5 py-4" :style="{ backgroundColor: brand.colors.surface }">
-          <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
+      <div class="lg:col-span-1 flex flex-col gap-px border" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-border)' }">
+        <div class="flex flex-col gap-1 px-5 py-4" :style="{ backgroundColor: 'var(--brand-surface)' }">
+          <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: 'var(--brand-text-muted)' }">
             COTISTAS
           </span>
-          <span class="font-mono-tab text-2xl font-bold tabular-nums" :style="{ color: brand.colors.text }">
+          <span class="font-mono-tab text-2xl font-bold tabular-nums" :style="{ color: 'var(--brand-text)' }">
             {{ formatInteger(fii.num_shareholders) }}
           </span>
         </div>
-        <div class="flex flex-col gap-1 px-5 py-4" :style="{ backgroundColor: brand.colors.surface }">
-          <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
+        <div class="flex flex-col gap-1 px-5 py-4" :style="{ backgroundColor: 'var(--brand-surface)' }">
+          <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: 'var(--brand-text-muted)' }">
             VALOR EM CAIXA
           </span>
-          <span class="font-mono-tab text-2xl font-bold tabular-nums" :style="{ color: brand.colors.text }">
+          <span class="font-mono-tab text-2xl font-bold tabular-nums" :style="{ color: 'var(--brand-text)' }">
             {{ formatMoneyBR(fii.cash_and_equivalents) }}
           </span>
         </div>
-        <div class="flex flex-col gap-1 px-5 py-4" :style="{ backgroundColor: brand.colors.surface }">
-          <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
+        <div class="flex flex-col gap-1 px-5 py-4" :style="{ backgroundColor: 'var(--brand-surface)' }">
+          <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: 'var(--brand-text-muted)' }">
             PARTICIPAÇÃO NO IFIX
           </span>
-          <span class="font-mono-tab text-2xl font-bold tabular-nums" :style="{ color: brand.colors.text }">
+          <span class="font-mono-tab text-2xl font-bold tabular-nums" :style="{ color: 'var(--brand-text)' }">
             {{ fii.ifix_share !== null ? formatPercent(fii.ifix_share) : '-' }}
           </span>
         </div>
@@ -151,37 +151,37 @@
       <header class="mb-4 flex flex-col gap-1">
         <span
           class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
-          :style="{ color: brand.colors.primary }"
+          :style="{ color: 'var(--brand-primary)' }"
         >
           Perfil do FII
         </span>
         <h3
           class="text-lg font-semibold md:text-xl"
-          :style="{ color: brand.colors.text }"
+          :style="{ color: 'var(--brand-text)' }"
         >
           Sobre o fundo
         </h3>
         <p
           class="font-mono-tab text-[10px] uppercase tracking-[0.12em]"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
         >
           &gt; CLASSIFICAÇÃO ANBIMA · ESTRUTURA
         </p>
       </header>
       <div
         class="grid grid-cols-1 gap-px border md:grid-cols-2 lg:grid-cols-3"
-        :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }"
+        :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-border)' }"
       >
         <div
           v-for="(cell, idx) in profileCells"
           :key="cell.label"
           class="flex flex-col gap-1.5 px-4 py-4"
-          :style="{ backgroundColor: brand.colors.surface }"
+          :style="{ backgroundColor: 'var(--brand-surface)' }"
         >
-          <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">
+          <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: 'var(--brand-text-muted)' }">
             {{ cell.label }}
           </span>
-          <span class="font-mono-tab text-sm font-bold" :style="{ color: brand.colors.text }">
+          <span class="font-mono-tab text-sm font-bold" :style="{ color: 'var(--brand-text)' }">
             {{ cell.value || '-' }}
           </span>
         </div>
@@ -191,31 +191,31 @@
     <!-- AI interpretations -->
     <div v-if="interpretations.length">
       <header class="mb-4 flex items-center gap-2">
-        <IconAi class="h-3 w-3" :style="{ fill: brand.colors.primary }" />
+        <IconAi class="h-3 w-3" :style="{ fill: 'var(--brand-primary)' }" />
         <span
           class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
-          :style="{ color: brand.colors.primary }"
+          :style="{ color: 'var(--brand-primary)' }"
         >
           Interpretações IA
         </span>
         <span
           class="font-mono-tab text-[10px] uppercase tracking-[0.12em]"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
         >
           &gt; LEITURA DOS NÚMEROS
         </span>
       </header>
       <div
         class="flex flex-col gap-px border"
-        :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }"
+        :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-border)' }"
       >
         <div
           v-for="(line, idx) in interpretations"
           :key="idx"
           class="flex items-start gap-3 px-5 py-3"
-          :style="{ backgroundColor: brand.colors.surface }"
+          :style="{ backgroundColor: 'var(--brand-surface)' }"
         >
-          <p class="text-sm leading-relaxed" :style="{ color: brand.colors.text }" v-html="line" />
+          <p class="text-sm leading-relaxed" :style="{ color: 'var(--brand-text)' }" v-html="line" />
         </div>
       </div>
     </div>

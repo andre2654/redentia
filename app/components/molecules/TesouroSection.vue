@@ -1,21 +1,19 @@
 <template>
-  <section class="border-b py-10" :style="{ borderColor: brand.colors.border }">
-    <!-- Header terminal-styled -->
-    <header class="mb-6 flex flex-col gap-1 px-4 md:px-0">
-      <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
-        Tesouro Direto
-      </span>
-      <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
+  <section class="pt-12 md:pt-16">
+    <!-- Header quiet -->
+    <header class="mb-8 flex flex-col gap-2 px-4 md:px-0">
+      <span class="eyebrow">Renda fixa pública</span>
+      <h2 class="font-light leading-tight text-[28px] md:text-[36px]" style="color: var(--text-heading); letter-spacing: -0.025em;">
         Tesouro Direto
       </h2>
-      <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
-        &gt; TÍTULOS PÚBLICOS DO GOVERNO · ATUALIZAÇÃO DIÁRIA
+      <p class="text-[14px] leading-relaxed" style="color: var(--text-body);">
+        Títulos públicos do governo, atualização diária.
       </p>
     </header>
 
     <!-- Loading state -->
-    <div v-if="isLoading" class="grid gap-px border md:grid-cols-2 lg:grid-cols-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }">
-      <div v-for="i in 4" :key="`sk-${i}`" class="p-5" :style="{ backgroundColor: brand.colors.surface }">
+    <div v-if="isLoading" class="grid gap-px overflow-hidden rounded-lg border md:grid-cols-2 lg:grid-cols-4" style="border-color: var(--border-subtle); background-color: var(--border-subtle);">
+      <div v-for="i in 4" :key="`sk-${i}`" class="p-5" style="background-color: var(--bg-elevated);">
         <USkeleton class="h-48 w-full" />
       </div>
     </div>
@@ -29,54 +27,52 @@
       :items="indexerSlides"
       :ui="{ item: 'basis-1/1 md:basis-1/3 xl:basis-1/4', container: 'bg-transparent' }"
     >
-      <div class="flex w-full flex-col gap-2 px-2 py-4">
-        <!-- Header: badge + category name + VIEW ALL -->
-        <div class="mb-3 flex items-center justify-between border-b pb-2" :style="{ borderColor: brand.colors.border }">
-          <div class="flex items-center gap-2">
-            <UIcon name="i-lucide-landmark" class="h-3 w-3" :style="{ color: item.color }" />
-            <div class="flex flex-col">
-              <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: item.color }">
-                TD {{ item.key }}
-              </span>
-              <h3 class="font-mono-tab text-[11px] font-semibold uppercase tracking-wider" :style="{ color: brand.colors.text }">
-                {{ item.label }} / {{ item.title }}
-              </h3>
-            </div>
+      <div class="flex w-full flex-col gap-3 px-2 py-4">
+        <!-- Header quiet: eyebrow inline + h3 normal + ver todos link -->
+        <div class="mb-2 flex items-end justify-between border-b pb-3" style="border-color: var(--border-subtle);">
+          <div class="flex flex-col gap-1">
+            <span class="inline-flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.12em]" :style="{ color: item.color }">
+              <UIcon name="i-lucide-landmark" class="h-3 w-3" />
+              TD {{ item.key }}
+            </span>
+            <h3 class="text-[15px] font-medium leading-tight" style="color: var(--text-heading);">
+              {{ item.label }}
+            </h3>
           </div>
           <NuxtLink
             :to="{ path: '/search', query: item.query }"
-            class="flex items-center gap-1 font-mono-tab text-[10px] uppercase tracking-[0.12em] transition-colors hover:opacity-80"
-            :style="{ color: brand.colors.textMuted }"
+            class="inline-flex items-center gap-1 text-[12px] font-medium transition-colors hover:underline"
+            style="color: var(--brand-primary);"
           >
-            VIEW ALL
+            Ver todos
             <UIcon name="i-lucide-arrow-right" class="h-3 w-3" />
           </NuxtLink>
         </div>
 
-        <!-- Vertical list of 5 titles -->
+        <!-- Vertical list of 5 titles. Linhas com border subtle, hover bg-overlay. -->
         <div class="flex flex-col">
           <NuxtLink
             v-for="title in item.items.slice(0, 5)"
             :key="title.slug"
             :to="`/tesouro/${title.slug}`"
             class="group flex items-center justify-between gap-3 border-b py-2.5 transition-colors"
-            :style="{ borderColor: brand.colors.border }"
-            @mouseenter="$event.currentTarget.style.backgroundColor = brand.colors.textMuted + '0D'"
-            @mouseleave="$event.currentTarget.style.backgroundColor = 'transparent'"
+            style="border-color: var(--border-subtle);"
+            @mouseenter="(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'var(--bg-overlay)')"
+            @mouseleave="(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'transparent')"
           >
             <div class="flex min-w-0 flex-1 flex-col">
-              <span class="truncate text-sm font-medium" :style="{ color: brand.colors.text }">
+              <span class="truncate text-[14px] font-medium" style="color: var(--text-heading);">
                 {{ prettyName(title.name) }}
               </span>
-              <span class="font-mono-tab text-[10px] uppercase tracking-wider tabular-nums" :style="{ color: brand.colors.textMuted }">
-                VENC · {{ formatMaturity(title.maturity_date) }}
+              <span class="text-[11px] tabular-nums" style="color: var(--text-muted);">
+                Venc {{ formatMaturity(title.maturity_date) }}
               </span>
             </div>
             <div class="flex flex-shrink-0 flex-col items-end">
-              <span class="font-mono-tab text-sm font-bold tabular-nums" :style="{ color: brand.colors.primary }">
+              <span class="text-[14px] font-light tabular-nums" style="color: var(--brand-primary); letter-spacing: -0.01em;">
                 {{ formatRate(title) }}
               </span>
-              <span class="font-mono-tab text-[10px] tabular-nums" :style="{ color: brand.colors.textMuted }">
+              <span class="text-[11px] tabular-nums" style="color: var(--text-muted);">
                 {{ formatMoney(title.price_buy) }}
               </span>
             </div>
@@ -85,10 +81,10 @@
           <!-- Empty state -->
           <div
             v-if="!item.items.length"
-            class="py-6 text-center font-mono-tab text-[10px] uppercase tracking-wider"
-            :style="{ color: brand.colors.textMuted }"
+            class="py-6 text-center text-[12px]"
+            style="color: var(--text-muted);"
           >
-            &gt; Sem títulos
+            Sem títulos disponíveis
           </div>
         </div>
       </div>

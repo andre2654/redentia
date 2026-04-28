@@ -13,8 +13,8 @@
       rel="noopener noreferrer"
       class="chat-source-card group flex shrink-0 flex-col gap-2 rounded-2xl px-3.5 py-3 transition-all"
       :style="{
-        backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 55%, transparent)`,
-        border: `1px solid color-mix(in srgb, ${brand.colors.border} 30%, transparent)`,
+        backgroundColor: `color-mix(in srgb, var(--brand-surface) 55%, transparent)`,
+        border: `1px solid color-mix(in srgb, var(--brand-border) 30%, transparent)`,
       }"
     >
       <!-- Top: index + host -->
@@ -22,8 +22,8 @@
         <span
           class="font-mono-tab inline-flex size-5 shrink-0 items-center justify-center rounded text-[10px] font-bold tabular-nums"
           :style="{
-            backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 18%, transparent)`,
-            color: brand.colors.primary,
+            backgroundColor: `color-mix(in srgb, var(--brand-primary) 18%, transparent)`,
+            color: 'var(--brand-primary)',
           }"
         >
           {{ cite.id }}
@@ -41,7 +41,7 @@
         />
         <span
           class="font-mono-tab truncate text-[10.5px] uppercase tracking-[0.1em]"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
         >
           {{ host(cite.source.url) ?? cite.source.type ?? 'Fonte' }}
         </span>
@@ -50,7 +50,7 @@
       <!-- Title -->
       <span
         class="line-clamp-2 text-[12.5px] font-medium leading-snug"
-        :style="{ color: brand.colors.text }"
+        :style="{ color: 'var(--brand-text)' }"
       >
         {{ cite.source.title ?? cite.source.url ?? 'Sem título' }}
       </span>
@@ -59,7 +59,7 @@
       <span
         v-if="cite.source.publishedAt"
         class="mt-auto font-mono-tab text-[10px] tabular-nums"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
       >
         {{ formatDate(cite.source.publishedAt) }}
       </span>

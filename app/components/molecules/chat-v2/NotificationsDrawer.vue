@@ -62,7 +62,7 @@
         <!-- Mobile drag handle -->
         <span
           class="mx-auto mt-3 inline-block h-1 w-12 rounded-full md:hidden"
-          :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.text} 18%, transparent)` }"
+          :style="{ backgroundColor: `color-mix(in srgb, var(--brand-text) 18%, transparent)` }"
           aria-hidden="true"
         />
 
@@ -70,18 +70,18 @@
         <header
           class="flex items-start justify-between gap-3 px-5 pb-3 pt-5 md:px-6 md:pt-6"
           :style="{
-            borderBottom: `1px solid color-mix(in srgb, ${brand.colors.border} 35%, transparent)`,
+            borderBottom: `1px solid color-mix(in srgb, var(--brand-border) 35%, transparent)`,
           }"
         >
           <div class="flex flex-col gap-0.5">
             <span
               class="font-mono-tab text-[10px] uppercase tracking-[0.18em]"
-              :style="{ color: brand.colors.textMuted }"
+              :style="{ color: 'var(--brand-text-muted)' }"
             >Notificações</span>
             <h2
               :id="titleId"
               class="text-[18px] font-semibold leading-tight tracking-tight"
-              :style="{ color: brand.colors.text }"
+              :style="{ color: 'var(--brand-text)' }"
             >Recentes</h2>
           </div>
           <div class="flex items-center gap-1">
@@ -90,15 +90,15 @@
               type="button"
               class="notifications-clear rounded-full px-2.5 py-1 text-[10.5px] transition-colors"
               :style="{
-                color: brand.colors.textMuted,
-                border: `1px solid color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+                color: 'var(--brand-text-muted)',
+                border: `1px solid color-mix(in srgb, var(--brand-border) 50%, transparent)`,
               }"
               @click="onClearAll"
             >Limpar tudo</button>
             <button
               type="button"
               class="notifications-close inline-flex size-8 items-center justify-center rounded-full transition-colors"
-              :style="{ color: brand.colors.textMuted }"
+              :style="{ color: 'var(--brand-text-muted)' }"
               aria-label="Fechar"
               @click="onCloseRequest"
             >
@@ -112,7 +112,7 @@
           <p
             v-if="loading && alerts.length === 0"
             class="py-2 text-[12px]"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
           >Carregando…</p>
 
           <!-- Empty state -->
@@ -123,17 +123,17 @@
             <UIcon
               name="i-lucide-bell-off"
               class="size-8"
-              :style="{ color: brand.colors.textMuted }"
+              :style="{ color: 'var(--brand-text-muted)' }"
               aria-hidden="true"
             />
             <p
               class="text-[13px] leading-snug"
-              :style="{ color: brand.colors.text }"
+              :style="{ color: 'var(--brand-text)' }"
             >Sem notificações por enquanto.</p>
             <p
               class="text-[11.5px] leading-snug"
               :style="{
-                color: brand.colors.textMuted,
+                color: 'var(--brand-text-muted)',
                 maxWidth: '260px',
               }"
             >Adicione um ativo à watchlist com condições (queda %, preço, DY) para receber alertas aqui.</p>
@@ -147,7 +147,7 @@
           >
             <h3
               class="font-mono-tab mb-1 px-1 text-[10px] uppercase tracking-[0.18em]"
-              :style="{ color: brand.colors.textMuted }"
+              :style="{ color: 'var(--brand-text-muted)' }"
             >{{ group.label }} · {{ group.alerts.length }}</h3>
             <ul class="flex flex-col gap-1">
               <li
@@ -157,8 +157,8 @@
                 :style="{
                   backgroundColor: a.readAt
                     ? 'transparent'
-                    : `color-mix(in srgb, ${brand.colors.primary} 4%, transparent)`,
-                  border: `1px solid color-mix(in srgb, ${brand.colors.border} 40%, transparent)`,
+                    : `color-mix(in srgb, var(--brand-primary) 4%, transparent)`,
+                  border: `1px solid color-mix(in srgb, var(--brand-border) 40%, transparent)`,
                 }"
               >
                 <!-- Severity dot -->
@@ -183,24 +183,24 @@
                     <span
                       class="truncate text-[12.5px]"
                       :style="{
-                        color: brand.colors.text,
+                        color: 'var(--brand-text)',
                         fontWeight: a.readAt ? '400' : '500',
                       }"
                     >{{ a.title }}</span>
                   </header>
                   <p
                     class="text-[11.5px] leading-snug"
-                    :style="{ color: brand.colors.textMuted }"
+                    :style="{ color: 'var(--brand-text-muted)' }"
                   >{{ a.body }}</p>
                   <span
                     class="font-mono-tab text-[10px] tabular-nums"
-                    :style="{ color: brand.colors.textMuted }"
+                    :style="{ color: 'var(--brand-text-muted)' }"
                   >{{ relativeTime(a.createdAt) }}</span>
                 </button>
                 <button
                   type="button"
                   class="notif-dismiss inline-flex size-6 shrink-0 items-center justify-center rounded-full opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100"
-                  :style="{ color: brand.colors.textMuted }"
+                  :style="{ color: 'var(--brand-text-muted)' }"
                   :aria-label="`Dispensar: ${a.title}`"
                   @click.stop="$emit('dismiss', a.id)"
                 >

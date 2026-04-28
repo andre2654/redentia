@@ -179,7 +179,7 @@ function onSkip() {
       >
         <UIcon :name="aff.icon" class="proposal-chip-icon" :style="{ color: iconColor }" />
       </span>
-      <span class="proposal-chip-label font-semibold" :style="{ color: brand.colors.text }">
+      <span class="proposal-chip-label font-semibold" :style="{ color: 'var(--brand-text)' }">
         {{ aff.cta }}
       </span>
     </button>

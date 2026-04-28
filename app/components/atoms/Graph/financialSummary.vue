@@ -1,13 +1,13 @@
 <template>
   <section
     class="financial-card flex h-full flex-col overflow-hidden rounded-xl border transition-[transform,opacity,box-shadow,background-color,border-color,filter]"
-    :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+    :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
   >
     <!-- Header -->
-    <header class="flex items-center justify-between border-b px-4 py-3" :style="{ borderColor: brand.colors.border }">
+    <header class="flex items-center justify-between border-b px-4 py-3" :style="{ borderColor: 'var(--brand-border)' }">
       <div class="flex items-center gap-2">
-        <UIcon v-if="props.icon" :name="props.icon" class="h-4 w-4" :style="{ color: brand.colors.textMuted }" />
-        <h3 class="text-sm font-medium" :style="{ color: brand.colors.text }">
+        <UIcon v-if="props.icon" :name="props.icon" class="h-4 w-4" :style="{ color: 'var(--brand-text-muted)' }" />
+        <h3 class="text-sm font-medium" :style="{ color: 'var(--brand-text)' }">
           {{ props.title }}
         </h3>
       </div>
@@ -21,8 +21,8 @@
         v-if="props.isLoading"
         class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2"
       >
-        <UIcon name="i-lucide-loader-2" class="h-5 w-5 motion-safe:animate-spin" :style="{ color: brand.colors.textMuted }" />
-        <span class="text-xs" :style="{ color: brand.colors.textMuted }">Carregando...</span>
+        <UIcon name="i-lucide-loader-2" class="h-5 w-5 motion-safe:animate-spin" :style="{ color: 'var(--brand-text-muted)' }" />
+        <span class="text-xs" :style="{ color: 'var(--brand-text-muted)' }">Carregando...</span>
       </div>
 
       <!-- Chart -->
@@ -36,7 +36,7 @@
     </div>
 
     <!-- Legend -->
-    <div v-if="!props.isLoading && props.items.length" class="flex flex-wrap gap-3 border-t px-4 py-3" :style="{ borderColor: brand.colors.border }">
+    <div v-if="!props.isLoading && props.items.length" class="flex flex-wrap gap-3 border-t px-4 py-3" :style="{ borderColor: 'var(--brand-border)' }">
       <div
         v-for="(item, index) in props.items"
         :key="item.label"
@@ -46,7 +46,7 @@
           class="h-2 w-2 rounded-full"
           :style="{ backgroundColor: palette[index % palette.length] }"
         />
-        <span class="text-[10px]" :style="{ color: brand.colors.textMuted }">{{ item.label }}</span>
+        <span class="text-[10px]" :style="{ color: 'var(--brand-text-muted)' }">{{ item.label }}</span>
       </div>
     </div>
 

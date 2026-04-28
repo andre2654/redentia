@@ -19,7 +19,7 @@
   <dialog
     ref="dialogEl"
     class="confirm-dialog relative w-full max-w-md rounded-xl border p-0 backdrop:bg-black/60 backdrop:backdrop-blur-sm"
-    :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.text }"
+    :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', color: 'var(--brand-text)' }"
     @close="handleClose"
     @cancel="handleCancel"
   >
@@ -28,16 +28,16 @@
         <div
           v-if="state.variant === 'destructive'"
           class="flex size-10 shrink-0 items-center justify-center rounded-full"
-          :style="{ backgroundColor: `${brand.colors.negative}1F`, color: brand.colors.negative }"
+          :style="{ backgroundColor: `var(--brand-negative)1F`, color: 'var(--brand-negative)' }"
           aria-hidden="true"
         >
           <UIcon name="i-lucide-alert-triangle" class="size-5" />
         </div>
         <div class="flex flex-col gap-1">
-          <h2 class="text-lg font-semibold" :style="{ color: brand.colors.text }">
+          <h2 class="text-lg font-semibold" :style="{ color: 'var(--brand-text)' }">
             {{ state.title }}
           </h2>
-          <p v-if="state.description" class="text-sm" :style="{ color: brand.colors.textMuted }">
+          <p v-if="state.description" class="text-sm" :style="{ color: 'var(--brand-text-muted)' }">
             {{ state.description }}
           </p>
         </div>
@@ -48,8 +48,8 @@
           type="button"
           class="inline-flex items-center justify-center rounded-md border px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
           :style="{
-            borderColor: brand.colors.border,
-            color: brand.colors.text,
+            borderColor: 'var(--brand-border)',
+            color: 'var(--brand-text)',
             backgroundColor: 'transparent',
           }"
           @click="resolve(false)"

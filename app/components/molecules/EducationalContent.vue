@@ -2,13 +2,13 @@
   <section v-if="brand.educational.items.length > 0" class="py-16 md:py-20">
     <div class="mx-auto max-w-6xl px-6">
       <div class="mb-12 text-center">
-        <p class="mb-2 text-xs uppercase tracking-[0.2em]" :style="{ color: brand.colors.textMuted }">
+        <p class="mb-2 text-xs uppercase tracking-[0.2em]" :style="{ color: 'var(--brand-text-muted)' }">
           Conteudo educacional
         </p>
-        <h2 class="text-2xl font-bold md:text-3xl" :style="{ color: brand.colors.text }">
+        <h2 class="text-2xl font-bold md:text-3xl" :style="{ color: 'var(--brand-text)' }">
           {{ brand.educational.sectionTitle }}
         </h2>
-        <p class="mt-3" :style="{ color: brand.colors.textMuted }">
+        <p class="mt-3" :style="{ color: 'var(--brand-text-muted)' }">
           {{ brand.educational.sectionSubtitle }}
         </p>
       </div>
@@ -22,8 +22,8 @@
           rel="noopener"
           class="group flex flex-col overflow-hidden rounded-2xl border transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-300"
           :style="{
-            borderColor: brand.colors.border,
-            backgroundColor: brand.colors.surface,
+            borderColor: 'var(--brand-border)',
+            backgroundColor: 'var(--brand-surface)',
           }"
           @mouseenter="($event.currentTarget as HTMLElement).style.borderColor = brand.colors.secondary; ($event.currentTarget as HTMLElement).style.backgroundColor = brand.colors.surfaceHover"
           @mouseleave="($event.currentTarget as HTMLElement).style.borderColor = brand.colors.border; ($event.currentTarget as HTMLElement).style.backgroundColor = brand.colors.surface"
@@ -41,8 +41,8 @@
               v-if="item.type === 'video'"
               class="absolute inset-0 flex items-center justify-center bg-black/30 transition-colors duration-300 group-hover:bg-black/40"
             >
-              <div class="flex h-14 w-14 items-center justify-center rounded-full backdrop-blur-sm transition-transform duration-300 group-hover:scale-110" :style="{ backgroundColor: brand.colors.surface }">
-                <UIcon name="i-lucide-play" class="h-6 w-6" :style="{ color: brand.colors.text }" />
+              <div class="flex h-14 w-14 items-center justify-center rounded-full backdrop-blur-sm transition-transform duration-300 group-hover:scale-110" :style="{ backgroundColor: 'var(--brand-surface)' }">
+                <UIcon name="i-lucide-play" class="h-6 w-6" :style="{ color: 'var(--brand-text)' }" />
               </div>
             </div>
 
@@ -50,7 +50,7 @@
             <span
               v-if="item.badge"
               class="absolute right-3 top-3 rounded-full bg-secondary px-3 py-1 text-xs font-semibold"
-              :style="{ color: brand.colors.text }"
+              :style="{ color: 'var(--brand-text)' }"
             >
               {{ item.badge }}
             </span>
@@ -59,11 +59,11 @@
           <!-- Content -->
           <div class="flex flex-1 flex-col gap-2 p-5">
             <!-- Type & Duration -->
-            <div class="flex items-center gap-2" :style="{ color: brand.colors.textMuted }">
+            <div class="flex items-center gap-2" :style="{ color: 'var(--brand-text-muted)' }">
               <UIcon :name="typeIcon(item.type)" class="h-4 w-4" />
               <span class="text-xs uppercase tracking-wider">{{ typeLabel(item.type) }}</span>
               <template v-if="item.duration">
-                <span :style="{ color: brand.colors.textMuted }">&middot;</span>
+                <span :style="{ color: 'var(--brand-text-muted)' }">&middot;</span>
                 <span class="text-xs">{{ item.duration }}</span>
               </template>
             </div>

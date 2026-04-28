@@ -1,12 +1,12 @@
 <template>
   <div
     class="overflow-hidden rounded-2xl border"
-    :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+    :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
   >
     <!-- Header row (hidden on mobile) -->
     <div
       class="hidden items-center gap-4 border-b px-5 py-3 text-[10px] font-medium uppercase tracking-[0.12em] md:flex"
-      :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted }"
+      :style="{ borderColor: 'var(--brand-border)', color: 'var(--brand-text-muted)' }"
     >
       <div class="w-8 text-right">#</div>
       <div class="flex-1">Ativo</div>
@@ -25,7 +25,7 @@
         v-for="(row, idx) in rows"
         :key="row.ticker"
         class="border-b last:border-b-0"
-        :style="{ borderColor: brand.colors.border }"
+        :style="{ borderColor: 'var(--brand-border)' }"
       >
         <NuxtLink
           :to="`/asset/${row.ticker.toLowerCase()}`"
@@ -37,7 +37,7 @@
           <!-- Rank -->
           <div
             class="w-6 text-right text-xs font-semibold tabular-nums md:w-8"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
           >
             {{ idx + 1 }}
           </div>
@@ -46,7 +46,7 @@
           <div class="flex min-w-0 flex-1 items-center gap-3">
             <div
               class="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-lg border"
-              :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.background }"
+              :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-background)' }"
             >
               <img
                 v-if="row.logo"
@@ -59,7 +59,7 @@
               <span
                 v-else
                 class="text-[10px] font-bold"
-                :style="{ color: brand.colors.textMuted }"
+                :style="{ color: 'var(--brand-text-muted)' }"
               >
                 {{ row.ticker.slice(0, 2) }}
               </span>
@@ -67,13 +67,13 @@
             <div class="min-w-0 flex-1">
               <div
                 class="truncate text-sm font-semibold"
-                :style="{ color: brand.colors.text }"
+                :style="{ color: 'var(--brand-text)' }"
               >
                 {{ row.ticker }}
               </div>
               <div
                 class="truncate text-[11px]"
-                :style="{ color: brand.colors.textMuted }"
+                :style="{ color: 'var(--brand-text-muted)' }"
               >
                 {{ row.name || '-' }}
               </div>
@@ -83,7 +83,7 @@
           <!-- Price -->
           <div
             class="w-20 text-right text-sm font-semibold tabular-nums md:w-24"
-            :style="{ color: brand.colors.text }"
+            :style="{ color: 'var(--brand-text)' }"
           >
             {{ formatBrl(row.market_price) }}
           </div>
@@ -92,7 +92,7 @@
           <div
             v-if="showColumn('dy')"
             class="hidden w-24 text-right text-sm font-semibold tabular-nums md:block"
-            :style="{ color: brand.colors.primary }"
+            :style="{ color: 'var(--brand-primary)' }"
           >
             {{ formatPercent(row.dividend_yield, true) }}
           </div>
@@ -101,7 +101,7 @@
           <div
             v-if="showColumn('pe')"
             class="hidden w-20 text-right text-xs tabular-nums md:block"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
           >
             {{ row.trailing_pe != null ? Number(row.trailing_pe).toFixed(1) : '-' }}
           </div>
@@ -111,7 +111,7 @@
             v-if="showColumn('change')"
             class="hidden w-24 text-right text-sm font-semibold tabular-nums md:block"
             :style="{
-              color: Number(row.change_percent) >= 0 ? brand.colors.positive : brand.colors.negative,
+              color: Number(row.change_percent) >= 0 ? brand.colors.positive : 'var(--brand-negative)',
             }"
           >
             {{ formatPercent(row.change_percent) }}
@@ -121,7 +121,7 @@
           <div
             v-if="showColumn('marketCap')"
             class="hidden w-28 text-right text-xs tabular-nums md:block"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
           >
             {{ formatMarketCap(row.market_cap) }}
           </div>
@@ -139,7 +139,7 @@
               v-else-if="showColumn('change')"
               class="text-sm font-semibold tabular-nums"
               :style="{
-                color: Number(row.change_percent) >= 0 ? brand.colors.positive : brand.colors.negative,
+                color: Number(row.change_percent) >= 0 ? brand.colors.positive : 'var(--brand-negative)',
               }"
             >
               {{ formatPercent(row.change_percent) }}
@@ -153,7 +153,7 @@
     <div
       v-if="rows.length === 0"
       class="flex items-center justify-center px-5 py-12 text-sm"
-      :style="{ color: brand.colors.textMuted }"
+      :style="{ color: 'var(--brand-text-muted)' }"
     >
       Sem dados disponíveis no momento.
     </div>

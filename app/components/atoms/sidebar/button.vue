@@ -7,8 +7,8 @@
       'ml-6 rounded-l-none pl-4': isSubItem,
     }"
     :style="{
-      color: activeMatch ? brand.colors.text : `color-mix(in srgb, ${brand.colors.text} 60%, transparent)`,
-      backgroundColor: activeMatch ? `color-mix(in srgb, ${brand.colors.text} 6%, transparent)` : 'transparent',
+      color: activeMatch ? brand.colors.text : `color-mix(in srgb, var(--brand-text) 60%, transparent)`,
+      backgroundColor: activeMatch ? `color-mix(in srgb, var(--brand-text) 6%, transparent)` : 'transparent',
       fontWeight: activeMatch ? 500 : 400,
     }"
     @mouseenter="onEnter"
@@ -17,7 +17,7 @@
     <span
       v-if="activeMatch"
       class="absolute inset-y-[6px] left-0 w-[2px] rounded-full"
-      :style="{ backgroundColor: brand.colors.secondary }"
+      :style="{ backgroundColor: 'var(--brand-secondary)' }"
       aria-hidden="true"
     />
     <UIcon

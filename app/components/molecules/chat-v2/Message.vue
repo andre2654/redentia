@@ -17,16 +17,16 @@
         type="button"
         class="chat-form-response-pill inline-flex max-w-fit items-center gap-2 self-start rounded-full px-3 py-1.5 text-[12.5px] transition-colors"
         :style="{
-          backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 60%, transparent)`,
-          border: `1px solid color-mix(in srgb, ${brand.colors.border} 35%, transparent)`,
-          color: brand.colors.textMuted,
+          backgroundColor: `color-mix(in srgb, var(--brand-surface) 60%, transparent)`,
+          border: `1px solid color-mix(in srgb, var(--brand-border) 35%, transparent)`,
+          color: 'var(--brand-text-muted)',
         }"
         @click="formResponseOpen = !formResponseOpen"
       >
         <UIcon
           name="i-lucide-check"
           class="size-3.5"
-          :style="{ color: brand.colors.positive }"
+          :style="{ color: 'var(--brand-positive)' }"
         />
         <span class="font-mono-tab text-[10.5px] uppercase tracking-[0.16em]">
           Respostas enviadas{{ message.meta.fields ? ` · ${message.meta.fields.length}` : '' }}
@@ -40,8 +40,8 @@
         v-if="formResponseOpen"
         class="chat-form-response-list flex flex-col gap-1 rounded-xl px-4 py-3"
         :style="{
-          backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 50%, transparent)`,
-          border: `1px solid color-mix(in srgb, ${brand.colors.border} 30%, transparent)`,
+          backgroundColor: `color-mix(in srgb, var(--brand-surface) 50%, transparent)`,
+          border: `1px solid color-mix(in srgb, var(--brand-border) 30%, transparent)`,
         }"
       >
         <li
@@ -51,11 +51,11 @@
         >
           <span
             class="shrink-0"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
           >{{ f.label }}:</span>
           <span
             class="font-medium tabular-nums"
-            :style="{ color: brand.colors.text }"
+            :style="{ color: 'var(--brand-text)' }"
           >{{ f.value }}</span>
         </li>
       </ul>
@@ -77,20 +77,20 @@
           :key="att.id ?? att.name"
           class="chat-attach-chip-static inline-flex max-w-full items-center gap-2 rounded-xl px-2.5 py-1.5 text-[12px]"
           :style="{
-            backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 70%, transparent)`,
-            border: `1px solid color-mix(in srgb, ${brand.colors.border} 45%, transparent)`,
-            color: brand.colors.text,
+            backgroundColor: `color-mix(in srgb, var(--brand-surface) 70%, transparent)`,
+            border: `1px solid color-mix(in srgb, var(--brand-border) 45%, transparent)`,
+            color: 'var(--brand-text)',
           }"
         >
           <UIcon
             :name="attachIconStatic(att)"
             class="size-3.5 shrink-0"
-            :style="{ color: brand.colors.primary }"
+            :style="{ color: 'var(--brand-primary)' }"
           />
           <span class="max-w-[200px] truncate">{{ att.name }}</span>
           <span
             class="shrink-0 font-mono-tab text-[10px] uppercase tracking-[0.12em]"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
           >
             {{ humanSizeStatic(att.size) }}
           </span>
@@ -99,7 +99,7 @@
       <div
         v-if="message.content"
         class="chat-question font-display text-[26px] font-semibold leading-tight tracking-tight md:text-[32px]"
-        :style="{ color: brand.colors.text }"
+        :style="{ color: 'var(--brand-text)' }"
       >
         {{ message.content }}
       </div>
@@ -136,7 +136,7 @@
         <div
           ref="answerRef"
           class="chat-answer text-[16.5px] leading-[1.7]"
-          :style="{ color: brand.colors.text }"
+          :style="{ color: 'var(--brand-text)' }"
         >
           <!-- Cold-start placeholder — between "user sent" and "first
                reasoning / tool / content chunk arrives" the answer area
@@ -154,12 +154,12 @@
           >
             <span
               class="chat-thinking-pulse inline-flex size-2 shrink-0 rounded-full"
-              :style="{ backgroundColor: brand.colors.primary }"
+              :style="{ backgroundColor: 'var(--brand-primary)' }"
               aria-hidden="true"
             />
             <span
               class="text-[14px] italic"
-              :style="{ color: brand.colors.textMuted }"
+              :style="{ color: 'var(--brand-text-muted)' }"
             >Pensando…</span>
           </div>
           <ChatV2StreamingText
@@ -262,17 +262,17 @@
           type="button"
           class="chat-artifact-card group flex w-full items-center gap-4 rounded-2xl px-4 py-3.5 text-left transition-all"
           :style="{
-            backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 60%, transparent)`,
-            border: `1px solid color-mix(in srgb, ${brand.colors.border} 35%, transparent)`,
-            color: brand.colors.text,
+            backgroundColor: `color-mix(in srgb, var(--brand-surface) 60%, transparent)`,
+            border: `1px solid color-mix(in srgb, var(--brand-border) 35%, transparent)`,
+            color: 'var(--brand-text)',
           }"
           @click="$emit('open-artifact', art)"
         >
           <span
             class="flex size-10 shrink-0 items-center justify-center rounded-xl"
             :style="{
-              backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 16%, transparent)`,
-              color: brand.colors.primary,
+              backgroundColor: `color-mix(in srgb, var(--brand-primary) 16%, transparent)`,
+              color: 'var(--brand-primary)',
             }"
           >
             <UIcon :name="artifactIcon(art.type)" class="size-5" />
@@ -281,7 +281,7 @@
             <span class="truncate text-[14px] font-semibold">{{ art.title }}</span>
             <span
               class="font-mono-tab text-[10.5px] uppercase tracking-[0.16em]"
-              :style="{ color: brand.colors.textMuted }"
+              :style="{ color: 'var(--brand-text-muted)' }"
             >
               {{ artifactLabel(art.type) }}{{ art.filename ? ' · ' + art.filename : '' }}
             </span>
@@ -289,7 +289,7 @@
           <span
             v-if="art.downloadUrl"
             class="font-mono-tab text-[11px] font-semibold uppercase tracking-[0.12em]"
-            :style="{ color: brand.colors.primary }"
+            :style="{ color: 'var(--brand-primary)' }"
           >
             Abrir →
           </span>
@@ -316,9 +316,9 @@
         v-if="message.status === 'error'"
         class="rounded-2xl px-4 py-3 text-[13px]"
         :style="{
-          border: `1px solid color-mix(in srgb, ${brand.colors.negative} 40%, transparent)`,
-          backgroundColor: `color-mix(in srgb, ${brand.colors.negative} 8%, transparent)`,
-          color: brand.colors.negative,
+          border: `1px solid color-mix(in srgb, var(--brand-negative) 40%, transparent)`,
+          backgroundColor: `color-mix(in srgb, var(--brand-negative) 8%, transparent)`,
+          color: 'var(--brand-negative)',
         }"
       >
         {{ message.error ?? 'Erro ao gerar resposta. Tente novamente.' }}

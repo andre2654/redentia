@@ -61,7 +61,7 @@
         <!-- Mobile drag handle -->
         <span
           class="mx-auto mt-3 inline-block h-1 w-12 rounded-full md:hidden"
-          :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.text} 18%, transparent)` }"
+          :style="{ backgroundColor: `color-mix(in srgb, var(--brand-text) 18%, transparent)` }"
           aria-hidden="true"
         />
 
@@ -72,18 +72,18 @@
           <div class="flex flex-col gap-1">
             <span
               class="font-mono-tab text-[10.5px] uppercase tracking-[0.2em]"
-              :style="{ color: brand.colors.textMuted }"
+              :style="{ color: 'var(--brand-text-muted)' }"
             >Auditoria</span>
             <h2
               :id="titleId"
               class="font-display text-[22px] font-semibold leading-tight tracking-tight"
-              :style="{ color: brand.colors.text }"
+              :style="{ color: 'var(--brand-text)' }"
             >Tudo que a IA guarda</h2>
           </div>
           <button
             type="button"
             class="audit-close inline-flex size-8 items-center justify-center rounded-full transition-colors"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
             aria-label="Fechar auditoria"
             @click="onCloseRequest"
           >
@@ -119,14 +119,14 @@
         <div
           class="audit-body flex min-h-0 flex-1"
           :style="{
-            borderTop: `1px solid color-mix(in srgb, ${brand.colors.border} 35%, transparent)`,
+            borderTop: `1px solid color-mix(in srgb, var(--brand-border) 35%, transparent)`,
           }"
         >
           <!-- Desktop sidebar nav -->
           <nav
             class="audit-sidenav hidden w-[150px] shrink-0 flex-col gap-px py-3 md:flex"
             :style="{
-              borderRight: `1px solid color-mix(in srgb, ${brand.colors.border} 30%, transparent)`,
+              borderRight: `1px solid color-mix(in srgb, var(--brand-border) 30%, transparent)`,
             }"
             aria-label="Seções da auditoria"
           >
@@ -168,11 +168,11 @@
                 <div class="flex flex-col gap-0.5">
                   <h3
                     class="text-[15px] font-semibold leading-tight"
-                    :style="{ color: brand.colors.text }"
+                    :style="{ color: 'var(--brand-text)' }"
                   >Metas</h3>
                   <p
                     class="font-mono-tab text-[10.5px] uppercase tracking-[0.16em]"
-                    :style="{ color: brand.colors.textMuted }"
+                    :style="{ color: 'var(--brand-text-muted)' }"
                   >{{ goalsState.goals.value.length }} {{ goalsState.goals.value.length === 1 ? 'meta' : 'metas' }}</p>
                 </div>
                 <button
@@ -187,9 +187,9 @@
                 class="empty"
                 :style="emptyStyle"
               >
-                <UIcon name="i-lucide-target" class="size-7" :style="{ color: brand.colors.textMuted }" aria-hidden="true" />
-                <p class="empty-title" :style="{ color: brand.colors.text }">Sem metas definidas</p>
-                <p class="empty-body" :style="{ color: brand.colors.textMuted }">
+                <UIcon name="i-lucide-target" class="size-7" :style="{ color: 'var(--brand-text-muted)' }" aria-hidden="true" />
+                <p class="empty-title" :style="{ color: 'var(--brand-text)' }">Sem metas definidas</p>
+                <p class="empty-body" :style="{ color: 'var(--brand-text-muted)' }">
                   Crie a primeira para que cada recomendação da IA passe a ser avaliada contra ela. Aposentadoria, FIRE, reserva de emergência — qualquer objetivo concreto.
                 </p>
                 <button type="button" class="empty-cta" :style="ctaStyle" @click="onNewGoal">
@@ -218,11 +218,11 @@
                         <header class="flex items-baseline justify-between gap-3">
                           <span
                             class="truncate text-[14px] font-semibold leading-tight"
-                            :style="{ color: brand.colors.text }"
+                            :style="{ color: 'var(--brand-text)' }"
                           >{{ g.name }}</span>
                           <span
                             class="font-mono-tab shrink-0 text-[12px] tabular-nums"
-                            :style="{ color: brand.colors.text }"
+                            :style="{ color: 'var(--brand-text)' }"
                           >{{ goalProgress(g) }}%</span>
                         </header>
                         <div class="flex items-center gap-2">
@@ -233,16 +233,16 @@
                           />
                           <span
                             class="font-mono-tab text-[10.5px] uppercase tracking-[0.14em]"
-                            :style="{ color: brand.colors.textMuted }"
+                            :style="{ color: 'var(--brand-text-muted)' }"
                           >{{ goalStatusLabel(g.status) }}</span>
                           <span
                             class="text-[11px]"
-                            :style="{ color: brand.colors.textMuted }"
+                            :style="{ color: 'var(--brand-text-muted)' }"
                           >· até {{ formatDate(g.targetDate) }}</span>
                         </div>
                         <div
                           class="relative h-[3px] w-full overflow-hidden rounded-full"
-                          :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.text} 6%, transparent)` }"
+                          :style="{ backgroundColor: `color-mix(in srgb, var(--brand-text) 6%, transparent)` }"
                           aria-hidden="true"
                         >
                           <span
@@ -261,7 +261,7 @@
                          center; healthy goals just have "Conversar". -->
                     <footer
                       class="flex flex-wrap items-center gap-1.5 pt-1"
-                      :style="{ borderTop: `1px solid color-mix(in srgb, ${brand.colors.border} 25%, transparent)` }"
+                      :style="{ borderTop: `1px solid color-mix(in srgb, var(--brand-border) 25%, transparent)` }"
                     >
                       <button
                         v-if="g.status === 'unfeasible' || g.status === 'at_risk'"
@@ -301,11 +301,11 @@
                 <div class="flex flex-col gap-0.5">
                   <h3
                     class="text-[15px] font-semibold leading-tight"
-                    :style="{ color: brand.colors.text }"
+                    :style="{ color: 'var(--brand-text)' }"
                   >Decisões</h3>
                   <p
                     class="font-mono-tab text-[10.5px] uppercase tracking-[0.16em]"
-                    :style="{ color: brand.colors.textMuted }"
+                    :style="{ color: 'var(--brand-text-muted)' }"
                   >{{ decisionsState.decisions.value.length }} {{ decisionsState.decisions.value.length === 1 ? 'decisão' : 'decisões' }}</p>
                 </div>
                 <span
@@ -313,7 +313,7 @@
                   :style="hitRatePillStyle"
                 >
                   {{ Math.round((decisionsState.hitRate.value.rate ?? 0) * 100) }}% hit
-                  <span :style="{ color: brand.colors.textMuted, marginLeft: '4px' }">
+                  <span :style="{ color: 'var(--brand-text-muted)', marginLeft: '4px' }">
                     · {{ decisionsState.hitRate.value.hits }}/{{ decisionsState.hitRate.value.total }}
                   </span>
                 </span>
@@ -346,11 +346,11 @@
                 class="empty"
                 :style="emptyStyle"
               >
-                <UIcon name="i-lucide-check-square" class="size-7" :style="{ color: brand.colors.textMuted }" aria-hidden="true" />
-                <p class="empty-title" :style="{ color: brand.colors.text }">
+                <UIcon name="i-lucide-check-square" class="size-7" :style="{ color: 'var(--brand-text-muted)' }" aria-hidden="true" />
+                <p class="empty-title" :style="{ color: 'var(--brand-text)' }">
                   {{ decisionsState.decisions.value.length === 0 ? 'Sem decisões registradas' : 'Nenhuma decisão neste filtro' }}
                 </p>
-                <p class="empty-body" :style="{ color: brand.colors.textMuted }">
+                <p class="empty-body" :style="{ color: 'var(--brand-text-muted)' }">
                   Decisões prescritivas (compra, venda, rebalance) que a IA registra ficam aqui — com tese, invalidador e revisita automática em +30/+90/+180 dias.
                 </p>
               </div>
@@ -368,7 +368,7 @@
                       <header class="flex flex-wrap items-center gap-2">
                         <span
                           class="font-mono-tab text-[10.5px] uppercase tracking-[0.14em]"
-                          :style="{ color: brand.colors.textMuted }"
+                          :style="{ color: 'var(--brand-text-muted)' }"
                         >{{ decisionTypeLabel(d.type) }}</span>
                         <ChatV2TickerChip
                           v-if="d.ticker"
@@ -383,19 +383,19 @@
                       </header>
                       <p
                         class="line-clamp-2 text-[12.5px] leading-snug"
-                        :style="{ color: brand.colors.text }"
+                        :style="{ color: 'var(--brand-text)' }"
                       >{{ d.thesis }}</p>
                       <p
                         v-if="d.invalidator"
                         class="text-[11px] leading-snug"
-                        :style="{ color: brand.colors.textMuted }"
-                      >Invalidador: <span :style="{ color: brand.colors.text }">{{ d.invalidator }}</span></p>
+                        :style="{ color: 'var(--brand-text-muted)' }"
+                      >Invalidador: <span :style="{ color: 'var(--brand-text)' }">{{ d.invalidator }}</span></p>
                     </button>
 
                     <!-- Smart actions row -->
                     <footer
                       class="flex flex-wrap items-center gap-1.5 pt-1"
-                      :style="{ borderTop: `1px solid color-mix(in srgb, ${brand.colors.border} 25%, transparent)` }"
+                      :style="{ borderTop: `1px solid color-mix(in srgb, var(--brand-border) 25%, transparent)` }"
                     >
                       <button
                         type="button"
@@ -430,20 +430,20 @@
                       v-if="counterProposalOpen === d.id"
                       class="counter-proposal flex flex-col gap-2 rounded-lg p-2.5"
                       :style="{
-                        backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 6%, transparent)`,
-                        border: `1px solid color-mix(in srgb, ${brand.colors.primary} 22%, transparent)`,
+                        backgroundColor: `color-mix(in srgb, var(--brand-primary) 6%, transparent)`,
+                        border: `1px solid color-mix(in srgb, var(--brand-primary) 22%, transparent)`,
                       }"
                     >
                       <label
                         class="font-mono-tab text-[10px] uppercase tracking-[0.16em]"
-                        :style="{ color: brand.colors.textMuted }"
+                        :style="{ color: 'var(--brand-text-muted)' }"
                       >Sua contraproposta</label>
                       <textarea
                         v-model="counterProposalDraft[d.id]"
                         rows="2"
                         placeholder="Ex.: ao invés de comprar PETR4 a 32, esperar 28 — risco/retorno melhora porque…"
                         class="counter-proposal-input min-w-0 resize-none border-0 bg-transparent text-[12.5px] leading-snug outline-none"
-                        :style="{ color: brand.colors.text }"
+                        :style="{ color: 'var(--brand-text)' }"
                       />
                       <div class="flex items-center justify-end gap-1.5">
                         <button
@@ -475,11 +475,11 @@
                 <div class="flex flex-col gap-0.5">
                   <h3
                     class="text-[15px] font-semibold leading-tight"
-                    :style="{ color: brand.colors.text }"
+                    :style="{ color: 'var(--brand-text)' }"
                   >Watchlist</h3>
                   <p
                     class="font-mono-tab text-[10.5px] uppercase tracking-[0.16em]"
-                    :style="{ color: brand.colors.textMuted }"
+                    :style="{ color: 'var(--brand-text-muted)' }"
                   >{{ watchlistState.watches.value.length }} {{ watchlistState.watches.value.length === 1 ? 'ativo' : 'ativos' }}</p>
                 </div>
                 <div class="flex items-center gap-1.5">
@@ -513,13 +513,13 @@
                 v-if="manualWatchOpen"
                 class="manual-watch-form flex flex-col gap-3 rounded-xl p-3.5"
                 :style="{
-                  backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 5%, transparent)`,
-                  border: `1px solid color-mix(in srgb, ${brand.colors.primary} 22%, transparent)`,
+                  backgroundColor: `color-mix(in srgb, var(--brand-primary) 5%, transparent)`,
+                  border: `1px solid color-mix(in srgb, var(--brand-primary) 22%, transparent)`,
                 }"
               >
                 <div class="flex flex-col gap-2 md:flex-row">
                   <label class="manual-watch-field flex-1">
-                    <span class="manual-watch-label" :style="{ color: brand.colors.textMuted }">Ticker</span>
+                    <span class="manual-watch-label" :style="{ color: 'var(--brand-text-muted)' }">Ticker</span>
                     <input
                       v-model="manualWatchTicker"
                       type="text"
@@ -532,7 +532,7 @@
                     />
                   </label>
                   <label class="manual-watch-field flex-1">
-                    <span class="manual-watch-label" :style="{ color: brand.colors.textMuted }">Nota (opcional)</span>
+                    <span class="manual-watch-label" :style="{ color: 'var(--brand-text-muted)' }">Nota (opcional)</span>
                     <input
                       v-model="manualWatchNote"
                       type="text"
@@ -544,7 +544,7 @@
                 </div>
 
                 <div class="flex flex-col gap-1.5">
-                  <span class="manual-watch-label" :style="{ color: brand.colors.textMuted }">Condições de alerta</span>
+                  <span class="manual-watch-label" :style="{ color: 'var(--brand-text-muted)' }">Condições de alerta</span>
                   <div
                     v-for="(c, idx) in manualWatchConditions"
                     :key="idx"
@@ -579,7 +579,7 @@
                     <button
                       type="button"
                       class="manual-watch-remove inline-flex size-6 items-center justify-center rounded-full transition-colors"
-                      :style="{ color: brand.colors.textMuted }"
+                      :style="{ color: 'var(--brand-text-muted)' }"
                       :aria-label="`Remover condição ${idx + 1}`"
                       @click="removeManualWatchCondition(idx)"
                     >
@@ -590,7 +590,7 @@
                     type="button"
                     class="self-start text-[11px] transition-colors"
                     :style="{
-                      color: brand.colors.primary,
+                      color: 'var(--brand-primary)',
                       padding: '4px 0',
                     }"
                     @click="addManualWatchCondition"
@@ -621,9 +621,9 @@
                 class="empty"
                 :style="emptyStyle"
               >
-                <UIcon name="i-lucide-eye" class="size-7" :style="{ color: brand.colors.textMuted }" aria-hidden="true" />
-                <p class="empty-title" :style="{ color: brand.colors.text }">Watchlist proativa vazia</p>
-                <p class="empty-body" :style="{ color: brand.colors.textMuted }">
+                <UIcon name="i-lucide-eye" class="size-7" :style="{ color: 'var(--brand-text-muted)' }" aria-hidden="true" />
+                <p class="empty-title" :style="{ color: 'var(--brand-text)' }">Watchlist proativa vazia</p>
+                <p class="empty-body" :style="{ color: 'var(--brand-text-muted)' }">
                   Adicione um ativo manualmente, ou peça pra IA sugerir o que faz sentido pra sua carteira. O cron sweep avalia a cada 30 min e dispara notificação quando uma condição bate.
                 </p>
                 <div class="flex items-center gap-1.5">
@@ -648,12 +648,12 @@
                       <span
                         v-if="w.note"
                         class="truncate text-[11.5px]"
-                        :style="{ color: brand.colors.textMuted }"
+                        :style="{ color: 'var(--brand-text-muted)' }"
                       >{{ w.note }}</span>
                       <button
                         type="button"
                         class="watch-remove ml-auto inline-flex size-6 shrink-0 items-center justify-center rounded-full transition-colors"
-                        :style="{ color: brand.colors.textMuted }"
+                        :style="{ color: 'var(--brand-text-muted)' }"
                         :aria-label="`Remover ${w.ticker}`"
                         @click="watchlistState.remove(w.id)"
                       >
@@ -663,7 +663,7 @@
                     <ul
                       v-if="w.conditions && w.conditions.length > 0"
                       class="flex flex-col gap-1 pt-1"
-                      :style="{ borderTop: `1px solid color-mix(in srgb, ${brand.colors.border} 25%, transparent)` }"
+                      :style="{ borderTop: `1px solid color-mix(in srgb, var(--brand-border) 25%, transparent)` }"
                     >
                       <li
                         v-for="(c, idx) in w.conditions"
@@ -672,20 +672,20 @@
                       >
                         <span
                           class="inline-flex size-1 shrink-0 rounded-full"
-                          :style="{ backgroundColor: brand.colors.primary }"
+                          :style="{ backgroundColor: 'var(--brand-primary)' }"
                           aria-hidden="true"
                         />
-                        <span :style="{ color: brand.colors.text }">{{ describeWatchCondition(c) }}</span>
+                        <span :style="{ color: 'var(--brand-text)' }">{{ describeWatchCondition(c) }}</span>
                       </li>
                     </ul>
                     <p
                       v-else
                       class="text-[11px] italic"
-                      :style="{ color: brand.colors.textMuted }"
+                      :style="{ color: 'var(--brand-text-muted)' }"
                     >Sem condições — não dispara alertas.</p>
                     <footer
                       class="flex items-center gap-1.5 pt-1"
-                      :style="{ borderTop: `1px solid color-mix(in srgb, ${brand.colors.border} 25%, transparent)` }"
+                      :style="{ borderTop: `1px solid color-mix(in srgb, var(--brand-border) 25%, transparent)` }"
                     >
                       <button
                         type="button"
@@ -708,11 +708,11 @@
                 <div class="flex flex-col gap-0.5">
                   <h3
                     class="text-[15px] font-semibold leading-tight"
-                    :style="{ color: brand.colors.text }"
+                    :style="{ color: 'var(--brand-text)' }"
                   >Memória de longo prazo</h3>
                   <p
                     class="font-mono-tab text-[10.5px] uppercase tracking-[0.16em]"
-                    :style="{ color: brand.colors.textMuted }"
+                    :style="{ color: 'var(--brand-text-muted)' }"
                   >{{ memoriesState.memories.value.length }} {{ memoriesState.memories.value.length === 1 ? 'fato' : 'fatos' }}</p>
                 </div>
                 <button
@@ -720,8 +720,8 @@
                   type="button"
                   class="text-[10.5px] transition-colors"
                   :style="{
-                    color: brand.colors.negative,
-                    border: `1px solid color-mix(in srgb, ${brand.colors.negative} 28%, transparent)`,
+                    color: 'var(--brand-negative)',
+                    border: `1px solid color-mix(in srgb, var(--brand-negative) 28%, transparent)`,
                     borderRadius: '999px',
                     padding: '4px 10px',
                   }"
@@ -732,7 +732,7 @@
               <p
                 v-if="memoriesState.memories.value.length > 0"
                 class="text-[11.5px] leading-snug"
-                :style="{ color: brand.colors.textMuted }"
+                :style="{ color: 'var(--brand-text-muted)' }"
               >Tudo que a IA aprendeu sobre você. Esses fatos são injetados no prompt em toda nova mensagem — audite, edite ou remova o que não fizer sentido.</p>
 
               <!-- Search + filter -->
@@ -743,11 +743,11 @@
                 <label
                   class="flex items-center gap-2 rounded-lg px-3 py-2"
                   :style="{
-                    backgroundColor: `color-mix(in srgb, ${brand.colors.text} 4%, transparent)`,
-                    border: `1px solid color-mix(in srgb, ${brand.colors.border} 35%, transparent)`,
+                    backgroundColor: `color-mix(in srgb, var(--brand-text) 4%, transparent)`,
+                    border: `1px solid color-mix(in srgb, var(--brand-border) 35%, transparent)`,
                   }"
                 >
-                  <UIcon name="i-lucide-search" class="size-3.5 shrink-0" :style="{ color: brand.colors.textMuted }" />
+                  <UIcon name="i-lucide-search" class="size-3.5 shrink-0" :style="{ color: 'var(--brand-text-muted)' }" />
                   <input
                     v-model="memorySearch"
                     type="text"
@@ -755,13 +755,13 @@
                     autocomplete="off"
                     spellcheck="false"
                     class="min-w-0 flex-1 border-0 bg-transparent text-[12.5px] outline-none"
-                    :style="{ color: brand.colors.text }"
+                    :style="{ color: 'var(--brand-text)' }"
                   />
                   <button
                     v-if="memorySearch"
                     type="button"
                     class="shrink-0 rounded-full p-0.5 transition-colors"
-                    :style="{ color: brand.colors.textMuted }"
+                    :style="{ color: 'var(--brand-text-muted)' }"
                     aria-label="Limpar busca"
                     @click="memorySearch = ''"
                   >
@@ -784,14 +784,14 @@
               </div>
 
               <div v-if="filteredMemories.length === 0" class="empty" :style="emptyStyle">
-                <UIcon name="i-lucide-brain" class="size-7" :style="{ color: brand.colors.textMuted }" aria-hidden="true" />
-                <p class="empty-title" :style="{ color: brand.colors.text }">
+                <UIcon name="i-lucide-brain" class="size-7" :style="{ color: 'var(--brand-text-muted)' }" aria-hidden="true" />
+                <p class="empty-title" :style="{ color: 'var(--brand-text)' }">
                   {{ memoriesState.memories.value.length === 0 ? 'Memória vazia' : 'Nada bate com a busca' }}
                 </p>
                 <p
                   v-if="memoriesState.memories.value.length === 0"
                   class="empty-body"
-                  :style="{ color: brand.colors.textMuted }"
+                  :style="{ color: 'var(--brand-text-muted)' }"
                 >
                   Conforme você conversa, fatos relevantes (perfil, preferências, decisões, fatos) ficam guardados aqui e voltam a contextualizar a IA em conversas futuras.
                 </p>
@@ -807,11 +807,11 @@
                   <header class="flex items-baseline justify-between gap-2 px-3 pt-2.5">
                     <h4
                       class="font-mono-tab text-[10.5px] uppercase tracking-[0.18em]"
-                      :style="{ color: brand.colors.textMuted }"
+                      :style="{ color: 'var(--brand-text-muted)' }"
                     >{{ memoryKindLabel(kind) }}</h4>
                     <span
                       class="font-mono-tab text-[10.5px] tabular-nums"
-                      :style="{ color: brand.colors.textMuted }"
+                      :style="{ color: 'var(--brand-text-muted)' }"
                     >{{ rows.length }}</span>
                   </header>
                   <ul class="flex flex-col gap-px pb-1.5 pt-1">
@@ -823,21 +823,21 @@
                       <div class="flex min-w-0 flex-1 flex-col gap-0.5">
                         <span
                           class="font-mono-tab truncate text-[10.5px]"
-                          :style="{ color: brand.colors.text }"
+                          :style="{ color: 'var(--brand-text)' }"
                         >{{ humanizeKey(m.key) }}</span>
                         <span
                           class="break-words text-[12.5px] leading-snug"
-                          :style="{ color: `color-mix(in srgb, ${brand.colors.text} 88%, transparent)` }"
+                          :style="{ color: `color-mix(in srgb, var(--brand-text) 88%, transparent)` }"
                         >{{ formatMemoryValue(m.value) }}</span>
                         <span
                           class="font-mono-tab pt-0.5 text-[10px] tabular-nums"
-                          :style="{ color: brand.colors.textMuted }"
+                          :style="{ color: 'var(--brand-text-muted)' }"
                         >{{ formatDate(m.updatedAt) }} · conf {{ m.confidence }}</span>
                       </div>
                       <button
                         type="button"
                         class="memory-delete inline-flex size-6 shrink-0 items-center justify-center rounded-full transition-colors"
-                        :style="{ color: brand.colors.textMuted }"
+                        :style="{ color: 'var(--brand-text-muted)' }"
                         :aria-label="`Esquecer ${m.key}`"
                         @click="memoriesState.remove(m.id)"
                       >
@@ -855,11 +855,11 @@
                 <div class="flex flex-col gap-0.5">
                   <h3
                     class="text-[15px] font-semibold leading-tight"
-                    :style="{ color: brand.colors.text }"
+                    :style="{ color: 'var(--brand-text)' }"
                   >Atividade recente</h3>
                   <p
                     class="font-mono-tab text-[10.5px] uppercase tracking-[0.16em]"
-                    :style="{ color: brand.colors.textMuted }"
+                    :style="{ color: 'var(--brand-text-muted)' }"
                   >{{ activityState.events.value.length }} {{ activityState.events.value.length === 1 ? 'evento' : 'eventos' }}</p>
                 </div>
               </header>
@@ -869,9 +869,9 @@
                 class="empty"
                 :style="emptyStyle"
               >
-                <UIcon name="i-lucide-activity" class="size-7" :style="{ color: brand.colors.textMuted }" aria-hidden="true" />
-                <p class="empty-title" :style="{ color: brand.colors.text }">Sem atividade recente</p>
-                <p class="empty-body" :style="{ color: brand.colors.textMuted }">
+                <UIcon name="i-lucide-activity" class="size-7" :style="{ color: 'var(--brand-text-muted)' }" aria-hidden="true" />
+                <p class="empty-title" :style="{ color: 'var(--brand-text)' }">Sem atividade recente</p>
+                <p class="empty-body" :style="{ color: 'var(--brand-text-muted)' }">
                   Eventos da IA — tools rodadas, mudanças de status de decisão, alertas disparados, novas memórias — aparecem aqui em ordem cronológica.
                 </p>
               </div>
@@ -879,7 +879,7 @@
               <p
                 v-else-if="activityState.loading.value && activityState.events.value.length === 0"
                 class="text-[12px]"
-                :style="{ color: brand.colors.textMuted }"
+                :style="{ color: 'var(--brand-text-muted)' }"
               >Carregando…</p>
 
               <div v-else class="flex flex-col gap-4">
@@ -890,7 +890,7 @@
                 >
                   <h4
                     class="font-mono-tab px-2 text-[10.5px] uppercase tracking-[0.18em]"
-                    :style="{ color: brand.colors.textMuted }"
+                    :style="{ color: 'var(--brand-text-muted)' }"
                   >{{ group.label }} · {{ group.events.length }}</h4>
                   <ul class="flex flex-col gap-px">
                     <li v-for="e in group.events" :key="e.id">
@@ -904,17 +904,17 @@
                           <div class="flex items-baseline gap-2">
                             <span
                               class="truncate text-[12.5px]"
-                              :style="{ color: brand.colors.text }"
+                              :style="{ color: 'var(--brand-text)' }"
                             >{{ e.summary }}</span>
                             <span
                               v-if="e.detail"
                               class="font-mono-tab truncate text-[10.5px]"
-                              :style="{ color: brand.colors.textMuted }"
+                              :style="{ color: 'var(--brand-text-muted)' }"
                             >{{ e.detail }}</span>
                           </div>
                           <span
                             class="font-mono-tab text-[10px] tabular-nums"
-                            :style="{ color: brand.colors.textMuted }"
+                            :style="{ color: 'var(--brand-text-muted)' }"
                           >{{ formatRelative(e.at) }}</span>
                         </div>
                       </div>

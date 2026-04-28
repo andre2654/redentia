@@ -44,7 +44,7 @@
         <p
           v-if="primarySubtext"
           class="text-balance text-[13px] leading-snug"
-          :style="{ color: brand.colors.text }"
+          :style="{ color: 'var(--brand-text)' }"
         >{{ primarySubtext }}</p>
       </div>
       <span
@@ -64,20 +64,20 @@
       <dl class="grid grid-cols-[80px_1fr] gap-x-2 gap-y-1.5 text-[12px]">
         <dt
           class="font-mono-tab pt-0.5 text-[10px] uppercase tracking-[0.14em]"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
         >Tese</dt>
         <dd
           class="text-pretty leading-snug"
-          :style="{ color: brand.colors.text }"
+          :style="{ color: 'var(--brand-text)' }"
         >{{ decision.thesis }}</dd>
         <template v-if="decision.invalidator">
           <dt
             class="font-mono-tab pt-0.5 text-[10px] uppercase tracking-[0.14em]"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
           >Invalidador</dt>
           <dd
             class="text-pretty leading-snug"
-            :style="{ color: brand.colors.text }"
+            :style="{ color: 'var(--brand-text)' }"
           >{{ decision.invalidator }}</dd>
         </template>
         <template v-if="decision.triggerCondition">

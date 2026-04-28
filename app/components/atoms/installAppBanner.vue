@@ -1,7 +1,7 @@
 <template>
   <div
     class="flex items-center justify-between px-7 py-3 xl:mx-4 xl:mt-4 xl:rounded-[20px]"
-    :style="{ backgroundColor: brand.colors.surface }"
+    :style="{ backgroundColor: 'var(--brand-surface)' }"
   >
     <div class="flex items-center gap-2">
       <!-- The wrapping pill is always the primary→secondary gradient
@@ -13,8 +13,8 @@
         class="to-secondary from-primary h-7 w-7 rounded-full bg-gradient-to-r p-1"
       />
       <div class="flex flex-col">
-        <span class="text-[13px] font-semibold" :style="{ color: brand.colors.text }">{{ brand.name }}</span>
-        <span class="-mt-1 text-[11px]" :style="{ color: brand.colors.textMuted }">Instalação do aplicativo</span>
+        <span class="text-[13px] font-semibold" :style="{ color: 'var(--brand-text)' }">{{ brand.name }}</span>
+        <span class="-mt-1 text-[11px]" :style="{ color: 'var(--brand-text-muted)' }">Instalação do aplicativo</span>
       </div>
     </div>
     <div class="flex items-center gap-2">
@@ -22,11 +22,11 @@
         to="/download"
         class="to-secondary from-primary flex items-center gap-2 rounded-full bg-gradient-to-r px-3 py-1 hover:opacity-80"
       >
-        <span class="text-[12px] font-medium" :style="{ color: brand.colors.background }">Baixar</span>
+        <span class="text-[12px] font-medium" :style="{ color: 'var(--brand-background)' }">Baixar</span>
       </NuxtLink>
       <button
         class="group flex items-center justify-center rounded-full p-1 transition-colors"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
         aria-label="Fechar banner"
         @click="closeBanner"
       >

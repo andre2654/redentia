@@ -22,19 +22,19 @@
   <dialog
     ref="dialogEl"
     class="screenshot-modal w-full max-w-2xl rounded-2xl border p-0 backdrop:bg-black/70 backdrop:backdrop-blur-sm"
-    :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.text }"
+    :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', color: 'var(--brand-text)' }"
     @close="handleClose"
     @cancel="handleCancel"
   >
     <div class="flex flex-col gap-5 p-6">
       <header class="flex items-start justify-between gap-4">
-        <h2 class="text-lg font-semibold" :style="{ color: brand.colors.text }">
+        <h2 class="text-lg font-semibold" :style="{ color: 'var(--brand-text)' }">
           Compartilhar imagem
         </h2>
         <button
           type="button"
           class="inline-flex size-8 shrink-0 items-center justify-center rounded-md transition-colors hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
           aria-label="Fechar"
           @click="close"
         >
@@ -46,7 +46,7 @@
       <div class="flex flex-wrap items-center gap-3">
         <div
           class="inline-flex items-center border"
-          :style="{ borderColor: brand.colors.border }"
+          :style="{ borderColor: 'var(--brand-border)' }"
           role="group"
           aria-label="Proporção da imagem"
         >
@@ -57,7 +57,7 @@
             class="inline-flex h-8 min-w-12 items-center justify-center px-3 font-mono-tab text-[11px] uppercase tracking-[0.1em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset"
             :style="{
               backgroundColor: aspect === opt.value ? brand.colors.primary : 'transparent',
-              color: aspect === opt.value ? brand.colors.background : brand.colors.textMuted,
+              color: aspect === opt.value ? brand.colors.background : 'var(--brand-text-muted)',
             }"
             :aria-pressed="aspect === opt.value"
             @click="aspect = opt.value"
@@ -68,7 +68,7 @@
 
         <div
           class="inline-flex items-center border"
-          :style="{ borderColor: brand.colors.border }"
+          :style="{ borderColor: 'var(--brand-border)' }"
           role="group"
           aria-label="Tema"
         >
@@ -77,7 +77,7 @@
             class="inline-flex size-8 items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset"
             :style="{
               backgroundColor: theme === 'light' ? brand.colors.primary : 'transparent',
-              color: theme === 'light' ? brand.colors.background : brand.colors.textMuted,
+              color: theme === 'light' ? brand.colors.background : 'var(--brand-text-muted)',
             }"
             :aria-pressed="theme === 'light'"
             aria-label="Tema claro"
@@ -89,9 +89,9 @@
             type="button"
             class="inline-flex size-8 items-center justify-center border-l transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset"
             :style="{
-              borderColor: brand.colors.border,
+              borderColor: 'var(--brand-border)',
               backgroundColor: theme === 'dark' ? brand.colors.primary : 'transparent',
-              color: theme === 'dark' ? brand.colors.background : brand.colors.textMuted,
+              color: theme === 'dark' ? brand.colors.background : 'var(--brand-text-muted)',
             }"
             :aria-pressed="theme === 'dark'"
             aria-label="Tema escuro"
@@ -191,9 +191,9 @@
           class="inline-flex items-center justify-center gap-2 rounded-md border px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
           :disabled="isRendering || !sourceImage"
           :style="{
-            borderColor: brand.colors.border,
-            color: brand.colors.text,
-            backgroundColor: brand.colors.surface,
+            borderColor: 'var(--brand-border)',
+            color: 'var(--brand-text)',
+            backgroundColor: 'var(--brand-surface)',
           }"
           @click="copyToClipboard"
         >
@@ -205,9 +205,9 @@
           class="inline-flex items-center justify-center gap-2 rounded-md border px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
           :disabled="isRendering || !sourceImage"
           :style="{
-            backgroundColor: brand.colors.primary,
-            color: brand.colors.background,
-            borderColor: brand.colors.primary,
+            backgroundColor: 'var(--brand-primary)',
+            color: 'var(--brand-background)',
+            borderColor: 'var(--brand-primary)',
           }"
           @click="downloadPng"
         >

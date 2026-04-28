@@ -3,10 +3,10 @@
     <div class="mx-auto max-w-5xl">
       <!-- Header -->
       <div class="mb-10 text-center">
-        <h2 class="mb-2 text-2xl md:text-3xl" :class="[brand.font.headingWeight, brand.font.headingStyle]" :style="{ color: brand.colors.text }">
+        <h2 class="mb-2 text-2xl md:text-3xl" :class="[brand.font.headingWeight, brand.font.headingStyle]" :style="{ color: 'var(--brand-text)' }">
           {{ config.sectionTitle }}
         </h2>
-        <p class="text-sm md:text-base" :style="{ color: brand.colors.textMuted }">
+        <p class="text-sm md:text-base" :style="{ color: 'var(--brand-text-muted)' }">
           {{ config.sectionSubtitle }}
         </p>
       </div>
@@ -36,7 +36,7 @@
               <UIcon :name="char.emoji" class="h-6 w-6" :style="{ color: char.color }" />
             </div>
             <div>
-              <h3 class="text-lg font-bold" :style="{ color: brand.colors.text }">{{ char.name }}</h3>
+              <h3 class="text-lg font-bold" :style="{ color: 'var(--brand-text)' }">{{ char.name }}</h3>
               <p class="text-xs font-medium" :style="{ color: char.color }">{{ char.role }}</p>
             </div>
             <!-- Villain badge -->
@@ -51,7 +51,7 @@
 
           <!-- Quote bubble -->
           <div class="relative mx-5 mt-4 p-3 brand-card-sm" :style="{ backgroundColor: `${char.color}0D` }">
-            <p class="text-sm italic leading-relaxed" :style="{ color: `${brand.colors.text}CC` }">
+            <p class="text-sm italic leading-relaxed" :style="{ color: `var(--brand-text)CC` }">
               "{{ char.catchphrase }}"
             </p>
             <!-- Bubble tail -->
@@ -62,7 +62,7 @@
           </div>
 
           <!-- Description -->
-          <p class="flex-1 px-5 pt-4 text-sm leading-relaxed" :style="{ color: brand.colors.textMuted }">
+          <p class="flex-1 px-5 pt-4 text-sm leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
             {{ char.description }}
           </p>
 

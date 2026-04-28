@@ -61,6 +61,52 @@ function buildCssVars(b: typeof defaultBrand): string {
   --brand-ease: ${anim.ease};
   --brand-overlay: ${isLight ? '0, 0, 0' : '255, 255, 255'};
   --brand-overlay-inverse: ${isLight ? '255, 255, 255' : '0, 0, 0'};
+
+  /* ============================================================
+     QUIET tokens — semantic layer for the redentia-stripe-style skill.
+     Lightness as luxury: warm headings instead of pure black/white,
+     amber-tinted shadows, conservative borders derived from primary.
+     Available platform-wide; consumed by typography defaults in main.css,
+     by app.config.ts component defaults, and by any quiet-aware component.
+     ============================================================ */
+  /* Surfaces (alias to brand vars where they coincide, distinct names so
+     quiet components express intent without coupling to brand semantics) */
+  --bg-base: ${b.colors.background};
+  --bg-elevated: ${b.colors.surface};
+  --bg-overlay: ${b.colors.surfaceHover};
+  --bg-input: ${b.colors.inputBg};
+
+  /* Text ramp — 4 stops. Headings are warm (aubergine/onyx), never pure. */
+  --text-heading: ${isLight ? '#1A0A2E' : b.colors.text};
+  --text-label: ${isLight ? '#2A1A4A' : b.colors.text};
+  --text-body: ${b.colors.textMuted};
+  --text-muted: ${isLight ? '#9A92A8' : b.colors.textMuted};
+
+  /* Borders — derived from primary via color-mix so multi-tenant safe.
+     Light: low-saturation amber neutralized. Dark: amber tint on white. */
+  --border-subtle: ${isLight
+    ? `color-mix(in srgb, ${b.colors.primary} 8%, ${b.colors.border})`
+    : `color-mix(in srgb, ${b.colors.primary} 8%, transparent)`};
+  --border-default: ${isLight
+    ? `color-mix(in srgb, ${b.colors.primary} 16%, ${b.colors.border})`
+    : `color-mix(in srgb, ${b.colors.primary} 14%, transparent)`};
+  --border-strong: ${isLight
+    ? `color-mix(in srgb, ${b.colors.primary} 28%, ${b.colors.border})`
+    : `color-mix(in srgb, ${b.colors.primary} 24%, transparent)`};
+
+  /* Shadow — chromatic, amber-tinted. Light gets a far amber + near neutral,
+     dark gets a much lower-opacity amber + heavy neutral for ambient depth. */
+  --shadow-amber-far: ${isLight
+    ? `color-mix(in srgb, ${b.colors.primary} 18%, transparent)`
+    : `color-mix(in srgb, ${b.colors.primary} 10%, transparent)`};
+  --shadow-amber-near: ${isLight ? 'rgba(0,0,0,0.08)' : 'rgba(0,0,0,0.4)'};
+  --shadow-ambient: ${isLight ? 'rgba(23,23,23,0.06)' : 'rgba(0,0,0,0.5)'};
+
+  /* Composed shadow recipes — drop-in for elevation levels */
+  --shadow-card: 0 30px 45px -30px var(--shadow-amber-far), 0 18px 36px -18px var(--shadow-amber-near);
+  --shadow-card-hover: 0 40px 55px -30px var(--shadow-amber-far), 0 24px 40px -18px var(--shadow-amber-near);
+  --shadow-popover: 0 14px 30px -10px rgba(0,0,0,${isLight ? '0.12' : '0.55'}), 0 30px 45px -30px var(--shadow-amber-far);
+  --shadow-ring-focus: 0 0 0 3px color-mix(in srgb, ${b.colors.primary} 22%, transparent);
 }
 body {
   background-image: ${bgPattern};

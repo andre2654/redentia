@@ -31,7 +31,7 @@
     <div
       class="pointer-events-none absolute inset-0"
       :style="{
-        background: `radial-gradient(ellipse 80% 30% at 50% 0%, color-mix(in srgb, ${brand.colors.primary} 6%, transparent) 0%, transparent 60%)`,
+        background: `radial-gradient(ellipse 80% 30% at 50% 0%, color-mix(in srgb, var(--brand-primary) 6%, transparent) 0%, transparent 60%)`,
       }"
       aria-hidden="true"
     />
@@ -53,7 +53,7 @@
     <button
       type="button"
       class="chat-new group relative mx-2 mb-1 flex items-center gap-2.5 rounded-md px-3 py-1.5 text-left text-[13px] transition-[background-color,color]"
-      :style="{ color: `color-mix(in srgb, ${brand.colors.text} 78%, transparent)` }"
+      :style="{ color: `color-mix(in srgb, var(--brand-text) 78%, transparent)` }"
       aria-label="Nova conversa"
       @click="$emit('new')"
     >
@@ -67,9 +67,9 @@
         v-if="shortcutLabel"
         class="ml-auto hidden rounded px-1.5 py-[1px] font-mono-tab text-[9.5px] tracking-wider transition-colors sm:inline-flex"
         :style="{
-          color: brand.colors.textMuted,
-          border: `1px solid color-mix(in srgb, ${brand.colors.border} 45%, transparent)`,
-          backgroundColor: `color-mix(in srgb, ${brand.colors.text} 3%, transparent)`,
+          color: 'var(--brand-text-muted)',
+          border: `1px solid color-mix(in srgb, var(--brand-border) 45%, transparent)`,
+          backgroundColor: `color-mix(in srgb, var(--brand-text) 3%, transparent)`,
         }"
       >
         {{ shortcutLabel }}
@@ -84,7 +84,7 @@
       <UIcon
         name="i-lucide-search"
         class="size-3.5 shrink-0"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
         aria-hidden="true"
       />
       <input
@@ -95,13 +95,13 @@
         autocomplete="off"
         spellcheck="false"
         class="chat-search-input min-w-0 flex-1 border-0 bg-transparent text-[12.5px] outline-none"
-        :style="{ color: brand.colors.text }"
+        :style="{ color: 'var(--brand-text)' }"
       />
       <button
         v-if="searchQuery"
         type="button"
         class="chat-search-clear shrink-0 rounded-sm p-0.5 transition-colors"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
         aria-label="Limpar busca"
         @click="searchQuery = ''"
       >
@@ -115,7 +115,7 @@
     <div
       class="chat-horizon mx-4 mt-1 h-px shrink-0"
       :style="{
-        backgroundImage: `linear-gradient(90deg, transparent 0%, color-mix(in srgb, ${brand.colors.border} 70%, transparent) 50%, transparent 100%)`,
+        backgroundImage: `linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--brand-border) 70%, transparent) 50%, transparent 100%)`,
       }"
       aria-hidden="true"
     />
@@ -137,14 +137,14 @@
       <h3
         :id="stashHeadingId"
         class="font-mono-tab mb-1 px-2 text-[10px] uppercase tracking-[0.18em]"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
       >Guardado</h3>
       <ul class="flex flex-col">
         <li v-for="row in stashRows" :key="row.section">
           <button
             type="button"
             class="chat-stash-row flex w-full items-center gap-2 rounded-md px-2 py-1 text-left text-[12.5px] transition-colors"
-            :style="{ color: brand.colors.text }"
+            :style="{ color: 'var(--brand-text)' }"
             :aria-label="`${row.label}: ${row.count}${row.pending ? ', com pendência' : ''}`"
             @click="$emit('open-panel', row.section)"
           >
@@ -153,7 +153,7 @@
               :style="{
                 backgroundColor: row.pending
                   ? brand.colors.primary
-                  : `color-mix(in srgb, ${brand.colors.text} 25%, transparent)`,
+                  : `color-mix(in srgb, var(--brand-text) 25%, transparent)`,
               }"
               aria-hidden="true"
             />
@@ -161,7 +161,7 @@
             <span
               class="ml-auto font-mono-tab tabular-nums text-[11.5px]"
               :style="{
-                color: row.count > 0 ? brand.colors.text : brand.colors.textMuted,
+                color: row.count > 0 ? brand.colors.text : 'var(--brand-text-muted)',
                 fontWeight: row.count > 0 ? '500' : '400',
               }"
             >{{ row.count }}</span>
@@ -171,7 +171,7 @@
       <button
         type="button"
         class="chat-audit-btn mt-1 flex items-center justify-between gap-2 rounded-md px-2 py-1 text-left text-[12px] transition-colors"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
         aria-label="Abrir auditoria completa — logs, atividade, memória de longo prazo"
         @click="$emit('open-panel', 'memory')"
       >
@@ -184,7 +184,7 @@
       v-if="showGoalsAndDecisions"
       class="chat-horizon mx-4 mb-1 mt-2 h-px shrink-0"
       :style="{
-        backgroundImage: `linear-gradient(90deg, transparent 0%, color-mix(in srgb, ${brand.colors.border} 70%, transparent) 50%, transparent 100%)`,
+        backgroundImage: `linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--brand-border) 70%, transparent) 50%, transparent 100%)`,
       }"
       aria-hidden="true"
     />
@@ -197,7 +197,7 @@
       <p
         v-if="sessions.length === 0"
         class="px-5 pt-8 text-[12px] leading-relaxed"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
       >
         Suas conversas aparecem aqui.
       </p>
@@ -205,28 +205,28 @@
       <p
         v-else-if="visibleSessions.length === 0"
         class="px-5 pt-6 text-[12px]"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
       >
-        Nada bate com&nbsp;<span class="font-medium" :style="{ color: brand.colors.text }">{{ searchQuery }}</span>.
+        Nada bate com&nbsp;<span class="font-medium" :style="{ color: 'var(--brand-text)' }">{{ searchQuery }}</span>.
       </p>
 
       <template v-for="group in groupedSessions" :key="group.label">
         <h3
           v-if="group.items.length > 0"
           class="mb-1 mt-5 flex items-center gap-2 px-5 font-mono-tab text-[10px] uppercase tracking-[0.18em]"
-          :style="{ color: `color-mix(in srgb, ${brand.colors.textMuted} 55%, transparent)` }"
+          :style="{ color: `color-mix(in srgb, var(--brand-text-muted) 55%, transparent)` }"
         >
           <span>{{ group.label }}</span>
           <span
             class="h-px flex-1"
             :style="{
-              backgroundColor: `color-mix(in srgb, ${brand.colors.border} 25%, transparent)`,
+              backgroundColor: `color-mix(in srgb, var(--brand-border) 25%, transparent)`,
             }"
             aria-hidden="true"
           />
           <span
             class="font-mono-tab tabular-nums"
-            :style="{ color: `color-mix(in srgb, ${brand.colors.textMuted} 45%, transparent)` }"
+            :style="{ color: `color-mix(in srgb, var(--brand-text-muted) 45%, transparent)` }"
           >
             {{ group.items.length }}
           </span>
@@ -252,7 +252,7 @@
               v-if="activeId === session.id"
               class="chat-sess-pad pointer-events-none absolute inset-x-2 inset-y-0.5 overflow-hidden rounded-md"
               :style="{
-                backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 5%, transparent)`,
+                backgroundColor: `color-mix(in srgb, var(--brand-primary) 5%, transparent)`,
               }"
               aria-hidden="true"
             />
@@ -265,7 +265,7 @@
               class="chat-sess-bar pointer-events-none absolute left-0 top-1/2 h-4 -translate-y-1/2 rounded-r-full"
               :style="{
                 width: '2px',
-                backgroundColor: brand.colors.primary,
+                backgroundColor: 'var(--brand-primary)',
               }"
               aria-hidden="true"
             />
@@ -273,8 +273,8 @@
               type="button"
               class="chat-sess relative flex w-full items-center gap-2 rounded-md px-4 py-1.5 text-left text-[13px] transition-[background-color,color]"
               :style="activeId === session.id
-                ? { color: brand.colors.text, fontWeight: '500' }
-                : { color: `color-mix(in srgb, ${brand.colors.text} 80%, transparent)` }"
+                ? { color: 'var(--brand-text)', fontWeight: '500' }
+                : { color: `color-mix(in srgb, var(--brand-text) 80%, transparent)` }"
               :aria-current="activeId === session.id ? 'page' : undefined"
               :data-tier="session.tier"
               @click="$emit('select', session.id)"
@@ -284,7 +284,7 @@
               <span
                 v-if="session.tier === 'max' && activeId !== session.id"
                 class="size-1.5 shrink-0 rounded-full"
-                :style="{ backgroundColor: brand.colors.primary }"
+                :style="{ backgroundColor: 'var(--brand-primary)' }"
                 aria-label="Conversa Redentia MAX"
               />
               <span class="min-w-0 flex-1 truncate">
@@ -293,7 +293,7 @@
               <!-- Hover-revealed date -->
               <span
                 class="chat-sess-meta hidden shrink-0 font-mono-tab text-[10px] tabular-nums"
-                :style="{ color: `color-mix(in srgb, ${brand.colors.textMuted} 70%, transparent)` }"
+                :style="{ color: `color-mix(in srgb, var(--brand-text-muted) 70%, transparent)` }"
               >
                 {{ formatRelativeDate(session.createdAt) }}
               </span>
@@ -302,7 +302,7 @@
                 role="button"
                 tabindex="0"
                 class="chat-sess-del hidden size-5 shrink-0 items-center justify-center rounded-sm transition-colors"
-                :style="{ color: brand.colors.textMuted }"
+                :style="{ color: 'var(--brand-text-muted)' }"
                 aria-label="Excluir conversa"
                 @click.stop="$emit('delete', session.id)"
                 @keydown.enter.stop.prevent="$emit('delete', session.id)"

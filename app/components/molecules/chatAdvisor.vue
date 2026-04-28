@@ -1,15 +1,15 @@
 <template>
-  <div class="flex h-full flex-col overflow-hidden rounded-[30px]" :style="{ background: `linear-gradient(to bottom, ${brand.colors.surface}, ${brand.colors.background})`, color: brand.colors.text }">
+  <div class="flex h-full flex-col overflow-hidden rounded-[30px]" :style="{ background: `linear-gradient(to bottom, var(--brand-surface), var(--brand-background))`, color: 'var(--brand-text)' }">
     <!-- Header alinhado ao estilo da IA -->
-    <div class="flex shrink-0 items-center gap-3 border-b px-5 py-4" :style="{ borderColor: brand.colors.border }">
-      <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-semibold text-secondary" :style="{ backgroundColor: brand.colors.surfaceHover }">
+    <div class="flex shrink-0 items-center gap-3 border-b px-5 py-4" :style="{ borderColor: 'var(--brand-border)' }">
+      <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-semibold text-secondary" :style="{ backgroundColor: 'var(--brand-surface-hover)' }">
         {{ otherUserName.charAt(0).toUpperCase() }}
       </div>
       <div class="min-w-0 flex-1">
-        <p class="text-[13px] font-medium uppercase tracking-wide" :style="{ color: brand.colors.textMuted }">
+        <p class="text-[13px] font-medium uppercase tracking-wide" :style="{ color: 'var(--brand-text-muted)' }">
           Conversa
         </p>
-        <p class="truncate text-[15px] font-semibold" :style="{ color: brand.colors.text }">
+        <p class="truncate text-[15px] font-semibold" :style="{ color: 'var(--brand-text)' }">
           {{ otherUserName }}
         </p>
       </div>
@@ -17,7 +17,7 @@
         v-if="investorDetailHref"
         :to="investorDetailHref"
         class="flex shrink-0 items-center gap-2 rounded-xl border px-3 py-2 text-[13px] font-medium transition hover:opacity-80"
-        :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surfaceHover, color: brand.colors.textMuted }"
+        :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface-hover)', color: 'var(--brand-text-muted)' }"
       >
         <UIcon name="i-lucide-user-cog" class="h-4 w-4" />
         Ver detalhes
@@ -36,7 +36,7 @@
         <div
           v-if="msg.sender_id !== myId"
           class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-medium"
-          :style="{ backgroundColor: brand.colors.surfaceHover, color: brand.colors.textMuted }"
+          :style="{ backgroundColor: 'var(--brand-surface-hover)', color: 'var(--brand-text-muted)' }"
         >
           {{ otherUserName.charAt(0).toUpperCase() }}
         </div>
@@ -48,11 +48,11 @@
           class="max-w-[78%] rounded-2xl px-4 py-3 text-[14px] leading-relaxed"
           :class="msg.sender_id === myId ? 'rounded-br-lg shadow-sm' : 'rounded-bl-lg border'"
           :style="msg.sender_id === myId
-            ? { backgroundColor: 'color-mix(in srgb, ' + brand.colors.primary + ' 25%, transparent)', color: brand.colors.text }
-            : { borderColor: brand.colors.border, backgroundColor: brand.colors.surfaceHover, color: brand.colors.text }"
+            ? { backgroundColor: 'color-mix(in srgb, ' + brand.colors.primary + ' 25%, transparent)', color: 'var(--brand-text)' }
+            : { borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface-hover)', color: 'var(--brand-text)' }"
         >
           <p class="whitespace-pre-wrap">{{ msg.body }}</p>
-          <p class="mt-1.5 text-[11px]" :style="{ color: brand.colors.textMuted }">
+          <p class="mt-1.5 text-[11px]" :style="{ color: 'var(--brand-text-muted)' }">
             {{ formatDate(msg.created_at) }}
           </p>
         </div>
@@ -64,13 +64,13 @@
         v-if="!loading && messages.length === 0"
         class="flex flex-col items-center justify-center gap-2 py-12 text-center"
       >
-        <div class="flex h-12 w-12 items-center justify-center rounded-full" :style="{ backgroundColor: brand.colors.surfaceHover }">
-          <UIcon name="i-lucide-message-circle" class="h-6 w-6" :style="{ color: brand.colors.textMuted }" />
+        <div class="flex h-12 w-12 items-center justify-center rounded-full" :style="{ backgroundColor: 'var(--brand-surface-hover)' }">
+          <UIcon name="i-lucide-message-circle" class="h-6 w-6" :style="{ color: 'var(--brand-text-muted)' }" />
         </div>
-        <p class="text-[14px]" :style="{ color: brand.colors.textMuted }">
+        <p class="text-[14px]" :style="{ color: 'var(--brand-text-muted)' }">
           Nenhuma mensagem ainda.
         </p>
-        <p class="text-[13px]" :style="{ color: brand.colors.textMuted, opacity: 0.7 }">
+        <p class="text-[13px]" :style="{ color: 'var(--brand-text-muted)', opacity: 0.7 }">
           Envie uma mensagem para {{ otherUserName }}.
         </p>
       </div>
@@ -79,7 +79,7 @@
     <!-- Input idêntico ao do chat com IA -->
     <form
       class="flex w-full shrink-0 flex-col gap-3 p-3 pb-6 backdrop-blur-[99px]"
-      :style="{ backgroundColor: brand.colors.surfaceHover }"
+      :style="{ backgroundColor: 'var(--brand-surface-hover)' }"
       @submit.prevent="sendMessage"
     >
       <UTextarea

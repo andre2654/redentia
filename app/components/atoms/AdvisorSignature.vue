@@ -8,13 +8,13 @@
       <div
         class="size-full"
         :style="{
-          background: `radial-gradient(circle at 35% 40%, ${brand.colors.surface}, ${brand.colors.background})`,
+          background: `radial-gradient(circle at 35% 40%, var(--brand-surface), var(--brand-background))`,
         }"
       >
         <!-- Simple monogram as avatar stand-in; swap for real photo later -->
         <div
           class="flex size-full items-center justify-center font-editorial-display text-lg"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
         >
           {{ initials }}
         </div>
@@ -24,19 +24,19 @@
     <div class="flex flex-col gap-0.5">
       <span
         class="font-editorial-body text-[11px] italic"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
       >
        , {{ closing }}
       </span>
       <span
         class="font-editorial-display text-xl leading-tight"
-        :style="{ color: brand.colors.text }"
+        :style="{ color: 'var(--brand-text)' }"
       >
         {{ name }}
       </span>
       <span
         class="font-editorial-body text-[12px] italic"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
       >
         {{ role }}
       </span>

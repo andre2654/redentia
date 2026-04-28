@@ -11,12 +11,12 @@
   <section v-if="articles.length > 0" class="py-8">
     <header class="mb-5 flex flex-col gap-1">
       <div class="flex items-center gap-2 font-mono-tab text-[10px] uppercase tracking-[0.18em]">
-        <span class="inline-flex h-1.5 w-1.5 rounded-full motion-safe:animate-pulse" :style="{ backgroundColor: brand.colors.primary }" aria-hidden="true" />
-        <span :style="{ color: brand.colors.primary }" translate="no">{{ ticker }}</span>
-        <span aria-hidden="true" :style="{ color: brand.colors.border }">·</span>
-        <span :style="{ color: brand.colors.textMuted }">{{ articles.length }} MATÉRIAS · {{ sources.length }} FONTES</span>
+        <span class="inline-flex h-1.5 w-1.5 rounded-full motion-safe:animate-pulse" :style="{ backgroundColor: 'var(--brand-primary)' }" aria-hidden="true" />
+        <span :style="{ color: 'var(--brand-primary)' }" translate="no">{{ ticker }}</span>
+        <span aria-hidden="true" :style="{ color: 'var(--brand-border)' }">·</span>
+        <span :style="{ color: 'var(--brand-text-muted)' }">{{ articles.length }} MATÉRIAS · {{ sources.length }} FONTES</span>
       </div>
-      <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
+      <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: 'var(--brand-text)' }">
         Últimas notícias
       </h2>
     </header>
@@ -31,7 +31,7 @@
         v-for="item in heroArticles"
         :key="`hero-${item.id}`"
         class="news-hero-card flex flex-col overflow-hidden rounded-xl border transition-transform duration-300"
-        :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+        :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
       >
         <a
           :href="item.url"
@@ -54,13 +54,13 @@
           <div
             v-else
             class="absolute inset-0"
-            :style="{ background: `linear-gradient(135deg, ${brand.colors.primary}22, ${brand.colors.surface})` }"
+            :style="{ background: `linear-gradient(135deg, var(--brand-primary)22, var(--brand-surface))` }"
             aria-hidden="true"
           />
           <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/5 transition-opacity duration-300 group-hover:from-black/90 group-hover:via-black/50" aria-hidden="true" />
           <div
             class="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-            :style="{ boxShadow: `inset 0 0 0 2px ${brand.colors.primary}` }"
+            :style="{ boxShadow: `inset 0 0 0 2px var(--brand-primary)` }"
             aria-hidden="true"
           />
 
@@ -68,8 +68,8 @@
             <span
               class="inline-flex items-center gap-1.5 font-mono-tab text-[10px] font-bold uppercase tracking-[0.15em] backdrop-blur-md"
               :style="{
-                color: brand.colors.text,
-                backgroundColor: `${brand.colors.background}CC`,
+                color: 'var(--brand-text)',
+                backgroundColor: `var(--brand-background)CC`,
                 padding: '4px 8px',
                 borderRadius: '6px',
               }"
@@ -79,7 +79,7 @@
                 class="inline-flex size-3 items-center justify-center rounded-[3px] font-mono-tab text-[7px] font-black"
                 :style="{
                   backgroundColor: sourceColor(item.source),
-                  color: brand.colors.background,
+                  color: 'var(--brand-background)',
                 }"
               >{{ sourceInitials(item.source) }}</span>
               {{ formatSource(item.source) }}
@@ -88,7 +88,7 @@
 
           <div
             class="absolute right-3 top-3 flex size-7 items-center justify-center rounded-full opacity-0 transition-all duration-300 group-hover:opacity-100"
-            :style="{ backgroundColor: brand.colors.primary, color: brand.colors.background }"
+            :style="{ backgroundColor: 'var(--brand-primary)', color: 'var(--brand-background)' }"
             aria-hidden="true"
           >
             <UIcon name="i-lucide-arrow-up-right" class="size-3.5" />
@@ -117,15 +117,15 @@
 
     <!-- Grid compacto de outras manchetes (thumb + título + meta) -->
     <div v-if="otherArticles.length > 0">
-      <ul class="grid gap-px" :style="{ backgroundColor: brand.colors.border }" :class="othersGridClass">
-        <li v-for="item in visibleOthers" :key="`other-${item.id}`" :style="{ backgroundColor: brand.colors.surface }">
+      <ul class="grid gap-px" :style="{ backgroundColor: 'var(--brand-border)' }" :class="othersGridClass">
+        <li v-for="item in visibleOthers" :key="`other-${item.id}`" :style="{ backgroundColor: 'var(--brand-surface)' }">
           <a
             :href="item.url"
             target="_blank"
             rel="noopener noreferrer"
             class="other-link group relative flex items-stretch gap-3 p-3 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset"
           >
-            <div class="relative size-16 shrink-0 overflow-hidden rounded-md" :style="{ backgroundColor: brand.colors.border }">
+            <div class="relative size-16 shrink-0 overflow-hidden rounded-md" :style="{ backgroundColor: 'var(--brand-border)' }">
               <NuxtImg
                 v-if="item.image_url && !failedImages[item.id]"
                 :src="item.image_url"
@@ -142,26 +142,26 @@
               <div
                 v-else
                 class="flex h-full w-full items-center justify-center"
-                :style="{ background: `linear-gradient(135deg, ${brand.colors.primary}22, ${brand.colors.surface})` }"
+                :style="{ background: `linear-gradient(135deg, var(--brand-primary)22, var(--brand-surface))` }"
                 aria-hidden="true"
               >
-                <UIcon name="i-lucide-newspaper" class="size-5 opacity-40" :style="{ color: brand.colors.primary }" />
+                <UIcon name="i-lucide-newspaper" class="size-5 opacity-40" :style="{ color: 'var(--brand-primary)' }" />
               </div>
             </div>
             <div class="flex min-w-0 flex-1 flex-col justify-between">
               <h3
                 class="line-clamp-2 text-xs leading-snug transition-colors group-hover:text-secondary"
-                :style="{ color: brand.colors.text }"
+                :style="{ color: 'var(--brand-text)' }"
               >
                 {{ item.title }}
               </h3>
-              <div class="mt-1 flex items-center justify-between gap-2 font-mono-tab text-[9px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
+              <div class="mt-1 flex items-center justify-between gap-2 font-mono-tab text-[9px] uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-text-muted)' }">
                 <span class="inline-flex items-center gap-1.5">
                   <span
                     class="inline-flex size-3 shrink-0 items-center justify-center rounded-[2px] font-mono-tab text-[7px] font-black"
                     :style="{
                       backgroundColor: sourceColor(item.source),
-                      color: brand.colors.background,
+                      color: 'var(--brand-background)',
                     }"
                   >{{ sourceInitials(item.source) }}</span>
                   <span translate="no">{{ formatSource(item.source) }}</span>
@@ -178,9 +178,9 @@
           type="button"
           class="inline-flex items-center gap-2 rounded-full border px-4 py-1.5 font-mono-tab text-[10px] font-semibold uppercase tracking-[0.15em] transition-colors hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
           :style="{
-            borderColor: brand.colors.border,
-            color: brand.colors.text,
-            backgroundColor: brand.colors.surface,
+            borderColor: 'var(--brand-border)',
+            color: 'var(--brand-text)',
+            backgroundColor: 'var(--brand-surface)',
           }"
           @click="othersLimit += 6"
         >

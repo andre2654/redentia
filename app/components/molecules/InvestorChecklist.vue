@@ -3,10 +3,10 @@
     <div class="mx-auto max-w-4xl">
       <!-- Header -->
       <div class="mb-10 text-center">
-        <h2 class="mb-2 text-2xl md:text-3xl" :class="[brand.font.headingWeight, brand.font.headingStyle]" :style="{ color: brand.colors.text }">
+        <h2 class="mb-2 text-2xl md:text-3xl" :class="[brand.font.headingWeight, brand.font.headingStyle]" :style="{ color: 'var(--brand-text)' }">
           {{ config.sectionTitle }}
         </h2>
-        <p class="text-sm md:text-base" :style="{ color: brand.colors.textMuted }">
+        <p class="text-sm md:text-base" :style="{ color: 'var(--brand-text-muted)' }">
           {{ config.sectionSubtitle }}
         </p>
       </div>
@@ -33,8 +33,8 @@
           <div class="min-w-0 flex-1">
             <div class="flex flex-col gap-1 md:flex-row md:items-center md:gap-3">
               <div class="flex items-center gap-2">
-                <UIcon :name="step.icon" class="h-4 w-4 shrink-0" :style="{ color: step.status === 'locked' ? brand.colors.textMuted : brand.colors.primary }" />
-                <h3 class="text-sm font-semibold md:text-base" :style="{ color: step.status === 'locked' ? brand.colors.textMuted : brand.colors.text }">
+                <UIcon :name="step.icon" class="h-4 w-4 shrink-0" :style="{ color: step.status === 'locked' ? brand.colors.textMuted : 'var(--brand-primary)' }" />
+                <h3 class="text-sm font-semibold md:text-base" :style="{ color: step.status === 'locked' ? brand.colors.textMuted : 'var(--brand-text)' }">
                   {{ step.title }}
                 </h3>
               </div>
@@ -42,19 +42,19 @@
               <span
                 v-if="step.status === 'recommended'"
                 class="inline-flex w-fit items-center gap-1 px-2 py-0.5 text-xs font-bold uppercase tracking-wider brand-card-sm"
-                :style="{ backgroundColor: `${brand.colors.primary}1A`, color: brand.colors.primary }"
+                :style="{ backgroundColor: `var(--brand-primary)1A`, color: 'var(--brand-primary)' }"
               >
-                <span class="h-1.5 w-1.5 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
+                <span class="h-1.5 w-1.5 rounded-full" :style="{ backgroundColor: 'var(--brand-primary)' }" />
                 Proximo passo
               </span>
             </div>
-            <p class="mt-1 text-xs leading-relaxed md:text-sm" :style="{ color: brand.colors.textMuted, opacity: step.status === 'locked' ? 0.6 : 1 }">
+            <p class="mt-1 text-xs leading-relaxed md:text-sm" :style="{ color: 'var(--brand-text-muted)', opacity: step.status === 'locked' ? 0.6 : 1 }">
               {{ step.description }}
             </p>
           </div>
 
           <!-- CTA arrow -->
-          <div class="hidden shrink-0 items-center gap-1 text-xs font-semibold transition-transform group-hover:translate-x-0.5 md:flex" :style="{ color: step.status === 'locked' ? brand.colors.textMuted : brand.colors.primary }">
+          <div class="hidden shrink-0 items-center gap-1 text-xs font-semibold transition-transform group-hover:translate-x-0.5 md:flex" :style="{ color: step.status === 'locked' ? brand.colors.textMuted : 'var(--brand-primary)' }">
             <span>{{ step.ctaText }}</span>
             <UIcon name="i-lucide-chevron-right" class="h-3.5 w-3.5" />
           </div>
@@ -62,9 +62,9 @@
       </div>
 
       <!-- Footer -->
-      <div class="mt-6 text-center text-xs" :style="{ color: brand.colors.textMuted }">
+      <div class="mt-6 text-center text-xs" :style="{ color: 'var(--brand-text-muted)' }">
         {{ config.footerText }}
-        <a :href="config.footerLink" target="_blank" rel="noopener" class="font-semibold underline underline-offset-2 transition-colors hover:opacity-80" :style="{ color: brand.colors.primary }">
+        <a :href="config.footerLink" target="_blank" rel="noopener" class="font-semibold underline underline-offset-2 transition-colors hover:opacity-80" :style="{ color: 'var(--brand-primary)' }">
           {{ config.footerLinkText }}
         </a>
       </div>

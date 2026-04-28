@@ -74,46 +74,32 @@ onBeforeUnmount(() => {
 
 <template>
   <div v-if="options.length" class="period-selector">
-    <!-- Desktop: segmented control (md+) -->
-    <div
-      class="hidden items-center gap-px border font-mono-tab text-[10px] uppercase tracking-[0.15em] md:flex"
-      :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }"
-      role="group"
-      aria-label="Período do gráfico"
-    >
-      <button
-        v-for="option in options"
-        :key="option.value"
-        type="button"
-        class="px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
-        :class="[isDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer']"
-        :style="{
-          backgroundColor: modelValue === option.value ? brand.colors.primary : brand.colors.surface,
-          color: modelValue === option.value ? brand.colors.background : brand.colors.textMuted,
-        }"
+    <!-- Desktop: AtomsSegmented oficial (design/IDENTITY.md secao 3.3).
+         Loading state e indicado via overlay sutil; o componente segmented
+         em si nao precisa carregar essa logica. -->
+    <div class="relative hidden md:block">
+      <AtomsSegmented
+        v-model="modelValue"
+        :options="options"
         :disabled="isDisabled"
-        :aria-pressed="modelValue === option.value"
-        @click="modelValue = option.value"
-      >
-        <span v-if="isLoading && modelValue === option.value" class="inline-flex items-center gap-1">
-          <UIcon name="i-lucide-loader-2" class="h-3 w-3 motion-safe:animate-spin" aria-hidden="true" />
-          {{ option.label }}
-        </span>
-        <span v-else>{{ option.label }}</span>
-      </button>
+        aria-label="Período do gráfico"
+      />
+      <UIcon
+        v-if="isLoading"
+        name="i-lucide-loader-2"
+        class="absolute -right-5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 motion-safe:animate-spin"
+        :style="{ color: 'var(--text-muted)' }"
+        aria-hidden="true"
+      />
     </div>
 
-    <!-- Mobile: dropdown with terminal aesthetic -->
+    <!-- Mobile: dropdown quiet. Trigger pill + popover panel sombra-card. -->
     <div ref="mobileRef" class="relative md:hidden">
       <button
         type="button"
-        class="flex items-center gap-2 border px-3 py-2 font-mono-tab text-[10px] uppercase tracking-[0.15em] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
+        class="flex items-center gap-2 rounded-md border px-3 py-2 text-[13px] font-medium transition-all duration-150 focus-visible:outline-none focus-visible:shadow-[var(--shadow-ring-focus)]"
         :class="[isDisabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer']"
-        :style="{
-          borderColor: brand.colors.border,
-          backgroundColor: brand.colors.surface,
-          color: brand.colors.text,
-        }"
+        style="border-color: var(--border-default); background-color: var(--bg-input); color: var(--text-heading);"
         :disabled="isDisabled"
         :aria-expanded="mobileOpen"
         aria-haspopup="listbox"
@@ -126,7 +112,7 @@ onBeforeUnmount(() => {
           class="h-3 w-3 motion-safe:animate-spin"
           aria-hidden="true"
         />
-        <span translate="no">{{ activeLabel.toUpperCase() }}</span>
+        <span>{{ activeLabel }}</span>
         <UIcon
           name="i-lucide-chevron-down"
           class="h-3 w-3 transition-transform duration-200"
@@ -137,8 +123,8 @@ onBeforeUnmount(() => {
 
       <div
         v-if="mobileOpen"
-        class="absolute right-0 top-full z-20 mt-1 flex min-w-[8rem] flex-col border font-mono-tab text-[10px] uppercase tracking-[0.15em] shadow-lg"
-        :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+        class="absolute right-0 top-full z-20 mt-1.5 flex min-w-[9rem] flex-col rounded-md border p-1 text-[13px] font-medium"
+        style="border-color: var(--border-subtle); background-color: var(--bg-elevated); box-shadow: var(--shadow-popover);"
         role="listbox"
         aria-label="Período do gráfico"
       >
@@ -146,11 +132,10 @@ onBeforeUnmount(() => {
           v-for="option in options"
           :key="`m-${option.value}`"
           type="button"
-          class="flex items-center justify-between gap-3 px-3 py-2 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset"
-          :style="{
-            backgroundColor: modelValue === option.value ? brand.colors.primary : 'transparent',
-            color: modelValue === option.value ? brand.colors.background : brand.colors.textMuted,
-          }"
+          class="flex items-center justify-between gap-3 rounded-[4px] px-3 py-2 text-left transition-colors focus-visible:outline-none"
+          :style="modelValue === option.value
+            ? { backgroundColor: 'var(--brand-primary)', color: '#1A0A2E' }
+            : { backgroundColor: 'transparent', color: 'var(--text-body)' }"
           :disabled="isDisabled"
           role="option"
           :aria-selected="modelValue === option.value"

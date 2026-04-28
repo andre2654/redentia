@@ -3,7 +3,7 @@
     :to="item.to"
     class="group flex items-center gap-4 border-b px-5 py-3 transition-colors"
     :style="{
-      borderColor: brand.colors.border,
+      borderColor: 'var(--brand-border)',
       backgroundColor: focused ? brand.colors.surface : 'transparent',
     }"
     @click="$emit('click')"
@@ -14,7 +14,7 @@
          an HTML 404 page instead of an SVG) -->
     <div
       class="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden border"
-      :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+      :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
     >
       <img
         v-if="item.logo && !imgFailed"
@@ -29,7 +29,7 @@
       <span
         v-else
         class="font-mono-tab text-[11px] font-bold tracking-wider"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
       >
         {{ item.ticker.slice(0, 4) }}
       </span>
@@ -40,7 +40,7 @@
       <div class="flex items-center gap-2">
         <span
           class="font-mono-tab text-[15px] font-bold tracking-wide"
-          :style="{ color: brand.colors.text }"
+          :style="{ color: 'var(--brand-text)' }"
         >
           {{ item.ticker }}
         </span>
@@ -53,7 +53,7 @@
       </div>
       <span
         class="truncate text-[12px] leading-tight"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
       >
         {{ item.name }}
       </span>
@@ -64,7 +64,7 @@
       <span
         v-if="item.price > 0"
         class="font-mono-tab text-[13px] font-bold tabular-nums"
-        :style="{ color: brand.colors.text }"
+        :style="{ color: 'var(--brand-text)' }"
       >
         {{ formatCurrencyBRL(item.price) }}
       </span>
@@ -80,7 +80,7 @@
     <UIcon
       name="i-lucide-chevron-right"
       class="h-4 w-4 shrink-0 transition-transform group-hover:translate-x-0.5"
-      :style="{ color: focused ? brand.colors.primary : brand.colors.textMuted }"
+      :style="{ color: focused ? brand.colors.primary : 'var(--brand-text-muted)' }"
     />
   </NuxtLink>
 </template>

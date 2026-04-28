@@ -9,7 +9,7 @@
     <span
       v-if="streaming"
       class="chat-cursor"
-      :style="{ backgroundColor: brand.colors.primary }"
+      :style="{ backgroundColor: 'var(--brand-primary)' }"
       aria-hidden="true"
     />
   </div>

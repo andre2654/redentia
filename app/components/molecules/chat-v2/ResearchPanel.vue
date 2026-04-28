@@ -37,7 +37,7 @@
       class="chat-research-trigger flex w-full items-center justify-between gap-3 rounded-xl px-2 py-1.5 text-left transition-colors"
       :style="{
         backgroundColor: hover
-          ? `color-mix(in srgb, ${brand.colors.surface} 50%, transparent)`
+          ? `color-mix(in srgb, var(--brand-surface) 50%, transparent)`
           : 'transparent',
       }"
       :aria-expanded="open"
@@ -53,19 +53,19 @@
         <span
           class="inline-flex size-2 shrink-0 rounded-full"
           :style="{
-            backgroundColor: anyRunning ? brand.colors.primary : brand.colors.textMuted,
+            backgroundColor: anyRunning ? brand.colors.primary : 'var(--brand-text-muted)',
           }"
           aria-hidden="true"
         />
         <span
           class="font-mono-tab text-[10.5px] uppercase tracking-[0.18em]"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
         >
           Pesquisa
         </span>
         <span
           class="truncate text-[12.5px] tabular-nums"
-          :style="{ color: brand.colors.text }"
+          :style="{ color: 'var(--brand-text)' }"
         >
           {{ summaryText }}
         </span>
@@ -73,7 +73,7 @@
       <UIcon
         :name="open ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
         class="size-4 shrink-0 transition-transform"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
         aria-hidden="true"
       />
     </button>
@@ -94,18 +94,18 @@
               <UIcon
                 :name="group.icon"
                 class="size-3.5 shrink-0"
-                :style="{ color: brand.colors.textMuted }"
+                :style="{ color: 'var(--brand-text-muted)' }"
                 aria-hidden="true"
               />
               <span
                 class="font-mono-tab text-[10px] uppercase tracking-[0.16em]"
-                :style="{ color: brand.colors.textMuted }"
+                :style="{ color: 'var(--brand-text-muted)' }"
               >
                 {{ group.label }}
               </span>
               <span
                 class="font-mono-tab text-[10px] tabular-nums"
-                :style="{ color: brand.colors.textMuted }"
+                :style="{ color: 'var(--brand-text-muted)' }"
               >
                 · {{ group.tools.length }}
               </span>

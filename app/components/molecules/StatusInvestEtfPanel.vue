@@ -5,39 +5,39 @@
       <header class="mb-4 flex flex-col gap-1">
         <span
           class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
-          :style="{ color: brand.colors.primary }"
+          :style="{ color: 'var(--brand-primary)' }"
         >
           Snapshot do ETF
         </span>
         <h3
           class="text-lg font-semibold md:text-xl"
-          :style="{ color: brand.colors.text }"
+          :style="{ color: 'var(--brand-text)' }"
         >
           Indicadores do ETF
         </h3>
         <p
           class="font-mono-tab text-[10px] uppercase tracking-[0.12em]"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
         >
           &gt; PREÇO · LIQUIDEZ · ESTRUTURA DO FUNDO
         </p>
       </header>
       <div
         class="grid grid-cols-2 gap-px border md:grid-cols-3 lg:grid-cols-6"
-        :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }"
+        :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-border)' }"
       >
         <div
           v-for="(cell, idx) in snapshotCells"
           :key="cell.label"
           class="flex flex-col gap-1.5 px-4 py-4"
-          :style="{ backgroundColor: brand.colors.surface }"
+          :style="{ backgroundColor: 'var(--brand-surface)' }"
         >
           <div class="flex items-center justify-end">
             <UTooltip v-if="cell.tooltip" :text="cell.tooltip" :delay-duration="0">
-              <UIcon name="i-lucide-info" class="h-3 w-3 opacity-40" :style="{ color: brand.colors.textMuted }" />
+              <UIcon name="i-lucide-info" class="h-3 w-3 opacity-40" :style="{ color: 'var(--brand-text-muted)' }" />
             </UTooltip>
           </div>
-          <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">
+          <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: 'var(--brand-text-muted)' }">
             {{ cell.label }}
           </span>
           <span
@@ -55,37 +55,37 @@
       <header class="mb-4 flex flex-col gap-1">
         <span
           class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
-          :style="{ color: brand.colors.primary }"
+          :style="{ color: 'var(--brand-primary)' }"
         >
           Perfil do ETF
         </span>
         <h3
           class="text-lg font-semibold md:text-xl"
-          :style="{ color: brand.colors.text }"
+          :style="{ color: 'var(--brand-text)' }"
         >
           Sobre o fundo
         </h3>
         <p
           class="font-mono-tab text-[10px] uppercase tracking-[0.12em]"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
         >
           &gt; ESTRUTURA E IDENTIFICAÇÃO
         </p>
       </header>
       <div
         class="grid grid-cols-1 gap-px border md:grid-cols-2 lg:grid-cols-3"
-        :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }"
+        :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-border)' }"
       >
         <div
           v-for="(cell, idx) in profileCells"
           :key="cell.label"
           class="flex flex-col gap-1.5 px-4 py-4"
-          :style="{ backgroundColor: brand.colors.surface }"
+          :style="{ backgroundColor: 'var(--brand-surface)' }"
         >
-          <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">
+          <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: 'var(--brand-text-muted)' }">
             {{ cell.label }}
           </span>
-          <span class="font-mono-tab text-sm font-bold" :style="{ color: brand.colors.text }">
+          <span class="font-mono-tab text-sm font-bold" :style="{ color: 'var(--brand-text)' }">
             {{ cell.value || '-' }}
           </span>
         </div>
@@ -95,31 +95,31 @@
     <!-- AI interpretation -->
     <div v-if="interpretations.length">
       <header class="mb-4 flex items-center gap-2">
-        <IconAi class="h-3 w-3" :style="{ fill: brand.colors.primary }" />
+        <IconAi class="h-3 w-3" :style="{ fill: 'var(--brand-primary)' }" />
         <span
           class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
-          :style="{ color: brand.colors.primary }"
+          :style="{ color: 'var(--brand-primary)' }"
         >
           Interpretações IA
         </span>
         <span
           class="font-mono-tab text-[10px] uppercase tracking-[0.12em]"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
         >
           &gt; LEITURA DO ETF
         </span>
       </header>
       <div
         class="flex flex-col gap-px border"
-        :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }"
+        :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-border)' }"
       >
         <div
           v-for="(line, idx) in interpretations"
           :key="idx"
           class="flex items-start gap-3 px-5 py-3"
-          :style="{ backgroundColor: brand.colors.surface }"
+          :style="{ backgroundColor: 'var(--brand-surface)' }"
         >
-          <p class="text-sm leading-relaxed" :style="{ color: brand.colors.text }" v-html="line" />
+          <p class="text-sm leading-relaxed" :style="{ color: 'var(--brand-text)' }" v-html="line" />
         </div>
       </div>
     </div>

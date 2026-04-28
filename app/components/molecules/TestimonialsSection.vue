@@ -1,14 +1,14 @@
 <template>
-  <section class="py-16 md:py-20" :style="{ backgroundColor: brand.colors.surface }">
+  <section class="py-16 md:py-20" :style="{ backgroundColor: 'var(--brand-surface)' }">
     <div class="mx-auto max-w-6xl px-6">
       <div class="mb-12 text-center">
-        <p class="mb-2 text-xs uppercase tracking-[0.2em]" :style="{ color: brand.colors.textMuted }">
+        <p class="mb-2 text-xs uppercase tracking-[0.2em]" :style="{ color: 'var(--brand-text-muted)' }">
           Histórias de sucesso
         </p>
-        <h2 class="text-2xl font-bold md:text-3xl" :style="{ color: brand.colors.text }">
+        <h2 class="text-2xl font-bold md:text-3xl" :style="{ color: 'var(--brand-text)' }">
           {{ brand.testimonials.sectionTitle }}
         </h2>
-        <p class="mt-3" :style="{ color: brand.colors.textMuted }">
+        <p class="mt-3" :style="{ color: 'var(--brand-text-muted)' }">
           {{ brand.testimonials.sectionSubtitle }}
         </p>
       </div>
@@ -18,15 +18,15 @@
           v-for="testimonial in brand.testimonials.items"
           :key="testimonial.name"
           class="flex flex-col gap-4 rounded-2xl border p-6"
-          :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+          :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
         >
           <!-- Quote -->
-          <p class="flex-1" :style="{ color: brand.colors.textMuted }">
+          <p class="flex-1" :style="{ color: 'var(--brand-text-muted)' }">
             "{{ testimonial.quote }}"
           </p>
 
           <!-- Metrics -->
-          <div class="flex gap-4 border-t pt-4" :style="{ borderColor: brand.colors.border }">
+          <div class="flex gap-4 border-t pt-4" :style="{ borderColor: 'var(--brand-border)' }">
             <div 
               v-for="metric in testimonial.metrics" 
               :key="metric.label"
@@ -35,7 +35,7 @@
               <span class="block text-lg font-bold text-secondary">
                 {{ metric.value }}
               </span>
-              <span class="text-xs" :style="{ color: brand.colors.textMuted }">
+              <span class="text-xs" :style="{ color: 'var(--brand-text-muted)' }">
                 {{ metric.label }}
               </span>
             </div>
@@ -49,8 +49,8 @@
               class="bg-secondary/20"
             />
             <div>
-              <p class="font-medium" :style="{ color: brand.colors.text }">{{ testimonial.name }}</p>
-              <p class="text-sm" :style="{ color: brand.colors.textMuted }">{{ testimonial.role }}</p>
+              <p class="font-medium" :style="{ color: 'var(--brand-text)' }">{{ testimonial.name }}</p>
+              <p class="text-sm" :style="{ color: 'var(--brand-text-muted)' }">{{ testimonial.role }}</p>
             </div>
           </div>
         </div>

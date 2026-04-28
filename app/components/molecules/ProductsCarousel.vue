@@ -2,15 +2,15 @@
   <section
     v-if="brand.products.categories.length > 0"
     class="border-t py-16 md:py-20"
-    :style="{ borderColor: brand.colors.border }"
+    :style="{ borderColor: 'var(--brand-border)' }"
   >
     <div class="mx-auto max-w-7xl px-6">
       <!-- Section Header -->
       <div class="mb-10 text-center">
-        <p class="mb-2 text-xs uppercase tracking-[0.2em]" :style="{ color: brand.colors.textMuted }">
+        <p class="mb-2 text-xs uppercase tracking-[0.2em]" :style="{ color: 'var(--brand-text-muted)' }">
           {{ brand.products.sectionSubtitle }}
         </p>
-        <h2 class="text-2xl font-bold md:text-3xl" :style="{ color: brand.colors.text }">
+        <h2 class="text-2xl font-bold md:text-3xl" :style="{ color: 'var(--brand-text)' }">
           {{ brand.products.sectionTitle }}
         </h2>
       </div>
@@ -23,11 +23,11 @@
         >
           <!-- Category Header -->
           <div class="mb-4 flex items-center gap-3">
-            <div class="h-px flex-1" :style="{ backgroundColor: brand.colors.border }" />
-            <h3 class="text-xs font-semibold uppercase tracking-widest" :style="{ color: brand.colors.textMuted }">
+            <div class="h-px flex-1" :style="{ backgroundColor: 'var(--brand-border)' }" />
+            <h3 class="text-xs font-semibold uppercase tracking-widest" :style="{ color: 'var(--brand-text-muted)' }">
               {{ category.name }}
             </h3>
-            <div class="h-px flex-1" :style="{ backgroundColor: brand.colors.border }" />
+            <div class="h-px flex-1" :style="{ backgroundColor: 'var(--brand-border)' }" />
           </div>
 
           <!-- Grid -->
@@ -39,7 +39,7 @@
               target="_blank"
               rel="noopener noreferrer"
               class="group relative flex gap-4 rounded-2xl border p-4 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-300 hover:border-secondary/40"
-              :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+              :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
             >
               <!-- Cover Image -->
               <div class="relative h-28 w-20 flex-shrink-0 overflow-hidden rounded-xl sm:h-32 sm:w-24">
@@ -60,10 +60,10 @@
               <!-- Card Content -->
               <div class="flex min-w-0 flex-1 flex-col justify-between py-0.5">
                 <div>
-                  <h4 class="font-semibold leading-tight transition-colors group-hover:text-secondary" :style="{ color: brand.colors.text }">
+                  <h4 class="font-semibold leading-tight transition-colors group-hover:text-secondary" :style="{ color: 'var(--brand-text)' }">
                     {{ item.title }}
                   </h4>
-                  <p class="mt-1 line-clamp-2 text-xs leading-relaxed" :style="{ color: brand.colors.textMuted }">
+                  <p class="mt-1 line-clamp-2 text-xs leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
                     {{ item.description }}
                   </p>
                 </div>
@@ -82,7 +82,7 @@
                   <span
                     v-if="item.rating"
                     class="flex items-center gap-1 text-xs"
-                    :style="{ color: brand.colors.textMuted }"
+                    :style="{ color: 'var(--brand-text-muted)' }"
                   >
                     <UIcon
                       name="i-lucide-star"
@@ -95,7 +95,7 @@
                   <span
                     v-if="item.students"
                     class="ml-auto text-[11px]"
-                    :style="{ color: brand.colors.textMuted }"
+                    :style="{ color: 'var(--brand-text-muted)' }"
                   >
                     {{ item.students }}
                   </span>
@@ -103,8 +103,8 @@
               </div>
 
               <!-- Arrow -->
-              <div class="absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-full opacity-0 transition-[transform,opacity,box-shadow,background-color,border-color,filter] group-hover:opacity-100" :style="{ backgroundColor: brand.colors.border }">
-                <UIcon name="i-lucide-arrow-up-right" aria-hidden="true" class="h-3 w-3" :style="{ color: brand.colors.textMuted }" />
+              <div class="absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-full opacity-0 transition-[transform,opacity,box-shadow,background-color,border-color,filter] group-hover:opacity-100" :style="{ backgroundColor: 'var(--brand-border)' }">
+                <UIcon name="i-lucide-arrow-up-right" aria-hidden="true" class="h-3 w-3" :style="{ color: 'var(--brand-text-muted)' }" />
               </div>
             </a>
           </div>

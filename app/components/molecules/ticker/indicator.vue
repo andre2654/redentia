@@ -2,15 +2,15 @@
   <div
     class="group flex flex-col gap-2 rounded-xl border p-4 transition-[transform,opacity,box-shadow,background-color,border-color,filter]"
     :style="{
-      borderColor: brand.colors.border,
-      backgroundColor: brand.colors.surface,
+      borderColor: 'var(--brand-border)',
+      backgroundColor: 'var(--brand-surface)',
     }"
   >
     <!-- Header -->
     <div class="flex items-start justify-between gap-2">
-      <span class="text-sm" :style="{ color: brand.colors.textMuted }">{{ name }}</span>
+      <span class="text-sm" :style="{ color: 'var(--brand-text-muted)' }">{{ name }}</span>
       <UTooltip v-if="helpTextWithTooltip" :text="helpText" :delay-duration="0">
-        <UIcon name="i-lucide-info" class="h-3.5 w-3.5" :style="{ color: brand.colors.textMuted }" />
+        <UIcon name="i-lucide-info" class="h-3.5 w-3.5" :style="{ color: 'var(--brand-text-muted)' }" />
       </UTooltip>
     </div>
 
@@ -19,13 +19,13 @@
     <span
       v-else
       class="text-2xl font-semibold tabular-nums"
-      :style="{ color: brand.colors.text }"
+      :style="{ color: 'var(--brand-text)' }"
     >
       {{ value }}
     </span>
 
     <!-- Help text (when not in tooltip) -->
-    <p v-if="!helpTextWithTooltip" class="text-[11px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
+    <p v-if="!helpTextWithTooltip" class="text-[11px] leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
       {{ helpText }}
     </p>
   </div>

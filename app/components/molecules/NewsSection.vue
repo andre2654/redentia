@@ -7,32 +7,25 @@
   associado). Quebra o padrão do grid homogêneo de blog e cria hierarquia.
 -->
 <template>
-  <section v-if="articles.length > 0" class="py-6">
-    <header class="mb-5 flex flex-col gap-1 px-4 md:px-0">
-      <div class="flex items-center gap-2 font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
-        <span class="inline-flex h-1.5 w-1.5 rounded-full motion-safe:animate-pulse" :style="{ backgroundColor: brand.colors.primary }" aria-hidden="true" />
-        <span :style="{ color: brand.colors.primary }">Notícias</span>
-        <span aria-hidden="true">·</span>
-        <span>{{ sources.length }} FONTES</span>
-        <span v-if="lastUpdated" aria-hidden="true">·</span>
-        <span v-if="lastUpdated">ATUALIZADO {{ lastUpdated }}</span>
-      </div>
-      <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
+  <section v-if="articles.length > 0" class="py-10 md:py-16">
+    <header class="mb-8 flex flex-col gap-2 px-4 md:px-0">
+      <span class="eyebrow">Notícias</span>
+      <h2 class="font-light leading-tight text-[28px] md:text-[36px]" style="color: var(--text-heading); letter-spacing: -0.025em;">
         Notícias do mercado
       </h2>
-      <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
-        &gt; ÚLTIMAS 24H · {{ articles.length }} MANCHETES AGRUPADAS POR TICKER
+      <p class="text-[14px] leading-relaxed" style="color: var(--text-body);">
+        Últimas 24h, {{ articles.length }} manchetes agrupadas por ticker, {{ sources.length }} fontes<span v-if="lastUpdated">, atualizado {{ lastUpdated }}</span>.
       </p>
     </header>
 
     <!-- HOT CLUSTERS: tickers with most coverage -->
     <div v-if="hotClusters.length > 0" class="mb-8 px-4 md:px-0">
-      <div class="grid gap-px" :style="{ backgroundColor: brand.colors.border }" :class="hotClustersGridClass">
+      <div class="grid gap-px" :style="{ backgroundColor: 'var(--brand-border)' }" :class="hotClustersGridClass">
         <article
           v-for="cluster in hotClusters"
           :key="`hot-${cluster.ticker}`"
           class="cluster-card flex flex-col overflow-hidden transition-transform duration-300"
-          :style="{ backgroundColor: brand.colors.surface }"
+          :style="{ backgroundColor: 'var(--brand-surface)' }"
         >
           <!-- Hero headline: full-bleed image on top with overlay -->
           <a
@@ -57,7 +50,7 @@
             <div
               v-else
               class="absolute inset-0"
-              :style="{ background: `linear-gradient(135deg, ${brand.colors.primary}22, ${brand.colors.surface})` }"
+              :style="{ background: `linear-gradient(135deg, var(--brand-primary)22, var(--brand-surface))` }"
               aria-hidden="true"
             />
             <!-- Gradient overlay for contrast; darker on hover -->
@@ -65,32 +58,22 @@
             <!-- Accent glow border on hover -->
             <div
               class="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-              :style="{ boxShadow: `inset 0 0 0 2px ${brand.colors.primary}` }"
+              :style="{ boxShadow: `inset 0 0 0 2px var(--brand-primary)` }"
               aria-hidden="true"
             />
 
-            <!-- Top-left: ticker + count pill -->
-            <div class="absolute left-3 top-3 flex items-center gap-2">
+            <!-- Top-left: ticker + count pill quiet (rounded-md, weight 500, sem mono bold tracking-wider) -->
+            <div class="absolute left-3 top-3 flex items-center gap-1.5">
               <span
-                class="font-mono-tab text-xs font-bold tracking-wider backdrop-blur-md transition-colors"
-                :style="{
-                  color: brand.colors.text,
-                  backgroundColor: `${brand.colors.background}CC`,
-                  padding: '4px 8px',
-                  borderRadius: '6px',
-                }"
+                class="rounded-[4px] px-2 py-1 text-[12px] font-medium tracking-tight backdrop-blur-md"
+                style="color: var(--text-heading); background-color: color-mix(in srgb, var(--bg-elevated) 88%, transparent);"
                 translate="no"
               >
                 {{ cluster.ticker }}
               </span>
               <span
-                class="font-mono-tab text-[10px] font-bold uppercase tabular-nums tracking-[0.12em] backdrop-blur-md"
-                :style="{
-                  color: brand.colors.primary,
-                  backgroundColor: `${brand.colors.background}CC`,
-                  padding: '4px 8px',
-                  borderRadius: '6px',
-                }"
+                class="rounded-[4px] px-2 py-1 text-[11px] font-medium tabular-nums backdrop-blur-md"
+                style="color: var(--brand-primary); background-color: color-mix(in srgb, var(--bg-elevated) 88%, transparent);"
                 translate="no"
               >
                 {{ cluster.count }}
@@ -99,25 +82,21 @@
 
             <!-- Top-right: arrow indicator on hover -->
             <div
-              class="absolute right-3 top-3 flex size-7 items-center justify-center rounded-full opacity-0 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-300 group-hover:opacity-100"
-              :style="{ backgroundColor: brand.colors.primary, color: brand.colors.background }"
+              class="absolute right-3 top-3 flex size-7 items-center justify-center rounded-md opacity-0 transition-all duration-200 group-hover:opacity-100"
+              style="background-color: var(--brand-primary); color: #1A0A2E;"
               aria-hidden="true"
             >
               <UIcon name="i-lucide-arrow-up-right" class="size-3.5" />
             </div>
 
-            <!-- Bottom: headline + time
-                 Inline white color: this text rides on a hardcoded
-                 dark gradient overlay so it must stay white regardless
-                 of the active theme. Tailwind `text-white` was being
-                 overridden by the brand text token in light mode. -->
+            <!-- Bottom: headline + time. Texto fica sobre gradient escuro hardcoded -->
             <div class="relative z-10 w-full p-4 transition-transform duration-300 group-hover:translate-y-[-2px]">
-              <h3 class="line-clamp-2 text-sm font-semibold leading-snug" style="color: #ffffff">
+              <h3 class="line-clamp-2 text-[14px] font-medium leading-snug" style="color: #ffffff;">
                 {{ cluster.articles[0].title }}
               </h3>
               <span
-                class="mt-1 block font-mono-tab text-[10px] uppercase tracking-[0.12em]"
-                style="color: rgba(255, 255, 255, 0.7)"
+                class="mt-1 block text-[11px]"
+                style="color: rgba(255, 255, 255, 0.7);"
                 translate="no"
               >
                 {{ formatRelativeTime(cluster.articles[0].published_at) }}
@@ -125,30 +104,29 @@
             </div>
           </a>
 
-          <!-- Secondary headlines: 2 mini links without image -->
+          <!-- Secondary headlines: 2 mini links sem mono uppercase wide -->
           <ul v-if="cluster.articles.length > 1" class="flex flex-col">
             <li
               v-for="item in cluster.articles.slice(1)"
               :key="`cl-${cluster.ticker}-${item.id}`"
               class="border-t"
-              :style="{ borderColor: brand.colors.border }"
+              style="border-color: var(--border-subtle);"
             >
               <a
                 :href="item.url"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="secondary-link group flex items-center justify-between gap-3 px-4 py-2.5 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset"
-                :style="{ '--hover-bg': `${brand.colors.primary}10` } as Record<string, string>"
+                class="secondary-link group flex items-center justify-between gap-3 px-4 py-2.5 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset"
               >
                 <h4
-                  class="line-clamp-1 flex-1 text-xs leading-snug transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-200 group-hover:translate-x-1 group-hover:text-secondary"
-                  :style="{ color: brand.colors.text }"
+                  class="line-clamp-1 flex-1 text-[13px] leading-snug transition-transform duration-200 group-hover:translate-x-1"
+                  style="color: var(--text-heading);"
                 >
                   {{ item.title }}
                 </h4>
                 <span
-                  class="inline-flex shrink-0 items-center gap-1 font-mono-tab text-[10px] uppercase tabular-nums tracking-[0.12em] transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-200"
-                  :style="{ color: brand.colors.textMuted }"
+                  class="inline-flex shrink-0 items-center gap-1 text-[11px] tabular-nums transition-all duration-200"
+                  style="color: var(--text-muted);"
                   translate="no"
                 >
                   {{ formatRelativeTime(item.published_at) }}
@@ -163,21 +141,17 @@
 
     <!-- OTHERS: compact list with thumbnail for low-coverage + untagged -->
     <div v-if="otherArticles.length > 0" class="px-4 md:px-0">
-      <div class="mb-3 flex items-center gap-2 font-mono-tab text-[10px] uppercase tracking-[0.18em]">
-        <span :style="{ color: brand.colors.textMuted }">Outras</span>
-        <span aria-hidden="true" :style="{ color: brand.colors.border }">·</span>
-        <span :style="{ color: brand.colors.textMuted }">DEMAIS MANCHETES</span>
-      </div>
+      <p class="eyebrow mb-4">Outras manchetes</p>
 
-      <ul class="grid gap-px" :style="{ backgroundColor: brand.colors.border }" :class="othersGridClass">
-        <li v-for="item in visibleOthers" :key="`other-${item.id}`" :style="{ backgroundColor: brand.colors.surface }">
+      <ul class="grid gap-px" :style="{ backgroundColor: 'var(--brand-border)' }" :class="othersGridClass">
+        <li v-for="item in visibleOthers" :key="`other-${item.id}`" :style="{ backgroundColor: 'var(--brand-surface)' }">
           <a
             :href="item.url"
             target="_blank"
             rel="noopener noreferrer"
             class="other-link group relative flex items-stretch gap-3 p-3 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset"
           >
-            <div class="relative size-16 shrink-0 overflow-hidden rounded-md" :style="{ backgroundColor: brand.colors.border }">
+            <div class="relative size-16 shrink-0 overflow-hidden rounded-md" :style="{ backgroundColor: 'var(--brand-border)' }">
               <NuxtImg
                 v-if="item.image_url && !failedImages[item.id]"
                 :src="item.image_url"
@@ -194,25 +168,25 @@
               <div
                 v-else
                 class="flex h-full w-full items-center justify-center"
-                :style="{ background: `linear-gradient(135deg, ${brand.colors.primary}22, ${brand.colors.surface})` }"
+                :style="{ background: `linear-gradient(135deg, var(--brand-primary)22, var(--brand-surface))` }"
                 aria-hidden="true"
               >
-                <UIcon name="i-lucide-newspaper" class="size-5 opacity-40" :style="{ color: brand.colors.primary }" />
+                <UIcon name="i-lucide-newspaper" class="size-5 opacity-40" :style="{ color: 'var(--brand-primary)' }" />
               </div>
             </div>
             <div class="flex min-w-0 flex-1 flex-col justify-between">
               <h3
                 class="line-clamp-2 text-xs leading-snug transition-colors group-hover:text-secondary"
-                :style="{ color: brand.colors.text }"
+                :style="{ color: 'var(--brand-text)' }"
               >
                 {{ item.title }}
               </h3>
-              <div class="mt-1 flex items-center justify-between gap-2 font-mono-tab text-[9px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
-                <span class="inline-flex items-center gap-2">
+              <div class="mt-1 flex items-center justify-between gap-2 text-[11px]" style="color: var(--text-muted);">
+                <span class="inline-flex items-center gap-1.5">
                   <span
                     v-if="item.tickers.length > 0"
-                    class="font-bold"
-                    :style="{ color: brand.colors.primary }"
+                    class="font-medium"
+                    style="color: var(--brand-primary);"
                     translate="no"
                   >
                     {{ item.tickers[0] }}
@@ -223,7 +197,7 @@
                 <UIcon
                   name="i-lucide-arrow-up-right"
                   class="size-3 opacity-0 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-200 group-hover:translate-x-0.5 group-hover:opacity-100"
-                  :style="{ color: brand.colors.primary }"
+                  :style="{ color: 'var(--brand-primary)' }"
                   aria-hidden="true"
                 />
               </div>
@@ -232,18 +206,13 @@
         </li>
       </ul>
 
-      <div v-if="otherArticles.length > othersLimit" class="mt-4 flex justify-center">
+      <div v-if="otherArticles.length > othersLimit" class="mt-6 flex justify-center">
         <button
           type="button"
-          class="inline-flex items-center gap-2 rounded-full border px-4 py-1.5 font-mono-tab text-[10px] font-semibold uppercase tracking-[0.15em] transition-colors hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
-          :style="{
-            borderColor: brand.colors.border,
-            color: brand.colors.text,
-            backgroundColor: brand.colors.surface,
-          }"
+          class="quiet-btn-ghost"
           @click="othersLimit += 6"
         >
-          <UIcon name="i-lucide-plus" class="size-3" aria-hidden="true" />
+          <UIcon name="i-lucide-plus" class="size-4" aria-hidden="true" />
           Ver mais {{ Math.min(6, otherArticles.length - othersLimit) }}
         </button>
       </div>

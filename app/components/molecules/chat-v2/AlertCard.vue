@@ -35,12 +35,12 @@
         />
         <span
           class="text-[13px] font-medium"
-          :style="{ color: brand.colors.text }"
+          :style="{ color: 'var(--brand-text)' }"
         >{{ alert.title }}</span>
       </header>
       <p
         class="text-[12.5px] leading-snug"
-        :style="{ color: `color-mix(in srgb, ${brand.colors.text} 80%, transparent)` }"
+        :style="{ color: `color-mix(in srgb, var(--brand-text) 80%, transparent)` }"
       >
         {{ alert.body }}
       </p>
@@ -49,7 +49,7 @@
           v-if="alert.ticker"
           type="button"
           class="alert-action text-[11px] transition-colors"
-          :style="{ color: brand.colors.primary }"
+          :style="{ color: 'var(--brand-primary)' }"
           @click="$emit('select', alert)"
         >
           Ver detalhes
@@ -57,7 +57,7 @@
         <button
           type="button"
           class="alert-action text-[11px] transition-colors"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
           @click="$emit('dismiss', alert.id)"
         >
           Dispensar

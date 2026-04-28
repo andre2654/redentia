@@ -1,20 +1,20 @@
 <template>
   <div
     class="overflow-hidden rounded-lg border"
-    :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.surface}E6` }"
+    :style="{ borderColor: 'var(--brand-border)', backgroundColor: `var(--brand-surface)E6` }"
   >
     <!-- Header with label + copy button -->
     <div
       class="flex items-center justify-between border-b px-4 py-2 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
-      :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.background, color: brand.colors.textMuted }"
+      :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-background)', color: 'var(--brand-text-muted)' }"
     >
       <div class="flex items-center gap-2">
-        <UIcon name="i-lucide-chevron-right" class="size-3" :style="{ color: brand.colors.primary }" />
+        <UIcon name="i-lucide-chevron-right" class="size-3" :style="{ color: 'var(--brand-primary)' }" />
         {{ label }}
       </div>
       <button
         class="inline-flex items-center gap-1 rounded px-2 py-0.5 transition-colors hover:opacity-70"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
         @click="copy"
       >
         <UIcon :name="copied ? 'i-lucide-check' : 'i-lucide-copy'" class="size-3" />
@@ -25,7 +25,7 @@
     <!-- Code body -->
     <pre
       class="overflow-x-auto px-5 py-4 font-mono-tab text-[12px] leading-relaxed"
-      :style="{ color: brand.colors.text }"
+      :style="{ color: 'var(--brand-text)' }"
     ><code v-html="highlighted"></code></pre>
   </div>
 </template>

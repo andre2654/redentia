@@ -53,26 +53,26 @@
       <UIcon
         :name="family.icon"
         class="size-3.5 shrink-0"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
         aria-hidden="true"
       />
       <span
         class="truncate text-[12.5px]"
-        :style="{ color: brand.colors.text }"
+        :style="{ color: 'var(--brand-text)' }"
       >{{ family.label }}</span>
       <span
         class="font-mono-tab text-[11px] tabular-nums"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
       >({{ calls.length }})</span>
       <span
         v-if="totalDurationMs != null"
         class="ml-auto font-mono-tab text-[10.5px] tabular-nums"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
       >{{ formatDuration(totalDurationMs) }}</span>
       <UIcon
         :name="open ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
         class="size-3.5 shrink-0"
-        :style="{ color: brand.colors.textMuted, transition: 'transform 160ms ease' }"
+        :style="{ color: 'var(--brand-text-muted)', transition: 'transform 160ms ease' }"
         aria-hidden="true"
       />
     </button>
@@ -95,17 +95,17 @@
           />
           <span
             class="truncate"
-            :style="{ color: brand.colors.text }"
+            :style="{ color: 'var(--brand-text)' }"
           >{{ describeCall(c) }}</span>
           <span
             v-if="c.error"
             class="truncate text-[10.5px]"
-            :style="{ color: brand.colors.negative }"
+            :style="{ color: 'var(--brand-negative)' }"
           >· {{ humanizeError(c.error) }}</span>
           <span
             v-if="c.durationMs != null"
             class="ml-auto font-mono-tab text-[10px] tabular-nums"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
           >{{ formatDuration(c.durationMs) }}</span>
         </li>
       </ul>

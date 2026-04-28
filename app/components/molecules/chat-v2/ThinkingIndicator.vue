@@ -68,12 +68,12 @@
              static between phases of work. -->
         <span
           class="thinking-dot is-running inline-flex size-2 shrink-0 rounded-full"
-          :style="{ backgroundColor: brand.colors.primary }"
+          :style="{ backgroundColor: 'var(--brand-primary)' }"
           aria-hidden="true"
         />
         <span
           class="font-mono-tab shrink-0 text-[10.5px] uppercase tracking-[0.18em]"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
         >Pensando</span>
         <!-- Live reasoning preview — the tail of the model's
              chain-of-thought, faded so it reads as "ambient noise"
@@ -84,14 +84,14 @@
           v-if="pillBody"
           class="thinking-preview min-w-0 flex-1 truncate text-[12px]"
           :style="{
-            color: brand.colors.text,
+            color: 'var(--brand-text)',
             opacity: pillBody.faded ? 0.55 : 1,
           }"
         >· {{ pillBody.text }}</span>
         <UIcon
           :name="open ? 'i-lucide-chevron-down' : 'i-lucide-chevron-up'"
           class="ml-auto size-3.5 shrink-0"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
           aria-hidden="true"
         />
       </button>
@@ -102,7 +102,7 @@
           :id="bodyId"
           class="thinking-body flex flex-col gap-2 px-5 pb-3"
           :style="{
-            borderTop: `1px solid color-mix(in srgb, ${brand.colors.border} 35%, transparent)`,
+            borderTop: `1px solid color-mix(in srgb, var(--brand-border) 35%, transparent)`,
           }"
         >
           <!-- Live reasoning — italic, line-clamp-6 by default,
@@ -112,7 +112,7 @@
             ref="reasoningRef"
             class="thinking-reasoning whitespace-pre-line break-words pt-2 text-[12.5px] italic leading-relaxed"
             :style="{
-              color: `color-mix(in srgb, ${brand.colors.text} 80%, transparent)`,
+              color: `color-mix(in srgb, var(--brand-text) 80%, transparent)`,
               maxHeight: '12em',
               overflowY: 'auto',
             }"
@@ -125,7 +125,7 @@
             class="flex flex-col gap-px"
             :style="{
               borderTop: reasoning
-                ? `1px solid color-mix(in srgb, ${brand.colors.border} 30%, transparent)`
+                ? `1px solid color-mix(in srgb, var(--brand-border) 30%, transparent)`
                 : undefined,
               paddingTop: reasoning ? '8px' : '4px',
             }"
@@ -143,12 +143,12 @@
               />
               <span
                 class="truncate"
-                :style="{ color: brand.colors.text }"
+                :style="{ color: 'var(--brand-text)' }"
               >{{ describeEntry(entry) }}</span>
               <span
                 v-if="entry.durationMs != null"
                 class="ml-auto font-mono-tab text-[10px] tabular-nums"
-                :style="{ color: brand.colors.textMuted }"
+                :style="{ color: 'var(--brand-text-muted)' }"
               >{{ formatDuration(entry.durationMs) }}</span>
             </li>
           </ul>
@@ -156,7 +156,7 @@
           <p
             v-if="!reasoning && recentActions.length === 0"
             class="py-2 text-[12px] italic"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
           >Sintetizando análise…</p>
         </div>
       </Transition>

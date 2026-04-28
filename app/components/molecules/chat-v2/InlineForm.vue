@@ -13,22 +13,22 @@
   <div
     class="chat-form rounded-2xl px-5 py-5 md:px-6 md:py-6"
     :style="{
-      backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 65%, transparent)`,
-      border: `1px solid color-mix(in srgb, ${brand.colors.border} 45%, transparent)`,
+      backgroundColor: `color-mix(in srgb, var(--brand-surface) 65%, transparent)`,
+      border: `1px solid color-mix(in srgb, var(--brand-border) 45%, transparent)`,
     }"
   >
     <header v-if="form.title || form.intro" class="mb-4 flex flex-col gap-1">
       <h3
         v-if="form.title"
         class="text-[15px] font-semibold tracking-tight"
-        :style="{ color: brand.colors.text }"
+        :style="{ color: 'var(--brand-text)' }"
       >
         {{ form.title }}
       </h3>
       <p
         v-if="form.intro"
         class="text-[13.5px] leading-relaxed"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
       >
         {{ form.intro }}
       </p>
@@ -51,26 +51,26 @@
         <label
           :for="`${form.formId}-${q.id}`"
           class="text-[13.5px] font-semibold"
-          :style="{ color: brand.colors.text }"
+          :style="{ color: 'var(--brand-text)' }"
         >
           {{ q.label }}
           <span
             v-if="q.required !== false"
             class="ml-1 text-[12px] font-normal"
-            :style="{ color: brand.colors.primary }"
+            :style="{ color: 'var(--brand-primary)' }"
           >*</span>
         </label>
         <p
           v-if="q.hint && !errors[q.id]"
           class="-mt-1 text-[12px] leading-snug"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
         >
           {{ q.hint }}
         </p>
         <p
           v-if="errors[q.id]"
           class="-mt-1 text-[12px] font-medium leading-snug"
-          :style="{ color: brand.colors.negative }"
+          :style="{ color: 'var(--brand-negative)' }"
         >
           {{ errors[q.id] }}
         </p>
@@ -148,11 +148,11 @@
             :style="
               answers[q.id] === opt.value
                 ? {
-                    borderColor: brand.colors.primary,
-                    backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 8%, transparent)`,
+                    borderColor: 'var(--brand-primary)',
+                    backgroundColor: `color-mix(in srgb, var(--brand-primary) 8%, transparent)`,
                   }
                 : {
-                    borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+                    borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
                   }
             "
           >
@@ -165,11 +165,11 @@
               @change="answers[q.id] = opt.value"
             />
             <span class="flex flex-col">
-              <span class="text-[14px] font-semibold" :style="{ color: brand.colors.text }">{{ opt.label }}</span>
+              <span class="text-[14px] font-semibold" :style="{ color: 'var(--brand-text)' }">{{ opt.label }}</span>
               <span
                 v-if="opt.hint"
                 class="text-[12.5px] leading-snug"
-                :style="{ color: brand.colors.textMuted }"
+                :style="{ color: 'var(--brand-text-muted)' }"
               >
                 {{ opt.hint }}
               </span>
@@ -193,11 +193,11 @@
             :style="
               checkboxArray(q.id).includes(opt.value)
                 ? {
-                    borderColor: brand.colors.primary,
-                    backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 8%, transparent)`,
+                    borderColor: 'var(--brand-primary)',
+                    backgroundColor: `color-mix(in srgb, var(--brand-primary) 8%, transparent)`,
                   }
                 : {
-                    borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+                    borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
                   }
             "
           >
@@ -209,11 +209,11 @@
               @change="toggleCheckbox(q.id, opt.value)"
             />
             <span class="flex flex-col">
-              <span class="text-[14px] font-semibold" :style="{ color: brand.colors.text }">{{ opt.label }}</span>
+              <span class="text-[14px] font-semibold" :style="{ color: 'var(--brand-text)' }">{{ opt.label }}</span>
               <span
                 v-if="opt.hint"
                 class="text-[12.5px] leading-snug"
-                :style="{ color: brand.colors.textMuted }"
+                :style="{ color: 'var(--brand-text-muted)' }"
               >
                 {{ opt.hint }}
               </span>
@@ -245,14 +245,14 @@
         <span
           v-if="hasErrors"
           class="text-[12.5px]"
-          :style="{ color: brand.colors.negative }"
+          :style="{ color: 'var(--brand-negative)' }"
         >
           Preencha os campos destacados acima
         </span>
         <span
           v-else-if="submitted"
           class="text-[12.5px]"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
         >
           Respostas enviadas
         </span>
@@ -262,7 +262,7 @@
           class="chat-form-submit"
           :disabled="submitted"
           :style="{
-            backgroundColor: brand.colors.primary,
+            backgroundColor: 'var(--brand-primary)',
             color: brand.colors.onPrimary ?? '#fff',
           }"
         >

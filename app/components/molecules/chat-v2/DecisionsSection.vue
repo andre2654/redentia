@@ -20,13 +20,13 @@
       <h3
         :id="headingId"
         class="font-mono-tab text-[10px] uppercase tracking-[0.18em]"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
       >
         Decisões
         <span
           v-if="active.length > 0"
           class="ml-1 tabular-nums"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
         >· {{ active.length }}</span>
       </h3>
       <span
@@ -50,17 +50,17 @@
       <UIcon
         name="i-lucide-notebook-pen"
         class="size-3.5 shrink-0"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
         aria-hidden="true"
       />
       <span class="flex flex-col">
         <span
           class="text-[12px] font-medium"
-          :style="{ color: brand.colors.text }"
+          :style="{ color: 'var(--brand-text)' }"
         >Sem decisões ainda</span>
         <span
           class="text-[10.5px]"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
         >Aceite uma recomendação MAX e ela aparece aqui</span>
       </span>
     </button>
@@ -86,17 +86,17 @@
                    read as redundant + noisy on the sidebar. -->
               <span
                 class="font-mono-tab shrink-0 text-[10px] uppercase tracking-[0.14em]"
-                :style="{ color: brand.colors.textMuted }"
+                :style="{ color: 'var(--brand-text-muted)' }"
               >{{ typeLabel(d.type) }}</span>
               <span
                 v-if="d.ticker"
                 class="truncate text-[12.5px] font-semibold tabular-nums"
-                :style="{ color: brand.colors.text }"
+                :style="{ color: 'var(--brand-text)' }"
               >{{ d.ticker }}</span>
             </span>
             <span
               class="truncate text-[11px]"
-              :style="{ color: brand.colors.textMuted }"
+              :style="{ color: 'var(--brand-text-muted)' }"
             >{{ countdownLabel(d) }}</span>
           </span>
           <UIcon
@@ -112,7 +112,7 @@
         <button
           type="button"
           class="text-[11px] font-medium underline-offset-2 hover:underline"
-          :style="{ color: brand.colors.primary }"
+          :style="{ color: 'var(--brand-primary)' }"
           @click="$emit('see-all')"
         >Ver todas ({{ active.length }})</button>
       </li>

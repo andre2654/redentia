@@ -12,12 +12,12 @@
       type="button"
       class="group relative flex w-full items-center gap-2.5 rounded-md px-2.5 py-1.5 text-left text-[13px] transition-colors duration-150"
       :style="{
-        color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)`,
+        color: `color-mix(in srgb, var(--brand-text) 60%, transparent)`,
       }"
       :aria-expanded="open"
       @click="toggle"
-      @mouseover="(e) => { const el = e.currentTarget as HTMLElement; el.style.color = brand.colors.text; el.style.backgroundColor = `color-mix(in srgb, ${brand.colors.text} 5%, transparent)` }"
-      @mouseleave="(e) => { const el = e.currentTarget as HTMLElement; el.style.color = `color-mix(in srgb, ${brand.colors.text} 60%, transparent)`; el.style.backgroundColor = 'transparent' }"
+      @mouseover="(e) => { const el = e.currentTarget as HTMLElement; el.style.color = brand.colors.text; el.style.backgroundColor = `color-mix(in srgb, var(--brand-text) 5%, transparent)` }"
+      @mouseleave="(e) => { const el = e.currentTarget as HTMLElement; el.style.color = `color-mix(in srgb, var(--brand-text) 60%, transparent)`; el.style.backgroundColor = 'transparent' }"
     >
       <UIcon
         v-if="icon"

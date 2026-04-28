@@ -42,7 +42,7 @@
             <!-- Mobile drag handle (visual only) -->
             <span
               class="mx-auto mt-3 inline-block h-1 w-12 rounded-full md:hidden"
-              :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.text} 18%, transparent)` }"
+              :style="{ backgroundColor: `color-mix(in srgb, var(--brand-text) 18%, transparent)` }"
               aria-hidden="true"
             />
 
@@ -70,11 +70,11 @@
                 <h2
                   :id="titleId"
                   class="text-balance text-[20px] font-semibold leading-tight tracking-tight"
-                  :style="{ color: brand.colors.text }"
+                  :style="{ color: 'var(--brand-text)' }"
                 >{{ goal.name }}</h2>
                 <p
                   class="font-mono-tab text-[11px] tabular-nums"
-                  :style="{ color: brand.colors.textMuted }"
+                  :style="{ color: 'var(--brand-text-muted)' }"
                 >
                   Alvo {{ formatBRL(target) }} · {{ targetDateLabel }}
                 </p>
@@ -82,7 +82,7 @@
               <button
                 type="button"
                 class="goal-drawer-close size-9 shrink-0 rounded-full transition-colors"
-                :style="{ color: brand.colors.textMuted }"
+                :style="{ color: 'var(--brand-text-muted)' }"
                 aria-label="Fechar"
                 @click="close"
               >
@@ -97,26 +97,26 @@
                 <div class="mb-2 flex items-baseline justify-between">
                   <span
                     class="font-mono-tab text-[10px] uppercase tracking-[0.18em]"
-                    :style="{ color: brand.colors.textMuted }"
+                    :style="{ color: 'var(--brand-text-muted)' }"
                   >Progresso</span>
                   <span
                     class="font-mono-tab text-[12.5px] tabular-nums"
-                    :style="{ color: brand.colors.textMuted }"
+                    :style="{ color: 'var(--brand-text-muted)' }"
                   >{{ progressPct }}%</span>
                 </div>
                 <p
                   class="mb-3 flex items-baseline gap-2 font-display text-[28px] font-semibold tabular-nums leading-none tracking-tight md:text-[32px]"
-                  :style="{ color: brand.colors.text }"
+                  :style="{ color: 'var(--brand-text)' }"
                 >
                   {{ formatBRL(current) }}
                   <span
                     class="text-[14px] font-medium tabular-nums"
-                    :style="{ color: brand.colors.textMuted }"
+                    :style="{ color: 'var(--brand-text-muted)' }"
                   >/ {{ formatBRL(target) }}</span>
                 </p>
                 <span
                   class="goal-drawer-track block h-1.5 w-full overflow-hidden rounded-full"
-                  :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.text} 8%, transparent)` }"
+                  :style="{ backgroundColor: `color-mix(in srgb, var(--brand-text) 8%, transparent)` }"
                   aria-hidden="true"
                 >
                   <span
@@ -161,14 +161,14 @@
               <section class="mb-6">
                 <h3
                   class="font-mono-tab mb-2 text-[10px] uppercase tracking-[0.18em]"
-                  :style="{ color: brand.colors.textMuted }"
+                  :style="{ color: 'var(--brand-text-muted)' }"
                 >Atualizar</h3>
                 <form class="flex flex-col gap-3" novalidate @submit.prevent="saveEdits">
                   <div class="flex flex-col gap-1.5">
                     <label
                       :for="`goal-edit-current-${goal.id}`"
                       class="text-[12px] font-medium"
-                      :style="{ color: brand.colors.text }"
+                      :style="{ color: 'var(--brand-text)' }"
                     >Patrimônio atual</label>
                     <div class="goal-input-with-prefix">
                       <span class="goal-input-prefix">R$</span>
@@ -188,7 +188,7 @@
                     <label
                       :for="`goal-edit-monthly-${goal.id}`"
                       class="text-[12px] font-medium"
-                      :style="{ color: brand.colors.text }"
+                      :style="{ color: 'var(--brand-text)' }"
                     >Aporte mensal</label>
                     <div class="goal-input-with-prefix">
                       <span class="goal-input-prefix">R$</span>
@@ -246,7 +246,7 @@
                 >Avaliação</p>
                 <p
                   class="text-pretty text-[13px] leading-relaxed"
-                  :style="{ color: brand.colors.text }"
+                  :style="{ color: 'var(--brand-text)' }"
                 >{{ goal.statusExplanation }}</p>
               </section>
 
@@ -257,11 +257,11 @@
               >
                 <h3
                   class="font-mono-tab mb-1 text-[10px] uppercase tracking-[0.18em]"
-                  :style="{ color: brand.colors.textMuted }"
+                  :style="{ color: 'var(--brand-text-muted)' }"
                 >Notas</h3>
                 <p
                   class="text-pretty text-[13px] leading-relaxed"
-                  :style="{ color: brand.colors.text }"
+                  :style="{ color: 'var(--brand-text)' }"
                 >{{ goal.notes }}</p>
               </section>
 
@@ -269,7 +269,7 @@
               <p
                 v-if="goal.lastCalculatedAt"
                 class="font-mono-tab text-[10.5px] tabular-nums"
-                :style="{ color: brand.colors.textMuted }"
+                :style="{ color: 'var(--brand-text-muted)' }"
               >Último cálculo: {{ relativeTime(goal.lastCalculatedAt) }}</p>
             </div>
 
@@ -315,9 +315,9 @@
               class="absolute bottom-20 left-5 right-5 rounded-lg px-3 py-2 text-[11.5px]"
               role="alert"
               :style="{
-                backgroundColor: `color-mix(in srgb, ${brand.colors.negative} 10%, transparent)`,
-                border: `1px solid color-mix(in srgb, ${brand.colors.negative} 28%, transparent)`,
-                color: brand.colors.negative,
+                backgroundColor: `color-mix(in srgb, var(--brand-negative) 10%, transparent)`,
+                border: `1px solid color-mix(in srgb, var(--brand-negative) 28%, transparent)`,
+                color: 'var(--brand-negative)',
               }"
             >{{ errorMsg }}</p>
           </aside>

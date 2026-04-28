@@ -18,19 +18,19 @@
       <h3
         :id="headingId"
         class="font-mono-tab text-[10px] uppercase tracking-[0.18em]"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
       >
         Metas
         <span
           v-if="goals.length > 0"
           class="ml-1 tabular-nums"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
         >· {{ goals.length }}</span>
       </h3>
       <button
         type="button"
         class="goals-new-btn inline-flex size-5 items-center justify-center rounded transition-colors"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
         aria-label="Nova meta"
         @click="$emit('new-goal')"
       >
@@ -44,7 +44,7 @@
         v-for="i in 3"
         :key="i"
         class="goal-skeleton h-[52px] rounded-xl"
-        :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 50%, transparent)` }"
+        :style="{ backgroundColor: `color-mix(in srgb, var(--brand-surface) 50%, transparent)` }"
       />
     </ul>
 
@@ -59,19 +59,19 @@
       <UIcon
         name="i-lucide-target"
         class="size-4 shrink-0"
-        :style="{ color: brand.colors.primary }"
+        :style="{ color: 'var(--brand-primary)' }"
         aria-hidden="true"
       />
       <span class="flex flex-col">
         <span
           class="text-[12.5px] font-medium"
-          :style="{ color: brand.colors.text }"
+          :style="{ color: 'var(--brand-text)' }"
         >
           Defina sua primeira meta
         </span>
         <span
           class="text-[11px]"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
         >
           Ancorar conversas a um objetivo concreto
         </span>

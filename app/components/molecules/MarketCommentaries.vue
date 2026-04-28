@@ -7,18 +7,18 @@
     <!-- Status bar header -->
     <header
       class="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1 border px-3 py-2 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
-      :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted, backgroundColor: brand.colors.surface }"
+      :style="{ borderColor: 'var(--brand-border)', color: 'var(--brand-text-muted)', backgroundColor: 'var(--brand-surface)' }"
     >
-      <span :style="{ color: brand.colors.text }">Movimentos notáveis</span>
-      <span :style="{ color: brand.colors.border }">·</span>
+      <span :style="{ color: 'var(--brand-text)' }">Movimentos notáveis</span>
+      <span :style="{ color: 'var(--brand-border)' }">·</span>
       <span>AI · ANTHROPIC</span>
       <span class="ml-auto flex items-center gap-3">
         <span
           v-if="backfillStatus?.running"
           class="inline-flex items-center gap-1.5"
-          :style="{ color: brand.colors.primary }"
+          :style="{ color: 'var(--brand-primary)' }"
         >
-          <span class="h-1.5 w-1.5 motion-safe:animate-pulse rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
+          <span class="h-1.5 w-1.5 motion-safe:animate-pulse rounded-full" :style="{ backgroundColor: 'var(--brand-primary)' }" />
           INGESTING {{ backfillStatus.current }}/{{ backfillStatus.total }}
         </span>
         <span v-if="commentaries.length > 0" class="tabular-nums">
@@ -30,14 +30,14 @@
     <!-- Dense terminal grid -->
     <div
       class="border font-mono-tab"
-      :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.background }"
+      :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-background)' }"
     >
       <!-- Column headers -->
       <div
         class="grid border-b px-3 py-1.5 text-[9px] uppercase tracking-[0.18em]"
         :style="{
-          borderColor: brand.colors.border,
-          color: brand.colors.textMuted,
+          borderColor: 'var(--brand-border)',
+          color: 'var(--brand-text-muted)',
           gridTemplateColumns: '72px 64px 80px 1fr',
           gap: '12px',
         }"
@@ -55,7 +55,7 @@
           :key="item.id"
           :id="`commentary-${item.date}`"
           class="border-b last:border-b-0"
-          :style="{ borderColor: brand.colors.border + '66' }"
+          :style="{ borderColor: 'var(--brand-border)' + '66' }"
         >
           <!-- Collapsed row -->
           <button
@@ -71,33 +71,33 @@
           >
             <span
               class="text-[11px] font-semibold tabular-nums"
-              :style="{ color: brand.colors.text }"
+              :style="{ color: 'var(--brand-text)' }"
             >
               {{ formatDateTerminal(item.date) }}
             </span>
             <span
               class="truncate text-[11px] font-bold"
-              :style="{ color: brand.colors.primary }"
+              :style="{ color: 'var(--brand-primary)' }"
             >
               {{ item.identifier }}
             </span>
             <span
               class="text-right text-[11px] font-semibold tabular-nums"
               :style="{
-                color: isPositive(item.change_percent) ? brand.colors.positive : brand.colors.negative,
+                color: isPositive(item.change_percent) ? brand.colors.positive : 'var(--brand-negative)',
               }"
             >
               {{ formatPercent(item.change_percent) }}
             </span>
             <span
               class="flex min-w-0 items-center gap-2 text-[12px] leading-tight"
-              :style="{ color: brand.colors.text }"
+              :style="{ color: 'var(--brand-text)' }"
             >
               <span class="truncate">{{ item.title }}</span>
               <UIcon
                 :name="expanded[item.id] ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
                 class="ml-auto size-3 shrink-0"
-                :style="{ color: brand.colors.textMuted }"
+                :style="{ color: 'var(--brand-text-muted)' }"
               />
             </span>
           </button>
@@ -108,8 +108,8 @@
             class="grid gap-x-3 px-3 pb-3 text-[12px] leading-relaxed"
             :style="{
               gridTemplateColumns: '72px 64px 80px 1fr',
-              color: brand.colors.textMuted,
-              backgroundColor: brand.colors.surface + '55',
+              color: 'var(--brand-text-muted)',
+              backgroundColor: 'var(--brand-surface)' + '55',
             }"
           >
             <span></span>
@@ -117,19 +117,19 @@
             <span></span>
             <div class="pt-1">
               <div class="mb-2 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono-tab text-[10px] uppercase tracking-[0.12em]">
-                <span v-if="extractPriceNumber(item) !== null" :style="{ color: brand.colors.text }">
+                <span v-if="extractPriceNumber(item) !== null" :style="{ color: 'var(--brand-text)' }">
                   PRICE {{ formatPrice(item) }}
                 </span>
-                <span v-if="item.scope" :style="{ color: brand.colors.textMuted }">
+                <span v-if="item.scope" :style="{ color: 'var(--brand-text-muted)' }">
                   SCOPE · {{ item.scope.toUpperCase() }}
                 </span>
-                <span v-if="item.ai_model" :style="{ color: brand.colors.textMuted }">
+                <span v-if="item.ai_model" :style="{ color: 'var(--brand-text-muted)' }">
                   MODEL · {{ item.ai_model }}
                 </span>
               </div>
               <p
                 class="whitespace-pre-line text-[12.5px] leading-relaxed"
-                :style="{ color: brand.colors.text, fontFamily: 'Inter, system-ui, sans-serif' }"
+                :style="{ color: 'var(--brand-text)', fontFamily: 'Inter, system-ui, sans-serif' }"
               >
                 {{ item.commentary }}
               </p>
@@ -137,9 +137,9 @@
               <div
                 v-if="item.sources && item.sources.length > 0"
                 class="mt-3 border-t pt-2"
-                :style="{ borderColor: brand.colors.border }"
+                :style="{ borderColor: 'var(--brand-border)' }"
               >
-                <div class="mb-1.5 text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
+                <div class="mb-1.5 text-[9px] uppercase tracking-[0.18em]" :style="{ color: 'var(--brand-text-muted)' }">
                   Fontes · {{ item.sources.length }}
                 </div>
                 <ul class="flex flex-col gap-1">
@@ -149,7 +149,7 @@
                       target="_blank"
                       rel="noopener noreferrer"
                       class="inline-flex items-center gap-1.5 text-[11px] transition hover:underline"
-                      :style="{ color: brand.colors.textMuted, fontFamily: 'Inter, system-ui, sans-serif' }"
+                      :style="{ color: 'var(--brand-text-muted)', fontFamily: 'Inter, system-ui, sans-serif' }"
                     >
                       <span class="truncate max-w-[32rem]">{{ src.title || src.url }}</span>
                       <UIcon name="i-lucide-external-link" class="size-2.5 shrink-0 opacity-60" />
@@ -165,7 +165,7 @@
       <!-- Footer status -->
       <div
         class="flex items-center gap-2 border-t px-3 py-1.5 font-mono-tab text-[9px] uppercase tracking-[0.18em]"
-        :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted }"
+        :style="{ borderColor: 'var(--brand-border)', color: 'var(--brand-text-muted)' }"
       >
         <span>CLIQUE EM UMA LINHA PARA EXPANDIR</span>
         <span class="ml-auto">ORDENADO POR DATA DESC</span>
@@ -183,13 +183,13 @@
       <div>
         <p
           class="mb-1 text-[10px] font-medium uppercase tracking-[0.15em]"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
         >
           Analise com IA
         </p>
         <h3
           class="text-base font-semibold md:text-lg"
-          :style="{ color: brand.colors.text }"
+          :style="{ color: 'var(--brand-text)' }"
         >
           Movimentos notaveis
         </h3>
@@ -197,7 +197,7 @@
       <span
         v-if="commentaries.length > 0"
         class="text-xs tabular-nums"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
       >
         {{ commentaries.length }} {{ commentaries.length === 1 ? 'evento' : 'eventos' }}
       </span>
@@ -206,29 +206,29 @@
     <!-- Card container with internal scroll -->
     <div
       class="mc-card rounded-2xl border"
-      :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+      :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
     >
       <!-- Backfill progress (inside card, sticky top) -->
       <div
         v-if="backfillStatus?.running && backfillStatus.total > 0"
         class="sticky top-0 z-10 flex items-center gap-3 border-b px-5 py-3 text-xs backdrop-blur-sm"
         :style="{
-          color: brand.colors.textMuted,
-          borderColor: brand.colors.border,
-          backgroundColor: brand.colors.surface + 'ee',
+          color: 'var(--brand-text-muted)',
+          borderColor: 'var(--brand-border)',
+          backgroundColor: 'var(--brand-surface)' + 'ee',
         }"
       >
-        <span class="h-1 w-1 motion-safe:animate-pulse rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
+        <span class="h-1 w-1 motion-safe:animate-pulse rounded-full" :style="{ backgroundColor: 'var(--brand-primary)' }" />
         Analisando {{ backfillStatus.current }}/{{ backfillStatus.total }} eventos
         <div
           class="h-px flex-1 overflow-hidden"
-          :style="{ backgroundColor: brand.colors.border }"
+          :style="{ backgroundColor: 'var(--brand-border)' }"
         >
           <div
             class="h-full transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-500"
             :style="{
               width: `${Math.min(100, Math.round((backfillStatus.current / Math.max(1, backfillStatus.total)) * 100))}%`,
-              backgroundColor: brand.colors.primary,
+              backgroundColor: 'var(--brand-primary)',
             }"
           />
         </div>
@@ -246,13 +246,13 @@
             >
               <div
                 class="text-xs font-semibold tabular-nums"
-                :style="{ color: brand.colors.text }"
+                :style="{ color: 'var(--brand-text)' }"
               >
                 {{ formatDateShort(item.date) }}
               </div>
               <div
                 class="mt-0.5 text-[10px] uppercase tracking-wider"
-                :style="{ color: brand.colors.textMuted }"
+                :style="{ color: 'var(--brand-text-muted)' }"
               >
                 {{ relativeLabel(item.date) }}
               </div>
@@ -264,16 +264,16 @@
               <span
                 v-if="idx < commentaries.length - 1"
                 class="mc-connector"
-                :style="{ backgroundColor: brand.colors.border }"
+                :style="{ backgroundColor: 'var(--brand-border)' }"
               />
               <!-- Dot -->
               <span
                 class="mc-dot"
                 :style="{
-                  borderColor: isPositive(item.change_percent) ? brand.colors.positive : brand.colors.negative,
+                  borderColor: isPositive(item.change_percent) ? brand.colors.positive : 'var(--brand-negative)',
                   backgroundColor: isToday(item.date)
                     ? (isPositive(item.change_percent) ? brand.colors.positive : brand.colors.negative)
-                    : brand.colors.surface,
+                    : 'var(--brand-surface)',
                 }"
               />
             </div>
@@ -284,14 +284,14 @@
               <div class="mb-2 flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
                 <span
                   class="text-sm font-semibold tabular-nums"
-                  :style="{ color: brand.colors.text }"
+                  :style="{ color: 'var(--brand-text)' }"
                 >
                   {{ formatPrice(item) }}
                 </span>
                 <span
                   class="flex items-center gap-0.5 text-xs font-medium"
                   :style="{
-                    color: isPositive(item.change_percent) ? brand.colors.positive : brand.colors.negative,
+                    color: isPositive(item.change_percent) ? brand.colors.positive : 'var(--brand-negative)',
                   }"
                 >
                   <UIcon
@@ -302,7 +302,7 @@
                 </span>
                 <span
                   class="text-[10px] uppercase tracking-wider"
-                  :style="{ color: brand.colors.textMuted }"
+                  :style="{ color: 'var(--brand-text-muted)' }"
                 >
                   · {{ item.identifier }}
                 </span>
@@ -311,7 +311,7 @@
               <!-- Title -->
               <h4
                 class="mb-1.5 text-[14px] font-semibold leading-snug"
-                :style="{ color: brand.colors.text }"
+                :style="{ color: 'var(--brand-text)' }"
               >
                 {{ item.title }}
               </h4>
@@ -319,7 +319,7 @@
               <!-- Body -->
               <p
                 class="text-[13px] leading-relaxed"
-                :style="{ color: brand.colors.textMuted }"
+                :style="{ color: 'var(--brand-text-muted)' }"
               >
                 {{
                   expanded[item.id]
@@ -330,7 +330,7 @@
                   v-if="item.commentary.length > 220"
                   type="button"
                   class="ml-0.5 text-[11px] font-medium hover:underline"
-                  :style="{ color: brand.colors.primary }"
+                  :style="{ color: 'var(--brand-primary)' }"
                   @click="toggleExpand(item.id)"
                 >
                   {{ expanded[item.id] ? 'recolher' : 'ler mais' }}
@@ -345,7 +345,7 @@
                 <button
                   type="button"
                   class="inline-flex items-center gap-1 text-[11px] transition hover:underline"
-                  :style="{ color: brand.colors.textMuted }"
+                  :style="{ color: 'var(--brand-text-muted)' }"
                   @click="toggleSources(item.id)"
                 >
                   <span class="tabular-nums">
@@ -367,7 +367,7 @@
                       target="_blank"
                       rel="noopener noreferrer"
                       class="inline-flex items-center gap-1.5 text-[11px] transition hover:underline"
-                      :style="{ color: brand.colors.textMuted }"
+                      :style="{ color: 'var(--brand-text-muted)' }"
                     >
                       <span class="truncate max-w-[28rem]">{{ src.title || src.url }}</span>
                       <UIcon name="i-lucide-external-link" class="size-2.5 shrink-0 opacity-60" />

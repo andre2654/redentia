@@ -20,7 +20,7 @@
     <div
       class="pointer-events-none absolute inset-x-0 bottom-0 h-32"
       :style="{
-        background: `linear-gradient(to top, ${brand.colors.background} 30%, transparent)`,
+        background: `linear-gradient(to top, var(--brand-background) 30%, transparent)`,
       }"
       aria-hidden="true"
     />
@@ -49,9 +49,9 @@
           v-if="dragOver"
           class="chat-drop-overlay pointer-events-none absolute inset-0 flex items-center justify-center rounded-[28px] text-[14px] font-semibold"
           :style="{
-            backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 12%, transparent)`,
-            border: `1.5px dashed ${brand.colors.primary}`,
-            color: brand.colors.primary,
+            backgroundColor: `color-mix(in srgb, var(--brand-primary) 12%, transparent)`,
+            border: `1.5px dashed var(--brand-primary)`,
+            color: 'var(--brand-primary)',
             zIndex: 5,
           }"
           aria-hidden="true"
@@ -72,20 +72,20 @@
           :key="att.id"
           class="chat-attach-chip group inline-flex max-w-full items-center gap-2 rounded-xl px-2.5 py-1.5 text-[12px]"
           :style="{
-            backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 70%, transparent)`,
-            border: `1px solid color-mix(in srgb, ${brand.colors.border} 45%, transparent)`,
-            color: brand.colors.text,
+            backgroundColor: `color-mix(in srgb, var(--brand-surface) 70%, transparent)`,
+            border: `1px solid color-mix(in srgb, var(--brand-border) 45%, transparent)`,
+            color: 'var(--brand-text)',
           }"
         >
           <UIcon
             :name="attachIcon(att)"
             class="size-3.5 shrink-0"
-            :style="{ color: brand.colors.primary }"
+            :style="{ color: 'var(--brand-primary)' }"
           />
           <span class="max-w-[180px] truncate">{{ att.name }}</span>
           <span
             class="shrink-0 font-mono-tab text-[10px] uppercase tracking-[0.12em]"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
           >
             {{ humanSize(att.size) }}
           </span>
@@ -106,9 +106,9 @@
         role="alert"
         class="rounded-lg px-3 py-1.5 text-[11.5px]"
         :style="{
-          backgroundColor: `color-mix(in srgb, ${brand.colors.negative} 8%, transparent)`,
-          border: `1px solid color-mix(in srgb, ${brand.colors.negative} 30%, transparent)`,
-          color: brand.colors.negative,
+          backgroundColor: `color-mix(in srgb, var(--brand-negative) 8%, transparent)`,
+          border: `1px solid color-mix(in srgb, var(--brand-negative) 30%, transparent)`,
+          color: 'var(--brand-negative)',
         }"
       >
         {{ attachError }}
@@ -122,7 +122,7 @@
           rows="1"
           :placeholder="placeholder"
           class="chat-textarea min-h-[28px] max-h-[200px] flex-1 resize-none border-0 bg-transparent text-[16px] leading-relaxed outline-none"
-          :style="{ color: brand.colors.text }"
+          :style="{ color: 'var(--brand-text)' }"
           :disabled="disabled"
           @input="autosize"
           @focus="focused = true"
@@ -148,8 +148,8 @@
           :disabled="disabled || attachments.length >= MAX_ATTACHMENTS"
           class="chat-attach-btn mb-0.5 flex size-9 shrink-0 items-center justify-center rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-40"
           :style="{
-            backgroundColor: `color-mix(in srgb, ${brand.colors.text} 5%, transparent)`,
-            color: brand.colors.textMuted,
+            backgroundColor: `color-mix(in srgb, var(--brand-text) 5%, transparent)`,
+            color: 'var(--brand-text-muted)',
           }"
           :title="
             attachments.length >= MAX_ATTACHMENTS
@@ -166,10 +166,10 @@
           class="chat-tier-group inline-flex items-center gap-0.5 rounded-full p-0.5"
           :style="{
             backgroundColor: isMax
-              ? `color-mix(in srgb, ${brand.colors.primary} 8%, transparent)`
-              : `color-mix(in srgb, ${brand.colors.text} 5%, transparent)`,
+              ? `color-mix(in srgb, var(--brand-primary) 8%, transparent)`
+              : `color-mix(in srgb, var(--brand-text) 5%, transparent)`,
             border: isMax
-              ? `1px solid color-mix(in srgb, ${brand.colors.primary} 22%, transparent)`
+              ? `1px solid color-mix(in srgb, var(--brand-primary) 22%, transparent)`
               : '1px solid transparent',
           }"
           role="radiogroup"
@@ -195,9 +195,9 @@
               class="size-3"
               :style="
                 tier === opt.value && opt.value === 'max'
-                  ? { color: brand.colors.primary }
+                  ? { color: 'var(--brand-primary)' }
                   : tier === opt.value
-                    ? { color: brand.colors.text }
+                    ? { color: 'var(--brand-text)' }
                     : { color: 'inherit' }
               "
             />
@@ -228,15 +228,15 @@
           type="button"
           class="chat-stop mb-0.5 flex size-9 shrink-0 items-center justify-center rounded-full transition-colors"
           :style="{
-            backgroundColor: brand.colors.text,
-            color: brand.colors.background,
+            backgroundColor: 'var(--brand-text)',
+            color: 'var(--brand-background)',
           }"
           aria-label="Parar"
           @click="$emit('stop')"
         >
           <span
             class="inline-block size-3 rounded-[3px]"
-            :style="{ backgroundColor: brand.colors.background }"
+            :style="{ backgroundColor: 'var(--brand-background)' }"
           />
         </button>
       </div>
@@ -247,8 +247,8 @@
       class="mx-auto mt-2 max-w-3xl text-center font-mono-tab text-[10px] uppercase tracking-[0.16em] transition-colors"
       :style="{
         color: isMax
-          ? `color-mix(in srgb, ${brand.colors.primary} 70%, ${brand.colors.textMuted})`
-          : `color-mix(in srgb, ${brand.colors.textMuted} 65%, transparent)`,
+          ? `color-mix(in srgb, var(--brand-primary) 70%, var(--brand-text-muted))`
+          : `color-mix(in srgb, var(--brand-text-muted) 65%, transparent)`,
       }"
     >
       <template v-if="isMax">

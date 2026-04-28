@@ -35,19 +35,19 @@
           <span v-if="goal.emoji" aria-hidden="true">{{ goal.emoji }}</span>
           <span
             class="truncate text-[13px] font-medium"
-            :style="{ color: brand.colors.text }"
+            :style="{ color: 'var(--brand-text)' }"
           >{{ goal.name }}</span>
         </span>
         <span
           class="font-mono-tab block truncate text-[10.5px] uppercase tracking-[0.12em]"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
         >
           {{ statusLabel }}
         </span>
       </span>
       <span
         class="font-mono-tab shrink-0 text-[12.5px] tabular-nums"
-        :style="{ color: brand.colors.text }"
+        :style="{ color: 'var(--brand-text)' }"
       >
         {{ progressPct }}%
       </span>
@@ -55,7 +55,7 @@
 
     <!-- Slim progress bar. The track has fixed width; we scale the fill. -->
     <span class="goal-progress-track relative block h-[3px] w-full overflow-hidden rounded-full"
-      :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.text} 8%, transparent)` }"
+      :style="{ backgroundColor: `color-mix(in srgb, var(--brand-text) 8%, transparent)` }"
       aria-hidden="true"
     >
       <span

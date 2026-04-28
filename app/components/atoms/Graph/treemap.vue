@@ -2,35 +2,35 @@
   <div
     class="mktmap relative flex w-full flex-col"
     :style="{
-      backgroundColor: brand.colors.background,
-      color: brand.colors.text,
-      border: `1px solid ${brand.colors.border}`,
+      backgroundColor: 'var(--brand-background)',
+      color: 'var(--brand-text)',
+      border: `1px solid var(--brand-border)`,
     }"
     @mouseleave="clearHover"
   >
     <!-- STATUS BAR TOP -->
     <div
       class="status-bar-top flex flex-wrap items-center gap-x-3 gap-y-1 border-b px-4 py-2 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
-      :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted }"
+      :style="{ borderColor: 'var(--brand-border)', color: 'var(--brand-text-muted)' }"
     >
-      <span :style="{ color: brand.colors.primary }">MKTMAP</span>
-      <span :style="{ color: brand.colors.border }">·</span>
+      <span :style="{ color: 'var(--brand-primary)' }">MKTMAP</span>
+      <span :style="{ color: 'var(--brand-border)' }">·</span>
       <span>B3</span>
-      <span :style="{ color: brand.colors.border }">·</span>
+      <span :style="{ color: 'var(--brand-border)' }">·</span>
       <span class="inline-flex items-center gap-1.5">
         <span
           class="h-1.5 w-1.5 rounded-full"
-          :style="{ backgroundColor: sessionOpen ? brand.colors.positive : brand.colors.neutral }"
+          :style="{ backgroundColor: sessionOpen ? brand.colors.positive : 'var(--brand-neutral)' }"
         />
         <span>SESSION {{ sessionOpen ? 'OPEN' : 'CLOSED' }}</span>
       </span>
-      <span :style="{ color: brand.colors.border }">·</span>
+      <span :style="{ color: 'var(--brand-border)' }">·</span>
       <span class="tabular-nums">{{ clockText }} BRT</span>
       <span class="ml-auto flex items-center gap-3">
         <span>HEAT · |%CHG|</span>
-        <span :style="{ color: brand.colors.border }">·</span>
+        <span :style="{ color: 'var(--brand-border)' }">·</span>
         <span>{{ totalTickers }} TICKERS</span>
-        <span :style="{ color: brand.colors.border }">·</span>
+        <span :style="{ color: 'var(--brand-border)' }">·</span>
         <span>{{ sectorCount }} SECTORS</span>
       </span>
     </div>
@@ -50,8 +50,8 @@
           top: `${sector.y}px`,
           width: `${sector.w}px`,
           height: `${sector.h}px`,
-          borderRight: `1px solid ${brand.colors.border}`,
-          borderBottom: `1px solid ${brand.colors.border}`,
+          borderRight: `1px solid var(--brand-border)`,
+          borderBottom: `1px solid var(--brand-border)`,
         }"
       >
         <!-- Sector label strip -->
@@ -59,17 +59,17 @@
           class="sector-label flex items-center gap-2 px-2 font-mono-tab text-[9px] uppercase tracking-[0.12em] sm:text-[10px]"
           :style="{
             height: `${SECTOR_LABEL_H}px`,
-            backgroundColor: brand.colors.surface,
-            color: brand.colors.textMuted,
-            borderBottom: `1px solid ${brand.colors.border}`,
+            backgroundColor: 'var(--brand-surface)',
+            color: 'var(--brand-text-muted)',
+            borderBottom: `1px solid var(--brand-border)`,
           }"
         >
           <span
             class="font-semibold"
-            :style="{ color: brand.colors.primary }"
+            :style="{ color: 'var(--brand-primary)' }"
             >{{ sector.code }}</span
           >
-          <span class="truncate" :style="{ color: brand.colors.text }">{{
+          <span class="truncate" :style="{ color: 'var(--brand-text)' }">{{
             sector.name
           }}</span>
           <span
@@ -78,12 +78,12 @@
             <span
               :style="{
                 color:
-                  sector.avgChange >= 0 ? brand.colors.positive : brand.colors.negative,
+                  sector.avgChange >= 0 ? brand.colors.positive : 'var(--brand-negative)',
               }"
             >
               {{ sector.avgChange >= 0 ? '+' : '' }}{{ sector.avgChange.toFixed(1) }}%
             </span>
-            <span :style="{ color: brand.colors.border }">·</span>
+            <span :style="{ color: 'var(--brand-border)' }">·</span>
             <span>{{ sector.totalCount }}</span>
           </span>
         </div>
@@ -137,7 +137,7 @@
       <div
         v-if="sectorBoxes.length === 0"
         class="absolute inset-0 flex items-center justify-center font-mono-tab text-[11px] uppercase tracking-[0.15em]"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
       >
         NENHUM DADO NO FILTRO ATUAL
       </div>
@@ -146,30 +146,30 @@
     <!-- STATUS BAR BOTTOM -->
     <div
       class="status-bar-bottom flex flex-wrap items-center gap-x-3 gap-y-1 border-t px-4 py-2 font-mono-tab text-[10px] uppercase tracking-[0.15em] sm:text-[11px]"
-      :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted }"
+      :style="{ borderColor: 'var(--brand-border)', color: 'var(--brand-text-muted)' }"
     >
       <template v-if="hovered">
-        <span class="font-semibold" :style="{ color: brand.colors.primary }">{{
+        <span class="font-semibold" :style="{ color: 'var(--brand-primary)' }">{{
           hovered.symbol
         }}</span>
-        <span :style="{ color: brand.colors.border }">·</span>
-        <span class="max-w-[16rem] truncate" :style="{ color: brand.colors.text }">{{
+        <span :style="{ color: 'var(--brand-border)' }">·</span>
+        <span class="max-w-[16rem] truncate" :style="{ color: 'var(--brand-text)' }">{{
           hovered.name
         }}</span>
-        <span :style="{ color: brand.colors.border }">·</span>
-        <span class="tabular-nums" :style="{ color: brand.colors.text }"
+        <span :style="{ color: 'var(--brand-border)' }">·</span>
+        <span class="tabular-nums" :style="{ color: 'var(--brand-text)' }"
           >R$ {{ hovered.price.toFixed(2) }}</span
         >
-        <span :style="{ color: brand.colors.border }">·</span>
+        <span :style="{ color: 'var(--brand-border)' }">·</span>
         <span
           class="tabular-nums font-semibold"
           :style="{
-            color: hovered.change >= 0 ? brand.colors.positive : brand.colors.negative,
+            color: hovered.change >= 0 ? brand.colors.positive : 'var(--brand-negative)',
           }"
         >
           {{ hovered.change >= 0 ? '+' : '' }}{{ hovered.change.toFixed(2) }}%
         </span>
-        <span v-if="hovered.sectorLabel" :style="{ color: brand.colors.border }">·</span>
+        <span v-if="hovered.sectorLabel" :style="{ color: 'var(--brand-border)' }">·</span>
         <span v-if="hovered.sectorLabel">{{ hovered.sectorLabel }}</span>
         <span class="ml-auto opacity-60">CLIQUE PARA ABRIR ATIVO →</span>
       </template>

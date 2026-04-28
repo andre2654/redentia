@@ -34,8 +34,8 @@
     <div
       class="quick-search-shell w-full max-w-md pointer-events-auto"
       :style="{
-        '--qs-primary': brand.colors.primary,
-        '--qs-primary-soft': `${brand.colors.primary}40`,
+        '--qs-primary': 'var(--brand-primary)',
+        '--qs-primary-soft': `var(--brand-primary)40`,
       } as any"
     >
       <!-- STAGED preview — when the user clicked a rotating suggestion in
@@ -53,7 +53,7 @@
             :style="{
               borderColor: chipBorder,
               backgroundColor: chipBg,
-              color: brand.colors.text,
+              color: 'var(--brand-text)',
             }"
             :aria-label="`Confirmar: ${stagedSuggestion.text}`"
             @click="commitStagedSuggestion"
@@ -73,21 +73,21 @@
               v-else-if="stagedSuggestion.icon"
               :name="stagedSuggestion.icon"
               class="size-4 shrink-0"
-              :style="{ color: brand.colors.primary }"
+              :style="{ color: 'var(--brand-primary)' }"
               aria-hidden="true"
             />
             <span class="truncate">
-              <span v-if="stagedSuggestion.prefix" :style="{ color: brand.colors.textMuted }">{{ stagedSuggestion.prefix }}</span>
+              <span v-if="stagedSuggestion.prefix" :style="{ color: 'var(--brand-text-muted)' }">{{ stagedSuggestion.prefix }}</span>
               <span
                 class="font-semibold"
                 :class="stagedSuggestion.mono ? 'font-mono-tab tracking-tight' : ''"
-                :style="{ color: brand.colors.text }"
+                :style="{ color: 'var(--brand-text)' }"
               >{{ stagedSuggestion.highlight }}</span>
-              <span v-if="stagedSuggestion.suffix" :style="{ color: brand.colors.textMuted }">{{ stagedSuggestion.suffix }}</span>
+              <span v-if="stagedSuggestion.suffix" :style="{ color: 'var(--brand-text-muted)' }">{{ stagedSuggestion.suffix }}</span>
             </span>
             <span
               class="font-mono-tab text-[10px] uppercase tracking-[0.14em]"
-              :style="{ color: brand.colors.primary }"
+              :style="{ color: 'var(--brand-primary)' }"
               aria-hidden="true"
             >
               ↵
@@ -104,7 +104,7 @@
         <div
           v-if="open && !searchTerm && isLoading && idleChips.length === 0"
           class="mb-3 flex items-center justify-center gap-2 text-[12px]"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
           role="status"
           aria-live="polite"
         >
@@ -133,7 +133,7 @@
             :style="{
               borderColor: chipBorder,
               backgroundColor: chipBg,
-              color: brand.colors.text,
+              color: 'var(--brand-text)',
             }"
             role="option"
             :aria-selected="isFocused(chip.groupType, 0)"
@@ -168,7 +168,7 @@
           :style="{
             backgroundColor: panelBg,
             borderColor: panelBorder,
-            color: brand.colors.text,
+            color: 'var(--brand-text)',
           }"
           role="listbox"
           aria-label="Sugestões de ativos"
@@ -177,7 +177,7 @@
           <div
             v-if="isLoading && filteredItems.length === 0"
             class="relative flex items-center gap-2 px-5 py-6 text-sm"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
             role="status"
             aria-live="polite"
           >
@@ -189,7 +189,7 @@
           <div
             v-else-if="filteredItems.length === 0 && !askAiItem"
             class="relative flex flex-col items-center gap-1 px-4 py-8 text-center text-sm"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
           >
             <UIcon name="i-lucide-search-x" class="size-5 opacity-60" aria-hidden="true" />
             <span>Nenhum ativo encontrado</span>
@@ -205,7 +205,7 @@
                 class="qs-hero group/qs-hero relative flex items-center gap-3 rounded-xl px-3.5 py-2.5 transition-colors focus-visible:outline-none"
                 :style="{
                   backgroundColor: isFocused('AI', 0)
-                    ? `color-mix(in srgb, ${brand.colors.text} 6%, transparent)`
+                    ? `color-mix(in srgb, var(--brand-text) 6%, transparent)`
                     : 'transparent',
                 }"
                 role="option"
@@ -216,8 +216,8 @@
                 <span
                   class="flex size-8 shrink-0 items-center justify-center rounded-lg"
                   :style="{
-                    backgroundColor: `${brand.colors.primary}1F`,
-                    color: brand.colors.primary,
+                    backgroundColor: `var(--brand-primary)1F`,
+                    color: 'var(--brand-primary)',
                   }"
                   aria-hidden="true"
                 >
@@ -226,20 +226,20 @@
                 <div class="flex min-w-0 flex-1 flex-col leading-tight">
                   <span
                     class="truncate text-[13px] font-semibold tracking-tight"
-                    :style="{ color: brand.colors.text }"
+                    :style="{ color: 'var(--brand-text)' }"
                   >
                     Perguntar para a IA
                   </span>
                   <span
                     class="truncate text-[11.5px]"
-                    :style="{ color: brand.colors.textMuted }"
+                    :style="{ color: 'var(--brand-text-muted)' }"
                   >
                     "{{ searchTerm }}"
                   </span>
                 </div>
                 <span
                   class="font-mono-tab text-[10px] uppercase tracking-[0.14em]"
-                  :style="{ color: brand.colors.primary }"
+                  :style="{ color: 'var(--brand-primary)' }"
                   aria-hidden="true"
                 >
                   ↵
@@ -254,12 +254,12 @@
               >
                 <div
                   class="flex items-center justify-between gap-2 px-3 pb-1 pt-1 font-mono-tab text-[10px] uppercase tracking-[0.2em]"
-                  :style="{ color: `color-mix(in srgb, ${brand.colors.textMuted} 65%, transparent)` }"
+                  :style="{ color: `color-mix(in srgb, var(--brand-text-muted) 65%, transparent)` }"
                 >
                   <span class="flex items-center gap-1.5" translate="no">
                     <span
                       class="size-1 shrink-0 rounded-full"
-                      :style="{ backgroundColor: brand.colors.primary }"
+                      :style="{ backgroundColor: 'var(--brand-primary)' }"
                       aria-hidden="true"
                     />
                     {{ group.label }}
@@ -281,8 +281,8 @@
                       :class="isFocused(group.type, idx) ? 'qs-pill-row-focused' : ''"
                       :style="{
                         backgroundColor: isFocused(group.type, idx)
-                          ? `color-mix(in srgb, ${brand.colors.text} 7%, transparent)`
-                          : `color-mix(in srgb, ${brand.colors.surface} 50%, transparent)`,
+                          ? `color-mix(in srgb, var(--brand-text) 7%, transparent)`
+                          : `color-mix(in srgb, var(--brand-surface) 50%, transparent)`,
                       }"
                       role="option"
                       :aria-selected="isFocused(group.type, idx)"
@@ -292,7 +292,7 @@
                       <div
                         class="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-lg"
                         :style="{
-                          backgroundColor: `color-mix(in srgb, ${brand.colors.text} 6%, transparent)`,
+                          backgroundColor: `color-mix(in srgb, var(--brand-text) 6%, transparent)`,
                         }"
                       >
                         <NuxtImg
@@ -310,7 +310,7 @@
                         <span
                           v-else
                           class="font-mono-tab text-[11px] font-bold"
-                          :style="{ color: brand.colors.primary }"
+                          :style="{ color: 'var(--brand-primary)' }"
                           translate="no"
                         >
                           {{ item.ticker.slice(0, 3) }}
@@ -319,14 +319,14 @@
                       <div class="flex min-w-0 flex-1 flex-col leading-tight">
                         <span
                           class="truncate font-mono-tab text-[14px] font-semibold tracking-tight"
-                          :style="{ color: brand.colors.text }"
+                          :style="{ color: 'var(--brand-text)' }"
                           translate="no"
                         >
                           {{ item.ticker }}
                         </span>
                         <span
                           class="truncate text-[11.5px]"
-                          :style="{ color: brand.colors.textMuted }"
+                          :style="{ color: 'var(--brand-text-muted)' }"
                         >
                           {{ item.name }}
                         </span>
@@ -335,7 +335,7 @@
                         <span
                           v-if="item.priceLabel"
                           class="font-mono-tab text-[13px] font-semibold tabular-nums"
-                          :style="{ color: brand.colors.text }"
+                          :style="{ color: 'var(--brand-text)' }"
                           translate="no"
                         >
                           {{ item.priceLabel }}

@@ -20,7 +20,7 @@
     <!-- Severity bar -->
     <span
       class="absolute inset-y-3 left-0 w-[3px] rounded-r-full"
-      :style="{ backgroundColor: brand.colors.primary }"
+      :style="{ backgroundColor: 'var(--brand-primary)' }"
       aria-hidden="true"
     />
 
@@ -28,12 +28,12 @@
       <span
         id="preexec-title"
         class="text-[14px] font-semibold"
-        :style="{ color: brand.colors.text }"
+        :style="{ color: 'var(--brand-text)' }"
       >Pré-execução</span>
       <span
         v-if="data.ticker"
         class="font-mono-tab text-[11px] font-bold uppercase tracking-[0.14em]"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
       >{{ data.ticker }} · {{ typeLabel }}</span>
     </header>
 
@@ -49,11 +49,11 @@
       >
         <dt
           class="font-mono-tab text-[9.5px] uppercase tracking-[0.16em]"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
         >{{ entry.label }}</dt>
         <dd
           class="text-[12.5px] tabular-nums"
-          :style="{ color: brand.colors.text }"
+          :style="{ color: 'var(--brand-text)' }"
         >{{ entry.value }}</dd>
       </div>
     </dl>
@@ -82,16 +82,16 @@
             <span
               class="text-[13px] leading-snug"
               :style="{
-                color: brand.colors.text,
+                color: 'var(--brand-text)',
                 textDecoration: checked.has(item.id) ? 'line-through' : 'none',
-                textDecorationColor: brand.colors.textMuted,
+                textDecorationColor: 'var(--brand-text-muted)',
               }"
             >{{ item.label }}</span>
             <span
               v-if="item.detail"
               :id="`preexec-detail-${item.id}`"
               class="text-[11.5px] leading-snug"
-              :style="{ color: brand.colors.textMuted }"
+              :style="{ color: 'var(--brand-text-muted)' }"
             >{{ item.detail }}</span>
           </span>
           <span
@@ -99,7 +99,7 @@
             class="ml-auto inline-flex size-1.5 shrink-0 self-start rounded-full"
             :style="{
               backgroundColor:
-                item.severity === 'critical' ? brand.colors.negative : brand.colors.primary,
+                item.severity === 'critical' ? brand.colors.negative : 'var(--brand-primary)',
               marginTop: '7px',
             }"
             :aria-label="item.severity === 'critical' ? 'crítico' : 'atenção'"
@@ -112,7 +112,7 @@
     <footer class="mt-1 flex flex-wrap items-center justify-between gap-2 pl-1">
       <p
         class="font-mono-tab text-[10px] uppercase tracking-[0.16em]"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
       >
         {{ checked.size }}/{{ data.items.length }} confirmados
       </p>
@@ -121,8 +121,8 @@
           type="button"
           class="preexec-cta-ghost rounded-full px-3 py-1.5 text-[12px] transition-colors"
           :style="{
-            color: brand.colors.textMuted,
-            border: `1px solid color-mix(in srgb, ${brand.colors.border} 60%, transparent)`,
+            color: 'var(--brand-text-muted)',
+            border: `1px solid color-mix(in srgb, var(--brand-border) 60%, transparent)`,
           }"
           @click="$emit('cancel', data.decisionId)"
         >

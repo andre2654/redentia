@@ -9,13 +9,13 @@
       :class="deepMode ? 'chat-deep-active' : ''"
       :style="deepMode
         ? {
-            borderColor: brand.colors.primary,
-            backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 18%, transparent)`,
-            color: brand.colors.primary,
+            borderColor: 'var(--brand-primary)',
+            backgroundColor: `color-mix(in srgb, var(--brand-primary) 18%, transparent)`,
+            color: 'var(--brand-primary)',
           }
         : {
-            borderColor: `color-mix(in srgb, ${brand.colors.border} 60%, transparent)`,
-            color: brand.colors.textMuted,
+            borderColor: `color-mix(in srgb, var(--brand-border) 60%, transparent)`,
+            color: 'var(--brand-text-muted)',
           }"
       :title="deepMode ? 'Desativar Redentia MAX' : 'Redentia MAX — análise rigorosa, multi-passo'"
       @click="$emit('toggle-deep')"
@@ -29,9 +29,9 @@
       type="button"
       class="inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-medium transition-colors"
       :style="{
-        borderColor: `color-mix(in srgb, ${brand.colors.negative} 50%, transparent)`,
-        backgroundColor: `color-mix(in srgb, ${brand.colors.negative} 12%, transparent)`,
-        color: brand.colors.negative,
+        borderColor: `color-mix(in srgb, var(--brand-negative) 50%, transparent)`,
+        backgroundColor: `color-mix(in srgb, var(--brand-negative) 12%, transparent)`,
+        color: 'var(--brand-negative)',
       }"
       @click="$emit('stop')"
     >

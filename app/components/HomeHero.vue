@@ -1,53 +1,66 @@
 <template>
   <div>
-    <!-- ========== HERO: TERMINAL (Redentia, Bloomberg-reimagined dedicated variant) ========== -->
+    <!-- ========== HERO: QUIET (Redentia premium, lightness as luxury) ========== -->
+    <!-- Disjuncto do terminal. Weight 300, sombras com tint amber, headings warm,
+         radii 4-8px, light + dark adaptativo. Componente isolado. -->
+    <HomeHeroQuiet
+      v-if="brand.hero.variant === 'quiet'"
+      :ibov-series="ibovSeries"
+      :ibov-last-price="ibovLastPrice"
+      :ibov-indicator="ibovIndicator"
+      :ibov-variation-color="ibovVariationColor"
+      :ifix-last-price="ifixLastPrice"
+      :ifix-indicator="ifixIndicator"
+    />
+
+    <!-- ========== HERO: TERMINAL (Redentia v2, Bloomberg-reimagined) ========== -->
     <section v-if="brand.hero.variant === 'terminal'"  class="relative overflow-hidden">
       <!-- Live market ticker, rendered only after mount so the scroll animation
            and fetch don't fight with SSR hydration. Reserved space kept the same
            to prevent layout shift. -->
-      <div class="h-9 border-y" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+      <div class="h-9 border-y" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
         <AtomsMarketTicker v-if="isMounted" class="!border-0" />
       </div>
 
       <!-- Background depth: warm amber radial + faint grid + scanlines -->
       <div class="pointer-events-none absolute inset-0 top-9">
         <!-- Ambient amber glow from top-center -->
-        <div class="absolute left-1/2 top-0 h-[540px] w-[900px] -translate-x-1/2 rounded-full blur-3xl opacity-60" :style="{ background: `radial-gradient(ellipse at center top, ${brand.colors.primary}33, transparent 60%)` }" />
+        <div class="absolute left-1/2 top-0 h-[540px] w-[900px] -translate-x-1/2 rounded-full blur-3xl opacity-60" :style="{ background: `radial-gradient(ellipse at center top, var(--brand-primary)33, transparent 60%)` }" />
         <!-- Terminal-style grid overlay (tight 32px grid) -->
-        <div class="absolute inset-0 opacity-[0.04]" :style="{ backgroundImage: `linear-gradient(${brand.colors.text} 1px, transparent 1px), linear-gradient(90deg, ${brand.colors.text} 1px, transparent 1px)`, backgroundSize: '32px 32px' }" />
+        <div class="absolute inset-0 opacity-[0.04]" :style="{ backgroundImage: `linear-gradient(var(--brand-text) 1px, transparent 1px), linear-gradient(90deg, var(--brand-text) 1px, transparent 1px)`, backgroundSize: '32px 32px' }" />
         <!-- Horizontal scanlines (1px stripes), CRT texture -->
-        <div class="absolute inset-0 opacity-30" :style="{ backgroundImage: `repeating-linear-gradient(to bottom, transparent 0px, transparent 2px, ${brand.colors.text}04 2px, ${brand.colors.text}04 3px)` }" />
+        <div class="absolute inset-0 opacity-30" :style="{ backgroundImage: `repeating-linear-gradient(to bottom, transparent 0px, transparent 2px, var(--brand-text)04 2px, var(--brand-text)04 3px)` }" />
       </div>
 
       <div class="relative mx-auto max-w-6xl px-6 pb-20 pt-16 md:pb-28 md:pt-20">
         <!-- Terminal status line: [MARKET.LIVE] + timestamp + version -->
         <div class="mb-8 flex flex-wrap items-center justify-center gap-3 font-mono-tab text-[10px] uppercase tracking-[0.18em]">
-          <span class="flex items-center gap-1.5" :style="{ color: brand.colors.primary }">
+          <span class="flex items-center gap-1.5" :style="{ color: 'var(--brand-primary)' }">
             <span class="relative flex size-1.5" aria-hidden="true">
-              <span class="absolute inline-flex size-1.5 rounded-full opacity-75 motion-safe:animate-ping" :style="{ backgroundColor: brand.colors.primary }" />
-              <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
+              <span class="absolute inline-flex size-1.5 rounded-full opacity-75 motion-safe:animate-ping" :style="{ backgroundColor: 'var(--brand-primary)' }" />
+              <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: 'var(--brand-primary)' }" />
             </span>
             <span translate="no">{{ brand.hero.badge }}</span>
           </span>
-          <span :style="{ color: brand.colors.border }" aria-hidden="true">·</span>
-          <span :style="{ color: brand.colors.textMuted }" translate="no">B3 · SESSÃO ABERTA</span>
-          <span :style="{ color: brand.colors.border }" aria-hidden="true">·</span>
-          <span :style="{ color: brand.colors.textMuted }" translate="no">REDENTIA v2.1</span>
+          <span :style="{ color: 'var(--brand-border)' }" aria-hidden="true">·</span>
+          <span :style="{ color: 'var(--brand-text-muted)' }" translate="no">B3 · SESSÃO ABERTA</span>
+          <span :style="{ color: 'var(--brand-border)' }" aria-hidden="true">·</span>
+          <span :style="{ color: 'var(--brand-text-muted)' }" translate="no">REDENTIA v2.1</span>
         </div>
 
         <!-- Display serif headline, editorial scale, high contrast -->
         <h1
           class="font-display mx-auto mb-6 max-w-4xl text-center text-[56px] leading-[0.95] tracking-tight sm:text-[72px] md:text-[96px] lg:text-[120px]"
-          :style="{ color: brand.colors.text }"
+          :style="{ color: 'var(--brand-text)' }"
         >
           Investir com
-          <span class="italic" :style="{ color: brand.colors.primary }">inteligência.</span>
+          <span class="italic" :style="{ color: 'var(--brand-primary)' }">inteligência.</span>
         </h1>
 
         <!-- Subtitle: mono eyebrow feel -->
         <p
           class="mx-auto mb-10 max-w-2xl text-center text-sm leading-relaxed md:text-base"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
         >
           {{ brand.hero.subtitle }}
         </p>
@@ -61,9 +74,9 @@
           type="button"
           class="qs-replica mx-auto flex w-full max-w-md items-center gap-2 rounded-full border px-4 py-3 text-left transition-[border-color,box-shadow,background-color] focus-visible:outline-none"
           :style="{
-            borderColor: `color-mix(in srgb, ${brand.colors.border} 70%, transparent)`,
-            backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 85%, transparent)`,
-            color: brand.colors.text,
+            borderColor: `color-mix(in srgb, var(--brand-border) 70%, transparent)`,
+            backgroundColor: `color-mix(in srgb, var(--brand-surface) 85%, transparent)`,
+            color: 'var(--brand-text)',
           }"
           aria-label="Abrir busca rápida"
           @click="openQuickSearch"
@@ -71,18 +84,18 @@
           <UIcon
             name="i-lucide-search"
             class="size-4 shrink-0"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
             aria-hidden="true"
           />
-          <span class="flex-1 truncate text-sm" :style="{ color: brand.colors.textMuted }">
+          <span class="flex-1 truncate text-sm" :style="{ color: 'var(--brand-text-muted)' }">
             Buscar ativos
           </span>
           <kbd
             class="font-mono-tab inline-flex shrink-0 items-center gap-1 rounded-md border px-2 py-0.5 text-[10px] tabular-nums"
             :style="{
-              borderColor: `color-mix(in srgb, ${brand.colors.border} 70%, transparent)`,
-              color: brand.colors.textMuted,
-              backgroundColor: brand.colors.background,
+              borderColor: `color-mix(in srgb, var(--brand-border) 70%, transparent)`,
+              color: 'var(--brand-text-muted)',
+              backgroundColor: 'var(--brand-background)',
             }"
             aria-hidden="true"
           >
@@ -97,23 +110,23 @@
     <!-- ========== HERO: SHOWTIME (Me Poupe!, TV show / pop magazine) ========== -->
     <section
       v-if="brand.hero.variant === 'showtime'"
-      :style="{ backgroundColor: brand.colors.background, color: brand.colors.text }"
+      :style="{ backgroundColor: 'var(--brand-background)', color: 'var(--brand-text)' }"
       class="relative overflow-hidden"
     >
       <!-- Decorative background: yellow blob + dots -->
       <div class="pointer-events-none absolute inset-0">
         <div
           class="absolute -left-40 top-20 h-[520px] w-[520px] rounded-full blur-3xl opacity-25"
-          :style="{ backgroundColor: brand.colors.primary }"
+          :style="{ backgroundColor: 'var(--brand-primary)' }"
         />
         <div
           class="absolute right-0 top-40 h-[420px] w-[420px] rounded-full blur-3xl opacity-20"
-          :style="{ backgroundColor: brand.colors.neutral }"
+          :style="{ backgroundColor: 'var(--brand-neutral)' }"
         />
         <div
           class="absolute inset-0 opacity-[0.08]"
           :style="{
-            backgroundImage: `radial-gradient(${brand.colors.text} 1px, transparent 1px)`,
+            backgroundImage: `radial-gradient(var(--brand-text) 1px, transparent 1px)`,
             backgroundSize: '24px 24px',
           }"
         />
@@ -126,7 +139,7 @@
         </span>
         <span
           class="font-showtime-label hidden sm:inline-block"
-          :style="{ color: `${brand.colors.text}99` }"
+          :style="{ color: `var(--brand-text)99` }"
         >
           {{ showtimeDate }}
         </span>
@@ -139,13 +152,13 @@
           <h1
             class="font-showtime-display chunky-shadow"
             :style="{
-              color: brand.colors.text,
+              color: 'var(--brand-text)',
               fontSize: 'clamp(3rem, 7vw, 6rem)',
             }"
           >
             <template v-for="(line, idx) in brand.hero.title.split('\n')" :key="idx">
               <br v-if="idx > 0" />
-              <span v-if="idx === brand.hero.title.split('\n').length - 1" :style="{ color: brand.colors.primary }">{{ line }}</span>
+              <span v-if="idx === brand.hero.title.split('\n').length - 1" :style="{ color: 'var(--brand-primary)' }">{{ line }}</span>
               <span v-else>{{ line }}</span>
             </template>
           </h1>
@@ -3672,6 +3685,36 @@
 <script setup lang="ts">
 import type { IAsset } from '~/types/asset'
 import { useFormat } from '~/composables/useFormat'
+
+// Props alimentadas pela pagina pai (pages/index.vue) para passar ao
+// hero variant 'quiet' o estado real do mercado, evitando que o
+// componente faca seu proprio fetch e duplique requests.
+type IbovPoint = { date: string; value: number; timestamp: number }
+const props = withDefaults(
+  defineProps<{
+    ibovSeries?: IbovPoint[]
+    ibovLastPrice?: number
+    ibovIndicator?: string
+    ibovVariationColor?: string
+    ifixLastPrice?: number
+    ifixIndicator?: string
+  }>(),
+  {
+    ibovSeries: () => [] as IbovPoint[],
+    ibovLastPrice: 0,
+    ibovIndicator: '+0,00%',
+    ibovVariationColor: undefined,
+    ifixLastPrice: 0,
+    ifixIndicator: '+0,00%',
+  },
+)
+
+const ibovSeries = computed(() => props.ibovSeries)
+const ibovLastPrice = computed(() => props.ibovLastPrice)
+const ibovIndicator = computed(() => props.ibovIndicator)
+const ibovVariationColor = computed(() => props.ibovVariationColor)
+const ifixLastPrice = computed(() => props.ifixLastPrice)
+const ifixIndicator = computed(() => props.ifixIndicator)
 
 const brand = useBrand()
 const failedLogos = useFailedLogos()

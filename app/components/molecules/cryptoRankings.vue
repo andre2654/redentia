@@ -6,33 +6,35 @@
   pelos rankings de ações (acima) e Tesouro Direto (abaixo).
 -->
 <template>
-  <section v-if="items.length" class="pt-2">
-    <header class="mb-6 flex flex-col gap-1 px-4 md:px-0">
-      <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
-        Criptomoedas
+  <section v-if="items.length" class="pt-10 md:pt-16">
+    <header class="mb-8 flex flex-col gap-2 px-4 md:px-0">
+      <span class="eyebrow">Criptomoedas</span>
+      <h2 class="font-light leading-tight text-[28px] md:text-[36px]" style="color: var(--text-heading); letter-spacing: -0.025em;">
+        Top 7 por market cap
       </h2>
-      <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
-        &gt; TOP 7 POR MARKET CAP · COTAÇÕES EM BRL
+      <p class="text-[14px] leading-relaxed" style="color: var(--text-body);">
+        Cotações em real, atualizadas a cada minuto.
       </p>
     </header>
 
-    <!-- Bento: hero (BTC) + 6 tiles laterais -->
+    <!-- Bento quiet: hero (BTC) + 6 tiles laterais. Container rounded-lg
+         com border-subtle. Tiles separados por divisor sutil. -->
     <div
       v-if="hero"
-      class="bento-grid mx-2 gap-px md:mx-0"
-      :style="{ backgroundColor: brand.colors.border }"
+      class="bento-grid mx-2 overflow-hidden rounded-lg border md:mx-0"
+      style="border-color: var(--border-subtle); background-color: var(--border-subtle); gap: 1px;"
     >
-      <!-- Hero card: spans 2x2 in md+ -->
+      <!-- Hero card: spans 2x2 em md+. Sem ambient overlay agressivo. -->
       <NuxtLink
         :to="`/crypto/${hero.id}`"
         class="bento-hero relative flex flex-col justify-between overflow-hidden p-6 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset md:p-8"
-        :style="{ backgroundColor: brand.colors.surface }"
+        style="background-color: var(--bg-elevated);"
         :aria-label="`Ver ${hero.name}`"
       >
-        <!-- Ambient radial in accent color -->
+        <!-- Ambient radial discreto no accent (positive/negative/primary) -->
         <div
-          class="pointer-events-none absolute inset-0 opacity-60"
-          :style="{ background: `radial-gradient(ellipse at top right, ${heroAccent}22, transparent 60%)` }"
+          class="pointer-events-none absolute inset-0"
+          :style="{ background: `radial-gradient(ellipse at top right, ${heroAccent}14, transparent 65%)` }"
           aria-hidden="true"
         />
 
@@ -46,51 +48,51 @@
               height="48"
               loading="lazy"
               decoding="async"
-              class="size-12 shrink-0 rounded-xl"
+              class="size-12 shrink-0 rounded-lg"
             />
-            <div class="flex flex-col">
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }" translate="no">
-                Destaque
-              </span>
-              <span class="text-lg font-semibold" :style="{ color: brand.colors.text }">
+            <div class="flex flex-col gap-1">
+              <span class="eyebrow" translate="no">Destaque</span>
+              <span class="text-[18px] font-medium leading-tight" style="color: var(--text-heading);">
                 {{ hero.name }}
               </span>
             </div>
           </div>
 
-          <!-- Rank badge -->
+          <!-- Rank: caption sutil, sem mono uppercase wide -->
           <span
-            class="font-mono-tab text-[10px] uppercase tracking-[0.15em]"
-            :style="{ color: brand.colors.textMuted }"
+            class="text-[12px] tabular-nums"
+            style="color: var(--text-muted);"
             translate="no"
           >
-            #{{ hero.rank ?? '—' }} MCAP
+            #{{ hero.rank ?? '—' }} mcap
           </span>
         </div>
 
         <div class="relative mt-6 flex items-end justify-between gap-4">
-          <div class="flex flex-col gap-1">
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }" translate="no">
-              PREÇO BRL
+          <div class="flex flex-col gap-1.5">
+            <span class="text-[11px] font-medium uppercase tracking-[0.12em]" style="color: var(--text-muted);" translate="no">
+              Preço BRL
             </span>
             <span
-              class="font-mono-tab text-3xl font-bold tabular-nums leading-none sm:text-4xl md:text-5xl"
-              :style="{ color: brand.colors.text }"
+              class="font-light leading-none tabular-nums text-[32px] sm:text-[40px] md:text-[48px]"
+              style="color: var(--text-heading); letter-spacing: -0.025em;"
               translate="no"
             >
               {{ fmt.brl(hero.price_brl) }}
             </span>
           </div>
 
+          <!-- Variacao: badge quiet (radius 4px, weight 500, sem pill full) -->
           <span
-            class="inline-flex shrink-0 items-center gap-1 rounded-full px-3 py-1.5 font-mono-tab text-xs font-semibold tabular-nums md:text-sm"
+            class="inline-flex shrink-0 items-center gap-1 rounded-[4px] border px-2 py-1 text-[12px] font-medium tabular-nums"
             :style="{
-              backgroundColor: `${heroAccent}1F`,
+              backgroundColor: `color-mix(in srgb, ${heroAccent} 14%, transparent)`,
+              borderColor: `color-mix(in srgb, ${heroAccent} 30%, transparent)`,
               color: heroAccent,
             }"
             translate="no"
           >
-            <span aria-hidden="true">{{ (hero.change_24h_pct ?? 0) >= 0 ? '▲' : '▼' }}</span>
+            <span aria-hidden="true">{{ (hero.change_24h_pct ?? 0) >= 0 ? '+' : '−' }}</span>
             {{ Math.abs(hero.change_24h_pct ?? 0).toFixed(2) }}%
           </span>
         </div>
@@ -125,38 +127,38 @@
             />
           </svg>
           <div v-else class="flex h-full items-center justify-center">
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">
-              carregando 30d…
+            <span class="text-[12px]" style="color: var(--text-muted);">
+              Carregando 30d…
             </span>
           </div>
         </div>
 
-        <!-- Footer stats -->
+        <!-- Footer stats: caption normal sem mono uppercase, divisor subtle -->
         <div
-          class="relative mt-4 flex flex-wrap items-center gap-4 border-t pt-3 font-mono-tab text-[10px] uppercase tracking-[0.12em]"
-          :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted }"
+          class="relative mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 border-t pt-3 text-[12px]"
+          style="border-color: var(--border-subtle); color: var(--text-muted);"
         >
           <span translate="no">
-            MCAP <span :style="{ color: brand.colors.text }">{{ compactBRL(hero.market_cap_brl) }}</span>
+            Mcap <span class="tabular-nums" style="color: var(--text-heading);">{{ compactBRL(hero.market_cap_brl) }}</span>
           </span>
           <span aria-hidden="true">·</span>
           <span translate="no">
-            VOL24H <span :style="{ color: brand.colors.text }">{{ compactBRL(hero.volume_24h_brl) }}</span>
+            Vol 24h <span class="tabular-nums" style="color: var(--text-heading);">{{ compactBRL(hero.volume_24h_brl) }}</span>
           </span>
           <span v-if="hero.market_cap_dominance_pct != null" aria-hidden="true">·</span>
           <span v-if="hero.market_cap_dominance_pct != null" translate="no">
-            DOM <span :style="{ color: brand.colors.text }">{{ hero.market_cap_dominance_pct.toFixed(1) }}%</span>
+            Dom <span class="tabular-nums" style="color: var(--text-heading);">{{ hero.market_cap_dominance_pct.toFixed(1) }}%</span>
           </span>
         </div>
       </NuxtLink>
 
-      <!-- Tiles: next 6 by market cap -->
+      <!-- Tiles: next 6 by market cap. Layout simples weight 500. -->
       <NuxtLink
         v-for="tile in tiles"
         :key="`tile-${tile.id}`"
         :to="`/crypto/${tile.id}`"
         class="bento-tile flex flex-col justify-between gap-2 p-4 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset"
-        :style="{ backgroundColor: brand.colors.surface }"
+        style="background-color: var(--bg-elevated);"
         :aria-label="`Ver ${tile.name}`"
       >
         <div class="flex items-center justify-between gap-2">
@@ -171,21 +173,21 @@
               decoding="async"
               class="size-6 shrink-0 rounded-md"
             />
-            <span class="font-mono-tab text-xs font-semibold tracking-wide" :style="{ color: brand.colors.text }" translate="no">
+            <span class="text-[13px] font-medium tracking-tight" style="color: var(--text-heading);" translate="no">
               {{ tile.symbol.toUpperCase() }}
             </span>
           </div>
-          <span class="font-mono-tab text-[9px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }" translate="no">
+          <span class="text-[11px] tabular-nums" style="color: var(--text-muted);" translate="no">
             #{{ tile.rank ?? '—' }}
           </span>
         </div>
 
         <div class="flex items-baseline justify-between gap-2">
-          <span class="font-mono-tab text-sm font-semibold tabular-nums" :style="{ color: brand.colors.text }" translate="no">
+          <span class="text-[14px] font-light tabular-nums" style="color: var(--text-heading); letter-spacing: -0.01em;" translate="no">
             {{ fmt.brl(tile.price_brl) }}
           </span>
           <span
-            class="font-mono-tab text-[11px] font-semibold tabular-nums"
+            class="text-[12px] font-medium tabular-nums"
             :style="{ color: changeColor(tile.change_24h_pct) }"
             translate="no"
           >

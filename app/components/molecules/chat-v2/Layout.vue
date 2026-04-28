@@ -14,7 +14,7 @@
   <div
     class="chat-shell fixed inset-0 z-30 flex"
     :class="tier === 'max' ? 'is-max' : 'is-basic'"
-    :style="{ backgroundColor: brand.colors.background, color: brand.colors.text }"
+    :style="{ backgroundColor: 'var(--brand-background)', color: 'var(--brand-text)' }"
   >
     <!-- Ambient gradient — single subtle radial, tier-agnostic.
          Decorative only; pointer-events-none so nothing blocks the
@@ -22,7 +22,7 @@
     <div
       class="pointer-events-none absolute inset-0"
       :style="{
-        backgroundImage: `radial-gradient(ellipse 80% 50% at 50% 0%, ${brand.colors.primary}10 0%, transparent 60%)`,
+        backgroundImage: `radial-gradient(ellipse 80% 50% at 50% 0%, var(--brand-primary)10 0%, transparent 60%)`,
       }"
       aria-hidden="true"
     />
@@ -33,7 +33,7 @@
       v-if="tier === 'max'"
       class="pointer-events-none absolute inset-x-0 top-0 h-px"
       :style="{
-        backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 70%, transparent)`,
+        backgroundColor: `color-mix(in srgb, var(--brand-primary) 70%, transparent)`,
       }"
       aria-hidden="true"
     />
@@ -42,7 +42,7 @@
     <aside
       class="hidden h-full w-[260px] shrink-0 flex-col xl:flex"
       :style="{
-        backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 25%, ${brand.colors.background})`,
+        backgroundColor: `color-mix(in srgb, var(--brand-surface) 25%, var(--brand-background))`,
       }"
     >
       <slot name="sidebar" />
@@ -66,7 +66,7 @@
         />
         <aside
           class="fixed left-0 top-0 z-50 flex h-full w-[88vw] max-w-[340px] flex-col"
-          :style="{ backgroundColor: brand.colors.surface }"
+          :style="{ backgroundColor: 'var(--brand-surface)' }"
           @click.stop
         >
           <slot name="sidebar" />
@@ -85,7 +85,7 @@
         v-if="artifactOpen"
         class="hidden h-full w-[440px] shrink-0 flex-col xl:flex"
         :style="{
-          backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 30%, ${brand.colors.background})`,
+          backgroundColor: `color-mix(in srgb, var(--brand-surface) 30%, var(--brand-background))`,
         }"
       >
         <slot name="artifact" />
@@ -107,13 +107,13 @@
         />
         <aside
           class="fixed bottom-0 left-0 right-0 z-50 flex h-[90vh] flex-col rounded-t-[28px]"
-          :style="{ backgroundColor: brand.colors.surface }"
+          :style="{ backgroundColor: 'var(--brand-surface)' }"
           @click.stop
         >
           <div class="flex justify-center pb-1 pt-3">
             <span
               class="inline-block h-1 w-12 rounded-full"
-              :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.text} 18%, transparent)` }"
+              :style="{ backgroundColor: `color-mix(in srgb, var(--brand-text) 18%, transparent)` }"
             />
           </div>
           <slot name="artifact" />

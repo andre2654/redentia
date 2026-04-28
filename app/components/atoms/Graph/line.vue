@@ -47,24 +47,25 @@
         :plugins="localPlugins"
       />
 
-      <!-- Prev-close pill: replaces canvas fillText for crisp typography
-           at any DPR and allows brand fonts. Hidden while hovering so the
-           hover tooltip takes focus. -->
+      <!-- Prev-close pill minimalista: pill compacto inline, sem glow,
+           apenas border subtle e bg semi-transparente. Eyebrow muted +
+           valor tabular na mesma linha, separados por middle dot. -->
       <div
         v-if="prevClosePillPos && prevClosePillPos.visible"
-        class="pointer-events-none absolute z-[4] inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono-tab text-[10px] tabular-nums backdrop-blur"
+        class="pointer-events-none absolute z-[4] inline-flex items-center gap-2 whitespace-nowrap rounded-md border px-2.5 py-1"
         :style="{
           left: `${prevClosePillPos.right - 12}px`,
           top: `${prevClosePillPos.y}px`,
           transform: 'translate(-100%, -50%)',
-          borderColor: cc.border,
-          backgroundColor: cc.loadingBg,
-          color: cc.textMuted,
+          borderColor: 'var(--border-subtle)',
+          backgroundColor: 'color-mix(in srgb, var(--bg-elevated) 96%, transparent)',
         }"
         aria-hidden="true"
       >
-        <span>Fech. anterior</span>
-        <span :style="{ color: cc.labelColor }" translate="no">
+        <span class="text-[10px] font-medium uppercase tracking-[0.1em]" :style="{ color: 'var(--text-muted)' }">
+          Fech. anterior
+        </span>
+        <span class="font-mono-tab text-[11px] font-medium tabular-nums" :style="{ color: 'var(--text-heading)' }" translate="no">
           {{ currency }} {{ Number(prevClosePillPos.value).toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
         </span>
       </div>
@@ -1672,10 +1673,16 @@ function getSegmentOrientation(index: number): 'above' | 'below' | 'mixed' {
   return orientations[segmentIndex] ?? 'mixed'
 }
 
+// Tons pastel para casar com o hero live preview card. Substituem o cc.positive
+// (verde forte) e cc.negative (vermelho forte) somente no traço da linha — area
+// fill ja foi pastelizada acima nos gradients.
+const PASTEL_POSITIVE = '#4ADE80'
+const PASTEL_NEGATIVE = '#F87171'
+
 function dynamicLineColor(index: number, fallback = true): string {
   const orientation = getSegmentOrientation(index)
-  if (orientation === 'above') return DEFAULTS.POSITIVE_COLOR
-  if (orientation === 'below') return DEFAULTS.NEGATIVE_COLOR
+  if (orientation === 'above') return PASTEL_POSITIVE
+  if (orientation === 'below') return PASTEL_NEGATIVE
   return fallback ? dynamicColor.value : 'rgba(148, 163, 184, 0.6)'
 }
 
@@ -1847,26 +1854,30 @@ const closingDeltaFillPlugin: Plugin<'line'> = {
         Math.max(0, (closingY - chartTop) / chartHeight)
       )
 
+      // Gradient flip + pastelizado para casar com o hero live preview card.
+      // Positivo: solido na curva (topo) -> transparente na linha de fechamento (fade pra baixo).
+      // Negativo: solido na linha de fechamento (topo da regiao negativa) -> transparente embaixo.
+      // Alphas reduzidas (0.32 -> 0.18 max) para ficar pastel/peach como o hero.
       const positiveGradient = ctx.createLinearGradient(
         0,
         chartTop,
         0,
         chartBottom
       )
-      positiveGradient.addColorStop(0, 'rgba(34, 197, 94, 0)')
+      positiveGradient.addColorStop(0, 'rgba(134, 239, 172, 0.22)')
       positiveGradient.addColorStop(
         Math.max(0, closingRatio - 0.25),
-        'rgba(34, 197, 94, 0.06)'
+        'rgba(134, 239, 172, 0.14)'
       )
       positiveGradient.addColorStop(
-        Math.max(0, closingRatio - 0.1),
-        'rgba(34, 197, 94, 0.18)'
+        Math.max(0, closingRatio - 0.05),
+        'rgba(134, 239, 172, 0.04)'
       )
       positiveGradient.addColorStop(
         Math.max(0, closingRatio),
-        'rgba(34, 197, 94, 0.32)'
+        'rgba(134, 239, 172, 0)'
       )
-      positiveGradient.addColorStop(1, 'rgba(34, 197, 94, 0)')
+      positiveGradient.addColorStop(1, 'rgba(134, 239, 172, 0)')
 
       const negativeGradient = ctx.createLinearGradient(
         0,
@@ -1874,20 +1885,24 @@ const closingDeltaFillPlugin: Plugin<'line'> = {
         0,
         chartBottom
       )
-      negativeGradient.addColorStop(0, 'rgba(239, 68, 68, 0.32)')
+      negativeGradient.addColorStop(0, 'rgba(252, 165, 165, 0)')
+      negativeGradient.addColorStop(
+        Math.max(0, closingRatio - 0.05),
+        'rgba(252, 165, 165, 0)'
+      )
       negativeGradient.addColorStop(
         Math.min(1, closingRatio),
-        'rgba(239, 68, 68, 0.32)'
+        'rgba(252, 165, 165, 0.18)'
       )
       negativeGradient.addColorStop(
-        Math.min(1, closingRatio + 0.12),
-        'rgba(239, 68, 68, 0.18)'
+        Math.min(1, closingRatio + 0.2),
+        'rgba(252, 165, 165, 0.10)'
       )
       negativeGradient.addColorStop(
-        Math.min(1, closingRatio + 0.3),
-        'rgba(239, 68, 68, 0.06)'
+        Math.min(1, closingRatio + 0.45),
+        'rgba(252, 165, 165, 0.04)'
       )
-      negativeGradient.addColorStop(1, 'rgba(239, 68, 68, 0)')
+      negativeGradient.addColorStop(1, 'rgba(252, 165, 165, 0)')
 
       const gradients: IClosingFillGradients = {
         positive: positiveGradient,
@@ -2168,7 +2183,7 @@ const chartData = computed(() => {
           borderColor: (ctx: any) => dynamicLineColor(ctx.p1DataIndex, true),
         },
         backgroundColor: () => 'rgba(34, 197, 94, 0.06)',
-        borderWidth: 1.25,
+        borderWidth: 2.5,
         fill: false,
         clip: false,
         borderColor: (ctx: any) =>
@@ -2213,8 +2228,9 @@ const chartOptions = computed(() => {
         offset: false,
         bounds: 'data',
         display: false,
+        border: { display: false },
         grid: {
-          display: true,
+          display: false,
           color: cc.gridColor,
           drawBorder: false,
           drawTicks: false,
@@ -2236,8 +2252,9 @@ const chartOptions = computed(() => {
       y: {
         display: true,
         reverse: false,
+        border: { display: false },
         grid: {
-          display: true,
+          display: false,
           color: cc.tickColorMuted,
           drawBorder: false,
           drawTicks: false,

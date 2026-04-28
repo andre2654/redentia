@@ -3,17 +3,17 @@
     <!-- Header com controles -->
     <div v-if="showControls" class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div class="flex items-center gap-3">
-        <div class="flex h-9 w-9 items-center justify-center rounded-lg" :style="{ backgroundColor: brand.colors.surface }">
-          <UIcon name="i-lucide-bar-chart-2" class="h-5 w-5" :style="{ color: brand.colors.textMuted }" />
+        <div class="flex h-9 w-9 items-center justify-center rounded-lg" :style="{ backgroundColor: 'var(--brand-surface)' }">
+          <UIcon name="i-lucide-bar-chart-2" class="h-5 w-5" :style="{ color: 'var(--brand-text-muted)' }" />
         </div>
         <div>
-          <h2 class="text-lg font-semibold" :style="{ color: brand.colors.text }">Histórico de Dividendos</h2>
-          <p class="text-xs" :style="{ color: brand.colors.textMuted }">Pagamentos e dividend yield</p>
+          <h2 class="text-lg font-semibold" :style="{ color: 'var(--brand-text)' }">Histórico de Dividendos</h2>
+          <p class="text-xs" :style="{ color: 'var(--brand-text-muted)' }">Pagamentos e dividend yield</p>
         </div>
       </div>
 
       <!-- Period selector -->
-      <div class="flex items-center gap-1 rounded-lg border p-1" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+      <div class="flex items-center gap-1 rounded-lg border p-1" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
         <button
           v-for="period in [
             { key: 'year', label: '1A' },
@@ -24,8 +24,8 @@
           :key="period.key"
           class="rounded-md px-3 py-1.5 text-xs font-medium transition-[transform,opacity,box-shadow,background-color,border-color,filter]"
           :style="selectedTimeRange === period.key
-            ? { backgroundColor: brand.colors.surfaceHover, color: brand.colors.text }
-            : { color: brand.colors.textMuted }"
+            ? { backgroundColor: 'var(--brand-surface-hover)', color: 'var(--brand-text)' }
+            : { color: 'var(--brand-text-muted)' }"
           @click="selectedTimeRange = period.key as any"
         >
           {{ period.label }}
@@ -34,7 +34,7 @@
     </div>
 
     <!-- Chart container -->
-    <div class="overflow-hidden rounded-xl border" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+    <div class="overflow-hidden rounded-xl border" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
       <!-- Chart area -->
       <div class="relative p-4" @mouseleave="hoveredIndex = null">
         <div class="relative h-[300px] w-full">
@@ -44,8 +44,8 @@
             class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 rounded-lg"
             :style="{ backgroundColor: cc.loadingBg }"
           >
-            <UIcon name="i-lucide-loader-2" class="h-6 w-6 motion-safe:animate-spin" :style="{ color: brand.colors.textMuted }" />
-            <span class="text-sm" :style="{ color: brand.colors.textMuted }">Carregando...</span>
+            <UIcon name="i-lucide-loader-2" class="h-6 w-6 motion-safe:animate-spin" :style="{ color: 'var(--brand-text-muted)' }" />
+            <span class="text-sm" :style="{ color: 'var(--brand-text-muted)' }">Carregando...</span>
           </div>
 
           <Bar
@@ -61,15 +61,15 @@
           v-if="hoveredIndex !== null && tooltipData"
           class="pointer-events-none fixed z-50 rounded-xl border p-3 shadow-xl backdrop-blur-sm"
           :style="{
-            borderColor: brand.colors.border,
+            borderColor: 'var(--brand-border)',
             backgroundColor: cc.tooltipBg,
             left: `${tooltipPosition.x + 12}px`,
             top: `${tooltipPosition.y - 80}px`,
           }"
         >
           <div class="flex flex-col gap-2">
-            <div class="flex items-center gap-2 border-b pb-2" :style="{ borderColor: brand.colors.border }">
-              <span class="text-xs font-medium" :style="{ color: brand.colors.text }">
+            <div class="flex items-center gap-2 border-b pb-2" :style="{ borderColor: 'var(--brand-border)' }">
+              <span class="text-xs font-medium" :style="{ color: 'var(--brand-text)' }">
                 {{ tooltipData.label }}
               </span>
               <span
@@ -82,7 +82,7 @@
             <div class="flex items-center justify-between gap-4">
               <div class="flex items-center gap-1.5">
                 <div class="h-2 w-2 rounded-full bg-emerald-400" />
-                <span class="text-[10px]" :style="{ color: brand.colors.textMuted }">Dividendo</span>
+                <span class="text-[10px]" :style="{ color: 'var(--brand-text-muted)' }">Dividendo</span>
               </div>
               <span class="text-sm font-semibold text-emerald-400">
                 R$ {{ tooltipData.value.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) }}
@@ -91,7 +91,7 @@
             <div class="flex items-center justify-between gap-4">
               <div class="flex items-center gap-1.5">
                 <div class="h-2 w-2 rounded-full bg-blue-400" />
-                <span class="text-[10px]" :style="{ color: brand.colors.textMuted }">Yield</span>
+                <span class="text-[10px]" :style="{ color: 'var(--brand-text-muted)' }">Yield</span>
               </div>
               <span class="text-sm font-semibold text-blue-400">
                 {{ tooltipData.dividendYield.toFixed(2) }}%
@@ -102,12 +102,12 @@
       </div>
 
       <!-- Footer with toggle and legend -->
-      <div v-if="showControls" class="flex items-center justify-between border-t px-4 py-3" :style="{ borderColor: brand.colors.border }">
+      <div v-if="showControls" class="flex items-center justify-between border-t px-4 py-3" :style="{ borderColor: 'var(--brand-border)' }">
         <!-- Toggle -->
         <button
           type="button"
           class="flex items-center gap-2 text-xs transition-colors"
-          :style="{ color: groupByYear ? brand.colors.text : brand.colors.textMuted }"
+          :style="{ color: groupByYear ? brand.colors.text : 'var(--brand-text-muted)' }"
           @click="groupByYear = !groupByYear"
         >
           <div
@@ -126,11 +126,11 @@
         <div class="flex items-center gap-4">
           <div class="flex items-center gap-1.5">
             <div class="h-2 w-2 rounded-full bg-emerald-400" />
-            <span class="text-[10px]" :style="{ color: brand.colors.textMuted }">Dividendos</span>
+            <span class="text-[10px]" :style="{ color: 'var(--brand-text-muted)' }">Dividendos</span>
           </div>
           <div class="flex items-center gap-1.5">
             <div class="h-2 w-2 rounded-full bg-blue-400" />
-            <span class="text-[10px]" :style="{ color: brand.colors.textMuted }">Yield</span>
+            <span class="text-[10px]" :style="{ color: 'var(--brand-text-muted)' }">Yield</span>
           </div>
         </div>
       </div>
@@ -138,35 +138,35 @@
 
     <!-- Stats cards -->
     <div v-if="showControls" class="grid gap-3 sm:grid-cols-3">
-      <div class="flex items-center gap-4 rounded-xl border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
-        <div class="flex h-10 w-10 items-center justify-center rounded-lg" :style="{ backgroundColor: brand.colors.surfaceHover }">
-          <UIcon name="i-lucide-coins" class="h-5 w-5" :style="{ color: brand.colors.textMuted }" />
+      <div class="flex items-center gap-4 rounded-xl border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg" :style="{ backgroundColor: 'var(--brand-surface-hover)' }">
+          <UIcon name="i-lucide-coins" class="h-5 w-5" :style="{ color: 'var(--brand-text-muted)' }" />
         </div>
         <div class="flex flex-col">
-          <span class="text-xs" :style="{ color: brand.colors.textMuted }">Total no período</span>
-          <span class="text-lg font-semibold tabular-nums" :style="{ color: brand.colors.text }">
+          <span class="text-xs" :style="{ color: 'var(--brand-text-muted)' }">Total no período</span>
+          <span class="text-lg font-semibold tabular-nums" :style="{ color: 'var(--brand-text)' }">
             R$ {{ totalDividends.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
           </span>
         </div>
       </div>
-      <div class="flex items-center gap-4 rounded-xl border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
-        <div class="flex h-10 w-10 items-center justify-center rounded-lg" :style="{ backgroundColor: brand.colors.surfaceHover }">
-          <UIcon name="i-lucide-trophy" class="h-5 w-5" :style="{ color: brand.colors.textMuted }" />
+      <div class="flex items-center gap-4 rounded-xl border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg" :style="{ backgroundColor: 'var(--brand-surface-hover)' }">
+          <UIcon name="i-lucide-trophy" class="h-5 w-5" :style="{ color: 'var(--brand-text-muted)' }" />
         </div>
         <div class="flex flex-col">
-          <span class="text-xs" :style="{ color: brand.colors.textMuted }">Maior pagamento</span>
-          <span class="text-lg font-semibold tabular-nums" :style="{ color: brand.colors.text }">
+          <span class="text-xs" :style="{ color: 'var(--brand-text-muted)' }">Maior pagamento</span>
+          <span class="text-lg font-semibold tabular-nums" :style="{ color: 'var(--brand-text)' }">
             R$ {{ maxDividend.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
           </span>
         </div>
       </div>
-      <div class="flex items-center gap-4 rounded-xl border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
-        <div class="flex h-10 w-10 items-center justify-center rounded-lg" :style="{ backgroundColor: brand.colors.surfaceHover }">
-          <UIcon name="i-lucide-calculator" class="h-5 w-5" :style="{ color: brand.colors.textMuted }" />
+      <div class="flex items-center gap-4 rounded-xl border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
+        <div class="flex h-10 w-10 items-center justify-center rounded-lg" :style="{ backgroundColor: 'var(--brand-surface-hover)' }">
+          <UIcon name="i-lucide-calculator" class="h-5 w-5" :style="{ color: 'var(--brand-text-muted)' }" />
         </div>
         <div class="flex flex-col">
-          <span class="text-xs" :style="{ color: brand.colors.textMuted }">Média por pagamento</span>
-          <span class="text-lg font-semibold tabular-nums" :style="{ color: brand.colors.text }">
+          <span class="text-xs" :style="{ color: 'var(--brand-text-muted)' }">Média por pagamento</span>
+          <span class="text-lg font-semibold tabular-nums" :style="{ color: 'var(--brand-text)' }">
             R$ {{ averageDividend.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
           </span>
         </div>

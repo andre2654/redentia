@@ -1,59 +1,58 @@
 <template>
   <div class="relative flex min-w-0 items-center gap-3 overflow-hidden">
-    <!-- Fade gradient left -->
-    <div class="pointer-events-none absolute left-0 top-0 z-10 h-full w-16" :style="{ background: `linear-gradient(to right, ${fadeBg}, transparent)` }" />
-    <!-- Fade gradient right -->
-    <div class="pointer-events-none absolute right-0 top-0 z-10 h-full w-16" :style="{ background: `linear-gradient(to left, ${fadeBg}, transparent)` }" />
     <div
       id="carousel-tickercarousel"
       class="relative min-w-0 flex-1 overflow-hidden"
     >
       <div
         ref="carousel"
-        class="flex max-w-full items-center whitespace-nowrap will-change-transform"
+        class="flex max-w-full items-stretch whitespace-nowrap will-change-transform"
         :style="{ transform: `translateX(${position}px)` }"
       >
         <NuxtLink
           v-for="(item, index) in repeatedItems"
           :key="index"
           :to="`/asset/${item?.ticker?.toLowerCase?.() || item?.ticker || ''}`"
-          :class="['flex items-center gap-2', big ? 'px-8 py-3' : 'px-6 py-2']"
+          :class="['relative flex items-center gap-3 border-l first:border-l-0', big ? 'px-8 py-3' : 'px-6 py-2']"
+          :style="{ borderColor: 'var(--border-subtle)' }"
         >
+          <!-- Logo grande, ocupa as duas linhas a esquerda -->
           <img
             v-if="!isPlaceholderLogo(item.logo) && !failedLogos.isFailed(item.logo)"
             :src="item.logo"
             :alt="item?.ticker ? `Logo do ativo ${item.ticker}` : 'Logo do ativo'"
-            :class="[
-              'select-none rounded object-cover',
-              big ? 'h-10 w-10' : 'h-6 w-6',
-            ]"
+            :class="['shrink-0 select-none rounded object-cover', big ? 'h-10 w-10' : 'h-8 w-8']"
             @error="failedLogos.markFailed(item.logo)"
           />
           <div
             v-else
-            :class="[
-              'flex items-center justify-center rounded border font-mono-tab font-bold',
-              big ? 'h-10 w-10 text-[10px]' : 'h-6 w-6 text-[8px]',
-            ]"
-            :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted, backgroundColor: brand.colors.surface }"
+            :class="['flex shrink-0 items-center justify-center rounded border font-mono-tab font-bold', big ? 'h-10 w-10 text-[10px]' : 'h-8 w-8 text-[9px]']"
+            :style="{ borderColor: 'var(--border-subtle)', color: 'var(--text-muted)', backgroundColor: 'var(--bg-overlay)' }"
           >
             {{ (item?.ticker || '').slice(0, 2) }}
           </div>
-          <span
-            :class="[
-              'select-none font-medium',
-              big ? 'text-[20px]' : 'text-[14px]',
-            ]"
-            :style="{ color: brand.colors.text }"
-            >{{ item.ticker }}</span
-          >
-          <span
-            :class="[
-              'font-regular text-primary select-none',
-              big ? 'text-[16px]' : 'text-[12px]',
-            ]"
-            >{{ item.change }}</span
-          >
+
+          <!-- Coluna direita: ticker em cima, preco + variacao embaixo -->
+          <div class="flex flex-col justify-center gap-0.5">
+            <span
+              class="select-none font-medium leading-none"
+              :class="big ? 'text-[15px]' : 'text-[13px]'"
+              :style="{ color: 'var(--text-heading)' }"
+            >{{ item.ticker }}</span>
+            <div class="flex items-baseline gap-1.5 leading-none">
+              <span
+                v-if="item.price"
+                class="select-none tabular-nums leading-none"
+                :class="big ? 'text-[13px]' : 'text-[12px]'"
+                :style="{ color: 'var(--text-body)' }"
+              >{{ item.price }}</span>
+              <span
+                class="select-none tabular-nums font-medium leading-none"
+                :class="big ? 'text-[13px]' : 'text-[12px]'"
+                :style="{ color: changeColor(item.change) }"
+              >{{ item.change }}</span>
+            </div>
+          </div>
         </NuxtLink>
       </div>
     </div>
@@ -67,9 +66,9 @@
       <IconPlay
         v-if="isPaused"
         :class="[big ? 'h-6 w-6' : 'h-4 w-4']"
-        :style="{ fill: brand.colors.text }"
+        :style="{ fill: 'var(--brand-text)' }"
       />
-      <IconPause v-else :class="[big ? 'h-6 w-6' : 'h-4 w-4']" :style="{ fill: brand.colors.text }" />
+      <IconPause v-else :class="[big ? 'h-6 w-6' : 'h-4 w-4']" :style="{ fill: 'var(--brand-text)' }" />
     </button>
   </div>
 </template>
@@ -84,6 +83,7 @@ interface CarouselItem {
   logo: string
   ticker: string
   change: string
+  price?: string
 }
 
 const props = withDefaults(
@@ -103,6 +103,17 @@ const props = withDefaults(
 
 const fadeBg = computed(() => props.fadeColor || brand.colors.background)
 
+// Cor da change% baseada no sinal: negativo -> brand.negative, positivo -> brand.positive,
+// neutro/parse-fail -> muted.
+function changeColor(value: string): string {
+  const trimmed = (value || '').trim()
+  if (!trimmed) return brand.colors.textMuted
+  if (trimmed.startsWith('-')) return brand.colors.negative
+  const parsed = parseFloat(trimmed.replace('%', '').replace(',', '.'))
+  if (!Number.isFinite(parsed) || parsed === 0) return brand.colors.textMuted
+  return brand.colors.positive
+}
+
 const { getTopStocks } = useAssetsService()
 
 const fetchedItems = !props.items.length
@@ -116,10 +127,16 @@ const fetchedItems = !props.items.length
               ? asset.change
               : Number(asset.change_percent ?? asset.change ?? 0) || 0
 
+        const priceNum = Number(asset.market_price ?? asset.close ?? 0)
+        const price = Number.isFinite(priceNum) && priceNum > 0
+          ? `R$ ${priceNum.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+          : ''
+
         return {
           logo: asset.logo || '/default-logo.png',
           ticker: asset.ticker,
           change: `${variation.toFixed(2)}%`,
+          price,
         }
       })
     })

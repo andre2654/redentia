@@ -256,7 +256,7 @@ interface BrandConfig {
 
   // HERO (pagina inicial, visitante nao logado)
   hero: {
-    variant: 'centered' | 'split' | 'minimal' | 'institutional' | 'editorial' | 'terminal' | 'mentor' | 'research' | 'showtime' | 'playbook' | 'holder'  // layout do hero: centered (premium), split (founder), minimal (data-first), institutional (assessoria/escritorio), editorial (narrated private-bank letter, Norte Capital), terminal (Bloomberg-reimagined, Redentia), mentor (aspirational book-cover, Primo Rico), research (academic paper / AUVP study notebook, Investidor Sardinha), showtime (TV show / pop magazine, Me Poupe!), playbook (calm method + author photo + bold sticker accents, Saraiva Invest), holder (sentencious editorial portrait + giant chunky condensed wordmark + serif manifesto, Holder, the conviction-driven pseudonymous buy-and-hold archetype)
+    variant: 'centered' | 'split' | 'minimal' | 'institutional' | 'editorial' | 'terminal' | 'mentor' | 'research' | 'showtime' | 'playbook' | 'holder' | 'quiet'  // layout do hero: centered (premium), split (founder), minimal (data-first), institutional (assessoria/escritorio), editorial (narrated private-bank letter, Norte Capital), terminal (Bloomberg-reimagined, Redentia v2), mentor (aspirational book-cover, Primo Rico), research (academic paper / AUVP study notebook, Investidor Sardinha), showtime (TV show / pop magazine, Me Poupe!), playbook (calm method + author photo + bold sticker accents, Saraiva Invest), holder (sentencious editorial portrait + giant chunky condensed wordmark + serif manifesto, Holder, the conviction-driven pseudonymous buy-and-hold archetype), quiet (Redentia premium fintech editorial, lightness as luxury, weight 300 display, amber-tinted shadows, conservative radii, tabular numerals, white-OR-dark, sussurro)
     badge: string                // texto do badge animado no topo
     title: string                // headline principal (pode usar HTML)
     subtitle: string             // subtitulo
@@ -2493,13 +2493,13 @@ const redentia: BrandConfig = {
   },
 
   hero: {
-    // 'terminal' is Redentia's dedicated variant, Bloomberg-reimagined
-    // aesthetic with live ticker, mono labels, serif display, etc. Other
-    // tenants that used 'centered' (e.g. Primo Rico) should continue
-    // rendering their own layouts without inheriting this one.
-    variant: 'terminal',
+    // 'quiet' is Redentia's current variant, premium fintech editorial,
+    // lightness como luxo (weight 300 display), sombras com tint amber,
+    // radii conservadores 4-8px, tabular numerals. Disjuncto do 'terminal'.
+    // Marker {em}...{/em} no title destaca trecho em amber italico.
+    variant: 'quiet',
     badge: '[MARKET.LIVE]',
-    title: 'Investir com\ninteligencia.',
+    title: 'Investir com {em}inteligencia{/em}.',
     subtitle: 'Mercado em tempo real, inteligência sob demanda. Cotações, análises fundamentalistas, calculadoras e assessoria com IA, um ecossistema de investimentos em um só lugar.',
     founderQuote: '',
     ctaLabel: 'Comecar agora',

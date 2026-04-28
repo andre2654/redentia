@@ -29,25 +29,25 @@
     <template #content>
       <div
         class="flex flex-col overflow-hidden"
-        :style="{ backgroundColor: brand.colors.background, color: brand.colors.text }"
+        :style="{ backgroundColor: 'var(--brand-background)', color: 'var(--brand-text)' }"
       >
         <!-- Success state -->
         <div v-if="state === 'success'" class="flex flex-col items-center gap-6 px-8 py-16 text-center">
           <div
             class="flex size-16 items-center justify-center rounded-full"
-            :style="{ backgroundColor: `${brand.colors.positive}20`, color: brand.colors.positive }"
+            :style="{ backgroundColor: `var(--brand-positive)20`, color: 'var(--brand-positive)' }"
           >
             <UIcon name="i-lucide-check" class="size-8" />
           </div>
           <div>
-            <h3 class="text-xl font-bold" :style="{ color: brand.colors.text }">Recebemos seu contato!</h3>
-            <p class="mt-2 text-sm" :style="{ color: brand.colors.textMuted }">
+            <h3 class="text-xl font-bold" :style="{ color: 'var(--brand-text)' }">Recebemos seu contato!</h3>
+            <p class="mt-2 text-sm" :style="{ color: 'var(--brand-text-muted)' }">
               Nosso time vai entrar em contato em até 24h.
             </p>
           </div>
           <button
             class="rounded-full px-6 py-2.5 text-sm font-medium transition hover:opacity-80"
-            :style="{ backgroundColor: brand.colors.surface, color: brand.colors.text, border: `1px solid ${brand.colors.border}` }"
+            :style="{ backgroundColor: 'var(--brand-surface)', color: 'var(--brand-text)', border: `1px solid var(--brand-border)` }"
             @click="isOpen = false"
           >
             Fechar
@@ -57,19 +57,19 @@
         <!-- Form state -->
         <template v-else>
           <!-- Header -->
-          <div class="border-b px-6 py-5" :style="{ borderColor: brand.colors.border }">
+          <div class="border-b px-6 py-5" :style="{ borderColor: 'var(--brand-border)' }">
             <div class="flex items-center justify-between">
               <div>
-                <div class="text-[10px] font-bold uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
+                <div class="text-[10px] font-bold uppercase tracking-[0.2em]" :style="{ color: 'var(--brand-primary)' }">
                   {{ source === 'whitelabel' ? 'White-Label' : 'API' }}{{ plan ? ` · ${plan.toUpperCase()}` : '' }}
                 </div>
-                <h2 class="mt-1 text-lg font-bold" :style="{ color: brand.colors.text }">
+                <h2 class="mt-1 text-lg font-bold" :style="{ color: 'var(--brand-text)' }">
                   {{ title || (source === 'whitelabel' ? 'Fale com o time' : 'Solicitar acesso') }}
                 </h2>
               </div>
               <button
                 class="flex size-8 items-center justify-center rounded-full transition hover:opacity-70"
-                :style="{ backgroundColor: brand.colors.surface, color: brand.colors.textMuted }"
+                :style="{ backgroundColor: 'var(--brand-surface)', color: 'var(--brand-text-muted)' }"
                 @click="isOpen = false"
               >
                 <UIcon name="i-lucide-x" class="size-4" />
@@ -81,7 +81,7 @@
           <form class="flex flex-col gap-4 px-6 py-6" @submit.prevent="onSubmit">
             <!-- Name -->
             <div>
-              <label class="mb-1.5 block text-xs font-medium uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">
+              <label class="mb-1.5 block text-xs font-medium uppercase tracking-wider" :style="{ color: 'var(--brand-text-muted)' }">
                 Nome *
               </label>
               <input
@@ -91,17 +91,17 @@
                 placeholder="Seu nome completo"
                 class="w-full rounded-xl border px-4 py-3 text-sm outline-none transition focus:ring-2"
                 :style="{
-                  backgroundColor: brand.colors.inputBg,
-                  borderColor: brand.colors.inputBorder,
-                  color: brand.colors.text,
-                  '--tw-ring-color': brand.colors.primary,
+                  backgroundColor: 'var(--brand-input-bg)',
+                  borderColor: 'var(--brand-input-border)',
+                  color: 'var(--brand-text)',
+                  '--tw-ring-color': 'var(--brand-primary)',
                 }"
               />
             </div>
 
             <!-- Email -->
             <div>
-              <label class="mb-1.5 block text-xs font-medium uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">
+              <label class="mb-1.5 block text-xs font-medium uppercase tracking-wider" :style="{ color: 'var(--brand-text-muted)' }">
                 E-mail *
               </label>
               <input
@@ -111,10 +111,10 @@
                 placeholder="voce@empresa.com"
                 class="w-full rounded-xl border px-4 py-3 text-sm outline-none transition focus:ring-2"
                 :style="{
-                  backgroundColor: brand.colors.inputBg,
-                  borderColor: brand.colors.inputBorder,
-                  color: brand.colors.text,
-                  '--tw-ring-color': brand.colors.primary,
+                  backgroundColor: 'var(--brand-input-bg)',
+                  borderColor: 'var(--brand-input-border)',
+                  color: 'var(--brand-text)',
+                  '--tw-ring-color': 'var(--brand-primary)',
                 }"
               />
             </div>
@@ -122,7 +122,7 @@
             <!-- Company + Phone (side by side) -->
             <div class="grid grid-cols-2 gap-3">
               <div>
-                <label class="mb-1.5 block text-xs font-medium uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">
+                <label class="mb-1.5 block text-xs font-medium uppercase tracking-wider" :style="{ color: 'var(--brand-text-muted)' }">
                   Empresa
                 </label>
                 <input
@@ -131,15 +131,15 @@
                   placeholder="Nome da empresa"
                   class="w-full rounded-xl border px-4 py-3 text-sm outline-none transition focus:ring-2"
                   :style="{
-                    backgroundColor: brand.colors.inputBg,
-                    borderColor: brand.colors.inputBorder,
-                    color: brand.colors.text,
-                    '--tw-ring-color': brand.colors.primary,
+                    backgroundColor: 'var(--brand-input-bg)',
+                    borderColor: 'var(--brand-input-border)',
+                    color: 'var(--brand-text)',
+                    '--tw-ring-color': 'var(--brand-primary)',
                   }"
                 />
               </div>
               <div>
-                <label class="mb-1.5 block text-xs font-medium uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">
+                <label class="mb-1.5 block text-xs font-medium uppercase tracking-wider" :style="{ color: 'var(--brand-text-muted)' }">
                   Telefone
                 </label>
                 <input
@@ -148,10 +148,10 @@
                   placeholder="(11) 99999-9999"
                   class="w-full rounded-xl border px-4 py-3 text-sm outline-none transition focus:ring-2"
                   :style="{
-                    backgroundColor: brand.colors.inputBg,
-                    borderColor: brand.colors.inputBorder,
-                    color: brand.colors.text,
-                    '--tw-ring-color': brand.colors.primary,
+                    backgroundColor: 'var(--brand-input-bg)',
+                    borderColor: 'var(--brand-input-border)',
+                    color: 'var(--brand-text)',
+                    '--tw-ring-color': 'var(--brand-primary)',
                   }"
                 />
               </div>
@@ -159,7 +159,7 @@
 
             <!-- Message -->
             <div>
-              <label class="mb-1.5 block text-xs font-medium uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">
+              <label class="mb-1.5 block text-xs font-medium uppercase tracking-wider" :style="{ color: 'var(--brand-text-muted)' }">
                 Mensagem
               </label>
               <textarea
@@ -168,16 +168,16 @@
                 placeholder="Conte um pouco sobre seu projeto..."
                 class="w-full resize-none rounded-xl border px-4 py-3 text-sm outline-none transition focus:ring-2"
                 :style="{
-                  backgroundColor: brand.colors.inputBg,
-                  borderColor: brand.colors.inputBorder,
-                  color: brand.colors.text,
-                  '--tw-ring-color': brand.colors.primary,
+                  backgroundColor: 'var(--brand-input-bg)',
+                  borderColor: 'var(--brand-input-border)',
+                  color: 'var(--brand-text)',
+                  '--tw-ring-color': 'var(--brand-primary)',
                 }"
               />
             </div>
 
             <!-- Error message -->
-            <p v-if="errorMsg" class="text-sm" :style="{ color: brand.colors.negative }">
+            <p v-if="errorMsg" class="text-sm" :style="{ color: 'var(--brand-negative)' }">
               {{ errorMsg }}
             </p>
 
@@ -187,9 +187,9 @@
               :disabled="state === 'loading'"
               class="flex w-full items-center justify-center gap-2 rounded-full px-6 py-3.5 text-sm font-bold transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-0.5 disabled:opacity-50"
               :style="{
-                backgroundColor: brand.colors.primary,
-                color: brand.colors.background,
-                boxShadow: `0 12px 40px -12px ${brand.colors.primary}80`,
+                backgroundColor: 'var(--brand-primary)',
+                color: 'var(--brand-background)',
+                boxShadow: `0 12px 40px -12px var(--brand-primary)80`,
               }"
             >
               <UIcon v-if="state === 'loading'" name="i-lucide-loader-2" class="size-4 motion-safe:animate-spin" />
@@ -197,7 +197,7 @@
               {{ state === 'loading' ? 'Enviando...' : (source === 'whitelabel' ? 'Enviar contato' : 'Solicitar API Key') }}
             </button>
 
-            <p class="text-center text-[11px]" :style="{ color: brand.colors.textMuted }">
+            <p class="text-center text-[11px]" :style="{ color: 'var(--brand-text-muted)' }">
               Seus dados estão seguros. Não compartilhamos com terceiros.
             </p>
           </form>

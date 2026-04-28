@@ -6,37 +6,37 @@
     <div class="mb-4 flex flex-col gap-1">
       <span
         class="font-mono-tab text-[10px] uppercase tracking-[0.2em]"
-        :style="{ color: brand.colors.primary }"
+        :style="{ color: 'var(--brand-primary)' }"
       >
         Consenso de analistas
       </span>
       <h2
         class="text-xl font-semibold md:text-2xl"
-        :style="{ color: brand.colors.text }"
+        :style="{ color: 'var(--brand-text)' }"
       >
         Consenso dos analistas
       </h2>
       <p
         class="font-mono-tab text-[10px] uppercase tracking-[0.12em]"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
       >
         &gt; TARGET MÉDIO · {{ coverageLabel }}
       </p>
     </div>
 
-    <div class="border" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+    <div class="border" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
       <!-- Recommendation + upside cells (register style, glued with gap-px) -->
       <div
         class="grid grid-cols-2 gap-px"
-        :style="{ backgroundColor: brand.colors.border }"
+        :style="{ backgroundColor: 'var(--brand-border)' }"
       >
         <div
           class="flex flex-col gap-1.5 px-4 py-4"
-          :style="{ backgroundColor: brand.colors.surface }"
+          :style="{ backgroundColor: 'var(--brand-surface)' }"
         >
           <span
             class="font-mono-tab text-[10px] uppercase tracking-wider"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
           >
             RECOMENDAÇÃO
           </span>
@@ -50,11 +50,11 @@
 
         <div
           class="flex flex-col gap-1.5 px-4 py-4"
-          :style="{ backgroundColor: brand.colors.surface }"
+          :style="{ backgroundColor: 'var(--brand-surface)' }"
         >
           <span
             class="font-mono-tab text-[10px] uppercase tracking-wider"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
           >
             UPSIDE
           </span>
@@ -71,11 +71,11 @@
       <div
         v-if="hasTargetRange"
         class="border-t px-4 pt-4 pb-5"
-        :style="{ borderColor: brand.colors.border }"
+        :style="{ borderColor: 'var(--brand-border)' }"
       >
         <div
           class="mb-3 flex items-center justify-between font-mono-tab text-[9px] uppercase tracking-[0.18em]"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
         >
           <span>&gt; PRICE TARGET RANGE</span>
           <span v-if="data.price?.usd_brl" class="tabular-nums">
@@ -99,23 +99,23 @@
         <!-- Min / Current / Max ruler -->
         <div
           class="mt-2 flex items-start justify-between font-mono-tab text-[9px] uppercase tracking-[0.15em]"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
         >
           <div class="flex flex-col items-start gap-0.5">
             <span>LOW</span>
-            <span class="tabular-nums" :style="{ color: brand.colors.text }">
+            <span class="tabular-nums" :style="{ color: 'var(--brand-text)' }">
               {{ formatCurrency(data.price?.target_low) }}
             </span>
           </div>
           <div class="flex flex-col items-center gap-0.5">
-            <span :style="{ color: brand.colors.primary }">ATUAL</span>
-            <span class="tabular-nums font-bold" :style="{ color: brand.colors.text }">
+            <span :style="{ color: 'var(--brand-primary)' }">ATUAL</span>
+            <span class="tabular-nums font-bold" :style="{ color: 'var(--brand-text)' }">
               {{ formatCurrency(data.price?.close) }}
             </span>
           </div>
           <div class="flex flex-col items-end gap-0.5">
             <span>HIGH</span>
-            <span class="tabular-nums" :style="{ color: brand.colors.text }">
+            <span class="tabular-nums" :style="{ color: 'var(--brand-text)' }">
               {{ formatCurrency(data.price?.target_high) }}
             </span>
           </div>
@@ -125,17 +125,17 @@
         <div
           v-if="data.price?.target_average !== null && data.price?.target_average !== undefined"
           class="mt-4 flex items-center justify-between border-t pt-3"
-          :style="{ borderColor: brand.colors.border }"
+          :style="{ borderColor: 'var(--brand-border)' }"
         >
           <span
             class="font-mono-tab text-[10px] uppercase tracking-[0.15em]"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
           >
             TARGET MÉDIO
           </span>
           <span
             class="font-mono-tab text-base font-bold tabular-nums"
-            :style="{ color: brand.colors.text }"
+            :style="{ color: 'var(--brand-text)' }"
           >
             {{ formatCurrency(data.price.target_average) }}
           </span>

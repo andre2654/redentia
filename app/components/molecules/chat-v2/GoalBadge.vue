@@ -37,21 +37,21 @@
         <span v-if="goal.emoji" aria-hidden="true">{{ goal.emoji }}</span>
         <span
           class="truncate text-[12.5px] font-medium"
-          :style="{ color: brand.colors.text }"
+          :style="{ color: 'var(--brand-text)' }"
         >{{ goal.name }}</span>
         <span
           class="font-mono-tab shrink-0 text-[11.5px] tabular-nums"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
         >· {{ progressPct }}%</span>
         <span
           class="font-mono-tab shrink-0 text-[10.5px] uppercase tracking-[0.12em]"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
         >· {{ statusLabel }}</span>
       </button>
       <button
         type="button"
         class="goal-badge-unlink size-6 shrink-0 rounded-full transition-colors"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
         aria-label="Desvincular meta desta conversa"
         @click="$emit('unlink')"
       >

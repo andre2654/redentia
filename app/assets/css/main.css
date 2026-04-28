@@ -126,6 +126,264 @@ html {
   z-index: 1;
 }
 
+/* ============================================================
+   QUIET typography defaults (redentia-stripe-style skill).
+   Aplica em escala ao h1/h2/h3/body sem precisar reescrever cada
+   componente. Light/dark adapta via tokens semanticos resolvidos
+   pelo plugin/brand.ts (--text-heading, --text-body, --text-muted).
+
+   Marketing display headings (.font-display, hero variants especificos
+   como editorial/terminal/holder) NAO sao afetados, eles tem fontes
+   proprias e weight proprio que ja sobreescrevem.
+   ============================================================ */
+
+/* Display headings: lightness as luxury. Weight 300, letter-spacing
+   negativo progressivo, color heading warm. */
+h1, h2 {
+  font-weight: 300;
+  color: var(--text-heading, var(--brand-text));
+  letter-spacing: -0.025em;
+  line-height: 1.08;
+}
+
+h3 {
+  font-weight: 400;
+  color: var(--text-heading, var(--brand-text));
+  letter-spacing: -0.018em;
+  line-height: 1.15;
+}
+
+h4, h5, h6 {
+  font-weight: 500;
+  color: var(--text-heading, var(--brand-text));
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+/* Body padrao: muted warm em vez de cinza puro. Mantem 1.55 reading. */
+body {
+  color: var(--text-body, var(--brand-text-muted));
+  line-height: 1.55;
+}
+
+/* Helpers semanticos para uso ad-hoc. Quando voce nao quer h-tag mas
+   quer o tom heading/label/muted certo. */
+.text-heading { color: var(--text-heading, var(--brand-text)); }
+.text-label { color: var(--text-label, var(--brand-text)); }
+.text-body { color: var(--text-body, var(--brand-text-muted)); }
+.text-muted { color: var(--text-muted, var(--brand-text-muted)); }
+
+/* Microeyebrow: 11px UPPERCASE letter-spacing wide em amber. Padrao Stripe.
+   Use em sub-titulos de section, tags acima de headlines, kickers. */
+.eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--brand-primary);
+  line-height: 1;
+}
+
+/* Tabular numerals automaticos para qualquer celula de tabela ou
+   elemento com [data-tnum]. Garante alinhamento financeiro sem
+   precisar lembrar da classe font-mono-tab cada vez. */
+table td, table th, [data-tnum] {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+/* Quiet card — recipe drop-in. Aplique a class .quiet-card em qualquer
+   article/div para herdar surface elevada + border subtle + sombra
+   amber-tinted. Hover intensifica sombra e clarifica border.
+   Multi-tenant safe: vem das vars do brand. */
+.quiet-card {
+  background: var(--bg-elevated, var(--brand-surface));
+  border: 1px solid var(--border-subtle, var(--brand-border));
+  border-radius: var(--brand-radius-md, 8px);
+  box-shadow: var(--shadow-card, none);
+  transition: border-color 200ms ease-out, box-shadow 200ms ease-out, background-color 200ms ease-out;
+}
+.quiet-card:hover {
+  border-color: var(--border-default, var(--brand-border));
+  box-shadow: var(--shadow-card-hover, var(--shadow-card, none));
+}
+
+/* Quiet button primary — alternativa direta sem depender do UButton
+   wrapper. Use class .quiet-btn-primary em qualquer <button>/<a>. */
+.quiet-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: var(--brand-radius-md, 6px);
+  background: var(--brand-primary);
+  color: #1A0A2E;
+  font-family: var(--brand-font);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.005em;
+  transition: filter 200ms ease-out, transform 100ms ease-out, box-shadow 200ms ease-out;
+}
+.quiet-btn-primary:hover { filter: brightness(0.92); }
+.quiet-btn-primary:active { transform: translateY(1px); }
+.quiet-btn-primary:focus-visible { outline: none; box-shadow: var(--shadow-ring-focus); }
+
+.quiet-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: var(--brand-radius-md, 6px);
+  background: transparent;
+  color: var(--text-heading, var(--brand-text));
+  border: 1px solid var(--border-default, var(--brand-border));
+  font-family: var(--brand-font);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1;
+  transition: border-color 200ms ease-out, background-color 200ms ease-out;
+}
+.quiet-btn-ghost:hover {
+  border-color: color-mix(in srgb, var(--brand-primary) 50%, transparent);
+  background: color-mix(in srgb, var(--brand-primary) 6%, transparent);
+}
+.quiet-btn-ghost:focus-visible { outline: none; box-shadow: var(--shadow-ring-focus); }
+
+/* Quiet badge family. Use .quiet-badge + variant class. */
+.quiet-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  border: 1px solid transparent;
+}
+.quiet-badge--success {
+  background: color-mix(in srgb, var(--brand-positive) 18%, transparent);
+  color: color-mix(in srgb, var(--brand-positive) 85%, var(--text-heading, #000));
+  border-color: color-mix(in srgb, var(--brand-positive) 35%, transparent);
+}
+.quiet-badge--negative {
+  background: color-mix(in srgb, var(--brand-negative) 18%, transparent);
+  color: color-mix(in srgb, var(--brand-negative) 85%, var(--text-heading, #000));
+  border-color: color-mix(in srgb, var(--brand-negative) 35%, transparent);
+}
+.quiet-badge--neutral {
+  background: var(--bg-overlay, var(--brand-surface-hover));
+  color: var(--text-body);
+  border-color: var(--border-subtle, var(--brand-border));
+}
+.quiet-badge--brand {
+  background: color-mix(in srgb, var(--brand-primary) 14%, transparent);
+  color: color-mix(in srgb, var(--brand-primary) 90%, var(--text-heading, #000));
+  border-color: color-mix(in srgb, var(--brand-primary) 30%, transparent);
+}
+
+/* Section rhythm helpers. Aplica padding vertical generoso default
+   (96px desktop, 64px mobile) com hook para overrides. */
+.quiet-section {
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+@media (min-width: 768px) {
+  .quiet-section { padding-top: 6rem; padding-bottom: 6rem; }
+}
+
+/* Section divider — fina border-top com tint amber em vez de cinza. */
+.quiet-divider {
+  border-top: 1px solid var(--border-subtle, var(--brand-border));
+}
+
+/* ============================================================
+   HEADLINE EDITORIAL MIX — Inter sans (weight 500) + Instrument Serif
+   italic na palavra-chave. A assinatura tipográfica da Redentia v3
+   (introduzida no hero, reutilizada em section headers).
+
+   Uso:
+     <h2 class="headline-editorial text-[40px] md:text-[56px]">
+       <span class="headline-editorial-sans">Tudo no mesmo</span>
+       <em class="headline-editorial-serif" style="color: var(--brand-primary)">lugar</em>
+       <span class="headline-editorial-sans" style="color: var(--brand-primary)">.</span>
+     </h2>
+   ============================================================ */
+.headline-editorial {
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.02;
+  color: var(--text-heading);
+}
+.headline-editorial-sans {
+  font-family: var(--brand-font);
+  font-style: normal;
+  font-weight: 500;
+}
+.headline-editorial-serif {
+  font-family: 'Instrument Serif', 'Didot', 'Tiempos Headline', 'Times New Roman', serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.1em;
+  line-height: 0.9;
+  margin-right: 0.04em;
+}
+
+/* ============================================================
+   MESH GRADIENT BACKDROP — composicao de 2-3 blobs amber/rose.
+   Uso em sections que precisam da "atmosfera" do hero sem ser tao
+   dramatico. O <Component> aplica este wrapper como overlay absoluto.
+
+     <div class="quiet-mesh quiet-mesh--soft" />
+
+   Variantes: --soft (saturado baixo, sections internas)
+              --bold (saturado alto, hero + featured sections)
+   ============================================================ */
+.quiet-mesh {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.quiet-mesh::before,
+.quiet-mesh::after {
+  content: '';
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(80px);
+}
+.quiet-mesh::before {
+  background: radial-gradient(circle, var(--brand-primary), transparent 70%);
+  width: 600px;
+  height: 400px;
+  right: -10%;
+  top: -10%;
+}
+.quiet-mesh::after {
+  background: radial-gradient(circle, #F96BEE, transparent 70%);
+  width: 480px;
+  height: 360px;
+  left: -8%;
+  bottom: -10%;
+}
+.quiet-mesh--soft::before { opacity: 0.18; }
+.quiet-mesh--soft::after { opacity: 0.08; }
+.quiet-mesh--bold::before { opacity: 0.42; }
+.quiet-mesh--bold::after { opacity: 0.16; }
+
+[data-mode='dark'] .quiet-mesh--soft::before,
+.dark .quiet-mesh--soft::before { opacity: 0.10; }
+[data-mode='dark'] .quiet-mesh--soft::after,
+.dark .quiet-mesh--soft::after { opacity: 0.06; }
+[data-mode='dark'] .quiet-mesh--bold::before,
+.dark .quiet-mesh--bold::before { opacity: 0.18; }
+[data-mode='dark'] .quiet-mesh--bold::after,
+.dark .quiet-mesh--bold::after { opacity: 0.08; }
+
 /* Blinking caret used inside terminal-styled inputs and hero prompts. */
 @keyframes brand-blink {
   0%, 49% { opacity: 1; }

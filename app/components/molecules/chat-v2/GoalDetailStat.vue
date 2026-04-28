@@ -16,7 +16,7 @@
   >
     <dt
       class="font-mono-tab text-[10px] uppercase tracking-[0.16em]"
-      :style="{ color: brand.colors.textMuted }"
+      :style="{ color: 'var(--brand-text-muted)' }"
     >{{ label }}</dt>
     <dd
       class="font-display text-[16px] font-semibold tabular-nums leading-none tracking-tight"
@@ -25,7 +25,7 @@
     <dd
       v-if="hint"
       class="text-[10.5px]"
-      :style="{ color: brand.colors.textMuted }"
+      :style="{ color: 'var(--brand-text-muted)' }"
     >{{ hint }}</dd>
   </div>
 </template>

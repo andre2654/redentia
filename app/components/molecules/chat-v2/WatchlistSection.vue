@@ -15,7 +15,7 @@
     <header class="mb-1.5 flex items-center justify-between gap-2 px-2">
       <h3
         class="font-mono-tab text-[10px] uppercase tracking-[0.18em]"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
       >
         Watchlist
         <span v-if="watches.length > 0" class="tabular-nums">· {{ watches.length }}</span>
@@ -33,17 +33,17 @@
           <span class="flex min-w-0 items-center gap-2">
             <span
               class="font-mono-tab text-[12px] font-bold tracking-tight"
-              :style="{ color: brand.colors.text }"
+              :style="{ color: 'var(--brand-text)' }"
             >{{ w.ticker }}</span>
             <span
               v-if="w.label"
               class="truncate text-[11.5px]"
-              :style="{ color: brand.colors.textMuted }"
+              :style="{ color: 'var(--brand-text-muted)' }"
             >{{ w.label }}</span>
           </span>
           <span
             class="shrink-0 font-mono-tab text-[10px] tabular-nums"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
           >
             {{ conditionCount(w) }} cond.
           </span>
@@ -58,7 +58,7 @@
         :key="n"
         class="watch-skel mx-2 h-7 rounded-md"
         :style="{
-          backgroundColor: `color-mix(in srgb, ${brand.colors.text} 5%, transparent)`,
+          backgroundColor: `color-mix(in srgb, var(--brand-text) 5%, transparent)`,
         }"
         aria-hidden="true"
       />

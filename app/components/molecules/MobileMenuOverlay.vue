@@ -3,7 +3,7 @@
     <div
       v-if="open"
       class="fixed inset-0 z-[60] flex flex-col"
-      :style="{ backgroundColor: brand.colors.background, color: brand.colors.text }"
+      :style="{ backgroundColor: 'var(--brand-background)', color: 'var(--brand-text)' }"
     >
       <div class="flex items-center justify-between px-6 pb-6 pt-10">
         <div class="flex items-center gap-3">
@@ -11,7 +11,7 @@
             <UAvatar :alt="userName" size="lg" />
             <div class="flex flex-col">
               <span class="text-base font-semibold">{{ userName }}</span>
-              <span class="text-xs" :style="{ color: brand.colors.textMuted }">{{ brand.sidebar.planLabel }}</span>
+              <span class="text-xs" :style="{ color: 'var(--brand-text-muted)' }">{{ brand.sidebar.planLabel }}</span>
             </div>
           </template>
           <template v-else>

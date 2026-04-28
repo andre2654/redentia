@@ -31,7 +31,7 @@
       <span
         v-if="$slots.period && showActions"
         class="hidden h-5 w-px md:inline-block"
-        :style="{ backgroundColor: brand.colors.border }"
+        :style="{ backgroundColor: 'var(--brand-border)' }"
         aria-hidden="true"
       />
 
@@ -39,7 +39,7 @@
       <div
         v-if="chartTypes && chartTypes.length > 1"
         class="inline-flex items-center border"
-        :style="{ borderColor: brand.colors.border }"
+        :style="{ borderColor: 'var(--brand-border)' }"
         role="group"
         aria-label="Tipo de gráfico"
       >
@@ -50,7 +50,7 @@
           class="inline-flex size-8 items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset"
           :style="{
             backgroundColor: chartType === type.value ? brand.colors.primary : 'transparent',
-            color: chartType === type.value ? brand.colors.background : brand.colors.textMuted,
+            color: chartType === type.value ? brand.colors.background : 'var(--brand-text-muted)',
           }"
           :aria-pressed="chartType === type.value"
           :aria-label="type.label"
@@ -66,9 +66,9 @@
         type="button"
         class="inline-flex size-8 items-center justify-center border transition-colors hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
         :style="{
-          borderColor: brand.colors.border,
-          backgroundColor: brand.colors.surface,
-          color: brand.colors.textMuted,
+          borderColor: 'var(--brand-border)',
+          backgroundColor: 'var(--brand-surface)',
+          color: 'var(--brand-text-muted)',
         }"
         aria-label="Compartilhar como imagem"
         @click="$emit('screenshot')"
@@ -82,9 +82,9 @@
         type="button"
         class="inline-flex size-8 items-center justify-center border transition-colors hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
         :style="{
-          borderColor: brand.colors.border,
-          backgroundColor: brand.colors.surface,
-          color: brand.colors.textMuted,
+          borderColor: 'var(--brand-border)',
+          backgroundColor: 'var(--brand-surface)',
+          color: 'var(--brand-text-muted)',
         }"
         aria-label="Abrir em tela cheia"
         @click="$emit('fullscreen')"

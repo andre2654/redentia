@@ -3,10 +3,10 @@
     <div class="mx-auto max-w-4xl">
       <!-- Header -->
       <div class="mb-10 text-center">
-        <h2 class="mb-2 text-2xl md:text-3xl" :class="[brand.font.headingWeight, brand.font.headingStyle]" :style="{ color: brand.colors.text }">
+        <h2 class="mb-2 text-2xl md:text-3xl" :class="[brand.font.headingWeight, brand.font.headingStyle]" :style="{ color: 'var(--brand-text)' }">
           {{ config.sectionTitle }}
         </h2>
-        <p class="text-sm md:text-base" :style="{ color: brand.colors.textMuted }">
+        <p class="text-sm md:text-base" :style="{ color: 'var(--brand-text-muted)' }">
           {{ config.sectionSubtitle }}
         </p>
       </div>
@@ -17,8 +17,8 @@
           <!-- Age slider -->
           <div>
             <div class="mb-2 flex items-center justify-between">
-              <label class="text-sm font-medium" :style="{ color: brand.colors.textMuted }">{{ config.labels.ageSlider }}</label>
-              <span class="text-lg font-bold" :style="{ color: brand.colors.primary }">{{ startAge }} anos</span>
+              <label class="text-sm font-medium" :style="{ color: 'var(--brand-text-muted)' }">{{ config.labels.ageSlider }}</label>
+              <span class="text-lg font-bold" :style="{ color: 'var(--brand-primary)' }">{{ startAge }} anos</span>
             </div>
             <input
               v-model.number="startAge"
@@ -30,7 +30,7 @@
               :aria-valuetext="`${startAge} anos`"
               class="slider w-full"
             />
-            <div class="mt-1 flex justify-between text-xs" :style="{ color: brand.colors.textMuted }">
+            <div class="mt-1 flex justify-between text-xs" :style="{ color: 'var(--brand-text-muted)' }">
               <span>16</span>
               <span>50</span>
             </div>
@@ -39,8 +39,8 @@
           <!-- Monthly slider -->
           <div>
             <div class="mb-2 flex items-center justify-between">
-              <label class="text-sm font-medium" :style="{ color: brand.colors.textMuted }">{{ config.labels.monthlySlider }}</label>
-              <span class="text-lg font-bold" :style="{ color: brand.colors.primary }">{{ formatCurrency(monthlyAmount) }}</span>
+              <label class="text-sm font-medium" :style="{ color: 'var(--brand-text-muted)' }">{{ config.labels.monthlySlider }}</label>
+              <span class="text-lg font-bold" :style="{ color: 'var(--brand-primary)' }">{{ formatCurrency(monthlyAmount) }}</span>
             </div>
             <input
               v-model.number="monthlyAmount"
@@ -52,7 +52,7 @@
               :aria-valuetext="formatCurrency(monthlyAmount)"
               class="slider w-full"
             />
-            <div class="mt-1 flex justify-between text-xs" :style="{ color: brand.colors.textMuted }">
+            <div class="mt-1 flex justify-between text-xs" :style="{ color: 'var(--brand-text-muted)' }">
               <span>R$ 100</span>
               <span>R$ 10.000</span>
             </div>
@@ -73,27 +73,27 @@
         <!-- Right: Results -->
         <div class="flex flex-col gap-4">
           <!-- Main result -->
-          <div class="border p-6 brand-card" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
-            <p class="mb-1 text-xs uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">
+          <div class="border p-6 brand-card" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
+            <p class="mb-1 text-xs uppercase tracking-wider" :style="{ color: 'var(--brand-text-muted)' }">
               {{ resultLabel }}
             </p>
-            <p class="text-3xl md:text-4xl" :class="brand.font.headingWeight" :style="{ color: brand.colors.primary }">
+            <p class="text-3xl md:text-4xl" :class="brand.font.headingWeight" :style="{ color: 'var(--brand-primary)' }">
               {{ formatCurrency(mainResult) }}
             </p>
-            <p class="mt-2 text-sm" :style="{ color: brand.colors.textMuted }">
+            <p class="mt-2 text-sm" :style="{ color: 'var(--brand-text-muted)' }">
               {{ yearsInvesting }} {{ config.labels.timeLabel }}
             </p>
           </div>
 
           <!-- Comparison -->
-          <div class="border p-5 brand-card" :style="{ borderColor: `${brand.colors.negative}33`, backgroundColor: `${brand.colors.negative}0D` }">
+          <div class="border p-5 brand-card" :style="{ borderColor: `var(--brand-negative)33`, backgroundColor: `var(--brand-negative)0D` }">
             <div class="flex items-start gap-3">
-              <UIcon name="i-lucide-clock" class="mt-0.5 h-5 w-5 shrink-0" :style="{ color: brand.colors.negative }" />
+              <UIcon name="i-lucide-clock" class="mt-0.5 h-5 w-5 shrink-0" :style="{ color: 'var(--brand-negative)' }" />
               <div>
-                <p class="text-sm font-semibold" :style="{ color: brand.colors.text }">
+                <p class="text-sm font-semibold" :style="{ color: 'var(--brand-text)' }">
                   {{ comparisonLabel }}
                 </p>
-                <p class="mt-1 text-xs" :style="{ color: brand.colors.textMuted }">
+                <p class="mt-1 text-xs" :style="{ color: 'var(--brand-text-muted)' }">
                   {{ formatCurrency(comparisonResult) }} vs {{ formatCurrency(mainResult) }}
                 </p>
               </div>
@@ -103,12 +103,12 @@
           <!-- Bar comparison visual -->
           <div class="flex flex-col gap-2">
             <div class="flex items-center gap-3">
-              <span class="w-20 text-right text-xs font-medium" :style="{ color: brand.colors.text }">{{ startAge }} anos</span>
-              <div class="h-6 brand-card-sm transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-500" :style="{ width: '100%', backgroundColor: brand.colors.primary }" />
+              <span class="w-20 text-right text-xs font-medium" :style="{ color: 'var(--brand-text)' }">{{ startAge }} anos</span>
+              <div class="h-6 brand-card-sm transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-500" :style="{ width: '100%', backgroundColor: 'var(--brand-primary)' }" />
             </div>
             <div class="flex items-center gap-3">
-              <span class="w-20 text-right text-xs font-medium" :style="{ color: brand.colors.textMuted }">{{ config.compareAge }} anos</span>
-              <div class="h-6 brand-card-sm transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-500" :style="{ width: comparisonBarWidth, backgroundColor: brand.colors.negative }" />
+              <span class="w-20 text-right text-xs font-medium" :style="{ color: 'var(--brand-text-muted)' }">{{ config.compareAge }} anos</span>
+              <div class="h-6 brand-card-sm transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-500" :style="{ width: comparisonBarWidth, backgroundColor: 'var(--brand-negative)' }" />
             </div>
           </div>
         </div>

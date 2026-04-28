@@ -3,12 +3,12 @@
     :to="to"
     class="group flex flex-col overflow-hidden rounded-2xl border transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-secondary/30"
     :style="{
-      borderColor: brand.colors.border,
-      backgroundImage: `linear-gradient(to bottom right, ${brand.colors.surfaceHover}, transparent)`,
+      borderColor: 'var(--brand-border)',
+      backgroundImage: `linear-gradient(to bottom right, var(--brand-surface-hover), transparent)`,
     }"
   >
     <!-- Header com Ícone/Imagem -->
-    <div class="flex items-center gap-4 border-b p-6" :style="{ borderColor: brand.colors.border }">
+    <div class="flex items-center gap-4 border-b p-6" :style="{ borderColor: 'var(--brand-border)' }">
       <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-secondary/20">
         <UIcon :name="icon" class="text-secondary h-7 w-7" />
       </div>
@@ -20,7 +20,7 @@
           size="xs"
           class="mb-2"
         />
-        <h3 class="text-xl font-bold leading-tight group-hover:text-secondary transition-colors" :style="{ color: brand.colors.text }">
+        <h3 class="text-xl font-bold leading-tight group-hover:text-secondary transition-colors" :style="{ color: 'var(--brand-text)' }">
           {{ titulo }}
         </h3>
       </div>
@@ -28,12 +28,12 @@
 
     <!-- Conteúdo -->
     <div class="flex flex-1 flex-col gap-4 p-6">
-      <p class="line-clamp-3 text-sm leading-relaxed" :style="{ color: brand.colors.textMuted }">
+      <p class="line-clamp-3 text-sm leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
         {{ descricao }}
       </p>
 
       <!-- Meta Info -->
-      <div class="mt-auto flex items-center justify-between border-t pt-4 text-xs" :style="{ borderColor: brand.colors.border, color: brand.colors.textMuted }">
+      <div class="mt-auto flex items-center justify-between border-t pt-4 text-xs" :style="{ borderColor: 'var(--brand-border)', color: 'var(--brand-text-muted)' }">
         <div class="flex items-center gap-4">
           <span class="flex items-center gap-1">
             <UIcon name="i-lucide-calendar" class="h-3 w-3" />

@@ -2,8 +2,8 @@
   <div
     class="relative flex h-9 items-center overflow-hidden border-y"
     :style="{
-      borderColor: brand.colors.border,
-      backgroundColor: brand.colors.surface,
+      borderColor: 'var(--brand-border)',
+      backgroundColor: 'var(--brand-surface)',
     }"
     role="region"
     aria-label="Cotações ao vivo"
@@ -13,19 +13,19 @@
     <div
       class="relative z-10 flex h-full shrink-0 items-center gap-2 border-r px-4 font-mono-tab text-[10px] font-semibold uppercase tracking-[0.18em]"
       :style="{
-        borderColor: brand.colors.border,
-        backgroundColor: brand.colors.background,
-        color: brand.colors.primary,
+        borderColor: 'var(--brand-border)',
+        backgroundColor: 'var(--brand-background)',
+        color: 'var(--brand-primary)',
       }"
     >
       <span class="relative flex size-1.5" aria-hidden="true">
         <span
           class="absolute inline-flex size-1.5 rounded-full opacity-75 motion-safe:animate-ping"
-          :style="{ backgroundColor: brand.colors.primary }"
+          :style="{ backgroundColor: 'var(--brand-primary)' }"
         />
         <span
           class="relative inline-flex size-1.5 rounded-full"
-          :style="{ backgroundColor: brand.colors.primary }"
+          :style="{ backgroundColor: 'var(--brand-primary)' }"
         />
       </span>
       <span translate="no">LIVE</span>
@@ -36,15 +36,15 @@
       <div class="ticker-track flex shrink-0 items-center gap-8 whitespace-nowrap px-6">
         <template v-for="(item, idx) in tapeItems" :key="`a-${idx}`">
           <div class="flex items-center gap-2 font-mono-tab text-[11px]">
-            <span class="font-semibold" :style="{ color: brand.colors.text }">
+            <span class="font-semibold" :style="{ color: 'var(--brand-text)' }">
               {{ item.symbol }}
             </span>
-            <span :style="{ color: brand.colors.textMuted }">
+            <span :style="{ color: 'var(--brand-text-muted)' }">
               {{ item.value }}
             </span>
             <span
               :style="{
-                color: item.change >= 0 ? brand.colors.positive : brand.colors.negative,
+                color: item.change >= 0 ? brand.colors.positive : 'var(--brand-negative)',
               }"
             >
               {{ item.change >= 0 ? '▲' : '▼' }} {{ item.change >= 0 ? '+' : '' }}{{ item.change.toFixed(2) }}%
@@ -52,7 +52,7 @@
           </div>
           <span
             class="h-3 w-px"
-            :style="{ backgroundColor: brand.colors.border }"
+            :style="{ backgroundColor: 'var(--brand-border)' }"
           />
         </template>
       </div>
