@@ -224,7 +224,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { ChatArtifact, ChatAttachment, ChatProposalData } from '~/composables/useChatStream'
 
 definePageMeta({
@@ -472,6 +472,42 @@ onMounted(async () => {
     window.history.replaceState({}, '', '/help')
     void chat.send(q).then(refreshSessionList)
   }
+})
+
+/**
+ * `MaxFeatureChip` (rendered in chat answers when Basic refuses a
+ * MAX-only feature) dispatches this CustomEvent on click. We:
+ *   1. Switch the tier picker to MAX immediately so the badge
+ *      reflects the new state.
+ *   2. Re-send the user's previous message so the gated feature
+ *      gets executed at the right tier without the user having to
+ *      retype.
+ *
+ * Listening on `window` is the simplest way to bridge a chip that's
+ * mounted via createVNode + render (deep inside the markdown) back
+ * to the page-level state without threading callbacks through the
+ * composable chain.
+ */
+function handleRequestMax() {
+  if (tier.value !== 'max') tier.value = 'max'
+  // Find the most recent user message in the thread and replay it.
+  const msgs = chat.messages.value
+  for (let i = msgs.length - 1; i >= 0; i--) {
+    const m = msgs[i]
+    if (m && m.role === 'user' && typeof m.content === 'string' && m.content.trim()) {
+      void chat.send(m.content).then(refreshSessionList)
+      return
+    }
+  }
+}
+
+onMounted(() => {
+  if (typeof window === 'undefined') return
+  window.addEventListener('redentia:request-max', handleRequestMax as EventListener)
+})
+onBeforeUnmount(() => {
+  if (typeof window === 'undefined') return
+  window.removeEventListener('redentia:request-max', handleRequestMax as EventListener)
 })
 
 watch(

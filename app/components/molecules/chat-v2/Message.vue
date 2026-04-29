@@ -340,6 +340,7 @@ import type { ChatAlert } from '~/composables/useAlerts'
 import { ensureTickerProseSetup, useTickerProse } from '~/composables/useTickerProse'
 import { ensureProposalProseSetup, useProposalProse } from '~/composables/useProposalProse'
 import { ensureChartProseSetup, useChartProse } from '~/composables/useChartProse'
+import { ensureMaxFeatureProseSetup, useMaxFeatureProse } from '~/composables/useMaxFeatureProse'
 
 // Register the marked ticker extension once (idempotent). Must run
 // before the first `renderMarkdown` call so PETR4 / VALE3 / KNRI11
@@ -350,6 +351,10 @@ ensureTickerProseSetup()
 ensureProposalProseSetup()
 // And `{{chart:TICKER:PERIOD}}` — replaced by live <InlineChart>.
 ensureChartProseSetup()
+// And `{{max:LABEL}}` — Basic mode renders this in place of features
+// gated behind MAX (chart, watchlist, scenarios, decisions, full
+// analysis, etc). Click → switches tier + re-asks.
+ensureMaxFeatureProseSetup()
 
 // DOMPurify sanitization runs **only on the client**. The
 // `isomorphic-dompurify` package transitively pulls in `jsdom` for
@@ -448,6 +453,7 @@ const isWaitingForFirstChunk = computed(
 const answerRef = ref<HTMLElement | null>(null)
 const tickerProse = useTickerProse()
 const chartProse = useChartProse()
+const maxFeatureProse = useMaxFeatureProse()
 const proposalProse = useProposalProse({
   proposals: () => props.message.proposals ?? [],
   // Suppress the fallback chip row while the message is still
@@ -520,6 +526,7 @@ watch(
     void nextTick(() => {
       tickerProse.mountIn(answerRef.value)
       chartProse.mountIn(answerRef.value)
+      maxFeatureProse.mountIn(answerRef.value)
       proposalProse.mountIn(answerRef.value)
     })
   },
@@ -546,6 +553,7 @@ watch(
 onBeforeUnmount(() => {
   tickerProse.cleanup()
   chartProse.cleanup()
+  maxFeatureProse.cleanup()
   proposalProse.cleanup()
 })
 
@@ -573,7 +581,7 @@ function renderMarkdown(text: string): string {
         // mount points after sanitisation. Without ADD_ATTR, DOMPurify
         // strips data-* attributes by default. Same goes for
         // `data-period` on the chart-mount placeholder.
-        ADD_ATTR: ['target', 'rel', 'data-ticker', 'data-period'],
+        ADD_ATTR: ['target', 'rel', 'data-ticker', 'data-period', 'data-label'],
       })
     : rawHtml
   return decorateHtml(safe)
