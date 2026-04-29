@@ -339,6 +339,7 @@ import type {
 import type { ChatAlert } from '~/composables/useAlerts'
 import { ensureTickerProseSetup, useTickerProse } from '~/composables/useTickerProse'
 import { ensureProposalProseSetup, useProposalProse } from '~/composables/useProposalProse'
+import { ensureChartProseSetup, useChartProse } from '~/composables/useChartProse'
 
 // Register the marked ticker extension once (idempotent). Must run
 // before the first `renderMarkdown` call so PETR4 / VALE3 / KNRI11
@@ -347,6 +348,8 @@ ensureTickerProseSetup()
 // Same idea for `{{propose}}` markers — replaced by inline
 // ActionProposalChip components after the markdown is rendered.
 ensureProposalProseSetup()
+// And `{{chart:TICKER:PERIOD}}` — replaced by live <InlineChart>.
+ensureChartProseSetup()
 
 // DOMPurify sanitization runs **only on the client**. The
 // `isomorphic-dompurify` package transitively pulls in `jsdom` for
@@ -444,6 +447,7 @@ const isWaitingForFirstChunk = computed(
 // `const` bindings are in TDZ until their declaration line.
 const answerRef = ref<HTMLElement | null>(null)
 const tickerProse = useTickerProse()
+const chartProse = useChartProse()
 const proposalProse = useProposalProse({
   proposals: () => props.message.proposals ?? [],
   // Suppress the fallback chip row while the message is still
@@ -515,6 +519,7 @@ watch(
   () => {
     void nextTick(() => {
       tickerProse.mountIn(answerRef.value)
+      chartProse.mountIn(answerRef.value)
       proposalProse.mountIn(answerRef.value)
     })
   },
@@ -540,6 +545,7 @@ watch(
 )
 onBeforeUnmount(() => {
   tickerProse.cleanup()
+  chartProse.cleanup()
   proposalProse.cleanup()
 })
 
@@ -565,8 +571,9 @@ function renderMarkdown(text: string): string {
         // `data-ticker` is what the marked ticker extension stamps on
         // the placeholder span — it's how `useTickerProse` finds the
         // mount points after sanitisation. Without ADD_ATTR, DOMPurify
-        // strips data-* attributes by default.
-        ADD_ATTR: ['target', 'rel', 'data-ticker'],
+        // strips data-* attributes by default. Same goes for
+        // `data-period` on the chart-mount placeholder.
+        ADD_ATTR: ['target', 'rel', 'data-ticker', 'data-period'],
       })
     : rawHtml
   return decorateHtml(safe)
@@ -845,4 +852,17 @@ function artifactLabel(type: ChatArtifact['type']): string {
 /* Strong & em */
 .chat-answer :deep(strong) { font-weight: 600; }
 .chat-answer :deep(em) { font-style: italic; }
+
+/* Chart mount placeholder — the marker `{{chart:X:Y}}` is matched as
+   inline (so it can appear mid-paragraph), but the rendered chart is
+   a block-level card. Force the host span to break the inline flow so
+   the chart claims a full row. */
+.chat-answer :deep(.chart-mount) {
+  display: block;
+  width: 100%;
+  margin: 0.75em 0;
+}
+.chat-answer :deep(.chart-mount[data-mounted="1"]) {
+  font-size: 0; /* hide any whitespace around the mount */
+}
 </style>
