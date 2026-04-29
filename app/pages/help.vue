@@ -148,8 +148,10 @@
           :is-streaming="chat.isStreaming.value"
           :tier-locked="chat.messages.value.length > 0"
           :streaming-message="chat.lastAssistant.value"
+          :show-starters="chat.messages.value.length === 0"
           @send="onSend"
           @stop="chat.stop"
+          @starter="onStarterChip"
         />
       </div>
     </template>

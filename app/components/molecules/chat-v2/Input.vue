@@ -15,7 +15,11 @@
   send-button intensity change. Speed of paint > visual signature.
 -->
 <template>
-  <div class="chat-composer-wrap pointer-events-none absolute inset-x-0 bottom-0 z-10 px-5 pt-10 md:px-8" :style="{ paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom, 0px))' }">
+  <!-- z-30 keeps the composer above interactive surfaces in the thread
+       below it (e.g. the news-card action layer at z-20 in the home
+       dashboard). Without this, scrolling content that visually overlaps
+       the composer area would intercept clicks meant for the input. -->
+  <div class="chat-composer-wrap pointer-events-none absolute inset-x-0 bottom-0 z-30 px-5 pt-10 md:px-8" :style="{ paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom, 0px))' }">
     <!-- Background fade so messages don't overlap composer harshly -->
     <div
       class="pointer-events-none absolute inset-x-0 bottom-0 h-32"
@@ -32,6 +36,18 @@
       v-if="isStreaming && streamingMessage"
       :reasoning="streamingMessage.reasoning ?? ''"
       :tool-calls="streamingMessage.toolCalls ?? []"
+    />
+
+    <!-- Starter chips — only when the conversation is empty. They sit
+         right above the composer pill so the user sees a curated
+         entry point even on the first visit, without scrolling. The
+         emit hits the same `start` event the dashboard uses, which
+         help.vue routes to chat.send(). -->
+    <ChatV2StarterChips
+      v-if="showStarters"
+      :tier="tier"
+      class="mb-2"
+      @start="(q: string) => $emit('starter', q)"
     />
 
     <div
@@ -288,6 +304,13 @@ const props = defineProps<{
    * having to subscribe through the layout.
    */
   streamingMessage?: ChatMessage | null
+  /**
+   * Render starter-question chips above the composer pill. The parent
+   * sets this true when the conversation is empty so users get a
+   * curated entry point inline with the input instead of having to
+   * scroll up to find suggestions.
+   */
+  showStarters?: boolean
 }>()
 
 const tier = defineModel<ChatTier>('tier', { default: 'basic' })
@@ -295,6 +318,7 @@ const tier = defineModel<ChatTier>('tier', { default: 'basic' })
 const emit = defineEmits<{
   send: [message: string, attachments: ChatAttachment[]]
   stop: []
+  starter: [question: string]
 }>()
 
 const brand = useBrand()
@@ -531,20 +555,28 @@ const canSend = computed(
 )
 
 const composerStyle = computed(() => {
-  // Single shape, two tones. Border colour and focus ring tint vary
-  // by tier; everything else (radius, shadow, surface) is shared so
-  // there's no decorative motion between modes.
+  // Stripe-style highlight: amber-tinted ambient shadow at rest so the
+  // composer reads as the page's focal point. Border tightens + ring
+  // expands on focus. Shape (radius, surface) is shared between tiers;
+  // tier identity is carried by border tint only.
   const borderColor = isMax.value
-    ? `color-mix(in srgb, ${brand.colors.primary} ${focused.value ? 70 : 45}%, transparent)`
+    ? `color-mix(in srgb, ${brand.colors.primary} ${focused.value ? 75 : 55}%, transparent)`
     : focused.value
       ? brand.colors.primary
-      : `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`
+      : `color-mix(in srgb, ${brand.colors.primary} 22%, ${brand.colors.border})`
   const ringTint = focused.value
-    ? `0 0 0 3px color-mix(in srgb, ${brand.colors.primary} ${isMax.value ? 18 : 14}%, transparent)`
+    ? `0 0 0 3px color-mix(in srgb, ${brand.colors.primary} ${isMax.value ? 22 : 18}%, transparent)`
     : ''
-  const baseShadow = '0 8px 30px -16px rgba(0,0,0,0.18)'
+  // Resting state: amber-tinted lift shadow (stripe pattern) + soft
+  // dark base. Combined they create a clear "this is where you type"
+  // affordance even when nothing is focused.
+  const baseShadow = `0 24px 50px -22px color-mix(in srgb, ${brand.colors.primary} 22%, transparent), 0 12px 24px -12px rgba(0,0,0,0.16)`
   return {
-    backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 96%, transparent)`,
+    // Solid surface — not translucent. Earlier 96/98% blended values
+    // read as washed-out over the page background, especially in light
+    // mode. Keeping the composer fully opaque sharpens its presence as
+    // the page's primary interactive surface.
+    backgroundColor: brand.colors.surface,
     borderRadius: '28px',
     border: `1px solid ${borderColor}`,
     boxShadow: ringTint ? `${baseShadow}, ${ringTint}` : baseShadow,
