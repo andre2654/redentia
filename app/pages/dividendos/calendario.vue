@@ -1,5 +1,5 @@
 <template>
-  <NuxtLayout name="static" title="Calendário de Dividendos">
+  <NuxtLayout :name="layoutName" title="Calendário de Dividendos">
     <section class="flex flex-col gap-8 px-6 py-8">
       <!-- Hero -->
       <div class="flex flex-col gap-3">
@@ -247,6 +247,16 @@ import { dividendAccent, readableOn } from '~/utils/color'
 
 const brand = useBrand()
 const service = useAssetsService()
+const authStore = useAuthStore()
+
+// Auth-aware layout: authenticated users keep the platform shell
+// (sidebar with quick actions, market strip, etc.) so the calendar
+// reads as part of the app. Unauthenticated visitors get the
+// `static` marketing layout, where the calendar doubles as a SEO/
+// lead-capture surface.
+const layoutName = computed(() =>
+  authStore.isAuthenticated ? 'default' : 'static'
+)
 
 const rateAccent = computed(() =>
   dividendAccent(brand.colors.primary, brand.colors.negative, brand.colors.positive)

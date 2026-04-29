@@ -35,8 +35,91 @@
         </NuxtLink>
       </header>
 
+      <!-- Portfolio snapshot — Mission Control card. Shows current
+           wallet value with reveal masking. Skeleton while loading,
+           CTA when empty, hidden when unauthenticated. The whole card
+           is a NuxtLink to /wallet so the snapshot doubles as a quick
+           jump into the carteira page. -->
+      <div v-if="authStore.me" class="shrink-0 px-3 pb-3">
+        <NuxtLink
+          to="/wallet"
+          class="platform-snapshot-card group block rounded-xl border p-3 transition-[border-color,background-color,box-shadow]"
+          :style="{
+            backgroundColor: `color-mix(in srgb, ${brand.colors.background} 55%, transparent)`,
+            borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+          }"
+        >
+          <div class="flex items-center justify-between">
+            <span class="platform-sidebar-eyebrow !mb-0 !p-0">Patrimônio</span>
+            <span
+              v-if="portfolio.loaded && portfolio.value !== null"
+              class="flex items-center gap-1 font-mono-tab text-[10px] font-medium uppercase"
+              :style="{ letterSpacing: '0.18em', color: brand.colors.positive }"
+            >
+              <span
+                class="inline-block size-1.5 rounded-full"
+                :style="{ backgroundColor: brand.colors.positive }"
+              />
+              Live
+            </span>
+          </div>
+
+          <!-- Loading skeleton -->
+          <div
+            v-if="!portfolio.loaded"
+            class="platform-skeleton mt-1.5 h-7 w-32 rounded"
+            :style="{
+              backgroundColor: `color-mix(in srgb, ${brand.colors.text} 8%, transparent)`,
+            }"
+          />
+
+          <!-- Empty / error state — CTA to seed wallet -->
+          <template v-else-if="portfolio.value === null">
+            <div
+              class="mt-1.5 text-[14px] font-medium"
+              :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }"
+            >Adicione seu 1º ativo</div>
+            <div
+              class="mt-1 flex items-center gap-1 text-[12px]"
+              :style="{ color: brand.colors.primary }"
+            >
+              Ir pra carteira
+              <UIcon name="i-lucide-arrow-right" class="size-3" />
+            </div>
+          </template>
+
+          <!-- Loaded state — value + ver carteira hint -->
+          <template v-else>
+            <div
+              class="mt-1.5 font-mono-tab text-[22px] font-light tabular-nums"
+              :style="{ color: brand.colors.text, letterSpacing: '-0.02em' }"
+            >
+              {{ portfolioDisplay }}
+            </div>
+            <div
+              class="mt-1 flex items-center justify-between gap-2 text-[10.5px]"
+              :style="{
+                color: `color-mix(in srgb, ${brand.colors.text} 50%, transparent)`,
+              }"
+            >
+              <span class="font-mono-tab" style="letter-spacing: 0.04em">
+                {{ portfolio.positions }}
+                {{ portfolio.positions === 1 ? 'ativo' : 'ativos' }}
+              </span>
+              <span class="flex items-center gap-1 transition-colors group-hover:!text-[color:var(--brand-primary)]">
+                Ver carteira
+                <UIcon
+                  name="i-lucide-arrow-right"
+                  class="size-3 transition-transform group-hover:translate-x-0.5"
+                />
+              </span>
+            </div>
+          </template>
+        </NuxtLink>
+      </div>
+
       <!-- Primary AI CTA — amber solid, mirrors the chat sidebar CTA -->
-      <div v-if="authStore.me?.role !== 'advisor'" class="shrink-0 px-4 pb-3">
+      <div v-if="authStore.me?.role !== 'advisor'" class="shrink-0 px-3 pb-3">
         <NuxtLink
           to="/help"
           class="platform-ai-cta group flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-[14px] font-medium transition-[background-color,box-shadow,transform]"
@@ -60,6 +143,42 @@
             :style="{ color: brand.colors.background }"
           />
         </NuxtLink>
+      </div>
+
+      <!-- Quick actions: 2x2 grid for the most-traveled routes. Each
+           card is a real NuxtLink with the route's brand-tinted icon
+           + label + meta line. Hidden for advisors who navigate via a
+           different surface. -->
+      <div v-if="authStore.me?.role !== 'advisor'" class="shrink-0 px-3 pb-3">
+        <div class="grid grid-cols-2 gap-2">
+          <NuxtLink
+            v-for="qa in quickActions"
+            :key="qa.label"
+            :to="qa.to"
+            class="platform-quick-action group flex flex-col items-start gap-1.5 rounded-lg border px-2.5 py-2 text-left transition-[border-color,background-color]"
+            :style="{
+              backgroundColor: `color-mix(in srgb, ${brand.colors.background} 35%, transparent)`,
+              borderColor: `color-mix(in srgb, ${brand.colors.border} 40%, transparent)`,
+            }"
+          >
+            <span
+              class="flex size-7 items-center justify-center rounded-md"
+              :style="{ backgroundColor: `color-mix(in srgb, ${qa.tint} 14%, transparent)` }"
+            >
+              <UIcon :name="qa.icon" class="size-4" :style="{ color: qa.tint }" />
+            </span>
+            <div class="flex w-full flex-col leading-tight">
+              <span
+                class="text-[12px] font-medium"
+                :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }"
+              >{{ qa.label }}</span>
+              <span
+                class="font-mono-tab text-[10px]"
+                :style="{ color: `color-mix(in srgb, ${brand.colors.text} 45%, transparent)` }"
+              >{{ qa.meta }}</span>
+            </div>
+          </NuxtLink>
+        </div>
       </div>
 
       <!-- Scrollable nav body — sections separated by eyebrows that
@@ -175,21 +294,61 @@
         </section>
       </nav>
 
-      <!-- Color mode toggle, sitting just above the user row so it's
-           always reachable without adding chrome to the user card
-           itself. The nav above already takes flex-1, so the toggle +
-           user row dock naturally at the bottom. -->
-      <div class="flex flex-shrink-0 justify-center px-3 pb-2">
-        <AtomsColorModeToggle />
+      <!-- Market strip — IBOV / IFIX live tickers. Pulled from the
+           public indices endpoint, refreshed every 60s. The strip
+           hides itself entirely if the fetch fails — better no strip
+           than a broken one. Dashes appear during initial load. -->
+      <div
+        v-if="authStore.me && market.show"
+        class="flex shrink-0 items-stretch gap-px border-t"
+        :style="{
+          borderColor: `color-mix(in srgb, ${brand.colors.border} 40%, transparent)`,
+          backgroundColor: `color-mix(in srgb, ${brand.colors.border} 18%, transparent)`,
+        }"
+      >
+        <div
+          v-for="cell in market.cells"
+          :key="cell.label"
+          class="flex flex-1 flex-col items-center gap-0.5 px-2 py-1.5"
+          :style="{ backgroundColor: brand.colors.surface }"
+        >
+          <span
+            class="font-mono-tab text-[9px] font-medium uppercase"
+            :style="{
+              letterSpacing: '0.18em',
+              color: `color-mix(in srgb, ${brand.colors.text} 45%, transparent)`,
+            }"
+          >{{ cell.label }}</span>
+          <span
+            class="font-mono-tab text-[11px] tabular-nums"
+            :style="{ color: brand.colors.text }"
+          >{{ cell.value }}</span>
+          <span
+            class="font-mono-tab text-[9.5px] tabular-nums"
+            :style="{
+              color:
+                cell.changeNum === null
+                  ? `color-mix(in srgb, ${brand.colors.text} 35%, transparent)`
+                  : cell.changeNum >= 0
+                    ? brand.colors.positive
+                    : brand.colors.negative,
+            }"
+          >{{ cell.change }}</span>
+        </div>
       </div>
 
       <!-- User row — inline strip, no bordered card. Avatar + name
-           + plan, plus two icon-only action buttons (eye toggle,
-           logout). The top border picks up the same tint the rest
-           of the sidebar uses, so the row reads as a footer rather
-           than a tray. -->
+           + plan, plus three icon-only action buttons (theme cycle,
+           eye toggle, logout). The top border picks up the same
+           tint the rest of the sidebar uses, so the row reads as a
+           footer rather than a tray.
+
+           Theme toggle: single icon that cycles light → dark →
+           system. Replaces the chunky 3-segment pill that used to
+           live above this row — the segmented control was visually
+           heavy for what's a one-off preference flip. -->
       <div
-        class="platform-user-row flex flex-shrink-0 items-center gap-2.5 border-t px-3 py-3"
+        class="platform-user-row flex flex-shrink-0 items-center gap-2 border-t px-3 py-3"
         :style="{ borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)` }"
       >
         <div class="relative shrink-0">
@@ -201,7 +360,7 @@
             aria-hidden="true"
           />
         </div>
-        <div class="flex min-w-0 flex-1 flex-col leading-tight">
+        <div class="ml-0.5 flex min-w-0 flex-1 flex-col leading-tight">
           <span
             class="truncate text-[13px] font-medium"
             :style="{ color: brand.colors.text, letterSpacing: '-0.01em' }"
@@ -218,6 +377,19 @@
             {{ brand.sidebar.planLabel }}
           </span>
         </div>
+        <button
+          v-if="supportsMultiMode"
+          type="button"
+          class="platform-icon-btn flex size-7 items-center justify-center rounded-md"
+          :style="{ color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }"
+          :title="`Tema: ${themeLabel} (clique pra alternar)`"
+          :aria-label="`Tema: ${themeLabel}`"
+          @mouseover="(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = `color-mix(in srgb, ${brand.colors.text} 7%, transparent)`)"
+          @mouseleave="(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'transparent')"
+          @click="cycleThemeMode"
+        >
+          <UIcon :name="themeIcon" class="size-4" />
+        </button>
         <button
           type="button"
           class="platform-icon-btn flex size-7 items-center justify-center rounded-md"
@@ -411,6 +583,227 @@ async function makeLogout() {
   await authStore.logout()
   router.push('/auth/login')
 }
+
+// ============================================================
+// Theme toggle (icon-only, lives inside the user row)
+// ============================================================
+// Single button that cycles light → dark → system. Replaces the
+// chunky 3-segment pill that used to sit above the user row. We
+// hide the toggle entirely for tenants that don't ship multiple
+// palettes (matches the AtomsColorModeToggle behavior — picking
+// "Auto / Light" with no light palette is confusing UX).
+const colorMode = useColorMode()
+const brandThemes = (brand as { themes?: { light?: object; dark?: object } }).themes
+const supportsMultiMode = computed(
+  () => !!(brandThemes && (brandThemes.light || brandThemes.dark))
+)
+
+type ThemePref = 'system' | 'light' | 'dark'
+const themePref = computed<ThemePref>(() => {
+  const p = colorMode.preference
+  return p === 'dark' || p === 'light' ? p : 'system'
+})
+const themeIcon = computed(() => {
+  if (themePref.value === 'light') return 'i-lucide-sun'
+  if (themePref.value === 'dark') return 'i-lucide-moon'
+  return 'i-lucide-monitor'
+})
+const themeLabel = computed(() => {
+  if (themePref.value === 'light') return 'Claro'
+  if (themePref.value === 'dark') return 'Escuro'
+  return 'Auto (sistema)'
+})
+
+function cycleThemeMode() {
+  const next: ThemePref =
+    themePref.value === 'light'
+      ? 'dark'
+      : themePref.value === 'dark'
+        ? 'system'
+        : 'light'
+  if (next === 'system') {
+    // Translate "Auto" to the current OS preference IMMEDIATELY,
+    // storing it as a concrete `light` or `dark`. Same pattern the
+    // AtomsColorModeToggle uses to avoid SSR/CSR hydration mismatch.
+    const osDark =
+      typeof window !== 'undefined' &&
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(prefers-color-scheme: dark)').matches
+    colorMode.preference = osDark ? 'dark' : 'light'
+    return
+  }
+  colorMode.preference = next
+}
+
+// ============================================================
+// Portfolio snapshot card (sidebar)
+// ============================================================
+// Fetches the wallet composition once on mount when the user is
+// authenticated. We expose a single reactive object so the template
+// renders three states: skeleton (not yet loaded), empty (loaded
+// but zero positions), and value (loaded with totalValue).
+const portfolio = reactive<{
+  loaded: boolean
+  value: number | null
+  positions: number
+}>({
+  loaded: false,
+  value: null,
+  positions: 0,
+})
+
+const portfolioDisplay = computed(() => {
+  if (portfolio.value === null) return '—'
+  if (!interfaceStore.revealAmount) return 'R$ ••••••'
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    maximumFractionDigits: 0,
+  }).format(portfolio.value)
+})
+
+async function fetchPortfolioSnapshot() {
+  if (!authStore.me) return
+  try {
+    const portfolioService = usePortfolioService()
+    const [composition, posResp] = await Promise.all([
+      portfolioService.getComposition().catch(() => null),
+      portfolioService.getPositions().catch(() => ({ positions: [] })),
+    ])
+    portfolio.positions = posResp?.positions?.length || 0
+    portfolio.value =
+      composition && composition.totalValue > 0 ? composition.totalValue : null
+  } catch {
+    // Silent fail — the card will render the empty/CTA state which
+    // is honest about the missing data without blocking the layout.
+    portfolio.value = null
+  } finally {
+    portfolio.loaded = true
+  }
+}
+
+// ============================================================
+// Quick actions (2x2 grid)
+// ============================================================
+// Static list — these don't depend on user state. Tints come from
+// hardcoded brand-friendly hues so each card has a distinct color
+// chip without us needing to extend the brand config.
+const quickActions = [
+  {
+    label: 'Calculadora',
+    meta: brand.calculators?.pageTitle ? '12 ferramentas' : 'Várias',
+    icon: 'i-lucide-calculator',
+    tint: '#a78bfa',
+    to: '/calculadora',
+  },
+  {
+    label: 'Rankings',
+    meta: 'Top altas / quedas',
+    icon: 'i-lucide-trophy',
+    tint: '#fbbf24',
+    to: '/ranking',
+  },
+  {
+    label: 'Dividendos',
+    meta: 'Calendário próx.',
+    icon: 'i-lucide-coins',
+    tint: '#34d399',
+    to: '/dividendos/calendario',
+  },
+  {
+    label: 'Configurações',
+    meta: 'Conta e plano',
+    icon: 'i-lucide-settings',
+    tint: '#f87171',
+    to: '/settings',
+  },
+] as const
+
+// ============================================================
+// Market strip (IBOV / IFIX)
+// ============================================================
+// Pulled lazily on mount via the existing `getIndiceHistoricPrices`
+// service. We render the cells with em-dash placeholders during the
+// initial fetch and hide the strip entirely if the fetch fails — a
+// half-broken strip is worse than no strip.
+type MarketCell = {
+  label: string
+  value: string
+  change: string
+  changeNum: number | null
+}
+const market = reactive<{ show: boolean; cells: MarketCell[] }>({
+  show: true,
+  cells: [
+    { label: 'IBOV', value: '—', change: '—', changeNum: null },
+    { label: 'IFIX', value: '—', change: '—', changeNum: null },
+  ],
+})
+
+function pctFmt(n: number) {
+  const sign = n >= 0 ? '+' : ''
+  return `${sign}${n.toFixed(2).replace('.', ',')}%`
+}
+
+function thousandsFmt(n: number) {
+  return new Intl.NumberFormat('pt-BR', {
+    maximumFractionDigits: 0,
+  }).format(n)
+}
+
+async function fetchMarketStrip() {
+  try {
+    const assets = useAssetsService()
+    const [ibov, ifix] = await Promise.all([
+      assets.getIndiceHistoricPrices('ibov', '1mo').catch(() => null),
+      assets.getIndiceHistoricPrices('ifix', '1mo').catch(() => null),
+    ])
+
+    const buildCell = (label: string, payload: any): MarketCell => {
+      // The service unwraps `{ data: [...] }` to a bare array of
+      // `{ name, market_price, price_at }`. We compute today's % from
+      // the last two closes — good enough for a sidebar ticker.
+      const arr: any[] = Array.isArray(payload)
+        ? payload
+        : Array.isArray(payload?.data)
+          ? payload.data
+          : Array.isArray(payload?.values)
+            ? payload.values
+            : []
+      const closes: number[] = arr
+        .map((p: any) => p.market_price ?? p.close ?? p.value)
+        .filter((v: any) => Number.isFinite(v))
+      if (closes.length < 2) {
+        return { label, value: '—', change: '—', changeNum: null }
+      }
+      const last = closes[closes.length - 1]!
+      const prev = closes[closes.length - 2]!
+      const pct = ((last - prev) / prev) * 100
+      return {
+        label,
+        value: thousandsFmt(last),
+        change: pctFmt(pct),
+        changeNum: pct,
+      }
+    }
+
+    market.cells = [
+      buildCell('IBOV', ibov),
+      buildCell('IFIX', ifix),
+    ]
+    // If both cells failed, hide the strip entirely.
+    if (market.cells.every((c) => c.changeNum === null)) {
+      market.show = false
+    }
+  } catch {
+    market.show = false
+  }
+}
+
+onMounted(() => {
+  fetchPortfolioSnapshot()
+  fetchMarketStrip()
+})
 </script>
 
 <style scoped>
@@ -473,6 +866,45 @@ async function makeLogout() {
   display: none;
 }
 
+/* Portfolio snapshot card — quiet hover that telegraphs "this is
+   a link" without competing with the AI CTA below. */
+.platform-snapshot-card:hover {
+  border-color: color-mix(in srgb, var(--brand-primary) 30%, transparent) !important;
+  background-color: color-mix(in srgb, var(--brand-primary) 4%, var(--brand-background)) !important;
+  box-shadow: 0 4px 12px -6px color-mix(in srgb, var(--brand-primary) 24%, transparent);
+}
+
+/* Quick action cards — same recipe as the snapshot card but a
+   touch lighter on hover (4 cards in a grid; if every card lit up
+   like the snapshot, the sidebar would feel too busy). */
+.platform-quick-action:hover {
+  border-color: color-mix(in srgb, var(--brand-primary) 24%, transparent) !important;
+  background-color: color-mix(in srgb, var(--brand-primary) 3%, var(--brand-background)) !important;
+}
+
+/* Skeleton shimmer — used while the portfolio fetch is in flight.
+   Gentle gradient sweep, no flashy animation. */
+.platform-skeleton {
+  position: relative;
+  overflow: hidden;
+}
+.platform-skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--brand-text) 4%, transparent) 50%,
+    transparent 100%
+  );
+  animation: platform-skeleton-shimmer 1.4s linear infinite;
+}
+@keyframes platform-skeleton-shimmer {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+
 /* User row — quiet card-on-card. The border-top from the
    container handles the separation; this layer adds the
    inline icon button polish (hover bg, focus ring). */
@@ -492,13 +924,18 @@ async function makeLogout() {
 @media (prefers-reduced-motion: reduce) {
   .platform-brand-mark,
   .platform-ai-cta,
-  .platform-icon-btn {
+  .platform-icon-btn,
+  .platform-snapshot-card,
+  .platform-quick-action {
     transition: none;
   }
   .platform-brand-mark:hover,
   .platform-ai-cta:hover,
   .platform-ai-cta:active {
     transform: none;
+  }
+  .platform-skeleton::after {
+    animation: none;
   }
 }
 

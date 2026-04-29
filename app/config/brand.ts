@@ -784,7 +784,7 @@ const primoRico: BrandConfig = {
   },
 
   sidebar: {
-    aiCtaTitle: 'Assessor Patrimonial',
+    aiCtaTitle: 'Assessor com IA',
     aiCtaSubtitle: 'Analise fundamentalista com IA',
     planLabel: 'Plano gratuito',
   },
