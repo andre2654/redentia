@@ -814,8 +814,13 @@ function decorateHtml(html: string): string {
     // putting them in a class-laden <pre>, so the remaining <code> are
     // inline. Add our class to those.
     .replace(/<code>/g, '<code class="chat-inline-code">')
-    // <table> → chat-table for our scoped styles
-    .replace(/<table>/g, '<table class="chat-table">')
+    // <table> → wrap in a horizontally-scrollable shell so wide
+    // tables (10+ columns from carteira analysis, comparativos, etc)
+    // don't blow past the answer column width. The wrap owns the
+    // border + rounded corners; the table inside keeps its intrinsic
+    // min-width so columns stay readable instead of being squeezed.
+    .replace(/<table>/g, '<div class="chat-table-wrap"><table class="chat-table">')
+    .replace(/<\/table>/g, '</table></div>')
 }
 
 function artifactIcon(type: ChatArtifact['type']): string {
@@ -990,16 +995,61 @@ function artifactLabel(type: ChatArtifact['type']): string {
 .chat-answer :deep(h3) { font-size: 17px; }
 .chat-answer :deep(h4) { font-size: 15px; opacity: 0.85; }
 
-/* Tables */
-.chat-answer :deep(.chat-table) {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
+/* Tables — wrapped in a horizontally-scrollable shell.
+   The wrap owns the border + rounded corners + the scroll container.
+   The inner table keeps its intrinsic min-width so columns stay
+   readable; when the natural width exceeds the answer column, the
+   wrap scrolls horizontally instead of squashing cells. */
+.chat-answer :deep(.chat-table-wrap) {
   margin: 0.9em 0;
-  font-size: 14.5px;
   border: 1px solid color-mix(in srgb, currentColor 12%, transparent);
   border-radius: 12px;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+  /* Scrollbar visible but slim — gives a hint of scrollability while
+     keeping the chat looking clean. Hidden on Firefox where the slim
+     scrollbar already feels right with `scrollbar-width: thin`. */
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, currentColor 22%, transparent) transparent;
+  -webkit-overflow-scrolling: touch;
+  /* Soft fade on the right edge to hint "more columns →" when content
+     overflows. Mask only kicks in visually when there's overflow because
+     the gradient covers a relative percentage of the wrap. */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    black 0,
+    black calc(100% - 24px),
+    color-mix(in srgb, black 40%, transparent) 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    black 0,
+    black calc(100% - 24px),
+    color-mix(in srgb, black 40%, transparent) 100%
+  );
+}
+.chat-answer :deep(.chat-table-wrap)::-webkit-scrollbar {
+  height: 6px;
+}
+.chat-answer :deep(.chat-table-wrap)::-webkit-scrollbar-track {
+  background: transparent;
+}
+.chat-answer :deep(.chat-table-wrap)::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, currentColor 22%, transparent);
+  border-radius: 4px;
+}
+.chat-answer :deep(.chat-table-wrap)::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, currentColor 35%, transparent);
+}
+
+.chat-answer :deep(.chat-table) {
+  /* Use intrinsic content width — never below the wrap, never compress
+     columns to fit. If wider, the wrap scrolls. */
+  width: max-content;
+  min-width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 14.5px;
 }
 .chat-answer :deep(.chat-table thead) {
   background: color-mix(in srgb, currentColor 4%, transparent);

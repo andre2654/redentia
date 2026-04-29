@@ -1339,6 +1339,18 @@ function formatRelativeTime(iso: string): string {
 </script>
 
 <style scoped>
+/* ---- Scroll container ------------------------------------------------- */
+/* The dashboard root scrolls vertically (overflow-y-auto on the wrapper).
+   Hide the scrollbar visually — keeps scroll behavior fully functional
+   on every browser, just removes the visual track/thumb. */
+.home-dashboard {
+  scrollbar-width: none;       /* Firefox */
+  -ms-overflow-style: none;    /* old IE / Edge */
+}
+.home-dashboard::-webkit-scrollbar {
+  display: none;               /* Chromium / Safari */
+}
+
 /* ---- Hero ------------------------------------------------------------- */
 .hero-headline {
   /* Stripe-style: light weight + large size + tight tracking */

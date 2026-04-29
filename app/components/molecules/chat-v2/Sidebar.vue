@@ -1,321 +1,336 @@
 <!--
-  Sidebar — Linear minimalism, restraint pass.
+  ChatV2Sidebar — full re-skin in the Redentia × Stripe-style flavor.
 
-  Design philosophy:
-  - One screen of pixels. Hierarchy through space + weight, never
-    through animation or layered tints.
-  - Single accent color, single weight scale. Active row uses a 2px
-    left bar + a faint primary tint (~5%) — hierarchy without volume.
-  - Hover reveals secondary affordances (date, delete). Default
-    state is title-only.
-  - MAX = a small solid dot next to the title, no animation, no
-    radial glow. Tier identity through tone.
-  - Dates collapse to relative ("3h", "2d", "12 jan"). tabular-nums.
+  Anatomy (top → bottom):
+    1. Header: brand logo + collapse chevron («).
+    2. Big amber "+ Nova conversa" CTA with ⌘K hint.
+    3. Search input with ⌘F hint.
+    4. MEU PAINEL — eyebrow + 2x2 grid of stat cards (Metas / Decisões /
+       Watchlist / Alertas), each clickable → emits `open-panel`.
+    5. HISTÓRICO — eyebrow + filter pills (Tudo / Hoje / Semana / Mês).
+    6. Sessions grouped by recency. Pinned sessions (📌 Fixados) come
+       first when present; otherwise the standard Hoje / Esta semana /
+       Anteriores groups.
 
-  Restraint pass (audit follow-up):
-  - Removed the breathing radial dot animation (4s loop on every
-    MAX row in the list).
-  - Removed the active-MAX shimmer sweep (4.8s loop with mix-blend-
-    mode: screen — expensive on lower-end hardware).
-  - Removed the active-MAX top hairline gradient. Active state is
-    one signal: the left accent bar.
-  - Kept the ambient radial gradient — it's a single static paint,
-    no animation, communicates "this is a sidebar pane" even on
-    devices without scrollbar styling.
-
-  WIG compliance unchanged.
+  Design language:
+    - Eyebrows: 10.5–11px font-mono-tab UPPERCASE tracking 0.18em,
+      brand-primary or muted depending on emphasis.
+    - Numbers (counts, dates): tabular-nums.
+    - Surfaces: solid `--brand-surface` + 1px subtle border with the
+      amber-tinted lift shadow on hover.
+    - CTA: amber fill, 8px radius (no pills on primary buttons).
 -->
 <template>
-  <div class="chat-sidebar flex h-full min-h-0 flex-col">
-    <!-- Ambient gradient — sits behind everything, very subtle -->
-    <div
-      class="pointer-events-none absolute inset-0"
-      :style="{
-        background: `radial-gradient(ellipse 80% 30% at 50% 0%, color-mix(in srgb, var(--brand-primary) 6%, transparent) 0%, transparent 60%)`,
-      }"
-      aria-hidden="true"
-    />
-
-    <!-- Brand row — full lockup (logo + wordmark in one asset). The
-         BrandLogo `full` variant ships separate dark/light artwork
-         per tenant, so it always reads correctly on whatever surface
-         the sidebar is rendered on. -->
-    <header class="relative flex flex-shrink-0 items-center px-4 pb-5 pt-6">
-      <BrandLogo
-        variant="full"
-        mode="auto"
-        class="chat-brand-mark h-8 w-auto"
-        aria-hidden="true"
-      />
+  <aside
+    ref="rootRef"
+    class="chat-sidebar flex h-full w-full flex-col"
+    :style="{ backgroundColor: 'var(--brand-surface)' }"
+  >
+    <!-- ============ 1. Header ============ -->
+    <header class="flex shrink-0 items-center justify-between px-4 pt-5 pb-3">
+      <NuxtLink to="/" class="chat-brand-mark inline-flex items-center" aria-label="Ir pra home">
+        <BrandLogo variant="full" mode="auto" class="h-7 w-auto" />
+      </NuxtLink>
+      <button
+        type="button"
+        class="collapse-btn flex size-8 shrink-0 items-center justify-center rounded-md transition-colors"
+        :style="{ color: 'var(--brand-text-muted)' }"
+        aria-label="Recolher conversas"
+        @click="$emit('close-sidebar')"
+      >
+        <UIcon name="i-lucide-chevrons-left" class="size-4" />
+      </button>
     </header>
 
-    <!-- Primary action: ghost row with kbd hint -->
-    <button
-      type="button"
-      class="chat-new group relative mx-2 mb-1 flex items-center gap-2.5 rounded-md px-3 py-1.5 text-left text-[13px] transition-[background-color,color]"
-      :style="{ color: `color-mix(in srgb, var(--brand-text) 78%, transparent)` }"
-      aria-label="Nova conversa"
-      @click="$emit('new')"
-    >
-      <UIcon
-        name="i-lucide-plus"
-        class="size-3.5 shrink-0 transition-transform duration-200 group-hover:rotate-90"
-        aria-hidden="true"
-      />
-      <span>Nova conversa</span>
-      <kbd
-        v-if="shortcutLabel"
-        class="ml-auto hidden rounded px-1.5 py-[1px] font-mono-tab text-[9.5px] tracking-wider transition-colors sm:inline-flex"
-        :style="{
-          color: 'var(--brand-text-muted)',
-          border: `1px solid color-mix(in srgb, var(--brand-border) 45%, transparent)`,
-          backgroundColor: `color-mix(in srgb, var(--brand-text) 3%, transparent)`,
-        }"
-      >
-        {{ shortcutLabel }}
-      </kbd>
-    </button>
-
-    <!-- Search — only when it earns its place -->
-    <label
-      v-if="sessions.length > 8"
-      class="chat-search mx-2 mb-2 flex items-center gap-2 rounded-md px-3 py-1.5 transition-colors"
-    >
-      <UIcon
-        name="i-lucide-search"
-        class="size-3.5 shrink-0"
-        :style="{ color: 'var(--brand-text-muted)' }"
-        aria-hidden="true"
-      />
-      <input
-        v-model="searchQuery"
-        type="text"
-        aria-label="Buscar conversas"
-        placeholder="Buscar"
-        autocomplete="off"
-        spellcheck="false"
-        class="chat-search-input min-w-0 flex-1 border-0 bg-transparent text-[12.5px] outline-none"
-        :style="{ color: 'var(--brand-text)' }"
-      />
+    <!-- ============ 2. New conversation CTA ============ -->
+    <div class="px-4 pb-3 shrink-0">
       <button
-        v-if="searchQuery"
         type="button"
-        class="chat-search-clear shrink-0 rounded-sm p-0.5 transition-colors"
-        :style="{ color: 'var(--brand-text-muted)' }"
-        aria-label="Limpar busca"
-        @click="searchQuery = ''"
+        class="new-conv-btn group flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-[14px] font-medium transition-[background-color,box-shadow,transform]"
+        :style="newConvStyle"
+        @click="$emit('new')"
       >
-        <UIcon name="i-lucide-x" class="size-3" aria-hidden="true" />
+        <UIcon name="i-lucide-plus" class="size-4" />
+        <span>Nova conversa</span>
+        <kbd
+          class="ml-auto rounded px-1.5 py-0.5 font-mono-tab text-[10.5px] font-medium"
+          :style="kbdStyle"
+        >{{ shortcutLabel }}</kbd>
       </button>
-    </label>
+    </div>
 
-    <!-- Horizon hairline — a soft separator that fades at the edges,
-         just enough to give the threads list a top margin without
-         a hard division. Pure ornament that earns its pixel. -->
-    <div
-      class="chat-horizon mx-4 mt-1 h-px shrink-0"
-      :style="{
-        backgroundImage: `linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--brand-border) 70%, transparent) 50%, transparent 100%)`,
-      }"
-      aria-hidden="true"
-    />
+    <!-- ============ 3. Search ============ -->
+    <div class="px-4 pb-4 shrink-0">
+      <label
+        class="search-wrap flex items-center gap-2 rounded-lg px-3 py-2 transition-[border-color,box-shadow]"
+        :style="searchStyle"
+      >
+        <UIcon
+          name="i-lucide-search"
+          class="size-3.5 shrink-0"
+          :style="{ color: 'var(--brand-text-muted)' }"
+        />
+        <input
+          v-model="searchQuery"
+          type="search"
+          autocomplete="off"
+          spellcheck="false"
+          class="chat-search-input min-w-0 flex-1 border-0 bg-transparent text-[13px] outline-none"
+          :style="{ color: 'var(--brand-text)' }"
+          placeholder="Buscar conversas"
+        />
+        <kbd
+          v-if="!searchQuery"
+          class="rounded px-1.5 py-0.5 font-mono-tab text-[10.5px] font-medium"
+          :style="kbdMutedStyle"
+        >⌘F</kbd>
+      </label>
+    </div>
 
-    <!-- "Guardado" — compact category counters. Each row reflects the
-         actual count and is clickable: it opens the audit drawer
-         scrolled to that section. The tail count uses tabular-nums
-         so the digit doesn't dance; a tiny dot signals pending
-         action (pending decision, unread alert).
-
-         Below the counters, "Ver auditoria" opens the same drawer
-         but scrolled to "Memória" + activity log — for users who
-         want to inspect everything the agent has access to. -->
-    <section
-      v-if="showGoalsAndDecisions"
-      class="chat-stash flex flex-col px-2 pb-1 pt-2"
-      :aria-labelledby="stashHeadingId"
-    >
-      <h3
-        :id="stashHeadingId"
-        class="font-mono-tab mb-1 px-2 text-[10px] uppercase tracking-[0.18em]"
-        :style="{ color: 'var(--brand-text-muted)' }"
-      >Guardado</h3>
-      <ul class="flex flex-col">
-        <li v-for="row in stashRows" :key="row.section">
+    <!-- ============ Scrollable body (panel + history) ============ -->
+    <div class="chat-sidebar-body flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-4 pb-6">
+      <!-- ============ 4. Meu painel (stat cards 2x2) ============ -->
+      <section v-if="showGoalsAndDecisions" class="flex flex-col gap-2">
+        <span
+          class="font-mono-tab text-[10.5px] font-medium uppercase tracking-[0.18em]"
+          :style="{ color: 'var(--brand-text-muted)' }"
+        >Meu painel</span>
+        <div class="grid grid-cols-2 gap-2">
           <button
+            v-for="row in stashRows"
+            :key="row.section"
             type="button"
-            class="chat-stash-row flex w-full items-center gap-2 rounded-md px-2 py-1 text-left text-[12.5px] transition-colors"
-            :style="{ color: 'var(--brand-text)' }"
-            :aria-label="`${row.label}: ${row.count}${row.pending ? ', com pendência' : ''}`"
+            class="panel-stat-card group flex min-w-0 items-center gap-2 rounded-lg px-2.5 py-2.5 text-left transition-[transform,border-color,background-color,box-shadow]"
+            :style="cardStyle"
             @click="$emit('open-panel', row.section)"
           >
             <span
-              class="size-1.5 shrink-0 rounded-full"
+              class="flex size-7 shrink-0 items-center justify-center rounded-md"
               :style="{
-                backgroundColor: row.pending
-                  ? brand.colors.primary
-                  : `color-mix(in srgb, var(--brand-text) 25%, transparent)`,
+                backgroundColor: `color-mix(in srgb, ${row.iconColor} 14%, transparent)`,
               }"
+            >
+              <UIcon
+                :name="row.icon"
+                class="size-3.5"
+                :style="{ color: row.iconColor }"
+                aria-hidden="true"
+              />
+            </span>
+            <span
+              class="min-w-0 flex-1 truncate text-[12.5px] font-medium"
+              :style="{ color: 'var(--brand-text)' }"
+            >{{ row.label }}</span>
+            <span
+              class="shrink-0 font-mono-tab text-[12.5px] font-semibold tabular-nums"
+              :style="{ color: row.count > 0 ? 'var(--brand-text)' : 'var(--brand-text-muted)' }"
+            >{{ row.count }}</span>
+            <span
+              v-if="row.pending"
+              class="absolute right-1.5 top-1.5 size-1.5 rounded-full"
+              :style="{ backgroundColor: 'var(--brand-primary)' }"
               aria-hidden="true"
             />
-            <span>{{ row.label }}</span>
-            <span
-              class="ml-auto font-mono-tab tabular-nums text-[11.5px]"
-              :style="{
-                color: row.count > 0 ? brand.colors.text : 'var(--brand-text-muted)',
-                fontWeight: row.count > 0 ? '500' : '400',
-              }"
-            >{{ row.count }}</span>
           </button>
-        </li>
-      </ul>
-      <button
-        type="button"
-        class="chat-audit-btn mt-1 flex items-center justify-between gap-2 rounded-md px-2 py-1 text-left text-[12px] transition-colors"
-        :style="{ color: 'var(--brand-text-muted)' }"
-        aria-label="Abrir auditoria completa — logs, atividade, memória de longo prazo"
-        @click="$emit('open-panel', 'memory')"
-      >
-        <span>Ver auditoria</span>
-        <UIcon name="i-lucide-arrow-right" class="size-3" aria-hidden="true" />
-      </button>
-    </section>
+        </div>
+      </section>
 
-    <div
-      v-if="showGoalsAndDecisions"
-      class="chat-horizon mx-4 mb-1 mt-2 h-px shrink-0"
-      :style="{
-        backgroundImage: `linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--brand-border) 70%, transparent) 50%, transparent 100%)`,
-      }"
-      aria-hidden="true"
-    />
-
-    <!-- Threads -->
-    <nav
-      class="chat-threads relative flex-1 overflow-y-auto pb-6 pt-2"
-      aria-label="Histórico de conversas"
-    >
-      <p
-        v-if="sessions.length === 0"
-        class="px-5 pt-8 text-[12px] leading-relaxed"
-        :style="{ color: 'var(--brand-text-muted)' }"
-      >
-        Suas conversas aparecem aqui.
-      </p>
-
-      <p
-        v-else-if="visibleSessions.length === 0"
-        class="px-5 pt-6 text-[12px]"
-        :style="{ color: 'var(--brand-text-muted)' }"
-      >
-        Nada bate com&nbsp;<span class="font-medium" :style="{ color: 'var(--brand-text)' }">{{ searchQuery }}</span>.
-      </p>
-
-      <template v-for="group in groupedSessions" :key="group.label">
-        <h3
-          v-if="group.items.length > 0"
-          class="mb-1 mt-5 flex items-center gap-2 px-5 font-mono-tab text-[10px] uppercase tracking-[0.18em]"
-          :style="{ color: `color-mix(in srgb, var(--brand-text-muted) 55%, transparent)` }"
-        >
-          <span>{{ group.label }}</span>
+      <!-- ============ 5. Histórico — eyebrow + filter pills ============ -->
+      <section class="flex flex-col gap-2">
+        <header class="flex items-center justify-between">
           <span
-            class="h-px flex-1"
-            :style="{
-              backgroundColor: `color-mix(in srgb, var(--brand-border) 25%, transparent)`,
-            }"
+            class="font-mono-tab text-[10.5px] font-medium uppercase tracking-[0.18em]"
+            :style="{ color: 'var(--brand-text-muted)' }"
+          >Histórico</span>
+          <UIcon
+            name="i-lucide-sliders-horizontal"
+            class="size-3.5 opacity-50"
+            :style="{ color: 'var(--brand-text-muted)' }"
             aria-hidden="true"
           />
-          <span
-            class="font-mono-tab tabular-nums"
-            :style="{ color: `color-mix(in srgb, var(--brand-text-muted) 45%, transparent)` }"
-          >
-            {{ group.items.length }}
-          </span>
-        </h3>
-        <ul v-if="group.items.length > 0" class="flex flex-col">
-          <li
-            v-for="session in group.items"
-            :key="session.id"
-            class="group/sess relative"
-            :class="[
-              activeId === session.id ? 'is-active' : '',
-              session.tier === 'max' ? 'is-max' : '',
-            ]"
-          >
-            <!-- Active row pad — soft tonal background.
-                 MAX gets a richer gradient AND an animated shimmer
-                 sweeping across (the shimmer lives in CSS as a
-                 ::before on .is-active.is-max). -->
-            <!-- Active row pad — flat 5% tint, no gradient, no per-tier
-                 mix. Selection is communicated by the bar + the bg
-                 alone, not by a graded fade. -->
-            <span
-              v-if="activeId === session.id"
-              class="chat-sess-pad pointer-events-none absolute inset-x-2 inset-y-0.5 overflow-hidden rounded-md"
-              :style="{
-                backgroundColor: `color-mix(in srgb, var(--brand-primary) 5%, transparent)`,
-              }"
-              aria-hidden="true"
-            />
-            <!-- Left accent bar — solid 2px brand fill. No box-shadow
-                 glow (was 6-10px in the previous pass; the audit flagged
-                 it as one of the loudest pieces of decoration on the
-                 sidebar). -->
-            <span
-              v-if="activeId === session.id"
-              class="chat-sess-bar pointer-events-none absolute left-0 top-1/2 h-4 -translate-y-1/2 rounded-r-full"
-              :style="{
-                width: '2px',
-                backgroundColor: 'var(--brand-primary)',
-              }"
-              aria-hidden="true"
-            />
+        </header>
+
+        <div
+          class="filter-pills flex items-center gap-1 rounded-lg p-0.5"
+          :style="{ backgroundColor: `color-mix(in srgb, var(--brand-text) 5%, transparent)` }"
+        >
+          <button
+            v-for="f in FILTERS"
+            :key="f.id"
+            type="button"
+            class="flex flex-1 items-center justify-center rounded-md px-2 py-1 text-[12px] font-medium transition-colors"
+            :style="filterPillStyle(f.id)"
+            @click="filter = f.id"
+          >{{ f.label }}</button>
+        </div>
+      </section>
+
+      <!-- ============ 6. Pinned sessions ============ -->
+      <section v-if="pinnedSessions.length > 0" class="flex flex-col gap-1">
+        <span
+          class="flex items-center gap-1.5 font-mono-tab text-[10.5px] font-medium uppercase tracking-[0.18em]"
+          :style="{ color: 'var(--brand-primary)' }"
+        >
+          <UIcon name="i-lucide-pin" class="size-3" aria-hidden="true" />
+          Fixados
+        </span>
+        <ul class="flex flex-col gap-px">
+          <li v-for="s in pinnedSessions" :key="s.id">
             <button
               type="button"
-              class="chat-sess relative flex w-full items-center gap-2 rounded-md px-4 py-1.5 text-left text-[13px] transition-[background-color,color]"
-              :style="activeId === session.id
-                ? { color: 'var(--brand-text)', fontWeight: '500' }
-                : { color: `color-mix(in srgb, var(--brand-text) 80%, transparent)` }"
-              :aria-current="activeId === session.id ? 'page' : undefined"
-              :data-tier="session.tier"
-              @click="$emit('select', session.id)"
+              class="session-row group relative flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left transition-colors"
+              :style="sessionRowStyle(s.id === activeId)"
+              @click="$emit('select', s.id)"
             >
-              <!-- Tier marker — solid dot, no glow. Inactive rows only;
-                   active rows get the bar + tinted pad as the cue. -->
               <span
-                v-if="session.tier === 'max' && activeId !== session.id"
-                class="size-1.5 shrink-0 rounded-full"
-                :style="{ backgroundColor: 'var(--brand-primary)' }"
-                aria-label="Conversa Redentia MAX"
-              />
-              <span class="min-w-0 flex-1 truncate">
-                {{ session.title ?? 'Sem título' }}
-              </span>
-              <!-- Hover-revealed date -->
+                class="min-w-0 flex-1 truncate text-[13px]"
+                :style="{ color: s.id === activeId ? 'var(--brand-text)' : 'var(--brand-text)' }"
+              >{{ s.title ?? 'Sem título' }}</span>
               <span
-                class="chat-sess-meta hidden shrink-0 font-mono-tab text-[10px] tabular-nums"
-                :style="{ color: `color-mix(in srgb, var(--brand-text-muted) 70%, transparent)` }"
-              >
-                {{ formatRelativeDate(session.createdAt) }}
-              </span>
-              <!-- Hover-revealed delete -->
-              <span
-                role="button"
-                tabindex="0"
-                class="chat-sess-del hidden size-5 shrink-0 items-center justify-center rounded-sm transition-colors"
+                class="font-mono-tab text-[10.5px] tabular-nums shrink-0"
                 :style="{ color: 'var(--brand-text-muted)' }"
-                aria-label="Excluir conversa"
-                @click.stop="$emit('delete', session.id)"
-                @keydown.enter.stop.prevent="$emit('delete', session.id)"
-                @keydown.space.stop.prevent="$emit('delete', session.id)"
-              >
-                <UIcon name="i-lucide-trash-2" class="size-3" aria-hidden="true" />
-              </span>
+              >{{ formatRelativeDate(s.createdAt) }}</span>
+              <UIcon
+                name="i-lucide-pin"
+                class="size-3 shrink-0"
+                :style="{ color: 'var(--brand-primary)' }"
+                aria-hidden="true"
+              />
             </button>
           </li>
         </ul>
-      </template>
-    </nav>
-  </div>
+      </section>
+
+      <!-- ============ 7. Recency-grouped sessions ============ -->
+      <section
+        v-for="group in groupedSessions"
+        :key="group.label"
+        v-show="group.items.length > 0"
+        class="flex flex-col gap-1"
+      >
+        <header class="flex items-center justify-between">
+          <span
+            class="flex items-center gap-1.5 font-mono-tab text-[10.5px] font-medium uppercase tracking-[0.18em]"
+            :style="{ color: 'var(--brand-text-muted)' }"
+          >
+            <span
+              class="inline-flex size-1.5 rounded-full"
+              :style="{ backgroundColor: group.dotColor }"
+              aria-hidden="true"
+            />
+            {{ group.label }}
+          </span>
+          <span
+            v-if="group.items.length > 0"
+            class="rounded-full px-1.5 py-0 font-mono-tab text-[10px] font-semibold tabular-nums"
+            :style="{
+              backgroundColor: `color-mix(in srgb, var(--brand-text) 8%, transparent)`,
+              color: 'var(--brand-text-muted)',
+            }"
+          >{{ group.items.length }}</span>
+        </header>
+
+        <ul class="flex flex-col gap-px">
+          <li
+            v-for="s in expandedSessionsFor(group)"
+            :key="s.id"
+          >
+            <button
+              type="button"
+              class="session-row group relative flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left transition-colors"
+              :style="sessionRowStyle(s.id === activeId)"
+              @click="$emit('select', s.id)"
+            >
+              <span
+                v-if="s.id === activeId"
+                class="size-1.5 shrink-0 rounded-full"
+                :style="{ backgroundColor: 'var(--brand-primary)' }"
+                aria-hidden="true"
+              />
+              <UIcon
+                v-else
+                name="i-lucide-message-circle"
+                class="size-3 shrink-0"
+                :style="{ color: 'var(--brand-text-muted)' }"
+                aria-hidden="true"
+              />
+              <span
+                class="min-w-0 flex-1 truncate text-[13px]"
+                :style="{ color: 'var(--brand-text)' }"
+              >{{ s.title ?? 'Sem título' }}</span>
+              <span
+                class="font-mono-tab text-[10.5px] tabular-nums shrink-0"
+                :style="{ color: s.id === activeId ? 'var(--brand-primary)' : 'var(--brand-text-muted)' }"
+              >{{ formatRelativeDate(s.createdAt) }}</span>
+              <button
+                type="button"
+                class="session-delete absolute right-1.5 inline-flex size-5 items-center justify-center rounded opacity-0 transition-opacity group-hover:opacity-100"
+                :style="{ color: 'var(--brand-negative)', backgroundColor: 'var(--brand-surface)' }"
+                aria-label="Apagar conversa"
+                @click.stop="$emit('delete', s.id)"
+              >
+                <UIcon name="i-lucide-x" class="size-3" />
+              </button>
+            </button>
+          </li>
+        </ul>
+
+        <!-- "Ver todas de hoje / da semana" expander when truncated -->
+        <button
+          v-if="group.items.length > group.collapsedSize && !group.expanded"
+          type="button"
+          class="see-more-btn flex w-full items-center justify-between rounded-md px-2 py-1.5 text-left text-[12.5px] transition-colors"
+          :style="{ color: 'var(--brand-text-muted)' }"
+          @click="expandedGroups.add(group.label); expandedGroups = new Set(expandedGroups)"
+        >
+          <span>Ver todas {{ group.expandLabel }}</span>
+          <UIcon name="i-lucide-chevron-down" class="size-3.5 opacity-60" />
+        </button>
+      </section>
+
+      <!-- Empty state -->
+      <div
+        v-if="!hasAnySession"
+        class="rounded-lg px-3 py-6 text-center text-[12.5px]"
+        :style="{
+          color: 'var(--brand-text-muted)',
+          border: `1px dashed color-mix(in srgb, var(--brand-border) 45%, transparent)`,
+        }"
+      >
+        Suas conversas aparecem aqui.
+      </div>
+    </div>
+
+    <!-- ============ Footer: Ver auditoria ============
+         Sticky bottom button that opens the audit drawer (PanelDrawer)
+         on the "activity" tab. Lives outside the scroll container so
+         it's always visible regardless of how long the history list
+         scrolls. -->
+    <footer
+      v-if="showGoalsAndDecisions"
+      class="shrink-0 border-t px-4 py-3"
+      :style="{ borderColor: `color-mix(in srgb, var(--brand-border) 35%, transparent)` }"
+    >
+      <button
+        type="button"
+        class="audit-btn flex w-full items-center justify-center gap-2 rounded-lg px-3 py-2 text-[13px] font-medium transition-[background-color,border-color,box-shadow]"
+        :style="auditBtnStyle"
+        @click="$emit('open-panel', 'activity')"
+      >
+        <UIcon
+          name="i-lucide-clipboard-list"
+          class="size-3.5"
+          :style="{ color: 'var(--brand-primary)' }"
+        />
+        <span :style="{ color: 'var(--brand-text)' }">Ver auditoria</span>
+        <UIcon
+          name="i-lucide-arrow-right"
+          class="ml-auto size-3 opacity-60"
+          :style="{ color: 'var(--brand-text-muted)' }"
+        />
+      </button>
+    </footer>
+  </aside>
 </template>
 
 <script setup lang="ts">
@@ -326,14 +341,16 @@ interface Session {
   title: string | null
   createdAt: string
   tier?: 'basic' | 'max'
+  /** Optional: pinned-by-user marker (future). When undefined, treated
+   *  as not pinned. */
+  pinned?: boolean
 }
 
 const props = defineProps<{
   sessions: Session[]
   activeId: string | null
-  /** When true, the consolidated Painel button is rendered above the
-   *  chat history. Disabled for anonymous users (the panel features
-   *  all require a persistent identity). */
+  /** Toggle the "Meu painel" stat grid. Disabled for anonymous users
+   *  (the panel features all require persistent identity). */
   showGoalsAndDecisions?: boolean
 }>()
 
@@ -344,11 +361,12 @@ defineEmits<{
   select: [id: string]
   delete: [id: string]
   'open-panel': [section: PanelSection]
+  'close-sidebar': []
 }>()
 
-// Goals + decisions + watchlist + alerts composables. We refresh
-// them here so the "Guardado" counters in the sidebar stay in sync;
-// the actual lists are rendered inside the audit drawer.
+const brand = useBrand()
+
+// ---- Painel state (composables) -----------------------------------------
 const goalsState = useGoals()
 const decisionsState = useDecisions()
 const watchlistState = useWatchlist()
@@ -362,31 +380,34 @@ onMounted(() => {
   }
 })
 
-const stashHeadingId = `chat-stash-${Math.random().toString(36).slice(2, 8)}`
-
 interface StashRow {
   section: PanelSection
   label: string
+  icon: string
+  iconColor: string
   count: number
-  /** Subset that needs attention — drives the "pending" dot. */
   pending: boolean
 }
 
 const stashRows = computed<StashRow[]>(() => {
-  const pendingDecisions = decisionsState.decisions.value.filter(
-    (d) => d.status === 'pending',
-  ).length
+  const pendingDecisions = decisionsState.decisions.value.filter((d) => d.status === 'pending').length
   const unreadAlerts = alertsState.alerts.value.filter((a) => a.readAt == null).length
   return [
     {
       section: 'goals',
       label: 'Metas',
+      icon: 'i-lucide-target',
+      iconColor: 'var(--brand-primary)',
       count: goalsState.goals.value.length,
       pending: false,
     },
     {
       section: 'decisions',
       label: 'Decisões',
+      icon: 'i-lucide-briefcase',
+      iconColor: '#8b5cf6', // purple — distinct from primary so the
+                            // 4 cards read as a category palette, not
+                            // a single repeated tone.
       count: decisionsState.decisions.value.filter(
         (d) => d.status === 'pending' || d.status === 'accepted',
       ).length,
@@ -395,75 +416,232 @@ const stashRows = computed<StashRow[]>(() => {
     {
       section: 'watchlist',
       label: 'Watchlist',
+      icon: 'i-lucide-star',
+      iconColor: 'var(--brand-positive, #22c55e)',
       count: watchlistState.watches.value.length,
       pending: false,
     },
     {
       section: 'alerts',
       label: 'Alertas',
+      icon: 'i-lucide-bell',
+      iconColor: alertsState.alerts.value.length > 0 ? 'var(--brand-negative, #ef4444)' : 'var(--brand-text-muted)',
       count: alertsState.alerts.value.length,
       pending: unreadAlerts > 0,
     },
   ]
 })
 
-const brand = useBrand()
+// ---- Search + filter ----------------------------------------------------
 const searchQuery = ref('')
 
-// Detect platform for keyboard hint (Mac shows ⌘, others Ctrl).
-const shortcutLabel = ref('')
-onMounted(() => {
-  const isMac =
-    typeof navigator !== 'undefined' && /Mac|iPhone|iPad|iPod/i.test(navigator.platform || navigator.userAgent || '')
-  shortcutLabel.value = isMac ? '⌘K' : 'Ctrl K'
-})
+type FilterId = 'tudo' | 'hoje' | 'semana' | 'mes'
+const FILTERS: Array<{ id: FilterId; label: string }> = [
+  { id: 'tudo', label: 'Tudo' },
+  { id: 'hoje', label: 'Hoje' },
+  { id: 'semana', label: 'Semana' },
+  { id: 'mes', label: 'Mês' },
+]
+const filter = ref<FilterId>('tudo')
 
 const visibleSessions = computed(() => {
   const q = searchQuery.value.trim().toLowerCase()
-  if (!q) return props.sessions
-  return props.sessions.filter((s) => (s.title ?? '').toLowerCase().includes(q))
+  const queried = q
+    ? props.sessions.filter((s) => (s.title ?? '').toLowerCase().includes(q))
+    : props.sessions
+
+  // Apply time filter
+  const now = new Date()
+  const today = new Date(now)
+  today.setHours(0, 0, 0, 0)
+  const weekAgo = new Date(today)
+  weekAgo.setDate(today.getDate() - 7)
+  const monthAgo = new Date(today)
+  monthAgo.setMonth(today.getMonth() - 1)
+
+  if (filter.value === 'tudo') return queried
+  return queried.filter((s) => {
+    const d = new Date(s.createdAt)
+    if (filter.value === 'hoje') return d >= today
+    if (filter.value === 'semana') return d >= weekAgo
+    if (filter.value === 'mes') return d >= monthAgo
+    return true
+  })
 })
 
-const groupedSessions = computed(() => {
+// ---- Pinned + grouped ---------------------------------------------------
+const pinnedSessions = computed(() => visibleSessions.value.filter((s) => s.pinned))
+
+const expandedGroups = ref<Set<string>>(new Set())
+
+interface SessionGroup {
+  label: string
+  items: Session[]
+  collapsedSize: number
+  expanded: boolean
+  dotColor: string
+  expandLabel: string
+}
+
+const groupedSessions = computed<SessionGroup[]>(() => {
   const now = new Date()
   const today = new Date(now)
   today.setHours(0, 0, 0, 0)
   const weekAgo = new Date(today)
   weekAgo.setDate(today.getDate() - 7)
 
-  const groups = {
+  const buckets = {
     Hoje: [] as Session[],
     'Esta semana': [] as Session[],
     Anteriores: [] as Session[],
   }
 
   for (const s of visibleSessions.value) {
+    if (s.pinned) continue // pinned section already handled them
     const d = new Date(s.createdAt)
-    if (d >= today) groups.Hoje.push(s)
-    else if (d >= weekAgo) groups['Esta semana'].push(s)
-    else groups.Anteriores.push(s)
+    if (d >= today) buckets.Hoje.push(s)
+    else if (d >= weekAgo) buckets['Esta semana'].push(s)
+    else buckets.Anteriores.push(s)
   }
 
-  return Object.entries(groups).map(([label, items]) => ({ label, items }))
+  return [
+    {
+      label: 'Hoje',
+      items: buckets.Hoje,
+      collapsedSize: 3,
+      expanded: expandedGroups.value.has('Hoje'),
+      dotColor: 'var(--brand-primary)',
+      expandLabel: 'de hoje',
+    },
+    {
+      label: 'Esta semana',
+      items: buckets['Esta semana'],
+      collapsedSize: 4,
+      expanded: expandedGroups.value.has('Esta semana'),
+      dotColor: 'var(--brand-text-muted)',
+      expandLabel: 'da semana',
+    },
+    {
+      label: 'Anteriores',
+      items: buckets.Anteriores,
+      collapsedSize: 5,
+      expanded: expandedGroups.value.has('Anteriores'),
+      dotColor: 'var(--brand-text-muted)',
+      expandLabel: 'anteriores',
+    },
+  ]
 })
 
+function expandedSessionsFor(group: SessionGroup): Session[] {
+  return group.expanded ? group.items : group.items.slice(0, group.collapsedSize)
+}
+
+const hasAnySession = computed(
+  () => pinnedSessions.value.length > 0 || groupedSessions.value.some((g) => g.items.length > 0),
+)
+
+// ---- Styles -------------------------------------------------------------
+const newConvStyle = computed(() => ({
+  backgroundColor: 'var(--brand-primary)',
+  color: brand.colors.background,
+  boxShadow: `0 8px 18px -10px color-mix(in srgb, var(--brand-primary) 60%, transparent), 0 4px 10px -6px rgba(0,0,0,0.10)`,
+}))
+
+const kbdStyle = computed(() => ({
+  backgroundColor: `color-mix(in srgb, ${brand.colors.background} 25%, transparent)`,
+  color: brand.colors.background,
+}))
+const kbdMutedStyle = computed(() => ({
+  backgroundColor: `color-mix(in srgb, var(--brand-text) 7%, transparent)`,
+  color: 'var(--brand-text-muted)',
+}))
+
+const searchStyle = computed(() => ({
+  backgroundColor: `color-mix(in srgb, var(--brand-text) 4%, transparent)`,
+  border: `1px solid transparent`,
+}))
+
+const cardStyle = computed(() => ({
+  position: 'relative' as const,
+  backgroundColor: 'var(--brand-surface)',
+  border: `1px solid color-mix(in srgb, var(--brand-border) 40%, transparent)`,
+  boxShadow: `color-mix(in srgb, var(--brand-primary) 6%, transparent) 0px 6px 14px -10px, rgba(0,0,0,0.04) 0px 3px 8px -6px`,
+}))
+
+function filterPillStyle(id: FilterId): Record<string, string> {
+  const active = filter.value === id
+  if (active) {
+    return {
+      backgroundColor: 'var(--brand-primary)',
+      color: brand.colors.background,
+      boxShadow: `0 1px 3px rgba(0,0,0,0.08)`,
+    }
+  }
+  return {
+    color: 'var(--brand-text-muted)',
+    backgroundColor: 'transparent',
+  }
+}
+
+const auditBtnStyle = computed(() => ({
+  backgroundColor: 'var(--brand-surface)',
+  border: `1px solid color-mix(in srgb, var(--brand-border) 50%, transparent)`,
+  boxShadow: `color-mix(in srgb, var(--brand-primary) 6%, transparent) 0px 6px 14px -10px, rgba(0,0,0,0.04) 0px 3px 8px -6px`,
+}))
+
+function sessionRowStyle(active: boolean): Record<string, string> {
+  if (active) {
+    return {
+      backgroundColor: `color-mix(in srgb, var(--brand-primary) 10%, transparent)`,
+      border: `1px solid color-mix(in srgb, var(--brand-primary) 25%, transparent)`,
+    }
+  }
+  return {
+    backgroundColor: 'transparent',
+    border: '1px solid transparent',
+  }
+}
+
+// ---- Date formatting ----------------------------------------------------
 function formatRelativeDate(iso: string): string {
   const d = new Date(iso)
   const now = new Date()
+  const today = new Date(now)
+  today.setHours(0, 0, 0, 0)
   const diffMs = now.getTime() - d.getTime()
   const diffMin = Math.floor(diffMs / 60000)
-  if (diffMin < 1) return 'agora'
-  if (diffMin < 60) return `${diffMin}m`
-  const diffH = Math.floor(diffMin / 60)
-  if (diffH < 24) return `${diffH}h`
-  const diffD = Math.floor(diffH / 24)
-  if (diffD < 7) return `${diffD}d`
-  return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short' }).format(d)
+
+  // Same day → "HH:MM"
+  if (d >= today) {
+    return d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+  }
+  // Past 7d → "Xh atrás" / "Xd atrás"
+  if (diffMin < 60 * 24 * 7) {
+    if (diffMin < 60) return `${diffMin}m`
+    const diffH = Math.floor(diffMin / 60)
+    if (diffH < 24) return `${diffH}h atrás`
+    const diffD = Math.floor(diffH / 24)
+    if (diffD === 1) return 'ontem'
+    return `${diffD}d atrás`
+  }
+  // Older → "Qua" / "Qui" / "01/04"
+  if (diffMin < 60 * 24 * 30) {
+    return d.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '')
+  }
+  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })
 }
 
-// ⌘K / Ctrl+K focuses the search input when present.
+// ---- Keyboard shortcut --------------------------------------------------
+const shortcutLabel = ref('')
+onMounted(() => {
+  const isMac =
+    typeof navigator !== 'undefined' &&
+    /Mac|iPhone|iPad|iPod/i.test(navigator.platform || navigator.userAgent || '')
+  shortcutLabel.value = isMac ? '⌘K' : 'Ctrl K'
+})
+
 function onKey(e: KeyboardEvent) {
-  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'f') {
     const input = document.querySelector<HTMLInputElement>('.chat-search-input')
     if (input) {
       e.preventDefault()
@@ -473,133 +651,101 @@ function onKey(e: KeyboardEvent) {
 }
 onMounted(() => window.addEventListener('keydown', onKey))
 onUnmounted(() => window.removeEventListener('keydown', onKey))
+
+const rootRef = ref<HTMLElement | null>(null)
 </script>
 
 <style scoped>
 .chat-sidebar {
-  position: relative;
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Brand mark — subtle hover lift on the logo itself */
+/* Hide scrollbar visually on the body — keep scroll behavior. */
+.chat-sidebar-body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.chat-sidebar-body::-webkit-scrollbar { display: none; }
+
+/* Brand mark — subtle hover lift */
 .chat-brand-mark {
   transition: transform 240ms cubic-bezier(0.2, 0.7, 0.3, 1);
 }
 .chat-sidebar:hover .chat-brand-mark {
   transform: scale(1.04);
 }
+
+/* Collapse button hover */
+.collapse-btn:hover {
+  background-color: color-mix(in srgb, var(--brand-text) 6%, transparent);
+  color: var(--brand-text) !important;
+}
+
+/* New conversation CTA */
+.new-conv-btn:hover {
+  background-color: color-mix(in srgb, var(--brand-primary) 92%, black) !important;
+  transform: translateY(-0.5px);
+  box-shadow:
+    0 12px 24px -10px color-mix(in srgb, var(--brand-primary) 70%, transparent),
+    0 6px 14px -8px rgba(0, 0, 0, 0.14) !important;
+}
+.new-conv-btn:active {
+  transform: translateY(0);
+}
+
+/* Search wrap — focus ring */
+.search-wrap:focus-within {
+  border-color: color-mix(in srgb, var(--brand-primary) 60%, transparent) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-primary) 16%, transparent);
+}
+
+/* Stat cards */
+.panel-stat-card:hover {
+  border-color: color-mix(in srgb, var(--brand-primary) 35%, transparent) !important;
+  background-color: color-mix(in srgb, var(--brand-primary) 4%, var(--brand-surface)) !important;
+  transform: translateY(-1px);
+  box-shadow:
+    color-mix(in srgb, var(--brand-primary) 14%, transparent) 0px 12px 24px -16px,
+    rgba(0, 0, 0, 0.08) 0px 6px 14px -8px !important;
+}
+
+/* Session row hover */
+.session-row:hover {
+  background-color: color-mix(in srgb, var(--brand-text) 4%, transparent) !important;
+}
+
+/* Delete button hover */
+.session-delete:hover {
+  background-color: color-mix(in srgb, var(--brand-negative) 12%, var(--brand-surface)) !important;
+}
+
+/* See-more button hover */
+.see-more-btn:hover {
+  background-color: color-mix(in srgb, var(--brand-text) 4%, transparent);
+  color: var(--brand-text) !important;
+}
+
+/* Audit footer button — same family as the stat cards */
+.audit-btn:hover {
+  border-color: color-mix(in srgb, var(--brand-primary) 35%, transparent) !important;
+  background-color: color-mix(in srgb, var(--brand-primary) 4%, var(--brand-surface)) !important;
+  box-shadow:
+    color-mix(in srgb, var(--brand-primary) 14%, transparent) 0px 12px 24px -16px,
+    rgba(0, 0, 0, 0.06) 0px 6px 14px -8px !important;
+}
+
+/* Filter pill transition */
+.filter-pills button {
+  cursor: pointer;
+  transition: background-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .chat-brand-mark { transition: none !important; }
-}
-
-/* Touch + keyboard niceties */
-.chat-new,
-.chat-sess,
-.chat-search,
-.chat-search-clear,
-.chat-sess-del,
-.chat-stash-row,
-.chat-audit-btn {
-  touch-action: manipulation;
-}
-
-/* Visible focus only via keyboard navigation */
-.chat-new:focus-visible,
-.chat-sess:focus-visible,
-.chat-search-input:focus-visible,
-.chat-search-clear:focus-visible,
-.chat-sess-del:focus-visible,
-.chat-stash-row:focus-visible,
-.chat-audit-btn:focus-visible {
-  outline: 2px solid var(--brand-primary, currentColor);
-  outline-offset: 2px;
-  border-radius: 6px;
-}
-
-/* Hover states — explicit transitions, single property */
-.chat-new:hover {
-  background-color: color-mix(in srgb, currentColor 6%, transparent);
-  color: var(--brand-text, currentColor);
-}
-
-.chat-sess:hover {
-  background-color: color-mix(in srgb, currentColor 5%, transparent);
-}
-
-.chat-stash-row:hover,
-.chat-audit-btn:hover {
-  background-color: color-mix(in srgb, currentColor 5%, transparent);
-}
-.chat-audit-btn:hover {
-  color: var(--brand-text, currentColor);
-}
-
-.chat-search:focus-within {
-  background-color: color-mix(in srgb, currentColor 5%, transparent);
-}
-
-.chat-search-input::placeholder {
-  color: color-mix(in srgb, currentColor 40%, transparent);
-}
-
-.chat-search-clear:hover {
-  background-color: color-mix(in srgb, currentColor 8%, transparent);
-}
-
-/* Hover reveal — date + delete only show on row hover/focus.
-   `display: none` keeps them out of the tab order until needed. */
-.chat-sess-meta,
-.chat-sess-del {
-  display: none;
-}
-.group\/sess:hover .chat-sess-meta,
-.group\/sess:focus-within .chat-sess-meta {
-  display: inline-block;
-}
-.group\/sess:hover .chat-sess-del,
-.group\/sess:focus-within .chat-sess-del {
-  display: inline-flex;
-}
-.chat-sess-del:hover {
-  background-color: color-mix(in srgb, currentColor 10%, transparent);
-}
-
-/* MAX dot — solid colored dot, no animation. Tier identity through
-   tone, not motion. The audit flagged 7+ simultaneous animations on
-   load; killing the breathing dot is the cheapest cumulative win. */
-
-/* Active + MAX row uses the same active treatment as Basic; the row's
-   left accent bar (rendered inline) is enough to signal selection.
-   No shimmer sweep, no top-edge gradient hairline. */
-
-/* Honor reduced motion — kept for the few legitimate transitions
-   that remain (search clear, hover/focus). */
-@media (prefers-reduced-motion: reduce) {
-  .chat-new,
-  .chat-sess,
-  .chat-search,
-  .chat-search-clear,
-  .chat-sess-del {
+  .chat-brand-mark,
+  .new-conv-btn,
+  .panel-stat-card {
     transition: none !important;
+    transform: none !important;
   }
-  .chat-new .iconify {
-    transition: none !important;
-  }
-}
-
-/* Slim, refined scrollbar */
-.chat-threads {
-  scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, currentColor 14%, transparent) transparent;
-}
-.chat-threads::-webkit-scrollbar {
-  width: 5px;
-}
-.chat-threads::-webkit-scrollbar-thumb {
-  background-color: color-mix(in srgb, currentColor 12%, transparent);
-  border-radius: 3px;
-}
-.chat-threads::-webkit-scrollbar-thumb:hover {
-  background-color: color-mix(in srgb, currentColor 22%, transparent);
 }
 </style>

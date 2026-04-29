@@ -35,9 +35,10 @@
   <ChatV2Layout
     v-else
     :sidebar-open="sidebarOpen"
+    :sidebar-collapsed="sidebarCollapsed"
     :artifact-open="artifactOpen"
     :tier="tier"
-    @close-sidebar="sidebarOpen = false"
+    @close-sidebar="onCloseSidebar"
     @close-artifact="artifactOpen = false"
   >
     <template #sidebar>
@@ -89,6 +90,26 @@
           >
             <UIcon name="i-lucide-x" class="size-4" />
           </NuxtLink>
+        </div>
+
+        <!-- Desktop top-LEFT: re-open sidebar button (only when collapsed) -->
+        <div
+          v-if="sidebarCollapsed"
+          class="absolute left-5 top-5 z-10 hidden items-center gap-2 xl:flex"
+        >
+          <button
+            type="button"
+            class="flex size-9 items-center justify-center rounded-full transition-colors"
+            :style="{
+              backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 80%, transparent)`,
+              border: `1px solid color-mix(in srgb, ${brand.colors.border} 45%, transparent)`,
+              color: brand.colors.text,
+            }"
+            aria-label="Mostrar conversas"
+            @click="sidebarCollapsed = false"
+          >
+            <UIcon name="i-lucide-panel-left" class="size-4" />
+          </button>
         </div>
 
         <!-- Desktop top-right cluster: bell + close -->
@@ -243,6 +264,9 @@ const authStore = useAuthStore()
 // ---- State ------------------------------------------------------
 const tier = ref<'basic' | 'max'>('basic')
 const sidebarOpen = ref(false)
+// Desktop-only: when true, the sidebar is hidden entirely (collapsed
+// by the user clicking the « button). Mobile uses `sidebarOpen` instead.
+const sidebarCollapsed = ref(false)
 const artifactOpen = ref(false)
 const activeArtifact = ref<ChatArtifact | null>(null)
 const sessionList = ref<Array<{ id: string; title: string | null; createdAt: string; tier?: 'basic' | 'max'; goalId?: string | null }>>([])

@@ -38,8 +38,11 @@
       aria-hidden="true"
     />
 
-    <!-- Sidebar (desktop) -->
+    <!-- Sidebar (desktop). Hidden when `sidebarCollapsed` is true so
+         the user can reclaim full width on demand. The chat header
+         shows a "panel-left" button to bring it back. -->
     <aside
+      v-if="!sidebarCollapsed"
       class="hidden h-full w-[260px] shrink-0 flex-col xl:flex"
       :style="{
         backgroundColor: `color-mix(in srgb, var(--brand-surface) 25%, var(--brand-background))`,
@@ -126,6 +129,9 @@
 <script setup lang="ts">
 defineProps<{
   sidebarOpen: boolean
+  /** When true, the desktop sidebar is hidden entirely (collapsed by
+   *  user). The mobile drawer continues to use `sidebarOpen`. */
+  sidebarCollapsed?: boolean
   artifactOpen: boolean
   tier?: 'basic' | 'max'
 }>()
