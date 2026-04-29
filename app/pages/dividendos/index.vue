@@ -1,451 +1,456 @@
+<!--
+  /dividendos — Editorial guide on dividends, Stripe-styled.
+
+  Replaces the prior `prose prose-invert` + `font-bold` + `text-gray-*`
+  treatment with the redentia-stripe-style typography system:
+    - eyebrow (mono tabular, 0.18em, 11px) → display heading (weight
+      300, clamp 28-44px, negative letter-spacing) → body large (17px,
+      1.55 lh, color-mix on brand text).
+    - Sub-headings 22-26px medium (500), not bold.
+    - Strong terms via weight 500, not <strong> tags inheriting prose.
+    - All colors derived from brand tokens via color-mix — no
+      `text-gray-400`, no `text-white`, no hardcoded amber/yellow.
+
+  The SEO content (FAQ + HowTo + BreadcrumbList structured data)
+  stays identical, so Google sees no diff.
+-->
 <template>
   <NuxtLayout name="static" title="Dividendos">
-    <section class="flex flex-col gap-8 px-6 py-8">
-      <!-- Hero Section -->
-      <div class="flex flex-col gap-4">
-        <div class="flex items-center gap-2">
-          <UIcon name="i-lucide-coins" class="text-secondary h-8 w-8" />
-          <h1 class="text-3xl md:text-4xl" :class="[brand.font.headingWeight, brand.font.headingStyle]">
-            Dividendos: Renda Passiva com Ações e FIIs
-          </h1>
-        </div>
-        <p class="text-base text-gray-400 md:text-lg">
-          Aprenda a construir uma carteira de dividendos e viver de renda
-          passiva. Descubra as melhores ações e FIIs pagadores de dividendos do
-          Brasil.
-        </p>
-      </div>
+    <section class="flex flex-col gap-16 px-6 py-10 md:py-14">
+      <!-- ============ Hero ============ -->
+      <header class="flex max-w-3xl flex-col gap-3">
+        <span
+          class="font-mono-tab text-[11px] font-medium uppercase"
+          :style="{ letterSpacing: '0.18em', color: brand.colors.primary }"
+        >Guia · Dividendos</span>
+        <h1
+          class="font-light"
+          :style="{
+            color: brand.colors.text,
+            fontSize: 'clamp(32px, 5vw, 48px)',
+            lineHeight: 1.05,
+            letterSpacing: '-1.2px',
+          }"
+        >Dividendos: renda passiva com ações e FIIs</h1>
+        <p
+          class="max-w-2xl"
+          :style="{
+            fontSize: '17.5px',
+            lineHeight: 1.55,
+            color: `color-mix(in srgb, ${brand.colors.text} 72%, transparent)`,
+          }"
+        >Como construir uma carteira de dividendos e viver de renda passiva. As melhores ações e FIIs pagadores do Brasil, sem misticismo nem promessa de rentabilidade.</p>
+      </header>
 
-      <!-- Conteúdo Educacional -->
-      <div class="prose prose-invert max-w-none">
-        <h2 class="text-2xl font-bold">O que são Dividendos?</h2>
-        <p class="leading-relaxed text-gray-300">
-          Dividendos são a parcela dos lucros que as empresas distribuem aos
-          seus acionistas. Quando você compra uma ação, se torna sócio da
-          empresa e tem direito a receber parte dos lucros na forma de
-          dividendos.
+      <!-- ============ Section: O que são? ============ -->
+      <section class="flex flex-col gap-5">
+        <SectionHeading :brand="brand" eyebrow="01 · Conceito" title="O que são dividendos" />
+        <p :style="bodyStyle" class="max-w-3xl">
+          Dividendos são a parcela dos lucros que as empresas distribuem
+          aos acionistas. Quando você compra uma ação, vira sócio da
+          empresa e tem direito a parte dos lucros na forma de dividendos.
         </p>
 
-        <div
-          class="my-6 brand-card border border-secondary/20 bg-secondary/10 p-6"
+        <!-- Highlight card -->
+        <article
+          class="flex flex-col gap-2 rounded-xl border p-5"
+          :style="highlightCardStyle"
         >
-          <h3 class="mb-3 text-xl font-semibold text-secondary">
-            Isenção de Imposto de Renda
-          </h3>
-          <p class="text-gray-300">
-            <strong>Dividendos de ações e FIIs são isentos de IR</strong> para
-            pessoas físicas no Brasil. Todo valor que cair na sua conta é 100%
-            seu. Enorme vantagem para construir renda passiva.
+          <div class="flex items-center gap-2">
+            <UIcon
+              name="i-lucide-check-circle-2"
+              class="size-4"
+              :style="{ color: brand.colors.positive }"
+            />
+            <span
+              class="font-mono-tab text-[10.5px] font-medium uppercase"
+              :style="{ letterSpacing: '0.18em', color: brand.colors.positive }"
+            >Vantagem fiscal</span>
+          </div>
+          <h3
+            class="text-[18px] font-medium"
+            :style="{ color: brand.colors.text, letterSpacing: '-0.22px' }"
+          >Isenção total de imposto de renda</h3>
+          <p :style="bodyStyle">
+            Dividendos de ações e FIIs são <span :style="strongStyle">100% isentos de IR</span> para pessoa física no Brasil. Todo valor que cair na conta é seu inteiro — vantagem grande pra construir renda passiva.
           </p>
-        </div>
+        </article>
+      </section>
 
-        <h3 class="text-xl font-semibold">Como Funcionam os Dividendos</h3>
-        <div class="space-y-4">
-          <div class="brand-card border border-white/10 bg-white/5 p-5">
-            <h4 class="mb-2 font-semibold">1. Empresa Anuncia Dividendos</h4>
-            <p class="text-sm text-gray-300">
-              Empresa decide distribuir parte dos lucros e anuncia valor por
-              ação (ex: R$ 0,50 por ação).
-            </p>
-          </div>
-
-          <div class="brand-card border border-white/10 bg-white/5 p-5">
-            <h4 class="mb-2 font-semibold">
-              2. Data COM (Último Dia com Direito)
-            </h4>
-            <p class="text-sm text-gray-300">
-              Quem tiver a ação até essa data tem direito ao dividendo. Precisa
-              comprar no dia COM ou antes.
-            </p>
-          </div>
-
-          <div class="brand-card border border-white/10 bg-white/5 p-5">
-            <h4 class="mb-2 font-semibold">
-              3. Data EX (Primeiro Dia sem Direito)
-            </h4>
-            <p class="text-sm text-gray-300">
-              Dia seguinte à data COM. Quem comprar a partir daqui não recebe
-              esse dividendo. Preço costuma cair proporcionalmente.
-            </p>
-          </div>
-
-          <div class="brand-card border border-white/10 bg-white/5 p-5">
-            <h4 class="mb-2 font-semibold">4. Data de Pagamento</h4>
-            <p class="text-sm text-gray-300">
-              Dividendo cai automaticamente na sua conta da corretora. Você não
-              precisa fazer nada.
-            </p>
-          </div>
-        </div>
-
-        <h3 class="text-xl font-semibold">
-          Tipos de Proventos (Além de Dividendos)
-        </h3>
-        <ul class="list-disc space-y-2 pl-6 text-gray-300">
-          <li>
-            <strong>Dividendos:</strong> Distribuição de lucros em dinheiro
-            (100% isento de IR)
-          </li>
-          <li>
-            <strong>JCP (Juros sobre Capital Próprio):</strong> Similar a
-            dividendos, mas com 15% de IR retido na fonte
-          </li>
-          <li>
-            <strong>Bonificação:</strong> Distribuição de novas ações gratuitas
-          </li>
-          <li>
-            <strong>Direitos de Subscrição:</strong> Direito de comprar novas
-            ações com desconto
-          </li>
-        </ul>
-
-        <h3 class="text-xl font-semibold">
-          Indicador Principal: Dividend Yield
-        </h3>
-        <p class="leading-relaxed text-gray-300">
-          O Dividend Yield (DY) é o percentual que você recebe de dividendos em
-          relação ao preço da ação.
-        </p>
-        <div class="brand-card border border-white/10 bg-white/5 p-5">
-          <p class="mb-2 text-sm font-mono text-gray-300">
-            DY = (Dividendos últimos 12 meses ÷ Preço atual) × 100
-          </p>
-          <p class="text-sm text-gray-400">
-            Exemplo: Ação a R$ 40 que pagou R$ 3,20 no ano = DY de 8%
-          </p>
-        </div>
-
-        <div class="my-4 space-y-2 text-gray-300">
-          <p><strong>Bom DY para Ações:</strong> 4-8% ao ano</p>
-          <p><strong>Bom DY para FIIs:</strong> 8-12% ao ano</p>
-        </div>
-
-        <h3 class="text-xl font-semibold">
-          Melhores Ações Pagadoras de Dividendos
-        </h3>
-        <p class="leading-relaxed text-gray-300">
-          Setores conhecidos por bons dividendos:
-        </p>
-        <div class="grid gap-3 md:grid-cols-2">
-          <div class="brand-card border border-white/10 bg-white/5 p-4">
-            <h4 class="mb-1 font-semibold">Bancos</h4>
-            <p class="text-sm text-gray-400">
-              ITUB4, BBDC4, BBAS3, SANB11 - DY 6-10%
-            </p>
-          </div>
-          <div class="brand-card border border-white/10 bg-white/5 p-4">
-            <h4 class="mb-1 font-semibold">Energia Elétrica</h4>
-            <p class="text-sm text-gray-400">
-              TAEE11, ELET3, CPLE6 - DY 8-12%
-            </p>
-          </div>
-          <div class="brand-card border border-white/10 bg-white/5 p-4">
-            <h4 class="mb-1 font-semibold">Seguradoras</h4>
-            <p class="text-sm text-gray-400">BBSE3, PSSA3 - DY 5-8%</p>
-          </div>
-          <div class="brand-card border border-white/10 bg-white/5 p-4">
-            <h4 class="mb-1 font-semibold">Saneamento</h4>
-            <p class="text-sm text-gray-400">SAPR11, SBSP3 - DY 4-7%</p>
-          </div>
-        </div>
-
-        <h3 class="text-xl font-semibold">
-          Estratégia: Viver de Dividendos
-        </h3>
-        <p class="leading-relaxed text-gray-300">
-          Para viver de renda passiva com dividendos:
-        </p>
-        <ol class="list-decimal space-y-2 pl-6 text-gray-300">
-          <li>
-            <strong>Calcule sua necessidade mensal:</strong> Ex: R$ 5.000/mês =
-            R$ 60.000/ano
-          </li>
-          <li>
-            <strong>Defina dividend yield alvo:</strong> Ex: carteira com DY
-            médio de 8% ao ano
-          </li>
-          <li>
-            <strong>Calcule patrimônio necessário:</strong> R$ 60.000 ÷ 0,08 =
-            R$ 750.000
-          </li>
-          <li>
-            <strong>Monte carteira diversificada:</strong> 50% FIIs + 50%
-            ações pagadoras
-          </li>
-          <li>
-            <strong>Reinvista dividendos inicialmente:</strong> Acelera
-            crescimento
-          </li>
-          <li>
-            <strong>Quando atingir o valor:</strong> Pare de reinvestir e use
-            os dividendos
+      <!-- ============ Section: Como funcionam ============ -->
+      <section class="flex flex-col gap-6">
+        <SectionHeading :brand="brand" eyebrow="02 · Mecânica" title="Como funcionam os dividendos" />
+        <ol class="grid grid-cols-1 gap-3 md:grid-cols-2">
+          <li
+            v-for="(step, idx) in mechanicSteps"
+            :key="step.title"
+            class="flex flex-col gap-2 rounded-xl border p-5"
+            :style="cardStyle"
+          >
+            <span
+              class="font-mono-tab text-[10.5px] font-medium uppercase tabular-nums"
+              :style="{
+                letterSpacing: '0.18em',
+                color: `color-mix(in srgb, ${brand.colors.text} 50%, transparent)`,
+              }"
+            >Passo 0{{ idx + 1 }}</span>
+            <h3
+              class="text-[16px] font-medium"
+              :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }"
+            >{{ step.title }}</h3>
+            <p :style="bodySmallStyle">{{ step.body }}</p>
           </li>
         </ol>
+      </section>
 
-        <div
-          class="my-6 brand-card border border-secondary/20 bg-secondary/10 p-6"
+      <!-- ============ Section: Tipos de proventos ============ -->
+      <section class="flex flex-col gap-6">
+        <SectionHeading :brand="brand" eyebrow="Glossário" title="Tipos de proventos (além de dividendos)" />
+        <dl class="flex flex-col">
+          <div
+            v-for="t in proventoTypes"
+            :key="t.term"
+            class="grid grid-cols-1 gap-1.5 border-b py-4 last:border-b-0 md:grid-cols-[260px_1fr] md:gap-8 md:py-5"
+            :style="{
+              borderColor: `color-mix(in srgb, ${brand.colors.border} 40%, transparent)`,
+            }"
+          >
+            <dt class="flex items-baseline gap-2">
+              <span
+                class="size-1 shrink-0 rounded-full"
+                :style="{ backgroundColor: brand.colors.primary }"
+              />
+              <span
+                class="text-[14.5px] font-medium"
+                :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }"
+              >{{ t.term }}</span>
+            </dt>
+            <dd :style="bodyStyle">{{ t.def }}</dd>
+          </div>
+        </dl>
+      </section>
+
+      <!-- ============ Section: Dividend Yield ============ -->
+      <section class="flex flex-col gap-5">
+        <SectionHeading :brand="brand" eyebrow="03 · Indicador" title="Dividend Yield, o medidor que importa" />
+        <p :style="bodyStyle" class="max-w-3xl">
+          O Dividend Yield (DY) é o percentual recebido em dividendos no
+          ano, em relação ao preço atual da ação. Quanto maior o DY,
+          maior a renda relativa — mas alto demais costuma ser sinal de
+          preço caindo, não de generosidade.
+        </p>
+
+        <article
+          class="flex flex-col gap-3 rounded-xl border p-5"
+          :style="cardStyle"
         >
-          <h3 class="mb-3 text-xl font-semibold text-secondary">
-            Exemplo Prático
-          </h3>
-          <p class="mb-3 text-gray-300">
-            João tem R$ 300 mil investidos em ações e FIIs com DY médio de 9%
-            ao ano.
+          <div
+            class="font-mono-tab text-[14px] tabular-nums"
+            :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }"
+          >DY = (dividendos últimos 12 meses ÷ preço atual) × 100</div>
+          <p :style="bodySmallStyle">
+            <span :style="strongStyle">Exemplo:</span> ação a R$ 40 que pagou R$ 3,20 no ano = DY de 8%.
           </p>
-          <p class="text-gray-300">
-            Renda anual: R$ 300.000 × 9% = <strong>R$ 27.000</strong>
-          </p>
-          <p class="text-gray-300">
-            Renda mensal: R$ 27.000 ÷ 12 = <strong>R$ 2.250/mês</strong>
-          </p>
-          <p class="mt-3 text-sm text-gray-400">
-            100% isento de IR! Todo mês cai R$ 2.250 na conta sem fazer nada.
-          </p>
-        </div>
-
-        <h3 class="text-xl font-semibold">Cuidados com Dividendos</h3>
-        <div
-          class="brand-card border border-yellow-500/20 bg-yellow-500/10 p-5"
-        >
-          <ul class="list-disc space-y-2 pl-6 text-gray-300">
-            <li>
-              <strong>Dividend yield alto nem sempre é bom:</strong> Pode
-              indicar que preço caiu muito (empresa em crise)
-            </li>
-            <li>
-              <strong>Verifique sustentabilidade:</strong> Empresa consegue
-              manter esses dividendos? Payout < 100%?
-            </li>
-            <li>
-              <strong>Consistência importa:</strong> Prefira empresas que pagam
-              há muitos anos
-            </li>
-            <li>
-              <strong>Não ignore crescimento:</strong> Empresa que só paga
-              dividendos mas não cresce pode estagnar
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- Destaque para Planejamento com Dividendos -->
-      <div class="rounded-[30px] border border-secondary/30 bg-gradient-to-br from-secondary/10 to-secondary/5 p-8">
-        <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-          <div class="flex-1">
-            <div class="mb-3 flex items-center gap-2">
-              <UIcon name="i-lucide-target" class="text-secondary h-8 w-8" />
-              <h2 class="text-2xl font-bold">Planeje sua Renda com Dividendos</h2>
+          <hr
+            class="my-1"
+            :style="{
+              border: 0,
+              borderTop: `1px solid color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+            }"
+          >
+          <div class="grid grid-cols-1 gap-2 md:grid-cols-2">
+            <div :style="bodySmallStyle">
+              <span :style="strongStyle">DY bom em ações:</span> 4–8% ao ano
             </div>
-            <p class="mb-4 text-gray-300">
-              Calcule quanto você precisa investir para atingir sua meta de renda passiva. Receba uma carteira recomendada com foco em dividendos consistentes.
-            </p>
-            <ul class="space-y-2 text-sm text-gray-400">
-              <li class="flex items-center gap-2">
-                <UIcon name="i-lucide-check" class="text-secondary size-4" />
-                Projeção realista baseada em dados reais
-              </li>
-              <li class="flex items-center gap-2">
-                <UIcon name="i-lucide-check" class="text-secondary size-4" />
-                Carteira personalizada para seu perfil
-              </li>
-              <li class="flex items-center gap-2">
-                <UIcon name="i-lucide-check" class="text-secondary size-4" />
-                Estratégia de rentabilidade ou segurança
-              </li>
-            </ul>
+            <div :style="bodySmallStyle">
+              <span :style="strongStyle">DY bom em FIIs:</span> 8–12% ao ano
+            </div>
           </div>
-          <div class="flex flex-col gap-3 md:w-auto">
-            <UButton
-              to="/calculadora/planejamento"
-              color="secondary"
-              size="xl"
-              icon="i-lucide-target"
-              class="w-full md:w-auto"
-            >
-              Fazer Planejamento
-            </UButton>
-            <UButton
-              to="/calculadora/acoes"
-              color="white"
-              variant="outline"
-              size="lg"
-              icon="i-lucide-chart-line"
-              class="w-full md:w-auto"
-            >
-              Simular Ações
-            </UButton>
-          </div>
-        </div>
-      </div>
+        </article>
+      </section>
 
-      <!-- CTA -->
+      <!-- ============ Section: Setores pagadores ============ -->
+      <section class="flex flex-col gap-6">
+        <SectionHeading :brand="brand" eyebrow="04 · Setores" title="Onde os dividendos vivem" />
+        <p :style="bodyStyle" class="max-w-3xl">
+          Setores tradicionalmente pagadores no Brasil — cada um com perfil de risco e DY característicos.
+        </p>
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-4">
+          <article
+            v-for="s in sectorBenchmarks"
+            :key="s.name"
+            class="flex flex-col gap-2 rounded-xl border p-4"
+            :style="cardStyle"
+          >
+            <span
+              class="font-mono-tab text-[10.5px] font-medium uppercase"
+              :style="{
+                letterSpacing: '0.16em',
+                color: brand.colors.primary,
+              }"
+            >{{ s.dy }}</span>
+            <h3
+              class="text-[15px] font-medium"
+              :style="{ color: brand.colors.text }"
+            >{{ s.name }}</h3>
+            <p
+              class="font-mono-tab text-[12px] tabular-nums"
+              :style="{
+                color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)`,
+              }"
+            >{{ s.tickers }}</p>
+          </article>
+        </div>
+      </section>
+
+      <!-- ============ Section: Estratégia ============ -->
+      <section class="flex flex-col gap-6">
+        <SectionHeading :brand="brand" eyebrow="05 · Estratégia" title="Como viver de dividendos" />
+        <ol class="flex flex-col gap-3">
+          <li
+            v-for="(step, idx) in strategySteps"
+            :key="step.title"
+            class="flex gap-4 rounded-xl border p-5"
+            :style="cardStyle"
+          >
+            <span
+              class="flex size-9 shrink-0 items-center justify-center rounded-lg font-mono-tab text-[14px] font-medium tabular-nums"
+              :style="{
+                backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 12%, transparent)`,
+                color: brand.colors.primary,
+              }"
+            >{{ idx + 1 }}</span>
+            <div class="flex flex-col gap-1">
+              <h3
+                class="text-[16px] font-medium"
+                :style="{ color: brand.colors.text }"
+              >{{ step.title }}</h3>
+              <p :style="bodySmallStyle">{{ step.body }}</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <!-- ============ Section: Exemplo prático ============ -->
+      <section class="flex flex-col gap-5">
+        <SectionHeading :brand="brand" eyebrow="Exemplo" title="Como isso funciona na prática" />
+        <article
+          class="flex flex-col gap-3 rounded-xl border p-6"
+          :style="highlightCardStyle"
+        >
+          <p :style="bodyStyle">
+            João tem <span :style="strongStyle">R$ 300 mil</span> investidos em ações e FIIs com DY médio de 9% ao ano.
+          </p>
+          <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <div
+              class="rounded-lg p-3"
+              :style="{
+                backgroundColor: `color-mix(in srgb, ${brand.colors.background} 50%, transparent)`,
+              }"
+            >
+              <span
+                class="font-mono-tab text-[10.5px] font-medium uppercase"
+                :style="{
+                  letterSpacing: '0.18em',
+                  color: `color-mix(in srgb, ${brand.colors.text} 55%, transparent)`,
+                }"
+              >Renda anual</span>
+              <div
+                class="font-mono-tab text-[20px] font-light tabular-nums"
+                :style="{
+                  color: brand.colors.positive,
+                  letterSpacing: '-0.02em',
+                }"
+              >R$ 27.000</div>
+              <div
+                class="font-mono-tab text-[11px] tabular-nums"
+                :style="{
+                  color: `color-mix(in srgb, ${brand.colors.text} 55%, transparent)`,
+                }"
+              >R$ 300.000 × 9%</div>
+            </div>
+            <div
+              class="rounded-lg p-3"
+              :style="{
+                backgroundColor: `color-mix(in srgb, ${brand.colors.background} 50%, transparent)`,
+              }"
+            >
+              <span
+                class="font-mono-tab text-[10.5px] font-medium uppercase"
+                :style="{
+                  letterSpacing: '0.18em',
+                  color: `color-mix(in srgb, ${brand.colors.text} 55%, transparent)`,
+                }"
+              >Renda mensal</span>
+              <div
+                class="font-mono-tab text-[20px] font-light tabular-nums"
+                :style="{
+                  color: brand.colors.positive,
+                  letterSpacing: '-0.02em',
+                }"
+              >R$ 2.250</div>
+              <div
+                class="font-mono-tab text-[11px] tabular-nums"
+                :style="{
+                  color: `color-mix(in srgb, ${brand.colors.text} 55%, transparent)`,
+                }"
+              >R$ 27.000 ÷ 12</div>
+            </div>
+          </div>
+          <p :style="bodySmallStyle">
+            Os R$ 2.250 caem isentos de IR todo mês, sem João precisar fazer nada.
+          </p>
+        </article>
+      </section>
+
+      <!-- ============ Section: Cuidados ============ -->
+      <section class="flex flex-col gap-5">
+        <SectionHeading :brand="brand" eyebrow="Atenção" title="Cuidados antes de comprar por dividendos" />
+        <ul class="flex flex-col gap-3">
+          <li
+            v-for="c in cautions"
+            :key="c.title"
+            class="flex gap-3 rounded-xl border p-4"
+            :style="warnCardStyle"
+          >
+            <UIcon
+              name="i-lucide-alert-triangle"
+              class="mt-0.5 size-4 shrink-0"
+              :style="{ color: brand.colors.warning || '#f59e0b' }"
+            />
+            <div class="flex flex-col gap-0.5">
+              <h3
+                class="text-[14.5px] font-medium"
+                :style="{ color: brand.colors.text }"
+              >{{ c.title }}</h3>
+              <p :style="bodySmallStyle">{{ c.body }}</p>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <!-- ============ Section: Carteira de exemplo ============ -->
+      <section class="flex flex-col gap-5">
+        <SectionHeading :brand="brand" eyebrow="Composição" title="Carteira de dividendos de exemplo" />
+        <article
+          class="overflow-hidden rounded-xl border"
+          :style="cardStyle"
+        >
+          <div
+            v-for="(row, idx) in portfolioRows"
+            :key="row.bucket"
+            class="flex items-center justify-between gap-4 border-b px-5 py-3"
+            :class="idx === portfolioRows.length - 1 ? '!border-b-0' : ''"
+            :style="{
+              borderColor: `color-mix(in srgb, ${brand.colors.border} 40%, transparent)`,
+            }"
+          >
+            <div class="flex min-w-0 items-center gap-3">
+              <span
+                class="font-mono-tab text-[12px] font-medium tabular-nums"
+                :style="{
+                  color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)`,
+                  width: '40px',
+                }"
+              >{{ row.weight }}</span>
+              <span
+                class="text-[14.5px]"
+                :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }"
+              >{{ row.bucket }}</span>
+            </div>
+            <span
+              class="font-mono-tab text-[12px] tabular-nums"
+              :style="{
+                color: `color-mix(in srgb, ${brand.colors.text} 65%, transparent)`,
+              }"
+            >{{ row.dy }}</span>
+          </div>
+          <div
+            class="flex items-center justify-between gap-4 px-5 py-4"
+            :style="{
+              backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 8%, transparent)`,
+              borderTop: `1px solid color-mix(in srgb, ${brand.colors.primary} 30%, transparent)`,
+            }"
+          >
+            <span
+              class="text-[14.5px] font-medium"
+              :style="{ color: brand.colors.text }"
+            >Dividend Yield médio</span>
+            <span
+              class="font-mono-tab text-[15px] font-medium tabular-nums"
+              :style="{ color: brand.colors.primary, letterSpacing: '-0.005em' }"
+            >~8,5% ao ano</span>
+          </div>
+        </article>
+      </section>
+
+      <!-- ============ Featured links ============ -->
+      <section class="flex flex-col gap-3">
+        <NuxtLink
+          v-for="link in featuredLinks"
+          :key="link.to"
+          :to="link.to"
+          class="ranking-card group flex items-center justify-between gap-4 rounded-xl border p-5 transition-[border-color,background-color]"
+          :style="cardStyle"
+        >
+          <div class="flex flex-col gap-1">
+            <span
+              class="font-mono-tab text-[10.5px] font-medium uppercase"
+              :style="{
+                letterSpacing: '0.18em',
+                color: brand.colors.primary,
+              }"
+            >{{ link.eyebrow }}</span>
+            <h3
+              class="text-[18px] font-medium"
+              :style="{ color: brand.colors.text, letterSpacing: '-0.22px' }"
+            >{{ link.title }}</h3>
+            <p :style="bodySmallStyle">{{ link.body }}</p>
+          </div>
+          <UIcon
+            name="i-lucide-arrow-up-right"
+            class="size-5 shrink-0 transition-[transform,opacity] group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+            :style="{ color: brand.colors.primary }"
+          />
+        </NuxtLink>
+      </section>
+
+      <!-- ============ FAQ ============ -->
+      <section class="flex flex-col gap-5">
+        <SectionHeading :brand="brand" eyebrow="FAQ" title="Perguntas frequentes" />
+        <div class="flex flex-col gap-3">
+          <details
+            v-for="qa in faq"
+            :key="qa.q"
+            class="group rounded-xl border p-4 transition-[border-color]"
+            :style="cardStyle"
+          >
+            <summary
+              class="flex cursor-pointer list-none items-center justify-between gap-3 text-[15px] font-medium"
+              :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }"
+            >
+              {{ qa.q }}
+              <UIcon
+                name="i-lucide-chevron-down"
+                class="size-4 shrink-0 transition-transform group-open:rotate-180"
+                :style="{ color: brand.colors.primary }"
+              />
+            </summary>
+            <p class="mt-3" :style="bodySmallStyle">{{ qa.a }}</p>
+          </details>
+        </div>
+      </section>
+
+      <!-- ============ Bottom CTA ============ -->
       <MoleculesCtaSection
-        title="Encontre os Melhores Pagadores de Dividendos"
-        description="Compare dividend yield, histórico de pagamentos e consistência"
+        title="Encontre os melhores pagadores de dividendos"
+        description="Compare dividend yield, histórico de pagamentos e consistência."
         :buttons="[
-          { label: 'Buscar Ativos', to: '/search', icon: 'i-lucide-search', variant: 'primary' },
-          { label: 'Calcular Renda Passiva', to: '/calculadora', icon: 'i-lucide-calculator', variant: 'outline' },
+          { label: 'Buscar ativos', to: '/search', icon: 'i-lucide-search', variant: 'primary' },
+          { label: 'Calcular renda passiva', to: '/calculadora', icon: 'i-lucide-calculator', variant: 'outline' },
           { label: 'Glossário', to: '/glossario/dividendos', icon: 'i-lucide-book-open', variant: 'ghost' },
         ]"
       />
-
-      <!-- Links Destacados -->
-      <div class="space-y-4 border-t border-white/10 pt-8">
-        <NuxtLink
-          to="/search?group=stocks"
-          class="group mx-auto flex max-w-2xl items-center justify-between brand-card border border-secondary/30 bg-secondary/10 p-6 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-secondary/50 hover:bg-secondary/20"
-        >
-          <div class="flex flex-col gap-1">
-            <h3 class="text-xl font-bold group-hover:text-secondary transition-colors">
-              Maiores Pagadoras de Dividendos (Ações)
-            </h3>
-            <p class="text-sm text-gray-400">
-              Bancos, elétricas, seguradoras e outras ações com alto dividend yield
-            </p>
-          </div>
-          <UIcon
-            name="i-lucide-arrow-right"
-            class="text-secondary h-8 w-8 transition-transform group-hover:translate-x-2"
-          />
-        </NuxtLink>
-
-        <NuxtLink
-          to="/search?group=reits"
-          class="group mx-auto flex max-w-2xl items-center justify-between brand-card border border-secondary/30 bg-secondary/10 p-6 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-secondary/50 hover:bg-secondary/20"
-        >
-          <div class="flex flex-col gap-1">
-            <h3 class="text-xl font-bold group-hover:text-secondary transition-colors">
-              FIIs com Melhores Dividendos
-            </h3>
-            <p class="text-sm text-gray-400">
-              Fundos imobiliários com rendimentos mensais isentos de IR
-            </p>
-          </div>
-          <UIcon
-            name="i-lucide-arrow-right"
-            class="text-secondary h-8 w-8 transition-transform group-hover:translate-x-2"
-          />
-        </NuxtLink>
-      </div>
-
-      <!-- FAQ -->
-      <div class="space-y-4">
-        <h2 class="text-2xl font-bold">
-          Perguntas Frequentes sobre Dividendos
-        </h2>
-        <div class="space-y-4">
-          <details class="group brand-card border border-white/10 bg-white/5 p-4">
-            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
-              Quanto preciso investir para receber R$ 1.000/mês em dividendos?
-              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
-            </summary>
-            <p class="mt-3 text-sm text-gray-300">
-              Com dividend yield médio de 8% ao ano (FIIs), você precisaria de
-              aproximadamente R$ 150.000 investidos (150.000 × 8% = 12.000/ano
-              = 1.000/mês). Com ações (DY ~6%), precisaria de ~R$ 200.000.
-            </p>
-          </details>
-
-          <details class="group brand-card border border-white/10 bg-white/5 p-4">
-            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
-              Dividendos pagam Imposto de Renda?
-              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
-            </summary>
-            <p class="mt-3 text-sm text-gray-300">
-              NÃO! Dividendos de ações e rendimentos de FIIs são 100% isentos de
-              Imposto de Renda para pessoas físicas. JCP (Juros sobre Capital
-              Próprio) tem retenção de 15% na fonte.
-            </p>
-          </details>
-
-          <details class="group brand-card border border-white/10 bg-white/5 p-4">
-            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
-              É melhor dividendos de ações ou FIIs?
-              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
-            </summary>
-            <p class="mt-3 text-sm text-gray-300">
-              FIIs geralmente pagam mais (8-12% vs 4-8% de ações) e com maior
-              frequência (mensal). Ações têm potencial de valorização maior. O
-              ideal é ter ambos: FIIs para renda mensal e ações para
-              crescimento + renda.
-            </p>
-          </details>
-
-          <details class="group brand-card border border-white/10 bg-white/5 p-4">
-            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
-              Quando os dividendos caem na conta?
-              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
-            </summary>
-            <p class="mt-3 text-sm text-gray-300">
-              Cada empresa define suas datas. Geralmente 30-60 dias após a data
-              COM. Os dividendos caem automaticamente na sua conta da corretora,
-              você não precisa fazer nada.
-            </p>
-          </details>
-
-          <details class="group brand-card border border-white/10 bg-white/5 p-4">
-            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
-              Devo reinvestir dividendos?
-              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
-            </summary>
-            <p class="mt-3 text-sm text-gray-300">
-              Se você ainda está acumulando patrimônio: SIM! Reinvestir acelera
-              muito o crescimento (juros compostos). Quando atingir seu objetivo
-              de patrimônio, aí você usa os dividendos como renda.
-            </p>
-          </details>
-
-          <details class="group brand-card border border-white/10 bg-white/5 p-4">
-            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
-              Quais setores pagam melhores dividendos?
-              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
-            </summary>
-            <p class="mt-3 text-sm text-gray-300">
-              Bancos, energia elétrica, seguradoras e saneamento são
-              tradicionais pagadores. Empresas maduras com receita previsível
-              tendem a pagar mais. Empresas em crescimento (tech, varejo)
-              geralmente pagam menos porque reinvestem no negócio.
-            </p>
-          </details>
-        </div>
-      </div>
-
-      <!-- Carteira de Dividendos -->
-      <div class="brand-card border border-white/10 bg-white/5 p-6">
-        <h3 class="mb-4 text-xl font-semibold">
-          Exemplo de Carteira de Dividendos
-        </h3>
-        <div class="space-y-3">
-          <div class="flex items-center justify-between border-b border-white/10 pb-2">
-            <span class="font-semibold">Ações de Bancos (20%)</span>
-            <span class="text-sm text-gray-400">DY ~7%</span>
-          </div>
-          <div class="flex items-center justify-between border-b border-white/10 pb-2">
-            <span class="font-semibold">Ações de Energia (15%)</span>
-            <span class="text-sm text-gray-400">DY ~9%</span>
-          </div>
-          <div class="flex items-center justify-between border-b border-white/10 pb-2">
-            <span class="font-semibold">Ações de Seguros (10%)</span>
-            <span class="text-sm text-gray-400">DY ~6%</span>
-          </div>
-          <div class="flex items-center justify-between border-b border-white/10 pb-2">
-            <span class="font-semibold">FIIs de Tijolo (25%)</span>
-            <span class="text-sm text-gray-400">DY ~10%</span>
-          </div>
-          <div class="flex items-center justify-between border-b border-white/10 pb-2">
-            <span class="font-semibold">FIIs de Papel (20%)</span>
-            <span class="text-sm text-gray-400">DY ~11%</span>
-          </div>
-          <div class="flex items-center justify-between border-b border-white/10 pb-2">
-            <span class="font-semibold">Reserva (10%)</span>
-            <span class="text-sm text-gray-400">Tesouro Selic</span>
-          </div>
-          <div class="mt-4 flex items-center justify-between border-t-2 border-secondary pt-3">
-            <span class="text-lg font-bold">Dividend Yield Médio</span>
-            <span class="text-lg font-bold text-secondary">~8,5% ao ano</span>
-          </div>
-        </div>
-      </div>
     </section>
   </NuxtLayout>
 </template>
@@ -462,7 +467,7 @@ usePageSeo({
   title:
     `Dividendos: Guia Completo para Viver de Renda Passiva | ${brand.name}`,
   description:
-    'Aprenda a construir carteira de dividendos e viver de renda passiva. Melhores ações e FIIs pagadores, estratégias, cálculos e dividend yield. Isenção de IR. Guia 2026.',
+    'Como construir uma carteira de dividendos e viver de renda passiva. Melhores ações e FIIs pagadores, estratégias, cálculos e dividend yield. Isenção de IR. Guia 2026.',
   path: '/dividendos',
   structuredData: [
     {
@@ -542,4 +547,182 @@ usePageSeo({
     },
   ],
 })
+
+// ---------- Style helpers (computed once for reuse) ----------
+
+const bodyStyle = computed(() => ({
+  fontSize: '16px',
+  lineHeight: 1.55,
+  color: `color-mix(in srgb, ${brand.colors.text} 75%, transparent)`,
+}))
+
+const bodySmallStyle = computed(() => ({
+  fontSize: '14px',
+  lineHeight: 1.55,
+  color: `color-mix(in srgb, ${brand.colors.text} 68%, transparent)`,
+}))
+
+const strongStyle = computed(() => ({
+  fontWeight: 500,
+  color: brand.colors.text,
+}))
+
+const cardStyle = computed(() => ({
+  backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 55%, ${brand.colors.background})`,
+  borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+}))
+
+const highlightCardStyle = computed(() => ({
+  backgroundColor: `color-mix(in srgb, ${brand.colors.positive} 6%, ${brand.colors.surface})`,
+  borderColor: `color-mix(in srgb, ${brand.colors.positive} 28%, transparent)`,
+}))
+
+const warnCardStyle = computed(() => ({
+  backgroundColor: `color-mix(in srgb, ${brand.colors.warning || '#f59e0b'} 6%, ${brand.colors.surface})`,
+  borderColor: `color-mix(in srgb, ${brand.colors.warning || '#f59e0b'} 24%, transparent)`,
+}))
+
+// ---------- Editorial copy ----------
+
+const mechanicSteps = [
+  {
+    title: 'Empresa anuncia dividendos',
+    body: 'Conselho decide distribuir parte dos lucros e anuncia o valor por ação (ex: R$ 0,50 por ação).',
+  },
+  {
+    title: 'Data-com (último dia com direito)',
+    body: 'Quem tiver a ação até essa data tem direito ao provento. Tem que comprar no dia-com ou antes.',
+  },
+  {
+    title: 'Data-ex (primeiro dia sem direito)',
+    body: 'Dia útil seguinte à data-com. Quem comprar a partir daqui não recebe esse dividendo. O preço cai proporcionalmente.',
+  },
+  {
+    title: 'Data de pagamento',
+    body: 'Dividendo cai automático na conta da corretora. Pode levar de dias a semanas após a data-com.',
+  },
+]
+
+const proventoTypes = [
+  {
+    term: 'Dividendos',
+    def: 'Distribuição de lucros em dinheiro. Isento de IR para pessoa física.',
+  },
+  {
+    term: 'JCP — Juros sobre Capital Próprio',
+    def: 'Tributado em 15% na fonte, mas vantajoso pra empresa por ser dedutível do imposto sobre lucros.',
+  },
+  {
+    term: 'Bonificação',
+    def: 'Distribuição de novas ações aos acionistas existentes, em vez de pagamento em dinheiro. Não muda valor patrimonial.',
+  },
+  {
+    term: 'Direitos de subscrição',
+    def: 'Direito de comprar novas ações com desconto antes do mercado em geral.',
+  },
+] as const
+
+const sectorBenchmarks = [
+  { name: 'Bancos', tickers: 'ITUB4 · BBDC4 · BBAS3 · SANB11', dy: 'DY 6–10%' },
+  { name: 'Energia elétrica', tickers: 'TAEE11 · ELET3 · CPLE6', dy: 'DY 8–12%' },
+  { name: 'Seguradoras', tickers: 'BBSE3 · PSSA3', dy: 'DY 5–8%' },
+  { name: 'Saneamento', tickers: 'SAPR11 · SBSP3', dy: 'DY 4–7%' },
+] as const
+
+const strategySteps = [
+  {
+    title: 'Calcule sua necessidade mensal',
+    body: 'Quanto você precisa por mês? Ex: R$ 5.000/mês = R$ 60.000/ano.',
+  },
+  {
+    title: 'Defina o dividend yield alvo',
+    body: 'Use uma média realista pra carteira inteira — 6 a 9% é razoável misturando ações e FIIs.',
+  },
+  {
+    title: 'Calcule o patrimônio necessário',
+    body: 'Divida a necessidade anual pelo DY alvo. Ex: R$ 60.000 ÷ 0,08 = R$ 750.000.',
+  },
+  {
+    title: 'Monte uma carteira diversificada',
+    body: 'Cerca de 50% FIIs (renda mensal) + 50% ações pagadoras (renda + crescimento).',
+  },
+  {
+    title: 'Reinvista no início',
+    body: 'Enquanto está acumulando, reinveste tudo. Os juros compostos fazem o trabalho pesado.',
+  },
+  {
+    title: 'No alvo, use a renda',
+    body: 'Quando o patrimônio bate a meta, para de reinvestir e vive dos pagamentos mensais.',
+  },
+] as const
+
+const cautions = [
+  {
+    title: 'DY alto nem sempre é bom',
+    body: 'Costuma sinalizar preço caindo (empresa em crise), não generosidade. Olha o histórico antes de comprar pelo número.',
+  },
+  {
+    title: 'Verifique sustentabilidade',
+    body: 'A empresa consegue manter esses dividendos? Payout abaixo de 100% é o piso pra confiar na recorrência.',
+  },
+  {
+    title: 'Consistência importa mais que pico',
+    body: 'Empresas que pagam há 10+ anos sem cortar valem mais que dividendos esporádicos altos.',
+  },
+  {
+    title: 'Não ignore crescimento',
+    body: 'Empresa que só paga dividendos e não cresce pode estagnar. Equilibre yield com perspectiva de valorização.',
+  },
+] as const
+
+const portfolioRows = [
+  { bucket: 'Ações de bancos', weight: '20%', dy: 'DY ~7%' },
+  { bucket: 'Ações de energia', weight: '15%', dy: 'DY ~9%' },
+  { bucket: 'Ações de seguros', weight: '10%', dy: 'DY ~6%' },
+  { bucket: 'FIIs de tijolo', weight: '25%', dy: 'DY ~10%' },
+  { bucket: 'FIIs de papel', weight: '20%', dy: 'DY ~11%' },
+  { bucket: 'Reserva (Tesouro Selic)', weight: '10%', dy: '—' },
+] as const
+
+const featuredLinks = [
+  {
+    to: '/search?group=stocks',
+    eyebrow: 'Renda variável',
+    title: 'Maiores pagadoras de dividendos (ações)',
+    body: 'Bancos, elétricas, seguradoras e outras ações com alto dividend yield e histórico consistente.',
+  },
+  {
+    to: '/search?group=reits',
+    eyebrow: 'FIIs',
+    title: 'FIIs com melhores dividendos',
+    body: 'Fundos imobiliários com rendimentos mensais isentos de IR.',
+  },
+] as const
+
+const faq = [
+  {
+    q: 'Quanto preciso investir para receber R$ 1.000/mês em dividendos?',
+    a: 'Com dividend yield médio de 8% ao ano (FIIs), você precisaria de cerca de R$ 150.000 investidos (150.000 × 8% = 12.000/ano = 1.000/mês). Com ações (DY ~6%), precisaria de cerca de R$ 200.000.',
+  },
+  {
+    q: 'Dividendos pagam Imposto de Renda?',
+    a: 'Não. Dividendos de ações e rendimentos de FIIs são 100% isentos de IR para pessoas físicas. JCP (juros sobre capital próprio) tem retenção de 15% na fonte.',
+  },
+  {
+    q: 'É melhor dividendos de ações ou FIIs?',
+    a: 'FIIs geralmente pagam mais (8–12% vs 4–8% de ações) e com maior frequência (mensal). Ações têm potencial de valorização maior. O ideal é ter ambos: FIIs para renda mensal e ações para crescimento + renda.',
+  },
+  {
+    q: 'Quando os dividendos caem na conta?',
+    a: 'Cada empresa define a própria data. Geralmente entre 30 e 60 dias após a data-com. Os dividendos caem automaticamente na conta da corretora — você não precisa fazer nada.',
+  },
+  {
+    q: 'Devo reinvestir dividendos?',
+    a: 'Se você ainda está acumulando patrimônio: sim. Reinvestir acelera muito o crescimento via juros compostos. Quando atingir o objetivo de patrimônio, aí você usa os dividendos como renda.',
+  },
+  {
+    q: 'Quais setores pagam melhores dividendos?',
+    a: 'Bancos, energia elétrica, seguradoras e saneamento são os tradicionais. Empresas maduras com receita previsível tendem a pagar mais. Empresas em crescimento (tech, varejo) costumam pagar menos porque reinvestem no negócio.',
+  },
+] as const
 </script>
