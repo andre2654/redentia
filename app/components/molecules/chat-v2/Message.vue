@@ -726,7 +726,8 @@ function renderMarkdown(text: string): string {
   // it can't accidentally repeat the link as prose), but if the LLM
   // genuinely wants to link to something — even an artifact — the
   // frontend must respect it.
-  const repaired = repairTableSeparators(text)
+  const cleaned = stripUnknownInlineMarkers(text)
+  const repaired = repairTableSeparators(cleaned)
   const rawHtml = marked.parse(repaired, { async: false, gfm: true, breaks: true }) as string
   // domPurify is null during SSR and during the brief window between
   // mount and the dynamic import resolving — fall through with the raw
@@ -742,6 +743,47 @@ function renderMarkdown(text: string): string {
       })
     : rawHtml
   return decorateHtml(safe)
+}
+
+/**
+ * Strip `{{...}}` markers the renderer doesn't know about.
+ *
+ * Allowed markers (handled by dedicated marked extensions):
+ *   - `{{propose}}`               → ActionProposalChip
+ *   - `{{max:LABEL}}`             → MaxFeatureChip
+ *   - `{{chart:TICKER:PERIODO}}`  → InlineChart
+ *
+ * The model occasionally hallucinates new template-style "tool calls"
+ * like `{{import_portfolio:mode="reanalyze"}}` instead of using the
+ * real tool-call protocol. Without this filter the placeholder lands
+ * in the chat as raw text and the user sees `{{import_portfolio:...}}`
+ * staring back at them with no actual action behind it.
+ *
+ * We strip the marker entirely (rather than leaving a generic note)
+ * to keep the prose clean — the agent's NEXT turn is responsible for
+ * actually calling the tool. Logging on the client lets us spot
+ * recurrences during streaming without polluting the prompt cache.
+ */
+function stripUnknownInlineMarkers(md: string): string {
+  if (!md.includes('{{')) return md
+  // Match every `{{...}}` and decide per-match if it's a whitelisted
+  // marker. Non-greedy `[^{}]*?` keeps us from swallowing nested or
+  // multi-line content.
+  return md.replace(/\{\{([^{}]*?)\}\}/g, (full, inner: string) => {
+    const trimmed = inner.trim()
+    if (
+      trimmed === 'propose' ||
+      /^max:\s*\S/i.test(trimmed) ||
+      /^chart:\s*[A-Z0-9_.-]+(?::[a-z0-9]+)?$/i.test(trimmed)
+    ) {
+      return full
+    }
+    if (import.meta.client) {
+      // eslint-disable-next-line no-console
+      console.warn('[Message] dropping unknown inline marker:', full)
+    }
+    return ''
+  })
 }
 
 /**

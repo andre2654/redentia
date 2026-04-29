@@ -563,19 +563,76 @@ function authHeaders(): Record<string, string> {
   return authStore.token ? { Authorization: `Bearer ${authStore.token}` } : {}
 }
 
-// ---- Auto-send `?q=` --------------------------------------------
-// QuickSearch and other entry points push the user here with the
-// query in the URL. If logged in, dispatch immediately. If not,
-// the auth gate above shows; the query is preserved through the
-// login redirect (via `redirect=/help` keeping the original URL
-// in history).
+// ---- Auto-send `?q=` and `?intent=` -----------------------------
+// QuickSearch and other entry points push the user here with `?q=…`
+// (literal query) or `?intent=…` (semantic action — "rodar raio-x",
+// "adicionar watchlist", etc.). Intents are mapped to a pre-formatted
+// prompt so the agent immediately calls the right tool without the
+// user having to type anything. Some intents also force MAX tier
+// (raio-x analysis runs on Kimi K2-thinking; basic isn't enough).
+//
+// Intents whose `prompt` is `null` only need to land on the chat
+// surface (e.g. file-import — the user still has to attach the
+// XLSX). Everything else dispatches automatically.
+type IntentSpec = {
+  prompt: string | null
+  tier?: 'basic' | 'max'
+}
+const INTENT_MAP: Record<string, IntentSpec> = {
+  // Both intents trigger `import_portfolio({mode:'reanalyze'})` on the
+  // chat-service side. The keywords below ("rodar análise", "fazer
+  // raio-x") match the patterns wired in `llm/prompts/base.ts` so the
+  // LLM doesn't ask the user for the XLSX again — it reuses the
+  // already-imported carteira and only reruns the analysis pipeline.
+  'analyze-portfolio': {
+    prompt:
+      'Quero rodar análise completa da minha carteira agora — fazer o raio-x. Pega as posições já importadas, classifica os ativos, monta as 9 dimensões (concentração, qualidade, valuation, dividendos, geografia, macro, etc.), identifica forças e riscos principais, sugere ajustes prioritários e salva o snapshot.',
+    tier: 'max',
+  },
+  'reanalyze-portfolio': {
+    prompt:
+      'Reanalisar minha carteira agora — fazer raio-x novamente, atualizar análise. Pega o snapshot mais recente das posições, roda o pipeline com preços e dados atuais, salva por cima do snapshot anterior.',
+    tier: 'max',
+  },
+  'portfolio-review': {
+    prompt:
+      'Faz uma revisão rápida da minha carteira: posições atuais, alertas em aberto, e 1-2 ajustes prioritários se houver.',
+  },
+  'add-watchlist': {
+    prompt:
+      'Quero adicionar ativos à minha watchlist. Olha minha carteira e me sugere 3-5 tickers que faria sentido acompanhar (correlação útil, complemento de classe ou geografia, ou potencial de valuation). Lista os candidatos com tese curta de cada um.',
+  },
+  'set-goal': {
+    prompt:
+      'Quero definir uma nova meta financeira. Abre o formulário guiado pra eu preencher.',
+  },
+  // No-prompt intents — just bring the user to the chat. Useful when
+  // the action requires the user to attach a file or type something.
+  'import-portfolio': { prompt: null },
+}
+
+async function runIntent(intent: string): Promise<boolean> {
+  const spec = INTENT_MAP[intent]
+  if (!spec) return false
+  if (spec.tier && tier.value !== spec.tier) tier.value = spec.tier
+  if (!spec.prompt) return true // landed only — caller already cleared the URL
+  void chat.send(spec.prompt).then(refreshSessionList)
+  return true
+}
+
 onMounted(async () => {
   if (!authStore.isAuthenticated) return
   await refreshSessionList()
   const q = String(route.query.q ?? '').trim()
+  const intent = String(route.query.intent ?? '').trim()
   if (q) {
     window.history.replaceState({}, '', '/help')
     void chat.send(q).then(refreshSessionList)
+    return
+  }
+  if (intent) {
+    window.history.replaceState({}, '', '/help')
+    await runIntent(intent)
   }
 })
 
@@ -622,6 +679,22 @@ watch(
     if (typeof q === 'string' && q.trim()) {
       window.history.replaceState({}, '', '/help')
       void chat.send(q).then(refreshSessionList)
+    }
+  },
+)
+
+// Same idea for `?intent=` — covers the case where the user is
+// already on /help (e.g. came back to a previous tab) and clicks a
+// "Rodar análise" / "Reanalisar" link from /wallet which only changes
+// the query string. Without this watch, useRoute() updates but
+// nothing fires until a hard reload.
+watch(
+  () => route.query.intent,
+  async (intent) => {
+    if (!authStore.isAuthenticated) return
+    if (typeof intent === 'string' && intent.trim()) {
+      window.history.replaceState({}, '', '/help')
+      await runIntent(intent.trim())
     }
   },
 )

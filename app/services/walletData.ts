@@ -25,13 +25,36 @@ interface ChatGoalShape {
   currentAmount?: string | number | null
   monthlyContribution?: string | number | null
   targetDate?: string | null
-  classification?: string | null
+  // chat-service field is `status` (on_track | at_risk | unfeasible | hit).
+  // We map it onto WalletGoal.classification (achieved | realistic | aggressive | unfeasible).
+  status?: string | null
   notes?: string | null
+}
+
+function statusToClassification(s: string | null | undefined): WalletGoal['classification'] {
+  switch (s) {
+    case 'hit':
+      return 'achieved'
+    case 'on_track':
+      return 'realistic'
+    case 'at_risk':
+      return 'aggressive'
+    case 'unfeasible':
+      return 'unfeasible'
+    default:
+      return 'realistic'
+  }
 }
 interface ChatWatchShape {
   id?: string
   ticker: string
-  notes?: string | null
+  // chat-service returns these names verbatim (singular `note`, optional
+  // `label` for the human-friendly display string). The schema lives in
+  // chat-service/src/db/schema.ts → chatWatchlist. Don't pluralise.
+  label?: string | null
+  note?: string | null
+  conditions?: unknown
+  snapshotPrice?: number | null
   createdAt?: string | null
 }
 
@@ -57,16 +80,22 @@ function adaptChatGoal(g: ChatGoalShape): WalletGoal {
     current_progress: toNumber(g.currentAmount),
     horizon_years: horizon,
     monthly_contribution_required: toNumber(g.monthlyContribution),
-    classification: g.classification ?? 'realistic',
+    classification: statusToClassification(g.status),
     note: g.notes ?? null,
   }
 }
 
 function adaptChatWatch(w: ChatWatchShape): WatchlistItem {
+  // `label` is the friendly display string ("Schwab US Dividend ETF"),
+  // `note` is the rationale ("acompanho pra dividendos US"). The card
+  // shows label first, falling back to note. Never invent either —
+  // letting the card render `—` is correct when both are absent.
   return {
     ticker: w.ticker,
-    note: w.notes ?? null,
+    name: w.label ?? undefined,
+    note: w.note ?? null,
     added_at: w.createdAt ?? null,
+    current_price: typeof w.snapshotPrice === 'number' ? w.snapshotPrice : undefined,
   }
 }
 
