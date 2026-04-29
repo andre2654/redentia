@@ -107,14 +107,14 @@
 
     <!-- ASSISTANT TURN -->
     <div v-else class="flex flex-col gap-5 md:gap-6">
-      <!-- ===== Action groups (Manus-style) =====
-           Replaces the previous monolithic ResearchPanel. Tools are
-           bundled by family ("Verificando dividendos (6)", "Buscando
-           notícias (3)") in execution order, each in its own self-
-           collapsing card. Tools that have a dedicated visual surface
-           (decisions, scenarios, goals, forms, artifacts) are filtered
-           OUT of this list — they render as their own cards below. -->
-      <ChatV2ActionGroupList
+      <!-- ===== Tool hover-stack (replaces ActionGroupList) =====
+           Compact one-row strip of overlapping circular avatars (one
+           per inline tool call). Hover any avatar to swap the status
+           label; click to expand a detail row with args + result
+           preview. Tools that own a dedicated card (decisions,
+           scenarios, forms, artifacts) are filtered out and render
+           further down. -->
+      <ChatV2ToolStack
         v-if="message.toolCalls.length > 0"
         :tool-calls="message.toolCalls"
       />
@@ -138,29 +138,59 @@
           class="chat-answer text-[16.5px] leading-[1.7]"
           :style="{ color: 'var(--brand-text)' }"
         >
-          <!-- Cold-start placeholder — between "user sent" and "first
+          <!-- Cold-start status ticker — between "user sent" and "first
                reasoning / tool / content chunk arrives" the answer area
-               used to show only a blinking yellow cursor, which read as
-               "frozen" to users. This pill makes the wait state legible:
-               pulsing brand-tinted dot + "Pensando…" italic so the
-               whole thing has obvious motion. Disappears the moment
-               anything starts streaming, then the regular answer flow
-               takes over. -->
+               used to show only a blinking yellow cursor, which read
+               as "frozen". Now we show:
+                 - pulsing amber dot
+                 - status text that auto-cycles ("Lendo IBOV…" →
+                   "Cruzando macro…" → "Sintetizando…")
+                 - elapsed-time counter on the right (transparency)
+                 - 3 skeleton lines hinting at where the answer lands
+               Disappears the moment anything streams. -->
           <div
             v-if="isWaitingForFirstChunk"
-            class="chat-thinking-inline flex items-center gap-2.5 py-1"
+            class="chat-thinking-inline flex flex-col gap-3 py-1"
             role="status"
             aria-live="polite"
           >
-            <span
-              class="chat-thinking-pulse inline-flex size-2 shrink-0 rounded-full"
-              :style="{ backgroundColor: 'var(--brand-primary)' }"
-              aria-hidden="true"
-            />
-            <span
-              class="text-[14px] italic"
-              :style="{ color: 'var(--brand-text-muted)' }"
-            >Pensando…</span>
+            <div class="flex items-center gap-3">
+              <span class="relative inline-flex size-2 shrink-0">
+                <span
+                  class="chat-thinking-pulse absolute inline-flex h-full w-full rounded-full"
+                  :style="{ backgroundColor: 'var(--brand-primary)' }"
+                  aria-hidden="true"
+                />
+                <span
+                  class="relative inline-flex size-2 rounded-full"
+                  :style="{ backgroundColor: 'var(--brand-primary)' }"
+                  aria-hidden="true"
+                />
+              </span>
+              <Transition name="chat-status-text" mode="out-in">
+                <span
+                  :key="statusTickerIndex"
+                  class="font-mono-tab text-[12.5px] tabular-nums"
+                  :style="{ color: 'var(--brand-text-muted)' }"
+                >{{ STATUS_TICKER_MESSAGES[statusTickerIndex] }}</span>
+              </Transition>
+              <span
+                class="ml-auto font-mono-tab text-[10.5px] tabular-nums"
+                :style="{ color: 'var(--brand-text-muted)' }"
+              >{{ elapsedFmt }}</span>
+            </div>
+            <div class="flex flex-col gap-2">
+              <span
+                v-for="(w, i) in [85, 70, 92]"
+                :key="`skel-${i}`"
+                class="chat-thinking-skel block h-[10px] rounded-full"
+                :style="{
+                  width: `${w}%`,
+                  backgroundColor: `color-mix(in srgb, var(--brand-text) 6%, transparent)`,
+                  animationDelay: `${i * 120}ms`,
+                }"
+              />
+            </div>
           </div>
           <ChatV2StreamingText
             v-else
@@ -432,8 +462,9 @@ const formResponseOpen = ref(false)
 /**
  * True between "user sent the message" and "first chunk arrived" —
  * either reasoning, a tool call, or actual answer content. While
- * this is true the answer slot shows a "Pensando…" pill instead of
- * an empty box with a blinking cursor (which read as frozen).
+ * this is true the answer slot shows a status ticker (pulsing dot +
+ * cycling text + elapsed timer) instead of an empty box with a
+ * blinking cursor (which read as frozen).
  *
  * Becomes false the moment anything streams; the regular answer
  * flow takes over from there.
@@ -445,6 +476,64 @@ const isWaitingForFirstChunk = computed(
     (props.message.toolCalls?.length ?? 0) === 0 &&
     !(props.message.reasoning ?? ''),
 )
+
+// ---- Status ticker (cold-start "thinking" state) -------------------------
+// Curated rotation of statuses that read as the agent doing real work.
+// Cycles every 1.6s. Once a tool call or reasoning chunk arrives the
+// `isWaitingForFirstChunk` flag flips and the whole ticker hides.
+const STATUS_TICKER_MESSAGES = [
+  'Lendo cotações…',
+  'Cruzando dados de macro…',
+  'Buscando notícias recentes…',
+  'Validando números…',
+  'Sintetizando análise…',
+] as const
+const statusTickerIndex = ref(0)
+const elapsedMs = ref(0)
+const elapsedFmt = computed(() => {
+  const s = elapsedMs.value / 1000
+  if (s < 10) return `${s.toFixed(1)}s`
+  return `${Math.floor(s)}s`
+})
+
+let _tickerInterval: ReturnType<typeof setInterval> | null = null
+let _elapsedInterval: ReturnType<typeof setInterval> | null = null
+let _waitStartedAt = 0
+
+watch(
+  isWaitingForFirstChunk,
+  (waiting) => {
+    if (waiting) {
+      // Start fresh — reset both counters when the ticker comes alive.
+      statusTickerIndex.value = 0
+      elapsedMs.value = 0
+      _waitStartedAt = Date.now()
+      if (_tickerInterval) clearInterval(_tickerInterval)
+      if (_elapsedInterval) clearInterval(_elapsedInterval)
+      _tickerInterval = setInterval(() => {
+        statusTickerIndex.value =
+          (statusTickerIndex.value + 1) % STATUS_TICKER_MESSAGES.length
+      }, 1600)
+      _elapsedInterval = setInterval(() => {
+        elapsedMs.value = Date.now() - _waitStartedAt
+      }, 100)
+    } else {
+      if (_tickerInterval) {
+        clearInterval(_tickerInterval)
+        _tickerInterval = null
+      }
+      if (_elapsedInterval) {
+        clearInterval(_elapsedInterval)
+        _elapsedInterval = null
+      }
+    }
+  },
+  { immediate: true },
+)
+onBeforeUnmount(() => {
+  if (_tickerInterval) clearInterval(_tickerInterval)
+  if (_elapsedInterval) clearInterval(_elapsedInterval)
+})
 
 // Wrapper ref for the assistant answer DIV. The watcher that mounts
 // `<TickerChip>` instances into the rendered prose lives at the
@@ -686,19 +775,38 @@ function artifactLabel(type: ChatArtifact['type']): string {
   word-break: break-word;
 }
 
-/* Cold-start "Pensando…" pulse — opacity-only animation so it stays
-   compositor-friendly. Fades from 1 → 0.4 → 1 every 1.4s; honours
-   prefers-reduced-motion by falling back to a static dot. */
+/* Cold-start status ticker — pulsing dot ring + skeleton shimmer.
+   The dot is one solid + one ping ring (matches the live-tape pattern
+   in the dashboard). Skeletons soft-pulse 0.6 ↔ 1 with staggered
+   delays. Honours prefers-reduced-motion. */
 .chat-thinking-pulse {
-  animation: chat-thinking-pulse-keys 1.4s ease-in-out infinite;
+  animation: chat-thinking-ping-keys 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+  opacity: 0.6;
 }
-@keyframes chat-thinking-pulse-keys {
-  0%, 100% { opacity: 1; }
-  50%      { opacity: 0.4; }
+@keyframes chat-thinking-ping-keys {
+  75%, 100% { transform: scale(2.4); opacity: 0; }
 }
+.chat-thinking-skel {
+  animation: chat-thinking-skel-keys 1.6s ease-in-out infinite;
+}
+@keyframes chat-thinking-skel-keys {
+  0%, 100% { opacity: 0.6; }
+  50%      { opacity: 1; }
+}
+.chat-status-text-enter-active,
+.chat-status-text-leave-active {
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+.chat-status-text-enter-from { opacity: 0; transform: translateY(3px); }
+.chat-status-text-leave-to { opacity: 0; transform: translateY(-3px); }
+
 @media (prefers-reduced-motion: reduce) {
-  .chat-thinking-pulse {
+  .chat-thinking-pulse,
+  .chat-thinking-skel,
+  .chat-status-text-enter-active,
+  .chat-status-text-leave-active {
     animation: none;
+    transition: none;
   }
 }
 
