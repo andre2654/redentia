@@ -373,10 +373,18 @@ function onSendFollowup(
   void chat.send(message)
 }
 
-function onStarterChip(message: string) {
+function onStarterChip(message: string, requestedTier?: 'basic' | 'max') {
   if (!authStore.isAuthenticated) {
     redirectToLogin()
     return
+  }
+  // Some starter actions (HomeDashboard ticker menu's "Análise completa"
+  // and "Faz sentido pra mim?") emit a tier hint because they only make
+  // sense in MAX (multi-tool research, portfolio framework). Honor the
+  // hint by switching the picker before sending so the badge reflects
+  // the actual tier the answer was generated under.
+  if (requestedTier && requestedTier !== tier.value) {
+    tier.value = requestedTier
   }
   void chat.send(message).then(refreshSessionList)
 }

@@ -296,29 +296,130 @@
          "more behind" rather than clipped content. The strip is also
          drag-scrollable and click-able (click any chip → /asset/X).
          Items are duplicated so the marquee loops seamlessly. -->
+    <!-- Marquee constrained to the same width as the stat cards above.
+         shrink-0 keeps the band at its natural height inside the
+         flex-col dashboard. -mt pulls it tight against the cards. The
+         band uses overflow-x: clip + overflow-y: visible so the
+         action menu opened from a ticker chip can bleed out below
+         (regular `overflow: hidden` would clip it).
+
+         The band creates its own stacking context (because of
+         overflow-x: clip), so even with the inner menu at z-50, the
+         menu paints UNDER any later-DOM siblings (the news grid).
+         When a menu opens, we promote the band itself above the news
+         section by toggling .is-menu-open → z-index 50. -->
     <div
       v-if="tickerChips.length > 0"
-      class="ticker-chips-band relative -mx-4 overflow-hidden md:-mx-6"
+      class="ticker-chips-band relative -mt-7 shrink-0 md:-mt-9"
+      :class="openTickerMenu ? 'is-menu-open' : ''"
       @mouseenter="marqueePaused = true"
       @mouseleave="marqueePaused = false"
     >
       <div
-        class="ticker-chips-track flex w-max items-center gap-2 px-4 md:px-6"
-        :class="marqueePaused ? 'is-paused' : ''"
+        class="ticker-chips-track flex w-max items-center gap-2"
+        :class="isMarqueePaused ? 'is-paused' : ''"
       >
-        <NuxtLink
+        <div
           v-for="(t, idx) in tickerChipsLooped"
           :key="`${t.ticker}-${idx}`"
-          :to="`/asset/${t.ticker.toLowerCase()}`"
-          class="ticker-chip group inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 font-mono-tab text-[12.5px] font-medium tabular-nums leading-none transition-colors"
-          :style="{
-            backgroundColor: `color-mix(in srgb, var(--brand-text) 4%, transparent)`,
-            color: 'var(--brand-text)',
-          }"
+          class="ticker-chip-wrap relative shrink-0"
         >
-          <span class="font-semibold" translate="no">{{ t.ticker }}</span>
-          <span :style="{ color: changeColor(t.change) }" translate="no">{{ formatChange(t.change) }}</span>
-        </NuxtLink>
+          <button
+            type="button"
+            class="ticker-chip group inline-flex shrink-0 items-center gap-2 rounded-full py-1.5 pl-1.5 pr-3 font-mono-tab text-[12.5px] font-medium tabular-nums leading-none transition-[border-color,background-color,box-shadow]"
+            :class="openTickerMenu?.idx === idx ? 'is-active' : ''"
+            :style="chipStyle"
+            :aria-expanded="openTickerMenu?.idx === idx"
+            :aria-label="`Ações para ${t.ticker}`"
+            @click.stop="toggleTickerMenu(idx, t.ticker)"
+          >
+            <AtomsTickerLogo
+              :ticker="t.ticker"
+              :logo="t.logo ?? undefined"
+              :size="20"
+              class="shrink-0"
+            />
+            <span class="font-semibold" :style="{ color: 'var(--brand-text)' }" translate="no">{{ t.ticker }}</span>
+            <span :style="{ color: changeColor(t.change) }" translate="no">{{ formatChange(t.change) }}</span>
+          </button>
+
+          <!-- Action menu — same affordance as the news card menu.
+               Mounted below the chip; the marquee auto-pauses while
+               the menu is open. z-50 keeps it above the composer
+               (z-30) and the news cards (z-20) — anything below z-50
+               in the layout shouldn't intercept the popover. -->
+          <Transition name="news-menu">
+            <div
+              v-if="openTickerMenu?.idx === idx"
+              class="ticker-menu absolute left-1/2 top-full z-50 mt-2 flex w-[220px] -translate-x-1/2 flex-col overflow-hidden rounded-lg shadow-lg"
+              :style="{
+                backgroundColor: 'var(--brand-surface)',
+                border: `1px solid color-mix(in srgb, var(--brand-border) 60%, transparent)`,
+              }"
+              @click.stop
+            >
+              <button
+                type="button"
+                class="news-menu-item flex items-center gap-2 px-3 py-2.5 text-left text-[13px] font-medium transition-colors"
+                :style="{ color: 'var(--brand-text)' }"
+                @click.stop="onAskAnalysis(t)"
+              >
+                <UIcon name="i-lucide-bar-chart-3" class="size-3.5" :style="{ color: 'var(--brand-primary)' }" />
+                <span class="flex-1">Análise completa</span>
+                <span
+                  class="rounded px-1.5 py-0.5 font-mono-tab text-[9.5px] font-semibold uppercase tracking-[0.14em]"
+                  :style="{
+                    backgroundColor: `color-mix(in srgb, var(--brand-primary) 16%, transparent)`,
+                    color: 'var(--brand-primary)',
+                  }"
+                >MAX</span>
+              </button>
+              <button
+                type="button"
+                class="news-menu-item flex items-center gap-2 px-3 py-2.5 text-left text-[13px] transition-colors"
+                :style="{
+                  color: 'var(--brand-text)',
+                  borderTop: `1px solid color-mix(in srgb, var(--brand-border) 35%, transparent)`,
+                }"
+                @click.stop="onAskPortfolioFit(t)"
+              >
+                <UIcon name="i-lucide-pie-chart" class="size-3.5" :style="{ color: 'var(--brand-primary)' }" />
+                <span class="flex-1">Faz sentido pra mim?</span>
+                <span
+                  class="rounded px-1.5 py-0.5 font-mono-tab text-[9.5px] font-semibold uppercase tracking-[0.14em]"
+                  :style="{
+                    backgroundColor: `color-mix(in srgb, var(--brand-primary) 16%, transparent)`,
+                    color: 'var(--brand-primary)',
+                  }"
+                >MAX</span>
+              </button>
+              <button
+                type="button"
+                class="news-menu-item flex items-center gap-2 px-3 py-2.5 text-left text-[13px] transition-colors"
+                :style="{
+                  color: 'var(--brand-text)',
+                  borderTop: `1px solid color-mix(in srgb, var(--brand-border) 35%, transparent)`,
+                }"
+                @click.stop="onAddWatch(t)"
+              >
+                <UIcon name="i-lucide-bell-plus" class="size-3.5" :style="{ color: 'var(--brand-primary)' }" />
+                Adicionar à watchlist
+              </button>
+              <NuxtLink
+                :to="`/asset/${t.ticker.toLowerCase()}`"
+                class="news-menu-item flex items-center gap-2 px-3 py-2.5 text-left text-[13px] transition-colors"
+                :style="{
+                  color: 'var(--brand-text-muted)',
+                  borderTop: `1px solid color-mix(in srgb, var(--brand-border) 35%, transparent)`,
+                }"
+                @click.stop="closeTickerMenu"
+              >
+                <UIcon name="i-lucide-external-link" class="size-3.5" />
+                Abrir página do ativo
+              </NuxtLink>
+            </div>
+          </Transition>
+        </div>
       </div>
     </div>
 
@@ -576,7 +677,13 @@ withDefaults(
 )
 
 const emit = defineEmits<{
-  start: [question: string]
+  /**
+   * Send a starter question to the chat. Optional `tier` hint forces
+   * the chat to switch (e.g. ticker actions like "Análise completa"
+   * are MAX-only because they trigger multi-tool research). When
+   * omitted, the chat keeps whatever tier is currently selected.
+   */
+  start: [question: string, tier?: 'basic' | 'max']
   'open-goal': []
 }>()
 
@@ -757,55 +864,73 @@ const watchlistsCount = computed(() => watchState.watches.value.length)
 interface TickerChipData {
   ticker: string
   change: number
+  logo: string | null
 }
 
 const tickerChips = ref<TickerChipData[]>([])
 
-// SSR-safe via useAsyncData (matches the existing AtomsTickerCarousel
-// pattern at atoms/tickerCarousel.vue). Fetching inside `onMounted`
-// produces a CSR-only result that flashes on hydration; useAsyncData
-// runs on the server so the chips ship in the SSR HTML.
-const { data: topStocksData } = await useAsyncData<TickerChipData[]>(
-  'home-dashboard-ticker-chips',
-  async () => {
-    try {
-      const data = await getTopStocks('top', 100000)
-      return (Array.isArray(data) ? data : [])
-        .slice(0, 30)
-        .map((a) => {
-          // The asset list endpoint returns `ticker` (e.g. PETR4) and
-          // `change_percent` (number). Some payloads expose `stock`
-          // instead of `ticker`; fall through both to be safe.
-          const sym = String(
-            (a as { ticker?: string; stock?: string }).ticker ??
-              (a as { stock?: string }).stock ??
-              '',
-          ).toUpperCase()
-          const change =
-            typeof a.change_percent === 'number'
-              ? a.change_percent
-              : typeof a.change === 'number'
-                ? a.change
-                : Number(a.change_percent ?? a.change ?? 0) || 0
-          return { ticker: sym, change }
-        })
-        .filter((t) => !!t.ticker)
-    } catch {
-      return []
-    }
-  },
-)
-
-watch(
-  topStocksData,
-  (next) => {
-    if (Array.isArray(next)) tickerChips.value = next
-  },
-  { immediate: true },
-)
+// Fetched on mount (CSR). We tried `await useAsyncData` here for SSR-
+// safety but the top-level await blocks the component on layouts that
+// don't wrap us in Suspense — in `/help` (the chat page) that meant
+// the dashboard simply didn't render. CSR-only is the right trade-off
+// for a "live ticker" anyway: SSR data would be stale by the time it
+// reaches the user.
+onMounted(async () => {
+  try {
+    const data = await getTopStocks('top', 100000)
+    tickerChips.value = (Array.isArray(data) ? data : [])
+      .slice(0, 30)
+      .map((a) => {
+        // The asset list endpoint returns `ticker` (e.g. PETR4) and
+        // `change_percent` (number). Some payloads expose `stock`
+        // instead of `ticker`; fall through both.
+        const sym = String(
+          (a as { ticker?: string; stock?: string }).ticker ??
+            (a as { stock?: string }).stock ??
+            '',
+        ).toUpperCase()
+        const change =
+          typeof a.change_percent === 'number'
+            ? a.change_percent
+            : typeof a.change === 'number'
+              ? a.change
+              : Number(a.change_percent ?? a.change ?? 0) || 0
+        return {
+          ticker: sym,
+          change,
+          logo: typeof a.logo === 'string' && a.logo.length > 0 ? a.logo : null,
+        }
+      })
+      .filter((t) => !!t.ticker)
+  } catch {
+    tickerChips.value = []
+  }
+})
 
 // Pause-on-hover state for the auto-marquee.
 const marqueePaused = ref(false)
+
+// Open ticker menu state. Keyed by chip index (looped list) so we can
+// pinpoint exactly which on-screen chip has the menu — important
+// because each ticker appears twice in the looped track and we don't
+// want to flash menus on both copies. Also tracks the ticker symbol
+// so the action handlers can reference it without re-resolving.
+const openTickerMenu = ref<{ idx: number; ticker: string } | null>(null)
+
+// The marquee freezes while a ticker menu is open. Otherwise the chip
+// would slide out from under the popover mid-interaction.
+const isMarqueePaused = computed(
+  () => marqueePaused.value || openTickerMenu.value !== null,
+)
+
+// White-card chip style — solid surface + subtle border + amber-tinted
+// lift shadow. Same family as the stat cards above so the marquee
+// reads as a sibling row, not a separate ribbon.
+const chipStyle = computed(() => ({
+  backgroundColor: 'var(--brand-surface)',
+  border: `1px solid color-mix(in srgb, var(--brand-border) 40%, transparent)`,
+  boxShadow: `color-mix(in srgb, var(--brand-primary) 6%, transparent) 0px 6px 14px -10px, rgba(0,0,0,0.05) 0px 3px 8px -6px`,
+}))
 
 // Duplicate the chip list so the CSS keyframe can scroll the track from
 // 0% → -50% (one full set's width) and loop seamlessly without a visible
@@ -1119,9 +1244,62 @@ function onAskSummary(n: NewsArticle) {
 function onDocClick(ev: MouseEvent) {
   const target = ev.target as Element | null
   if (!target || !target.closest('.news-card')) closeMenu()
+  // Same dismiss behavior for the ticker menu — click anywhere outside
+  // a chip-wrap closes the popover. The handlers on the menu items
+  // themselves use `@click.stop` so picking an option doesn't double-
+  // dismiss.
+  if (!target || !target.closest('.ticker-chip-wrap')) closeTickerMenu()
 }
 function onKey(ev: KeyboardEvent) {
-  if (ev.key === 'Escape') closeMenu()
+  if (ev.key === 'Escape') {
+    closeMenu()
+    closeTickerMenu()
+  }
+}
+
+// ---- Ticker chip menu actions --------------------------------------------
+function toggleTickerMenu(idx: number, ticker: string) {
+  if (openTickerMenu.value?.idx === idx) {
+    openTickerMenu.value = null
+  } else {
+    openTickerMenu.value = { idx, ticker }
+  }
+}
+function closeTickerMenu() {
+  openTickerMenu.value = null
+}
+
+function onAskAnalysis(t: TickerChipData) {
+  closeTickerMenu()
+  // MAX-only: full multi-tool research (view_asset + dividend_history +
+  // technical_analysis + macro_snapshot + search_news). Basic tier
+  // would skip half of these, so we force MAX to make the answer
+  // worth the user's click.
+  emit(
+    'start',
+    `Faça uma análise completa de ${t.ticker}: fundamentos, gráfico recente, dividendos, contexto macro e tese atual.`,
+    'max',
+  )
+}
+
+function onAskPortfolioFit(t: TickerChipData) {
+  closeTickerMenu()
+  // MAX-only: needs to read carteira_atual_composicao memory + run
+  // verify_asset_composition + portfolio_expected_return. Basic
+  // doesn't load the full portfolio framework.
+  emit(
+    'start',
+    `${t.ticker} faz sentido pra minha carteira hoje? Considere minha exposição atual e se traz papel novo ou redundante.`,
+    'max',
+  )
+}
+
+function onAddWatch(t: TickerChipData) {
+  closeTickerMenu()
+  emit(
+    'start',
+    `Adicione ${t.ticker} à minha watchlist com gatilho de queda 8% em 7 dias e me avise quando bater.`,
+  )
 }
 onMounted(() => {
   if (typeof window !== 'undefined') {
@@ -1178,27 +1356,56 @@ function formatRelativeTime(iso: string): string {
 }
 
 /* ---- Ticker chips marquee --------------------------------------------- */
-/* Edge fade so the cut-off reads as "more behind" rather than clipped. */
+/* Edge fade horizontally via pseudo-elements (NOT mask-image) because
+   mask applies to ALL descendants, which would hide the ticker action
+   menu that bleeds below the band. Pseudo-elements paint OVER the
+   chips at the edges without clipping anything outside the band's
+   vertical bounds. */
 .ticker-chips-band {
-  -webkit-mask-image: linear-gradient(
+  overflow-x: hidden;          /* fallback */
+  overflow-x: clip;            /* preferred — establishes a clipping
+                                  context for X without forcing Y to auto */
+  overflow-y: visible;
+  /* The shadows on the chips spill above/below the band's content
+     box. Padding-y gives them room without changing the visual gap. */
+  padding-block: 6px;
+}
+/* When a chip menu is open, lift the entire band's stacking context
+   above the news grid below. Without this, the band's overflow-x: clip
+   creates a stacking context that traps the menu underneath later
+   sibling elements regardless of inner z-index. */
+.ticker-chips-band.is-menu-open {
+  z-index: 50;
+}
+.ticker-chips-band::before,
+.ticker-chips-band::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 36px;
+  pointer-events: none;
+  z-index: 2;
+}
+.ticker-chips-band::before {
+  left: 0;
+  background: linear-gradient(
     to right,
-    transparent 0,
-    black 24px,
-    black calc(100% - 24px),
-    transparent 100%
+    var(--brand-background, #fff),
+    transparent
   );
-  mask-image: linear-gradient(
-    to right,
-    transparent 0,
-    black 24px,
-    black calc(100% - 24px),
-    transparent 100%
+}
+.ticker-chips-band::after {
+  right: 0;
+  background: linear-gradient(
+    to left,
+    var(--brand-background, #fff),
+    transparent
   );
 }
 
 /* Auto-scroll marquee — loops because the track contains 2× the items
-   and we translate by exactly half the track's width per cycle. The
-   duration scales with the count for a steady ~80px/s read speed. */
+   and we translate by exactly half the track's width per cycle. */
 .ticker-chips-track {
   animation: ticker-chips-scroll 60s linear infinite;
 }
@@ -1213,8 +1420,13 @@ function formatRelativeTime(iso: string): string {
   .ticker-chips-track { animation: none; }
 }
 
-.ticker-chip:hover {
-  background-color: color-mix(in srgb, var(--brand-primary) 10%, transparent) !important;
+.ticker-chip:hover,
+.ticker-chip.is-active {
+  border-color: color-mix(in srgb, var(--brand-primary) 55%, transparent) !important;
+  background-color: color-mix(in srgb, var(--brand-primary) 6%, var(--brand-surface)) !important;
+  box-shadow:
+    color-mix(in srgb, var(--brand-primary) 18%, transparent) 0px 10px 22px -12px,
+    rgba(0, 0, 0, 0.08) 0px 5px 12px -6px !important;
 }
 
 /* ---- News carousel ---------------------------------------------------- */
