@@ -1,26 +1,29 @@
 <template>
-  <NuxtLayout name="static" title="Calculadora de Preço Teto">
+  <NuxtLayout :name="layoutName" title="Calculadora de Preço Teto">
     <section class="flex flex-col gap-8 px-6 py-8">
-      <!-- Breadcrumbs -->
-      <nav class="flex items-center gap-2 text-sm">
-        <NuxtLink to="/" class="transition-colors hover:text-secondary">
-          Home
-        </NuxtLink>
-        <UIcon name="i-lucide-chevron-right" class="h-4 w-4" />
-        <NuxtLink to="/calculadora" class="transition-colors hover:text-secondary">
-          Calculadoras
-        </NuxtLink>
-        <UIcon name="i-lucide-chevron-right" class="h-4 w-4" />
-        <span>Preço Teto</span>
-      </nav>
+      <!-- Back-link to parent listing -->
+      <NuxtLink
+        to="/calculadora"
+        class="flex items-center gap-1 text-xs transition hover:opacity-80"
+        :style="{ color: brand.colors.textMuted }"
+      >
+        <UIcon name="i-lucide-chevron-left" class="size-3" />
+        Todas as calculadoras
+      </NuxtLink>
 
       <!-- Hero Section -->
       <div class="flex flex-col gap-4">
         <div class="flex items-center gap-2">
           <UIcon name="i-lucide-target" class="text-secondary h-8 w-8" />
-          <h1 class="text-3xl md:text-4xl" :class="[brand.font.headingWeight, brand.font.headingStyle]">
-            Calculadora de Preço Teto: Graham, Bazin, P/L Setorial e VPA
-          </h1>
+          <h1
+            class="font-light"
+            :style="{
+              color: brand.colors.text,
+              fontSize: 'clamp(28px, 4vw, 36px)',
+              lineHeight: 1.05,
+              letterSpacing: '-0.7px',
+            }"
+          >Calculadora de Preço Teto: Graham, Bazin, P/L Setorial e VPA</h1>
         </div>
         <p class="text-base md:text-lg">
           Escolha uma ação da B3 e receba na hora o preço justo calculado pelas 4 principais metodologias da análise fundamentalista, com dados atualizados, consenso de margem de segurança e veredito de compra. Sem planilhas, sem cadastro.
@@ -685,10 +688,10 @@
       <MoleculesCtaSection
         :title="`Analise Ações na ${brand.name}`"
         description="Acesse dados fundamentalistas em tempo real, compare indicadores e receba análises com IA."
-        primary-button-text="Criar conta grátis"
-        primary-button-link="/auth/register"
-        secondary-button-text="Ver ações"
-        secondary-button-link="/acoes"
+        :buttons="[
+          { label: 'Criar conta grátis', to: '/auth/register', icon: 'i-lucide-arrow-right', variant: 'primary' },
+          { label: 'Ver ações', to: '/acoes', variant: 'outline' },
+        ]"
       />
     </section>
   </NuxtLayout>
@@ -699,6 +702,10 @@ import { computed } from 'vue'
 import { useAssetsService } from '~/services/assets'
 
 const brand = useBrand()
+const authStore = useAuthStore()
+const layoutName = computed(() =>
+  authStore.isAuthenticated ? 'default' : 'static'
+)
 const { getAssets, getSectors } = useAssetsService()
 
 const [{ data: assetsData, pending: assetsPending }, { data: sectorsData }] = await Promise.all([

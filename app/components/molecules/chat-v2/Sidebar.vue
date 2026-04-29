@@ -367,6 +367,12 @@ defineEmits<{
 const brand = useBrand()
 
 // ---- Painel state (composables) -----------------------------------------
+// TODO(wallet-redesign): Phase 3 introduced /api/goals + /api/watchlist on
+// the Laravel side (see services/walletData.ts). The chat sidebar still
+// reads from /api/chat/goals + /api/chat/watchlist (chat-service shells).
+// Eventually these should converge — but keeping the chat-service ones
+// here preserves the in-conversation goal/watchlist UX without touching
+// the wallet contract.
 const goalsState = useGoals()
 const decisionsState = useDecisions()
 const watchlistState = useWatchlist()

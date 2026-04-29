@@ -8,14 +8,28 @@
   brand-bound colors — no `font-bold`, no `text-gray-*`.
 -->
 <template>
-  <NuxtLayout name="static" title="Calculadoras Financeiras">
+  <NuxtLayout :name="layoutName" title="Calculadoras Financeiras">
     <section class="flex flex-col gap-14 px-6 py-10">
-      <!-- ============ Lead paragraph ============ -->
-      <header class="mx-auto -mt-6 flex max-w-2xl flex-col items-center gap-3 text-center">
+      <!-- ============ Hero ============
+           Page-level h1 is rendered ALWAYS. The static layout cascade
+           hides any h1 inside `.static-content`, so on static this
+           one stays invisible (the layout's centered title-prop h1
+           takes over). On default layout (logged-in users), there's
+           no automatic heading, so this page h1 IS what shows. -->
+      <header class="mx-auto -mt-2 flex max-w-2xl flex-col items-center gap-3 text-center">
         <span
           class="font-mono-tab text-[11px] font-medium uppercase"
           :style="{ letterSpacing: '0.18em', color: brand.colors.primary }"
         >Ferramentas · Gratuitas</span>
+        <h1
+          class="font-light"
+          :style="{
+            color: brand.colors.text,
+            fontSize: 'clamp(28px, 4vw, 36px)',
+            lineHeight: 1.05,
+            letterSpacing: '-0.7px',
+          }"
+        >Calculadoras Financeiras</h1>
         <p
           :style="{
             fontSize: '17.5px',
@@ -208,10 +222,10 @@
       <MoleculesCtaSection
         title="Pronto pra começar a investir?"
         :description="`Cadastre-se na ${brand.name} pra ter análises com IA, acompanhamento de carteira e mais.`"
-        primary-button-text="Criar conta grátis"
-        primary-button-link="/auth/register"
-        secondary-button-text="Conhecer a plataforma"
-        secondary-button-link="/institucional/how-works"
+        :buttons="[
+          { label: 'Criar conta grátis', to: '/auth/register', icon: 'i-lucide-arrow-right', variant: 'primary' },
+          { label: 'Conhecer a plataforma', to: '/institucional/how-works', variant: 'outline' },
+        ]"
       />
     </section>
   </NuxtLayout>
@@ -219,6 +233,10 @@
 
 <script setup lang="ts">
 const brand = useBrand()
+const authStore = useAuthStore()
+const layoutName = computed(() =>
+  authStore.isAuthenticated ? 'default' : 'static'
+)
 
 definePageMeta({
   isPublicRoute: true,

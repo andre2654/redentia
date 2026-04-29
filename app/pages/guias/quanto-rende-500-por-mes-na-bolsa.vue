@@ -44,13 +44,14 @@ usePageSeo({
 <template>
   <NuxtLayout name="static" title="Quanto Rende R$ 500 Por Mês na Bolsa">
     <article class="static-content mx-auto flex w-full max-w-4xl flex-col gap-8 px-6 py-12 md:py-16">
-      <nav class="flex items-center gap-2 text-sm">
-        <NuxtLink to="/" class="hover:opacity-80">Início</NuxtLink>
-        <UIcon name="i-lucide-chevron-right" class="size-4" />
-        <NuxtLink to="/guias" class="hover:opacity-80">Guias</NuxtLink>
-        <UIcon name="i-lucide-chevron-right" class="size-4" />
-        <span>R$ 500 por mês</span>
-      </nav>
+      <NuxtLink
+        to="/guias"
+        class="flex items-center gap-1 text-xs transition hover:opacity-80"
+        :style="{ color: brand.colors.textMuted }"
+      >
+        <UIcon name="i-lucide-chevron-left" class="size-3" />
+        Todos os guias
+      </NuxtLink>
 
       <header class="flex flex-col gap-4">
         <h1 class="md:text-5xl">

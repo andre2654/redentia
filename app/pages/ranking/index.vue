@@ -7,7 +7,7 @@
   color-mix on brand text. No `font-bold`, no `text-gray-*` literals.
 -->
 <template>
-  <NuxtLayout name="static" title="Rankings do Mercado">
+  <NuxtLayout :name="layoutName" title="Rankings do Mercado">
     <section class="flex flex-col gap-12 px-6 py-10 md:py-14">
       <!-- ============ Hero ============ -->
       <header class="flex max-w-3xl flex-col gap-3">
@@ -19,9 +19,9 @@
           class="font-light"
           :style="{
             color: brand.colors.text,
-            fontSize: 'clamp(32px, 5vw, 48px)',
+            fontSize: 'clamp(28px, 4vw, 36px)',
             lineHeight: 1.05,
-            letterSpacing: '-1.2px',
+            letterSpacing: '-0.7px',
           }"
         >Rankings do Mercado</h1>
         <p
@@ -103,6 +103,10 @@ definePageMeta({
 })
 
 const brand = useBrand()
+const authStore = useAuthStore()
+const layoutName = computed(() =>
+  authStore.isAuthenticated ? 'default' : 'static'
+)
 
 usePageSeo({
   title: 'Rankings do Mercado Brasileiro | Redentia',

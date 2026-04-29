@@ -1,25 +1,28 @@
 <template>
-  <NuxtLayout name="static" title="Calculadora de Aposentadoria">
+  <NuxtLayout :name="layoutName" title="Calculadora de Aposentadoria">
     <section class="flex flex-col gap-8 px-6 py-8">
-      <!-- Breadcrumbs -->
-      <nav class="flex items-center gap-2 text-sm">
-        <NuxtLink to="/" class="transition-colors hover:text-secondary">
-          Home
-        </NuxtLink>
-        <UIcon name="i-lucide-chevron-right" class="h-4 w-4" />
-        <NuxtLink to="/calculadora" class="transition-colors hover:text-secondary">
-          Calculadoras
-        </NuxtLink>
-        <UIcon name="i-lucide-chevron-right" class="h-4 w-4" />
-        <span>Aposentadoria</span>
-      </nav>
+      <!-- Back-link to parent listing -->
+      <NuxtLink
+        to="/calculadora"
+        class="flex items-center gap-1 text-xs transition hover:opacity-80"
+        :style="{ color: brand.colors.textMuted }"
+      >
+        <UIcon name="i-lucide-chevron-left" class="size-3" />
+        Todas as calculadoras
+      </NuxtLink>
 
       <div class="flex flex-col gap-4">
         <div class="flex items-center gap-2">
           <UIcon name="i-lucide-piggy-bank" class="text-secondary h-8 w-8" />
-          <h1 class="text-3xl md:text-4xl" :class="[brand.font.headingWeight, brand.font.headingStyle]">
-            Calculadora de Aposentadoria: Quanto Preciso para Me Aposentar?
-          </h1>
+          <h1
+            class="font-light"
+            :style="{
+              color: brand.colors.text,
+              fontSize: 'clamp(28px, 4vw, 36px)',
+              lineHeight: 1.05,
+              letterSpacing: '-0.7px',
+            }"
+          >Calculadora de Aposentadoria: Quanto Preciso para Me Aposentar?</h1>
         </div>
         <p class="text-base md:text-lg">
           Calcule quanto você precisa investir para se aposentar. Considere INSS, inflação, expectativa de vida e a regra dos 4%. Planeje seu FIRE (Financial Independence, Retire Early)!
@@ -182,10 +185,10 @@
       <MoleculesCtaSection
         title="Acompanhe seus investimentos"
         description="Monitore seu progresso rumo à aposentadoria com análises em tempo real."
-        primary-button-text="Criar conta grátis"
-        primary-button-link="/auth/register"
-        secondary-button-text="Ver mais calculadoras"
-        secondary-button-link="/calculadora"
+        :buttons="[
+          { label: 'Criar conta grátis', to: '/auth/register', icon: 'i-lucide-arrow-right', variant: 'primary' },
+          { label: 'Ver mais calculadoras', to: '/calculadora', variant: 'outline' },
+        ]"
       />
     </section>
   </NuxtLayout>
@@ -193,6 +196,10 @@
 
 <script setup lang="ts">
 const brand = useBrand()
+const authStore = useAuthStore()
+const layoutName = computed(() =>
+  authStore.isAuthenticated ? 'default' : 'static'
+)
 
 usePageSeo({
   title: `Calculadora de Aposentadoria: Quanto Preciso para Me Aposentar? | ${brand.name}`,

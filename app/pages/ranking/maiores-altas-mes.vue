@@ -1,5 +1,5 @@
 <template>
-  <NuxtLayout name="static" title="Maiores Altas do Mês">
+  <NuxtLayout :name="layoutName" title="Maiores Altas do Mês">
     <section class="flex flex-col gap-8 px-6 py-8">
       <div class="flex flex-col gap-3">
         <NuxtLink
@@ -28,7 +28,15 @@
             >
               Ranking
             </p>
-            <h1 class="md:text-4xl">Maiores Altas do Mês</h1>
+            <h1
+              class="font-light"
+              :style="{
+                color: brand.colors.text,
+                fontSize: 'clamp(28px, 4vw, 36px)',
+                lineHeight: 1.05,
+                letterSpacing: '-0.7px',
+              }"
+            >Maiores Altas do Mês</h1>
           </div>
         </div>
         <p class="max-w-2xl text-base" :style="{ color: brand.colors.textMuted }">
@@ -98,6 +106,10 @@ definePageMeta({
 import { readableOn } from '~/utils/color'
 
 const brand = useBrand()
+const authStore = useAuthStore()
+const layoutName = computed(() =>
+  authStore.isAuthenticated ? 'default' : 'static'
+)
 const service = useAssetsService()
 
 usePageSeo({

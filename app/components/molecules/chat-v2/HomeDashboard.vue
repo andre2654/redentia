@@ -86,8 +86,15 @@
       </p>
     </header>
 
-    <!-- ============ 2. Stat cards ============ -->
-    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <!-- ============ 2. Stat cards ============
+         Layout depende de `hasWallet`:
+           - sem carteira → 2 cols (IBOV + Importar carteira)
+           - com carteira → 4 cols (IBOV + Meta + Decisões + Watchlists)
+    -->
+    <div
+      class="grid gap-3"
+      :class="hasWallet ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 sm:grid-cols-2'"
+    >
       <!-- IBOV -->
       <button
         type="button"
@@ -146,8 +153,90 @@
 
       </button>
 
+      <!-- ===== Carteira import card (no-wallet state) =====
+           Single button that triggers the file picker. On select we
+           emit `start-import(File)` so the parent collapses the whole
+           import flow into a single click → file → chat with attachment
+           + pre-filled text + MAX tier. -->
+      <button
+        v-if="!hasWallet"
+        type="button"
+        class="import-card group relative flex flex-col gap-3 overflow-hidden rounded-lg p-5 text-left transition-[transform,border-color,background-color,box-shadow]"
+        :style="importCardStyle"
+        @click="triggerImportPicker"
+      >
+        <!-- Subtle radial glow -->
+        <div
+          class="pointer-events-none absolute inset-0"
+          :style="{
+            backgroundImage: `radial-gradient(ellipse 70% 80% at 100% 0%, color-mix(in srgb, var(--brand-primary) 16%, transparent) 0%, transparent 60%)`,
+          }"
+          aria-hidden="true"
+        />
+        <div class="relative flex items-center gap-2">
+          <span
+            class="flex size-7 items-center justify-center rounded-md"
+            :style="{ backgroundColor: `color-mix(in srgb, var(--brand-primary) 18%, transparent)` }"
+          >
+            <UIcon
+              name="i-lucide-file-spreadsheet"
+              class="size-3.5"
+              :style="{ color: 'var(--brand-primary)' }"
+              aria-hidden="true"
+            />
+          </span>
+          <span
+            class="font-mono-tab text-[10.5px] font-medium uppercase tracking-[0.16em]"
+            :style="{ color: 'var(--brand-primary)' }"
+          >Importar carteira</span>
+          <span
+            class="ml-auto rounded-md px-1.5 py-0.5 font-mono-tab text-[9.5px] font-medium uppercase tracking-[0.14em]"
+            :style="{
+              backgroundColor: `color-mix(in srgb, var(--brand-primary) 14%, transparent)`,
+              color: 'var(--brand-primary)',
+            }"
+          >MAX</span>
+        </div>
+
+        <div class="relative flex flex-col gap-1.5">
+          <span
+            class="font-light leading-tight text-[18px] tracking-[-0.32px] md:text-[20px]"
+            :style="{ color: 'var(--brand-text)' }"
+          >Anexar planilha do CEI</span>
+          <span
+            class="text-[12.5px]"
+            :style="{
+              color: 'var(--brand-text-muted)',
+              lineHeight: 1.5,
+            }"
+          >Arraste o XLSX da B3 ou clique pra selecionar. Em ~30s a IA monta seu raio-x.</span>
+        </div>
+
+        <div
+          class="relative mt-1 inline-flex items-center gap-1.5 self-start rounded-md px-2.5 py-1 font-mono-tab text-[11px] font-medium"
+          :style="{
+            backgroundColor: 'var(--brand-primary)',
+            color: 'var(--brand-background)',
+          }"
+        >
+          <UIcon name="i-lucide-paperclip" class="size-3" />
+          Anexar agora
+        </div>
+
+        <!-- Hidden file input — triggered programatically -->
+        <input
+          ref="importFileInput"
+          type="file"
+          accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          class="sr-only"
+          @click.stop
+          @change="onImportFileChange"
+        >
+      </button>
+
       <!-- Goal progress -->
       <button
+        v-if="hasWallet"
         type="button"
         class="stat-card group relative flex flex-col gap-3 rounded-lg p-5 text-left transition-[transform,border-color,background-color,box-shadow]"
         :style="cardStyle"
@@ -204,12 +293,13 @@
         </div>
       </button>
 
-      <!-- Decisions -->
+      <!-- ===== Patrimônio (carteira total + sparkline) ===== -->
       <button
+        v-if="hasWallet"
         type="button"
         class="stat-card group relative flex flex-col gap-3 rounded-lg p-5 text-left transition-[transform,border-color,background-color,box-shadow]"
         :style="cardStyle"
-        @click="$emit('start', 'Mostre minhas decisões pendentes e o status de cada uma.')"
+        @click="$emit('start', 'Mostre o resumo do meu patrimônio: total, alocação por classe e setores.')"
       >
         <div class="flex items-center gap-2">
           <span
@@ -217,7 +307,7 @@
             :style="{ backgroundColor: `color-mix(in srgb, var(--brand-primary) 14%, transparent)` }"
           >
             <UIcon
-              name="i-lucide-briefcase"
+              name="i-lucide-wallet"
               class="size-3.5"
               :style="{ color: 'var(--brand-primary)' }"
               aria-hidden="true"
@@ -226,65 +316,109 @@
           <span
             class="font-mono-tab text-[10.5px] font-medium uppercase tracking-[0.16em]"
             :style="{ color: 'var(--brand-text-muted)' }"
-          >Decisões</span>
+          >Patrimônio</span>
         </div>
 
         <div class="flex flex-col gap-1.5">
           <span
-            class="font-light tabular-nums leading-none text-[26px] tracking-[-0.6px] md:text-[30px]"
+            class="font-light tabular-nums leading-none text-[22px] tracking-[-0.4px] md:text-[26px]"
             :style="{ color: 'var(--brand-text)' }"
             translate="no"
-          >{{ decisionsCount }}</span>
+          >{{ patrimonyDisplay }}</span>
           <span
-            class="font-mono-tab text-[12px] font-medium tabular-nums"
-            :style="{
-              color: decisionsCount > 0
-                ? 'var(--brand-primary)'
-                : 'var(--brand-text-muted)',
-            }"
-          >{{ decisionsCount === 1 ? 'decisão ativa' : 'decisões ativas' }}</span>
+            class="font-mono-tab text-[11.5px] tabular-nums"
+            :style="{ color: 'var(--brand-text-muted)' }"
+          >{{ portfolioCount }} {{ portfolioCount === 1 ? 'ativo' : 'ativos' }}</span>
         </div>
       </button>
 
-      <!-- Watchlists -->
+      <!-- ===== Proventos (recebido + a receber + bar chart 4 semanas) ===== -->
       <button
+        v-if="hasWallet"
         type="button"
         class="stat-card group relative flex flex-col gap-3 rounded-lg p-5 text-left transition-[transform,border-color,background-color,box-shadow]"
         :style="cardStyle"
-        @click="$emit('start', 'Mostre minhas watchlists ativas e os gatilhos atuais.')"
+        @click="$emit('start', 'Quais proventos eu recebi este mês e quais ainda vou receber?')"
       >
         <div class="flex items-center gap-2">
           <span
             class="flex size-7 items-center justify-center rounded-md"
-            :style="{ backgroundColor: `color-mix(in srgb, var(--brand-primary) 14%, transparent)` }"
+            :style="{ backgroundColor: `color-mix(in srgb, var(--brand-positive) 16%, transparent)` }"
           >
             <UIcon
-              name="i-lucide-star"
+              name="i-lucide-coins"
               class="size-3.5"
-              :style="{ color: 'var(--brand-primary)' }"
+              :style="{ color: 'var(--brand-positive)' }"
               aria-hidden="true"
             />
           </span>
           <span
             class="font-mono-tab text-[10.5px] font-medium uppercase tracking-[0.16em]"
             :style="{ color: 'var(--brand-text-muted)' }"
-          >Watchlists</span>
+          >Proventos · 30 dias</span>
         </div>
 
-        <div class="flex flex-col gap-1.5">
+        <div class="flex items-baseline justify-between gap-2">
           <span
-            class="font-light tabular-nums leading-none text-[26px] tracking-[-0.6px] md:text-[30px]"
-            :style="{ color: 'var(--brand-text)' }"
+            class="font-light tabular-nums leading-none text-[22px] tracking-[-0.4px] md:text-[26px]"
+            :style="{ color: 'var(--brand-positive)' }"
             translate="no"
-          >{{ watchlistsCount }}</span>
+          >{{ formatBRL(proventosTotal) }}</span>
           <span
-            class="font-mono-tab text-[12px] font-medium tabular-nums"
-            :style="{
-              color: watchlistsCount > 0
-                ? 'var(--brand-primary)'
-                : 'var(--brand-text-muted)',
-            }"
-          >{{ watchlistsCount === 1 ? 'watchlist ativa' : 'watchlists ativas' }}</span>
+            class="font-mono-tab text-[10px] uppercase tracking-[0.14em]"
+            :style="{ color: 'var(--brand-text-muted)' }"
+          >recebido</span>
+        </div>
+
+        <!-- 4-bucket weekly bar chart. Each column has 2 stacked
+             segments: bottom = recebido (positive green), top = a
+             receber (primary amber). Normalized to the tallest
+             (received+expected) week so the proportion reads. The
+             chart spans the full card width — the "a receber"
+             caption sits below it on its own line, not competing
+             for horizontal space with the bars. -->
+        <div class="flex h-14 items-end gap-1.5">
+          <div
+            v-for="(w, i) in proventosWeeks"
+            :key="i"
+            class="flex h-full flex-1 flex-col-reverse overflow-hidden rounded-sm"
+            :style="{ minWidth: '0' }"
+            :title="`Semana ${i + 1}: recebido ${formatBRL(w.received)} · a receber ${formatBRL(w.expected)}`"
+          >
+            <div
+              v-if="w.received > 0"
+              :style="{
+                height: barPct(w.received) + '%',
+                backgroundColor: `color-mix(in srgb, var(--brand-positive) 70%, transparent)`,
+              }"
+            />
+            <div
+              v-if="w.expected > 0"
+              :style="{
+                height: barPct(w.expected) + '%',
+                backgroundColor: `color-mix(in srgb, var(--brand-primary) 65%, transparent)`,
+              }"
+            />
+            <div
+              v-if="w.received === 0 && w.expected === 0"
+              class="rounded-sm"
+              :style="{
+                height: '3px',
+                backgroundColor: `color-mix(in srgb, var(--brand-text) 8%, transparent)`,
+              }"
+            />
+          </div>
+        </div>
+
+        <div class="flex items-baseline justify-between gap-2">
+          <span
+            class="font-mono-tab text-[10px] uppercase tracking-[0.14em]"
+            :style="{ color: 'var(--brand-text-muted)' }"
+          >Próximas 4 semanas</span>
+          <span
+            class="font-mono-tab text-[11.5px] font-medium tabular-nums"
+            :style="{ color: 'var(--brand-primary)' }"
+          >+{{ formatBRL(proventosUpcomingTotal) }} a receber</span>
         </div>
       </button>
     </div>
@@ -672,8 +806,14 @@ const { getIndiceHistoricPrices, getTopStocks } = useAssetsService()
 withDefaults(
   defineProps<{
     tier?: 'basic' | 'max'
+    /**
+     * When `false`, the dashboard collapses Meta/Decisões/Watchlists
+     * into a single "Importar carteira" import card. Default `true`
+     * (logged-in user with imported wallet sees the full 4-card grid).
+     */
+    hasWallet?: boolean
   }>(),
-  { tier: 'basic' },
+  { tier: 'basic', hasWallet: true },
 )
 
 const emit = defineEmits<{
@@ -684,6 +824,13 @@ const emit = defineEmits<{
    * omitted, the chat keeps whatever tier is currently selected.
    */
   start: [question: string, tier?: 'basic' | 'max']
+  /**
+   * User picked an XLSX from the "Importar carteira" import card.
+   * The parent (/help page) handles converting File→ChatAttachment,
+   * forcing MAX tier, and dispatching the chat send with pre-filled
+   * text. Emitted only when `hasWallet === false`.
+   */
+  'start-import': [file: File]
   'open-goal': []
 }>()
 
@@ -707,6 +854,33 @@ const cardStyle = computed(() => ({
   color: 'var(--brand-text)',
   boxShadow: `color-mix(in srgb, var(--brand-primary) 8%, transparent) 0px 18px 32px -22px, rgba(0,0,0,0.06) 0px 8px 16px -10px`,
 }))
+
+// Import card has its own emphasized style — amber-tinted border +
+// extra shadow lift so it reads as the primary CTA on the home grid
+// when no wallet is imported yet.
+const importCardStyle = computed(() => ({
+  backgroundColor: 'var(--brand-surface)',
+  border: `1px solid color-mix(in srgb, var(--brand-primary) 30%, transparent)`,
+  color: 'var(--brand-text)',
+  boxShadow: `color-mix(in srgb, var(--brand-primary) 18%, transparent) 0px 24px 50px -22px, rgba(0,0,0,0.08) 0px 8px 18px -10px`,
+}))
+
+// ---- Import card: file picker + emit handler --------------------
+// The card holds its own hidden file input. We trigger it on click
+// and emit `start-import(file)` to the parent on change. Parent owns
+// the conversion to ChatAttachment + tier switch + chat send.
+const importFileInput = ref<HTMLInputElement | null>(null)
+function triggerImportPicker() {
+  importFileInput.value?.click()
+}
+function onImportFileChange(e: Event) {
+  const input = e.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
+  emit('start-import', file)
+  // Reset so the user can re-pick the same file later if needed.
+  input.value = ''
+}
 
 // ---- IBOV -----------------------------------------------------------------
 interface IndicePoint {
@@ -855,6 +1029,184 @@ onMounted(async () => {
   }
 })
 const watchlistsCount = computed(() => watchState.watches.value.length)
+
+// ---- Patrimônio + Proventos -----------------------------------------------
+// These two cards replaced the old Decisões/Watchlists pair. Patrimônio
+// is just a sum of `current_value` across positions. Proventos pulls
+// the live dividend calendar (recent 30d + upcoming 30d), filters to
+// the user's holdings, and buckets the values into 4 weeks of the
+// current month so the mini bar chart can render a clean visual flow.
+const portfolioPositions = ref<
+  Array<{
+    ticker: string
+    quantity: number
+    current_price?: number
+    current_value?: number
+    average_price: number
+  }>
+>([])
+const portfolioCount = computed(() => portfolioPositions.value.length)
+const patrimonyTotal = computed(() =>
+  portfolioPositions.value.reduce((s, p) => {
+    const v = p.current_value ?? p.quantity * (p.current_price ?? p.average_price)
+    return s + (Number.isFinite(v) ? v : 0)
+  }, 0),
+)
+const patrimonyDisplay = computed(() => formatBRL(patrimonyTotal.value))
+
+interface ProventoEvent {
+  date: string // ISO YYYY-MM-DD
+  amount: number
+}
+const proventosReceived = ref<ProventoEvent[]>([])
+const proventosUpcoming = ref<ProventoEvent[]>([])
+
+const proventosTotal = computed(() =>
+  proventosReceived.value.reduce((s, e) => s + e.amount, 0),
+)
+const proventosUpcomingTotal = computed(() =>
+  proventosUpcoming.value.reduce((s, e) => s + e.amount, 0),
+)
+
+// Renamed: the upcoming total used in the card body.
+// (Local alias for readability inside the template.)
+const proventosUpcoming_total = computed(() => proventosUpcomingTotal.value)
+
+// Bucket the rolling 30-day window forward into 4 weekly buckets.
+// Each bucket tracks BOTH `received` (events that already happened
+// in the past 7 days of that bucket) and `expected` (upcoming events
+// in the next 7 days of that bucket).
+//
+// We anchor on TODAY and split the next 30 days into 4 buckets:
+//   bucket 0 → days  +0..+7      (this week)
+//   bucket 1 → days  +8..+14     (next week)
+//   bucket 2 → days +15..+21
+//   bucket 3 → days +22..+30
+//
+// For received (past 30d), we map the same way going BACKWARDS:
+//   the most recent week falls into bucket 0, etc.
+//
+// This makes the chart read as "what's coming + what just came",
+// independent of calendar boundaries (no empty Aprils or sparse
+// Mays just because we're on the 29th of a month).
+interface WeekBucket {
+  received: number
+  expected: number
+}
+const proventosWeeks = computed<WeekBucket[]>(() => {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const buckets: WeekBucket[] = [
+    { received: 0, expected: 0 },
+    { received: 0, expected: 0 },
+    { received: 0, expected: 0 },
+    { received: 0, expected: 0 },
+  ]
+  const dayDiff = (iso: string): number => {
+    const d = new Date(iso + 'T12:00:00')
+    if (Number.isNaN(d.getTime())) return Number.POSITIVE_INFINITY
+    return Math.round((d.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
+  }
+
+  // Upcoming: 0..30 days ahead → bucket 0..3
+  for (const e of proventosUpcoming.value) {
+    const days = dayDiff(e.date)
+    if (days < 0 || days > 30) continue
+    const idx = Math.min(3, Math.floor(days / 7))
+    buckets[idx].expected += e.amount
+  }
+
+  // Received: 0..30 days behind → most recent = bucket 0
+  for (const e of proventosReceived.value) {
+    const days = dayDiff(e.date)
+    if (days > 0 || days < -30) continue
+    const idx = Math.min(3, Math.floor(-days / 7))
+    buckets[idx].received += e.amount
+  }
+
+  return buckets
+})
+
+// Helper: compute bar height as % of the tallest week, capped at 100.
+function barPct(value: number): number {
+  if (value <= 0) return 0
+  const max = Math.max(
+    ...proventosWeeks.value.map((w) => w.received + w.expected),
+    1,
+  )
+  return Math.max(8, (value / max) * 100)
+}
+
+function formatBRL(n: number): string {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    maximumFractionDigits: 0,
+  }).format(n)
+}
+
+// Fetch portfolio + dividend feeds in parallel. Silently no-ops on
+// failure so the card just renders empty buckets.
+async function loadPortfolioAndProventos() {
+  if (!authStore.isAuthenticated) return
+  try {
+    const portfolio = usePortfolioService()
+    const assets = useAssetsService()
+    const [positionsResp, recentGroups, upcomingGroups] = await Promise.all([
+      portfolio.getPositions().catch(() => ({ positions: [] })),
+      assets.getRecentDividends(30, 300).catch(() => []),
+      assets.getUpcomingDividends(30, 300).catch(() => []),
+    ])
+    portfolioPositions.value = (positionsResp?.positions || []) as Array<{
+      ticker: string
+      quantity: number
+      current_price?: number
+      current_value?: number
+      average_price: number
+    }>
+    const userTickers = new Set(
+      portfolioPositions.value.map((p) => p.ticker.toUpperCase()),
+    )
+
+    const expandGroups = (
+      groups: unknown,
+    ): Array<{ date: string; ticker: string; rate: number }> => {
+      if (!Array.isArray(groups)) return []
+      const out: Array<{ date: string; ticker: string; rate: number }> = []
+      for (const g of groups as Array<{ date: string; items?: unknown[] }>) {
+        const items = Array.isArray(g?.items) ? g.items : []
+        for (const it of items) {
+          const x = it as { ticker?: string; rate?: unknown }
+          out.push({
+            date: g.date,
+            ticker: (x.ticker || '').toUpperCase(),
+            rate: Number(x.rate) || 0,
+          })
+        }
+      }
+      return out
+    }
+
+    const computeAmount = (ticker: string, rate: number): number => {
+      const pos = portfolioPositions.value.find(
+        (p) => p.ticker.toUpperCase() === ticker,
+      )
+      const qty = pos?.quantity || 0
+      return rate * qty
+    }
+
+    proventosReceived.value = expandGroups(recentGroups)
+      .filter((it) => userTickers.has(it.ticker))
+      .map((it) => ({ date: it.date, amount: computeAmount(it.ticker, it.rate) }))
+
+    proventosUpcoming.value = expandGroups(upcomingGroups)
+      .filter((it) => userTickers.has(it.ticker))
+      .map((it) => ({ date: it.date, amount: computeAmount(it.ticker, it.rate) }))
+  } catch {
+    // silent — cards render zeros
+  }
+}
+onMounted(loadPortfolioAndProventos)
 
 // ---- Ticker chips marquee ------------------------------------------------
 // Tiny chip-style ticker strip below the stat cards. Reuses the existing

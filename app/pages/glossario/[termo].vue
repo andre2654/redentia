@@ -1,18 +1,15 @@
 <template>
   <NuxtLayout name="static" :title="termo?.nome || 'Glossário'">
     <div v-if="termo" class="flex flex-col gap-8 px-6 py-8">
-      <!-- Breadcrumbs -->
-      <nav class="flex items-center gap-2 text-sm" :style="{ color: brand.colors.textMuted }">
-        <NuxtLink to="/" class="transition-colors hover:text-secondary">
-          Home
-        </NuxtLink>
-        <UIcon name="i-lucide-chevron-right" class="h-4 w-4" />
-        <NuxtLink to="/glossario" class="transition-colors hover:text-secondary">
-          Glossário
-        </NuxtLink>
-        <UIcon name="i-lucide-chevron-right" class="h-4 w-4" />
-        <span :style="{ color: brand.colors.text }">{{ termo.nome }}</span>
-      </nav>
+      <!-- Back-link to parent listing -->
+      <NuxtLink
+        to="/glossario"
+        class="flex items-center gap-1 text-xs transition hover:opacity-80"
+        :style="{ color: brand.colors.textMuted }"
+      >
+        <UIcon name="i-lucide-chevron-left" class="size-3" />
+        Todos os termos
+      </NuxtLink>
 
       <!-- Header -->
       <section class="flex flex-col gap-4">

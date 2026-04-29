@@ -154,7 +154,9 @@
         <ChatV2HomeDashboard
           v-else
           :tier="tier"
+          :has-wallet="hasWallet"
           @start="onStarterChip"
+          @start-import="onStartImport"
           @open-goal="goalSetupOpen = true"
         />
 
@@ -416,6 +418,85 @@ function onStarterChip(message: string, requestedTier?: 'basic' | 'max') {
 async function onNewConversation() {
   chat.reset()
   sidebarOpen.value = false
+}
+
+// ============================================================
+// Wallet detection for HomeDashboard
+// ============================================================
+// When the user has no positions yet, the dashboard collapses
+// Meta/Decisões/Watchlists into a single "Importar carteira" card.
+// We refetch on mount and after a `portfolio.imported` SSE event
+// would refresh the page (MVP: just on mount).
+const hasWallet = ref(true) // optimistic default — flip if fetch returns empty
+async function loadHasWallet() {
+  if (!authStore.isAuthenticated) {
+    hasWallet.value = false
+    return
+  }
+  try {
+    const portfolioService = usePortfolioService()
+    const resp = await portfolioService.getPositions()
+    hasWallet.value = (resp?.positions?.length || 0) > 0
+  } catch {
+    // 401 / network failure → assume empty so the import card surfaces.
+    hasWallet.value = false
+  }
+}
+onMounted(loadHasWallet)
+
+// ============================================================
+// Single-click portfolio import from the home dashboard
+// ============================================================
+// User picks an XLSX in the import card → we build a ChatAttachment,
+// force MAX tier, dispatch the chat send with a pre-filled prompt.
+// The chat-service auto-import detection (filename match
+// `/posicao.*\.xlsx|carteira.*\.xlsx/i`) catches it and runs the
+// full import_portfolio flow without the user having to type or
+// confirm anything.
+async function onStartImport(file: File) {
+  if (!authStore.isAuthenticated) {
+    redirectToLogin()
+    return
+  }
+  try {
+    // Read file as base64 (binary attachment).
+    const buffer = await file.arrayBuffer()
+    const bytes = new Uint8Array(buffer)
+    let binary = ''
+    const chunkSize = 0x8000
+    for (let i = 0; i < bytes.length; i += chunkSize) {
+      const chunk = bytes.subarray(i, i + chunkSize)
+      binary += String.fromCharCode.apply(
+        null,
+        Array.from(chunk) as unknown as number[],
+      )
+    }
+    const base64 = btoa(binary)
+
+    const attachment: ChatAttachment = {
+      id: `cei-${Date.now()}`,
+      name: file.name,
+      mime:
+        file.type ||
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      size: file.size,
+      kind: 'binary',
+      content: base64,
+    }
+
+    // Force MAX so the agent runs full enrichment + raio-x analysis.
+    if (tier.value !== 'max') tier.value = 'max'
+
+    void chat
+      .send({
+        text: 'Importei minha carteira do CEI. Faz o raio-x completo: classifica os ativos, monta as 9 dimensões, identifica forças e riscos, sugere ajustes. Salva tudo.',
+        attachments: [attachment],
+      })
+      .then(refreshSessionList)
+      .then(() => { hasWallet.value = true })
+  } catch (e) {
+    console.error('Failed to read CEI file', e)
+  }
 }
 
 async function onSelectSession(id: string) {

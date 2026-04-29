@@ -1,4 +1,9 @@
 /**
+ * @deprecated Phase 3 wallet redesign moved XLSX parsing entirely into
+ * the chat-service (`/help?intent=import-portfolio` flow). Do NOT call
+ * this from new code. Kept for backwards compatibility only — no live
+ * caller in the wallet page anymore.
+ *
  * Parse XLSX in the same format as "Posicao Feb 7 2026.xlsx":
  * Headers: Produto, Instituição, Conta, Código de Negociação, ..., Quantidade, ..., Preço de Fechamento, Valor Atualizado
  * Returns array of { ticker, quantity, average_price } (average_price = Preço de Fechamento).

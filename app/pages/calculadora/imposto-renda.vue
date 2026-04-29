@@ -1,25 +1,28 @@
 <template>
-  <NuxtLayout name="static" title="Calculadora de IR sobre Ações">
+  <NuxtLayout :name="layoutName" title="Calculadora de IR sobre Ações">
     <section class="flex flex-col gap-8 px-6 py-8">
-      <!-- Breadcrumbs -->
-      <nav class="flex items-center gap-2 text-sm">
-        <NuxtLink to="/" class="transition-colors hover:text-secondary">
-          Home
-        </NuxtLink>
-        <UIcon name="i-lucide-chevron-right" class="h-4 w-4" />
-        <NuxtLink to="/calculadora" class="transition-colors hover:text-secondary">
-          Calculadoras
-        </NuxtLink>
-        <UIcon name="i-lucide-chevron-right" class="h-4 w-4" />
-        <span>Imposto de Renda</span>
-      </nav>
+      <!-- Back-link to parent listing -->
+      <NuxtLink
+        to="/calculadora"
+        class="flex items-center gap-1 text-xs transition hover:opacity-80"
+        :style="{ color: brand.colors.textMuted }"
+      >
+        <UIcon name="i-lucide-chevron-left" class="size-3" />
+        Todas as calculadoras
+      </NuxtLink>
 
       <div class="flex flex-col gap-4">
         <div class="flex items-center gap-2">
           <UIcon name="i-lucide-receipt-text" class="text-secondary h-8 w-8" />
-          <h1 class="text-3xl md:text-4xl" :class="[brand.font.headingWeight, brand.font.headingStyle]">
-            Calculadora de IR sobre Ações: Day Trade e Swing Trade
-          </h1>
+          <h1
+            class="font-light"
+            :style="{
+              color: brand.colors.text,
+              fontSize: 'clamp(28px, 4vw, 36px)',
+              lineHeight: 1.05,
+              letterSpacing: '-0.7px',
+            }"
+          >Calculadora de IR sobre Ações: Day Trade e Swing Trade</h1>
         </div>
         <p class="text-base md:text-lg">
           Calcule o imposto de renda sobre suas operações com ações. Gere informações do DARF automaticamente, compense prejuízos e fique em dia com a Receita Federal.
@@ -306,10 +309,10 @@
       <MoleculesCtaSection
         :title="`Controle seus investimentos na ${brand.name}`"
         description="Acompanhe sua carteira, receba alertas e tenha relatórios prontos para o IR."
-        primary-button-text="Criar conta grátis"
-        primary-button-link="/auth/register"
-        secondary-button-text="Ver mais calculadoras"
-        secondary-button-link="/calculadora"
+        :buttons="[
+          { label: 'Criar conta grátis', to: '/auth/register', icon: 'i-lucide-arrow-right', variant: 'primary' },
+          { label: 'Ver mais calculadoras', to: '/calculadora', variant: 'outline' },
+        ]"
       />
     </section>
   </NuxtLayout>
@@ -317,6 +320,10 @@
 
 <script setup lang="ts">
 const brand = useBrand()
+const authStore = useAuthStore()
+const layoutName = computed(() =>
+  authStore.isAuthenticated ? 'default' : 'static'
+)
 
 usePageSeo({
   title: `Calculadora de IR sobre Ações: Day Trade e Swing Trade | ${brand.name}`,

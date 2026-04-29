@@ -1,25 +1,28 @@
 <template>
-  <NuxtLayout name="static" title="Calculadora de Dividend Yield">
+  <NuxtLayout :name="layoutName" title="Calculadora de Dividend Yield">
     <section class="flex flex-col gap-8 px-6 py-8">
-      <!-- Breadcrumbs -->
-      <nav class="flex items-center gap-2 text-sm">
-        <NuxtLink to="/" class="transition-colors hover:text-secondary">
-          Home
-        </NuxtLink>
-        <UIcon name="i-lucide-chevron-right" class="h-4 w-4" />
-        <NuxtLink to="/calculadora" class="transition-colors hover:text-secondary">
-          Calculadoras
-        </NuxtLink>
-        <UIcon name="i-lucide-chevron-right" class="h-4 w-4" />
-        <span>Dividend Yield</span>
-      </nav>
+      <!-- Back-link to parent listing -->
+      <NuxtLink
+        to="/calculadora"
+        class="flex items-center gap-1 text-xs transition hover:opacity-80"
+        :style="{ color: brand.colors.textMuted }"
+      >
+        <UIcon name="i-lucide-chevron-left" class="size-3" />
+        Todas as calculadoras
+      </NuxtLink>
 
       <div class="flex flex-col gap-4">
         <div class="flex items-center gap-2">
           <UIcon name="i-lucide-coins" class="text-secondary h-8 w-8" />
-          <h1 class="text-3xl md:text-4xl" :class="[brand.font.headingWeight, brand.font.headingStyle]">
-            Calculadora de Dividend Yield: DY Atual, Projetado e On Cost
-          </h1>
+          <h1
+            class="font-light"
+            :style="{
+              color: brand.colors.text,
+              fontSize: 'clamp(28px, 4vw, 36px)',
+              lineHeight: 1.05,
+              letterSpacing: '-0.7px',
+            }"
+          >Calculadora de Dividend Yield: DY Atual, Projetado e On Cost</h1>
         </div>
         <p class="text-base md:text-lg">
           Calcule o dividend yield de ações e FIIs. Veja DY atual, projetado para os próximos anos e DY on cost (no seu preço de compra). Encontre os melhores pagadores de dividendos.
@@ -219,10 +222,10 @@
       <MoleculesCtaSection
         title="Encontre as melhores pagadoras de dividendos"
         description="Compare dividend yield de todas as ações e FIIs da B3 em tempo real."
-        primary-button-text="Ver ranking de dividendos"
-        primary-button-link="/dividendos"
-        secondary-button-text="Criar conta grátis"
-        secondary-button-link="/auth/register"
+        :buttons="[
+          { label: 'Ver ranking de dividendos', to: '/dividendos', icon: 'i-lucide-arrow-right', variant: 'primary' },
+          { label: 'Criar conta grátis', to: '/auth/register', variant: 'outline' },
+        ]"
       />
     </section>
   </NuxtLayout>
@@ -233,6 +236,10 @@ import { computed } from 'vue'
 import { useAssetsService } from '~/services/assets'
 
 const brand = useBrand()
+const authStore = useAuthStore()
+const layoutName = computed(() =>
+  authStore.isAuthenticated ? 'default' : 'static'
+)
 const { getAssets } = useAssetsService()
 const { data: assetsData, pending: assetsPending } = await useAsyncData(
   'assets-calculator-dividend-yield',

@@ -1,26 +1,29 @@
 <template>
   <NuxtLayout :name="layoutName" title="Simulador de Investimento em Ações">
     <section class="flex flex-col gap-8 px-6 py-8">
-      <!-- Breadcrumbs -->
-      <nav class="flex items-center gap-2 text-sm" :style="{ color: brand.colors.textMuted }">
-        <NuxtLink to="/" class="transition-colors hover:opacity-80">
-          Home
-        </NuxtLink>
-        <UIcon name="i-lucide-chevron-right" class="h-4 w-4" />
-        <NuxtLink to="/calculadora" class="transition-colors hover:opacity-80">
-          Calculadoras
-        </NuxtLink>
-        <UIcon name="i-lucide-chevron-right" class="h-4 w-4" />
-        <span :style="{ color: brand.colors.text }">Simulador de Ações</span>
-      </nav>
+      <!-- Back-link to parent listing -->
+      <NuxtLink
+        to="/calculadora"
+        class="flex items-center gap-1 text-xs transition hover:opacity-80"
+        :style="{ color: brand.colors.textMuted }"
+      >
+        <UIcon name="i-lucide-chevron-left" class="size-3" />
+        Todas as calculadoras
+      </NuxtLink>
 
       <!-- Hero Section -->
       <div class="flex flex-col gap-4">
         <div class="flex items-center gap-2">
           <UIcon name="i-lucide-chart-line" class="text-secondary h-8 w-8" />
-          <h1 class="text-3xl md:text-4xl" :class="[brand.font.headingWeight, brand.font.headingStyle]">
-            Simulador de Investimento em Ações com Dividendos
-          </h1>
+          <h1
+            class="font-light"
+            :style="{
+              color: brand.colors.text,
+              fontSize: 'clamp(28px, 4vw, 36px)',
+              lineHeight: 1.05,
+              letterSpacing: '-0.7px',
+            }"
+          >Simulador de Investimento em Ações com Dividendos</h1>
         </div>
         <p class="text-base md:text-lg" :style="{ color: brand.colors.textMuted }">
           Descubra quanto você teria ganho investindo em ações da B3. Análise baseada em dados históricos reais, incluindo reinvestimento de dividendos e simulação com múltiplos ativos.
@@ -542,10 +545,10 @@
       <MoleculesCtaSection
         title="Descubra as melhores ações para investir"
         :description="`Use a ${brand.name} para analisar ações em tempo real, receber recomendações com IA e acompanhar sua carteira.`"
-        primary-button-text="Criar conta grátis"
-        primary-button-link="/auth/register"
-        secondary-button-text="Ver ações em alta"
-        secondary-button-link="/acoes"
+        :buttons="[
+          { label: 'Criar conta grátis', to: '/auth/register', icon: 'i-lucide-arrow-right', variant: 'primary' },
+          { label: 'Ver ações em alta', to: '/acoes', variant: 'outline' },
+        ]"
       />
     </section>
   </NuxtLayout>
