@@ -125,10 +125,16 @@
           @confirm-proposal="onConfirmProposal"
           @skip-proposal="onSkipProposal"
         />
-        <ChatV2EmptyState
+        <!-- Authenticated users see the rich dashboard (real IBOV, goal
+             progress, decisions/watchlist counts, personalized news with
+             "ask impact" affordance). Unauthenticated never reaches here
+             (the unauthenticated branch above renders a separate showcase
+             landing). -->
+        <ChatV2HomeDashboard
           v-else
           :tier="tier"
           @start="onStarterChip"
+          @open-goal="goalSetupOpen = true"
         />
 
         <!-- Composer — also hosts the ThinkingIndicator inline (see
