@@ -2,8 +2,8 @@
   <NuxtLayout title="André Saraiva">
     <div class="flex h-full flex-col gap-4 pt-6">
       <div class="flex flex-col px-6">
-        <h2 class="text-[18px] font-bold">Configurações</h2>
-        <p class="text-[13px] font-extralight text-white/70">
+        <h2 class="text-[18px] font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }">Configurações</h2>
+        <p class="text-[13px] font-extralight" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 70%, transparent)` }">
           Altere seu nome e senha de acesso.
         </p>
       </div>
@@ -19,6 +19,7 @@
 
 <script setup lang="ts">
 const authStore = useAuthStore()
+const brand = useBrand()
 
 usePageSeo({
   title: 'Configurações',

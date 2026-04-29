@@ -142,7 +142,7 @@
                     R$
                   </span>
                   <span
-                    class="font-mono-tab text-5xl font-bold leading-none tabular-nums md:text-6xl"
+                    class="font-mono-tab text-5xl font-light leading-none tabular-nums md:text-6xl"
                     :style="{ color: brand.colors.text }"
                     translate="no"
                   >
@@ -381,7 +381,7 @@
         <!-- Tokenomics -->
         <section class="border-b py-8" :style="{ borderColor: brand.colors.border }">
           <div class="mb-4 flex flex-col gap-1">
-            <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
+            <h2 class="text-xl font-medium md:text-2xl" :style="{ color: brand.colors.text, letterSpacing: '-0.4px' }">
               Tokenomics
             </h2>
             <span class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
@@ -403,7 +403,7 @@
         <!-- Indicadores de Mercado -->
         <section class="border-b py-8" :style="{ borderColor: brand.colors.border }">
           <div class="mb-4 flex flex-col gap-1">
-            <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
+            <h2 class="text-xl font-medium md:text-2xl" :style="{ color: brand.colors.text, letterSpacing: '-0.4px' }">
               Indicadores de mercado
             </h2>
             <span class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
@@ -425,7 +425,7 @@
         <!-- Resumo diário -->
         <section v-if="hasOhlc" class="border-b py-8" :style="{ borderColor: brand.colors.border }">
           <div class="mb-4 flex flex-col gap-1">
-            <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
+            <h2 class="text-xl font-medium md:text-2xl" :style="{ color: brand.colors.text, letterSpacing: '-0.4px' }">
               Resumo diário
             </h2>
             <span class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
@@ -447,7 +447,7 @@
         <!-- 52 semanas / Valorização -->
         <section class="border-b py-8" :style="{ borderColor: brand.colors.border }">
           <div class="mb-4 flex flex-col gap-1">
-            <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
+            <h2 class="text-xl font-medium md:text-2xl" :style="{ color: brand.colors.text, letterSpacing: '-0.4px' }">
               Faixa de 52 semanas
             </h2>
           </div>

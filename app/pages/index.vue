@@ -603,7 +603,7 @@
                 <div class="bg-secondary/20 p-3 brand-pill">
                   <UIcon :name="cat.icon" class="text-secondary h-6 w-6" />
                 </div>
-                <h3 class="text-xl font-bold group-hover:text-secondary" :style="{ color: brand.colors.text }">{{ cat.label }}</h3>
+                <h3 class="text-[18px] font-medium group-hover:text-secondary" :style="{ color: brand.colors.text, letterSpacing: '-0.22px' }">{{ cat.label }}</h3>
               </div>
               <p v-if="cat.description" class="text-sm" :style="{ color: brand.colors.textMuted }">
                 {{ cat.description }}
@@ -627,7 +627,7 @@
               <div class="bg-secondary/20 p-4 brand-pill">
                 <UIcon :name="cat.icon" class="text-secondary h-8 w-8" />
               </div>
-              <h3 class="text-lg font-bold group-hover:text-secondary" :style="{ color: brand.colors.text }">{{ cat.label }}</h3>
+              <h3 class="text-[18px] font-medium group-hover:text-secondary" :style="{ color: brand.colors.text, letterSpacing: '-0.22px' }">{{ cat.label }}</h3>
               <p v-if="cat.description" class="text-sm" :style="{ color: brand.colors.textMuted }">
                 {{ cat.description }}
               </p>

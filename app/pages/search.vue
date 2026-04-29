@@ -35,9 +35,9 @@
       <!-- Hero title -->
       <div class="border-b px-4 py-8 md:py-12" :style="{ borderColor: brand.colors.border }">
         <h1
-          class="mt-2 text-3xl font-bold tracking-tight md:text-5xl"
+          class="mt-2 font-light tracking-tight"
           :class="brand.font.headingWeight"
-          :style="{ color: brand.colors.text, fontFamily: brandFontStack }"
+          :style="{ color: brand.colors.text, fontFamily: brandFontStack, fontSize: 'clamp(28px, 4vw, 44px)', lineHeight: 1.1, letterSpacing: '-0.4px' }"
         >
           BUSCA AVANÇADA
         </h1>
@@ -503,7 +503,7 @@
                   class="h-5 w-5 shrink-0 object-contain"
                   @error="failedLogos.markFailed(coin.image)"
                 />
-                <span class="truncate font-bold" :style="{ color: brand.colors.primary }">
+                <span class="truncate font-medium" :style="{ color: brand.colors.primary }">
                   {{ coin.symbol }}
                 </span>
               </span>
@@ -584,7 +584,7 @@
               <span class="text-right" :style="{ color: brand.colors.textMuted }">
                 {{ formatTesouroMaturity(title.maturity_date) }}
               </span>
-              <span class="text-right font-bold" :style="{ color: brand.colors.primary }">
+              <span class="text-right font-medium" :style="{ color: brand.colors.primary }">
                 {{ formatTesouroRate(title) }}
               </span>
               <span class="text-right">
@@ -647,7 +647,7 @@
                   :style="{ borderColor: brand.colors.border }"
                   @error="markAssetLogoFailed(asset)"
                 />
-                <span class="truncate font-bold" :style="{ color: brand.colors.primary }">
+                <span class="truncate font-medium" :style="{ color: brand.colors.primary }">
                   {{ asset.ticker || asset.stock }}
                 </span>
               </span>
@@ -808,7 +808,7 @@
               :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
             >
               <span class="text-[10px] font-medium uppercase tracking-wider sm:text-xs" :style="{ color: secondaryMuted }">Resultados</span>
-              <p class="mt-1 text-2xl font-semibold sm:text-3xl" :style="{ color: brand.colors.text }">
+              <p class="mt-1 font-light tabular-nums" :style="{ color: brand.colors.text, fontSize: 'clamp(22px, 3vw, 28px)', lineHeight: 1.15, letterSpacing: '-0.4px' }">
                 {{ resultsCount }}
               </p>
               <p class="text-[11px] sm:text-xs" :style="{ color: brand.colors.textMuted }">Ativos nos filtros.</p>
@@ -818,7 +818,7 @@
               :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
             >
               <span class="text-[10px] font-medium uppercase tracking-wider sm:text-xs" :style="{ color: secondaryMuted }">Filtros ativos</span>
-              <p class="mt-1 text-2xl font-semibold sm:text-3xl" :style="{ color: brand.colors.text }">
+              <p class="mt-1 font-light tabular-nums" :style="{ color: brand.colors.text, fontSize: 'clamp(22px, 3vw, 28px)', lineHeight: 1.15, letterSpacing: '-0.4px' }">
                 {{ activeFiltersCount }}
               </p>
               <p class="text-[11px] sm:text-xs" :style="{ color: brand.colors.textMuted }">Modificados.</p>
@@ -828,7 +828,7 @@
               :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
             >
               <span class="text-[10px] font-medium uppercase tracking-wider sm:text-xs" :style="{ color: secondaryMuted }">Atualização</span>
-              <p class="mt-1 text-2xl font-semibold sm:text-3xl" :style="{ color: brand.colors.text }">
+              <p class="mt-1 font-light tabular-nums" :style="{ color: brand.colors.text, fontSize: 'clamp(22px, 3vw, 28px)', lineHeight: 1.15, letterSpacing: '-0.4px' }">
                 {{ lastUpdatedLabel }}
               </p>
               <p class="text-[11px] sm:text-xs" :style="{ color: brand.colors.textMuted }">API {{ brand.name }}.</p>
@@ -869,7 +869,7 @@
                   <template v-if="terminalVariant">Filtros</template>
                   <template v-else>Filtros avançados</template>
                 </span>
-                <h2 class="text-2xl font-semibold" :style="{ color: brand.colors.text }">Personalize sua análise</h2>
+                <h2 class="font-light" :style="{ color: brand.colors.text, fontSize: 'clamp(22px, 3vw, 28px)', lineHeight: 1.15, letterSpacing: '-0.4px' }">Personalize sua análise</h2>
                 <p class="text-sm" :style="{ color: brand.colors.textMuted }">
                   Ajuste ranges numéricos, selecione grupos de ativos e combine
                   com buscas rápidas.
@@ -903,7 +903,8 @@
                   :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
                 >
                   <div
-                    class="flex items-center justify-between text-sm font-semibold"
+                    class="flex items-center justify-between text-sm font-medium"
+                    :style="{ color: brand.colors.text }"
                   >
                     <span>Market Cap (R$)</span>
                   </div>
@@ -924,7 +925,8 @@
                   :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
                 >
                   <div
-                    class="flex items-center justify-between text-sm font-semibold"
+                    class="flex items-center justify-between text-sm font-medium"
+                    :style="{ color: brand.colors.text }"
                   >
                     <span>Preço (R$)</span>
                   </div>
@@ -949,7 +951,8 @@
                   :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
                 >
                   <div
-                    class="flex items-center justify-between text-sm font-semibold"
+                    class="flex items-center justify-between text-sm font-medium"
+                    :style="{ color: brand.colors.text }"
                   >
                     <span>Variação (%)</span>
                   </div>
@@ -973,7 +976,7 @@
                   class="flex flex-col gap-4 brand-card border p-4"
                   :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
                 >
-                  <div class="text-sm font-semibold">Grupo</div>
+                  <div class="text-sm font-medium" :style="{ color: brand.colors.text }">Grupo</div>
                   <div class="flex flex-wrap items-center gap-3">
                     <UCheckbox
                       v-model="showStock"
@@ -1000,7 +1003,7 @@
                   :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
                 >
                   <div class="flex flex-col gap-1">
-                    <span class="text-sm font-semibold" :style="{ color: brand.colors.text }">
+                    <span class="text-sm font-medium" :style="{ color: brand.colors.text }">
                       MDI, Ocorrência principal
                     </span>
                     <p class="text-xs" :style="{ color: brand.colors.textMuted }">
@@ -1039,7 +1042,7 @@
                   :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
                 >
                   <div class="flex flex-col gap-1">
-                    <span class="text-sm font-semibold" :style="{ color: brand.colors.text }">
+                    <span class="text-sm font-medium" :style="{ color: brand.colors.text }">
                       MDI, Maior probabilidade
                     </span>
                     <p class="text-xs" :style="{ color: brand.colors.textMuted }">
@@ -1078,7 +1081,7 @@
                 :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
                 >
                   <div class="flex flex-col gap-1">
-                    <span class="text-sm font-semibold" :style="{ color: brand.colors.text }">
+                    <span class="text-sm font-medium" :style="{ color: brand.colors.text }">
                       Dados MDI
                     </span>
                     <p class="text-xs" :style="{ color: brand.colors.textMuted }">
@@ -1109,7 +1112,7 @@
                   <template v-if="terminalVariant">Resultados</template>
                   <template v-else>Resultados</template>
                 </span>
-                <h2 class="flex items-center gap-2 text-xl font-semibold sm:text-2xl">
+                <h2 class="flex items-center gap-2 font-light" :style="{ color: brand.colors.text, fontSize: 'clamp(20px, 2.5vw, 26px)', lineHeight: 1.15, letterSpacing: '-0.3px' }">
                   Ativos encontrados
                   <IconAi class="h-5 w-5 shrink-0 sm:h-6 sm:w-6" :style="{ fill: brand.colors.secondary }" aria-hidden="true" />
                 </h2>
@@ -1158,7 +1161,7 @@
                           :style="{ borderColor: brand.colors.border }"
                         />
                         <div class="min-w-0 flex-1">
-                          <p class="truncate font-semibold" :style="{ color: brand.colors.text }">
+                          <p class="truncate font-medium" :style="{ color: brand.colors.text }">
                             {{ asset.ticker || asset.stock }}
                           </p>
                           <p class="truncate text-xs sm:text-sm" :style="{ color: brand.colors.textMuted }">

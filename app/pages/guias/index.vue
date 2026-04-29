@@ -14,7 +14,7 @@
       >
         <div class="mb-4 flex items-center gap-2">
           <UIcon name="i-lucide-star" class="text-secondary h-5 w-5" />
-          <h2 class="text-secondary text-lg font-semibold">Guia em Destaque para Investir</h2>
+          <h2 class="text-secondary text-lg">Guia em Destaque para Investir</h2>
         </div>
         <NuxtLink
           to="/guias/como-investir-em-acoes-para-iniciantes"
@@ -28,7 +28,7 @@
               <UBadge label="Ações" color="secondary" variant="subtle" size="xs" />
               <span class="text-xs" :style="{ color: brand.colors.textMuted }">8 min de leitura</span>
             </div>
-            <h3 class="mb-2 text-2xl font-bold group-hover:text-secondary transition-colors">
+            <h3 class="mb-2 group-hover:text-secondary transition-colors">
               Como Investir em Ações para Iniciantes
             </h3>
             <p class="mb-4" :style="{ color: brand.colors.textMuted }">
@@ -55,7 +55,7 @@
             >
               Dados da B3 em tempo real
             </p>
-            <h2 class="text-xl font-semibold">Ferramentas para Investir com Dados ao Vivo</h2>
+            <h2 class="text-xl">Ferramentas para Investir com Dados ao Vivo</h2>
           </div>
         </div>
         <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
@@ -78,7 +78,7 @@
             <div class="min-w-0 flex-1">
               <div class="mb-0.5 flex items-center gap-1.5">
                 <h3
-                  class="text-sm font-semibold"
+                  class="text-sm"
                   :style="{ color: brand.colors.text }"
                 >
                   {{ tool.title }}
@@ -102,7 +102,7 @@
 
       <!-- Categorias -->
       <section class="flex flex-col gap-4">
-        <h2 class="text-xl font-semibold">Escolha o tipo de investimento</h2>
+        <h2 class="text-xl">Escolha o tipo de investimento</h2>
         <div class="flex flex-wrap gap-2">
           <UButton
             color="secondary"
@@ -172,7 +172,7 @@
       <!-- Lista de Guias -->
       <section class="flex flex-col gap-6">
         <div class="flex items-center justify-between">
-          <h2 class="text-xl font-semibold">
+          <h2 class="text-xl">
             {{ guiasFiltrados.length }} guia{{ guiasFiltrados.length !== 1 ? 's' : '' }} para investir com mais segurança
           </h2>
         </div>

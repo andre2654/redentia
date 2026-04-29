@@ -122,10 +122,10 @@ if (!isWidgetMode.value) {
       <!-- Header inline: logo + ticker + variação com cores controladas por tema -->
       <div class="flex items-center gap-2">
         <img v-if="logoUrl && !failedLogos.isFailed(logoUrl)" :src="logoUrl" :alt="ticker" class="size-7 rounded object-contain" @error="failedLogos.markFailed(logoUrl)" />
-        <div v-else class="flex size-7 items-center justify-center rounded bg-black/10 text-[10px] font-bold" :style="{ color: theme === 'light' ? '#6b7280' : brand.colors.textMuted }">
+        <div v-else class="flex size-7 items-center justify-center rounded bg-black/10 text-[10px] font-medium" :style="{ color: theme === 'light' ? '#6b7280' : brand.colors.textMuted }">
           {{ ticker.slice(0, 2) }}
         </div>
-        <span class="text-sm font-bold tracking-wide" :style="{ color: theme === 'light' ? '#111' : brand.colors.text }">
+        <span class="text-sm font-medium tracking-wide" :style="{ color: theme === 'light' ? '#111' : brand.colors.text, letterSpacing: '-0.005em' }">
           {{ ticker }}
         </span>
         <span
@@ -139,8 +139,8 @@ if (!isWidgetMode.value) {
 
       <!-- Preço grande -->
       <div
-        class="mt-3 text-2xl font-bold tabular-nums"
-        :style="{ color: theme === 'light' ? '#111' : brand.colors.text }"
+        class="mt-3 text-2xl font-light tabular-nums"
+        :style="{ color: theme === 'light' ? '#111' : brand.colors.text, letterSpacing: '-0.4px' }"
       >
         {{ loading ? '—' : formatPrice(price) }}
       </div>
@@ -152,15 +152,15 @@ if (!isWidgetMode.value) {
       >
         <div>
           <div class="text-[9px] uppercase tracking-wider" :style="{ color: theme === 'light' ? '#9ca3af' : brand.colors.textMuted }">DY</div>
-          <div class="text-sm font-semibold" :style="{ color: theme === 'light' ? '#111' : brand.colors.text }">{{ formatPct(dy) }}</div>
+          <div class="text-sm font-medium" :style="{ color: theme === 'light' ? '#111' : brand.colors.text }">{{ formatPct(dy) }}</div>
         </div>
         <div>
           <div class="text-[9px] uppercase tracking-wider" :style="{ color: theme === 'light' ? '#9ca3af' : brand.colors.textMuted }">P/L</div>
-          <div class="text-sm font-semibold" :style="{ color: theme === 'light' ? '#111' : brand.colors.text }">{{ formatNumber(pl) }}</div>
+          <div class="text-sm font-medium" :style="{ color: theme === 'light' ? '#111' : brand.colors.text }">{{ formatNumber(pl) }}</div>
         </div>
         <div>
           <div class="text-[9px] uppercase tracking-wider" :style="{ color: theme === 'light' ? '#9ca3af' : brand.colors.textMuted }">SETOR</div>
-          <div class="truncate text-sm font-semibold" :style="{ color: theme === 'light' ? '#111' : brand.colors.text }">{{ sector || '—' }}</div>
+          <div class="truncate text-sm font-medium" :style="{ color: theme === 'light' ? '#111' : brand.colors.text }">{{ sector || '—' }}</div>
         </div>
       </div>
 
@@ -180,20 +180,20 @@ if (!isWidgetMode.value) {
   >
       <div class="grid gap-8 md:grid-cols-5">
         <div class="flex flex-col gap-5 md:col-span-2">
-          <h2 class="text-xl font-semibold" :style="{ color: brand.colors.text }">Customizar</h2>
+          <h2 class="text-xl font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }">Customizar</h2>
           <div class="flex flex-col gap-2">
-            <label class="text-sm text-gray-400">Ticker</label>
+            <label class="text-sm" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 70%, transparent)' }">Ticker</label>
             <UInput v-model="ticker" placeholder="VALE3" @update:model-value="(v) => (ticker = String(v).toUpperCase())" />
           </div>
           <div class="flex flex-col gap-2">
-            <label class="text-sm text-gray-400">Tema</label>
+            <label class="text-sm" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 70%, transparent)' }">Tema</label>
             <div class="flex gap-2">
-              <button type="button" class="flex-1 rounded-lg border px-4 py-2 text-sm transition" :class="theme === 'dark' ? 'border-secondary bg-secondary/10 text-secondary' : 'border-white/10 text-gray-400 hover:border-white/20'" @click="theme = 'dark'">Escuro</button>
-              <button type="button" class="flex-1 rounded-lg border px-4 py-2 text-sm transition" :class="theme === 'light' ? 'border-secondary bg-secondary/10 text-secondary' : 'border-white/10 text-gray-400 hover:border-white/20'" @click="theme = 'light'">Claro</button>
+              <button type="button" class="flex-1 rounded-lg border px-4 py-2 text-sm transition" :class="theme === 'dark' ? 'border-secondary bg-secondary/10 text-secondary' : 'border-white/10 hover:border-white/20'" :style="theme !== 'dark' ? { color: 'color-mix(in srgb, ' + brand.colors.text + ' 70%, transparent)' } : {}" @click="theme = 'dark'">Escuro</button>
+              <button type="button" class="flex-1 rounded-lg border px-4 py-2 text-sm transition" :class="theme === 'light' ? 'border-secondary bg-secondary/10 text-secondary' : 'border-white/10 hover:border-white/20'" :style="theme !== 'light' ? { color: 'color-mix(in srgb, ' + brand.colors.text + ' 70%, transparent)' } : {}" @click="theme = 'light'">Claro</button>
             </div>
           </div>
           <div class="flex flex-col gap-2">
-            <label class="text-sm text-gray-400">Código iframe</label>
+            <label class="text-sm" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 70%, transparent)' }">Código iframe</label>
             <div class="overflow-x-auto rounded-lg border p-4 font-mono text-xs" :style="{ backgroundColor: brand.colors.background, borderColor: brand.colors.border, color: brand.colors.text }">
               <code>{{ iframeCode }}</code>
             </div>
@@ -204,7 +204,7 @@ if (!isWidgetMode.value) {
         </div>
 
         <div class="flex flex-col gap-4 md:col-span-3">
-          <h2 class="text-xl font-semibold" :style="{ color: brand.colors.text }">Pré-visualização</h2>
+          <h2 class="text-xl font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }">Pré-visualização</h2>
           <div class="flex min-h-[360px] items-center justify-center rounded-2xl border p-8" :style="{ borderColor: brand.colors.border, backgroundColor: theme === 'light' ? '#f9fafb' : brand.colors.background }">
             <iframe :src="embedUrl" width="420" height="220" frameborder="0" loading="lazy" :title="`Cotação ${ticker}`" style="border:0;border-radius:12px;" />
           </div>

@@ -95,7 +95,7 @@ if (!isWidgetMode.value) {
   >
       <div class="grid gap-8 md:grid-cols-5">
         <div class="flex flex-col gap-5 md:col-span-2">
-          <h2 class="text-xl font-semibold" :style="{ color: brand.colors.text }">Customizar</h2>
+          <h2 class="text-xl font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.22px' }">Customizar</h2>
           <div class="flex flex-col gap-2">
             <label class="text-sm text-gray-400">Tickers (separados por vírgula)</label>
             <UTextarea v-model="tickersInput" :rows="3" placeholder="PETR4,VALE3,ITUB4" />
@@ -115,7 +115,7 @@ if (!isWidgetMode.value) {
           </div>
         </div>
         <div class="flex flex-col gap-4 md:col-span-3">
-          <h2 class="text-xl font-semibold" :style="{ color: brand.colors.text }">Pré-visualização</h2>
+          <h2 class="text-xl font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.22px' }">Pré-visualização</h2>
           <div class="flex min-h-[200px] items-center justify-center rounded-2xl border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: theme === 'light' ? '#f9fafb' : brand.colors.background }">
             <iframe :src="embedUrl" width="100%" height="100" frameborder="0" loading="lazy" title="Carrossel de cotações" style="border:0;border-radius:12px;" />
           </div>

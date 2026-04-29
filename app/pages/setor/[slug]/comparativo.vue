@@ -29,7 +29,7 @@
             >
               Comparativo Setorial
             </p>
-            <h1 class="text-3xl font-bold md:text-4xl">
+            <h1 class="md:text-4xl">
               {{ sector?.name || 'Setor' }}
             </h1>
           </div>
@@ -54,7 +54,7 @@
             Empresas
           </span>
           <span
-            class="text-xl font-semibold tabular-nums"
+            class="text-xl font-medium tabular-nums"
             :style="{ color: brand.colors.text }"
           >
             {{ aggregates.ticker_count }}
@@ -71,7 +71,7 @@
             Market Cap
           </span>
           <span
-            class="text-xl font-semibold tabular-nums"
+            class="text-xl font-medium tabular-nums"
             :style="{ color: brand.colors.text }"
           >
             {{ formatMarketCap(aggregates.total_market_cap) }}
@@ -88,7 +88,7 @@
             Variação média hoje
           </span>
           <span
-            class="text-xl font-semibold tabular-nums"
+            class="text-xl font-medium tabular-nums"
             :style="{
               color: aggregates.avg_change_percent >= 0 ? brand.colors.positive : brand.colors.negative,
             }"
@@ -107,7 +107,7 @@
             DY médio (12m)
           </span>
           <span
-            class="text-xl font-semibold tabular-nums"
+            class="text-xl font-medium tabular-nums"
             :style="{ color: dyAccent }"
           >
             {{ aggregates.avg_dividend_yield != null ? formatPercent(aggregates.avg_dividend_yield * 100) : '-' }}
@@ -149,10 +149,10 @@
       <!-- SEO content -->
       <article
         v-if="sector"
-        class="prose prose-invert mt-8 max-w-none border-t pt-8"
+        class="mt-8 border-t pt-8"
         :style="{ borderColor: brand.colors.border }"
       >
-        <h2 class="text-2xl font-bold">Sobre o setor {{ sector.name }}</h2>
+        <h2>Sobre o setor {{ sector.name }}</h2>
         <p class="leading-relaxed" :style="{ color: brand.colors.textMuted }">
           O setor <strong>{{ sector.name }}</strong> da bolsa brasileira reúne
           {{ aggregates?.ticker_count }} empresas listadas, ordenadas aqui por
@@ -160,7 +160,7 @@
           indicadores fundamentalistas como dividend yield, preço/lucro e
           price-to-book entre empresas do mesmo setor.
         </p>
-        <h3 class="text-xl font-semibold">Como usar o comparativo</h3>
+        <h3>Como usar o comparativo</h3>
         <ul class="space-y-2" :style="{ color: brand.colors.textMuted }">
           <li>Identifique líderes por market cap no topo da lista</li>
           <li>Compare DY e P/L entre pares diretos do setor</li>

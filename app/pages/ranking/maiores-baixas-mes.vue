@@ -28,7 +28,7 @@
             >
               Ranking
             </p>
-            <h1 class="text-3xl font-bold md:text-4xl">Maiores Baixas do Mês</h1>
+            <h1 class="md:text-4xl">Maiores Baixas do Mês</h1>
           </div>
         </div>
         <p class="max-w-2xl text-base" :style="{ color: brand.colors.textMuted }">
@@ -68,17 +68,17 @@
       />
 
       <article
-        class="prose prose-invert mt-8 max-w-none border-t pt-8"
+        class="mt-8 border-t pt-8"
         :style="{ borderColor: brand.colors.border }"
       >
-        <h2 class="text-2xl font-bold">Oportunidade ou armadilha?</h2>
+        <h2>Oportunidade ou armadilha?</h2>
         <p class="leading-relaxed" :style="{ color: brand.colors.textMuted }">
           Ativos em baixa podem representar entradas a preços descontados,
           mas também podem estar refletindo deterioração de fundamentos. Antes
           de qualquer decisão, analise o motivo da queda: é setorial,
           macroeconômico ou específico da empresa?
         </p>
-        <h3 class="text-xl font-semibold">Como usar este ranking</h3>
+        <h3>Como usar este ranking</h3>
         <ul class="space-y-2" :style="{ color: brand.colors.textMuted }">
           <li>Identifique setores com quedas generalizadas (pressão macro)</li>
           <li>Pesquise notícias recentes sobre cada ativo</li>

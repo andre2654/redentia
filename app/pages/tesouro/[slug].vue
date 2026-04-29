@@ -86,14 +86,14 @@
                       {{ indexerLabel }}
                     </span>
                     <h1
-                      class="font-mono-tab text-lg font-bold leading-tight tracking-tight md:text-4xl md:leading-none"
-                      :style="{ color: brand.colors.text }"
+                      class="font-mono-tab font-light leading-tight tracking-tight md:leading-none"
+                      :style="{ color: brand.colors.text, fontSize: 'clamp(20px, 3.5vw, 36px)', letterSpacing: '-0.4px' }"
                       translate="no"
                     >
                       {{ indexerLabel }}
                     </h1>
                     <span
-                      class="line-clamp-1 text-[11px] font-medium md:text-base md:font-semibold"
+                      class="line-clamp-1 text-[11px] font-medium md:text-base md:font-medium"
                       :style="{ color: `${brand.colors.text}99` }"
                     >
                       {{ prettyName(data?.name ?? slug) }}
@@ -130,7 +130,7 @@
               <div class="hidden flex-col gap-2 md:col-span-4 md:flex">
                 <div class="flex items-baseline gap-1.5">
                   <span
-                    class="font-mono-tab text-5xl font-bold leading-none tabular-nums md:text-6xl"
+                    class="font-mono-tab text-5xl font-light leading-none tabular-nums md:text-6xl"
                     :style="{ color: brand.colors.text }"
                     translate="no"
                   >
@@ -204,7 +204,7 @@
         <!-- Price register bigger version -->
         <section class="border-b py-8" :style="{ borderColor: brand.colors.border }">
           <header class="mb-4 flex flex-col gap-1">
-            <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
+            <h2 class="font-light" :style="{ color: brand.colors.text, fontSize: 'clamp(20px, 2.5vw, 26px)', lineHeight: 1.15, letterSpacing: '-0.3px' }">
               Preços do Tesouro Nacional
             </h2>
             <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
@@ -217,13 +217,13 @@
           >
             <div class="flex flex-col gap-2 px-6 py-5" :style="{ backgroundColor: brand.colors.surface }">
               <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">COMPRA</span>
-              <span class="font-mono-tab text-3xl font-bold tabular-nums md:text-4xl" :style="{ color: brand.colors.positive }">
+              <span class="font-mono-tab text-3xl font-light tabular-nums md:text-4xl" :style="{ color: brand.colors.positive }">
                 {{ formatMoney(data?.price_buy) }}
               </span>
             </div>
             <div class="flex flex-col gap-2 px-6 py-5" :style="{ backgroundColor: brand.colors.surface }">
               <span class="font-mono-tab text-[10px] uppercase tracking-wider" :style="{ color: brand.colors.textMuted }">VENDA</span>
-              <span class="font-mono-tab text-3xl font-bold tabular-nums md:text-4xl" :style="{ color: brand.colors.text }">
+              <span class="font-mono-tab text-3xl font-light tabular-nums md:text-4xl" :style="{ color: brand.colors.text }">
                 {{ formatMoney(data?.price_sell) }}
               </span>
             </div>
@@ -362,7 +362,7 @@
             <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
               Assistente IA
             </span>
-            <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
+            <h2 class="font-light" :style="{ color: brand.colors.text, fontSize: 'clamp(20px, 2.5vw, 26px)', lineHeight: 1.15, letterSpacing: '-0.3px' }">
               Dúvidas sobre <span class="italic" :style="{ color: brand.colors.primary }">este título</span>?
             </h2>
             <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
@@ -381,7 +381,7 @@
               <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
                 Pergunta {{ idx + 1 }}
               </span>
-              <p class="text-base font-semibold leading-snug" :style="{ color: brand.colors.text }">
+              <p class="text-base font-medium leading-snug" :style="{ color: brand.colors.text }">
                 <span :style="{ color: brand.colors.primary }">&gt;</span> {{ item.text }}
               </p>
               <span class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">

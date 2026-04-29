@@ -233,7 +233,7 @@
                     /v1/{{ feature.slug }}
                   </span>
                 </div>
-                <h3 class="text-2xl font-bold tracking-tight" :style="{ color: brand.colors.text }">
+                <h3 class="text-2xl font-light tracking-tight" :style="{ color: brand.colors.text, letterSpacing: '-0.5px' }">
                   {{ feature.title }}
                 </h3>
                 <p class="text-sm leading-relaxed" :style="{ color: brand.colors.textMuted }">
@@ -324,7 +324,7 @@
                   </span>
                 </div>
 
-                <h3 class="mt-5 text-xl font-bold tracking-tight" :style="{ color: brand.colors.text }">
+                <h3 class="mt-5 text-xl font-medium tracking-tight" :style="{ color: brand.colors.text, letterSpacing: '-0.22px' }">
                   {{ currentExample.title }}
                 </h3>
                 <p class="mt-3 text-sm leading-relaxed" :style="{ color: brand.colors.textMuted }">

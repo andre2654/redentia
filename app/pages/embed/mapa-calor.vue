@@ -85,7 +85,7 @@ if (!isWidgetMode.value) {
     }"
   >
     <div class="flex items-center justify-between px-1">
-      <h3 class="text-sm font-bold uppercase tracking-wider" :style="{ color: brand.colors.text }">
+      <h3 class="text-sm font-medium uppercase tracking-wider" :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }">
         Mapa de Calor · {{ indiceLabels[indice] }}
       </h3>
       <span class="text-[10px] uppercase tracking-wider opacity-60" :style="{ color: brand.colors.textMuted }">hoje</span>
@@ -109,30 +109,30 @@ if (!isWidgetMode.value) {
   >
       <div class="grid gap-8 md:grid-cols-5">
         <div class="flex flex-col gap-5 md:col-span-2">
-          <h2 class="text-xl font-semibold" :style="{ color: brand.colors.text }">Customizar</h2>
+          <h2 class="text-xl font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }">Customizar</h2>
           <div class="flex flex-col gap-2">
-            <label class="text-sm text-gray-400">Índice</label>
+            <label class="text-sm" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 70%, transparent)' }">Índice</label>
             <div class="grid grid-cols-3 gap-2">
-              <button v-for="k in (['ibovespa', 'ifix', 'smll'] as const)" :key="k" type="button" class="rounded-lg border px-3 py-2 text-xs transition" :class="indice === k ? 'border-secondary bg-secondary/10 text-secondary' : 'border-white/10 text-gray-400'" @click="indice = k">
+              <button v-for="k in (['ibovespa', 'ifix', 'smll'] as const)" :key="k" type="button" class="rounded-lg border px-3 py-2 text-xs transition" :class="indice === k ? 'border-secondary bg-secondary/10 text-secondary' : 'border-white/10'" :style="indice !== k ? { color: 'color-mix(in srgb, ' + brand.colors.text + ' 70%, transparent)' } : {}" @click="indice = k">
                 {{ indiceLabels[k] }}
               </button>
             </div>
           </div>
           <div class="flex flex-col gap-2">
-            <label class="text-sm text-gray-400">Tema</label>
+            <label class="text-sm" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 70%, transparent)' }">Tema</label>
             <div class="flex gap-2">
-              <button type="button" class="flex-1 rounded-lg border px-4 py-2 text-sm transition" :class="theme === 'dark' ? 'border-secondary bg-secondary/10 text-secondary' : 'border-white/10 text-gray-400'" @click="theme = 'dark'">Escuro</button>
-              <button type="button" class="flex-1 rounded-lg border px-4 py-2 text-sm transition" :class="theme === 'light' ? 'border-secondary bg-secondary/10 text-secondary' : 'border-white/10 text-gray-400'" @click="theme = 'light'">Claro</button>
+              <button type="button" class="flex-1 rounded-lg border px-4 py-2 text-sm transition" :class="theme === 'dark' ? 'border-secondary bg-secondary/10 text-secondary' : 'border-white/10'" :style="theme !== 'dark' ? { color: 'color-mix(in srgb, ' + brand.colors.text + ' 70%, transparent)' } : {}" @click="theme = 'dark'">Escuro</button>
+              <button type="button" class="flex-1 rounded-lg border px-4 py-2 text-sm transition" :class="theme === 'light' ? 'border-secondary bg-secondary/10 text-secondary' : 'border-white/10'" :style="theme !== 'light' ? { color: 'color-mix(in srgb, ' + brand.colors.text + ' 70%, transparent)' } : {}" @click="theme = 'light'">Claro</button>
             </div>
           </div>
           <div class="flex flex-col gap-2">
-            <label class="text-sm text-gray-400">Código iframe</label>
+            <label class="text-sm" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 70%, transparent)' }">Código iframe</label>
             <div class="overflow-x-auto rounded-lg border p-4 font-mono text-xs" :style="{ backgroundColor: brand.colors.background, borderColor: brand.colors.border, color: brand.colors.text }"><code>{{ iframeCode }}</code></div>
             <UButton :icon="copied ? 'i-lucide-check' : 'i-lucide-copy'" color="primary" block @click="copyIframe">{{ copied ? 'Copiado!' : 'Copiar código' }}</UButton>
           </div>
         </div>
         <div class="flex flex-col gap-4 md:col-span-3">
-          <h2 class="text-xl font-semibold" :style="{ color: brand.colors.text }">Pré-visualização</h2>
+          <h2 class="text-xl font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }">Pré-visualização</h2>
           <div class="flex min-h-[540px] items-center justify-center rounded-2xl border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: theme === 'light' ? '#f9fafb' : brand.colors.background }">
             <iframe :src="embedUrl" width="800" height="500" frameborder="0" loading="lazy" title="Mapa de calor" style="border:0;border-radius:12px;max-width:100%;" />
           </div>

@@ -3,7 +3,7 @@
     <div class="flex h-full flex-col justify-between">
       <div class="flex flex-col gap-5 border-b p-6">
         <div class="flex flex-wrap items-center justify-between gap-4">
-          <h2 class="text-[18px] font-bold">{{ brand.nav.wallet }}</h2>
+          <h2 class="text-[18px] font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }">{{ brand.nav.wallet }}</h2>
           <div class="flex items-center gap-2">
             <input
               ref="fileInputRef"
@@ -72,7 +72,7 @@
       </div>
       <template v-if="positions.length">
         <div class="flex flex-col gap-8 border-b p-6">
-          <h2 class="text-[18px] font-bold">Composição</h2>
+          <h2 class="text-[18px] font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }">Composição</h2>
           <div v-if="compositionLoading" class="flex justify-center py-8">
             <UIcon name="i-lucide-loader-2" class="h-6 w-6 motion-safe:animate-spin text-secondary" />
           </div>

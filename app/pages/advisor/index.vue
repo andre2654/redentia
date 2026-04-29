@@ -2,8 +2,8 @@
   <NuxtLayout title="Área do assessor">
     <div class="flex h-full flex-col gap-6 p-6">
       <div class="flex flex-col gap-2">
-        <h2 class="text-[18px] font-bold">Meus assessorados</h2>
-        <p class="text-[13px] text-white/70">
+        <h2 class="text-[18px] font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }">Meus assessorados</h2>
+        <p class="text-[13px]" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 70%, transparent)` }">
           Aprove ou recuse investidores que informaram seu código. Acompanhe os aprovados aqui.
         </p>
       </div>
@@ -47,7 +47,7 @@
       <div v-else-if="error" class="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
         {{ error }}
       </div>
-      <div v-else-if="!investors.length" class="rounded-xl border border-white/10 bg-white/5 px-6 py-12 text-center text-white/60">
+      <div v-else-if="!investors.length" class="rounded-xl border border-white/10 bg-white/5 px-6 py-12 text-center" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }">
         Nenhum investidor encontrado com esse filtro. Compartilhe seu código para receber solicitações.
       </div>
       <div v-else class="flex flex-col gap-3">
@@ -57,9 +57,9 @@
           class="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-white/10 bg-white/5 p-4"
         >
           <NuxtLink :to="`/advisor/investors/${inv.id}`" class="flex min-w-0 flex-1 flex-col gap-1">
-            <span class="font-medium text-white">{{ inv.name }}</span>
-            <span class="text-xs text-white/50">{{ inv.email }}</span>
-            <span v-if="inv.last_contact_at" class="text-[11px] text-white/40">
+            <span class="font-medium" :style="{ color: brand.colors.text }">{{ inv.name }}</span>
+            <span class="text-xs" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 50%, transparent)` }">{{ inv.email }}</span>
+            <span v-if="inv.last_contact_at" class="text-[11px]" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 40%, transparent)` }">
               Último contato: {{ formatDate(inv.last_contact_at) }}
             </span>
             <span v-else class="text-[11px] text-amber-400/80">Nunca houve contato</span>
@@ -98,6 +98,8 @@
 </template>
 
 <script setup lang="ts">
+const brand = useBrand()
+
 usePageSeo({
   title: 'Área do Assessor',
   description: 'Painel de gestão de investidores',

@@ -46,7 +46,15 @@
             >
               Calendário
             </p>
-            <h1 class="text-3xl font-bold md:text-4xl">Próximos Dividendos</h1>
+            <h1
+              class="font-light"
+              :style="{
+                color: brand.colors.text,
+                fontSize: 'clamp(28px, 4vw, 36px)',
+                lineHeight: 1.05,
+                letterSpacing: '-1px',
+              }"
+            >Próximos Dividendos</h1>
           </div>
         </div>
         <p class="max-w-2xl text-base" :style="{ color: brand.colors.textMuted }">
@@ -69,7 +77,7 @@
             <UIcon name="i-lucide-chevron-left" class="size-4" />
           </button>
           <h2
-            class="min-w-[180px] text-xl font-semibold tabular-nums"
+            class="min-w-[180px] text-xl font-medium tabular-nums"
             :style="{ color: brand.colors.text, letterSpacing: '-0.01em' }"
           >
             {{ monthLabel }}
@@ -400,7 +408,7 @@
                   :style="{ color: brand.colors.textMuted }"
                 >Pagamentos do dia</span>
                 <h3
-                  class="mt-0.5 text-xl font-semibold"
+                  class="mt-0.5 text-xl font-medium"
                   :style="{ color: brand.colors.text, letterSpacing: '-0.01em' }"
                 >{{ formatDateLong(openCell.iso) }}</h3>
               </div>

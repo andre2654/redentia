@@ -7,8 +7,14 @@
           <UIcon :name="step.icon" class="text-secondary h-5 w-5" />
         </div>
         <div>
-          <h2 class="text-lg font-semibold text-white">{{ step.title }}</h2>
-          <p class="text-sm text-white/70">{{ step.description }}</p>
+          <h2
+            class="text-lg font-medium"
+            :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }"
+          >{{ step.title }}</h2>
+          <p
+            class="text-sm"
+            :style="{ color: `color-mix(in srgb, ${brand.colors.text} 70%, transparent)` }"
+          >{{ step.description }}</p>
         </div>
       </div>
     </section>

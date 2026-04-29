@@ -20,7 +20,7 @@
             >
               Explore
             </p>
-            <h1 class="text-3xl font-bold md:text-4xl">Setores da Bolsa</h1>
+            <h1>Setores da Bolsa</h1>
           </div>
         </div>
         <p class="max-w-2xl text-base" :style="{ color: brand.colors.textMuted }">
@@ -47,7 +47,7 @@
         >
           <div class="flex min-w-0 flex-1 flex-col">
             <span
-              class="truncate text-sm font-semibold"
+              class="truncate text-sm"
               :style="{ color: brand.colors.text }"
             >
               {{ sector.name }}

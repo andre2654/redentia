@@ -146,7 +146,10 @@
 
       <!-- Informações de contato alternativas -->
       <div class="mt-8 w-full max-w-2xl">
-        <h3 class="mb-4 text-center text-lg font-semibold">
+        <h3
+          class="mb-4 text-center text-lg font-medium"
+          :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }"
+        >
           Outras formas de contato
         </h3>
         <div class="grid gap-4 md:grid-cols-3">
@@ -173,7 +176,10 @@
 
       <!-- FAQ rápido -->
       <div class="mt-8 w-full max-w-2xl">
-        <h3 class="mb-4 text-center text-lg font-semibold">
+        <h3
+          class="mb-4 text-center text-lg font-medium"
+          :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }"
+        >
           Perguntas Frequentes
         </h3>
         <div class="space-y-3">

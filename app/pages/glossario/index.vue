@@ -20,14 +20,14 @@
       >
         <div class="mb-3 flex items-center gap-2">
           <UIcon name="i-lucide-star" class="text-secondary h-5 w-5" />
-          <h2 class="text-secondary text-lg font-semibold">Termo do Dia</h2>
+          <h2 class="text-secondary text-lg font-medium" :style="{ letterSpacing: '-0.22px' }">Termo do Dia</h2>
         </div>
         <NuxtLink
           :to="`/glossario/${termoDoDia.slug}`"
           class="group flex flex-col gap-3"
         >
           <div class="flex items-center justify-between">
-            <h3 class="text-2xl font-bold group-hover:text-secondary">
+            <h3 class="font-light group-hover:text-secondary" :style="{ color: brand.colors.text, fontSize: 'clamp(22px, 3vw, 28px)', lineHeight: 1.15, letterSpacing: '-0.4px' }">
               {{ termoDoDia.nome }}
               <span v-if="termoDoDia.sigla" :style="{ color: brand.colors.textMuted }">
                 ({{ termoDoDia.sigla }})
@@ -103,7 +103,7 @@
       <!-- Lista de Termos -->
       <section class="flex flex-col gap-4">
         <div class="flex items-center justify-between">
-          <h2 class="text-xl font-semibold">
+          <h2 class="text-[18px] font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.22px' }">
             {{ termosFiltrados.length }} termo{{
               termosFiltrados.length !== 1 ? 's' : ''
             }}
@@ -126,7 +126,8 @@
               <div class="flex items-start justify-between">
                 <div class="flex flex-col gap-1">
                   <h3
-                    class="text-lg font-semibold group-hover:text-secondary transition-colors"
+                    class="text-[18px] font-medium group-hover:text-secondary transition-colors"
+                    :style="{ color: brand.colors.text, letterSpacing: '-0.22px' }"
                   >
                     {{ termo.nome }}
                   </h3>
@@ -166,9 +167,9 @@
           class="flex flex-col items-center gap-4 brand-card border p-12 text-center"
           :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
         >
-          <UIcon name="i-lucide-search-x" class="h-12 w-12 text-gray-500" />
+          <UIcon name="i-lucide-search-x" class="h-12 w-12" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }" />
           <div>
-            <h3 class="text-lg font-semibold" :style="{ color: brand.colors.text }">
+            <h3 class="text-[18px] font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.22px' }">
               Nenhum termo encontrado
             </h3>
             <p class="text-sm" :style="{ color: brand.colors.textMuted }">

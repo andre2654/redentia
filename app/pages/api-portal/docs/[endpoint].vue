@@ -294,7 +294,7 @@
           data-toc-heading
           class="mb-10"
         >
-          <h2 class="font-display mb-4 text-2xl font-bold tracking-tight" :style="{ color: brand.colors.text }">
+          <h2 class="font-display mb-4 text-2xl font-light tracking-tight" :style="{ color: brand.colors.text, letterSpacing: '-0.5px' }">
             Path Parameters
           </h2>
           <div class="flex flex-col gap-4">
@@ -322,7 +322,7 @@
           data-toc-heading
           class="mb-10"
         >
-          <h2 class="font-display mb-4 text-2xl font-bold tracking-tight" :style="{ color: brand.colors.text }">
+          <h2 class="font-display mb-4 text-2xl font-light tracking-tight" :style="{ color: brand.colors.text, letterSpacing: '-0.5px' }">
             Query Parameters
           </h2>
           <div class="flex flex-col gap-4">
@@ -358,7 +358,7 @@
 
         <!-- ============ RESPONSES SECTION ============ -->
         <section id="responses" data-toc-heading class="mb-10">
-          <h2 class="font-display mb-4 text-2xl font-bold tracking-tight" :style="{ color: brand.colors.text }">
+          <h2 class="font-display mb-4 text-2xl font-light tracking-tight" :style="{ color: brand.colors.text, letterSpacing: '-0.5px' }">
             Responses
           </h2>
           <div class="flex flex-col gap-3">

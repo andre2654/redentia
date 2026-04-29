@@ -144,21 +144,21 @@
             <div class="flex items-start gap-3">
               <UIcon name="i-lucide-layers" class="mt-0.5 size-5 shrink-0" :style="{ color: C.primary }" />
               <div>
-                <div class="text-[14px] font-semibold" :style="{ color: C.text }">Stack completa</div>
+                <div class="text-[14px] font-medium" :style="{ color: C.text }">Stack completa</div>
                 <div class="text-[12px]" :style="{ color: C.textMuted }">Frontend + backend + dados B3</div>
               </div>
             </div>
             <div class="flex items-start gap-3">
               <UIcon name="i-lucide-zap" class="mt-0.5 size-5 shrink-0" :style="{ color: C.primary }" />
               <div>
-                <div class="text-[14px] font-semibold" :style="{ color: C.text }">Deploy em 7 dias</div>
+                <div class="text-[14px] font-medium" :style="{ color: C.text }">Deploy em 7 dias</div>
                 <div class="text-[12px]" :style="{ color: C.textMuted }">Da call ao ar em uma semana</div>
               </div>
             </div>
             <div class="flex items-start gap-3">
               <UIcon name="i-lucide-palette" class="mt-0.5 size-5 shrink-0" :style="{ color: C.primary }" />
               <div>
-                <div class="text-[14px] font-semibold" :style="{ color: C.text }">100% custom</div>
+                <div class="text-[14px] font-medium" :style="{ color: C.text }">100% custom</div>
                 <div class="text-[12px]" :style="{ color: C.textMuted }">Cores, fontes, hero, domínio</div>
               </div>
             </div>
@@ -309,7 +309,7 @@
                 <div class="flex items-end justify-between gap-4 border-t pt-4" :style="{ borderColor: `${tenant.fg}20` }">
                   <div>
                     <div
-                      class="text-[18px] font-bold leading-tight tracking-tight md:text-[22px]"
+                      class="text-[18px] leading-tight tracking-tight md:text-[22px]"
                       :style="{
                         color: tenant.fg,
                         fontFamily: tenant.font,
@@ -373,7 +373,7 @@
               >
                 <UIcon :name="feat.icon" class="size-6" />
               </div>
-              <h3 class="text-[18px] font-bold leading-tight tracking-tight" :style="{ color: C.text }">
+              <h3 class="text-[18px] font-medium leading-tight tracking-tight" :style="{ color: C.text, letterSpacing: '-0.005em' }">
                 {{ feat.title }}
               </h3>
               <p class="text-[13px] leading-relaxed" :style="{ color: C.textMuted }">
@@ -420,7 +420,7 @@
             >
               <!-- Step number circle -->
               <div
-                class="relative z-10 flex size-16 items-center justify-center rounded-full border-2 text-[24px] font-bold tabular-nums"
+                class="relative z-10 flex size-16 items-center justify-center rounded-full border-2 text-[24px] font-medium tabular-nums"
                 :style="{
                   borderColor: C.primary,
                   backgroundColor: C.background,
@@ -434,7 +434,7 @@
               <div class="text-[11px] font-medium uppercase tracking-[0.18em]" :style="{ color: C.primary }">
                 {{ step.duration }}
               </div>
-              <h3 class="text-[24px] font-bold leading-tight tracking-tight" :style="{ color: C.text }">
+              <h3 class="text-[24px] font-medium leading-tight tracking-tight" :style="{ color: C.text, letterSpacing: '-0.005em' }">
                 {{ step.title }}
               </h3>
               <p class="text-[14px] leading-relaxed" :style="{ color: C.textMuted }">
@@ -493,7 +493,7 @@
                 <div class="mb-5 inline-flex size-14 items-center justify-center rounded-2xl" :style="{ backgroundColor: `${C.primary}20`, color: C.primary }">
                   <UIcon :name="persona.icon" class="size-7" />
                 </div>
-                <h3 class="text-[24px] font-bold tracking-tight" :style="{ color: C.text }">
+                <h3 class="text-[24px] font-medium tracking-tight" :style="{ color: C.text, letterSpacing: '-0.005em' }">
                   {{ persona.name }}
                 </h3>
                 <p class="mt-3 text-[14px] leading-relaxed" :style="{ color: `${C.text}B0` }">
@@ -562,7 +562,7 @@
               />
 
               <div class="flex items-center gap-3">
-                <h3 class="text-[15px] font-semibold" :style="{ color: C.text }">
+                <h3 class="text-[15px] font-medium" :style="{ color: C.text, letterSpacing: '-0.005em' }">
                   {{ plan.name }}
                 </h3>
                 <span

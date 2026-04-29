@@ -187,7 +187,7 @@
                     {{ embed.category }}
                   </span>
                 </div>
-                <h3 class="text-xl font-bold tracking-tight" :style="{ color: REDENTIA_COLORS.text }">
+                <h3 class="text-xl font-medium tracking-tight" :style="{ color: REDENTIA_COLORS.text, letterSpacing: '-0.005em' }">
                   {{ embed.title }}
                 </h3>
                 <p class="text-[13px] leading-relaxed" :style="{ color: REDENTIA_COLORS.textMuted }">
@@ -242,7 +242,7 @@
                 {{ idx + 1 }}
               </div>
               <div class="flex-1">
-                <h3 class="text-lg font-bold tracking-tight" :style="{ color: REDENTIA_COLORS.text }">
+                <h3 class="text-lg font-medium tracking-tight" :style="{ color: REDENTIA_COLORS.text, letterSpacing: '-0.005em' }">
                   {{ step.title }}
                 </h3>
                 <p class="mt-1 text-[13px] leading-relaxed" :style="{ color: REDENTIA_COLORS.textMuted }">
@@ -338,7 +338,7 @@
               :style="{ borderColor: REDENTIA_COLORS.border, backgroundColor: REDENTIA_COLORS.background }"
             >
               <summary
-                class="flex cursor-pointer list-none items-center justify-between text-sm font-semibold md:text-base"
+                class="flex cursor-pointer list-none items-center justify-between text-sm font-medium md:text-base"
                 :style="{ color: REDENTIA_COLORS.text }"
               >
                 {{ faq.q }}

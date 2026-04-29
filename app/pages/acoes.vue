@@ -9,7 +9,7 @@
             Todas as Ações da B3
           </h1>
         </div>
-        <p class="text-base text-gray-400 md:text-lg">
+        <p class="text-base md:text-lg">
           Descubra as melhores ações para investir, compare indicadores
           fundamentalistas e construa uma carteira de sucesso no mercado
           brasileiro.
@@ -17,21 +17,21 @@
       </div>
 
       <!-- Conteúdo Educacional -->
-      <div class="prose prose-invert max-w-none">
-        <h2 class="text-2xl font-bold">O que são Ações?</h2>
-        <p class="leading-relaxed text-gray-300">
+      <div>
+        <h2>O que são Ações?</h2>
+        <p class="leading-relaxed">
           Ações são pequenas partes (frações) de uma empresa listada na bolsa
           de valores. Ao comprar uma ação, você se torna sócio da empresa e
           tem direito a receber parte dos lucros (dividendos) e participar do
           crescimento do valor da companhia.
         </p>
 
-        <h3 class="text-xl font-semibold">Como Funcionam as Ações no Brasil</h3>
-        <p class="leading-relaxed text-gray-300">
+        <h3>Como Funcionam as Ações no Brasil</h3>
+        <p class="leading-relaxed">
           No Brasil, as ações são negociadas na B3 (Brasil, Bolsa, Balcão) e
           podem ser de dois tipos principais:
         </p>
-        <ul class="list-disc space-y-2 pl-6 text-gray-300">
+        <ul class="list-disc space-y-2 pl-6">
           <li>
             <strong>Ações Ordinárias (ON):</strong> Terminam em 3 (VALE3,
             PETR3) e dão direito a voto nas assembleias da empresa
@@ -43,56 +43,56 @@
           </li>
         </ul>
 
-        <h3 class="text-xl font-semibold">
+        <h3>
           Por que Investir em Ações?
         </h3>
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="brand-card border border-white/10 bg-white/5 p-5">
-            <h4 class="mb-2 font-semibold text-secondary">
+          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+            <h4 class="mb-2 text-secondary">
               Potencial de Crescimento
             </h4>
-            <p class="text-sm text-gray-300">
+            <p class="text-sm">
               Ações podem se valorizar significativamente ao longo do tempo,
               superando a inflação e renda fixa no longo prazo.
             </p>
           </div>
-          <div class="brand-card border border-white/10 bg-white/5 p-5">
-            <h4 class="mb-2 font-semibold text-secondary">
+          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+            <h4 class="mb-2 text-secondary">
               Renda Passiva
             </h4>
-            <p class="text-sm text-gray-300">
+            <p class="text-sm">
               Muitas empresas distribuem dividendos regularmente, gerando renda
               passiva para os acionistas sem precisar vender as ações.
             </p>
           </div>
-          <div class="brand-card border border-white/10 bg-white/5 p-5">
-            <h4 class="mb-2 font-semibold text-secondary">
+          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+            <h4 class="mb-2 text-secondary">
               Proteção Contra Inflação
             </h4>
-            <p class="text-sm text-gray-300">
+            <p class="text-sm">
               Empresas reajustam preços conforme a inflação, protegendo seu
               poder de compra no longo prazo.
             </p>
           </div>
-          <div class="brand-card border border-white/10 bg-white/5 p-5">
-            <h4 class="mb-2 font-semibold text-secondary">
+          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+            <h4 class="mb-2 text-secondary">
               Participação nos Lucros
             </h4>
-            <p class="text-sm text-gray-300">
+            <p class="text-sm">
               Como sócio, você se beneficia do crescimento e sucesso da empresa
               através da valorização das ações.
             </p>
           </div>
         </div>
 
-        <h3 class="text-xl font-semibold">
+        <h3>
           Como Escolher Boas Ações para Investir
         </h3>
-        <p class="leading-relaxed text-gray-300">
+        <p class="leading-relaxed">
           A análise fundamentalista é essencial para escolher ações de
           qualidade. Principais indicadores a observar:
         </p>
-        <ul class="list-disc space-y-2 pl-6 text-gray-300">
+        <ul class="list-disc space-y-2 pl-6">
           <li>
             <strong>P/L (Preço sobre Lucro):</strong> Indica se a ação está
             cara ou barata em relação ao lucro
@@ -115,71 +115,72 @@
           </li>
         </ul>
 
-        <h3 class="text-xl font-semibold">
+        <h3>
           Principais Setores da Bolsa Brasileira
         </h3>
         <div class="space-y-3">
-          <div class="brand-card border border-white/10 bg-white/5 p-4">
-            <h4 class="mb-1 font-semibold">Financeiro (Bancos)</h4>
-            <p class="text-sm text-gray-400">
+          <div class="brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+            <h4 class="mb-1">Financeiro (Bancos)</h4>
+            <p class="text-sm">
               ITUB4, BBDC4, BBAS3 - Alta liquidez, bons pagadores de dividendos
             </p>
           </div>
-          <div class="brand-card border border-white/10 bg-white/5 p-4">
-            <h4 class="mb-1 font-semibold">Commodities</h4>
-            <p class="text-sm text-gray-400">
+          <div class="brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+            <h4 class="mb-1">Commodities</h4>
+            <p class="text-sm">
               VALE3, PETR4 - Expostas a preços internacionais, cíclicas
             </p>
           </div>
-          <div class="brand-card border border-white/10 bg-white/5 p-4">
-            <h4 class="mb-1 font-semibold">Varejo</h4>
-            <p class="text-sm text-gray-400">
+          <div class="brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+            <h4 class="mb-1">Varejo</h4>
+            <p class="text-sm">
               MGLU3, AMER3, LREN3 - Dependem do consumo interno, crescimento
             </p>
           </div>
-          <div class="brand-card border border-white/10 bg-white/5 p-4">
-            <h4 class="mb-1 font-semibold">Utilities (Energia, Saneamento)</h4>
-            <p class="text-sm text-gray-400">
+          <div class="brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+            <h4 class="mb-1">Utilities (Energia, Saneamento)</h4>
+            <p class="text-sm">
               ELET3, TAEE11, SAPR11 - Previsíveis, bons dividendos
             </p>
           </div>
         </div>
 
-        <h3 class="text-xl font-semibold">
+        <h3>
           Estratégias para Investir em Ações
         </h3>
         <div class="space-y-3">
           <div class="brand-card border border-secondary/20 bg-secondary/10 p-5">
-            <h4 class="mb-2 font-semibold text-secondary">
+            <h4 class="mb-2 text-secondary">
               Buy and Hold (Longo Prazo)
             </h4>
-            <p class="text-sm text-gray-300">
+            <p class="text-sm">
               Compre ações de empresas de qualidade e mantenha por anos.
               Estratégia preferida de Warren Buffett. Ideal para quem busca
               crescimento e dividendos consistentes.
             </p>
           </div>
-          <div class="brand-card border border-white/10 bg-white/5 p-5">
-            <h4 class="mb-2 font-semibold">Carteira de Dividendos</h4>
-            <p class="text-sm text-gray-300">
+          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+            <h4 class="mb-2">Carteira de Dividendos</h4>
+            <p class="text-sm">
               Foco em empresas que pagam bons dividendos regularmente.
               Objetivo: renda passiva mensal ou trimestral.
             </p>
           </div>
-          <div class="brand-card border border-white/10 bg-white/5 p-5">
-            <h4 class="mb-2 font-semibold">Diversificação Setorial</h4>
-            <p class="text-sm text-gray-300">
+          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+            <h4 class="mb-2">Diversificação Setorial</h4>
+            <p class="text-sm">
               Distribua investimentos entre setores diferentes (bancos, varejo,
               energia, etc.) para reduzir riscos.
             </p>
           </div>
         </div>
 
-        <h3 class="text-xl font-semibold">Riscos de Investir em Ações</h3>
+        <h3>Riscos de Investir em Ações</h3>
         <div
-          class="brand-card border border-yellow-500/20 bg-yellow-500/10 p-5"
+          class="brand-card p-5"
+          :style="{ borderColor: 'color-mix(in srgb, ' + (brand.colors.warning || '#f59e0b') + ' 25%, transparent)', backgroundColor: 'color-mix(in srgb, ' + (brand.colors.warning || '#f59e0b') + ' 8%, transparent)', borderWidth: '1px', borderStyle: 'solid' }"
         >
-          <ul class="list-disc space-y-2 pl-6 text-gray-300">
+          <ul class="list-disc space-y-2 pl-6">
             <li>
               <strong>Volatilidade:</strong> Preços sobem e descem,
               especialmente no curto prazo
@@ -197,15 +198,15 @@
               o investimento
             </li>
           </ul>
-          <p class="mt-3 text-sm font-semibold text-yellow-400">
+          <p class="mt-3 text-sm" :style="{ color: brand.colors.warning || '#f59e0b' }">
             ⚠️ Importante: Invista apenas o que você pode deixar investido por
             pelo menos 5 anos. Nunca invista dinheiro que precisará no curto
             prazo.
           </p>
         </div>
 
-        <h3 class="text-xl font-semibold">Como Começar a Investir em Ações</h3>
-        <ol class="list-decimal space-y-2 pl-6 text-gray-300">
+        <h3>Como Começar a Investir em Ações</h3>
+        <ol class="list-decimal space-y-2 pl-6">
           <li>
             <strong>Abra conta em uma corretora:</strong> XP, Rico, Inter, BTG,
             Clear, etc.
@@ -236,12 +237,12 @@
           <div class="flex-1">
             <div class="mb-3 flex items-center gap-2">
               <UIcon name="i-lucide-chart-line" class="text-secondary h-8 w-8" />
-              <h2 class="text-2xl font-bold">Simule Investimentos em Ações Reais</h2>
+              <h2>Simule Investimentos em Ações Reais</h2>
             </div>
-            <p class="mb-4 text-gray-300">
+            <p class="mb-4">
               Descubra quanto você teria ganho investindo em ações da B3. Use dados históricos reais, incluindo dividendos reinvestidos e performance de múltiplos ativos.
             </p>
-            <ul class="space-y-2 text-sm text-gray-400">
+            <ul class="space-y-2 text-sm">
               <li class="flex items-center gap-2">
                 <UIcon name="i-lucide-check" class="text-secondary size-4" />
                 Dados históricos reais da B3
@@ -292,16 +293,16 @@
       />
 
       <!-- Link Destacado para Ver Todas -->
-      <div class="border-t border-white/10 pt-8">
+      <div class="pt-8" :style="{ borderTopWidth: '1px', borderTopStyle: 'solid', borderTopColor: brand.colors.border }">
         <NuxtLink
           to="/search?group=stocks"
           class="group mx-auto flex max-w-2xl items-center justify-between rounded-2xl border border-secondary/30 bg-secondary/10 p-6 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-secondary/50 hover:bg-secondary/20"
         >
           <div class="flex flex-col gap-1">
-            <h3 class="text-xl font-bold group-hover:text-secondary transition-colors">
+            <h3 class="group-hover:text-secondary transition-colors">
               Ver Todas as Ações da B3
             </h3>
-            <p class="text-sm text-gray-400">
+            <p class="text-sm">
               Explore +500 ações com filtros avançados e indicadores em tempo real
             </p>
           </div>
@@ -315,14 +316,14 @@
 
       <!-- FAQ Section para SEO -->
       <div class="space-y-4">
-        <h2 class="text-2xl font-bold">Perguntas Frequentes sobre Ações</h2>
+        <h2>Perguntas Frequentes sobre Ações</h2>
         <div class="space-y-4">
-          <details class="group brand-card border border-white/10 bg-white/5 p-4">
-            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
+          <details class="group brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+            <summary class="cursor-pointer list-none flex items-center justify-between">
               Quanto preciso para começar a investir em ações?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="mt-3 text-sm text-gray-300">
+            <p class="mt-3 text-sm">
               É possível começar com menos de R$ 100. Muitas ações custam entre
               R$ 10-50, e você pode comprar no mercado fracionário (menos de
               100 ações). O importante é começar e ir aumentando conforme
@@ -330,12 +331,12 @@
             </p>
           </details>
 
-          <details class="group brand-card border border-white/10 bg-white/5 p-4">
-            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
+          <details class="group brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+            <summary class="cursor-pointer list-none flex items-center justify-between">
               Qual a diferença entre ações ON e PN?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="mt-3 text-sm text-gray-300">
+            <p class="mt-3 text-sm">
               ON (Ordinárias, final 3) dão direito a voto. PN (Preferenciais,
               final 4) têm preferência em dividendos mas geralmente não têm
               voto. Para pequenos investidores, PN costuma ser mais indicada
@@ -343,24 +344,24 @@
             </p>
           </details>
 
-          <details class="group brand-card border border-white/10 bg-white/5 p-4">
-            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
+          <details class="group brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+            <summary class="cursor-pointer list-none flex items-center justify-between">
               Como recebo dividendos?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="mt-3 text-sm text-gray-300">
+            <p class="mt-3 text-sm">
               Os dividendos caem automaticamente na sua conta da corretora nas
               datas definidas pela empresa. Você não precisa fazer nada - basta
               ter as ações na data "com" (último dia para ter direito).
             </p>
           </details>
 
-          <details class="group brand-card border border-white/10 bg-white/5 p-4">
-            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
+          <details class="group brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+            <summary class="cursor-pointer list-none flex items-center justify-between">
               Ações são seguras?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="mt-3 text-sm text-gray-300">
+            <p class="mt-3 text-sm">
               Ações têm risco de oscilação e perda. No curto prazo podem cair
               muito. Mas no longo prazo (10+ anos), historicamente superam
               inflação e renda fixa. A segurança vem da diversificação e prazo
@@ -368,12 +369,12 @@
             </p>
           </details>
 
-          <details class="group brand-card border border-white/10 bg-white/5 p-4">
-            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
+          <details class="group brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+            <summary class="cursor-pointer list-none flex items-center justify-between">
               Posso perder mais dinheiro do que investi?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="mt-3 text-sm text-gray-300">
+            <p class="mt-3 text-sm">
               Não em ações normais. O máximo que você pode perder é 100% do que
               investiu (se empresa quebrar). Diferente de alavancagem ou
               derivativos, onde pode perder mais.

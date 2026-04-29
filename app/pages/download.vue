@@ -111,17 +111,17 @@
           <div class="grid grid-cols-3 gap-6 border-t pt-8" :style="{ borderColor: `${brand.colors.border}80` }">
             <div class="flex flex-col gap-1">
               <div class="text-[20px]" :style="{ color: brand.colors.primary }">⚡</div>
-              <div class="text-[13px] font-semibold" :style="{ color: brand.colors.text }">Abre na hora</div>
+              <div class="text-[13px] font-medium" :style="{ color: brand.colors.text }">Abre na hora</div>
               <div class="text-[12px]" :style="{ color: brand.colors.textMuted }">Zero loading</div>
             </div>
             <div class="flex flex-col gap-1">
               <div class="text-[20px]" :style="{ color: brand.colors.primary }">📡</div>
-              <div class="text-[13px] font-semibold" :style="{ color: brand.colors.text }">Modo offline</div>
+              <div class="text-[13px] font-medium" :style="{ color: brand.colors.text }">Modo offline</div>
               <div class="text-[12px]" :style="{ color: brand.colors.textMuted }">Funciona sem net</div>
             </div>
             <div class="flex flex-col gap-1">
               <div class="text-[20px]" :style="{ color: brand.colors.primary }">🔔</div>
-              <div class="text-[13px] font-semibold" :style="{ color: brand.colors.text }">Push real</div>
+              <div class="text-[13px] font-medium" :style="{ color: brand.colors.text }">Push real</div>
               <div class="text-[12px]" :style="{ color: brand.colors.textMuted }">Tipo iMessage</div>
             </div>
           </div>
@@ -294,7 +294,7 @@
             >
               <UIcon :name="benefit.icon" class="size-7" />
             </div>
-            <h3 class="text-[22px] font-bold leading-tight tracking-tight" :style="{ color: brand.colors.text }">
+            <h3 class="text-[22px] font-medium leading-tight tracking-tight" :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }">
               {{ benefit.title }}
             </h3>
             <p class="text-[14px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
@@ -362,14 +362,14 @@
             >
               <div class="flex items-center gap-4">
                 <div
-                  class="flex size-12 items-center justify-center rounded-full border-2 text-[18px] font-bold tabular-nums"
+                  class="flex size-12 items-center justify-center rounded-full border-2 text-[18px] font-medium tabular-nums"
                   :style="{ borderColor: brand.colors.primary, color: brand.colors.primary }"
                 >
                   {{ idx + 1 }}
                 </div>
                 <div class="hidden h-px flex-1 md:block" :style="{ backgroundColor: brand.colors.border }" />
               </div>
-              <h3 class="text-[17px] font-bold leading-tight" :style="{ color: brand.colors.text }">
+              <h3 class="text-[17px] font-medium leading-tight" :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }">
                 {{ step.title }}
               </h3>
               <p class="text-[13px] leading-relaxed" :style="{ color: brand.colors.textMuted }">

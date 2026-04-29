@@ -136,7 +136,7 @@ if (!isWidgetMode.value) {
   >
       <div class="grid gap-8 md:grid-cols-5">
         <div class="flex flex-col gap-5 md:col-span-2">
-          <h2 class="text-xl font-semibold" :style="{ color: brand.colors.text }">Customizar</h2>
+          <h2 class="text-xl font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.22px' }">Customizar</h2>
           <div class="flex flex-col gap-2">
             <label class="text-sm text-gray-400">Ticker</label>
             <UInput v-model="ticker" placeholder="BBAS3" @update:model-value="(v) => (ticker = String(v).toUpperCase())" />
@@ -161,7 +161,7 @@ if (!isWidgetMode.value) {
           </div>
         </div>
         <div class="flex flex-col gap-4 md:col-span-3">
-          <h2 class="text-xl font-semibold" :style="{ color: brand.colors.text }">Pré-visualização</h2>
+          <h2 class="text-xl font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.22px' }">Pré-visualização</h2>
           <div class="flex min-h-[440px] items-center justify-center rounded-2xl border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: theme === 'light' ? '#f9fafb' : brand.colors.background }">
             <iframe :src="embedUrl" width="640" height="400" frameborder="0" loading="lazy" :title="`Gráfico ${ticker}`" style="border:0;border-radius:12px;max-width:100%;" />
           </div>

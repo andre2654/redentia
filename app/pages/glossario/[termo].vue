@@ -47,7 +47,7 @@
             <UIcon name="i-lucide-lightbulb" class="text-secondary h-6 w-6" />
           </div>
           <div class="flex flex-col gap-3">
-            <h2 class="text-xl font-semibold">Definição</h2>
+            <h2 class="text-[18px] font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.22px' }">Definição</h2>
             <p class="text-lg leading-relaxed" :style="{ color: brand.colors.textMuted }">
               {{ termo.definicaoResumida }}
             </p>
@@ -73,7 +73,7 @@
             <UIcon name="i-lucide-sigma" class="text-tertiary h-6 w-6" />
           </div>
           <div class="flex flex-col gap-3">
-            <h2 class="text-xl font-semibold">Como Calcular</h2>
+            <h2 class="text-[18px] font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.22px' }">Como Calcular</h2>
             <div
               class="bg-tertiary/10 brand-card-md border border-tertiary/20 p-4 font-mono text-lg"
             >
@@ -94,7 +94,7 @@
             <UIcon name="i-lucide-sparkles" class="text-primary h-6 w-6" />
           </div>
           <div class="flex flex-col gap-3">
-            <h2 class="text-xl font-semibold">Exemplo Prático</h2>
+            <h2 class="text-[18px] font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.22px' }">Exemplo Prático</h2>
             <p class="leading-relaxed" :style="{ color: brand.colors.textMuted }">{{ termo.exemplo }}</p>
           </div>
         </div>
@@ -111,7 +111,7 @@
             <UIcon name="i-lucide-compass" class="h-6 w-6 text-blue-400" />
           </div>
           <div class="flex flex-col gap-3">
-            <h2 class="text-xl font-semibold">Como Usar na Prática</h2>
+            <h2 class="text-[18px] font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.22px' }">Como Usar na Prática</h2>
             <p class="leading-relaxed" :style="{ color: brand.colors.textMuted }">{{ termo.comoUsar }}</p>
           </div>
         </div>
@@ -126,11 +126,12 @@
           <div class="rounded-full bg-yellow-500/20 p-3 max-md:hidden">
             <UIcon
               name="i-lucide-alert-triangle"
-              class="h-6 w-6 text-yellow-400"
+              class="h-6 w-6"
+              :style="{ color: brand.colors.warning }"
             />
           </div>
           <div class="flex flex-col gap-3">
-            <h2 class="text-xl font-semibold text-yellow-400">
+            <h2 class="text-[18px] font-medium" :style="{ color: brand.colors.warning, letterSpacing: '-0.22px' }">
               Pontos de Atenção
             </h2>
             <p class="leading-relaxed" :style="{ color: brand.colors.textMuted }">{{ termo.atencao }}</p>
@@ -143,7 +144,7 @@
         v-if="termosRelacionados.length > 0"
         class="flex flex-col gap-4"
       >
-        <h2 class="text-xl font-semibold">Termos Relacionados</h2>
+        <h2 class="text-[18px] font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.22px' }">Termos Relacionados</h2>
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <NuxtLink
             v-for="relacionado in termosRelacionados"
@@ -153,7 +154,7 @@
             :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
           >
             <div class="flex flex-col gap-1">
-              <span class="font-semibold group-hover:text-secondary">
+              <span class="font-medium group-hover:text-secondary" :style="{ color: brand.colors.text }">
                 {{ relacionado.nome }}
               </span>
               <span
@@ -184,7 +185,7 @@
           />
           <div class="flex flex-col items-start">
             <span class="text-xs" :style="{ color: brand.colors.textMuted }">Anterior</span>
-            <span class="font-semibold">{{ termoAnterior.nome }}</span>
+            <span class="font-medium" :style="{ color: brand.colors.text }">{{ termoAnterior.nome }}</span>
           </div>
         </NuxtLink>
         <div v-else />
@@ -196,7 +197,7 @@
         >
           <div class="flex flex-col items-end">
             <span class="text-xs" :style="{ color: brand.colors.textMuted }">Próximo</span>
-            <span class="font-semibold">{{ termoProximo.nome }}</span>
+            <span class="font-medium" :style="{ color: brand.colors.text }">{{ termoProximo.nome }}</span>
           </div>
           <UIcon
             name="i-lucide-chevron-right"
@@ -221,9 +222,9 @@
 
     <!-- Erro 404 -->
     <div v-else class="flex flex-col items-center gap-6 px-6 py-20">
-      <UIcon name="i-lucide-search-x" class="h-20 w-20 text-gray-500" />
+      <UIcon name="i-lucide-search-x" class="h-20 w-20" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }" />
       <div class="text-center">
-        <h1 class="mb-2 text-3xl font-bold">Termo não encontrado</h1>
+        <h1 class="mb-2 font-light" :style="{ color: brand.colors.text, fontSize: 'clamp(22px, 3vw, 28px)', lineHeight: 1.15, letterSpacing: '-0.4px' }">Termo não encontrado</h1>
         <p :style="{ color: brand.colors.textMuted }">
           O termo que você procura não existe ou foi removido.
         </p>

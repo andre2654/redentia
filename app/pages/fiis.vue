@@ -9,18 +9,18 @@
             Fundos Imobiliários (FIIs)
           </h1>
         </div>
-        <p class="text-base text-gray-400 md:text-lg">
+        <p class="text-base md:text-lg">
           Invista em imóveis de forma simples e acessível. Receba renda passiva
           mensal com dividendos isentos de IR. Descubra os melhores FIIs da B3.
         </p>
       </div>
 
       <!-- Conteúdo Educacional -->
-      <div class="prose prose-invert max-w-none">
-        <h2 class="text-2xl font-bold">
+      <div>
+        <h2>
           O que são Fundos Imobiliários (FIIs)?
         </h2>
-        <p class="leading-relaxed text-gray-300">
+        <p class="leading-relaxed">
           Fundos Imobiliários são uma forma de investir em grandes
           empreendimentos imobiliários sem precisar comprar um imóvel físico.
           Funcionam como um "condomínio de investidores" que, juntos, compram e
@@ -31,10 +31,10 @@
         <div
           class="my-6 rounded-2xl border border-secondary/20 bg-secondary/10 p-6"
         >
-          <h3 class="mb-3 text-xl font-semibold text-secondary">
+          <h3 class="mb-3 text-secondary">
             Grande Vantagem: Dividendos Isentos de IR!
           </h3>
-          <p class="text-gray-300">
+          <p>
             Os rendimentos mensais de FIIs são
             <strong>100% isentos de Imposto de Renda</strong> para pessoas
             físicas. Isso torna FIIs muito atrativos para quem busca renda
@@ -42,17 +42,17 @@
           </p>
         </div>
 
-        <h3 class="text-xl font-semibold">Tipos de FIIs</h3>
+        <h3>Tipos de FIIs</h3>
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="brand-card border border-white/10 bg-white/5 p-5">
-            <h4 class="mb-2 flex items-center gap-2 font-semibold text-secondary">
+          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+            <h4 class="mb-2 flex items-center gap-2 text-secondary">
               <UIcon name="i-lucide-building" aria-hidden="true" class="h-5 w-5" />
               Fundos de Tijolo
             </h4>
-            <p class="mb-3 text-sm text-gray-300">
+            <p class="mb-3 text-sm">
               Investem em imóveis físicos que são alugados para gerar renda.
             </p>
-            <ul class="list-disc space-y-1 pl-5 text-sm text-gray-400">
+            <ul class="list-disc space-y-1 pl-5 text-sm">
               <li>Lajes corporativas (escritórios)</li>
               <li>Galpões logísticos</li>
               <li>Shopping centers</li>
@@ -61,15 +61,15 @@
             </ul>
           </div>
 
-          <div class="brand-card border border-white/10 bg-white/5 p-5">
-            <h4 class="mb-2 flex items-center gap-2 font-semibold text-secondary">
+          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+            <h4 class="mb-2 flex items-center gap-2 text-secondary">
               <UIcon name="i-lucide-file-text" aria-hidden="true" class="h-5 w-5" />
               Fundos de Papel
             </h4>
-            <p class="mb-3 text-sm text-gray-300">
+            <p class="mb-3 text-sm">
               Investem em títulos e recebíveis do setor imobiliário.
             </p>
-            <ul class="list-disc space-y-1 pl-5 text-sm text-gray-400">
+            <ul class="list-disc space-y-1 pl-5 text-sm">
               <li>CRI (Certificados de Recebíveis Imobiliários)</li>
               <li>LCI (Letras de Crédito Imobiliário)</li>
               <li>Debêntures de empresas do setor</li>
@@ -77,36 +77,36 @@
             </ul>
           </div>
 
-          <div class="brand-card border border-white/10 bg-white/5 p-5">
-            <h4 class="mb-2 flex items-center gap-2 font-semibold text-secondary">
+          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+            <h4 class="mb-2 flex items-center gap-2 text-secondary">
               <UIcon name="i-lucide-layers" aria-hidden="true" class="h-5 w-5" />
               Fundos de Fundos (FOFs)
             </h4>
-            <p class="text-sm text-gray-300">
+            <p class="text-sm">
               Investem em cotas de outros FIIs. Ideal para quem quer
               diversificação automática com um único fundo.
             </p>
           </div>
 
-          <div class="brand-card border border-white/10 bg-white/5 p-5">
-            <h4 class="mb-2 flex items-center gap-2 font-semibold text-secondary">
+          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+            <h4 class="mb-2 flex items-center gap-2 text-secondary">
               <UIcon name="i-lucide-combine" aria-hidden="true" class="h-5 w-5" />
               Fundos Híbridos
             </h4>
-            <p class="text-sm text-gray-300">
+            <p class="text-sm">
               Combinam tijolo e papel. Diversificam entre imóveis físicos e
               recebíveis imobiliários.
             </p>
           </div>
         </div>
 
-        <h3 class="text-xl font-semibold">
+        <h3>
           Como Analisar Fundos Imobiliários
         </h3>
-        <p class="leading-relaxed text-gray-300">
+        <p class="leading-relaxed">
           Para escolher bons FIIs, analise estes indicadores principais:
         </p>
-        <ul class="list-disc space-y-2 pl-6 text-gray-300">
+        <ul class="list-disc space-y-2 pl-6">
           <li>
             <strong>Dividend Yield (DY):</strong> Busque FIIs com DY anual de
             8-12%. Cuidado com DY muito alto (> 15%) - pode ser insustentável
@@ -133,62 +133,63 @@
           </li>
         </ul>
 
-        <h3 class="text-xl font-semibold">
+        <h3>
           Vantagens de Investir em FIIs
         </h3>
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="brand-card border border-white/10 bg-white/5 p-5">
+          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-coins" aria-hidden="true" class="text-primary h-5 w-5" />
-              <h4 class="font-semibold">Renda Passiva Mensal</h4>
+              <h4>Renda Passiva Mensal</h4>
             </div>
-            <p class="text-sm text-gray-300">
+            <p class="text-sm">
               FIIs são obrigados por lei a distribuir 95% dos lucros
               semestralmente. Na prática, maioria paga todo mês.
             </p>
           </div>
 
-          <div class="brand-card border border-white/10 bg-white/5 p-5">
+          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-shield-check" aria-hidden="true" class="text-primary h-5 w-5" />
-              <h4 class="font-semibold">Isenção de IR</h4>
+              <h4>Isenção de IR</h4>
             </div>
-            <p class="text-sm text-gray-300">
+            <p class="text-sm">
               Rendimentos mensais são 100% isentos de Imposto de Renda para
               pessoas físicas. Enorme vantagem.
             </p>
           </div>
 
-          <div class="brand-card border border-white/10 bg-white/5 p-5">
+          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-zap" aria-hidden="true" class="text-primary h-5 w-5" />
-              <h4 class="font-semibold">Alta Liquidez</h4>
+              <h4>Alta Liquidez</h4>
             </div>
-            <p class="text-sm text-gray-300">
+            <p class="text-sm">
               Diferente de imóveis físicos, você vende FIIs em segundos no
               horário de pregão. Flexibilidade total.
             </p>
           </div>
 
-          <div class="brand-card border border-white/10 bg-white/5 p-5">
+          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-trending-up" aria-hidden="true" class="text-primary h-5 w-5" />
-              <h4 class="font-semibold">Acessibilidade</h4>
+              <h4>Acessibilidade</h4>
             </div>
-            <p class="text-sm text-gray-300">
+            <p class="text-sm">
               Invista em shoppings, galpões e escritórios premium com R$ 100.
               Impossível comprar imóvel físico assim.
             </p>
           </div>
         </div>
 
-        <h3 class="text-xl font-semibold">
+        <h3>
           Riscos de Investir em FIIs
         </h3>
         <div
-          class="brand-card border border-yellow-500/20 bg-yellow-500/10 p-5"
+          class="brand-card p-5"
+          :style="{ borderColor: 'color-mix(in srgb, ' + (brand.colors.warning || '#f59e0b') + ' 25%, transparent)', backgroundColor: 'color-mix(in srgb, ' + (brand.colors.warning || '#f59e0b') + ' 8%, transparent)', borderWidth: '1px', borderStyle: 'solid' }"
         >
-          <ul class="list-disc space-y-2 pl-6 text-gray-300">
+          <ul class="list-disc space-y-2 pl-6">
             <li>
               <strong>Vacância:</strong> Imóveis podem ficar vazios, reduzindo
               dividendos
@@ -212,10 +213,10 @@
           </ul>
         </div>
 
-        <h3 class="text-xl font-semibold">
+        <h3>
           Estratégia para Montar Carteira de FIIs
         </h3>
-        <ol class="list-decimal space-y-2 pl-6 text-gray-300">
+        <ol class="list-decimal space-y-2 pl-6">
           <li>
             <strong>Diversifique entre tipos:</strong> Tenha tijolo E papel
             (50/50 ou 60/40)
@@ -242,13 +243,13 @@
           </li>
         </ol>
 
-        <h3 class="text-xl font-semibold">
+        <h3>
           Quanto Investir em FIIs?
         </h3>
-        <p class="leading-relaxed text-gray-300">
+        <p class="leading-relaxed">
           Uma carteira balanceada pode ter 20-30% em FIIs. Exemplo de alocação:
         </p>
-        <ul class="list-disc space-y-1 pl-6 text-gray-300">
+        <ul class="list-disc space-y-1 pl-6">
           <li>40% Renda Fixa (segurança)</li>
           <li>30% Ações (crescimento)</li>
           <li><strong>25% FIIs (renda passiva)</strong></li>
@@ -262,12 +263,12 @@
           <div class="flex-1">
             <div class="mb-3 flex items-center gap-2">
               <UIcon name="i-lucide-target" aria-hidden="true" class="text-secondary h-8 w-8" />
-              <h2 class="text-2xl font-bold">Monte sua Carteira de FIIs</h2>
+              <h2>Monte sua Carteira de FIIs</h2>
             </div>
-            <p class="mb-4 text-gray-300">
+            <p class="mb-4">
               Use nossas ferramentas para simular investimentos em FIIs e planejar sua renda passiva mensal com fundos imobiliários.
             </p>
-            <ul class="space-y-2 text-sm text-gray-400">
+            <ul class="space-y-2 text-sm">
               <li class="flex items-center gap-2">
                 <UIcon name="i-lucide-check" class="text-secondary size-4" />
                 Simulação com dados históricos reais
@@ -317,16 +318,16 @@
       />
 
       <!-- Link Destacado para Ver Todas -->
-      <div class="border-t border-white/10 pt-8">
+      <div class="pt-8" :style="{ borderTopWidth: '1px', borderTopStyle: 'solid', borderTopColor: brand.colors.border }">
         <NuxtLink
           to="/search?group=reits"
           class="group mx-auto flex max-w-2xl items-center justify-between rounded-2xl border border-secondary/30 bg-secondary/10 p-6 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-secondary/50 hover:bg-secondary/20"
         >
           <div class="flex flex-col gap-1">
-            <h3 class="text-xl font-bold group-hover:text-secondary transition-colors">
+            <h3 class="group-hover:text-secondary transition-colors">
               Ver Todos os Fundos Imobiliários
             </h3>
-            <p class="text-sm text-gray-400">
+            <p class="text-sm">
               Explore +300 FIIs com análise de dividend yield, vacância e indicadores completos
             </p>
           </div>
@@ -340,76 +341,76 @@
 
       <!-- FAQ -->
       <div class="space-y-4">
-        <h2 class="text-2xl font-bold">
+        <h2>
           Perguntas Frequentes sobre FIIs
         </h2>
         <div class="space-y-4">
-          <details class="group brand-card border border-white/10 bg-white/5 p-4">
-            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
+          <details class="group brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+            <summary class="cursor-pointer list-none flex items-center justify-between">
               FIIs pagam dividendos todo mês?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="mt-3 text-sm text-gray-300">
+            <p class="mt-3 text-sm">
               A maioria dos FIIs paga dividendos mensalmente, mas por lei são
               obrigados a distribuir apenas semestralmente. Consulte o
               histórico de cada FII para verificar a frequência de pagamentos.
             </p>
           </details>
 
-          <details class="group brand-card border border-white/10 bg-white/5 p-4">
-            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
+          <details class="group brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+            <summary class="cursor-pointer list-none flex items-center justify-between">
               Qual o melhor FII para iniciantes?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="mt-3 text-sm text-gray-300">
+            <p class="mt-3 text-sm">
               Para iniciantes, recomenda-se fundos de fundos (FOFs) como HFOF11,
               XPML11 ou KFOF11, que já vêm diversificados. Também FIIs grandes
               e líquidos como HGLG11 (logística) ou MXRF11 (lajes corporativas).
             </p>
           </details>
 
-          <details class="group brand-card border border-white/10 bg-white/5 p-4">
-            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
+          <details class="group brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+            <summary class="cursor-pointer list-none flex items-center justify-between">
               É melhor tijolo ou papel?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="mt-3 text-sm text-gray-300">
+            <p class="mt-3 text-sm">
               Depende do momento e objetivo. Fundos de tijolo são mais estáveis
               e tangíveis. Fundos de papel geralmente pagam mais mas são mais
               sensíveis a juros. O ideal é ter os dois tipos na carteira.
             </p>
           </details>
 
-          <details class="group brand-card border border-white/10 bg-white/5 p-4">
-            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
+          <details class="group brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+            <summary class="cursor-pointer list-none flex items-center justify-between">
               Quanto preciso para começar a investir em FIIs?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="mt-3 text-sm text-gray-300">
+            <p class="mt-3 text-sm">
               Muitos FIIs custam entre R$ 80-150 por cota. Você pode começar com
               R$ 100-200 comprando 1-2 cotas. O importante é ir aumentando
               gradualmente e diversificando.
             </p>
           </details>
 
-          <details class="group brand-card border border-white/10 bg-white/5 p-4">
-            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
+          <details class="group brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+            <summary class="cursor-pointer list-none flex items-center justify-between">
               FIIs são seguros?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="mt-3 text-sm text-gray-300">
+            <p class="mt-3 text-sm">
               FIIs têm riscos (vacância, inadimplência, desvalorização), mas são
               menos voláteis que ações. A chave é diversificar e escolher fundos
               com boa gestão, bons inquilinos e imóveis em boas localizações.
             </p>
           </details>
 
-          <details class="group brand-card border border-white/10 bg-white/5 p-4">
-            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
+          <details class="group brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+            <summary class="cursor-pointer list-none flex items-center justify-between">
               Qual o dividend yield ideal de um FII?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="mt-3 text-sm text-gray-300">
+            <p class="mt-3 text-sm">
               Um bom FII costuma ter dividend yield entre 8-12% ao ano (0,67-1%
               ao mês). Dividend yields muito altos (> 15%) podem indicar que o
               preço caiu por algum problema. Sempre analise a sustentabilidade.

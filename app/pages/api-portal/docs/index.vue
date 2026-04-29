@@ -249,7 +249,7 @@
             :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.surface}40` }"
           >
             <UIcon :name="c.icon" class="mb-3 size-5" :style="{ color: brand.colors.primary }" />
-            <h3 class="mb-1 text-base font-bold" :style="{ color: brand.colors.text }">
+            <h3 class="mb-1 text-base font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }">
               {{ c.title }}
             </h3>
             <p class="text-[13px] leading-relaxed" :style="{ color: brand.colors.textMuted }">

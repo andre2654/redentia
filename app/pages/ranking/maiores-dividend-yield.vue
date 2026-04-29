@@ -29,7 +29,7 @@
             >
               Ranking
             </p>
-            <h1 class="text-3xl font-bold md:text-4xl">
+            <h1 class="md:text-4xl">
               Maiores Dividend Yields
             </h1>
           </div>
@@ -74,10 +74,10 @@
 
       <!-- SEO content -->
       <article
-        class="prose prose-invert mt-8 max-w-none border-t pt-8"
+        class="mt-8 border-t pt-8"
         :style="{ borderColor: brand.colors.border }"
       >
-        <h2 class="text-2xl font-bold">O que é Dividend Yield?</h2>
+        <h2>O que é Dividend Yield?</h2>
         <p class="leading-relaxed" :style="{ color: brand.colors.textMuted }">
           Dividend Yield (DY) é o indicador que mostra quanto uma empresa pagou
           em dividendos nos últimos 12 meses em relação ao preço atual da ação.
@@ -91,7 +91,7 @@
           dividendos é mais estável e previsível.
         </p>
 
-        <h3 class="text-xl font-semibold">Como o ranking é calculado?</h3>
+        <h3>Como o ranking é calculado?</h3>
         <p class="leading-relaxed" :style="{ color: brand.colors.textMuted }">
           O ranking considera o dividend yield nos últimos 12 meses (TTM),
           cruzando os dividendos pagos com o preço atual de cada ativo.
@@ -100,7 +100,7 @@
           recente de pagamentos.
         </p>
 
-        <h3 class="text-xl font-semibold">Atenção ao "DY alto demais"</h3>
+        <h3>Atenção ao "DY alto demais"</h3>
         <p class="leading-relaxed" :style="{ color: brand.colors.textMuted }">
           Um DY muito elevado pode indicar tanto uma oportunidade quanto uma
           armadilha de valor (<em>value trap</em>). Quando o preço da ação cai

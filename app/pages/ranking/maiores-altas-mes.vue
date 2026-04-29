@@ -28,7 +28,7 @@
             >
               Ranking
             </p>
-            <h1 class="text-3xl font-bold md:text-4xl">Maiores Altas do Mês</h1>
+            <h1 class="md:text-4xl">Maiores Altas do Mês</h1>
           </div>
         </div>
         <p class="max-w-2xl text-base" :style="{ color: brand.colors.textMuted }">
@@ -67,17 +67,17 @@
       />
 
       <article
-        class="prose prose-invert mt-8 max-w-none border-t pt-8"
+        class="mt-8 border-t pt-8"
         :style="{ borderColor: brand.colors.border }"
       >
-        <h2 class="text-2xl font-bold">Como o ranking é calculado?</h2>
+        <h2>Como o ranking é calculado?</h2>
         <p class="leading-relaxed" :style="{ color: brand.colors.textMuted }">
           Comparamos o preço de fechamento atual com o preço de fechamento de
           aproximadamente 30 dias corridos atrás (respeitando dias úteis da
           B3). A variação percentual é então ordenada do maior para o menor
           ganho.
         </p>
-        <h3 class="text-xl font-semibold">Por que acompanhar?</h3>
+        <h3>Por que acompanhar?</h3>
         <p class="leading-relaxed" :style="{ color: brand.colors.textMuted }">
           Rankings de altas ajudam a identificar momentum, setores aquecidos e
           ativos em tendência. Combinado com análise fundamentalista, serve

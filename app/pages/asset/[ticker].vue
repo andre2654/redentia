@@ -2310,7 +2310,7 @@
               <div class="flex size-12 items-center justify-center rounded-2xl" :style="{ backgroundColor: `${brand.colors.primary}20`, color: brand.colors.primary }">
                 <UIcon name="i-lucide-scale" class="size-6" />
               </div>
-              <h3 class="text-[18px] font-bold" :style="{ color: brand.colors.text, fontFamily: `'Fredoka', sans-serif` }">
+              <h3 class="text-[18px] font-medium" :style="{ color: brand.colors.text, fontFamily: `'Fredoka', sans-serif`, letterSpacing: '-0.22px' }">
                 Calcular preço-teto
               </h3>
               <p class="text-[13px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
@@ -2329,7 +2329,7 @@
               <div class="flex size-12 items-center justify-center rounded-2xl" :style="{ backgroundColor: `${brand.colors.primary}20`, color: brand.colors.primary }">
                 <UIcon name="i-lucide-timer" class="size-6" />
               </div>
-              <h3 class="text-[18px] font-bold" :style="{ color: brand.colors.text, fontFamily: `'Fredoka', sans-serif` }">
+              <h3 class="text-[18px] font-medium" :style="{ color: brand.colors.text, fontFamily: `'Fredoka', sans-serif`, letterSpacing: '-0.22px' }">
                 Simular juros compostos
               </h3>
               <p class="text-[13px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
@@ -2348,7 +2348,7 @@
               <div class="flex size-12 items-center justify-center rounded-2xl" :style="{ backgroundColor: `${brand.colors.primary}20`, color: brand.colors.primary }">
                 <UIcon name="i-lucide-message-circle" class="size-6" />
               </div>
-              <h3 class="text-[18px] font-bold" :style="{ color: brand.colors.text, fontFamily: `'Fredoka', sans-serif` }">
+              <h3 class="text-[18px] font-medium" :style="{ color: brand.colors.text, fontFamily: `'Fredoka', sans-serif`, letterSpacing: '-0.22px' }">
                 Perguntar à Saraiva IA
               </h3>
               <p class="text-[13px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
@@ -3124,7 +3124,7 @@
                       R$
                     </span>
                     <span
-                      class="font-mono-tab text-5xl font-bold leading-none tabular-nums md:text-6xl"
+                      class="font-mono-tab text-5xl font-light leading-none tabular-nums md:text-6xl"
                       :style="{ color: brand.colors.text }"
                       translate="no"
                     >
@@ -3299,7 +3299,7 @@
           <!-- Col 1-2: Fundamentals register -->
           <div v-if="brand.assetPage.showIndicators" class="lg:col-span-2">
             <div class="mb-4 flex flex-col gap-1">
-              <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
+              <h2 class="font-light" :style="{ color: brand.colors.text, fontSize: 'clamp(20px, 2.5vw, 26px)', lineHeight: 1.15, letterSpacing: '-0.3px' }">
                 Indicadores fundamentalistas
               </h2>
               <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
@@ -3387,7 +3387,7 @@
           <div class="lg:col-span-1 flex flex-col gap-8">
             <div v-if="brand.assetPage.showVolatility">
               <div class="mb-4 flex flex-col gap-1">
-                <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
+                <h2 class="font-light" :style="{ color: brand.colors.text, fontSize: 'clamp(20px, 2.5vw, 26px)', lineHeight: 1.15, letterSpacing: '-0.3px' }">
                   Volatilidade
                 </h2>
                 <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
@@ -3416,7 +3416,7 @@
           <div class="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2">
             <div v-if="brand.assetPage.showVolatility">
               <div class="mb-4 flex flex-col gap-1">
-                <h3 class="text-lg font-semibold md:text-xl" :style="{ color: brand.colors.text }">
+                <h3 class="text-[18px] font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.22px' }">
                   Volatilidade
                 </h3>
                 <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
@@ -3440,7 +3440,7 @@
       <section v-if="(brand.assetPage.showDividendMap || brand.assetPage.showDividendChart) && !isEtf" class="border-b py-8" :style="{ borderColor: brand.colors.border }">
         <!-- Terminal header -->
         <header class="mb-6 flex flex-col gap-1">
-          <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
+          <h2 class="font-light" :style="{ color: brand.colors.text, fontSize: 'clamp(20px, 2.5vw, 26px)', lineHeight: 1.15, letterSpacing: '-0.3px' }">
             Dividendos e proventos
           </h2>
           <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
@@ -3559,7 +3559,7 @@
            (basket, not an operating company with DRE/balance) -->
       <section v-if="brand.assetPage.showFinancials && !isBdr && !isEtf" class="border-b py-8" :style="{ borderColor: brand.colors.border }">
         <header class="mb-6 flex flex-col gap-1">
-          <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
+          <h2 class="font-light" :style="{ color: brand.colors.text, fontSize: 'clamp(20px, 2.5vw, 26px)', lineHeight: 1.15, letterSpacing: '-0.3px' }">
             Demonstrações financeiras
           </h2>
           <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
@@ -3618,7 +3618,7 @@
                 <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
                   Qualidade
                 </span>
-                <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
+                <h2 class="font-light" :style="{ color: brand.colors.text, fontSize: 'clamp(20px, 2.5vw, 26px)', lineHeight: 1.15, letterSpacing: '-0.3px' }">
                   Checklist Buy & Hold
                 </h2>
                 <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
@@ -3631,7 +3631,7 @@
                 <span class="text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
                   Score
                 </span>
-                <span class="text-3xl font-bold tabular-nums" :style="{ color: brand.colors.positive }">
+                <span class="text-3xl font-light tabular-nums" :style="{ color: brand.colors.positive, letterSpacing: '-0.02em' }">
                   {{ activeChecklist.filter(i => i.status === 'pass').length }}
                 </span>
                 <span class="text-xl tabular-nums" :style="{ color: brand.colors.textMuted }">/</span>
@@ -3737,7 +3737,7 @@
       <!-- Company profile -->
       <section v-if="brand.assetPage.showCompanyInfo" class="border-b py-8" :style="{ borderColor: brand.colors.border }">
         <header class="mb-6 flex flex-col gap-1">
-          <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
+          <h2 class="font-light" :style="{ color: brand.colors.text, fontSize: 'clamp(20px, 2.5vw, 26px)', lineHeight: 1.15, letterSpacing: '-0.3px' }">
             Sobre a empresa
           </h2>
           <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
@@ -3766,7 +3766,7 @@
             <div class="flex flex-1 flex-col gap-1">
               <USkeleton v-if="isLoadingAsset" class="h-6 w-48" />
               <template v-else>
-                <h3 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
+                <h3 class="text-[18px] font-medium md:text-[20px]" :style="{ color: brand.colors.text, letterSpacing: '-0.22px' }">
                   {{ asset?.name }}
                 </h3>
                 <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
@@ -3819,7 +3819,7 @@
           <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
             Assistente IA
           </span>
-          <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: brand.colors.text }">
+          <h2 class="font-light" :style="{ color: brand.colors.text, fontSize: 'clamp(20px, 2.5vw, 26px)', lineHeight: 1.15, letterSpacing: '-0.3px' }">
             Dúvidas sobre <span class="italic" :style="{ color: brand.colors.primary }">{{ tickerUpper }}</span>?
           </h2>
           <p class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">
@@ -3843,7 +3843,7 @@
             <span class="font-mono-tab text-[9px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
               Pergunta {{ idx + 1 }}
             </span>
-            <p class="text-base font-semibold leading-snug" :style="{ color: brand.colors.text }">
+            <p class="text-base font-medium leading-snug" :style="{ color: brand.colors.text }">
               <span :style="{ color: brand.colors.primary }">&gt;</span> {{ item.text }}
             </p>
             <span class="font-mono-tab text-[10px] uppercase tracking-[0.12em]" :style="{ color: brand.colors.textMuted }">

@@ -9,7 +9,7 @@
             ETFs: Fundos de Índice
           </h1>
         </div>
-        <p class="text-base text-gray-400 md:text-lg">
+        <p class="text-base md:text-lg">
           Invista no Ibovespa, S&P 500 e outros índices com um único clique.
           Diversificação instantânea e taxas baixas. Descubra todos os ETFs da
           B3.
@@ -17,9 +17,9 @@
       </div>
 
       <!-- Conteúdo Educacional -->
-      <div class="prose prose-invert max-w-none">
-        <h2 class="text-2xl font-bold">O que são ETFs?</h2>
-        <p class="leading-relaxed text-gray-300">
+      <div>
+        <h2>O que são ETFs?</h2>
+        <p class="leading-relaxed">
           ETF (Exchange Traded Fund) é um fundo de investimento que replica um
           índice de mercado e é negociado na bolsa como se fosse uma ação. Com
           um único ETF, você investe em dezenas ou centenas de empresas
@@ -29,74 +29,74 @@
         <div
           class="my-6 brand-card border border-secondary/20 bg-secondary/10 p-6"
         >
-          <h3 class="mb-3 text-xl font-semibold text-secondary">
+          <h3 class="mb-3 text-secondary">
             Diversificação Instantânea
           </h3>
-          <p class="text-gray-300">
+          <p>
             Ao comprar uma cota de BOVA11 (ETF do Ibovespa), você está comprando
             todas as ~90 ações do índice na mesma proporção. Com R$ 100 você tem
             exposição a Vale, Petrobras, Itaú, Bradesco e todas as outras.
           </p>
         </div>
 
-        <h3 class="text-xl font-semibold">Principais ETFs no Brasil</h3>
+        <h3>Principais ETFs no Brasil</h3>
         <div class="space-y-4">
-          <div class="brand-card border border-white/10 bg-white/5 p-5">
+          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
             <div class="mb-3 flex items-center justify-between">
-              <h4 class="text-lg font-semibold text-secondary">
+              <h4 class="text-secondary">
                 BOVA11 - Ibovespa
               </h4>
               <UBadge label="Mais Popular" color="secondary" />
             </div>
-            <p class="mb-2 text-sm text-gray-300">
+            <p class="mb-2 text-sm">
               Replica o Ibovespa. Ideal para quem quer investir "na bolsa
               brasileira" de forma diversificada.
             </p>
-            <div class="text-sm text-gray-400">
+            <div class="text-sm">
               • ~90 ações das maiores empresas do Brasil
               • Alta liquidez
               • Taxa de administração: ~0,50% ao ano
             </div>
           </div>
 
-          <div class="brand-card border border-white/10 bg-white/5 p-5">
-            <h4 class="mb-3 text-lg font-semibold text-secondary">
+          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+            <h4 class="mb-3 text-secondary">
               SMAL11 - Small Caps
             </h4>
-            <p class="mb-2 text-sm text-gray-300">
+            <p class="mb-2 text-sm">
               Replica índice de small caps. Para quem busca maior potencial de
               crescimento com mais risco.
             </p>
-            <div class="text-sm text-gray-400">
+            <div class="text-sm">
               • Empresas pequenas e médias
               • Maior volatilidade
               • Potencial de retorno maior
             </div>
           </div>
 
-          <div class="brand-card border border-white/10 bg-white/5 p-5">
-            <h4 class="mb-3 text-lg font-semibold text-secondary">
+          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+            <h4 class="mb-3 text-secondary">
               IVVB11 - S&P 500 em Reais
             </h4>
-            <p class="mb-2 text-sm text-gray-300">
+            <p class="mb-2 text-sm">
               Invista nas 500 maiores empresas americanas (Apple, Microsoft,
               Amazon) em reais.
             </p>
-            <div class="text-sm text-gray-400">
+            <div class="text-sm">
               • Exposição internacional
               • Hedge cambial (dólar)
               • Empresas de tecnologia
             </div>
           </div>
 
-          <div class="brand-card border border-white/10 bg-white/5 p-5">
-            <h4 class="mb-3 text-lg font-semibold text-secondary">
+          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+            <h4 class="mb-3 text-secondary">
               PIBB11 - IBrX-50
             </h4>
-            <p class="mb-2 text-sm text-gray-300">
+            <p class="mb-2 text-sm">
               Replica as 50 ações mais negociadas da B3. Alternativa ao BOVA11.
             </p>
-            <div class="text-sm text-gray-400">
+            <div class="text-sm">
               • 50 empresas mais líquidas
               • Menor taxa que BOVA11
               • Rebalanceamento quadrimestral
@@ -104,81 +104,81 @@
           </div>
         </div>
 
-        <h3 class="text-xl font-semibold">Vantagens dos ETFs</h3>
+        <h3>Vantagens dos ETFs</h3>
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="brand-card border border-white/10 bg-white/5 p-5">
+          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-trending-up" class="text-primary h-5 w-5" />
-              <h4 class="font-semibold">Taxas Baixas</h4>
+              <h4>Taxas Baixas</h4>
             </div>
-            <p class="text-sm text-gray-300">
+            <p class="text-sm">
               Gestão passiva custa menos. Taxas de 0,20% a 0,80% ao ano, muito
               abaixo de fundos ativos (1,5-3%).
             </p>
           </div>
 
-          <div class="brand-card border border-white/10 bg-white/5 p-5">
+          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-layers" class="text-primary h-5 w-5" />
-              <h4 class="font-semibold">Diversificação Automática</h4>
+              <h4>Diversificação Automática</h4>
             </div>
-            <p class="text-sm text-gray-300">
+            <p class="text-sm">
               Uma cota = dezenas/centenas de ações. Diversificação que levaria
               milhares de reais para fazer sozinho.
             </p>
           </div>
 
-          <div class="brand-card border border-white/10 bg-white/5 p-5">
+          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-zap" class="text-primary h-5 w-5" />
-              <h4 class="font-semibold">Liquidez</h4>
+              <h4>Liquidez</h4>
             </div>
-            <p class="text-sm text-gray-300">
+            <p class="text-sm">
               Compra e vende como ação normal, em segundos durante o pregão. Sem
               burocracia de fundos tradicionais.
             </p>
           </div>
 
-          <div class="brand-card border border-white/10 bg-white/5 p-5">
+          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-eye" class="text-primary h-5 w-5" />
-              <h4 class="font-semibold">Transparência Total</h4>
+              <h4>Transparência Total</h4>
             </div>
-            <p class="text-sm text-gray-300">
+            <p class="text-sm">
               Você sabe exatamente em quais ações o ETF investe. Composição
               pública e atualizada.
             </p>
           </div>
         </div>
 
-        <h3 class="text-xl font-semibold">ETF vs Fundo de Ações</h3>
+        <h3>ETF vs Fundo de Ações</h3>
         <div class="overflow-x-auto">
           <table class="w-full text-sm">
             <caption class="sr-only">Comparativo entre ETF e Fundo de Ações por característica</caption>
             <thead>
-              <tr class="border-b border-white/10">
+              <tr :style="{ borderBottomWidth: '1px', borderBottomStyle: 'solid', borderBottomColor: brand.colors.border }">
                 <th scope="col" class="p-3 text-left">Característica</th>
                 <th scope="col" class="p-3 text-left">ETF</th>
                 <th scope="col" class="p-3 text-left">Fundo de Ações</th>
               </tr>
             </thead>
-            <tbody class="text-gray-300">
-              <tr class="border-b border-white/10">
+            <tbody>
+              <tr :style="{ borderBottomWidth: '1px', borderBottomStyle: 'solid', borderBottomColor: brand.colors.border }">
                 <th scope="row" class="p-3 font-normal text-left">Taxa de administração</th>
                 <td class="p-3 text-secondary tabular-nums">0,20-0,80%</td>
                 <td class="p-3 tabular-nums">1,5-3%</td>
               </tr>
-              <tr class="border-b border-white/10">
+              <tr :style="{ borderBottomWidth: '1px', borderBottomStyle: 'solid', borderBottomColor: brand.colors.border }">
                 <th scope="row" class="p-3 font-normal text-left">Objetivo</th>
                 <td class="p-3 text-secondary">Replicar índice</td>
                 <td class="p-3">Superar índice</td>
               </tr>
-              <tr class="border-b border-white/10">
+              <tr :style="{ borderBottomWidth: '1px', borderBottomStyle: 'solid', borderBottomColor: brand.colors.border }">
                 <th scope="row" class="p-3 font-normal text-left">Liquidez</th>
                 <td class="p-3 text-secondary">Imediata (como ação)</td>
                 <td class="p-3">D+4 ou mais</td>
               </tr>
-              <tr class="border-b border-white/10">
+              <tr :style="{ borderBottomWidth: '1px', borderBottomStyle: 'solid', borderBottomColor: brand.colors.border }">
                 <th scope="row" class="p-3 font-normal text-left">Transparência</th>
                 <td class="p-3 text-secondary">Total</td>
                 <td class="p-3">Parcial</td>
@@ -192,8 +192,8 @@
           </table>
         </div>
 
-        <h3 class="text-xl font-semibold">Para Quem são os ETFs?</h3>
-        <ul class="list-disc space-y-2 pl-6 text-gray-300">
+        <h3>Para Quem são os ETFs?</h3>
+        <ul class="list-disc space-y-2 pl-6">
           <li>
             <strong>Iniciantes:</strong> Quer investir em ações mas não sabe
             quais escolher
@@ -222,16 +222,16 @@
       />
 
       <!-- Link Destacado para Ver Todas -->
-      <div class="border-t border-white/10 pt-8">
+      <div class="pt-8" :style="{ borderTopWidth: '1px', borderTopStyle: 'solid', borderTopColor: brand.colors.border }">
         <NuxtLink
           to="/search?group=etfs"
           class="group mx-auto flex max-w-2xl items-center justify-between brand-card border border-secondary/30 bg-secondary/10 p-6 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-secondary/50 hover:bg-secondary/20"
         >
           <div class="flex flex-col gap-1">
-            <h3 class="text-xl font-bold group-hover:text-secondary transition-colors">
+            <h3 class="group-hover:text-secondary transition-colors">
               Explorar Todos os ETFs Disponíveis
             </h3>
-            <p class="text-sm text-gray-400">
+            <p class="text-sm">
               Compare BOVA11, IVVB11, SMAL11 e outros ETFs com dados atualizados
             </p>
           </div>

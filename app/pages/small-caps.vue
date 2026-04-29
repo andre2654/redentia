@@ -9,7 +9,7 @@
             Small Caps: Ações de Empresas Pequenas
           </h1>
         </div>
-        <p class="text-base text-gray-400 md:text-lg">
+        <p class="text-base md:text-lg">
           Descubra empresas com alto potencial de crescimento. Small caps podem
           se tornar as gigantes do futuro. Aprenda estratégias e riscos dessa
           classe de ativos.
@@ -17,102 +17,103 @@
       </div>
 
       <!-- Conteúdo Educacional -->
-      <div class="prose prose-invert max-w-none">
-        <h2 class="text-2xl font-bold">O que são Small Caps?</h2>
-        <p class="leading-relaxed text-gray-300">
+      <div>
+        <h2>O que são Small Caps?</h2>
+        <p class="leading-relaxed">
           Small Caps são ações de empresas com baixo valor de mercado
           (capitalização). No Brasil, geralmente considera-se small caps
           empresas com valor de mercado abaixo de R$ 2-5 bilhões.
         </p>
 
-        <h3 class="text-xl font-semibold">Classificação por Tamanho</h3>
+        <h3>Classificação por Tamanho</h3>
         <div class="space-y-3">
-          <div class="brand-card border border-white/10 bg-white/5 p-4">
-            <h4 class="mb-1 font-semibold">
+          <div class="brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+            <h4 class="mb-1">
               Mega Caps (> R$ 100 bilhões)
             </h4>
-            <p class="text-sm text-gray-400">
+            <p class="text-sm">
               Vale, Petrobras, Itaú - Gigantes consolidadas
             </p>
           </div>
-          <div class="brand-card border border-white/10 bg-white/5 p-4">
-            <h4 class="mb-1 font-semibold">Large Caps (R$ 10-100 bi)</h4>
-            <p class="text-sm text-gray-400">
+          <div class="brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+            <h4 class="mb-1">Large Caps (R$ 10-100 bi)</h4>
+            <p class="text-sm">
               Weg, Localiza, Magazine Luiza - Grandes empresas
             </p>
           </div>
-          <div class="brand-card border border-white/10 bg-white/5 p-4">
-            <h4 class="mb-1 font-semibold">Mid Caps (R$ 2-10 bi)</h4>
-            <p class="text-sm text-gray-400">
+          <div class="brand-card p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
+            <h4 class="mb-1">Mid Caps (R$ 2-10 bi)</h4>
+            <p class="text-sm">
               Empresas médias em crescimento
             </p>
           </div>
           <div
             class="brand-card border border-secondary/20 bg-secondary/10 p-4"
           >
-            <h4 class="mb-1 font-semibold text-secondary">
+            <h4 class="mb-1 text-secondary">
               Small Caps (< R$ 2 bi)
             </h4>
-            <p class="text-sm text-gray-300">
+            <p class="text-sm">
               Empresas pequenas com alto potencial de crescimento
             </p>
           </div>
         </div>
 
-        <h3 class="text-xl font-semibold">
+        <h3>
           Por que Investir em Small Caps?
         </h3>
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="brand-card border border-white/10 bg-white/5 p-5">
+          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-trending-up" class="text-primary h-5 w-5" />
-              <h4 class="font-semibold">Alto Potencial de Crescimento</h4>
+              <h4>Alto Potencial de Crescimento</h4>
             </div>
-            <p class="text-sm text-gray-300">
+            <p class="text-sm">
               Pequenas empresas podem crescer 50-100% ao ano. Uma small cap de
               sucesso pode multiplicar seu investimento por 5x ou 10x.
             </p>
           </div>
 
-          <div class="brand-card border border-white/10 bg-white/5 p-5">
+          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-target" class="text-primary h-5 w-5" />
-              <h4 class="font-semibold">Pouca Cobertura de Analistas</h4>
+              <h4>Pouca Cobertura de Analistas</h4>
             </div>
-            <p class="text-sm text-gray-300">
+            <p class="text-sm">
               Menos analistas acompanham = maior chance de encontrar empresas
               subavaliadas antes do mercado descobrir.
             </p>
           </div>
 
-          <div class="brand-card border border-white/10 bg-white/5 p-5">
+          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-award" class="text-primary h-5 w-5" />
-              <h4 class="font-semibold">Futuras Blue Chips</h4>
+              <h4>Futuras Blue Chips</h4>
             </div>
-            <p class="text-sm text-gray-300">
+            <p class="text-sm">
               Magazine Luiza, Localiza e Weg eram small caps. Investir cedo em
               vencedoras gera retornos extraordinários.
             </p>
           </div>
 
-          <div class="brand-card border border-white/10 bg-white/5 p-5">
+          <div class="brand-card p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, borderWidth: '1px', borderStyle: 'solid' }">
             <div class="mb-2 flex items-center gap-2">
               <UIcon name="i-lucide-shield" class="text-primary h-5 w-5" />
-              <h4 class="font-semibold">Menor Competição</h4>
+              <h4>Menor Competição</h4>
             </div>
-            <p class="text-sm text-gray-300">
+            <p class="text-sm">
               Grandes fundos não investem em small caps (baixa liquidez). Menos
               competição para o investidor pessoa física.
             </p>
           </div>
         </div>
 
-        <h3 class="text-xl font-semibold">Riscos das Small Caps</h3>
+        <h3>Riscos das Small Caps</h3>
         <div
-          class="brand-card border border-yellow-500/20 bg-yellow-500/10 p-5"
+          class="brand-card p-5"
+          :style="{ borderColor: 'color-mix(in srgb, ' + (brand.colors.warning || '#f59e0b') + ' 25%, transparent)', backgroundColor: 'color-mix(in srgb, ' + (brand.colors.warning || '#f59e0b') + ' 8%, transparent)', borderWidth: '1px', borderStyle: 'solid' }"
         >
-          <ul class="list-disc space-y-2 pl-6 text-gray-300">
+          <ul class="list-disc space-y-2 pl-6">
             <li>
               <strong>Alta volatilidade:</strong> Preços oscilam muito (30-50%
               em poucos meses)
@@ -134,16 +135,16 @@
               recessões
             </li>
           </ul>
-          <p class="mt-4 font-semibold text-yellow-400">
+          <p class="mt-4" :style="{ color: brand.colors.warning || '#f59e0b' }">
             ⚠️ Small caps NÃO são para iniciantes. Exigem mais conhecimento e
             tolerância a risco.
           </p>
         </div>
 
-        <h3 class="text-xl font-semibold">
+        <h3>
           Estratégias para Investir em Small Caps
         </h3>
-        <ol class="list-decimal space-y-3 pl-6 text-gray-300">
+        <ol class="list-decimal space-y-3 pl-6">
           <li>
             <strong>Nunca concentre:</strong> Small caps devem ser no máximo
             20-30% da carteira
@@ -169,11 +170,11 @@
           </li>
         </ol>
 
-        <h3 class="text-xl font-semibold">Como Identificar Boas Small Caps</h3>
-        <p class="leading-relaxed text-gray-300">
+        <h3>Como Identificar Boas Small Caps</h3>
+        <p class="leading-relaxed">
           Procure estas características:
         </p>
-        <ul class="list-disc space-y-2 pl-6 text-gray-300">
+        <ul class="list-disc space-y-2 pl-6">
           <li>
             <strong>Crescimento de receita:</strong> > 20% ao ano
             consistentemente
@@ -202,10 +203,10 @@
         <div
           class="my-6 brand-card border border-secondary/20 bg-secondary/10 p-6"
         >
-          <h3 class="mb-3 text-xl font-semibold text-secondary">
+          <h3 class="mb-3 text-secondary">
             Dica de Ouro
           </h3>
-          <p class="text-gray-300">
+          <p>
             Use a ferramenta de busca da {{ brand.name }} para filtrar empresas com
             valor de mercado < R$ 2 bilhões, ROE > 15%, crescimento de receita
             > 20% e baixo endividamento. Você encontrará as melhores candidatas.
@@ -224,16 +225,16 @@
       />
 
       <!-- Link Destacado para Ver Todas -->
-      <div class="border-t border-white/10 pt-8">
+      <div class="pt-8" :style="{ borderTopWidth: '1px', borderTopStyle: 'solid', borderTopColor: brand.colors.border }">
         <NuxtLink
           to="/search?mc_max=2000000000&group=stocks"
           class="group mx-auto flex max-w-2xl items-center justify-between brand-card border border-secondary/30 bg-secondary/10 p-6 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-secondary/50 hover:bg-secondary/20"
         >
           <div class="flex flex-col gap-1">
-            <h3 class="text-xl font-bold group-hover:text-secondary transition-colors">
+            <h3 class="group-hover:text-secondary transition-colors">
               Ver Todas as Small Caps
             </h3>
-            <p class="text-sm text-gray-400">
+            <p class="text-sm">
               Filtre por valor de mercado, ROE, crescimento e encontre oportunidades
             </p>
           </div>

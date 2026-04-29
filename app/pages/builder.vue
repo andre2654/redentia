@@ -64,7 +64,7 @@
       <section v-if="phase === 'analysis'" key="analysis" class="relative z-10 flex min-h-[80vh] flex-col items-center justify-center px-6">
         <div class="w-full max-w-2xl">
           <p class="mb-2 text-center text-[10px] font-medium uppercase tracking-[.3em] text-white/15" style="animation:bld-fade-down .5s both">Processando</p>
-          <h2 class="mb-10 text-center text-3xl font-bold" style="animation:bld-fade-down .6s .1s both"><span :style="{ color: primaryColor }">{{ brandName }}</span></h2>
+          <h2 class="mb-10 text-center text-3xl font-light" style="animation:bld-fade-down .6s .1s both" :style="{ letterSpacing: '-0.4px' }"><span :style="{ color: primaryColor }">{{ brandName }}</span></h2>
           <div class="overflow-hidden rounded-2xl border border-white/[.06] bg-[#060609] shadow-2xl" style="animation:bld-scale-in .7s cubic-bezier(.16,1,.3,1) .2s both" :style="{ boxShadow: `0 40px 120px ${primaryColor}06` }">
             <div class="flex items-center gap-2 border-b border-white/[.04] px-5 py-3">
               <span class="h-2.5 w-2.5 rounded-full bg-[#ff5f57]/60" /><span class="h-2.5 w-2.5 rounded-full bg-[#febc2e]/60" /><span class="h-2.5 w-2.5 rounded-full bg-[#28c840]/60" />
@@ -99,7 +99,7 @@
               </div>
               <div>
                 <p class="text-[10px] font-medium uppercase tracking-[.3em] text-white/15">Construindo</p>
-                <h2 class="text-xl font-bold">{{ brandName }}</h2>
+                <h2 class="text-xl font-medium" :style="{ letterSpacing: '-0.005em' }">{{ brandName }}</h2>
               </div>
             </div>
             <!-- Step pills -->
@@ -184,7 +184,7 @@
                 <div class="mb-6 flex items-center justify-between">
                   <div class="transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-700" :style="{ opacity: currentStep >= 3 ? 1 : 0.1 }">
                     <p class="text-xs" :style="{ color: brand.colors.textMuted }">Bem-vindo ao</p>
-                    <h3 class="text-lg font-bold" :style="{ fontFamily: currentStep >= 2 ? `'${brand.font.family}', sans-serif` : 'inherit', color: brand.colors.text }">{{ currentStep >= 3 ? brandName : '•••••' }}</h3>
+                    <h3 class="text-lg font-medium" :style="{ fontFamily: currentStep >= 2 ? `'${brand.font.family}', sans-serif` : 'inherit', color: brand.colors.text, letterSpacing: '-0.005em' }">{{ currentStep >= 3 ? brandName : '•••••' }}</h3>
                   </div>
                   <div class="flex h-8 w-48 items-center gap-2 rounded-lg border px-3 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-700" :style="{ borderColor: currentStep >= 1 ? (brand.colors.border || '#1a1a1a') : '#111', opacity: currentStep >= 3 ? 0.6 : 0.05, backgroundColor: currentStep >= 1 ? (brand.colors.inputBg || '#050505') : '#0a0a0a' }">
                     <UIcon name="i-lucide-search" class="size-3 text-white/20" />
@@ -338,7 +338,7 @@
           <div class="bld-reveal mb-8 inline-flex items-center gap-2 rounded-full border border-emerald-400/10 bg-emerald-400/[.03] px-5 py-2">
             <UIcon name="i-lucide-check-circle" class="size-4 text-emerald-400" /><span class="text-[10px] font-medium uppercase tracking-[.25em] text-emerald-400/80">Plataforma gerada</span>
           </div>
-          <h2 class="bld-reveal bld-d1 mb-3 text-4xl font-extrabold tracking-tight md:text-6xl"><span class="bld-gradient-text" :style="{ '--g-from': primaryColor, '--g-to': '#fff' } as any">{{ brandName }}</span> esta pronta.</h2>
+          <h2 class="bld-reveal bld-d1 mb-3 text-4xl font-light tracking-tight md:text-6xl" :style="{ letterSpacing: '-0.4px' }"><span class="bld-gradient-text" :style="{ '--g-from': primaryColor, '--g-to': '#fff' } as any">{{ brandName }}</span> esta pronta.</h2>
           <p class="bld-reveal bld-d2 mx-auto mb-8 max-w-md text-sm text-white/30">Sua plataforma white-label foi criada com sucesso.</p>
 
           <div class="bld-reveal bld-d2 mx-auto mb-12 flex max-w-lg justify-center gap-8 md:gap-14">
@@ -358,7 +358,7 @@
                 <div class="flex h-11 w-11 items-center justify-center rounded-xl text-lg font-bold text-white" :style="{ backgroundColor: brand.colors.primary }">{{ brandName.charAt(0).toUpperCase() }}</div>
                 <span class="text-lg font-bold" :style="{ fontFamily: `'${brand.font.family}', sans-serif` }">{{ brandName }}</span>
               </div>
-              <h3 class="mb-2 text-2xl font-extrabold md:text-3xl" :style="{ fontFamily: `'${brand.font.family}', sans-serif` }">Investir com {{ brandName }}.</h3>
+              <h3 class="mb-2 text-2xl font-medium md:text-3xl" :style="{ fontFamily: `'${brand.font.family}', sans-serif`, letterSpacing: '-0.005em' }">Investir com {{ brandName }}.</h3>
               <p class="mb-6 text-sm" :style="{ color: brand.colors.textMuted }">Analise ativos, acompanhe dividendos e invista com inteligencia.</p>
               <div class="flex gap-3">
                 <span class="rounded-xl px-6 py-2.5 text-sm font-medium text-white" :style="{ backgroundColor: brand.colors.primary }">Criar conta</span>
@@ -384,7 +384,7 @@
         <div v-if="showContactModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 px-4 backdrop-blur-lg" @click.self="showContactModal = false">
           <div class="w-full max-w-md rounded-2xl border border-white/[.06] bg-[#060609] p-8 shadow-2xl" :style="{ boxShadow: `0 40px 120px ${primaryColor}08` }">
             <div class="mb-8 flex items-center justify-between">
-              <div><h3 class="text-lg font-bold">Quero minha plataforma</h3><p class="mt-1 text-xs text-white/25">Responderemos em 24h.</p></div>
+              <div><h3 class="text-lg font-medium" :style="{ letterSpacing: '-0.005em' }">Quero minha plataforma</h3><p class="mt-1 text-xs text-white/25">Responderemos em 24h.</p></div>
               <button class="flex h-8 w-8 items-center justify-center rounded-lg text-white/15 transition hover:bg-white/5 hover:text-white/40" @click="showContactModal = false"><UIcon name="i-lucide-x" class="size-4" /></button>
             </div>
             <div class="flex flex-col gap-3">

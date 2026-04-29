@@ -181,7 +181,7 @@
                     {{ creative.category }}
                   </span>
                 </div>
-                <h3 class="text-xl font-bold tracking-tight" :style="{ color: REDENTIA_COLORS.text }">
+                <h3 class="text-xl font-medium tracking-tight" :style="{ color: REDENTIA_COLORS.text, letterSpacing: '-0.005em' }">
                   {{ creative.title }}
                 </h3>
                 <p class="text-[13px] leading-relaxed" :style="{ color: REDENTIA_COLORS.textMuted }">
@@ -236,7 +236,7 @@
                 {{ idx + 1 }}
               </div>
               <div class="flex-1">
-                <h3 class="text-lg font-bold tracking-tight" :style="{ color: REDENTIA_COLORS.text }">
+                <h3 class="text-lg font-medium tracking-tight" :style="{ color: REDENTIA_COLORS.text, letterSpacing: '-0.005em' }">
                   {{ step.title }}
                 </h3>
                 <p class="mt-1 text-[13px] leading-relaxed" :style="{ color: REDENTIA_COLORS.textMuted }">

@@ -2,16 +2,16 @@
   <NuxtLayout name="static" title="Calculadora de Aposentadoria">
     <section class="flex flex-col gap-8 px-6 py-8">
       <!-- Breadcrumbs -->
-      <nav class="flex items-center gap-2 text-sm text-gray-400">
-        <NuxtLink to="/" class="hover:text-white transition-colors">
+      <nav class="flex items-center gap-2 text-sm">
+        <NuxtLink to="/" class="transition-colors hover:text-secondary">
           Home
         </NuxtLink>
         <UIcon name="i-lucide-chevron-right" class="h-4 w-4" />
-        <NuxtLink to="/calculadora" class="hover:text-white transition-colors">
+        <NuxtLink to="/calculadora" class="transition-colors hover:text-secondary">
           Calculadoras
         </NuxtLink>
         <UIcon name="i-lucide-chevron-right" class="h-4 w-4" />
-        <span class="text-white">Aposentadoria</span>
+        <span>Aposentadoria</span>
       </nav>
 
       <div class="flex flex-col gap-4">
@@ -21,112 +21,159 @@
             Calculadora de Aposentadoria: Quanto Preciso para Me Aposentar?
           </h1>
         </div>
-        <p class="text-base text-gray-400 md:text-lg">
+        <p class="text-base md:text-lg">
           Calcule quanto você precisa investir para se aposentar. Considere INSS, inflação, expectativa de vida e a regra dos 4%. Planeje seu FIRE (Financial Independence, Retire Early)!
         </p>
       </div>
 
       <CalculatorRetirement />
 
-      <div class="prose prose-invert max-w-none">
-        <h2 class="text-2xl font-bold">Como Planejar sua Aposentadoria</h2>
-        <p class="leading-relaxed text-gray-300">
-          Aposentadoria não acontece por acaso - é resultado de planejamento e disciplina. Quanto mais cedo você começar a se planejar, mais confortável será sua aposentadoria e menos você precisará poupar mensalmente.
+      <div class="max-w-none">
+        <h2>Como Planejar sua Aposentadoria</h2>
+        <p class="leading-relaxed">
+          Aposentadoria não acontece por acaso, é resultado de planejamento e disciplina. Quanto mais cedo você começar a se planejar, mais confortável será sua aposentadoria e menos você precisará poupar mensalmente.
         </p>
 
-        <h3 class="text-xl font-semibold">A Regra dos 4%</h3>
+        <h3>A Regra dos 4%</h3>
         <div class="brand-card border border-secondary/20 bg-secondary/10 p-5">
-          <p class="text-center text-lg font-semibold">
+          <p class="text-center text-lg">
             Você pode sacar 4% do patrimônio por ano mantendo o capital indefinidamente
           </p>
-          <div class="mt-4 space-y-2 text-sm text-gray-300">
+          <div class="mt-4 space-y-2 text-sm">
             <p><strong>Exemplo:</strong> Com R$ 1 milhão investido, você pode sacar R$ 40.000/ano ou R$ 3.333/mês</p>
             <p><strong>Cálculo inverso:</strong> Para R$ 5.000/mês = R$ 5.000 × 12 ÷ 0.04 = <strong>R$ 1,5 milhão</strong></p>
           </div>
         </div>
 
-        <h2 class="text-2xl font-bold">Movimento FIRE no Brasil</h2>
-        <p class="leading-relaxed text-gray-300">
+        <h2>Movimento FIRE no Brasil</h2>
+        <p class="leading-relaxed">
           FIRE (Financial Independence, Retire Early) é um movimento que prega independência financeira e aposentadoria antecipada. Os pilares são: viver abaixo das suas posses, investir agressivamente e ter um plano claro.
         </p>
 
         <div class="grid gap-4 md:grid-cols-3">
-          <div class="brand-card border border-white/10 bg-white/5 p-5">
-            <h4 class="mb-2 font-semibold text-secondary">Lean FIRE</h4>
-            <p class="text-sm text-gray-300">
+          <div
+            class="brand-card border p-5"
+            :style="{
+              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
+              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+            }"
+          >
+            <h4 class="mb-2 text-secondary">Lean FIRE</h4>
+            <p class="text-sm">
               Aposentar com o mínimo necessário, estilo de vida frugal. Meta: R$ 500-750k.
             </p>
           </div>
-          <div class="brand-card border border-white/10 bg-white/5 p-5">
-            <h4 class="mb-2 font-semibold text-secondary">Regular FIRE</h4>
-            <p class="text-sm text-gray-300">
+          <div
+            class="brand-card border p-5"
+            :style="{
+              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
+              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+            }"
+          >
+            <h4 class="mb-2 text-secondary">Regular FIRE</h4>
+            <p class="text-sm">
               Manter padrão de vida médio. Meta: R$ 1-2 milhões.
             </p>
           </div>
-          <div class="brand-card border border-white/10 bg-white/5 p-5">
-            <h4 class="mb-2 font-semibold text-secondary">Fat FIRE</h4>
-            <p class="text-sm text-gray-300">
+          <div
+            class="brand-card border p-5"
+            :style="{
+              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
+              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+            }"
+          >
+            <h4 class="mb-2 text-secondary">Fat FIRE</h4>
+            <p class="text-sm">
               Aposentar com alto padrão de vida. Meta: R$ 3 milhões+.
             </p>
           </div>
         </div>
 
-        <h2 class="text-2xl font-bold">Perguntas Frequentes</h2>
-        
+        <h2>Perguntas Frequentes</h2>
+
         <div class="space-y-4">
-          <details class="group brand-card border border-white/10 bg-white/5 p-4">
-            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
+          <details
+            class="group brand-card border p-4"
+            :style="{
+              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
+              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+            }"
+          >
+            <summary class="cursor-pointer list-none flex items-center justify-between">
               Quanto preciso para me aposentar?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="mt-3 text-sm text-gray-300">
+            <p class="mt-3 text-sm">
               Multiplique sua despesa mensal desejada por 300 (regra dos 4%). Exemplo: Para R$ 5.000/mês, você precisa de R$ 1,5 milhão. Para R$ 10.000/mês, precisa de R$ 3 milhões. Ajuste pelo INSS que você vai receber.
             </p>
           </details>
 
-          <details class="group brand-card border border-white/10 bg-white/5 p-4">
-            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
+          <details
+            class="group brand-card border p-4"
+            :style="{
+              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
+              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+            }"
+          >
+            <summary class="cursor-pointer list-none flex items-center justify-between">
               É possível se aposentar aos 40 anos no Brasil?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="mt-3 text-sm text-gray-300">
+            <p class="mt-3 text-sm">
               Sim, mas requer disciplina extrema. Você precisaria: 1) Poupar 50-70% da renda, 2) Começar cedo (20-25 anos), 3) Ter boa renda ou fazer side hustles, 4) Investir bem (12%+ a.a.), 5) Viver de forma frugal. É desafiador mas não impossível.
             </p>
           </details>
 
-          <details class="group brand-card border border-white/10 bg-white/5 p-4">
-            <summary class="cursor-pointer font-semibold text-white list-none flex items-center justify-between">
+          <details
+            class="group brand-card border p-4"
+            :style="{
+              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
+              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+            }"
+          >
+            <summary class="cursor-pointer list-none flex items-center justify-between">
               Devo contar com o INSS no planejamento?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
             </summary>
-            <p class="mt-3 text-sm text-gray-300">
-              Depende da sua idade. Se você tem 40+ e contribui regularmente, pode contar com INSS como complemento. Se tem 20-30 anos, seja conservador - o sistema pode mudar muito até você se aposentar. Trate o INSS como bônus, não como pilar do seu plano.
+            <p class="mt-3 text-sm">
+              Depende da sua idade. Se você tem 40+ e contribui regularmente, pode contar com INSS como complemento. Se tem 20-30 anos, seja conservador, o sistema pode mudar muito até você se aposentar. Trate o INSS como bônus, não como pilar do seu plano.
             </p>
           </details>
         </div>
       </div>
 
-      <div class="flex flex-col gap-4 rounded-[30px] bg-white/5 p-6">
-        <h2 class="text-2xl font-bold">Outras Ferramentas</h2>
+      <div
+        class="flex flex-col gap-4 rounded-[30px] p-6"
+        :style="{ backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }"
+      >
+        <h2>Outras Ferramentas</h2>
         <div class="grid gap-4 md:grid-cols-2">
           <NuxtLink
             to="/calculadora/quanto-investir"
-            class="group flex items-center gap-4 brand-card border border-white/10 bg-white/5 p-4 transition hover:border-secondary/50"
+            class="group flex items-center gap-4 brand-card border p-4 transition hover:border-secondary/50"
+            :style="{
+              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
+              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+            }"
           >
             <UIcon name="i-lucide-wallet" class="text-secondary size-8 shrink-0" />
             <div>
-              <h3 class="font-semibold">Quanto Investir por Mês</h3>
-              <p class="text-sm text-gray-400">Calcule aportes para suas metas</p>
+              <h3>Quanto Investir por Mês</h3>
+              <p class="text-sm">Calcule aportes para suas metas</p>
             </div>
           </NuxtLink>
           <NuxtLink
             to="/calculadora/planejamento"
-            class="group flex items-center gap-4 brand-card border border-white/10 bg-white/5 p-4 transition hover:border-secondary/50"
+            class="group flex items-center gap-4 brand-card border p-4 transition hover:border-secondary/50"
+            :style="{
+              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
+              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+            }"
           >
             <UIcon name="i-lucide-target" class="text-secondary size-8 shrink-0" />
             <div>
-              <h3 class="font-semibold">Planejamento Patrimonial</h3>
-              <p class="text-sm text-gray-400">Carteira recomendada</p>
+              <h3>Planejamento Patrimonial</h3>
+              <p class="text-sm">Carteira recomendada</p>
             </div>
           </NuxtLink>
         </div>
