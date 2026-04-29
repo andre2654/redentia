@@ -143,6 +143,65 @@
           @refresh="reload"
         />
 
+        <!--
+          Action header — two CTAs sit just below the hero so the user
+          can either kick off a fresh raio-X (sends the chat the right
+          intent message and force-MAX) OR wipe the entire portfolio
+          (positions + analysis snapshot + chat memories) in one shot.
+          The wipe is destructive so it requires a JS `confirm` step
+          before firing the two parallel deletes.
+        -->
+        <div
+          class="flex flex-wrap items-center justify-between gap-3 rounded-xl border px-5 py-4"
+          :style="actionBarStyle"
+        >
+          <div class="flex flex-col gap-0.5">
+            <span
+              class="font-mono-tab text-[10.5px] font-medium uppercase"
+              :style="{ letterSpacing: '0.18em', color: brand.colors.primary }"
+            >Ações da carteira</span>
+            <span
+              class="text-[12.5px]"
+              :style="{ color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }"
+            >
+              {{ analysis
+                ? `Última análise: ${generatedLabel}`
+                : 'Você ainda não rodou um raio-X completo.' }}
+            </span>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <NuxtLink
+              :to="`/help?intent=${analysis ? 'reanalyze-portfolio' : 'analyze-portfolio'}`"
+              class="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-[13px] font-medium"
+              :style="{
+                backgroundColor: brand.colors.primary,
+                color: brand.colors.background,
+                boxShadow: `0 8px 18px -10px color-mix(in srgb, ${brand.colors.primary} 60%, transparent)`,
+              }"
+            >
+              <UIcon name="i-lucide-sparkles" class="size-4" />
+              {{ analysis ? 'Atualizar raio-X' : 'Gerar raio-X' }}
+            </NuxtLink>
+            <button
+              type="button"
+              class="inline-flex items-center gap-2 rounded-lg border px-3.5 py-2 text-[12.5px] font-medium transition-[background-color]"
+              :style="{
+                borderColor: `color-mix(in srgb, ${brand.colors.negative} 35%, transparent)`,
+                color: brand.colors.negative,
+                backgroundColor: 'transparent',
+              }"
+              :disabled="wiping"
+              @click="onWipeClick"
+            >
+              <UIcon
+                :name="wiping ? 'i-lucide-loader-2' : 'i-lucide-trash-2'"
+                :class="['size-3.5', wiping && 'motion-safe:animate-spin']"
+              />
+              {{ wiping ? 'Limpando...' : 'Limpar carteira' }}
+            </button>
+          </div>
+        </div>
+
         <MoleculesWalletMetricsGrid
           :total-value="totalValue"
           :pnl-pct="pnlPct"
@@ -152,6 +211,22 @@
           :dividend-meta="dividendMeta"
           :benchmarks="benchmarksMini"
         />
+
+        <!-- Snowflake — 5-axis radar collapsing the diagnosis into a
+             single shape (SimplyWall.st-style). Only renders when an
+             analysis snapshot exists; the action bar above already
+             nudges the user to "Gerar raio-X" otherwise. -->
+        <MoleculesWalletSnowflake
+          v-if="snowflakeAxes.length"
+          :axes="snowflakeAxes"
+          :headline="snowflakeHeadline"
+          :subline="snowflakeSubline"
+        />
+
+        <!-- Full raio-X surface (dimensions + diagnostic + thesis +
+             stress + macro + alternatives). Hidden when no snapshot
+             exists — the action bar above is enough CTA. -->
+        <MoleculesWalletRaioXFull v-if="analysis" :analysis="analysis" />
 
         <MoleculesWalletAllocationSection
           :by-class="allocationByClass"
@@ -167,13 +242,6 @@
         </section>
 
         <MoleculesWalletDividendCalendarCard :events="dividendEvents" />
-
-        <MoleculesWalletRaioXPreview
-          :strengths="(report?.strengths || []).map((s) => ({ title: s.title, body: s.description || '' }))"
-          :risks="(report?.risks || []).map((r) => ({ title: r.title, body: r.description || '' }))"
-          :recommendations="(report?.alternatives || []).slice(0, 2).map((a) => ({ title: `Considerar ${a.toTicker}`, body: a.reason || '' }))"
-          :analysis="analysis"
-        />
 
         <MoleculesWalletEventsList :events="upcomingEvents" />
       </div>
@@ -203,15 +271,92 @@ const wallet = useWalletDataService()
 
 const loading = ref(true)
 const refreshing = ref(false)
+const wiping = ref(false)
 const positions = ref<UnifiedPosition[]>([])
 const goals = ref<WalletGoal[]>([])
 const watchlist = ref<WatchlistItem[]>([])
 const analysis = ref<PortfolioAnalysis | null>(null)
 
+const authStore = useAuthStore()
+
 const emptyCardStyle = computed(() => ({
   backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 55%, ${brand.colors.background})`,
   borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
 }))
+
+const actionBarStyle = computed(() => ({
+  backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 55%, ${brand.colors.background})`,
+  borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+}))
+
+// Friendly timestamp shown next to the raio-X CTA so the user knows
+// how fresh the analysis is. Falls back to empty string when the
+// server didn't return a usable date.
+const generatedLabel = computed(() => {
+  const iso = analysis.value?.generated_at
+  if (!iso) return ''
+  try {
+    const d = new Date(iso)
+    if (Number.isNaN(d.getTime())) return ''
+    const date = d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }).replace('.', '')
+    const time = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+    return `${date}, ${time}`
+  } catch {
+    return ''
+  }
+})
+
+/**
+ * Limpar carteira — destructive 2-step deletion:
+ *   1. DELETE /api/portfolio   (Laravel: positions + analysis row)
+ *   2. DELETE /api/chat/memories/portfolio  (chat-db: carteira_atual,
+ *      carteira_atual_composicao, derived raio-x memories)
+ *
+ * Both run in parallel (Promise.allSettled) so a hiccup on one side
+ * doesn't block the other from completing. After both resolve we
+ * reload the page state — the empty state takes over once positions
+ * is back to []. Confirmation is a plain `confirm()` for now;
+ * upgrade to a styled modal once a Modal molecule lands.
+ */
+async function onWipeClick(): Promise<void> {
+  const ok = window.confirm(
+    'Tem certeza que quer apagar TODA a sua carteira?\n\n' +
+      'Isso remove suas posições, o último raio-X salvo e o que a IA lembra ' +
+      'sobre a carteira. Suas metas e watchlist NÃO são apagadas.\n\n' +
+      'Pra ter de volta, importe a planilha do CEI no chat.',
+  )
+  if (!ok) return
+
+  wiping.value = true
+  try {
+    const cfg = useRuntimeConfig()
+    const apiBase = cfg.public.apiBaseUrl as string
+    const direct = (cfg.public as { chatDirectUrl?: string }).chatDirectUrl
+    const chatBase = direct && import.meta.client ? direct : '/api/chat'
+    const auth = authStore.token ? { Authorization: `Bearer ${authStore.token}` } : {}
+
+    await Promise.allSettled([
+      fetch(`${apiBase}/portfolio`, {
+        method: 'DELETE',
+        headers: { Accept: 'application/json', ...auth },
+      }),
+      fetch(`${chatBase}/memories/portfolio`, {
+        method: 'DELETE',
+        headers: { Accept: 'application/json', ...auth },
+      }),
+    ])
+
+    // Reset the local state immediately so the empty branch renders
+    // before the network reload finishes — the wipe feels instant.
+    positions.value = []
+    analysis.value = null
+    await reload()
+  } catch (err) {
+    console.error('[wallet] wipe failed', err)
+  } finally {
+    wiping.value = false
+  }
+}
 
 const afterImportCards = [
   {
@@ -346,7 +491,86 @@ const report = computed<PortfolioReport | null>(() => {
   return analyzePortfolio(inputs, brand.colors.primary)
 })
 
-const score = computed(() => report.value?.score ?? 0)
+// Single source of truth for "the" score: prefer the AI snapshot
+// when present (authoritative — same number rendered in the big
+// gauge inside RaioXFull below). Falls back to the live heuristic
+// from usePortfolioScore when the user hasn't run a raio-X yet, so
+// the metric tile still shows something meaningful on a fresh
+// import. Without this fallback the user would see "two scores"
+// (live in the metrics grid, snapshot in the gauge) that disagreed.
+const score = computed(() => analysis.value?.score ?? report.value?.score ?? 0)
+
+// ============ Snowflake (5-axis radar) ============
+// Collapses the 9 deterministic dimensions of the raio-x into the 5
+// classic investor-radar axes: Valor / Futuro / Passado / Saúde /
+// Dividendos. Mapping is intentional, not 1-to-1:
+//   - Valor      ← `quality` (proxy for company-fundamental value)
+//   - Futuro     ← `growth` (growth-sector exposure)
+//   - Passado    ← `volatility` (defensiveness = solid past survival)
+//   - Saúde      ← average(`diversification`, `concentration`, `macro`)
+//                  (capacidade de aguentar tranco multi-frente)
+//   - Dividendos ← `income` (DY ponderado)
+// All inputs are 0-100 already (deterministic raio-x output), so no
+// rescaling needed.
+function dimByKey(key: string): { value: number; note: string } | null {
+  const d = analysis.value?.dimensions?.find((x) => x.key === key)
+  if (!d) return null
+  return { value: d.value, note: d.note ?? '' }
+}
+
+const snowflakeAxes = computed(() => {
+  // Hide the snowflake while there's no snapshot — caller already
+  // gates on `analysis` so this just guards against transient nulls.
+  if (!analysis.value?.dimensions?.length) return []
+  const quality = dimByKey('quality')
+  const growth = dimByKey('growth')
+  const volatility = dimByKey('volatility')
+  const income = dimByKey('income')
+  const diversification = dimByKey('diversification')
+  const concentration = dimByKey('concentration')
+  const macro = dimByKey('macro')
+  const healthInputs = [diversification, concentration, macro].filter(
+    (x): x is { value: number; note: string } => x != null,
+  )
+  const healthAvg = healthInputs.length
+    ? Math.round(healthInputs.reduce((s, x) => s + x.value, 0) / healthInputs.length)
+    : 0
+  return [
+    { key: 'valor', label: 'Valor', value: quality?.value ?? 0, note: quality?.note },
+    { key: 'futuro', label: 'Futuro', value: growth?.value ?? 0, note: growth?.note },
+    { key: 'passado', label: 'Passado', value: volatility?.value ?? 0, note: volatility?.note },
+    { key: 'saude', label: 'Saúde', value: healthAvg, note: 'Diversificação, concentração e macro combinados.' },
+    { key: 'dividendos', label: 'Dividendos', value: income?.value ?? 0, note: income?.note },
+  ]
+})
+
+const snowflakeHeadline = computed(() => {
+  const axes = snowflakeAxes.value
+  if (!axes.length) return 'Sua carteira em 5 eixos'
+  const sorted = [...axes].sort((a, b) => b.value - a.value)
+  const best = sorted[0]
+  const worst = sorted[sorted.length - 1]
+  if (!best || !worst) return 'Sua carteira em 5 eixos'
+  // Hand-tuned headline — same pattern as SimplyWall's snowflake card.
+  const labelMap: Record<string, string> = {
+    valor: 'Valor sólido',
+    futuro: 'Crescimento à frente',
+    passado: 'Histórico defensivo',
+    saude: 'Saúde robusta',
+    dividendos: 'Renda passiva forte',
+  }
+  return labelMap[best.key] ?? 'Sua carteira em 5 eixos'
+})
+
+const snowflakeSubline = computed(() => {
+  const axes = snowflakeAxes.value
+  if (!axes.length) return ''
+  const sorted = [...axes].sort((a, b) => b.value - a.value)
+  const top = sorted[0]
+  const bottom = sorted[sorted.length - 1]
+  if (!top || !bottom) return ''
+  return `Mais forte em ${top.label.toLowerCase()} (${Math.round(top.value)}). Mais fraco em ${bottom.label.toLowerCase()} (${Math.round(bottom.value)}). A área preenchida mostra o equilíbrio do conjunto.`
+})
 
 const dividendForecast12m = computed(() => {
   if (!report.value) return 0

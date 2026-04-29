@@ -38,7 +38,7 @@
     </article>
 
     <article class="metric-card flex flex-col gap-2 rounded-xl border p-5" :style="cardStyle">
-      <span class="mock-eyebrow">Score de saúde</span>
+      <span class="mock-eyebrow">Score Redentia</span>
       <div class="flex items-baseline gap-2">
         <div
           class="font-mono-tab text-[40px] font-light tabular-nums leading-none"

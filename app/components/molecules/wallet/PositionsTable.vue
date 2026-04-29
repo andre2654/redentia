@@ -63,17 +63,15 @@
             >
               <td class="td">
                 <div class="flex items-center gap-2.5">
-                  <span
-                    class="flex size-7 shrink-0 items-center justify-center rounded-md font-mono-tab text-[10px] font-medium"
-                    :style="{
-                      backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 18%, transparent)`,
-                      color: brand.colors.primary,
-                    }"
-                  >{{ p.ticker.slice(0, 4) }}</span>
+                  <AtomsTickerLogo
+                    :ticker="p.ticker"
+                    :logo="snapshots.get(p.ticker)?.logo ?? null"
+                    :size="28"
+                  />
                   <div class="flex min-w-0 flex-col leading-tight">
                     <span class="font-mono-tab text-[12.5px] font-medium" :style="{ color: brand.colors.text }">{{ p.ticker }}</span>
                     <span class="truncate text-[10.5px]" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 55%, transparent)` }">
-                      {{ p.name || displayClass(p.asset_class) }}
+                      {{ p.name || snapshots.get(p.ticker)?.name || displayClass(p.asset_class) }}
                       <span
                         v-if="p.is_loaned"
                         class="ml-1 rounded px-1 py-0.5 font-mono-tab text-[9px] font-medium"
@@ -150,6 +148,43 @@ const brand = useBrand()
 const activeClass = ref<'ALL' | UnifiedAssetClass>('ALL')
 const expanded = ref(false)
 const pageSize = 12
+
+// ---- Ticker logos via the shared snapshot composable -----------
+// Subscribes to all unique tickers in the table; the composable
+// batches them into a single `/api/chat/tickers/snapshot` call and
+// re-renders rows when logos arrive. `TickerLogo` falls back to
+// initials when a logo is missing or fails to load (handled by
+// the shared `useFailedLogos` registry).
+const tickerSnaps = useTickerSnapshots()
+const snapshots = tickerSnaps.snapshots
+const subscribed = new Set<string>()
+const positionTickers = computed(() => Array.from(new Set(props.positions.map((p) => p.ticker.toUpperCase()))))
+
+watch(
+  positionTickers,
+  (tickers) => {
+    // Subscribe new tickers
+    for (const t of tickers) {
+      if (!subscribed.has(t)) {
+        tickerSnaps.subscribe(t)
+        subscribed.add(t)
+      }
+    }
+    // Unsubscribe ones that disappeared (e.g. user wiped + re-imported)
+    for (const t of Array.from(subscribed)) {
+      if (!tickers.includes(t)) {
+        tickerSnaps.unsubscribe(t)
+        subscribed.delete(t)
+      }
+    }
+  },
+  { immediate: true },
+)
+
+onBeforeUnmount(() => {
+  for (const t of subscribed) tickerSnaps.unsubscribe(t)
+  subscribed.clear()
+})
 
 const cardStyle = computed(() => ({
   backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 55%, ${brand.colors.background})`,
