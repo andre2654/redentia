@@ -127,7 +127,7 @@
 
           <AtomsPasswordStrengthBlock :requirements="requirements" :score="score" :text="text" :color="color" />
 
-          <AtomsButton type="submit" color="secondary" size="lg" class="w-full justify-center font-mono-tab text-xs tracking-[0.15em]">
+          <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="w-full justify-center font-mono-tab text-xs tracking-[0.15em]">
             Criar sessão
           </AtomsButton>
 
@@ -245,7 +245,7 @@
 
           <AtomsPasswordStrengthBlock :requirements="requirements" :score="score" :text="text" :color="color" />
 
-          <AtomsButton type="submit" color="secondary" size="lg" class="mt-2 w-full justify-center font-small-caps tracking-wide">
+          <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="mt-2 w-full justify-center font-small-caps tracking-wide">
             Abrir conta
           </AtomsButton>
 
@@ -381,7 +381,7 @@
 
           <AtomsPasswordStrengthBlock :requirements="requirements" :score="score" :text="text" :color="color" />
 
-          <AtomsButton type="submit" color="secondary" size="lg" class="mt-2 w-full justify-center font-mentor-eyebrow">
+          <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="mt-2 w-full justify-center font-mentor-eyebrow">
             COMEÇAR A CONSTRUIR →
           </AtomsButton>
 
@@ -513,7 +513,7 @@
 
             <AtomsPasswordStrengthBlock :requirements="requirements" :score="score" :text="text" :color="color" />
 
-            <AtomsButton type="submit" color="secondary" size="lg" class="mt-2 w-full justify-center font-academic-label">
+            <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="mt-2 w-full justify-center font-academic-label">
               MATRICULAR-SE →
             </AtomsButton>
 
@@ -665,7 +665,7 @@
 
           <AtomsPasswordStrengthBlock :requirements="requirements" :score="score" :text="text" :color="color" />
 
-          <AtomsButton type="submit" color="secondary" size="lg" class="mt-3 w-full justify-center font-showtime-label">
+          <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="mt-3 w-full justify-center font-showtime-label">
             BORA COMEÇAR, CRIATURA! →
           </AtomsButton>
 
@@ -1037,7 +1037,7 @@
 
           <AtomsPasswordStrengthBlock :requirements="requirements" :score="score" :text="text" :color="color" />
 
-          <AtomsButton type="submit" color="secondary" size="lg" class="w-full justify-center">
+          <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="w-full justify-center">
             {{ brand.nav.register }}
           </AtomsButton>
 
@@ -1052,8 +1052,89 @@
         </UForm>
       </div>
     </section>
+
+    <!--
+      Landing overlay (registration) — same component pattern as the
+      one in /auth/login. Fades in after the register call resolves
+      and stays up until the redirect lands. Brand-tinted spinner +
+      personalised greeting using the name the user just typed.
+    -->
+    <Transition name="landing-fade">
+      <div
+        v-if="landing"
+        class="landing-overlay"
+        :style="{
+          backgroundColor: `color-mix(in srgb, ${brand.colors.background} 92%, transparent)`,
+        }"
+        aria-live="polite"
+        inert
+      >
+        <div class="landing-card" :style="landingCardStyle">
+          <div
+            class="landing-spinner"
+            :style="{ borderColor: `color-mix(in srgb, ${brand.colors.primary} 25%, transparent)`, borderTopColor: brand.colors.primary }"
+          />
+          <div class="flex flex-col items-center gap-1.5">
+            <span
+              class="font-mono-tab text-[11px] font-medium uppercase"
+              :style="{ letterSpacing: '0.18em', color: brand.colors.primary }"
+            >Cadastro concluído</span>
+            <p
+              class="text-center text-[15px] font-medium"
+              :style="{ color: brand.colors.text }"
+            >{{ landingMessage }}</p>
+            <p
+              class="text-center text-[12.5px]"
+              :style="{ color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }"
+            >Carregando seu painel…</p>
+          </div>
+        </div>
+      </div>
+    </Transition>
   </NuxtLayout>
 </template>
+
+<style scoped>
+.landing-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 60;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.landing-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 36px 44px;
+  border-radius: 16px;
+  border: 1px solid;
+  min-width: 260px;
+}
+.landing-spinner {
+  width: 38px;
+  height: 38px;
+  border: 3px solid;
+  border-radius: 50%;
+  animation: landing-spin 800ms linear infinite;
+}
+@keyframes landing-spin {
+  to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .landing-spinner { animation: none; }
+}
+.landing-fade-enter-active,
+.landing-fade-leave-active {
+  transition: opacity 200ms ease-out;
+}
+.landing-fade-enter-from,
+.landing-fade-leave-to { opacity: 0; }
+</style>
 
 <script setup lang="ts">
 import * as z from 'zod'
@@ -1138,7 +1219,39 @@ const text = computed(() => {
 
 const router = useRouter()
 
+// Two-phase loading. `submitting` keeps the form disabled + button
+// in spinner state during the network round-trip; `landing` swaps
+// in the brand-tinted overlay while we settle the auth + redirect.
+// Splitting them removes the awkward 200-300ms gap where the form
+// looked frozen but no visual feedback was happening.
+const submitting = ref(false)
+const landing = ref(false)
+
+const landingCardStyle = computed(() => ({
+  backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 92%, ${brand.colors.background})`,
+  borderColor: `color-mix(in srgb, ${brand.colors.primary} 22%, transparent)`,
+  boxShadow: `0 24px 60px -32px color-mix(in srgb, ${brand.colors.primary} 35%, transparent), 0 8px 16px -10px rgba(0,0,0,0.18)`,
+}))
+
+/** Friendly first name from `state.name`; capitalised. Used in both
+ *  the success toast and the landing overlay. Falls back to a
+ *  generic greeting when the user typed something we can't parse. */
+function welcomeName(): string {
+  const raw = (state.name || '').trim()
+  if (!raw) return ''
+  const first = raw.split(/\s+/)[0] ?? ''
+  if (!first) return ''
+  return first.charAt(0).toUpperCase() + first.slice(1).toLowerCase()
+}
+
+const landingMessage = computed(() => {
+  const n = welcomeName()
+  return n ? `Bem-vindo, ${n}` : 'Bem-vindo'
+})
+
 async function onSubmit(_: FormSubmitEvent<Schema>) {
+  if (submitting.value) return
+  submitting.value = true
   try {
     const payload: Parameters<typeof register>[0] = {
       name: state.name,
@@ -1151,23 +1264,42 @@ async function onSubmit(_: FormSubmitEvent<Schema>) {
     if (state.advisor_code?.trim()) {
       payload.advisor_code = state.advisor_code.trim()
     }
-    const resp = await register(payload) as { access_token?: string; token?: string; user?: unknown }
+    const resp = (await register(payload)) as {
+      access_token?: string
+      token?: string
+      user?: unknown
+    }
     const token = resp?.access_token ?? resp?.token
+    const name = welcomeName()
+
     if (token) {
       authStore.addToken(token)
       await authStore.fetchProfile()
-      showSuccessNotification('Cadastro concluído', 'Bem-vindo!')
-      router.push('/')
+      showSuccessNotification(
+        name ? `Cadastro concluído, ${name}` : 'Cadastro concluído',
+        'Carregando seu painel…',
+      )
+      // Hand off to the landing overlay so the post-auth redirect
+      // happens with a polished transition instead of a frozen form.
+      landing.value = true
+      setTimeout(() => router.push('/'), 280)
     } else {
       showSuccessNotification(
         'Cadastro concluído',
-        'Agora você pode fazer login'
+        'Agora você pode fazer login.',
       )
-      router.push('/auth/login')
+      // Same overlay flow, just routed at /auth/login since the
+      // backend didn't auto-issue a token. Keeps the UX consistent.
+      landing.value = true
+      setTimeout(() => router.push('/auth/login'), 280)
     }
-  } catch (e: any) {
-    const message = e?.data?.message ?? (e instanceof Error ? e.message : 'Verifique os dados informados')
+  } catch (e) {
+    const message =
+      (e as { data?: { message?: string } })?.data?.message
+        ?? (e instanceof Error ? e.message : 'Verifique os dados informados')
     showErrorNotification('Falha no cadastro', message)
+  } finally {
+    submitting.value = false
   }
 }
 

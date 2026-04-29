@@ -83,7 +83,7 @@
             <AtomsFormInputPassword v-model="state.password" class="w-full" />
           </UFormField>
 
-          <AtomsButton type="submit" color="secondary" size="lg" class="mt-2 w-full justify-center font-mono-tab text-xs tracking-[0.15em]">
+          <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="mt-2 w-full justify-center font-mono-tab text-xs tracking-[0.15em]">
             Autenticar
           </AtomsButton>
 
@@ -152,7 +152,7 @@
             <AtomsFormInputPassword v-model="state.password" class="w-full" />
           </UFormField>
 
-          <AtomsButton type="submit" color="secondary" size="lg" class="mt-2 w-full justify-center font-small-caps tracking-wide">
+          <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="mt-2 w-full justify-center font-small-caps tracking-wide">
             Entrar no portal
           </AtomsButton>
 
@@ -243,7 +243,7 @@
             <AtomsFormInputPassword v-model="state.password" class="w-full" />
           </UFormField>
 
-          <AtomsButton type="submit" color="secondary" size="lg" class="mt-2 w-full justify-center font-mentor-eyebrow">
+          <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="mt-2 w-full justify-center font-mentor-eyebrow">
             ENTRAR NO MANUAL →
           </AtomsButton>
 
@@ -330,7 +330,7 @@
               <AtomsFormInputPassword v-model="state.password" class="w-full" />
             </UFormField>
 
-            <AtomsButton type="submit" color="secondary" size="lg" class="mt-2 w-full justify-center font-academic-label">
+            <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="mt-2 w-full justify-center font-academic-label">
               ABRIR O TERMINAL →
             </AtomsButton>
 
@@ -416,7 +416,7 @@
             <AtomsFormInputPassword v-model="state.password" class="w-full" />
           </UFormField>
 
-          <AtomsButton type="submit" color="secondary" size="lg" class="mt-3 w-full justify-center font-showtime-label">
+          <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="mt-3 w-full justify-center font-showtime-label">
             BORA ENTRAR! →
           </AtomsButton>
 
@@ -747,7 +747,7 @@
             <AtomsFormInputPassword v-model="state.password" class="w-full" />
           </UFormField>
 
-          <AtomsButton type="submit" color="secondary" size="lg" class="mt-2 w-full justify-center">
+          <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="mt-2 w-full justify-center">
             {{ brand.nav.login }}
           </AtomsButton>
 
@@ -762,8 +762,98 @@
         </UForm>
       </div>
     </section>
+
+    <!--
+      Landing overlay — full-screen brand-tinted veil that fades in
+      AFTER the auth call succeeds and BEFORE Nuxt finishes routing
+      to /. Covers the awkward 100-300ms where the form is disabled
+      but the destination page hasn't mounted yet (felt frozen).
+
+      Inert so screen readers + tab order don't get trapped here;
+      pointer-events block clicks on the form behind. Animation
+      uses the same 200ms ease as the rest of the app's transitions
+      (see plugins/brand.ts).
+    -->
+    <Transition name="landing-fade">
+      <div
+        v-if="landing"
+        class="landing-overlay"
+        :style="{
+          backgroundColor: `color-mix(in srgb, ${brand.colors.background} 92%, transparent)`,
+        }"
+        aria-live="polite"
+        inert
+      >
+        <div class="landing-card" :style="landingCardStyle">
+          <div class="landing-spinner" :style="{ borderColor: `color-mix(in srgb, ${brand.colors.primary} 25%, transparent)`, borderTopColor: brand.colors.primary }" />
+          <div class="flex flex-col items-center gap-1.5">
+            <span
+              class="font-mono-tab text-[11px] font-medium uppercase"
+              :style="{ letterSpacing: '0.18em', color: brand.colors.primary }"
+            >Conectado</span>
+            <p
+              class="text-center text-[15px] font-medium"
+              :style="{ color: brand.colors.text }"
+            >{{ landingMessage }}</p>
+            <p
+              class="text-center text-[12.5px]"
+              :style="{ color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }"
+            >Carregando seu painel…</p>
+          </div>
+        </div>
+      </div>
+    </Transition>
   </NuxtLayout>
 </template>
+
+<style scoped>
+.landing-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 60;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.landing-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 36px 44px;
+  border-radius: 16px;
+  border: 1px solid;
+  min-width: 260px;
+}
+.landing-spinner {
+  width: 38px;
+  height: 38px;
+  border: 3px solid;
+  border-radius: 50%;
+  animation: landing-spin 800ms linear infinite;
+}
+@keyframes landing-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .landing-spinner {
+    animation: none;
+  }
+}
+
+.landing-fade-enter-active,
+.landing-fade-leave-active {
+  transition: opacity 200ms ease-out;
+}
+.landing-fade-enter-from,
+.landing-fade-leave-to {
+  opacity: 0;
+}
+</style>
 
 <script setup lang="ts">
 import * as z from 'zod'
@@ -798,20 +888,77 @@ const state = reactive({
   password: '',
 })
 
+// Two-phase loading flag so the submit button can show a spinner
+// (`submitting`) and the post-login overlay can take over while the
+// router transitions (`landing`). Splitting them avoids the brief
+// flash where the button stops spinning but the redirect hasn't
+// happened yet, which made the form look frozen.
+const submitting = ref(false)
+const landing = ref(false)
+
+const landingCardStyle = computed(() => ({
+  backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 92%, ${brand.colors.background})`,
+  borderColor: `color-mix(in srgb, ${brand.colors.primary} 22%, transparent)`,
+  boxShadow: `0 24px 60px -32px color-mix(in srgb, ${brand.colors.primary} 35%, transparent), 0 8px 16px -10px rgba(0,0,0,0.18)`,
+}))
+
+const landingMessage = computed(() => {
+  const me = authStore.me as { name?: string; displayName?: string } | null
+  const raw = me?.displayName?.trim() || me?.name?.trim() || ''
+  if (!raw) return 'Bem-vindo de volta'
+  const first = raw.split(/\s+/)[0] ?? ''
+  if (!first) return 'Bem-vindo de volta'
+  const cap = first.charAt(0).toUpperCase() + first.slice(1).toLowerCase()
+  return `Bem-vindo de volta, ${cap}`
+})
+
+/**
+ * Pull a friendly first name from the auth store profile. We try
+ * `displayName` first (some tenants set it explicitly), fall back to
+ * the first word of `name`, then to a generic greeting if neither is
+ * available. Capitalises the first letter so even uppercase profile
+ * names ("ANDRE") read naturally in the toast ("André" / "Andre").
+ */
+function welcomeName(): string {
+  const me = authStore.me as { name?: string; displayName?: string } | null
+  const raw = me?.displayName?.trim() || me?.name?.trim() || ''
+  if (!raw) return ''
+  const first = raw.split(/\s+/)[0] ?? ''
+  if (!first) return ''
+  return first.charAt(0).toUpperCase() + first.slice(1).toLowerCase()
+}
+
 async function onSubmit(_: FormSubmitEvent<Schema>) {
+  if (submitting.value) return
+  submitting.value = true
   try {
     const resp = await login({ login: state.login, password: state.password })
-    if (resp.access_token) {
-      authStore.addToken(resp.access_token)
-      await authStore.fetchProfile()
-      showSuccessNotification('Login efetuado', 'Bem-vindo de volta!')
-      router.push('/')
+    if (!resp.access_token) {
+      showErrorNotification('Falha no login', 'Token não recebido. Tente novamente.')
+      return
     }
+    authStore.addToken(resp.access_token)
+    await authStore.fetchProfile()
+    const name = welcomeName()
+    showSuccessNotification(
+      name ? `Bem-vindo de volta, ${name}` : 'Login efetuado',
+      'Carregando seu painel…',
+    )
+    // Hand the form over to the full-screen landing overlay so the
+    // navigation happens with a polished transition instead of an
+    // abrupt redirect on top of a half-disabled form.
+    landing.value = true
+    // Small delay lets the overlay animate in (200ms enter) before
+    // we kick the route change — Nuxt's default page transition then
+    // dovetails with our own fade.
+    setTimeout(() => router.push('/'), 280)
   } catch (e) {
-    console.log(e)
     const message =
-      e instanceof Error ? e?.data?.message : 'Verifique suas credenciais'
+      (e as { data?: { message?: string } })?.data?.message
+        ?? (e instanceof Error ? e.message : 'Verifique suas credenciais')
     showErrorNotification('Falha no login', message)
+  } finally {
+    submitting.value = false
   }
 }
 
