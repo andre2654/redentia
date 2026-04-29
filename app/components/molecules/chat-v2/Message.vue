@@ -169,10 +169,10 @@
               </span>
               <Transition name="chat-status-text" mode="out-in">
                 <span
-                  :key="statusTickerIndex"
-                  class="font-mono-tab text-[12.5px] tabular-nums"
-                  :style="{ color: 'var(--brand-text-muted)' }"
-                >{{ STATUS_TICKER_MESSAGES[statusTickerIndex] }}</span>
+                  :key="tickerKey"
+                  class="chat-status-breathe min-w-0 flex-1 truncate text-[13px] font-medium"
+                  :style="{ color: 'var(--brand-text)' }"
+                >{{ tickerText }}</span>
               </Transition>
               <span
                 class="ml-auto font-mono-tab text-[10.5px] tabular-nums"
@@ -460,35 +460,103 @@ const brand = useBrand()
 const formResponseOpen = ref(false)
 
 /**
- * True between "user sent the message" and "first chunk arrived" —
- * either reasoning, a tool call, or actual answer content. While
- * this is true the answer slot shows a status ticker (pulsing dot +
- * cycling text + elapsed timer) instead of an empty box with a
- * blinking cursor (which read as frozen).
+ * True between "user sent the message" and "first text content
+ * chunk arrived". While true, the answer slot shows a status ticker
+ * (pulsing dot + breathing curated text + elapsed timer + skeletons)
+ * instead of an empty box.
  *
- * Becomes false the moment anything streams; the regular answer
- * flow takes over from there.
+ * We deliberately do NOT check `toolCalls.length === 0` (MAX emits a
+ * `synthesizing_analysis` tool.start at run-start) NOR `reasoning ===
+ * ''` (Kimi K2-thinking streams reasoning_content first, before any
+ * content). Both cases would silently hide the ticker and leave the
+ * answer area blank for several seconds while the agent does work
+ * behind the scenes. The reasoning is shown inside the floating
+ * ThinkingIndicator above the composer; the curated breathing
+ * status text belongs HERE in the answer slot. Both vanish only
+ * once `content` actually starts streaming.
  */
 const isWaitingForFirstChunk = computed(
   () =>
     props.message.status === 'streaming' &&
-    !props.message.content &&
-    (props.message.toolCalls?.length ?? 0) === 0 &&
-    !(props.message.reasoning ?? ''),
+    !props.message.content,
 )
 
 // ---- Status ticker (cold-start "thinking" state) -------------------------
-// Curated rotation of statuses that read as the agent doing real work.
-// Cycles every 1.6s. Once a tool call or reasoning chunk arrives the
-// `isWaitingForFirstChunk` flag flips and the whole ticker hides.
-const STATUS_TICKER_MESSAGES = [
+// Two-phase status text inside the breathing ticker:
+//   1. Pre-reasoning  → cycle through curated generic phrases at 1.6s,
+//      reassuring the user something is happening. Used for the brief
+//      window between message-send and the first reasoning chunk.
+//   2. Reasoning streaming → show the LATEST complete sentence
+//      ("trecho") from `message.reasoning`. As the model thinks, the
+//      ticker text updates with what it's actually thinking about
+//      right now — but always a clean, finished sentence (not a raw
+//      mid-word dump).
+const STATUS_TICKER_FALLBACKS = [
   'Lendo cotações…',
   'Cruzando dados de macro…',
   'Buscando notícias recentes…',
   'Validando números…',
   'Sintetizando análise…',
 ] as const
-const statusTickerIndex = ref(0)
+
+// Generic-phrase cursor (used when reasoning is empty).
+const fallbackTickerIndex = ref(0)
+
+/**
+ * Pull the latest "good" sentence from reasoning_content. Heuristics:
+ *   - split by sentence terminator (`. `, `! `, `? `, newline)
+ *   - skip fragments shorter than 12 chars (mid-thought noise)
+ *   - skip empty / whitespace-only chunks
+ *   - cap to 120 chars (one ticker line)
+ *   - return the LAST sentence so the text updates as reasoning grows
+ */
+function latestReasoningExcerpt(reasoning: string): string | null {
+  if (!reasoning) return null
+  const cleaned = reasoning.replace(/\s+/g, ' ').trim()
+  if (cleaned.length < 12) return null
+  // Split keeping the terminator (so we can test "is this a complete
+  // sentence?" — we ignore the last fragment if it doesn't end with
+  // punctuation, since it's still being typed).
+  const parts = cleaned.split(/(?<=[.!?])\s+/).map((s) => s.trim()).filter(Boolean)
+  if (parts.length === 0) return null
+  // Walk from the end backwards, find the most recent sentence ≥ 12 chars.
+  for (let i = parts.length - 1; i >= 0; i--) {
+    const p = parts[i]!
+    // The very last entry may be incomplete (no terminator yet) — only
+    // accept it if it already has enough substance.
+    const isComplete = /[.!?]$/.test(p)
+    if (!isComplete && i === parts.length - 1 && p.length < 32) continue
+    if (p.length < 12) continue
+    // Strip leading filler words common in reasoning chains.
+    const stripped = p.replace(
+      /^(hmm,?|ah,?|ok,?|bom,?|certo,?|ent[aã]o,?|aliás,?|aliás\.?)\s+/i,
+      '',
+    )
+    return stripped.length > 120 ? `${stripped.slice(0, 117).trim()}…` : stripped
+  }
+  return null
+}
+
+const reasoningExcerpt = computed<string | null>(() =>
+  latestReasoningExcerpt(props.message.reasoning ?? ''),
+)
+
+// What the ticker actually displays — reasoning trecho when available,
+// generic fallback while we wait for reasoning to start.
+const tickerText = computed<string>(() => {
+  if (reasoningExcerpt.value) return reasoningExcerpt.value
+  return STATUS_TICKER_FALLBACKS[fallbackTickerIndex.value]
+})
+
+// Vue Transition keys. Whenever the visible text changes (either the
+// fallback cursor advances OR a new reasoning sentence completes),
+// the key flips and the crossfade plays.
+const tickerKey = computed<string>(() =>
+  reasoningExcerpt.value
+    ? `r:${reasoningExcerpt.value.slice(0, 40)}`
+    : `f:${fallbackTickerIndex.value}`,
+)
+
 const elapsedMs = ref(0)
 const elapsedFmt = computed(() => {
   const s = elapsedMs.value / 1000
@@ -505,14 +573,14 @@ watch(
   (waiting) => {
     if (waiting) {
       // Start fresh — reset both counters when the ticker comes alive.
-      statusTickerIndex.value = 0
+      fallbackTickerIndex.value = 0
       elapsedMs.value = 0
       _waitStartedAt = Date.now()
       if (_tickerInterval) clearInterval(_tickerInterval)
       if (_elapsedInterval) clearInterval(_elapsedInterval)
       _tickerInterval = setInterval(() => {
-        statusTickerIndex.value =
-          (statusTickerIndex.value + 1) % STATUS_TICKER_MESSAGES.length
+        fallbackTickerIndex.value =
+          (fallbackTickerIndex.value + 1) % STATUS_TICKER_FALLBACKS.length
       }, 1600)
       _elapsedInterval = setInterval(() => {
         elapsedMs.value = Date.now() - _waitStartedAt
@@ -800,9 +868,22 @@ function artifactLabel(type: ChatArtifact['type']): string {
 .chat-status-text-enter-from { opacity: 0; transform: translateY(3px); }
 .chat-status-text-leave-to { opacity: 0; transform: translateY(-3px); }
 
+/* Breathing glow on the status phrase — opacity oscillates 1 ↔ 0.55
+   on a 2.4s ease-in-out cycle. Communicates "alive, working" without
+   the chrome of a shimmer or a stack. Casa com a quiet identity da
+   Redentia. */
+.chat-status-breathe {
+  animation: chat-status-breathe-keys 2.4s ease-in-out infinite;
+}
+@keyframes chat-status-breathe-keys {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.55; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .chat-thinking-pulse,
   .chat-thinking-skel,
+  .chat-status-breathe,
   .chat-status-text-enter-active,
   .chat-status-text-leave-active {
     animation: none;
