@@ -430,13 +430,46 @@ function classifyKind(label: string | null | undefined): 'Dividendo' | 'JCP' | '
 
 const dividendEvents = computed(() => liveDividendCalendar.value)
 
+// Real upcoming events derived from data we actually have:
+//   1. Dividend payment dates (top 5 from liveDividendCalendar)
+//   2. Tesouro maturity dates from positions
+//   3. (Earnings calendar would need a separate API — out of scope.)
+//
+// Each entry is filtered to ensure `date` is a valid ISO string,
+// avoiding the "Invalid Date" issue that came from the score
+// composable's relative-date strings ("hoje", "em 5 dias").
 const upcomingEvents = computed(() => {
-  if (!report.value?.events) return []
-  return report.value.events.slice(0, 8).map((e) => ({
-    date: e.date,
-    label: `${e.headline} (${e.ticker})`,
-    kind: 'earnings' as const,
-  }))
+  const out: Array<{ date: string; label: string; kind: 'pay' | 'maturity' | 'rotate' }> = []
+
+  // Dividend payments (top 5 closest)
+  for (const d of liveDividendCalendar.value.slice(0, 5)) {
+    if (!d.payment_date) continue
+    out.push({
+      date: d.payment_date,
+      label: `Pagamento ${d.ticker}`,
+      kind: 'pay',
+    })
+  }
+
+  // Tesouro maturities — only those still in the future
+  const todayIso = new Date().toISOString().slice(0, 10)
+  for (const p of positions.value) {
+    const m = (p as { maturity?: string }).maturity
+    if (!m || typeof m !== 'string') continue
+    const isoDate = m.slice(0, 10) // strip time component if present
+    if (isoDate <= todayIso) continue
+    out.push({
+      date: isoDate,
+      label: `Vencimento ${p.ticker}`,
+      kind: 'maturity',
+    })
+  }
+
+  // Sort by date asc, cap at 8 items.
+  return out
+    .filter((e) => /^\d{4}-\d{2}-\d{2}$/.test(e.date))
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .slice(0, 8)
 })
 
 // ============ Loading ============

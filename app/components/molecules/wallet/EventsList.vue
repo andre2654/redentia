@@ -54,7 +54,9 @@ const cardStyle = computed(() => ({
 }))
 
 function formatDateLong(iso: string): string {
+  if (!iso) return '—'
   const d = new Date(iso + 'T12:00:00')
+  if (Number.isNaN(d.getTime())) return '—'
   return d
     .toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })
     .replace(/^./, (c) => c.toUpperCase())

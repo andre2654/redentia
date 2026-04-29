@@ -1,15 +1,74 @@
 /**
  * walletData — wallet-page data layer.
  *
- * Wraps the unified-contract endpoints for positions, composition,
- * goals and watchlist behind a single composable. Mirrors the
- * surface used by `pages/wallet.vue` and the wallet sub-components.
+ * Wraps:
+ *   - Laravel:     positions, composition, portfolio analysis (read-only here)
+ *   - Chat-service (via /api/chat/* proxy): goals, watchlist
  *
- * Goal + Watchlist endpoints are NEW (Laravel side is being added
- * in parallel); the calls fall back to empty arrays on failure so
- * the wallet page can still render.
+ * Goals + watchlist live exclusively in chat-service (chat-db), where
+ * the user creates them through conversation. The wallet page reads
+ * them from there and adapts the shape to WalletGoal/WatchlistItem
+ * so the UI doesn't need to know about the underlying source.
  */
 import type { UnifiedPosition, PortfolioComposition } from '~/services/portfolio'
+
+// ============================================================
+// Chat-service shapes (raw response from /api/chat/goals + /api/chat/watchlist)
+// Kept narrow to what the adapter actually consumes — chat-service
+// sends a richer object but we only need a handful of fields.
+// ============================================================
+interface ChatGoalShape {
+  id: string
+  name: string
+  type?: string | null
+  targetAmount?: string | number | null
+  currentAmount?: string | number | null
+  monthlyContribution?: string | number | null
+  targetDate?: string | null
+  classification?: string | null
+  notes?: string | null
+}
+interface ChatWatchShape {
+  id?: string
+  ticker: string
+  notes?: string | null
+  createdAt?: string | null
+}
+
+function toNumber(v: string | number | null | undefined, fallback = 0): number {
+  if (v == null) return fallback
+  const n = typeof v === 'number' ? v : Number(v)
+  return Number.isFinite(n) ? n : fallback
+}
+
+function adaptChatGoal(g: ChatGoalShape): WalletGoal {
+  // Horizon = years between today and targetDate (rounded).
+  let horizon = 0
+  if (g.targetDate) {
+    const d = new Date(g.targetDate + 'T12:00:00')
+    if (!Number.isNaN(d.getTime())) {
+      horizon = Math.max(0, Math.round((d.getTime() - Date.now()) / (1000 * 60 * 60 * 24 * 365)))
+    }
+  }
+  return {
+    id: g.id,
+    title: g.name,
+    target_value: toNumber(g.targetAmount),
+    current_progress: toNumber(g.currentAmount),
+    horizon_years: horizon,
+    monthly_contribution_required: toNumber(g.monthlyContribution),
+    classification: g.classification ?? 'realistic',
+    note: g.notes ?? null,
+  }
+}
+
+function adaptChatWatch(w: ChatWatchShape): WatchlistItem {
+  return {
+    ticker: w.ticker,
+    note: w.notes ?? null,
+    added_at: w.createdAt ?? null,
+  }
+}
 
 export interface WalletGoal {
   id: string
@@ -141,11 +200,25 @@ export const useWalletDataService = () => {
   }
 
   async function getGoals(): Promise<WalletGoal[]> {
+    // Goals live in chat-service (chat-db), where the user creates
+    // them via the chat. Hit that endpoint via the /api/chat/* proxy
+    // and adapt the chat-service shape to WalletGoal.
     try {
-      const resp = (await authFetch(`${baseURL}/goals`, { method: 'GET' })) as {
-        goals: WalletGoal[]
-      }
-      return resp.goals ?? []
+      const cfg = useRuntimeConfig()
+      const direct = (cfg.public as { chatDirectUrl?: string }).chatDirectUrl
+      const chatBase = direct && import.meta.client ? direct : '/api/chat'
+      const authStore = useAuthStore()
+      const r = await fetch(`${chatBase}/goals`, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          ...(authStore.token ? { Authorization: `Bearer ${authStore.token}` } : {}),
+        },
+      })
+      if (!r.ok) return []
+      const data = (await r.json()) as { goals?: ChatGoalShape[] }
+      const list = Array.isArray(data?.goals) ? data.goals : []
+      return list.map(adaptChatGoal)
     } catch {
       return []
     }
@@ -164,11 +237,23 @@ export const useWalletDataService = () => {
   }
 
   async function getWatchlist(): Promise<WatchlistItem[]> {
+    // Same pattern as goals: watchlist lives in chat-service.
     try {
-      const resp = (await authFetch(`${baseURL}/watchlist`, { method: 'GET' })) as {
-        items: WatchlistItem[]
-      }
-      return resp.items ?? []
+      const cfg = useRuntimeConfig()
+      const direct = (cfg.public as { chatDirectUrl?: string }).chatDirectUrl
+      const chatBase = direct && import.meta.client ? direct : '/api/chat'
+      const authStore = useAuthStore()
+      const r = await fetch(`${chatBase}/watchlist`, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+          ...(authStore.token ? { Authorization: `Bearer ${authStore.token}` } : {}),
+        },
+      })
+      if (!r.ok) return []
+      const data = (await r.json()) as { watches?: ChatWatchShape[] }
+      const list = Array.isArray(data?.watches) ? data.watches : []
+      return list.map(adaptChatWatch)
     } catch {
       return []
     }
