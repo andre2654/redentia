@@ -371,6 +371,7 @@ import { ensureTickerProseSetup, useTickerProse } from '~/composables/useTickerP
 import { ensureProposalProseSetup, useProposalProse } from '~/composables/useProposalProse'
 import { ensureChartProseSetup, useChartProse } from '~/composables/useChartProse'
 import { ensureMaxFeatureProseSetup, useMaxFeatureProse } from '~/composables/useMaxFeatureProse'
+import { ensureGlossaryProseSetup, useGlossaryProse } from '~/composables/useGlossaryProse'
 
 // Register the marked ticker extension once (idempotent). Must run
 // before the first `renderMarkdown` call so PETR4 / VALE3 / KNRI11
@@ -385,6 +386,12 @@ ensureChartProseSetup()
 // gated behind MAX (chart, watchlist, scenarios, decisions, full
 // analysis, etc). Click → switches tier + re-asks.
 ensureMaxFeatureProseSetup()
+// Financial glossary — every CDI / IPCA / DY / P/L / FII / etc. in
+// the prose gets a tooltip with the canonical resumida definition
+// from `data/glossario/termos.ts`. First occurrence per term per
+// message is decorated; subsequent mentions stay plain so the prose
+// doesn't turn into a sea of underlines.
+ensureGlossaryProseSetup()
 
 // DOMPurify sanitization runs **only on the client**. The
 // `isomorphic-dompurify` package transitively pulls in `jsdom` for
@@ -611,6 +618,7 @@ const answerRef = ref<HTMLElement | null>(null)
 const tickerProse = useTickerProse()
 const chartProse = useChartProse()
 const maxFeatureProse = useMaxFeatureProse()
+const glossaryProse = useGlossaryProse()
 const proposalProse = useProposalProse({
   proposals: () => props.message.proposals ?? [],
   // Suppress the fallback chip row while the message is still
@@ -685,6 +693,12 @@ watch(
       chartProse.mountIn(answerRef.value)
       maxFeatureProse.mountIn(answerRef.value)
       proposalProse.mountIn(answerRef.value)
+      // Glossary mounts AFTER the others so it can short-circuit
+      // when a placeholder lives inside an already-mounted ticker /
+      // chart / proposal / max chip. The composable also runs an
+      // explicit `closest()` check, but ordering keeps the DOM
+      // walks cheap and prevents transient flicker.
+      glossaryProse.mountIn(answerRef.value)
     })
   },
   { flush: 'post', immediate: true },
@@ -712,6 +726,7 @@ onBeforeUnmount(() => {
   chartProse.cleanup()
   maxFeatureProse.cleanup()
   proposalProse.cleanup()
+  glossaryProse.cleanup()
 })
 
 function renderMarkdown(text: string): string {
@@ -739,7 +754,13 @@ function renderMarkdown(text: string): string {
         // mount points after sanitisation. Without ADD_ATTR, DOMPurify
         // strips data-* attributes by default. Same goes for
         // `data-period` on the chart-mount placeholder.
-        ADD_ATTR: ['target', 'rel', 'data-ticker', 'data-period', 'data-label'],
+        ADD_ATTR: [
+          'target', 'rel',
+          'data-ticker',          // useTickerProse
+          'data-period',          // useChartProse
+          'data-label',           // useMaxFeatureProse
+          'data-key', 'data-term', // useGlossaryProse
+        ],
       })
     : rawHtml
   return decorateHtml(safe)
