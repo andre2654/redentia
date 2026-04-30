@@ -7,7 +7,7 @@
        No bubbles. No avatars. Just typography + thin section labels.
 -->
 <template>
-  <article class="chat-turn">
+  <article class="chat-turn" :class="{ 'chat-turn--editing': isEditing }">
     <!-- USER — FORM RESPONSE (one-line pill, expandable) -->
     <div
       v-if="message.role === 'user' && message.meta?.kind === 'form_response'"
@@ -99,19 +99,29 @@
       <div
         v-if="message.content"
         class="chat-question group/question"
-        :class="[questionSizeClass, isLastUserMessage ? 'chat-question--editable' : '']"
+        :class="questionSizeClass"
         :style="{ color: 'var(--brand-text)', fontFamily: 'var(--brand-font, system-ui)' }"
-        :role="isLastUserMessage ? 'button' : undefined"
-        :tabindex="isLastUserMessage ? 0 : undefined"
-        :aria-label="isLastUserMessage ? 'Editar pergunta' : undefined"
-        @click="onClickQuestion"
-        @keydown.enter="onClickQuestion"
       >
         {{ message.content }}
-        <span v-if="isLastUserMessage" class="chat-question__edit-hint" aria-hidden="true">
-          <UIcon name="i-lucide-pencil" class="size-3.5" />
-          editar
+        <span
+          v-if="isEditing"
+          class="chat-question__editing-badge"
+          aria-live="polite"
+        >
+          <span class="chat-question__editing-dot" aria-hidden="true" />
+          Editando
         </span>
+        <button
+          v-else-if="isLastUserMessage"
+          type="button"
+          class="chat-question__edit-btn"
+          aria-label="Editar pergunta"
+          title="Editar pergunta"
+          @click.stop="onClickQuestion"
+          @keydown.enter.stop="onClickQuestion"
+        >
+          <UIcon name="i-lucide-pencil" class="size-3.5" />
+        </button>
       </div>
     </div>
 
@@ -454,6 +464,11 @@ const props = defineProps<{
    *  not implemented yet. Computed in Thread.vue from the messages
    *  array. */
   isLastUserMessage?: boolean
+  /** True when this message is being edited (user clicked the
+   *  pencil + composer is prefilled but they haven't submitted
+   *  yet). The thread keeps showing the original turn with a
+   *  ghost / "will be replaced" treatment until submit lands. */
+  isEditing?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -1011,59 +1026,114 @@ function artifactLabel(type: ChatArtifact['type']): string {
   /* Big top spacing between turns is set by Thread.vue's gap */
 }
 
+/*
+  User question container.
+  - `position: relative` so the absolute-positioned edit button
+    (only present on the last user turn) anchors to its corner.
+  - `padding-right` reserves a sliver so long questions don't run
+    under the edit button.
+*/
 .chat-question {
+  position: relative;
   word-break: break-word;
+  padding-right: 36px;
+}
+
+.chat-question__edit-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: color-mix(in srgb, var(--brand-text) 50%, transparent);
+  cursor: pointer;
+  transition:
+    background-color 140ms ease-out,
+    color 140ms ease-out;
+}
+.chat-question__edit-btn:hover {
+  background: color-mix(in srgb, var(--brand-text) 7%, transparent);
+  color: var(--brand-primary);
+}
+.chat-question__edit-btn:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
 }
 
 /*
-  Editable user question — only applied to the LAST user turn.
-  The hint appears on hover/focus only so resting state is clean.
-  We use `position: relative` to anchor the absolute hint pill at
-  the top-right corner.
-*/
-.chat-question--editable {
-  position: relative;
-  cursor: pointer;
-  border-radius: 6px;
-  padding: 4px 6px;
-  margin: -4px -6px;
-  transition: background-color 140ms ease-out;
-}
-.chat-question--editable:hover,
-.chat-question--editable:focus-visible {
-  background-color: color-mix(in srgb, var(--brand-primary) 6%, transparent);
-  outline: none;
-}
+  Editing state — visual ghost on the user turn while the user is
+  composing a replacement in the input pill. The thread keeps the
+  original question + assistant reply visible so the user can read
+  context, but they're dimmed and slightly washed out so it's clear
+  they'll be REPLACED on submit (not duplicated).
 
-.chat-question__edit-hint {
+  Pseudo-disabled treatment: 55% opacity + slight saturate(0.7)
+  filter on every descendant. We don't disable pointer events
+  because the user might still want to copy text from the answer
+  while editing.
+*/
+.chat-turn--editing {
+  position: relative;
+  opacity: 0.55;
+  filter: saturate(0.7);
+  transition: opacity 200ms ease-out, filter 200ms ease-out;
+}
+.chat-turn--editing::after {
+  /* Subtle dashed outline framing the whole turn so the "this is
+     being edited" intent is unmistakable, even on long answers
+     where the badge in the corner may be off-screen. */
+  content: '';
   position: absolute;
-  top: 6px;
-  right: 6px;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 8px 3px 6px;
-  border-radius: 6px;
-  background: color-mix(in srgb, var(--brand-surface) 90%, transparent);
-  border: 1px solid color-mix(in srgb, var(--brand-border) 50%, transparent);
-  color: color-mix(in srgb, var(--brand-text) 60%, transparent);
-  font-family: var(--brand-font, system-ui);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  text-transform: lowercase;
-  /* Hidden by default; revealed on parent hover/focus. */
-  opacity: 0;
-  transform: translateY(-2px);
-  transition:
-    opacity 160ms ease-out,
-    transform 160ms ease-out;
+  inset: -8px -10px;
+  border-radius: 12px;
+  border: 1.5px dashed color-mix(in srgb, var(--brand-primary) 50%, transparent);
   pointer-events: none;
 }
-.chat-question--editable:hover .chat-question__edit-hint,
-.chat-question--editable:focus-visible .chat-question__edit-hint {
-  opacity: 1;
-  transform: translateY(0);
+
+.chat-question__editing-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px 4px 8px;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--brand-primary) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 35%, transparent);
+  color: color-mix(in srgb, var(--brand-primary) 85%, var(--brand-text));
+  font-family: var(--brand-font, system-ui);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.chat-question__editing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--brand-primary);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--brand-primary) 60%, transparent);
+  animation: chat-editing-pulse 1.6s ease-in-out infinite;
+}
+@keyframes chat-editing-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--brand-primary) 60%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 5px color-mix(in srgb, var(--brand-primary) 0%, transparent);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chat-question__editing-dot {
+    animation: none;
+  }
 }
 
 /* Cold-start status ticker — pulsing dot ring + skeleton shimmer.

@@ -49,28 +49,61 @@
         @new="onNewConversation"
         @select="onSelectSession"
         @delete="onDeleteSession"
+        @pin="onPinSession"
+        @rename="onRenameSession"
         @open-panel="onOpenPanel"
       />
     </template>
 
     <template #thread>
       <div class="relative flex h-full min-w-0 flex-1 flex-col">
-        <!-- Mobile-only top bar -->
-        <div
-          class="absolute inset-x-0 top-0 z-10 flex items-center justify-between gap-3 px-4 py-3 xl:hidden"
+        <!--
+          Mobile-only top app bar. In-flow (not absolute) so the Thread
+          + dashboard content automatically sits below it without
+          fighting overlap. ~52 px tall, single hairline border-bottom,
+          translucent surface with backdrop-blur (iOS/ChatGPT pattern).
+
+          Layout: [open sidebar] · [brand logo + active session title] ·
+          [bell] · [close] — the title is dynamic so a returning user
+          can read where they are in the thread without opening the
+          drawer.
+        -->
+        <header
+          class="chat-mobile-header relative z-20 flex items-center gap-2 px-3 xl:hidden"
+          :style="{
+            backgroundColor: `color-mix(in srgb, ${brand.colors.background} 82%, transparent)`,
+            borderBottom: `1px solid color-mix(in srgb, ${brand.colors.border} 38%, transparent)`,
+          }"
         >
           <button
             type="button"
-            class="flex size-9 items-center justify-center rounded-full backdrop-blur-md transition-colors"
-            :style="{
-              backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 70%, transparent)`,
-              border: `1px solid color-mix(in srgb, ${brand.colors.border} 40%, transparent)`,
-              color: brand.colors.text,
-            }"
+            class="chat-mobile-iconbtn"
+            :style="{ color: brand.colors.text }"
             aria-label="Abrir conversas"
             @click="sidebarOpen = true"
           >
-            <UIcon name="i-lucide-panel-left" class="size-4" />
+            <UIcon name="i-lucide-panel-left" class="size-[18px]" />
+          </button>
+
+          <!-- Center cluster: logo + active title.
+               Logo is `icon` variant (small mark) so it doesn't crowd
+               the title. Title falls back to "Redentia" before there's
+               an active session, then to the trimmed session name. -->
+          <button
+            type="button"
+            class="chat-mobile-title group flex min-w-0 flex-1 items-center justify-center gap-2"
+            aria-label="Nova conversa"
+            @click="onNewConversation"
+          >
+            <BrandLogo
+              variant="icon"
+              class="h-5 w-auto shrink-0"
+              :no-bg="true"
+            />
+            <span
+              class="truncate text-[14px] font-medium"
+              :style="{ color: brand.colors.text }"
+            >{{ mobileHeaderTitle }}</span>
           </button>
 
           <ChatV2NotificationBell
@@ -80,17 +113,13 @@
 
           <NuxtLink
             to="/"
-            class="flex size-9 items-center justify-center rounded-full backdrop-blur-md transition-colors"
-            :style="{
-              backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 70%, transparent)`,
-              border: `1px solid color-mix(in srgb, ${brand.colors.border} 40%, transparent)`,
-              color: brand.colors.text,
-            }"
+            class="chat-mobile-iconbtn"
+            :style="{ color: brand.colors.textMuted }"
             aria-label="Voltar para a home"
           >
-            <UIcon name="i-lucide-x" class="size-4" />
+            <UIcon name="i-lucide-x" class="size-[18px]" />
           </NuxtLink>
-        </div>
+        </header>
 
         <!-- Desktop top-LEFT: re-open sidebar button (only when collapsed) -->
         <div
@@ -138,6 +167,7 @@
           v-if="chat.messages.value.length > 0"
           ref="threadRef"
           :messages="chat.messages.value"
+          :editing-message-id="chat.editingMessageId.value"
           @send-followup="onSendFollowup"
           @open-artifact="onOpenArtifact"
           @confirm-execution="onConfirmExecution"
@@ -200,9 +230,11 @@
           :tier-locked="chat.messages.value.length > 0"
           :streaming-message="chat.lastAssistant.value"
           :show-starters="chat.messages.value.length === 0"
+          :is-editing="chat.editingMessageId.value !== null"
           @send="onSend"
           @stop="chat.stop"
           @starter="onStarterChip"
+          @cancel-edit="onCancelEdit"
         />
       </div>
     </template>
@@ -285,11 +317,32 @@ definePageMeta({
   // the takeover can own 100% of the viewport when logged in.
   isPublicRoute: true,
   layout: false,
+  // /help is a takeover surface on mobile — the install-app banner
+  // (rendered globally in app.vue) would crop the composer's
+  // safe-area inset and visually clash with the mobile header. The
+  // banner is recoverable from /home or /wallet, so suppress it
+  // here for a clean chat experience.
+  hideInstallAppBanner: true,
 })
 
 const route = useRoute()
 const brand = useBrand()
 const authStore = useAuthStore()
+
+/**
+ * Mobile-header title. Mirrors the active session title from the
+ * sidebar when one is loaded; falls back to the brand name when the
+ * thread is empty (new chat). Truncated by CSS — no need to slice
+ * here, just keep the source string honest.
+ */
+const mobileHeaderTitle = computed<string>(() => {
+  const sid = chat.sessionId.value
+  if (!sid) return brand.name ?? 'Redentia'
+  const session = sessionList.value.find((s) => s.id === sid)
+  const title = session?.title?.trim()
+  if (title) return title
+  return brand.name ?? 'Redentia'
+})
 
 // ---- State ------------------------------------------------------
 const tier = ref<'basic' | 'max'>('basic')
@@ -319,7 +372,7 @@ const sidebarOpen = ref(false)
 const sidebarCollapsed = ref(false)
 const artifactOpen = ref(false)
 const activeArtifact = ref<ChatArtifact | null>(null)
-const sessionList = ref<Array<{ id: string; title: string | null; createdAt: string; tier?: 'basic' | 'max'; goalId?: string | null }>>([])
+const sessionList = ref<Array<{ id: string; title: string | null; createdAt: string; tier?: 'basic' | 'max'; goalId?: string | null; pinned?: boolean }>>([])
 
 // ---- Goals + Decisions ------------------------------------------
 // Goals/Decisions only make sense when authenticated. Composables are
@@ -399,6 +452,7 @@ async function refreshSessionList() {
         tier?: string
         goalId?: string | null
         goal_id?: string | null
+        pinned?: boolean
       }>
     }>('/api/chat/sessions', {
       headers: { ...authHeaders(), ...chatClientIdHeaders() },
@@ -409,6 +463,7 @@ async function refreshSessionList() {
       createdAt: s.createdAt ?? s.created_at ?? new Date().toISOString(),
       tier: s.tier === 'max' ? 'max' : 'basic',
       goalId: s.goalId ?? s.goal_id ?? null,
+      pinned: s.pinned === true,
     }))
   } catch {
     sessionList.value = []
@@ -573,6 +628,72 @@ async function onDeleteSession(id: string) {
     if (chat.sessionId.value === id) chat.reset()
   } catch {
     /* ignore */
+  }
+}
+
+/**
+ * Toggle pin status. Optimistic update — flip locally first so the
+ * sidebar reorder is instant; rollback on API failure.
+ */
+async function onPinSession(id: string, pinned: boolean): Promise<void> {
+  // Optimistic flip
+  const idx = sessionList.value.findIndex((s) => s.id === id)
+  if (idx >= 0) {
+    sessionList.value = sessionList.value.map((s) =>
+      s.id === id ? { ...s, pinned } : s,
+    )
+  }
+  try {
+    await $fetch(`/api/chat/sessions/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        ...authHeaders(),
+        ...chatClientIdHeaders(),
+      },
+      body: { pinned },
+    })
+  } catch (err) {
+    // Rollback on failure
+    if (idx >= 0) {
+      sessionList.value = sessionList.value.map((s) =>
+        s.id === id ? { ...s, pinned: !pinned } : s,
+      )
+    }
+    // eslint-disable-next-line no-console
+    console.warn('[help] pin toggle failed', err)
+  }
+}
+
+/**
+ * Inline rename committed. Same optimistic pattern as pin — write
+ * the new title to local state, fire the PATCH, rollback if it
+ * fails. Empty / unchanged titles are filtered out by SessionRow
+ * so we know the value here is meaningful.
+ */
+async function onRenameSession(id: string, title: string): Promise<void> {
+  const idx = sessionList.value.findIndex((s) => s.id === id)
+  if (idx < 0) return
+  const previous = sessionList.value[idx]?.title ?? null
+  sessionList.value = sessionList.value.map((s) =>
+    s.id === id ? { ...s, title } : s,
+  )
+  try {
+    await $fetch(`/api/chat/sessions/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        ...authHeaders(),
+        ...chatClientIdHeaders(),
+      },
+      body: { title },
+    })
+  } catch (err) {
+    sessionList.value = sessionList.value.map((s) =>
+      s.id === id ? { ...s, title: previous } : s,
+    )
+    // eslint-disable-next-line no-console
+    console.warn('[help] rename failed', err)
   }
 }
 
@@ -940,27 +1061,40 @@ async function onRegenerate(_messageId: string): Promise<void> {
 }
 
 /**
- * "Editar pergunta" clicked on the last user message. Strips the
- * question (and its assistant reply, if any) from the thread,
- * then prefills the composer with the original content + focuses
- * the textarea. The user re-fires manually after editing.
+ * "Editar pergunta" clicked on the last user message. Marks the
+ * message as being-edited (visual ghost treatment in the thread
+ * stays put until the user actually submits the new prose) +
+ * prefills the composer with the original content. The thread
+ * is NOT mutated yet — that happens inside `chat.send()` via
+ * `consumeEdit()`, which splices the old turn the moment the
+ * new question is pushed.
+ *
+ * Cancel paths:
+ *   - User clears the composer + types a brand-new message and
+ *     submits → the brand-new message replaces the old turn (still
+ *     "edit" semantics; we used the affordance, just changed the
+ *     content completely).
+ *   - User clicks the cancel chip in the composer → calls
+ *     `chat.cancelEdit()` and clears the textarea.
+ *   - User presses Esc in the composer → same as cancel.
  */
 function onEditQuestion(payload: { messageId: string; content: string }): void {
   if (chat.isStreaming.value) return
-  // Strip locally so the composer becomes the source of truth for
-  // the next turn. `popLastUserTurn` is idempotent — calling it
-  // when the thread doesn't end on a user-then-assistant pair is
-  // a no-op, so the explicit message id from the event is the
-  // ground truth even if the composable's internal state lags.
-  const stripped = chat.popLastUserTurn()
-  const prefill = stripped ?? payload.content
-  composerRef.value?.setValue(prefill)
-  // Wait a tick so the textarea autosizes before focus — focus
-  // before autosize would put the caret at the wrong line on
-  // multi-line questions.
+  chat.startEdit(payload.messageId)
+  composerRef.value?.setValue(payload.content)
   void nextTick(() => {
     composerRef.value?.focus()
   })
+}
+
+/**
+ * Cancel the in-flight edit (pencil click without committing).
+ * Clears the composer too so the user has a clean slate for a
+ * fresh question after backing out.
+ */
+function onCancelEdit(): void {
+  chat.cancelEdit()
+  composerRef.value?.setValue('')
 }
 
 // ---- Pre-execution co-pilot handlers ----------------------------
@@ -1135,6 +1269,60 @@ watch(
   }
 }
 
+/* ============================================================
+   Mobile top app bar — sticky in-flow compact header.
+   ============================================================ */
+.chat-mobile-header {
+  height: 52px;
+  flex-shrink: 0;
+  padding-top: env(safe-area-inset-top, 0px);
+  height: calc(52px + env(safe-area-inset-top, 0px));
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+}
+
+.chat-mobile-iconbtn {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  transition: background-color 160ms ease-out;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.chat-mobile-iconbtn:hover,
+.chat-mobile-iconbtn:active {
+  background: color-mix(in srgb, var(--brand-text) 6%, transparent);
+}
+
+.chat-mobile-iconbtn:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+}
+
+.chat-mobile-title {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 10px;
+  transition: background-color 160ms ease-out;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.chat-mobile-title:hover,
+.chat-mobile-title:active {
+  background: color-mix(in srgb, var(--brand-text) 5%, transparent);
+}
+
 /*
   Scroll-to-bottom FAB. Rendered as a sibling of <ChatV2Input>
   inside the chat column wrapper (`relative flex h-full flex-col`).
@@ -1142,23 +1330,27 @@ watch(
   `translateX(-50%)` — so the FAB lines up perfectly with the
   composer pill's center, regardless of sidebar width or screen
   size.
-  `bottom: 9rem` lands ~2rem above the composer pill (which sits
-  at bottom:0 with ~6-7rem of pill height + safe-area padding).
-  z-index 35 sits above the composer (z-30) so a hover on the
-  FAB is always clickable but only covers a 44px circle of the
-  pill area.
+
+  Position is driven by `--chat-composer-height` — a CSS variable
+  written by the composer itself via a ResizeObserver (see
+  Input.vue's setupComposerHeightObserver). That keeps the FAB
+  ALWAYS hovering ~12 px above the composer's top edge regardless
+  of how tall the composer becomes (attachments, MAX disclaimer,
+  thinking indicator, edit banner). On mobile the composer is
+  flush against the screen edge — without the dynamic anchor the
+  FAB used to crash into the input.
 */
 .chat-scroll-fab {
   position: absolute;
-  bottom: 9rem;
+  bottom: calc(var(--chat-composer-height, 6.5rem) + 12px + env(safe-area-inset-bottom, 0px));
   left: 50%;
   transform: translateX(-50%);
   z-index: 35;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border-radius: 9999px;
   background: color-mix(in srgb, var(--brand-surface) 92%, transparent);
   color: var(--brand-text);

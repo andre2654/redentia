@@ -30,7 +30,7 @@
     :aria-label="ariaLabel"
     @mouseenter="show"
     @mouseleave="hide"
-    @focus="show"
+    @focus="onFocus"
     @blur="hide"
     @click="onClick"
     @keydown.enter="onClick"
@@ -55,7 +55,7 @@
         </span>
         <span class="citation-preview__hint">
           <UIcon name="i-lucide-arrow-up-right" class="size-3" />
-          Abrir fonte
+          {{ isCoarse ? 'Toque novamente para abrir' : 'Abrir fonte' }}
         </span>
         <span class="citation-preview__tail" />
       </span>
@@ -125,19 +125,54 @@ function onScrollOrResize(): void {
   if (open.value) reposition()
 }
 
+/**
+ * Touch-device detection. On hover-incapable devices we adopt a
+ * "tap-to-preview, second-tap-to-open" pattern so the user can
+ * read the source metadata BEFORE being navigated away. Same
+ * semantics as GlossaryTerm — see that component for the rationale.
+ */
+const isCoarse = ref(false)
+const swallowNextClick = ref(false)
+
+function onPointerOutside(e: Event): void {
+  if (!open.value) return
+  const root = rootEl.value
+  if (!root) return
+  const target = e.target as Node | null
+  if (target && !root.contains(target)) {
+    hide()
+  }
+}
+
 onMounted(() => {
   // Capture-phase scroll listener so the preview follows the chip
   // inside any scroll container (chat-thread, table wrappers, etc.).
   window.addEventListener('scroll', onScrollOrResize, true)
   window.addEventListener('resize', onScrollOrResize, { passive: true })
+  if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+    isCoarse.value = window.matchMedia('(hover: none)').matches
+  }
+  document.addEventListener('pointerdown', onPointerOutside, true)
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('scroll', onScrollOrResize, true)
   window.removeEventListener('resize', onScrollOrResize)
+  document.removeEventListener('pointerdown', onPointerOutside, true)
 })
 
+function onFocus(): void {
+  show()
+  if (isCoarse.value) {
+    swallowNextClick.value = true
+  }
+}
+
 function onClick(): void {
+  if (swallowNextClick.value) {
+    swallowNextClick.value = false
+    return
+  }
   const url = props.source?.url
   if (!url) return
   if (typeof window !== 'undefined') {

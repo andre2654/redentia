@@ -617,6 +617,13 @@ export function useChatStream(opts: UseChatStreamOptions) {
           }
 
     error.value = null
+    // If an edit is in flight (user clicked the pencil on a past
+    // question), strip that question + its assistant reply BEFORE
+    // we push the new user turn. The fresh user/assistant pair
+    // then renders in place of the original. consumeEdit() also
+    // clears `editingMessageId` so the visual "editing" treatment
+    // disappears the moment the new turn lands.
+    consumeEdit()
     pushUser(message, meta)
     const assistant = startAssistant()
     isStreaming.value = true
@@ -1210,6 +1217,53 @@ export function useChatStream(opts: UseChatStreamOptions) {
     return removed[0]?.content ?? userMsg.content
   }
 
+  /**
+   * Edit state — set when the user clicks the pencil on a past user
+   * question. The thread STAYS intact (with a visual "editing"
+   * treatment on the marked message); the composer gets prefilled
+   * with the original content. Only on submit do we splice the old
+   * turn out and re-fire with the new prose. This lets the user
+   * preview the edit + cancel mid-flight without losing the
+   * original answer they were reading.
+   */
+  const editingMessageId = ref<string | null>(null)
+
+  function startEdit(messageId: string): void {
+    if (isStreaming.value) return
+    const exists = messages.value.some(
+      (m) => m.id === messageId && m.role === 'user',
+    )
+    if (!exists) return
+    editingMessageId.value = messageId
+  }
+
+  function cancelEdit(): void {
+    editingMessageId.value = null
+  }
+
+  /**
+   * Strip the user message identified by `editingMessageId` plus
+   * every turn that came after it (its assistant reply + any
+   * trailing turns). Returns the stripped user message's content
+   * so the caller can decide whether to use it (e.g. fall back to
+   * "" when the user cleared the composer mid-edit). Idempotent —
+   * calling when no edit is in progress is a no-op.
+   *
+   * Used by `send()` when an edit is in flight: we splice BEFORE
+   * the new turn is pushed so the thread shows the new question +
+   * fresh assistant turn replacing the old pair.
+   */
+  function consumeEdit(): string | null {
+    const targetId = editingMessageId.value
+    if (!targetId) return null
+    editingMessageId.value = null
+    const arr = messages.value
+    const idx = arr.findIndex((m) => m.id === targetId)
+    if (idx < 0) return null
+    const removed = arr.splice(idx)
+    return removed[0]?.content ?? null
+  }
+
   /** Update a proposal's state (called by the page after the user
    *  clicks Confirmar / Pular on an ActionProposalCard). The card
    *  collapses + locks once flipped. */
@@ -1239,5 +1293,8 @@ export function useChatStream(opts: UseChatStreamOptions) {
     markProposal,
     regenerateLast,
     popLastUserTurn,
+    editingMessageId,
+    startEdit,
+    cancelEdit,
   }
 }

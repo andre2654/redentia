@@ -47,7 +47,7 @@
     :aria-label="`${term}: ${definition}`"
     @mouseenter="show"
     @mouseleave="hide"
-    @focus="show"
+    @focus="onFocus"
     @blur="hide"
     @click="onClick"
     @keydown.enter="onClick"
@@ -61,7 +61,7 @@
         :style="{ top: coords.top + 'px', left: coords.left + 'px' }"
       >
         <span class="glossary-term-tooltip__text">{{ definition }}</span>
-        <span v-if="slug" class="glossary-term-tooltip__hint">Clique para detalhes</span>
+        <span v-if="slug" class="glossary-term-tooltip__hint">{{ isCoarse ? 'Toque novamente para detalhes' : 'Clique para detalhes' }}</span>
         <span class="glossary-term-tooltip__tail" />
       </span>
     </Teleport>
@@ -140,19 +140,67 @@ function onScrollOrResize(): void {
   if (open.value) reposition()
 }
 
+/**
+ * Touch-device detection. On hover-incapable devices (phones,
+ * tablets without a mouse) we adopt a "tap-to-preview, second-tap
+ * to-open" pattern instead of the desktop hover→click flow:
+ *
+ *   1. First tap   → tooltip shows, navigation is swallowed.
+ *   2. Second tap  → tooltip already open, navigation proceeds.
+ *   3. Tap outside → blur fires, tooltip hides.
+ *
+ * Without this, mobile users would never see the definition because
+ * the click navigates straight to /glossario/{slug} on the very
+ * first tap. This matches Twitter/LinkedIn @-mention behaviour.
+ */
+const isCoarse = ref(false)
+const swallowNextClick = ref(false)
+
+function onPointerOutside(e: Event): void {
+  if (!open.value) return
+  const root = rootEl.value
+  if (!root) return
+  const target = e.target as Node | null
+  if (target && !root.contains(target)) {
+    hide()
+  }
+}
+
 onMounted(() => {
   // Capture-phase scroll listener so tooltip follows term inside ANY
   // scroll container (table wrappers, chat scroll area, page itself).
   window.addEventListener('scroll', onScrollOrResize, true)
   window.addEventListener('resize', onScrollOrResize, { passive: true })
+  if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+    isCoarse.value = window.matchMedia('(hover: none)').matches
+  }
+  // Tap-outside on touch devices closes the tooltip even when the
+  // browser doesn't fire a synthetic blur (some mobile Safari edge
+  // cases skip blur for a tap on a non-interactive surface).
+  document.addEventListener('pointerdown', onPointerOutside, true)
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('scroll', onScrollOrResize, true)
   window.removeEventListener('resize', onScrollOrResize)
+  document.removeEventListener('pointerdown', onPointerOutside, true)
 })
 
+function onFocus(): void {
+  show()
+  if (isCoarse.value) {
+    // Arm the swallow guard — the click event that fires immediately
+    // after this focus (on the same tap) should be eaten so the user
+    // sees the tooltip before being routed away.
+    swallowNextClick.value = true
+  }
+}
+
 function onClick(): void {
+  if (swallowNextClick.value) {
+    swallowNextClick.value = false
+    return
+  }
   if (props.slug) {
     void router.push(`/glossario/${props.slug}`)
   }

@@ -8,17 +8,35 @@
 <template>
   <div ref="scrollRef" class="chat-thread relative flex-1 overflow-y-auto">
     <!--
-      Bottom padding has to clear the floating composer regardless of
-      its rendered height. The composer can swell from ~96 px (empty,
+      In-thread search bar — opened with Cmd+F (or Ctrl+F on
+      Linux/Win). When open, the native browser find is suppressed
+      so the user gets our scoped search across only the chat prose
+      (skipping chip Vue mounts so highlighting doesn't crack open
+      ticker / glossary / citation / mention chip subtrees).
+    -->
+    <ChatV2ThreadSearch
+      :open="searchOpen"
+      :scroll-container="scrollRef"
+      @close="closeSearch"
+    />
+    <!--
+      Bottom padding tracks the actual composer height via a CSS
+      variable (`--chat-composer-height`) written by Input.vue's
+      ResizeObserver. The composer can swell from ~96 px (empty,
       Basic) to ~260 px (MAX, multiple attachments, MAX-disclaimer
-      sub-line). We pad generously (`pb-56` mobile / `pb-60` desktop)
-      and add `env(safe-area-inset-bottom)` so the iPhone home
-      indicator never crops the last line of the response.
+      sub-line, thinking indicator) and back; padding follows so the
+      last line of any answer always clears the input by a uniform
+      gap regardless of state. The fallback (`13rem`) covers the very
+      first paint before the observer settles.
+
+      Top padding is generous on desktop (no in-flow header above
+      this) and tight on mobile (the new in-flow header already
+      gives the title room to breathe).
     -->
     <div
-      class="mx-auto max-w-3xl px-5 pt-10 md:px-8 md:pt-14"
+      class="mx-auto max-w-3xl px-5 pt-4 md:px-8 md:pt-14"
       :style="{
-        paddingBottom: 'calc(13rem + env(safe-area-inset-bottom, 0px))',
+        paddingBottom: 'calc(var(--chat-composer-height, 13rem) + 1.5rem + env(safe-area-inset-bottom, 0px))',
       }"
     >
       <div class="flex flex-col">
@@ -28,6 +46,7 @@
           :message="m"
           :is-last="i === messages.length - 1"
           :is-last-user-message="m.id === lastUserMessageId"
+          :is-editing="m.id === editingMessageId"
           :class="i > 0 ? 'mt-12 md:mt-16' : ''"
           @send-followup="$emit('send-followup', $event)"
           @open-artifact="$emit('open-artifact', $event)"
@@ -57,12 +76,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { ChatMessage, ChatArtifact, ChatProposalData } from '~/composables/useChatStream'
 import type { ChatAlert } from '~/composables/useAlerts'
 
 const props = defineProps<{
   messages: ChatMessage[]
+  /** ID of the user message currently being edited (preview state).
+   *  Drives the "ghost" visual on the matching user turn so the
+   *  user sees which message will be replaced when they submit. */
+  editingMessageId?: string | null
 }>()
 
 defineEmits<{
@@ -90,6 +113,45 @@ defineEmits<{
 // Brand colors all flow through CSS vars now (`var(--brand-*)`),
 // so no `useBrand()` reactive ref needed in this component.
 const scrollRef = ref<HTMLElement | null>(null)
+
+/**
+ * In-thread search overlay state. Cmd+F (or Ctrl+F) intercepts the
+ * browser's native find and opens our scoped search instead. Closing
+ * the search restores native behaviour for the next Cmd+F.
+ *
+ * Listener lives on `window` (capture phase) because the focus is
+ * usually inside the composer textarea / contenteditable — the
+ * native dispatcher would route Ctrl+F there first if we listened
+ * on the thread element.
+ */
+const searchOpen = ref(false)
+
+function openSearch(): void {
+  searchOpen.value = true
+}
+
+function closeSearch(): void {
+  searchOpen.value = false
+}
+
+function onGlobalKeydown(e: KeyboardEvent): void {
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'f') {
+    // Only intercept when the chat thread is the visible focus
+    // surface (i.e. the user hasn't navigated away to a modal
+    // panel). Cheapest check: at least one chat message rendered.
+    if (props.messages.length === 0) return
+    e.preventDefault()
+    // CRITICAL: stop propagation so the Sidebar's own Cmd+F handler
+    // (which focuses the session-search input on the left rail)
+    // doesn't fire on the same event. Both listeners live on
+    // `window`; ours is registered with `capture: true` so we run
+    // first, then `stopImmediatePropagation` blocks Sidebar's
+    // bubble-phase listener.
+    e.stopImmediatePropagation()
+    e.stopPropagation()
+    openSearch()
+  }
+}
 
 /**
  * ID of the most recent user-role message in the thread. Drives
@@ -143,6 +205,16 @@ onMounted(() => {
   // position above the bottom, show the FAB without waiting for
   // the user's first scroll event.
   recomputeAtBottom()
+  // Cmd+F / Ctrl+F → open in-thread search.
+  if (typeof window !== 'undefined') {
+    window.addEventListener('keydown', onGlobalKeydown, { capture: true })
+  }
+})
+
+onBeforeUnmount(() => {
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('keydown', onGlobalKeydown, { capture: true })
+  }
 })
 
 /**

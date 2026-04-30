@@ -176,27 +176,15 @@
         </span>
         <ul class="flex flex-col gap-px">
           <li v-for="s in pinnedSessions" :key="s.id">
-            <button
-              type="button"
-              class="session-row group relative flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left transition-colors"
-              :style="sessionRowStyle(s.id === activeId)"
-              @click="$emit('select', s.id)"
-            >
-              <span
-                class="min-w-0 flex-1 truncate text-[13px]"
-                :style="{ color: s.id === activeId ? 'var(--brand-text)' : 'var(--brand-text)' }"
-              >{{ s.title ?? 'Sem título' }}</span>
-              <span
-                class="font-mono-tab text-[10.5px] tabular-nums shrink-0"
-                :style="{ color: 'var(--brand-text-muted)' }"
-              >{{ formatRelativeDate(s.createdAt) }}</span>
-              <UIcon
-                name="i-lucide-pin"
-                class="size-3 shrink-0"
-                :style="{ color: 'var(--brand-primary)' }"
-                aria-hidden="true"
-              />
-            </button>
+            <ChatV2SessionRow
+              :session="s"
+              :active="s.id === activeId"
+              :relative-date="formatRelativeDate(s.createdAt)"
+              @select="$emit('select', $event)"
+              @delete="$emit('delete', $event)"
+              @pin="(id, pinned) => $emit('pin', id, pinned)"
+              @rename="(id, title) => $emit('rename', id, title)"
+            />
           </li>
         </ul>
       </section>
@@ -235,43 +223,15 @@
             v-for="s in expandedSessionsFor(group)"
             :key="s.id"
           >
-            <button
-              type="button"
-              class="session-row group relative flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left transition-colors"
-              :style="sessionRowStyle(s.id === activeId)"
-              @click="$emit('select', s.id)"
-            >
-              <span
-                v-if="s.id === activeId"
-                class="size-1.5 shrink-0 rounded-full"
-                :style="{ backgroundColor: 'var(--brand-primary)' }"
-                aria-hidden="true"
-              />
-              <UIcon
-                v-else
-                name="i-lucide-message-circle"
-                class="size-3 shrink-0"
-                :style="{ color: 'var(--brand-text-muted)' }"
-                aria-hidden="true"
-              />
-              <span
-                class="min-w-0 flex-1 truncate text-[13px]"
-                :style="{ color: 'var(--brand-text)' }"
-              >{{ s.title ?? 'Sem título' }}</span>
-              <span
-                class="font-mono-tab text-[10.5px] tabular-nums shrink-0"
-                :style="{ color: s.id === activeId ? 'var(--brand-primary)' : 'var(--brand-text-muted)' }"
-              >{{ formatRelativeDate(s.createdAt) }}</span>
-              <button
-                type="button"
-                class="session-delete absolute right-1.5 inline-flex size-5 items-center justify-center rounded opacity-0 transition-opacity group-hover:opacity-100"
-                :style="{ color: 'var(--brand-negative)', backgroundColor: 'var(--brand-surface)' }"
-                aria-label="Apagar conversa"
-                @click.stop="$emit('delete', s.id)"
-              >
-                <UIcon name="i-lucide-x" class="size-3" />
-              </button>
-            </button>
+            <ChatV2SessionRow
+              :session="s"
+              :active="s.id === activeId"
+              :relative-date="formatRelativeDate(s.createdAt)"
+              @select="$emit('select', $event)"
+              @delete="$emit('delete', $event)"
+              @pin="(id, pinned) => $emit('pin', id, pinned)"
+              @rename="(id, title) => $emit('rename', id, title)"
+            />
           </li>
         </ul>
 
@@ -360,6 +320,12 @@ defineEmits<{
   new: []
   select: [id: string]
   delete: [id: string]
+  /** Toggle pin status. The row component computes the new state
+   *  (`!s.pinned`) and forwards it; parent calls the API + reloads. */
+  pin: [id: string, pinned: boolean]
+  /** Inline rename committed (Enter / blur with non-empty change).
+   *  Parent calls PATCH /sessions/:id with the new title. */
+  rename: [id: string, title: string]
   'open-panel': [section: PanelSection]
   'close-sidebar': []
 }>()

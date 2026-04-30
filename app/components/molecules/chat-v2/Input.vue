@@ -18,8 +18,16 @@
   <!-- z-30 keeps the composer above interactive surfaces in the thread
        below it (e.g. the news-card action layer at z-20 in the home
        dashboard). Without this, scrolling content that visually overlaps
-       the composer area would intercept clicks meant for the input. -->
-  <div class="chat-composer-wrap pointer-events-none absolute inset-x-0 bottom-0 z-30 px-5 pt-10 md:px-8" :style="{ paddingBottom: 'calc(1.5rem + env(safe-area-inset-bottom, 0px))' }">
+       the composer area would intercept clicks meant for the input.
+
+       Mobile (< md): wrap has no horizontal padding so the composer pill
+       reaches edge-to-edge (sheet treatment). paddingBottom collapses to
+       only the safe-area inset so the input docks flush against the
+       device chrome (ChatGPT / Perplexity pattern).
+
+       Desktop (>= md): keeps the centered floating pill — generous side
+       padding + 1.5 rem of breathing room above the home indicator. -->
+  <div ref="composerWrapRef" class="chat-composer-wrap pointer-events-none absolute inset-x-0 bottom-0 z-30 px-0 pt-6 md:px-8 md:pt-10" :style="{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }">
     <!-- Background fade so messages don't overlap composer harshly -->
     <div
       class="pointer-events-none absolute inset-x-0 bottom-0 h-32"
@@ -51,7 +59,8 @@
     />
 
     <div
-      class="chat-composer pointer-events-auto relative mx-auto flex max-w-3xl flex-col gap-2 px-5 pb-3 pt-4 transition-[border-color,box-shadow] duration-200"
+      ref="composerPillRef"
+      class="chat-composer pointer-events-auto relative flex flex-col gap-2 px-4 pb-3 pt-4 transition-[border-color,box-shadow] duration-200 md:mx-auto md:max-w-3xl md:px-5"
       :class="[isMax ? 'is-max' : 'is-basic', dragOver ? 'is-drag-over' : '']"
       :style="composerStyle"
       @dragenter.prevent="onDragEnter"
@@ -92,6 +101,31 @@
           Solte para anexar
         </div>
       </Transition>
+
+      <!--
+        Edit-mode chip — visible only while the user is editing a
+        past question. Sits in the same vertical slot as the
+        attachment chips so the composer pill stays one tidy stack.
+        Click the X to bail out without committing the edit.
+      -->
+      <div
+        v-if="isEditing"
+        class="chat-edit-banner"
+        role="status"
+        aria-live="polite"
+      >
+        <UIcon name="i-lucide-pencil" class="size-3.5" />
+        <span>Editando pergunta anterior</span>
+        <button
+          type="button"
+          class="chat-edit-banner__cancel"
+          aria-label="Cancelar edição"
+          title="Cancelar (Esc)"
+          @click="$emit('cancel-edit')"
+        >
+          <UIcon name="i-lucide-x" class="size-3" />
+        </button>
+      </div>
 
       <!-- Attachment chips (above the textarea) -->
       <ul
@@ -323,9 +357,29 @@
       </div>
     </div>
 
-    <!-- Disclaimer / sub-line -->
+    <!--
+      Disclaimer / sub-line.
+
+      Hidden on mobile (< md). Reasons:
+        1. The pill should dock flush against the bottom edge of
+           the viewport (above safe-area-inset). A ~24 px caption
+           below it floats the pill upward and creates dead space
+           at the bottom — exactly what the docked-sheet treatment
+           was meant to eliminate.
+        2. Mobile screens are vertically scarce; CVM compliance
+           text is served on the dashboard, profile, and
+           individual answers ("REDENTIA BASIC" tier badge above
+           every response carries the same regulatory signal).
+        3. Caption-style sub-text below an input is a desktop
+           pattern (ChatGPT "can make mistakes…", Claude "is in
+           preview…"). On mobile, ChatGPT and Claude both drop it.
+
+      Desktop keeps the caption — the floating pill has visual
+      breathing room either way and the eyebrow reinforces the
+      compliance posture without crowding the layout.
+    -->
     <p
-      class="mx-auto mt-2 max-w-3xl text-center font-mono-tab text-[10px] uppercase tracking-[0.16em] transition-colors"
+      class="mx-auto mt-2 hidden max-w-3xl text-center font-mono-tab text-[10px] uppercase tracking-[0.16em] transition-colors md:block"
       :style="{
         color: isMax
           ? `color-mix(in srgb, var(--brand-primary) 70%, var(--brand-text-muted))`
@@ -377,6 +431,15 @@ const props = defineProps<{
    * scroll up to find suggestions.
    */
   showStarters?: boolean
+  /**
+   * True when the user clicked the pencil on a past question and
+   * the composer is now prefilled with that message's content,
+   * waiting for an edit + submit. Drives the "Editando" chip + the
+   * Esc-to-cancel keybinding. The parent owns the actual edit state
+   * (in `useChatStream.editingMessageId`) — we just need to know
+   * whether to render the cancel affordance.
+   */
+  isEditing?: boolean
 }>()
 
 const tier = defineModel<ChatTier>('tier', { default: 'basic' })
@@ -385,6 +448,10 @@ const emit = defineEmits<{
   send: [message: string, attachments: ChatAttachment[]]
   stop: []
   starter: [question: string]
+  /** User backed out of editing — pencil click → composer prefilled
+   *  → cancel chip / Esc. Parent calls `chat.cancelEdit()` and
+   *  clears the textarea. */
+  'cancel-edit': []
 }>()
 
 const brand = useBrand()
@@ -394,6 +461,16 @@ const brand = useBrand()
 const value = ref('')
 const focused = ref(false)
 const editorRef = ref<HTMLDivElement | null>(null)
+
+// Refs to the outer wrap (full-bleed band that holds the gradient
+// fade + composer pill + thinking indicator + starter chips) and
+// the composer pill itself. The wrap is what we measure for the
+// total "bottom dead zone" so the FAB and the thread know how much
+// space to clear. Using the wrap (not the pill) means the FAB stays
+// above the WHOLE bottom region — including starter chips and the
+// thinking indicator — without having to special-case each variant.
+const composerWrapRef = ref<HTMLDivElement | null>(null)
+const composerPillRef = ref<HTMLDivElement | null>(null)
 const isEditorEmpty = computed(() => value.value.trim().length === 0)
 
 const isMax = computed(() => tier.value === 'max')
@@ -649,7 +726,9 @@ const composerStyle = computed(() => {
     // mode. Keeping the composer fully opaque sharpens its presence as
     // the page's primary interactive surface.
     backgroundColor: brand.colors.surface,
-    borderRadius: '28px',
+    // border-radius lives in CSS now (`.chat-composer`) so the mobile
+    // sheet treatment (top-only radius) can override it via media query
+    // without a class soup.
     border: `1px solid ${borderColor}`,
     boxShadow: ringTint ? `${baseShadow}, ${ringTint}` : baseShadow,
   } as Record<string, string>
@@ -855,6 +934,69 @@ onBeforeUnmount(() => {
   document.removeEventListener('selectionchange', captureEditorSelection)
 })
 
+// =============================================================
+// Composer-height observer
+// =============================================================
+//
+// Drives `--chat-composer-height` on `document.documentElement` so
+// the scroll-to-bottom FAB (rendered as a sibling in help.vue) and
+// the Thread's bottom padding can both anchor against the actual
+// bottom dead zone — not a hard-coded magic number.
+//
+// We measure the outer WRAP (not just the pill) so attachments,
+// starter chips, the thinking indicator, and the edit banner all
+// inflate the value naturally as soon as they mount. ResizeObserver
+// is the right tool here: writing the variable on innerHeight only
+// would miss content-driven re-layouts that don't change the
+// viewport.
+//
+// Rounded up to 1 px to avoid sub-pixel jitter on every paint while
+// streaming text widens the pill briefly on each token.
+let composerResizeObserver: ResizeObserver | null = null
+
+function writeComposerHeight(value: number): void {
+  if (typeof document === 'undefined') return
+  const px = Math.ceil(Math.max(value, 0))
+  document.documentElement.style.setProperty(
+    '--chat-composer-height',
+    `${px}px`,
+  )
+}
+
+onMounted(() => {
+  const el = composerWrapRef.value
+  if (!el || typeof ResizeObserver === 'undefined') return
+  // Initial sync — observer fires asynchronously, so the FAB would
+  // briefly see the var unset on first paint without this.
+  writeComposerHeight(el.getBoundingClientRect().height)
+  composerResizeObserver = new ResizeObserver((entries) => {
+    for (const entry of entries) {
+      // Prefer borderBoxSize (includes the wrap's own pt-6 / md:pt-10
+      // padding) so the FAB and the Thread's pb both clear the FULL
+      // visual footprint of the composer band, not just its content.
+      // Fall back to getBoundingClientRect for browsers that haven't
+      // shipped borderBoxSize yet (very old Safari).
+      const boxes = entry.borderBoxSize
+      const height =
+        Array.isArray(boxes) && boxes.length > 0 && boxes[0]
+          ? boxes[0].blockSize
+          : (entry.target as HTMLElement).getBoundingClientRect().height
+      writeComposerHeight(height)
+    }
+  })
+  composerResizeObserver.observe(el)
+})
+
+onBeforeUnmount(() => {
+  composerResizeObserver?.disconnect()
+  composerResizeObserver = null
+  // Reset so other pages don't inherit a stale composer offset (the
+  // var leaks through cross-page navigation otherwise).
+  if (typeof document !== 'undefined') {
+    document.documentElement.style.removeProperty('--chat-composer-height')
+  }
+})
+
 /** Word-char delimiter: anything else breaks the `@` chain. */
 function isPrefixChar(ch: string): boolean {
   return /[A-Za-zÀ-ÿ0-9/.-]/.test(ch)
@@ -949,7 +1091,15 @@ function onTextareaClick(): void {
 }
 
 function onTextareaEscape(): void {
-  if (pickerOpen.value) closePicker()
+  if (pickerOpen.value) {
+    closePicker()
+    return
+  }
+  // Esc with the picker closed but an edit in flight = cancel edit.
+  // Lets the user back out without reaching for the mouse.
+  if (props.isEditing) {
+    emit('cancel-edit')
+  }
 }
 
 function togglePickerFromButton(): void {
@@ -1188,6 +1338,103 @@ defineExpose({
 </script>
 
 <style scoped>
+/*
+  Edit-mode banner — sits inside the composer pill, above the
+  textarea. Brand-tinted to match the "Editando" badge on the
+  ghosted message in the thread, so the user reads them as a pair.
+*/
+.chat-edit-banner {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 6px 5px 10px;
+  margin-bottom: 4px;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--brand-primary) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 30%, transparent);
+  color: color-mix(in srgb, var(--brand-primary) 85%, var(--brand-text));
+  font-family: var(--brand-font, system-ui);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  align-self: flex-start;
+}
+.chat-edit-banner__cancel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  border: none;
+  background: color-mix(in srgb, var(--brand-text) 8%, transparent);
+  color: color-mix(in srgb, var(--brand-text) 65%, transparent);
+  cursor: pointer;
+  transition: background 140ms, color 140ms;
+}
+.chat-edit-banner__cancel:hover {
+  background: color-mix(in srgb, var(--brand-negative) 18%, transparent);
+  color: var(--brand-negative);
+}
+
+/*
+  Composer pill — shape lives in CSS so the mobile sheet treatment
+  can override the desktop rounded pill via media query without a
+  reactive class on every paint.
+
+  Desktop (>= md / 768px): full pill, 28px radius all corners — the
+  composer floats with breathing room either side. The wrap above
+  fades from transparent to surface via the `linear-gradient` div
+  so messages dissolve behind the floating pill.
+
+  Mobile (< md): the composer becomes a docked sheet against the
+  viewport edge. Top corners only (22px), bottom corners flat. The
+  WRAP itself gets a solid surface fill so starter chips and the
+  thinking indicator don't visually leak through the dashboard /
+  thread content scrolling below them — a top hairline fade keeps
+  the transition soft. ChatGPT / Perplexity / Claude.ai pattern.
+*/
+.chat-composer {
+  border-radius: 28px;
+}
+.chat-drop-overlay {
+  border-radius: 28px;
+}
+
+@media (max-width: 767px) {
+  .chat-composer {
+    border-radius: 22px 22px 0 0;
+    /* Slightly tighter shadow on mobile — the docked sheet doesn't
+       need to "lift off" the page like a floating pill does. */
+    box-shadow:
+      0 -8px 24px -10px color-mix(in srgb, var(--brand-primary) 14%, transparent),
+      0 -4px 12px -8px rgba(0, 0, 0, 0.10) !important;
+  }
+  .chat-drop-overlay {
+    border-radius: 22px 22px 0 0;
+  }
+  /* Solid backdrop so chips / thinking indicator / edit banner don't
+     bleed through scrollable content behind them. */
+  .chat-composer-wrap {
+    background-color: var(--brand-background);
+  }
+  /* Thin top fade so the solid backdrop softens into transparency
+     instead of cutting hard across the dashboard content. */
+  .chat-composer-wrap::before {
+    content: '';
+    position: absolute;
+    inset: -16px 0 auto 0;
+    height: 16px;
+    background: linear-gradient(
+      to top,
+      var(--brand-background) 0%,
+      color-mix(in srgb, var(--brand-background) 60%, transparent) 50%,
+      transparent 100%
+    );
+    pointer-events: none;
+  }
+}
+
 /*
   Contenteditable composer styling. The div behaves as a
   multi-line textarea visually but supports inline chips because
