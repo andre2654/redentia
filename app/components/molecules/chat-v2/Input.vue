@@ -59,6 +59,22 @@
       @dragleave.prevent="onDragLeave"
       @drop.prevent="onDrop"
     >
+      <!--
+        Asset picker popover. Sits above the composer pill via
+        `position: absolute; bottom: 100%`. Opened by:
+          (a) the @-symbol toolbar button (no initial query), OR
+          (b) typing `@` in the textarea (initial query = whatever
+              the user typed after the @, kept in sync via
+              `pickerTrigger.prefix`).
+      -->
+      <ChatV2AssetPickerPopover
+        :open="pickerOpen"
+        :initial-query="pickerInitialQuery"
+        @select="onAssetPicked"
+        @close="closePicker"
+        @query-change="onPickerQueryChange"
+      />
+
       <!-- Drag-drop overlay -->
       <Transition name="chat-drop-overlay">
         <div
@@ -130,21 +146,44 @@
         {{ attachError }}
       </div>
 
-      <!-- Textarea row -->
+      <!--
+        Contenteditable composer — replaces the previous <textarea>
+        so picked assets can render INLINE as chips at the caret
+        position (not as a separate row above). Editing model:
+          - The div is the source of truth for what the user has
+            typed. We mirror its `innerText` into the reactive
+            `value` ref on every `input` so the existing
+            send/canSend/watcher logic keeps working.
+          - Asset chips are rendered as `contenteditable=false`
+            spans inline with the prose; the browser treats each
+            chip as a single atomic unit — Backspace deletes the
+            whole chip, arrow keys jump over it.
+          - Auto-grow comes from `min-height` + natural box growth
+            (no JS autosize needed for contenteditable).
+          - Placeholder is faked via `:empty:before { content }`.
+        Submit-time serialization (see `submit()`) walks the DOM
+        and concatenates text + ticker codes from chip data attrs
+        so the chat-service sees a flat string with bare tickers.
+      -->
       <div class="flex items-start gap-3">
-        <textarea
-          ref="textareaRef"
-          v-model="value"
-          rows="1"
-          :placeholder="placeholder"
-          class="chat-textarea min-h-[28px] max-h-[200px] flex-1 resize-none border-0 bg-transparent text-[16px] leading-relaxed outline-none"
+        <div
+          ref="editorRef"
+          contenteditable="true"
+          role="textbox"
+          aria-multiline="true"
+          :data-placeholder="placeholder"
+          class="chat-editor min-h-[28px] max-h-[200px] flex-1 overflow-y-auto resize-none border-0 bg-transparent text-[16px] leading-relaxed outline-none"
+          :class="{ 'is-empty': isEditorEmpty, 'is-disabled': disabled }"
           :style="{ color: 'var(--brand-text)' }"
-          :disabled="disabled"
-          @input="autosize"
+          :contenteditable="!disabled"
+          @input="onEditorInput"
           @focus="focused = true"
           @blur="focused = false"
           @keydown.enter.exact.prevent="onEnter"
-          @paste="onPaste"
+          @keydown.escape="onTextareaEscape"
+          @keyup="onTextareaKeyup"
+          @click="onTextareaClick"
+          @paste="onEditorPaste"
         />
       </div>
 
@@ -176,6 +215,32 @@
           @click="fileInputRef?.click()"
         >
           <UIcon name="i-lucide-paperclip" class="size-4" />
+        </button>
+
+        <!--
+          Asset picker button — opens the AssetPickerPopover with no
+          prefix. The popover is also opened automatically when the
+          user types `@` in the textarea (see `onTextInput`); this
+          button is for users who don't know about the keyboard
+          shortcut. Same visual vocabulary as the paperclip so the
+          two affordances read as a pair.
+        -->
+        <button
+          type="button"
+          :disabled="disabled"
+          class="chat-attach-btn mb-0.5 flex size-9 shrink-0 items-center justify-center rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+          :class="{ 'is-active': pickerOpen }"
+          :style="{
+            backgroundColor: pickerOpen
+              ? `color-mix(in srgb, var(--brand-primary) 14%, transparent)`
+              : `color-mix(in srgb, var(--brand-text) 5%, transparent)`,
+            color: pickerOpen ? 'var(--brand-primary)' : 'var(--brand-text-muted)',
+          }"
+          title="Inserir ativo (ou digite @ no campo)"
+          aria-label="Inserir ativo"
+          @click="togglePickerFromButton"
+        >
+          <UIcon name="i-lucide-at-sign" class="size-4" />
         </button>
 
         <div
@@ -278,12 +343,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type {
   ChatAttachment,
   ChatAttachmentKind,
   ChatMessage,
 } from '~/composables/useChatStream'
+import type { AssetSearchItem } from '~/composables/useAssetSearch'
 
 export type ChatTier = 'basic' | 'max'
 
@@ -322,9 +388,13 @@ const emit = defineEmits<{
 }>()
 
 const brand = useBrand()
+// `value` mirrors the editor's serialized prose (innerText with
+// chip text expanded inline). Reactive so canSend / watchers /
+// the existing submit() pipeline keep working without changes.
 const value = ref('')
 const focused = ref(false)
-const textareaRef = ref<HTMLTextAreaElement | null>(null)
+const editorRef = ref<HTMLDivElement | null>(null)
+const isEditorEmpty = computed(() => value.value.trim().length === 0)
 
 const isMax = computed(() => tier.value === 'max')
 
@@ -551,7 +621,9 @@ async function onPaste(e: ClipboardEvent) {
 }
 
 const canSend = computed(
-  () => (value.value.trim().length > 0 || attachments.value.length > 0) && !props.disabled,
+  () =>
+    (value.value.trim().length > 0 || attachments.value.length > 0)
+    && !props.disabled,
 )
 
 const composerStyle = computed(() => {
@@ -626,49 +698,566 @@ const sendButtonStyle = computed(() => {
   } as Record<string, string>
 })
 
-function autosize() {
-  const ta = textareaRef.value
-  if (!ta) return
-  ta.style.height = 'auto'
-  ta.style.height = `${Math.min(ta.scrollHeight, 200)}px`
+// ---- Editor model (contenteditable) -----------------------------
+//
+// Serializes the editor's DOM into a flat string. Walks children
+// in order and concatenates:
+//   - text nodes verbatim
+//   - chip elements as their `data-ticker` attribute (the ticker
+//     code, e.g. "PETR4")
+//   - <br> as "\n"
+//   - any other element's textContent as a fallback
+//
+// The result is what we put into `value.value` (so canSend, the
+// watcher, etc. keep working) AND what we send to the chat-service
+// on submit. The agent's TickerProse extension already turns bare
+// tickers (PETR4, VALE3) into live chips on the receiving end —
+// so no new wire protocol is needed.
+function serializeEditor(): string {
+  const root = editorRef.value
+  if (!root) return ''
+  const out: string[] = []
+  const walk = (node: Node): void => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      out.push(node.textContent ?? '')
+      return
+    }
+    if (node instanceof HTMLElement) {
+      if (node.tagName === 'BR') {
+        out.push('\n')
+        return
+      }
+      if (node.classList.contains('chat-mention')) {
+        const tk = node.dataset.ticker
+        if (tk) out.push(tk)
+        return
+      }
+      // Default: recurse into children so nested formatting (a
+      // contenteditable with stray inline elements from paste, etc.)
+      // contributes its text.
+      node.childNodes.forEach(walk)
+    }
+  }
+  root.childNodes.forEach(walk)
+  return out.join('')
+}
+
+/** Sync the reactive `value` with the editor's serialized prose.
+ *  Called on every `input` event from the contenteditable div. */
+function syncValueFromEditor(): void {
+  value.value = serializeEditor()
 }
 
 async function onEnter(e: KeyboardEvent) {
+  // When the asset picker is open, Enter is reserved for confirming
+  // the highlighted asset row — defer to the popover's own handler.
+  if (pickerOpen.value) return
   if (e.shiftKey) {
-    const ta = textareaRef.value
-    if (!ta) return
-    const start = ta.selectionStart
-    const end = ta.selectionEnd
-    value.value = value.value.slice(0, start) + '\n' + value.value.slice(end)
-    await nextTick()
-    ta.selectionStart = ta.selectionEnd = start + 1
-    autosize()
+    // Shift+Enter inserts a soft newline. We use execCommand so
+    // the contenteditable handles caret placement natively across
+    // browsers (some emit a <br>, others a <div>; both work for
+    // serialize).
+    const root = editorRef.value
+    if (!root) return
+    document.execCommand('insertLineBreak')
+    syncValueFromEditor()
     return
   }
   submit()
 }
 
+/**
+ * Handle paste so users dropping rich HTML (formatted text from
+ * Google Docs, Word, etc.) don't end up with random font-family /
+ * color overrides leaking into the contenteditable. We grab plain
+ * text only and insert it at the caret via execCommand —
+ * preserves undo history natively.
+ */
+function onEditorPaste(e: ClipboardEvent): void {
+  e.preventDefault()
+  const text = e.clipboardData?.getData('text/plain') ?? ''
+  if (!text) return
+  document.execCommand('insertText', false, text)
+  syncValueFromEditor()
+}
+
+// ----- Asset picker (`@` trigger) -----------------------------------
+//
+// Track the open/closed state of the AssetPickerPopover plus the
+// position in the textarea where an `@` was typed. When the user is
+// actively writing the prefix (e.g. `@petr`), we keep the picker's
+// initialQuery in sync with whatever sits between the `@` and the
+// caret. Selecting an item replaces the entire `@<prefix>` substring
+// with the chosen ticker.
+//
+// Why a position-based parser (and not just regex on value):
+//   - Lets us tell `@PETR4` (a typed-out trigger) apart from `email
+//     @gmail.com` (an in-the-middle @-sign).
+//   - Survives multi-line input (\n followed by `@…`) without
+//     constraint on whitespace.
+//   - Closes the picker the moment the user types a space / new
+//     line / non-word character, exactly when the prefix is "done".
+const pickerOpen = ref(false)
+const pickerInitialQuery = ref('')
+// Index of the `@` symbol in the textarea value. -1 when not in
+// trigger mode (button-opened picker, or no `@` typed yet).
+const pickerTriggerStart = ref(-1)
+
+// ---- Asset @-trigger detection (Selection API) ------------------
+//
+// Track where the user typed `@` in the editor so the picker's
+// query stays in sync as they keep typing. The trigger anchor is
+// stored as a (Node, offset) pair from the live caret — that's
+// resilient to editor mutations (chip insertion, line breaks) in
+// a way that a string-index offset isn't.
+//
+// `triggerAnchor`:
+//   - Set on detection: points at the `@` symbol's text node +
+//     the offset of the `@` character.
+//   - Read on each text-input + arrow-key keyup, recomputing the
+//     prefix from anchor → caret.
+//   - Cleared when the picker closes or when the prefix breaks.
+//
+// `triggerEnd` is computed on demand (caret position at evaluation
+// time), so it doesn't need its own ref.
+const triggerAnchor = ref<{ node: Node; offset: number } | null>(null)
+
+/**
+ * Snapshot of the editor's last known Range while it had focus.
+ * Used by the asset picker's button-mode insertion path: when the
+ * user clicks the toolbar `@` button, focus moves to the popover
+ * input and `window.getSelection()` no longer points at the editor.
+ * We listen to `selectionchange` on `document` and re-capture the
+ * range as long as the editor is the active focused element. The
+ * picker reads from `lastEditorRange` to know where to drop the
+ * chip when the popover-mediated click happens later.
+ */
+let lastEditorRange: Range | null = null
+
+function captureEditorSelection(): void {
+  const root = editorRef.value
+  if (!root) return
+  const sel = typeof window !== 'undefined' ? window.getSelection() : null
+  if (!sel || sel.rangeCount === 0) return
+  const r = sel.getRangeAt(0)
+  if (!root.contains(r.startContainer)) return
+  // Clone so subsequent caret moves don't mutate the snapshot.
+  lastEditorRange = r.cloneRange()
+}
+
+onMounted(() => {
+  if (typeof document === 'undefined') return
+  document.addEventListener('selectionchange', captureEditorSelection)
+})
+
+onBeforeUnmount(() => {
+  if (typeof document === 'undefined') return
+  document.removeEventListener('selectionchange', captureEditorSelection)
+})
+
+/** Word-char delimiter: anything else breaks the `@` chain. */
+function isPrefixChar(ch: string): boolean {
+  return /[A-Za-zÀ-ÿ0-9/.-]/.test(ch)
+}
+
+/** Get the caret position as a Range — null when there's no
+ *  selection inside the editor (e.g. focus elsewhere). */
+function getEditorRange(): Range | null {
+  const sel = typeof window !== 'undefined' ? window.getSelection() : null
+  if (!sel || sel.rangeCount === 0) return null
+  const r = sel.getRangeAt(0)
+  const root = editorRef.value
+  if (!root) return null
+  // Only honor selections whose ANCHOR is inside the editor.
+  if (!root.contains(r.startContainer)) return null
+  return r.cloneRange()
+}
+
+function evaluateAtTrigger(): void {
+  const range = getEditorRange()
+  if (!range) {
+    closePickerIfTriggered()
+    return
+  }
+  // Walk backward from the caret in the same text node looking for
+  // an `@`. If we leave the text node (e.g. cross into a chip span
+  // or a <br>), the trigger chain breaks — same effect as hitting
+  // a non-prefix char.
+  const node = range.startContainer
+  if (node.nodeType !== Node.TEXT_NODE) {
+    closePickerIfTriggered()
+    return
+  }
+  const text = node.textContent ?? ''
+  const caret = range.startOffset
+  let i = caret - 1
+  while (i >= 0) {
+    const ch = text[i]
+    if (ch === '@') {
+      // Boundary check on the char before the `@` — must be start
+      // of node OR whitespace OR newline. Letters / digits before
+      // = email-style usage, not a mention.
+      const before = i === 0 ? ' ' : text[i - 1]
+      if (before === ' ' || before === '\n' || before === '\t') {
+        const prefix = text.slice(i + 1, caret)
+        if ([...prefix].every(isPrefixChar)) {
+          triggerAnchor.value = { node, offset: i }
+          pickerInitialQuery.value = prefix
+          if (!pickerOpen.value) pickerOpen.value = true
+          return
+        }
+      }
+      break
+    }
+    if (!ch || !isPrefixChar(ch)) break
+    i--
+  }
+  closePickerIfTriggered()
+}
+
+/** Close the picker only when it was opened by an `@` trigger.
+ *  Button-opened pickers (triggerAnchor=null) stay open through
+ *  caret moves so the user can browse the list freely. */
+function closePickerIfTriggered(): void {
+  if (triggerAnchor.value) {
+    triggerAnchor.value = null
+    pickerOpen.value = false
+    pickerInitialQuery.value = ''
+  }
+}
+
+function onEditorInput(): void {
+  syncValueFromEditor()
+  evaluateAtTrigger()
+}
+
+function onTextareaKeyup(e: KeyboardEvent): void {
+  if (
+    e.key === 'ArrowLeft'
+    || e.key === 'ArrowRight'
+    || e.key === 'ArrowUp'
+    || e.key === 'ArrowDown'
+    || e.key === 'Home'
+    || e.key === 'End'
+  ) {
+    evaluateAtTrigger()
+  }
+}
+
+function onTextareaClick(): void {
+  evaluateAtTrigger()
+}
+
+function onTextareaEscape(): void {
+  if (pickerOpen.value) closePicker()
+}
+
+function togglePickerFromButton(): void {
+  if (pickerOpen.value) {
+    closePicker()
+    return
+  }
+  triggerAnchor.value = null
+  pickerInitialQuery.value = ''
+  pickerOpen.value = true
+}
+
+function closePicker(): void {
+  pickerOpen.value = false
+  triggerAnchor.value = null
+  pickerInitialQuery.value = ''
+}
+
+/** Mirror the popover's query back into the editor when in `@`
+ *  trigger mode — rewrites the text between the `@` anchor and the
+ *  current caret. Button-mode (no anchor) leaves the editor alone. */
+function onPickerQueryChange(next: string): void {
+  const anchor = triggerAnchor.value
+  if (!anchor) return
+  const root = editorRef.value
+  if (!root) return
+  const node = anchor.node
+  if (node.nodeType !== Node.TEXT_NODE) return
+  const sel = window.getSelection()
+  if (!sel) return
+  // Take the current selection (caret) end as the right boundary.
+  const r = sel.rangeCount > 0 ? sel.getRangeAt(0) : null
+  if (!r || r.startContainer !== node) return
+  const text = node.textContent ?? ''
+  const before = text.slice(0, anchor.offset + 1) // include the @
+  const after = text.slice(r.startOffset)
+  node.textContent = `${before}${next}${after}`
+  // Restore caret to right after the new query.
+  const newRange = document.createRange()
+  const newCaret = anchor.offset + 1 + next.length
+  newRange.setStart(node, newCaret)
+  newRange.setEnd(node, newCaret)
+  sel.removeAllRanges()
+  sel.addRange(newRange)
+  syncValueFromEditor()
+}
+
+/**
+ * Build the chip element for an asset. The chip is `contenteditable=
+ * false` so the browser treats it as a single atomic glyph — Backspace
+ * deletes the whole chip, arrow keys jump over it, selection skips it.
+ *
+ * Markup mirrors the live TickerChip used in chat answers (logo +
+ * mono ticker) but slimmer because it lives inside the composer and
+ * shouldn't compete visually with the user's prose. Brand-tinted
+ * background via `--brand-primary` so it tints per tenant.
+ */
+function buildChipNode(item: AssetSearchItem): HTMLElement {
+  const chip = document.createElement('span')
+  chip.className = 'chat-mention'
+  chip.contentEditable = 'false'
+  chip.setAttribute('spellcheck', 'false')
+  chip.dataset.ticker = item.ticker
+  chip.setAttribute('data-asset-kind', item.kind)
+  // Logo: render initials when no logo URL — keeps the chip lean
+  // even before the icon CDN responds. Falls through to text if the
+  // logo fails to load (we mirror useFailedLogos's failure pattern
+  // by listening to the img onerror at runtime).
+  if (item.logo) {
+    const img = document.createElement('img')
+    img.className = 'chat-mention__logo'
+    img.src = item.logo
+    img.width = 16
+    img.height = 16
+    img.alt = ''
+    img.setAttribute('aria-hidden', 'true')
+    img.addEventListener('error', () => {
+      img.style.display = 'none'
+    })
+    chip.appendChild(img)
+  }
+  const code = document.createElement('span')
+  code.className = 'chat-mention__code'
+  code.textContent = item.ticker
+  chip.appendChild(code)
+  return chip
+}
+
+/**
+ * Insert a chip at the editor caret. Two paths:
+ *
+ *   - **Trigger mode**: replace the `@<prefix>` text range with the
+ *     chip + a trailing space. Caret lands after the space.
+ *   - **Button mode**: insert the chip at `lastEditorRange` (last
+ *     known caret while editor had focus) + a trailing space.
+ *
+ * Why we don't read window.getSelection() at click time:
+ * Clicking the popover row moves the live selection INTO the
+ * popover input. The previous version used that range as the END
+ * of the deletion slice, silently normalising a reversed range
+ * and leaving `@<prefix>` intact while the chip landed at the
+ * start of the editor. Trigger mode now derives endOffset by
+ * scanning forward inside the anchor's text node — no Selection
+ * dependency.
+ */
+function onAssetPicked(item: AssetSearchItem): void {
+  const root = editorRef.value
+  if (!root) {
+    closePicker()
+    return
+  }
+  const anchor = triggerAnchor.value
+  let range: Range
+  if (anchor) {
+    const node = anchor.node
+    if (node.nodeType !== Node.TEXT_NODE || !root.contains(node)) {
+      closePicker()
+      return
+    }
+    const text = node.textContent ?? ''
+    let endOffset = anchor.offset + 1 // skip the `@`
+    while (endOffset < text.length && isPrefixChar(text[endOffset]!)) {
+      endOffset++
+    }
+    range = document.createRange()
+    range.setStart(node, anchor.offset)
+    range.setEnd(node, endOffset)
+    range.deleteContents()
+  } else if (lastEditorRange) {
+    range = lastEditorRange.cloneRange()
+  } else {
+    range = document.createRange()
+    range.selectNodeContents(root)
+    range.collapse(false)
+  }
+
+  const chip = buildChipNode(item)
+  const trailing = document.createTextNode(' ')
+  // insertNode collapses the range to AFTER the inserted node,
+  // so chaining inserts the trailing space right after the chip.
+  range.insertNode(chip)
+  range.collapse(false)
+  range.insertNode(trailing)
+
+  // Restore focus + caret AFTER trailing space. Doing this AFTER
+  // the DOM mutation avoids fighting the popover for ownership of
+  // window.getSelection().
+  root.focus()
+  const after = document.createRange()
+  after.setStartAfter(trailing)
+  after.collapse(true)
+  const sel = window.getSelection()
+  if (sel) {
+    sel.removeAllRanges()
+    sel.addRange(after)
+  }
+  syncValueFromEditor()
+  closePicker()
+}
+
 function submit() {
   if (!canSend.value) return
-  const message = value.value.trim()
-  // Snapshot the chips, then clear — emit after so the parent gets a
-  // stable list and our reactive ref doesn't double-fire.
+  // serializeEditor() expands chips into their ticker codes inline
+  // with the prose, so the message we emit carries everything the
+  // user intended. Trim outer whitespace; preserve internal breaks.
+  const message = serializeEditor().trim()
   const files = attachments.value.slice()
   attachments.value = []
   attachError.value = null
   emit('send', message, files)
+  // Clear editor — set empty content + reset value mirror.
+  if (editorRef.value) {
+    editorRef.value.innerHTML = ''
+  }
   value.value = ''
-  nextTick(() => autosize())
 }
 
-watch(value, () => {
-  nextTick(() => autosize())
+/**
+ * Public API exposed to the parent (help.vue):
+ *   - `setValue(text)` — replaces ALL editor content with plain
+ *     text. Used by "edit last question" — click a past prose-only
+ *     question and the composer rehydrates with that text.
+ *     Note: this method assumes the input is plain text. If the
+ *     original message had ticker chips, they come back as bare
+ *     ticker codes (PETR4 etc.) and the user can re-pick them via
+ *     `@` if they want chip rendering.
+ *   - `focus()` — moves keyboard focus into the editor after a
+ *     prefill so the user can type immediately.
+ *   - `insertAtCursor(text)` — inserts plain text at the caret.
+ *     Reserved for future flows (e.g. quick-insert from a sidebar
+ *     button); not used by the @ picker (that path goes through
+ *     `onAssetPicked` which inserts a real chip element).
+ */
+function setValue(next: string): void {
+  const root = editorRef.value
+  if (root) {
+    root.textContent = next
+  }
+  value.value = next
+}
+
+function focus(): void {
+  const root = editorRef.value
+  if (!root) return
+  root.focus()
+  // Place caret at end so prefill text stays put — focus alone
+  // can land the caret at start in some browsers.
+  const sel = window.getSelection()
+  if (!sel) return
+  const r = document.createRange()
+  r.selectNodeContents(root)
+  r.collapse(false)
+  sel.removeAllRanges()
+  sel.addRange(r)
+}
+
+function insertAtCursor(text: string): void {
+  const root = editorRef.value
+  if (!root) {
+    value.value = `${value.value}${text}`
+    return
+  }
+  root.focus()
+  document.execCommand('insertText', false, text)
+  syncValueFromEditor()
+  void nextTick(() => {
+    editorRef.value?.focus()
+  })
+}
+
+defineExpose({
+  setValue,
+  focus,
+  insertAtCursor,
 })
 </script>
 
 <style scoped>
-.chat-textarea::placeholder {
+/*
+  Contenteditable composer styling. The div behaves as a
+  multi-line textarea visually but supports inline chips because
+  it's `contenteditable=true`. Placeholder via :empty + data-attr
+  so it stays in sync with the bound prop.
+*/
+.chat-editor {
+  white-space: pre-wrap;     /* honor user line breaks */
+  word-break: break-word;    /* long URLs / unbroken strings wrap */
+  caret-color: var(--brand-text);
+}
+.chat-editor.is-disabled {
+  pointer-events: none;
+  opacity: 0.6;
+}
+.chat-editor.is-empty:before {
+  content: attr(data-placeholder);
   color: color-mix(in srgb, currentColor 45%, transparent);
+  pointer-events: none;
+}
+/* Hide the placeholder when caret enters even if value is still ""
+   (browsers like Safari mark an empty editor with a phantom <br>;
+   we don't want to flash placeholder over that). */
+.chat-editor:focus.is-empty:before {
+  opacity: 0.5;
+}
+
+/*
+  Inline mention chip — rendered into the contenteditable as a
+  contenteditable=false span. Browser treats it as a single atomic
+  glyph: arrow keys jump over it, Backspace deletes the whole
+  thing, selections highlight it as one unit.
+  Visually picks the brand-primary tint so it reads as "this is an
+  asset reference, not prose." Same vocabulary as the live
+  TickerChip in chat answers — keeps the user oriented.
+*/
+.chat-editor :deep(.chat-mention) {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 8px 1px 2px;
+  margin: 0 1px;
+  border-radius: 9999px;
+  background-color: color-mix(in srgb, var(--brand-primary) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 30%, transparent);
+  color: var(--brand-text);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  line-height: 1.3;
+  user-select: all;
+  cursor: default;
+  vertical-align: baseline;
+  transition: background-color 140ms ease-out, border-color 140ms ease-out;
+}
+.chat-editor :deep(.chat-mention:hover) {
+  background-color: color-mix(in srgb, var(--brand-primary) 22%, transparent);
+  border-color: color-mix(in srgb, var(--brand-primary) 45%, transparent);
+}
+.chat-editor :deep(.chat-mention__logo) {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  object-fit: cover;
+  background-color: color-mix(in srgb, var(--brand-text) 6%, transparent);
+}
+.chat-editor :deep(.chat-mention__code) {
+  display: inline-block;
 }
 
 .chat-send:not(:disabled):hover {

@@ -1142,6 +1142,74 @@ export function useChatStream(opts: UseChatStreamOptions) {
 
   const sources = computed(() => lastAssistant.value?.citations ?? [])
 
+  /**
+   * Drop the last assistant turn from the local thread + re-fire the
+   * preceding user question. Used by the "Regenerar" action under
+   * each answer. Backend has no separate `regenerate` endpoint —
+   * we just resend the same message; the new turn becomes the
+   * authoritative one client-side.
+   *
+   * Returns `true` when a regenerate was queued, `false` if the
+   * thread shape didn't fit (no trailing assistant + preceding user).
+   */
+  async function regenerateLast(): Promise<boolean> {
+    if (isStreaming.value) return false
+    const arr = messages.value
+    if (arr.length < 2) return false
+    const last = arr[arr.length - 1]
+    const prev = arr[arr.length - 2]
+    if (!last || last.role !== 'assistant') return false
+    if (!prev || prev.role !== 'user') return false
+    const userText = prev.content
+    const userAttachments = prev.meta?.attachments
+    // Pop both turns. The send() call below will re-add a fresh
+    // user turn (identical content) + a new streaming assistant
+    // turn. Keeps history consistent — no duplicate user message.
+    arr.splice(arr.length - 2, 2)
+    if (userAttachments && userAttachments.length > 0) {
+      // Stored attachments only carry meta (id/name/mime/size/kind),
+      // not bytes — we can't re-upload. Best we can do is replay
+      // the prose; the agent already has the parsed snapshot in
+      // memory if the original turn ran. Document the limit so
+      // callers don't expect attachment round-trips on regenerate.
+      await send(userText)
+    } else {
+      await send(userText)
+    }
+    return true
+  }
+
+  /**
+   * Strip the LAST user turn (and its assistant reply, if any) from
+   * the local thread. Used by the "click to edit" affordance: the
+   * page picks up the original content via the `edit-question`
+   * event, prefills the composer, and the user re-fires manually.
+   *
+   * Returns the stripped user message's text so the caller can
+   * prefill without depending on prop wiring; null when the thread
+   * didn't end on a user-then-assistant pair.
+   */
+  function popLastUserTurn(): string | null {
+    if (isStreaming.value) return null
+    const arr = messages.value
+    if (arr.length === 0) return null
+    let userIdx = -1
+    for (let i = arr.length - 1; i >= 0; i--) {
+      const m = arr[i]
+      if (m && m.role === 'user') {
+        userIdx = i
+        break
+      }
+    }
+    if (userIdx < 0) return null
+    const userMsg = arr[userIdx]!
+    // Strip everything from the user message onward (its assistant
+    // reply + any trailing turns — though normally there's at most
+    // one assistant after).
+    const removed = arr.splice(userIdx)
+    return removed[0]?.content ?? userMsg.content
+  }
+
   /** Update a proposal's state (called by the page after the user
    *  clicks Confirmar / Pular on an ActionProposalCard). The card
    *  collapses + locks once flipped. */
@@ -1169,5 +1237,7 @@ export function useChatStream(opts: UseChatStreamOptions) {
     reset,
     loadSession,
     markProposal,
+    regenerateLast,
+    popLastUserTurn,
   }
 }

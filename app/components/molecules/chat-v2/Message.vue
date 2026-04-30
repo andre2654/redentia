@@ -98,10 +98,20 @@
       </ul>
       <div
         v-if="message.content"
-        class="chat-question font-display text-[26px] font-semibold leading-tight tracking-tight md:text-[32px]"
-        :style="{ color: 'var(--brand-text)' }"
+        class="chat-question group/question"
+        :class="[questionSizeClass, isLastUserMessage ? 'chat-question--editable' : '']"
+        :style="{ color: 'var(--brand-text)', fontFamily: 'var(--brand-font, system-ui)' }"
+        :role="isLastUserMessage ? 'button' : undefined"
+        :tabindex="isLastUserMessage ? 0 : undefined"
+        :aria-label="isLastUserMessage ? 'Editar pergunta' : undefined"
+        @click="onClickQuestion"
+        @keydown.enter="onClickQuestion"
       >
         {{ message.content }}
+        <span v-if="isLastUserMessage" class="chat-question__edit-hint" aria-hidden="true">
+          <UIcon name="i-lucide-pencil" class="size-3.5" />
+          editar
+        </span>
       </div>
     </div>
 
@@ -326,6 +336,14 @@
         </button>
       </section>
 
+      <!-- ===== Action bar (Copiar / Regenerar) ===== -->
+      <ChatV2MessageActions
+        :content="message.content"
+        :status="message.status"
+        :can-regenerate="isLast"
+        @regenerate="$emit('regenerate', message.id)"
+      />
+
       <!-- ===== Sugestões (Related) ===== -->
       <section
         v-if="isLast && message.followups && message.followups.length > 0 && message.status === 'complete'"
@@ -372,6 +390,7 @@ import { ensureProposalProseSetup, useProposalProse } from '~/composables/usePro
 import { ensureChartProseSetup, useChartProse } from '~/composables/useChartProse'
 import { ensureMaxFeatureProseSetup, useMaxFeatureProse } from '~/composables/useMaxFeatureProse'
 import { ensureGlossaryProseSetup, useGlossaryProse } from '~/composables/useGlossaryProse'
+import { useCitationProse } from '~/composables/useCitationProse'
 
 // Register the marked ticker extension once (idempotent). Must run
 // before the first `renderMarkdown` call so PETR4 / VALE3 / KNRI11
@@ -427,6 +446,14 @@ if (import.meta.client) {
 const props = defineProps<{
   message: ChatMessage
   isLast: boolean
+  /** True only for the most recent USER turn in the thread,
+   *  regardless of whether an assistant reply follows it.
+   *  Drives the "click to edit" affordance — we never let users
+   *  edit older questions because we'd need to surgically rewrite
+   *  history (delete every turn after the edited one) and that's
+   *  not implemented yet. Computed in Thread.vue from the messages
+   *  array. */
+  isLastUserMessage?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -438,6 +465,18 @@ const emit = defineEmits<{
   'dismiss-alert': [id: string]
   'confirm-proposal': [proposal: ChatProposalData]
   'skip-proposal': [proposal: ChatProposalData]
+  /** User clicked "Regenerar" on the assistant message footer.
+   *  Parent (help.vue) drops the last assistant turn and re-fires
+   *  the preceding user question. Argument is the message id of
+   *  the answer being regenerated, in case the parent wants to
+   *  pick the right turn (we always regenerate the LAST one for
+   *  now, but the id is here for future symmetry). */
+  'regenerate': [messageId: string]
+  /** User clicked their own past question to edit + re-send.
+   *  Carries the original content so the composer can be
+   *  pre-filled. Parent strips the question + its assistant
+   *  reply from the thread before pre-fill. */
+  'edit-question': [payload: { messageId: string; content: string }]
 }>()
 
 /** Adapt the lightweight inline alert payload (from `alert.fired`) to
@@ -619,6 +658,7 @@ const tickerProse = useTickerProse()
 const chartProse = useChartProse()
 const maxFeatureProse = useMaxFeatureProse()
 const glossaryProse = useGlossaryProse()
+const citationProse = useCitationProse()
 const proposalProse = useProposalProse({
   proposals: () => props.message.proposals ?? [],
   // Suppress the fallback chip row while the message is still
@@ -668,6 +708,58 @@ function humanSizeStatic(bytes: number): string {
   return `${(bytes / 1024 / 1024).toFixed(1)}MB`
 }
 
+/**
+ * Adaptive size for the user question based on length.
+ *
+ * Short questions (≤80 chars) = headline-style (26→32px). Reads
+ * like a chapter title above the answer.
+ *
+ * Medium (81-200) = "lead paragraph" size (20→24px). Still
+ * substantial but no longer punches the screen on multi-line walls.
+ *
+ * Long (>200) = body+ size (17→19px). At this length the question
+ * is more of an instruction block than a title — heading-weight
+ * type would feel like a manifesto. We tighten line-height too so
+ * the block doesn't sprawl vertically.
+ *
+ * The break points are chosen by feel — 80 chars ≈ 1 dense line at
+ * 26px on desktop, 200 chars ≈ 3-4 lines. Past that we step down
+ * to a comfortable read.
+ */
+const questionSizeClass = computed(() => {
+  const len = props.message.role === 'user'
+    ? (props.message.content || '').length
+    : 0
+  if (len <= 80) {
+    return 'text-[26px] font-semibold leading-tight tracking-tight md:text-[32px]'
+  }
+  if (len <= 200) {
+    return 'text-[20px] font-semibold leading-snug tracking-tight md:text-[24px]'
+  }
+  return 'text-[17px] font-medium leading-normal md:text-[19px]'
+})
+
+/**
+ * Handle a click on the user's last question. Emits `edit-question`
+ * so the parent (help.vue) can:
+ *   1. Strip the current answer (and the user message itself) from
+ *      the thread,
+ *   2. Pre-fill the composer with the original content,
+ *   3. Place focus on the textarea.
+ *
+ * Guard: only fires for the last user message — older questions
+ * stay read-only because rewriting history surgically (deleting
+ * every turn after the edit point) isn't implemented yet.
+ */
+function onClickQuestion(): void {
+  if (!props.isLastUserMessage) return
+  if (!props.message.content) return
+  emit('edit-question', {
+    messageId: props.message.id,
+    content: props.message.content,
+  })
+}
+
 // Depends on `sanitizerReady` so the computed re-runs once DOMPurify
 // finishes its dynamic import on the client (otherwise the first
 // render would stay unsanitized forever).
@@ -699,6 +791,11 @@ watch(
       // explicit `closest()` check, but ordering keeps the DOM
       // walks cheap and prevents transient flicker.
       glossaryProse.mountIn(answerRef.value)
+      // Citation chips read from message.citations to populate the
+      // hover preview (title, url, publisher, date). Streaming
+      // appends new citations to the array, so re-running this on
+      // every renderedMarkdown tick wires the new ones.
+      citationProse.mountIn(answerRef.value, props.message.citations)
     })
   },
   { flush: 'post', immediate: true },
@@ -727,6 +824,7 @@ onBeforeUnmount(() => {
   maxFeatureProse.cleanup()
   proposalProse.cleanup()
   glossaryProse.cleanup()
+  citationProse.cleanup()
 })
 
 function renderMarkdown(text: string): string {
@@ -756,10 +854,11 @@ function renderMarkdown(text: string): string {
         // `data-period` on the chart-mount placeholder.
         ADD_ATTR: [
           'target', 'rel',
-          'data-ticker',          // useTickerProse
-          'data-period',          // useChartProse
-          'data-label',           // useMaxFeatureProse
+          'data-ticker',           // useTickerProse
+          'data-period',           // useChartProse
+          'data-label',            // useMaxFeatureProse
           'data-key', 'data-term', // useGlossaryProse
+          'data-cite-id',          // useCitationProse (hover preview)
         ],
       })
     : rawHtml
@@ -855,9 +954,14 @@ function repairTableSeparators(md: string): string {
 // We do this on the HTML string so we don't fight Marked's tokenizer.
 function decorateHtml(html: string): string {
   return html
-    // Citations [N] → sup chip. Only matches in text nodes (not inside
-    // attributes), since marked renders text content escaped.
-    .replace(/\[(\d+)\]/g, '<sup class="chat-citation-ref">$1</sup>')
+    // Citations [N] → sup chip with data-cite-id so the post-mount
+    // step (`useCitationProse`) can wire a hover preview tooltip
+    // showing source title + URL + snippet. The trailing class
+    // `chat-citation-mount` is the selector the mount step queries.
+    .replace(
+      /\[(\d+)\]/g,
+      '<sup class="chat-citation-ref chat-citation-mount" data-cite-id="$1">$1</sup>',
+    )
     // <a ...> → add chat-link class + open in new tab
     .replace(/<a\s+href="([^"]+)"([^>]*)>/g, (_, href, rest) => {
       const hasClass = /class=/.test(rest)
@@ -909,6 +1013,57 @@ function artifactLabel(type: ChatArtifact['type']): string {
 
 .chat-question {
   word-break: break-word;
+}
+
+/*
+  Editable user question — only applied to the LAST user turn.
+  The hint appears on hover/focus only so resting state is clean.
+  We use `position: relative` to anchor the absolute hint pill at
+  the top-right corner.
+*/
+.chat-question--editable {
+  position: relative;
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 4px 6px;
+  margin: -4px -6px;
+  transition: background-color 140ms ease-out;
+}
+.chat-question--editable:hover,
+.chat-question--editable:focus-visible {
+  background-color: color-mix(in srgb, var(--brand-primary) 6%, transparent);
+  outline: none;
+}
+
+.chat-question__edit-hint {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px 3px 6px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--brand-surface) 90%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-border) 50%, transparent);
+  color: color-mix(in srgb, var(--brand-text) 60%, transparent);
+  font-family: var(--brand-font, system-ui);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
+  /* Hidden by default; revealed on parent hover/focus. */
+  opacity: 0;
+  transform: translateY(-2px);
+  transition:
+    opacity 160ms ease-out,
+    transform 160ms ease-out;
+  pointer-events: none;
+}
+.chat-question--editable:hover .chat-question__edit-hint,
+.chat-question--editable:focus-visible .chat-question__edit-hint {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* Cold-start status ticker — pulsing dot ring + skeleton shimmer.

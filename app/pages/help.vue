@@ -136,6 +136,7 @@
 
         <ChatV2Thread
           v-if="chat.messages.value.length > 0"
+          ref="threadRef"
           :messages="chat.messages.value"
           @send-followup="onSendFollowup"
           @open-artifact="onOpenArtifact"
@@ -145,6 +146,8 @@
           @dismiss-alert="onDismissAlert"
           @confirm-proposal="onConfirmProposal"
           @skip-proposal="onSkipProposal"
+          @regenerate="onRegenerate"
+          @edit-question="onEditQuestion"
         />
         <!-- Authenticated users see the rich dashboard (real IBOV, goal
              progress, decisions/watchlist counts, personalized news with
@@ -160,12 +163,37 @@
           @open-goal="goalSetupOpen = true"
         />
 
+        <!--
+          Scroll-to-bottom FAB. Lives here (not inside ChatV2Thread)
+          so it sits in the SAME column container as the composer
+          pill — both are `absolute bottom-x left-1/2 translate-x(-50%)`
+          inside this `relative flex flex-col` wrapper, so they
+          inherit the same horizontal center. Visibility + click
+          handler come from Thread via `defineExpose({ showScrollFab,
+          scrollToBottom })`. Sits AFTER the v-if/v-else pair so the
+          Vue compiler still sees them as adjacent siblings (the
+          Transition wrapper here would otherwise break adjacency
+          and trip the "v-else has no adjacent v-if" error).
+        -->
+        <Transition name="chat-fab">
+          <button
+            v-if="threadRef?.showScrollFab"
+            type="button"
+            class="chat-scroll-fab"
+            aria-label="Rolar para o final"
+            @click="threadRef?.scrollToBottom()"
+          >
+            <UIcon name="i-lucide-arrow-down" class="size-[18px]" />
+          </button>
+        </Transition>
+
         <!-- Composer — also hosts the ThinkingIndicator inline (see
              Input.vue). The indicator only mounts while streaming and
              reads reasoning + tool calls off the active assistant
              message we pass in here, so it visually attaches to the
              composer pill (Manus pattern). -->
         <ChatV2Input
+          ref="composerRef"
           v-model:tier="tier"
           :disabled="chat.isStreaming.value"
           :is-streaming="chat.isStreaming.value"
@@ -247,7 +275,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { ChatArtifact, ChatAttachment, ChatProposalData } from '~/composables/useChatStream'
 
 definePageMeta({
@@ -265,6 +293,26 @@ const authStore = useAuthStore()
 
 // ---- State ------------------------------------------------------
 const tier = ref<'basic' | 'max'>('basic')
+
+// Reference to the Thread so this page can drive the scroll-to-bottom
+// FAB (rendered as a sibling of the composer to inherit the same
+// horizontal center). Type is opaque on purpose — we only touch the
+// `showScrollFab` ref + `scrollToBottom()` method exposed by the
+// component via `defineExpose`.
+const threadRef = ref<{
+  showScrollFab: boolean
+  scrollToBottom: () => void
+} | null>(null)
+
+// Reference to the composer so we can drive it from outside —
+// specifically for the "edit last question" affordance (prefill +
+// focus) and the upcoming asset-picker (`@` trigger inserts a
+// ticker at the caret).
+const composerRef = ref<{
+  setValue: (text: string) => void
+  focus: () => void
+  insertAtCursor: (text: string) => void
+} | null>(null)
 const sidebarOpen = ref(false)
 // Desktop-only: when true, the sidebar is hidden entirely (collapsed
 // by the user clicking the « button). Mobile uses `sidebarOpen` instead.
@@ -878,6 +926,43 @@ function onDismissAlert(id: string) {
   void alertsState.dismiss(id)
 }
 
+// ---- Action bar handlers ----------------------------------------
+/**
+ * "Regenerar" clicked under an answer. Drops the last assistant
+ * turn from the local thread and re-fires the preceding user
+ * question — the new turn replaces the old one. Backend has no
+ * dedicated regenerate endpoint; we just resend the same prose.
+ */
+async function onRegenerate(_messageId: string): Promise<void> {
+  if (chat.isStreaming.value) return
+  await chat.regenerateLast()
+  await refreshSessionList()
+}
+
+/**
+ * "Editar pergunta" clicked on the last user message. Strips the
+ * question (and its assistant reply, if any) from the thread,
+ * then prefills the composer with the original content + focuses
+ * the textarea. The user re-fires manually after editing.
+ */
+function onEditQuestion(payload: { messageId: string; content: string }): void {
+  if (chat.isStreaming.value) return
+  // Strip locally so the composer becomes the source of truth for
+  // the next turn. `popLastUserTurn` is idempotent — calling it
+  // when the thread doesn't end on a user-then-assistant pair is
+  // a no-op, so the explicit message id from the event is the
+  // ground truth even if the composable's internal state lags.
+  const stripped = chat.popLastUserTurn()
+  const prefill = stripped ?? payload.content
+  composerRef.value?.setValue(prefill)
+  // Wait a tick so the textarea autosizes before focus — focus
+  // before autosize would put the caret at the wrong line on
+  // multi-line questions.
+  void nextTick(() => {
+    composerRef.value?.focus()
+  })
+}
+
 // ---- Pre-execution co-pilot handlers ----------------------------
 function onConfirmExecution(decisionId: string) {
   // The user has checked all critical items and clicked "Executei".
@@ -1047,6 +1132,90 @@ watch(
   }
   .chat-unauth-cta:hover {
     transform: none;
+  }
+}
+
+/*
+  Scroll-to-bottom FAB. Rendered as a sibling of <ChatV2Input>
+  inside the chat column wrapper (`relative flex h-full flex-col`).
+  Both elements use the same horizontal anchor — `left: 50%` +
+  `translateX(-50%)` — so the FAB lines up perfectly with the
+  composer pill's center, regardless of sidebar width or screen
+  size.
+  `bottom: 9rem` lands ~2rem above the composer pill (which sits
+  at bottom:0 with ~6-7rem of pill height + safe-area padding).
+  z-index 35 sits above the composer (z-30) so a hover on the
+  FAB is always clickable but only covers a 44px circle of the
+  pill area.
+*/
+.chat-scroll-fab {
+  position: absolute;
+  bottom: 9rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 35;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--brand-surface) 92%, transparent);
+  color: var(--brand-text);
+  border: 1px solid color-mix(in srgb, var(--brand-border) 60%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow:
+    0 12px 28px -14px color-mix(in srgb, var(--brand-primary) 30%, transparent),
+    0 4px 10px -6px rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+  pointer-events: auto;
+  transition:
+    background-color 160ms ease-out,
+    border-color 160ms ease-out,
+    transform 160ms ease-out,
+    box-shadow 160ms ease-out;
+}
+
+.chat-scroll-fab:hover {
+  background: var(--brand-surface);
+  border-color: color-mix(in srgb, var(--brand-primary) 45%, transparent);
+  box-shadow:
+    0 16px 36px -16px color-mix(in srgb, var(--brand-primary) 45%, transparent),
+    0 6px 12px -8px rgba(0, 0, 0, 0.22);
+  transform: translateX(-50%) translateY(-2px);
+}
+
+.chat-scroll-fab:active {
+  transform: translateX(-50%) translateY(0);
+}
+
+.chat-scroll-fab:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 3px;
+}
+
+.chat-fab-enter-active,
+.chat-fab-leave-active {
+  transition:
+    opacity 200ms ease,
+    transform 220ms cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+.chat-fab-enter-from,
+.chat-fab-leave-to {
+  opacity: 0;
+  transform: translate(-50%, 12px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-scroll-fab,
+  .chat-fab-enter-active,
+  .chat-fab-leave-active {
+    transition: opacity 100ms;
+  }
+  .chat-fab-enter-from,
+  .chat-fab-leave-to {
+    transform: translateX(-50%);
   }
 }
 </style>

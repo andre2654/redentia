@@ -27,6 +27,7 @@
           :key="m.id"
           :message="m"
           :is-last="i === messages.length - 1"
+          :is-last-user-message="m.id === lastUserMessageId"
           :class="i > 0 ? 'mt-12 md:mt-16' : ''"
           @send-followup="$emit('send-followup', $event)"
           @open-artifact="$emit('open-artifact', $event)"
@@ -36,32 +37,27 @@
           @dismiss-alert="$emit('dismiss-alert', $event)"
           @confirm-proposal="$emit('confirm-proposal', $event)"
           @skip-proposal="$emit('skip-proposal', $event)"
+          @regenerate="$emit('regenerate', $event)"
+          @edit-question="$emit('edit-question', $event)"
         />
       </div>
     </div>
 
-    <Transition name="chat-fab">
-      <button
-        v-if="showScrollFab"
-        type="button"
-        class="absolute bottom-44 left-1/2 z-20 flex size-9 -translate-x-1/2 items-center justify-center rounded-full backdrop-blur-md transition-colors"
-        :style="{
-          backgroundColor: `color-mix(in srgb, var(--brand-surface) 80%, transparent)`,
-          color: 'var(--brand-text)',
-          border: `1px solid color-mix(in srgb, var(--brand-border) 50%, transparent)`,
-          boxShadow: '0 8px 20px -8px rgba(0,0,0,0.25)',
-        }"
-        aria-label="Rolar para o final"
-        @click="scrollToBottom"
-      >
-        <UIcon name="i-lucide-arrow-down" class="size-4" />
-      </button>
-    </Transition>
+    <!--
+      Note: the floating "scroll to bottom" FAB is rendered by the
+      PARENT (help.vue) as a sibling of the composer, not here.
+      Reason: the FAB needs to align horizontally with the composer
+      pill (`mx-auto max-w-3xl` inside the column parent), and the
+      cleanest way to inherit that center is to live in the same
+      ancestor as the composer. Thread exposes its scroll state via
+      `defineExpose` so the parent can drive FAB visibility +
+      `scrollToBottom()` clicks without a separate state store.
+    -->
   </div>
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import type { ChatMessage, ChatArtifact, ChatProposalData } from '~/composables/useChatStream'
 import type { ChatAlert } from '~/composables/useAlerts'
 
@@ -87,46 +83,99 @@ defineEmits<{
   'dismiss-alert': [id: string]
   'confirm-proposal': [proposal: ChatProposalData]
   'skip-proposal': [proposal: ChatProposalData]
+  'regenerate': [messageId: string]
+  'edit-question': [payload: { messageId: string; content: string }]
 }>()
 
-const brand = useBrand()
+// Brand colors all flow through CSS vars now (`var(--brand-*)`),
+// so no `useBrand()` reactive ref needed in this component.
 const scrollRef = ref<HTMLElement | null>(null)
-const showScrollFab = ref(false)
-let pinnedToBottom = true
 
-function isAtBottom(): boolean {
+/**
+ * ID of the most recent user-role message in the thread. Drives
+ * the "click-to-edit" affordance — only the last question gets the
+ * pencil hint; older questions are read-only because rewriting
+ * history surgically isn't supported yet. Recomputes whenever the
+ * messages list changes, so a fresh user turn instantly transfers
+ * the affordance from the previous question to the new one.
+ */
+const lastUserMessageId = computed(() => {
+  for (let i = props.messages.length - 1; i >= 0; i--) {
+    const m = props.messages[i]
+    if (m && m.role === 'user') return m.id
+  }
+  return null
+})
+
+/**
+ * `atBottom` is reactive (was a local `let` before, which prevented
+ * the watch on `messages` from recomputing FAB visibility while a
+ * response streamed in). Slack of 100px so a few pixels of overscroll
+ * doesn't keep the FAB visible right at the bottom.
+ */
+const atBottom = ref(true)
+const showScrollFab = computed(
+  () => !atBottom.value && props.messages.length > 0,
+)
+
+function recomputeAtBottom(): void {
   const el = scrollRef.value
-  if (!el) return true
+  if (!el) {
+    atBottom.value = true
+    return
+  }
   const slack = 100
-  return el.scrollTop + el.clientHeight >= el.scrollHeight - slack
+  atBottom.value = el.scrollTop + el.clientHeight >= el.scrollHeight - slack
 }
 
 function scrollToBottom() {
   const el = scrollRef.value
   if (!el) return
   el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' })
-  pinnedToBottom = true
-  showScrollFab.value = false
+  atBottom.value = true
 }
 
 onMounted(() => {
   const el = scrollRef.value
   if (!el) return
-  el.addEventListener('scroll', () => {
-    pinnedToBottom = isAtBottom()
-    showScrollFab.value = !pinnedToBottom && props.messages.length > 0
-  })
+  el.addEventListener('scroll', recomputeAtBottom, { passive: true })
+  // Initial check — if a session loaded into a tall scrollable
+  // position above the bottom, show the FAB without waiting for
+  // the user's first scroll event.
+  recomputeAtBottom()
 })
 
+/**
+ * Re-evaluate position on EVERY message tick (streaming text
+ * inflates the scroll area):
+ *   - If we WERE pinned to the bottom, slide back down so the user
+ *     follows the live response (existing behaviour).
+ *   - If we were NOT pinned (user scrolled up to read history) we
+ *     just refresh `atBottom` so the FAB reflects the new geometry
+ *     instead of staying stale.
+ */
 watch(
   () => props.messages.map((m) => m.content + m.toolCalls.length).join('|'),
   async () => {
-    if (pinnedToBottom) {
-      await nextTick()
+    const wasAtBottom = atBottom.value
+    await nextTick()
+    if (wasAtBottom) {
       scrollToBottom()
+    } else {
+      recomputeAtBottom()
     }
   },
 )
+
+// Exposed to the parent (help.vue) so it can drive the floating
+// "scroll to bottom" FAB. The FAB lives outside this component to
+// inherit the composer's horizontal alignment — see template
+// comment above.
+defineExpose({
+  atBottom,
+  showScrollFab,
+  scrollToBottom,
+})
 </script>
 
 <style scoped>
@@ -145,15 +194,4 @@ watch(
   background-color: color-mix(in srgb, currentColor 22%, transparent);
 }
 
-.chat-fab-enter-active,
-.chat-fab-leave-active {
-  transition:
-    opacity 200ms ease,
-    transform 200ms cubic-bezier(0.2, 0.7, 0.3, 1);
-}
-.chat-fab-enter-from,
-.chat-fab-leave-to {
-  opacity: 0;
-  transform: translate(-50%, 8px);
-}
 </style>
