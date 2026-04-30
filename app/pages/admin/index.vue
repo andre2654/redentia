@@ -14,7 +14,7 @@
       </header>
 
       <!-- Metrics grid -->
-      <div class="grid gap-px overflow-hidden rounded-sm border md:grid-cols-4" :style="{ borderColor: C.border, backgroundColor: C.border }">
+      <div class="grid gap-px overflow-hidden rounded-sm border md:grid-cols-2 lg:grid-cols-3" :style="{ borderColor: C.border, backgroundColor: C.border }">
         <NuxtLink
           v-for="card in cards"
           :key="card.to"
@@ -107,6 +107,8 @@ const auth = useAuthStore()
 const tenantsService = useTenantsService()
 const autService = useSocialAutomationsService()
 const profilesService = useMonitoredProfilesService()
+const usersService = useAdminUsersService()
+const leadsService = useLeadsService()
 
 const postizUrl = computed(() => {
   if (import.meta.server) return 'https://postiz.saraivada.com'
@@ -119,13 +121,19 @@ const automationsActive = ref(0)
 const automationsTotal = ref(0)
 const profilesCount = ref(0)
 const profilesEnabled = ref(0)
+const usersTotal = ref(0)
+const usersPending = ref(0)
+const leadsTotal = ref(0)
+const leadsLast7d = ref(0)
 
 onMounted(async () => {
   try {
-    const [tenants, automations, profiles] = await Promise.all([
+    const [tenants, automations, profiles, userStats, leadStats] = await Promise.all([
       tenantsService.list().catch(() => ({ data: [] } as any)),
       autService.list().catch(() => []),
       profilesService.list().catch(() => []),
+      usersService.stats().catch(() => null),
+      leadsService.stats().catch(() => null),
     ])
     // tenants returns paginated wrapper or list depending on backend
     const tenantsArr = Array.isArray(tenants) ? tenants : ((tenants as any)?.data || [])
@@ -134,6 +142,14 @@ onMounted(async () => {
     automationsActive.value = automations.filter(a => a.enabled).length
     profilesCount.value = profiles.length
     profilesEnabled.value = profiles.filter(p => p.enabled).length
+    if (userStats) {
+      usersTotal.value = userStats.total
+      usersPending.value = userStats.pendingApproval
+    }
+    if (leadStats) {
+      leadsTotal.value = leadStats.total
+      leadsLast7d.value = leadStats.last_7d
+    }
   } finally {
     loading.value = false
   }
@@ -141,6 +157,20 @@ onMounted(async () => {
 
 const cards = computed(() => [
   { to: '/admin/tenants', label: 'TENANTS', value: String(tenantsCount.value), sub: 'CADASTRADOS', icon: 'i-lucide-building-2' },
+  {
+    to: '/admin/users',
+    label: 'USUÁRIOS',
+    value: String(usersTotal.value),
+    sub: usersPending.value > 0 ? `${usersPending.value} PENDENTES` : 'TOTAL',
+    icon: 'i-lucide-users',
+  },
+  {
+    to: '/admin/leads',
+    label: 'LEADS',
+    value: String(leadsTotal.value),
+    sub: leadsLast7d.value > 0 ? `+${leadsLast7d.value} EM 7D` : 'TOTAL',
+    icon: 'i-lucide-magnet',
+  },
   { to: '/admin/social/automations', label: 'AUTOMAÇÕES', value: `${automationsActive.value}/${automationsTotal.value}`, sub: 'ATIVAS/TOTAL', icon: 'i-lucide-zap' },
   { to: '/admin/social/monitored-profiles', label: 'PERFIS MONITORADOS', value: `${profilesEnabled.value}/${profilesCount.value}`, sub: 'ATIVOS/TOTAL', icon: 'i-lucide-eye' },
   { to: '/admin/data-health', label: 'DATA HEALTH', value: '↗', sub: 'SCRAPE · NEWS · TESOURO', icon: 'i-lucide-activity' },
