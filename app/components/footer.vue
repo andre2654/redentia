@@ -290,9 +290,21 @@
       </div>
       
       <div class="flex w-full items-center justify-between pt-6 max-lg:flex-col max-lg:gap-4" :style="{ borderTop: `1px solid var(--brand-border)` }">
-        <p class="text-[12px] max-lg:text-center" :style="{ color: 'var(--brand-text-muted)' }">
-          © {{ new Date().getFullYear() }} {{ brand.name }}. {{ brand.nav.footerCopyright }}
-        </p>
+        <div
+          class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] max-lg:justify-center max-lg:text-center"
+          :style="{ color: 'var(--brand-text-muted)' }"
+        >
+          <span>
+            © {{ new Date().getFullYear() }} {{ brand.name }}. {{ brand.nav.footerCopyright }}
+          </span>
+          <span aria-hidden="true" class="opacity-50">·</span>
+          <!-- Quiet "report a problem" link. Inline with the copyright
+               so it reads as a service link rather than a CTA. Owns
+               its own modal state via the trigger atom. -->
+          <AtomsReportProblemTrigger variant="link">
+            Reportar problema
+          </AtomsReportProblemTrigger>
+        </div>
         <p v-if="brand.company.address" class="text-[11px] max-lg:text-center" :style="{ color: 'var(--brand-text-muted)' }">
           {{ brand.company.address }}
         </p>

@@ -261,17 +261,18 @@
       </div>
     </div>
 
-    <!-- ============ Footer: Ver auditoria ============
-         Sticky bottom button that opens the audit drawer (PanelDrawer)
-         on the "activity" tab. Lives outside the scroll container so
-         it's always visible regardless of how long the history list
-         scrolls. -->
+    <!-- ============ Footer: Ver auditoria + Reportar problema ============
+         Sticky bottom block. The audit button only renders for
+         authenticated users (gated by `showGoalsAndDecisions`); the
+         report link always renders so anonymous users can flag
+         issues from the chat too. Order: audit (primary affordance),
+         then a tiny muted link below it as secondary. -->
     <footer
-      v-if="showGoalsAndDecisions"
       class="shrink-0 border-t px-4 py-3"
       :style="{ borderColor: `color-mix(in srgb, var(--brand-border) 35%, transparent)` }"
     >
       <button
+        v-if="showGoalsAndDecisions"
         type="button"
         class="audit-btn flex w-full items-center justify-center gap-2 rounded-lg px-3 py-2 text-[13px] font-medium transition-[background-color,border-color,box-shadow]"
         :style="auditBtnStyle"
@@ -289,6 +290,22 @@
           :style="{ color: 'var(--brand-text-muted)' }"
         />
       </button>
+
+      <!-- Quiet secondary affordance. Sits BELOW the audit button so
+           it never competes for attention. ~11px font + low opacity
+           on rest, centered, no border. The trigger atom handles the
+           modal state. -->
+      <div
+        :class="showGoalsAndDecisions ? 'mt-2' : ''"
+        class="flex justify-center"
+      >
+        <AtomsReportProblemTrigger
+          variant="link"
+          class="report-link text-[11px]"
+        >
+          Reportar problema
+        </AtomsReportProblemTrigger>
+      </div>
     </footer>
   </aside>
 </template>
@@ -695,6 +712,20 @@ const rootRef = ref<HTMLElement | null>(null)
 .see-more-btn:hover {
   background-color: color-mix(in srgb, var(--brand-text) 4%, transparent);
   color: var(--brand-text) !important;
+}
+
+/* Quiet "report a problem" link in the footer. Lives at lower
+   contrast at rest so it never competes with the audit button
+   above it; brightens on hover. Color is `currentColor` driven
+   from `--brand-text-muted` set inline. */
+.report-link :deep(.report-trigger-link) {
+  color: var(--brand-text-muted, currentColor);
+  opacity: 0.75;
+  transition: opacity 150ms ease, color 150ms ease;
+}
+.report-link :deep(.report-trigger-link:hover) {
+  opacity: 1;
+  color: var(--brand-text);
 }
 
 /* Audit footer button — same family as the stat cards */

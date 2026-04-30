@@ -109,6 +109,7 @@ const autService = useSocialAutomationsService()
 const profilesService = useMonitoredProfilesService()
 const usersService = useAdminUsersService()
 const leadsService = useLeadsService()
+const reportsService = useReportsService()
 
 const postizUrl = computed(() => {
   if (import.meta.server) return 'https://postiz.saraivada.com'
@@ -125,15 +126,18 @@ const usersTotal = ref(0)
 const usersPending = ref(0)
 const leadsTotal = ref(0)
 const leadsLast7d = ref(0)
+const reportsTotal = ref(0)
+const reportsOpen = ref(0)
 
 onMounted(async () => {
   try {
-    const [tenants, automations, profiles, userStats, leadStats] = await Promise.all([
+    const [tenants, automations, profiles, userStats, leadStats, reportStats] = await Promise.all([
       tenantsService.list().catch(() => ({ data: [] } as any)),
       autService.list().catch(() => []),
       profilesService.list().catch(() => []),
       usersService.stats().catch(() => null),
       leadsService.stats().catch(() => null),
+      reportsService.stats().catch(() => null),
     ])
     // tenants returns paginated wrapper or list depending on backend
     const tenantsArr = Array.isArray(tenants) ? tenants : ((tenants as any)?.data || [])
@@ -149,6 +153,10 @@ onMounted(async () => {
     if (leadStats) {
       leadsTotal.value = leadStats.total
       leadsLast7d.value = leadStats.last_7d
+    }
+    if (reportStats) {
+      reportsTotal.value = reportStats.total
+      reportsOpen.value = reportStats.open
     }
   } finally {
     loading.value = false
@@ -170,6 +178,13 @@ const cards = computed(() => [
     value: String(leadsTotal.value),
     sub: leadsLast7d.value > 0 ? `+${leadsLast7d.value} EM 7D` : 'TOTAL',
     icon: 'i-lucide-magnet',
+  },
+  {
+    to: '/admin/reports',
+    label: 'REPORTS',
+    value: String(reportsTotal.value),
+    sub: reportsOpen.value > 0 ? `${reportsOpen.value} ABERTOS` : 'TOTAL',
+    icon: 'i-lucide-life-buoy',
   },
   { to: '/admin/social/automations', label: 'AUTOMAÇÕES', value: `${automationsActive.value}/${automationsTotal.value}`, sub: 'ATIVAS/TOTAL', icon: 'i-lucide-zap' },
   { to: '/admin/social/monitored-profiles', label: 'PERFIS MONITORADOS', value: `${profilesEnabled.value}/${profilesCount.value}`, sub: 'ATIVOS/TOTAL', icon: 'i-lucide-eye' },

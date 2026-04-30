@@ -143,6 +143,7 @@ const mainNav = [
   { to: '/admin/tenants', label: 'Tenants', icon: 'i-lucide-building-2' },
   { to: '/admin/users', label: 'Usuários', icon: 'i-lucide-users' },
   { to: '/admin/leads', label: 'Leads', icon: 'i-lucide-magnet' },
+  { to: '/admin/reports', label: 'Reports', icon: 'i-lucide-life-buoy' },
 ]
 
 const socialNav = [
