@@ -202,7 +202,7 @@ const risksPreview = computed(() => demoReport.value.risks.slice(0, 3))
           </p>
 
           <div class="mb-3 md:mb-5">
-            <AtomsPortfolioInput variant="hero" cta-label="Analisar minha carteira gratis" :show-suggestions="true" />
+            <AtomsPortfolioInput variant="hero" cta-label="Analisar minha carteira gratis" cta-label-short="Analisar" :show-suggestions="true" />
           </div>
 
           <!-- Trust signals: ficam só os dois que continuam verdadeiros

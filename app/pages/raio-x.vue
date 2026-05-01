@@ -16,6 +16,7 @@ import type { PortfolioReport } from '~/composables/usePortfolioScore'
 
 definePageMeta({
   isPublicRoute: true,
+  hideInstallAppBanner: true,
 })
 
 const brand = useBrand()
@@ -139,7 +140,7 @@ usePageSeo({
 
         <div class="mx-auto max-w-4xl px-6 py-16 md:py-24">
           <div class="flex flex-col items-start gap-6 md:items-center md:text-center">
-            <p class="eyebrow">RAIO-X DA CARTEIRA</p>
+            <p class="eyebrow">RAIO-X DEMO · GRATUITO</p>
             <h1
               class="max-w-3xl text-[40px] font-light leading-[1.05] tracking-[-0.025em] md:text-[64px]"
               :style="{ color: 'var(--text-heading)' }"
@@ -152,21 +153,22 @@ usePageSeo({
               class="max-w-2xl text-[17px] leading-relaxed md:text-[19px]"
               :style="{ color: 'var(--text-body)' }"
             >
-              Adicione seus ativos e a Redent.IA cruza fundamentos, noticias, dividendos, concentracao e mercado para mostrar o que esta bom, o que esta ruim e o que mudou.
+              Cole seus tickers e veja uma previa do que mexeu na sua carteira. O Raio-X completo (com pesos, dividendos e plano de acao) acontece dentro da plataforma com sua carteira real.
             </p>
 
             <div class="mt-4 w-full max-w-2xl">
               <AtomsPortfolioInput
                 variant="hero"
                 :autofocus="true"
-                cta-label="Gerar meu Raio-X gratis"
+                cta-label="Gerar Raio-X demo gratis"
+                cta-label-short="Demo gratis"
               />
             </div>
 
             <ul class="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px]" :style="{ color: 'var(--text-muted)' }">
               <li class="flex items-center gap-2">
                 <span class="size-1 rounded-full" :style="{ background: brand.colors.primary }" />
-                Sem cadastro
+                Demo sem cadastro
               </li>
               <li class="flex items-center gap-2">
                 <span class="size-1 rounded-full" :style="{ background: brand.colors.primary }" />
@@ -174,7 +176,7 @@ usePageSeo({
               </li>
               <li class="flex items-center gap-2">
                 <span class="size-1 rounded-full" :style="{ background: brand.colors.primary }" />
-                Analise gratuita
+                100% gratuito
               </li>
             </ul>
           </div>
@@ -274,10 +276,24 @@ usePageSeo({
       <!-- ============ STATE B: com tickers, mostra diagnostico completo ============ -->
       <section v-if="hasTickers && report" class="raio-x__result">
         <div class="mx-auto max-w-6xl px-6 py-12 md:py-20">
+          <!-- Demo disclaimer banner: aviso claro que isso e uma previa -->
+          <div class="raio-x__demo-banner">
+            <div class="raio-x__demo-banner-text">
+              <p class="raio-x__demo-banner-eyebrow">VOCE ESTA VENDO A VERSAO DEMO</p>
+              <p class="raio-x__demo-banner-msg">
+                Esta analise usa apenas os tickers (sem pesos, quantidades ou seu perfil). E uma <strong>previa</strong> do que a Redent.IA consegue ver. Para o Raio-X <strong>real</strong>, com sua carteira completa, monitoramento continuo, alertas e plano de acao, crie sua conta.
+              </p>
+            </div>
+            <NuxtLink to="/auth/register" class="quiet-btn-primary raio-x__demo-banner-cta">
+              <UIcon name="i-lucide-sparkles" class="size-4" aria-hidden="true" />
+              Fazer Raio-X completo gratis
+            </NuxtLink>
+          </div>
+
           <div class="mb-10 flex flex-wrap items-center justify-between gap-4">
             <div class="flex flex-col gap-1">
               <p class="eyebrow flex items-center gap-2">
-                <span>RAIO-X DA CARTEIRA</span>
+                <span>RAIO-X DEMO</span>
                 <span
                   v-if="loadingReal"
                   class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] font-medium normal-case tracking-normal"
@@ -374,5 +390,62 @@ usePageSeo({
   color: var(--text-muted);
   letter-spacing: 0.005em;
   max-width: 720px;
+}
+
+/* Demo disclaimer banner — Estado B (com tickers).
+   Aparece no topo do diagnostico pra deixar absolutamente claro que
+   o que o usuario esta vendo e uma PREVIA, e que o Raio-X completo
+   acontece dentro da plataforma com a carteira real. */
+.raio-x__demo-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 22px;
+  margin-bottom: 32px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 32%, transparent);
+  background: color-mix(in srgb, var(--brand-primary) 8%, var(--bg-elevated));
+  box-shadow: 0 4px 14px -8px color-mix(in srgb, var(--brand-primary) 22%, transparent);
+}
+
+@media (min-width: 768px) {
+  .raio-x__demo-banner {
+    flex-direction: row;
+    align-items: center;
+    gap: 24px;
+    padding: 24px 28px;
+  }
+}
+
+.raio-x__demo-banner-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.raio-x__demo-banner-eyebrow {
+  font-family: var(--brand-font);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--brand-primary);
+}
+
+.raio-x__demo-banner-msg {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-heading);
+}
+
+.raio-x__demo-banner-msg strong {
+  color: var(--text-heading);
+  font-weight: 600;
+}
+
+.raio-x__demo-banner-cta {
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 </style>

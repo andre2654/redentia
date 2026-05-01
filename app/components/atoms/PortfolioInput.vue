@@ -14,6 +14,13 @@ interface Props {
   variant?: 'hero' | 'inline'
   initialTickers?: string[]
   ctaLabel?: string
+  /**
+   * Label curto exibido em mobile (max 12 chars). Se nao fornecido,
+   * usa as primeiras palavras do ctaLabel. Mostrar texto curto no
+   * mobile e melhor que so icone — o usuario precisa entender
+   * o que o botao faz pra clicar.
+   */
+  ctaLabelShort?: string
   showSuggestions?: boolean
   autofocus?: boolean
 }
@@ -22,6 +29,7 @@ const props = withDefaults(defineProps<Props>(), {
   variant: 'hero',
   initialTickers: () => [],
   ctaLabel: 'Gerar meu Raio-X gratis',
+  ctaLabelShort: 'Demo gratis',
   showSuggestions: true,
   autofocus: false,
 })
@@ -149,7 +157,9 @@ const placeholder = computed(() => {
 })
 
 const suggestionsToShow = computed(() => {
-  return SUGGESTED_TICKERS.filter(t => !tickers.value.includes(t)).slice(0, 8)
+  // 4 sugestoes diversificadas (vs 8 anteriores) reduzem paralisia
+  // de escolha e dao destaque ao "Carteira de exemplo" como atalho.
+  return SUGGESTED_TICKERS.filter(t => !tickers.value.includes(t)).slice(0, 4)
 })
 </script>
 
@@ -213,7 +223,8 @@ const suggestionsToShow = computed(() => {
         @click="submit"
       >
         <UIcon name="i-lucide-sparkles" class="portfolio-input__submit-icon size-4" aria-hidden="true" />
-        <span class="portfolio-input__submit-label">{{ ctaLabel }}</span>
+        <span class="portfolio-input__submit-label portfolio-input__submit-label--desktop">{{ ctaLabel }}</span>
+        <span class="portfolio-input__submit-label portfolio-input__submit-label--mobile">{{ ctaLabelShort }}</span>
       </button>
     </div>
 
@@ -363,31 +374,35 @@ const suggestionsToShow = computed(() => {
   gap: 8px;
 }
 
-/* Mobile: icon-only square. Same 56 px height as the input field
-   so the row reads as a single horizontal control. */
+/* Default (desktop ≥ md): mostra label longo, esconde curto */
+.portfolio-input__submit-label--desktop {
+  display: inline-block;
+}
+.portfolio-input__submit-label--mobile {
+  display: none;
+}
+
+/* Mobile (< md): troca pra label curto. CRO insight — user precisa
+   ver o que o botao faz, nao so um icone. Antes era 1px hidden e
+   custava 10-20% do clique no CTA principal. */
 @media (max-width: 767px) {
   .portfolio-input__submit {
-    width: 56px;
-    padding: 0;
-    gap: 0;
+    padding: 0 16px;
+    gap: 6px;
   }
   .portfolio-input__submit .portfolio-input__submit-icon {
-    /* Slightly larger icon when alone so the empty button still
-       reads as an action target, not a decoration. */
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
   }
-  .portfolio-input__submit-label {
-    /* visually hidden, still accessible via aria-label on button */
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
+  .portfolio-input__submit-label--desktop {
+    display: none;
+  }
+  .portfolio-input__submit-label--mobile {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.005em;
     white-space: nowrap;
-    border: 0;
   }
 }
 
