@@ -306,43 +306,23 @@ export default defineNuxtPlugin({
     ],
   })
 
-  // Font loading: inject link tag and watch for brand changes
-  if (import.meta.client) {
-    const fontLinkId = 'brand-google-font'
-
-    function loadFont(googleSpec: string) {
-      let link = document.getElementById(fontLinkId) as HTMLLinkElement | null
-      const url = googleFontsUrl(googleSpec)
-
-      if (link) {
-        if (link.href === url) return
-        link.href = url
-      } else {
-        link = document.createElement('link')
-        link.id = fontLinkId
-        link.rel = 'stylesheet'
-        link.href = url
-        document.head.appendChild(link)
-      }
-    }
-
-    // Load initial font
-    loadFont(brand.font.google)
-
-    // Watch for brand switches
-    watch(() => brand.font.google, (newGoogle) => {
-      loadFont(newGoogle)
-    })
-  } else {
-    // SSR: use useHead for initial render
-    useHead({
-      link: [
-        {
-          rel: 'stylesheet',
-          href: googleFontsUrl(brand.font.google),
-        },
-      ],
-    })
-  }
+  // Font loading — single source of truth.
+  //
+  // Both SSR and client install the stylesheet via `useHead` with a stable
+  // `key` so we get exactly ONE <link> in the rendered HTML (preventing the
+  // duplicated render-blocking request that PageSpeed used to flag).
+  //
+  // On the client, we additionally watch for tenant brand swaps so the
+  // active font follows the active tenant (the URL changes, the existing
+  // <link> mutates in place via the same key).
+  useHead({
+    link: [
+      {
+        key: 'brand-google-font',
+        rel: 'stylesheet',
+        href: computed(() => googleFontsUrl(brand.font.google)),
+      },
+    ],
+  })
   },
 })

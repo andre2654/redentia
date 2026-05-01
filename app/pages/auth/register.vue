@@ -1144,6 +1144,7 @@ import { vMaska } from 'maska/vue'
 const brand = useBrand()
 const { register } = useAuthService()
 const authStore = useAuthStore()
+const { track } = useMetaPixel()
 
 const variant = computed(() => brand.hero?.variant || 'default')
 
@@ -1275,6 +1276,10 @@ async function onSubmit(_: FormSubmitEvent<Schema>) {
     if (token) {
       authStore.addToken(token)
       await authStore.fetchProfile()
+      track('CompleteRegistration', {
+        content_name: 'User Registration',
+        status: true,
+      })
       showSuccessNotification(
         name ? `Cadastro concluído, ${name}` : 'Cadastro concluído',
         'Carregando seu painel…',
@@ -1284,6 +1289,10 @@ async function onSubmit(_: FormSubmitEvent<Schema>) {
       landing.value = true
       setTimeout(() => router.push('/'), 280)
     } else {
+      track('CompleteRegistration', {
+        content_name: 'User Registration',
+        status: true,
+      })
       showSuccessNotification(
         'Cadastro concluído',
         'Agora você pode fazer login.',

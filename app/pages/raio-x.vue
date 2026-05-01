@@ -55,10 +55,34 @@ const loadingReal = ref(false)
 
 const report = computed(() => realReport.value || initialReport.value)
 
+const { track } = useMetaPixel()
+
+onMounted(() => {
+  track('ViewContent', {
+    content_name: 'Raio-X Carteira',
+    content_category: 'portfolio_analysis',
+    content_type: 'product',
+  })
+  if (hasTickers.value) {
+    track('Lead', {
+      content_name: 'Raio-X Carteira',
+      content_category: 'portfolio_analysis',
+      num_assets: tickersFromUrl.value.length,
+    })
+  }
+})
+
 watch(
   () => tickersFromUrl.value.join(','),
-  async (csv) => {
+  async (csv, prevCsv) => {
     if (!csv || !apiBase) return
+    if (prevCsv !== undefined && prevCsv !== csv) {
+      track('Lead', {
+        content_name: 'Raio-X Carteira',
+        content_category: 'portfolio_analysis',
+        num_assets: tickersFromUrl.value.length,
+      })
+    }
     loadingReal.value = true
     try {
       const inputs = tickersFromUrl.value.map(t => ({ ticker: t }))

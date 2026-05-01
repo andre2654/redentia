@@ -21,6 +21,9 @@ const props = withDefaults(defineProps<{
   mode: 'auto',
 })
 
+const naturalWidth = computed(() => (props.variant === 'icon' ? 120 : 537))
+const naturalHeight = computed(() => 120)
+
 // Resolve the actual asset path. When the brand ships mode-specific
 // assets we use those; otherwise we fall back to the legacy single
 // asset (`icon`/`full`) which was designed for dark surfaces.
@@ -65,14 +68,23 @@ const needsBg = computed(() => isLight.value && !hasModeSpecificAsset.value)
     <img
       :src="logoSrc"
       :alt="brand.name"
+      :width="naturalWidth"
+      :height="naturalHeight"
+      decoding="async"
       class="h-full w-auto object-contain"
     />
   </div>
-  <!-- Mode-specific asset OR dark mode: render flat. -->
+  <!-- Mode-specific asset OR dark mode: render flat. width/height carry the
+       intrinsic aspect ratio so the browser reserves layout space and
+       avoids CLS, while the consumer's `class` (h-7, w-[150px], etc.)
+       drives the actual rendered size via CSS. -->
   <img
     v-else
     :src="logoSrc"
     :alt="brand.name"
+    :width="naturalWidth"
+    :height="naturalHeight"
+    decoding="async"
     :class="$props.class"
     class="object-contain"
   />

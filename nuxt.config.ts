@@ -84,10 +84,18 @@ export default defineNuxtConfig({
           // lazy chunk. Listing it in manualChunks would force-include
           // it in this initial bundle on every page (unnecessary
           // weight) and complicates the SSR stub above.
+          //
+          // Splits below carve out the heaviest libraries so the home
+          // page's main chunk doesn't drag them in. PageSpeed reported
+          // a single ~14.9s CPU monster (BN52xPUw.js); splitting frees
+          // the browser to download these in parallel and skip what's
+          // not needed for the route.
           manualChunks: {
-            'chart': ['chart.js', 'vue-chartjs'],
+            'chart': ['chart.js', 'vue-chartjs', 'chartjs-chart-treemap'],
             'markdown': ['marked'],
             'firebase': ['firebase/app', 'firebase/messaging'],
+            'pinia': ['pinia', '@pinia/nuxt'],
+            'xlsx-vendor': ['xlsx'],
           },
         },
       },
@@ -581,9 +589,31 @@ export default defineNuxtConfig({
       viewport: 'width=device-width, initial-scale=1',
       charset: 'utf-8',
       link: [
+        // Google Fonts CSS is injected by `plugins/brand.ts` (via useHead)
+        // because it's tenant-aware. Listing it here too produced two
+        // identical render-blocking CSS requests — moved out.
+        // ----------------------------------------------------------------
+        // Preconnect hints — open the TCP+TLS handshake to the origins
+        // that block LCP before the browser actually requests anything.
+        // Without these, fonts.gstatic.com starts negotiating at ~600ms
+        // and redentia-api.saraivada.com at ~570ms; both shave ~250-310ms
+        // off LCP on a cold connection.
+        // `crossorigin` is required on font origins because woff2 fetches
+        // are CORS-protected; missing it costs the preconnect entirely.
+        // ----------------------------------------------------------------
         {
-          rel: 'stylesheet',
-          href: `https://fonts.googleapis.com/css2?family=${brand.font.google}&display=swap`,
+          rel: 'preconnect',
+          href: 'https://fonts.googleapis.com',
+        },
+        {
+          rel: 'preconnect',
+          href: 'https://fonts.gstatic.com',
+          crossorigin: '',
+        },
+        {
+          rel: 'preconnect',
+          href: 'https://redentia-api.saraivada.com',
+          crossorigin: '',
         },
         {
           rel: 'icon',

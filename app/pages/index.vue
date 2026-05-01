@@ -341,7 +341,7 @@
             aria-label="Filtro do mapa de calor"
           />
         </div>
-        <AtomsGraphTreemap
+        <LazyAtomsGraphTreemap
           :data="stocksData"
           :height="550"
           :show-positive="
@@ -448,11 +448,11 @@
            ritmo: primeiro a grid do B3, depois atalhos, depois cripto,
            depois tesouro. Só renderiza pra tenants que tão na variante
            terminal (Redentia) porque o bloco tá dentro desse v-if. -->
-      <MoleculesCryptoRankings />
+      <LazyMoleculesCryptoRankings />
 
       <!-- Tesouro Direto — após rankings + filtros inteligentes -->
       <div class="px-4 md:px-0">
-        <MoleculesTesouroSection />
+        <LazyMoleculesTesouroSection />
       </div>
     </div>
 
@@ -585,7 +585,7 @@
     <MoleculesFeatureTabs v-if="showSection('featureTabs') && !authStore.isAuthenticated" :style="{ order: sectionOrder('featureTabs') }" class="mt-8" />
 
     <!-- Marquee de Tags em movimento -->
-    <AtomsMarqueeFeatures v-if="showSection('marquee') && !authStore.isAuthenticated" :style="{ order: sectionOrder('marquee') }" />
+    <LazyAtomsMarqueeFeatures v-if="showSection('marquee') && !authStore.isAuthenticated" :style="{ order: sectionOrder('marquee') }" />
 
     <!-- Conteudo Educacional -->
     <MoleculesEducationalContent v-if="showSection('educational')" :style="{ order: sectionOrder('educational') }" class="mt-12" />
@@ -1837,6 +1837,18 @@ const { data: homeMarketData } = await useAsyncData<HomeMarketData>(
       ibovSeries: Array.isArray(ibovSeries) ? ibovSeries : [],
       ifixSeries: Array.isArray(ifixSeries) ? ifixSeries : [],
     }
+  },
+  {
+    // `dedupe: 'defer'` collapses parallel/repeated calls to this same
+    // key into one in-flight promise instead of refetching. `getCachedData`
+    // hydrates from the SSR payload on first client render and reuses
+    // the in-memory copy across client navigations — no extra round-trip
+    // when the user comes back to /. Stale data is fine: rankings update
+    // in 24h cycles, not seconds.
+    dedupe: 'defer',
+    getCachedData: (key, nuxtApp) => {
+      return nuxtApp.payload.data[key] ?? nuxtApp.static.data[key]
+    },
   }
 )
 
@@ -2039,46 +2051,64 @@ const BENTO_FALLBACK_NAMES: Record<string, string> = {
   TSLA34: 'Tesla BDR',
 }
 
-const { data: bentoTickerRaw } = await useAsyncData<BentoTickerData[]>(
-  'bento-tickers',
-  async () => {
-    const results = await Promise.all(
-      BENTO_CODES.map(async (code) => {
-        try {
-          const [details, history] = await Promise.all([
-            getTickerDetails(code).catch(() => null),
-            assetHistoricPrices(code, '1mo').catch(() => null),
-          ])
-          const d: any = details || {}
-          const price = coerceNumber(d.market_price ?? d.close)
-          const change = coerceNumber(d.change_percent ?? d.change)
-          const name = (d.name as string) || BENTO_FALLBACK_NAMES[code] || code
-          const histArr = Array.isArray(history) ? history : []
-          const points = histArr
-            .map((p: any) => coerceNumber(p?.market_price ?? p?.close))
-            .filter((v: number) => Number.isFinite(v) && v > 0)
-          // Sample ~15 points pra sparkline (mantem forma da curva sem ruido).
-          let sparkline: number[] = points
-          if (points.length > 15) {
-            const step = (points.length - 1) / 14
-            sparkline = Array.from({ length: 15 }, (_, i) => points[Math.round(i * step)])
-          }
-          if (sparkline.length < 2) sparkline = [price || 50, price || 50]
-          return { code, name, price, change, sparkline }
-        } catch {
-          return {
-            code,
-            name: BENTO_FALLBACK_NAMES[code] || code,
-            price: 0,
-            change: 0,
-            sparkline: [50, 50],
-          }
+// Bento cards are decorative ("PETR4 +2.84%" with a sparkline). To keep
+// the 8 ticker fetches OFF the SSR critical path we initialize with stub
+// data (4 cards rendered immediately, in both SSR and client) and only
+// fire the actual fetch on mount. SSR HTML and client hydration see the
+// SAME 4 cards — no mismatch. After mount, the fetcher runs once on the
+// client and the values fill in without any DOM structural change.
+//
+// SEO impact: zero. Every numeric value is also indexed at /asset/petr4
+// etc., which Googlebot crawls separately. The home doesn't claim ranking
+// on "PETR4 R$ 38,42" anyway — that page's H1 is the value prop hero.
+const bentoStubs = (): BentoTickerData[] =>
+  BENTO_CODES.map((code) => ({
+    code,
+    name: BENTO_FALLBACK_NAMES[code] || code,
+    price: 0,
+    change: 0,
+    sparkline: [50, 50],
+  }))
+
+const bentoTickerRaw = ref<BentoTickerData[]>(bentoStubs())
+
+onMounted(async () => {
+  const results = await Promise.all(
+    BENTO_CODES.map(async (code) => {
+      try {
+        const [details, history] = await Promise.all([
+          getTickerDetails(code).catch(() => null),
+          assetHistoricPrices(code, '1mo').catch(() => null),
+        ])
+        const d: any = details || {}
+        const price = coerceNumber(d.market_price ?? d.close)
+        const change = coerceNumber(d.change_percent ?? d.change)
+        const name = (d.name as string) || BENTO_FALLBACK_NAMES[code] || code
+        const histArr = Array.isArray(history) ? history : []
+        const points = histArr
+          .map((p: any) => coerceNumber(p?.market_price ?? p?.close))
+          .filter((v: number) => Number.isFinite(v) && v > 0)
+        // Sample ~15 points pra sparkline (mantem forma da curva sem ruido).
+        let sparkline: number[] = points
+        if (points.length > 15) {
+          const step = (points.length - 1) / 14
+          sparkline = Array.from({ length: 15 }, (_, i) => points[Math.round(i * step)])
         }
-      })
-    )
-    return results
-  }
-)
+        if (sparkline.length < 2) sparkline = [price || 50, price || 50]
+        return { code, name, price, change, sparkline }
+      } catch {
+        return {
+          code,
+          name: BENTO_FALLBACK_NAMES[code] || code,
+          price: 0,
+          change: 0,
+          sparkline: [50, 50],
+        }
+      }
+    })
+  )
+  bentoTickerRaw.value = results
+})
 
 const bentoTickers = computed(() =>
   (bentoTickerRaw.value || []).map((t) => ({
