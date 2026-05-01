@@ -74,7 +74,7 @@
               Preço BRL
             </span>
             <span
-              class="font-light leading-none tabular-nums text-[32px] sm:text-[40px] md:text-[48px]"
+              class="font-light leading-none tabular-nums text-[26px] sm:text-[32px] md:text-[38px]"
               style="color: var(--text-heading); letter-spacing: -0.025em;"
               translate="no"
             >

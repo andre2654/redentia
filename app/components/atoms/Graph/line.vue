@@ -11,14 +11,20 @@
     </div>
 
     <!-- Container do gráfico. `data-chart-capture-root` marks the element
-         that screenshot modals should target — it excludes the toolbar
-         above, keeping only the plotting area in the exported PNG. -->
+         that screenshot modals should target, it excludes the toolbar
+         above, keeping only the plotting area in the exported PNG.
+
+         Mobile height: when the consumer doesn't pass `mobileHeight`
+         explicitly, we derive a smaller default from the desktop
+         height (`effectiveMobileHeight`). Phones don't have the
+         vertical room a desktop chart assumes, so without this every
+         page using the chart felt cramped on mobile. -->
     <div
       ref="chartContainerRef"
       data-chart-capture-root
       :style="{
         '--chart-h': `${height}px`,
-        '--chart-h-mobile': `${mobileHeight ?? height}px`,
+        '--chart-h-mobile': `${effectiveMobileHeight}px`,
       } as any"
       class="relative w-full rounded-lg h-[var(--chart-h-mobile)] md:h-[var(--chart-h)]"
     >
@@ -420,8 +426,18 @@ interface Props {
    */
   height?: number
   /**
-   * Optional mobile height in pixels. Applied on screens < 768px.
-   * When omitted, falls back to `height` (no responsive change).
+   * Mobile height in pixels (screens < 768px).
+   *
+   * When omitted (the common case across pages), the component
+   * applies a sensible default: roughly 78% of `height` floored at
+   * 180px. The 78% ratio mirrors what `/asset/[ticker]` was using
+   * manually (320 → 250) and the 180 floor keeps very small charts
+   * legible. Examples:
+   *   240 → 187   320 → 250   480 → 374   550 → 429
+   *
+   * Override explicitly only when you need a tighter / taller
+   * mobile layout than the default. Passing the same value as
+   * `height` disables responsive scaling entirely.
    */
   mobileHeight?: number
   showLegend?: boolean
@@ -459,6 +475,22 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   (e: 'marker-click', date: string): void
 }>()
+
+/**
+ * Resolved mobile height. When the consumer passes `mobileHeight`
+ * explicitly we honor it; otherwise we derive a smaller default from
+ * `height` so every page using this chart gets a sensible mobile
+ * layout without each consumer having to know the magic number.
+ *
+ * Formula: `max(180, round(height * 0.78))`. The 0.78 ratio matches
+ * what /asset/[ticker] was already doing manually (320 → 250); the
+ * 180 floor protects very small charts (e.g. the 240px desktop
+ * planning calc) from becoming unreadable.
+ */
+const effectiveMobileHeight = computed<number>(() => {
+  if (props.mobileHeight !== undefined) return props.mobileHeight
+  return Math.max(180, Math.round(props.height * 0.78))
+})
 
 // Map chart data-point indices to an ARRAY of markers (supports multiple commentaries per date)
 const markerIndexMap = computed(() => {

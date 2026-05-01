@@ -18,6 +18,30 @@
       />
     </ClientOnly>
 
+    <!-- Ticker rail logo abaixo do hero. Banda full-bleed (zero
+         padding lateral, sem max-width, sem cantos arredondados) que
+         se cola visualmente na base do hero como uma "régua" de
+         mercado. Apenas border-bottom de 1 px pra separar da seção
+         seguinte. Duas instâncias do carrossel porque a variante big
+         renderiza logos + preço maiores no desktop; mobile usa a
+         versão compacta. -->
+    <div
+      class="w-full border-b py-4"
+      style="background: var(--bg-elevated); border-bottom-color: var(--border-subtle);"
+    >
+      <AtomsTickerCarousel
+        class="w-full max-md:hidden"
+        big
+        no-control
+        :items="tickerCarouselItems"
+      />
+      <AtomsTickerCarousel
+        class="w-full md:hidden"
+        no-control
+        :items="tickerCarouselItems"
+      />
+    </div>
+
     <!-- BRIDGE: conector visual entre o hero e a secao seguinte (mercado).
          Linha vertical amber decrescente + eyebrow "Mercado ao vivo" +
          chevron com bounce sutil. Aparece em DOM order logo apos o hero
@@ -129,64 +153,59 @@
               <span class="text-[14px]" style="color: var(--text-muted);" translate="no">IBOV</span>
             </div>
 
-            <!-- Big number + change pill + period selector (right) -->
-            <div class="flex w-full flex-wrap items-end justify-between gap-4">
-              <div class="flex flex-col gap-1.5">
-                <div class="flex items-center gap-3">
-                  <p
-                    class="font-light leading-none tabular-nums text-[36px] md:text-[56px]"
-                    style="color: var(--text-heading); letter-spacing: -0.03em;"
-                    aria-label="Cotação atual do IBOV"
-                    translate="no"
-                  >
-                    {{ fmt.brl(ibovLastPrice) }}
-                  </p>
-                  <span
-                    class="rounded-md px-2 py-1 text-[12px] font-medium tabular-nums"
-                    :style="{
-                      backgroundColor: `color-mix(in srgb, ${ibovVariationColor} 16%, transparent)`,
-                      color: ibovVariationColor,
-                    }"
-                    translate="no"
-                  >{{ ibovIndicator }}</span>
-                </div>
+            <!-- Linha principal: big number + change pill + period
+                 selector compacto, todos no mesmo eixo horizontal.
+                 `dropdown` força o select pequeno (em vez do segmented
+                 de 4 pílulas) pra a row caber bem mesmo em narrow card.
+                 `Hoje, -X pts` segue na linha de baixo dentro do
+                 mesmo wrapper. -->
+            <div class="flex w-full flex-col gap-1.5">
+              <div class="flex flex-wrap items-center gap-3">
                 <p
-                  v-if="ibovDeltaPtsFormatted"
-                  class="text-[12px]"
-                  style="color: var(--text-muted);"
+                  class="font-light leading-none tabular-nums text-[28px] md:text-[44px]"
+                  style="color: var(--text-heading); letter-spacing: -0.03em;"
+                  aria-label="Cotação atual do IBOV"
                   translate="no"
                 >
-                  Hoje, <span class="tabular-nums" :style="{ color: ibovVariationColor }">{{ ibovDeltaPtsFormatted }}</span>
+                  {{ fmt.brl(ibovLastPrice) }}
                 </p>
+                <span
+                  class="rounded-md px-2 py-1 text-[12px] font-medium tabular-nums"
+                  :style="{
+                    backgroundColor: `color-mix(in srgb, ${ibovVariationColor} 16%, transparent)`,
+                    color: ibovVariationColor,
+                  }"
+                  translate="no"
+                >{{ ibovIndicator }}</span>
+                <MoleculesPeriodSelector
+                  v-model="selectedTimeRange"
+                  :loading="loading"
+                  :dropdown="true"
+                  class="ml-auto"
+                />
               </div>
-              <MoleculesPeriodSelector
-                v-model="selectedTimeRange"
-                :loading="loading"
-              />
+              <p
+                v-if="ibovDeltaPtsFormatted"
+                class="text-[12px]"
+                style="color: var(--text-muted);"
+                translate="no"
+              >
+                Hoje, <span class="tabular-nums" :style="{ color: ibovVariationColor }">{{ ibovDeltaPtsFormatted }}</span>
+              </p>
             </div>
 
             <AtomsGraphLine
               :data="ibovChartData"
               :legend="ibovChartLabel"
-              :height="350"
+              :height="280"
               :loading="loading"
             />
           </div>
-
-          <!-- Ticker rail: footer interno do card, divisor superior sutil -->
-          <div class="border-t py-4" style="border-color: var(--border-subtle); background: color-mix(in srgb, var(--bg-overlay, var(--bg-elevated)) 60%, transparent);">
-            <AtomsTickerCarousel
-              class="w-full max-md:hidden"
-              big
-              no-control
-              :items="tickerCarouselItems"
-            />
-            <AtomsTickerCarousel
-              class="w-full md:hidden"
-              no-control
-              :items="tickerCarouselItems"
-            />
-          </div>
+          <!-- Ticker rail moved out of the card. Lives below the bento
+               as a full-width band (see end of `.market-bento` block).
+               This way the IBOV card stays a focused price-explorer
+               surface and the rail doesn't compete for attention with
+               the chart. -->
         </article>
 
           <!-- Mini bento ticker cards (PETR4, VALE3, AAPL34, TSLA34).

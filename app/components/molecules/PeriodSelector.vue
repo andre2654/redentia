@@ -6,6 +6,14 @@ const props = withDefaults(
     options?: { label: string; value: string }[]
     disabled?: boolean
     loading?: boolean
+    /**
+     * Force dropdown rendering on every breakpoint. By default the
+     * component renders segmented pills on md+ and a dropdown on
+     * mobile; pass `dropdown` when the surrounding layout is too
+     * tight for 4 inline pills (centered hero card, narrow column,
+     * etc.) so the trigger stays compact regardless of viewport.
+     */
+    dropdown?: boolean
   }>(),
   {
     options: () => [
@@ -16,6 +24,7 @@ const props = withDefaults(
     ],
     disabled: false,
     loading: false,
+    dropdown: false,
   }
 )
 
@@ -74,10 +83,10 @@ onBeforeUnmount(() => {
 
 <template>
   <div v-if="options.length" class="period-selector">
-    <!-- Desktop: AtomsSegmented oficial (design/IDENTITY.md secao 3.3).
-         Loading state e indicado via overlay sutil; o componente segmented
-         em si nao precisa carregar essa logica. -->
-    <div class="relative hidden md:block">
+    <!-- Segmented (md+ default). Hidden completamente quando o caller
+         passa `dropdown` pra forçar a versão compacta em qualquer
+         viewport. Loading aparece via spinner sutil ao lado direito. -->
+    <div :class="['relative', dropdown ? 'hidden' : 'hidden md:block']">
       <AtomsSegmented
         v-model="modelValue"
         :options="options"
@@ -93,8 +102,10 @@ onBeforeUnmount(() => {
       />
     </div>
 
-    <!-- Mobile: dropdown quiet. Trigger pill + popover panel sombra-card. -->
-    <div ref="mobileRef" class="relative md:hidden">
+    <!-- Dropdown quiet. Default em mobile (md:hidden); virou padrão em
+         qualquer viewport quando `dropdown=true`. Trigger pill + popover
+         com sombra-card. -->
+    <div ref="mobileRef" :class="['relative', dropdown ? '' : 'md:hidden']">
       <button
         type="button"
         class="flex items-center gap-2 rounded-md border px-3 py-2 text-[13px] font-medium transition-all duration-150 focus-visible:outline-none focus-visible:shadow-[var(--shadow-ring-focus)]"

@@ -357,6 +357,7 @@
               :data="chartData"
               :legend="chartLegend"
               :height="expandedHeight"
+              :mobile-height="expandedHeight"
               :loading="isLoadingChart"
               currency="R$"
             >

@@ -261,50 +261,46 @@
       </div>
     </div>
 
-    <!-- ============ Footer: Ver auditoria + Reportar problema ============
-         Sticky bottom block. The audit button only renders for
-         authenticated users (gated by `showGoalsAndDecisions`); the
-         report link always renders so anonymous users can flag
-         issues from the chat too. Order: audit (primary affordance),
-         then a tiny muted link below it as secondary. -->
+    <!-- ============ Footer: Reportar problema + Ver auditoria ============
+         Sticky bottom block. Layout em uma linha só: o trigger de
+         report fica como ícone-só na ESQUERDA, e o "Ver auditoria"
+         (quando renderiza, gated em `showGoalsAndDecisions`) ocupa o
+         resto da row com `flex-1`. Quando não há audit (usuário
+         anônimo), o report icon fica centralizado sozinho. -->
     <footer
       class="shrink-0 border-t px-4 py-3"
       :style="{ borderColor: `color-mix(in srgb, var(--brand-border) 35%, transparent)` }"
     >
-      <button
-        v-if="showGoalsAndDecisions"
-        type="button"
-        class="audit-btn flex w-full items-center justify-center gap-2 rounded-lg px-3 py-2 text-[13px] font-medium transition-[background-color,border-color,box-shadow]"
-        :style="auditBtnStyle"
-        @click="$emit('open-panel', 'activity')"
-      >
-        <UIcon
-          name="i-lucide-clipboard-list"
-          class="size-3.5"
-          :style="{ color: 'var(--brand-primary)' }"
-        />
-        <span :style="{ color: 'var(--brand-text)' }">Ver auditoria</span>
-        <UIcon
-          name="i-lucide-arrow-right"
-          class="ml-auto size-3 opacity-60"
-          :style="{ color: 'var(--brand-text-muted)' }"
-        />
-      </button>
-
-      <!-- Quiet secondary affordance. Sits BELOW the audit button so
-           it never competes for attention. ~11px font + low opacity
-           on rest, centered, no border. The trigger atom handles the
-           modal state. -->
       <div
-        :class="showGoalsAndDecisions ? 'mt-2' : ''"
-        class="flex justify-center"
+        class="flex items-stretch gap-2"
+        :class="showGoalsAndDecisions ? '' : 'justify-center'"
       >
         <AtomsReportProblemTrigger
-          variant="link"
-          class="report-link text-[11px]"
+          variant="chip"
+          size="md"
+          :icon-only="true"
+          class="report-trigger-stretch"
+        />
+
+        <button
+          v-if="showGoalsAndDecisions"
+          type="button"
+          class="audit-btn flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-[13px] font-medium transition-[background-color,border-color,box-shadow]"
+          :style="auditBtnStyle"
+          @click="$emit('open-panel', 'activity')"
         >
-          Reportar problema
-        </AtomsReportProblemTrigger>
+          <UIcon
+            name="i-lucide-clipboard-list"
+            class="size-3.5"
+            :style="{ color: 'var(--brand-primary)' }"
+          />
+          <span :style="{ color: 'var(--brand-text)' }">Ver auditoria</span>
+          <UIcon
+            name="i-lucide-arrow-right"
+            class="ml-auto size-3 opacity-60"
+            :style="{ color: 'var(--brand-text-muted)' }"
+          />
+        </button>
       </div>
     </footer>
   </aside>
@@ -714,18 +710,17 @@ const rootRef = ref<HTMLElement | null>(null)
   color: var(--brand-text) !important;
 }
 
-/* Quiet "report a problem" link in the footer. Lives at lower
-   contrast at rest so it never competes with the audit button
-   above it; brightens on hover. Color is `currentColor` driven
-   from `--brand-text-muted` set inline. */
-.report-link :deep(.report-trigger-link) {
-  color: var(--brand-text-muted, currentColor);
-  opacity: 0.75;
-  transition: opacity 150ms ease, color 150ms ease;
-}
-.report-link :deep(.report-trigger-link:hover) {
-  opacity: 1;
-  color: var(--brand-text);
+/* Sidebar-specific override do botão de reportar problema:
+   stretch a altura pra bater EXATAMENTE com o "Ver auditoria" ao
+   lado. O atom default fixa width=height=32px (quadrado fechado);
+   aqui a row usa `items-stretch` e o chip ganha `height: auto +
+   aspect-ratio: 1 / 1`, então ele acompanha o audit (~33px) sem
+   precisar de magic numbers. */
+.report-trigger-stretch :deep(.report-trigger-chip) {
+  height: auto !important;
+  width: auto !important;
+  aspect-ratio: 1 / 1;
+  align-self: stretch;
 }
 
 /* Audit footer button — same family as the stat cards */

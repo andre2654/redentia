@@ -197,14 +197,23 @@ const suggestionsToShow = computed(() => {
         </div>
       </div>
 
-      <!-- Submit -->
+      <!--
+        Submit button. Sits beside the input on every breakpoint now
+        (used to drop below on mobile). On screens < md the label is
+        hidden so the button collapses to an icon-only square that
+        fits next to the input without crowding the chips area; the
+        full "Analisar minha carteira" label returns from md+. The
+        aria-label keeps the action accessible for screen readers
+        when the visible label is hidden.
+      -->
       <button
         type="button"
         class="portfolio-input__submit quiet-btn-primary"
+        :aria-label="ctaLabel"
         @click="submit"
       >
-        <UIcon name="i-lucide-sparkles" class="size-4" aria-hidden="true" />
-        <span>{{ ctaLabel }}</span>
+        <UIcon name="i-lucide-sparkles" class="portfolio-input__submit-icon size-4" aria-hidden="true" />
+        <span class="portfolio-input__submit-label">{{ ctaLabel }}</span>
       </button>
     </div>
 
@@ -248,17 +257,15 @@ const suggestionsToShow = computed(() => {
   width: 100%;
 }
 
+/* Always row: input on the left, submit on the right. The mobile
+   submit collapses to icon-only (see `.portfolio-input__submit`
+   below) so the row fits in a 343 px wide viewport without
+   squashing the chips area. */
 .portfolio-input__shell {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  flex-direction: row;
+  gap: 8px;
   align-items: stretch;
-}
-
-@media (min-width: 768px) {
-  .portfolio-input__shell {
-    flex-direction: row;
-  }
 }
 
 .portfolio-input__field {
@@ -347,8 +354,41 @@ const suggestionsToShow = computed(() => {
   flex-shrink: 0;
   white-space: nowrap;
   height: 56px;
-  padding: 0 24px;
   font-size: 15px;
+  /* Default (desktop): icon + label in line */
+  padding: 0 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* Mobile: icon-only square. Same 56 px height as the input field
+   so the row reads as a single horizontal control. */
+@media (max-width: 767px) {
+  .portfolio-input__submit {
+    width: 56px;
+    padding: 0;
+    gap: 0;
+  }
+  .portfolio-input__submit .portfolio-input__submit-icon {
+    /* Slightly larger icon when alone so the empty button still
+       reads as an action target, not a decoration. */
+    width: 18px;
+    height: 18px;
+  }
+  .portfolio-input__submit-label {
+    /* visually hidden, still accessible via aria-label on button */
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
 }
 
 .portfolio-input__error {
@@ -367,13 +407,18 @@ const suggestionsToShow = computed(() => {
   gap: 6px;
 }
 
+/* "Tente:" label: full heading color (preto da paleta). Era muted,
+   ficava lavado contra o background peach do hero. */
 .portfolio-input__suggestions-label {
   font-size: 13px;
-  color: var(--text-muted);
-  font-weight: 400;
+  color: var(--text-heading);
+  font-weight: 500;
   margin-right: 2px;
 }
 
+/* Ticker suggestion chip: borda na MESMA cor do texto via currentColor,
+   pra a outline acompanhar o foreground em qualquer modo (light/dark) e
+   em qualquer tenant sem precisar de cores hardcoded. */
 .portfolio-input__suggestion {
   padding: 4px 10px;
   border-radius: 4px;
@@ -383,16 +428,19 @@ const suggestionsToShow = computed(() => {
   font-family: var(--brand-font);
   color: var(--text-body);
   background: transparent;
-  border: 1px solid var(--border-subtle);
-  transition: all 150ms;
+  border: 1px solid currentColor;
+  transition: color 150ms, background 150ms;
 }
 
 .portfolio-input__suggestion:hover {
   color: var(--text-heading);
-  border-color: color-mix(in srgb, var(--brand-primary) 40%, transparent);
   background: color-mix(in srgb, var(--brand-primary) 6%, transparent);
 }
 
+/* Carteira de exemplo: mesma família do botão de submit (amber fill +
+   texto preto + ícone preto). Antes era um chip ghost com border
+   tracejada amber, que ficava perdido visualmente ao lado dos chips
+   de ticker. Agora ele se torna a CTA secundária clara. */
 .portfolio-input__demo-btn {
   display: inline-flex;
   align-items: center;
@@ -402,16 +450,18 @@ const suggestionsToShow = computed(() => {
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.02em;
-  color: var(--brand-primary);
-  background: transparent;
-  border: 1px dashed color-mix(in srgb, var(--brand-primary) 35%, transparent);
-  transition: all 150ms;
+  background: var(--brand-primary);
+  color: #1A0A2E;
+  border: 1px solid var(--brand-primary);
+  transition: filter 150ms, transform 100ms;
   margin-left: 4px;
 }
 
 .portfolio-input__demo-btn:hover {
-  background: color-mix(in srgb, var(--brand-primary) 8%, transparent);
-  border-style: solid;
+  filter: brightness(0.92);
+}
+.portfolio-input__demo-btn:active {
+  transform: translateY(1px);
 }
 
 /* Variant inline (mais compacto, usado em paginas internas) */

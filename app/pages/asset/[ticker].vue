@@ -3251,6 +3251,7 @@
               :data="chartData"
               :legend="chartLabel"
               :height="expandedHeight"
+              :mobile-height="expandedHeight"
               :loading="isLoadingChart"
               :markers="chartMarkers"
             >

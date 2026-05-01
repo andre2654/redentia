@@ -161,25 +161,56 @@ const risksPreview = computed(() => demoReport.value.risks.slice(0, 3))
       </svg>
     </div>
 
-    <div class="relative mx-auto max-w-6xl px-6 pb-20 pt-14 md:pb-28 md:pt-20">
-      <div class="grid items-center gap-12 md:grid-cols-12 md:gap-12 lg:gap-16">
+    <!--
+      Padding vertical: bem apertado no mobile pra o hero não ocupar
+      a viewport inteira. Desktop continua generoso (pt-20 pb-28) pq
+      o split 50/50 com o stack 3D precisa de respiro.
+    -->
+    <div class="relative mx-auto max-w-6xl px-6 pb-10 pt-8 md:pb-28 md:pt-20">
+      <div class="grid items-center gap-6 md:grid-cols-12 md:gap-12 lg:gap-16">
         <!-- ============ LEFT: manifesto + input ============ -->
         <div class="md:col-span-7">
-          <p class="eyebrow mb-5">{{ eyebrow }}</p>
+          <!--
+            Eyebrow descritivo "PLATAFORMA DE IA PARA SUA CARTEIRA" só
+            aparece a partir de md+. No mobile o headline + input já
+            comunicam a proposta sem precisar dessa linha de contexto;
+            cortando ela ganhamos ~32 px de altura crítica acima da
+            dobra.
+          -->
+          <p class="eyebrow mb-5 hidden md:block">{{ eyebrow }}</p>
 
-          <h1 class="hero-radiograph__headline mb-6 max-w-2xl text-[40px] leading-[1.04] sm:text-[52px] md:text-[60px] lg:text-[72px]" :style="{ color: 'var(--text-heading)' }">
+          <!--
+            Headline mobile-first: 36 px com leading apertado. A 36 px
+            o texto cabe em 3 linhas curtas em 375px de largura, ainda
+            sentindo "grande" sem expulsar input/chips pra fora da
+            tela. sm:44px e md:60px continuam servindo telas maiores.
+          -->
+          <h1 class="hero-radiograph__headline mb-4 max-w-2xl text-[36px] leading-[1.05] tracking-[-0.02em] sm:text-[44px] md:mb-6 md:text-[60px] md:leading-[1.04] md:tracking-normal lg:text-[72px]" :style="{ color: 'var(--text-heading)' }">
             Descubra os riscos escondidos da sua
             <em class="hero-radiograph__headline-serif" :style="{ color: 'var(--brand-primary)' }">carteira</em><span :style="{ color: 'var(--brand-primary)' }">.</span>
           </h1>
 
-          <p class="mb-8 max-w-xl text-[16px] leading-relaxed md:text-[18px]" :style="{ color: 'var(--text-body)' }">
+          <!--
+            Subtitle de 30+ palavras só aparece a partir de md+. No
+            mobile ela ocupava 5 linhas e basicamente repetia o que o
+            headline já diz. Esconder libera a maior parte do ganho de
+            altura sem custo de mensagem (CTA "Analisar minha carteira
+            grátis" do input já tem promessa concreta).
+          -->
+          <p class="mb-8 hidden max-w-xl text-[16px] leading-relaxed md:block md:text-[18px]" :style="{ color: 'var(--text-body)' }">
             Adicione seus ativos e a Redent.IA cruza fundamentos, noticias, dividendos, concentracao e mercado para mostrar o que esta bom, o que esta ruim e o que mudou.
           </p>
 
-          <div class="mb-5">
+          <div class="mb-3 md:mb-5">
             <AtomsPortfolioInput variant="hero" cta-label="Analisar minha carteira gratis" :show-suggestions="true" />
           </div>
 
+          <!-- Trust signals: ficam só os dois que continuam verdadeiros
+               em qualquer plano. "Sempre grátis" foi removido porque a
+               plataforma vai entrar no modelo Free/Pro/Max e o
+               freemium não cobre todas as funções, então prometer
+               "sempre grátis" no hero principal seria propaganda
+               enganosa cedo demais. -->
           <ul class="hero-radiograph__trust">
             <li>
               <UIcon name="i-lucide-shield-check" class="size-3.5 shrink-0" :style="{ color: 'var(--brand-primary)' }" aria-hidden="true" />
@@ -188,10 +219,6 @@ const risksPreview = computed(() => demoReport.value.risks.slice(0, 3))
             <li>
               <UIcon name="i-lucide-clock" class="size-3.5 shrink-0" :style="{ color: 'var(--brand-primary)' }" aria-hidden="true" />
               <span>Resultado em 2 min</span>
-            </li>
-            <li>
-              <UIcon name="i-lucide-sparkles" class="size-3.5 shrink-0" :style="{ color: 'var(--brand-primary)' }" aria-hidden="true" />
-              <span>Sempre gratis</span>
             </li>
           </ul>
         </div>

@@ -291,17 +291,18 @@
       
       <div class="flex w-full items-center justify-between pt-6 max-lg:flex-col max-lg:gap-4" :style="{ borderTop: `1px solid var(--brand-border)` }">
         <div
-          class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] max-lg:justify-center max-lg:text-center"
+          class="flex flex-wrap items-center gap-x-4 gap-y-3 text-[12px] max-lg:justify-center max-lg:text-center"
           :style="{ color: 'var(--brand-text-muted)' }"
         >
           <span>
             © {{ new Date().getFullYear() }} {{ brand.name }}. {{ brand.nav.footerCopyright }}
           </span>
-          <span aria-hidden="true" class="opacity-50">·</span>
-          <!-- Quiet "report a problem" link. Inline with the copyright
-               so it reads as a service link rather than a CTA. Owns
-               its own modal state via the trigger atom. -->
-          <AtomsReportProblemTrigger variant="link">
+          <!-- "Report a problem" rendered as a button-shaped chip with
+               bug icon. Sits inline with the copyright row at the
+               bottom of the footer; the chip's pill shape separates
+               it visually from the copyright text without needing a
+               glyph divider. Owns its own modal state. -->
+          <AtomsReportProblemTrigger variant="chip" size="md">
             Reportar problema
           </AtomsReportProblemTrigger>
         </div>
