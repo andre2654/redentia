@@ -1,22 +1,26 @@
 <template>
   <NuxtLayout :name="layoutName" title="Visão geral">
     <div class="flex flex-col">
-    <!-- Hero (10 variants) - extracted to standalone component for maintainability.
-         Wrapped in ClientOnly so authStore.isAuthenticated won't cause SSR/client
-         hydration mismatches when Pinia persisted state hydrates from localStorage
-         only on the client. -->
-    <ClientOnly>
-      <HomeHero
-        v-if="showSection('hero') && !authStore.isAuthenticated"
-        :style="{ order: sectionOrder('hero') }"
-        :ibov-series="ibovChartData"
-        :ibov-last-price="ibovLastPrice"
-        :ibov-indicator="ibovIndicator"
-        :ibov-variation-color="ibovVariationColor"
-        :ifix-last-price="ifixLastPrice"
-        :ifix-indicator="ifixIndicator"
-      />
-    </ClientOnly>
+    <!-- Hero — always rendered in SSR (was wrapped in ClientOnly before, which
+         caused a 0.578 CLS spike when the ~700px hero popped in after hydration,
+         pushing every other section down).
+         The auth store's persisted state hasn't hydrated from localStorage at
+         SSR time, so `authStore.isAuthenticated` reads its initial value of
+         `false` — matching what we want for the marketing landing where 95%+
+         of visitors are unauth. After Pinia hydrates on client, authed users
+         briefly see the hero before it hides via reactivity (acceptable trade
+         since auth users on / is an edge case; the layout switches to
+         `default` anyway). -->
+    <HomeHero
+      v-if="showSection('hero') && !authStore.isAuthenticated"
+      :style="{ order: sectionOrder('hero') }"
+      :ibov-series="ibovChartData"
+      :ibov-last-price="ibovLastPrice"
+      :ibov-indicator="ibovIndicator"
+      :ibov-variation-color="ibovVariationColor"
+      :ifix-last-price="ifixLastPrice"
+      :ifix-indicator="ifixIndicator"
+    />
 
     <!-- Ticker rail logo abaixo do hero. Banda full-bleed (zero
          padding lateral, sem max-width, sem cantos arredondados) que

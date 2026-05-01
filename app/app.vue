@@ -2,13 +2,21 @@
   <Analytics />
   <NuxtPwaManifest />
   <UApp :toaster="uAppConfig?.toaster">
-    <!-- ClientOnly so the SSR never attempts to render this banner
-         (SSR viewport = desktop default, but client viewport can be
-         anything, the mismatch would cascade through the whole tree
-         and break the brand reactive state on hydration). -->
-    <ClientOnly>
-      <AtomsInstallAppBanner v-if="showBanner" />
-    </ClientOnly>
+    <!-- Install banner — rendered in SSR so the layout reserves space and
+         the page doesn't shift on hydration (was a CLS culprit when wrapped
+         in ClientOnly + JS viewport gating). Visibility is controlled by:
+           - `v-if`  → route opts out (e.g. /download, /help) — SSR-safe.
+           - `v-show` → user dismissed the banner (Pinia persisted, only
+              available client-side; brief flash on subsequent visits when
+              dismissed, acceptable since SSR can't read localStorage).
+           - `lg:hidden` Tailwind class → CSS-only mobile gate; SSR HTML
+              always has the banner, desktop hides it via media query, no
+              JS viewport check needed. -->
+    <AtomsInstallAppBanner
+      v-if="!route.meta.hideInstallAppBanner"
+      v-show="!interfaceStore.hideInstallBanner"
+      class="lg:hidden"
+    />
     <NuxtPage />
   </UApp>
 </template>
@@ -33,24 +41,6 @@ const uAppConfig = {
 
 const interfaceStore = useInterfaceStore()
 const route = useRoute()
-
-// Viewport width tracked reactively so the install banner can be hidden on
-// desktop where PWA install is rare and the banner just steals above-the-fold.
-const viewportWidth = ref(1920) // SSR-safe default (desktop)
-if (import.meta.client) {
-  viewportWidth.value = window.innerWidth
-  window.addEventListener('resize', () => {
-    viewportWidth.value = window.innerWidth
-  })
-}
-
-const showBanner = computed(() => {
-  if (route.meta.hideInstallAppBanner) return false
-  if (interfaceStore.hideInstallBanner) return false
-  // Only show on mobile/tablet where installing a PWA actually makes sense.
-  if (viewportWidth.value >= 1024) return false
-  return true
-})
 
 const { checkPermission, listen, cleanup } = useFirebaseNotifications()
 

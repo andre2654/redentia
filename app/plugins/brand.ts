@@ -252,41 +252,39 @@ export default defineNuxtPlugin({
   //     in nextTick. The reactive update propagates to inline :style
   //     bindings after hydration completes — they DO update on
   //     post-hydration mutations.
-  // First-visit / legacy-cookie safeguard: if `preference=system` (or
-  // no cookie at all), SSR rendered with `fallback`/`defaultMode` but
-  // the client will resolve to actual OS pref. That mismatch freezes
-  // inline `:style` bindings forever (Vue 3 doesn't rectify them on
-  // hydration). We translate to a concrete `light`/`dark`, write the
-  // cookie, and trigger a clean reload so SSR can re-render with the
-  // resolved value. One extra navigation on first visit only — every
-  // subsequent F5 is fast and bug-free.
+  // First-visit / legacy-cookie path: if `preference=system` (or no cookie
+  // at all), SSR rendered with `defaultMode` but the client now knows the
+  // actual OS pref. The OLD code triggered `window.location.reload()` so
+  // SSR could re-render with the resolved value — but that's a full second
+  // page load on every fresh visitor whose OS color mode differs from the
+  // tenant default, which on Lighthouse mobile pegged FCP/LCP for half the
+  // landing traffic.
+  //
+  // The fix: write the cookie (so the NEXT F5 is fast and bug-free) but
+  // SKIP the reload. Apply the SSR-painted mode synchronously to match
+  // hydration cleanly, then do a single post-hydration `applyMode(resolved)`
+  // via the `app:mounted` hook. By that point Vue owns the DOM, the SSR
+  // inline `:style` attrs have been replaced by reactive bindings, and the
+  // mutation propagates normally — no reload needed, just one extra paint
+  // ~200ms after hydration on the first visit only.
+  let pendingPostHydrateMode: 'dark' | 'light' | null = null
   if (import.meta.client && colorMode.preference === 'system') {
-    // What did SSR ACTUALLY render with? `brand.theme.mode` was set
-    // by SSR's applyMode (server-side resolveMode falls through to
-    // `defaultMode` when preference='system' since `prefers-color-scheme`
-    // isn't readable on the server). This survives in `useState` and
-    // is therefore the source of truth for "what the SSR HTML was
-    // painted with" — much more reliable than reading `colorMode.value`
-    // which may have already been re-resolved on the client.
     const ssrMode: 'dark' | 'light' = brand.theme.mode === 'light' ? 'light' : 'dark'
     const osDark =
       typeof window.matchMedia === 'function'
       && window.matchMedia('(prefers-color-scheme: dark)').matches
     const resolved: 'dark' | 'light' = osDark ? 'dark' : 'light'
-    // Persist via the color-mode setter so the cookie is written
-    // with the format @nuxtjs/color-mode reads on the next request.
     colorMode.preference = resolved
     if (ssrMode !== resolved) {
-      // SSR painted with the wrong palette. Trigger a clean reload
-      // so the next request SSRs with the concrete cookie value —
-      // server and client agree, Vue hydrates without freezing
-      // inline `:style` attrs. One extra navigation on first visit
-      // only; every subsequent F5 is fast.
-      window.location.reload()
-      return
+      pendingPostHydrateMode = resolved
     }
   }
   applyMode(resolveMode())
+  if (pendingPostHydrateMode) {
+    nuxtApp.hook('app:mounted', () => {
+      applyMode(pendingPostHydrateMode!)
+    })
+  }
 
   // ----------------------------------------------------------------
   // Runtime watcher — applies subsequent mode changes (toggle, OS
