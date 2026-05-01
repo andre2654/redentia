@@ -91,6 +91,9 @@
             <NuxtLink to="/auth/register" class="font-mono-tab text-[10px] uppercase tracking-[0.15em] transition hover:opacity-80" :style="{ color: brand.colors.primary }">
               &gt; REGISTER_NEW
             </NuxtLink>
+            <NuxtLink to="/auth/forgot-password" class="font-mono-tab text-[10px] uppercase tracking-[0.15em] transition hover:opacity-80" :style="{ color: brand.colors.textMuted }">
+              &gt; FORGOT_PWD
+            </NuxtLink>
             <span class="font-mono-tab text-[10px]" :style="{ color: brand.colors.textMuted }">{{ sessionTime }}</span>
           </div>
         </UForm>
@@ -159,6 +162,9 @@
           <hr class="dashed-rule" />
 
           <div class="flex flex-col gap-2">
+            <NuxtLink to="/auth/forgot-password" class="font-editorial-body text-[13px] italic transition hover:opacity-70" :style="{ color: brand.colors.textMuted }">
+              Esqueci minha senha <span :style="{ color: brand.colors.primary }">→</span>
+            </NuxtLink>
             <NuxtLink to="/auth/register" class="font-editorial-body text-[13px] italic transition hover:opacity-70" :style="{ color: brand.colors.text }">
               Abrir uma nova conta <span :style="{ color: brand.colors.primary }">→</span>
             </NuxtLink>
@@ -248,6 +254,9 @@
           </AtomsButton>
 
           <div class="flex flex-col gap-2 border-t-2 pt-4" :style="{ borderColor: brand.colors.text }">
+            <NuxtLink to="/auth/forgot-password" class="font-mentor-eyebrow transition hover:opacity-80" :style="{ color: `${brand.colors.text}99` }">
+              ESQUECI A SENHA →
+            </NuxtLink>
             <NuxtLink to="/auth/register" class="font-mentor-eyebrow transition hover:opacity-80" :style="{ color: brand.colors.primary }">
               AINDA NÃO É LEITOR? COMECE AQUI →
             </NuxtLink>
@@ -337,6 +346,9 @@
             <hr class="dashed-rule" />
 
             <div class="flex flex-col gap-2">
+              <NuxtLink to="/auth/forgot-password" class="font-academic-body text-[13px] italic transition hover:opacity-70" :style="{ color: brand.colors.textMuted }">
+                Esqueci minha senha <span :style="{ color: brand.colors.primary }">→</span>
+              </NuxtLink>
               <NuxtLink to="/auth/register" class="font-academic-body text-[13px] italic transition hover:opacity-70" :style="{ color: brand.colors.text }">
                 Solicitar acesso de aluno <span :style="{ color: brand.colors.primary }">→</span>
               </NuxtLink>
@@ -421,6 +433,9 @@
           </AtomsButton>
 
           <div class="flex flex-col items-center gap-2 text-center">
+            <NuxtLink to="/auth/forgot-password" class="font-showtime-label underline underline-offset-4 transition hover:opacity-70" :style="{ color: `${brand.colors.text}90` }">
+              ESQUECI A SENHA →
+            </NuxtLink>
             <NuxtLink to="/auth/register" class="font-showtime-label underline underline-offset-4 transition hover:opacity-70" :style="{ color: brand.colors.primary }">
               ÉS NOVA POR AQUI? BORA CADASTRAR →
             </NuxtLink>
@@ -564,6 +579,9 @@
           </button>
 
           <div class="flex flex-col gap-2 pt-2 text-center">
+            <NuxtLink to="/auth/forgot-password" class="text-[12px] font-medium underline-offset-4 transition hover:opacity-70" :style="{ color: brand.colors.textMuted }">
+              <span class="underline">Esqueci minha senha</span>
+            </NuxtLink>
             <NuxtLink to="/auth/register" class="text-[12px] font-bold underline-offset-4 transition hover:opacity-70" :style="{ color: brand.colors.primary }">
               Não tem conta? <span class="underline">Começar agora</span>
             </NuxtLink>
@@ -678,6 +696,14 @@
 
             <div class="mt-2 flex flex-col gap-3 border-t pt-5" :style="{ borderColor: brand.colors.border }">
               <NuxtLink
+                to="/auth/forgot-password"
+                class="text-[11px] font-bold uppercase tracking-[0.18em]"
+                style="font-family: 'JetBrains Mono', monospace;"
+                :style="{ color: brand.colors.textMuted }"
+              >
+                Esqueci a senha →
+              </NuxtLink>
+              <NuxtLink
                 to="/auth/register"
                 class="text-[11px] font-bold uppercase tracking-[0.18em]"
                 style="font-family: 'JetBrains Mono', monospace;"
@@ -752,6 +778,9 @@
           </AtomsButton>
 
           <div class="flex flex-col gap-2 text-center md:text-left">
+            <NuxtLink to="/auth/forgot-password" class="text-sm font-medium transition hover:opacity-80" :style="{ color: brand.colors.textMuted }">
+              Esqueci minha senha
+            </NuxtLink>
             <NuxtLink to="/auth/register" class="text-sm font-medium transition hover:opacity-80" :style="{ color: brand.colors.primary }">
               Ainda não tem conta? Cadastre-se agora
             </NuxtLink>
