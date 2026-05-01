@@ -253,35 +253,59 @@ export default defineNuxtPlugin({
   //     bindings after hydration completes — they DO update on
   //     post-hydration mutations.
   // First-visit / legacy-cookie path: if `preference=system` (or no cookie
-  // at all), SSR rendered with `defaultMode` but the client now knows the
-  // actual OS pref. The OLD code triggered `window.location.reload()` so
-  // SSR could re-render with the resolved value — but that's a full second
-  // page load on every fresh visitor whose OS color mode differs from the
-  // tenant default, which on Lighthouse mobile pegged FCP/LCP for half the
-  // landing traffic.
+  // at all), SSR rendered with the tenant's `defaultMode` but the client
+  // now knows the actual OS pref via the anti-flash script. The OLD code
+  // triggered `window.location.reload()` to fix this — full second page
+  // load on every fresh visitor whose OS mode differs from the default.
+  // That double-load was hammering Lighthouse mobile (LCP +5-7s).
   //
-  // The fix: write the cookie (so the NEXT F5 is fast and bug-free) but
-  // SKIP the reload. Apply the SSR-painted mode synchronously to match
-  // hydration cleanly, then do a single post-hydration `applyMode(resolved)`
-  // via the `app:mounted` hook. By that point Vue owns the DOM, the SSR
-  // inline `:style` attrs have been replaced by reactive bindings, and the
-  // mutation propagates normally — no reload needed, just one extra paint
-  // ~200ms after hydration on the first visit only.
+  // The fix has two halves and the ORDER MATTERS:
+  //
+  //   1) SYNCHRONOUS PRE-HYDRATE: apply the SSR-painted mode exactly,
+  //      DON'T touch `colorMode.preference` yet. If we set preference
+  //      now, `colorMode.value` flips to the resolved mode immediately
+  //      (its computed deps include preference + system pref), and the
+  //      `applyMode(resolveMode())` call below would apply the WRONG
+  //      mode pre-hydration. SSR has dark `:style` attrs, JS now has
+  //      light colors, hydration mismatches, Vue 3 leaves the SSR inline
+  //      `:style` intact (per the comment block above), and you get
+  //      mixed-mode UI: CSS-var-based components swap correctly via the
+  //      reactive `<style>` block, but components using `:style="{
+  //      background: brand.colors.X }"` stay frozen on the SSR colors.
+  //
+  //   2) POST-HYDRATE swap: in `app:mounted` (after Vue owns the DOM
+  //      and SSR `:style` attrs have been parsed into reactive bindings),
+  //      set `colorMode.preference` AND call `applyMode(resolved)`.
+  //      The watcher below also fires from the preference change; the
+  //      explicit call is belt-and-suspenders. Both go through Vue's
+  //      reactive update cycle and propagate to every consumer cleanly.
   let pendingPostHydrateMode: 'dark' | 'light' | null = null
+  let syncMode: 'dark' | 'light' | null = null
   if (import.meta.client && colorMode.preference === 'system') {
     const ssrMode: 'dark' | 'light' = brand.theme.mode === 'light' ? 'light' : 'dark'
     const osDark =
       typeof window.matchMedia === 'function'
       && window.matchMedia('(prefers-color-scheme: dark)').matches
     const resolved: 'dark' | 'light' = osDark ? 'dark' : 'light'
-    colorMode.preference = resolved
     if (ssrMode !== resolved) {
+      // Mismatch: pin synchronous mode to ssrMode so hydration is clean.
+      // The cookie write + mode swap are deferred until after mount.
+      syncMode = ssrMode
       pendingPostHydrateMode = resolved
+    } else {
+      // SSR happened to match the OS pref — persist the concrete value
+      // so subsequent F5s skip this whole branch and let resolveMode()
+      // take the fast path.
+      colorMode.preference = resolved
     }
   }
-  applyMode(resolveMode())
+  applyMode(syncMode ?? resolveMode())
   if (pendingPostHydrateMode) {
     nuxtApp.hook('app:mounted', () => {
+      // Persist the resolved mode in the cookie now (no reload needed).
+      // Setting preference triggers the watcher → applyMode(resolveMode()),
+      // and we also apply explicitly so we don't depend on watcher timing.
+      colorMode.preference = pendingPostHydrateMode!
       applyMode(pendingPostHydrateMode!)
     })
   }
