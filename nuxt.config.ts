@@ -91,10 +91,13 @@ export default defineNuxtConfig({
           // the browser to download these in parallel and skip what's
           // not needed for the route.
           manualChunks: {
+            // Only RUNTIME packages here — Nuxt modules like `@pinia/nuxt`
+            // are build-time and the import-protection plugin rejects them.
+            // Each entry must be importable in the Vue/client bundle.
             'chart': ['chart.js', 'vue-chartjs', 'chartjs-chart-treemap'],
             'markdown': ['marked'],
             'firebase': ['firebase/app', 'firebase/messaging'],
-            'pinia': ['pinia', '@pinia/nuxt'],
+            'pinia': ['pinia'],
             'xlsx-vendor': ['xlsx'],
           },
         },
