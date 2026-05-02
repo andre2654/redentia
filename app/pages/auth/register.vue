@@ -119,16 +119,16 @@
           </UFormField>
 
           <p
-            class="!m-0 flex items-center gap-1 !text-[11px] !leading-tight transition-colors"
+            class="!m-0 flex items-center gap-1.5 !text-[13px] !leading-tight transition-colors"
             :style="{ color: score >= 1 ? brand.colors.positive : brand.colors.textMuted }"
             aria-live="polite"
           >
             <UIcon
               :name="score >= 1 ? 'i-lucide-circle-check' : 'i-lucide-circle'"
-              class="size-3 shrink-0"
+              class="size-3.5 shrink-0"
               aria-hidden="true"
             />
-            <span class="!text-[11px] !leading-tight">A senha deve ter pelo menos 8 caracteres</span>
+            <span class="!text-[13px] !leading-tight">A senha deve ter pelo menos 8 caracteres</span>
           </p>
 
           <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="w-full justify-center font-mono-tab text-xs tracking-[0.15em]">
@@ -241,16 +241,16 @@
           </UFormField>
 
           <p
-            class="!m-0 flex items-center gap-1 !text-[11px] !leading-tight transition-colors"
+            class="!m-0 flex items-center gap-1.5 !text-[13px] !leading-tight transition-colors"
             :style="{ color: score >= 1 ? brand.colors.positive : brand.colors.textMuted }"
             aria-live="polite"
           >
             <UIcon
               :name="score >= 1 ? 'i-lucide-circle-check' : 'i-lucide-circle'"
-              class="size-3 shrink-0"
+              class="size-3.5 shrink-0"
               aria-hidden="true"
             />
-            <span class="!text-[11px] !leading-tight">A senha deve ter pelo menos 8 caracteres</span>
+            <span class="!text-[13px] !leading-tight">A senha deve ter pelo menos 8 caracteres</span>
           </p>
 
           <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="mt-2 w-full justify-center font-small-caps tracking-wide">
@@ -381,16 +381,16 @@
           </UFormField>
 
           <p
-            class="!m-0 flex items-center gap-1 !text-[11px] !leading-tight transition-colors"
+            class="!m-0 flex items-center gap-1.5 !text-[13px] !leading-tight transition-colors"
             :style="{ color: score >= 1 ? brand.colors.positive : brand.colors.textMuted }"
             aria-live="polite"
           >
             <UIcon
               :name="score >= 1 ? 'i-lucide-circle-check' : 'i-lucide-circle'"
-              class="size-3 shrink-0"
+              class="size-3.5 shrink-0"
               aria-hidden="true"
             />
-            <span class="!text-[11px] !leading-tight">A senha deve ter pelo menos 8 caracteres</span>
+            <span class="!text-[13px] !leading-tight">A senha deve ter pelo menos 8 caracteres</span>
           </p>
 
           <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="mt-2 w-full justify-center font-mentor-eyebrow">
@@ -517,16 +517,16 @@
             </UFormField>
 
             <p
-            class="!m-0 flex items-center gap-1 !text-[11px] !leading-tight transition-colors"
+            class="!m-0 flex items-center gap-1.5 !text-[13px] !leading-tight transition-colors"
             :style="{ color: score >= 1 ? brand.colors.positive : brand.colors.textMuted }"
             aria-live="polite"
           >
             <UIcon
               :name="score >= 1 ? 'i-lucide-circle-check' : 'i-lucide-circle'"
-              class="size-3 shrink-0"
+              class="size-3.5 shrink-0"
               aria-hidden="true"
             />
-            <span class="!text-[11px] !leading-tight">A senha deve ter pelo menos 8 caracteres</span>
+            <span class="!text-[13px] !leading-tight">A senha deve ter pelo menos 8 caracteres</span>
           </p>
 
             <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="mt-2 w-full justify-center font-academic-label">
@@ -673,16 +673,16 @@
           </UFormField>
 
           <p
-            class="!m-0 flex items-center gap-1 !text-[11px] !leading-tight transition-colors"
+            class="!m-0 flex items-center gap-1.5 !text-[13px] !leading-tight transition-colors"
             :style="{ color: score >= 1 ? brand.colors.positive : brand.colors.textMuted }"
             aria-live="polite"
           >
             <UIcon
               :name="score >= 1 ? 'i-lucide-circle-check' : 'i-lucide-circle'"
-              class="size-3 shrink-0"
+              class="size-3.5 shrink-0"
               aria-hidden="true"
             />
-            <span class="!text-[11px] !leading-tight">A senha deve ter pelo menos 8 caracteres</span>
+            <span class="!text-[13px] !leading-tight">A senha deve ter pelo menos 8 caracteres</span>
           </p>
 
           <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="mt-3 w-full justify-center font-showtime-label">
@@ -805,16 +805,16 @@
             <AtomsFormInputPassword v-model="state.password_confirmation" placeholder="Confirme a senha" class="w-full" />
           </UFormField>
           <p
-            class="!m-0 flex items-center gap-1 !text-[11px] !leading-tight transition-colors"
+            class="!m-0 flex items-center gap-1.5 !text-[13px] !leading-tight transition-colors"
             :style="{ color: score >= 1 ? brand.colors.positive : brand.colors.textMuted }"
             aria-live="polite"
           >
             <UIcon
               :name="score >= 1 ? 'i-lucide-circle-check' : 'i-lucide-circle'"
-              class="size-3 shrink-0"
+              class="size-3.5 shrink-0"
               aria-hidden="true"
             />
-            <span class="!text-[11px] !leading-tight">A senha deve ter pelo menos 8 caracteres</span>
+            <span class="!text-[13px] !leading-tight">A senha deve ter pelo menos 8 caracteres</span>
           </p>
 
           <button
@@ -957,16 +957,16 @@
               <AtomsFormInputPassword v-model="state.password_confirmation" placeholder="Confirme a senha" class="w-full" />
             </UFormField>
             <p
-            class="!m-0 flex items-center gap-1 !text-[11px] !leading-tight transition-colors"
+            class="!m-0 flex items-center gap-1.5 !text-[13px] !leading-tight transition-colors"
             :style="{ color: score >= 1 ? brand.colors.positive : brand.colors.textMuted }"
             aria-live="polite"
           >
             <UIcon
               :name="score >= 1 ? 'i-lucide-circle-check' : 'i-lucide-circle'"
-              class="size-3 shrink-0"
+              class="size-3.5 shrink-0"
               aria-hidden="true"
             />
-            <span class="!text-[11px] !leading-tight">A senha deve ter pelo menos 8 caracteres</span>
+            <span class="!text-[13px] !leading-tight">A senha deve ter pelo menos 8 caracteres</span>
           </p>
 
             <button
@@ -1037,13 +1037,11 @@
             </p>
           </div>
 
-          <!-- Cadastro reduzido — Redentia v3: nome completo + email +
-               senha. Os campos `login` e `celular` foram removidos pra
-               cortar fricao no funil. login agora = email (auto-set no
-               submit), celular fica pra coleta posterior em /settings
-               (sera obrigatorio antes de acessar wallet/chat numa proxima
-               iteracao). advisor_code tambem foi cortado — o codigo do
-               assessor passa a ser indicado depois via convite/profile. -->
+          <!-- Cadastro reduzido — Redentia v3: nome + email + senha.
+               Login derivado do email (alphanumeric, auto-set no submit).
+               advisor_code removido — vincula em /settings depois.
+               Celular removido — agora opcional no backend (migration
+               2026_05_02_180000), coletado depois em /settings. -->
           <UFormField name="name">
             <AtomsFormInput v-model="state.name" type="text" autocomplete="name" placeholder="Nome completo" size="lg" class="w-full" />
           </UFormField>
@@ -1053,7 +1051,7 @@
           </UFormField>
 
           <UFormField name="password">
-            <AtomsFormInputPassword v-model="state.password" autocomplete="new-password" :aria-invalid="score < 4" class="w-full" />
+            <AtomsFormInputPassword v-model="state.password" autocomplete="new-password" :aria-invalid="score < 1" class="w-full" />
           </UFormField>
 
           <UFormField name="password_confirmation">
@@ -1061,16 +1059,16 @@
           </UFormField>
 
           <p
-            class="!m-0 flex items-center gap-1 !text-[11px] !leading-tight transition-colors"
+            class="!m-0 flex items-center gap-1.5 !text-[13px] !leading-tight transition-colors"
             :style="{ color: score >= 1 ? brand.colors.positive : brand.colors.textMuted }"
             aria-live="polite"
           >
             <UIcon
               :name="score >= 1 ? 'i-lucide-circle-check' : 'i-lucide-circle'"
-              class="size-3 shrink-0"
+              class="size-3.5 shrink-0"
               aria-hidden="true"
             />
-            <span class="!text-[11px] !leading-tight">A senha deve ter pelo menos 8 caracteres</span>
+            <span class="!text-[13px] !leading-tight">A senha deve ter pelo menos 8 caracteres</span>
           </p>
 
           <!-- Submit unificado (variant default → Redentia + tenants sem
@@ -1202,11 +1200,10 @@ const sessionTime = computed(() => {
   }
 })
 
-// Requisitos de senha simplificados — antes exigiamos 4 (8 chars + numero
-// + minuscula + maiuscula). Agora so 8 caracteres minimo, em linha com
-// o NIST SP 800-63B revisado que recomenda comprimento sobre composicao
-// (composicao forcada gera senhas previsiveis tipo Senha123). Reduz
-// fricao no funil sem comprometer segurança real.
+// Requisitos de senha — alinhados com o backend que agora exige so
+// `Password::min(8)`. Antes a regra incluia letters/numbers/mixedCase
+// mas a migration + RegisterRequest 2026-05-02 relaxou pra reduzir
+// fricao no funil (NIST SP 800-63B preconiza tamanho > composicao).
 const passwordRequirements = [
   { regex: /.{8,}/, text: 'Pelo menos 8 caracteres' },
 ]
@@ -1242,13 +1239,13 @@ function deriveLoginFromEmail(email: string): string {
 const schema = z
   .object({
     name: z.string().min(2, 'Nome obrigatório'),
-    // login e celular ficaram OPCIONAIS na schema porque o variant
-    // default da Redentia removeu esses campos do form. Outros variants
-    // (mentor, holder, showtime, etc.) ainda renderizam e o usuario
-    // preenche; nesse caso vai pra payload normalmente. Quando vazio,
-    // o submit usa o email como login e omite celular.
+    // login derivado do email no submit. Variants antigos (mentor,
+    // holder, etc.) ainda tem o campo proprio, e nesse caso o input
+    // do usuario substitui o derivado.
     login: z.string().optional(),
     email: z.string().email('Email inválido'),
+    // celular OPCIONAL — backend nao exige mais (migration 2026-05-02
+    // tornou a coluna nullable). Coletado em /settings depois.
     celular: z.string().optional(),
     password: z
       .string()
@@ -1283,10 +1280,8 @@ const requirements = computed(() =>
   }))
 )
 
-// Score binario agora (so 1 requisito: 8 chars). Usado no ticker
-// inline (icone de check verde quando score >= 1) e tambem no
-// canSubmitPassword (na tela de settings) — aqui no register o submit
-// e bloqueado pela schema do zod, score so alimenta o ticker visual.
+// Score binario (0 ou 1 — so checamos 8 chars). Alimenta o ticker
+// inline (icone circle / circle-check) e o aria-invalid do input.
 const score = computed(() => requirements.value.filter((r) => r.met).length)
 
 const router = useRouter()

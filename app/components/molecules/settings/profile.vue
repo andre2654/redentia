@@ -133,16 +133,16 @@
              progresso + lista de requisitos. Com so 1 requisito (8 chars
              minimo) o bloco completo virou overkill. -->
         <p
-          class="!m-0 flex items-center gap-1 !text-[11px] !leading-tight transition-colors"
+          class="!m-0 flex items-center gap-1.5 !text-[13px] !leading-tight transition-colors"
           :class="passwordScore >= 1 ? 'text-secondary' : 'text-white/60'"
           aria-live="polite"
         >
           <UIcon
             :name="passwordScore >= 1 ? 'i-lucide-circle-check' : 'i-lucide-circle'"
-            class="size-3 shrink-0"
+            class="size-3.5 shrink-0"
             aria-hidden="true"
           />
-          <span class="!text-[11px] !leading-tight">A senha deve ter pelo menos 8 caracteres</span>
+          <span class="!text-[13px] !leading-tight">A senha deve ter pelo menos 8 caracteres</span>
         </p>
 
         <UFormField name="password_confirmation" label="Confirmar nova senha">
