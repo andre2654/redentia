@@ -1,9 +1,6 @@
 /**
- * useMetaPixel — disparo DUAL de eventos Meta (Pixel browser + CAPI server).
- *
- * O snippet base (`fbq('init')` + PageView automatico) e injetado pelo
- * plugin `plugins/meta-pixel.client.ts`. Este composable expoe helpers
- * para eventos de conversao chamados de qualquer pagina.
+ * useMetaPixel — disparo DUAL de eventos Meta (Pixel browser + CAPI server)
+ * com user_data enriquecido pra match quality.
  *
  * ============ FLUXO DUAL ============
  *
@@ -13,22 +10,124 @@
  *   2. POST /api/track/meta-event                  ← server (Nitro → Meta CAPI)
  *
  * Ambos enviam o MESMO `event_id` (uuid). Quando os 2 chegam na Meta,
- * ela dedupe automaticamente. Se o pixel JS for bloqueado (adblock, iOS),
- * o CAPI ainda registra o evento. Match rate sobe de ~30% pra ~85%.
+ * ela dedupe automaticamente.
  *
- * Eventos padrao da Meta usam `track`. Eventos custom (nao listados na
- * Meta) usam `trackCustom`. Sempre passe parametros relevantes — eles
- * alimentam o Andromeda para otimizar entrega.
+ * ============ MATCH QUALITY ============
+ *
+ * O CAPI envia tambem `user_data` enriquecido pra Meta casar usuario:
+ *
+ *   - fbp:         cookie _fbp do browser (ID persistente)
+ *   - fbc:         cookie _fbc OU construido a partir do fbclid da URL
+ *                  (quando user vem de um clique em ad). +100% conversoes.
+ *   - em:          sha256(email) se user logado. +100% conversoes.
+ *   - fn / ln:     sha256(first_name / last_name) se user logado. +5-10%.
+ *   - external_id: user_id da Redentia se logado. +17%.
+ *
+ * Match quality alvo: 6.0/10 (ate +120% conversoes vs 3.0/10 atual).
  */
 type FbqWindow = Window & { fbq?: (...args: unknown[]) => void }
 
+interface MetaUserData {
+  fbp?: string
+  fbc?: string
+  em?: string[]
+  fn?: string[]
+  ln?: string[]
+  external_id?: string[]
+}
+
 function generateEventId(): string {
-  // crypto.randomUUID e padrao em browsers modernos (Chrome 92+, Safari 15.4+,
-  // Firefox 95+). Fallback pra timestamp + random pra navegadores antigos.
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
     return crypto.randomUUID()
   }
   return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`
+}
+
+/** SHA-256 hex via Web Crypto API. Normalizado: lowercase + trim. */
+async function sha256(text: string): Promise<string> {
+  if (!text) return ''
+  const normalized = text.toLowerCase().trim()
+  if (typeof crypto === 'undefined' || !crypto.subtle) return ''
+  const encoder = new TextEncoder()
+  const data = encoder.encode(normalized)
+  const buffer = await crypto.subtle.digest('SHA-256', data)
+  return Array.from(new Uint8Array(buffer))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('')
+}
+
+/**
+ * Le cookies _fbp e _fbc do browser. Se _fbc nao existe mas a URL
+ * tem `fbclid`, constroi o fbc no formato esperado pela Meta:
+ * `fb.1.{timestamp_ms}.{fbclid}`.
+ */
+function getMetaCookies(): { fbp?: string; fbc?: string } {
+  if (typeof document === 'undefined') return {}
+  const result: { fbp?: string; fbc?: string } = {}
+
+  const fbpMatch = document.cookie.match(/(?:^| )_fbp=([^;]+)/)
+  if (fbpMatch) result.fbp = decodeURIComponent(fbpMatch[1])
+
+  const fbcMatch = document.cookie.match(/(?:^| )_fbc=([^;]+)/)
+  if (fbcMatch) {
+    result.fbc = decodeURIComponent(fbcMatch[1])
+  } else {
+    try {
+      const url = new URL(window.location.href)
+      const fbclid = url.searchParams.get('fbclid')
+      if (fbclid) {
+        result.fbc = `fb.1.${Date.now()}.${fbclid}`
+      }
+    } catch {
+      // URL invalida, ignora
+    }
+  }
+
+  return result
+}
+
+/**
+ * Constroi o user_data do CAPI: cookies + dados hashed do user logado
+ * (se houver). Tudo opcional — Meta usa o que vier.
+ */
+async function buildUserData(): Promise<MetaUserData> {
+  if (!import.meta.client) return {}
+
+  const cookies = getMetaCookies()
+  const userData: MetaUserData = { ...cookies }
+
+  // Tenta enriquecer com dados do user logado.
+  // useAuthStore() funciona em qualquer lugar do client onde Pinia
+  // esteja inicializado (que e sempre, no Nuxt 3).
+  try {
+    const authStore = useAuthStore()
+    const me = authStore.me
+
+    if (me?.email) {
+      const hash = await sha256(me.email)
+      if (hash) userData.em = [hash]
+    }
+    if (me?.id) {
+      userData.external_id = [String(me.id)]
+    }
+    if (me?.name) {
+      const parts = me.name.trim().split(/\s+/)
+      const firstName = parts[0] || ''
+      const lastName = parts.length > 1 ? parts[parts.length - 1] : ''
+      if (firstName) {
+        const hash = await sha256(firstName)
+        if (hash) userData.fn = [hash]
+      }
+      if (lastName) {
+        const hash = await sha256(lastName)
+        if (hash) userData.ln = [hash]
+      }
+    }
+  } catch {
+    // authStore nao disponivel ou user nao logado, segue so com cookies
+  }
+
+  return userData
 }
 
 function callFbq(
@@ -40,9 +139,7 @@ function callFbq(
   if (!import.meta.client) return
   const w = window as FbqWindow
   if (typeof w.fbq !== 'function') return
-  // O 4o argumento `{ eventID }` e o que permite Meta deduplicar
-  // entre o evento browser (pixel) e o evento server (CAPI). Se nao
-  // passar, Meta conta os 2 disparos como eventos distintos = inflado.
+  // 4o argumento `{ eventID }` permite Meta deduplicar entre browser e server.
   const opts = { eventID: eventId }
   if (Object.keys(params).length > 0) {
     w.fbq(method, event, params, opts)
@@ -57,9 +154,9 @@ async function callCapi(
   eventId: string,
 ) {
   if (!import.meta.client) return
-  // Best-effort: nao bloqueia UI se CAPI falhar. O pixel browser
-  // ja foi disparado em paralelo, entao mesmo se o CAPI falhar
-  // (timeout, etc), o evento ainda chega via pixel.
+
+  const userData = await buildUserData()
+
   try {
     await $fetch('/api/track/meta-event', {
       method: 'POST',
@@ -67,13 +164,12 @@ async function callCapi(
         event_name: event,
         event_id: eventId,
         event_source_url: window.location.href,
+        user_data: userData,
         custom_data: params,
       },
-      // Timeout curto pra nao segurar nada
       timeout: 5000,
     })
   } catch (err) {
-    // Silencioso em prod. Loga so em dev.
     if (import.meta.dev) {
       console.warn('[useMetaPixel] CAPI dispatch failed:', err)
     }
@@ -83,15 +179,14 @@ async function callCapi(
 export function useMetaPixel() {
   function track(event: string, params: Record<string, unknown> = {}) {
     const eventId = generateEventId()
-    // Disparo paralelo: pixel JS no browser + CAPI no server.
-    // Ambos usam o mesmo event_id pra Meta deduplicar.
     callFbq('track', event, params, eventId)
-    callCapi(event, params, eventId)
+    // Fire-and-forget: nao bloqueia UI nem o codigo do caller.
+    callCapi(event, params, eventId).catch(() => { /* silent */ })
   }
   function trackCustom(event: string, params: Record<string, unknown> = {}) {
     const eventId = generateEventId()
     callFbq('trackCustom', event, params, eventId)
-    callCapi(event, params, eventId)
+    callCapi(event, params, eventId).catch(() => { /* silent */ })
   }
   return { track, trackCustom }
 }

@@ -64,11 +64,17 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'event_name and event_id required' })
   }
 
-  // Enriquecer com dados do request (nao confiar no client)
+  // Enriquecer com dados do request (nao confiar no client).
+  // Vercel: o IP REAL do visitante chega em `x-vercel-forwarded-for`.
+  // O `x-forwarded-for` tradicional pode trazer IP de proxy intermediario.
+  // Cloudflare adiciona `cf-connecting-ip`. Tentamos na ordem de prioridade.
   const headers = getHeaders(event)
   const ip = (
-    headers['x-forwarded-for']?.split(',')[0]?.trim()
+    headers['x-vercel-forwarded-for']?.split(',')[0]?.trim()
+    || headers['cf-connecting-ip']
+    || headers['x-forwarded-for']?.split(',')[0]?.trim()
     || headers['x-real-ip']
+    || headers['x-client-ip']
     || ''
   )
   const userAgent = headers['user-agent'] || ''
