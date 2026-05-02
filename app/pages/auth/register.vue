@@ -1211,6 +1211,34 @@ const passwordRequirements = [
   { regex: /.{8,}/, text: 'Pelo menos 8 caracteres' },
 ]
 
+/**
+ * Deriva um username valido a partir do email do usuario.
+ *
+ * Backend valida `login` como `[a-z0-9]+` (sem pontos, sem @, sem
+ * underscore). Email tipico (`andre.victor29@hotmail.com`) tem
+ * caracteres invalidos no local-part, entao se mandassemos o email
+ * inteiro o cadastro quebraria com "O login deve conter apenas letras
+ * e numeros".
+ *
+ * Estrategia: pega o local-part (antes do @), lowercases e remove
+ * tudo que nao for letra/digito. Se ficar curto (< 4 chars, alguns
+ * tenants exigem min length), padda com sufixo time-based pra
+ * garantir unicidade entre cadastros simultaneos.
+ *
+ * Exemplos:
+ *   andre.victor29@hotmail.com  → andrevictor29
+ *   ana@redentia.com.br         → ana<sufixo>     (caso tenha min 4)
+ *   joao+spam@gmail.com         → joaospam
+ */
+function deriveLoginFromEmail(email: string): string {
+  const local = (email.split('@')[0] ?? '').toLowerCase()
+  const sanitized = local.replace(/[^a-z0-9]/g, '')
+  if (sanitized.length >= 4) return sanitized
+  // Padding determinístico-ish baseado em timestamp curto (base36).
+  // Nao usamos Math.random pra ficar mais reproducivel em testes.
+  return sanitized + Date.now().toString(36).slice(-4)
+}
+
 const schema = z
   .object({
     name: z.string().min(2, 'Nome obrigatório'),
@@ -1300,10 +1328,13 @@ async function onSubmit(_: FormSubmitEvent<Schema>) {
     const payload: Parameters<typeof register>[0] = {
       name: state.name,
       email: state.email,
-      // login = email por default (variant default da Redentia removeu o
-      // campo do form). Outros variants ainda preenchem, e nesse caso
-      // respeitamos. O backend aceita ambos.
-      login: state.login?.trim() || state.email,
+      // login = derivado do email (alphanumeric only) por default.
+      // Outros variants antigos ainda renderizam o input proprio de
+      // login; se o usuario digitou algo, respeitamos.
+      // Backend valida `[a-z0-9]+`, entao mandar o email cru
+      // (`andre.victor29@hotmail.com`) quebrava com "login deve conter
+      // apenas letras e numeros".
+      login: state.login?.trim() || deriveLoginFromEmail(state.email),
       password: state.password,
       password_confirmation: state.password_confirmation,
     }
