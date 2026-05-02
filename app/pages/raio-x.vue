@@ -152,31 +152,79 @@ function resetAnalysis() {
   router.push({ path: '/raio-x' })
 }
 
-// ============ SIMULATION MODAL ============
-// When the picker emits `submit`, instead of navigating directly we open
-// a disclaimer modal that explains "you'll see a simulation, sign up for
-// the real Raio-X" with the explainer video embedded. Only after the
-// user confirms (or registers) do we navigate to the demo result. This
-// turns the highest-intent moment of the funnel into a conversion gate.
+// ============ SIMULATION MODAL — pop-up depois de 5s no resultado ============
+// Antes: o modal abria ANTES de navegar para o resultado, virando um gate
+// de conversao (signup ali, ou continua para o demo). Cortamos a fricao:
+// o picker @submit agora vai DIRETO pro resultado, e o modal sobe sozinho
+// 5s depois — tempo suficiente pro usuario absorver o Score + os primeiros
+// pontos de risco e ter contexto pra entender a oferta de cadastro.
+//
+// O timer so dispara no estado de resultado (hasTickers && report) e cada
+// carga nova reinicia (watch em tickersFromUrl). Se o usuario fechar o
+// modal nao reaparece nessa sessao (sessionStorage flag).
 const simModalOpen = ref(false)
-const pendingTickers = ref<string[]>([])
+const simModalShown = ref(false)
+const pendingTickers = computed(() => tickersFromUrl.value)
 
-function onPickerSubmit(tickers: string[]) {
-  pendingTickers.value = tickers
-  simModalOpen.value = true
+let simModalTimer: ReturnType<typeof setTimeout> | null = null
+
+function clearSimModalTimer() {
+  if (simModalTimer) {
+    clearTimeout(simModalTimer)
+    simModalTimer = null
+  }
 }
 
-function onSimModalConfirm() {
-  const tickers = pendingTickers.value
-  simModalOpen.value = false
+function scheduleSimModal() {
+  clearSimModalTimer()
+  if (simModalShown.value) return
+  if (typeof window === 'undefined') return
+  // Already shown in this session? Skip — usuario ja viu, nao queremos
+  // virar irritante no segundo raio-x da mesma sessao.
+  if (sessionStorage.getItem('raio-x:sim-modal-shown') === '1') {
+    simModalShown.value = true
+    return
+  }
+  simModalTimer = setTimeout(() => {
+    simModalOpen.value = true
+    simModalShown.value = true
+    if (typeof sessionStorage !== 'undefined') {
+      sessionStorage.setItem('raio-x:sim-modal-shown', '1')
+    }
+  }, 5000)
+}
+
+// Picker @submit agora apenas navega — o modal nao aparece nesse momento.
+function onPickerSubmit(tickers: string[]) {
   if (tickers.length === 0) return
   router.push({ path: '/raio-x', query: { tickers: tickers.join(',') } })
 }
 
+// Confirmar (botao "Ver o Raio-X Demo") apenas fecha — o usuario ja esta
+// na pagina do diagnostico, esse CTA virou um "ok, entendi" agora que a
+// ordem mudou.
+function onSimModalConfirm() {
+  simModalOpen.value = false
+}
+
 function onSimModalClose() {
   simModalOpen.value = false
-  pendingTickers.value = []
 }
+
+// Sempre que o usuario chega no estado de resultado (ou troca de tickers),
+// agendamos o modal. Limpamos quando sai do estado.
+watch(
+  () => hasTickers.value && !!report.value,
+  (ready) => {
+    if (ready) scheduleSimModal()
+    else clearSimModalTimer()
+  },
+  { immediate: true },
+)
+
+onBeforeUnmount(() => {
+  clearSimModalTimer()
+})
 
 // SEO
 const siteUrl = computed(() => {
@@ -239,8 +287,8 @@ usePageSeo({
                    e clicar pra montar a carteira. -->
               <div class="w-full">
                 <MoleculesPortfolioAssetPicker
-                  cta-label="Gerar Raio-X demo gratis"
-                  cta-label-short="Demo gratis"
+                  cta-label="Gerar Raio-X"
+                  cta-label-short="Gerar Raio-X"
                   :initial="tickersFromUrl"
                   @submit="onPickerSubmit"
                 />
@@ -432,8 +480,8 @@ usePageSeo({
 
           <div class="mx-auto max-w-2xl">
             <MoleculesPortfolioAssetPicker
-              cta-label="Gerar Raio-X demo gratis"
-              cta-label-short="Demo gratis"
+              cta-label="Gerar Raio-X"
+              cta-label-short="Gerar Raio-X"
               :initial="tickersFromUrl"
               @submit="onPickerSubmit"
             />
