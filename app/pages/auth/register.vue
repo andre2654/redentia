@@ -119,7 +119,7 @@
           </UFormField>
 
           <p
-            class="flex items-center gap-1 text-[10px] leading-tight transition-colors"
+            class="!m-0 flex items-center gap-1 !text-[11px] !leading-tight transition-colors"
             :style="{ color: score >= 1 ? brand.colors.positive : brand.colors.textMuted }"
             aria-live="polite"
           >
@@ -128,7 +128,7 @@
               class="size-3 shrink-0"
               aria-hidden="true"
             />
-            <span>A senha deve ter pelo menos 8 caracteres</span>
+            <span class="!text-[11px] !leading-tight">A senha deve ter pelo menos 8 caracteres</span>
           </p>
 
           <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="w-full justify-center font-mono-tab text-xs tracking-[0.15em]">
@@ -241,7 +241,7 @@
           </UFormField>
 
           <p
-            class="flex items-center gap-1 text-[10px] leading-tight transition-colors"
+            class="!m-0 flex items-center gap-1 !text-[11px] !leading-tight transition-colors"
             :style="{ color: score >= 1 ? brand.colors.positive : brand.colors.textMuted }"
             aria-live="polite"
           >
@@ -250,7 +250,7 @@
               class="size-3 shrink-0"
               aria-hidden="true"
             />
-            <span>A senha deve ter pelo menos 8 caracteres</span>
+            <span class="!text-[11px] !leading-tight">A senha deve ter pelo menos 8 caracteres</span>
           </p>
 
           <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="mt-2 w-full justify-center font-small-caps tracking-wide">
@@ -381,7 +381,7 @@
           </UFormField>
 
           <p
-            class="flex items-center gap-1 text-[10px] leading-tight transition-colors"
+            class="!m-0 flex items-center gap-1 !text-[11px] !leading-tight transition-colors"
             :style="{ color: score >= 1 ? brand.colors.positive : brand.colors.textMuted }"
             aria-live="polite"
           >
@@ -390,7 +390,7 @@
               class="size-3 shrink-0"
               aria-hidden="true"
             />
-            <span>A senha deve ter pelo menos 8 caracteres</span>
+            <span class="!text-[11px] !leading-tight">A senha deve ter pelo menos 8 caracteres</span>
           </p>
 
           <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="mt-2 w-full justify-center font-mentor-eyebrow">
@@ -517,7 +517,7 @@
             </UFormField>
 
             <p
-            class="flex items-center gap-1 text-[10px] leading-tight transition-colors"
+            class="!m-0 flex items-center gap-1 !text-[11px] !leading-tight transition-colors"
             :style="{ color: score >= 1 ? brand.colors.positive : brand.colors.textMuted }"
             aria-live="polite"
           >
@@ -526,7 +526,7 @@
               class="size-3 shrink-0"
               aria-hidden="true"
             />
-            <span>A senha deve ter pelo menos 8 caracteres</span>
+            <span class="!text-[11px] !leading-tight">A senha deve ter pelo menos 8 caracteres</span>
           </p>
 
             <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="mt-2 w-full justify-center font-academic-label">
@@ -673,7 +673,7 @@
           </UFormField>
 
           <p
-            class="flex items-center gap-1 text-[10px] leading-tight transition-colors"
+            class="!m-0 flex items-center gap-1 !text-[11px] !leading-tight transition-colors"
             :style="{ color: score >= 1 ? brand.colors.positive : brand.colors.textMuted }"
             aria-live="polite"
           >
@@ -682,7 +682,7 @@
               class="size-3 shrink-0"
               aria-hidden="true"
             />
-            <span>A senha deve ter pelo menos 8 caracteres</span>
+            <span class="!text-[11px] !leading-tight">A senha deve ter pelo menos 8 caracteres</span>
           </p>
 
           <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="mt-3 w-full justify-center font-showtime-label">
@@ -805,7 +805,7 @@
             <AtomsFormInputPassword v-model="state.password_confirmation" placeholder="Confirme a senha" class="w-full" />
           </UFormField>
           <p
-            class="flex items-center gap-1 text-[10px] leading-tight transition-colors"
+            class="!m-0 flex items-center gap-1 !text-[11px] !leading-tight transition-colors"
             :style="{ color: score >= 1 ? brand.colors.positive : brand.colors.textMuted }"
             aria-live="polite"
           >
@@ -814,7 +814,7 @@
               class="size-3 shrink-0"
               aria-hidden="true"
             />
-            <span>A senha deve ter pelo menos 8 caracteres</span>
+            <span class="!text-[11px] !leading-tight">A senha deve ter pelo menos 8 caracteres</span>
           </p>
 
           <button
@@ -957,7 +957,7 @@
               <AtomsFormInputPassword v-model="state.password_confirmation" placeholder="Confirme a senha" class="w-full" />
             </UFormField>
             <p
-            class="flex items-center gap-1 text-[10px] leading-tight transition-colors"
+            class="!m-0 flex items-center gap-1 !text-[11px] !leading-tight transition-colors"
             :style="{ color: score >= 1 ? brand.colors.positive : brand.colors.textMuted }"
             aria-live="polite"
           >
@@ -966,7 +966,7 @@
               class="size-3 shrink-0"
               aria-hidden="true"
             />
-            <span>A senha deve ter pelo menos 8 caracteres</span>
+            <span class="!text-[11px] !leading-tight">A senha deve ter pelo menos 8 caracteres</span>
           </p>
 
             <button
@@ -1061,7 +1061,7 @@
           </UFormField>
 
           <p
-            class="flex items-center gap-1 text-[10px] leading-tight transition-colors"
+            class="!m-0 flex items-center gap-1 !text-[11px] !leading-tight transition-colors"
             :style="{ color: score >= 1 ? brand.colors.positive : brand.colors.textMuted }"
             aria-live="polite"
           >
@@ -1070,7 +1070,7 @@
               class="size-3 shrink-0"
               aria-hidden="true"
             />
-            <span>A senha deve ter pelo menos 8 caracteres</span>
+            <span class="!text-[11px] !leading-tight">A senha deve ter pelo menos 8 caracteres</span>
           </p>
 
           <!-- Submit unificado (variant default → Redentia + tenants sem
