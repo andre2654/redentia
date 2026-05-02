@@ -129,38 +129,21 @@
           </UInput>
         </UFormField>
 
-        <!-- Critérios da senha (igual à tela de registro) -->
-        <div class="rounded-2xl border border-white/10 bg-white/5 p-5">
-          <UProgress
-            :model-value="passwordScore"
-            :max="passwordRequirements.length"
-            :color="passwordColor"
-            :indicator="passwordStrengthText"
-            size="sm"
+        <!-- Ticker inline simples — substituiu o bloco antigo de barra de
+             progresso + lista de requisitos. Com so 1 requisito (8 chars
+             minimo) o bloco completo virou overkill. -->
+        <p
+          class="flex items-center gap-1.5 text-[12px] transition-colors"
+          :class="passwordScore >= 1 ? 'text-secondary' : 'text-white/60'"
+          aria-live="polite"
+        >
+          <UIcon
+            :name="passwordScore >= 1 ? 'i-lucide-circle-check' : 'i-lucide-circle'"
+            class="size-3.5 shrink-0"
+            aria-hidden="true"
           />
-          <div class="mt-4 flex flex-col gap-3 text-sm font-medium">
-            <span class="text-center text-[13px] font-light text-white/80">
-              {{ passwordStrengthText }}
-            </span>
-            <span class="text-[13px] font-extralight text-white/70">
-              Sua senha precisa ter:
-            </span>
-          </div>
-          <ul class="mt-2 space-y-2" aria-label="Requisitos da senha">
-            <li
-              v-for="req in passwordRequirementsList"
-              :key="req.text"
-              class="flex items-center gap-2"
-              :class="req.met ? 'text-secondary' : 'text-white/70'"
-            >
-              <UIcon
-                :name="req.met ? 'i-lucide-circle-check' : 'i-lucide-circle-x'"
-                class="size-4 shrink-0"
-              />
-              <span class="text-xs font-medium">{{ req.text }}</span>
-            </li>
-          </ul>
-        </div>
+          <span>Pelo menos 8 caracteres</span>
+        </p>
 
         <UFormField name="password_confirmation" label="Confirmar nova senha">
           <UInput
@@ -244,29 +227,13 @@ const passwordRequirements = [
   { regex: /.{8,}/, text: 'Pelo menos 8 caracteres' },
 ]
 
-const passwordRequirementsList = computed(() =>
-  passwordRequirements.map((req) => ({
-    ...req,
-    met: req.regex.test(passwordState.password ?? ''),
-  }))
-)
-
+// Score binario (0 ou 1 — so checamos 8 chars). Usado pelo ticker
+// inline acima e pelo `canSubmitPassword` abaixo. Os antigos
+// passwordColor/passwordStrengthText/passwordRequirementsList foram
+// removidos junto com o bloco de progresso, ninguem mais usa.
 const passwordScore = computed(() =>
-  passwordRequirementsList.value.filter((r) => r.met).length
+  passwordRequirements.filter((req) => req.regex.test(passwordState.password ?? '')).length
 )
-
-const passwordColor = computed(() => {
-  if (passwordScore.value <= 1) return 'error'
-  if (passwordScore.value <= 3) return 'warning'
-  return 'success'
-})
-
-const passwordStrengthText = computed(() => {
-  if (passwordScore.value === 0) return 'Digite uma senha'
-  if (passwordScore.value <= 2) return 'Senha fraca'
-  if (passwordScore.value === 3) return 'Senha média'
-  return 'Senha forte'
-})
 
 const canSubmitPassword = computed(() => {
   const cur = (passwordState.current_password ?? '').trim()

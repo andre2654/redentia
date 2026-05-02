@@ -118,7 +118,18 @@
             <AtomsFormInputPassword v-model="state.password_confirmation" placeholder="Confirme a senha" class="w-full" />
           </UFormField>
 
-          <AtomsPasswordStrengthBlock :requirements="requirements" :score="score" :text="text" :color="color" />
+          <p
+            class="flex items-center gap-1.5 text-[12px] transition-colors"
+            :style="{ color: score >= 1 ? brand.colors.positive : brand.colors.textMuted }"
+            aria-live="polite"
+          >
+            <UIcon
+              :name="score >= 1 ? 'i-lucide-circle-check' : 'i-lucide-circle'"
+              class="size-3.5"
+              aria-hidden="true"
+            />
+            <span>Pelo menos 8 caracteres</span>
+          </p>
 
           <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="w-full justify-center font-mono-tab text-xs tracking-[0.15em]">
             Criar sessão
@@ -229,7 +240,18 @@
             <AtomsFormInputPassword v-model="state.password_confirmation" placeholder="Confirme a senha" class="w-full" />
           </UFormField>
 
-          <AtomsPasswordStrengthBlock :requirements="requirements" :score="score" :text="text" :color="color" />
+          <p
+            class="flex items-center gap-1.5 text-[12px] transition-colors"
+            :style="{ color: score >= 1 ? brand.colors.positive : brand.colors.textMuted }"
+            aria-live="polite"
+          >
+            <UIcon
+              :name="score >= 1 ? 'i-lucide-circle-check' : 'i-lucide-circle'"
+              class="size-3.5"
+              aria-hidden="true"
+            />
+            <span>Pelo menos 8 caracteres</span>
+          </p>
 
           <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="mt-2 w-full justify-center font-small-caps tracking-wide">
             Abrir conta
@@ -358,7 +380,18 @@
             <AtomsFormInputPassword v-model="state.password_confirmation" placeholder="Confirme a senha" class="w-full" />
           </UFormField>
 
-          <AtomsPasswordStrengthBlock :requirements="requirements" :score="score" :text="text" :color="color" />
+          <p
+            class="flex items-center gap-1.5 text-[12px] transition-colors"
+            :style="{ color: score >= 1 ? brand.colors.positive : brand.colors.textMuted }"
+            aria-live="polite"
+          >
+            <UIcon
+              :name="score >= 1 ? 'i-lucide-circle-check' : 'i-lucide-circle'"
+              class="size-3.5"
+              aria-hidden="true"
+            />
+            <span>Pelo menos 8 caracteres</span>
+          </p>
 
           <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="mt-2 w-full justify-center font-mentor-eyebrow">
             COMEÇAR A CONSTRUIR →
@@ -483,7 +516,18 @@
               <AtomsFormInputPassword v-model="state.password_confirmation" placeholder="Confirme a senha" class="w-full" />
             </UFormField>
 
-            <AtomsPasswordStrengthBlock :requirements="requirements" :score="score" :text="text" :color="color" />
+            <p
+            class="flex items-center gap-1.5 text-[12px] transition-colors"
+            :style="{ color: score >= 1 ? brand.colors.positive : brand.colors.textMuted }"
+            aria-live="polite"
+          >
+            <UIcon
+              :name="score >= 1 ? 'i-lucide-circle-check' : 'i-lucide-circle'"
+              class="size-3.5"
+              aria-hidden="true"
+            />
+            <span>Pelo menos 8 caracteres</span>
+          </p>
 
             <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="mt-2 w-full justify-center font-academic-label">
               MATRICULAR-SE →
@@ -628,7 +672,18 @@
             <AtomsFormInputPassword v-model="state.password_confirmation" placeholder="Confirme a senha" class="w-full" />
           </UFormField>
 
-          <AtomsPasswordStrengthBlock :requirements="requirements" :score="score" :text="text" :color="color" />
+          <p
+            class="flex items-center gap-1.5 text-[12px] transition-colors"
+            :style="{ color: score >= 1 ? brand.colors.positive : brand.colors.textMuted }"
+            aria-live="polite"
+          >
+            <UIcon
+              :name="score >= 1 ? 'i-lucide-circle-check' : 'i-lucide-circle'"
+              class="size-3.5"
+              aria-hidden="true"
+            />
+            <span>Pelo menos 8 caracteres</span>
+          </p>
 
           <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="mt-3 w-full justify-center font-showtime-label">
             BORA COMEÇAR, CRIATURA! →
@@ -749,7 +804,18 @@
           <UFormField name="password_confirmation">
             <AtomsFormInputPassword v-model="state.password_confirmation" placeholder="Confirme a senha" class="w-full" />
           </UFormField>
-          <AtomsPasswordStrengthBlock :requirements="requirements" :score="score" :text="text" :color="color" />
+          <p
+            class="flex items-center gap-1.5 text-[12px] transition-colors"
+            :style="{ color: score >= 1 ? brand.colors.positive : brand.colors.textMuted }"
+            aria-live="polite"
+          >
+            <UIcon
+              :name="score >= 1 ? 'i-lucide-circle-check' : 'i-lucide-circle'"
+              class="size-3.5"
+              aria-hidden="true"
+            />
+            <span>Pelo menos 8 caracteres</span>
+          </p>
 
           <button
             type="submit"
@@ -890,7 +956,18 @@
               </template>
               <AtomsFormInputPassword v-model="state.password_confirmation" placeholder="Confirme a senha" class="w-full" />
             </UFormField>
-            <AtomsPasswordStrengthBlock :requirements="requirements" :score="score" :text="text" :color="color" />
+            <p
+            class="flex items-center gap-1.5 text-[12px] transition-colors"
+            :style="{ color: score >= 1 ? brand.colors.positive : brand.colors.textMuted }"
+            aria-live="polite"
+          >
+            <UIcon
+              :name="score >= 1 ? 'i-lucide-circle-check' : 'i-lucide-circle'"
+              class="size-3.5"
+              aria-hidden="true"
+            />
+            <span>Pelo menos 8 caracteres</span>
+          </p>
 
             <button
               type="submit"
@@ -983,7 +1060,18 @@
             <AtomsFormInputPassword v-model="state.password_confirmation" autocomplete="new-password" placeholder="Confirme a senha" class="w-full" />
           </UFormField>
 
-          <AtomsPasswordStrengthBlock :requirements="requirements" :score="score" :text="text" :color="color" />
+          <p
+            class="flex items-center gap-1.5 text-[12px] transition-colors"
+            :style="{ color: score >= 1 ? brand.colors.positive : brand.colors.textMuted }"
+            aria-live="polite"
+          >
+            <UIcon
+              :name="score >= 1 ? 'i-lucide-circle-check' : 'i-lucide-circle'"
+              class="size-3.5"
+              aria-hidden="true"
+            />
+            <span>Pelo menos 8 caracteres</span>
+          </p>
 
           <!-- Submit unificado (variant default → Redentia + tenants sem
                variant proprio). bg var(--brand-primary) + texto branco. -->
@@ -1167,19 +1255,11 @@ const requirements = computed(() =>
   }))
 )
 
+// Score binario agora (so 1 requisito: 8 chars). Usado no ticker
+// inline (icone de check verde quando score >= 1) e tambem no
+// canSubmitPassword (na tela de settings) — aqui no register o submit
+// e bloqueado pela schema do zod, score so alimenta o ticker visual.
 const score = computed(() => requirements.value.filter((r) => r.met).length)
-const color = computed(() => {
-  if (score.value <= 1) return 'error'
-  if (score.value <= 3) return 'warning'
-  return 'success'
-})
-
-const text = computed(() => {
-  if (score.value === 0) return 'Digite uma senha'
-  if (score.value <= 2) return 'Senha fraca'
-  if (score.value === 3) return 'Senha média'
-  return 'Senha forte'
-})
 
 const router = useRouter()
 
