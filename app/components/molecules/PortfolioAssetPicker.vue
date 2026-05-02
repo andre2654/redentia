@@ -134,6 +134,17 @@ function submit() {
   close()
 }
 
+// CTA button on the trigger pill. Smart-routes:
+//   - empty selection: open picker (so the user has somewhere to go).
+//   - has selection: emit submit and skip the popover — parent intercepts
+//     and shows the simulation modal directly. Keeps the right side of the
+//     pill always actionable instead of a no-op when there's nothing
+//     selected yet.
+function onCtaClick() {
+  if (selected.value.length > 0) submit()
+  else open()
+}
+
 function onKeydown(e: KeyboardEvent) {
   if (e.key === 'Escape') {
     e.preventDefault()
@@ -205,41 +216,56 @@ const kindBadges: Record<string, { label: string, color: string }> = {
 </script>
 
 <template>
-  <div class="picker">
-    <!-- ============ TRIGGER ============ -->
-    <button
-      ref="triggerEl"
-      type="button"
-      class="picker__trigger"
-      :class="{ 'picker__trigger--active': isOpen }"
-      :aria-expanded="isOpen"
-      :aria-label="selected.length > 0 ? `${selected.length} ativos selecionados, abrir seletor` : 'Abrir seletor de ativos'"
-      @click="open"
-    >
-      <UIcon name="i-lucide-search" class="picker__trigger-icon size-5 shrink-0" aria-hidden="true" />
+  <div ref="triggerEl" class="picker" :class="{ 'picker--active': isOpen }">
+    <!-- ============ TRIGGER (split: main area + CTA button) ============ -->
+    <!-- Visual: a single pill, but functionally two buttons sitting side-by-
+         side. Clicking the LEFT area (icon + placeholder/chips) opens the
+         picker so the user can edit the selection. Clicking the RIGHT
+         area (CTA button) is smarter:
+           - empty selection → opens the picker (no-op shortcut to "go pick")
+           - has selection   → submits straight away, which the parent then
+             pipes into the simulation modal. Lets a user who's already
+             selected their tickers (e.g. came back to the page with
+             ?tickers= prefill) skip reopening the picker. -->
+    <div class="picker__trigger">
+      <button
+        type="button"
+        class="picker__trigger-main"
+        :aria-expanded="isOpen"
+        :aria-label="selected.length > 0 ? `${selected.length} ativos selecionados, abrir seletor` : 'Abrir seletor de ativos'"
+        @click="open"
+      >
+        <UIcon name="i-lucide-search" class="picker__trigger-icon size-5 shrink-0" aria-hidden="true" />
 
-      <span v-if="selected.length === 0" class="picker__trigger-placeholder">
-        Selecionar ativos da sua carteira...
-      </span>
-
-      <span v-else class="picker__trigger-chips">
-        <span
-          v-for="s in selected.slice(0, 4)"
-          :key="s.id"
-          class="picker__inline-chip"
-          translate="no"
-        >{{ s.ticker }}</span>
-        <span v-if="selected.length > 4" class="picker__trigger-extra">
-          +{{ selected.length - 4 }}
+        <span v-if="selected.length === 0" class="picker__trigger-placeholder">
+          Selecionar ativos da sua carteira...
         </span>
-      </span>
 
-      <span class="picker__trigger-cta">
+        <span v-else class="picker__trigger-chips">
+          <span
+            v-for="s in selected.slice(0, 4)"
+            :key="s.id"
+            class="picker__inline-chip"
+            translate="no"
+          >{{ s.ticker }}</span>
+          <span v-if="selected.length > 4" class="picker__trigger-extra">
+            +{{ selected.length - 4 }}
+          </span>
+        </span>
+      </button>
+
+      <button
+        type="button"
+        class="picker__trigger-cta"
+        :aria-label="selected.length > 0 ? ctaLabel : 'Abrir seletor de ativos'"
+        @click="onCtaClick"
+      >
+        <UIcon name="i-lucide-sparkles" class="size-4 shrink-0" aria-hidden="true" />
         <span class="picker__trigger-cta-label--desktop">{{ ctaLabel }}</span>
         <span class="picker__trigger-cta-label--mobile">{{ ctaLabelShort }}</span>
-        <UIcon name="i-lucide-arrow-right" class="size-4" aria-hidden="true" />
-      </span>
-    </button>
+        <UIcon name="i-lucide-arrow-right" class="size-4 shrink-0" aria-hidden="true" />
+      </button>
+    </div>
 
     <!-- ============ DROPDOWN POPOVER ============ -->
     <Teleport v-if="isOpen" to="body">
@@ -378,39 +404,58 @@ const kindBadges: Record<string, { label: string, color: string }> = {
 </template>
 
 <style scoped>
-/* ============ TRIGGER ============ */
+/* ============ TRIGGER (wrapper + 2 buttons) ============ */
 .picker {
   position: relative;
   width: 100%;
 }
 
+/* Outer pill — visual continuity. Border + bg are HERE, not on the inner
+   buttons. Buttons just inherit the rounded shape via overflow:hidden. */
 .picker__trigger {
   display: flex;
   align-items: center;
-  gap: 12px;
   width: 100%;
-  padding: 6px 6px 6px 18px;
+  padding: 6px;
   border-radius: 999px;
   border: 1px solid var(--border-subtle);
   background: var(--bg-elevated);
-  color: var(--text-heading);
   font-family: var(--brand-font);
-  cursor: pointer;
-  transition: border-color 200ms, box-shadow 200ms, transform 120ms;
-  text-align: left;
+  transition: border-color 200ms, box-shadow 200ms;
   min-height: 56px;
 }
 
 .picker__trigger:hover,
-.picker__trigger--active {
+.picker--active .picker__trigger {
   border-color: color-mix(in srgb, var(--brand-primary) 38%, var(--border-default));
   box-shadow: 0 8px 24px -12px color-mix(in srgb, var(--brand-primary) 22%, transparent);
 }
 
-.picker__trigger:focus-visible {
-  outline: none;
+.picker__trigger:focus-within {
   border-color: var(--brand-primary);
   box-shadow: var(--shadow-ring-focus);
+}
+
+/* Left button — search icon + placeholder/chips. Takes all available
+   space, transparent so the outer pill bg shows through. */
+.picker__trigger-main {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+  gap: 12px;
+  padding: 0 8px 0 12px;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  text-align: left;
+  color: var(--text-heading);
+  font-family: inherit;
+  height: 100%;
+}
+
+.picker__trigger-main:focus-visible {
+  outline: none;
 }
 
 .picker__trigger-icon {
@@ -452,17 +497,39 @@ const kindBadges: Record<string, { label: string, color: string }> = {
   margin-left: 4px;
 }
 
+/* Right button — CTA pill. Same amber as the global primary CTA, white
+   text + icons so it doesn't read as black on amber (#1A0A2E was the
+   default text from .quiet-btn-primary and looked muddy). Hover:
+   slight darken via brightness filter to match the rest of the system. */
 .picker__trigger-cta {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 12px 20px;
   border-radius: 999px;
+  border: 0;
   background: var(--brand-primary);
-  color: var(--bg-base);
+  color: #fff;
   font-size: 14px;
   font-weight: 600;
   white-space: nowrap;
+  cursor: pointer;
+  font-family: inherit;
+  flex-shrink: 0;
+  transition: filter 180ms, transform 120ms;
+}
+
+.picker__trigger-cta:hover {
+  filter: brightness(0.94);
+}
+
+.picker__trigger-cta:active {
+  transform: translateY(1px);
+}
+
+.picker__trigger-cta:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-ring-focus);
 }
 
 .picker__trigger-cta-label--mobile {
@@ -476,8 +543,8 @@ const kindBadges: Record<string, { label: string, color: string }> = {
   .picker__trigger-cta-label--mobile {
     display: inline;
   }
-  .picker__trigger {
-    padding-left: 14px;
+  .picker__trigger-main {
+    padding-left: 8px;
   }
   .picker__trigger-cta {
     padding: 10px 14px;
@@ -789,6 +856,10 @@ const kindBadges: Record<string, { label: string, color: string }> = {
   }
 }
 
+/* Submit button no rodape do popover. Sobrescreve a cor herdada do
+   .quiet-btn-primary (#1A0A2E, quase preto, ficava sujo no botao
+   amber). Usa branco igual o CTA do trigger pra unificar visualmente
+   e o icone tambem segue (currentColor). */
 .picker__popover-submit {
   display: inline-flex;
   align-items: center;
@@ -797,6 +868,12 @@ const kindBadges: Record<string, { label: string, color: string }> = {
   border-radius: 999px;
   font-weight: 600;
   font-size: 13px;
+  color: #fff !important;
+}
+
+.picker__popover-submit :deep(svg),
+.picker__popover-submit :deep(.iconify) {
+  color: #fff;
 }
 
 .picker__popover-submit:disabled {

@@ -135,9 +135,13 @@ watch(
   { immediate: true },
 )
 
+// Demo CTA — agora passa pelo mesmo gate de simulacao que o picker
+// (modal com video + comparativo + signup). Mantem a coerencia: TODA rota
+// que leva pro estado de resultado abre o disclaimer antes, ninguem pula
+// direto pro diagnostico sem ver a oferta de cadastro.
 function loadDemo() {
-  const tickers = DEMO_PORTFOLIO.map(p => p.ticker.replace('TESOURO_SELIC', 'TESOURO SELIC')).join(',')
-  router.push({ path: '/raio-x', query: { tickers } })
+  const tickers = DEMO_PORTFOLIO.map(p => p.ticker.replace('TESOURO_SELIC', 'TESOURO SELIC'))
+  onPickerSubmit(tickers)
 }
 
 // Video src as a runtime-resolved string (see comment near the <video>
