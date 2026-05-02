@@ -238,12 +238,10 @@ watch(
   { immediate: true }
 )
 
-// Critérios da senha (iguais à tela de registro)
+// Critérios da senha — alinhado ao registro: apenas 8 caracteres minimo.
+// (composicao forcada nao agrega seguranca real, conforme NIST SP 800-63B.)
 const passwordRequirements = [
   { regex: /.{8,}/, text: 'Pelo menos 8 caracteres' },
-  { regex: /\d/, text: 'Ao menos 1 número' },
-  { regex: /[a-z]/, text: 'Ao menos 1 letra minúscula' },
-  { regex: /[A-Z]/, text: 'Ao menos 1 letra maiúscula' },
 ]
 
 const passwordRequirementsList = computed(() =>

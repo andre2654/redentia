@@ -1114,11 +1114,13 @@ const sessionTime = computed(() => {
   }
 })
 
+// Requisitos de senha simplificados — antes exigiamos 4 (8 chars + numero
+// + minuscula + maiuscula). Agora so 8 caracteres minimo, em linha com
+// o NIST SP 800-63B revisado que recomenda comprimento sobre composicao
+// (composicao forcada gera senhas previsiveis tipo Senha123). Reduz
+// fricao no funil sem comprometer segurança real.
 const passwordRequirements = [
   { regex: /.{8,}/, text: 'Pelo menos 8 caracteres' },
-  { regex: /\d/, text: 'Ao menos 1 número' },
-  { regex: /[a-z]/, text: 'Ao menos 1 letra minúscula' },
-  { regex: /[A-Z]/, text: 'Ao menos 1 letra maiúscula' },
 ]
 
 const schema = z
