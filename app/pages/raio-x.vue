@@ -928,23 +928,41 @@ usePageSeo({
 }
 
 @media (max-width: 480px) {
+  /* No mobile o CTA vira um BOTTOM ACTION BAR ancorado no fundo da
+     viewport. Sai do formato pill flutuante (que ficava preso no meio
+     com margem) e vira uma barra full-width arredondada apenas no topo
+     — interage como um sheet sticky, padrao Instagram/Twitter "responder".
+     Vantagens: maior area de toque, layout mais agressivo no mobile,
+     nao precisa o usuario mirar no pill curtinho. */
   .raio-x-floating {
-    /* No mobile o pill encosta nas margens com padding interno menor pra
-       caber sem cortar; o subtitulo fica menor pra reduzir altura. */
-    bottom: 12px;
-    padding: 8px 14px 8px 8px;
-    padding-bottom: max(8px, env(safe-area-inset-bottom));
-    max-width: calc(100vw - 24px);
+    bottom: 0;
+    left: 0;
+    right: 0;
+    transform: none;
+    width: 100%;
+    max-width: 100%;
+    border-radius: 18px 18px 0 0;
+    padding: 14px 18px 14px 14px;
+    padding-bottom: max(14px, env(safe-area-inset-bottom));
+    justify-content: flex-start;
+    gap: 12px;
+  }
+  .raio-x-floating:hover {
+    transform: none;
   }
   .raio-x-floating__icon {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
+  }
+  .raio-x-floating__text {
+    flex: 1;
+    min-width: 0;
   }
   .raio-x-floating__label {
-    font-size: 13px;
+    font-size: 14px;
   }
   .raio-x-floating__sub {
-    font-size: 10px;
+    font-size: 11px;
   }
 }
 
@@ -980,5 +998,14 @@ usePageSeo({
 .raio-x-floating-leave-to {
   transform: translateX(-50%) translateY(120%);
   opacity: 0;
+}
+
+/* Mobile usa transform: none no estado resting (full-width sticky bar),
+   entao a transicao de entrada/saida nao deve aplicar translateX. */
+@media (max-width: 480px) {
+  .raio-x-floating-enter-from,
+  .raio-x-floating-leave-to {
+    transform: translateY(120%);
+  }
 }
 </style>
