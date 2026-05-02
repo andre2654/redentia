@@ -118,13 +118,6 @@
             <AtomsFormInputPassword v-model="state.password_confirmation" placeholder="Confirme a senha" class="w-full" />
           </UFormField>
 
-          <UFormField name="advisor_code">
-            <template #label>
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">&gt; Código do assessor (opcional)</span>
-            </template>
-            <AtomsFormInput v-model="state.advisor_code" type="text" placeholder="ex: ABC123" size="lg" class="w-full" />
-          </UFormField>
-
           <AtomsPasswordStrengthBlock :requirements="requirements" :score="score" :text="text" :color="color" />
 
           <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="w-full justify-center font-mono-tab text-xs tracking-[0.15em]">
@@ -234,13 +227,6 @@
               <span class="font-small-caps text-[10px]" :style="{ color: brand.colors.textMuted }">Confirme a senha</span>
             </template>
             <AtomsFormInputPassword v-model="state.password_confirmation" placeholder="Confirme a senha" class="w-full" />
-          </UFormField>
-
-          <UFormField name="advisor_code">
-            <template #label>
-              <span class="font-small-caps text-[10px]" :style="{ color: brand.colors.textMuted }">Código do assessor (opcional)</span>
-            </template>
-            <AtomsFormInput v-model="state.advisor_code" type="text" placeholder="Ex: ABC123" size="lg" class="w-full" />
           </UFormField>
 
           <AtomsPasswordStrengthBlock :requirements="requirements" :score="score" :text="text" :color="color" />
@@ -372,13 +358,6 @@
             <AtomsFormInputPassword v-model="state.password_confirmation" placeholder="Confirme a senha" class="w-full" />
           </UFormField>
 
-          <UFormField name="advisor_code">
-            <template #label>
-              <span class="font-mentor-eyebrow" :style="{ color: brand.colors.text }">Código do assessor (opcional)</span>
-            </template>
-            <AtomsFormInput v-model="state.advisor_code" type="text" placeholder="Ex: ABC123" size="lg" class="w-full" />
-          </UFormField>
-
           <AtomsPasswordStrengthBlock :requirements="requirements" :score="score" :text="text" :color="color" />
 
           <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="mt-2 w-full justify-center font-mentor-eyebrow">
@@ -502,13 +481,6 @@
                 <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">Confirme a senha</span>
               </template>
               <AtomsFormInputPassword v-model="state.password_confirmation" placeholder="Confirme a senha" class="w-full" />
-            </UFormField>
-
-            <UFormField name="advisor_code">
-              <template #label>
-                <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">Código do assessor (opcional)</span>
-              </template>
-              <AtomsFormInput v-model="state.advisor_code" type="text" placeholder="Ex: ABC123" size="lg" class="w-full" />
             </UFormField>
 
             <AtomsPasswordStrengthBlock :requirements="requirements" :score="score" :text="text" :color="color" />
@@ -654,13 +626,6 @@
               <span class="font-showtime-label" :style="{ color: `${brand.colors.text}80` }">REPETE A SENHA</span>
             </template>
             <AtomsFormInputPassword v-model="state.password_confirmation" placeholder="Confirme a senha" class="w-full" />
-          </UFormField>
-
-          <UFormField name="advisor_code">
-            <template #label>
-              <span class="font-showtime-label" :style="{ color: `${brand.colors.text}80` }">CÓDIGO DO ASSESSOR (OPCIONAL)</span>
-            </template>
-            <AtomsFormInput v-model="state.advisor_code" type="text" placeholder="Ex: ABC123" size="lg" class="w-full" />
           </UFormField>
 
           <AtomsPasswordStrengthBlock :requirements="requirements" :score="score" :text="text" :color="color" />
@@ -995,25 +960,15 @@
             </p>
           </div>
 
+          <!-- Cadastro reduzido — Redentia v3: nome completo + email +
+               senha. Os campos `login` e `celular` foram removidos pra
+               cortar fricao no funil. login agora = email (auto-set no
+               submit), celular fica pra coleta posterior em /settings
+               (sera obrigatorio antes de acessar wallet/chat numa proxima
+               iteracao). advisor_code tambem foi cortado — o codigo do
+               assessor passa a ser indicado depois via convite/profile. -->
           <UFormField name="name">
-            <AtomsFormInput v-model="state.name" type="text" placeholder="Nome completo" size="lg" class="w-full" />
-          </UFormField>
-
-          <UFormField name="login">
-            <AtomsFormInput v-model="state.login" type="text" placeholder="Usuário" size="lg" class="w-full" />
-          </UFormField>
-
-          <UFormField name="celular">
-            <AtomsFormInput
-              v-model="state.celular"
-              v-maska="'+55 (##) # ####-####'"
-              type="tel"
-              autocomplete="tel"
-              inputmode="tel"
-              placeholder="Celular"
-              size="lg"
-              class="w-full"
-            />
+            <AtomsFormInput v-model="state.name" type="text" autocomplete="name" placeholder="Nome completo" size="lg" class="w-full" />
           </UFormField>
 
           <UFormField name="email">
@@ -1021,18 +976,11 @@
           </UFormField>
 
           <UFormField name="password">
-            <AtomsFormInputPassword v-model="state.password" :aria-invalid="score < 4" class="w-full" />
+            <AtomsFormInputPassword v-model="state.password" autocomplete="new-password" :aria-invalid="score < 4" class="w-full" />
           </UFormField>
 
           <UFormField name="password_confirmation">
-            <AtomsFormInputPassword v-model="state.password_confirmation" placeholder="Confirme a senha" class="w-full" />
-          </UFormField>
-
-          <UFormField name="advisor_code">
-            <template #label>
-              <span :style="{ color: brand.colors.textMuted }">Código do assessor (opcional)</span>
-            </template>
-            <AtomsFormInput v-model="state.advisor_code" type="text" placeholder="Ex: ABC123" size="lg" class="w-full" />
+            <AtomsFormInputPassword v-model="state.password_confirmation" autocomplete="new-password" placeholder="Confirme a senha" class="w-full" />
           </UFormField>
 
           <AtomsPasswordStrengthBlock :requirements="requirements" :score="score" :text="text" :color="color" />
@@ -1176,9 +1124,14 @@ const passwordRequirements = [
 const schema = z
   .object({
     name: z.string().min(2, 'Nome obrigatório'),
-    login: z.string().min(3, 'Login obrigatório'),
+    // login e celular ficaram OPCIONAIS na schema porque o variant
+    // default da Redentia removeu esses campos do form. Outros variants
+    // (mentor, holder, showtime, etc.) ainda renderizam e o usuario
+    // preenche; nesse caso vai pra payload normalmente. Quando vazio,
+    // o submit usa o email como login e omite celular.
+    login: z.string().optional(),
     email: z.string().email('Email inválido'),
-    celular: z.string().min(20, 'Celular obrigatório'),
+    celular: z.string().optional(),
     password: z
       .string()
       .refine(
@@ -1188,7 +1141,6 @@ const schema = z
         }
       ),
     password_confirmation: z.string(),
-    advisor_code: z.string().optional(),
   })
   .refine((data) => data.password === data.password_confirmation, {
     message: 'As senhas devem ser iguais',
@@ -1204,7 +1156,6 @@ const state = reactive({
   celular: '',
   password: '',
   password_confirmation: '',
-  advisor_code: '',
 })
 
 const requirements = computed(() =>
@@ -1266,15 +1217,23 @@ async function onSubmit(_: FormSubmitEvent<Schema>) {
   try {
     const payload: Parameters<typeof register>[0] = {
       name: state.name,
-      login: state.login,
       email: state.email,
-      celular: '+' + state.celular.replace(/\D/g, ''),
+      // login = email por default (variant default da Redentia removeu o
+      // campo do form). Outros variants ainda preenchem, e nesse caso
+      // respeitamos. O backend aceita ambos.
+      login: state.login?.trim() || state.email,
       password: state.password,
       password_confirmation: state.password_confirmation,
     }
-    if (state.advisor_code?.trim()) {
-      payload.advisor_code = state.advisor_code.trim()
+    // Celular agora opcional. So manda se o usuario preencheu (nos
+    // variants antigos). E.164: '+5511999999999' a partir do mascarado.
+    const cleanedCelular = state.celular?.replace(/\D/g, '') ?? ''
+    if (cleanedCelular.length >= 10) {
+      payload.celular = '+' + cleanedCelular
     }
+    // advisor_code foi removido do cadastro inicial. Quem tem codigo
+    // de assessor agora vincula depois em /settings via
+    // <MoleculesSettingsAttachAdvisor> (que ja existia na pagina).
     const resp = (await register(payload)) as {
       access_token?: string
       token?: string

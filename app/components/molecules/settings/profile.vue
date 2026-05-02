@@ -38,6 +38,50 @@
     <!-- Divisor -->
     <div class="border-t border-white/10" />
 
+    <!-- Seção: Telefone (opcional por enquanto; sera obrigatorio antes de
+         acessar /wallet e /help numa proxima iteracao). Coletado aqui
+         pra cortar fricao do cadastro inicial. -->
+    <section class="flex flex-col gap-4">
+      <div>
+        <h3 class="text-base font-semibold text-white">Telefone</h3>
+        <p class="mt-1 text-xs text-white/50">
+          Usado para contato e acesso a recursos como carteira e chat. Opcional por enquanto.
+        </p>
+      </div>
+      <UForm
+        :schema="celularSchema"
+        :state="celularState"
+        class="flex flex-col gap-4 sm:flex-row sm:items-end sm:gap-3"
+        @submit="onSubmitCelular"
+      >
+        <UFormField name="celular" class="min-w-0 flex-1 sm:max-w-xs">
+          <UInput
+            v-model="celularState.celular"
+            v-maska="'+55 (##) # ####-####'"
+            type="tel"
+            autocomplete="tel"
+            inputmode="tel"
+            size="lg"
+            placeholder="+55 (00) 0 0000-0000"
+            class="w-full"
+            :ui="{ base: 'rounded-xl border-white/10 bg-white/5' }"
+          />
+        </UFormField>
+        <UButton
+          type="submit"
+          color="primary"
+          size="lg"
+          :loading="savingCelular"
+          class="rounded-xl shrink-0"
+        >
+          Salvar telefone
+        </UButton>
+      </UForm>
+    </section>
+
+    <!-- Divisor -->
+    <div class="border-t border-white/10" />
+
     <!-- Seção: Alterar senha -->
     <section class="flex flex-col gap-4">
       <div>
@@ -152,6 +196,7 @@ const authStore = useAuthStore()
 const { updateProfile, changePassword } = useAuthService()
 
 const savingName = ref(false)
+const savingCelular = ref(false)
 const savingPassword = ref(false)
 const showNewPassword = ref(false)
 
@@ -169,6 +214,26 @@ watch(
   () => authStore.me?.name,
   (name) => {
     if (name && !nameState.name) nameState.name = name
+  },
+  { immediate: true }
+)
+
+// Telefone: schema permite vazio. Pra acessar wallet/chat depois, vamos
+// validar `min(20)` num middleware de rota separado, nao aqui — settings
+// continua salvando com o que o usuario quiser informar.
+const celularSchema = z.object({
+  celular: z.string().optional(),
+})
+
+const celularState = reactive({
+  celular: authStore.me?.celular ?? '',
+})
+
+// Hidrata o telefone quando o `me` carrega/atualiza.
+watch(
+  () => authStore.me?.celular,
+  (celular) => {
+    if (celular && !celularState.celular) celularState.celular = celular
   },
   { immediate: true }
 )
@@ -245,6 +310,26 @@ async function onSubmitName(event: FormSubmitEvent<z.infer<typeof nameSchema>>) 
     showErrorNotification('Erro ao salvar', msg)
   } finally {
     savingName.value = false
+  }
+}
+
+async function onSubmitCelular(event: FormSubmitEvent<z.infer<typeof celularSchema>>) {
+  savingCelular.value = true
+  try {
+    // Normaliza pro formato E.164 (ex: +5511999999999) antes de enviar.
+    // Se o usuario apagou tudo, manda vazio explicito pro backend
+    // remover o registro antigo.
+    const raw = (event.data.celular ?? '').replace(/\D/g, '')
+    const normalized = raw.length >= 10 ? '+' + raw : ''
+    const resp = (await updateProfile({ celular: normalized })) as { user?: { id?: string | number; name?: string; email?: string; celular?: string }; data?: { user?: unknown } }
+    const user = resp?.user ?? (resp as any)?.data?.user
+    if (user) authStore.setMeFromUser(user as any)
+    showSuccessNotification('Telefone atualizado', normalized ? 'Seu telefone foi salvo.' : 'Telefone removido do perfil.')
+  } catch (e: any) {
+    const msg = e?.data?.message ?? e?.message ?? 'Não foi possível atualizar o telefone.'
+    showErrorNotification('Erro ao salvar', msg)
+  } finally {
+    savingCelular.value = false
   }
 }
 

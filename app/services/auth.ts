@@ -1,10 +1,18 @@
 export interface RegisterPayload {
   name: string
-  login: string
   email: string
-  celular: string
   password: string
   password_confirmation: string
+  /**
+   * Username de login. Deprecated como input do formulario, agora vai
+   * sempre = email. Mantido na interface enquanto o backend ainda exige
+   * o campo (vamos remover a obrigatoriedade na proxima migration).
+   */
+  login?: string
+  /** Telefone agora e opcional no cadastro — coletado em /settings depois. */
+  celular?: string
+  /** Codigo do assessor — removido do formulario default mas a interface
+   *  continua aceitando pra fluxos B2B antigos. */
   advisor_code?: string
 }
 
@@ -67,7 +75,12 @@ export const useAuthService = () => {
     return resp
   }
 
-  async function updateProfile(body: { name: string }) {
+  async function updateProfile(body: {
+    name?: string
+    celular?: string
+    /** E.164 ja normalizado (ex: +5511999999999). Quando vazio, mantem
+     *  o valor antigo no backend (PUT parcial). */
+  }) {
     const resp = await authFetch(`${baseURL}/profile`, {
       method: 'PUT',
       body,
