@@ -90,10 +90,6 @@ onBeforeUnmount(() => {
               preload="metadata"
               aria-label="Apresentacao em video do Raio-X"
             />
-            <span class="raio-x-sim__video-badge" aria-hidden="true">
-              <span class="raio-x-sim__video-badge-dot" />
-              Demo
-            </span>
           </div>
 
           <div class="raio-x-sim__body">
@@ -156,23 +152,21 @@ onBeforeUnmount(() => {
           </div>
 
           <footer class="raio-x-sim__footer">
-            <!-- PRIMARY: ver o demo. Quem chegou ate aqui acabou de selecionar
-                 sua carteira; a fricao maior e segurar essa pessoa numa tela
-                 de cadastro antes de ela ver o resultado. CTA dominante manda
-                 ela direto pro diagnostico, depois o floating CTA na pagina
-                 do resultado pesca a conversao quando ela ja viu o valor. -->
-            <button type="button" class="raio-x-sim__btn-primary quiet-btn-primary" @click="confirm">
+            <!-- PRIMARY: cadastro pro Raio-X real. O modal sobe DEPOIS de
+                 5s na tela do diagnostico — o usuario ja viu o demo,
+                 tem contexto, ta no momento certo pra ser empurrado pro
+                 cadastro. -->
+            <NuxtLink to="/auth/register" class="raio-x-sim__btn-primary quiet-btn-primary">
               <UIcon name="i-lucide-sparkles" class="size-4" aria-hidden="true" />
-              <span>Ver o Raio-X Demo</span>
+              <span>Gerar Raio-X real</span>
               <UIcon name="i-lucide-arrow-right" class="size-4" aria-hidden="true" />
-            </button>
-            <!-- SECONDARY: cadastro como link textual sem borda nem bg, abaixo
-                 do CTA principal. Disponivel pra quem ja sabe o que quer mas
-                 nao compete visualmente com o demo. -->
-            <NuxtLink to="/auth/register" class="raio-x-sim__btn-link">
-              Cadastrar grátis e ver o Raio-X Real
-              <UIcon name="i-lucide-arrow-up-right" class="size-3.5" aria-hidden="true" />
             </NuxtLink>
+            <!-- SECONDARY: continuar no demo. Sem borda nem bg, link
+                 textual abaixo do CTA principal. Pra quem ainda quer
+                 explorar antes de cadastrar. -->
+            <button type="button" class="raio-x-sim__btn-link" @click="confirm">
+              Continuar vendo o demo
+            </button>
           </footer>
         </div>
       </div>

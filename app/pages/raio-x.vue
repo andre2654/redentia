@@ -359,11 +359,6 @@ usePageSeo({
                   preload="metadata"
                   aria-label="Apresentacao em video do Raio-X da Redent.IA"
                 />
-                <!-- Play indicator pin no canto superior esquerdo -->
-                <span class="raio-x__video-badge" aria-hidden="true">
-                  <span class="raio-x__video-badge-dot" />
-                  Demo
-                </span>
               </div>
               <figcaption class="mt-3 text-center text-[12px] md:text-left" :style="{ color: 'var(--text-muted)' }">
                 Veja em 60 segundos o que a Redent.IA cruza na sua carteira.
