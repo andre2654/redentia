@@ -773,9 +773,21 @@
             <AtomsFormInputPassword v-model="state.password" class="w-full" />
           </UFormField>
 
-          <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="mt-2 w-full justify-center">
-            {{ brand.nav.login }}
-          </AtomsButton>
+          <!-- Submit unificado (variant default → Redentia + tenants sem
+               variant proprio). Mesmo padrao do .quiet-btn-primary global:
+               bg var(--brand-primary) + texto/icones brancos. Loader inline
+               aparece enquanto submitting=true. -->
+          <button
+            type="submit"
+            :disabled="submitting || landing"
+            class="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-md px-5 py-3 text-[15px] font-semibold transition-[filter,box-shadow] duration-200 disabled:cursor-not-allowed disabled:opacity-60"
+            :style="{ backgroundColor: 'var(--brand-primary)', color: '#fff' }"
+            @mouseenter="($event.currentTarget as HTMLElement).style.filter = 'brightness(0.94)'"
+            @mouseleave="($event.currentTarget as HTMLElement).style.filter = 'brightness(1)'"
+          >
+            <UIcon v-if="submitting" name="i-lucide-loader-2" class="size-4 animate-spin" aria-hidden="true" />
+            <span>{{ brand.nav.login }}</span>
+          </button>
 
           <div class="flex flex-col gap-2 text-center md:text-left">
             <NuxtLink to="/auth/forgot-password" class="text-sm font-medium transition hover:opacity-80" :style="{ color: brand.colors.textMuted }">

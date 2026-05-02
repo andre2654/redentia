@@ -209,16 +209,22 @@
         </div>
       </nav>
 
-      <!-- Tablet -->
+      <!-- Tablet (sm <= viewport < lg) — usa o MESMO CTA do desktop pra
+           manter coerencia visual. Antes era um <UButton color="secondary">
+           que herdava cores diferentes (color do tema do nuxt/ui em vez
+           de var(--brand-primary)) e ficava deslocado da identidade.
+           Sem o group-hover do arrow porque tablet nao tem hover real. -->
       <div class="flex items-center gap-2 max-sm:hidden lg:hidden">
-        <UButton
+        <NuxtLink
           to="/auth/login"
-          color="secondary"
-          size="sm"
-          class="rounded-full px-5 font-medium"
+          class="inline-flex items-center gap-2 rounded-md px-5 py-2 text-[14px] font-medium leading-none transition-all duration-200 focus-visible:outline-none focus-visible:shadow-[var(--shadow-ring-focus)] active:translate-y-px"
+          style="background-color: var(--brand-primary); color: #fff;"
+          @mouseenter="($event.currentTarget as HTMLElement).style.filter = 'brightness(0.92)'"
+          @mouseleave="($event.currentTarget as HTMLElement).style.filter = 'brightness(1)'"
         >
-          {{ brand.nav.login }}
-        </UButton>
+          <span>{{ brand.nav.login }}</span>
+          <UIcon name="i-lucide-arrow-right" class="h-3.5 w-3.5" />
+        </NuxtLink>
       </div>
     </header>
 

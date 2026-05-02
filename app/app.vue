@@ -2,21 +2,17 @@
   <Analytics />
   <NuxtPwaManifest />
   <UApp :toaster="uAppConfig?.toaster">
-    <!-- Install banner — rendered in SSR so the layout reserves space and
-         the page doesn't shift on hydration (was a CLS culprit when wrapped
-         in ClientOnly + JS viewport gating). Visibility is controlled by:
-           - `v-if`  → route opts out (e.g. /download, /help) — SSR-safe.
-           - `v-show` → user dismissed the banner (Pinia persisted, only
-              available client-side; brief flash on subsequent visits when
-              dismissed, acceptable since SSR can't read localStorage).
-           - `lg:hidden` Tailwind class → CSS-only mobile gate; SSR HTML
-              always has the banner, desktop hides it via media query, no
-              JS viewport check needed. -->
+    <!-- Install banner — TEMPORARIAMENTE DESABILITADO em todas as telas.
+         Pra reativar, descomenta o bloco abaixo. Mantido em comentario
+         (em vez de delete) porque a logica de SSR + lg:hidden ja esta
+         resolvida e a gente nao quer ter que reescrever isso depois. -->
+    <!--
     <AtomsInstallAppBanner
       v-if="!route.meta.hideInstallAppBanner"
       v-show="!interfaceStore.hideInstallBanner"
       class="lg:hidden"
     />
+    -->
     <NuxtPage />
   </UApp>
 </template>

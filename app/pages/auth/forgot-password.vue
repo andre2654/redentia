@@ -694,9 +694,17 @@
             <AtomsFormInput v-model="state.email" type="email" autocomplete="email" spellcheck="false" placeholder="seu@email.com" size="lg" class="w-full" :disabled="sent" />
           </UFormField>
 
-          <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || sent" class="mt-2 w-full justify-center">
-            {{ sent ? 'Link enviado' : 'Enviar link de redefinição' }}
-          </AtomsButton>
+          <button
+            type="submit"
+            :disabled="submitting || sent"
+            class="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-md px-5 py-3 text-[15px] font-semibold transition-[filter,box-shadow] duration-200 disabled:cursor-not-allowed disabled:opacity-60"
+            :style="{ backgroundColor: 'var(--brand-primary)', color: '#fff' }"
+            @mouseenter="($event.currentTarget as HTMLElement).style.filter = 'brightness(0.94)'"
+            @mouseleave="($event.currentTarget as HTMLElement).style.filter = 'brightness(1)'"
+          >
+            <UIcon v-if="submitting" name="i-lucide-loader-2" class="size-4 animate-spin" aria-hidden="true" />
+            <span>{{ sent ? 'Link enviado' : 'Enviar link de redefinição' }}</span>
+          </button>
 
           <div v-if="sent" class="rounded-xl border p-3 text-[12px]" :style="{ borderColor: `${brand.colors.positive}66`, color: brand.colors.text, backgroundColor: `${brand.colors.positive}10` }">
             <strong :style="{ color: brand.colors.positive }">Link enviado.</strong>

@@ -1037,9 +1037,19 @@
 
           <AtomsPasswordStrengthBlock :requirements="requirements" :score="score" :text="text" :color="color" />
 
-          <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="w-full justify-center">
-            {{ brand.nav.register }}
-          </AtomsButton>
+          <!-- Submit unificado (variant default → Redentia + tenants sem
+               variant proprio). bg var(--brand-primary) + texto branco. -->
+          <button
+            type="submit"
+            :disabled="submitting || landing"
+            class="inline-flex w-full items-center justify-center gap-2 rounded-md px-5 py-3 text-[15px] font-semibold transition-[filter,box-shadow] duration-200 disabled:cursor-not-allowed disabled:opacity-60"
+            :style="{ backgroundColor: 'var(--brand-primary)', color: '#fff' }"
+            @mouseenter="($event.currentTarget as HTMLElement).style.filter = 'brightness(0.94)'"
+            @mouseleave="($event.currentTarget as HTMLElement).style.filter = 'brightness(1)'"
+          >
+            <UIcon v-if="submitting" name="i-lucide-loader-2" class="size-4 animate-spin" aria-hidden="true" />
+            <span>{{ brand.nav.register }}</span>
+          </button>
 
           <div class="flex flex-col gap-2 text-center md:text-left">
             <NuxtLink to="/auth/login" class="text-sm font-medium transition hover:opacity-80" :style="{ color: brand.colors.primary }">

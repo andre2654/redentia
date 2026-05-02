@@ -799,9 +799,17 @@
             <AtomsFormInputPassword v-model="state.password_confirmation" class="w-full" />
           </UFormField>
 
-          <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting" class="mt-2 w-full justify-center">
-            Salvar nova senha
-          </AtomsButton>
+          <button
+            type="submit"
+            :disabled="submitting"
+            class="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-md px-5 py-3 text-[15px] font-semibold transition-[filter,box-shadow] duration-200 disabled:cursor-not-allowed disabled:opacity-60"
+            :style="{ backgroundColor: 'var(--brand-primary)', color: '#fff' }"
+            @mouseenter="($event.currentTarget as HTMLElement).style.filter = 'brightness(0.94)'"
+            @mouseleave="($event.currentTarget as HTMLElement).style.filter = 'brightness(1)'"
+          >
+            <UIcon v-if="submitting" name="i-lucide-loader-2" class="size-4 animate-spin" aria-hidden="true" />
+            <span>Salvar nova senha</span>
+          </button>
 
           <NuxtLink to="/auth/login" class="text-center text-sm font-medium transition hover:opacity-80" :style="{ color: brand.colors.primary }">
             ← Voltar para o login
