@@ -46,6 +46,34 @@
       />
     </div>
 
+    <!-- AUTH GREETING: substitui o HomeHero pra usuarios logados. Mantem
+         o mesmo ritmo tipografico do hero radiograph (eyebrow + headline
+         weight 300 com `carteira` em Instrument Serif italic). Eyebrow
+         neutro "BEM-VINDO DE VOLTA" em vez de saudacao por hora pra
+         evitar SSR/client mismatch (server e client podem estar em
+         fusos diferentes). -->
+    <section
+      v-if="authStore.isAuthenticated"
+      class="relative mx-auto w-full max-w-6xl px-4 pt-10 md:px-6 md:pt-16"
+    >
+      <p class="eyebrow mb-3" :style="{ color: 'var(--brand-primary)' }">
+        BEM-VINDO DE VOLTA
+      </p>
+      <h1
+        class="max-w-3xl text-[32px] font-light leading-[1.08] tracking-[-0.022em] md:text-[48px]"
+        :style="{ color: 'var(--text-heading)' }"
+      >
+        Olá,
+        <span class="italic" style="font-family: 'Instrument Serif', serif; color: var(--brand-primary)">{{ userFirstName }}</span>.
+      </h1>
+      <p
+        class="mt-3 max-w-xl text-[14px] leading-relaxed md:text-[16px]"
+        :style="{ color: 'var(--text-body)' }"
+      >
+        Veja o que mudou na sua carteira e no mercado nas últimas horas. Tudo em um piscar de olhos.
+      </p>
+    </section>
+
     <!-- BRIDGE: conector visual entre o hero e a secao seguinte (mercado).
          Linha vertical amber decrescente + eyebrow "Mercado ao vivo" +
          chevron com bounce sutil. Aparece em DOM order logo apos o hero
@@ -1384,6 +1412,18 @@ const authStore = useAuthStore()
 const route = useRoute()
 const router = useRouter()
 const fmt = useFormat()
+
+// Primeiro nome do usuario logado, capitalizado. Usado no greeting da
+// home autenticada ("Olá, André."). Fallback "investidor" cobre o caso
+// raro de `me` ainda nao ter hidratado de localStorage no exato momento
+// do render (Pinia hydration roda apos mount).
+const userFirstName = computed(() => {
+  const raw = (authStore.me?.name ?? '').trim()
+  if (!raw) return 'investidor'
+  const first = raw.split(/\s+/)[0] ?? ''
+  if (!first) return 'investidor'
+  return first.charAt(0).toUpperCase() + first.slice(1).toLowerCase()
+})
 
 // Creative studio thumbnails, used in the redentia home CTA section.
 // Each entry links to a pre-filled creative template on the
