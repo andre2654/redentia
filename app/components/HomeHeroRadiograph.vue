@@ -50,14 +50,49 @@ const demoReport = computed(() => analyzePortfolio(DEMO_PORTFOLIO))
 
 const resolvedMode = computed(() => colorMode.value === 'dark' ? 'dark' : 'light')
 
+// Light mode: much softer pastel wash. The previous values (0.55/0.30/0.40)
+// pulled too much amber into the canvas and stole contrast from the headline,
+// CTA and trust signals — text was reading on a peach background instead of
+// white. New values keep the mesh as a barely-there hint of warmth (~12-18%
+// alpha) so the page reads predominantly white with pastel amber accents.
+// Dark mode left alone — it works on near-black where stronger glow is
+// needed to register at all.
 const meshOpacity = computed(() => {
   if (resolvedMode.value === 'dark') return { amber: 0.30, rose: 0.18, amberSoft: 0.20 }
-  return { amber: 0.55, rose: 0.30, amberSoft: 0.40 }
+  return { amber: 0.18, rose: 0.10, amberSoft: 0.14 }
 })
 
-const meshAmber = computed(() => `radial-gradient(circle, ${brand.colors.primary}, transparent 65%)`)
-const meshRose = computed(() => `radial-gradient(circle, ${brand.colors.primary}, transparent 70%)`)
-const meshAmberSoft = computed(() => `radial-gradient(circle, ${brand.colors.primary}, transparent 70%)`)
+// Mesh gradients — in light mode each circle is the brand primary mixed
+// HEAVILY with white before being drawn (so the radial center is a pastel
+// peach, not saturated amber). In dark mode we keep the pure primary so it
+// reads as light against the black canvas.
+const meshAmber = computed(() => {
+  if (resolvedMode.value === 'dark') {
+    return `radial-gradient(circle, ${brand.colors.primary}, transparent 65%)`
+  }
+  return `radial-gradient(circle, color-mix(in srgb, ${brand.colors.primary} 35%, white), transparent 65%)`
+})
+const meshRose = computed(() => {
+  if (resolvedMode.value === 'dark') {
+    return `radial-gradient(circle, ${brand.colors.primary}, transparent 70%)`
+  }
+  return `radial-gradient(circle, color-mix(in srgb, ${brand.colors.primary} 28%, white), transparent 70%)`
+})
+const meshAmberSoft = computed(() => {
+  if (resolvedMode.value === 'dark') {
+    return `radial-gradient(circle, ${brand.colors.primary}, transparent 70%)`
+  }
+  return `radial-gradient(circle, color-mix(in srgb, ${brand.colors.primary} 30%, white), transparent 70%)`
+})
+
+// Base wash — in light mode, a soft top-to-bottom gradient that pulls toward
+// pure white at the bottom, so the page transitions cleanly into the rest of
+// the layout (which is white). Mounted UNDER the mesh circles so they read as
+// pastel highlights ON white, not amber-on-amber.
+const baseWash = computed(() => {
+  if (resolvedMode.value === 'dark') return 'transparent'
+  return 'linear-gradient(180deg, color-mix(in srgb, var(--brand-primary) 4%, white) 0%, white 70%)'
+})
 
 const heroCardShadow = computed(() => {
   if (resolvedMode.value === 'dark') {
@@ -71,13 +106,93 @@ const STACK_TOTAL = 5
 const activeStackIdx = ref(0)
 let stackTimer: ReturnType<typeof setInterval> | null = null
 
+function pauseAutoRotate() {
+  if (stackTimer) {
+    clearInterval(stackTimer)
+    stackTimer = null
+  }
+}
+
+function nextCard() {
+  activeStackIdx.value = (activeStackIdx.value + 1) % STACK_TOTAL
+}
+
+function prevCard() {
+  activeStackIdx.value = (activeStackIdx.value - 1 + STACK_TOTAL) % STACK_TOTAL
+}
+
+// ---- Touch swipe support (mobile) -----------------------------------------
+// User-facing UX: drag a finger horizontally over the card pile to advance
+// (swipe left) or rewind (swipe right). Once the user takes manual control
+// the auto-rotate timer stops — re-rotating after a deliberate swipe would
+// feel like the carousel is fighting the user.
+//
+// Implementation details that matter:
+//   - SWIPE_THRESHOLD filters out tiny accidental drags so a regular tap
+//     still lands on the card click handler.
+//   - We compare |dx| vs |dy| so vertical scrolls (page scroll) don't get
+//     mis-classified as swipes. If the user was scrolling, bail.
+//   - When a swipe IS detected we set `justSwiped` for 350ms and intercept
+//     the click that always follows touchend on mobile, otherwise the card
+//     under the finger would also fire its own `@click="activeStackIdx=N"`
+//     and undo the swipe direction.
+//   - Listeners are attached via addEventListener (not Vue @-bindings) so we
+//     can use `capture: true` for the click suppressor and pick the right
+//     `passive` flags per event.
+const stackEl = ref<HTMLDivElement | null>(null)
+const SWIPE_THRESHOLD = 40
+let touchStartX = 0
+let touchStartY = 0
+let justSwiped = false
+
+function onTouchStart(e: TouchEvent) {
+  const t = e.touches[0]
+  if (!t) return
+  touchStartX = t.clientX
+  touchStartY = t.clientY
+}
+
+function onTouchEnd(e: TouchEvent) {
+  const t = e.changedTouches[0]
+  if (!t) return
+  const dx = t.clientX - touchStartX
+  const dy = t.clientY - touchStartY
+  // Reject vertical drags (page scroll) and below-threshold gestures.
+  if (Math.abs(dy) > Math.abs(dx)) return
+  if (Math.abs(dx) < SWIPE_THRESHOLD) return
+  justSwiped = true
+  setTimeout(() => { justSwiped = false }, 350)
+  pauseAutoRotate()
+  if (dx < 0) nextCard()
+  else prevCard()
+}
+
+function onClickCapture(e: Event) {
+  if (justSwiped) {
+    e.stopPropagation()
+    e.preventDefault()
+  }
+}
+
 onMounted(() => {
   stackTimer = setInterval(() => {
     activeStackIdx.value = (activeStackIdx.value + 1) % STACK_TOTAL
   }, 4500)
+
+  const el = stackEl.value
+  if (!el) return
+  el.addEventListener('touchstart', onTouchStart, { passive: true })
+  el.addEventListener('touchend', onTouchEnd, { passive: true })
+  el.addEventListener('click', onClickCapture, true) // capture phase
 })
+
 onBeforeUnmount(() => {
   if (stackTimer) clearInterval(stackTimer)
+  const el = stackEl.value
+  if (!el) return
+  el.removeEventListener('touchstart', onTouchStart)
+  el.removeEventListener('touchend', onTouchEnd)
+  el.removeEventListener('click', onClickCapture, true)
 })
 
 function stackStyle(absoluteIdx: number) {
@@ -144,16 +259,26 @@ const risksPreview = computed(() => demoReport.value.risks.slice(0, 3))
 
 <template>
   <section class="hero-radiograph relative overflow-hidden md:-mx-4 md:-mt-4" :data-mode="resolvedMode">
-    <!-- ============ MESH GRADIENT DRAMATICO ============ -->
-    <div class="hero-radiograph__bg pointer-events-none absolute inset-0">
+    <!-- ============ BACKGROUND PASTEL + WHITE WASH ============ -->
+    <!-- Stack (back → front):
+           1. baseWash: top-to-bottom linear that lands on pure white at 70%
+              of the section height. Pulls the canvas toward white so text
+              reads on white, not on saturated amber.
+           2. mesh circles: pastel (color-mix with white, ~28-35% primary)
+              with low opacity (10-18%) — barely-there warm highlights, not
+              dramatic mesh.
+           3. SVG arc: dropped to <8% opacity for the same reason.
+         Dark mode bypasses baseWash (transparent) and uses the original
+         saturated mesh because it needs the glow to register on near-black. -->
+    <div class="hero-radiograph__bg pointer-events-none absolute inset-0" :style="{ background: baseWash }">
       <div class="absolute -right-32 -top-40 h-[680px] w-[820px] rounded-full blur-3xl" :style="{ background: meshAmber, opacity: meshOpacity.amber }" />
       <div class="absolute right-[10%] top-[30%] h-[480px] w-[520px] rounded-full blur-3xl" :style="{ background: meshRose, opacity: meshOpacity.rose }" />
       <div class="absolute -bottom-40 -left-32 h-[560px] w-[640px] rounded-full blur-3xl" :style="{ background: meshAmberSoft, opacity: meshOpacity.amberSoft }" />
       <svg class="absolute -right-20 -top-20 h-[520px] w-[640px]" viewBox="0 0 640 520" fill="none" preserveAspectRatio="none" aria-hidden="true">
         <defs>
           <linearGradient id="hero-radiograph-arc" x1="100%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" :stop-color="brand.colors.primary" stop-opacity="0.22" />
-            <stop offset="60%" stop-color="#F96BEE" stop-opacity="0.08" />
+            <stop offset="0%" :stop-color="brand.colors.primary" :stop-opacity="resolvedMode === 'dark' ? 0.22 : 0.08" />
+            <stop offset="60%" stop-color="#F96BEE" :stop-opacity="resolvedMode === 'dark' ? 0.08 : 0.03" />
             <stop offset="100%" stop-color="#F96BEE" stop-opacity="0" />
           </linearGradient>
         </defs>
@@ -169,7 +294,10 @@ const risksPreview = computed(() => demoReport.value.risks.slice(0, 3))
     <div class="relative mx-auto max-w-6xl px-6 pb-10 pt-8 md:pb-28 md:pt-20">
       <div class="grid items-center gap-6 md:grid-cols-12 md:gap-12 lg:gap-16">
         <!-- ============ LEFT: manifesto + input ============ -->
-        <div class="md:col-span-7">
+        <!-- order-2 on mobile so the 3D pile carousel renders ABOVE the
+             headline (per UX request: "no mobile, deixe os cards em cima").
+             md:order-1 reverts to the desktop layout (manifesto on the left). -->
+        <div class="order-2 md:order-1 md:col-span-7">
           <!--
             Eyebrow descritivo "PLATAFORMA DE IA PARA SUA CARTEIRA" só
             aparece a partir de md+. No mobile o headline + input já
@@ -201,8 +329,22 @@ const risksPreview = computed(() => demoReport.value.risks.slice(0, 3))
             Adicione seus ativos e a Redent.IA cruza fundamentos, noticias, dividendos, concentracao e mercado para mostrar o que esta bom, o que esta ruim e o que mudou.
           </p>
 
+          <!-- CTA simples: empurra o usuario direto pra /raio-x onde o input
+               de tickers + Score completo moram. Antes vivia aqui no hero um
+               <AtomsPortfolioInput> in-place — funcionava mas competia com o
+               headline pelo foco e enchia a primeira dobra de affordances
+               (input, chips, botao, microcopy). Movido pra /raio-x consolida
+               o fluxo e libera o hero pra cumprir o papel de eyebrow + headline
+               + CTA unico, classico playbook B2C SaaS. -->
           <div class="mb-3 md:mb-5">
-            <AtomsPortfolioInput variant="hero" cta-label="Analisar minha carteira gratis" cta-label-short="Analisar" :show-suggestions="true" />
+            <NuxtLink
+              to="/raio-x"
+              class="hero-radiograph__cta quiet-btn-primary inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[15px] font-semibold transition-shadow md:text-[16px]"
+            >
+              <UIcon name="i-lucide-sparkles" class="size-4" aria-hidden="true" />
+              <span>Analisar minha carteira gratis</span>
+              <UIcon name="i-lucide-arrow-right" class="size-4" aria-hidden="true" />
+            </NuxtLink>
           </div>
 
           <!-- Trust signals: ficam só os dois que continuam verdadeiros
@@ -224,9 +366,19 @@ const risksPreview = computed(() => demoReport.value.risks.slice(0, 3))
         </div>
 
         <!-- ============ RIGHT: 3D PILE CAROUSEL ============ -->
-        <aside class="hidden md:col-span-5 md:block" aria-label="Showcase Redent.IA">
+        <!-- Mobile: visible (order-1 → renders ABOVE the manifesto), centered
+             (mx-auto), narrower (max-w-[260px]) so the cards stay readable
+             without overflowing on 360-414px viewports. The mb-6 keeps the
+             dots indicator (bottom: -32px) from kissing the H1.
+             Desktop (md+): same width-fluid layout as before — 5 columns,
+             order-2, no horizontal centering. -->
+        <aside
+          class="order-1 mx-auto mb-6 block w-full max-w-[260px] md:order-2 md:col-span-5 md:mx-0 md:mb-0 md:max-w-none"
+          aria-label="Showcase Redent.IA"
+        >
           <div
-            class="hero-stack relative"
+            ref="stackEl"
+            class="hero-stack relative touch-pan-y select-none"
             :style="{
               perspective: '1600px',
               perspectiveOrigin: 'center top',
