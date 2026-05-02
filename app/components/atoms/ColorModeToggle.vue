@@ -39,7 +39,7 @@
       :style="preference === option.value
         ? {
             backgroundColor: 'var(--brand-primary)',
-            color: '#1A0A2E',
+            color: '#fff',
           }
         : { backgroundColor: 'transparent', color: 'var(--text-body)' }"
       @click="setPreference(option.value)"

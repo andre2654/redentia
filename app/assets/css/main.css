@@ -218,7 +218,12 @@ table td, table th, [data-tnum] {
   padding: 0.625rem 1.25rem;
   border-radius: var(--brand-radius-md, 6px);
   background: var(--brand-primary);
-  color: #1A0A2E;
+  /* White text + icons on the amber CTA. Was #1A0A2E (deep purple/near-
+     black) which read as muddy on Redentia's warm amber primary —
+     contrast was ~6:1 but visually felt heavy. White lifts the button.
+     Tenants with very light primaries (e.g. Me Poupe yellow) handle
+     CTA contrast in their own scoped styles, not via this global. */
+  color: #fff;
   font-family: var(--brand-font);
   font-size: 0.9375rem;
   font-weight: 500;

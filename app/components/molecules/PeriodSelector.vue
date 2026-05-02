@@ -145,7 +145,7 @@ onBeforeUnmount(() => {
           type="button"
           class="flex items-center justify-between gap-3 rounded-[4px] px-3 py-2 text-left transition-colors focus-visible:outline-none"
           :style="modelValue === option.value
-            ? { backgroundColor: 'var(--brand-primary)', color: '#1A0A2E' }
+            ? { backgroundColor: 'var(--brand-primary)', color: '#fff' }
             : { backgroundColor: 'transparent', color: 'var(--text-body)' }"
           :disabled="isDisabled"
           role="option"

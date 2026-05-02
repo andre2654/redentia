@@ -466,7 +466,7 @@ const suggestionsToShow = computed(() => {
   font-weight: 500;
   letter-spacing: 0.02em;
   background: var(--brand-primary);
-  color: #1A0A2E;
+  color: #fff;
   border: 1px solid var(--brand-primary);
   transition: filter 150ms, transform 100ms;
   margin-left: 4px;

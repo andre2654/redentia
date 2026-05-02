@@ -83,7 +83,7 @@
             <!-- Top-right: arrow indicator on hover -->
             <div
               class="absolute right-3 top-3 flex size-7 items-center justify-center rounded-md opacity-0 transition-all duration-200 group-hover:opacity-100"
-              style="background-color: var(--brand-primary); color: #1A0A2E;"
+              style="background-color: var(--brand-primary); color: #fff;"
               aria-hidden="true"
             >
               <UIcon name="i-lucide-arrow-up-right" class="size-3.5" />

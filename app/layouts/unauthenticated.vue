@@ -189,13 +189,14 @@
           </NuxtLink>
 
           <!-- Entrar — primary CTA quiet style. Radius 6px, weight 500.
-               Texto fixado em #1A0A2E (deep aubergine, contraste >= 7:1
-               sobre amber em qualquer tenant). Hover via filter brightness
-               para preservar saturacao da marca. Focus ring amber. -->
+               Texto branco (#fff) sobre amber para um look mais punchy de
+               CTA, alinhado com .quiet-btn-primary global. Hover via
+               filter brightness para preservar saturacao da marca. Focus
+               ring amber. -->
           <NuxtLink
             to="/auth/login"
             class="group inline-flex items-center gap-2 rounded-md px-5 py-2 text-[14px] font-medium leading-none transition-all duration-200 focus-visible:outline-none focus-visible:shadow-[var(--shadow-ring-focus)] active:translate-y-px"
-            style="background-color: var(--brand-primary); color: #1A0A2E;"
+            style="background-color: var(--brand-primary); color: #fff;"
             @mouseenter="($event.currentTarget as HTMLElement).style.filter = 'brightness(0.92)'"
             @mouseleave="($event.currentTarget as HTMLElement).style.filter = 'brightness(1)'"
           >
