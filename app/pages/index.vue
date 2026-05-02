@@ -54,7 +54,7 @@
          fusos diferentes). -->
     <section
       v-if="authStore.isAuthenticated"
-      class="relative mx-auto w-full max-w-6xl px-4 pt-10 md:px-6 md:pt-16"
+      class="relative mx-auto flex w-full max-w-6xl flex-col items-center px-4 pt-10 text-center md:px-6 md:pt-16"
     >
       <p class="eyebrow mb-3" :style="{ color: 'var(--brand-primary)' }">
         BEM-VINDO DE VOLTA
@@ -67,7 +67,7 @@
         <span class="italic" style="font-family: 'Instrument Serif', serif; color: var(--brand-primary)">{{ userFirstName }}</span>.
       </h1>
       <p
-        class="mt-3 max-w-xl text-[14px] leading-relaxed md:text-[16px]"
+        class="mt-3 max-w-xl !text-[14px] leading-relaxed"
         :style="{ color: 'var(--text-body)' }"
       >
         Veja o que mudou na sua carteira e no mercado nas últimas horas. Tudo em um piscar de olhos.
