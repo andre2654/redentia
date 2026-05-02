@@ -153,17 +153,16 @@ function resetAnalysis() {
 }
 
 // ============ SIMULATION MODAL — pop-up depois de 5s no resultado ============
-// Antes: o modal abria ANTES de navegar para o resultado, virando um gate
-// de conversao (signup ali, ou continua para o demo). Cortamos a fricao:
-// o picker @submit agora vai DIRETO pro resultado, e o modal sobe sozinho
-// 5s depois — tempo suficiente pro usuario absorver o Score + os primeiros
-// pontos de risco e ter contexto pra entender a oferta de cadastro.
+// Modal sobe 5s depois do diagnostico carregar. CTA primario manda pro
+// /auth/register, secundario fecha e deixa o usuario seguir vendo o demo.
 //
-// O timer so dispara no estado de resultado (hasTickers && report) e cada
-// carga nova reinicia (watch em tickersFromUrl). Se o usuario fechar o
-// modal nao reaparece nessa sessao (sessionStorage flag).
+// IMPORTANTE: nao bloqueamos com sessionStorage. Se o usuario gerou um
+// novo Raio-X na mesma sessao, o modal volta — cada nova analise e um
+// novo "momento de valor" e a oferta de cadastro segue valida. Pra evitar
+// re-spam dentro DA MESMA analise, o `simModalSeenForCurrent` trava ate
+// o usuario sair do estado (gerar outra carteira / voltar ao seletor).
 const simModalOpen = ref(false)
-const simModalShown = ref(false)
+const simModalSeenForCurrent = ref(false)
 const pendingTickers = computed(() => tickersFromUrl.value)
 
 let simModalTimer: ReturnType<typeof setTimeout> | null = null
@@ -177,20 +176,11 @@ function clearSimModalTimer() {
 
 function scheduleSimModal() {
   clearSimModalTimer()
-  if (simModalShown.value) return
+  if (simModalSeenForCurrent.value) return
   if (typeof window === 'undefined') return
-  // Already shown in this session? Skip — usuario ja viu, nao queremos
-  // virar irritante no segundo raio-x da mesma sessao.
-  if (sessionStorage.getItem('raio-x:sim-modal-shown') === '1') {
-    simModalShown.value = true
-    return
-  }
   simModalTimer = setTimeout(() => {
     simModalOpen.value = true
-    simModalShown.value = true
-    if (typeof sessionStorage !== 'undefined') {
-      sessionStorage.setItem('raio-x:sim-modal-shown', '1')
-    }
+    simModalSeenForCurrent.value = true
   }, 5000)
 }
 
@@ -200,9 +190,8 @@ function onPickerSubmit(tickers: string[]) {
   router.push({ path: '/raio-x', query: { tickers: tickers.join(',') } })
 }
 
-// Confirmar (botao "Ver o Raio-X Demo") apenas fecha — o usuario ja esta
-// na pagina do diagnostico, esse CTA virou um "ok, entendi" agora que a
-// ordem mudou.
+// Confirmar (botao "Continuar vendo o demo") apenas fecha — o usuario ja
+// esta na pagina do diagnostico, segue olhando.
 function onSimModalConfirm() {
   simModalOpen.value = false
 }
@@ -211,13 +200,19 @@ function onSimModalClose() {
   simModalOpen.value = false
 }
 
-// Sempre que o usuario chega no estado de resultado (ou troca de tickers),
-// agendamos o modal. Limpamos quando sai do estado.
+// Sempre que entra/sai do estado de resultado, agendamos/limpamos o
+// timer e resetamos a trava quando sai (pra que a proxima analise dispare
+// o modal de novo).
 watch(
   () => hasTickers.value && !!report.value,
   (ready) => {
-    if (ready) scheduleSimModal()
-    else clearSimModalTimer()
+    if (ready) {
+      scheduleSimModal()
+    } else {
+      clearSimModalTimer()
+      simModalSeenForCurrent.value = false
+      simModalOpen.value = false
+    }
   },
   { immediate: true },
 )
