@@ -156,14 +156,23 @@ onBeforeUnmount(() => {
           </div>
 
           <footer class="raio-x-sim__footer">
-            <NuxtLink to="/auth/register" class="raio-x-sim__btn-primary quiet-btn-primary">
+            <!-- PRIMARY: ver o demo. Quem chegou ate aqui acabou de selecionar
+                 sua carteira; a fricao maior e segurar essa pessoa numa tela
+                 de cadastro antes de ela ver o resultado. CTA dominante manda
+                 ela direto pro diagnostico, depois o floating CTA na pagina
+                 do resultado pesca a conversao quando ela ja viu o valor. -->
+            <button type="button" class="raio-x-sim__btn-primary quiet-btn-primary" @click="confirm">
               <UIcon name="i-lucide-sparkles" class="size-4" aria-hidden="true" />
-              <span>Cadastrar grátis e ver Raio-X real</span>
-            </NuxtLink>
-            <button type="button" class="raio-x-sim__btn-secondary" @click="confirm">
-              <span>Continuar para o demo</span>
+              <span>Ver o Raio-X Demo</span>
               <UIcon name="i-lucide-arrow-right" class="size-4" aria-hidden="true" />
             </button>
+            <!-- SECONDARY: cadastro como link textual sem borda nem bg, abaixo
+                 do CTA principal. Disponivel pra quem ja sabe o que quer mas
+                 nao compete visualmente com o demo. -->
+            <NuxtLink to="/auth/register" class="raio-x-sim__btn-link">
+              Cadastrar grátis e ver o Raio-X Real
+              <UIcon name="i-lucide-arrow-up-right" class="size-3.5" aria-hidden="true" />
+            </NuxtLink>
           </footer>
         </div>
       </div>
@@ -421,7 +430,8 @@ onBeforeUnmount(() => {
   bottom: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  align-items: center;
+  gap: 12px;
   padding: 16px 22px 22px;
   background: linear-gradient(180deg, transparent 0%, var(--bg-elevated) 30%);
   flex-shrink: 0;
@@ -433,34 +443,56 @@ onBeforeUnmount(() => {
   }
 }
 
-.raio-x-sim__btn-primary,
-.raio-x-sim__btn-secondary {
+.raio-x-sim__btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 12px 20px;
+  width: 100%;
+  padding: 14px 22px;
   border-radius: 999px;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 15px;
   cursor: pointer;
-  transition: opacity 150ms, transform 120ms, background 150ms;
-}
-
-.raio-x-sim__btn-primary {
-  text-decoration: none;
-}
-
-.raio-x-sim__btn-secondary {
-  border: 1px solid var(--border-subtle);
-  background: transparent;
-  color: var(--text-heading);
+  border: 0;
   font-family: var(--brand-font);
+  text-decoration: none;
+  transition: filter 180ms, transform 120ms, box-shadow 180ms;
+  box-shadow: 0 8px 22px -10px color-mix(in srgb, var(--brand-primary) 55%, transparent);
 }
 
-.raio-x-sim__btn-secondary:hover {
-  background: var(--bg-overlay);
-  border-color: var(--border-default);
+.raio-x-sim__btn-primary:hover {
+  filter: brightness(0.94);
+  transform: translateY(-1px);
+  box-shadow: 0 12px 28px -10px color-mix(in srgb, var(--brand-primary) 65%, transparent);
+}
+
+.raio-x-sim__btn-primary:active {
+  transform: translateY(0);
+}
+
+/* Link textual abaixo do CTA primario. Sem borda, sem bg — so o texto
+   com sublinhado discreto. Padding gera area de toque, mas visualmente
+   nao concorre com o botao principal. */
+.raio-x-sim__btn-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-body);
+  text-decoration: none;
+  transition: color 180ms, opacity 180ms;
+}
+
+.raio-x-sim__btn-link:hover {
+  color: var(--brand-primary);
+}
+
+.raio-x-sim__btn-link :deep(svg),
+.raio-x-sim__btn-link :deep(.iconify) {
+  opacity: 0.7;
 }
 
 /* Transitions */
