@@ -448,6 +448,12 @@ export default defineNuxtConfig({
     anthropicCommentaryModel: process.env.NUXT_ANTHROPIC_COMMENTARY_MODEL || 'claude-haiku-4-5',
     internalApiKey: process.env.NUXT_INTERNAL_API_KEY,
     n8nRenderKey: process.env.NUXT_N8N_RENDER_KEY,
+    // Meta Conversions API (CAPI) — server-side event dispatch.
+    // Bypassa adblockers e iOS ATT que bloqueiam o pixel JS.
+    // Combinado com pixel browser via event_id (deduplicacao Meta).
+    // NUNCA usar prefixo NUXT_PUBLIC_ — token nao pode vazar pro client.
+    metaPixelIdServer: process.env.META_PIXEL_ID || process.env.NUXT_PUBLIC_META_PIXEL_ID || '860063501994992',
+    metaCapiAccessToken: process.env.META_CAPI_ACCESS_TOKEN || '',
     public: {
       apiBaseUrl:
         process.env.NUXT_PUBLIC_API_BASE_URL ||

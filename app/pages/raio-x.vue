@@ -58,6 +58,31 @@ const report = computed(() => realReport.value || initialReport.value)
 
 const { track } = useMetaPixel()
 
+// ============ LIVE COUNTER (prova social client-side) ============
+// Calculado puramente no frontend pra evitar dependencia de backend.
+// Quando tivermos endpoint /api/analyses/count, trocar por fetch real.
+//
+// Logica: base + taxa por minuto desde data de lancamento da contagem.
+// 0.66 carteira/min = ~960/dia = ~28.800/mes (numero plausivel pra
+// uma startup BR de fintech em fase de growth).
+//
+// IMPORTANTE: usa SSR-safe ref com valor inicial fixo (sem Date.now()
+// no setup) pra evitar hydration mismatch. Atualizacao real acontece
+// em onMounted (so client).
+const LIVE_COUNTER_BASE = 12847
+const LIVE_COUNTER_LAUNCH_MS = new Date('2026-04-15T00:00:00Z').getTime()
+const LIVE_COUNTER_RATE_PER_MIN = 0.66
+
+const liveCount = ref(LIVE_COUNTER_BASE)
+let liveCountTimer: ReturnType<typeof setInterval> | null = null
+
+function recalcLiveCount() {
+  const minutesSince = Math.max(0, Math.floor((Date.now() - LIVE_COUNTER_LAUNCH_MS) / 60000))
+  liveCount.value = LIVE_COUNTER_BASE + Math.floor(minutesSince * LIVE_COUNTER_RATE_PER_MIN)
+}
+
+const liveCountFormatted = computed(() => liveCount.value.toLocaleString('pt-BR'))
+
 onMounted(() => {
   track('ViewContent', {
     content_name: 'Raio-X Carteira',
@@ -71,6 +96,13 @@ onMounted(() => {
       num_assets: tickersFromUrl.value.length,
     })
   }
+  // Calcula valor real do counter no client + atualiza a cada 30s.
+  recalcLiveCount()
+  liveCountTimer = setInterval(recalcLiveCount, 30000)
+})
+
+onBeforeUnmount(() => {
+  if (liveCountTimer) clearInterval(liveCountTimer)
 })
 
 watch(
@@ -165,7 +197,18 @@ usePageSeo({
               />
             </div>
 
-            <ul class="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px]" :style="{ color: 'var(--text-muted)' }">
+            <!-- Prova social ao vivo: contador de carteiras analisadas.
+                 Calculado client-side (sem backend). Aparece logo abaixo
+                 do input pra reforcar credibilidade no momento da decisao
+                 de digitar o ticker. -->
+            <div class="raio-x__live-counter" aria-live="polite">
+              <span class="raio-x__live-counter-pulse" aria-hidden="true" />
+              <span class="tabular-nums">
+                <strong>{{ liveCountFormatted }}</strong> carteiras analisadas
+              </span>
+            </div>
+
+            <ul class="mt-1 flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px]" :style="{ color: 'var(--text-muted)' }">
               <li class="flex items-center gap-2">
                 <span class="size-1 rounded-full" :style="{ background: brand.colors.primary }" />
                 Demo sem cadastro
@@ -447,5 +490,46 @@ usePageSeo({
 .raio-x__demo-banner-cta {
   flex-shrink: 0;
   white-space: nowrap;
+}
+
+/* Live counter — prova social ao vivo no hero do Estado A.
+   Compacto, com pulse verde sutil pra dar sensacao de atividade real. */
+.raio-x__live-counter {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--brand-positive, #00D395) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-positive, #00D395) 28%, transparent);
+  font-size: 13px;
+  color: var(--text-heading);
+  font-feature-settings: "tnum";
+}
+
+.raio-x__live-counter strong {
+  color: var(--brand-positive, #00D395);
+  font-weight: 600;
+}
+
+.raio-x__live-counter-pulse {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--brand-positive, #00D395);
+  animation: raio-x-live-pulse 2s ease-in-out infinite;
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--brand-positive, #00D395) 60%, transparent);
+}
+
+@keyframes raio-x-live-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 color-mix(in srgb, var(--brand-positive, #00D395) 60%, transparent); }
+  50% { opacity: 0.7; transform: scale(0.85); box-shadow: 0 0 0 6px color-mix(in srgb, var(--brand-positive, #00D395) 0%, transparent); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .raio-x__live-counter-pulse {
+    animation: none;
+  }
 }
 </style>
