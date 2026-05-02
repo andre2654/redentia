@@ -17,6 +17,10 @@ import type { PortfolioReport } from '~/composables/usePortfolioScore'
 definePageMeta({
   isPublicRoute: true,
   hideInstallAppBanner: true,
+  // Hide the global floating QuickSearch pill on this route so it
+  // doesn't fight the new "Gerar Raio-X real" floating CTA we mount
+  // when the user is looking at the demo result.
+  hideQuickSearch: true,
 })
 
 const brand = useBrand()
@@ -136,8 +140,38 @@ function loadDemo() {
   router.push({ path: '/raio-x', query: { tickers } })
 }
 
+// Video src as a runtime-resolved string (see comment near the <video>
+// element for why the binding is dynamic instead of static).
+const videoSrc = '/assets/videos/raio-x.mp4'
+
 function resetAnalysis() {
   router.push({ path: '/raio-x' })
+}
+
+// ============ SIMULATION MODAL ============
+// When the picker emits `submit`, instead of navigating directly we open
+// a disclaimer modal that explains "you'll see a simulation, sign up for
+// the real Raio-X" with the explainer video embedded. Only after the
+// user confirms (or registers) do we navigate to the demo result. This
+// turns the highest-intent moment of the funnel into a conversion gate.
+const simModalOpen = ref(false)
+const pendingTickers = ref<string[]>([])
+
+function onPickerSubmit(tickers: string[]) {
+  pendingTickers.value = tickers
+  simModalOpen.value = true
+}
+
+function onSimModalConfirm() {
+  const tickers = pendingTickers.value
+  simModalOpen.value = false
+  if (tickers.length === 0) return
+  router.push({ path: '/raio-x', query: { tickers: tickers.join(',') } })
+}
+
+function onSimModalClose() {
+  simModalOpen.value = false
+  pendingTickers.value = []
 }
 
 // SEO
@@ -158,7 +192,7 @@ usePageSeo({
 <template>
   <NuxtLayout :name="layoutName" title="Raio-X da Carteira">
     <main class="raio-x">
-      <!-- ============ STATE A: sem tickers, mostra input + steps ============ -->
+      <!-- ============ STATE A: sem tickers, mostra input + video + steps ============ -->
       <section v-if="!hasTickers" class="raio-x__hero">
         <!-- Atmospheric radial -->
         <div
@@ -170,58 +204,119 @@ usePageSeo({
           }"
         />
 
-        <div class="mx-auto max-w-4xl px-6 py-16 md:py-24">
-          <div class="flex flex-col items-start gap-6 md:items-center md:text-center">
-            <p class="eyebrow">RAIO-X DEMO · GRATUITO</p>
-            <h1
-              class="max-w-3xl text-[40px] font-light leading-[1.05] tracking-[-0.025em] md:text-[64px]"
-              :style="{ color: 'var(--text-heading)' }"
-            >
-              Descubra os riscos escondidos da sua
-              <span class="italic" style="font-family: 'Instrument Serif', serif; color: var(--brand-primary)">carteira</span>
-              em 2 minutos.
-            </h1>
-            <p
-              class="max-w-2xl text-[17px] leading-relaxed md:text-[19px]"
-              :style="{ color: 'var(--text-body)' }"
-            >
-              Cole seus tickers e veja uma previa do que mexeu na sua carteira. O Raio-X completo (com pesos, dividendos e plano de acao) acontece dentro da plataforma com sua carteira real.
-            </p>
+        <div class="mx-auto max-w-6xl px-6 py-12 md:py-20">
+          <div class="grid items-center gap-8 md:grid-cols-12 md:gap-12 lg:gap-16">
+            <!-- ============ COPY + INPUT (right on desktop, BELOW video on mobile) ============ -->
+            <!-- order-2 mobile: video aparece em cima (faz o trabalho de
+                 "explicar o que e Raio-X" sem o usuario ter que ler).
+                 md:order-2: na direita do desktop (assimetria classica
+                 SaaS, texto-left + product-shot-right). -->
+            <div class="order-2 flex flex-col gap-5 md:col-span-6 md:order-2">
+              <p class="eyebrow">RAIO-X DEMO · GRATUITO</p>
+              <h1
+                class="text-[36px] font-light leading-[1.05] tracking-[-0.025em] md:text-[52px]"
+                :style="{ color: 'var(--text-heading)' }"
+              >
+                Descubra os riscos escondidos da sua
+                <span class="italic" style="font-family: 'Instrument Serif', serif; color: var(--brand-primary)">carteira</span>
+                em 2 minutos.
+              </h1>
+              <p
+                class="text-[16px] leading-relaxed md:text-[17px]"
+                :style="{ color: 'var(--text-body)' }"
+              >
+                Cole seus tickers e a Redent.IA cruza fundamentos, dividendos, concentracao e noticias pra mostrar o que esta bom, o que esta ruim e o que mudou.
+              </p>
 
-            <div class="mt-4 w-full max-w-2xl">
-              <AtomsPortfolioInput
-                variant="hero"
-                :autofocus="true"
-                cta-label="Gerar Raio-X demo gratis"
-                cta-label-short="Demo gratis"
-              />
+              <!-- Primary CTA: asset picker (QuickSearch-style modal).
+                   Substituiu o text input que exigia que o usuario
+                   digitasse cada ticker. Agora abre uma dialog onde da
+                   pra buscar por ticker OU nome (PETR4 ou "Petrobras")
+                   e clicar pra montar a carteira. -->
+              <div class="w-full">
+                <MoleculesPortfolioAssetPicker
+                  cta-label="Gerar Raio-X demo gratis"
+                  cta-label-short="Demo gratis"
+                  :initial="tickersFromUrl"
+                  @submit="onPickerSubmit"
+                />
+              </div>
+
+              <!-- Secondary CTA: subiu da secao "Como funciona" pra reduzir
+                   friccao. Quem nao quer digitar tickers ainda converte
+                   abrindo a carteira de exemplo, dai puxa na esteira de
+                   conversao igual quem digitou os proprios. -->
+              <button
+                type="button"
+                class="raio-x__demo-cta inline-flex items-center gap-2 self-start text-[14px] font-medium underline decoration-dotted underline-offset-4 transition-opacity hover:opacity-70"
+                :style="{ color: 'var(--brand-primary)' }"
+                @click="loadDemo"
+              >
+                <UIcon name="i-lucide-wand-sparkles" class="size-4" aria-hidden="true" />
+                <span>Ou veja o exemplo com uma carteira pronta</span>
+              </button>
+
+              <!-- Trust + counter compactos. Counter primeiro (numero
+                   chama mais atencao que palavras), trust signals no
+                   wrap embaixo. -->
+              <div class="mt-2 flex flex-wrap items-center gap-x-6 gap-y-2">
+                <div class="raio-x__live-counter" aria-live="polite">
+                  <span class="raio-x__live-counter-pulse" aria-hidden="true" />
+                  <span class="tabular-nums">
+                    <strong>{{ liveCountFormatted }}</strong> carteiras analisadas
+                  </span>
+                </div>
+                <ul class="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[12px]" :style="{ color: 'var(--text-muted)' }">
+                  <li class="flex items-center gap-1.5">
+                    <span class="size-1 rounded-full" :style="{ background: brand.colors.primary }" />
+                    Sem cadastro
+                  </li>
+                  <li class="flex items-center gap-1.5">
+                    <span class="size-1 rounded-full" :style="{ background: brand.colors.primary }" />
+                    100% gratuito
+                  </li>
+                </ul>
+              </div>
             </div>
 
-            <!-- Prova social ao vivo: contador de carteiras analisadas.
-                 Calculado client-side (sem backend). Aparece logo abaixo
-                 do input pra reforcar credibilidade no momento da decisao
-                 de digitar o ticker. -->
-            <div class="raio-x__live-counter" aria-live="polite">
-              <span class="raio-x__live-counter-pulse" aria-hidden="true" />
-              <span class="tabular-nums">
-                <strong>{{ liveCountFormatted }}</strong> carteiras analisadas
-              </span>
-            </div>
-
-            <ul class="mt-1 flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px]" :style="{ color: 'var(--text-muted)' }">
-              <li class="flex items-center gap-2">
-                <span class="size-1 rounded-full" :style="{ background: brand.colors.primary }" />
-                Demo sem cadastro
-              </li>
-              <li class="flex items-center gap-2">
-                <span class="size-1 rounded-full" :style="{ background: brand.colors.primary }" />
-                Resultado em 2 min
-              </li>
-              <li class="flex items-center gap-2">
-                <span class="size-1 rounded-full" :style="{ background: brand.colors.primary }" />
-                100% gratuito
-              </li>
-            </ul>
+            <!-- ============ VIDEO (left on desktop, on top on mobile) ============ -->
+            <!-- order-1 garante video acima do bloco de copy no mobile.
+                 md:order-1 mantem video na esquerda no desktop.
+                 aspect-[16/9] reserva a area antes do video carregar (CLS
+                 fix). autoplay+muted+playsinline e a unica combinacao que
+                 toca sozinho em iOS e Android sem gesto do usuario. loop
+                 fecha o ciclo pra explicacao continuar disponivel se o
+                 usuario nao for embora. preload="metadata" baixa so o
+                 cabecalho ate o video entrar em viewport, evitando custo
+                 de banda em quem nem rolou ate la. -->
+            <figure class="order-1 md:col-span-6 md:order-1">
+              <div class="raio-x__video-frame">
+                <!-- :src (dynamic binding) instead of src="..." because the
+                     Vite/Vue template compiler tries to "resolve" static `src`
+                     attrs on <video>/<img> as project assets, rewriting them
+                     to /_nuxt/@fs/... which 404s. Dynamic binding ships the
+                     literal string at runtime and the dev server serves it
+                     straight out of public/ as expected. -->
+                <video
+                  class="raio-x__video"
+                  :src="videoSrc"
+                  autoplay
+                  muted
+                  loop
+                  playsinline
+                  preload="metadata"
+                  aria-label="Apresentacao em video do Raio-X da Redent.IA"
+                />
+                <!-- Play indicator pin no canto superior esquerdo -->
+                <span class="raio-x__video-badge" aria-hidden="true">
+                  <span class="raio-x__video-badge-dot" />
+                  Demo
+                </span>
+              </div>
+              <figcaption class="mt-3 text-center text-[12px] md:text-left" :style="{ color: 'var(--text-muted)' }">
+                Veja em 60 segundos o que a Redent.IA cruza na sua carteira.
+              </figcaption>
+            </figure>
           </div>
         </div>
       </section>
@@ -269,12 +364,6 @@ usePageSeo({
             </article>
           </div>
 
-          <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
-            <button type="button" class="quiet-btn-ghost" @click="loadDemo">
-              <UIcon name="i-lucide-wand-sparkles" class="size-4" aria-hidden="true" />
-              Ver exemplo com carteira pronta
-            </button>
-          </div>
         </div>
       </section>
 
@@ -316,23 +405,60 @@ usePageSeo({
         </div>
       </section>
 
-      <!-- ============ STATE B: com tickers, mostra diagnostico completo ============ -->
-      <section v-if="hasTickers && report" class="raio-x__result">
-        <div class="mx-auto max-w-6xl px-6 py-12 md:py-20">
-          <!-- Demo disclaimer banner: aviso claro que isso e uma previa -->
-          <div class="raio-x__demo-banner">
-            <div class="raio-x__demo-banner-text">
-              <p class="raio-x__demo-banner-eyebrow">VOCE ESTA VENDO A VERSAO DEMO</p>
-              <p class="raio-x__demo-banner-msg">
-                Esta analise usa apenas os tickers (sem pesos, quantidades ou seu perfil). E uma <strong>previa</strong> do que a Redent.IA consegue ver. Para o Raio-X <strong>real</strong>, com sua carteira completa, monitoramento continuo, alertas e plano de acao, crie sua conta.
-              </p>
-            </div>
-            <NuxtLink to="/auth/register" class="quiet-btn-primary raio-x__demo-banner-cta">
-              <UIcon name="i-lucide-sparkles" class="size-4" aria-hidden="true" />
-              Fazer Raio-X completo gratis
-            </NuxtLink>
+      <!-- ============ STATE A.4: Final CTA (so quando sem tickers) ============ -->
+      <!-- Quem chegou ate aqui leu tudo e ainda nao converteu. CTA grande,
+           emocional, com 2 acoes claras (digitar carteira propria OU usar
+           exemplo). Coloca o input de novo dentro do bloco pra fechar o
+           ciclo de conversao na propria viewport, evitando scroll-back
+           pra topo. -->
+      <section v-if="!hasTickers" class="raio-x__final-cta">
+        <div class="mx-auto max-w-3xl px-6 py-20 text-center md:py-28">
+          <p class="eyebrow mb-3">PRONTO QUANDO VOCE ESTIVER</p>
+          <h2
+            class="mb-4 text-[32px] font-light leading-[1.1] tracking-[-0.025em] md:text-[44px]"
+            :style="{ color: 'var(--text-heading)' }"
+          >
+            Sua carteira merece um
+            <span class="italic" style="font-family: 'Instrument Serif', serif; color: var(--brand-primary)">raio-x</span>
+            de verdade.
+          </h2>
+          <p class="mx-auto mb-8 max-w-xl text-[15px] leading-relaxed md:text-[16px]" :style="{ color: 'var(--text-body)' }">
+            Em 2 minutos voce ve quais ativos da sua carteira estao bem, quais estao mal e o que mudou na ultima semana. Sem cadastro, sem cartao.
+          </p>
+
+          <div class="mx-auto max-w-2xl">
+            <MoleculesPortfolioAssetPicker
+              cta-label="Gerar Raio-X demo gratis"
+              cta-label-short="Demo gratis"
+              :initial="tickersFromUrl"
+              @submit="onPickerSubmit"
+            />
           </div>
 
+          <button
+            type="button"
+            class="raio-x__demo-cta mx-auto mt-5 inline-flex items-center gap-2 text-[14px] font-medium underline decoration-dotted underline-offset-4 transition-opacity hover:opacity-70"
+            :style="{ color: 'var(--brand-primary)' }"
+            @click="loadDemo"
+          >
+            <UIcon name="i-lucide-wand-sparkles" class="size-4" aria-hidden="true" />
+            <span>Ou veja o exemplo com uma carteira pronta</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- ============ STATE B: com tickers, mostra diagnostico completo ============ -->
+      <!-- O banner "VOCE ESTA VENDO A VERSAO DEMO" foi removido em favor de
+           um floating CTA fixed (renderizado abaixo do </main>) que segue o
+           usuario enquanto ele rola pelo diagnostico. O contexto demo ja e
+           comunicado pela modal de simulacao que o usuario aceita ANTES de
+           chegar nesse estado, entao o banner virava ruido visual repetido. -->
+      <section v-if="hasTickers && report" class="raio-x__result">
+        <!-- pt-4 fixo (mobile + desktop): apertado de proposito porque o
+             resultado e o conteudo principal e nao precisa de respiro top
+             como uma landing tem. pb-12/pb-20 mantidos pra dar espaco do
+             rodape pro footer da pagina. -->
+        <div class="mx-auto max-w-6xl px-6 pt-4 pb-12 md:pb-20">
           <div class="mb-10 flex flex-wrap items-center justify-between gap-4">
             <div class="flex flex-col gap-1">
               <p class="eyebrow flex items-center gap-2">
@@ -371,6 +497,40 @@ usePageSeo({
         </div>
       </section>
     </main>
+
+    <!-- ============ FLOATING CTA: "Gerar Raio-X real" ============ -->
+    <!-- Renderizado APENAS quando o usuario esta no estado de resultado
+         (hasTickers + report carregado). Fica fixo no bottom-center
+         (mesma posicao do QuickSearch que escondemos via route.meta) e
+         segue o scroll do diagnostico inteiro. Estilo amber gradient
+         puxado pra ser chamativo, com pulse sutil pra captar atencao
+         sem virar epilepsy. /auth/register para conversao real. -->
+    <ClientOnly>
+      <Transition name="raio-x-floating">
+        <NuxtLink
+          v-if="hasTickers && report"
+          to="/auth/register"
+          class="raio-x-floating"
+        >
+          <span class="raio-x-floating__icon">
+            <UIcon name="i-lucide-sparkles" class="size-4" aria-hidden="true" />
+          </span>
+          <span class="raio-x-floating__text">
+            <span class="raio-x-floating__label">Gerar Raio-X real</span>
+            <span class="raio-x-floating__sub">Com sua carteira de verdade</span>
+          </span>
+          <UIcon name="i-lucide-arrow-right" class="raio-x-floating__arrow size-4" aria-hidden="true" />
+        </NuxtLink>
+      </Transition>
+    </ClientOnly>
+
+    <!-- ============ SIMULATION DISCLAIMER MODAL ============ -->
+    <MoleculesRaioXSimulationModal
+      :open="simModalOpen"
+      :tickers="pendingTickers"
+      @confirm="onSimModalConfirm"
+      @close="onSimModalClose"
+    />
   </NuxtLayout>
 </template>
 
@@ -394,6 +554,19 @@ usePageSeo({
 
 .raio-x__proof {
   border-top: 1px solid var(--border-subtle);
+}
+
+/* Final CTA — bloco emocional no fim do funil de leitura.
+   Background com gradiente vertical bem suave puxando pra primary
+   pastel + branco, pra esse bloco se destacar do .raio-x__proof acima
+   sem virar uma "ilha colorida" gritante. */
+.raio-x__final-cta {
+  border-top: 1px solid var(--border-subtle);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--brand-primary) 5%, var(--bg-base)) 0%,
+    var(--bg-base) 70%
+  );
 }
 
 .raio-x__step-number {
@@ -531,5 +704,234 @@ usePageSeo({
   .raio-x__live-counter-pulse {
     animation: none;
   }
+}
+
+/* ===================================================================
+   Video frame — premium card around the autoplay loop.
+
+   - aspect-ratio reserves layout space BEFORE the video loads, so the
+     hero doesn't shift when the file finally arrives (CLS fix).
+   - 16/9 was chosen as the safe default; if the source video gets
+     re-cut to 9/16 portrait or 1:1 square, just override
+     `--video-ratio` on .raio-x__video-frame.
+   - shadow + amber-tinted glow gives the video a "floating" feel
+     consistent with the hero radial behind it. In dark mode the glow
+     pulls back so the card doesn't bleed into the canvas.
+   ================================================================== */
+
+.raio-x__video-frame {
+  --video-ratio: 16 / 9;
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-elevated);
+  aspect-ratio: var(--video-ratio);
+  box-shadow:
+    0 24px 60px -24px color-mix(in srgb, var(--brand-primary) 22%, transparent),
+    0 12px 30px -12px rgba(0, 0, 0, 0.10);
+  transition: box-shadow 240ms ease, transform 240ms ease;
+}
+
+[data-mode='dark'] .raio-x__video-frame,
+.dark .raio-x__video-frame {
+  box-shadow:
+    0 24px 60px -24px rgba(0, 0, 0, 0.55),
+    0 12px 30px -12px color-mix(in srgb, var(--brand-primary) 14%, transparent);
+}
+
+.raio-x__video-frame:hover {
+  box-shadow:
+    0 32px 70px -24px color-mix(in srgb, var(--brand-primary) 28%, transparent),
+    0 16px 36px -12px rgba(0, 0, 0, 0.12);
+}
+
+.raio-x__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* "Demo" pill no canto superior esquerdo do video frame.
+   Status visual de que e demonstracao (nao e a UI ao vivo do produto). */
+.raio-x__video-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bg-elevated) 88%, transparent);
+  backdrop-filter: blur(8px);
+  border: 1px solid var(--border-subtle);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-heading);
+  pointer-events: none;
+}
+
+.raio-x__video-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--brand-primary);
+  animation: raio-x-video-badge-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes raio-x-video-badge-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(0.85); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .raio-x__video-badge-dot {
+    animation: none;
+  }
+}
+
+/* ===================================================================
+   FLOATING "Gerar Raio-X real" CTA — bottom-center pill (mesma posicao
+   do QuickSearch que escondemos nesta rota). Aparece quando o usuario
+   esta vendo o diagnostico demo. Vai pra /auth/register pra converter
+   no momento de pico de intencao (ele acabou de ver o que a Redent
+   consegue gerar com so os tickers, agora pode imaginar o que sai com
+   carteira completa).
+   ================================================================== */
+.raio-x-floating {
+  position: fixed;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px 10px 10px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--brand-primary), color-mix(in srgb, var(--brand-primary) 80%, #FF8A3D));
+  color: #fff;
+  font-family: var(--brand-font);
+  text-decoration: none;
+  box-shadow:
+    0 14px 36px -8px color-mix(in srgb, var(--brand-primary) 55%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--brand-primary) 40%, transparent);
+  transition: transform 220ms cubic-bezier(0.22, 0.61, 0.36, 1), box-shadow 220ms;
+  animation: raio-x-floating-pulse 3.2s ease-in-out infinite;
+  padding-bottom: max(10px, env(safe-area-inset-bottom));
+}
+
+.raio-x-floating:hover {
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow:
+    0 20px 44px -8px color-mix(in srgb, var(--brand-primary) 65%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--brand-primary) 50%, transparent);
+}
+
+.raio-x-floating:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--brand-primary) 35%, transparent);
+  outline-offset: 3px;
+}
+
+.raio-x-floating__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  flex-shrink: 0;
+}
+
+.raio-x-floating__text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.1;
+}
+
+.raio-x-floating__label {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.raio-x-floating__sub {
+  font-size: 11px;
+  font-weight: 500;
+  opacity: 0.82;
+  margin-top: 2px;
+}
+
+.raio-x-floating__arrow {
+  flex-shrink: 0;
+  transition: transform 200ms;
+}
+
+.raio-x-floating:hover .raio-x-floating__arrow {
+  transform: translateX(2px);
+}
+
+@media (max-width: 480px) {
+  .raio-x-floating {
+    /* No mobile o pill encosta nas margens com padding interno menor pra
+       caber sem cortar; o subtitulo fica menor pra reduzir altura. */
+    bottom: 12px;
+    padding: 8px 14px 8px 8px;
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+    max-width: calc(100vw - 24px);
+  }
+  .raio-x-floating__icon {
+    width: 32px;
+    height: 32px;
+  }
+  .raio-x-floating__label {
+    font-size: 13px;
+  }
+  .raio-x-floating__sub {
+    font-size: 10px;
+  }
+}
+
+/* Subtle attention pulse — gentle scale + shadow expansion every 3s. */
+@keyframes raio-x-floating-pulse {
+  0%, 100% {
+    box-shadow:
+      0 14px 36px -8px color-mix(in srgb, var(--brand-primary) 55%, transparent),
+      0 0 0 1px color-mix(in srgb, var(--brand-primary) 40%, transparent),
+      0 0 0 0 color-mix(in srgb, var(--brand-primary) 35%, transparent);
+  }
+  50% {
+    box-shadow:
+      0 14px 36px -8px color-mix(in srgb, var(--brand-primary) 55%, transparent),
+      0 0 0 1px color-mix(in srgb, var(--brand-primary) 40%, transparent),
+      0 0 0 12px color-mix(in srgb, var(--brand-primary) 0%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .raio-x-floating {
+    animation: none;
+  }
+}
+
+/* Enter/leave transition — slide up from below the fold. */
+.raio-x-floating-enter-active,
+.raio-x-floating-leave-active {
+  transition: transform 320ms cubic-bezier(0.22, 0.61, 0.36, 1), opacity 240ms ease;
+}
+
+.raio-x-floating-enter-from,
+.raio-x-floating-leave-to {
+  transform: translateX(-50%) translateY(120%);
+  opacity: 0;
 }
 </style>

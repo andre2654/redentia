@@ -467,7 +467,7 @@
 
   <!-- The floating QuickSearch pill is hidden on /help — the chat page
        has its own dedicated composer and the two would overlap. -->
-  <MoleculesQuickSearch v-if="route.path !== '/help'" />
+  <MoleculesQuickSearch v-if="route.path !== '/help' && !route.meta.hideQuickSearch" />
 
   <!-- Floating hamburger button (mobile only) — anchored at the same
        baseline as the QuickSearch pill so they read as paired, but

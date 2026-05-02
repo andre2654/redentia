@@ -230,7 +230,7 @@
     </main>
     <!-- Global floating quick search (public layout) — hidden on
          /help where the page is its own search/chat surface. -->
-    <MoleculesQuickSearch v-if="$route.path !== '/help'" />
+    <MoleculesQuickSearch v-if="$route.path !== '/help' && !$route.meta.hideQuickSearch" />
   </div>
   <Footer />
 </template>
