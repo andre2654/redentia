@@ -853,6 +853,14 @@
         />
       </section>
 
+      <!-- Modos especiais (Tesouro / Cripto) foram movidos PRA
+           DENTRO do card de "Filtros avançados" abaixo, como uma
+           segment row no topo. Antes ficavam em 2 cards externos
+           soltos entre o ticker carousel e os filtros, mas o
+           usuario falou que quebrava o ritmo visual — agora vira
+           um unico bloco coeso: tipo-de-ativo no topo + filtros
+           especificos do modo abaixo. -->
+
       <section class="relative z-10 max-md:px-4">
         <div class="mx-auto flex w-full flex-col gap-8">
           <div
@@ -870,11 +878,142 @@
                   <template v-else>Filtros avançados</template>
                 </span>
                 <h2 class="font-light" :style="{ color: brand.colors.text, fontSize: 'clamp(22px, 3vw, 28px)', lineHeight: 1.15, letterSpacing: '-0.4px' }">Personalize sua análise</h2>
-                <p class="text-sm" :style="{ color: brand.colors.textMuted }">
+                <p v-if="!isTesouroMode && !isCryptoMode" class="text-sm" :style="{ color: brand.colors.textMuted }">
                   Ajuste ranges numéricos, selecione grupos de ativos e combine
                   com buscas rápidas.
                 </p>
+                <p v-else class="text-sm" :style="{ color: brand.colors.textMuted }">
+                  Filtros de equity desabilitados — você está em modo {{ isTesouroMode ? 'Tesouro' : 'Cripto' }}.
+                </p>
               </div>
+
+              <!-- ===== Segment row: tipo de ativo =====
+                   Antes os modos especiais ficavam em 2 cards
+                   externos (Tesouro / Cripto), mas isso quebrava o
+                   ritmo visual — usuario via cards soltos depois
+                   desse card grande de filtros e nao entendia. Aqui
+                   ficam dentro do mesmo card como 3 segmentos
+                   mutuamente exclusivos: Renda Variavel / Tesouro /
+                   Cripto. O segmento ativo carrega amber accent;
+                   os outros ficam mutados. Quando Tesouro/Cripto
+                   sao selecionados, abaixo aparece um sub-row de
+                   chips (indexador ou ordenacao). -->
+              <div class="flex flex-col gap-3">
+                <span
+                  class="text-[11px] font-medium uppercase"
+                  :style="{ letterSpacing: '0.18em', color: secondaryMuted }"
+                >Tipo de ativo</span>
+                <div
+                  class="flex flex-wrap gap-1.5 rounded-xl border p-1"
+                  :style="{
+                    borderColor: `color-mix(in srgb, ${brand.colors.border} 60%, transparent)`,
+                    backgroundColor: `color-mix(in srgb, ${brand.colors.text} 3%, transparent)`,
+                  }"
+                >
+                  <NuxtLink
+                    :to="{ path: '/search' }"
+                    class="flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2 text-[13px] font-medium transition-colors"
+                    :style="{
+                      backgroundColor: (!isTesouroMode && !isCryptoMode) ? brand.colors.surface : 'transparent',
+                      color: (!isTesouroMode && !isCryptoMode) ? brand.colors.text : `color-mix(in srgb, ${brand.colors.text} 55%, transparent)`,
+                      boxShadow: (!isTesouroMode && !isCryptoMode) ? `0 1px 3px -1px color-mix(in srgb, ${brand.colors.text} 12%, transparent)` : 'none',
+                    }"
+                  >
+                    <UIcon name="i-lucide-trending-up" class="size-3.5" />
+                    Renda Variável
+                  </NuxtLink>
+                  <NuxtLink
+                    :to="{ path: '/search', query: { indexer: 'IPCA' } }"
+                    class="flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2 text-[13px] font-medium transition-colors"
+                    :style="{
+                      backgroundColor: isTesouroMode ? brand.colors.surface : 'transparent',
+                      color: isTesouroMode ? brand.colors.primary : `color-mix(in srgb, ${brand.colors.text} 55%, transparent)`,
+                      boxShadow: isTesouroMode ? `0 1px 3px -1px color-mix(in srgb, ${brand.colors.primary} 28%, transparent)` : 'none',
+                    }"
+                  >
+                    <UIcon name="i-lucide-landmark" class="size-3.5" />
+                    Tesouro Direto
+                  </NuxtLink>
+                  <NuxtLink
+                    :to="{ path: '/search', query: { crypto: '1' } }"
+                    class="flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2 text-[13px] font-medium transition-colors"
+                    :style="{
+                      backgroundColor: isCryptoMode ? brand.colors.surface : 'transparent',
+                      color: isCryptoMode ? brand.colors.primary : `color-mix(in srgb, ${brand.colors.text} 55%, transparent)`,
+                      boxShadow: isCryptoMode ? `0 1px 3px -1px color-mix(in srgb, ${brand.colors.primary} 28%, transparent)` : 'none',
+                    }"
+                  >
+                    <UIcon name="i-lucide-bitcoin" class="size-3.5" />
+                    Cripto
+                  </NuxtLink>
+                </div>
+
+                <!-- Tesouro: indexer chips inline. Mesmo padrao
+                     dos chips antigos, so que agora vivem na linha
+                     logo abaixo do segment row pra ficar visivel
+                     como sub-filtro do tipo selecionado. -->
+                <div
+                  v-if="isTesouroMode"
+                  class="flex flex-wrap items-center gap-1.5"
+                >
+                  <span
+                    class="font-mono-tab text-[10px] font-medium uppercase"
+                    :style="{ letterSpacing: '0.16em', color: secondaryMuted }"
+                  >Indexador</span>
+                  <NuxtLink
+                    v-for="chip in tesouroIndexers"
+                    :key="chip.key"
+                    :to="{ path: '/search', query: { indexer: chip.key } }"
+                    class="rounded-full px-2.5 py-1 text-[11.5px] font-medium transition-colors"
+                    :style="{
+                      backgroundColor: tesouroIndexer === chip.key
+                        ? `color-mix(in srgb, ${chip.color} 16%, transparent)`
+                        : `color-mix(in srgb, ${brand.colors.text} 6%, transparent)`,
+                      color: tesouroIndexer === chip.key
+                        ? chip.color
+                        : `color-mix(in srgb, ${brand.colors.text} 65%, transparent)`,
+                    }"
+                  >{{ chip.label }}</NuxtLink>
+                  <span
+                    class="ml-auto text-[12px]"
+                    :style="{ color: brand.colors.textMuted }"
+                  ><span class="font-mono-tab tabular-nums">{{ tesouroItems.length }}</span> títulos</span>
+                </div>
+
+                <!-- Cripto: sort chips inline -->
+                <div
+                  v-else-if="isCryptoMode"
+                  class="flex flex-wrap items-center gap-1.5"
+                >
+                  <span
+                    class="font-mono-tab text-[10px] font-medium uppercase"
+                    :style="{ letterSpacing: '0.16em', color: secondaryMuted }"
+                  >Ordenar</span>
+                  <NuxtLink
+                    v-for="opt in cryptoSortOptions"
+                    :key="opt.key"
+                    :to="{ path: '/search', query: { crypto: '1', sort: opt.key } }"
+                    class="rounded-full px-2.5 py-1 text-[11.5px] font-medium transition-colors"
+                    :style="{
+                      backgroundColor: cryptoSort === opt.key
+                        ? `color-mix(in srgb, ${brand.colors.primary} 16%, transparent)`
+                        : `color-mix(in srgb, ${brand.colors.text} 6%, transparent)`,
+                      color: cryptoSort === opt.key
+                        ? brand.colors.primary
+                        : `color-mix(in srgb, ${brand.colors.text} 65%, transparent)`,
+                    }"
+                  >{{ opt.label }}</NuxtLink>
+                  <span
+                    class="ml-auto text-[12px]"
+                    :style="{ color: brand.colors.textMuted }"
+                  ><span class="font-mono-tab tabular-nums">{{ cryptoItems.length }}</span> ativos</span>
+                </div>
+              </div>
+
+              <!-- Equity-only filters wrapper. Sliders + checkboxes
+                   so fazem sentido no modo Renda Variavel; ficam
+                   ocultos quando Tesouro/Cripto pra nao confundir. -->
+              <div v-if="!isTesouroMode && !isCryptoMode" class="contents">
 
               <AtomsFormInput
                 id="global-search-input"
@@ -1095,6 +1234,8 @@
                   />
                 </div>
               </div>
+              </div>
+              <!-- /equity-only filters wrapper (`v-if="!isTesouroMode && !isCryptoMode"`) -->
             </div>
           </div>
 
@@ -1133,8 +1274,10 @@
               </div>
 
               <template v-else>
+                <!-- Branch 1: Equity (default — sem modos especiais)
+                     Cards originais com logo + ticker + preco + change % + MC. -->
                 <div
-                  v-if="paginatedData.length"
+                  v-if="paginatedData.length && !isTesouroMode && !isCryptoMode"
                   class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
                 >
                   <NuxtLink
@@ -1220,12 +1363,155 @@
                   </NuxtLink>
                 </div>
 
+                <!-- Branch 2: Tesouro Direto
+                     Cards focados em renda fixa: nome do titulo, badge
+                     do indexador (IPCA/SELIC/PREFIXADO), taxa label
+                     (ex: "IPCA + 6,15% a.a."), vencimento, preco unit
+                     de compra. Sem ticker/logo (titulos publicos nao
+                     tem). Linkam pra /asset/<slug> mantendo o
+                     padrao da app. -->
+                <div
+                  v-else-if="paginatedData.length && isTesouroMode"
+                  class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                >
+                  <NuxtLink
+                    v-for="item in (paginatedData as TesouroItem[])"
+                    :key="item.slug"
+                    :to="`/tesouro/${item.slug}`"
+                    class="group flex flex-col gap-3 brand-card border p-4 transition-[transform,opacity,box-shadow,background-color,border-color] active:scale-[0.99] sm:gap-4 sm:p-5"
+                    :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+                  >
+                    <div class="flex items-start justify-between gap-2">
+                      <div class="min-w-0 flex-1">
+                        <span
+                          class="font-mono-tab text-[10px] font-medium uppercase"
+                          :style="{ letterSpacing: '0.16em', color: getTesouroIndexerColor(item.indexer) }"
+                        >{{ item.indexer || 'TESOURO' }}</span>
+                        <p
+                          class="mt-0.5 line-clamp-2 text-[14px] font-medium leading-snug"
+                          :style="{ color: brand.colors.text }"
+                        >{{ item.name }}</p>
+                      </div>
+                    </div>
+
+                    <div class="flex items-baseline justify-between gap-2 border-t pt-3" :style="{ borderColor: `color-mix(in srgb, ${brand.colors.border} 60%, transparent)` }">
+                      <div class="flex flex-col gap-0.5">
+                        <span
+                          class="font-mono-tab text-[10px] uppercase"
+                          :style="{ letterSpacing: '0.14em', color: `color-mix(in srgb, ${brand.colors.text} 50%, transparent)` }"
+                        >Taxa atual</span>
+                        <span
+                          class="font-mono-tab text-[15px] font-medium tabular-nums"
+                          :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }"
+                        >{{ item.rate || '—' }}</span>
+                      </div>
+                      <div class="flex flex-col items-end gap-0.5">
+                        <span
+                          class="font-mono-tab text-[10px] uppercase"
+                          :style="{ letterSpacing: '0.14em', color: `color-mix(in srgb, ${brand.colors.text} 50%, transparent)` }"
+                        >Vencimento</span>
+                        <span
+                          class="font-mono-tab text-[12px] tabular-nums"
+                          :style="{ color: `color-mix(in srgb, ${brand.colors.text} 75%, transparent)` }"
+                        >{{ formatTesouroMaturity(item.maturity_date) }}</span>
+                      </div>
+                    </div>
+
+                    <p
+                      v-if="item.price_buy"
+                      class="mt-auto text-[11px]"
+                      :style="{ color: brand.colors.textMuted }"
+                    >Preço unitário <span class="font-mono-tab tabular-nums" :style="{ color: brand.colors.text }">{{ formatCurrencyBRL(item.price_buy) }}</span></p>
+                  </NuxtLink>
+                </div>
+
+                <!-- Branch 3: Cripto
+                     Cards com logo (CMC images), ticker SYMBOL +
+                     name, rank #, preco BRL, change 24h. Linkam pra
+                     /asset/<symbol> mantendo padrao. -->
+                <div
+                  v-else-if="paginatedData.length && isCryptoMode"
+                  class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                >
+                  <NuxtLink
+                    v-for="item in (paginatedData as CryptoAssetItem[])"
+                    :key="item.id"
+                    :to="`/asset/${item.symbol.toLowerCase()}`"
+                    class="group flex flex-col gap-3 brand-card border p-4 transition-[transform,opacity,box-shadow,background-color,border-color] active:scale-[0.99] sm:gap-4 sm:p-5"
+                    :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+                  >
+                    <div class="flex items-center justify-between gap-2">
+                      <div class="flex min-w-0 flex-1 items-center gap-3">
+                        <img
+                          v-if="item.image"
+                          :src="item.image"
+                          :alt="item.symbol"
+                          class="h-10 w-10 shrink-0 rounded-full border object-cover sm:h-11 sm:w-11"
+                          :style="{ borderColor: brand.colors.border }"
+                        />
+                        <div
+                          v-else
+                          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border sm:h-11 sm:w-11"
+                          :style="{ borderColor: brand.colors.border, backgroundColor: `color-mix(in srgb, ${brand.colors.text} 6%, transparent)` }"
+                        >
+                          <span class="font-mono-tab text-[11px] font-medium" :style="{ color: brand.colors.textMuted }">
+                            {{ item.symbol.slice(0, 3) }}
+                          </span>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                          <p class="truncate font-medium" :style="{ color: brand.colors.text }">
+                            {{ item.symbol }}
+                          </p>
+                          <p class="truncate text-xs sm:text-sm" :style="{ color: brand.colors.textMuted }">
+                            {{ item.name }}
+                          </p>
+                        </div>
+                      </div>
+                      <span
+                        v-if="item.rank"
+                        class="shrink-0 brand-card-sm px-2 py-0.5 font-mono-tab text-[10px] font-medium tabular-nums"
+                        :style="{ letterSpacing: '0.05em', backgroundColor: brand.colors.border, color: brand.colors.textMuted }"
+                      >#{{ item.rank }}</span>
+                    </div>
+
+                    <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 text-sm">
+                      <span class="font-medium tabular-nums" :style="{ color: brand.colors.text }">
+                        {{ formatCryptoPrice(item.price_brl) }}
+                      </span>
+                      <span
+                        v-if="item.change_24h_pct !== null"
+                        class="inline-flex items-center gap-1 font-medium tabular-nums"
+                        :style="{ color: item.change_24h_pct >= 0 ? positiveColor : negativeColor }"
+                      >
+                        <IconArrowFinanceUp
+                          :class="['h-4 w-4 sm:h-5 sm:w-5', item.change_24h_pct >= 0 ? '' : 'rotate-180']"
+                          :style="{ fill: item.change_24h_pct >= 0 ? positiveColor : negativeColor }"
+                        />
+                        {{ item.change_24h_pct >= 0 ? '+' : '' }}{{ item.change_24h_pct.toFixed(2) }}%
+                      </span>
+                    </div>
+
+                    <p class="mt-auto text-[10px] sm:text-xs" :style="{ color: brand.colors.textMuted }">
+                      MC <span class="font-mono-tab tabular-nums">{{ formatCurrencyBRL(item.market_cap_brl ?? 0) }}</span>
+                    </p>
+                  </NuxtLink>
+                </div>
+
+                <!-- Empty state — copy contextual ao modo ativo. -->
                 <div
                   v-else
                   class="brand-card border py-12 text-center text-sm sm:py-16"
                   :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface, color: brand.colors.textMuted }"
                 >
-                  Nenhum ativo encontrado com os filtros atuais.
+                  <template v-if="isTesouroMode">
+                    Nenhum título do Tesouro Direto disponível para o indexador <strong>{{ tesouroIndexer }}</strong>.
+                  </template>
+                  <template v-else-if="isCryptoMode">
+                    Nenhum criptoativo carregado. Verifique sua conexão.
+                  </template>
+                  <template v-else>
+                    Nenhum ativo encontrado com os filtros atuais.
+                  </template>
                 </div>
               </template>
             </div>
@@ -1828,6 +2114,36 @@ function formatTesouroMaturity(iso: string | null): string {
   }
 }
 
+// Cor do badge do indexador no grid de resultados Tesouro. Le do
+// proprio array `tesouroIndexers` pra manter sincronizado — se o
+// indexador for desconhecido, fallback no textMuted (caso a API
+// um dia retornar algo fora do enum).
+function getTesouroIndexerColor(indexer: string | null): string {
+  if (!indexer) return brand.colors.textMuted
+  const upper = indexer.toUpperCase()
+  const found = tesouroIndexers.value.find((t) => t.key === upper || upper.startsWith(t.key))
+  return found?.color ?? brand.colors.textMuted
+}
+
+// Crypto price formatter — diferente do BRL padrao porque preco de
+// alt coin pode ser tipo R$ 0,000045 (BTC), R$ 0,82 (DOGE), R$
+// 350.000 (BTC). Intl.NumberFormat com BRL nao lida bem com 6+
+// casas decimais (corta em 2). Aqui escolhemos as casas decimais
+// dinamicamente: <1 vira 6 casas, <100 vira 4 casas, resto vira 2.
+function formatCryptoPrice(value: number | null | undefined): string {
+  if (value === null || value === undefined || !Number.isFinite(value)) return '—'
+  const abs = Math.abs(value)
+  let frac = 2
+  if (abs < 1) frac = 6
+  else if (abs < 100) frac = 4
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    minimumFractionDigits: frac,
+    maximumFractionDigits: frac,
+  }).format(value)
+}
+
 function formatTesouroRate(item: TesouroItem): string {
   if (!item.rate) return '-'
   return item.rate
@@ -1913,9 +2229,22 @@ const resultsCount = computed(() => {
 const itemsPerPage = ref(12)
 const currentPage = ref(1)
 
-const paginatedData = computed(() => {
+// Quando o user ativa modo Tesouro ou Cripto via query params,
+// queremos que o grid de resultados do default variant exiba os
+// items certos (titulos do TD ou cryptos), nao equity. Antes
+// `paginatedData` so olhava `filteredData` (equity), entao ativar
+// `?indexer=IPCA` no default mostrava "Nenhum ativo encontrado"
+// porque os filtros de equity zeravam o resultado. Agora retorna
+// a fonte correta baseada no modo ativo. Tipo intencional `any[]`
+// porque os tres modos tem shapes diferentes — o template ja faz
+// os checks via isCryptoMode/isTesouroMode pra renderizar o card
+// adequado.
+const paginatedData = computed<any[]>(() => {
   const start = (currentPage.value - 1) * itemsPerPage.value
-  return filteredData.value.slice(start, start + itemsPerPage.value)
+  const end = start + itemsPerPage.value
+  if (isCryptoMode.value) return filteredCryptoItems.value.slice(start, end)
+  if (isTesouroMode.value) return filteredTesouroItems.value.slice(start, end)
+  return filteredData.value.slice(start, end)
 })
 
 const totalPages = computed(() =>
