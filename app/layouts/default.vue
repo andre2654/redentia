@@ -40,10 +40,14 @@
            CTA when empty, hidden when unauthenticated. The whole card
            is a NuxtLink to /wallet so the snapshot doubles as a quick
            jump into the carteira page. -->
+      <!-- Patrimonio card — now outer wrapper is a <div> (was NuxtLink)
+           porque o empty state inclui o onboarding inline com seus
+           proprios NuxtLinks. Aninhar <a> dentro de <a> e HTML invalido,
+           entao a parte de "ir pra carteira" virou link interno do card. -->
       <div v-if="authStore.me" class="shrink-0 px-3 pb-3">
-        <NuxtLink
-          to="/wallet"
-          class="platform-snapshot-card group block rounded-xl border p-3 transition-[border-color,background-color,box-shadow]"
+        <div
+          class="platform-snapshot-card rounded-xl border p-3"
+          :class="{ 'platform-snapshot-card--empty': portfolio.loaded && portfolio.value === null }"
           :style="{
             backgroundColor: `color-mix(in srgb, ${brand.colors.background} 55%, transparent)`,
             borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
@@ -73,23 +77,75 @@
             }"
           />
 
-          <!-- Empty / error state — CTA to seed wallet -->
+          <!-- Empty state — placeholder + onboarding inline. O card
+               todo ja "ensina" o que fazer agora: seu patrimonio aparece
+               aqui depois que voce adicionar a carteira (passo 3 do
+               checklist abaixo). Sem link "ir pra carteira" — os 4
+               passos do onboarding ja cobrem isso (passo 3). -->
           <template v-else-if="portfolio.value === null">
             <div
               class="mt-1.5 text-[14px] font-medium"
               :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }"
-            >Adicione seu 1º ativo</div>
+            >Aqui ficará a sua carteira</div>
             <div
-              class="mt-1 flex items-center gap-1 text-[12px]"
-              :style="{ color: brand.colors.primary }"
+              class="mt-1 text-[11px] leading-snug"
+              :style="{ color: `color-mix(in srgb, ${brand.colors.text} 55%, transparent)` }"
             >
-              Ir pra carteira
-              <UIcon name="i-lucide-arrow-right" class="size-3" />
+              Complete os passos abaixo para ver seu patrimônio em tempo real.
+            </div>
+
+            <!-- Onboarding inline — so aparece quando carteira vazia E
+                 onboarding incompleto. Eyebrow + counter no topo, lista
+                 vertical compact com circle/check + label. Diferente
+                 do card standalone abaixo (que so aparece depois que
+                 o usuario adiciona carteira mas ainda tem passos). -->
+            <div
+              v-if="!onboarding.allDone.value && authStore.me?.role !== 'advisor'"
+              class="mt-3 border-t pt-3"
+              :style="{ borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)` }"
+            >
+              <div class="flex items-center justify-between">
+                <span class="platform-sidebar-eyebrow !mb-0 !p-0">Próximos passos</span>
+                <span
+                  class="font-mono-tab text-[10px] font-medium tabular-nums"
+                  :style="{ letterSpacing: '0.04em', color: `color-mix(in srgb, ${brand.colors.text} 50%, transparent)` }"
+                >
+                  {{ onboarding.done.value }}/{{ onboarding.total.value }}
+                </span>
+              </div>
+              <ul class="mt-2 flex flex-col">
+                <li v-for="step in onboarding.steps.value" :key="step.id">
+                  <NuxtLink
+                    :to="step.to"
+                    class="onboarding-sidebar-item group flex items-center gap-2 rounded-md px-1.5 py-1.5 transition-colors"
+                  >
+                    <UIcon
+                      :name="step.done ? 'i-lucide-circle-check' : 'i-lucide-circle'"
+                      class="size-3.5 shrink-0"
+                      :style="{ color: step.done ? brand.colors.positive : `color-mix(in srgb, ${brand.colors.text} 40%, transparent)` }"
+                      aria-hidden="true"
+                    />
+                    <span
+                      class="flex-1 truncate text-[12px] transition-colors"
+                      :class="{ 'line-through': step.done }"
+                      :style="{ color: step.done ? `color-mix(in srgb, ${brand.colors.text} 45%, transparent)` : brand.colors.text }"
+                    >{{ step.label }}</span>
+                    <UIcon
+                      v-if="!step.done"
+                      name="i-lucide-arrow-right"
+                      class="size-3 shrink-0 opacity-0 transition-[opacity,transform] group-hover:translate-x-0.5 group-hover:opacity-100"
+                      :style="{ color: brand.colors.primary }"
+                      aria-hidden="true"
+                    />
+                  </NuxtLink>
+                </li>
+              </ul>
             </div>
           </template>
 
-          <!-- Loaded state — value + ver carteira hint -->
-          <template v-else>
+          <!-- Loaded state — value + ver carteira link (mantido como
+               NuxtLink ja que nao tem onboarding inline aqui). -->
+          <NuxtLink v-else to="/wallet" class="block">
             <div
               class="mt-1.5 font-mono-tab text-[22px] font-light tabular-nums"
               :style="{ color: brand.colors.text, letterSpacing: '-0.02em' }"
@@ -114,14 +170,20 @@
                 />
               </span>
             </div>
-          </template>
-        </NuxtLink>
+          </NuxtLink>
+        </div>
       </div>
 
-      <!-- Primary AI CTA — amber solid, mirrors the chat sidebar CTA -->
+      <!-- Primary AI CTA — amber solid. Smart-routes baseado no
+           onboarding: enquanto o usuario nao gerou Raio-X, o botao
+           anuncia "Gerar Raio-X" e leva pra /wallet (onde a carteira
+           e cadastrada e o raio-x e gerado automaticamente). Depois
+           que o raio-x foi gerado, vira o "Assessor com IA" original
+           e leva pro /help. Empurra o user pro proximo passo
+           critico do funil sem precisar de educacao adicional. -->
       <div v-if="authStore.me?.role !== 'advisor'" class="shrink-0 px-3 pb-3">
         <NuxtLink
-          to="/help"
+          :to="aiCtaTo"
           class="platform-ai-cta group flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-[14px] font-medium transition-[background-color,box-shadow,transform]"
           :style="{
             backgroundColor: brand.colors.primary,
@@ -135,7 +197,7 @@
             :style="{ color: brand.colors.background }"
           />
           <span class="flex-1 text-center" :style="{ letterSpacing: '-0.005em' }">
-            {{ brand.sidebar.aiCtaTitle }}
+            {{ aiCtaLabel }}
           </span>
           <UIcon
             name="i-lucide-arrow-up-right"
@@ -145,41 +207,20 @@
         </NuxtLink>
       </div>
 
-      <!-- Quick actions: 2x2 grid for the most-traveled routes. Each
-           card is a real NuxtLink with the route's brand-tinted icon
-           + label + meta line. Hidden for advisors who navigate via a
-           different surface. -->
-      <div v-if="authStore.me?.role !== 'advisor'" class="shrink-0 px-3 pb-3">
-        <div class="grid grid-cols-2 gap-2">
-          <NuxtLink
-            v-for="qa in quickActions"
-            :key="qa.label"
-            :to="qa.to"
-            class="platform-quick-action group flex flex-col items-start gap-1.5 rounded-lg border px-2.5 py-2 text-left transition-[border-color,background-color]"
-            :style="{
-              backgroundColor: `color-mix(in srgb, ${brand.colors.background} 35%, transparent)`,
-              borderColor: `color-mix(in srgb, ${brand.colors.border} 40%, transparent)`,
-            }"
-          >
-            <span
-              class="flex size-7 items-center justify-center rounded-md"
-              :style="{ backgroundColor: `color-mix(in srgb, ${qa.tint} 14%, transparent)` }"
-            >
-              <UIcon :name="qa.icon" class="size-4" :style="{ color: qa.tint }" />
-            </span>
-            <div class="flex w-full flex-col leading-tight">
-              <span
-                class="text-[12px] font-medium"
-                :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }"
-              >{{ qa.label }}</span>
-              <span
-                class="font-mono-tab text-[10px]"
-                :style="{ color: `color-mix(in srgb, ${brand.colors.text} 45%, transparent)` }"
-              >{{ qa.meta }}</span>
-            </div>
-          </NuxtLink>
-        </div>
-      </div>
+      <!-- Onboarding checklist — vive APENAS dentro do card de patrimonio
+           (versao inline na empty state, quando o usuario ainda nao
+           cadastrou carteira). Quando patrimonio carrega com valor, o
+           card so mostra o numero — o checklist some sozinho porque o
+           passo "Cadastrar carteira" ja foi cumprido e o smart-routing
+           do AI CTA ("Gerar Raio-X") empurra o usuario pro proximo
+           passo critico sem precisar de outro card listando passos.
+           Antes existia uma versao standalone aqui que duplicava com
+           a inline; foi removida. -->
+
+      <!-- Quick actions 2x2 grid removidas — duplicavam itens do MENU
+           principal abaixo (Calculadora/Rankings/Dividendos/Configuracoes
+           ja aparecem em FERRAMENTAS), e estavam adicionando ruido visual
+           sem entregar valor unico. -->
 
       <!-- Scrollable nav body — sections separated by eyebrows that
            match the chat sidebar's typographic rhythm. -->
@@ -290,52 +331,19 @@
             icon="i-lucide-layers"
           />
           <AtomsSidebarButton to="/guias" :text="brand.nav.guides" icon="i-lucide-book-open" />
-          <AtomsSidebarButton to="/dividendos" :text="brand.nav.dividends" icon="i-lucide-coins" />
+          <!-- Antes "Proventos" → /dividendos. Renomeado pra "Calendário
+               de Dividendos" e re-rotado pra /dividendos/calendario, que
+               e a pagina especifica do calendario (mais util do que a
+               landing /dividendos). Texto inline pra evitar mexer no
+               brand.nav.dividends que outros tenants usam. -->
+          <AtomsSidebarButton to="/dividendos/calendario" text="Calendário de Dividendos" icon="i-lucide-calendar" />
         </section>
       </nav>
 
-      <!-- Market strip — IBOV / IFIX live tickers. Pulled from the
-           public indices endpoint, refreshed every 60s. The strip
-           hides itself entirely if the fetch fails — better no strip
-           than a broken one. Dashes appear during initial load. -->
-      <div
-        v-if="authStore.me && market.show"
-        class="flex shrink-0 items-stretch gap-px border-t"
-        :style="{
-          borderColor: `color-mix(in srgb, ${brand.colors.border} 40%, transparent)`,
-          backgroundColor: `color-mix(in srgb, ${brand.colors.border} 18%, transparent)`,
-        }"
-      >
-        <div
-          v-for="cell in market.cells"
-          :key="cell.label"
-          class="flex flex-1 flex-col items-center gap-0.5 px-2 py-1.5"
-          :style="{ backgroundColor: brand.colors.surface }"
-        >
-          <span
-            class="font-mono-tab text-[9px] font-medium uppercase"
-            :style="{
-              letterSpacing: '0.18em',
-              color: `color-mix(in srgb, ${brand.colors.text} 45%, transparent)`,
-            }"
-          >{{ cell.label }}</span>
-          <span
-            class="font-mono-tab text-[11px] tabular-nums"
-            :style="{ color: brand.colors.text }"
-          >{{ cell.value }}</span>
-          <span
-            class="font-mono-tab text-[9.5px] tabular-nums"
-            :style="{
-              color:
-                cell.changeNum === null
-                  ? `color-mix(in srgb, ${brand.colors.text} 35%, transparent)`
-                  : cell.changeNum >= 0
-                    ? brand.colors.positive
-                    : brand.colors.negative,
-            }"
-          >{{ cell.change }}</span>
-        </div>
-      </div>
+      <!-- Market strip IBOV/IFIX removida — ja existe um ticker rail
+           (AtomsTickerCarousel) no topo da home com dados mais ricos
+           (logo + price + change), e a strip da sidebar duplicava esse
+           sinal num lugar onde nao tinha espaco pra brilhar. -->
 
       <!-- User row — inline strip, no bordered card. Avatar + name
            + plan, plus three icon-only action buttons (theme cycle,
@@ -528,6 +536,26 @@ const interfaceStore = useInterfaceStore()
 const authStore = useAuthStore()
 const router = useRouter()
 const route = useRoute()
+
+// Onboarding checklist (3 passos pos-cadastro). Renderiza no card
+// "Próximos passos" da sidebar acima e some sozinho quando o usuario
+// completa todos. Logica em ~/composables/useOnboardingChecklist.
+const onboarding = useOnboardingChecklist()
+
+// AI CTA com smart-routing. Enquanto o usuario nao gerou raio-x, o
+// botao principal da sidebar empurra ele pra /wallet (com query do
+// onboarding pra exibir o banner contextual la). Depois que ele gera,
+// vira o "Assessor com IA" original. Tudo derivado dos steps do
+// composable, entao se a regra mudar, muda num lugar so.
+const raioXStep = computed(() =>
+  onboarding.steps.value.find(s => s.id === 'raio-x'),
+)
+const aiCtaTo = computed(() =>
+  raioXStep.value?.done ? '/help' : '/wallet?from=onboarding-raio-x',
+)
+const aiCtaLabel = computed(() =>
+  raioXStep.value?.done ? brand.sidebar.aiCtaTitle : 'Gerar Raio-X',
+)
 
 const menuMobileActive = ref(false)
 const pwa = import.meta.client ? usePWA() : null
@@ -872,6 +900,17 @@ onMounted(() => {
   border-color: color-mix(in srgb, var(--brand-primary) 30%, transparent) !important;
   background-color: color-mix(in srgb, var(--brand-primary) 4%, var(--brand-background)) !important;
   box-shadow: 0 4px 12px -6px color-mix(in srgb, var(--brand-primary) 24%, transparent);
+}
+
+/* Empty state — sem hover. Quando o card nao tem carteira (portfolio
+   = null), ele exibe o onboarding inline com seus proprios links
+   clicaveis. O hover do card inteiro nao ajuda nada nesse caso (o
+   wrapper nao e um link), e ainda fica esquisito quando o usuario
+   passa o mouse sobre um item do onboarding e o CARD inteiro reage. */
+.platform-snapshot-card--empty:hover {
+  border-color: color-mix(in srgb, var(--brand-border) 50%, transparent) !important;
+  background-color: color-mix(in srgb, var(--brand-background) 55%, transparent) !important;
+  box-shadow: none !important;
 }
 
 /* Quick action cards — same recipe as the snapshot card but a

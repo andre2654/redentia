@@ -25,6 +25,39 @@
       <!-- Empty state -->
       <template v-else-if="!positions.length">
         <div class="flex flex-col items-center gap-12 px-6 py-16">
+          <!-- Contextual banner — so aparece quando o usuario clica em
+               "Gerar Raio-X da sua carteira" no onboarding (rota
+               /wallet?from=onboarding-raio-x). Conecta o passo do
+               checklist ao fluxo natural: pra gerar o raio-x da
+               CARTEIRA, voce precisa primeiro ter uma carteira. -->
+          <div
+            v-if="cameFromRaioXOnboarding"
+            class="flex w-full max-w-2xl items-start gap-3 rounded-xl border px-4 py-3"
+            :style="{
+              borderColor: `color-mix(in srgb, ${brand.colors.primary} 32%, transparent)`,
+              backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 6%, ${brand.colors.surface})`,
+              boxShadow: `0 4px 14px -8px color-mix(in srgb, ${brand.colors.primary} 22%, transparent)`,
+            }"
+          >
+            <UIcon
+              name="i-lucide-sparkles"
+              class="size-4 shrink-0"
+              :style="{ color: brand.colors.primary, marginTop: '3px' }"
+            />
+            <div class="flex flex-col gap-0.5">
+              <span
+                class="font-mono-tab text-[10.5px] font-medium uppercase"
+                :style="{ letterSpacing: '0.16em', color: brand.colors.primary }"
+              >Raio-X automático</span>
+              <p
+                class="text-[13.5px] leading-snug"
+                :style="{ color: brand.colors.text }"
+              >
+                Adicione seus ativos abaixo e o Raio-X é gerado automaticamente — Score 0–100, riscos, dividendos esperados, tudo.
+              </p>
+            </div>
+          </div>
+
           <header class="flex max-w-xl flex-col items-center gap-4 text-center">
             <span
               class="font-mono-tab text-[11px] font-medium uppercase"
@@ -75,6 +108,56 @@
               </NuxtLink>
             </div>
           </header>
+
+          <!-- Demo video — prova visual do fluxo "manda planilha → IA
+               popula" prometido no copy acima. autoplay+muted+loop
+               pra rodar como GIF; quando trocar pelo video novo (com
+               audio), basta apontar emptyDemoVideoSrc pro novo arquivo
+               e remover o autoplay+muted+loop se quiser controle
+               manual de play. Aspect 16:9 (aspect-video do Tailwind)
+               pra reservar layout antes do video carregar (CLS). -->
+          <figure class="flex w-full max-w-2xl flex-col items-center gap-3">
+            <div
+              class="relative aspect-video w-full overflow-hidden rounded-2xl border"
+              :style="{
+                borderColor: `color-mix(in srgb, ${brand.colors.border} 55%, transparent)`,
+                backgroundColor: brand.colors.surface,
+                boxShadow: `0 24px 60px -24px color-mix(in srgb, ${brand.colors.primary} 22%, transparent), 0 12px 30px -12px rgba(0,0,0,0.10)`,
+              }"
+            >
+              <span
+                class="absolute left-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase backdrop-blur"
+                :style="{
+                  letterSpacing: '0.16em',
+                  backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 88%, transparent)`,
+                  border: `1px solid color-mix(in srgb, ${brand.colors.border} 55%, transparent)`,
+                  color: brand.colors.text,
+                }"
+              >
+                <span
+                  class="size-1.5 animate-pulse rounded-full"
+                  :style="{ backgroundColor: brand.colors.primary }"
+                />
+                Demo
+              </span>
+              <video
+                class="absolute inset-0 size-full object-cover"
+                :src="emptyDemoVideoSrc"
+                autoplay
+                muted
+                loop
+                playsinline
+                preload="metadata"
+                aria-label="Demonstração do fluxo de importar carteira pela Redent.IA"
+              />
+            </div>
+            <figcaption
+              class="text-[12.5px]"
+              :style="{ color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }"
+            >
+              Veja em 30 segundos como a IA monta sua carteira.
+            </figcaption>
+          </figure>
 
           <section class="grid w-full max-w-4xl grid-cols-1 gap-4 md:grid-cols-3">
             <article
@@ -278,6 +361,37 @@ const watchlist = ref<WatchlistItem[]>([])
 const analysis = ref<PortfolioAnalysis | null>(null)
 
 const authStore = useAuthStore()
+const onboarding = useOnboardingChecklist()
+
+// Sinaliza se o usuario veio do step "Gerar Raio-X da sua carteira" do
+// onboarding. Usado pra mostrar o banner contextual no empty state
+// explicando que o raio-x e gerado automaticamente apos enviar a
+// carteira. Query param em vez de localStorage pra ser auto-limpo
+// quando o user troca de pagina. (`route` ja e declarado abaixo no
+// watcher de import-portfolio — nao duplicar.)
+const cameFromRaioXOnboarding = computed(
+  () => useRoute().query.from === 'onboarding-raio-x',
+)
+
+// Video de demo do empty state. Por enquanto reutilizando o video do
+// raio-x — eventualmente e substituido por um demo especifico do
+// fluxo "abre chat → cola planilha → carteira populada" (com audio).
+// Binding dinamico (:src) em vez de src estatico evita o bug do Vite
+// reescrever pra /_nuxt/@fs/... e dar 404. Mesmo padrao usado em
+// pages/raio-x.vue e RaioXSimulationModal.vue.
+const emptyDemoVideoSrc = '/assets/videos/raio-x.mp4'
+
+// Watcher onboarding: assim que o usuario tiver 1+ posicao na carteira,
+// marca o passo "Adicionar 1º ativo" como concluido. Roda uma vez (a
+// flag e idempotente no localStorage). Usa `length > 0` em vez de
+// `length === 1` pra cobrir tambem o caso de import bulk via chat
+// (vários ativos chegando juntos do /help?intent=import-portfolio).
+watch(
+  () => positions.value.length,
+  (n) => {
+    if (n > 0) onboarding.markStepDone('wallet')
+  },
+)
 
 const emptyCardStyle = computed(() => ({
   backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 55%, ${brand.colors.background})`,

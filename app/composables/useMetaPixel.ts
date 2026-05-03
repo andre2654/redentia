@@ -60,26 +60,33 @@ async function sha256(text: string): Promise<string> {
  * Le cookies _fbp e _fbc do browser. Se _fbc nao existe mas a URL
  * tem `fbclid`, constroi o fbc no formato esperado pela Meta:
  * `fb.1.{timestamp_ms}.{fbclid}`.
+ *
+ * IMPORTANTE: Meta exige o fbclid EXATAMENTE como veio na URL,
+ * sem URL-decode. Por isso extraimos via regex do query string raw
+ * em vez de URLSearchParams (que faz auto-decode silencioso).
+ * Decodificar pode mudar `%2D` em `-`, `%5F` em `_`, etc, e a Meta
+ * marca como "fbclid modificado" baixando match quality.
  */
 function getMetaCookies(): { fbp?: string; fbc?: string } {
   if (typeof document === 'undefined') return {}
   const result: { fbp?: string; fbc?: string } = {}
 
   const fbpMatch = document.cookie.match(/(?:^| )_fbp=([^;]+)/)
-  if (fbpMatch) result.fbp = decodeURIComponent(fbpMatch[1])
+  if (fbpMatch) result.fbp = fbpMatch[1]
 
   const fbcMatch = document.cookie.match(/(?:^| )_fbc=([^;]+)/)
   if (fbcMatch) {
-    result.fbc = decodeURIComponent(fbcMatch[1])
+    result.fbc = fbcMatch[1]
   } else {
     try {
-      const url = new URL(window.location.href)
-      const fbclid = url.searchParams.get('fbclid')
-      if (fbclid) {
-        result.fbc = `fb.1.${Date.now()}.${fbclid}`
+      // Raw extract — NAO usar URLSearchParams (auto-decode quebra fbclid).
+      const search = window.location.search || ''
+      const m = search.match(/[?&]fbclid=([^&#]+)/)
+      if (m && m[1]) {
+        result.fbc = `fb.1.${Date.now()}.${m[1]}`
       }
     } catch {
-      // URL invalida, ignora
+      // location indisponivel, ignora
     }
   }
 

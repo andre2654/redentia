@@ -46,12 +46,9 @@
       />
     </div>
 
-    <!-- AUTH GREETING: substitui o HomeHero pra usuarios logados. Mantem
-         o mesmo ritmo tipografico do hero radiograph (eyebrow + headline
-         weight 300 com `carteira` em Instrument Serif italic). Eyebrow
-         neutro "BEM-VINDO DE VOLTA" em vez de saudacao por hora pra
-         evitar SSR/client mismatch (server e client podem estar em
-         fusos diferentes). -->
+    <!-- AUTH GREETING: introducao curta pra usuarios logados. O checklist
+         de onboarding (proximos passos) foi movido pra sidebar via
+         layouts/default.vue + useOnboardingChecklist composable. -->
     <section
       v-if="authStore.isAuthenticated"
       class="relative mx-auto flex w-full max-w-6xl flex-col items-center px-4 pt-10 text-center md:px-6 md:pt-16"
@@ -1425,6 +1422,10 @@ const userFirstName = computed(() => {
   return first.charAt(0).toUpperCase() + first.slice(1).toLowerCase()
 })
 
+// Onboarding checklist movido pra sidebar (default.vue) via composable
+// useOnboardingChecklist. A home autenticada agora so renderiza o
+// greeting; o "que fazer agora" vive sticky no canto.
+
 // Creative studio thumbnails, used in the redentia home CTA section.
 // Each entry links to a pre-filled creative template on the
 // creative.redentia.com.br subdomain.
@@ -2476,5 +2477,6 @@ definePageMeta({
 .api-product-section .api-row:hover .terminal-window {
   transform: translateY(-4px);
 }
+
 
 </style>

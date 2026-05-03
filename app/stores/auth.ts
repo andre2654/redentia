@@ -20,6 +20,10 @@ function toProfile(user: ApiUser | null | undefined): IProfile | null {
     id: String(user.id ?? ''),
     name: user.name,
     email: user.email ?? '',
+    // Antes faltava — sem isso o PhoneGateModal salvava o numero no
+    // backend mas authStore.me.celular continuava undefined, e o gate
+    // (computed em cima desse campo) ficava aberto pra sempre.
+    celular: user.celular ?? null,
     role: user.role ?? 'investor',
     approval_status: user.approval_status ?? null,
     advisor_code: user.advisor_code ?? null,

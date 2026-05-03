@@ -304,6 +304,15 @@
     @dismiss-all="() => alertsState.dismissAll()"
     @mark-read="(id) => alertsState.markRead(id)"
   />
+
+  <!-- Gate de telefone — abre automaticamente quando o usuario logado
+       chega no /help sem ter cadastrado celular. Bloqueia o uso do
+       chat ate que ele salve o numero (vamos enviar codigo via WhatsApp
+       depois). Some sozinho assim que `me.celular` aparece via
+       updateProfile chamada no proprio modal — `phoneGateOpen` e
+       computed em cima de authStore.me.celular, entao a reatividade
+       fecha o modal sem precisar de @saved/@close handlers explicitos. -->
+  <MoleculesPhoneGateModal :open="phoneGateOpen" />
 </template>
 
 <script setup lang="ts">
@@ -328,6 +337,15 @@ definePageMeta({
 const route = useRoute()
 const brand = useBrand()
 const authStore = useAuthStore()
+const onboarding = useOnboardingChecklist()
+
+// Phone gate — abre quando o usuario logado entra no /help sem celular
+// cadastrado. Reativo: assim que `me.celular` aparece (via salvamento
+// no proprio modal), o gate some sozinho. Sem flag de dismissal porque
+// o gate e obrigatorio (anti-fraude + canal de alertas).
+const phoneGateOpen = computed(
+  () => authStore.isAuthenticated && !authStore.me?.celular,
+)
 
 /**
  * Mobile-header title. Mirrors the active session title from the
@@ -476,6 +494,10 @@ function onSend(message: string, attachments: ChatAttachment[] = []) {
     redirectToLogin()
     return
   }
+  // Marca onboarding "Enviar mensagem no chat" como concluido na 1a
+  // mensagem que o usuario manda. Idempotente (markStepDone setta a
+  // flag no localStorage; chamadas seguintes sao no-op).
+  onboarding.markStepDone('chat')
   if (attachments.length > 0) {
     void chat
       .send({ text: message, attachments })
@@ -499,6 +521,7 @@ function onSendFollowup(
     redirectToLogin()
     return
   }
+  onboarding.markStepDone('chat')
   void chat.send(message)
 }
 
@@ -515,6 +538,7 @@ function onStarterChip(message: string, requestedTier?: 'basic' | 'max') {
   if (requestedTier && requestedTier !== tier.value) {
     tier.value = requestedTier
   }
+  onboarding.markStepDone('chat')
   void chat.send(message).then(refreshSessionList)
 }
 

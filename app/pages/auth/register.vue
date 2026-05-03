@@ -1356,6 +1356,8 @@ async function onSubmit(_: FormSubmitEvent<Schema>) {
       track('CompleteRegistration', {
         content_name: 'User Registration',
         status: true,
+        currency: 'BRL',
+        value: 20,
       })
       showSuccessNotification(
         name ? `Cadastro concluído, ${name}` : 'Cadastro concluído',
@@ -1369,6 +1371,8 @@ async function onSubmit(_: FormSubmitEvent<Schema>) {
       track('CompleteRegistration', {
         content_name: 'User Registration',
         status: true,
+        currency: 'BRL',
+        value: 20,
       })
       showSuccessNotification(
         'Cadastro concluído',

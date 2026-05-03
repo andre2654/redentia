@@ -88,16 +88,25 @@ function recalcLiveCount() {
 const liveCountFormatted = computed(() => liveCount.value.toLocaleString('pt-BR'))
 
 onMounted(() => {
+  // currency+value sao obrigatorios pra Meta nao flagar "missing currency"
+  // (100% dos ViewContent eram afetados, baixando ROAS estimado em 5%).
+  // value reflete peso relativo no funil: ViewContent < Lead < CompleteRegistration.
   track('ViewContent', {
     content_name: 'Raio-X Carteira',
     content_category: 'portfolio_analysis',
     content_type: 'product',
+    content_ids: ['raio-x'],
+    currency: 'BRL',
+    value: 1,
   })
   if (hasTickers.value) {
     track('Lead', {
       content_name: 'Raio-X Carteira',
       content_category: 'portfolio_analysis',
+      content_ids: ['raio-x'],
       num_assets: tickersFromUrl.value.length,
+      currency: 'BRL',
+      value: 5,
     })
   }
   // Calcula valor real do counter no client + atualiza a cada 30s.
@@ -117,7 +126,10 @@ watch(
       track('Lead', {
         content_name: 'Raio-X Carteira',
         content_category: 'portfolio_analysis',
+        content_ids: ['raio-x'],
         num_assets: tickersFromUrl.value.length,
+        currency: 'BRL',
+        value: 5,
       })
     }
     loadingReal.value = true
@@ -200,14 +212,18 @@ function onSimModalClose() {
   simModalOpen.value = false
 }
 
+const onboarding = useOnboardingChecklist()
+
 // Sempre que entra/sai do estado de resultado, agendamos/limpamos o
 // timer e resetamos a trava quando sai (pra que a proxima analise dispare
-// o modal de novo).
+// o modal de novo). Tambem marca o passo "Gerar Raio-X" como concluido
+// na primeira vez que o report fica pronto — idempotente.
 watch(
   () => hasTickers.value && !!report.value,
   (ready) => {
     if (ready) {
       scheduleSimModal()
+      onboarding.markStepDone('raio-x')
     } else {
       clearSimModalTimer()
       simModalSeenForCurrent.value = false
