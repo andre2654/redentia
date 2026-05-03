@@ -109,13 +109,14 @@
             </div>
           </header>
 
-          <!-- Demo video — prova visual do fluxo "manda planilha → IA
-               popula" prometido no copy acima. autoplay+muted+loop
-               pra rodar como GIF; quando trocar pelo video novo (com
-               audio), basta apontar emptyDemoVideoSrc pro novo arquivo
-               e remover o autoplay+muted+loop se quiser controle
-               manual de play. Aspect 16:9 (aspect-video do Tailwind)
-               pra reservar layout antes do video carregar (CLS). -->
+          <!-- Tutorial video — `preload="none"` pq o arquivo tem ~28MB
+               e em 4G/movel baixar tudo no load mata a UX. Browser so
+               fetch quando o user clica play. Sem autoplay/loop/muted
+               pq agora e tutorial narrado (5min com audio), nao mais
+               loop demo silencioso. `controls` deixa o user pausar e
+               escolher quando assistir. Sem poster ainda — caixa
+               preta com play button serve por enquanto; quando rolar,
+               extrai um frame com ffmpeg pra poster image (TODO). -->
           <figure class="flex w-full max-w-2xl flex-col items-center gap-3">
             <div
               class="relative aspect-video w-full overflow-hidden rounded-2xl border"
@@ -126,7 +127,7 @@
               }"
             >
               <span
-                class="absolute left-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase backdrop-blur"
+                class="pointer-events-none absolute left-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase backdrop-blur"
                 :style="{
                   letterSpacing: '0.16em',
                   backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 88%, transparent)`,
@@ -138,24 +139,22 @@
                   class="size-1.5 animate-pulse rounded-full"
                   :style="{ backgroundColor: brand.colors.primary }"
                 />
-                Demo
+                Tutorial
               </span>
               <video
                 class="absolute inset-0 size-full object-cover"
                 :src="emptyDemoVideoSrc"
-                autoplay
-                muted
-                loop
+                controls
                 playsinline
-                preload="metadata"
-                aria-label="Demonstração do fluxo de importar carteira pela Redent.IA"
+                preload="none"
+                aria-label="Tutorial: como gerar o Raio-X da sua carteira na Redent.IA"
               />
             </div>
             <figcaption
               class="text-[12.5px]"
               :style="{ color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }"
             >
-              Veja em 30 segundos como a IA monta sua carteira.
+              Tutorial: como adicionar sua carteira e gerar o Raio-X.
             </figcaption>
           </figure>
 
@@ -373,13 +372,14 @@ const cameFromRaioXOnboarding = computed(
   () => useRoute().query.from === 'onboarding-raio-x',
 )
 
-// Video de demo do empty state. Por enquanto reutilizando o video do
-// raio-x — eventualmente e substituido por um demo especifico do
-// fluxo "abre chat → cola planilha → carteira populada" (com audio).
+// Video tutorial do empty state. Arquivo de ~28MB com audio narrado
+// (~5min) explicando o fluxo "abre chat → cola planilha → carteira
+// populada → raio-x gerado". Servido com `preload="none"` no template
+// pra nao baixar tudo no load — so fetch quando o user clica play.
 // Binding dinamico (:src) em vez de src estatico evita o bug do Vite
 // reescrever pra /_nuxt/@fs/... e dar 404. Mesmo padrao usado em
 // pages/raio-x.vue e RaioXSimulationModal.vue.
-const emptyDemoVideoSrc = '/assets/videos/raio-x.mp4'
+const emptyDemoVideoSrc = '/assets/videos/como-gerar-raio-x.mp4'
 
 // Watcher onboarding: assim que o usuario tiver 1+ posicao na carteira,
 // marca o passo "Adicionar 1º ativo" como concluido. Roda uma vez (a
