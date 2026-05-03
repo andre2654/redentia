@@ -15,7 +15,7 @@
  * O produto e o mesmo, a narrativa muda tudo.
  * A mesma calculadora de juros compostos vira "Simulador do Primo",
  * "Quanto a Margarete precisa render?" ou "Ferramenta AUVP".
- * Dark mode e obrigatorio. Uma unica cor de destaque carrega toda a personalidade.
+ * Dark mode e obrigatorio. Uma única cor de destaque carrega toda a personalidade.
  * Nenhuma dessas marcas funciona sem a pessoa por tras.
  * Todas evitam azul corporativo, verde, amarelo e vermelho, nunca azul banco.
  * ---
@@ -88,7 +88,7 @@ interface BrandConfig {
     greeting: string         // "E ai, primo!" / "Oi, menina!" / "Fala, sardinha!"
     ctaPrimary: string       // Texto do botao principal
     ctaSecondary: string     // Texto do botao secundario
-    emptyState: string       // Mensagem quando nao ha dados
+    emptyState: string       // Mensagem quando não ha dados
     encouragement: string    // Frase motivacional para engajar
     error: string            // Mensagem de erro amigavel
   }
@@ -254,7 +254,7 @@ interface BrandConfig {
 
   // === PERSONALIZACOES POR AREA ===
 
-  // HERO (pagina inicial, visitante nao logado)
+  // HERO (pagina inicial, visitante não logado)
   hero: {
     variant: 'centered' | 'split' | 'minimal' | 'institutional' | 'editorial' | 'terminal' | 'mentor' | 'research' | 'showtime' | 'playbook' | 'holder' | 'quiet' | 'radiograph'  // layout do hero: centered (premium), split (founder), minimal (data-first), institutional (assessoria/escritorio), editorial (narrated private-bank letter, Norte Capital), terminal (Bloomberg-reimagined, Redentia v2), mentor (aspirational book-cover, Primo Rico), research (academic paper / AUVP study notebook, Investidor Sardinha), showtime (TV show / pop magazine, Me Poupe!), playbook (calm method + author photo + bold sticker accents, Saraiva Invest), holder (sentencious editorial portrait + giant chunky condensed wordmark + serif manifesto, Holder, the conviction-driven pseudonymous buy-and-hold archetype), quiet (Redentia premium fintech editorial, lightness as luxury, weight 300 display, amber-tinted shadows, conservative radii, tabular numerals, white-OR-dark, sussurro), radiograph (Redentia v3 reposicionada, headline de resultado + input de tickers embutido na primeira dobra + Redent Score demo card como visual; foco em B2C self-directed, esconde B2B na home)
     badge: string                // texto do badge animado no topo
@@ -395,7 +395,7 @@ interface BrandConfig {
     // Sidebar (menu lateral desktop)
     menuLabel: string              // "Menu", label da secao de menu
     toolsLabel: string             // "Ferramentas", label da secao de ferramentas
-    overview: string               // "Visao Geral"
+    overview: string               // "Visão Geral"
     wallet: string                 // "Sua carteira"
     chat: string                   // "Chat"
     advisorArea: string            // "Area do assessor"
@@ -418,7 +418,7 @@ interface BrandConfig {
     mobileAiDescriptionSub: string // "Entre na plataforma para conversar com a IA..."
     mobileCalc: string             // "Calculadora inteligente"
     mobileGuides: string           // "Guias de investimento"
-    mobileHome: string             // "Inicio"
+    mobileHome: string             // "Início"
     // Footer
     footerGlossaryTitle: string    // "Termos do Mercado"
     footerCalc: string             // "Calculadoras"
@@ -428,7 +428,7 @@ interface BrandConfig {
     footerAI: string               // "Assessoria IA"
     footerGuides: string           // "Guias de Investimento"
     footerGlossary: string         // "Glossario"
-    footerStocks: string           // "Acoes"
+    footerStocks: string           // "Ações"
     footerFiis: string             // "FIIs"
     footerDividends: string        // "Dividendos"
     footerAbout: string            // "Sobre"
@@ -450,8 +450,8 @@ interface BrandConfig {
     marketSubtitle: string       // "Altas, baixas e oportunidades..."
     filtersTitle: string         // "Filtros inteligentes"
     categoriesEyebrow: string   // "Explore por categoria"
-    categoriesTitle: string     // "Encontre seu proximo investimento"
-    categoriesSubtitle: string  // "Tudo que voce precisa..."
+    categoriesTitle: string     // "Encontre seu próximo investimento"
+    categoriesSubtitle: string  // "Tudo que você precisa..."
     guidesTitle: string         // "Conhecimento que gera resultados"
     guidesSubtitle: string      // "Guias praticos..."
     aiCtaEyebrow: string        // "Assessoria com IA"
@@ -527,9 +527,9 @@ interface BrandConfig {
     ctaText: string                 // "Comece agora"
     ctaLink: string                 // "/calculadora/juros-compostos"
     labels: {
-      ageSlider: string             // "Idade de inicio"
+      ageSlider: string             // "Idade de início"
       monthlySlider: string         // "Aporte mensal"
-      resultPrefix: string          // "Aos 65 anos voce tera"
+      resultPrefix: string          // "Aos 65 anos você tera"
       comparisonText: string        // "Quem comeca aos {age} perde {diff}"
       timeLabel: string             // "anos investindo"
     }
@@ -589,7 +589,7 @@ interface BrandConfig {
 // ============================================================
 // Persona: O mentor premium que ja chegou la. Aspiracional, direto,
 // provocativo. "Do mil ao milhao", jornada do investidor comum
-// ao patrimonio relevante. Estetica dark premium + verde maca.
+// ao patrimônio relevante. Estetica dark premium + verde maca.
 // Tipografia: Montserrat bold, moderna, limpa, premium.
 // ============================================================
 const primoRico: BrandConfig = {
@@ -598,23 +598,23 @@ const primoRico: BrandConfig = {
   slug: 'primo-rico',
   tagline: 'Do mil ao milhao. A escolha e sua.',
   subtitle: 'Investir com inteligencia',
-  description: 'A plataforma do Primo Rico para acompanhar cotacoes, dividendos e analises de acoes e FIIs.',
+  description: 'A plataforma do Primo Rico para acompanhar cotações, dividendos e analises de ações e FIIs.',
 
   founder: {
     name: 'Thiago Nigro',
     photo: '/brand/founder.webp',
     role: 'Educador financeiro & Investidor',
-    bio: 'Autor do best-seller "Do Mil ao Milhao", maior canal de financas do Brasil com mais de 7 milhoes de inscritos.',
+    bio: 'Autor do best-seller "Do Mil ao Milhao", maior canal de finanças do Brasil com mais de 7 milhoes de inscritos.',
     signaturePhrase: 'Liberdade ou mediocridade: a escolha e sua.',
   },
 
   voice: {
     style: 'premium',
     greeting: 'E ai, primo!',
-    ctaPrimary: 'Construir patrimonio',
+    ctaPrimary: 'Construir patrimônio',
     ctaSecondary: 'Ja tenho conta',
-    emptyState: 'Nenhum dado disponivel. O mercado nao espera, volte em instantes.',
-    encouragement: 'Patrimonio se constroi com consistencia, nao com sorte. Skin in the game.',
+    emptyState: 'Nenhum dado disponivel. O mercado não espera, volte em instantes.',
+    encouragement: 'Patrimônio se constroi com consistencia, não com sorte. Skin in the game.',
     error: 'Algo deu errado. Estamos corrigindo. Volte em instantes.',
   },
 
@@ -662,16 +662,16 @@ const primoRico: BrandConfig = {
   },
 
   seo: {
-    title: 'Primo Rico, Acompanhe acoes, FIIs e dividendos',
-    description: 'Plataforma do Primo Rico para cotacoes em tempo real, analises fundamentalistas e calculadoras financeiras.',
+    title: 'Primo Rico, Acompanhe ações, FIIs e dividendos',
+    description: 'Plataforma do Primo Rico para cotações em tempo real, analises fundamentalistas e calculadoras financeiras.',
     locale: 'pt_BR',
     lang: 'pt-BR',
     themeColor: '#000000',
-    keywords: ['primo rico', 'thiago nigro', 'investimentos', 'acoes', 'fiis', 'dividendos', 'do mil ao milhao'],
+    keywords: ['primo rico', 'thiago nigro', 'investimentos', 'ações', 'fiis', 'dividendos', 'do mil ao milhao'],
   },
 
   company: {
-    legalName: 'Grupo Primo Educacao Financeira Ltda.',
+    legalName: 'Grupo Primo Educação Financeira Ltda.',
     address: '',
     cnpj: '',
   },
@@ -716,10 +716,10 @@ const primoRico: BrandConfig = {
     },
     // Metodo ARCA: 4 pilares puros
     categories: [
-      { label: 'A, Acoes Brasileiras', to: '/acoes', icon: 'i-lucide-trending-up', description: 'Pilar do patrimonio de longo prazo. Large caps, small caps e dividendos, empresas que geram valor por decadas.', cta: 'Analisar acoes' },
-      { label: 'R, Real Estate', to: '/fiis', icon: 'i-lucide-building-2', description: 'Fundos imobiliarios com renda passiva mensal. Dividendos isentos de IR, eficiencia tributaria maxima.', cta: 'Analisar FIIs' },
-      { label: 'C, Caixa', to: '/dividendos', icon: 'i-lucide-shield', description: 'Renda fixa e reserva estrategica. Tesouro Direto, CDB, LCI/LCA, a base que protege o patrimonio.', cta: 'Ver renda fixa' },
-      { label: 'A, Ativos Alternativos', to: '/etfs', icon: 'i-lucide-globe', description: 'Exposicao global e diversificacao. ETFs internacionais, BDRs, cripto, risco controlado, retorno assimetrico.', cta: 'Explorar ativos' },
+      { label: 'A, Ações Brasileiras', to: '/acoes', icon: 'i-lucide-trending-up', description: 'Pilar do patrimônio de longo prazo. Large caps, small caps e dividendos, empresas que geram valor por décadas.', cta: 'Analisar ações' },
+      { label: 'R, Real Estate', to: '/fiis', icon: 'i-lucide-building-2', description: 'Fundos imobiliarios com renda passiva mensal. Dividendos isentos de IR, eficiência tributária maxima.', cta: 'Analisar FIIs' },
+      { label: 'C, Caixa', to: '/dividendos', icon: 'i-lucide-shield', description: 'Renda fixa e reserva estrategica. Tesouro Direto, CDB, LCI/LCA, a base que protege o patrimônio.', cta: 'Ver renda fixa' },
+      { label: 'A, Ativos Alternativos', to: '/etfs', icon: 'i-lucide-globe', description: 'Exposição global e diversificacao. ETFs internacionais, BDRs, cripto, risco controlado, retorno assimetrico.', cta: 'Explorar ativos' },
     ],
   },
 
@@ -748,10 +748,10 @@ const primoRico: BrandConfig = {
   },
 
   ecosystem: [
-    { name: 'Finclass', url: 'https://finclass.com', description: 'Streaming de educacao financeira premium', icon: 'i-lucide-play-circle' },
+    { name: 'Finclass', url: 'https://finclass.com', description: 'Streaming de educação financeira premium', icon: 'i-lucide-play-circle' },
     { name: 'Portfel', url: 'https://portfel.com.br', description: 'Consultoria patrimonial personalizada', icon: 'i-lucide-briefcase' },
     { name: 'Grao', url: 'https://grao.com.br', description: 'Previdencia privada inteligente', icon: 'i-lucide-piggy-bank' },
-    { name: 'Grupo Primo', url: 'https://grupoprimo.com.br', description: 'Holding de educacao e wealth management', icon: 'i-lucide-building-2' },
+    { name: 'Grupo Primo', url: 'https://grupoprimo.com.br', description: 'Holding de educação e wealth management', icon: 'i-lucide-building-2' },
   ],
 
   chartColors: {
@@ -791,13 +791,13 @@ const primoRico: BrandConfig = {
 
   calculators: {
     pageTitle: 'Calculadoras Patrimoniais',
-    pageSubtitle: 'Simule, projete e otimize. Ferramentas para quem constroi patrimonio com metodo, nao com achismo.',
+    pageSubtitle: 'Simule, projete e otimize. Ferramentas para quem constroi patrimônio com metodo, não com achismo.',
     labels: {
       jurosCompostos: 'Projecao de Juros Compostos',
       precoTeto: 'Calculadora de Preco Teto',
       dividendYield: 'Calculadora de Dividend Yield',
       aposentadoria: 'Independencia Financeira',
-      acoes: 'Simulador de Acoes',
+      ações: 'Simulador de Ações',
       quantoInvestir: 'Quanto investir para chegar la',
       impostoRenda: 'Otimizador Tributario',
       planejamento: 'Planejamento Patrimonial',
@@ -808,11 +808,11 @@ const primoRico: BrandConfig = {
     name: 'Assessor Patrimonial',
     avatar: '/brand/ai-avatar.svg',
     chatTitle: 'Consulte o Assessor',
-    chatSubtitle: 'Analise fundamentalista, alocacao ARCA e eficiencia tributaria. Consultivo, embasado em dados.',
+    chatSubtitle: 'Analise fundamentalista, alocação ARCA e eficiência tributária. Consultivo, embasado em dados.',
     typingLabel: 'ASSESSOR PATRIMONIAL:',
     welcomeTitle: 'Assessoria patrimonial com IA',
-    welcomeSubtitle: 'Analises profundas, comparacoes de ativos e estrategias de alocacao. Imune a ruido de curto prazo.',
-    placeholder: 'Analise um ativo, compare carteiras, simule alocacao...',
+    welcomeSubtitle: 'Analises profundas, comparacoes de ativos e estratégias de alocação. Imune a ruido de curto prazo.',
+    placeholder: 'Analise um ativo, compare carteiras, simule alocação...',
     suggestedQuestions: [
       'Monte uma carteira ARCA com R$ 10.000',
       'Analise os fundamentos de WEGE3',
@@ -820,14 +820,14 @@ const primoRico: BrandConfig = {
       'Compare Tesouro IPCA+ vs CDB prefixado',
       'Quanto preciso pra viver de renda passiva?',
     ],
-    systemPromptContext: 'Voce e o Assessor Patrimonial da plataforma Primo Rico. Atue como um private banker consultivo: seguro, embasado em dados historicos, imune a ruidos de curto prazo (noticiario). Priorize analise fundamentalista, eficiencia tributaria (isencao de IR em FIIs, PGBL, elisao fiscal legal) e construcao de patrimonio de longo prazo. Use o Metodo ARCA (Acoes, Real Estate, Caixa, Ativos Alternativos) como framework de alocacao. Linguagem premium, direta, sem hype. Nunca prometa retornos. Foque em merito, consistencia e skin in the game.',
-    ctaGreeting: 'Assessor Patrimonial a disposicao. Posso analisar ativos, montar alocacoes ARCA e otimizar sua estrategia tributaria.',
+    systemPromptContext: 'Você e o Assessor Patrimonial da plataforma Primo Rico. Atue como um private banker consultivo: seguro, embasado em dados históricos, imune a ruídos de curto prazo (noticiario). Priorize analise fundamentalista, eficiência tributária (isencao de IR em FIIs, PGBL, elisao fiscal legal) e construção de patrimônio de longo prazo. Use o Metodo ARCA (Ações, Real Estate, Caixa, Ativos Alternativos) como framework de alocação. Linguagem premium, direta, sem hype. Nunca prometa retornos. Foque em merito, consistencia e skin in the game.',
+    ctaGreeting: 'Assessor Patrimonial a disposicao. Posso analisar ativos, montar alocacoes ARCA e otimizar sua estratégia tributária.',
     ctaButton: 'Consultar assessor',
     ctaFeatures: ['Analise em ~3s', 'Metodo ARCA', 'Ilimitado'],
   },
 
   metrics: {
-    sectionTitle: 'Patrimonio se mede com dados.',
+    sectionTitle: 'Patrimônio se mede com dados.',
     sectionSubtitle: 'Numeros reais, sem enrolacao',
     counterLabel: 'Analises patrimoniais realizadas (e contando)',
     stats: [
@@ -839,23 +839,23 @@ const primoRico: BrandConfig = {
   },
 
   testimonials: {
-    sectionTitle: 'Quem constroi patrimonio usa dados',
+    sectionTitle: 'Quem constroi patrimônio usa dados',
     sectionSubtitle: 'Investidores que levam a serio a jornada do mil ao milhao',
     items: [
       {
-        quote: 'A projecao de juros compostos mudou minha mentalidade. Parei de tentar acertar o timing e comecei a construir patrimonio com consistencia.',
+        quote: 'A projecao de juros compostos mudou minha mentalidade. Parei de tentar acertar o timing e comecei a construir patrimônio com consistencia.',
         name: 'Lucas M.',
         role: 'Empresario, SP',
-        metrics: [{ value: '18 meses', label: 'de consistencia' }, { value: '+34%', label: 'patrimonio' }],
+        metrics: [{ value: '18 meses', label: 'de consistencia' }, { value: '+34%', label: 'patrimônio' }],
       },
       {
-        quote: 'O assessor com IA me ajudou a montar uma carteira ARCA equilibrada. Hoje recebo dividendos isentos de IR todo mes.',
+        quote: 'O assessor com IA me ajudou a montar uma carteira ARCA equilibrada. Hoje recebo dividendos isentos de IR todo mês.',
         name: 'Carolina S.',
         role: 'Medica, RJ',
-        metrics: [{ value: '15', label: 'FIIs na carteira' }, { value: 'R$ 1.200', label: 'dividendos/mes' }],
+        metrics: [{ value: '15', label: 'FIIs na carteira' }, { value: 'R$ 1.200', label: 'dividendos/mês' }],
       },
       {
-        quote: 'A plataforma me deu clareza para parar de especular e focar em fundamentos. Patrimonio se constroi com metodo, nao com sorte.',
+        quote: 'A plataforma me deu clareza para parar de especular e focar em fundamentos. Patrimônio se constroi com metodo, não com sorte.',
         name: 'Roberto A.',
         role: 'Engenheiro, MG',
         metrics: [{ value: 'ARCA', label: 'metodo aplicado' }, { value: '24/7', label: 'monitoramento' }],
@@ -870,7 +870,7 @@ const primoRico: BrandConfig = {
   },
 
   footer: {
-    tagline: 'Patrimonio se constroi com consistencia. A decisao e sua.',
+    tagline: 'Patrimônio se constroi com consistencia. A decisão e sua.',
     newsletterCta: 'Receba analises patrimoniais direto no seu email',
     sections: { tools: 'Ferramentas', resources: 'Recursos', company: 'Empresa', legal: 'Legal' },
   },
@@ -882,20 +882,20 @@ const primoRico: BrandConfig = {
   },
 
   auth: {
-    loginTitle: 'Acesse seu patrimonio',
+    loginTitle: 'Acesse seu patrimônio',
     loginSubtitle: 'Continue construindo. Cada dia conta.',
     registerTitle: 'Comece sua jornada patrimonial',
     registerSubtitle: 'Crie sua conta gratuita. O primeiro passo do mil ao milhao e esse.',
-    termsText: 'Ao criar sua conta, voce concorda com os Termos de Uso e Politica de Privacidade.',
+    termsText: 'Ao criar sua conta, você concorda com os Termos de Uso e Politica de Privacidade.',
   },
 
   about: {
     title: 'Sobre o Primo Rico',
     paragraphs: [
-      'O Primo Rico nasceu com uma missao: provar que qualquer pessoa pode construir patrimonio de verdade com disciplina, conhecimento e as ferramentas certas.',
-      'Criada por Thiago Nigro, autor do best-seller "Do Mil ao Milhao" e fundador do Grupo Primo, a plataforma une analise fundamentalista, eficiencia tributaria e inteligencia artificial para quem leva a serio a construcao de riqueza de longo prazo.',
-      'Aqui voce encontra cotacoes em tempo real, calculadoras patrimoniais, assessoria com IA e o Metodo ARCA aplicado na pratica. Tudo pensado para quem quer liberdade financeira, nao atalhos.',
-      'Patrimonio se constroi com consistencia. A plataforma e a ferramenta. A decisao e sua.',
+      'O Primo Rico nasceu com uma missão: provar que qualquer pessoa pode construir patrimônio de verdade com disciplina, conhecimento e as ferramentas certas.',
+      'Criada por Thiago Nigro, autor do best-seller "Do Mil ao Milhao" e fundador do Grupo Primo, a plataforma une analise fundamentalista, eficiência tributária e inteligencia artificial para quem leva a serio a construção de riqueza de longo prazo.',
+      'Aqui você encontra cotações em tempo real, calculadoras patrimoniais, assessoria com IA e o Metodo ARCA aplicado na pratica. Tudo pensado para quem quer liberdade financeira, não atalhos.',
+      'Patrimônio se constroi com consistencia. A plataforma e a ferramenta. A decisão e sua.',
     ],
   },
 
@@ -913,9 +913,9 @@ const primoRico: BrandConfig = {
   howWorks: {
     title: 'Como funciona o Primo Rico',
     steps: [
-      { icon: 'i-lucide-user-plus', title: 'Crie sua conta gratis', description: 'Cadastro rapido, sem cartao de credito. O primeiro passo do mil ao milhao.' },
-      { icon: 'i-lucide-search', title: 'Analise com fundamentos', description: 'Cotacoes em tempo real, indicadores e analise fundamentalista. Sem achismo, so dados.' },
-      { icon: 'i-lucide-calculator', title: 'Simule seu patrimonio', description: 'Calculadoras patrimoniais, eficiencia tributaria e planejamento de longo prazo.' },
+      { icon: 'i-lucide-user-plus', title: 'Crie sua conta grátis', description: 'Cadastro rapido, sem cartão de crédito. O primeiro passo do mil ao milhao.' },
+      { icon: 'i-lucide-search', title: 'Analise com fundamentos', description: 'Cotações em tempo real, indicadores e analise fundamentalista. Sem achismo, so dados.' },
+      { icon: 'i-lucide-calculator', title: 'Simule seu patrimônio', description: 'Calculadoras patrimoniais, eficiência tributária e planejamento de longo prazo.' },
       { icon: 'i-lucide-message-circle', title: 'Consulte a IA patrimonial', description: 'Assessor com IA que analisa ativos, compara carteiras e responde em segundos.' },
     ],
   },
@@ -923,7 +923,7 @@ const primoRico: BrandConfig = {
   nav: {
     menuLabel: 'Menu',
     toolsLabel: 'Ferramentas',
-    overview: 'Visao Geral',
+    overview: 'Visão Geral',
     wallet: 'Sua carteira',
     chat: 'Chat',
     advisorArea: 'Area do assessor',
@@ -945,7 +945,7 @@ const primoRico: BrandConfig = {
     mobileAiDescriptionSub: 'Entre na plataforma para conversar com a IA e receber recomendacoes.',
     mobileCalc: 'Calculadora inteligente',
     mobileGuides: 'Guias de investimento',
-    mobileHome: 'Inicio',
+    mobileHome: 'Início',
     footerGlossaryTitle: 'Termos do Mercado',
     footerCalc: 'Calculadoras',
     footerJuros: 'Juros Compostos',
@@ -954,7 +954,7 @@ const primoRico: BrandConfig = {
     footerAI: 'Assessoria IA',
     footerGuides: 'Guias de Investimento',
     footerGlossary: 'Glossario',
-    footerStocks: 'Acoes',
+    footerStocks: 'Ações',
     footerFiis: 'FIIs',
     footerDividends: 'Dividendos',
     footerAbout: 'Sobre',
@@ -970,24 +970,24 @@ const primoRico: BrandConfig = {
   },
 
   homeTexts: {
-    marketTitle: 'O mercado nao espera',
-    marketSubtitle: 'Cotacoes em tempo real. Oportunidades para quem esta preparado.',
+    marketTitle: 'O mercado não espera',
+    marketSubtitle: 'Cotações em tempo real. Oportunidades para quem esta preparado.',
     filtersTitle: 'Filtros inteligentes',
     categoriesEyebrow: 'Metodo ARCA',
-    categoriesTitle: 'Construa patrimonio com estrutura',
-    categoriesSubtitle: 'Acoes, Real Estate, Caixa e Ativos Alternativos. A alocacao que protege e multiplica.',
-    guidesTitle: 'Conhecimento e patrimonio',
-    guidesSubtitle: 'Guias fundamentalistas, estrategias de alocacao e eficiencia tributaria.',
+    categoriesTitle: 'Construa patrimônio com estrutura',
+    categoriesSubtitle: 'Ações, Real Estate, Caixa e Ativos Alternativos. A alocação que protege e multiplica.',
+    guidesTitle: 'Conhecimento e patrimônio',
+    guidesSubtitle: 'Guias fundamentalistas, estratégias de alocação e eficiência tributária.',
     aiCtaEyebrow: 'Assessor Patrimonial com IA',
     aiCtaTitle: 'Analise profissional em segundos',
-    aiCtaSubtitle: 'Consultivo, embasado em dados historicos, imune a ruido de curto prazo.',
+    aiCtaSubtitle: 'Consultivo, embasado em dados históricos, imune a ruido de curto prazo.',
     aiCtaQuestions: [
       { icon: 'i-lucide-pie-chart', question: 'Monte minha carteira ARCA', category: 'Metodo ARCA' },
-      { icon: 'i-lucide-coins', question: 'Quais FIIs sao isentos de IR?', category: 'Eficiencia Tributaria' },
+      { icon: 'i-lucide-coins', question: 'Quais FIIs sao isentos de IR?', category: 'Eficiência Tributária' },
       { icon: 'i-lucide-trending-up', question: 'Analise PETR4 vs VALE3', category: 'Analise Fundamentalista' },
-      { icon: 'i-lucide-wallet', question: 'Quanto preciso pra viver de renda?', category: 'Patrimonio' },
+      { icon: 'i-lucide-wallet', question: 'Quanto preciso pra viver de renda?', category: 'Patrimônio' },
       { icon: 'i-lucide-bar-chart-3', question: 'Compare CDI vs Tesouro IPCA', category: 'Renda Fixa' },
-      { icon: 'i-lucide-shield', question: 'Como proteger patrimonio da inflacao?', category: 'Preservacao' },
+      { icon: 'i-lucide-shield', question: 'Como proteger patrimônio da inflacao?', category: 'Preservacao' },
     ],
   },
 
@@ -1000,7 +1000,7 @@ const primoRico: BrandConfig = {
 
   wealthCalculator: {
     sectionTitle: 'O poder do tempo',
-    sectionSubtitle: 'Consistencia supera sorte. Veja a diferenca que 10 anos fazem no seu patrimonio.',
+    sectionSubtitle: 'Consistencia supera sorte. Veja a diferenca que 10 anos fazem no seu patrimônio.',
     defaultAge: 20,
     compareAge: 30,
     defaultMonthly: 500,
@@ -1009,10 +1009,10 @@ const primoRico: BrandConfig = {
     ctaText: 'Simular com mais detalhes',
     ctaLink: '/calculadora/juros-compostos',
     labels: {
-      ageSlider: 'Idade de inicio',
+      ageSlider: 'Idade de início',
       monthlySlider: 'Aporte mensal',
-      resultPrefix: 'Aos {target} anos voce tera',
-      comparisonText: 'Quem comeca aos {age} perde R$ {diff} em patrimonio',
+      resultPrefix: 'Aos {target} anos você tera',
+      comparisonText: 'Quem comeca aos {age} perde R$ {diff} em patrimônio',
       timeLabel: 'anos investindo',
     },
   },
@@ -1039,13 +1039,13 @@ const primoRico: BrandConfig = {
   ],
 
   educational: {
-    sectionTitle: 'Conhecimento gera patrimonio',
-    sectionSubtitle: 'Videos, analises e estrategias do Thiago Nigro e do ecossistema Grupo Primo',
+    sectionTitle: 'Conhecimento gera patrimônio',
+    sectionSubtitle: 'Videos, analises e estratégias do Thiago Nigro e do ecossistema Grupo Primo',
     items: [
       {
         type: 'video',
         title: 'Como investir com pouco dinheiro',
-        description: 'Neste video eu explico como comecei investindo apenas R$ 100 por mes e como voce pode fazer o mesmo.',
+        description: 'Neste video eu explico como comecei investindo apenas R$ 100 por mês e como você pode fazer o mesmo.',
         thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
         url: 'https://youtube.com/@primorico',
         duration: '15:23',
@@ -1063,15 +1063,15 @@ const primoRico: BrandConfig = {
       {
         type: 'article',
         title: 'Guia definitivo de analise fundamentalista',
-        description: 'Tudo que voce precisa saber sobre P/L, P/VP, ROE e outros indicadores.',
+        description: 'Tudo que você precisa saber sobre P/L, P/VP, ROE e outros indicadores.',
         thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
         url: 'https://primorico.com.br/blog',
         duration: '8 min',
       },
       {
         type: 'video',
-        title: 'Rumo ao primeiro milhao, minha estrategia',
-        description: 'Como construi meu patrimonio usando juros compostos e disciplina.',
+        title: 'Rumo ao primeiro milhao, minha estratégia',
+        description: 'Como construi meu patrimônio usando juros compostos e disciplina.',
         thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
         url: 'https://youtube.com/@primorico',
         duration: '18:45',
@@ -1080,25 +1080,25 @@ const primoRico: BrandConfig = {
   },
 
   products: {
-    sectionTitle: 'Ecossistema de Patrimonio',
-    sectionSubtitle: 'Educacao, consultoria e previdencia. Do conhecimento a execucao.',
+    sectionTitle: 'Ecossistema de Patrimônio',
+    sectionSubtitle: 'Educação, consultoria e previdencia. Do conhecimento a execucao.',
     categories: [
       {
         name: 'Cursos',
         items: [
           {
             title: 'Finclass',
-            description: 'O streaming da educacao financeira. Aulas com os maiores nomes do mercado.',
+            description: 'O streaming da educação financeira. Aulas com os maiores nomes do mercado.',
             image: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
             url: 'https://finclass.com',
-            price: 'R$ 59,90/mes',
+            price: 'R$ 59,90/mês',
             badge: 'Bestseller',
             rating: 4.9,
             students: '200.000+ alunos',
           },
           {
             title: 'Do Mil ao Milhao, O Curso',
-            description: 'Metodologia completa para construir patrimonio com consistencia.',
+            description: 'Metodologia completa para construir patrimônio com consistencia.',
             image: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
             url: 'https://primorico.com.br/cursos',
             price: 'R$ 997',
@@ -1112,7 +1112,7 @@ const primoRico: BrandConfig = {
         items: [
           {
             title: 'Portfel, Consultoria Patrimonial',
-            description: 'Consultoria personalizada para quem quer gestao profissional do patrimonio. Metodo ARCA aplicado.',
+            description: 'Consultoria personalizada para quem quer gestão profissional do patrimônio. Metodo ARCA aplicado.',
             image: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
             url: 'https://portfel.com.br',
             badge: 'Wealth Management',
@@ -1121,11 +1121,11 @@ const primoRico: BrandConfig = {
           },
           {
             title: 'Grao, Previdencia Inteligente',
-            description: 'Previdencia privada com taxas justas e eficiencia tributaria. Beneficio fiscal do PGBL incluso.',
+            description: 'Previdencia privada com taxas justas e eficiência tributária. Beneficio fiscal do PGBL incluso.',
             image: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
             url: 'https://grao.com.br',
-            price: 'A partir de R$ 100/mes',
-            badge: 'Eficiencia Tributaria',
+            price: 'A partir de R$ 100/mês',
+            badge: 'Eficiência Tributária',
             rating: 4.8,
             students: '50.000+ investidores',
           },
@@ -1162,15 +1162,15 @@ const mePoupe: BrandConfig = {
   name: 'Me Poupe!',
   shortName: 'Me Poupe!',
   slug: 'me-poupe',
-  tagline: 'Dinheiro e pra gente dominar, nao pra dominar a gente!',
-  subtitle: 'Financas sem frescura',
-  description: 'A plataforma do Me Poupe! para voce dominar seu dinheiro, acompanhar investimentos e calcular rendimentos.',
+  tagline: 'Dinheiro e pra gente dominar, não pra dominar a gente!',
+  subtitle: 'Finanças sem frescura',
+  description: 'A plataforma do Me Poupe! para você dominar seu dinheiro, acompanhar investimentos e calcular rendimentos.',
 
   founder: {
     name: 'Nathalia Arcuri',
     photo: '/brand/founder.webp',
     role: 'CEO & Fundadora do Me Poupe!',
-    bio: 'Maior canal feminino de financas do mundo. Jornalista que transformou educacao financeira em cultura pop.',
+    bio: 'Maior canal feminino de finanças do mundo. Jornalista que transformou educação financeira em cultura pop.',
     signaturePhrase: 'Poupe primeiro, gaste o que sobrar!',
   },
 
@@ -1180,7 +1180,7 @@ const mePoupe: BrandConfig = {
     ctaPrimary: 'Fala com a Na_th IA',
     ctaSecondary: 'Ja tenho conta',
     emptyState: 'Opa, nada aqui ainda! Mas calma que isso vai mudar. Ate a Margarete ta esperando!',
-    encouragement: 'Cada real poupado e um passo pra sua liberdade! O juro composto, esse filho maravilhoso, ta trabalhando por voce.',
+    encouragement: 'Cada real poupado e um passo pra sua liberdade! O juro composto, esse filho maravilhoso, ta trabalhando por você.',
     error: 'Ih, deu ruim! Tenta de novo, vai dar certo. Nem o Sidnelson conseguiria estragar mais que isso.',
   },
 
@@ -1229,11 +1229,11 @@ const mePoupe: BrandConfig = {
 
   seo: {
     title: 'Me Poupe!, Domine seu dinheiro e invista com confianca',
-    description: 'Plataforma do Me Poupe! com cotacoes, calculadoras e analises de investimentos sem complicacao.',
+    description: 'Plataforma do Me Poupe! com cotações, calculadoras e analises de investimentos sem complicacao.',
     locale: 'pt_BR',
     lang: 'pt-BR',
     themeColor: '#1A0A2E',
-    keywords: ['me poupe', 'nathalia arcuri', 'financas pessoais', 'investimentos', 'educacao financeira', 'poupar dinheiro'],
+    keywords: ['me poupe', 'nathalia arcuri', 'finanças pessoais', 'investimentos', 'educação financeira', 'poupar dinheiro'],
   },
 
   company: {
@@ -1295,9 +1295,9 @@ const mePoupe: BrandConfig = {
       columns: 2,
     },
     categories: [
-      { label: 'Acoes', to: '/acoes', icon: 'i-lucide-trending-up', description: 'Quer ganhar dinheiro com empresas? Melhor que titulo de capitalizacao do Sidnelson!', cta: 'Bora ver!' },
+      { label: 'Ações', to: '/acoes', icon: 'i-lucide-trending-up', description: 'Quer ganhar dinheiro com empresas? Melhor que titulo de capitalizacao do Sidnelson!', cta: 'Bora ver!' },
       { label: 'FIIs', to: '/fiis', icon: 'i-lucide-building-2', description: 'Ganhar aluguel sem ter imovel? Sim, existe! Ai que festa do aluguel!', cta: 'Bora ver!' },
-      { label: 'Dividendos', to: '/dividendos', icon: 'i-lucide-coins', description: 'Dinheiro pingando na conta todo mes. O juro composto, esse filho maravilhoso!', cta: 'Bora ver!' },
+      { label: 'Dividendos', to: '/dividendos', icon: 'i-lucide-coins', description: 'Dinheiro pingando na conta todo mês. O juro composto, esse filho maravilhoso!', cta: 'Bora ver!' },
       { label: 'ETFs', to: '/etfs', icon: 'i-lucide-bar-chart-3', description: 'Diversificar sem complicacao? Duplo twist carpado do pulo do gato!', cta: 'Bora ver!' },
     ],
   },
@@ -1312,8 +1312,8 @@ const mePoupe: BrandConfig = {
   },
 
   ecosystem: [
-    { name: 'Me Poupe! Escola', url: 'https://escola.mepoupe.com', description: 'Cursos de educacao financeira', icon: 'i-lucide-graduation-cap' },
-    { name: 'Livros Me Poupe!', url: 'https://mepoupe.com/livros', description: 'Best-sellers de financas pessoais', icon: 'i-lucide-book-open' },
+    { name: 'Me Poupe! Escola', url: 'https://escola.mepoupe.com', description: 'Cursos de educação financeira', icon: 'i-lucide-graduation-cap' },
+    { name: 'Livros Me Poupe!', url: 'https://mepoupe.com/livros', description: 'Best-sellers de finanças pessoais', icon: 'i-lucide-book-open' },
   ],
 
   chartColors: {
@@ -1343,7 +1343,7 @@ const mePoupe: BrandConfig = {
 
   header: {
     title: 'Me Poupe!',
-    subtitle: 'Financas sem frescura',
+    subtitle: 'Finanças sem frescura',
   },
 
   sidebar: {
@@ -1354,13 +1354,13 @@ const mePoupe: BrandConfig = {
 
   calculators: {
     pageTitle: 'Calculadoras da Me Poupe!',
-    pageSubtitle: 'Chega de achismo! Ferramentas gratis pra voce entender de verdade quanto seu dinheiro pode render. O Sidnelson nunca te mostrou isso no bancao, ne?',
+    pageSubtitle: 'Chega de achismo! Ferramentas grátis pra você entender de verdade quanto seu dinheiro pode render. O Sidnelson nunca te mostrou isso no bancao, ne?',
     labels: {
       jurosCompostos: 'Quanto o juro composto vai render pra mim?',
-      precoTeto: 'Essa acao ta cara ou barata?',
+      precoTeto: 'Essa ação ta cara ou barata?',
       dividendYield: 'Quanto vou ganhar de dividendos?',
       aposentadoria: 'Quando posso me aposentar?',
-      acoes: 'Simulador de acoes',
+      ações: 'Simulador de ações',
       quantoInvestir: 'Metinha, Meta ou Metona? Quanto investir',
       impostoRenda: 'Calculadora de imposto (sem drama!)',
       planejamento: 'Metodo 55-10-5-30 da Nath',
@@ -1378,20 +1378,20 @@ const mePoupe: BrandConfig = {
     placeholder: 'Pergunta sem medo! Ex: "To endividada, o que faco?"',
     suggestedQuestions: [
       'To endividada, o que faco?',
-      'Quanto guardar por mes?',
-      'FIIs ou acoes?',
-      'O que e melhor: poupanca ou Tesouro Direto?',
+      'Quanto guardar por mês?',
+      'FIIs ou ações?',
+      'O que e melhor: poupança ou Tesouro Direto?',
       'Como comecar a investir com R$ 100?',
     ],
-    systemPromptContext: 'Voce e a Na_th IA, assistente de IA da plataforma Me Poupe! (Nathalia Arcuri). Voce e como a melhor amiga que entende de dinheiro: responde com humor, empatia e sem jargao. Use linguagem descontraida, pode usar girias leves, emojis e referencias pop. Nunca seja condescendente. Empodere a pessoa. Se ela ta endividada, acolha primeiro e depois de o caminho. Personagens do ecossistema que voce pode usar: Margarete (espada da Nath, da choques de realidade), Sidnelson (gerente de bancao que vende produto ruim), Juro Composto (o filho maravilhoso que trabalha por voce). Nunca indique poupanca, quem investe na poupanca e vacilao. Sempre sugira corretoras em vez de bancoes. Se a pessoa ganha pouco, foque em renda extra antes de cortar gastos.',
-    ctaGreeting: 'Oi, criatura! Sou a Na_th IA, sua assessora pessoal. Pode perguntar qualquer coisa sobre dinheiro, prometo que nao vou te julgar (mas a Margarete talvez sim)!',
+    systemPromptContext: 'Você e a Na_th IA, assistente de IA da plataforma Me Poupe! (Nathalia Arcuri). Você e como a melhor amiga que entende de dinheiro: responde com humor, empatia e sem jargão. Use linguagem descontraida, pode usar girias leves, emojis e referencias pop. Nunca seja condescendente. Empodere a pessoa. Se ela ta endividada, acolha primeiro e depois de o caminho. Personagens do ecossistema que você pode usar: Margarete (espada da Nath, da choques de realidade), Sidnelson (gerente de bancao que vende produto ruim), Juro Composto (o filho maravilhoso que trabalha por você). Nunca indique poupança, quem investe na poupança e vacilao. Sempre sugira corretoras em vez de bancoes. Se a pessoa ganha pouco, foque em renda extra antes de cortar gastos.',
+    ctaGreeting: 'Oi, criatura! Sou a Na_th IA, sua assessora pessoal. Pode perguntar qualquer coisa sobre dinheiro, prometo que não vou te julgar (mas a Margarete talvez sim)!',
     ctaButton: 'Fala com a Na_th IA',
     ctaFeatures: ['Resposta em ~3s', 'Sem julgamento', 'Ilimitado'],
   },
 
   metrics: {
-    sectionTitle: 'Os numeros nao mentem jamais!',
-    sectionSubtitle: 'Conhecimento e liberdade. O juro composto ta trabalhando por voce.',
+    sectionTitle: 'Os numeros não mentem jamais!',
+    sectionSubtitle: 'Conhecimento e liberdade. O juro composto ta trabalhando por você.',
     counterLabel: 'Criaturas que ja usaram as ferramentas da Me Poupe!',
     stats: [
       { value: '12.500+', label: 'Ativos pra acompanhar' },
@@ -1406,22 +1406,22 @@ const mePoupe: BrandConfig = {
     sectionSubtitle: 'Milhares de pessoas ja dominaram seu dinheiro com a Me Poupe!',
     items: [
       {
-        quote: 'Eu tinha medo ate de abrir conta na corretora. A Me Poupe! me mostrou que investir nao e bicho de sete cabecas!',
+        quote: 'Eu tinha medo ate de abrir conta na corretora. A Me Poupe! me mostrou que investir não e bicho de sete cabecas!',
         name: 'Fernanda R.',
         role: 'Professora, CE',
         metrics: [{ value: 'R$ 0', label: 'de divida (era R$ 8k)' }, { value: '6 meses', label: 'pra zerar' }],
       },
       {
-        quote: 'A calculadora me mostrou que se eu poupar R$ 200/mes, em 20 anos tenho quase R$ 200 mil. Comecei no mesmo dia!',
+        quote: 'A calculadora me mostrou que se eu poupar R$ 200/mês, em 20 anos tenho quase R$ 200 mil. Comecei no mesmo dia!',
         name: 'Juliana P.',
         role: 'Designer, SP',
-        metrics: [{ value: 'R$ 200', label: 'investidos/mes' }, { value: '+18%', label: 'de retorno' }],
+        metrics: [{ value: 'R$ 200', label: 'investidos/mês' }, { value: '+18%', label: 'de retorno' }],
       },
       {
         quote: 'Antes eu gastava tudo. Agora tenho reserva de emergencia e 3 FIIs na carteira. A Nath mudou minha relacao com dinheiro.',
         name: 'Amanda L.',
         role: 'Analista de RH, MG',
-        metrics: [{ value: '3', label: 'FIIs na carteira' }, { value: 'R$ 320', label: 'dividendos/mes' }],
+        metrics: [{ value: '3', label: 'FIIs na carteira' }, { value: 'R$ 320', label: 'dividendos/mês' }],
       },
     ],
   },
@@ -1433,14 +1433,14 @@ const mePoupe: BrandConfig = {
   },
 
   footer: {
-    tagline: 'Dinheiro e pra gente dominar, nao pra dominar a gente!',
+    tagline: 'Dinheiro e pra gente dominar, não pra dominar a gente!',
     newsletterCta: 'Quer receber dicas da Nath? Se inscreve, criatura!',
     sections: { tools: 'Ferramentas', resources: 'Aprenda', company: 'Me Poupe!', legal: 'Legal' },
   },
 
   notifications: {
     ctaTitle: 'Ativa as notificacoes, criatura!',
-    ctaSubtitle: 'Ai que festa! Receba alertas de dividendos e oportunidades direto no celular. Os numeros nao mentem jamais!',
+    ctaSubtitle: 'Ai que festa! Receba alertas de dividendos e oportunidades direto no celular. Os numeros não mentem jamais!',
     ctaButton: 'Bora ativar!',
   },
 
@@ -1448,17 +1448,17 @@ const mePoupe: BrandConfig = {
     loginTitle: 'Entra ai, criatura!',
     loginSubtitle: 'Acessa sua conta pra continuar dominando seu dinheiro. A Na_th IA e o juro composto tao te esperando!',
     registerTitle: 'Cria sua conta agora, criatura!',
-    registerSubtitle: 'E gratis, e rapido e o Sidnelson NAO vai te ligar tentando vender titulo de capitalizacao. Prometo.',
-    termsText: 'Ao criar sua conta, voce concorda com os Termos de Uso e Politica de Privacidade.',
+    registerSubtitle: 'E grátis, e rapido e o Sidnelson NÃO vai te ligar tentando vender titulo de capitalizacao. Prometo.',
+    termsText: 'Ao criar sua conta, você concorda com os Termos de Uso e Politica de Privacidade.',
   },
 
   about: {
     title: 'Sobre a Me Poupe!',
     paragraphs: [
-      'A Me Poupe! e a maior plataforma de educacao financeira feminina do mundo, criada por Nathalia Arcuri. Nossa missao e descomplicar o dinheiro e empoderar as pessoas a tomarem o controle da sua vida financeira.',
+      'A Me Poupe! e a maior plataforma de educação financeira feminina do mundo, criada por Nathalia Arcuri. Nossa missão e descomplicar o dinheiro e empoderar as pessoas a tomarem o controle da sua vida financeira.',
       'Com uma linguagem acessivel, divertida e sem jargoes, a Me Poupe! ja ajudou milhoes de brasileiros a saírem das dividas, comecarem a investir e construirem sua liberdade financeira.',
-      'A plataforma reune cotacoes em tempo real, calculadoras intuitivas e uma conselheira com IA que explica tudo do jeitinho Me Poupe!, sem frescura.',
-      'Porque dinheiro nao e so pra quem ja nasce rico. E pra todo mundo que decide tomar as redeas da propria vida.',
+      'A plataforma reune cotações em tempo real, calculadoras intuitivas e uma conselheira com IA que explica tudo do jeitinho Me Poupe!, sem frescura.',
+      'Porque dinheiro não e so pra quem ja nasce rico. E pra todo mundo que decide tomar as redeas da propria vida.',
     ],
   },
 
@@ -1476,8 +1476,8 @@ const mePoupe: BrandConfig = {
   howWorks: {
     title: 'Como funciona a Me Poupe!',
     steps: [
-      { icon: 'i-lucide-user-plus', title: 'Cria sua conta (e gratis!)', description: 'Sem cartao, sem pegadinha. O Sidnelson nao vai te ligar, prometo.' },
-      { icon: 'i-lucide-search', title: 'Explora o mercado', description: 'Ve cotacoes, analisa acoes e FIIs de um jeito que voce entende. Sem jargao!' },
+      { icon: 'i-lucide-user-plus', title: 'Cria sua conta (e grátis!)', description: 'Sem cartão, sem pegadinha. O Sidnelson não vai te ligar, prometo.' },
+      { icon: 'i-lucide-search', title: 'Explora o mercado', description: 'Ve cotações, analisa ações e FIIs de um jeito que você entende. Sem jargão!' },
       { icon: 'i-lucide-calculator', title: 'Coloca o juro composto pra trabalhar', description: 'Simula tudo com as calculadoras. Esse filho maravilhoso vai te surpreender!' },
       { icon: 'i-lucide-message-circle', title: 'Fala com a Na_th IA', description: 'Sua assessora pessoal ta la 24h. Pode perguntar ate se deve largar o Sidnelson!' },
     ],
@@ -1486,7 +1486,7 @@ const mePoupe: BrandConfig = {
   nav: {
     menuLabel: 'Menu',
     toolsLabel: 'Ferramentas',
-    overview: 'Visao Geral',
+    overview: 'Visão Geral',
     wallet: 'Minha carteira',
     chat: 'Chat',
     advisorArea: 'Area do assessor',
@@ -1508,7 +1508,7 @@ const mePoupe: BrandConfig = {
     mobileAiDescriptionSub: 'Entra na plataforma pra conversar com a Na_th IA e receber dicas de investimento!',
     mobileCalc: 'Calculadora esperta',
     mobileGuides: 'Guias de investimento',
-    mobileHome: 'Inicio',
+    mobileHome: 'Início',
     footerGlossaryTitle: 'Termos do Mercado',
     footerCalc: 'Calculadoras',
     footerJuros: 'Juros Compostos',
@@ -1517,7 +1517,7 @@ const mePoupe: BrandConfig = {
     footerAI: 'Na_th IA',
     footerGuides: 'Guias de Investimento',
     footerGlossary: 'Glossario',
-    footerStocks: 'Acoes',
+    footerStocks: 'Ações',
     footerFiis: 'FIIs',
     footerDividends: 'Dividendos',
     footerAbout: 'Sobre',
@@ -1534,22 +1534,22 @@ const mePoupe: BrandConfig = {
 
   homeTexts: {
     marketTitle: 'Ai que festa! O mercado agora',
-    marketSubtitle: 'Veja o que ta subindo, o que ta caindo e onde ta a oportunidade. Os numeros nao mentem jamais!',
+    marketSubtitle: 'Veja o que ta subindo, o que ta caindo e onde ta a oportunidade. Os numeros não mentem jamais!',
     filtersTitle: 'Atalhos espertos',
     categoriesEyebrow: 'Bora explorar, criatura?',
-    categoriesTitle: 'Escolhe o que combina com voce',
-    categoriesSubtitle: 'Acoes, FIIs, ETFs... tem de tudo. E tudo explicadinho, sem Sidnelson no caminho!',
+    categoriesTitle: 'Escolhe o que combina com você',
+    categoriesSubtitle: 'Ações, FIIs, ETFs... tem de tudo. E tudo explicadinho, sem Sidnelson no caminho!',
     guidesTitle: 'Aprende rapido, investe melhor',
     guidesSubtitle: 'Guias diretos, sem enrolacao. Chega de dar dinheiro pro Sidnelson!',
     aiCtaEyebrow: 'Na_th IA',
     aiCtaTitle: 'Pergunta sem medo, criatura!',
-    aiCtaSubtitle: 'A Na_th IA responde qualquer duvida sobre dinheiro. Como sua melhor amiga, so que entende de investimentos e nao vai te julgar.',
+    aiCtaSubtitle: 'A Na_th IA responde qualquer duvida sobre dinheiro. Como sua melhor amiga, so que entende de investimentos e não vai te julgar.',
     aiCtaQuestions: [
       { icon: 'i-lucide-heart', question: 'To endividada, o que faco?', category: 'Emergencia' },
       { icon: 'i-lucide-piggy-bank', question: 'Metinha, Meta ou Metona?', category: 'Metas' },
-      { icon: 'i-lucide-scale', question: 'FIIs ou acoes? O que e melhor?', category: 'Investimentos' },
+      { icon: 'i-lucide-scale', question: 'FIIs ou ações? O que e melhor?', category: 'Investimentos' },
       { icon: 'i-lucide-wallet', question: 'Como comecar com R$ 100?', category: 'Iniciante' },
-      { icon: 'i-lucide-ban', question: 'Por que fugir da poupanca?', category: 'Fuja do Sidnelson' },
+      { icon: 'i-lucide-ban', question: 'Por que fugir da poupança?', category: 'Fuja do Sidnelson' },
       { icon: 'i-lucide-sparkles', question: 'Me ajuda com o metodo 55-10-5-30!', category: 'Planejamento' },
     ],
   },
@@ -1570,8 +1570,8 @@ const mePoupe: BrandConfig = {
         emoji: 'i-lucide-sword',
         role: 'A espada da verdade',
         color: '#FACC15',
-        catchphrase: 'Choque de realidade: voce precisa parar de dar desculpa e comecar a agir!',
-        description: 'A espada que a Nath carrega pra dar coragem e choques de realidade. Se voce ta enrolando pra investir, a Margarete vai te dar aquele empurrao.',
+        catchphrase: 'Choque de realidade: você precisa parar de dar desculpa e comecar a agir!',
+        description: 'A espada que a Nath carrega pra dar coragem e choques de realidade. Se você ta enrolando pra investir, a Margarete vai te dar aquele empurrao.',
         cta: 'Receber meu choque',
         ctaLink: '/auth/register',
         personality: 'hero',
@@ -1581,8 +1581,8 @@ const mePoupe: BrandConfig = {
         emoji: 'i-lucide-briefcase',
         role: 'O gerente do bancao',
         color: '#EF4444',
-        catchphrase: 'Boa tarde! Tenho um titulo de capitalizacao PERFEITO pra voce...',
-        description: 'O vilao do universo financeiro. Quer te vender titulo de capitalizacao, consorcio e previdencia cara. Tudo pra bater a meta DELE, nao a sua.',
+        catchphrase: 'Boa tarde! Tenho um titulo de capitalizacao PERFEITO pra você...',
+        description: 'O vilao do universo financeiro. Quer te vender titulo de capitalizacao, consorcio e previdencia cara. Tudo pra bater a meta DELE, não a sua.',
         cta: 'Fugir do Sidnelson',
         ctaLink: '/acoes',
         personality: 'villain',
@@ -1592,8 +1592,8 @@ const mePoupe: BrandConfig = {
         emoji: 'i-lucide-trending-up',
         role: 'O filho maravilhoso',
         color: '#4ADE80',
-        catchphrase: 'Fica tranquila, criatura. Eu trabalho por voce 24 horas por dia, 7 dias por semana!',
-        description: 'O melhor funcionario que existe: trabalha sem parar, nao tira ferias e faz seu dinheiro se multiplicar sozinho. Quanto mais cedo voce contrata ele, mais rico ele te deixa.',
+        catchphrase: 'Fica tranquila, criatura. Eu trabalho por você 24 horas por dia, 7 dias por semana!',
+        description: 'O melhor funcionario que existe: trabalha sem parar, não tira ferias e faz seu dinheiro se multiplicar sozinho. Quanto mais cedo você contrata ele, mais rico ele te deixa.',
         cta: 'Colocar pra trabalhar',
         ctaLink: '/calculadora/juros-compostos',
         personality: 'ally',
@@ -1627,7 +1627,7 @@ const mePoupe: BrandConfig = {
 
   educational: {
     sectionTitle: 'Aprende com a Nath!',
-    sectionSubtitle: 'Videos e conteudos pra voce dominar seu dinheiro de vez',
+    sectionSubtitle: 'Videos e conteudos pra você dominar seu dinheiro de vez',
     items: [
       {
         type: 'video',
@@ -1640,8 +1640,8 @@ const mePoupe: BrandConfig = {
       },
       {
         type: 'video',
-        title: 'Onde investir R$ 100 por mes',
-        description: 'Voce nao precisa ser rica pra comecar. Veja como investir com pouco!',
+        title: 'Onde investir R$ 100 por mês',
+        description: 'Você não precisa ser rica pra comecar. Veja como investir com pouco!',
         thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
         url: 'https://youtube.com/@mepoupe',
         duration: '14:30',
@@ -1675,7 +1675,7 @@ const mePoupe: BrandConfig = {
         items: [
           {
             title: 'Me Poupe! Escola',
-            description: 'O curso completo de educacao financeira mais vendido do Brasil.',
+            description: 'O curso completo de educação financeira mais vendido do Brasil.',
             image: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
             url: 'https://escola.mepoupe.com',
             price: 'R$ 497',
@@ -1685,7 +1685,7 @@ const mePoupe: BrandConfig = {
           },
           {
             title: 'Investimento descomplicado',
-            description: 'De zero a investidora em 30 dias. Sem frescura, sem jargao.',
+            description: 'De zero a investidora em 30 dias. Sem frescura, sem jargão.',
             image: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
             url: 'https://escola.mepoupe.com',
             price: 'R$ 297',
@@ -1716,16 +1716,16 @@ const mePoupe: BrandConfig = {
 // ============================================================
 // INVESTIDOR SARDINHA (Raul Sena)
 // ============================================================
-// Persona: O professor tecnico e pragmatico. AUVP (A Unica Verdade
+// Persona: O professor tecnico e pragmatico. AUVP (A Única Verdade
 // Possivel). Analise fundamentalista profunda, buy and hold, valor.
 // Estetica: Dark + vermelho intenso. Serio, contrastante, assertivo.
-// Tipografia: Barlow condensed, precisao, seriedade, eficiencia.
+// Tipografia: Barlow condensed, precisao, seriedade, eficiência.
 // ============================================================
 const investidorSardinha: BrandConfig = {
   name: 'Investidor Sardinha',
   shortName: 'Sardinha',
   slug: 'investidor-sardinha',
-  tagline: 'A unica verdade possivel e o conhecimento.',
+  tagline: 'A única verdade possivel e o conhecimento.',
   subtitle: 'Investimentos com fundamento',
   description: 'A plataforma do Investidor Sardinha para analise fundamentalista, acompanhamento de carteira e dados de mercado.',
 
@@ -1733,8 +1733,8 @@ const investidorSardinha: BrandConfig = {
     name: 'Raul Sena',
     photo: '/brand/founder.webp',
     role: 'Fundador da AUVP & Investidor',
-    bio: 'Fundador da AUVP (A Unica Verdade Possivel), escola de investimentos focada em analise fundamentalista e buy and hold.',
-    signaturePhrase: 'Nao existe investimento ruim, existe investidor sem conhecimento.',
+    bio: 'Fundador da AUVP (A Única Verdade Possivel), escola de investimentos focada em analise fundamentalista e buy and hold.',
+    signaturePhrase: 'Não existe investimento ruim, existe investidor sem conhecimento.',
   },
 
   voice: {
@@ -1743,7 +1743,7 @@ const investidorSardinha: BrandConfig = {
     ctaPrimary: 'Acessar plataforma',
     ctaSecondary: 'Ja tenho conta',
     emptyState: 'Nenhum dado encontrado. Verifique os filtros ou tente novamente.',
-    encouragement: 'Conhecimento e o unico ativo que nunca desvaloriza.',
+    encouragement: 'Conhecimento e o único ativo que nunca desvaloriza.',
     error: 'Erro ao processar. Verifique sua conexao e tente novamente.',
   },
 
@@ -1804,11 +1804,11 @@ const investidorSardinha: BrandConfig = {
     locale: 'pt_BR',
     lang: 'pt-BR',
     themeColor: '#FAFAF7',
-    keywords: ['investidor sardinha', 'raul sena', 'auvp', 'analise fundamentalista', 'buy and hold', 'acoes', 'fiis'],
+    keywords: ['investidor sardinha', 'raul sena', 'auvp', 'analise fundamentalista', 'buy and hold', 'ações', 'fiis'],
   },
 
   company: {
-    legalName: 'AUVP Capital Gestao e Investimentos Ltda.',
+    legalName: 'AUVP Capital Gestão e Investimentos Ltda.',
     address: '',
     cnpj: '',
   },
@@ -1889,7 +1889,7 @@ const investidorSardinha: BrandConfig = {
   },
 
   ecosystem: [
-    { name: 'AUVP', url: 'https://auvp.com.br', description: 'Escola de investimentos, A Unica Verdade Possivel', icon: 'i-lucide-graduation-cap' },
+    { name: 'AUVP', url: 'https://auvp.com.br', description: 'Escola de investimentos, A Única Verdade Possivel', icon: 'i-lucide-graduation-cap' },
     { name: 'AUVP Analítica', url: 'https://analitica.auvp.com.br', description: 'Plataforma de analise de ativos', icon: 'i-lucide-bar-chart-3' },
   ],
 
@@ -1930,13 +1930,13 @@ const investidorSardinha: BrandConfig = {
 
   calculators: {
     pageTitle: 'Ferramentas AUVP',
-    pageSubtitle: 'Ferramentas de analise para investidores fundamentalistas. Tome decisoes baseadas em dados, nao em emocao.',
+    pageSubtitle: 'Ferramentas de analise para investidores fundamentalistas. Tome decisões baseadas em dados, não em emocao.',
     labels: {
       jurosCompostos: 'Calculadora de Juros Compostos',
       precoTeto: 'Preco Teto (Graham/Bazin)',
       dividendYield: 'Dividend Yield Projetado',
       aposentadoria: 'Simulador de Independencia Financeira',
-      acoes: 'Analise de Rentabilidade',
+      ações: 'Analise de Rentabilidade',
       quantoInvestir: 'Aporte Mensal Ideal',
       impostoRenda: 'Calculadora de IR sobre Investimentos',
       planejamento: 'Planejamento Patrimonial',
@@ -1959,15 +1959,15 @@ const investidorSardinha: BrandConfig = {
       'Como calcular o preco teto de Bazin?',
       'Qual a margem de seguranca ideal?',
     ],
-    systemPromptContext: 'Voce e o Analista AUVP, assistente de IA da plataforma Investidor Sardinha (Raul Sena). Responda com profundidade tecnica, foco em analise fundamentalista e visao de longo prazo (buy and hold). Use dados concretos, indicadores (P/L, P/VP, DY, ROE, margem liquida) e sempre contextualize. Tom serio mas acessivel, sem hype.',
-    ctaGreeting: 'Sou o Analista AUVP. Posso ajudar com analises fundamentalistas, comparar ativos e fornecer dados concretos para suas decisoes de investimento.',
+    systemPromptContext: 'Você e o Analista AUVP, assistente de IA da plataforma Investidor Sardinha (Raul Sena). Responda com profundidade tecnica, foco em analise fundamentalista e visão de longo prazo (buy and hold). Use dados concretos, indicadores (P/L, P/VP, DY, ROE, margem liquida) e sempre contextualize. Tom serio mas acessivel, sem hype.',
+    ctaGreeting: 'Sou o Analista AUVP. Posso ajudar com analises fundamentalistas, comparar ativos e fornecer dados concretos para suas decisões de investimento.',
     ctaButton: 'Consultar o Analista',
     ctaFeatures: ['Resposta em ~3s', 'IA Treinada', 'Ilimitado'],
   },
 
   metrics: {
     sectionTitle: 'Dados que falam por si.',
-    sectionSubtitle: 'Numeros, nao promessas',
+    sectionSubtitle: 'Numeros, não promessas',
     counterLabel: 'Analises fundamentalistas realizadas (e contando)',
     stats: [
       { value: '12.500+', label: 'Ativos analisados' },
@@ -1979,7 +1979,7 @@ const investidorSardinha: BrandConfig = {
 
   testimonials: {
     sectionTitle: 'Investidores que pensam no longo prazo',
-    sectionSubtitle: 'Sardinhas que usam a plataforma para tomar decisoes fundamentadas',
+    sectionSubtitle: 'Sardinhas que usam a plataforma para tomar decisões fundamentadas',
     items: [
       {
         quote: 'Finalmente uma ferramenta que mostra os indicadores que importam. Parei de seguir dica de youtuber e comecei a analisar de verdade.',
@@ -1997,7 +1997,7 @@ const investidorSardinha: BrandConfig = {
         quote: 'O Analista AUVP me explicou a diferenca entre P/L e P/VP de um jeito que meu assessor nunca conseguiu. Ferramenta indispensavel.',
         name: 'Patricia M.',
         role: 'Advogada, SP',
-        metrics: [{ value: 'R$ 1.200', label: 'dividendos/mes' }, { value: '~3s', label: 'resposta da IA' }],
+        metrics: [{ value: 'R$ 1.200', label: 'dividendos/mês' }, { value: '~3s', label: 'resposta da IA' }],
       },
     ],
   },
@@ -2009,7 +2009,7 @@ const investidorSardinha: BrandConfig = {
   },
 
   footer: {
-    tagline: 'A unica verdade possivel e o conhecimento.',
+    tagline: 'A única verdade possivel e o conhecimento.',
     newsletterCta: 'Receba analises fundamentalistas no seu email',
     sections: { tools: 'Ferramentas', resources: 'Conhecimento', company: 'Sobre', legal: 'Legal' },
   },
@@ -2025,16 +2025,16 @@ const investidorSardinha: BrandConfig = {
     loginSubtitle: 'Entre com seus dados para continuar sua analise.',
     registerTitle: 'Criar conta',
     registerSubtitle: 'Acesse ferramentas de analise fundamentalista gratuitamente.',
-    termsText: 'Ao criar sua conta, voce concorda com os Termos de Uso e Politica de Privacidade.',
+    termsText: 'Ao criar sua conta, você concorda com os Termos de Uso e Politica de Privacidade.',
   },
 
   about: {
     title: 'Sobre o Investidor Sardinha',
     paragraphs: [
-      'O Investidor Sardinha e a plataforma de investimentos de Raul Sena, fundador da AUVP (A Unica Verdade Possivel). Nossa filosofia: conhecimento solido, analise fundamentalista e visao de longo prazo.',
+      'O Investidor Sardinha e a plataforma de investimentos de Raul Sena, fundador da AUVP (A Única Verdade Possivel). Nossa filosofia: conhecimento solido, analise fundamentalista e visão de longo prazo.',
       'A plataforma oferece dados de mercado em tempo real, indicadores financeiros detalhados e ferramentas de analise para investidores que pensam por conta propria.',
-      'Com inteligencia artificial treinada em analise fundamentalista, o Analista AUVP ajuda voce a avaliar ativos, comparar indicadores e tomar decisoes embasadas, sem hype, sem promessa.',
-      'Porque sardinha esperta nao segue o cardume. Sardinha esperta estuda, analisa e decide com fundamento.',
+      'Com inteligencia artificial treinada em analise fundamentalista, o Analista AUVP ajuda você a avaliar ativos, comparar indicadores e tomar decisões embasadas, sem hype, sem promessa.',
+      'Porque sardinha esperta não segue o cardume. Sardinha esperta estuda, analisa e decide com fundamento.',
     ],
   },
 
@@ -2052,8 +2052,8 @@ const investidorSardinha: BrandConfig = {
   howWorks: {
     title: 'Como funciona a plataforma',
     steps: [
-      { icon: 'i-lucide-user-plus', title: 'Crie sua conta', description: 'Cadastro gratuito em menos de 1 minuto. Sem cartao de credito.' },
-      { icon: 'i-lucide-bar-chart-3', title: 'Analise o mercado', description: 'Acesse indicadores fundamentalistas, cotacoes em tempo real e dados da B3.' },
+      { icon: 'i-lucide-user-plus', title: 'Crie sua conta', description: 'Cadastro gratuito em menos de 1 minuto. Sem cartão de crédito.' },
+      { icon: 'i-lucide-bar-chart-3', title: 'Analise o mercado', description: 'Acesse indicadores fundamentalistas, cotações em tempo real e dados da B3.' },
       { icon: 'i-lucide-calculator', title: 'Use as ferramentas AUVP', description: 'Calcule preco teto, projete dividendos e simule cenarios de longo prazo.' },
       { icon: 'i-lucide-message-circle', title: 'Consulte o Analista AUVP', description: 'IA treinada em analise fundamentalista disponivel 24/7.' },
     ],
@@ -2062,7 +2062,7 @@ const investidorSardinha: BrandConfig = {
   nav: {
     menuLabel: 'Menu',
     toolsLabel: 'Ferramentas',
-    overview: 'Visao Geral',
+    overview: 'Visão Geral',
     wallet: 'Carteira',
     chat: 'Analista',
     advisorArea: 'Area do assessor',
@@ -2084,7 +2084,7 @@ const investidorSardinha: BrandConfig = {
     mobileAiDescriptionSub: 'Entre na plataforma para consultar o Analista AUVP e receber analises fundamentalistas.',
     mobileCalc: 'Ferramentas AUVP',
     mobileGuides: 'Guias de investimento',
-    mobileHome: 'Inicio',
+    mobileHome: 'Início',
     footerGlossaryTitle: 'Termos do Mercado',
     footerCalc: 'Ferramentas AUVP',
     footerJuros: 'Juros Compostos',
@@ -2093,7 +2093,7 @@ const investidorSardinha: BrandConfig = {
     footerAI: 'Analista AUVP',
     footerGuides: 'Guias de Investimento',
     footerGlossary: 'Glossario',
-    footerStocks: 'Acoes',
+    footerStocks: 'Ações',
     footerFiis: 'FIIs',
     footerDividends: 'Dividendos',
     footerAbout: 'Sobre',
@@ -2153,7 +2153,7 @@ const investidorSardinha: BrandConfig = {
       {
         number: 2,
         title: 'Elimine dividas caras',
-        description: 'Cartao de credito, cheque especial e financiamentos com juros acima de 1% ao mes destroem patrimonio. Quite primeiro.',
+        description: 'Cartão de crédito, cheque especial e financiamentos com juros acima de 1% ao mês destroem patrimônio. Quite primeiro.',
         icon: 'i-lucide-ban',
         status: 'available',
         ctaText: 'Simular quitacao',
@@ -2170,8 +2170,8 @@ const investidorSardinha: BrandConfig = {
       },
       {
         number: 4,
-        title: 'Defina sua estrategia de alocacao',
-        description: 'Renda fixa, acoes, FIIs, ativos internacionais, distribua de acordo com seu perfil e horizonte de tempo.',
+        title: 'Defina sua estratégia de alocação',
+        description: 'Renda fixa, ações, FIIs, ativos internacionais, distribua de acordo com seu perfil e horizonte de tempo.',
         icon: 'i-lucide-pie-chart',
         status: 'available',
         ctaText: 'Explorar categorias',
@@ -2198,7 +2198,7 @@ const investidorSardinha: BrandConfig = {
     ],
     footerText: 'Baseado na metodologia',
     footerLink: 'https://auvp.com.br',
-    footerLinkText: 'AUVP, A Unica Verdade Possivel',
+    footerLinkText: 'AUVP, A Única Verdade Possivel',
   },
 
   // Sardinha uses the "AUVP research paper" layout, the hero self-contains
@@ -2227,7 +2227,7 @@ const investidorSardinha: BrandConfig = {
     items: [
       {
         type: 'video',
-        title: 'Como analisar uma acao do zero',
+        title: 'Como analisar uma ação do zero',
         description: 'Passo a passo completo para fazer analise fundamentalista de qualquer empresa.',
         thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
         url: 'https://youtube.com/@investidorsardinha',
@@ -2244,15 +2244,15 @@ const investidorSardinha: BrandConfig = {
       },
       {
         type: 'article',
-        title: 'Buy and Hold: a estrategia definitiva',
-        description: 'Por que comprar e segurar e a melhor estrategia para a maioria dos investidores.',
+        title: 'Buy and Hold: a estratégia definitiva',
+        description: 'Por que comprar e segurar e a melhor estratégia para a maioria dos investidores.',
         thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
         url: 'https://investidorsardinha.com.br/blog',
         duration: '10 min',
       },
       {
         type: 'video',
-        title: 'Os indicadores que voce PRECISA saber',
+        title: 'Os indicadores que você PRECISA saber',
         description: 'P/L, P/VP, ROE, margem liquida, DY, tudo explicado com exemplos reais.',
         thumbnail: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
         url: 'https://youtube.com/@investidorsardinha',
@@ -2270,7 +2270,7 @@ const investidorSardinha: BrandConfig = {
         name: 'Formacoes',
         items: [
           {
-            title: 'AUVP, A Unica Verdade Possivel',
+            title: 'AUVP, A Única Verdade Possivel',
             description: 'O curso completo de investimentos do Raul Sena. Analise fundamentalista na pratica.',
             image: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
             url: 'https://auvp.com.br',
@@ -2284,7 +2284,7 @@ const investidorSardinha: BrandConfig = {
             description: 'Plataforma de analise de ativos com indicadores avancados.',
             image: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
             url: 'https://analitica.auvp.com.br',
-            price: 'R$ 79,90/mes',
+            price: 'R$ 79,90/mês',
             rating: 4.8,
             students: '30.000+ usuarios',
           },
@@ -2295,7 +2295,7 @@ const investidorSardinha: BrandConfig = {
         items: [
           {
             title: 'Investidor Sardinha',
-            description: 'O livro que ensina a pensar como investidor, nao como especulador.',
+            description: 'O livro que ensina a pensar como investidor, não como especulador.',
             image: 'https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
             url: 'https://amzn.to/sardinha',
             price: 'R$ 44,90',
@@ -2322,13 +2322,13 @@ const redentia: BrandConfig = {
   slug: 'redentia',
   tagline: 'Investir com inteligencia.',
   subtitle: 'Plataforma de investimentos com IA',
-  description: 'Plataforma completa para acompanhar cotacoes, dividendos, analises fundamentalistas e simulacoes de investimentos com inteligencia artificial.',
+  description: 'Plataforma completa para acompanhar cotações, dividendos, analises fundamentalistas e simulacoes de investimentos com inteligencia artificial.',
 
   founder: {
     name: 'Redentia',
     photo: '',
     role: 'Plataforma de investimentos',
-    bio: 'Tecnologia financeira para investidores de todos os niveis. Dados em tempo real, analises com IA e ferramentas inteligentes.',
+    bio: 'Tecnologia financeira para investidores de todos os níveis. Dados em tempo real, analises com IA e ferramentas inteligentes.',
     signaturePhrase: 'Investir com inteligencia.',
   },
 
@@ -2454,11 +2454,11 @@ const redentia: BrandConfig = {
       columns: 3,
     },
     categories: [
-      { label: 'Acoes', to: '/acoes', icon: 'i-lucide-trending-up', description: 'Acompanhe as maiores empresas do Brasil. Cotacoes, fundamentos e dividendos.', cta: 'Explorar acoes' },
+      { label: 'Ações', to: '/acoes', icon: 'i-lucide-trending-up', description: 'Acompanhe as maiores empresas do Brasil. Cotações, fundamentos e dividendos.', cta: 'Explorar ações' },
       { label: 'FIIs', to: '/fiis', icon: 'i-lucide-building-2', description: 'Fundos imobiliarios com renda passiva mensal. Analise de rendimentos e vacancia.', cta: 'Explorar FIIs' },
       { label: 'ETFs', to: '/etfs', icon: 'i-lucide-bar-chart-3', description: 'Diversificacao instantanea com ETFs. Ibovespa, S&P 500 e indices globais.', cta: 'Explorar ETFs' },
       { label: 'Small Caps', to: '/small-caps', icon: 'i-lucide-rocket', description: 'Empresas de menor capitalizacao com potencial de crescimento acima da media.', cta: 'Explorar small caps' },
-      { label: 'Dividendos', to: '/dividendos', icon: 'i-lucide-coins', description: 'Rankings de dividend yield, historico de pagamentos e projecoes de renda passiva.', cta: 'Explorar dividendos' },
+      { label: 'Dividendos', to: '/dividendos', icon: 'i-lucide-coins', description: 'Rankings de dividend yield, histórico de pagamentos e projecoes de renda passiva.', cta: 'Explorar dividendos' },
       { label: 'BDRs', to: '/search?group=bdrs', icon: 'i-lucide-globe', description: 'Acesso a empresas globais pela B3. Apple, Google, Amazon e mais.', cta: 'Explorar BDRs' },
     ],
   },
@@ -2504,13 +2504,13 @@ const redentia: BrandConfig = {
     variant: 'radiograph',
     badge: '[CARTEIRA.LIVE]',
     title: 'Descubra os riscos escondidos da sua {em}carteira{/em} em 2 minutos.',
-    subtitle: 'Adicione seus ativos e a Redent.IA cruza fundamentos, noticias, dividendos, concentracao e mercado para mostrar o que esta bom, o que esta ruim e o que mudou.',
+    subtitle: 'Adicione seus ativos e a Redent.IA cruza fundamentos, notícias, dividendos, concentração e mercado para mostrar o que esta bom, o que esta ruim e o que mudou.',
     founderQuote: '',
-    ctaLabel: 'Analisar minha carteira gratis',
+    ctaLabel: 'Analisar minha carteira grátis',
     ctaSecondaryLabel: 'Ver exemplo de analise',
     ctaIcon: 'i-lucide-sparkles',
     eyebrow: 'PLATAFORMA DE IA PARA SUA CARTEIRA',
-    trustIndicators: ['Sem cadastro', 'Resultado em 2 min', 'Sempre gratis'],
+    trustIndicators: ['Sem cadastro', 'Resultado em 2 min', 'Sempre grátis'],
   },
 
   header: {
@@ -2520,20 +2520,20 @@ const redentia: BrandConfig = {
 
   sidebar: {
     aiCtaTitle: 'Assessor com IA',
-    aiCtaSubtitle: 'Tire suas duvidas gratis',
+    aiCtaSubtitle: 'Tire suas duvidas grátis',
     planLabel: 'Plano gratuito',
   },
 
   calculators: {
     pageTitle: 'Calculadoras Financeiras',
-    pageSubtitle: 'Ferramentas gratuitas para simular investimentos, analisar acoes e planejar seu patrimonio.',
+    pageSubtitle: 'Ferramentas gratuitas para simular investimentos, analisar ações e planejar seu patrimônio.',
     labels: {
       jurosCompostos: 'Simulador de Juros Compostos',
       precoTeto: 'Calculadora de Preco Teto',
       dividendYield: 'Calculadora de Dividend Yield',
       aposentadoria: 'Simulador de Aposentadoria',
-      acoes: 'Simulador de Acoes',
-      quantoInvestir: 'Quanto Investir por Mes',
+      ações: 'Simulador de Ações',
+      quantoInvestir: 'Quanto Investir por Mês',
       impostoRenda: 'Calculadora de Imposto de Renda',
       planejamento: 'Planejamento Financeiro',
     },
@@ -2547,15 +2547,15 @@ const redentia: BrandConfig = {
     typingLabel: 'ASSESSOR:',
     welcomeTitle: 'Converse com o Assessor Redentia',
     welcomeSubtitle: 'Tire duvidas, compare ativos e receba analises personalizadas com inteligencia artificial.',
-    placeholder: 'Pergunte sobre acoes, FIIs, dividendos...',
+    placeholder: 'Pergunte sobre ações, FIIs, dividendos...',
     suggestedQuestions: [
-      'Quais acoes pagam mais dividendos?',
+      'Quais ações pagam mais dividendos?',
       'PETR4 esta cara ou barata agora?',
       'Como montar uma carteira de FIIs?',
       'Qual a diferenca entre P/L e P/VP?',
       'Quanto preciso investir pra ter R$ 1 milhao?',
     ],
-    systemPromptContext: 'Voce e o Assessor Redentia, assistente de IA da plataforma Redentia. Responda de forma profissional, objetiva e didatica. Foque em analise fundamentalista e educacao financeira.',
+    systemPromptContext: 'Você e o Assessor Redentia, assistente de IA da plataforma Redentia. Responda de forma profissional, objetiva e didatica. Foque em analise fundamentalista e educação financeira.',
     ctaGreeting: 'Ola! Sou o Assessor Redentia. Posso ajudar com analises, tirar duvidas e dar recomendacoes personalizadas para seus investimentos.',
     ctaButton: 'Pergunte ao Assessor',
     ctaFeatures: ['Resposta em ~3s', 'IA Treinada', 'Ilimitado'],
@@ -2577,10 +2577,10 @@ const redentia: BrandConfig = {
 
   testimonials: {
     sectionTitle: 'Para todos os perfis de investidor',
-    sectionSubtitle: 'Milhares de investidores ja usam a plataforma para tomar decisoes melhores',
+    sectionSubtitle: 'Milhares de investidores ja usam a plataforma para tomar decisões melhores',
     items: [
       {
-        quote: 'A calculadora de juros compostos me mostrou o poder de investir cedo. Comecei com R$ 500/mes e hoje ja tenho uma reserva significativa.',
+        quote: 'A calculadora de juros compostos me mostrou o poder de investir cedo. Comecei com R$ 500/mês e hoje ja tenho uma reserva significativa.',
         name: 'Lucas M.',
         role: 'Investidor iniciante, SP',
         metrics: [{ value: '5h', label: 'economizadas/semana' }, { value: '+23%', label: 'em 1 ano' }],
@@ -2589,10 +2589,10 @@ const redentia: BrandConfig = {
         quote: 'A IA me ajudou a entender indicadores que antes pareciam impossiveis. Hoje analiso FIIs com confianca.',
         name: 'Carolina S.',
         role: 'Analista de marketing, RJ',
-        metrics: [{ value: '12', label: 'FIIs na carteira' }, { value: 'R$ 850', label: 'dividendos/mes' }],
+        metrics: [{ value: '12', label: 'FIIs na carteira' }, { value: 'R$ 850', label: 'dividendos/mês' }],
       },
       {
-        quote: 'Uso a plataforma todo dia antes de operar. Os dados em tempo real me dao seguranca nas decisoes.',
+        quote: 'Uso a plataforma todo dia antes de operar. Os dados em tempo real me dao seguranca nas decisões.',
         name: 'Roberto A.',
         role: 'Investidor, MG',
         metrics: [{ value: '~3s', label: 'resposta da IA' }, { value: '24/7', label: 'monitoramento' }],
@@ -2601,7 +2601,7 @@ const redentia: BrandConfig = {
   },
 
   trustBar: {
-    text: 'Tudo o que voce precisa em um so lugar',
+    text: 'Tudo o que você precisa em um so lugar',
     footnote: 'Dados oficiais da B3 · LGPD-compliant · 100% gratuito',
     // Partners transformed into "proof pillars", not broker endorsements.
     // Each entry represents a verifiable capability, not a partnership.
@@ -2632,15 +2632,15 @@ const redentia: BrandConfig = {
     loginSubtitle: 'Preencha seus dados para continuar.',
     registerTitle: 'Crie sua conta gratuita',
     registerSubtitle: 'Comece a acompanhar seus investimentos com inteligencia.',
-    termsText: 'Ao criar sua conta, voce concorda com os Termos de Uso e Politica de Privacidade.',
+    termsText: 'Ao criar sua conta, você concorda com os Termos de Uso e Politica de Privacidade.',
   },
 
   about: {
     title: 'Sobre a Redentia',
     paragraphs: [
       'A Redentia e uma plataforma de investimentos que combina tecnologia de ponta com inteligencia artificial para democratizar o acesso a informacao financeira de qualidade.',
-      'Oferecemos cotacoes em tempo real, analises fundamentalistas, calculadoras financeiras e assessoria com IA, tudo em um unico lugar, gratuito e acessivel.',
-      'Nossa missao e empoderar investidores de todos os niveis com ferramentas profissionais e dados confiaveis para tomadas de decisao mais inteligentes.',
+      'Oferecemos cotações em tempo real, analises fundamentalistas, calculadoras financeiras e assessoria com IA, tudo em um único lugar, gratuito e acessivel.',
+      'Nossa missão e empoderar investidores de todos os níveis com ferramentas profissionais e dados confiaveis para tomadas de decisão mais inteligentes.',
       'Comprometidos com transparencia, seguranca e inovacao, transformamos a experiencia de investir no Brasil.',
     ],
   },
@@ -2657,8 +2657,8 @@ const redentia: BrandConfig = {
   howWorks: {
     title: 'Como funciona a Redentia',
     steps: [
-      { icon: 'i-lucide-user-plus', title: 'Crie sua conta gratis', description: 'Cadastro rapido, sem cartao de credito. Comece em menos de 1 minuto.' },
-      { icon: 'i-lucide-search', title: 'Explore o mercado', description: 'Acompanhe cotacoes em tempo real, analise fundamentos e compare ativos.' },
+      { icon: 'i-lucide-user-plus', title: 'Crie sua conta grátis', description: 'Cadastro rapido, sem cartão de crédito. Comece em menos de 1 minuto.' },
+      { icon: 'i-lucide-search', title: 'Explore o mercado', description: 'Acompanhe cotações em tempo real, analise fundamentos e compare ativos.' },
       { icon: 'i-lucide-calculator', title: 'Simule seus investimentos', description: 'Use as calculadoras para planejar aposentadoria, calcular preco teto e mais.' },
       { icon: 'i-lucide-message-circle', title: 'Pergunte a IA', description: 'Tire duvidas com o Assessor Redentia, disponivel 24/7 com respostas em segundos.' },
     ],
@@ -2667,7 +2667,7 @@ const redentia: BrandConfig = {
   nav: {
     menuLabel: 'Menu',
     toolsLabel: 'Ferramentas',
-    overview: 'Visao Geral',
+    overview: 'Visão Geral',
     wallet: 'Sua carteira',
     chat: 'Chat',
     advisorArea: 'Area do assessor',
@@ -2689,7 +2689,7 @@ const redentia: BrandConfig = {
     mobileAiDescriptionSub: 'Entre na plataforma para conversar com a IA e receber recomendacoes.',
     mobileCalc: 'Calculadora inteligente',
     mobileGuides: 'Guias de investimento',
-    mobileHome: 'Inicio',
+    mobileHome: 'Início',
     footerGlossaryTitle: 'Termos do Mercado',
     footerCalc: 'Calculadoras',
     footerJuros: 'Juros Compostos',
@@ -2698,7 +2698,7 @@ const redentia: BrandConfig = {
     footerAI: 'Assessoria IA',
     footerGuides: 'Guias de Investimento',
     footerGlossary: 'Glossario',
-    footerStocks: 'Acoes',
+    footerStocks: 'Ações',
     footerFiis: 'FIIs',
     footerDividends: 'Dividendos',
     footerAbout: 'Sobre',
@@ -2718,19 +2718,19 @@ const redentia: BrandConfig = {
     marketSubtitle: 'Altas, baixas e oportunidades. Atualizacao instantanea.',
     filtersTitle: 'Filtros inteligentes',
     categoriesEyebrow: 'Explore por categoria',
-    categoriesTitle: 'Encontre seu proximo investimento',
-    categoriesSubtitle: 'Acoes, FIIs, ETFs, BDRs e muito mais.',
+    categoriesTitle: 'Encontre seu próximo investimento',
+    categoriesSubtitle: 'Ações, FIIs, ETFs, BDRs e muito mais.',
     guidesTitle: 'Conhecimento que gera resultados',
-    guidesSubtitle: 'Guias praticos, analises e estrategias.',
+    guidesSubtitle: 'Guias praticos, analises e estratégias.',
     aiCtaEyebrow: 'Assessoria com IA',
     aiCtaTitle: 'Tire suas duvidas em segundos',
     aiCtaSubtitle: 'Pergunte qualquer coisa sobre investimentos. Nossa IA responde instantaneamente.',
     aiCtaQuestions: [
-      { icon: 'i-lucide-scale', question: 'Qual a diferenca entre acoes e FIIs?', category: 'Conceitos' },
+      { icon: 'i-lucide-scale', question: 'Qual a diferenca entre ações e FIIs?', category: 'Conceitos' },
       { icon: 'i-lucide-coins', question: 'Como funcionam os dividendos?', category: 'Renda Passiva' },
-      { icon: 'i-lucide-pie-chart', question: 'O que e diversificacao?', category: 'Estrategia' },
-      { icon: 'i-lucide-wallet', question: 'Quanto devo investir por mes?', category: 'Planejamento' },
-      { icon: 'i-lucide-search', question: 'Como escolher boas acoes?', category: 'Analise' },
+      { icon: 'i-lucide-pie-chart', question: 'O que e diversificacao?', category: 'Estratégia' },
+      { icon: 'i-lucide-wallet', question: 'Quanto devo investir por mês?', category: 'Planejamento' },
+      { icon: 'i-lucide-search', question: 'Como escolher boas ações?', category: 'Analise' },
       { icon: 'i-lucide-trending-up', question: 'Vale a pena investir em ETFs?', category: 'Produtos' },
     ],
   },
@@ -2784,7 +2784,7 @@ const redentia: BrandConfig = {
     // Reposicionamento Redentia v3: home foca exclusivamente B2C self-directed.
     // B2B sai pra paginas dedicadas (/whitelabel, /api-portal, /assessores).
     // Ordem otimizada para conversao: hero com input → market live (prova de
-    // dado real) → news (relevancia diaria) → guides (educacao) → testimonials.
+    // dado real) → news (relevancia diária) → guides (educação) → testimonials.
     // Removidos: metrics ("Velocidade como diferencial" hero metric, virou
     // distrativo apos hero do raio-x), apiProduct, aiCta (B2B), trustBar
     // (redundante com trust signals do hero), creativeProduct (B2B/marketing).
@@ -2808,13 +2808,13 @@ const redentia: BrandConfig = {
 
   educational: {
     sectionTitle: 'Aprenda a investir',
-    sectionSubtitle: 'Conteudos educacionais para todos os niveis',
+    sectionSubtitle: 'Conteudos educacionais para todos os níveis',
     items: [],
   },
 
   products: {
     sectionTitle: 'Ferramentas',
-    sectionSubtitle: 'Tudo que voce precisa para investir melhor',
+    sectionSubtitle: 'Tudo que você precisa para investir melhor',
     categories: [],
   },
 
@@ -2829,8 +2829,8 @@ const redentia: BrandConfig = {
 // ============================================================
 // Persona: Assessoria de investimentos premium. Tom institucional,
 // confiavel, discreto, estetica de "private bank". Publico: investidor
-// com patrimonio em construcao ou consolidado que valoriza assessor
-// humano + tecnologia. Foco em preservacao de patrimonio e longo prazo.
+// com patrimônio em construção ou consolidado que valoriza assessor
+// humano + tecnologia. Foco em preservacao de patrimônio e longo prazo.
 // Diferencial: consolidador de carteira, assessor humano + IA,
 // credenciais CVM/Ancord.
 // Estetica: light mode premium + navy profundo + ambar dourado fosco,
@@ -2843,13 +2843,13 @@ const norteCapital: BrandConfig = {
   slug: 'norte-capital',
   tagline: 'Sua direcao. Nosso compromisso.',
   subtitle: 'Assessoria de investimentos premium',
-  description: 'Assessoria de investimentos premium com plataforma completa: acompanhe sua carteira consolidada, receba analises personalizadas, fale com seu assessor e construa patrimonio de longo prazo, tudo com a Norte Capital.',
+  description: 'Assessoria de investimentos premium com plataforma completa: acompanhe sua carteira consolidada, receba analises personalizadas, fale com seu assessor e construa patrimônio de longo prazo, tudo com a Norte Capital.',
 
   founder: {
     name: 'Norte Capital',
     photo: '',
     role: 'Assessoria de Investimentos',
-    bio: 'Assessoria credenciada focada em construcao e preservacao de patrimonio de longo prazo. Unimos tecnologia, dados e atendimento humano para entregar resultados consistentes aos nossos clientes.',
+    bio: 'Assessoria credenciada focada em construção e preservacao de patrimônio de longo prazo. Unimos tecnologia, dados e atendimento humano para entregar resultados consistentes aos nossos clientes.',
     signaturePhrase: 'Sua direcao. Nosso compromisso.',
   },
 
@@ -2874,7 +2874,7 @@ const norteCapital: BrandConfig = {
     secondary: '#C8932F',        // ambar dourado fosco (accent)
     tertiary: '#FBFAF5',         // creme claro
     positive: '#2F6B3A',         // verde floresta (sobrio)
-    negative: '#B33A3A',         // vermelho tijolo (nao muito agressivo)
+    negative: '#B33A3A',         // vermelho tijolo (não muito agressivo)
     neutral: '#6B6A5E',          // cinza quente
     background: '#F7F5EF',       // off-white creme
     surface: '#FBFAF5',          // creme mais claro
@@ -2913,11 +2913,11 @@ const norteCapital: BrandConfig = {
 
   seo: {
     title: 'Norte Capital, Assessoria de Investimentos Premium',
-    description: 'Assessoria de investimentos premium com carteira consolidada, analises personalizadas, assessor dedicado e tecnologia de ponta. Construa seu patrimonio de longo prazo com a Norte Capital.',
+    description: 'Assessoria de investimentos premium com carteira consolidada, analises personalizadas, assessor dedicado e tecnologia de ponta. Construa seu patrimônio de longo prazo com a Norte Capital.',
     locale: 'pt_BR',
     lang: 'pt-BR',
     themeColor: '#0C1E3C',
-    keywords: ['norte capital', 'assessoria de investimentos', 'private banking', 'wealth management', 'carteira consolidada', 'assessor financeiro', 'patrimonio', 'investimentos longo prazo'],
+    keywords: ['norte capital', 'assessoria de investimentos', 'private banking', 'wealth management', 'carteira consolidada', 'assessor financeiro', 'patrimônio', 'investimentos longo prazo'],
   },
 
   company: {
@@ -2968,10 +2968,10 @@ const norteCapital: BrandConfig = {
     },
     categories: [
       { label: 'Carteira Consolidada', to: '/wallet', icon: 'i-lucide-briefcase', description: 'Veja todos os seus investimentos consolidados em um so lugar. Importe via Excel ou Open Finance.', cta: 'Acessar carteira' },
-      { label: 'Acoes', to: '/acoes', icon: 'i-lucide-trending-up', description: 'Cotacoes, fundamentos, preco teto e dividendos das principais empresas da B3.', cta: 'Explorar acoes' },
+      { label: 'Ações', to: '/acoes', icon: 'i-lucide-trending-up', description: 'Cotações, fundamentos, preco teto e dividendos das principais empresas da B3.', cta: 'Explorar ações' },
       { label: 'FIIs', to: '/fiis', icon: 'i-lucide-building-2', description: 'Fundos imobiliarios com analise de rendimentos, vacancia e dividend yield.', cta: 'Explorar FIIs' },
       { label: 'Calculadoras', to: '/calculadora', icon: 'i-lucide-calculator', description: 'Juros compostos, preco teto, aposentadoria, dividend yield e planejamento financeiro.', cta: 'Usar calculadoras' },
-      { label: 'Dividendos', to: '/dividendos', icon: 'i-lucide-coins', description: 'Calendario de proventos, rankings de dividend yield e projecao de renda passiva.', cta: 'Ver dividendos' },
+      { label: 'Dividendos', to: '/dividendos', icon: 'i-lucide-coins', description: 'Calendário de proventos, rankings de dividend yield e projecao de renda passiva.', cta: 'Ver dividendos' },
       { label: 'Assessor IA', to: '/help', icon: 'i-lucide-bot', description: 'Tire duvidas com o assistente da Norte. Disponivel 24/7 com respostas em segundos.', cta: 'Falar com assessor' },
     ],
   },
@@ -3014,12 +3014,12 @@ const norteCapital: BrandConfig = {
     variant: 'editorial',
     badge: '',
     title: 'Sua direcao.\nNosso compromisso.',
-    subtitle: 'Assessoria de investimentos para patrimonios que nao se constroem em um clique. Atendemos um numero limitado de familias, cada carteira construida a partir de uma conversa, nao de um formulario.',
+    subtitle: 'Assessoria de investimentos para patrimônios que não se constroem em um clique. Atendemos um numero limitado de familias, cada carteira construida a partir de uma conversa, não de um formulário.',
     founderQuote: '',
     ctaLabel: 'Agendar uma conversa',
     ctaSecondaryLabel: 'Ja sou cliente',
     ctaIcon: 'i-lucide-arrow-right',
-    trustIndicators: ['Credenciada CVM', 'Atendimento por assessor CFA', 'Relatorios mensais', 'Conversa, nao formulario'],
+    trustIndicators: ['Credenciada CVM', 'Atendimento por assessor CFA', 'Relatórios mensais', 'Conversa, não formulário'],
     image: '/brand/norte/background.jpg',
   },
 
@@ -3036,14 +3036,14 @@ const norteCapital: BrandConfig = {
 
   calculators: {
     pageTitle: 'Calculadoras Financeiras',
-    pageSubtitle: 'Ferramentas da Norte para simular investimentos, calcular preco teto e planejar seu patrimonio.',
+    pageSubtitle: 'Ferramentas da Norte para simular investimentos, calcular preco teto e planejar seu patrimônio.',
     labels: {
       jurosCompostos: 'Simulador de Juros Compostos',
       precoTeto: 'Calculadora de Preco Teto',
       dividendYield: 'Calculadora de Dividend Yield',
       aposentadoria: 'Simulador de Aposentadoria',
-      acoes: 'Simulador de Acoes',
-      quantoInvestir: 'Quanto Investir por Mes',
+      ações: 'Simulador de Ações',
+      quantoInvestir: 'Quanto Investir por Mês',
       impostoRenda: 'Calculadora de Imposto de Renda',
       planejamento: 'Planejamento Financeiro',
     },
@@ -3053,20 +3053,20 @@ const norteCapital: BrandConfig = {
     name: 'Assessor Norte',
     avatar: '/brand/norte/icon-192.png',
     chatTitle: 'Assessor Norte',
-    chatSubtitle: 'Tire duvidas sobre investimentos, compare ativos e receba orientacoes. Para decisoes importantes, fale com seu assessor humano.',
+    chatSubtitle: 'Tire duvidas sobre investimentos, compare ativos e receba orientações. Para decisões importantes, fale com seu assessor humano.',
     typingLabel: 'ASSESSOR NORTE:',
     welcomeTitle: 'Fale com o Assessor Norte',
     welcomeSubtitle: 'Nosso assistente com IA complementa o trabalho do seu assessor. Tire duvidas rapidas, compare ativos e receba analises 24/7.',
-    placeholder: 'Pergunte sobre sua carteira, acoes, FIIs, dividendos...',
+    placeholder: 'Pergunte sobre sua carteira, ações, FIIs, dividendos...',
     suggestedQuestions: [
       'Como esta minha carteira hoje?',
-      'Quais acoes pagam mais dividendos?',
+      'Quais ações pagam mais dividendos?',
       'PETR4 esta cara ou barata agora?',
       'Como diversificar meus investimentos?',
       'Qual o preco teto de VALE3?',
     ],
-    systemPromptContext: 'Voce e o Assessor Norte, assistente de IA da Norte Capital. Responda de forma profissional, confiavel e didatica. Foque em analise fundamentalista, renda passiva e construcao de patrimonio de longo prazo. Quando a duvida exigir decisao complexa, sugira que o cliente fale com seu assessor humano.',
-    ctaGreeting: 'Ola! Sou o Assessor Norte. Posso ajudar com analises, tirar duvidas e orientar sobre seus investimentos. Para decisoes importantes, seu assessor humano esta sempre disponivel.',
+    systemPromptContext: 'Você e o Assessor Norte, assistente de IA da Norte Capital. Responda de forma profissional, confiavel e didatica. Foque em analise fundamentalista, renda passiva e construção de patrimônio de longo prazo. Quando a duvida exigir decisão complexa, sugira que o cliente fale com seu assessor humano.',
+    ctaGreeting: 'Ola! Sou o Assessor Norte. Posso ajudar com analises, tirar duvidas e orientar sobre seus investimentos. Para decisões importantes, seu assessor humano esta sempre disponivel.',
     ctaButton: 'Falar com Assessor',
     ctaFeatures: ['Resposta em ~3s', 'Complementa seu assessor', '24/7'],
   },
@@ -3074,7 +3074,7 @@ const norteCapital: BrandConfig = {
   metrics: {
     sectionTitle: 'Numeros que geram confianca.',
     sectionSubtitle: 'Resultado consistente para nossos clientes',
-    counterLabel: 'Operacoes assessoradas pela Norte (e contando)',
+    counterLabel: 'Operações assessoradas pela Norte (e contando)',
     stats: [
       { value: 'R$ 150M+', label: 'Sob custodia' },
       { value: '500+', label: 'Clientes ativos' },
@@ -3085,10 +3085,10 @@ const norteCapital: BrandConfig = {
 
   testimonials: {
     sectionTitle: 'Clientes que confiam na Norte',
-    sectionSubtitle: 'Assessoria que faz diferenca no patrimonio',
+    sectionSubtitle: 'Assessoria que faz diferenca no patrimônio',
     items: [
       {
-        quote: 'Com a Norte consegui consolidar todos os meus investimentos em um so lugar. A visao global da carteira mudou completamente a forma como tomo decisoes.',
+        quote: 'Com a Norte consegui consolidar todos os meus investimentos em um so lugar. A visão global da carteira mudou completamente a forma como tomo decisões.',
         name: 'Ricardo M.',
         role: 'Empresario, SP',
         metrics: [{ value: 'R$ 2.1M', label: 'sob assessoria' }, { value: '3 anos', label: 'como cliente' }],
@@ -3097,10 +3097,10 @@ const norteCapital: BrandConfig = {
         quote: 'O assessor IA me ajuda no dia a dia com duvidas rapidas, e quando preciso de algo mais complexo, meu assessor humano esta sempre disponivel. Melhor dos dois mundos.',
         name: 'Fernanda L.',
         role: 'Medica, RJ',
-        metrics: [{ value: '18', label: 'ativos na carteira' }, { value: 'R$ 3.200', label: 'dividendos/mes' }],
+        metrics: [{ value: '18', label: 'ativos na carteira' }, { value: 'R$ 3.200', label: 'dividendos/mês' }],
       },
       {
-        quote: 'As calculadoras de preco teto e aposentadoria me deram clareza sobre meus objetivos. Hoje invisto com estrategia, nao com emocao.',
+        quote: 'As calculadoras de preco teto e aposentadoria me deram clareza sobre meus objetivos. Hoje invisto com estratégia, não com emocao.',
         name: 'Eduardo P.',
         role: 'Engenheiro, MG',
         metrics: [{ value: '+31%', label: 'em 2 anos' }, { value: '5h', label: 'economizadas/semana' }],
@@ -3131,14 +3131,14 @@ const norteCapital: BrandConfig = {
     loginSubtitle: 'Entre na sua conta para acompanhar seus investimentos.',
     registerTitle: 'Criar conta na Norte',
     registerSubtitle: 'Cadastre-se para acessar a plataforma completa de investimentos.',
-    termsText: 'Ao criar sua conta, voce concorda com os Termos de Uso e Politica de Privacidade da Norte Capital.',
+    termsText: 'Ao criar sua conta, você concorda com os Termos de Uso e Politica de Privacidade da Norte Capital.',
   },
 
   about: {
     title: 'Sobre a Norte Capital',
     paragraphs: [
-      'A Norte Capital e uma assessoria focada em construcao de patrimonio de longo prazo. Unimos atendimento humano qualificado com tecnologia de ponta para oferecer a melhor experiencia de investimento aos nossos clientes.',
-      'Nossa plataforma consolida todos os seus investimentos em um unico lugar, acoes, FIIs, renda fixa, cripto, com cotacoes em tempo real, analises fundamentalistas e ferramentas de planejamento.',
+      'A Norte Capital e uma assessoria focada em construção de patrimônio de longo prazo. Unimos atendimento humano qualificado com tecnologia de ponta para oferecer a melhor experiencia de investimento aos nossos clientes.',
+      'Nossa plataforma consolida todos os seus investimentos em um único lugar, ações, FIIs, renda fixa, cripto, com cotações em tempo real, analises fundamentalistas e ferramentas de planejamento.',
       'Contamos com um assessor com inteligencia artificial disponivel 24/7 que complementa o trabalho do assessor humano, respondendo duvidas rapidas e gerando analises personalizadas.',
       'Credenciada junto a CVM e Ancord, a Norte opera com total transparencia e seguranca, sempre priorizando os interesses dos nossos clientes.',
     ],
@@ -3159,15 +3159,15 @@ const norteCapital: BrandConfig = {
     steps: [
       { icon: 'i-lucide-user-plus', title: 'Crie sua conta', description: 'Cadastro rapido e seguro. Comece a acompanhar seus investimentos em menos de 1 minuto.' },
       { icon: 'i-lucide-briefcase', title: 'Consolide sua carteira', description: 'Importe seus investimentos via Excel ou Open Finance. Veja tudo em um so lugar.' },
-      { icon: 'i-lucide-search', title: 'Analise o mercado', description: 'Cotacoes em tempo real, fundamentus, preco teto e calendario de dividendos.' },
-      { icon: 'i-lucide-users', title: 'Fale com seu assessor', description: 'IA disponivel 24/7 para duvidas rapidas. Assessor humano para decisoes importantes.' },
+      { icon: 'i-lucide-search', title: 'Analise o mercado', description: 'Cotações em tempo real, fundamentus, preco teto e calendário de dividendos.' },
+      { icon: 'i-lucide-users', title: 'Fale com seu assessor', description: 'IA disponivel 24/7 para duvidas rapidas. Assessor humano para decisões importantes.' },
     ],
   },
 
   nav: {
     menuLabel: 'Menu',
     toolsLabel: 'Ferramentas',
-    overview: 'Visao Geral',
+    overview: 'Visão Geral',
     wallet: 'Minha Carteira',
     chat: 'Assessor',
     advisorArea: 'Area do assessor',
@@ -3189,7 +3189,7 @@ const norteCapital: BrandConfig = {
     mobileAiDescriptionSub: 'Tire duvidas sobre investimentos com o assistente da Norte.',
     mobileCalc: 'Calculadoras',
     mobileGuides: 'Guias',
-    mobileHome: 'Inicio',
+    mobileHome: 'Início',
     footerGlossaryTitle: 'Glossario',
     footerCalc: 'Calculadoras',
     footerJuros: 'Juros Compostos',
@@ -3198,7 +3198,7 @@ const norteCapital: BrandConfig = {
     footerAI: 'Assessor IA',
     footerGuides: 'Guias',
     footerGlossary: 'Glossario',
-    footerStocks: 'Acoes',
+    footerStocks: 'Ações',
     footerFiis: 'FIIs',
     footerDividends: 'Dividendos',
     footerAbout: 'Sobre',
@@ -3215,11 +3215,11 @@ const norteCapital: BrandConfig = {
 
   homeTexts: {
     marketTitle: 'O mercado em tempo real',
-    marketSubtitle: 'Cotacoes, altas e baixas atualizadas automaticamente.',
+    marketSubtitle: 'Cotações, altas e baixas atualizadas automaticamente.',
     filtersTitle: 'Filtros inteligentes',
     categoriesEyebrow: 'Ferramentas da Norte',
     categoriesTitle: 'Tudo para seus investimentos',
-    categoriesSubtitle: 'Carteira consolidada, cotacoes, calculadoras e assessoria, em um so lugar.',
+    categoriesSubtitle: 'Carteira consolidada, cotações, calculadoras e assessoria, em um so lugar.',
     guidesTitle: 'Conhecimento para investir melhor',
     guidesSubtitle: 'Guias praticos e analises da Norte.',
     aiCtaEyebrow: 'Assessor com IA',
@@ -3227,8 +3227,8 @@ const norteCapital: BrandConfig = {
     aiCtaSubtitle: 'Nosso assessor com IA complementa o atendimento humano. Disponivel 24/7.',
     aiCtaQuestions: [
       { icon: 'i-lucide-briefcase', question: 'Como esta minha carteira hoje?', category: 'Carteira' },
-      { icon: 'i-lucide-coins', question: 'Quais acoes pagam mais dividendos?', category: 'Renda Passiva' },
-      { icon: 'i-lucide-scale', question: 'Devo diversificar mais?', category: 'Estrategia' },
+      { icon: 'i-lucide-coins', question: 'Quais ações pagam mais dividendos?', category: 'Renda Passiva' },
+      { icon: 'i-lucide-scale', question: 'Devo diversificar mais?', category: 'Estratégia' },
       { icon: 'i-lucide-calculator', question: 'Qual o preco teto de VALE3?', category: 'Analise' },
       { icon: 'i-lucide-target', question: 'Quanto preciso para viver de renda?', category: 'Planejamento' },
       { icon: 'i-lucide-building-2', question: 'Quais FIIs recomendados para iniciante?', category: 'FIIs' },
@@ -3265,12 +3265,12 @@ const norteCapital: BrandConfig = {
 
   investorChecklist: {
     sectionTitle: 'Como funciona a assessoria',
-    sectionSubtitle: 'Um processo simples e transparente para cuidar do seu patrimonio',
+    sectionSubtitle: 'Um processo simples e transparente para cuidar do seu patrimônio',
     steps: [
       { number: 1, title: 'Converse com um assessor', description: 'Entenda seus objetivos, perfil de risco e horizonte de investimento em uma conversa personalizada.', icon: 'i-lucide-users', status: 'recommended' as const, ctaText: 'Agendar conversa', ctaLink: '/help' },
-      { number: 2, title: 'Consolide sua carteira', description: 'Importe todos os seus investimentos via Excel ou Open Finance e tenha uma visao completa do seu patrimonio.', icon: 'i-lucide-briefcase', status: 'available' as const, ctaText: 'Importar carteira', ctaLink: '/wallet' },
+      { number: 2, title: 'Consolide sua carteira', description: 'Importe todos os seus investimentos via Excel ou Open Finance e tenha uma visão completa do seu patrimônio.', icon: 'i-lucide-briefcase', status: 'available' as const, ctaText: 'Importar carteira', ctaLink: '/wallet' },
       { number: 3, title: 'Receba recomendacoes', description: 'Analises personalizadas, rebalanceamento e alertas de oportunidades com base no seu perfil.', icon: 'i-lucide-target', status: 'available' as const, ctaText: 'Ver analises', ctaLink: '/help' },
-      { number: 4, title: 'Acompanhe em tempo real', description: 'Monitore cotacoes, dividendos e desempenho da carteira 24/7 pela plataforma ou app.', icon: 'i-lucide-activity', status: 'available' as const, ctaText: 'Explorar plataforma', ctaLink: '/' },
+      { number: 4, title: 'Acompanhe em tempo real', description: 'Monitore cotações, dividendos e desempenho da carteira 24/7 pela plataforma ou app.', icon: 'i-lucide-activity', status: 'available' as const, ctaText: 'Explorar plataforma', ctaLink: '/' },
     ],
     footerText: 'Duvidas sobre o processo?',
     footerLink: '/help',
@@ -3279,7 +3279,7 @@ const norteCapital: BrandConfig = {
 
   wealthCalculator: {
     sectionTitle: 'O impacto de investir com assessoria',
-    sectionSubtitle: 'Veja como o tempo e a consistencia transformam seu patrimonio',
+    sectionSubtitle: 'Veja como o tempo e a consistencia transformam seu patrimônio',
     defaultAge: 30,
     compareAge: 40,
     defaultMonthly: 2000,
@@ -3288,9 +3288,9 @@ const norteCapital: BrandConfig = {
     ctaText: 'Falar com assessor',
     ctaLink: '/help',
     labels: {
-      ageSlider: 'Idade de inicio',
+      ageSlider: 'Idade de início',
       monthlySlider: 'Aporte mensal',
-      resultPrefix: 'Aos {target} anos voce tera',
+      resultPrefix: 'Aos {target} anos você tera',
       comparisonText: 'Quem comeca aos {age} perde {diff}',
       timeLabel: 'anos investindo',
     },
@@ -3298,13 +3298,13 @@ const norteCapital: BrandConfig = {
 
   educational: {
     sectionTitle: 'Aprenda com a Norte',
-    sectionSubtitle: 'Conteudos educacionais para todos os niveis de investidor',
+    sectionSubtitle: 'Conteudos educacionais para todos os níveis de investidor',
     items: [],
   },
 
   products: {
     sectionTitle: 'Servicos',
-    sectionSubtitle: 'Solucoes completas de assessoria de investimentos',
+    sectionSubtitle: 'Soluções completas de assessoria de investimentos',
     categories: [],
   },
 }
@@ -3529,7 +3529,7 @@ const saraivaInvest: BrandConfig = {
       precoTeto: 'Preço-teto (Bazin & Graham)',
       dividendYield: 'Dividend Yield real',
       aposentadoria: 'Aposentadoria: quanto preciso?',
-      acoes: 'Simulador de carteira',
+      ações: 'Simulador de carteira',
       quantoInvestir: 'Quanto aportar por mês',
       impostoRenda: 'IR na renda variável',
       planejamento: 'Plano anual de aportes',
@@ -3552,7 +3552,7 @@ const saraivaInvest: BrandConfig = {
       'Quais FIIs pagam DY consistente há 5+ anos?',
       'Meu plano de 10 anos tá furando, por onde começo?',
     ],
-    systemPromptContext: 'Voce e a Saraiva IA, copiloto do André Saraiva. Tom: analitico, direto, calmo. Zero hype, zero FOMO, zero linguagem de guru. Responda como um engenheiro que entende de mercado e respeita a inteligencia do usuario. Sempre que possivel, cite a fonte (balanco trimestral, release oficial, CVM, B3, FGV, IPCA, etc). Quando o usuario pedir opiniao, prefira responder com o que o metodo diz e os dados historicos apontam, nao com achismo. Use portugues brasileiro correto, sem girias forcadas. Pode ser ironico com hype mas nunca com o usuario. Ritmo: paragrafos curtos, frases diretas, numeros concretos. Catchphrase natural: "cabeca fria".',
+    systemPromptContext: 'Você e a Saraiva IA, copiloto do André Saraiva. Tom: analítico, direto, calmo. Zero hype, zero FOMO, zero linguagem de guru. Responda como um engenheiro que entende de mercado e respeita a inteligencia do usuario. Sempre que possivel, cite a fonte (balanço trimestral, release oficial, CVM, B3, FGV, IPCA, etc). Quando o usuario pedir opinião, prefira responder com o que o metodo diz e os dados históricos apontam, não com achismo. Use portugues brasileiro correto, sem girias forcadas. Pode ser irônico com hype mas nunca com o usuario. Ritmo: parágrafos curtos, frases diretas, numeros concretos. Catchphrase natural: "cabeca fria".',
     ctaGreeting: 'E aí. Sou a Saraiva IA. Pode perguntar direto, eu respondo com o que o dado diz, não com o que te agradaria ouvir. Cabeça fria.',
     ctaButton: 'Falar com a Saraiva IA',
     ctaFeatures: ['Resposta em ~3s', 'Com fonte citada', 'Zero achismo'],
@@ -4049,7 +4049,7 @@ const holder: BrandConfig = {
       precoTeto: 'Preço-teto (Bazin / Graham)',
       dividendYield: 'Dividend Yield real',
       aposentadoria: 'Aposentadoria',
-      acoes: 'Simulador de carteira',
+      ações: 'Simulador de carteira',
       quantoInvestir: 'Aporte mensal',
       impostoRenda: 'IR, renda variável',
       planejamento: 'Plano de aportes',
@@ -4072,7 +4072,7 @@ const holder: BrandConfig = {
       'Diversificação ou concentração?',
       'Qual a única razão pra vender uma posição?',
     ],
-    systemPromptContext: 'Voce e a Holder IA, treinada nas cartas do Holder (pseudonimo). Tom: sentencioso, editorial, sem floreio. Frases curtas. Pontos finais. Sem exclamacao. Sem emoji. Cita Buffett, Munger, Howard Marks, Seth Klarman, Peter Lynch. Despreza day trade, swing trade, analise tecnica, hype. Filosofia: buy and hold concentrado, alta convicao, horizonte de decadas, foco em empresa (nao em acao). Quando o usuario pergunta sobre timing, responda com calma fria que timing nao importa. Quando pergunta sobre venda, responda que so se vende quando a tese muda fundamentalmente, nao quando o preco cai. Termine as respostas mais importantes com "HOLD." em maiusculo.',
+    systemPromptContext: 'Você e a Holder IA, treinada nas cartas do Holder (pseudonimo). Tom: sentencioso, editorial, sem floreio. Frases curtas. Pontos finais. Sem exclamação. Sem emoji. Cita Buffett, Munger, Howard Marks, Seth Klarman, Peter Lynch. Despreza day trade, swing trade, analise tecnica, hype. Filosofia: buy and hold concentrado, alta convicao, horizonte de décadas, foco em empresa (não em ação). Quando o usuario pergunta sobre timing, responda com calma fria que timing não importa. Quando pergunta sobre venda, responda que so se vende quando a tese muda fundamentalmente, não quando o preco cai. Termine as respostas mais importantes com "HOLD." em maiusculo.',
     ctaGreeting: 'Bem-vindo. Sou a Holder IA. Pergunta direto. Resposta vai vir direto. HOLD.',
     ctaButton: 'Falar com a Holder IA',
     ctaFeatures: ['Sem floreio', 'Cita os clássicos', 'Pensa em décadas'],
