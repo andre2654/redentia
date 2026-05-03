@@ -247,7 +247,7 @@ usePageSeo({
   title: hasTickers.value
     ? `Raio-X de ${tickersFromUrl.value.length} ativos | ${brand.name}`
     : 'Raio-X da Carteira | Descubra os riscos escondidos da sua carteira em 2 minutos',
-  description: 'Analise gratuita da sua carteira de investimentos. Cruzamos fundamentos, dividendos, concentracao, noticias e risco para mostrar o que esta bom, o que esta ruim e o que mudou.',
+  description: 'Análise gratuita da sua carteira de investimentos. Cruzamos fundamentos, dividendos, concentração, notícias e risco para mostrar o que está bom, o que está ruim e o que mudou.',
   path: hasTickers.value ? `/raio-x?tickers=${tickersFromUrl.value.join(',')}` : '/raio-x',
 })
 </script>
@@ -288,7 +288,7 @@ usePageSeo({
                 class="text-[16px] leading-relaxed md:text-[17px]"
                 :style="{ color: 'var(--text-body)' }"
               >
-                Cole seus tickers e a Redent.IA cruza fundamentos, dividendos, concentracao e noticias pra mostrar o que esta bom, o que esta ruim e o que mudou.
+                Cole seus tickers e a Redent.IA cruza fundamentos, dividendos, concentração e notícias pra mostrar o que está bom, o que está ruim e o que mudou.
               </p>
 
               <!-- Primary CTA: asset picker (QuickSearch-style modal).
@@ -388,7 +388,7 @@ usePageSeo({
               class="text-[28px] font-light leading-tight tracking-[-0.025em] md:text-[40px]"
               :style="{ color: 'var(--text-heading)' }"
             >
-              Tres passos. Sem planilha, sem decoreba, sem corretora.
+              Três passos. Sem planilha, sem decoreba, sem corretora.
             </h2>
           </header>
 
@@ -399,7 +399,7 @@ usePageSeo({
                 Cole seus ativos
               </h3>
               <p class="text-[14px] leading-relaxed" :style="{ color: 'var(--text-body)' }">
-                Digite tickers separados por virgula. Funciona com acoes, FIIs, ETFs, BDRs e Tesouro Direto.
+                Digite tickers separados por vírgula. Funciona com ações, FIIs, ETFs, BDRs e Tesouro Direto.
               </p>
             </article>
             <article class="quiet-card flex flex-col gap-3 p-6">
@@ -408,7 +408,7 @@ usePageSeo({
                 A IA cruza os dados
               </h3>
               <p class="text-[14px] leading-relaxed" :style="{ color: 'var(--text-body)' }">
-                Fundamentos, dividendos, concentracao, noticias recentes, risco macro, exposicao cambial. Tudo em segundos.
+                Fundamentos, dividendos, concentração, notícias recentes, risco macro, exposição cambial. Tudo em segundos.
               </p>
             </article>
             <article class="quiet-card flex flex-col gap-3 p-6">
@@ -438,15 +438,15 @@ usePageSeo({
                 Nao adivinhamos. Cruzamos.
               </h2>
               <p class="text-[15px] leading-relaxed" :style="{ color: 'var(--text-body)' }">
-                Toda analise vem de dados auditaveis: cotacoes oficiais da B3, fundamentos do StatusInvest, calendario de dividendos do Tesouro Direto e noticias dos principais portais financeiros do Brasil.
+                Toda análise vem de dados auditáveis: cotações oficiais da B3, fundamentos do StatusInvest, calendário de dividendos do Tesouro Direto e notícias dos principais portais financeiros do Brasil.
               </p>
             </div>
 
             <ul class="grid grid-cols-2 gap-3">
               <li v-for="item in [
-                { icon: 'i-lucide-line-chart', label: 'Cotacoes B3 ao vivo' },
+                { icon: 'i-lucide-line-chart', label: 'Cotações B3 ao vivo' },
                 { icon: 'i-lucide-bar-chart-3', label: 'Fundamentos completos' },
-                { icon: 'i-lucide-newspaper', label: '11 fontes de noticias' },
+                { icon: 'i-lucide-newspaper', label: '11 fontes de notícias' },
                 { icon: 'i-lucide-coins', label: 'Historico de dividendos' },
                 { icon: 'i-lucide-globe', label: 'Indices internacionais' },
                 { icon: 'i-lucide-shield-check', label: 'IA com fontes verificaveis' },
@@ -458,7 +458,7 @@ usePageSeo({
           </div>
 
           <p class="raio-x__compliance">
-            A Redent.IA oferece ferramentas de analise, organizacao e educacao financeira. As informacoes nao constituem recomendacao individual de investimento. Consulte um profissional autorizado antes de tomar decisoes financeiras.
+            A Redent.IA oferece ferramentas de análise, organização e educação financeira. As informações não constituem recomendação individual de investimento. Consulte um profissional autorizado antes de tomar decisões financeiras.
           </p>
         </div>
       </section>
@@ -471,7 +471,7 @@ usePageSeo({
            pra topo. -->
       <section v-if="!hasTickers" class="raio-x__final-cta">
         <div class="mx-auto max-w-3xl px-6 py-20 text-center md:py-28">
-          <p class="eyebrow mb-3">PRONTO QUANDO VOCE ESTIVER</p>
+          <p class="eyebrow mb-3">PRONTO QUANDO VOCÊ ESTIVER</p>
           <h2
             class="mb-4 text-[32px] font-light leading-[1.1] tracking-[-0.025em] md:text-[44px]"
             :style="{ color: 'var(--text-heading)' }"
@@ -481,7 +481,7 @@ usePageSeo({
             de verdade.
           </h2>
           <p class="mx-auto mb-8 max-w-xl text-[15px] leading-relaxed md:text-[16px]" :style="{ color: 'var(--text-body)' }">
-            Em 2 minutos voce ve quais ativos da sua carteira estao bem, quais estao mal e o que mudou na ultima semana. Sem cadastro, sem cartao.
+            Em 2 minutos você vê quais ativos da sua carteira estão bem, quais estão mal e o que mudou na última semana. Sem cadastro, sem cartão.
           </p>
 
           <div class="mx-auto max-w-2xl">

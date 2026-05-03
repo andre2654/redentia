@@ -326,7 +326,7 @@ const risksPreview = computed(() => demoReport.value.risks.slice(0, 3))
             grátis" do input já tem promessa concreta).
           -->
           <p class="mb-8 hidden max-w-xl text-[16px] leading-relaxed md:block md:text-[18px]" :style="{ color: 'var(--text-body)' }">
-            Adicione seus ativos e a Redent.IA cruza fundamentos, noticias, dividendos, concentracao e mercado para mostrar o que esta bom, o que esta ruim e o que mudou.
+            Adicione seus ativos e a Redent.IA cruza fundamentos, notícias, dividendos, concentração e mercado para mostrar o que está bom, o que está ruim e o que mudou.
           </p>
 
           <!-- CTA simples: empurra o usuario direto pra /raio-x onde o input
@@ -342,7 +342,7 @@ const risksPreview = computed(() => demoReport.value.risks.slice(0, 3))
               class="hero-radiograph__cta quiet-btn-primary inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[15px] font-semibold transition-shadow md:text-[16px]"
             >
               <UIcon name="i-lucide-sparkles" class="size-4" aria-hidden="true" />
-              <span>Analisar minha carteira gratis</span>
+              <span>Analisar minha carteira grátis</span>
               <UIcon name="i-lucide-arrow-right" class="size-4" aria-hidden="true" />
             </NuxtLink>
           </div>

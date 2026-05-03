@@ -176,7 +176,7 @@ function formatPercent(n: number | undefined | null, digits = 1): string {
         <div v-if="showShare" class="flex flex-wrap gap-3 pt-2">
           <NuxtLink to="/auth/register" class="quiet-btn-primary">
             <UIcon name="i-lucide-bell" class="size-4" aria-hidden="true" />
-            Monitorar minha carteira gratis
+            Monitorar minha carteira grátis
           </NuxtLink>
           <button type="button" class="quiet-btn-ghost" @click="onShare">
             <UIcon name="i-lucide-share-2" class="size-4" aria-hidden="true" />
@@ -483,7 +483,7 @@ function formatPercent(n: number | undefined | null, digits = 1): string {
       <header>
         <p class="eyebrow mb-1">TESES SOB RISCO</p>
         <h3 class="text-[24px] font-light leading-tight tracking-[-0.02em] md:text-[32px]" :style="{ color: 'var(--text-heading)' }">
-          Os ativos onde a tese original nao se sustenta mais.
+          Os ativos onde a tese original não se sustenta mais.
         </h3>
       </header>
       <ul class="flex flex-col gap-3">
@@ -575,7 +575,7 @@ function formatPercent(n: number | undefined | null, digits = 1): string {
           Sua renda passiva mensal.
         </h3>
         <p class="mt-2 max-w-2xl text-[14px]" :style="{ color: 'var(--text-muted)' }">
-          Estimativa baseada no DY historico de cada ativo aplicado a uma carteira de R$ 100.000 com a sua composicao.
+          Estimativa baseada no DY histórico de cada ativo aplicado a uma carteira de R$ 100.000 com a sua composição.
         </p>
       </header>
       <div class="grid gap-6 md:grid-cols-12">
@@ -586,10 +586,10 @@ function formatPercent(n: number | undefined | null, digits = 1): string {
               R$ {{ report.monthlyDividendsTotal.toLocaleString('pt-BR') }}
             </p>
             <p class="mt-2 text-[13px]" :style="{ color: 'var(--text-muted)' }">
-              por mes para cada R$ 100.000 investidos
+              por mês para cada R$ 100.000 investidos
             </p>
             <p class="mt-4 text-[13px] leading-relaxed" :style="{ color: 'var(--text-body)' }">
-              Anualizando, voce receberia <strong class="tabular-nums" :style="{ color: 'var(--brand-primary)' }">R$ {{ (report.monthlyDividendsTotal * 12).toLocaleString('pt-BR') }}</strong> em renda passiva, equivalente a <strong class="tabular-nums" :style="{ color: 'var(--brand-primary)' }">{{ formatPercent(report.monthlyDividendsTotal * 12 / 1000) }}</strong> ao ano sobre o capital.
+              Anualizando, você receberia <strong class="tabular-nums" :style="{ color: 'var(--brand-primary)' }">R$ {{ (report.monthlyDividendsTotal * 12).toLocaleString('pt-BR') }}</strong> em renda passiva, equivalente a <strong class="tabular-nums" :style="{ color: 'var(--brand-primary)' }">{{ formatPercent(report.monthlyDividendsTotal * 12 / 1000) }}</strong> ao ano sobre o capital.
             </p>
           </article>
         </div>
@@ -636,10 +636,10 @@ function formatPercent(n: number | undefined | null, digits = 1): string {
       <header>
         <p class="eyebrow mb-1">ATIVOS COMPARAVEIS</p>
         <h3 class="text-[24px] font-light leading-tight tracking-[-0.02em] md:text-[32px]" :style="{ color: 'var(--text-heading)' }">
-          Pares com fundamentos melhores para analise.
+          Pares com fundamentos melhores para análise.
         </h3>
         <p class="mt-2 max-w-2xl text-[14px]" :style="{ color: 'var(--text-muted)' }">
-          Hipoteses para voce avaliar, nao recomendacao individual de investimento.
+          Hipóteses para você avaliar, não recomendação individual de investimento.
         </p>
       </header>
       <ul class="grid gap-4 md:grid-cols-2">
@@ -717,12 +717,12 @@ function formatPercent(n: number | undefined | null, digits = 1): string {
           <span class="italic" style="font-family: 'Instrument Serif', serif; color: var(--brand-primary)">carteira.</span>
         </h3>
         <p class="mb-6 max-w-2xl text-[15px] leading-relaxed" :style="{ color: 'var(--text-body)' }">
-          Esta foi uma analise pontual. Crie uma conta gratis e a Redent.IA passa a monitorar diariamente, avisando voce quando aparecer um risco novo, oportunidade ou mudanca de fundamentos.
+          Esta foi uma análise pontual. Crie uma conta grátis e a Redent.IA passa a monitorar diariamente, avisando você quando aparecer um risco novo, oportunidade ou mudança de fundamentos.
         </p>
         <div class="flex flex-wrap gap-3">
           <NuxtLink to="/auth/register" class="quiet-btn-primary">
             <UIcon name="i-lucide-bell-ring" class="size-4" aria-hidden="true" />
-            Monitorar minha carteira gratis
+            Monitorar minha carteira grátis
           </NuxtLink>
           <NuxtLink to="/help" class="quiet-btn-ghost">
             <UIcon name="i-lucide-message-circle" class="size-4" aria-hidden="true" />
@@ -743,7 +743,7 @@ function formatPercent(n: number | undefined | null, digits = 1): string {
             inteligente?
           </h3>
           <p class="mb-5 text-[15px] leading-relaxed" :style="{ color: 'var(--text-body)' }">
-            Esta analise e o ponto de partida. O Assessor Inteligente da Redent.IA cruza fundamentos, noticias, dividendos e seu perfil de risco em tempo real, com a IA mais avancada da plataforma. Ele acompanha sua carteira diariamente e te avisa antes de qualquer mudanca relevante.
+            Esta análise é o ponto de partida. O Assessor Inteligente da Redent.IA cruza fundamentos, notícias, dividendos e seu perfil de risco em tempo real, com a IA mais avançada da plataforma. Ele acompanha sua carteira diariamente e te avisa antes de qualquer mudança relevante.
           </p>
           <ul class="diagnosis__advisor-list">
             <li>
@@ -760,7 +760,7 @@ function formatPercent(n: number | undefined | null, digits = 1): string {
             </li>
             <li>
               <UIcon name="i-lucide-check" class="size-4 shrink-0" :style="{ color: 'var(--brand-primary)' }" aria-hidden="true" />
-              <span>Conversa ilimitada com a IA avancada da Redent.IA</span>
+              <span>Conversa ilimitada com a IA avançada da Redent.IA</span>
             </li>
           </ul>
           <div class="flex flex-wrap gap-3">
@@ -787,7 +787,7 @@ function formatPercent(n: number | undefined | null, digits = 1): string {
             <ul class="diagnosis__advisor-bullets">
               <li>
                 <span class="text-[11px] uppercase tracking-[0.12em]" :style="{ color: 'var(--text-muted)' }">PRIMEIRA ANALISE</span>
-                <span class="text-[14px] font-medium" :style="{ color: 'var(--text-heading)' }">Gratis</span>
+                <span class="text-[14px] font-medium" :style="{ color: 'var(--text-heading)' }">Grátis</span>
               </li>
               <li>
                 <span class="text-[11px] uppercase tracking-[0.12em]" :style="{ color: 'var(--text-muted)' }">ACOMPANHAMENTO</span>
@@ -799,7 +799,7 @@ function formatPercent(n: number | undefined | null, digits = 1): string {
               </li>
             </ul>
             <p class="mt-4 text-[11px] leading-relaxed" :style="{ color: 'var(--text-muted)' }">
-              IA proprietaria da Redent.IA com fundamentos, noticias e dados de mercado em tempo real. A plataforma oferece ferramentas de analise e educacao financeira; nao executa ordens nem fornece recomendacao individual de investimento.
+              IA proprietária da Redent.IA com fundamentos, notícias e dados de mercado em tempo real. A plataforma oferece ferramentas de análise e educação financeira; não executa ordens nem fornece recomendação individual de investimento.
             </p>
           </article>
         </aside>
@@ -808,7 +808,7 @@ function formatPercent(n: number | undefined | null, digits = 1): string {
 
     <!-- Disclaimer -->
     <footer class="diagnosis__disclaimer">
-      A Redent.IA oferece ferramentas de analise, organizacao e educacao financeira. As informacoes nao constituem recomendacao individual de investimento. Consulte um profissional autorizado antes de tomar decisoes financeiras. Os dados sao apresentados para fins informativos e podem nao refletir as condicoes mais recentes do mercado.
+      A Redent.IA oferece ferramentas de análise, organização e educação financeira. As informações não constituem recomendação individual de investimento. Consulte um profissional autorizado antes de tomar decisões financeiras. Os dados são apresentados para fins informativos e podem não refletir as condições mais recentes do mercado.
     </footer>
   </div>
 </template>
