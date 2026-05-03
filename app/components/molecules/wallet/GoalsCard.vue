@@ -51,7 +51,7 @@
           >{{ classificationLabel(goal.classification) }}</span>
         </div>
         <div class="flex items-baseline justify-between font-mono-tab text-[12.5px] tabular-nums" :style="{ color: brand.colors.text }">
-          <span>{{ formatBRL(goal.current_progress || 0) }} <span :style="{ color: `color-mix(in srgb, ${brand.colors.text} 50%, transparent)` }">/ {{ formatBRL(goal.target_value) }}</span></span>
+          <span>{{ maskedBRL(goal.current_progress || 0) }} <span :style="{ color: `color-mix(in srgb, ${brand.colors.text} 50%, transparent)` }">/ {{ maskedBRL(goal.target_value) }}</span></span>
           <span :style="{ color: `color-mix(in srgb, ${brand.colors.text} 65%, transparent)` }">{{ progressPct(goal).toFixed(1) }}%</span>
         </div>
         <div
@@ -118,11 +118,20 @@ function badgeBg(c?: string): string {
   return `color-mix(in srgb, ${badgeColor(c)} 14%, transparent)`
 }
 
+// Mascarar metas (current + target) quando reveal=false. Goals
+// expoem aspiracao financeira do user — privacidade igual a do
+// patrimonio. Progresso % fica visivel (ratio nao expoe R$).
+const interfaceStore = useInterfaceStore()
+
 function formatBRL(n: number): string {
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'BRL',
     maximumFractionDigits: 0,
   }).format(n)
+}
+function maskedBRL(n: number): string {
+  if (!interfaceStore.revealAmount) return 'R$ ••••••'
+  return formatBRL(n)
 }
 </script>

@@ -261,12 +261,43 @@
       </div>
     </div>
 
-    <!-- ============ Footer: Reportar problema + Ver auditoria ============
-         Sticky bottom block. Layout em uma linha só: o trigger de
-         report fica como ícone-só na ESQUERDA, e o "Ver auditoria"
-         (quando renderiza, gated em `showGoalsAndDecisions`) ocupa o
-         resto da row com `flex-1`. Quando não há audit (usuário
-         anônimo), o report icon fica centralizado sozinho. -->
+    <!-- ============ Bottom: Privacy toggle + action footer ============
+         Privacy toggle vive em row propria (full-width, com label
+         "Modo privacidade" + badge On/Off). Espelha o toggle da
+         sidebar autenticada — mesma store, togglar num lugar
+         reflete no outro. O footer abaixo agrupa report problem +
+         ver auditoria; antes o olhinho ficava la apertado entre
+         os dois, mas com label nao cabia, ai foi pra row propria. -->
+    <!-- Privacy toggle row -->
+    <button
+      type="button"
+      class="privacy-toggle-row flex shrink-0 items-center gap-2.5 border-t px-4 py-2.5 transition-[background-color]"
+      :style="{
+        borderColor: `color-mix(in srgb, var(--brand-border) 35%, transparent)`,
+        color: 'var(--brand-text)',
+      }"
+      :aria-pressed="!interfaceStore.revealAmount"
+      @click="interfaceStore.toggleRevealAmount"
+    >
+      <UIcon
+        :name="interfaceStore.revealAmount ? 'i-lucide-eye' : 'i-lucide-eye-off'"
+        class="size-4 shrink-0"
+        :style="{ color: !interfaceStore.revealAmount ? 'var(--brand-primary)' : 'var(--brand-text-muted)' }"
+        aria-hidden="true"
+      />
+      <span class="flex-1 text-left text-[13px]">Modo privacidade</span>
+      <span
+        class="rounded-full px-2 py-0.5 font-mono-tab text-[10px] font-semibold uppercase"
+        :style="{
+          letterSpacing: '0.14em',
+          backgroundColor: !interfaceStore.revealAmount
+            ? `color-mix(in srgb, var(--brand-primary) 18%, transparent)`
+            : `color-mix(in srgb, var(--brand-text) 8%, transparent)`,
+          color: !interfaceStore.revealAmount ? 'var(--brand-primary)' : 'var(--brand-text-muted)',
+        }"
+      >{{ !interfaceStore.revealAmount ? 'On' : 'Off' }}</span>
+    </button>
+
     <footer
       class="shrink-0 border-t px-4 py-3"
       :style="{ borderColor: `color-mix(in srgb, var(--brand-border) 35%, transparent)` }"
@@ -344,6 +375,10 @@ defineEmits<{
 }>()
 
 const brand = useBrand()
+
+// Reveal toggle compartilhado com a sidebar autenticada (default.vue) e
+// com o mobile menu — todos leem/escrevem o mesmo flag persistido.
+const interfaceStore = useInterfaceStore()
 
 // ---- Painel state (composables) -----------------------------------------
 // TODO(wallet-redesign): Phase 3 introduced /api/goals + /api/watchlist on
@@ -721,6 +756,19 @@ const rootRef = ref<HTMLElement | null>(null)
   width: auto !important;
   aspect-ratio: 1 / 1;
   align-self: stretch;
+}
+
+/* Privacy-toggle row — full-width, hover sutil. Replaces the
+   icon-only button that lived inside the action footer below. */
+.privacy-toggle-row {
+  cursor: pointer;
+}
+.privacy-toggle-row:hover {
+  background-color: color-mix(in srgb, var(--brand-text) 5%, transparent);
+}
+.privacy-toggle-row:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--brand-primary) 40%, transparent);
 }
 
 /* Audit footer button — same family as the stat cards */

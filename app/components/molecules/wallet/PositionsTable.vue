@@ -87,8 +87,10 @@
               <td class="td">
                 <span class="text-[12px]" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 65%, transparent)` }">{{ p.sector || '—' }}</span>
               </td>
-              <td class="td td-num">{{ p.quantity.toLocaleString('pt-BR', { maximumFractionDigits: 2 }) }}</td>
-              <td class="td td-num">{{ formatBRL2(p.average_price) }}</td>
+              <td class="td td-num">{{ interfaceStore.revealAmount ? p.quantity.toLocaleString('pt-BR', { maximumFractionDigits: 2 }) : '••••' }}</td>
+              <td class="td td-num">{{ maskedBRL2(p.average_price) }}</td>
+              <!-- Current price e dado publico de mercado, nao expoe a
+                   carteira do usuario. Fica visivel mesmo com mask on. -->
               <td class="td td-num">{{ p.current_price ? formatBRL2(p.current_price) : '—' }}</td>
               <td class="td td-num">
                 <span
@@ -241,6 +243,13 @@ function displayClass(k?: string): string {
   }
 }
 
+// Mascarar quantidade + preco medio quando revealAmount = false.
+// Quantidade × preco_medio = total investido naquela posicao, entao
+// esconder os dois evita expor o tamanho de cada holding. Current
+// price (dado publico de mercado) continua visivel pra o usuario nao
+// perder contexto sobre o que cada ticker vale hoje.
+const interfaceStore = useInterfaceStore()
+
 function formatBRL2(n: number): string {
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
@@ -248,6 +257,10 @@ function formatBRL2(n: number): string {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(n)
+}
+function maskedBRL2(n: number): string {
+  if (!interfaceStore.revealAmount) return 'R$ ••••'
+  return formatBRL2(n)
 }
 function formatPct(n: number): string {
   const sign = n > 0 ? '+' : ''

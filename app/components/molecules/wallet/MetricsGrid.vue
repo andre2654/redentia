@@ -13,7 +13,7 @@
       <div
         class="font-mono-tab text-[24px] font-light tabular-nums"
         :style="{ color: brand.colors.text, letterSpacing: '-0.4px' }"
-      >{{ formatBRL(totalValue) }}</div>
+      >{{ maskedBRL(totalValue) }}</div>
       <svg viewBox="0 0 200 36" class="h-8 w-full">
         <defs>
           <linearGradient id="metric-spark" x1="0" x2="0" y1="0" y2="1">
@@ -73,12 +73,12 @@
       <div
         class="font-mono-tab text-[24px] font-light tabular-nums"
         :style="{ color: brand.colors.text, letterSpacing: '-0.4px' }"
-      >{{ formatBRL(dividendForecast12m) }}</div>
+      >{{ maskedBRL(dividendForecast12m) }}</div>
       <div class="flex items-center gap-2">
         <span
           class="font-mono-tab text-[11px] tabular-nums"
           :style="{ color: brand.colors.positive }"
-        >{{ formatBRL(dividendForecast12m / 12) }}/mês médio</span>
+        >{{ maskedBRL(dividendForecast12m / 12) }}/mês médio</span>
       </div>
       <span class="mock-meta">{{ dividendMeta }}</span>
     </article>
@@ -150,12 +150,21 @@ const scoreLabelColor = computed(() => {
   return brand.colors.negative
 })
 
+// Reveal toggle compartilhado — mascara patrimonio + dividendos
+// quando interfaceStore.revealAmount = false. Performance % nao
+// expoe R$ entao fica visivel sempre (privacidade nao quebra).
+const interfaceStore = useInterfaceStore()
+
 function formatBRL(n: number): string {
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'BRL',
     maximumFractionDigits: 0,
   }).format(n)
+}
+function maskedBRL(n: number): string {
+  if (!interfaceStore.revealAmount) return 'R$ ••••••'
+  return formatBRL(n)
 }
 function formatPct(n: number): string {
   const sign = n > 0 ? '+' : ''

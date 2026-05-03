@@ -21,13 +21,13 @@
             lineHeight: 1.0,
             letterSpacing: '-1.5px',
           }"
-        >{{ formatBRL(totalValue) }}</h1>
+        >{{ maskedBRL(totalValue) }}</h1>
         <div class="mt-1 flex flex-wrap items-baseline gap-3">
           <span
             v-if="pnlAmount !== null"
             class="font-mono-tab text-[15px] tabular-nums"
             :style="{ color: pnlAmount >= 0 ? brand.colors.positive : brand.colors.negative }"
-          >{{ pnlAmount >= 0 ? '+' : '' }}{{ formatBRL(pnlAmount) }}</span>
+          >{{ interfaceStore.revealAmount ? (pnlAmount >= 0 ? '+' : '') + formatBRL(pnlAmount) : 'R$ ••••••' }}</span>
           <span
             v-if="pnlPct !== null"
             class="rounded-md px-2 py-0.5 font-mono-tab text-[12px] font-medium tabular-nums"
@@ -104,6 +104,11 @@ defineEmits<{
 void props
 
 const brand = useBrand()
+// Mascarar patrimonio + P&L quando interfaceStore.revealAmount = false.
+// Mesmo store usado pela sidebar autenticada (eye toggle), entao
+// togglar em qualquer lugar (sidebar default, mobile menu, chat
+// sidebar) reflete aqui.
+const interfaceStore = useInterfaceStore()
 
 function formatBRL(n: number): string {
   return new Intl.NumberFormat('pt-BR', {
@@ -111,6 +116,10 @@ function formatBRL(n: number): string {
     currency: 'BRL',
     maximumFractionDigits: 0,
   }).format(n)
+}
+function maskedBRL(n: number): string {
+  if (!interfaceStore.revealAmount) return 'R$ ••••••'
+  return formatBRL(n)
 }
 function formatPct(n: number): string {
   const sign = n > 0 ? '+' : ''

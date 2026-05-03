@@ -5,7 +5,7 @@
 -->
 <template>
   <div class="chat-streaming">
-    <div v-html="content" />
+    <div v-html="displayContent" />
     <span
       v-if="streaming"
       class="chat-cursor"
@@ -16,11 +16,22 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{
+import { maskCurrency } from '~/utils/maskCurrency'
+
+const props = defineProps<{
   content: string
   streaming?: boolean
 }>()
 const brand = useBrand()
+
+// Reveal toggle compartilhado com a sidebar/wallet. Quando off,
+// passa o HTML ja renderizado por uma regex que troca R$ X por
+// R$ ••••••. Computed re-roda em cada delta do stream, entao o
+// mascarar e aplicado linha-a-linha enquanto o LLM responde.
+const interfaceStore = useInterfaceStore()
+const displayContent = computed(() =>
+  interfaceStore.revealAmount ? props.content : maskCurrency(props.content),
+)
 </script>
 
 <style scoped>

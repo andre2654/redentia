@@ -15,7 +15,7 @@
       />
       <div class="flex items-baseline gap-2">
         <span class="text-[12.5px]" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }">Total estimado</span>
-        <span class="font-mono-tab text-[16px] font-medium tabular-nums" :style="{ color: brand.colors.positive, letterSpacing: '-0.2px' }">{{ formatBRL(totalEstimated) }}</span>
+        <span class="font-mono-tab text-[16px] font-medium tabular-nums" :style="{ color: brand.colors.positive, letterSpacing: '-0.2px' }">{{ maskedBRL(totalEstimated) }}</span>
       </div>
     </div>
 
@@ -45,7 +45,7 @@
             </div>
             <span v-if="d.name" class="text-[11px]" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 55%, transparent)` }">{{ d.name }}</span>
           </div>
-          <span class="font-mono-tab text-[14px] tabular-nums" :style="{ color: brand.colors.positive, letterSpacing: '-0.005em' }">+{{ formatBRL2(d.amount) }}</span>
+          <span class="font-mono-tab text-[14px] tabular-nums" :style="{ color: brand.colors.positive, letterSpacing: '-0.005em' }">+{{ maskedBRL2(d.amount) }}</span>
         </li>
       </ul>
     </article>
@@ -101,12 +101,21 @@ function labelColor(kind: string): string {
   if (kind === 'Dividendo') return brand.colors.positive
   return brand.colors.primary
 }
+// Mascarar total estimado + valor por evento. Dividendos refletem
+// o tamanho da posicao (proventos × qty), entao expoem o patrimonio
+// indiretamente. Datas + tickers continuam visiveis (info publica).
+const interfaceStore = useInterfaceStore()
+
 function formatBRL(n: number): string {
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'BRL',
     maximumFractionDigits: 0,
   }).format(n)
+}
+function maskedBRL(n: number): string {
+  if (!interfaceStore.revealAmount) return 'R$ ••••••'
+  return formatBRL(n)
 }
 function formatBRL2(n: number): string {
   return new Intl.NumberFormat('pt-BR', {
@@ -115,5 +124,9 @@ function formatBRL2(n: number): string {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(n)
+}
+function maskedBRL2(n: number): string {
+  if (!interfaceStore.revealAmount) return 'R$ ••••'
+  return formatBRL2(n)
 }
 </script>

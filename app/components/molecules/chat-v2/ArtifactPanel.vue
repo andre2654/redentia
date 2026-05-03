@@ -110,6 +110,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { ChatArtifact } from '~/composables/useChatStream'
+import { maskCurrency } from '~/utils/maskCurrency'
 
 const props = defineProps<{
   artifact: ChatArtifact
@@ -136,10 +137,15 @@ const typeLabel = computed(() => {
   return 'Documento'
 })
 
-// Trivial markdown→HTML for non-spreadsheet artifacts
+// Reveal toggle — mascara R$ no artifact tambem (ja que o artifact
+// frequentemente e um resumo gerado pela IA com valores totais).
+const interfaceStore = useInterfaceStore()
+
+// Trivial markdown→HTML for non-spreadsheet artifacts. Aplica o
+// mascarar de currency apos o render quando reveal=false.
 const renderedContent = computed(() => {
   const c = props.artifact.content ?? ''
-  return c
+  const html = c
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
@@ -151,5 +157,6 @@ const renderedContent = computed(() => {
     .replace(/\n\n/g, '</p><p>')
     .replace(/^/, '<p>')
     .replace(/$/, '</p>')
+  return interfaceStore.revealAmount ? html : maskCurrency(html)
 })
 </script>

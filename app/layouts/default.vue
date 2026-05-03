@@ -345,16 +345,48 @@
            (logo + price + change), e a strip da sidebar duplicava esse
            sinal num lugar onde nao tinha espaco pra brilhar. -->
 
-      <!-- User row — inline strip, no bordered card. Avatar + name
-           + plan, plus three icon-only action buttons (theme cycle,
-           eye toggle, logout). The top border picks up the same
-           tint the rest of the sidebar uses, so the row reads as a
-           footer rather than a tray.
+      <!-- Privacy toggle row — full-width, label visivel + badge
+           On/Off. Antes era um icone-so apertado entre tema e
+           logout na user-row; ai virou linha propria pra ficar mais
+           descobrivel ("eu posso esconder valores aqui"). Mesma
+           store (interfaceStore.revealAmount) e mesmo comportamento
+           do toggle do chat sidebar — togglar num lugar reflete
+           no outro. -->
+      <button
+        type="button"
+        class="platform-privacy-toggle flex flex-shrink-0 items-center gap-2.5 border-t px-3 py-2.5 transition-[background-color]"
+        :style="{
+          borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+          color: brand.colors.text,
+        }"
+        :aria-pressed="!interfaceStore.revealAmount"
+        @click="interfaceStore.toggleRevealAmount"
+      >
+        <UIcon
+          :name="interfaceStore.revealAmount ? 'i-lucide-eye' : 'i-lucide-eye-off'"
+          class="size-4 shrink-0"
+          :style="{ color: !interfaceStore.revealAmount ? brand.colors.primary : `color-mix(in srgb, ${brand.colors.text} 55%, transparent)` }"
+          aria-hidden="true"
+        />
+        <span class="flex-1 text-left text-[13px]">Modo privacidade</span>
+        <span
+          class="rounded-full px-2 py-0.5 font-mono-tab text-[10px] font-semibold uppercase"
+          :style="{
+            letterSpacing: '0.14em',
+            backgroundColor: !interfaceStore.revealAmount
+              ? `color-mix(in srgb, ${brand.colors.primary} 18%, transparent)`
+              : `color-mix(in srgb, ${brand.colors.text} 8%, transparent)`,
+            color: !interfaceStore.revealAmount
+              ? brand.colors.primary
+              : `color-mix(in srgb, ${brand.colors.text} 55%, transparent)`,
+          }"
+        >{{ !interfaceStore.revealAmount ? 'On' : 'Off' }}</span>
+      </button>
 
-           Theme toggle: single icon that cycles light → dark →
-           system. Replaces the chunky 3-segment pill that used to
-           live above this row — the segmented control was visually
-           heavy for what's a one-off preference flip. -->
+      <!-- User row — inline strip, no bordered card. Avatar + name
+           + plan, plus two icon-only action buttons (theme cycle,
+           logout). O olhinho saiu daqui — virou a linha de "Modo
+           privacidade" acima, com label e badge On/Off. -->
       <div
         class="platform-user-row flex flex-shrink-0 items-center gap-2 border-t px-3 py-3"
         :style="{ borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)` }"
@@ -397,17 +429,6 @@
           @click="cycleThemeMode"
         >
           <UIcon :name="themeIcon" class="size-4" />
-        </button>
-        <button
-          type="button"
-          class="platform-icon-btn flex size-7 items-center justify-center rounded-md"
-          :style="{ color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }"
-          :title="interfaceStore.revealAmount ? brand.nav.hide : brand.nav.show"
-          @mouseover="(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = `color-mix(in srgb, ${brand.colors.text} 7%, transparent)`)"
-          @mouseleave="(e) => ((e.currentTarget as HTMLElement).style.backgroundColor = 'transparent')"
-          @click="interfaceStore.toggleRevealAmount"
-        >
-          <UIcon :name="interfaceStore.revealAmount ? 'i-lucide-eye-off' : 'i-lucide-eye'" class="size-4" />
         </button>
         <button
           type="button"
@@ -942,6 +963,21 @@ onMounted(() => {
 @keyframes platform-skeleton-shimmer {
   from { transform: translateX(-100%); }
   to { transform: translateX(100%); }
+}
+
+/* Privacy toggle row — full-width button. Hover puxa o mesmo tint
+   neutro dos outros action buttons da sidebar (sem amber agressivo)
+   pra nao chamar atencao constante quando o user passa o mouse na
+   regiao do footer. */
+.platform-privacy-toggle {
+  cursor: pointer;
+}
+.platform-privacy-toggle:hover {
+  background-color: color-mix(in srgb, var(--brand-text) 5%, transparent);
+}
+.platform-privacy-toggle:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--brand-primary) 40%, transparent);
 }
 
 /* User row — quiet card-on-card. The border-top from the
