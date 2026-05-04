@@ -510,6 +510,13 @@ export default defineNuxtConfig({
       '/api/chat/**': {
         proxy: `${process.env.NUXT_CHAT_SERVICE_URL ?? 'https://redentia-api.saraivada.com/chat'}/**`,
       },
+      // /legal/* → /institucional/* (301). Google Search Console
+      // reportou ~471 paginas 404 em /legal/* devido a links
+      // historicos no devPortalFooter que apontavam pra rotas
+      // inexistentes. Os arquivos vivem em /institucional/.
+      '/legal/terms': { redirect: { to: '/institucional/terms', statusCode: 301 } },
+      '/legal/privacy': { redirect: { to: '/institucional/privacy', statusCode: 301 } },
+      '/legal/cookies': { redirect: { to: '/institucional/cookies', statusCode: 301 } },
     }
   })(),
   // Dev-time proxy: forwards browser fetches of /api/chat/* to the

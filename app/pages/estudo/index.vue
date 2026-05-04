@@ -271,7 +271,7 @@ const breadcrumbSchema = {
 }
 
 useHead({
-  title: 'Redentia Estudo: Market research gratuito sobre finfluencers e creator economy financeira',
+  title: 'Redentia Estudo: Pesquisa sobre Finfluencers e Creators',
   htmlAttrs: { lang: 'pt-BR' },
   meta: [
     {

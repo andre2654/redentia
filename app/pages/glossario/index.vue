@@ -1,5 +1,5 @@
 <template>
-  <NuxtLayout name="static" title="Glossário Financeiro">
+  <NuxtLayout name="static" title="">
     <div class="flex flex-col gap-8 px-6 py-8">
       <!-- Header -->
       <section class="flex flex-col gap-4">

@@ -1,5 +1,5 @@
 <template>
-  <NuxtLayout name="static" title="ETFs">
+  <NuxtLayout name="static" title="">
     <section class="flex flex-col gap-8 px-6 py-8">
       <!-- Hero Section -->
       <div class="flex flex-col gap-4">
@@ -266,9 +266,27 @@ usePageSeo({
       headline: 'ETFs: Guia Completo de Fundos de Índice no Brasil',
       description:
         'Aprenda o que são ETFs, como funcionam, principais ETFs brasileiros (BOVA11, IVVB11, SMAL11) e como investir.',
+      image: [`${brand.url}/512x512.png`],
+      datePublished: '2025-01-01T00:00:00.000Z',
+      dateModified: new Date().toISOString(),
       author: {
         '@type': 'Organization',
         name: brand.name,
+        url: brand.url,
+      },
+      publisher: {
+        '@type': 'Organization',
+        name: brand.name,
+        logo: {
+          '@type': 'ImageObject',
+          url: `${brand.url}/512x512.png`,
+          width: 512,
+          height: 512,
+        },
+      },
+      mainEntityOfPage: {
+        '@type': 'WebPage',
+        '@id': `${brand.url}/etfs`,
       },
     },
     {

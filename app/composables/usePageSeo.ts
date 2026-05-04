@@ -21,6 +21,67 @@ function resolveUrl(base: string, path: string) {
   return `${base}${normalized}`
 }
 
+// Article/NewsArticle/BlogPosting exigem campos que paginas individuais
+// historicamente esqueciam (image, publisher, datePublished em ISO 8601).
+// Centralizar aqui mantem todas as paginas validas pro Google sem precisar
+// editar dezenas de arquivos. Qualquer override no caller vence o default.
+const ARTICLE_TYPES = new Set([
+  'Article',
+  'NewsArticle',
+  'BlogPosting',
+  'TechArticle',
+])
+
+function toIso8601(value: unknown): string | undefined {
+  if (!value || typeof value !== 'string') return undefined
+  if (value.includes('T')) return value
+  const d = new Date(value)
+  return isNaN(d.getTime()) ? value : d.toISOString()
+}
+
+function normalizeStructuredData(
+  entry: Record<string, any>,
+  defaults: { siteUrl: string; brandName: string },
+): Record<string, any> {
+  if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return entry
+  const t = entry['@type']
+  if (typeof t !== 'string' || !ARTICLE_TYPES.has(t)) return entry
+
+  const out = { ...entry }
+
+  if (!out.image) {
+    out.image = [`${defaults.siteUrl}/512x512.png`]
+  }
+
+  const dp = toIso8601(out.datePublished)
+  if (dp) out.datePublished = dp
+  const dm = toIso8601(out.dateModified)
+  if (dm) out.dateModified = dm
+
+  if (!out.publisher) {
+    out.publisher = {
+      '@type': 'Organization',
+      name: defaults.brandName,
+      logo: {
+        '@type': 'ImageObject',
+        url: `${defaults.siteUrl}/512x512.png`,
+        width: 512,
+        height: 512,
+      },
+    }
+  }
+
+  if (!out.author) {
+    out.author = {
+      '@type': 'Organization',
+      name: defaults.brandName,
+      url: defaults.siteUrl,
+    }
+  }
+
+  return out
+}
+
 export function usePageSeo(options: UsePageSeoOptions) {
   const brand = useBrand()
   const runtimeConfig = useRuntimeConfig()
@@ -110,7 +171,12 @@ export function usePageSeo(options: UsePageSeoOptions) {
       scripts.push({
         type: 'application/ld+json',
         key: `ld-json-${normalizedPath}-${index}`,
-        innerHTML: JSON.stringify(entry),
+        innerHTML: JSON.stringify(
+          normalizeStructuredData(entry, {
+            siteUrl,
+            brandName: brand.name,
+          }),
+        ),
       })
     })
   }

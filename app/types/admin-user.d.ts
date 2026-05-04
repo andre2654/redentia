@@ -37,6 +37,10 @@ export interface IAdminUser {
   has_portfolio?: boolean
   /** True if the user has an entry in portfolio_analyses (raio-x). */
   has_xray?: boolean
+  /** Soma do valor de mercado de todas as posições do usuário,
+   *  em BRL. Vem como number (cast no controller). 0 quando o
+   *  usuário não tem posições ou nenhuma tem preço atual. */
+  portfolio_value?: number
 }
 
 export interface IUserStats {
@@ -45,4 +49,10 @@ export interface IUserStats {
   pendingApproval: number
   /** role -> count map. Roles with zero users are absent. */
   byRole: Partial<Record<UserRole, number>>
+  /** AUM (Assets Under Management) — soma de TODOS os portfolios
+   *  da plataforma em BRL. Já cast como number no backend. */
+  aum?: number
+  /** Quantidade de users com pelo menos uma posição valendo > 0.
+   *  Diferente do total: filtra quem tem ações zeradas/sem preço. */
+  usersWithValue?: number
 }

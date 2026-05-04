@@ -244,7 +244,7 @@ definePageMeta({
 })
 
 usePageSeo({
-  title: `Calculadoras Financeiras Gratuitas, Juros, Ações, Planejamento | ${brand.name}`,
+  title: `Calculadoras Financeiras: Juros, Ações e IR | ${brand.name}`,
   description:
     'Calculadoras gratuitas: simule juros compostos, analise investimentos em ações e planeje seu patrimônio. Ferramentas com dados reais da B3.',
   path: '/calculadora',

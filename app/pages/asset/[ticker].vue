@@ -4956,6 +4956,17 @@ const faqStructuredData = computed(() => {
 
 // NewsArticle para cada commentary mais recente (ate 5), marcando a pagina
 // como fonte fresca no indice do Google. Ajuda em queries tipo "petr4 hoje".
+//
+// Normaliza datas pra ISO 8601 completo (YYYY-MM-DDTHH:mm:ss.sssZ). Datas
+// vindas do backend como "2026-01-21" sao validas como Date mas o Semrush
+// flag "structured data invalid" porque o Google espera o T+timezone.
+const toIsoDate = (raw: unknown): string => {
+  if (!raw) return new Date().toISOString()
+  const s = String(raw)
+  if (s.includes('T')) return s
+  const d = new Date(s)
+  return isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString()
+}
 const newsArticlesStructuredData = computed(() => {
   const arr = (commentaries.value || []) as any[]
   if (!arr || arr.length === 0) return []
@@ -4964,11 +4975,13 @@ const newsArticlesStructuredData = computed(() => {
     '@type': 'NewsArticle',
     headline: c.title,
     description: (c.commentary || '').slice(0, 200),
-    datePublished: c.date,
-    dateModified: c.updated_at || c.date,
+    image: [shareImage.value || `${baseSiteUrl.value}/512x512.png`],
+    datePublished: toIsoDate(c.date),
+    dateModified: toIsoDate(c.updated_at || c.date),
     author: {
       '@type': 'Organization',
       name: brand.name,
+      url: baseSiteUrl.value,
     },
     publisher: {
       '@type': 'Organization',
@@ -4976,6 +4989,8 @@ const newsArticlesStructuredData = computed(() => {
       logo: {
         '@type': 'ImageObject',
         url: `${baseSiteUrl.value}/512x512.png`,
+        width: 512,
+        height: 512,
       },
     },
     mainEntityOfPage: {

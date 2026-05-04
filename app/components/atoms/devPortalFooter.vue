@@ -87,8 +87,8 @@
           <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
             <span>© {{ year }} {{ brand.name }}</span>
             <span :style="{ color: 'var(--brand-border)' }">·</span>
-            <NuxtLink to="/legal/terms" class="transition-colors hover:opacity-80" :style="{ color: 'var(--brand-text)' }">TERMOS</NuxtLink>
-            <NuxtLink to="/legal/privacy" class="transition-colors hover:opacity-80" :style="{ color: 'var(--brand-text)' }">PRIVACIDADE</NuxtLink>
+            <NuxtLink to="/institucional/terms" class="transition-colors hover:opacity-80" :style="{ color: 'var(--brand-text)' }">TERMOS</NuxtLink>
+            <NuxtLink to="/institucional/privacy" class="transition-colors hover:opacity-80" :style="{ color: 'var(--brand-text)' }">PRIVACIDADE</NuxtLink>
             <a href="mailto:contato@redentia.com.br" class="transition-colors hover:opacity-80" :style="{ color: 'var(--brand-text)' }">CONTATO</a>
           </div>
           <div class="flex items-center gap-3">

@@ -246,7 +246,7 @@ const siteUrl = computed(() => {
 usePageSeo({
   title: hasTickers.value
     ? `Raio-X de ${tickersFromUrl.value.length} ativos | ${brand.name}`
-    : 'Raio-X da Carteira | Descubra os riscos escondidos da sua carteira em 2 minutos',
+    : `Raio-X da Carteira: Análise Gratuita em 2 Minutos | ${brand.name}`,
   description: 'Análise gratuita da sua carteira de investimentos. Cruzamos fundamentos, dividendos, concentração, notícias e risco para mostrar o que está bom, o que está ruim e o que mudou.',
   path: hasTickers.value ? `/raio-x?tickers=${tickersFromUrl.value.join(',')}` : '/raio-x',
 })
