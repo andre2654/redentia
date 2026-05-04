@@ -3811,18 +3811,31 @@
               </div>
             </template>
           </div>
+
+          <!-- Description completa da empresa, dentro do card. -->
+          <div
+            v-if="editorialDescriptionParagraphs.length"
+            class="mt-6 flex flex-col gap-4"
+          >
+            <p
+              v-for="(p, idx) in editorialDescriptionParagraphs"
+              :key="idx"
+              class="text-[15px] leading-[1.7]"
+              :style="{ color: brand.colors.textMuted }"
+            >{{ p }}</p>
+          </div>
+
+          <!-- Editorial completo (Tese, Comparacao, Trajetoria, FAQ)
+               dentro do mesmo card pra manter toda a info da empresa
+               num container unificado. -->
+          <MoleculesAssetEditorial
+            v-if="editorial"
+            :editorial="editorial"
+            :ticker-upper="tickerUpper"
+            :asset-name="assetName"
+          />
         </div>
       </section>
-
-      <!-- Editorial content (description, tese, peers, historico, FAQ).
-           So aparece em tickers que ja tem editorial gerado no banco.
-           Pra outros tickers, fica vazio sem quebrar o resto da page. -->
-      <MoleculesAssetEditorial
-        v-if="editorial"
-        :editorial="editorial"
-        :ticker-upper="tickerUpper"
-        :asset-name="assetName"
-      />
 
       <!-- Seção de IA para não autenticados, terminal REPL style -->
       <section v-if="!authStore.isAuthenticated" class="border-t py-12" :style="{ borderColor: brand.colors.border }">
@@ -4725,6 +4738,16 @@ const { data: editorial } = await useAsyncData<AssetEditorialPayload | null>(
   },
   { default: () => null, server: true }
 )
+
+// Description completa da empresa pra mostrar dentro do card de
+// "Sobre a empresa". A seccao "Sobre" foi removida do editorial
+// abaixo pra evitar duplicacao — agora tudo sobre a identidade
+// vive no card, e o editorial fica focado em analise.
+const editorialDescriptionParagraphs = computed<string[]>(() => {
+  const desc = editorial.value?.description
+  if (!desc) return []
+  return desc.split(/\n\n+/).map((p) => p.trim()).filter(Boolean)
+})
 
 const chartMarkers = computed(() =>
   commentaries.value.map((c) => ({
