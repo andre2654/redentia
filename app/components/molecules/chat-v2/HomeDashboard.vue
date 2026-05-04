@@ -644,7 +644,7 @@
             <span
               v-if="exposureFor(n) !== null"
               class="rounded-md px-2 py-0.5 font-mono-tab text-[11px] font-medium tabular-nums backdrop-blur-md"
-              :style="{ color: 'white', backgroundColor: `color-mix(in srgb, var(--brand-primary) 70%, rgba(0,0,0,0.6))` }"
+              :style="{ color: 'var(--text-on-primary)', backgroundColor: `color-mix(in srgb, var(--brand-primary) 70%, rgba(0,0,0,0.6))` }"
               translate="no"
             >{{ exposureFor(n)!.toFixed(1) }}%</span>
           </div>

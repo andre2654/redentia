@@ -57,42 +57,11 @@ const resolvedMode = computed(() => colorMode.value === 'dark' ? 'dark' : 'light
 // alpha) so the page reads predominantly white with pastel amber accents.
 // Dark mode left alone — it works on near-black where stronger glow is
 // needed to register at all.
-const meshOpacity = computed(() => {
-  if (resolvedMode.value === 'dark') return { amber: 0.30, rose: 0.18, amberSoft: 0.20 }
-  return { amber: 0.18, rose: 0.10, amberSoft: 0.14 }
-})
-
-// Mesh gradients — in light mode each circle is the brand primary mixed
-// HEAVILY with white before being drawn (so the radial center is a pastel
-// peach, not saturated amber). In dark mode we keep the pure primary so it
-// reads as light against the black canvas.
-const meshAmber = computed(() => {
-  if (resolvedMode.value === 'dark') {
-    return `radial-gradient(circle, ${brand.colors.primary}, transparent 65%)`
-  }
-  return `radial-gradient(circle, color-mix(in srgb, ${brand.colors.primary} 35%, white), transparent 65%)`
-})
-const meshRose = computed(() => {
-  if (resolvedMode.value === 'dark') {
-    return `radial-gradient(circle, ${brand.colors.primary}, transparent 70%)`
-  }
-  return `radial-gradient(circle, color-mix(in srgb, ${brand.colors.primary} 28%, white), transparent 70%)`
-})
-const meshAmberSoft = computed(() => {
-  if (resolvedMode.value === 'dark') {
-    return `radial-gradient(circle, ${brand.colors.primary}, transparent 70%)`
-  }
-  return `radial-gradient(circle, color-mix(in srgb, ${brand.colors.primary} 30%, white), transparent 70%)`
-})
-
-// Base wash — in light mode, a soft top-to-bottom gradient that pulls toward
-// pure white at the bottom, so the page transitions cleanly into the rest of
-// the layout (which is white). Mounted UNDER the mesh circles so they read as
-// pastel highlights ON white, not amber-on-amber.
-const baseWash = computed(() => {
-  if (resolvedMode.value === 'dark') return 'transparent'
-  return 'linear-gradient(180deg, color-mix(in srgb, var(--brand-primary) 4%, white) 0%, white 70%)'
-})
+// Mesh background, base wash e arc opacity foram migrados pra CSS-only
+// (ver `<style>` nao-scoped no fim do arquivo). Computeds JS-driven
+// reativos a `resolvedMode` ficavam congelados nos valores SSR durante
+// hidratacao, causando flash visivel. CSS resolve via `:root.dark` /
+// `:root.light` antes de qualquer JS rodar — zero flash.
 
 const heroCardShadow = computed(() => {
   if (resolvedMode.value === 'dark') {
@@ -230,7 +199,10 @@ function stackStyle(absoluteIdx: number) {
 }
 
 // Mock data para os cards do showcase (depois das integraçoes reais com APIs)
-const ibovChangeColor = computed(() => props.ibovVariationColor || brand.colors.negative || '#FF4747')
+// Mantido por compatibilidade caso algum filho consuma; nao tem callers no arquivo.
+// Fallback hex puro porque essa computed pode ser passada pra contextos
+// (libs externas, SVG attribute) que nao resolvem CSS vars.
+const ibovChangeColor = computed(() => props.ibovVariationColor || '#FF4747')
 
 const topStockMock = computed(() => [
   { ticker: 'BBAS3', name: 'Banco do Brasil', dy: '9.5%', change: '+2.84%', up: true },
@@ -270,15 +242,19 @@ const risksPreview = computed(() => demoReport.value.risks.slice(0, 3))
            3. SVG arc: dropped to <8% opacity for the same reason.
          Dark mode bypasses baseWash (transparent) and uses the original
          saturated mesh because it needs the glow to register on near-black. -->
-    <div class="hero-radiograph__bg pointer-events-none absolute inset-0" :style="{ background: baseWash }">
-      <div class="absolute -right-32 -top-40 h-[680px] w-[820px] rounded-full blur-3xl" :style="{ background: meshAmber, opacity: meshOpacity.amber }" />
-      <div class="absolute right-[10%] top-[30%] h-[480px] w-[520px] rounded-full blur-3xl" :style="{ background: meshRose, opacity: meshOpacity.rose }" />
-      <div class="absolute -bottom-40 -left-32 h-[560px] w-[640px] rounded-full blur-3xl" :style="{ background: meshAmberSoft, opacity: meshOpacity.amberSoft }" />
+    <!-- Background mesh — TODO via CSS classes (sem :style inline JS-driven)
+         pra resolver via :root.dark/:root.light selectors antes de qualquer
+         hidratacao. Computeds JS-driven (baseWash, meshAmber, etc.) ficavam
+         congelados nos valores SSR; CSS classes resolvem instantaneamente. -->
+    <div class="hero-radiograph__bg pointer-events-none absolute inset-0">
+      <div class="hero-radiograph__mesh-amber absolute -right-32 -top-40 h-[680px] w-[820px] rounded-full blur-3xl" />
+      <div class="hero-radiograph__mesh-rose absolute right-[10%] top-[30%] h-[480px] w-[520px] rounded-full blur-3xl" />
+      <div class="hero-radiograph__mesh-soft absolute -bottom-40 -left-32 h-[560px] w-[640px] rounded-full blur-3xl" />
       <svg class="absolute -right-20 -top-20 h-[520px] w-[640px]" viewBox="0 0 640 520" fill="none" preserveAspectRatio="none" aria-hidden="true">
         <defs>
           <linearGradient id="hero-radiograph-arc" x1="100%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" :stop-color="brand.colors.primary" :stop-opacity="resolvedMode === 'dark' ? 0.22 : 0.08" />
-            <stop offset="60%" stop-color="#F96BEE" :stop-opacity="resolvedMode === 'dark' ? 0.08 : 0.03" />
+            <stop class="hero-radiograph__arc-stop1" offset="0%" stop-color="var(--brand-primary)" />
+            <stop class="hero-radiograph__arc-stop2" offset="60%" stop-color="#F96BEE" />
             <stop offset="100%" stop-color="#F96BEE" stop-opacity="0" />
           </linearGradient>
         </defs>
@@ -395,14 +371,14 @@ const risksPreview = computed(() => demoReport.value.risks.slice(0, 3))
             >
               <div
                 class="pointer-events-none absolute inset-0"
-                :style="{ background: `linear-gradient(135deg, ${brand.colors.primary}1A 0%, transparent 35%, #F96BEE14 80%, transparent 100%)` }"
+                :style="{ background: `linear-gradient(135deg, var(--brand-primary)1A 0%, transparent 35%, #F96BEE14 80%, transparent 100%)` }"
                 aria-hidden="true"
               />
               <header class="relative flex items-center justify-between px-6 pt-6">
                 <div class="flex items-center gap-2">
                   <span class="text-[10px] font-medium uppercase tracking-[0.18em]" :style="{ color: 'var(--text-muted)' }">REDENT SCORE · DEMO</span>
                 </div>
-                <span class="rounded-md px-2 py-0.5 text-[10px] font-medium" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`, color: brand.colors.primary }">
+                <span class="rounded-md px-2 py-0.5 text-[10px] font-medium" :style="{ background: `color-mix(in srgb, var(--brand-primary) 14%, transparent)`, color: 'var(--brand-primary)' }">
                   Exemplo
                 </span>
               </header>
@@ -413,22 +389,22 @@ const risksPreview = computed(() => demoReport.value.risks.slice(0, 3))
                     <span
                       class="rounded-md border px-2 py-1 text-[10px] font-medium uppercase tracking-[0.06em]"
                       :style="{
-                        background: `color-mix(in srgb, ${brand.colors.primary} 16%, transparent)`,
-                        color: brand.colors.primary,
-                        borderColor: `color-mix(in srgb, ${brand.colors.primary} 30%, transparent)`,
+                        background: `color-mix(in srgb, var(--brand-primary) 16%, transparent)`,
+                        color: 'var(--brand-primary)',
+                        borderColor: `color-mix(in srgb, var(--brand-primary) 30%, transparent)`,
                       }"
                     >{{ demoReport.bandLabel }}</span>
                     <ul class="flex flex-col gap-1.5 text-[11px]">
                       <li class="flex items-center gap-2">
-                        <span class="size-1.5 rounded-full" :style="{ background: brand.colors.positive }" />
+                        <span class="size-1.5 rounded-full" :style="{ background: 'var(--brand-positive)' }" />
                         <span :style="{ color: 'var(--text-body)' }">{{ demoReport.strengths.length }} pontos fortes</span>
                       </li>
                       <li class="flex items-center gap-2">
-                        <span class="size-1.5 rounded-full" :style="{ background: brand.colors.negative }" />
+                        <span class="size-1.5 rounded-full" :style="{ background: 'var(--brand-negative)' }" />
                         <span :style="{ color: 'var(--text-body)' }">{{ demoReport.risks.length }} riscos</span>
                       </li>
                       <li class="flex items-center gap-2">
-                        <span class="size-1.5 rounded-full" :style="{ background: brand.colors.primary }" />
+                        <span class="size-1.5 rounded-full" :style="{ background: 'var(--brand-primary)' }" />
                         <span :style="{ color: 'var(--text-body)' }">{{ demoReport.events.length }} eventos hoje</span>
                       </li>
                     </ul>
@@ -447,7 +423,7 @@ const risksPreview = computed(() => demoReport.value.risks.slice(0, 3))
                     <UIcon
                       name="i-lucide-alert-triangle"
                       class="mt-[2px] size-3 shrink-0"
-                      :style="{ color: risk.severity === 'high' ? brand.colors.negative : brand.colors.primary }"
+                      :style="{ color: risk.severity === 'high' ? 'var(--brand-negative)' : 'var(--brand-primary)' }"
                     />
                     <span>{{ risk.title }}</span>
                   </li>
@@ -463,7 +439,7 @@ const risksPreview = computed(() => demoReport.value.risks.slice(0, 3))
             >
               <div
                 class="pointer-events-none absolute inset-0"
-                :style="{ background: `linear-gradient(135deg, ${brand.colors.positive}14 0%, transparent 40%, ${brand.colors.primary}10 100%)` }"
+                :style="{ background: `linear-gradient(135deg, var(--brand-positive)14 0%, transparent 40%, var(--brand-primary)10 100%)` }"
                 aria-hidden="true"
               />
               <header class="relative flex items-center justify-between px-6 pt-6">
@@ -510,12 +486,12 @@ const risksPreview = computed(() => demoReport.value.risks.slice(0, 3))
             >
               <div
                 class="pointer-events-none absolute inset-0"
-                :style="{ background: `linear-gradient(135deg, ${brand.colors.negative}10 0%, transparent 50%, ${brand.colors.primary}10 100%)` }"
+                :style="{ background: `linear-gradient(135deg, var(--brand-negative)10 0%, transparent 50%, var(--brand-primary)10 100%)` }"
                 aria-hidden="true"
               />
               <header class="relative flex items-center justify-between px-6 pt-6">
                 <div class="flex items-center gap-2">
-                  <UIcon name="i-lucide-flame" class="size-3.5" :style="{ color: brand.colors.primary }" />
+                  <UIcon name="i-lucide-flame" class="size-3.5" :style="{ color: 'var(--brand-primary)' }" />
                   <span class="text-[12px] font-medium" :style="{ color: 'var(--text-body)' }">Stress test</span>
                 </div>
                 <span class="rounded-md border px-2 py-0.5 text-[11px] font-medium" :style="{ borderColor: 'var(--border-subtle)', color: 'var(--text-body)' }">3 cenarios</span>
@@ -558,12 +534,12 @@ const risksPreview = computed(() => demoReport.value.risks.slice(0, 3))
             >
               <div
                 class="pointer-events-none absolute inset-0"
-                :style="{ background: `linear-gradient(135deg, ${brand.colors.primary}1A 0%, transparent 50%, ${brand.colors.positive}10 100%)` }"
+                :style="{ background: `linear-gradient(135deg, var(--brand-primary)1A 0%, transparent 50%, var(--brand-positive)10 100%)` }"
                 aria-hidden="true"
               />
               <header class="relative flex items-center justify-between px-6 pt-6">
                 <div class="flex items-center gap-2">
-                  <UIcon name="i-lucide-coins" class="size-3.5" :style="{ color: brand.colors.primary }" />
+                  <UIcon name="i-lucide-coins" class="size-3.5" :style="{ color: 'var(--brand-primary)' }" />
                   <span class="text-[12px] font-medium" :style="{ color: 'var(--text-body)' }">Renda passiva</span>
                 </div>
                 <span class="rounded-md border px-2 py-0.5 text-[11px] font-medium" :style="{ borderColor: 'var(--border-subtle)', color: 'var(--text-body)' }">Mensal</span>
@@ -583,7 +559,7 @@ const risksPreview = computed(() => demoReport.value.risks.slice(0, 3))
                   :style="{ borderColor: 'var(--border-subtle)' }"
                 >
                   <span class="text-[12px] font-medium" :style="{ color: 'var(--text-heading)' }">{{ d.ticker }}</span>
-                  <span class="font-mono-tab tabular-nums text-[12px]" :style="{ color: brand.colors.primary }">R$ {{ d.monthlyAvg.toFixed(2) }}</span>
+                  <span class="font-mono-tab tabular-nums text-[12px]" :style="{ color: 'var(--brand-primary)' }">R$ {{ d.monthlyAvg.toFixed(2) }}</span>
                 </li>
               </ul>
             </article>
@@ -596,12 +572,12 @@ const risksPreview = computed(() => demoReport.value.risks.slice(0, 3))
             >
               <div
                 class="pointer-events-none absolute inset-0"
-                :style="{ background: `linear-gradient(135deg, ${brand.colors.primary}1A 0%, transparent 50%, #F96BEE10 100%)` }"
+                :style="{ background: `linear-gradient(135deg, var(--brand-primary)1A 0%, transparent 50%, #F96BEE10 100%)` }"
                 aria-hidden="true"
               />
               <header class="relative flex items-center justify-between px-6 pt-6">
                 <div class="flex items-center gap-2">
-                  <UIcon name="i-lucide-pie-chart" class="size-3.5" :style="{ color: brand.colors.primary }" />
+                  <UIcon name="i-lucide-pie-chart" class="size-3.5" :style="{ color: 'var(--brand-primary)' }" />
                   <span class="text-[12px] font-medium" :style="{ color: 'var(--text-body)' }">Alocacao</span>
                 </div>
                 <span class="rounded-md border px-2 py-0.5 text-[11px] font-medium" :style="{ borderColor: 'var(--border-subtle)', color: 'var(--text-body)' }">{{ demoReport.allocationByClass.length }} classes</span>
@@ -725,4 +701,67 @@ const risksPreview = computed(() => demoReport.value.risks.slice(0, 3))
   width: 18px;
   background: var(--brand-primary);
 }
+</style>
+
+<!-- Estilos do background do hero (mesh + arc + base wash). Sao colocados
+     num <style> NAO-SCOPED de proposito: as regras dependem da class
+     `:root.dark` / `:root.light` no <html> que e adicionada pelo
+     `@nuxtjs/color-mode` ANTES do CSS aplicar. Como scoped CSS adiciona
+     `[data-v-XXX]` em todos seletores, ele quebra o match com `:root.X`.
+     Sem JS-driven `:style` reativo, a hidratacao SSR nao tem mismatch e
+     o flash some. -->
+<style>
+/* Default (modo nao definido, ainda no media query) — light atmosphere
+   pra evitar flash quando OS=dark mas anti-flash ainda nao rodou. */
+.hero-radiograph__bg {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--brand-primary) 4%, white) 0%, white 70%);
+}
+.hero-radiograph__mesh-amber {
+  background: radial-gradient(circle, color-mix(in srgb, var(--brand-primary) 35%, white), transparent 65%);
+  opacity: 0.18;
+}
+.hero-radiograph__mesh-rose {
+  background: radial-gradient(circle, color-mix(in srgb, var(--brand-primary) 28%, white), transparent 70%);
+  opacity: 0.10;
+}
+.hero-radiograph__mesh-soft {
+  background: radial-gradient(circle, color-mix(in srgb, var(--brand-primary) 30%, white), transparent 70%);
+  opacity: 0.12;
+}
+.hero-radiograph__arc-stop1 { stop-opacity: 0.08; }
+.hero-radiograph__arc-stop2 { stop-opacity: 0.03; }
+
+/* Dark — saturated mesh on near-black, baseWash transparente */
+@media (prefers-color-scheme: dark) {
+  :root:not(.light):not(.dark) .hero-radiograph__bg { background: transparent; }
+  :root:not(.light):not(.dark) .hero-radiograph__mesh-amber {
+    background: radial-gradient(circle, var(--brand-primary), transparent 65%);
+    opacity: 0.30;
+  }
+  :root:not(.light):not(.dark) .hero-radiograph__mesh-rose {
+    background: radial-gradient(circle, var(--brand-primary), transparent 70%);
+    opacity: 0.18;
+  }
+  :root:not(.light):not(.dark) .hero-radiograph__mesh-soft {
+    background: radial-gradient(circle, var(--brand-primary), transparent 70%);
+    opacity: 0.20;
+  }
+  :root:not(.light):not(.dark) .hero-radiograph__arc-stop1 { stop-opacity: 0.22; }
+  :root:not(.light):not(.dark) .hero-radiograph__arc-stop2 { stop-opacity: 0.08; }
+}
+:root.dark .hero-radiograph__bg { background: transparent; }
+:root.dark .hero-radiograph__mesh-amber {
+  background: radial-gradient(circle, var(--brand-primary), transparent 65%);
+  opacity: 0.30;
+}
+:root.dark .hero-radiograph__mesh-rose {
+  background: radial-gradient(circle, var(--brand-primary), transparent 70%);
+  opacity: 0.18;
+}
+:root.dark .hero-radiograph__mesh-soft {
+  background: radial-gradient(circle, var(--brand-primary), transparent 70%);
+  opacity: 0.20;
+}
+:root.dark .hero-radiograph__arc-stop1 { stop-opacity: 0.22; }
+:root.dark .hero-radiograph__arc-stop2 { stop-opacity: 0.08; }
 </style>

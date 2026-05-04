@@ -202,6 +202,39 @@ function onPickerSubmit(tickers: string[]) {
   router.push({ path: '/raio-x', query: { tickers: tickers.join(',') } })
 }
 
+// ============ QUIZ MODE — NOVA UX DO HERO ============
+//
+// Por que mudamos: a UX antiga era um picker direto pra digitar tickers.
+// Quem chega do anuncio nao sabe ticker decorado, abandonava (1.1% LPV
+// → Lead). Multi-step quiz tem bench de 13.85% conversao vs 4.53% single-
+// page (Acorns/Wealthfront/Betterment usam esse padrao).
+//
+// Como funciona:
+//   - mode='quiz' (padrao): hero mostra MoleculesPortfolioQuiz
+//   - mode='picker': pessoa clicou "Ja tenho carteira pronta" no quiz,
+//     ai mostramos o picker classico
+//
+// Quiz @submit emite PortfolioInput[] com weights inferidos. A page
+// extrai apenas os tickers e navega como o picker faz (mantemos o flow
+// de pixel firing, modal de cadastro, etc — tudo continua igual depois
+// que /raio-x?tickers=... carrega).
+type HeroMode = 'quiz' | 'picker'
+const heroMode = ref<HeroMode>('quiz')
+
+function onQuizSubmit(tickers: import('~/composables/usePortfolioScore').PortfolioInput[]) {
+  if (tickers.length === 0) return
+  // Pelo mesmo motivo que loadDemo: a URL leva apenas ticker list
+  // (composable distribui peso igual). Pesos do quiz servem pra UI,
+  // nao precisam navegar pela URL.
+  const tickerList = tickers.map(t => t.ticker)
+  router.push({ path: '/raio-x', query: { tickers: tickerList.join(',') } })
+}
+
+function onQuizFallback() {
+  // User clicou "ja tenho carteira pronta" — esconde quiz, mostra picker.
+  heroMode.value = 'picker'
+}
+
 // Confirmar (botao "Continuar vendo o demo") apenas fecha — o usuario ja
 // esta na pagina do diagnostico, segue olhando.
 function onSimModalConfirm() {
@@ -275,7 +308,7 @@ usePageSeo({
                  md:order-2: na direita do desktop (assimetria classica
                  SaaS, texto-left + product-shot-right). -->
             <div class="order-2 flex flex-col gap-5 md:col-span-6 md:order-2">
-              <p class="eyebrow">RAIO-X DEMO · GRATUITO</p>
+              <p class="eyebrow">RAIO-X PERSONALIZADO · 30 SEGUNDOS</p>
               <h1
                 class="text-[36px] font-light leading-[1.05] tracking-[-0.025em] md:text-[52px]"
                 :style="{ color: 'var(--text-heading)' }"
@@ -288,32 +321,45 @@ usePageSeo({
                 class="text-[16px] leading-relaxed md:text-[17px]"
                 :style="{ color: 'var(--text-body)' }"
               >
-                Cole seus tickers e a Redent.IA cruza fundamentos, dividendos, concentração e notícias pra mostrar o que está bom, o que está ruim e o que mudou.
+                Responda 5 perguntas rápidas e a Redent.IA monta a primeira versão da sua carteira pra analisar. Você ajusta com seus ativos depois. Sem precisar decorar ticker.
               </p>
 
-              <!-- Primary CTA: asset picker (QuickSearch-style modal).
-                   Substituiu o text input que exigia que o usuario
-                   digitasse cada ticker. Agora abre uma dialog onde da
-                   pra buscar por ticker OU nome (PETR4 ou "Petrobras")
-                   e clicar pra montar a carteira. -->
-              <div class="w-full">
+              <!-- ============ PRIMARY ACTION: QUIZ ============
+                   Multi-step onboarding (Acorns/Wealthfront-style). Cada
+                   pergunta cria sunk cost progressivo. Apos 5, o quiz emite
+                   tickers e a page navega pra /raio-x?tickers=... — mesmo
+                   flow que o picker tinha. Pessoa que ja tem ticker decorado
+                   tem escape hatch dentro do quiz ("ja tenho carteira pronta")
+                   que troca o componente pro picker classico.
+              -->
+              <div v-if="heroMode === 'quiz'" class="w-full">
+                <MoleculesPortfolioQuiz
+                  @submit="onQuizSubmit"
+                  @fallback="onQuizFallback"
+                />
+              </div>
+
+              <div v-else class="w-full">
                 <MoleculesPortfolioAssetPicker
                   cta-label="Gerar Raio-X"
                   cta-label-short="Gerar Raio-X"
                   :initial="tickersFromUrl"
                   @submit="onPickerSubmit"
                 />
+                <button
+                  type="button"
+                  class="mt-3 inline-flex items-center gap-1.5 self-start text-[13px] font-medium underline decoration-dotted underline-offset-4 transition-opacity hover:opacity-70"
+                  :style="{ color: 'var(--text-muted)' }"
+                  @click="heroMode = 'quiz'"
+                >
+                  <UIcon name="i-lucide-chevron-left" class="size-3.5" aria-hidden="true" />
+                  Voltar pro quiz guiado
+                </button>
               </div>
 
-              <!-- Secondary CTA: era link sublinhado discreto. Promovido pra
-                   botao outline (.quiet-btn-ghost) pra dar peso visual
-                   equivalente ao "Gerar Raio-X" do picker. Quem nao tem
-                   ticker decorado agora ve as 2 portas claramente em vez
-                   de procurar o link sublinhado pequeno. Pareamento Stripe-
-                   style: primary amber + ghost outline.
-                   Texto: "Ver com carteira de exemplo" (era "Ou veja o
-                   exemplo com uma carteira pronta") — mais conciso e
-                   menos hesitante. -->
+              <!-- Secondary CTA: ver demo (carteira pronta de exemplo).
+                   Mantemos como botao outline pra quem quer "espiar" antes
+                   de fazer o quiz proprio. -->
               <button
                 type="button"
                 class="quiet-btn-ghost raio-x__demo-cta self-start"
@@ -878,7 +924,7 @@ usePageSeo({
   padding: 10px 16px 10px 10px;
   border-radius: 999px;
   background: linear-gradient(135deg, var(--brand-primary), color-mix(in srgb, var(--brand-primary) 80%, #FF8A3D));
-  color: #fff;
+  color: var(--text-on-primary);
   font-family: var(--brand-font);
   text-decoration: none;
   box-shadow:

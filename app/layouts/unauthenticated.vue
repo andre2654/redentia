@@ -1,6 +1,6 @@
 <template>
   <!-- Use the CSS var (var(--brand-background)) instead of the reactive
-       `brand.colors.background`. Inline `:style` bindings get FROZEN
+       `'var(--brand-background)'`. Inline `:style` bindings get FROZEN
        at SSR-rendered values when the mode resolves differently on
        client (system pref + OS != defaultMode) — Vue 3's hydration
        intentionally skips DOM correction for mismatched inline styles.
@@ -8,13 +8,13 @@
        tag innerHTML and DOES propagate post-hydration. -->
   <div
     class="flex min-h-screen flex-col"
-    :style="{ backgroundColor: brand.colors.background, paddingLeft: 'env(safe-area-inset-left)', paddingRight: 'env(safe-area-inset-right)' }"
+    :style="{ backgroundColor: 'var(--brand-background)', paddingLeft: 'env(safe-area-inset-left)', paddingRight: 'env(safe-area-inset-right)' }"
   >
     <!-- Skip link: visible only on focus, jumps screen-reader/keyboard users past the ticker+nav -->
     <a
       href="#main-content"
       class="sr-only fixed left-4 top-4 z-[100] rounded-md px-4 py-2 font-semibold shadow-lg focus:not-sr-only focus:outline-none focus:ring-2 focus:ring-offset-2"
-      :style="{ backgroundColor: brand.colors.primary, color: brand.colors.background }"
+      :style="{ backgroundColor: 'var(--brand-primary)', color: 'var(--brand-background)' }"
     >
       Pular para o conteúdo principal
     </a>
@@ -23,8 +23,8 @@
       class="z-20 flex items-center justify-between gap-6 border-b px-8 py-4"
       :class="brand.hero?.variant === 'institutional' || brand.hero?.variant === 'editorial' ? '' : 'sticky top-0 backdrop-blur-xl'"
       :style="{
-        background: headerBg || (brand.colors.background + 'E6'),
-        borderColor: hexWithAlpha(brand.colors.border, 'CC'),
+        background: headerBg || 'color-mix(in srgb, var(--brand-background) 90%, transparent)',
+        borderColor: 'color-mix(in srgb, var(--brand-border) 80%, transparent)',
         paddingTop: 'max(1rem, env(safe-area-inset-top))',
       }"
     >
@@ -34,9 +34,9 @@
           type="button"
           class="inline-flex h-10 w-10 items-center justify-center rounded-full border transition md:hidden"
           :style="{
-            borderColor: brand.colors.border,
-            backgroundColor: brand.colors.surface,
-            color: brand.colors.text,
+            borderColor: 'var(--brand-border)',
+            backgroundColor: 'var(--brand-surface)',
+            color: 'var(--brand-text)',
           }"
           aria-label="Abrir menu"
           @click="menuMobileActive = true"
@@ -65,7 +65,7 @@
             type="button"
             class="group flex items-center gap-1.5 py-2 text-[13px] tracking-[0.01em] transition-colors"
             :style="{
-              color: openedMenu === group.key ? brand.colors.text : brand.colors.textMuted,
+              color: openedMenu === group.key ? 'var(--brand-text)' : 'var(--brand-text-muted)',
             }"
           >
             <span class="relative">
@@ -74,7 +74,7 @@
                 class="absolute -bottom-0.5 left-0 h-px transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-300 ease-out"
                 :style="{
                   width: openedMenu === group.key ? '100%' : '0%',
-                  backgroundColor: brand.colors.primary,
+                  backgroundColor: 'var(--brand-primary)',
                 }"
               />
             </span>
@@ -98,8 +98,8 @@
             <div
               class="overflow-hidden rounded-xl border"
               :style="{
-                borderColor: brand.colors.border,
-                backgroundColor: brand.colors.surface,
+                borderColor: 'var(--brand-border)',
+                backgroundColor: 'var(--brand-surface)',
                 boxShadow: brand.theme?.mode === 'dark' ? '0 20px 60px rgba(0,0,0,0.65)' : '0 20px 50px rgba(15,23,42,0.12)',
               }"
             >
@@ -113,11 +113,11 @@
                   v-for="(col, colIdx) in group.columns"
                   :key="col.heading"
                   class="flex flex-col gap-0.5 px-5 py-5"
-                  :style="{ borderLeft: colIdx > 0 ? `1px solid ${brand.colors.border}` : 'none' }"
+                  :style="{ borderLeft: colIdx > 0 ? '1px solid var(--brand-border)' : 'none' }"
                 >
                   <span
                     class="mb-3 text-[10px] font-semibold uppercase tracking-[0.15em]"
-                    :style="{ color: brand.colors.primary }"
+                    :style="{ color: 'var(--brand-primary)' }"
                   >
                     {{ col.heading }}
                   </span>
@@ -126,14 +126,14 @@
                     :key="item.to"
                     :to="item.to"
                     class="group/item -mx-2 flex items-center justify-between rounded px-2 py-1.5 text-[13px] leading-snug transition-colors"
-                    :style="{ color: brand.colors.text }"
-                    @mouseenter="($event.currentTarget as HTMLElement).style.backgroundColor = hexWithAlpha(brand.colors.text, '08')"
+                    :style="{ color: 'var(--brand-text)' }"
+                    @mouseenter="($event.currentTarget as HTMLElement).style.backgroundColor = 'color-mix(in srgb, var(--brand-text) 3%, transparent)'"
                     @mouseleave="($event.currentTarget as HTMLElement).style.backgroundColor = 'transparent'"
                   >
                     <span>{{ item.label }}</span>
                     <span
                       class="-mr-1 translate-x-[-4px] opacity-0 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-200 group-hover/item:translate-x-0 group-hover/item:opacity-100"
-                      :style="{ color: brand.colors.primary }"
+                      :style="{ color: 'var(--brand-primary)' }"
                     >→</span>
                   </NuxtLink>
                 </div>
@@ -146,14 +146,14 @@
                   :key="item.to"
                   :to="item.to"
                   class="group/item flex items-center justify-between rounded px-3 py-2 text-[13px] transition-colors"
-                  :style="{ color: brand.colors.text }"
-                  @mouseenter="($event.currentTarget as HTMLElement).style.backgroundColor = hexWithAlpha(brand.colors.text, '08')"
+                  :style="{ color: 'var(--brand-text)' }"
+                  @mouseenter="($event.currentTarget as HTMLElement).style.backgroundColor = 'color-mix(in srgb, var(--brand-text) 3%, transparent)'"
                   @mouseleave="($event.currentTarget as HTMLElement).style.backgroundColor = 'transparent'"
                 >
                   <span>{{ item.label }}</span>
                   <span
                     class="translate-x-[-4px] opacity-0 transition-[transform,opacity,box-shadow,background-color,border-color,filter] duration-200 group-hover/item:translate-x-0 group-hover/item:opacity-100"
-                    :style="{ color: brand.colors.primary }"
+                    :style="{ color: 'var(--brand-primary)' }"
                   >→</span>
                 </NuxtLink>
               </div>
@@ -171,18 +171,18 @@
           <NuxtLink
             to="/help"
             class="group flex items-center gap-2 text-[13px] transition-colors"
-            :style="{ color: brand.colors.textMuted }"
-            @mouseenter="($event.currentTarget as HTMLElement).style.color = brand.colors.secondary"
-            @mouseleave="($event.currentTarget as HTMLElement).style.color = brand.colors.textMuted"
+            :style="{ color: 'var(--brand-text-muted)' }"
+            @mouseenter="($event.currentTarget as HTMLElement).style.color = 'var(--brand-secondary)'"
+            @mouseleave="($event.currentTarget as HTMLElement).style.color = 'var(--brand-text-muted)'"
           >
             <span class="relative flex size-1.5">
               <span
                 class="absolute inline-flex size-1.5 motion-safe:animate-ping rounded-full opacity-60"
-                :style="{ backgroundColor: brand.colors.secondary }"
+                :style="{ backgroundColor: 'var(--brand-secondary)' }"
               />
               <span
                 class="relative inline-flex size-1.5 rounded-full"
-                :style="{ backgroundColor: brand.colors.secondary }"
+                :style="{ backgroundColor: 'var(--brand-secondary)' }"
               />
             </span>
             <span class="tracking-[0.01em]">{{ brand.nav.headerAI }}</span>
@@ -196,7 +196,7 @@
           <NuxtLink
             to="/auth/login"
             class="group inline-flex items-center gap-2 rounded-md px-5 py-2 text-[14px] font-medium leading-none transition-all duration-200 focus-visible:outline-none focus-visible:shadow-[var(--shadow-ring-focus)] active:translate-y-px"
-            style="background-color: var(--brand-primary); color: #fff;"
+            style="background-color: var(--brand-primary); color: var(--text-on-primary);"
             @mouseenter="($event.currentTarget as HTMLElement).style.filter = 'brightness(0.92)'"
             @mouseleave="($event.currentTarget as HTMLElement).style.filter = 'brightness(1)'"
           >
@@ -218,7 +218,7 @@
         <NuxtLink
           to="/auth/login"
           class="inline-flex items-center gap-2 rounded-md px-5 py-2 text-[14px] font-medium leading-none transition-all duration-200 focus-visible:outline-none focus-visible:shadow-[var(--shadow-ring-focus)] active:translate-y-px"
-          style="background-color: var(--brand-primary); color: #fff;"
+          style="background-color: var(--brand-primary); color: var(--text-on-primary);"
           @mouseenter="($event.currentTarget as HTMLElement).style.filter = 'brightness(0.92)'"
           @mouseleave="($event.currentTarget as HTMLElement).style.filter = 'brightness(1)'"
         >

@@ -29,6 +29,15 @@ export default defineNuxtConfig({
   colorMode: {
     storage: 'cookie',
     storageKey: 'nuxt-color-mode',
+    // Class adicionada no <html> e simplesmente `dark` ou `light`
+    // (nao `dark-mode`/`light-mode`). Bate com o seletor `:root.dark`
+    // emitido pelo `plugins/brand.ts buildCssVars`. O `@nuxtjs/color-mode`
+    // injeta a class via inline anti-flash script ANTES do CSS aplicar,
+    // entao componentes que usam `var(--brand-X)` ja sao renderizados
+    // no modo certo sem flash de hidratacao.
+    classSuffix: '',
+    preference: 'system',
+    fallback: 'dark',
   },
 
   // @nuxt/image config. External hosts we serve logos/thumbnails from

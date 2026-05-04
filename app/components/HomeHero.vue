@@ -1687,7 +1687,7 @@
               <NuxtLink
                 to="/auth/register"
                 class="inline-flex items-center gap-2.5 rounded-xl px-8 py-3.5 text-sm font-semibold shadow-lg transition hover:opacity-90"
-                :style="{ backgroundColor: brand.colors.primary, color: '#ffffff', boxShadow: `0 8px 30px ${brand.colors.primary}30` }"
+                :style="{ backgroundColor: 'var(--brand-primary)', color: 'var(--text-on-primary)', boxShadow: `0 8px 30px ${brand.colors.primary}30` }"
               >
                 <UIcon :name="brand.hero.ctaIcon || 'i-lucide-briefcase'" class="size-4" />
                 {{ brand.hero.ctaLabel }}

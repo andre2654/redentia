@@ -263,7 +263,7 @@
           :disabled="submitted"
           :style="{
             backgroundColor: 'var(--brand-primary)',
-            color: brand.colors.onPrimary ?? '#fff',
+            color: 'var(--text-on-primary)',
           }"
         >
           {{ submitted ? 'Enviado' : form.submitLabel }}

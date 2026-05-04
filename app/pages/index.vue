@@ -740,7 +740,7 @@
             </span>
             <div
               class="flex size-10 items-center justify-center rounded-md transition-all duration-200 group-hover:translate-x-1 group-hover:-translate-y-px"
-              style="background-color: var(--brand-primary); color: #fff;"
+              style="background-color: var(--brand-primary); color: var(--text-on-primary);"
               aria-hidden="true"
             >
               <UIcon name="i-lucide-arrow-up-right" class="size-5" />

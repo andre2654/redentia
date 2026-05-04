@@ -24,33 +24,150 @@ function getBgPatterns(isLight: boolean): Record<string, (primary: string) => st
   }
 }
 
+/**
+ * Resolve as `colors` ativas pra um modo especifico, aplicando overrides
+ * de `themes.{mode}` sobre `colors` base. Espelha a logica do `applyMode`
+ * mas e pure (sem mutar `brand.colors`). Usado pra emitir CSS de ambos
+ * modos simultaneamente.
+ */
+function resolveColorsForMode(b: typeof defaultBrand, mode: 'dark' | 'light'): typeof defaultBrand.colors {
+  const baseColors = b.colors
+  const overrides = b.themes?.[mode]
+  if (!overrides) return baseColors
+  return {
+    ...baseColors,
+    ...overrides,
+    gradient: {
+      ...baseColors.gradient,
+      ...(overrides.gradient ?? {}),
+    },
+  }
+}
+
+/**
+ * Emite o bloco de vars pra um modo especifico, em DOIS seletores:
+ *
+ *   1. `@media (prefers-color-scheme: {mode}) :root:not(.{otherMode})`
+ *      → fallback OS pref quando user nao tem class manual (1a visita
+ *      sem cookie). O `:not(.otherMode)` evita que media sobrescreva
+ *      toggle manual oposto.
+ *
+ *   2. `:root.{mode}` → class manual (cookie via @nuxtjs/color-mode).
+ *      Sempre vence media query (mesmo specificity, declarado depois).
+ *
+ * Brand-agnostic vars (font, radii, durations) ficam em `:root` puro,
+ * compartilhadas entre modos. Resultado: CSS resolve modo correto sem
+ * JS, eliminando flash em hidratacao SSR mesmo na 1a visita absoluta.
+ */
+function buildVarsBody(b: typeof defaultBrand, mode: 'dark' | 'light'): string {
+  const c = resolveColorsForMode(b, mode)
+  const isLight = mode === 'light'
+
+  return `color-scheme: ${mode};
+  --brand-primary: ${c.primary};
+  --brand-secondary: ${c.secondary};
+  --brand-tertiary: ${c.tertiary};
+  --brand-positive: ${c.positive};
+  --brand-negative: ${c.negative};
+  --brand-neutral: ${c.neutral};
+  --brand-background: ${c.background};
+  --brand-surface: ${c.surface};
+  --brand-surface-hover: ${c.surfaceHover};
+  --brand-border: ${c.border};
+  --brand-text: ${c.text};
+  --brand-text-muted: ${c.textMuted};
+  --brand-input-bg: ${c.inputBg};
+  --brand-input-bg-hover: ${c.inputBgHover};
+  --brand-input-border: ${c.inputBorder};
+  --brand-gradient-from: ${c.gradient.from};
+  --brand-gradient-via: ${c.gradient.via};
+  --brand-gradient-to: ${c.gradient.to};
+  --brand-overlay: ${isLight ? '0, 0, 0' : '255, 255, 255'};
+  --brand-overlay-inverse: ${isLight ? '255, 255, 255' : '0, 0, 0'};
+
+  /* Texto sobre amber (--brand-primary), dinamico por modo:
+     light = branco (amber escurece o suficiente pra contrastar),
+     dark  = onyx warm #1A0A2E (regra do IDENTITY.md secao 2.1).
+     Centraliza a regra em um token em vez de espalhar hex. */
+  --text-on-primary: ${isLight ? '#ffffff' : '#1A0A2E'};
+
+  /* QUIET tokens — semantic layer (redentia-stripe-style) */
+  --bg-base: ${c.background};
+  --bg-elevated: ${c.surface};
+  --bg-overlay: ${c.surfaceHover};
+  --bg-input: ${c.inputBg};
+
+  --text-heading: ${isLight ? '#1A0A2E' : c.text};
+  --text-label: ${isLight ? '#2A1A4A' : c.text};
+  --text-body: ${c.textMuted};
+  --text-muted: ${isLight ? '#9A92A8' : c.textMuted};
+
+  --border-subtle: ${isLight
+    ? `color-mix(in srgb, ${c.primary} 8%, ${c.border})`
+    : `color-mix(in srgb, ${c.primary} 8%, transparent)`};
+  --border-default: ${isLight
+    ? `color-mix(in srgb, ${c.primary} 16%, ${c.border})`
+    : `color-mix(in srgb, ${c.primary} 14%, transparent)`};
+  --border-strong: ${isLight
+    ? `color-mix(in srgb, ${c.primary} 28%, ${c.border})`
+    : `color-mix(in srgb, ${c.primary} 24%, transparent)`};
+
+  --shadow-amber-far: ${isLight
+    ? `color-mix(in srgb, ${c.primary} 18%, transparent)`
+    : `color-mix(in srgb, ${c.primary} 10%, transparent)`};
+  --shadow-amber-near: ${isLight ? 'rgba(0,0,0,0.08)' : 'rgba(0,0,0,0.4)'};
+  --shadow-ambient: ${isLight ? 'rgba(23,23,23,0.06)' : 'rgba(0,0,0,0.5)'};
+
+  --shadow-card: 0 30px 45px -30px var(--shadow-amber-far), 0 18px 36px -18px var(--shadow-amber-near);
+  --shadow-card-hover: 0 40px 55px -30px var(--shadow-amber-far), 0 24px 40px -18px var(--shadow-amber-near);
+  --shadow-popover: 0 14px 30px -10px rgba(0,0,0,${isLight ? '0.12' : '0.55'}), 0 30px 45px -30px var(--shadow-amber-far);
+  --shadow-ring-focus: 0 0 0 3px color-mix(in srgb, ${c.primary} 22%, transparent);`
+}
+
+/**
+ * Envolve o body de vars em DOIS seletores: media query (OS pref fallback)
+ * + class manual (toggle/cookie). Garante que CSS resolve o modo correto
+ * tanto na 1a visita (sem cookie, OS pref via media query) quanto apos
+ * toggle manual (class no <html>).
+ */
+function buildModeBlock(b: typeof defaultBrand, mode: 'dark' | 'light'): string {
+  const body = buildVarsBody(b, mode)
+  const otherMode = mode === 'dark' ? 'light' : 'dark'
+
+  return `@media (prefers-color-scheme: ${mode}) {
+  :root:not(.${otherMode}):not(.${mode}) {
+    ${body}
+  }
+}
+:root.${mode} {
+  ${body}
+}`
+}
+
 function buildCssVars(b: typeof defaultBrand): string {
   const radius = borderRadiusMap[b.theme.borderRadius]
   const anim = animationMap[b.theme.animation]
+  const tenantSupportsBoth = !!(b.themes?.dark || b.themes?.light)
+
+  // Tenants single-mode (sem `themes`) so emitem o seletor do seu defaultMode.
+  // Tenants multi-mode emitem ambos os blocos — CSS resolve via media query
+  // (1a visita) ou via class no <html> (apos cookie/toggle).
+  const blocks: string[] = []
+  if (tenantSupportsBoth) {
+    blocks.push(buildModeBlock(b, 'dark'))
+    blocks.push(buildModeBlock(b, 'light'))
+  } else {
+    const fallbackMode: 'dark' | 'light' = b.defaultMode === 'light' ? 'light' : 'dark'
+    blocks.push(buildModeBlock(b, fallbackMode))
+  }
+
+  // Shared brand-agnostic vars (font, radii, durations) — same in both modes.
+  // Emitted in plain `:root` so they apply regardless of mode class.
   const isLight = b.theme.mode === 'light'
   const bgPatterns = getBgPatterns(isLight)
   const bgPattern = (bgPatterns[b.theme.backgroundPattern] ?? bgPatterns.none)(b.colors.primary)
 
-  return `:root {
-  color-scheme: ${isLight ? 'light' : 'dark'};
-  --brand-primary: ${b.colors.primary};
-  --brand-secondary: ${b.colors.secondary};
-  --brand-tertiary: ${b.colors.tertiary};
-  --brand-positive: ${b.colors.positive};
-  --brand-negative: ${b.colors.negative};
-  --brand-neutral: ${b.colors.neutral};
-  --brand-background: ${b.colors.background};
-  --brand-surface: ${b.colors.surface};
-  --brand-surface-hover: ${b.colors.surfaceHover};
-  --brand-border: ${b.colors.border};
-  --brand-text: ${b.colors.text};
-  --brand-text-muted: ${b.colors.textMuted};
-  --brand-input-bg: ${b.colors.inputBg};
-  --brand-input-bg-hover: ${b.colors.inputBgHover};
-  --brand-input-border: ${b.colors.inputBorder};
-  --brand-gradient-from: ${b.colors.gradient.from};
-  --brand-gradient-via: ${b.colors.gradient.via};
-  --brand-gradient-to: ${b.colors.gradient.to};
+  const sharedRoot = `:root {
   --brand-font: '${b.font.family}', sans-serif;
   --brand-radius-sm: ${radius.sm};
   --brand-radius-md: ${radius.md};
@@ -59,60 +176,14 @@ function buildCssVars(b: typeof defaultBrand): string {
   --brand-radius-full: ${radius.full};
   --brand-duration: ${anim.duration};
   --brand-ease: ${anim.ease};
-  --brand-overlay: ${isLight ? '0, 0, 0' : '255, 255, 255'};
-  --brand-overlay-inverse: ${isLight ? '255, 255, 255' : '0, 0, 0'};
-
-  /* ============================================================
-     QUIET tokens — semantic layer for the redentia-stripe-style skill.
-     Lightness as luxury: warm headings instead of pure black/white,
-     amber-tinted shadows, conservative borders derived from primary.
-     Available platform-wide; consumed by typography defaults in main.css,
-     by app.config.ts component defaults, and by any quiet-aware component.
-     ============================================================ */
-  /* Surfaces (alias to brand vars where they coincide, distinct names so
-     quiet components express intent without coupling to brand semantics) */
-  --bg-base: ${b.colors.background};
-  --bg-elevated: ${b.colors.surface};
-  --bg-overlay: ${b.colors.surfaceHover};
-  --bg-input: ${b.colors.inputBg};
-
-  /* Text ramp — 4 stops. Headings are warm (aubergine/onyx), never pure. */
-  --text-heading: ${isLight ? '#1A0A2E' : b.colors.text};
-  --text-label: ${isLight ? '#2A1A4A' : b.colors.text};
-  --text-body: ${b.colors.textMuted};
-  --text-muted: ${isLight ? '#9A92A8' : b.colors.textMuted};
-
-  /* Borders — derived from primary via color-mix so multi-tenant safe.
-     Light: low-saturation amber neutralized. Dark: amber tint on white. */
-  --border-subtle: ${isLight
-    ? `color-mix(in srgb, ${b.colors.primary} 8%, ${b.colors.border})`
-    : `color-mix(in srgb, ${b.colors.primary} 8%, transparent)`};
-  --border-default: ${isLight
-    ? `color-mix(in srgb, ${b.colors.primary} 16%, ${b.colors.border})`
-    : `color-mix(in srgb, ${b.colors.primary} 14%, transparent)`};
-  --border-strong: ${isLight
-    ? `color-mix(in srgb, ${b.colors.primary} 28%, ${b.colors.border})`
-    : `color-mix(in srgb, ${b.colors.primary} 24%, transparent)`};
-
-  /* Shadow — chromatic, amber-tinted. Light gets a far amber + near neutral,
-     dark gets a much lower-opacity amber + heavy neutral for ambient depth. */
-  --shadow-amber-far: ${isLight
-    ? `color-mix(in srgb, ${b.colors.primary} 18%, transparent)`
-    : `color-mix(in srgb, ${b.colors.primary} 10%, transparent)`};
-  --shadow-amber-near: ${isLight ? 'rgba(0,0,0,0.08)' : 'rgba(0,0,0,0.4)'};
-  --shadow-ambient: ${isLight ? 'rgba(23,23,23,0.06)' : 'rgba(0,0,0,0.5)'};
-
-  /* Composed shadow recipes — drop-in for elevation levels */
-  --shadow-card: 0 30px 45px -30px var(--shadow-amber-far), 0 18px 36px -18px var(--shadow-amber-near);
-  --shadow-card-hover: 0 40px 55px -30px var(--shadow-amber-far), 0 24px 40px -18px var(--shadow-amber-near);
-  --shadow-popover: 0 14px 30px -10px rgba(0,0,0,${isLight ? '0.12' : '0.55'}), 0 30px 45px -30px var(--shadow-amber-far);
-  --shadow-ring-focus: 0 0 0 3px color-mix(in srgb, ${b.colors.primary} 22%, transparent);
 }
 body {
   background-image: ${bgPattern};
   background-repeat: repeat;
   background-attachment: fixed;
 }`
+
+  return `${sharedRoot}\n${blocks.join('\n')}`
 }
 
 function googleFontsUrl(googleSpec: string): string {
@@ -252,37 +323,19 @@ export default defineNuxtPlugin({
   //     in nextTick. The reactive update propagates to inline :style
   //     bindings after hydration completes — they DO update on
   //     post-hydration mutations.
-  // First-visit / legacy-cookie safeguard: if `preference=system` (or
-  // no cookie at all), SSR rendered with `fallback`/`defaultMode` but
-  // the client will resolve to actual OS pref. That mismatch freezes
-  // inline `:style` bindings forever (Vue 3 doesn't rectify them on
-  // hydration). We translate to a concrete `light`/`dark`, write the
-  // cookie, and trigger a clean reload so SSR can re-render with the
-  // resolved value. One extra navigation on first visit only — every
-  // subsequent F5 is fast and bug-free.
+  // CSS multi-mode (2026-05-04): o plugin agora emite vars pra dark E
+  // light em selectores `:root.dark` / `:root.light`. A class no <html>
+  // e gerenciada pelo `@nuxtjs/color-mode` (anti-flash inline script)
+  // ANTES do CSS aplicar — ou seja, componentes que usam `var(--brand-X)`
+  // ja chegam no modo certo sem JS rodar.
   //
-  // NOTE: we previously tried deferring `applyMode(resolved)` to the
-  // `app:mounted` hook to avoid this reload, with the theory that
-  // post-hydration mutations would propagate via Vue reactivity. In
-  // practice this produced mixed-mode UI (some components — typically
-  // `<img :src=…>` and `:style=` bindings — stayed pinned to the
-  // SSR-painted values while CSS-var based ones swapped). Reverted.
-  // The proper way to remove this reload is to refactor every
-  // component to consume CSS variables instead of `brand.colors.X`
-  // direct reads, so SSR HTML is mode-neutral and the swap is purely
-  // CSS-based — that's a much larger change and out of scope here.
-  if (import.meta.client && colorMode.preference === 'system') {
-    const ssrMode: 'dark' | 'light' = brand.theme.mode === 'light' ? 'light' : 'dark'
-    const osDark =
-      typeof window.matchMedia === 'function'
-      && window.matchMedia('(prefers-color-scheme: dark)').matches
-    const resolved: 'dark' | 'light' = osDark ? 'dark' : 'light'
-    colorMode.preference = resolved
-    if (ssrMode !== resolved) {
-      window.location.reload()
-      return
-    }
-  }
+  // O reload anterior em `preference=system` foi removido porque nao e
+  // mais necessario: a class no <html> ja faz o swap puro CSS. A unica
+  // razao pra ainda mutar `brand.colors` em runtime e suportar componentes
+  // que usam `:style="{ color: brand.colors.X }"` direto (5641 lugares).
+  // Esses ainda podem flashar na 1a visita; a partir da 2a, o
+  // `Sec-CH-Prefers-Color-Scheme` Client Hint faz SSR ja renderizar com
+  // o modo certo no cookie, eliminando flash.
   applyMode(resolveMode())
 
   // ----------------------------------------------------------------
@@ -295,7 +348,16 @@ export default defineNuxtPlugin({
     () => applyMode(resolveMode()),
   )
 
+  // Inject `<html class="dark|light">` AT SSR — sem isso o HTML chega
+  // sem class, o CSS multi-mode nao tem modo pra resolver, e os
+  // componentes que usam var(--brand-X) caem nos defaults antes do
+  // anti-flash script do client adicionar a class. Como ja resolvemos
+  // o modo correto via cookie/Client Hint no Nitro middleware
+  // `2-color-mode.ts`, basta serializar.
   useHead({
+    htmlAttrs: {
+      class: computed(() => brand.theme.mode),
+    },
     style: [
       {
         innerHTML: computed(() => buildCssVars(brand)),

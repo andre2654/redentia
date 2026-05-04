@@ -52,7 +52,7 @@
       class="inline-flex cursor-pointer items-center justify-center gap-1.5 rounded-[4px] transition-all duration-150 focus-visible:outline-none focus-visible:shadow-[var(--shadow-ring-focus)] disabled:cursor-not-allowed disabled:opacity-50"
       :class="[size === 'sm' ? 'px-2.5 py-1' : 'px-3 py-1.5']"
       :style="modelValue === option.value
-        ? { backgroundColor: 'var(--brand-primary)', color: '#fff' }
+        ? { backgroundColor: 'var(--brand-primary)', color: 'var(--text-on-primary)' }
         : { backgroundColor: 'transparent', color: 'var(--text-body)' }"
       :disabled="disabled"
       :aria-pressed="modelValue === option.value"

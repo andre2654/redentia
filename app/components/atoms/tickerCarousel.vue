@@ -101,17 +101,18 @@ const props = withDefaults(
   }
 )
 
-const fadeBg = computed(() => props.fadeColor || brand.colors.background)
+const fadeBg = computed(() => props.fadeColor || 'var(--brand-background)')
 
 // Cor da change% baseada no sinal: negativo -> brand.negative, positivo -> brand.positive,
-// neutro/parse-fail -> muted.
+// neutro/parse-fail -> muted. Retorna CSS vars pra resolver via class no
+// <html> sem flash em hidratacao SSR.
 function changeColor(value: string): string {
   const trimmed = (value || '').trim()
-  if (!trimmed) return brand.colors.textMuted
-  if (trimmed.startsWith('-')) return brand.colors.negative
+  if (!trimmed) return 'var(--brand-text-muted)'
+  if (trimmed.startsWith('-')) return 'var(--brand-negative)'
   const parsed = parseFloat(trimmed.replace('%', '').replace(',', '.'))
-  if (!Number.isFinite(parsed) || parsed === 0) return brand.colors.textMuted
-  return brand.colors.positive
+  if (!Number.isFinite(parsed) || parsed === 0) return 'var(--brand-text-muted)'
+  return 'var(--brand-positive)'
 }
 
 const { getTopStocks } = useAssetsService()

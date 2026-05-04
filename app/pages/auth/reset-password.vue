@@ -803,7 +803,7 @@
             type="submit"
             :disabled="submitting"
             class="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-md px-5 py-3 text-[15px] font-semibold transition-[filter,box-shadow] duration-200 disabled:cursor-not-allowed disabled:opacity-60"
-            :style="{ backgroundColor: 'var(--brand-primary)', color: '#fff' }"
+            :style="{ backgroundColor: 'var(--brand-primary)', color: 'var(--text-on-primary)' }"
             @mouseenter="($event.currentTarget as HTMLElement).style.filter = 'brightness(0.94)'"
             @mouseleave="($event.currentTarget as HTMLElement).style.filter = 'brightness(1)'"
           >

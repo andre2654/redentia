@@ -362,29 +362,29 @@
           <div
             class="relative flex items-center justify-between gap-3 px-4 py-2.5 text-[10px]"
             :style="{
-              borderTop: `1px solid color-mix(in srgb, ${brand.colors.border} 35%, transparent)`,
-              color: `color-mix(in srgb, ${brand.colors.textMuted} 75%, transparent)`,
+              borderTop: `1px solid color-mix(in srgb, var(--brand-border) 35%, transparent)`,
+              color: `color-mix(in srgb, var(--brand-text-muted) 75%, transparent)`,
             }"
           >
             <div class="hidden items-center gap-2 sm:flex">
               <span class="inline-flex items-center gap-1">
                 <kbd
                   class="font-mono-tab inline-flex h-4 min-w-[16px] items-center justify-center rounded border px-1 text-[10px] font-semibold leading-none"
-                  :style="{ borderColor: `color-mix(in srgb, ${brand.colors.border} 60%, transparent)` }"
+                  :style="{ borderColor: `color-mix(in srgb, var(--brand-border) 60%, transparent)` }"
                   aria-hidden="true"
                 >↑</kbd>
                 <kbd
                   class="font-mono-tab inline-flex h-4 min-w-[16px] items-center justify-center rounded border px-1 text-[10px] font-semibold leading-none"
-                  :style="{ borderColor: `color-mix(in srgb, ${brand.colors.border} 60%, transparent)` }"
+                  :style="{ borderColor: `color-mix(in srgb, var(--brand-border) 60%, transparent)` }"
                   aria-hidden="true"
                 >↓</kbd>
                 <span class="font-mono-tab uppercase tracking-[0.14em]">navegar</span>
               </span>
-              <span :style="{ color: brand.colors.border }" aria-hidden="true">·</span>
+              <span :style="{ color: 'var(--brand-border)' }" aria-hidden="true">·</span>
               <span class="inline-flex items-center gap-1">
                 <kbd
                   class="font-mono-tab inline-flex h-4 min-w-[16px] items-center justify-center rounded border px-1 text-[10px] font-semibold leading-none"
-                  :style="{ borderColor: `color-mix(in srgb, ${brand.colors.border} 60%, transparent)` }"
+                  :style="{ borderColor: `color-mix(in srgb, var(--brand-border) 60%, transparent)` }"
                   aria-hidden="true"
                 >↵</kbd>
                 <span class="font-mono-tab uppercase tracking-[0.14em]">abrir</span>
@@ -393,7 +393,7 @@
             <span class="inline-flex items-center gap-1">
               <kbd
                 class="font-mono-tab inline-flex h-4 items-center justify-center rounded border px-1.5 text-[10px] font-semibold leading-none"
-                :style="{ borderColor: `color-mix(in srgb, ${brand.colors.border} 60%, transparent)` }"
+                :style="{ borderColor: `color-mix(in srgb, var(--brand-border) 60%, transparent)` }"
                 aria-hidden="true"
               >Esc</kbd>
               <span class="font-mono-tab uppercase tracking-[0.14em]">fechar</span>
@@ -407,15 +407,15 @@
         class="quick-search-pill flex items-center gap-2 rounded-full border px-4 py-3 transition-[border-color,box-shadow]"
         :class="[open ? 'qs-pill-open' : '', !open ? 'qs-pill-idle' : '']"
         :style="{
-          borderColor: open ? brand.colors.primary : pillBorder,
+          borderColor: open ? 'var(--brand-primary)' : pillBorder,
           backgroundColor: pillBg,
-          color: brand.colors.text,
+          color: 'var(--brand-text)',
         }"
       >
         <UIcon
           name="i-lucide-search"
           class="size-4 shrink-0"
-          :style="{ color: open ? brand.colors.primary : brand.colors.textMuted }"
+          :style="{ color: open ? 'var(--brand-primary)' : 'var(--brand-text-muted)' }"
           aria-hidden="true"
         />
         <!-- Input + rotating suggestion overlay. The wrapper intercepts
@@ -434,7 +434,7 @@
             spellcheck="false"
             :placeholder="open ? 'Digite ticker ou nome…' : ''"
             class="w-full min-w-0 bg-transparent text-sm outline-none placeholder:opacity-60"
-            :style="{ color: brand.colors.text }"
+            :style="{ color: 'var(--brand-text)' }"
             aria-label="Buscar ativos"
             aria-controls="quick-search-listbox"
             @focus="open = true"
@@ -455,7 +455,7 @@
                 :key="currentSuggestion.id"
                 type="button"
                 class="qs-suggest pointer-events-auto absolute inset-y-0 left-0 inline-flex max-w-full cursor-pointer items-center gap-1.5 truncate border-0 bg-transparent p-0 text-left text-sm focus-visible:outline-none"
-                :style="{ color: brand.colors.text }"
+                :style="{ color: 'var(--brand-text)' }"
                 :aria-label="`Sugestão: ${currentSuggestion.text}`"
                 @click.stop.prevent="onSuggestionClick"
               >
@@ -474,17 +474,17 @@
                   v-else-if="currentSuggestion.icon"
                   :name="currentSuggestion.icon"
                   class="size-4 shrink-0"
-                  :style="{ color: brand.colors.primary }"
+                  :style="{ color: 'var(--brand-primary)' }"
                   aria-hidden="true"
                 />
                 <span class="qs-suggest-text truncate">
-                  <span v-if="currentSuggestion.prefix" :style="{ color: brand.colors.textMuted }">{{ currentSuggestion.prefix }}</span>
+                  <span v-if="currentSuggestion.prefix" :style="{ color: 'var(--brand-text-muted)' }">{{ currentSuggestion.prefix }}</span>
                   <span
                     class="font-semibold"
                     :class="currentSuggestion.mono ? 'font-mono-tab tracking-tight' : ''"
-                    :style="{ color: brand.colors.text }"
+                    :style="{ color: 'var(--brand-text)' }"
                   >{{ currentSuggestion.highlight }}</span>
-                  <span v-if="currentSuggestion.suffix" :style="{ color: brand.colors.textMuted }">{{ currentSuggestion.suffix }}</span>
+                  <span v-if="currentSuggestion.suffix" :style="{ color: 'var(--brand-text-muted)' }">{{ currentSuggestion.suffix }}</span>
                 </span>
               </button>
             </Transition>
@@ -494,7 +494,7 @@
           v-if="searchTerm"
           type="button"
           class="inline-flex size-6 shrink-0 items-center justify-center rounded-full transition-colors hover:opacity-80"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
           aria-label="Limpar busca"
           @click="searchTerm = ''"
         >
@@ -504,9 +504,9 @@
           v-if="!open"
           class="hidden shrink-0 items-center gap-1 rounded-md border px-2 py-0.5 font-mono-tab text-[10px] tabular-nums sm:inline-flex"
           :style="{
-            borderColor: brand.colors.border,
-            color: brand.colors.textMuted,
-            backgroundColor: brand.colors.background,
+            borderColor: 'var(--brand-border)',
+            color: 'var(--brand-text-muted)',
+            backgroundColor: 'var(--brand-background)',
           }"
           aria-hidden="true"
         >
@@ -561,16 +561,16 @@ const placeholder = computed(() => {
 // paired with strong backdrop blur in CSS. Pill stays a bit
 // more solid so its content is always readable.
 // ==========================================================
-const panelBg = computed(() => `${brand.colors.surface}8C`) // ~55%
-const panelBorder = computed(() => `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`)
-const pillBg = computed(() => `${brand.colors.surface}D9`) // ~85%
-const pillBorder = computed(() => `color-mix(in srgb, ${brand.colors.border} 70%, transparent)`)
+const panelBg = computed(() => `var(--brand-surface)8C`) // ~55%
+const panelBorder = computed(() => `color-mix(in srgb, var(--brand-border) 50%, transparent)`)
+const pillBg = computed(() => `var(--brand-surface)D9`) // ~85%
+const pillBorder = computed(() => `color-mix(in srgb, var(--brand-border) 70%, transparent)`)
 
 // Solid chip surface — translucent + the global backdrop blur was
 // double-stacking and made the chip area look soupy. Opaque reads
 // cleaner.
-const chipBg = computed(() => brand.colors.surface)
-const chipBorder = computed(() => `color-mix(in srgb, ${brand.colors.border} 70%, transparent)`)
+const chipBg = computed(() => 'var(--brand-surface)')
+const chipBorder = computed(() => `color-mix(in srgb, var(--brand-border) 70%, transparent)`)
 
 // Default to '⌘' on both server and client so the initial markup matches,
 // then upgrade to 'Ctrl' on non-Mac platforms after mount. This sidesteps
@@ -1295,10 +1295,10 @@ function moveFocus(delta: 1 | -1) {
 }
 
 function changeColor(pct: number | null | undefined): string {
-  if (pct == null) return brand.colors.textMuted
-  if (pct > 0) return brand.colors.positive
-  if (pct < 0) return brand.colors.negative
-  return brand.colors.textMuted
+  if (pct == null) return 'var(--brand-text-muted)'
+  if (pct > 0) return 'var(--brand-positive)'
+  if (pct < 0) return 'var(--brand-negative)'
+  return 'var(--brand-text-muted)'
 }
 
 const router = useRouter()
