@@ -579,15 +579,14 @@ const aiCtaLabel = computed(() =>
 )
 
 const menuMobileActive = ref(false)
-const pwa = import.meta.client ? usePWA() : null
-
+// PWA removida em 2026-05-04. Detectar "instalado" agora depende
+// apenas de display-mode standalone e do flag iOS — sem `usePWA()`.
 const isAppInstalledReal = computed(() => {
   if (!import.meta.client) return false
   const standalone =
     window.matchMedia?.('(display-mode: standalone)')?.matches ?? false
   const iosStandalone = (window.navigator as any).standalone === true
-  const pwaInstalled = !!(pwa && (pwa as any).isPWAInstalled)
-  return pwaInstalled || standalone || iosStandalone
+  return standalone || iosStandalone
 })
 
 const isAppInstalled = computed(() => {

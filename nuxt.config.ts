@@ -96,7 +96,6 @@ export default defineNuxtConfig({
             // Each entry must be importable in the Vue/client bundle.
             'chart': ['chart.js', 'vue-chartjs', 'chartjs-chart-treemap'],
             'markdown': ['marked'],
-            'firebase': ['firebase/app', 'firebase/messaging'],
             'pinia': ['pinia'],
             'xlsx-vendor': ['xlsx'],
           },
@@ -703,57 +702,14 @@ export default defineNuxtConfig({
       ],
     },
   },
+  // PWA REMOVIDO (2026-05-04): o service worker antigo estava cacheando
+  // respostas 403 stale e causando problemas em navegadores ja instalados.
+  // `selfDestroying: true` e o flag oficial do @vite-pwa pra gerar um SW
+  // que limpa caches, se desregistra e recarrega clientes ativos. Quando
+  // todos os browsers ativos passaram pela limpeza (1-2 semanas), e
+  // seguro remover o `@vite-pwa/nuxt` do modules array tambem.
   pwa: {
+    selfDestroying: true,
     registerType: 'autoUpdate',
-    manifest: {
-      name: brand.name,
-      short_name: brand.shortName,
-      description: brand.description,
-      theme_color: brand.seo.themeColor,
-      start_url: '/',
-      launch_handler: { client_mode: ['focus-existing', 'navigate-existing'] },
-      display: 'standalone',
-      orientation: 'portrait',
-      icons: [
-        {
-          src: brand.logo.icon192,
-          sizes: '192x192',
-          type: 'image/png',
-        },
-        {
-          src: brand.logo.icon512,
-          sizes: '512x512',
-          type: 'image/png',
-        },
-      ],
-      screenshots: [
-        {
-          src: '/screenshots/desktop.png',
-          sizes: '1611x950',
-          type: 'image/png',
-          form_factor: 'wide',
-        },
-        {
-          src: '/screenshots/mobile.png',
-          sizes: '510x950',
-          type: 'image/png',
-          form_factor: 'narrow',
-        },
-      ],
-    },
-    client: {
-      installPrompt: true,
-      periodicSyncForUpdates: 3600,
-    },
-    workbox: {
-      importScripts: ['/firebase-messaging-sw.js'],
-    },
-    devOptions: {
-      enabled: true,
-      suppressWarnings: true,
-      navigateFallback: '/',
-      navigateFallbackAllowlist: [/^\/$/],
-      type: 'module',
-    },
   },
 })

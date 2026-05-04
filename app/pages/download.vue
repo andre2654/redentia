@@ -553,8 +553,11 @@ const todayShort = computed(() => {
   return d.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })
 })
 
+// PWA removida em 2026-05-04 — o `installApp` antes acionava o prompt
+// nativo do navegador via `usePWA().install()`. Como o PWA foi
+// desativado, agora o botao apenas rola pro guia "como instalar"
+// para o usuario seguir manualmente quando voltarmos com a PWA.
 const installApp = () => {
-  const pwa = usePWA()
   const isIOS =
     typeof navigator !== 'undefined' &&
     /iPad|iPhone|iPod/.test(navigator.userAgent) &&
@@ -562,21 +565,12 @@ const installApp = () => {
 
   if (isIOS) {
     activePlatform.value = 'iphone'
-    scrollToHowTo()
-    return
-  }
-
-  if (!pwa) {
-    activePlatform.value = 'desktop'
-    scrollToHowTo()
-    return
-  }
-
-  if (!pwa.isPWAInstalled) {
-    pwa.install?.()
+  } else if (typeof navigator !== 'undefined' && /Android/i.test(navigator.userAgent)) {
+    activePlatform.value = 'android'
   } else {
-    navigateTo('/')
+    activePlatform.value = 'desktop'
   }
+  scrollToHowTo()
 }
 
 const scrollToHowTo = () => {

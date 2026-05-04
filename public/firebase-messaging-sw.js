@@ -1,42 +1,51 @@
-importScripts(
-  'https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js'
-)
-importScripts(
-  'https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging-compat.js'
-)
+/**
+ * KILL SWITCH (PWA removido em 2026-05-04)
+ *
+ * Esse SW substitui o anterior do Firebase Messaging. Quando os browsers
+ * dos usuarios atualizarem, vao pegar este SW, executar a limpeza e ficar
+ * sem PWA registrado. Assim eliminamos o problema de SW zumbi servindo
+ * 403 cached de versoes antigas.
+ *
+ * O `@vite-pwa/nuxt` no nuxt.config.ts esta com `selfDestroying: true`
+ * pra gerar /sw.js que tambem se auto-desregistra. Este aqui e camada
+ * extra de seguranca pra browsers que tinham firebase-messaging-sw.js
+ * registrado standalone.
+ */
 
-// TODO: Replace with your Firebase config object
-const firebaseConfig = {
-  apiKey: 'AIzaSyBGJYh2ycl-yHStZflV-N5cNjnL96qcth8',
-  authDomain: 'redentia-01.firebaseapp.com',
-  projectId: 'redentia-01',
-  storageBucket: 'redentia-01.firebasestorage.app',
-  messagingSenderId: '906267512818',
-  appId: '1:906267512818:web:2d07d39feffb873318256b',
-}
+self.addEventListener('install', () => {
+  // Pula a fila de waiting e ativa imediatamente
+  self.skipWaiting()
+})
 
-firebase.initializeApp(firebaseConfig)
+self.addEventListener('activate', (event) => {
+  event.waitUntil((async () => {
+    try {
+      // Toma controle de todos os clients abertos
+      await self.clients.claim()
+    } catch (e) { /* noop */ }
 
-const messaging = firebase.messaging()
+    try {
+      // Apaga todos os caches do CacheStorage
+      const cacheNames = await caches.keys()
+      await Promise.all(cacheNames.map((name) => caches.delete(name)))
+    } catch (e) { /* noop */ }
 
-// messaging.onBackgroundMessage((payload) => {
-//   console.log(
-//     '[firebase-messaging-sw.js] Received background message ',
-//     payload
-//   )
+    try {
+      // Desregistra este service worker
+      await self.registration.unregister()
+    } catch (e) { /* noop */ }
 
-//   // If the payload has a notification property, the browser will automatically show a notification.
-//   // We only need to manually show one if it's a data-only message.
-//   if (payload.notification) {
-//     return
-//   }
+    try {
+      // Recarrega cada janela aberta para sair do controle do SW
+      const clients = await self.clients.matchAll({ type: 'window' })
+      clients.forEach((c) => {
+        try { c.navigate(c.url) } catch (e) { /* noop */ }
+      })
+    } catch (e) { /* noop */ }
+  })())
+})
 
-//   const notificationTitle = payload.data.title
-//   const notificationOptions = {
-//     body: payload.data.body,
-//     icon: '/192x192.png', // Customize icon
-//     data: payload.data, // Pass data to the click handler
-//   }
-
-//   self.registration.showNotification(notificationTitle, notificationOptions)
-// })
+// Pass-through: nao intercepta fetches. Garante que enquanto o SW
+// estiver ativo (entre install e a unregister assincrona), nao
+// retornamos respostas erradas do cache anterior.
+self.addEventListener('fetch', () => { /* noop */ })
