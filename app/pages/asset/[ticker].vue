@@ -3814,6 +3814,16 @@
         </div>
       </section>
 
+      <!-- Editorial content (description, tese, peers, historico, FAQ).
+           So aparece em tickers que ja tem editorial gerado no banco.
+           Pra outros tickers, fica vazio sem quebrar o resto da page. -->
+      <MoleculesAssetEditorial
+        v-if="editorial"
+        :editorial="editorial"
+        :ticker-upper="tickerUpper"
+        :asset-name="assetName"
+      />
+
       <!-- Seção de IA para não autenticados, terminal REPL style -->
       <section v-if="!authStore.isAuthenticated" class="border-t py-12" :style="{ borderColor: brand.colors.border }">
         <header class="mb-6 flex flex-col gap-1">
@@ -4686,6 +4696,36 @@ const { data: commentariesData } = await useAsyncData(
 )
 const commentaries = computed(() => commentariesData.value || [])
 
+// ==========================================================
+// Editorial content — description, tese, peers, history, FAQ
+// extendida. Pages com editorial ficam ricas (~3.500 palavras
+// vs 1.000 do template base) pra escapar do "Cópia sem
+// canônica" do Google. Quando o ticker nao tem editorial
+// gerado ainda, retorna null e o componente nao monta.
+// ==========================================================
+const apiBase = useRuntimeConfig().public.apiBaseUrl as string
+interface AssetEditorialPayload {
+  ticker: string
+  description: string | null
+  thesis_pros: string | null
+  thesis_cons: string | null
+  peers_comparison: string | null
+  history_summary: string | null
+  faq_extended: Array<{ question: string; answer: string }> | null
+  generated_at: string | null
+}
+const { data: editorial } = await useAsyncData<AssetEditorialPayload | null>(
+  `editorial-${ticker.toLowerCase()}`,
+  async () => {
+    try {
+      return await $fetch<AssetEditorialPayload>(`${apiBase}/assets/${ticker.toLowerCase()}/editorial`)
+    } catch {
+      return null
+    }
+  },
+  { default: () => null, server: true }
+)
+
 const chartMarkers = computed(() =>
   commentaries.value.map((c) => ({
     date: c.date,
@@ -5029,8 +5069,41 @@ const financialProductStructuredData = computed(() => ({
   image: shareImage.value,
 }))
 
+// Article schema "principal" quando o ticker tem editorial gerado.
+// Diferente dos NewsArticles (commentaries do dia), esse Article
+// agrega description + thesis num articleBody longo, sinalizando
+// pro Google que a page tem conteudo aprofundado de autoria propria.
+// usePageSeo normaliza image/publisher/author/datePublished
+// automaticamente, entao basta o minimo aqui.
+const articleStructuredData = computed(() => {
+  const ed = editorial.value
+  if (!ed) return null
+  const body = [ed.description, ed.thesis_pros, ed.thesis_cons, ed.peers_comparison, ed.history_summary]
+    .filter(Boolean)
+    .join('\n\n')
+  if (!body) return null
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: `${tickerUpper.value} (${assetName.value}): análise completa, dividendos e tese de investimento`,
+    description: pageDescription.value,
+    articleBody: body.slice(0, 8000),
+    datePublished: ed.generated_at,
+    dateModified: ed.generated_at,
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': canonicalUrl.value,
+    },
+    about: {
+      '@type': 'FinancialProduct',
+      name: `${tickerUpper.value}, ${assetName.value}`,
+    },
+  }
+})
+
 const combinedStructuredData = computed(() => {
   const base: any[] = [financialProductStructuredData.value, faqStructuredData.value]
+  if (articleStructuredData.value) base.push(articleStructuredData.value)
   return [...base, ...newsArticlesStructuredData.value]
 })
 

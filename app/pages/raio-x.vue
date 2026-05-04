@@ -305,18 +305,22 @@ usePageSeo({
                 />
               </div>
 
-              <!-- Secondary CTA: subiu da secao "Como funciona" pra reduzir
-                   friccao. Quem nao quer digitar tickers ainda converte
-                   abrindo a carteira de exemplo, dai puxa na esteira de
-                   conversao igual quem digitou os proprios. -->
+              <!-- Secondary CTA: era link sublinhado discreto. Promovido pra
+                   botao outline (.quiet-btn-ghost) pra dar peso visual
+                   equivalente ao "Gerar Raio-X" do picker. Quem nao tem
+                   ticker decorado agora ve as 2 portas claramente em vez
+                   de procurar o link sublinhado pequeno. Pareamento Stripe-
+                   style: primary amber + ghost outline.
+                   Texto: "Ver com carteira de exemplo" (era "Ou veja o
+                   exemplo com uma carteira pronta") — mais conciso e
+                   menos hesitante. -->
               <button
                 type="button"
-                class="raio-x__demo-cta inline-flex items-center gap-2 self-start text-[14px] font-medium underline decoration-dotted underline-offset-4 transition-opacity hover:opacity-70"
-                :style="{ color: 'var(--brand-primary)' }"
+                class="quiet-btn-ghost raio-x__demo-cta self-start"
                 @click="loadDemo"
               >
                 <UIcon name="i-lucide-wand-sparkles" class="size-4" aria-hidden="true" />
-                <span>Ou veja o exemplo com uma carteira pronta</span>
+                <span>Ver com carteira de exemplo</span>
               </button>
 
               <!-- Trust + counter compactos. Counter primeiro (numero
@@ -495,12 +499,11 @@ usePageSeo({
 
           <button
             type="button"
-            class="raio-x__demo-cta mx-auto mt-5 inline-flex items-center gap-2 text-[14px] font-medium underline decoration-dotted underline-offset-4 transition-opacity hover:opacity-70"
-            :style="{ color: 'var(--brand-primary)' }"
+            class="quiet-btn-ghost raio-x__demo-cta mx-auto mt-5"
             @click="loadDemo"
           >
             <UIcon name="i-lucide-wand-sparkles" class="size-4" aria-hidden="true" />
-            <span>Ou veja o exemplo com uma carteira pronta</span>
+            <span>Ver com carteira de exemplo</span>
           </button>
         </div>
       </section>
