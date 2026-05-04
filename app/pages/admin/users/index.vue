@@ -90,17 +90,19 @@
               <th scope="col" class="px-4 py-3">LOGIN / CELULAR</th>
               <th scope="col" class="px-4 py-3 text-center">PAPEL</th>
               <th scope="col" class="px-4 py-3 text-center">APROVAÇÃO</th>
+              <th scope="col" class="px-4 py-3 text-center">PROGRESSO</th>
               <th scope="col" class="px-4 py-3">ASSESSOR</th>
+              <th scope="col" class="px-4 py-3 text-right">AÇÕES</th>
             </tr>
           </thead>
           <tbody>
             <tr v-if="loading">
-              <td colspan="6" class="p-8 text-center" :style="{ color: C.textMuted }">
+              <td colspan="8" class="p-8 text-center" :style="{ color: C.textMuted }">
                 <UIcon name="i-lucide-loader-2" class="size-5 motion-safe:animate-spin" />
               </td>
             </tr>
             <tr v-else-if="items.length === 0">
-              <td colspan="6" class="p-8 text-center text-[13px]" :style="{ color: C.textMuted }">
+              <td colspan="8" class="p-8 text-center text-[13px]" :style="{ color: C.textMuted }">
                 Nenhum usuário encontrado com esses filtros.
               </td>
             </tr>
@@ -156,12 +158,60 @@
                 </template>
                 <span v-else :style="{ color: C.textMuted }">-</span>
               </td>
+              <td class="px-4 py-3">
+                <!-- Two compact chips: "Carteira" + "Raio-X". Filled
+                     when the user has data (positive green), outlined
+                     when not yet (muted border). Lets the admin scan
+                     the funnel: signup → carteira → raio-x. -->
+                <div class="flex items-center justify-center gap-1.5">
+                  <span
+                    class="inline-flex items-center gap-1 rounded-sm border px-1.5 py-0.5 font-mono-tab text-[9px] uppercase tracking-[0.12em]"
+                    :title="user.has_portfolio ? 'Carteira preenchida' : 'Sem carteira'"
+                    :style="user.has_portfolio
+                      ? { borderColor: C.positive, color: C.positive, backgroundColor: `${C.positive}10` }
+                      : { borderColor: C.border, color: C.textMuted }"
+                  >
+                    <UIcon :name="user.has_portfolio ? 'i-lucide-check' : 'i-lucide-minus'" class="size-3" />
+                    Carteira
+                  </span>
+                  <span
+                    class="inline-flex items-center gap-1 rounded-sm border px-1.5 py-0.5 font-mono-tab text-[9px] uppercase tracking-[0.12em]"
+                    :title="user.has_xray ? 'Raio-X gerado' : 'Sem raio-X'"
+                    :style="user.has_xray
+                      ? { borderColor: C.positive, color: C.positive, backgroundColor: `${C.positive}10` }
+                      : { borderColor: C.border, color: C.textMuted }"
+                  >
+                    <UIcon :name="user.has_xray ? 'i-lucide-check' : 'i-lucide-minus'" class="size-3" />
+                    Raio-X
+                  </span>
+                </div>
+              </td>
               <td class="px-4 py-3 font-mono-tab text-[11px]" :style="{ color: C.textMuted }">
                 <template v-if="user.advisor">
                   <span :style="{ color: C.text }">{{ user.advisor.name }}</span>
                   <span v-if="user.advisor.advisor_code" class="ml-1">({{ user.advisor.advisor_code }})</span>
                 </template>
                 <span v-else>-</span>
+              </td>
+              <td class="px-4 py-3 text-right">
+                <!-- Impersonate — opens the platform as this user. We
+                     hide the button for the current admin (own row) and
+                     for other admins (server also rejects, but UI
+                     should match). Hover tooltip clarifies what
+                     happens; confirm dialog gates the actual switch. -->
+                <button
+                  v-if="!isSelf(user) && user.role !== 'admin'"
+                  type="button"
+                  :disabled="busyIds.has(user.id)"
+                  class="inline-flex items-center gap-1.5 rounded-sm border px-2.5 py-1 font-mono-tab text-[10px] uppercase tracking-[0.15em] transition-colors hover:opacity-80 disabled:opacity-50"
+                  :style="{ borderColor: C.primary, color: C.primary }"
+                  :title="`Entrar na plataforma como ${user.name}`"
+                  @click="handleImpersonate(user)"
+                >
+                  <UIcon name="i-lucide-log-in" class="size-3" />
+                  Login como
+                </button>
+                <span v-else :style="{ color: C.textMuted }">-</span>
               </td>
             </tr>
           </tbody>
@@ -283,6 +333,51 @@ async function handleRoleChange(user: IAdminUser, event: Event) {
     error.value = err?.data?.message || err?.message || 'Erro ao atualizar papel.'
     // Revert the visible select to the previous role on failure.
     target.value = user.role
+  } finally {
+    busyIds.delete(user.id)
+  }
+}
+
+/**
+ * Impersonate flow:
+ *   1. Confirm with the admin (this is irreversible without a manual
+ *      logout + re-login because the admin token is overwritten).
+ *   2. Stash the current admin token in `auth:admin_token` cookie so
+ *      a future "voltar a ser admin" button can restore it.
+ *   3. Call backend → swap token → fetch new profile → push("/")
+ *      so the platform mounts as the impersonated user.
+ */
+const router = useRouter()
+async function handleImpersonate(user: IAdminUser) {
+  if (busyIds.has(user.id)) return
+  const ok = window.confirm(
+    `Entrar na plataforma como ${user.name} (${user.email})?\n\n` +
+    'Sua sessão de admin será encerrada nesta aba. Para voltar, ' +
+    'faça logout e entre de novo com sua conta.'
+  )
+  if (!ok) return
+
+  busyIds.add(user.id)
+  try {
+    const resp = await usersService.impersonate(user.id)
+    if (!resp?.access_token) {
+      error.value = 'Token de impersonate não recebido.'
+      return
+    }
+    // Stash the admin's own token before swap. Stored in a cookie
+    // (not localStorage) so SSR middlewares see it on the next nav.
+    if (auth.token) {
+      const adminCookie = useCookie<string | null>('auth:admin_token', { maxAge: 3600 * 8 })
+      adminCookie.value = auth.token
+    }
+    auth.addToken(resp.access_token)
+    await auth.fetchProfile()
+    showSuccessNotification('Login efetuado', `Você está como ${user.name}.`)
+    // Send to root so the platform layout (not admin layout) mounts.
+    setTimeout(() => router.push('/'), 200)
+  } catch (e) {
+    const err = e as { data?: { message?: string }; message?: string }
+    error.value = err?.data?.message || err?.message || 'Não foi possível impersonar este usuário.'
   } finally {
     busyIds.delete(user.id)
   }

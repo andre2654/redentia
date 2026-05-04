@@ -53,5 +53,22 @@ export const useAdminUsersService = () => {
     })
   }
 
-  return { list, show, stats, updateRole, updateApproval }
+  /**
+   * Impersonate a platform user. Returns a brand-new Sanctum token
+   * in the target user's name. The caller (admin/users/index.vue)
+   * stashes the admin's own token before swapping, so a future
+   * "voltar a ser admin" button can restore the original session.
+   *
+   * Backend gates this to `admin` role + refuses admin-on-admin.
+   */
+  async function impersonate(id: number) {
+    return authFetch<{
+      access_token: string
+      token_type: 'bearer'
+      expires_in: number
+      user: { id: number; name: string; email: string; role: UserRole }
+    }>(`${baseURL}/${id}/impersonate`, { method: 'POST' })
+  }
+
+  return { list, show, stats, updateRole, updateApproval, impersonate }
 }

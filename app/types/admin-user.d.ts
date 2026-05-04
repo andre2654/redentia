@@ -32,6 +32,11 @@ export interface IAdminUser {
   email_verified_at: string | null
   created_at: string
   updated_at: string
+  /** Surfaced by `UserController@index` via EXISTS subqueries —
+   *  true if the user has at least one row in portfolio_positions. */
+  has_portfolio?: boolean
+  /** True if the user has an entry in portfolio_analyses (raio-x). */
+  has_xray?: boolean
 }
 
 export interface IUserStats {
