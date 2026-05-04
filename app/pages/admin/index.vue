@@ -124,10 +124,24 @@ const profilesCount = ref(0)
 const profilesEnabled = ref(0)
 const usersTotal = ref(0)
 const usersPending = ref(0)
+// AUM (Assets Under Management) — total das carteiras + quantos
+// investidores estão contribuindo. Renderizado em formato compacto
+// no card pra caber em ~30 chars (R$ 2,1M).
+const aum = ref(0)
+const usersWithValue = ref(0)
 const leadsTotal = ref(0)
 const leadsLast7d = ref(0)
 const reportsTotal = ref(0)
 const reportsOpen = ref(0)
+
+// Compact BRL formatter pra card. R$ 1.234.567 → "R$ 1,2 mi".
+const aumFormatter = new Intl.NumberFormat('pt-BR', {
+  style: 'currency', currency: 'BRL', notation: 'compact', maximumFractionDigits: 2,
+})
+function formatAum(value: number): string {
+  if (!Number.isFinite(value) || value <= 0) return 'R$ 0'
+  return aumFormatter.format(value)
+}
 
 onMounted(async () => {
   try {
@@ -149,6 +163,8 @@ onMounted(async () => {
     if (userStats) {
       usersTotal.value = userStats.total
       usersPending.value = userStats.pendingApproval
+      aum.value = userStats.aum ?? 0
+      usersWithValue.value = userStats.usersWithValue ?? 0
     }
     if (leadStats) {
       leadsTotal.value = leadStats.total
@@ -164,6 +180,17 @@ onMounted(async () => {
 })
 
 const cards = computed(() => [
+  // AUM em destaque: primeira posição porque é a métrica mais
+  // importante pro negócio (quanto dinheiro a Redentia "toca").
+  {
+    to: '/admin/users',
+    label: 'SOB GESTÃO (AUM)',
+    value: formatAum(aum.value),
+    sub: usersWithValue.value > 0
+      ? `${usersWithValue.value} ${usersWithValue.value === 1 ? 'INVESTIDOR' : 'INVESTIDORES'}`
+      : 'NENHUM AINDA',
+    icon: 'i-lucide-landmark',
+  },
   { to: '/admin/tenants', label: 'TENANTS', value: String(tenantsCount.value), sub: 'CADASTRADOS', icon: 'i-lucide-building-2' },
   {
     to: '/admin/users',

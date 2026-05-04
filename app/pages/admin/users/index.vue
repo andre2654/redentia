@@ -39,6 +39,23 @@
             <UIcon name="i-lucide-clock" class="size-3" />
             {{ stats.pendingApproval }} aguardando aprovação
           </span>
+          <!-- AUM: soma de todos os portfolios da plataforma. Mostra
+               valor + quantidade de investidores ativos contribuindo. -->
+          <span
+            v-if="stats && (stats.aum ?? 0) > 0"
+            class="inline-flex items-center gap-2 rounded-sm border px-3 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
+            :style="{ borderColor: C.positive, color: C.positive, backgroundColor: `${C.positive}10` }"
+            title="Assets Under Management — soma de todas as carteiras"
+          >
+            <UIcon name="i-lucide-landmark" class="size-3" />
+            <span class="font-semibold tabular-nums" style="letter-spacing: 0;">
+              {{ formatBRL(stats.aum ?? 0) }}
+            </span>
+            <span :style="{ color: C.textMuted }">sob gestão</span>
+            <span v-if="stats.usersWithValue" class="border-l pl-2" :style="{ borderColor: `${C.positive}40`, color: C.textMuted }">
+              {{ stats.usersWithValue }} {{ stats.usersWithValue === 1 ? 'investidor' : 'investidores' }}
+            </span>
+          </span>
         </div>
       </header>
 
@@ -91,18 +108,19 @@
               <th scope="col" class="px-4 py-3 text-center">PAPEL</th>
               <th scope="col" class="px-4 py-3 text-center">APROVAÇÃO</th>
               <th scope="col" class="px-4 py-3 text-center">PROGRESSO</th>
+              <th scope="col" class="px-4 py-3 text-right">CARTEIRA</th>
               <th scope="col" class="px-4 py-3">ASSESSOR</th>
               <th scope="col" class="px-4 py-3 text-right">AÇÕES</th>
             </tr>
           </thead>
           <tbody>
             <tr v-if="loading">
-              <td colspan="8" class="p-8 text-center" :style="{ color: C.textMuted }">
+              <td colspan="9" class="p-8 text-center" :style="{ color: C.textMuted }">
                 <UIcon name="i-lucide-loader-2" class="size-5 motion-safe:animate-spin" />
               </td>
             </tr>
             <tr v-else-if="items.length === 0">
-              <td colspan="8" class="p-8 text-center text-[13px]" :style="{ color: C.textMuted }">
+              <td colspan="9" class="p-8 text-center text-[13px]" :style="{ color: C.textMuted }">
                 Nenhum usuário encontrado com esses filtros.
               </td>
             </tr>
@@ -185,6 +203,14 @@
                     Raio-X
                   </span>
                 </div>
+              </td>
+              <td class="px-4 py-3 text-right font-mono-tab text-[12px] tabular-nums">
+                <span
+                  v-if="(user.portfolio_value ?? 0) > 0"
+                  :style="{ color: C.text }"
+                  :title="`Valor de mercado das ${user.has_portfolio ? '' : '(sem)'} posições`"
+                >{{ formatBRL(user.portfolio_value!) }}</span>
+                <span v-else :style="{ color: C.textMuted }">—</span>
               </td>
               <td class="px-4 py-3 font-mono-tab text-[11px]" :style="{ color: C.textMuted }">
                 <template v-if="user.advisor">
@@ -426,6 +452,19 @@ function formatDate(iso: string): string {
   const d = new Date(iso)
   if (Number.isNaN(d.getTime())) return iso
   return d.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })
+}
+
+/**
+ * BRL formatter compacto. Usa notação curta pra valores grandes
+ * (R$ 2,1M / R$ 850k) que aparecem no card AUM, mas mantém o
+ * formato cheio (R$ 1.234,56) na coluna por linha — controlado
+ * pelo argumento `compact`.
+ */
+const brlFull = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 2 })
+const brlCompact = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', notation: 'compact', maximumFractionDigits: 2 })
+function formatBRL(value: number, compact = false): string {
+  if (!Number.isFinite(value)) return '—'
+  return (compact ? brlCompact : brlFull).format(value)
 }
 
 onMounted(() => {
