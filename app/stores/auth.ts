@@ -99,6 +99,13 @@ export const useAuthStore = defineStore('auth', {
     clearAuthData() {
       const cookie = useCookie<string | null>('auth:token')
       cookie.value = null
+      // O pinia-plugin-persistedstate persiste `me` em um cookie com nome
+      // do store ('auth' por padrao). Setar this.me = null sincroniza com
+      // o cookie, MAS so em next-tick, e durante o intervalo o cookie
+      // antigo ainda volta ao state em qualquer re-init do store (como
+      // no remount do layout). Limpar manualmente fecha a janela.
+      const persistedMe = useCookie<unknown>('auth')
+      persistedMe.value = null
       this.me = null
       this.token = null
     },
