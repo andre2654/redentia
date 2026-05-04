@@ -1,10 +1,4 @@
 {
-  "crons": [
-    {
-      "path": "/api/cron/market-alert",
-      "schedule": "0 17 * * 1-5"
-    }
-  ],
   "redirects": [
     {
       "source": "/:path*",
