@@ -5,6 +5,14 @@
       "schedule": "0 17 * * 1-5"
     }
   ],
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "redentia.com.br" }],
+      "destination": "https://www.redentia.com.br/:path*",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/embed/(.*)",
