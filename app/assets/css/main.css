@@ -988,7 +988,61 @@ button:disabled {
   .placeholder\:text-white\/40::placeholder { color: rgb(var(--brand-overlay) / 0.4) !important; }
   .placeholder\:text-gray-500::placeholder { color: var(--brand-text-muted) !important; }
 
-  /* Tailwind gray overrides */
+  /* Tailwind palette → brand tokens.
+   * Componentes legados (calculadoras, cards de marketing antigos)
+   * usam classes Tailwind hardcoded tipo `text-green-400` que ignoram
+   * o brand do tenant ativo — quando rodava em Norte Capital (cream),
+   * texto verde-fluo aparecia em fundo creme, ilegível.
+   * Em vez de reescrever ~170 ocorrências em 8 componentes, mapeamos
+   * as classes mais usadas pros brand tokens via override global. Fica
+   * DRY: qualquer código futuro que usar essas classes também herda
+   * o tenant ativo automaticamente. */
+
+  /* Gray scale → text hierarchy */
+  .text-gray-300 { color: var(--brand-text) !important; }
+  .text-gray-400 { color: var(--brand-text-muted) !important; }
   .text-gray-500 { color: var(--brand-text-muted) !important; }
+  .text-gray-600 { color: var(--brand-text-muted) !important; opacity: 0.8; }
   .bg-gray-600 { background-color: var(--brand-neutral) !important; }
+
+  /* Greens → positive (ganho/renda/sucesso) */
+  .text-green-100,
+  .text-green-200,
+  .text-green-400,
+  .text-green-500,
+  .text-emerald-200 { color: var(--brand-positive) !important; }
+  .bg-green-400,
+  .bg-green-500 { background-color: var(--brand-positive) !important; }
+  .border-green-400,
+  .border-green-500 { border-color: var(--brand-positive) !important; }
+
+  /* Reds → negative (perda/risco/imposto) */
+  .text-red-200,
+  .text-red-400,
+  .text-red-500 { color: var(--brand-negative) !important; }
+  .bg-red-400,
+  .bg-red-500 { background-color: var(--brand-negative) !important; }
+  .border-red-400,
+  .border-red-500 { border-color: var(--brand-negative) !important; }
+
+  /* Yellows + Blues → primary (CTA / accent neutro do tenant).
+   * Yellow vira primary porque a Redentia É amber; em outros tenants
+   * (Norte cream / Primo Rico amarelo) cai no que cada um define.
+   * Blue vira primary porque não temos token "info" — tudo que era
+   * azul-info no design legacy era acento do brand de qualquer jeito. */
+  .text-yellow-100,
+  .text-yellow-200,
+  .text-yellow-400,
+  .text-amber-400,
+  .text-blue-100,
+  .text-blue-200,
+  .text-blue-400 { color: var(--brand-primary) !important; }
+  .bg-yellow-400,
+  .bg-yellow-500,
+  .bg-blue-400,
+  .bg-blue-500 { background-color: var(--brand-primary) !important; }
+  .border-yellow-400,
+  .border-yellow-500,
+  .border-blue-400,
+  .border-blue-500 { border-color: var(--brand-primary) !important; }
 }
