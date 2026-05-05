@@ -3,8 +3,14 @@ export const useInterfaceStore = defineStore('interface', {
     revealAmount: boolean
     hideInstallBanner: boolean
   } => {
+    // `revealAmount` controla se os valores monetarios aparecem em
+    // claro ou mascarados (R$ ••••••). True = revelado (Privacy Off);
+    // false = mascarado (Privacy On). Defaultamos true pra que novos
+    // usuarios vejam o patrimonio sem precisar destravar — o toggle
+    // fica visivel pra quem quiser ativar a privacidade. Se ja estava
+    // false em localStorage (pinia-persistedstate), respeita a escolha.
     return {
-      revealAmount: false,
+      revealAmount: true,
       hideInstallBanner: false,
     }
   },

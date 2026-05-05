@@ -1,10 +1,11 @@
 <!--
-  MoleculesOnboardingNameModal — modal soft pos-magic-link.
+  MoleculesOnboardingNameModal — modal hard-block pos-magic-link.
 
   QUANDO ABRE:
   - Apos login via magic link, se o user nao tem nome OU se URL tem
-    `?onboarding=true`. Nao bloqueia experiencia (pode pular), mas
-    incentiva a preencher pra UX personalizada.
+    `?onboarding=true`. BLOQUEIA o resto da app ate o nome ser
+    preenchido — nao tem skip, nao fecha pelo backdrop, nao fecha
+    com Esc.
 
   USADO EM:
   - default.vue (layout authenticated) — mount global se onboarding=true
@@ -12,14 +13,20 @@
 
   COMPORTAMENTO:
   - Mostra 1 campo "Como podemos te chamar?"
-  - Submit → PUT /auth/profile { name }
-  - Botao "Agora não" fecha sem salvar (pessoa pode preencher depois em /settings)
-  - Apos submit/skip, remove `?onboarding=true` da URL
+  - Submit → PUT /auth/profile { name } → fecha
+  - Sem skip — usuario tem que preencher pra continuar
+  - Apos submit, remove `?onboarding=true` da URL
 
   POR QUE NAO PEDE NOME NO SIGNUP:
   Magic link puro = 1 campo (email). Pedir nome no signup tira o ganho
   do passwordless. Padrao Linear/Cal.com/Notion: pega nome DEPOIS do
   primeiro login, quando user ja viu valor.
+
+  POR QUE NAO TEM "AGORA NAO":
+  Sem nome, varios componentes do shell ficam num estado intermediario
+  (sidebar de patrimonio, header personalizado, emails de reset). Em
+  vez de tratar todos os casos `name=null`, tratamos um so: bloqueia
+  ate preencher. Single source of truth.
 -->
 <script setup lang="ts">
 const props = defineProps<{
@@ -27,7 +34,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  /** Modal fechado (via skip ou submit). Parent remove ?onboarding= da URL. */
+  /** Modal fechado apos submit bem-sucedido. Parent remove ?onboarding= da URL. */
   close: []
 }>()
 
@@ -60,18 +67,37 @@ async function save() {
   }
 }
 
-function skip() {
-  emit('close')
-}
-
 // Body scroll lock while open
 watch(() => props.open, (next) => {
   if (typeof document === 'undefined') return
   document.body.style.overflow = next ? 'hidden' : ''
 })
 
+// Bloqueia Escape — modal e hard-block, fechar com Esc deixaria o
+// usuario num estado sem nome (que e exatamente o que estamos
+// evitando). Soft-cancel a tecla; nao previne se o foco ja saiu
+// do modal por algum motivo (failsafe).
+function onKeydown(e: KeyboardEvent) {
+  if (e.key === 'Escape' && props.open) {
+    e.preventDefault()
+    e.stopPropagation()
+  }
+}
+
+watch(() => props.open, (next) => {
+  if (typeof document === 'undefined') return
+  if (next) {
+    document.addEventListener('keydown', onKeydown, { capture: true })
+  } else {
+    document.removeEventListener('keydown', onKeydown, { capture: true })
+  }
+})
+
 onBeforeUnmount(() => {
-  if (typeof document !== 'undefined') document.body.style.overflow = ''
+  if (typeof document !== 'undefined') {
+    document.body.style.overflow = ''
+    document.removeEventListener('keydown', onKeydown, { capture: true })
+  }
 })
 </script>
 
@@ -126,14 +152,6 @@ onBeforeUnmount(() => {
                 aria-hidden="true"
               />
               <span>{{ submitting ? 'Salvando…' : 'Continuar' }}</span>
-            </button>
-
-            <button
-              type="button"
-              class="onb__btn-skip"
-              @click="skip"
-            >
-              Agora não
             </button>
           </form>
         </div>
@@ -278,22 +296,6 @@ onBeforeUnmount(() => {
   cursor: not-allowed;
   filter: grayscale(0.3);
   box-shadow: none;
-}
-
-.onb__btn-skip {
-  background: transparent;
-  border: 0;
-  cursor: pointer;
-  padding: 8px;
-  font-family: var(--brand-font);
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-muted);
-  transition: color 150ms;
-}
-
-.onb__btn-skip:hover {
-  color: var(--text-heading);
 }
 
 /* Transitions */
