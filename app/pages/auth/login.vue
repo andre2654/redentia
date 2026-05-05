@@ -10,7 +10,7 @@
       <div class="pointer-events-none absolute inset-0">
         <div
           class="absolute left-1/2 top-0 h-[540px] w-[900px] -translate-x-1/2 rounded-full blur-3xl opacity-40"
-          :style="{ background: `radial-gradient(ellipse at center top, var(--brand-primary)33, transparent 60%)` }"
+          :style="{ background: `radial-gradient(ellipse at center top, color-mix(in srgb, var(--brand-primary) 20%, transparent), transparent 60%)` }"
         />
         <div
           class="absolute inset-0 opacity-[0.04]"
@@ -34,7 +34,7 @@
 
           <div
             class="mt-4 overflow-hidden rounded-lg border backdrop-blur-sm"
-            :style="{ borderColor: 'var(--brand-border)', backgroundColor: `var(--brand-surface)E6` }"
+            :style="{ borderColor: 'var(--brand-border)', backgroundColor: `color-mix(in srgb, var(--brand-surface) 90%, transparent)` }"
           >
             <div
               class="flex items-center justify-between border-b px-4 py-2 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
@@ -66,7 +66,7 @@
              mas mantido pra A/B (alguns users buscam o link no rodape). -->
         <div
           class="flex w-full max-w-md flex-col gap-5 rounded-lg border p-8"
-          :style="{ borderColor: 'var(--brand-border)', backgroundColor: `var(--brand-surface)E6` }"
+          :style="{ borderColor: 'var(--brand-border)', backgroundColor: `color-mix(in srgb, var(--brand-surface) 90%, transparent)` }"
         >
           <MoleculesAuthFormCard
             mode="login"
@@ -173,7 +173,7 @@
         :style="{ backgroundColor: 'var(--brand-primary)', color: 'var(--brand-background)' }"
       >
         <span class="font-mentor-eyebrow">MANUAL DO PRIMO · ACESSO</span>
-        <span class="flex-1 border-t" :style="{ borderColor: `var(--brand-background)40` }" />
+        <span class="flex-1 border-t" :style="{ borderColor: `color-mix(in srgb, var(--brand-background) 25%, transparent)` }" />
         <span class="font-mentor-eyebrow">LOGIN · CAPÍTULO 01</span>
       </div>
 
@@ -189,7 +189,7 @@
             Continue<br />
             <span class="italic" :style="{ color: 'var(--brand-primary)' }">construindo.</span>
           </h1>
-          <p class="mt-8 max-w-md text-base leading-relaxed" :style="{ color: `var(--brand-text)CC` }">
+          <p class="mt-8 max-w-md text-base leading-relaxed" :style="{ color: `color-mix(in srgb, var(--brand-text) 80%, transparent)` }">
             {{ brand.auth.loginSubtitle }} O capítulo de hoje depende da sua disciplina de ontem. Hora de abrir o manual.
           </p>
 
@@ -241,13 +241,13 @@
           <MoleculesGoogleAuthBlock mode="signin" divider-label="OU" />
 
           <div class="flex flex-col gap-2 border-t-2 pt-4" :style="{ borderColor: 'var(--brand-text)' }">
-            <NuxtLink to="/auth/forgot-password" class="font-mentor-eyebrow transition hover:opacity-80" :style="{ color: `var(--brand-text)99` }">
+            <NuxtLink to="/auth/forgot-password" class="font-mentor-eyebrow transition hover:opacity-80" :style="{ color: `color-mix(in srgb, var(--brand-text) 60%, transparent)` }">
               ESQUECI A SENHA →
             </NuxtLink>
             <NuxtLink to="/auth/register" class="font-mentor-eyebrow transition hover:opacity-80" :style="{ color: 'var(--brand-primary)' }">
               AINDA NÃO É LEITOR? COMECE AQUI →
             </NuxtLink>
-            <p class="text-[11px] leading-relaxed" :style="{ color: `var(--brand-text)80` }">
+            <p class="text-[11px] leading-relaxed" :style="{ color: `color-mix(in srgb, var(--brand-text) 50%, transparent)` }">
               {{ brand.auth.termsText }}
             </p>
           </div>
@@ -374,13 +374,13 @@
             Volta, volta,<br />
             <span class="highlighter" :style="{ color: 'var(--brand-primary)' }">criatura!</span>
           </h1>
-          <p class="font-showtime-body mt-8 max-w-md text-base" :style="{ color: `var(--brand-text)CC` }">
+          <p class="font-showtime-body mt-8 max-w-md text-base" :style="{ color: `color-mix(in srgb, var(--brand-text) 80%, transparent)` }">
             {{ brand.auth.loginSubtitle }} A Na_th IA tá te esperando pra continuar cuidando do teu dinheiro.
           </p>
 
           <div class="mt-8 flex items-start gap-3">
             <img src="/brand/mepoupe/margarete.svg" alt="Margarete" class="h-12 shrink-0" />
-            <p class="font-showtime-body max-w-xs text-sm italic" :style="{ color: `var(--brand-text)B3` }">
+            <p class="font-showtime-body max-w-xs text-sm italic" :style="{ color: `color-mix(in srgb, var(--brand-text) 70%, transparent)` }">
               "Bora lá, que dinheiro parado não rende nada, só o juro composto, esse filho maravilhoso!"
             </p>
           </div>
@@ -405,14 +405,14 @@
 
           <UFormField name="login">
             <template #label>
-              <span class="font-showtime-label" :style="{ color: `var(--brand-text)80` }">USUÁRIO OU E-MAIL</span>
+              <span class="font-showtime-label" :style="{ color: `color-mix(in srgb, var(--brand-text) 50%, transparent)` }">USUÁRIO OU E-MAIL</span>
             </template>
             <AtomsFormInput v-model="state.login" type="text" autocomplete="username" spellcheck="false" placeholder="Usuário ou e-mail" size="lg" class="w-full" />
           </UFormField>
 
           <UFormField name="password">
             <template #label>
-              <span class="font-showtime-label" :style="{ color: `var(--brand-text)80` }">SENHA SECRETA</span>
+              <span class="font-showtime-label" :style="{ color: `color-mix(in srgb, var(--brand-text) 50%, transparent)` }">SENHA SECRETA</span>
             </template>
             <AtomsFormInputPassword v-model="state.password" class="w-full" />
           </UFormField>
@@ -424,13 +424,13 @@
           <MoleculesGoogleAuthBlock mode="signin" divider-label="OU" />
 
           <div class="flex flex-col items-center gap-2 text-center">
-            <NuxtLink to="/auth/forgot-password" class="font-showtime-label underline underline-offset-4 transition hover:opacity-70" :style="{ color: `var(--brand-text)90` }">
+            <NuxtLink to="/auth/forgot-password" class="font-showtime-label underline underline-offset-4 transition hover:opacity-70" :style="{ color: `color-mix(in srgb, var(--brand-text) 56%, transparent)` }">
               ESQUECI A SENHA →
             </NuxtLink>
             <NuxtLink to="/auth/register" class="font-showtime-label underline underline-offset-4 transition hover:opacity-70" :style="{ color: 'var(--brand-primary)' }">
               ÉS NOVA POR AQUI? BORA CADASTRAR →
             </NuxtLink>
-            <p class="font-showtime-body text-[11px]" :style="{ color: `var(--brand-text)80` }">
+            <p class="font-showtime-body text-[11px]" :style="{ color: `color-mix(in srgb, var(--brand-text) 50%, transparent)` }">
               {{ brand.auth.termsText }}
             </p>
           </div>
@@ -468,7 +468,7 @@
             :style="{
               backgroundColor: 'var(--brand-primary)',
               color: 'var(--brand-background)',
-              boxShadow: `0 8px 30px -8px var(--brand-primary)80, 0 0 0 3px var(--brand-background), 0 0 0 5px var(--brand-primary)40`,
+              boxShadow: `0 8px 30px -8px color-mix(in srgb, var(--brand-primary) 50%, transparent), 0 0 0 3px var(--brand-background), 0 0 0 5px color-mix(in srgb, var(--brand-primary) 25%, transparent)`,
             }"
           >
             <span class="relative flex size-1.5">
@@ -491,12 +491,12 @@
             <span :style="{ color: 'var(--brand-primary)' }">você parou.</span>
           </h1>
 
-          <p class="mt-6 max-w-md text-[16px] leading-relaxed" :style="{ color: `var(--brand-text)C0` }">
+          <p class="mt-6 max-w-md text-[16px] leading-relaxed" :style="{ color: `color-mix(in srgb, var(--brand-text) 75%, transparent)` }">
             Seu plano, sua carteira, seus backtests, esperando. Sem hype, sem ansiedade, no seu ritmo.
           </p>
 
           <!-- Author quote -->
-          <div class="mt-10 flex items-start gap-4 border-t pt-6" :style="{ borderColor: `var(--brand-border)80` }">
+          <div class="mt-10 flex items-start gap-4 border-t pt-6" :style="{ borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)` }">
             <img
               v-if="brand.hero.image"
               :src="brand.hero.image"
@@ -508,7 +508,7 @@
               }"
             />
             <div class="flex-1">
-              <p class="text-[13px] italic leading-snug" :style="{ color: `var(--brand-text)B0` }">
+              <p class="text-[13px] italic leading-snug" :style="{ color: `color-mix(in srgb, var(--brand-text) 69%, transparent)` }">
                 "Não é sorte. É método. Juros compostos trabalham enquanto você dorme."
               </p>
               <p class="mt-1 text-[11px] font-bold uppercase tracking-[0.15em]" :style="{ color: 'var(--brand-primary)' }">
@@ -526,7 +526,7 @@
           :style="{
             borderColor: 'var(--brand-border)',
             backgroundColor: 'var(--brand-surface)',
-            boxShadow: `0 30px 80px -30px var(--brand-primary)30`,
+            boxShadow: `0 30px 80px -30px color-mix(in srgb, var(--brand-primary) 19%, transparent)`,
           }"
           @submit="onSubmit"
         >
@@ -561,7 +561,7 @@
             :style="{
               backgroundColor: 'var(--brand-primary)',
               color: 'var(--brand-background)',
-              boxShadow: `0 16px 50px -16px var(--brand-primary)A0`,
+              boxShadow: `0 16px 50px -16px color-mix(in srgb, var(--brand-primary) 63%, transparent)`,
             }"
           >
             <UIcon name="i-lucide-flask-conical" class="size-4" />
@@ -626,7 +626,7 @@
           <p
             class="max-w-xl text-[18px] leading-[1.65]"
             :style="{
-              color: `var(--brand-text)C0`,
+              color: `color-mix(in srgb, var(--brand-text) 75%, transparent)`,
               fontFamily: `'Spectral', 'Georgia', serif`,
             }"
           >

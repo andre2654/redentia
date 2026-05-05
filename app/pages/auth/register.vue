@@ -9,7 +9,7 @@
       <div class="pointer-events-none absolute inset-0">
         <div
           class="absolute left-1/2 top-0 h-[540px] w-[900px] -translate-x-1/2 rounded-full blur-3xl opacity-40"
-          :style="{ background: `radial-gradient(ellipse at center top, var(--brand-primary)33, transparent 60%)` }"
+          :style="{ background: `radial-gradient(ellipse at center top, color-mix(in srgb, var(--brand-primary) 20%, transparent), transparent 60%)` }"
         />
         <div
           class="absolute inset-0 opacity-[0.04]"
@@ -32,7 +32,7 @@
 
           <div
             class="mt-4 overflow-hidden rounded-lg border backdrop-blur-sm"
-            :style="{ borderColor: 'var(--brand-border)', backgroundColor: `var(--brand-surface)E6` }"
+            :style="{ borderColor: 'var(--brand-border)', backgroundColor: `color-mix(in srgb, var(--brand-surface) 90%, transparent)` }"
           >
             <div
               class="flex items-center justify-between border-b px-4 py-2 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
@@ -62,7 +62,7 @@
              inline. UX provada com gate (3x conversao vs form antigo). -->
         <div
           class="flex w-full max-w-md flex-col gap-5 rounded-lg border p-8"
-          :style="{ borderColor: 'var(--brand-border)', backgroundColor: `var(--brand-surface)E6` }"
+          :style="{ borderColor: 'var(--brand-border)', backgroundColor: `color-mix(in srgb, var(--brand-surface) 90%, transparent)` }"
         >
           <MoleculesAuthFormCard
             mode="register"
@@ -213,7 +213,7 @@
         :style="{ backgroundColor: 'var(--brand-primary)', color: 'var(--brand-background)' }"
       >
         <span class="font-mentor-eyebrow">MANUAL DO PRIMO · INSCRIÇÃO</span>
-        <span class="flex-1 border-t" :style="{ borderColor: `var(--brand-background)40` }" />
+        <span class="flex-1 border-t" :style="{ borderColor: `color-mix(in srgb, var(--brand-background) 25%, transparent)` }" />
         <span class="font-mentor-eyebrow">REGISTRO · CAPÍTULO 00</span>
       </div>
 
@@ -229,7 +229,7 @@
             Comece a sua<br />
             <span class="italic" :style="{ color: 'var(--brand-primary)' }">construção.</span>
           </h1>
-          <p class="mt-8 max-w-md text-base leading-relaxed" :style="{ color: `var(--brand-text)CC` }">
+          <p class="mt-8 max-w-md text-base leading-relaxed" :style="{ color: `color-mix(in srgb, var(--brand-text) 80%, transparent)` }">
             {{ brand.auth.registerSubtitle }} O Método ARCA funciona quando você faz o básico bem feito, todo mês, por muitos anos.
           </p>
 
@@ -334,7 +334,7 @@
             <NuxtLink to="/auth/login" class="font-mentor-eyebrow transition hover:opacity-80" :style="{ color: 'var(--brand-primary)' }">
               JÁ É LEITOR? ENTRE NO MANUAL →
             </NuxtLink>
-            <p class="text-[11px] leading-relaxed" :style="{ color: `var(--brand-text)80` }">
+            <p class="text-[11px] leading-relaxed" :style="{ color: `color-mix(in srgb, var(--brand-text) 50%, transparent)` }">
               {{ brand.auth.termsText }}
             </p>
           </div>
@@ -506,13 +506,13 @@
             Bora entrar pra<br />
             <span class="highlighter" :style="{ color: 'var(--brand-primary)' }">família, criatura!</span>
           </h1>
-          <p class="font-showtime-body mt-8 max-w-md text-base" :style="{ color: `var(--brand-text)CC` }">
+          <p class="font-showtime-body mt-8 max-w-md text-base" :style="{ color: `color-mix(in srgb, var(--brand-text) 80%, transparent)` }">
             {{ brand.auth.registerSubtitle }} Sem Sidnelson, sem pegadinha, sem frescura, só você, seu bolso e a Nath.
           </p>
 
           <div class="mt-8 flex items-start gap-3">
             <img src="/brand/mepoupe/margarete.svg" alt="Margarete" class="h-12 shrink-0" />
-            <p class="font-showtime-body max-w-xs text-sm italic" :style="{ color: `var(--brand-text)B3` }">
+            <p class="font-showtime-body max-w-xs text-sm italic" :style="{ color: `color-mix(in srgb, var(--brand-text) 70%, transparent)` }">
               "Abre essa conta e bora pro primeiro aporte, ai que festa, criatura!"
             </p>
           </div>
@@ -520,19 +520,19 @@
           <div class="mt-10 flex flex-wrap gap-3">
             <div
               class="inline-flex items-center gap-2 rounded-full border-2 px-4 py-2 font-showtime-label text-[10px]"
-              :style="{ borderColor: `var(--brand-primary)70`, backgroundColor: `var(--brand-primary)15`, color: 'var(--brand-text)' }"
+              :style="{ borderColor: `color-mix(in srgb, var(--brand-primary) 44%, transparent)`, backgroundColor: `color-mix(in srgb, var(--brand-primary) 8%, transparent)`, color: 'var(--brand-text)' }"
             >
               💛 100% GRÁTIS
             </div>
             <div
               class="inline-flex items-center gap-2 rounded-full border-2 px-4 py-2 font-showtime-label text-[10px]"
-              :style="{ borderColor: `var(--brand-primary)70`, backgroundColor: `var(--brand-primary)15`, color: 'var(--brand-text)' }"
+              :style="{ borderColor: `color-mix(in srgb, var(--brand-primary) 44%, transparent)`, backgroundColor: `color-mix(in srgb, var(--brand-primary) 8%, transparent)`, color: 'var(--brand-text)' }"
             >
               ⚡ EM 2 MINUTOS
             </div>
             <div
               class="inline-flex items-center gap-2 rounded-full border-2 px-4 py-2 font-showtime-label text-[10px]"
-              :style="{ borderColor: `var(--brand-primary)70`, backgroundColor: `var(--brand-primary)15`, color: 'var(--brand-text)' }"
+              :style="{ borderColor: `color-mix(in srgb, var(--brand-primary) 44%, transparent)`, backgroundColor: `color-mix(in srgb, var(--brand-primary) 8%, transparent)`, color: 'var(--brand-text)' }"
             >
               🚫 SEM CARTÃO
             </div>
@@ -558,21 +558,21 @@
 
           <UFormField name="name">
             <template #label>
-              <span class="font-showtime-label" :style="{ color: `var(--brand-text)80` }">SEU NOME</span>
+              <span class="font-showtime-label" :style="{ color: `color-mix(in srgb, var(--brand-text) 50%, transparent)` }">SEU NOME</span>
             </template>
             <AtomsFormInput v-model="state.name" type="text" placeholder="Como a gente te chama?" size="lg" class="w-full" />
           </UFormField>
 
           <UFormField name="login">
             <template #label>
-              <span class="font-showtime-label" :style="{ color: `var(--brand-text)80` }">USUÁRIO</span>
+              <span class="font-showtime-label" :style="{ color: `color-mix(in srgb, var(--brand-text) 50%, transparent)` }">USUÁRIO</span>
             </template>
             <AtomsFormInput v-model="state.login" type="text" placeholder="Escolha um apelido" size="lg" class="w-full" />
           </UFormField>
 
           <UFormField name="celular">
             <template #label>
-              <span class="font-showtime-label" :style="{ color: `var(--brand-text)80` }">CELULAR</span>
+              <span class="font-showtime-label" :style="{ color: `color-mix(in srgb, var(--brand-text) 50%, transparent)` }">CELULAR</span>
             </template>
             <AtomsFormInput
               v-model="state.celular"
@@ -588,21 +588,21 @@
 
           <UFormField name="email">
             <template #label>
-              <span class="font-showtime-label" :style="{ color: `var(--brand-text)80` }">E-MAIL</span>
+              <span class="font-showtime-label" :style="{ color: `color-mix(in srgb, var(--brand-text) 50%, transparent)` }">E-MAIL</span>
             </template>
             <AtomsFormInput v-model="state.email" type="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="voce@exemplo.com" size="lg" class="w-full" />
           </UFormField>
 
           <UFormField name="password">
             <template #label>
-              <span class="font-showtime-label" :style="{ color: `var(--brand-text)80` }">SENHA SECRETA</span>
+              <span class="font-showtime-label" :style="{ color: `color-mix(in srgb, var(--brand-text) 50%, transparent)` }">SENHA SECRETA</span>
             </template>
             <AtomsFormInputPassword v-model="state.password" :aria-invalid="score < 4" class="w-full" />
           </UFormField>
 
           <UFormField name="password_confirmation">
             <template #label>
-              <span class="font-showtime-label" :style="{ color: `var(--brand-text)80` }">REPETE A SENHA</span>
+              <span class="font-showtime-label" :style="{ color: `color-mix(in srgb, var(--brand-text) 50%, transparent)` }">REPETE A SENHA</span>
             </template>
             <AtomsFormInputPassword v-model="state.password_confirmation" placeholder="Confirme a senha" class="w-full" />
           </UFormField>
@@ -630,7 +630,7 @@
             <NuxtLink to="/auth/login" class="font-showtime-label underline underline-offset-4 transition hover:opacity-70" :style="{ color: 'var(--brand-primary)' }">
               JÁ SOU DA FAMÍLIA · ENTRAR →
             </NuxtLink>
-            <p class="font-showtime-body text-[11px]" :style="{ color: `var(--brand-text)80` }">
+            <p class="font-showtime-body text-[11px]" :style="{ color: `color-mix(in srgb, var(--brand-text) 50%, transparent)` }">
               {{ brand.auth.termsText }}
             </p>
           </div>
@@ -662,7 +662,7 @@
             :style="{
               backgroundColor: 'var(--brand-primary)',
               color: 'var(--brand-background)',
-              boxShadow: `0 8px 30px -8px var(--brand-primary)80, 0 0 0 3px var(--brand-background), 0 0 0 5px var(--brand-primary)40`,
+              boxShadow: `0 8px 30px -8px color-mix(in srgb, var(--brand-primary) 50%, transparent), 0 0 0 3px var(--brand-background), 0 0 0 5px color-mix(in srgb, var(--brand-primary) 25%, transparent)`,
             }"
           >
             <span class="relative flex size-1.5">
@@ -683,11 +683,11 @@
             Comece o<br />
             <span :style="{ color: 'var(--brand-primary)' }">método.</span>
           </h1>
-          <p class="mt-6 max-w-md text-[16px] leading-relaxed" :style="{ color: `var(--brand-text)C0` }">
+          <p class="mt-6 max-w-md text-[16px] leading-relaxed" :style="{ color: `color-mix(in srgb, var(--brand-text) 75%, transparent)` }">
             {{ brand.auth.registerSubtitle }}
           </p>
 
-          <ul class="mt-10 flex flex-col gap-3 border-t pt-6" :style="{ borderColor: `var(--brand-border)80` }">
+          <ul class="mt-10 flex flex-col gap-3 border-t pt-6" :style="{ borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)` }">
             <li v-for="t in ['Backtests reais', 'Zero guru', 'Método publicado', 'Sem FOMO']" :key="t" class="flex items-center gap-3 text-[13px]" :style="{ color: 'var(--brand-text)' }">
               <UIcon name="i-lucide-check-circle-2" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
               {{ t }}
@@ -702,7 +702,7 @@
           :style="{
             borderColor: 'var(--brand-border)',
             backgroundColor: 'var(--brand-surface)',
-            boxShadow: `0 30px 80px -30px var(--brand-primary)30`,
+            boxShadow: `0 30px 80px -30px color-mix(in srgb, var(--brand-primary) 19%, transparent)`,
           }"
           @submit="onSubmit"
         >
@@ -760,7 +760,7 @@
             :style="{
               backgroundColor: 'var(--brand-primary)',
               color: 'var(--brand-background)',
-              boxShadow: `0 16px 50px -16px var(--brand-primary)A0`,
+              boxShadow: `0 16px 50px -16px color-mix(in srgb, var(--brand-primary) 63%, transparent)`,
             }"
           >
             <UIcon name="i-lucide-flask-conical" class="size-4" />
@@ -820,7 +820,7 @@
           <p
             class="max-w-xl text-[18px] leading-[1.65]"
             :style="{
-              color: `var(--brand-text)C0`,
+              color: `color-mix(in srgb, var(--brand-text) 75%, transparent)`,
               fontFamily: `'Spectral', 'Georgia', serif`,
             }"
           >
