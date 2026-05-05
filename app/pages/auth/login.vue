@@ -87,6 +87,8 @@
             Autenticar
           </AtomsButton>
 
+          <MoleculesGoogleAuthBlock mode="signin" divider-label="OU" />
+
           <div class="flex items-center justify-between border-t pt-4" :style="{ borderColor: brand.colors.border }">
             <NuxtLink to="/auth/register" class="font-mono-tab text-[10px] uppercase tracking-[0.15em] transition hover:opacity-80" :style="{ color: brand.colors.primary }">
               &gt; REGISTER_NEW
@@ -158,6 +160,8 @@
           <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="mt-2 w-full justify-center font-small-caps tracking-wide">
             Entrar no portal
           </AtomsButton>
+
+          <MoleculesGoogleAuthBlock mode="signin" />
 
           <hr class="dashed-rule" />
 
@@ -253,6 +257,8 @@
             ENTRAR NO MANUAL →
           </AtomsButton>
 
+          <MoleculesGoogleAuthBlock mode="signin" divider-label="OU" />
+
           <div class="flex flex-col gap-2 border-t-2 pt-4" :style="{ borderColor: brand.colors.text }">
             <NuxtLink to="/auth/forgot-password" class="font-mentor-eyebrow transition hover:opacity-80" :style="{ color: `${brand.colors.text}99` }">
               ESQUECI A SENHA →
@@ -343,6 +349,8 @@
               ABRIR O TERMINAL →
             </AtomsButton>
 
+            <MoleculesGoogleAuthBlock mode="signin" />
+
             <hr class="dashed-rule" />
 
             <div class="flex flex-col gap-2">
@@ -431,6 +439,8 @@
           <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="mt-3 w-full justify-center font-showtime-label">
             BORA ENTRAR! →
           </AtomsButton>
+
+          <MoleculesGoogleAuthBlock mode="signin" divider-label="OU" />
 
           <div class="flex flex-col items-center gap-2 text-center">
             <NuxtLink to="/auth/forgot-password" class="font-showtime-label underline underline-offset-4 transition hover:opacity-70" :style="{ color: `${brand.colors.text}90` }">
@@ -578,6 +588,8 @@
             <span class="transition-transform group-hover:translate-x-1">→</span>
           </button>
 
+          <MoleculesGoogleAuthBlock mode="signin" />
+
           <div class="flex flex-col gap-2 pt-2 text-center">
             <NuxtLink to="/auth/forgot-password" class="text-[12px] font-medium underline-offset-4 transition hover:opacity-70" :style="{ color: brand.colors.textMuted }">
               <span class="underline">Esqueci minha senha</span>
@@ -694,6 +706,8 @@
               <span>→</span>
             </button>
 
+            <MoleculesGoogleAuthBlock mode="signin" />
+
             <div class="mt-2 flex flex-col gap-3 border-t pt-5" :style="{ borderColor: brand.colors.border }">
               <NuxtLink
                 to="/auth/forgot-password"
@@ -788,6 +802,8 @@
             <UIcon v-if="submitting" name="i-lucide-loader-2" class="size-4 animate-spin" aria-hidden="true" />
             <span>{{ brand.nav.login }}</span>
           </button>
+
+          <MoleculesGoogleAuthBlock mode="signin" />
 
           <div class="flex flex-col gap-2 text-center md:text-left">
             <NuxtLink to="/auth/forgot-password" class="text-sm font-medium transition hover:opacity-80" :style="{ color: brand.colors.textMuted }">

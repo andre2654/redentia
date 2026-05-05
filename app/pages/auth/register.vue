@@ -135,6 +135,8 @@
             Criar sessão
           </AtomsButton>
 
+          <MoleculesGoogleAuthBlock mode="signup" divider-label="OU" />
+
           <div class="flex items-center justify-between border-t pt-4" :style="{ borderColor: brand.colors.border }">
             <NuxtLink to="/auth/login" class="font-mono-tab text-[10px] uppercase tracking-[0.15em] transition hover:opacity-80" :style="{ color: brand.colors.primary }">
               &gt; LOGIN
@@ -256,6 +258,8 @@
           <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="mt-2 w-full justify-center font-small-caps tracking-wide">
             Abrir conta
           </AtomsButton>
+
+          <MoleculesGoogleAuthBlock mode="signup" />
 
           <hr class="dashed-rule" />
 
@@ -397,6 +401,8 @@
             COMEÇAR A CONSTRUIR →
           </AtomsButton>
 
+          <MoleculesGoogleAuthBlock mode="signup" divider-label="OU" />
+
           <div class="flex flex-col gap-2 border-t-2 pt-4" :style="{ borderColor: brand.colors.text }">
             <NuxtLink to="/auth/login" class="font-mentor-eyebrow transition hover:opacity-80" :style="{ color: brand.colors.primary }">
               JÁ É LEITOR? ENTRE NO MANUAL →
@@ -532,6 +538,8 @@
             <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="mt-2 w-full justify-center font-academic-label">
               MATRICULAR-SE →
             </AtomsButton>
+
+            <MoleculesGoogleAuthBlock mode="signup" />
 
             <hr class="dashed-rule" />
 
@@ -689,6 +697,8 @@
             BORA COMEÇAR, CRIATURA! →
           </AtomsButton>
 
+          <MoleculesGoogleAuthBlock mode="signup" divider-label="OU" />
+
           <div class="flex flex-col items-center gap-2 text-center">
             <NuxtLink to="/auth/login" class="font-showtime-label underline underline-offset-4 transition hover:opacity-70" :style="{ color: brand.colors.primary }">
               JÁ SOU DA FAMÍLIA · ENTRAR →
@@ -830,6 +840,8 @@
             Começar o método
             <span class="transition-transform group-hover:translate-x-1">→</span>
           </button>
+
+          <MoleculesGoogleAuthBlock mode="signup" />
 
           <div class="flex flex-col gap-2 pt-2 text-center">
             <NuxtLink to="/auth/login" class="text-[12px] font-bold underline-offset-4 transition hover:opacity-70" :style="{ color: brand.colors.primary }">
@@ -982,6 +994,8 @@
               <span>→</span>
             </button>
 
+            <MoleculesGoogleAuthBlock mode="signup" />
+
             <div class="mt-2 flex flex-col gap-3 border-t pt-5" :style="{ borderColor: brand.colors.border }">
               <NuxtLink to="/auth/login" class="text-[11px] font-bold uppercase tracking-[0.18em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: brand.colors.primary }">
                 Já sou holder · entrar →
@@ -1084,6 +1098,8 @@
             <UIcon v-if="submitting" name="i-lucide-loader-2" class="size-4 animate-spin" aria-hidden="true" />
             <span>{{ brand.nav.register }}</span>
           </button>
+
+          <MoleculesGoogleAuthBlock mode="signup" />
 
           <div class="flex flex-col gap-2 text-center md:text-left">
             <NuxtLink to="/auth/login" class="text-sm font-medium transition hover:opacity-80" :style="{ color: brand.colors.primary }">

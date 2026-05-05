@@ -478,6 +478,13 @@ export default defineNuxtConfig({
       firebaseVapidKey: process.env.NUXT_PUBLIC_FIREBASE_VAPID_KEY,
       metaPixelId: process.env.NUXT_PUBLIC_META_PIXEL_ID || '',
       metaAccessToken: process.env.NUXT_PUBLIC_META_ACCESS_TOKEN || '',
+      // Google OAuth Web client ID — public by design (browsers
+      // need it to ask Google Identity Services for an id_token).
+      // The matching client_secret stays in the Laravel backend
+      // and is NOT exposed here.
+      googleClientId:
+        process.env.NUXT_PUBLIC_GOOGLE_CLIENT_ID
+        || '443939695025-6aho2ug59sa4mmvvoo8cphmeu1s6ji8a.apps.googleusercontent.com',
       // When set, the browser hits the chat-service directly instead of
       // going through Nuxt's /api/chat proxy. The proxy runs on Vercel
       // serverless functions which buffer and time-out long SSE streams.

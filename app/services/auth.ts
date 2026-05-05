@@ -108,6 +108,21 @@ export const useAuthService = () => {
   }
 
   /**
+   * Sign in / sign up via Google id_token. The frontend obtains the
+   * id_token from Google Identity Services (popup or One Tap), then
+   * forwards it here. Backend validates against Google's tokeninfo
+   * endpoint, finds-or-creates the user, returns the same Sanctum
+   * token shape as the regular login.
+   */
+  async function loginWithGoogle(idToken: string): Promise<LoginResponse> {
+    return await $fetch<LoginResponse>(`${baseURL}/google`, {
+      method: 'POST',
+      credentials: 'include',
+      body: { id_token: idToken },
+    })
+  }
+
+  /**
    * Step 1 of password reset — backend ALWAYS returns 200 with the
    * same generic message regardless of whether the email is registered
    * (anti-enumeration). The error path here only fires on
@@ -141,6 +156,7 @@ export const useAuthService = () => {
   return {
     register,
     login,
+    loginWithGoogle,
     me,
     logout,
     updateProfile,
