@@ -198,7 +198,7 @@
 const brand = useBrand()
 const authStore = useAuthStore()
 const layoutName = computed(() =>
-  authStore.isAuthenticated ? 'default' : 'static'
+  authStore.isAuthenticated ? 'default' : 'unauthenticated'
 )
 
 usePageSeo({

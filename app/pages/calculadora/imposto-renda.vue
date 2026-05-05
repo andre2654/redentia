@@ -221,11 +221,11 @@
           <div
             class="brand-card border p-4"
             :style="{
-              borderColor: 'color-mix(in srgb, #ef4444 25%, transparent)',
-              backgroundColor: 'color-mix(in srgb, #ef4444 8%, transparent)',
+              borderColor: `color-mix(in srgb, ${brand.colors.negative} 25%, transparent)`,
+              backgroundColor: `color-mix(in srgb, ${brand.colors.negative} 8%, transparent)`,
             }"
           >
-            <h4 class="mb-1" :style="{ color: '#f87171' }">Não Controlar as Operações</h4>
+            <h4 class="mb-1" :style="{ color: brand.colors.negative }">Não Controlar as Operações</h4>
             <p class="text-sm">
               Use planilha ou software. Não dá para confiar apenas na memória ou esperar a corretora fazer tudo.
             </p>
@@ -233,11 +233,11 @@
           <div
             class="brand-card border p-4"
             :style="{
-              borderColor: 'color-mix(in srgb, #ef4444 25%, transparent)',
-              backgroundColor: 'color-mix(in srgb, #ef4444 8%, transparent)',
+              borderColor: `color-mix(in srgb, ${brand.colors.negative} 25%, transparent)`,
+              backgroundColor: `color-mix(in srgb, ${brand.colors.negative} 8%, transparent)`,
             }"
           >
-            <h4 class="mb-1" :style="{ color: '#f87171' }">Esquecer de Pagar o DARF</h4>
+            <h4 class="mb-1" :style="{ color: brand.colors.negative }">Esquecer de Pagar o DARF</h4>
             <p class="text-sm">
               Multa de 0,33% ao dia. Configure lembretes! Último dia útil do mês seguinte.
             </p>
@@ -245,11 +245,11 @@
           <div
             class="brand-card border p-4"
             :style="{
-              borderColor: 'color-mix(in srgb, #ef4444 25%, transparent)',
-              backgroundColor: 'color-mix(in srgb, #ef4444 8%, transparent)',
+              borderColor: `color-mix(in srgb, ${brand.colors.negative} 25%, transparent)`,
+              backgroundColor: `color-mix(in srgb, ${brand.colors.negative} 8%, transparent)`,
             }"
           >
-            <h4 class="mb-1" :style="{ color: '#f87171' }">Não Declarar Operações Isentas</h4>
+            <h4 class="mb-1" :style="{ color: brand.colors.negative }">Não Declarar Operações Isentas</h4>
             <p class="text-sm">
               Mesmo isento, você DEVE declarar no IRPF anual. Omissão gera malha fina.
             </p>
@@ -257,11 +257,11 @@
           <div
             class="brand-card border p-4"
             :style="{
-              borderColor: 'color-mix(in srgb, #ef4444 25%, transparent)',
-              backgroundColor: 'color-mix(in srgb, #ef4444 8%, transparent)',
+              borderColor: `color-mix(in srgb, ${brand.colors.negative} 25%, transparent)`,
+              backgroundColor: `color-mix(in srgb, ${brand.colors.negative} 8%, transparent)`,
             }"
           >
-            <h4 class="mb-1" :style="{ color: '#f87171' }">Misturar Swing e Day Trade</h4>
+            <h4 class="mb-1" :style="{ color: brand.colors.negative }">Misturar Swing e Day Trade</h4>
             <p class="text-sm">
               São tratados separadamente. Prejuízo de um não compensa lucro do outro.
             </p>
@@ -322,7 +322,7 @@
 const brand = useBrand()
 const authStore = useAuthStore()
 const layoutName = computed(() =>
-  authStore.isAuthenticated ? 'default' : 'static'
+  authStore.isAuthenticated ? 'default' : 'unauthenticated'
 )
 
 usePageSeo({

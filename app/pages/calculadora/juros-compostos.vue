@@ -274,7 +274,7 @@
               borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
             }"
           >
-            <h4 class="mb-2" :style="{ color: '#f87171' }">Maria - Começou aos 35 anos</h4>
+            <h4 class="mb-2" :style="{ color: brand.colors.negative }">Maria - Começou aos 35 anos</h4>
             <ul class="text-sm">
               <li>Aporte mensal: R$ 500</li>
               <li>Até os 65 anos (30 anos)</li>
@@ -282,7 +282,7 @@
             </ul>
             <div
               class="mt-3 rounded-lg p-3"
-              :style="{ backgroundColor: 'color-mix(in srgb, #ef4444 8%, transparent)' }"
+              :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.negative} 8%, transparent)` }"
             >
               <p class="text-sm">R$ 1.130.244,00</p>
               <p class="text-xs">Investido: R$ 180.000</p>
@@ -733,7 +733,7 @@
 const brand = useBrand()
 const authStore = useAuthStore()
 const layoutName = computed(() =>
-  authStore.isAuthenticated ? 'default' : 'static'
+  authStore.isAuthenticated ? 'default' : 'unauthenticated'
 )
 
 // Data de atualização dinâmica: 1º dia do mês corrente. Google usa

@@ -238,7 +238,7 @@ import { useAssetsService } from '~/services/assets'
 const brand = useBrand()
 const authStore = useAuthStore()
 const layoutName = computed(() =>
-  authStore.isAuthenticated ? 'default' : 'static'
+  authStore.isAuthenticated ? 'default' : 'unauthenticated'
 )
 const { getAssets } = useAssetsService()
 const { data: assetsData, pending: assetsPending } = await useAsyncData(

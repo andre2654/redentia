@@ -235,7 +235,7 @@
 const brand = useBrand()
 const authStore = useAuthStore()
 const layoutName = computed(() =>
-  authStore.isAuthenticated ? 'default' : 'static'
+  authStore.isAuthenticated ? 'default' : 'unauthenticated'
 )
 
 definePageMeta({
@@ -271,11 +271,16 @@ const cardStyle = computed(() => ({
   borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
 }))
 
-const calculators = [
+// Tint resolvido a partir do brand do tenant ativo. Mantém variação
+// semântica (primary = ferramenta neutra; positive = ganho/renda;
+// negative = imposto/perda) sem hardcodar cores que ignoram a paleta
+// branda. Antes: 5 hex literais misturando amber/green/purple/red/blue
+// que não respeitavam a tematização white-label.
+const calculators = computed(() => [
   {
     to: '/calculadora/preco-teto',
     icon: 'i-lucide-target',
-    tint: '#fbbf24',
+    tint: brand.colors.primary,
     eyebrow: 'Valuation',
     title: 'Preço Teto',
     body: 'Calcule o preço justo de ações usando Graham, Bazin, P/L setorial e valor patrimonial. Saiba se está barata ou cara.',
@@ -284,7 +289,7 @@ const calculators = [
   {
     to: '/calculadora/aposentadoria',
     icon: 'i-lucide-piggy-bank',
-    tint: '#34d399',
+    tint: brand.colors.positive,
     eyebrow: 'Long-term',
     title: 'Aposentadoria',
     body: 'Calcule quanto investir pra se aposentar. Considera INSS, inflação, expectativa de vida e a regra dos 4%.',
@@ -293,7 +298,7 @@ const calculators = [
   {
     to: '/calculadora/dividend-yield',
     icon: 'i-lucide-coins',
-    tint: '#fbbf24',
+    tint: brand.colors.positive,
     eyebrow: 'Renda passiva',
     title: 'Dividend Yield',
     body: 'Calcule DY atual, projetado e histórico de ações e FIIs. Compare ativos e ache os melhores pagadores.',
@@ -302,7 +307,7 @@ const calculators = [
   {
     to: '/calculadora/quanto-investir',
     icon: 'i-lucide-wallet',
-    tint: '#a78bfa',
+    tint: brand.colors.primary,
     eyebrow: 'Aporte',
     title: 'Quanto Investir',
     body: 'Descubra quanto investir mensalmente pra atingir uma meta financeira. Aportes precisos, sem chute.',
@@ -311,7 +316,7 @@ const calculators = [
   {
     to: '/calculadora/imposto-renda',
     icon: 'i-lucide-receipt-text',
-    tint: '#f87171',
+    tint: brand.colors.negative,
     eyebrow: 'Tributação',
     title: 'Imposto de Renda',
     body: 'Calcule IR sobre day trade e swing trade. Gera DARF automático, compensa prejuízos e fica em dia com a Receita.',
@@ -320,7 +325,7 @@ const calculators = [
   {
     to: '/calculadora/juros-compostos',
     icon: 'i-lucide-trending-up',
-    tint: '#34d399',
+    tint: brand.colors.positive,
     eyebrow: 'Simulação',
     title: 'Juros Compostos',
     body: 'Simule rendimento de investimentos ao longo do tempo. Inclui aportes mensais e gráfico de evolução.',
@@ -329,7 +334,7 @@ const calculators = [
   {
     to: '/calculadora/acoes',
     icon: 'i-lucide-chart-line',
-    tint: '#60a5fa',
+    tint: brand.colors.primary,
     eyebrow: 'Backtest',
     title: 'Investimento em Ações',
     body: 'Quanto teria ganho investindo em ações específicas? Análise com dados históricos reais e dividendos reinvestidos.',
@@ -338,13 +343,13 @@ const calculators = [
   {
     to: '/calculadora/planejamento',
     icon: 'i-lucide-target',
-    tint: '#fbbf24',
+    tint: brand.colors.primary,
     eyebrow: 'Estratégia',
     title: 'Planejamento Patrimonial',
     body: 'Calcule quanto tempo e quanto investir pra atingir metas. Estratégias com dados reais da B3.',
     cta: 'Começar planejamento',
   },
-] as const
+])
 
 const reasons = [
   {

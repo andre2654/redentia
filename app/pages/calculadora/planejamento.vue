@@ -165,8 +165,14 @@
         <h2>Estratégias de Planejamento</h2>
 
         <h3>Maior Rentabilidade</h3>
-        <div class="brand-card border border-green-500/20 bg-green-500/10 p-5">
-          <h4 class="mb-3 text-green-400">
+        <div
+          class="brand-card border p-5"
+          :style="{
+            borderColor: `color-mix(in srgb, ${brand.colors.positive} 20%, transparent)`,
+            backgroundColor: `color-mix(in srgb, ${brand.colors.positive} 10%, transparent)`,
+          }"
+        >
+          <h4 class="mb-3" :style="{ color: brand.colors.positive }">
             Para quem: Investidores com tolerância a risco e horizonte longo (10+ anos)
           </h4>
           <p class="text-sm mb-3">
@@ -185,8 +191,14 @@
         </div>
 
         <h3>Maior Segurança</h3>
-        <div class="brand-card border border-blue-500/20 bg-blue-500/10 p-5">
-          <h4 class="mb-3 text-blue-400">
+        <div
+          class="brand-card border p-5"
+          :style="{
+            borderColor: `color-mix(in srgb, ${brand.colors.primary} 20%, transparent)`,
+            backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 10%, transparent)`,
+          }"
+        >
+          <h4 class="mb-3" :style="{ color: brand.colors.primary }">
             Para quem: Investidores conservadores ou próximos de usar o dinheiro (5-10 anos)
           </h4>
           <p class="text-sm mb-3">
@@ -621,11 +633,11 @@
           <div
             class="brand-card border p-4"
             :style="{
-              borderColor: 'color-mix(in srgb, #ef4444 25%, transparent)',
-              backgroundColor: 'color-mix(in srgb, #ef4444 8%, transparent)',
+              borderColor: `color-mix(in srgb, ${brand.colors.negative} 25%, transparent)`,
+              backgroundColor: `color-mix(in srgb, ${brand.colors.negative} 8%, transparent)`,
             }"
           >
-            <h4 class="mb-1" :style="{ color: '#f87171' }">Metas Irrealistas</h4>
+            <h4 class="mb-1" :style="{ color: brand.colors.negative }">Metas Irrealistas</h4>
             <p class="text-sm">
               Querer R$ 1 milhão em 5 anos investindo R$ 500/mês não é viável. Use a calculadora para definir metas realistas baseadas em dados reais.
             </p>
@@ -633,11 +645,11 @@
           <div
             class="brand-card border p-4"
             :style="{
-              borderColor: 'color-mix(in srgb, #ef4444 25%, transparent)',
-              backgroundColor: 'color-mix(in srgb, #ef4444 8%, transparent)',
+              borderColor: `color-mix(in srgb, ${brand.colors.negative} 25%, transparent)`,
+              backgroundColor: `color-mix(in srgb, ${brand.colors.negative} 8%, transparent)`,
             }"
           >
-            <h4 class="mb-1" :style="{ color: '#f87171' }">Pular Aportes Mensais</h4>
+            <h4 class="mb-1" :style="{ color: brand.colors.negative }">Pular Aportes Mensais</h4>
             <p class="text-sm">
               Inconsistência destrói o planejamento. Se você investe 10 meses e pula 2, perde muito do efeito composto. Seja consistente.
             </p>
@@ -645,11 +657,11 @@
           <div
             class="brand-card border p-4"
             :style="{
-              borderColor: 'color-mix(in srgb, #ef4444 25%, transparent)',
-              backgroundColor: 'color-mix(in srgb, #ef4444 8%, transparent)',
+              borderColor: `color-mix(in srgb, ${brand.colors.negative} 25%, transparent)`,
+              backgroundColor: `color-mix(in srgb, ${brand.colors.negative} 8%, transparent)`,
             }"
           >
-            <h4 class="mb-1" :style="{ color: '#f87171' }">Vender em Pânico</h4>
+            <h4 class="mb-1" :style="{ color: brand.colors.negative }">Vender em Pânico</h4>
             <p class="text-sm">
               Crises acontecem. Quedas de 20-30% são normais em ações. Vender em pânico cristaliza prejuízos. Mantenha a estratégia de longo prazo.
             </p>
@@ -657,11 +669,11 @@
           <div
             class="brand-card border p-4"
             :style="{
-              borderColor: 'color-mix(in srgb, #ef4444 25%, transparent)',
-              backgroundColor: 'color-mix(in srgb, #ef4444 8%, transparent)',
+              borderColor: `color-mix(in srgb, ${brand.colors.negative} 25%, transparent)`,
+              backgroundColor: `color-mix(in srgb, ${brand.colors.negative} 8%, transparent)`,
             }"
           >
-            <h4 class="mb-1" :style="{ color: '#f87171' }">Perseguir "Dicas Quentes"</h4>
+            <h4 class="mb-1" :style="{ color: brand.colors.negative }">Perseguir "Dicas Quentes"</h4>
             <p class="text-sm">
               Não abandone seu planejamento para investir na "ação da vez". Especulação geralmente resulta em perdas. Siga seu plano.
             </p>
@@ -669,11 +681,11 @@
           <div
             class="brand-card border p-4"
             :style="{
-              borderColor: 'color-mix(in srgb, #ef4444 25%, transparent)',
-              backgroundColor: 'color-mix(in srgb, #ef4444 8%, transparent)',
+              borderColor: `color-mix(in srgb, ${brand.colors.negative} 25%, transparent)`,
+              backgroundColor: `color-mix(in srgb, ${brand.colors.negative} 8%, transparent)`,
             }"
           >
-            <h4 class="mb-1" :style="{ color: '#f87171' }">Ignorar Diversificação</h4>
+            <h4 class="mb-1" :style="{ color: brand.colors.negative }">Ignorar Diversificação</h4>
             <p class="text-sm">
               Concentrar tudo em 1-2 ações é extremamente arriscado. Diversifique entre setores e tipos de ativos como recomendado.
             </p>
@@ -755,7 +767,7 @@ const { data: assetsData, pending: assetsPending } = await useAsyncData(
 
 const authStore = useAuthStore()
 const layoutName = computed(() =>
-  authStore.isAuthenticated ? 'default' : 'static'
+  authStore.isAuthenticated ? 'default' : 'unauthenticated'
 )
 
 const assets = computed(() => assetsData.value ?? [])

@@ -167,8 +167,14 @@
 
         <h3>Reinvestimento vs Saque</h3>
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="brand-card border border-green-500/20 bg-green-500/5 p-5">
-            <h4 class="mb-2 text-green-500">
+          <div
+            class="brand-card border p-5"
+            :style="{
+              borderColor: `color-mix(in srgb, ${brand.colors.positive} 20%, transparent)`,
+              backgroundColor: `color-mix(in srgb, ${brand.colors.positive} 5%, transparent)`,
+            }"
+          >
+            <h4 class="mb-2" :style="{ color: brand.colors.positive }">
               Reinvestindo Dividendos
             </h4>
             <p class="text-sm mb-3">
@@ -263,7 +269,10 @@
               <li>Dividendos: Poucos ou nenhum</li>
             </ul>
           </div>
-          <div class="rounded-lg bg-red-500/20 p-4">
+          <div
+            class="rounded-lg p-4"
+            :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.negative} 20%, transparent)` }"
+          >
             <p class="text-sm">
               Resultado aproximado: R$ 15.000 - R$ 25.000
             </p>
@@ -567,7 +576,7 @@ const { data: assetsData, pending: assetsPending } = await useAsyncData(
 
 const authStore = useAuthStore()
 const layoutName = computed(() =>
-  authStore.isAuthenticated ? 'default' : 'static'
+  authStore.isAuthenticated ? 'default' : 'unauthenticated'
 )
 
 const assets = computed(() => assetsData.value ?? [])

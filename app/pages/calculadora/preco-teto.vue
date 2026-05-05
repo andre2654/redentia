@@ -30,22 +30,22 @@
         </p>
         <div class="flex flex-wrap items-center gap-2 text-xs">
           <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-check-circle" class="size-4 text-green-400" />
+            <UIcon name="i-lucide-check-circle" class="size-4" :style="{ color: brand.colors.positive }" />
             100% gratuito
           </span>
           <span>·</span>
           <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-zap" class="size-4 text-secondary" />
+            <UIcon name="i-lucide-zap" class="size-4" :style="{ color: brand.colors.primary }" />
             Cálculo instantâneo
           </span>
           <span>·</span>
           <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-database" class="size-4 text-blue-400" />
+            <UIcon name="i-lucide-database" class="size-4" :style="{ color: brand.colors.primary }" />
             Dados oficiais da B3
           </span>
           <span>·</span>
           <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-layers" class="size-4 text-purple-400" />
+            <UIcon name="i-lucide-layers" class="size-4" :style="{ color: brand.colors.primary }" />
             Graham · Bazin · P/L · VPA
           </span>
         </div>
@@ -262,8 +262,11 @@
               <p>35 × 1.5 = R$ 52,50</p>
             </div>
           </div>
-          <div class="mt-4 rounded-lg bg-green-500/20 p-3">
-            <p class="text-sm text-green-400">
+          <div
+            class="mt-4 rounded-lg p-3"
+            :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.positive} 20%, transparent)` }"
+          >
+            <p class="text-sm" :style="{ color: brand.colors.positive }">
               Preço Teto Médio: R$ 65,80
             </p>
             <p class="text-xs mt-1">
@@ -336,11 +339,11 @@
           <div
             class="brand-card border p-4"
             :style="{
-              borderColor: 'color-mix(in srgb, #ef4444 25%, transparent)',
-              backgroundColor: 'color-mix(in srgb, #ef4444 8%, transparent)',
+              borderColor: `color-mix(in srgb, ${brand.colors.negative} 25%, transparent)`,
+              backgroundColor: `color-mix(in srgb, ${brand.colors.negative} 8%, transparent)`,
             }"
           >
-            <h4 class="mb-1" :style="{ color: '#f87171' }">Empresas de Crescimento (Growth)</h4>
+            <h4 class="mb-1" :style="{ color: brand.colors.negative }">Empresas de Crescimento (Growth)</h4>
             <p class="text-sm">
               Empresas como Magazine Luiza, Mercado Livre, que crescem rápido mas têm lucro baixo ou prejuízo, não funcionam bem com essas fórmulas. Prefira análise de múltiplos de receita ou fluxo de caixa descontado.
             </p>
@@ -348,11 +351,11 @@
           <div
             class="brand-card border p-4"
             :style="{
-              borderColor: 'color-mix(in srgb, #ef4444 25%, transparent)',
-              backgroundColor: 'color-mix(in srgb, #ef4444 8%, transparent)',
+              borderColor: `color-mix(in srgb, ${brand.colors.negative} 25%, transparent)`,
+              backgroundColor: `color-mix(in srgb, ${brand.colors.negative} 8%, transparent)`,
             }"
           >
-            <h4 class="mb-1" :style="{ color: '#f87171' }">Empresas com Prejuízo</h4>
+            <h4 class="mb-1" :style="{ color: brand.colors.negative }">Empresas com Prejuízo</h4>
             <p class="text-sm">
               Se o LPA é negativo, as fórmulas não funcionam. A empresa pode estar em reestruturação ou em setor cíclico no momento ruim.
             </p>
@@ -360,11 +363,11 @@
           <div
             class="brand-card border p-4"
             :style="{
-              borderColor: 'color-mix(in srgb, #ef4444 25%, transparent)',
-              backgroundColor: 'color-mix(in srgb, #ef4444 8%, transparent)',
+              borderColor: `color-mix(in srgb, ${brand.colors.negative} 25%, transparent)`,
+              backgroundColor: `color-mix(in srgb, ${brand.colors.negative} 8%, transparent)`,
             }"
           >
-            <h4 class="mb-1" :style="{ color: '#f87171' }">Setores Muito Cíclicos</h4>
+            <h4 class="mb-1" :style="{ color: brand.colors.negative }">Setores Muito Cíclicos</h4>
             <p class="text-sm">
               Commodities (mineração, siderurgia) têm lucros que variam muito. Use LPA médio de vários anos ou análise de ciclos.
             </p>
@@ -372,11 +375,11 @@
           <div
             class="brand-card border p-4"
             :style="{
-              borderColor: 'color-mix(in srgb, #ef4444 25%, transparent)',
-              backgroundColor: 'color-mix(in srgb, #ef4444 8%, transparent)',
+              borderColor: `color-mix(in srgb, ${brand.colors.negative} 25%, transparent)`,
+              backgroundColor: `color-mix(in srgb, ${brand.colors.negative} 8%, transparent)`,
             }"
           >
-            <h4 class="mb-1" :style="{ color: '#f87171' }">Empresas com Dívida Altíssima</h4>
+            <h4 class="mb-1" :style="{ color: brand.colors.negative }">Empresas com Dívida Altíssima</h4>
             <p class="text-sm">
               Se a empresa está super endividada, o valor patrimonial pode estar inflado. Verifique Dívida Líquida / EBITDA antes.
             </p>
@@ -704,7 +707,7 @@ import { useAssetsService } from '~/services/assets'
 const brand = useBrand()
 const authStore = useAuthStore()
 const layoutName = computed(() =>
-  authStore.isAuthenticated ? 'default' : 'static'
+  authStore.isAuthenticated ? 'default' : 'unauthenticated'
 )
 const { getAssets, getSectors } = useAssetsService()
 
