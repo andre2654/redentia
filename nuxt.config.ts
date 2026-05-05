@@ -478,6 +478,11 @@ export default defineNuxtConfig({
       firebaseVapidKey: process.env.NUXT_PUBLIC_FIREBASE_VAPID_KEY,
       metaPixelId: process.env.NUXT_PUBLIC_META_PIXEL_ID || '',
       metaAccessToken: process.env.NUXT_PUBLIC_META_ACCESS_TOKEN || '',
+      // Microsoft Clarity — session recordings + heatmaps + AI insights.
+      // Project criado 2026-05-05 pra debugar gargalo Lead → CR no
+      // /raio-x. Fallback hardcoded garante que funciona sem .env.
+      // Deixar string vazia na env desliga em qualquer ambiente.
+      clarityProjectId: process.env.NUXT_PUBLIC_CLARITY_PROJECT_ID || 'wmh9pyc3io',
       // Google OAuth Web client ID — public by design (browsers
       // need it to ask Google Identity Services for an id_token).
       // The matching client_secret stays in the Laravel backend
