@@ -741,36 +741,26 @@
           </p>
         </div>
 
-        <!-- Form de login via componente compartilhado MoleculesAuthFormCard
-             (mesma UX do hard gate /raio-x e do /auth/register). Toggle pra
-             register integrado, Google embaixo, label hint inline. -->
+        <!-- Form de login via componente compartilhado MoleculesAuthFormCard.
+             O componente já traz seu próprio header (logo radar + título +
+             subtítulo) — o card aqui é só o frame visual (border, padding,
+             shadow). Header eyebrow/h1/subtitle externos foram REMOVIDOS
+             porque duplicavam o header interno do AuthFormCard. -->
         <div
           class="flex w-full max-w-md flex-col gap-5 rounded-[32px] border px-8 py-10 shadow-[0_25px_60px_-15px_rgba(15,23,42,0.5)] backdrop-blur-2xl"
-          :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+          :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
         >
-          <div class="space-y-2 text-center md:text-left">
-            <span class="text-xs font-medium uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
-              Acesso
-            </span>
-            <h1 class="text-2xl font-semibold" :style="{ color: brand.colors.text }">
-              {{ brand.auth.loginTitle }}
-            </h1>
-            <p class="text-sm" :style="{ color: brand.colors.textMuted }">
-              {{ brand.auth.loginSubtitle }}
-            </p>
-          </div>
-
           <MoleculesAuthFormCard
             mode="login"
             redirect-to="/"
             pixel-context="auth_page_login"
           />
 
-          <div class="flex flex-col gap-2 text-center md:text-left mt-2">
-            <NuxtLink to="/auth/forgot-password" class="text-sm font-medium transition hover:opacity-80" :style="{ color: brand.colors.textMuted }">
+          <div class="flex flex-col gap-2 text-center md:text-left">
+            <NuxtLink to="/auth/forgot-password" class="text-sm font-medium transition hover:opacity-80" :style="{ color: 'var(--brand-text-muted)' }">
               Esqueci minha senha
             </NuxtLink>
-            <p class="text-[11px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
+            <p class="text-[11px] leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
               {{ brand.auth.termsText }}
             </p>
           </div>
