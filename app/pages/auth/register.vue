@@ -4,16 +4,16 @@
     <section
       v-if="variant === 'terminal'"
       class="relative min-h-screen overflow-hidden px-4 pb-16 pt-10"
-      :style="{ backgroundColor: brand.colors.background }"
+      :style="{ backgroundColor: 'var(--brand-background)' }"
     >
       <div class="pointer-events-none absolute inset-0">
         <div
           class="absolute left-1/2 top-0 h-[540px] w-[900px] -translate-x-1/2 rounded-full blur-3xl opacity-40"
-          :style="{ background: `radial-gradient(ellipse at center top, ${brand.colors.primary}33, transparent 60%)` }"
+          :style="{ background: `radial-gradient(ellipse at center top, var(--brand-primary)33, transparent 60%)` }"
         />
         <div
           class="absolute inset-0 opacity-[0.04]"
-          :style="{ backgroundImage: `linear-gradient(${brand.colors.text} 1px, transparent 1px), linear-gradient(90deg, ${brand.colors.text} 1px, transparent 1px)`, backgroundSize: '32px 32px' }"
+          :style="{ backgroundImage: `linear-gradient(var(--brand-text) 1px, transparent 1px), linear-gradient(90deg, var(--brand-text) 1px, transparent 1px)`, backgroundSize: '32px 32px' }"
         />
       </div>
 
@@ -21,37 +21,37 @@
         <div class="flex flex-1 flex-col gap-6">
           <h1
             class="font-display"
-            :style="{ color: brand.colors.text, fontSize: 'clamp(2.5rem, 5vw, 4rem)', lineHeight: '0.95' }"
+            :style="{ color: 'var(--brand-text)', fontSize: 'clamp(2.5rem, 5vw, 4rem)', lineHeight: '0.95' }"
           >
-            Crie sua <span class="italic" :style="{ color: brand.colors.primary }">conta.</span>
+            Crie sua <span class="italic" :style="{ color: 'var(--brand-primary)' }">conta.</span>
           </h1>
 
-          <p class="max-w-md text-sm font-mono-tab" :style="{ color: brand.colors.textMuted }">
+          <p class="max-w-md text-sm font-mono-tab" :style="{ color: 'var(--brand-text-muted)' }">
             {{ brand.auth.registerSubtitle }}
           </p>
 
           <div
             class="mt-4 overflow-hidden rounded-lg border backdrop-blur-sm"
-            :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.surface}E6` }"
+            :style="{ borderColor: 'var(--brand-border)', backgroundColor: `var(--brand-surface)E6` }"
           >
             <div
               class="flex items-center justify-between border-b px-4 py-2 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
-              :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.background, color: brand.colors.textMuted }"
+              :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-background)', color: 'var(--brand-text-muted)' }"
             >
               <div class="flex items-center gap-2">
                 <div class="flex gap-1.5">
-                  <span class="size-2 rounded-full opacity-60" :style="{ backgroundColor: brand.colors.negative }" />
-                  <span class="size-2 rounded-full opacity-60" :style="{ backgroundColor: brand.colors.primary }" />
-                  <span class="size-2 rounded-full opacity-60" :style="{ backgroundColor: brand.colors.positive }" />
+                  <span class="size-2 rounded-full opacity-60" :style="{ backgroundColor: 'var(--brand-negative)' }" />
+                  <span class="size-2 rounded-full opacity-60" :style="{ backgroundColor: 'var(--brand-primary)' }" />
+                  <span class="size-2 rounded-full opacity-60" :style="{ backgroundColor: 'var(--brand-positive)' }" />
                 </div>
                 <span class="ml-2">{{ brand.name.toUpperCase() }}.INIT</span>
               </div>
               <span class="hidden sm:inline">~/register</span>
             </div>
-            <div class="px-5 py-4 font-mono-tab text-xs" :style="{ color: brand.colors.textMuted }">
-              <div><span :style="{ color: brand.colors.primary }">&gt;</span> provisioning session...</div>
-              <div><span :style="{ color: brand.colors.positive }">✓</span> welcome package ready</div>
-              <div><span :style="{ color: brand.colors.primary }">&gt;</span> awaiting credentials_</div>
+            <div class="px-5 py-4 font-mono-tab text-xs" :style="{ color: 'var(--brand-text-muted)' }">
+              <div><span :style="{ color: 'var(--brand-primary)' }">&gt;</span> provisioning session...</div>
+              <div><span :style="{ color: 'var(--brand-positive)' }">✓</span> welcome package ready</div>
+              <div><span :style="{ color: 'var(--brand-primary)' }">&gt;</span> awaiting credentials_</div>
             </div>
           </div>
         </div>
@@ -62,7 +62,7 @@
              inline. UX provada com gate (3x conversao vs form antigo). -->
         <div
           class="flex w-full max-w-md flex-col gap-5 rounded-lg border p-8"
-          :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.surface}E6` }"
+          :style="{ borderColor: 'var(--brand-border)', backgroundColor: `var(--brand-surface)E6` }"
         >
           <MoleculesAuthFormCard
             mode="register"
@@ -70,7 +70,7 @@
             pixel-context="auth_page_register"
           />
 
-          <p class="font-mono-tab text-[10px] mt-2" :style="{ color: brand.colors.textMuted }">
+          <p class="font-mono-tab text-[10px] mt-2" :style="{ color: 'var(--brand-text-muted)' }">
             {{ brand.auth.termsText }}
           </p>
         </div>
@@ -81,25 +81,25 @@
     <section
       v-else-if="variant === 'editorial'"
       class="min-h-screen px-4 pb-16 pt-12"
-      :style="{ backgroundColor: brand.colors.background }"
+      :style="{ backgroundColor: 'var(--brand-background)' }"
     >
       <div class="mx-auto grid max-w-5xl gap-16 md:grid-cols-12 md:gap-20">
         <div class="md:col-span-6 md:pt-10">
-          <span class="font-small-caps text-[11px]" :style="{ color: brand.colors.textMuted }">
+          <span class="font-small-caps text-[11px]" :style="{ color: 'var(--brand-text-muted)' }">
             {{ brand.name }} &nbsp;·&nbsp; Nova conta
           </span>
           <h1
             class="font-editorial-display mt-4"
-            :style="{ color: brand.colors.text, fontSize: 'clamp(2.5rem, 5vw, 4rem)', lineHeight: '1.05' }"
+            :style="{ color: 'var(--brand-text)', fontSize: 'clamp(2.5rem, 5vw, 4rem)', lineHeight: '1.05' }"
           >
             Abra sua<br />
-            <span class="italic" :style="{ color: brand.colors.primary }">gestão patrimonial.</span>
+            <span class="italic" :style="{ color: 'var(--brand-primary)' }">gestão patrimonial.</span>
           </h1>
           <hr class="dashed-rule mt-8 max-w-[6rem]" />
-          <p class="font-editorial-body mt-8 max-w-md text-base italic" :style="{ color: brand.colors.textMuted }">
+          <p class="font-editorial-body mt-8 max-w-md text-base italic" :style="{ color: 'var(--brand-text-muted)' }">
             Prezado futuro cliente, em poucos minutos abrimos seu perfil no portal. A partir daí, seu assessor envia as cartas mensais, acompanha o portfólio e está disponível para suas dúvidas.
           </p>
-          <p class="font-editorial-body mt-6 max-w-md text-sm" :style="{ color: brand.colors.textMuted }">
+          <p class="font-editorial-body mt-6 max-w-md text-sm" :style="{ color: 'var(--brand-text-muted)' }">
             {{ brand.auth.registerSubtitle }}
           </p>
         </div>
@@ -108,33 +108,33 @@
           :schema="schema"
           :state="state"
           class="flex w-full flex-col gap-6 border px-10 py-12 md:col-span-6"
-          :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+          :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
           @submit="onSubmit"
         >
           <div>
-            <span class="font-small-caps text-[10px]" :style="{ color: brand.colors.textMuted }">Ficha de abertura</span>
-            <h2 class="font-editorial-display mt-2 text-2xl" :style="{ color: brand.colors.text }">
+            <span class="font-small-caps text-[10px]" :style="{ color: 'var(--brand-text-muted)' }">Ficha de abertura</span>
+            <h2 class="font-editorial-display mt-2 text-2xl" :style="{ color: 'var(--brand-text)' }">
               {{ brand.auth.registerTitle }}
             </h2>
           </div>
 
           <UFormField name="name">
             <template #label>
-              <span class="font-small-caps text-[10px]" :style="{ color: brand.colors.textMuted }">Nome completo</span>
+              <span class="font-small-caps text-[10px]" :style="{ color: 'var(--brand-text-muted)' }">Nome completo</span>
             </template>
             <AtomsFormInput v-model="state.name" type="text" placeholder="Seu nome" size="lg" class="w-full" />
           </UFormField>
 
           <UFormField name="login">
             <template #label>
-              <span class="font-small-caps text-[10px]" :style="{ color: brand.colors.textMuted }">Usuário</span>
+              <span class="font-small-caps text-[10px]" :style="{ color: 'var(--brand-text-muted)' }">Usuário</span>
             </template>
             <AtomsFormInput v-model="state.login" type="text" placeholder="Seu usuário" size="lg" class="w-full" />
           </UFormField>
 
           <UFormField name="celular">
             <template #label>
-              <span class="font-small-caps text-[10px]" :style="{ color: brand.colors.textMuted }">Telefone</span>
+              <span class="font-small-caps text-[10px]" :style="{ color: 'var(--brand-text-muted)' }">Telefone</span>
             </template>
             <AtomsFormInput
               v-model="state.celular"
@@ -150,28 +150,28 @@
 
           <UFormField name="email">
             <template #label>
-              <span class="font-small-caps text-[10px]" :style="{ color: brand.colors.textMuted }">E-mail</span>
+              <span class="font-small-caps text-[10px]" :style="{ color: 'var(--brand-text-muted)' }">E-mail</span>
             </template>
             <AtomsFormInput v-model="state.email" type="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="voce@exemplo.com" size="lg" class="w-full" />
           </UFormField>
 
           <UFormField name="password">
             <template #label>
-              <span class="font-small-caps text-[10px]" :style="{ color: brand.colors.textMuted }">Senha</span>
+              <span class="font-small-caps text-[10px]" :style="{ color: 'var(--brand-text-muted)' }">Senha</span>
             </template>
             <AtomsFormInputPassword v-model="state.password" :aria-invalid="score < 4" class="w-full" />
           </UFormField>
 
           <UFormField name="password_confirmation">
             <template #label>
-              <span class="font-small-caps text-[10px]" :style="{ color: brand.colors.textMuted }">Confirme a senha</span>
+              <span class="font-small-caps text-[10px]" :style="{ color: 'var(--brand-text-muted)' }">Confirme a senha</span>
             </template>
             <AtomsFormInputPassword v-model="state.password_confirmation" placeholder="Confirme a senha" class="w-full" />
           </UFormField>
 
           <p
             class="!m-0 flex items-center gap-1.5 !text-[13px] !leading-tight transition-colors"
-            :style="{ color: score >= 1 ? brand.colors.positive : brand.colors.textMuted }"
+            :style="{ color: score >= 1 ? brand.colors.positive : 'var(--brand-text-muted)' }"
             aria-live="polite"
           >
             <UIcon
@@ -191,10 +191,10 @@
           <hr class="dashed-rule" />
 
           <div class="flex flex-col gap-2">
-            <NuxtLink to="/auth/login" class="font-editorial-body text-[13px] italic transition hover:opacity-70" :style="{ color: brand.colors.text }">
-              Já é cliente? Entre no portal <span :style="{ color: brand.colors.primary }">→</span>
+            <NuxtLink to="/auth/login" class="font-editorial-body text-[13px] italic transition hover:opacity-70" :style="{ color: 'var(--brand-text)' }">
+              Já é cliente? Entre no portal <span :style="{ color: 'var(--brand-primary)' }">→</span>
             </NuxtLink>
-            <p class="font-editorial-body text-[11px] italic" :style="{ color: brand.colors.textMuted }">
+            <p class="font-editorial-body text-[11px] italic" :style="{ color: 'var(--brand-text-muted)' }">
               {{ brand.auth.termsText }}
             </p>
           </div>
@@ -206,41 +206,41 @@
     <section
       v-else-if="variant === 'mentor'"
       class="min-h-screen"
-      :style="{ backgroundColor: brand.colors.background }"
+      :style="{ backgroundColor: 'var(--brand-background)' }"
     >
       <div
         class="flex items-center gap-4 px-6 py-3 md:px-10"
-        :style="{ backgroundColor: brand.colors.primary, color: brand.colors.background }"
+        :style="{ backgroundColor: 'var(--brand-primary)', color: 'var(--brand-background)' }"
       >
         <span class="font-mentor-eyebrow">MANUAL DO PRIMO · INSCRIÇÃO</span>
-        <span class="flex-1 border-t" :style="{ borderColor: `${brand.colors.background}40` }" />
+        <span class="flex-1 border-t" :style="{ borderColor: `var(--brand-background)40` }" />
         <span class="font-mentor-eyebrow">REGISTRO · CAPÍTULO 00</span>
       </div>
 
       <div class="mx-auto grid max-w-5xl gap-14 px-6 pb-20 pt-16 md:grid-cols-12 md:gap-16 md:px-10 md:pt-20">
         <div class="md:col-span-6">
-          <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
+          <span class="font-mentor-eyebrow" :style="{ color: 'var(--brand-primary)' }">
             CAPÍTULO ZERO
           </span>
           <h1
             class="font-mentor-display mt-5"
-            :style="{ color: brand.colors.text, fontSize: 'clamp(2.5rem, 5.5vw, 4.5rem)', lineHeight: '0.95' }"
+            :style="{ color: 'var(--brand-text)', fontSize: 'clamp(2.5rem, 5.5vw, 4.5rem)', lineHeight: '0.95' }"
           >
             Comece a sua<br />
-            <span class="italic" :style="{ color: brand.colors.primary }">construção.</span>
+            <span class="italic" :style="{ color: 'var(--brand-primary)' }">construção.</span>
           </h1>
-          <p class="mt-8 max-w-md text-base leading-relaxed" :style="{ color: `${brand.colors.text}CC` }">
+          <p class="mt-8 max-w-md text-base leading-relaxed" :style="{ color: `var(--brand-text)CC` }">
             {{ brand.auth.registerSubtitle }} O Método ARCA funciona quando você faz o básico bem feito, todo mês, por muitos anos.
           </p>
 
           <div
             class="mt-12 border-l-4 pl-6"
-            :style="{ borderColor: brand.colors.primary }"
+            :style="{ borderColor: 'var(--brand-primary)' }"
           >
-            <p class="font-mentor-display text-lg italic" :style="{ color: brand.colors.text }">
+            <p class="font-mentor-display text-lg italic" :style="{ color: 'var(--brand-text)' }">
               "{{ brand.hero.founderQuote || 'Não existe atalho pra liberdade financeira. Só o caminho certo, feito com paciência.' }}"
             </p>
-            <p class="font-mentor-eyebrow mt-3" :style="{ color: brand.colors.primary }">
+            <p class="font-mentor-eyebrow mt-3" :style="{ color: 'var(--brand-primary)' }">
              , {{ brand.founder?.name || 'Thiago Nigro' }}
             </p>
           </div>
@@ -250,33 +250,33 @@
           :schema="schema"
           :state="state"
           class="flex w-full flex-col gap-5 border-2 p-8 md:col-span-6"
-          :style="{ borderColor: brand.colors.text, backgroundColor: brand.colors.surface }"
+          :style="{ borderColor: 'var(--brand-text)', backgroundColor: 'var(--brand-surface)' }"
           @submit="onSubmit"
         >
-          <div class="border-b-2 pb-4" :style="{ borderColor: brand.colors.text }">
-            <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">INSCRIÇÃO</span>
-            <h2 class="font-mentor-display mt-1 text-3xl" :style="{ color: brand.colors.text }">
+          <div class="border-b-2 pb-4" :style="{ borderColor: 'var(--brand-text)' }">
+            <span class="font-mentor-eyebrow" :style="{ color: 'var(--brand-primary)' }">INSCRIÇÃO</span>
+            <h2 class="font-mentor-display mt-1 text-3xl" :style="{ color: 'var(--brand-text)' }">
               {{ brand.auth.registerTitle }}
             </h2>
           </div>
 
           <UFormField name="name">
             <template #label>
-              <span class="font-mentor-eyebrow" :style="{ color: brand.colors.text }">Nome completo</span>
+              <span class="font-mentor-eyebrow" :style="{ color: 'var(--brand-text)' }">Nome completo</span>
             </template>
             <AtomsFormInput v-model="state.name" type="text" placeholder="Seu nome" size="lg" class="w-full" />
           </UFormField>
 
           <UFormField name="login">
             <template #label>
-              <span class="font-mentor-eyebrow" :style="{ color: brand.colors.text }">Usuário</span>
+              <span class="font-mentor-eyebrow" :style="{ color: 'var(--brand-text)' }">Usuário</span>
             </template>
             <AtomsFormInput v-model="state.login" type="text" placeholder="Seu usuário" size="lg" class="w-full" />
           </UFormField>
 
           <UFormField name="celular">
             <template #label>
-              <span class="font-mentor-eyebrow" :style="{ color: brand.colors.text }">Celular</span>
+              <span class="font-mentor-eyebrow" :style="{ color: 'var(--brand-text)' }">Celular</span>
             </template>
             <AtomsFormInput
               v-model="state.celular"
@@ -292,28 +292,28 @@
 
           <UFormField name="email">
             <template #label>
-              <span class="font-mentor-eyebrow" :style="{ color: brand.colors.text }">E-mail</span>
+              <span class="font-mentor-eyebrow" :style="{ color: 'var(--brand-text)' }">E-mail</span>
             </template>
             <AtomsFormInput v-model="state.email" type="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="voce@exemplo.com" size="lg" class="w-full" />
           </UFormField>
 
           <UFormField name="password">
             <template #label>
-              <span class="font-mentor-eyebrow" :style="{ color: brand.colors.text }">Senha</span>
+              <span class="font-mentor-eyebrow" :style="{ color: 'var(--brand-text)' }">Senha</span>
             </template>
             <AtomsFormInputPassword v-model="state.password" :aria-invalid="score < 4" class="w-full" />
           </UFormField>
 
           <UFormField name="password_confirmation">
             <template #label>
-              <span class="font-mentor-eyebrow" :style="{ color: brand.colors.text }">Confirme a senha</span>
+              <span class="font-mentor-eyebrow" :style="{ color: 'var(--brand-text)' }">Confirme a senha</span>
             </template>
             <AtomsFormInputPassword v-model="state.password_confirmation" placeholder="Confirme a senha" class="w-full" />
           </UFormField>
 
           <p
             class="!m-0 flex items-center gap-1.5 !text-[13px] !leading-tight transition-colors"
-            :style="{ color: score >= 1 ? brand.colors.positive : brand.colors.textMuted }"
+            :style="{ color: score >= 1 ? brand.colors.positive : 'var(--brand-text-muted)' }"
             aria-live="polite"
           >
             <UIcon
@@ -330,11 +330,11 @@
 
           <MoleculesGoogleAuthBlock mode="signup" divider-label="OU" />
 
-          <div class="flex flex-col gap-2 border-t-2 pt-4" :style="{ borderColor: brand.colors.text }">
-            <NuxtLink to="/auth/login" class="font-mentor-eyebrow transition hover:opacity-80" :style="{ color: brand.colors.primary }">
+          <div class="flex flex-col gap-2 border-t-2 pt-4" :style="{ borderColor: 'var(--brand-text)' }">
+            <NuxtLink to="/auth/login" class="font-mentor-eyebrow transition hover:opacity-80" :style="{ color: 'var(--brand-primary)' }">
               JÁ É LEITOR? ENTRE NO MANUAL →
             </NuxtLink>
-            <p class="text-[11px] leading-relaxed" :style="{ color: `${brand.colors.text}80` }">
+            <p class="text-[11px] leading-relaxed" :style="{ color: `var(--brand-text)80` }">
               {{ brand.auth.termsText }}
             </p>
           </div>
@@ -346,40 +346,40 @@
     <section
       v-else-if="variant === 'research'"
       class="min-h-screen px-4 pb-16 pt-12"
-      :style="{ backgroundColor: brand.colors.background }"
+      :style="{ backgroundColor: 'var(--brand-background)' }"
     >
       <div class="mx-auto flex max-w-5xl flex-col gap-10">
-        <div class="flex items-start justify-between border-b pb-6" :style="{ borderColor: brand.colors.border }">
+        <div class="flex items-start justify-between border-b pb-6" :style="{ borderColor: 'var(--brand-border)' }">
           <div class="flex flex-col gap-0.5">
-            <span class="font-academic-label" :style="{ color: brand.colors.primary }">
+            <span class="font-academic-label" :style="{ color: 'var(--brand-primary)' }">
               AUVP RESEARCH · NOVA MATRÍCULA
             </span>
-            <span class="font-academic-body text-[12px] italic" :style="{ color: brand.colors.textMuted }">
+            <span class="font-academic-body text-[12px] italic" :style="{ color: 'var(--brand-text-muted)' }">
               Protocolo de cadastro · aluno iniciante
             </span>
           </div>
-          <span class="font-academic-mono text-[11px] uppercase tabular-nums" :style="{ color: brand.colors.textMuted }">
+          <span class="font-academic-mono text-[11px] uppercase tabular-nums" :style="{ color: 'var(--brand-text-muted)' }">
             {{ new Date().getFullYear() }}
           </span>
         </div>
 
         <div class="grid gap-14 md:grid-cols-12 md:gap-16">
           <div class="md:col-span-6">
-            <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">
+            <span class="font-academic-label" :style="{ color: 'var(--brand-text-muted)' }">
               § · matrícula
             </span>
             <h1
               class="font-academic-display mt-4"
-              :style="{ color: brand.colors.text, fontSize: 'clamp(2.5rem, 5vw, 4rem)', lineHeight: '1' }"
+              :style="{ color: 'var(--brand-text)', fontSize: 'clamp(2.5rem, 5vw, 4rem)', lineHeight: '1' }"
             >
               Abra o<br />
-              <span class="italic" :style="{ color: brand.colors.primary }">caderno de estudo.</span>
+              <span class="italic" :style="{ color: 'var(--brand-primary)' }">caderno de estudo.</span>
             </h1>
             <hr class="dashed-rule mt-8 max-w-[8rem]" />
-            <p class="font-academic-body mt-6 max-w-md text-[14px] italic" :style="{ color: brand.colors.textMuted }">
+            <p class="font-academic-body mt-6 max-w-md text-[14px] italic" :style="{ color: 'var(--brand-text-muted)' }">
               <span class="red-pen">Nota do professor</span>, o cadastro é de graça, o esforço é cobrado em horas de estudo. Compareça. O método só funciona pra quem aparece.
             </p>
-            <p class="font-academic-body mt-6 max-w-md text-[13px]" :style="{ color: brand.colors.text }">
+            <p class="font-academic-body mt-6 max-w-md text-[13px]" :style="{ color: 'var(--brand-text)' }">
               {{ brand.auth.registerSubtitle }}
             </p>
           </div>
@@ -388,33 +388,33 @@
             :schema="schema"
             :state="state"
             class="flex w-full flex-col gap-5 border p-8 md:col-span-6"
-            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+            :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
             @submit="onSubmit"
           >
-            <div class="flex items-start justify-between border-b pb-4" :style="{ borderColor: brand.colors.border }">
-              <span class="font-academic-label" :style="{ color: brand.colors.primary }">§1 · dados pessoais</span>
-              <span class="font-academic-mono text-[10px] tabular-nums" :style="{ color: brand.colors.textMuted }">
+            <div class="flex items-start justify-between border-b pb-4" :style="{ borderColor: 'var(--brand-border)' }">
+              <span class="font-academic-label" :style="{ color: 'var(--brand-primary)' }">§1 · dados pessoais</span>
+              <span class="font-academic-mono text-[10px] tabular-nums" :style="{ color: 'var(--brand-text-muted)' }">
                 {{ sessionTime }}
               </span>
             </div>
 
             <UFormField name="name">
               <template #label>
-                <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">Nome completo</span>
+                <span class="font-academic-label" :style="{ color: 'var(--brand-text-muted)' }">Nome completo</span>
               </template>
               <AtomsFormInput v-model="state.name" type="text" placeholder="Como consta no seu documento" size="lg" class="w-full" />
             </UFormField>
 
             <UFormField name="login">
               <template #label>
-                <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">Usuário</span>
+                <span class="font-academic-label" :style="{ color: 'var(--brand-text-muted)' }">Usuário</span>
               </template>
               <AtomsFormInput v-model="state.login" type="text" placeholder="Seu login" size="lg" class="w-full" />
             </UFormField>
 
             <UFormField name="celular">
               <template #label>
-                <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">Celular</span>
+                <span class="font-academic-label" :style="{ color: 'var(--brand-text-muted)' }">Celular</span>
               </template>
               <AtomsFormInput
                 v-model="state.celular"
@@ -430,28 +430,28 @@
 
             <UFormField name="email">
               <template #label>
-                <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">E-mail</span>
+                <span class="font-academic-label" :style="{ color: 'var(--brand-text-muted)' }">E-mail</span>
               </template>
               <AtomsFormInput v-model="state.email" type="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="voce@exemplo.com" size="lg" class="w-full" />
             </UFormField>
 
             <UFormField name="password">
               <template #label>
-                <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">Senha</span>
+                <span class="font-academic-label" :style="{ color: 'var(--brand-text-muted)' }">Senha</span>
               </template>
               <AtomsFormInputPassword v-model="state.password" :aria-invalid="score < 4" class="w-full" />
             </UFormField>
 
             <UFormField name="password_confirmation">
               <template #label>
-                <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">Confirme a senha</span>
+                <span class="font-academic-label" :style="{ color: 'var(--brand-text-muted)' }">Confirme a senha</span>
               </template>
               <AtomsFormInputPassword v-model="state.password_confirmation" placeholder="Confirme a senha" class="w-full" />
             </UFormField>
 
             <p
             class="!m-0 flex items-center gap-1.5 !text-[13px] !leading-tight transition-colors"
-            :style="{ color: score >= 1 ? brand.colors.positive : brand.colors.textMuted }"
+            :style="{ color: score >= 1 ? brand.colors.positive : 'var(--brand-text-muted)' }"
             aria-live="polite"
           >
             <UIcon
@@ -471,10 +471,10 @@
             <hr class="dashed-rule" />
 
             <div class="flex flex-col gap-2">
-              <NuxtLink to="/auth/login" class="font-academic-body text-[13px] italic transition hover:opacity-70" :style="{ color: brand.colors.text }">
-                Já sou aluno · entrar no terminal <span :style="{ color: brand.colors.primary }">→</span>
+              <NuxtLink to="/auth/login" class="font-academic-body text-[13px] italic transition hover:opacity-70" :style="{ color: 'var(--brand-text)' }">
+                Já sou aluno · entrar no terminal <span :style="{ color: 'var(--brand-primary)' }">→</span>
               </NuxtLink>
-              <p class="font-academic-body text-[11px] italic" :style="{ color: brand.colors.textMuted }">
+              <p class="font-academic-body text-[11px] italic" :style="{ color: 'var(--brand-text-muted)' }">
                 {{ brand.auth.termsText }}
               </p>
             </div>
@@ -487,13 +487,13 @@
     <section
       v-else-if="variant === 'showtime'"
       class="relative min-h-screen overflow-hidden px-4 pb-16 pt-12"
-      :style="{ backgroundColor: brand.colors.background }"
+      :style="{ backgroundColor: 'var(--brand-background)' }"
     >
       <div class="pointer-events-none absolute inset-0 opacity-25">
-        <div class="absolute left-[8%] top-[12%] size-3 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
+        <div class="absolute left-[8%] top-[12%] size-3 rounded-full" :style="{ backgroundColor: 'var(--brand-primary)' }" />
         <div class="absolute left-[18%] top-[60%] size-2 rounded-full" :style="{ backgroundColor: brand.colors.secondary }" />
-        <div class="absolute right-[12%] top-[20%] size-4 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
-        <div class="absolute right-[30%] top-[75%] size-2 rounded-full" :style="{ backgroundColor: brand.colors.positive }" />
+        <div class="absolute right-[12%] top-[20%] size-4 rounded-full" :style="{ backgroundColor: 'var(--brand-primary)' }" />
+        <div class="absolute right-[30%] top-[75%] size-2 rounded-full" :style="{ backgroundColor: 'var(--brand-positive)' }" />
       </div>
 
       <div class="relative mx-auto flex max-w-5xl flex-col items-center gap-14 md:flex-row md:items-start md:gap-16">
@@ -501,18 +501,18 @@
           <span class="lower-third">NOVO NO PROGRAMA · BEM-VINDA!</span>
           <h1
             class="font-showtime-display chunky-shadow mt-6"
-            :style="{ color: brand.colors.text, fontSize: 'clamp(2.5rem, 5.5vw, 4.5rem)' }"
+            :style="{ color: 'var(--brand-text)', fontSize: 'clamp(2.5rem, 5.5vw, 4.5rem)' }"
           >
             Bora entrar pra<br />
-            <span class="highlighter" :style="{ color: brand.colors.primary }">família, criatura!</span>
+            <span class="highlighter" :style="{ color: 'var(--brand-primary)' }">família, criatura!</span>
           </h1>
-          <p class="font-showtime-body mt-8 max-w-md text-base" :style="{ color: `${brand.colors.text}CC` }">
+          <p class="font-showtime-body mt-8 max-w-md text-base" :style="{ color: `var(--brand-text)CC` }">
             {{ brand.auth.registerSubtitle }} Sem Sidnelson, sem pegadinha, sem frescura, só você, seu bolso e a Nath.
           </p>
 
           <div class="mt-8 flex items-start gap-3">
             <img src="/brand/mepoupe/margarete.svg" alt="Margarete" class="h-12 shrink-0" />
-            <p class="font-showtime-body max-w-xs text-sm italic" :style="{ color: `${brand.colors.text}B3` }">
+            <p class="font-showtime-body max-w-xs text-sm italic" :style="{ color: `var(--brand-text)B3` }">
               "Abre essa conta e bora pro primeiro aporte, ai que festa, criatura!"
             </p>
           </div>
@@ -520,19 +520,19 @@
           <div class="mt-10 flex flex-wrap gap-3">
             <div
               class="inline-flex items-center gap-2 rounded-full border-2 px-4 py-2 font-showtime-label text-[10px]"
-              :style="{ borderColor: `${brand.colors.primary}70`, backgroundColor: `${brand.colors.primary}15`, color: brand.colors.text }"
+              :style="{ borderColor: `var(--brand-primary)70`, backgroundColor: `var(--brand-primary)15`, color: 'var(--brand-text)' }"
             >
               💛 100% GRÁTIS
             </div>
             <div
               class="inline-flex items-center gap-2 rounded-full border-2 px-4 py-2 font-showtime-label text-[10px]"
-              :style="{ borderColor: `${brand.colors.primary}70`, backgroundColor: `${brand.colors.primary}15`, color: brand.colors.text }"
+              :style="{ borderColor: `var(--brand-primary)70`, backgroundColor: `var(--brand-primary)15`, color: 'var(--brand-text)' }"
             >
               ⚡ EM 2 MINUTOS
             </div>
             <div
               class="inline-flex items-center gap-2 rounded-full border-2 px-4 py-2 font-showtime-label text-[10px]"
-              :style="{ borderColor: `${brand.colors.primary}70`, backgroundColor: `${brand.colors.primary}15`, color: brand.colors.text }"
+              :style="{ borderColor: `var(--brand-primary)70`, backgroundColor: `var(--brand-primary)15`, color: 'var(--brand-text)' }"
             >
               🚫 SEM CARTÃO
             </div>
@@ -543,36 +543,36 @@
           :schema="schema"
           :state="state"
           class="showtime-frame showtime-frame--tilt-right relative flex w-full max-w-md flex-col gap-5 rounded-[28px] p-8"
-          :style="{ backgroundColor: brand.colors.surface }"
+          :style="{ backgroundColor: 'var(--brand-surface)' }"
           @submit="onSubmit"
         >
           <div class="washi-tape" />
           <div class="text-center">
-            <span class="font-showtime-label" :style="{ color: brand.colors.primary }">
+            <span class="font-showtime-label" :style="{ color: 'var(--brand-primary)' }">
               MINHA FICHA DE INSCRIÇÃO
             </span>
-            <h2 class="font-showtime-display mt-2" :style="{ color: brand.colors.text, fontSize: '1.75rem' }">
+            <h2 class="font-showtime-display mt-2" :style="{ color: 'var(--brand-text)', fontSize: '1.75rem' }">
               {{ brand.auth.registerTitle }}
             </h2>
           </div>
 
           <UFormField name="name">
             <template #label>
-              <span class="font-showtime-label" :style="{ color: `${brand.colors.text}80` }">SEU NOME</span>
+              <span class="font-showtime-label" :style="{ color: `var(--brand-text)80` }">SEU NOME</span>
             </template>
             <AtomsFormInput v-model="state.name" type="text" placeholder="Como a gente te chama?" size="lg" class="w-full" />
           </UFormField>
 
           <UFormField name="login">
             <template #label>
-              <span class="font-showtime-label" :style="{ color: `${brand.colors.text}80` }">USUÁRIO</span>
+              <span class="font-showtime-label" :style="{ color: `var(--brand-text)80` }">USUÁRIO</span>
             </template>
             <AtomsFormInput v-model="state.login" type="text" placeholder="Escolha um apelido" size="lg" class="w-full" />
           </UFormField>
 
           <UFormField name="celular">
             <template #label>
-              <span class="font-showtime-label" :style="{ color: `${brand.colors.text}80` }">CELULAR</span>
+              <span class="font-showtime-label" :style="{ color: `var(--brand-text)80` }">CELULAR</span>
             </template>
             <AtomsFormInput
               v-model="state.celular"
@@ -588,28 +588,28 @@
 
           <UFormField name="email">
             <template #label>
-              <span class="font-showtime-label" :style="{ color: `${brand.colors.text}80` }">E-MAIL</span>
+              <span class="font-showtime-label" :style="{ color: `var(--brand-text)80` }">E-MAIL</span>
             </template>
             <AtomsFormInput v-model="state.email" type="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="voce@exemplo.com" size="lg" class="w-full" />
           </UFormField>
 
           <UFormField name="password">
             <template #label>
-              <span class="font-showtime-label" :style="{ color: `${brand.colors.text}80` }">SENHA SECRETA</span>
+              <span class="font-showtime-label" :style="{ color: `var(--brand-text)80` }">SENHA SECRETA</span>
             </template>
             <AtomsFormInputPassword v-model="state.password" :aria-invalid="score < 4" class="w-full" />
           </UFormField>
 
           <UFormField name="password_confirmation">
             <template #label>
-              <span class="font-showtime-label" :style="{ color: `${brand.colors.text}80` }">REPETE A SENHA</span>
+              <span class="font-showtime-label" :style="{ color: `var(--brand-text)80` }">REPETE A SENHA</span>
             </template>
             <AtomsFormInputPassword v-model="state.password_confirmation" placeholder="Confirme a senha" class="w-full" />
           </UFormField>
 
           <p
             class="!m-0 flex items-center gap-1.5 !text-[13px] !leading-tight transition-colors"
-            :style="{ color: score >= 1 ? brand.colors.positive : brand.colors.textMuted }"
+            :style="{ color: score >= 1 ? brand.colors.positive : 'var(--brand-text-muted)' }"
             aria-live="polite"
           >
             <UIcon
@@ -627,10 +627,10 @@
           <MoleculesGoogleAuthBlock mode="signup" divider-label="OU" />
 
           <div class="flex flex-col items-center gap-2 text-center">
-            <NuxtLink to="/auth/login" class="font-showtime-label underline underline-offset-4 transition hover:opacity-70" :style="{ color: brand.colors.primary }">
+            <NuxtLink to="/auth/login" class="font-showtime-label underline underline-offset-4 transition hover:opacity-70" :style="{ color: 'var(--brand-primary)' }">
               JÁ SOU DA FAMÍLIA · ENTRAR →
             </NuxtLink>
-            <p class="font-showtime-body text-[11px]" :style="{ color: `${brand.colors.text}80` }">
+            <p class="font-showtime-body text-[11px]" :style="{ color: `var(--brand-text)80` }">
               {{ brand.auth.termsText }}
             </p>
           </div>
@@ -642,16 +642,16 @@
     <section
       v-else-if="variant === 'playbook'"
       class="relative min-h-screen overflow-hidden px-4 pb-16 pt-12"
-      :style="{ backgroundColor: brand.colors.background }"
+      :style="{ backgroundColor: 'var(--brand-background)' }"
     >
       <div class="pointer-events-none absolute inset-0">
         <div
           class="absolute -top-40 left-1/2 h-[640px] w-[1100px] -translate-x-1/2 rounded-full blur-3xl opacity-25"
-          :style="{ background: `radial-gradient(ellipse, ${brand.colors.primary}, transparent 65%)` }"
+          :style="{ background: `radial-gradient(ellipse, var(--brand-primary), transparent 65%)` }"
         />
         <div
           class="absolute inset-0 opacity-[0.04]"
-          :style="{ backgroundImage: `radial-gradient(${brand.colors.text} 1px, transparent 1px)`, backgroundSize: '36px 36px' }"
+          :style="{ backgroundImage: `radial-gradient(var(--brand-text) 1px, transparent 1px)`, backgroundSize: '36px 36px' }"
         />
       </div>
 
@@ -660,36 +660,36 @@
           <div
             class="mb-7 inline-flex items-center gap-2.5 rounded-full px-5 py-2"
             :style="{
-              backgroundColor: brand.colors.primary,
-              color: brand.colors.background,
-              boxShadow: `0 8px 30px -8px ${brand.colors.primary}80, 0 0 0 3px ${brand.colors.background}, 0 0 0 5px ${brand.colors.primary}40`,
+              backgroundColor: 'var(--brand-primary)',
+              color: 'var(--brand-background)',
+              boxShadow: `0 8px 30px -8px var(--brand-primary)80, 0 0 0 3px var(--brand-background), 0 0 0 5px var(--brand-primary)40`,
             }"
           >
             <span class="relative flex size-1.5">
-              <span class="absolute inline-flex size-1.5 motion-safe:animate-ping rounded-full opacity-75" :style="{ backgroundColor: brand.colors.background }" />
-              <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: brand.colors.background }" />
+              <span class="absolute inline-flex size-1.5 motion-safe:animate-ping rounded-full opacity-75" :style="{ backgroundColor: 'var(--brand-background)' }" />
+              <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: 'var(--brand-background)' }" />
             </span>
             <span class="text-[11px] font-bold uppercase tracking-[0.15em]">CABEÇA FRIA</span>
           </div>
           <h1
             class="leading-[0.92] tracking-tight"
             :style="{
-              color: brand.colors.text,
+              color: 'var(--brand-text)',
               fontFamily: `'Fredoka', 'Inter', sans-serif`,
               fontSize: 'clamp(2.5rem, 6vw, 4.5rem)',
               fontWeight: 700,
             }"
           >
             Comece o<br />
-            <span :style="{ color: brand.colors.primary }">método.</span>
+            <span :style="{ color: 'var(--brand-primary)' }">método.</span>
           </h1>
-          <p class="mt-6 max-w-md text-[16px] leading-relaxed" :style="{ color: `${brand.colors.text}C0` }">
+          <p class="mt-6 max-w-md text-[16px] leading-relaxed" :style="{ color: `var(--brand-text)C0` }">
             {{ brand.auth.registerSubtitle }}
           </p>
 
-          <ul class="mt-10 flex flex-col gap-3 border-t pt-6" :style="{ borderColor: `${brand.colors.border}80` }">
-            <li v-for="t in ['Backtests reais', 'Zero guru', 'Método publicado', 'Sem FOMO']" :key="t" class="flex items-center gap-3 text-[13px]" :style="{ color: brand.colors.text }">
-              <UIcon name="i-lucide-check-circle-2" class="size-4" :style="{ color: brand.colors.primary }" />
+          <ul class="mt-10 flex flex-col gap-3 border-t pt-6" :style="{ borderColor: `var(--brand-border)80` }">
+            <li v-for="t in ['Backtests reais', 'Zero guru', 'Método publicado', 'Sem FOMO']" :key="t" class="flex items-center gap-3 text-[13px]" :style="{ color: 'var(--brand-text)' }">
+              <UIcon name="i-lucide-check-circle-2" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
               {{ t }}
             </li>
           </ul>
@@ -700,20 +700,20 @@
           :state="state"
           class="flex w-full max-w-md flex-col gap-5 rounded-3xl border p-8 md:p-10"
           :style="{
-            borderColor: brand.colors.border,
-            backgroundColor: brand.colors.surface,
-            boxShadow: `0 30px 80px -30px ${brand.colors.primary}30`,
+            borderColor: 'var(--brand-border)',
+            backgroundColor: 'var(--brand-surface)',
+            boxShadow: `0 30px 80px -30px var(--brand-primary)30`,
           }"
           @submit="onSubmit"
         >
           <div class="space-y-2">
-            <span class="text-[10px] font-bold uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
+            <span class="text-[10px] font-bold uppercase tracking-[0.22em]" :style="{ color: 'var(--brand-primary)' }">
              , Cadastro
             </span>
             <h2
               class="leading-tight"
               :style="{
-                color: brand.colors.text,
+                color: 'var(--brand-text)',
                 fontFamily: `'Fredoka', sans-serif`,
                 fontSize: '1.75rem',
                 fontWeight: 700,
@@ -743,7 +743,7 @@
           </UFormField>
           <p
             class="!m-0 flex items-center gap-1.5 !text-[13px] !leading-tight transition-colors"
-            :style="{ color: score >= 1 ? brand.colors.positive : brand.colors.textMuted }"
+            :style="{ color: score >= 1 ? brand.colors.positive : 'var(--brand-text-muted)' }"
             aria-live="polite"
           >
             <UIcon
@@ -758,9 +758,9 @@
             type="submit"
             class="group mt-3 inline-flex w-full items-center justify-center gap-3 rounded-full px-6 py-4 text-[13px] font-bold transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-0.5"
             :style="{
-              backgroundColor: brand.colors.primary,
-              color: brand.colors.background,
-              boxShadow: `0 16px 50px -16px ${brand.colors.primary}A0`,
+              backgroundColor: 'var(--brand-primary)',
+              color: 'var(--brand-background)',
+              boxShadow: `0 16px 50px -16px var(--brand-primary)A0`,
             }"
           >
             <UIcon name="i-lucide-flask-conical" class="size-4" />
@@ -771,10 +771,10 @@
           <MoleculesGoogleAuthBlock mode="signup" />
 
           <div class="flex flex-col gap-2 pt-2 text-center">
-            <NuxtLink to="/auth/login" class="text-[12px] font-bold underline-offset-4 transition hover:opacity-70" :style="{ color: brand.colors.primary }">
+            <NuxtLink to="/auth/login" class="text-[12px] font-bold underline-offset-4 transition hover:opacity-70" :style="{ color: 'var(--brand-primary)' }">
               Já tem conta? <span class="underline">Entrar</span>
             </NuxtLink>
-            <p class="text-[10px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
+            <p class="text-[10px] leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
               {{ brand.auth.termsText }}
             </p>
           </div>
@@ -786,41 +786,41 @@
     <section
       v-else-if="variant === 'holder'"
       class="relative min-h-screen overflow-hidden"
-      :style="{ backgroundColor: brand.colors.background }"
+      :style="{ backgroundColor: 'var(--brand-background)' }"
     >
-      <div class="border-b" :style="{ borderColor: brand.colors.border }">
+      <div class="border-b" :style="{ borderColor: 'var(--brand-border)' }">
         <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4 md:px-10">
           <div class="flex items-center gap-4 text-[10px] uppercase tracking-[0.18em]" style="font-family: 'JetBrains Mono', monospace;">
-            <span :style="{ color: brand.colors.primary }">Hold</span>
-            <span :style="{ color: brand.colors.textMuted }">CADASTRO · NOVO HOLDER</span>
+            <span :style="{ color: 'var(--brand-primary)' }">Hold</span>
+            <span :style="{ color: 'var(--brand-text-muted)' }">CADASTRO · NOVO HOLDER</span>
           </div>
-          <span class="text-[10px] uppercase tracking-[0.18em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: brand.colors.textMuted }">
+          <span class="text-[10px] uppercase tracking-[0.18em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: 'var(--brand-text-muted)' }">
             01 / 01
           </span>
         </div>
       </div>
 
       <div class="mx-auto grid max-w-7xl grid-cols-12 items-stretch gap-0 px-6 py-12 md:px-10 md:py-16 lg:py-20">
-        <div class="col-span-12 flex flex-col justify-center border-b pb-10 lg:col-span-7 lg:border-b-0 lg:border-r lg:pb-0 lg:pr-10" :style="{ borderColor: brand.colors.border }">
-          <div class="mb-6 text-[10px] font-bold uppercase tracking-[0.22em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: brand.colors.primary }">
+        <div class="col-span-12 flex flex-col justify-center border-b pb-10 lg:col-span-7 lg:border-b-0 lg:border-r lg:pb-0 lg:pr-10" :style="{ borderColor: 'var(--brand-border)' }">
+          <div class="mb-6 text-[10px] font-bold uppercase tracking-[0.22em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: 'var(--brand-primary)' }">
             01 · Tornar-se holder
           </div>
           <h1
             class="mb-10 leading-[1.1]"
             :style="{
-              color: brand.colors.text,
+              color: 'var(--brand-text)',
               fontFamily: `'Spectral', 'Georgia', serif`,
               fontSize: 'clamp(2.5rem, 5vw, 4.5rem)',
               fontWeight: 400,
             }"
           >
             {{ brand.auth.registerTitle }}.<br />
-            <span class="italic" :style="{ color: brand.colors.primary, fontWeight: 500 }">Sem trial. Sem cartão.</span>
+            <span class="italic" :style="{ color: 'var(--brand-primary)', fontWeight: 500 }">Sem trial. Sem cartão.</span>
           </h1>
           <p
             class="max-w-xl text-[18px] leading-[1.65]"
             :style="{
-              color: `${brand.colors.text}C0`,
+              color: `var(--brand-text)C0`,
               fontFamily: `'Spectral', 'Georgia', serif`,
             }"
           >
@@ -828,17 +828,17 @@
           </p>
 
           <ul class="mt-12 flex flex-col gap-3" style="font-family: 'Spectral', serif;">
-            <li v-for="(t, i) in ['Sem trial. Sem cartão. Grátis.', 'Acesso completo ao Manifesto mensal.', 'Calculadoras + IA treinada nas cartas.', 'Dados B3 em tempo real.']" :key="i" class="flex items-baseline gap-3 text-[15px]" :style="{ color: brand.colors.text }">
-              <span class="text-[10px] tabular-nums" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: brand.colors.primary }">
+            <li v-for="(t, i) in ['Sem trial. Sem cartão. Grátis.', 'Acesso completo ao Manifesto mensal.', 'Calculadoras + IA treinada nas cartas.', 'Dados B3 em tempo real.']" :key="i" class="flex items-baseline gap-3 text-[15px]" :style="{ color: 'var(--brand-text)' }">
+              <span class="text-[10px] tabular-nums" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: 'var(--brand-primary)' }">
                 {{ String(i + 1).padStart(2, '0') }}
               </span>
               <span class="italic">{{ t }}</span>
             </li>
           </ul>
 
-          <div class="mt-12 flex items-center gap-4 text-[11px] uppercase tracking-[0.22em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: brand.colors.textMuted }">
-            <span class="h-px w-12" :style="{ backgroundColor: brand.colors.border }" />
-            <span :style="{ color: brand.colors.primary }">, @holder</span>
+          <div class="mt-12 flex items-center gap-4 text-[11px] uppercase tracking-[0.22em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: 'var(--brand-text-muted)' }">
+            <span class="h-px w-12" :style="{ backgroundColor: 'var(--brand-border)' }" />
+            <span :style="{ color: 'var(--brand-primary)' }">, @holder</span>
           </div>
         </div>
 
@@ -848,56 +848,56 @@
             :state="state"
             class="flex w-full flex-col gap-4 border p-7"
             :style="{
-              borderColor: brand.colors.border,
-              backgroundColor: brand.colors.surface,
+              borderColor: 'var(--brand-border)',
+              backgroundColor: 'var(--brand-surface)',
             }"
             @submit="onSubmit"
           >
-            <div class="border-b pb-5" :style="{ borderColor: brand.colors.border }">
-              <span class="text-[10px] font-bold uppercase tracking-[0.22em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: brand.colors.primary }">
+            <div class="border-b pb-5" :style="{ borderColor: 'var(--brand-border)' }">
+              <span class="text-[10px] font-bold uppercase tracking-[0.22em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: 'var(--brand-primary)' }">
                 Dados de cadastro
               </span>
             </div>
 
             <UFormField name="name">
               <template #label>
-                <span class="text-[10px] font-bold uppercase tracking-[0.18em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: brand.colors.textMuted }">Nome</span>
+                <span class="text-[10px] font-bold uppercase tracking-[0.18em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: 'var(--brand-text-muted)' }">Nome</span>
               </template>
               <AtomsFormInput v-model="state.name" type="text" placeholder="Nome completo" size="lg" class="w-full" />
             </UFormField>
             <UFormField name="login">
               <template #label>
-                <span class="text-[10px] font-bold uppercase tracking-[0.18em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: brand.colors.textMuted }">Usuário</span>
+                <span class="text-[10px] font-bold uppercase tracking-[0.18em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: 'var(--brand-text-muted)' }">Usuário</span>
               </template>
               <AtomsFormInput v-model="state.login" type="text" placeholder="Usuário" size="lg" class="w-full" />
             </UFormField>
             <UFormField name="celular">
               <template #label>
-                <span class="text-[10px] font-bold uppercase tracking-[0.18em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: brand.colors.textMuted }">Celular</span>
+                <span class="text-[10px] font-bold uppercase tracking-[0.18em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: 'var(--brand-text-muted)' }">Celular</span>
               </template>
               <AtomsFormInput v-model="state.celular" v-maska="'+55 (##) # ####-####'" type="tel" autocomplete="tel" inputmode="tel" placeholder="+55 (00) 0 0000-0000" size="lg" class="w-full" />
             </UFormField>
             <UFormField name="email">
               <template #label>
-                <span class="text-[10px] font-bold uppercase tracking-[0.18em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: brand.colors.textMuted }">E-mail</span>
+                <span class="text-[10px] font-bold uppercase tracking-[0.18em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: 'var(--brand-text-muted)' }">E-mail</span>
               </template>
               <AtomsFormInput v-model="state.email" type="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="seu@email.com" size="lg" class="w-full" />
             </UFormField>
             <UFormField name="password">
               <template #label>
-                <span class="text-[10px] font-bold uppercase tracking-[0.18em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: brand.colors.textMuted }">Senha</span>
+                <span class="text-[10px] font-bold uppercase tracking-[0.18em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: 'var(--brand-text-muted)' }">Senha</span>
               </template>
               <AtomsFormInputPassword v-model="state.password" :aria-invalid="score < 4" class="w-full" />
             </UFormField>
             <UFormField name="password_confirmation">
               <template #label>
-                <span class="text-[10px] font-bold uppercase tracking-[0.18em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: brand.colors.textMuted }">Confirmar senha</span>
+                <span class="text-[10px] font-bold uppercase tracking-[0.18em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: 'var(--brand-text-muted)' }">Confirmar senha</span>
               </template>
               <AtomsFormInputPassword v-model="state.password_confirmation" placeholder="Confirme a senha" class="w-full" />
             </UFormField>
             <p
             class="!m-0 flex items-center gap-1.5 !text-[13px] !leading-tight transition-colors"
-            :style="{ color: score >= 1 ? brand.colors.positive : brand.colors.textMuted }"
+            :style="{ color: score >= 1 ? brand.colors.positive : 'var(--brand-text-muted)' }"
             aria-live="polite"
           >
             <UIcon
@@ -912,8 +912,8 @@
               type="submit"
               class="mt-4 inline-flex w-full items-center justify-center gap-3 px-6 py-4 text-[12px] font-bold uppercase tracking-[0.18em] transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-0.5"
               :style="{
-                backgroundColor: brand.colors.primary,
-                color: brand.colors.text,
+                backgroundColor: 'var(--brand-primary)',
+                color: 'var(--brand-text)',
               }"
             >
               <UIcon name="i-lucide-anchor" class="size-4" />
@@ -923,11 +923,11 @@
 
             <MoleculesGoogleAuthBlock mode="signup" />
 
-            <div class="mt-2 flex flex-col gap-3 border-t pt-5" :style="{ borderColor: brand.colors.border }">
-              <NuxtLink to="/auth/login" class="text-[11px] font-bold uppercase tracking-[0.18em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: brand.colors.primary }">
+            <div class="mt-2 flex flex-col gap-3 border-t pt-5" :style="{ borderColor: 'var(--brand-border)' }">
+              <NuxtLink to="/auth/login" class="text-[11px] font-bold uppercase tracking-[0.18em]" style="font-family: 'JetBrains Mono', monospace;" :style="{ color: 'var(--brand-primary)' }">
                 Já sou holder · entrar →
               </NuxtLink>
-              <p class="text-[10px] leading-snug italic" style="font-family: 'Spectral', serif;" :style="{ color: brand.colors.textMuted }">
+              <p class="text-[10px] leading-snug italic" style="font-family: 'Spectral', serif;" :style="{ color: 'var(--brand-text-muted)' }">
                 {{ brand.auth.termsText }}
               </p>
             </div>
@@ -935,11 +935,11 @@
         </div>
       </div>
 
-      <div class="border-t py-12 text-center" :style="{ borderColor: brand.colors.border }">
+      <div class="border-t py-12 text-center" :style="{ borderColor: 'var(--brand-border)' }">
         <p
           class="select-none leading-none"
           :style="{
-            color: brand.colors.primary,
+            color: 'var(--brand-primary)',
             fontFamily: `'Anton', 'Bebas Neue', sans-serif`,
             fontWeight: 400,
             fontSize: 'clamp(3rem, 6vw, 5rem)',
@@ -956,7 +956,7 @@
       <div class="mx-auto flex max-w-5xl flex-col items-center gap-14 md:flex-row md:items-start md:gap-20">
         <div class="flex flex-1 flex-col items-center gap-8 text-center md:items-start md:text-left">
           <AtomsAuthHeader class="mt-0 w-full max-w-sm" />
-          <p class="text-sm leading-relaxed md:max-w-sm" :style="{ color: brand.colors.textMuted }">
+          <p class="text-sm leading-relaxed md:max-w-sm" :style="{ color: 'var(--brand-text-muted)' }">
             Crie sua conta para acessar carteiras inteligentes, simuladores de investimentos e recursos personalizados que aceleram seus resultados.
           </p>
         </div>
@@ -992,7 +992,7 @@
         v-if="landing"
         class="landing-overlay"
         :style="{
-          backgroundColor: `color-mix(in srgb, ${brand.colors.background} 92%, transparent)`,
+          backgroundColor: `color-mix(in srgb, var(--brand-background) 92%, transparent)`,
         }"
         aria-live="polite"
         inert
@@ -1000,20 +1000,20 @@
         <div class="landing-card" :style="landingCardStyle">
           <div
             class="landing-spinner"
-            :style="{ borderColor: `color-mix(in srgb, ${brand.colors.primary} 25%, transparent)`, borderTopColor: brand.colors.primary }"
+            :style="{ borderColor: `color-mix(in srgb, var(--brand-primary) 25%, transparent)`, borderTopColor: 'var(--brand-primary)' }"
           />
           <div class="flex flex-col items-center gap-1.5">
             <span
               class="font-mono-tab text-[11px] font-medium uppercase"
-              :style="{ letterSpacing: '0.18em', color: brand.colors.primary }"
+              :style="{ letterSpacing: '0.18em', color: 'var(--brand-primary)' }"
             >Cadastro concluído</span>
             <p
               class="text-center text-[15px] font-medium"
-              :style="{ color: brand.colors.text }"
+              :style="{ color: 'var(--brand-text)' }"
             >{{ landingMessage }}</p>
             <p
               class="text-center text-[12.5px]"
-              :style="{ color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }"
+              :style="{ color: `color-mix(in srgb, var(--brand-text) 60%, transparent)` }"
             >Carregando seu painel…</p>
           </div>
         </div>
@@ -1179,9 +1179,9 @@ const submitting = ref(false)
 const landing = ref(false)
 
 const landingCardStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 92%, ${brand.colors.background})`,
-  borderColor: `color-mix(in srgb, ${brand.colors.primary} 22%, transparent)`,
-  boxShadow: `0 24px 60px -32px color-mix(in srgb, ${brand.colors.primary} 35%, transparent), 0 8px 16px -10px rgba(0,0,0,0.18)`,
+  backgroundColor: `color-mix(in srgb, var(--brand-surface) 92%, var(--brand-background))`,
+  borderColor: `color-mix(in srgb, var(--brand-primary) 22%, transparent)`,
+  boxShadow: `0 24px 60px -32px color-mix(in srgb, var(--brand-primary) 35%, transparent), 0 8px 16px -10px rgba(0,0,0,0.18)`,
 }))
 
 /** Friendly first name from `state.name`; capitalised. Used in both
