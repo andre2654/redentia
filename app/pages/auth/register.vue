@@ -961,31 +961,20 @@
           </p>
         </div>
 
-        <!-- Form de cadastro/login via componente compartilhado (mesma UX
-             do hard gate /raio-x). 3 campos so (sem confirmacao de senha,
-             sem celular, sem login custom — tudo derivado), label hint
-             inline, Google abaixo do submit. UX provada com gate. -->
+        <!-- Form de cadastro via AuthFormCard. O componente já trás header
+             próprio (logo radar + "Qual seu e-mail?" + subtítulo) — header
+             externo eyebrow/h1/subtitle foi REMOVIDO porque duplicava. -->
         <div
           class="flex w-full max-w-md flex-col gap-5 rounded-[32px] border px-8 py-10 shadow-[0_25px_60px_-15px_rgba(15,23,42,0.5)] backdrop-blur-2xl"
-          :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+          :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
         >
-          <div class="space-y-2 text-center md:text-left">
-            <span class="text-xs font-medium uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
-              Cadastro
-            </span>
-            <h1 class="text-2xl font-semibold" :style="{ color: brand.colors.text }">{{ brand.auth.registerTitle }}</h1>
-            <p class="text-sm" :style="{ color: brand.colors.textMuted }">
-              {{ brand.auth.registerSubtitle }}
-            </p>
-          </div>
-
           <MoleculesAuthFormCard
             mode="register"
             redirect-to="/"
             pixel-context="auth_page_register"
           />
 
-          <p class="text-[11px] leading-relaxed text-center md:text-left mt-2" :style="{ color: brand.colors.textMuted }">
+          <p class="text-[11px] leading-relaxed text-center md:text-left" :style="{ color: 'var(--brand-text-muted)' }">
             {{ brand.auth.termsText }}
           </p>
         </div>
