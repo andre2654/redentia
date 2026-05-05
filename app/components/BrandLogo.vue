@@ -137,9 +137,9 @@ const padX = computed(() => (props.variant === 'icon' ? '6px' : '8px 16px'))
 <style scoped>
 /* The two stacked <img>s share the same slot — only one is visible at
  * a time. We don't use `position: absolute` because the consumer's
- * `class` (h-7, w-[150px], etc.) needs to dictate layout space — and
- * an absolute child collapses the parent. Instead, the hidden one
- * uses `display: none` so it doesn't take up space.
+ * `class` (h-7, w-[150px], etc.) lives on the WRAPPER and needs to
+ * dictate layout space. Instead, the hidden one uses `display: none`
+ * so it doesn't take up space.
  *
  * Why not :hidden + :block on a single <img>? Because <img>'s width
  * and height are intrinsic to the loaded asset. Two stacked <img>s
@@ -148,13 +148,23 @@ const padX = computed(() => (props.variant === 'icon' ? '6px' : '8px 16px'))
  */
 
 .brand-logo-stack {
-  /* The wrapper itself follows the consumer's height. Inner <img>s
-     are 100% high to match — keeps consumer-driven sizing intact. */
-  height: 100%;
+  /* `inline-flex` so the wrapper hugs the inner <img> tightly and
+     vertically centers it. NO `height: 100%` — that would inherit
+     the PARENT'S height (e.g. a 100vh hero), making the logo
+     absurdly tall. The consumer's class (h-7, h-8, w-[150px], etc.)
+     drives sizing here; the wrapper just contains the imgs. */
+  align-items: center;
+  line-height: 0;
 }
 
+/* Imgs inherit the consumer-driven height of the wrapper, keeping
+   intrinsic aspect ratio via width: auto. `max-height: 100%` is the
+   key — without it the natural <img> height (120-537px) would push
+   the wrapper open instead of the wrapper constraining the img. */
 .brand-logo-asset {
-  height: 100%;
+  max-height: 100%;
+  max-width: 100%;
+  height: auto;
   width: auto;
 }
 
