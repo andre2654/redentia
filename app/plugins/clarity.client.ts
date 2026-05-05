@@ -28,6 +28,30 @@ export default defineNuxtPlugin(() => {
 
   if (!projectId) return
 
+  // Skip everything when running on dev hosts. Clarity dashboards mix
+  // localhost/preview traffic with prod sessions and contaminate the
+  // funnel metrics — heatmaps from a dev clicking around become fake
+  // "rage clicks" once it lands in the prod project. Hostnames covered:
+  //
+  //   - localhost / 127.0.0.1 / *.local         (vite dev server)
+  //   - *.vercel.app preview deploys             (PR previews, not prod)
+  //   - Any hostname containing "preview"        (Vercel/Cloudflare)
+  //
+  // To override (e.g. testing the snippet itself locally), uncomment
+  // the preceding `return` or set `window.__forceClarity = true` from
+  // the devtools console before loading the page.
+  const host = window.location.hostname.toLowerCase()
+  const isDev
+    = host === 'localhost'
+    || host === '127.0.0.1'
+    || host === '0.0.0.0'
+    || host.endsWith('.local')
+    || host.endsWith('.vercel.app')
+    || host.includes('preview')
+  if (isDev && !(window as { __forceClarity?: boolean }).__forceClarity) {
+    return
+  }
+
   // Snippet oficial da Microsoft, adaptado pra TS + lazy load.
   // Mesmo padrao "stub-and-load" do GA4/fbq: cria a fila imediatamente
   // (window.clarity = function(){ queue.push(args) }) e injeta o script
