@@ -164,43 +164,39 @@ function resetAnalysis() {
   router.push({ path: '/raio-x' })
 }
 
-// ============ HARD GATE MODAL ============
-// Modal sobe IMEDIATAMENTE quando ha tickers e usuario
-// nao-autenticado, e SO sai com cadastro/login. Sem timer, sem botao de
-// fechar, sem Esc. Resultado fica visivel POR TRAS do modal (em blur)
-// como "produto premium por tras do paywall" (NYT/FT/Stripe pattern).
+// ============ AUTH STATE + SOFT GATE ============
+// Estrategia 2026-05-05: hard gate eterno foi substituido por SOFT GATE
+// (NYT/FT pattern). Pessoa nao autenticada VE o resultado completo do
+// MoleculesPortfolioDiagnosis no topo, scrolla pra baixo, encontra
+// preview blureado de mais conteudo (KPIs, dividendos, eventos, AI
+// insights), e um card sobreposto com email form pra liberar o resto.
 //
-// Quando user JA esta logado, /raio-x e redundante — pessoa deve estar
-// na /wallet montando carteira real. Redirecionamos imediatamente apos
-// mount no client (SSR ignora pra evitar flash de redirect na hidrate).
+// User autenticado em /raio-x = redundancia (deve estar em /wallet).
+// Redirect automatico no mount client-side.
 const authStore = useAuthStore()
 const pendingTickers = computed(() => tickersFromUrl.value)
 
 onMounted(() => {
   if (authStore.isAuthenticated) {
-    // replace pra nao adicionar /raio-x ao history — pessoa logada nunca
-    // deveria voltar pra /raio-x via "back" do navegador.
     router.replace('/wallet')
   }
 })
 
-const shouldGate = computed(
+const showSoftGate = computed(
   () => hasTickers.value && !!report.value && !authStore.isAuthenticated,
 )
 
-// Quando shouldGate vira true, salva os tickers em sessionStorage. Apos
-// cadastro, /wallet pode ler 'redentia.raiox.pendingTickers' pra montar
-// a carteira real automaticamente.
-watch(shouldGate, (gate) => {
-  if (!gate) return
+// Salva tickers em sessionStorage quando soft gate aparece. Apos magic
+// link verify, /wallet le essa key pra pre-popular carteira real do quiz.
+watch(showSoftGate, (visible) => {
+  if (!visible) return
   try {
     sessionStorage.setItem(
       'redentia.raiox.pendingTickers',
       JSON.stringify(tickersFromUrl.value),
     )
   } catch {
-    // sessionStorage indisponivel (Safari private mode) — ignora,
-    // cadastro continua funcionando, so perde o auto-import.
+    // sessionStorage indisponivel (Safari private mode) — ignora.
   }
 }, { immediate: true })
 
@@ -603,7 +599,42 @@ usePageSeo({
             </button>
           </div>
 
-          <MoleculesPortfolioDiagnosis :report="report" :show-share="true" />
+          <!-- ============ FLOW REDUZIDO (2026-05-05) ============
+               Brief do user: tirar tudo que nao for essencial, deixar
+               poucas secoes pesadas no resultado:
+                 1. Hero (Score, stats, descobertas, stress Covid)
+                 2. AI Insights — "O que a Redent.IA está vendo"
+                 3. Asset Deep Dive — "Cada ativo, sob a lupa" (3 visiveis
+                    + restante blureado pra criar gancho de cadastro)
+                 4. Soft Gate — campo email pra cadastrar (so deslogado)
+                 5. Locked Preview — calendario, eventos, benchmarks,
+                    alocacao, tudo blureado (so deslogado, reforca o gate)
+                 6. Assessor CTA — "Avaliacao continua" (cross-sell premium)
+               PortfolioDiagnosis original (1442 linhas) ficou desabilitado
+               aqui — referencia mantida no codebase pra rollback se preciso. -->
+          <MoleculesRaioXHeroResult :report="report" />
+
+          <MoleculesRaioXAIInsights :report="report" />
+
+          <MoleculesRaioXAssetDeepDive :report="report" />
+
+          <!-- Soft gate (apenas pra nao-autenticados): campo email + magic link -->
+          <MoleculesRaioXSoftGate
+            v-if="showSoftGate"
+            :report="report"
+          />
+
+          <!-- Locked preview (apenas pra nao-autenticados): mais 4 secoes
+               com blur (calendario de dividendos, eventos do mercado,
+               benchmarks, alocacao por classe) reforcando "tem mais conteudo
+               trancado". So renderiza junto com o soft gate. -->
+          <MoleculesRaioXLockedPreview
+            v-if="showSoftGate"
+            :report="report"
+          />
+
+          <!-- Assessor Inteligente CTA — cross-sell premium apos o gate -->
+          <MoleculesRaioXAssessorCTA />
         </div>
       </section>
     </main>
@@ -634,16 +665,12 @@ usePageSeo({
       </Transition>
     </ClientOnly>
 
-    <!-- ============ HARD GATE MODAL ============
-         Sobe quando ha tickers + report + usuario nao-autenticado.
-         Form de cadastro/login embedded, sem botao de fechar. Resultado
-         atras fica visivel mas blureado pelo backdrop do modal. -->
-    <MoleculesRaioXSimulationModal
-      :open="shouldGate"
-      :tickers="pendingTickers"
-      @confirm="onSimModalConfirm"
-      @close="onSimModalClose"
-    />
+    <!-- Modal hard gate REMOVIDO em 2026-05-05 — substituido por
+         <MoleculesRaioXSoftGate> inline (NYT/FT pattern) que aparece
+         depois do diagnostico. Pessoa ve mais valor antes de cadastrar,
+         conversao maior, e funciona melhor em Instagram in-app browser.
+         Componente RaioXSimulationModal continua existindo no codebase
+         pra rollback rapido se A/B mostrar que soft gate converte pior. -->
   </NuxtLayout>
 </template>
 

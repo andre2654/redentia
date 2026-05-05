@@ -29,6 +29,37 @@ p {
 }
 
 /* ================================================================
+   iOS Safari auto-zoom prevention — input font-size minimo 16px
+   ================================================================
+   Problema: Safari iOS faz auto-zoom (~110%) sempre que voce toca
+   num input com font-size < 16px. UX horrivel: tela "salta", layout
+   quebra, scroll fica inconsistente. Reportado pelo time multiplas
+   vezes em /raio-x, /auth, calculadoras, /chat.
+
+   Solucao: forcar font-size minimo 16px em TODOS os inputs/textareas
+   /selects em devices touch (mobile real). Desktop nao e afetado
+   (ele usa pointer fino — `pointer: fine`).
+
+   `max(16px, 1em)` respeita zoom de acessibilidade do user — se ele
+   aumentou texto via prefer-reduced-motion ou Settings → Acessibilidade,
+   honramos essa configuracao em vez de fixar 16px.
+
+   Excecoes (checkbox/radio/range): nao tem problema de zoom porque
+   sao controles nativos sem texto editavel.
+
+   Aplicado globalmente — supera CSS de qualquer componente por causa
+   da especificidade de tag selector + media query. Componentes que
+   precisem override (ex: caixa de busca super compacta no desktop) usam
+   `:where()` ou `media (pointer: fine)` pra so afetar desktop. */
+@media (hover: none) and (pointer: coarse) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+  textarea,
+  select {
+    font-size: max(16px, 1em);
+  }
+}
+
+/* ================================================================
    Custom scrollbar — tenant-aware
    ================================================================
    Applies to every scrollable element in the app. Uses CSS vars

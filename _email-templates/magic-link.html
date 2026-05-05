@@ -1,0 +1,173 @@
+<!--
+  Email template — Magic Link Redent.IA
+
+  USO NO BACKEND LARAVEL:
+    Use como Blade view (resources/views/emails/magic-link.blade.php).
+    Variaveis Blade esperadas:
+      $user_email       — email do destinatario (ex: voce@exemplo.com)
+      $magic_link_url   — URL completa com token (ex: https://redentia.com.br/auth/magic-link/verify?token=abc123)
+      $expires_in       — string tipo "15 minutos" ou int 15 (minutos)
+      $is_new_user      — boolean (muda copy do título)
+
+  USO NO RESEND DIRETO (sem Blade):
+    Substitui {{user_email}} por process de templating do Resend
+    OU concatena no backend antes de enviar.
+
+  COMPATIBILIDADE:
+  Inline styles. Tabela-based layout pra Outlook compat. Testado em
+  Gmail, Apple Mail, Outlook, Yahoo, Hotmail. Mobile-friendly.
+
+  IMAGENS:
+  Logo via SVG inline ou PNG hospedado em CDN. Pra simplicidade aqui,
+  usei um amber radar emoji visual. Substituir por img tag se quiser.
+-->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Acesse a Redent.IA</title>
+  <style>
+    /* Reset email clients */
+    body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    img { -ms-interpolation-mode: bicubic; border: 0; outline: none; text-decoration: none; display: block; }
+    body { margin: 0; padding: 0; width: 100% !important; }
+
+    /* Mobile responsive */
+    @media screen and (max-width: 600px) {
+      .container { width: 100% !important; }
+      .px-mobile { padding-left: 24px !important; padding-right: 24px !important; }
+      .btn-mobile { padding: 16px 32px !important; }
+      .title-mobile { font-size: 24px !important; line-height: 1.2 !important; }
+    }
+
+    /* Dark mode (Apple Mail iOS, Gmail Android) */
+    @media (prefers-color-scheme: dark) {
+      .body-bg { background-color: #0f0f10 !important; }
+      .card-bg { background-color: #1a1a1c !important; border-color: #2a2a2e !important; }
+      .text-heading { color: #f5f5f7 !important; }
+      .text-body { color: #b8b8bc !important; }
+      .text-muted { color: #7a7a82 !important; }
+      .divider { border-color: #2a2a2e !important; }
+    }
+  </style>
+</head>
+<body class="body-bg" style="margin: 0; padding: 0; background-color: #f7f7f8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+
+  <!-- Pre-header (mostra na lista do email mas nao no body) -->
+  <div style="display: none; max-height: 0; overflow: hidden; mso-hide: all;">
+    Seu link de acesso pra Redent.IA — válido por 15 minutos.
+  </div>
+
+  <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" width="100%" class="body-bg" style="background-color: #f7f7f8;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+
+        <!-- Container -->
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" width="560" class="container" style="max-width: 560px;">
+
+          <!-- Logo header -->
+          <tr>
+            <td align="center" style="padding-bottom: 32px;">
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                <tr>
+                  <td align="center" valign="middle" style="background-color: #fff7e6; border-radius: 14px; width: 56px; height: 56px;" width="56" height="56">
+                    <!-- Radar icon SVG (amber) -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#F5A623" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: block;">
+                      <path d="M19.07 4.93A10 10 0 0 0 6.99 3.34"/>
+                      <path d="M4 6h.01"/>
+                      <path d="M2.29 9.62A10 10 0 1 0 21.31 8.35"/>
+                      <path d="M16.24 7.76A6 6 0 1 0 17.51 14"/>
+                      <path d="M12 18h.01"/>
+                      <path d="M17.99 11.66A6 6 0 0 1 15.77 16.67"/>
+                      <circle cx="12" cy="12" r="2"/>
+                      <path d="m13.41 10.59 5.66-5.66"/>
+                    </svg>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Card -->
+          <tr>
+            <td class="card-bg px-mobile" style="background-color: #ffffff; border: 1px solid #e7e7eb; border-radius: 18px; padding: 40px 44px; box-shadow: 0 4px 16px rgba(15, 15, 16, 0.04);">
+
+              <!-- Title -->
+              <h1 class="text-heading title-mobile" style="margin: 0 0 12px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 26px; font-weight: 600; line-height: 1.25; letter-spacing: -0.02em; color: #0f0f10;">
+                @{{ $is_new_user ? 'Bem-vindo à Redent.IA' : 'Acesso à sua conta' }}
+              </h1>
+
+              <!-- Body -->
+              <p class="text-body" style="margin: 0 0 8px; font-size: 15px; line-height: 1.55; color: #4a4a52;">
+                Recebemos uma solicitação de acesso pra <strong style="color: #0f0f10;">@{{ $user_email }}</strong>.
+              </p>
+              <p class="text-body" style="margin: 0 0 28px; font-size: 15px; line-height: 1.55; color: #4a4a52;">
+                Clica no botão abaixo pra entrar. O link expira em <strong style="color: #0f0f10;">@{{ $expires_in }} minutos</strong> e só pode ser usado uma vez.
+              </p>
+
+              <!-- CTA button -->
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                <tr>
+                  <td align="center" style="padding-bottom: 24px;">
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                      <tr>
+                        <td align="center" style="background-color: #F5A623; border-radius: 12px; box-shadow: 0 8px 22px -10px rgba(245, 166, 35, 0.55);">
+                          <a href="@{{ $magic_link_url }}"
+                             class="btn-mobile"
+                             style="display: inline-block; padding: 14px 36px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 15px; font-weight: 600; color: #ffffff; text-decoration: none; border-radius: 12px; letter-spacing: -0.005em;">
+                            Acessar minha conta →
+                          </a>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Fallback link (caso o botão não funcione) -->
+              <p class="text-muted" style="margin: 0 0 8px; font-size: 12px; line-height: 1.5; color: #7a7a82;">
+                Se o botão não funcionar, copie e cole este link no navegador:
+              </p>
+              <p style="margin: 0 0 24px; word-break: break-all; font-size: 12px; line-height: 1.45;">
+                <a href="@{{ $magic_link_url }}" style="color: #F5A623; text-decoration: underline;">
+                  @{{ $magic_link_url }}
+                </a>
+              </p>
+
+              <!-- Divider -->
+              <hr class="divider" style="border: none; border-top: 1px solid #e7e7eb; margin: 24px 0;" />
+
+              <!-- Security note -->
+              <p class="text-muted" style="margin: 0 0 6px; font-size: 12px; line-height: 1.5; color: #7a7a82;">
+                <strong style="color: #4a4a52;">Não foi você?</strong>
+              </p>
+              <p class="text-muted" style="margin: 0; font-size: 12px; line-height: 1.5; color: #7a7a82;">
+                Se você não solicitou este acesso, pode ignorar este e-mail. Sem cliques, sem riscos.
+              </p>
+
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td class="px-mobile" style="padding: 24px 24px 0; text-align: center;">
+              <p class="text-muted" style="margin: 0 0 4px; font-size: 11px; line-height: 1.5; color: #9a9aa3;">
+                Redent.IA — A IA que entende sua carteira.
+              </p>
+              <p class="text-muted" style="margin: 0; font-size: 11px; line-height: 1.5; color: #9a9aa3;">
+                <a href="https://redentia.com.br" style="color: #9a9aa3; text-decoration: none;">redentia.com.br</a>
+              </p>
+            </td>
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>

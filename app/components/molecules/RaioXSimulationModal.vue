@@ -116,12 +116,21 @@ onBeforeUnmount(() => {
 .raio-x-sim {
   position: fixed;
   inset: 0;
+  /* Reforco explicito de altura usando dvh (dynamic viewport height).
+     Safari iOS tem URL bar que some/aparece — sem dvh, modal pode ficar
+     "curto" no scroll inicial e mostrar conteudo do site debaixo. dvh
+     respeita o viewport visivel real. */
+  height: 100dvh;
+  width: 100vw;
   z-index: 9100;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 16px;
   pointer-events: none;
+  /* Previne overscroll bounce do iPhone que mostra fundo branco/preto
+     quando user scrolla pra cima ja no topo. */
+  overscroll-behavior: contain;
 }
 
 @media (min-width: 768px) {

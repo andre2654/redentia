@@ -123,6 +123,51 @@ export const useAuthService = () => {
   }
 
   /**
+   * Magic Link flow — passwordless auth.
+   *
+   * STEP 1 (request): user manda email + redirect_to. Backend gera token,
+   * salva em magic_link_tokens (15min TTL), envia email com link tipo
+   * `https://redentia.com.br/auth/magic-link/verify?token=...`.
+   *
+   * STEP 2 (verify): user clica no link. Frontend extrai token da URL,
+   * chama esta funcao. Backend valida, cria/login user, retorna Sanctum
+   * token + user + redirect_to + isNewUser. Frontend salva token e
+   * navega pra redirect_to.
+   *
+   * REDIRECT TO:
+   *   - /auth/register page → "/" (home)
+   *   - /raio-x gate → "/wallet?onboarding=true" (com tickers em sessionStorage)
+   *   - /auth/login page → "/" (home)
+   *
+   * Anti-enumeration: backend SEMPRE retorna 200 no request, mesmo se o
+   * email nao gerou link (ex: rate limit). UI nao revela "email existe".
+   */
+  async function magicLinkRequest(body: {
+    email: string
+    redirect_to: string
+  }): Promise<{ message: string }> {
+    return await $fetch<{ message: string }>(`${baseURL}/magic-link/request`, {
+      method: 'POST',
+      credentials: 'include',
+      body,
+    })
+  }
+
+  async function magicLinkVerify(token: string): Promise<{
+    access_token: string
+    token_type?: string
+    user?: { id: string | number; name?: string; email: string }
+    redirect_to?: string
+    is_new_user?: boolean
+  }> {
+    return await $fetch(`${baseURL}/magic-link/verify`, {
+      method: 'POST',
+      credentials: 'include',
+      body: { token },
+    })
+  }
+
+  /**
    * Step 1 of password reset — backend ALWAYS returns 200 with the
    * same generic message regardless of whether the email is registered
    * (anti-enumeration). The error path here only fires on
@@ -164,5 +209,7 @@ export const useAuthService = () => {
     becomeAdvisor,
     forgotPassword,
     resetPassword,
+    magicLinkRequest,
+    magicLinkVerify,
   }
 }

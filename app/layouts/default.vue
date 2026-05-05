@@ -528,6 +528,15 @@
   </div>
 
   <Footer v-if="!hideFooter" />
+
+  <!-- Onboarding modal — pede nome do user apos primeiro login via magic
+       link. Trigger: ?onboarding=true na URL OU me.name vazio. Mount
+       global no layout default pra funcionar em qualquer pagina
+       autenticada (/, /wallet, /raio-x autenticado, etc). -->
+  <MoleculesOnboardingNameModal
+    :open="showOnboardingModal"
+    @close="closeOnboarding"
+  />
 </template>
 
 <script lang="ts" setup>
@@ -551,6 +560,38 @@ defineProps({
 })
 
 const brand = useBrand()
+
+// ============ ONBOARDING NAME MODAL ============
+// Soft modal pos-magic-link. Disparado por:
+//   1. ?onboarding=true na URL (vindo do verify do magic link)
+//   2. authStore.me.name vazio (caso anterior nao foi disparado)
+//
+// Estado dismissed em ref local — pessoa fecha sem salvar, nao volta
+// a aparecer na mesma sessao. Pode preencher depois em /settings.
+const route = useRoute()
+const router = useRouter()
+const authStoreLayout = useAuthStore()
+const onboardingDismissed = ref(false)
+
+const showOnboardingModal = computed(() => {
+  if (onboardingDismissed.value) return false
+  if (!authStoreLayout.isAuthenticated) return false
+  // Sempre que ?onboarding=true esta presente, mostra
+  if (route.query.onboarding === 'true') return true
+  // Fallback: nome vazio = mostra ate preencher
+  if (!authStoreLayout.me?.name?.trim()) return true
+  return false
+})
+
+function closeOnboarding() {
+  onboardingDismissed.value = true
+  // Limpa o ?onboarding=true da URL pra nao reabrir em refresh.
+  if (route.query.onboarding === 'true') {
+    const cleanQuery = { ...route.query }
+    delete cleanQuery.onboarding
+    router.replace({ path: route.path, query: cleanQuery })
+  }
+}
 
 const allAttrs = useAttrs()
 const interfaceStore = useInterfaceStore()
