@@ -907,6 +907,10 @@ async function onSubmit(_: FormSubmitEvent<Schema>) {
 definePageMeta({
   isPublicRoute: true,
   hideInstallAppBanner: true,
+  // Auth pages: o pill flutuante de busca compete visualmente com o
+  // form, distrai o usuario e oferece um caminho de saida bem na hora
+  // de converter. Some.
+  hideQuickSearch: true,
 })
 
 usePageSeo({
