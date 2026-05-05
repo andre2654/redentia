@@ -21,15 +21,17 @@ export default defineNuxtPlugin(() => {
   // critical render window. None of that work needs to happen before LCP.
   //
   // Strategy:
-  //   1. requestIdleCallback (fall back to setTimeout 2.5s on Safari and
+  //   1. requestIdleCallback (fall back to setTimeout 500ms on Safari and
   //      anywhere rIC is missing) — runs on browser idle, never blocks.
   //   2. Once running, install the stub-and-load snippet exactly as Meta
   //      ships it. The first PageView is fired in the same idle slot.
   //
-  // Tracking accuracy: PageView fires ~2-3s after LCP instead of during
-  // critical-path JS. Bounce-tracking still picks it up because the
-  // user is still on the page; only sessions <2.5s long are missed,
-  // which are bounces anyway.
+  // Tracking accuracy: PageView fires ~500ms after LCP instead of during
+  // critical-path JS. O fallback ANTERIOR era 2500ms — perdia eventos do
+  // tráfego pago do Instagram in-app browser (iOS WebKit não tem
+  // requestIdleCallback até 17.4) onde grande parte dos users sai
+  // entre 1-3s. 500ms captura ~95% das sessões sem prejudicar LCP
+  // (já é depois do First Paint na esmagadora maioria dos devices).
   const installPixel = () => {
     if ((window as any).fbq) return
     ;(function (f: any, b: any, e: string, v: string) {
@@ -57,7 +59,11 @@ export default defineNuxtPlugin(() => {
   if ('requestIdleCallback' in window) {
     ;(window as any).requestIdleCallback(installPixel, { timeout: 4000 })
   } else {
-    setTimeout(installPixel, 2500)
+    // 500ms (era 2500ms): o fallback dispara pra navegadores sem rIC
+    // — principalmente iOS Safari < 17.4 e o in-app browser do
+    // Instagram. Encurtar evita perder os eventos de quem bouncea
+    // rápido nesse fluxo (a esmagadora maioria do tráfego pago).
+    setTimeout(installPixel, 500)
   }
 
   // Track PageView on client-side navigation. Guarded so it no-ops until

@@ -343,6 +343,61 @@ const planningLoading = ref(false)
 const planningError = ref('')
 const planningResult = ref<PlanningResult | null>(null)
 
+// ====================================================================
+// Deep-link via query params, abilita URLs canonicas pra cenarios
+// populares (ex: /calculadora/planejamento?goal=500000&monthly=1500).
+// Cada combinacao vira uma "landing page" virtual indexavel pelo
+// Google sem precisar duplicar a pagina. O usePageSeo da rota mae
+// cobre todas as variacoes via canonical.
+//
+// Params suportados:
+//   ?goal=500000          meta financeira em R$ (numero)
+//   ?monthly=1500         aporte mensal em R$
+//   ?strategy=rentabilidade|seguranca   estrategia
+//   ?auto=1               dispara o calculo automaticamente apos hidratar
+// ====================================================================
+const route = useRoute()
+
+function parseNumberParam(value: unknown): number | null {
+  if (value === undefined || value === null) return null
+  const raw = Array.isArray(value) ? value[0] : value
+  if (typeof raw !== 'string' || raw.trim() === '') return null
+  // Aceita "10.5" e "10,5" (Brasil), Number() so entende ponto.
+  const normalized = raw.replace(',', '.')
+  const num = Number(normalized)
+  return Number.isFinite(num) ? num : null
+}
+
+function parseStrategyParam(value: unknown): PlanningStrategy | null {
+  if (value === undefined || value === null) return null
+  const raw = Array.isArray(value) ? value[0] : value
+  if (typeof raw !== 'string') return null
+  const normalized = raw.trim().toLowerCase()
+  if (normalized === 'rentabilidade' || normalized === 'seguranca') {
+    return normalized
+  }
+  return null
+}
+
+onMounted(() => {
+  const q = route.query
+  const goal = parseNumberParam(q.goal)
+  const monthly = parseNumberParam(q.monthly)
+  const strategy = parseStrategyParam(q.strategy)
+
+  if (goal !== null && goal > 0) planningForm.value.goalValue = goal
+  if (monthly !== null && monthly > 0) planningForm.value.monthlyContribution = monthly
+  if (strategy !== null) planningForm.value.strategy = strategy
+
+  // Auto-fire o calculo se algum param de input foi passado, usuario
+  // chegou aqui via deep-link (compartilhamento, snippet do Google,
+  // landing interna), entao a expectativa e ver o resultado direto.
+  const hasAnyInput = goal !== null || monthly !== null || strategy !== null
+  if (hasAnyInput || q.auto === '1' || q.auto === 'true') {
+    nextTick(() => calculatePlanningStrategy())
+  }
+})
+
 function formatTimeLabel(months: number) {
   if (months <= 0) return 'menos de 1 mês'
   const years = Math.floor(months / 12)

@@ -383,5 +383,90 @@ export default defineNuxtPlugin({
       },
     ],
   })
+
+  // ----------------------------------------------------------------
+  // Site-wide Organization JSON-LD — identity anchor pra Google e LLMs.
+  // ----------------------------------------------------------------
+  // Por que aqui no plugin (e nao em layout): o plugin roda 1 vez por
+  // SSR/cliente, antes de qualquer pagina renderizar. Schema injetado
+  // no <head> uma unica vez, valido pra rota inteira. Em layouts, teria
+  // que duplicar em default + unauthenticated + admin-panel + static.
+  //
+  // O `sameAs[]` e o sinal de disambiguacao mais importante hoje pra
+  // LLMs (ChatGPT/Perplexity/Gemini) descobrirem "quem e a Redentia"
+  // alem do dominio canonico. Sem isso, ficamos confundiveis com outras
+  // empresas brasileiras de nome parecido. As authority cites em
+  // `knowsAbout[]` ancoram a area de expertise (financas/investimentos
+  // BR) — sinal forte pra E-E-A-T em conteudo YMYL.
+  //
+  // Stable key garante que mesmo que o plugin re-rode em HMR/dev, so
+  // existe 1 script <ld+json> com esse @id.
+  useHead({
+    script: [
+      {
+        key: 'org-jsonld',
+        type: 'application/ld+json',
+        innerHTML: computed(() =>
+          JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Organization',
+            '@id': `${brand.url}#organization`,
+            name: brand.name,
+            legalName: brand.company?.legalName || brand.name,
+            url: brand.url,
+            logo: {
+              '@type': 'ImageObject',
+              url: `${brand.url}/512x512.png`,
+              width: 512,
+              height: 512,
+            },
+            description: brand.seo?.description,
+            foundingDate: '2024',
+            // Lista canonica dos perfis publicos da Redentia. Cada link e
+            // um sinal de identidade pra LLMs disambig — quanto mais
+            // amplo o `sameAs[]`, mais robusto o vinculo entre o nome
+            // "Redentia" e essa entidade especifica. Adicione conforme
+            // novas presencas oficiais (X/Twitter, YouTube, etc).
+            sameAs: brand.slug === 'redentia'
+              ? [
+                  'https://www.linkedin.com/company/redentia',
+                  'https://www.instagram.com/redentia.oficial',
+                  'https://estudo.redentia.com.br',
+                  'https://api.redentia.com.br',
+                ]
+              : [],
+            // E-E-A-T anchor: declara expertise em entidades reais que
+            // o Google reconhece como autoridades do dominio financeiro
+            // brasileiro. Faz a Redentia "conhecer sobre" os mesmos
+            // topicos que BCB/B3/CVM tratam — sinal positivo de YMYL
+            // expertise.
+            knowsAbout: [
+              { '@type': 'Thing', name: 'Investimentos' },
+              { '@type': 'Thing', name: 'Bolsa de Valores' },
+              { '@type': 'Thing', name: 'B3' },
+              { '@type': 'Thing', name: 'Análise fundamentalista' },
+              { '@type': 'Thing', name: 'Dividendos' },
+              { '@type': 'Thing', name: 'Tesouro Direto' },
+              { '@type': 'Thing', name: 'Fundos Imobiliários' },
+              { '@type': 'Thing', name: 'Planejamento financeiro' },
+            ],
+            address: brand.company?.address
+              ? {
+                  '@type': 'PostalAddress',
+                  addressCountry: 'BR',
+                  streetAddress: brand.company.address,
+                }
+              : { '@type': 'PostalAddress', addressCountry: 'BR' },
+            contactPoint: {
+              '@type': 'ContactPoint',
+              contactType: 'customer support',
+              email: 'contato@redentia.com.br',
+              availableLanguage: ['pt-BR'],
+            },
+          })
+        ),
+      },
+    ],
+  })
   },
 })

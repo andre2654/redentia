@@ -23,8 +23,11 @@
               lineHeight: 1.05,
               letterSpacing: '-0.7px',
             }"
-          >Calculadora de Preço Teto: Graham, Bazin, P/L Setorial e VPA</h1>
+          >Calculadora de Preço Teto e Preço Justo 2026: Graham, Bazin, P/L e VPA</h1>
         </div>
+        <p class="text-base md:text-lg" :style="{ color: 'var(--brand-text)' }">
+          O preço teto é o valor máximo que vale pagar por uma ação considerando seus fundamentos. Calcula-se por Graham (√(22.5×LPA×VPA)), Bazin (Dividendo÷0,06), P/L setorial ou VPA×1,5. Exemplo: ITUB4 com LPA R$ 3,50 e VPA R$ 18,00 tem preço teto Graham de R$ 35,55, ou seja, vale a compra abaixo desse valor.
+        </p>
         <p class="text-base md:text-lg">
           Escolha uma ação da B3 e receba na hora o preço justo calculado pelas 4 principais metodologias da análise fundamentalista, com dados atualizados, consenso de margem de segurança e veredito de compra. Sem planilhas, sem cadastro.
         </p>
@@ -49,6 +52,9 @@
             Graham · Bazin · P/L · VPA
           </span>
         </div>
+        <p class="text-[11px]" :style="{ color: 'var(--brand-text-muted)' }">
+          Última atualização: {{ lastUpdatedText }}
+        </p>
       </div>
 
       <!-- Calculadora -->
@@ -92,6 +98,11 @@
 
       <!-- Conteúdo Educacional -->
       <div class="max-w-none">
+        <h2>Simulador de preço teto grátis e online</h2>
+        <p class="leading-relaxed">
+          Use a calculadora acima para simular o preço teto de qualquer ação da B3 em segundos. Ideal pra quem busca uma referência rápida antes de comprar.
+        </p>
+
         <h2>O que é Preço Teto?</h2>
         <p class="leading-relaxed">
           O preço teto é o valor máximo que você deveria pagar por uma ação, considerando seus fundamentos e uma margem de segurança. É um conceito fundamental da análise fundamentalista, popularizado por Benjamin Graham (o "pai do value investing") e adaptado por investidores brasileiros como Décio Bazin.
@@ -157,6 +168,29 @@
         <p class="leading-relaxed">
           Graham sugeria não pagar mais que 1.5x o valor patrimonial. Útil para empresas com muitos ativos tangíveis (bancos, seguradoras, indústrias). Menos efetivo para empresas de serviço ou tecnologia.
         </p>
+
+        <h2>Indicadores de análise fundamentalista</h2>
+        <p class="leading-relaxed">
+          O preço teto é apenas uma parte da análise fundamentalista. Antes de comprar, cruze o resultado com os principais indicadores de qualidade da empresa. Eles dizem se o desconto é real ou se a ação está barata por um motivo legítimo.
+        </p>
+        <div
+          class="brand-card border p-5"
+          :style="{
+            backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+            borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
+          }"
+        >
+          <ul class="space-y-2 text-sm">
+            <li><strong>P/L (Preço/Lucro):</strong> quantos anos de lucro o preço atual representa. Bancos 8-12, varejo 12-18, tecnologia 20-30.</li>
+            <li><strong>P/VP (Preço/Valor Patrimonial):</strong> quantas vezes o patrimônio líquido o preço representa. Abaixo de 1,5 é o limite Graham; abaixo de 1,0 indica desconto sobre o valor contábil.</li>
+            <li><strong>ROE (Retorno sobre Patrimônio):</strong> quanto a empresa gera de lucro para cada R$ 1 de patrimônio. Bom: acima de 15% ao ano; excelente: acima de 20%.</li>
+            <li><strong>ROIC (Retorno sobre Capital Investido):</strong> mede eficiência operacional descontando dívida. ROIC acima do custo de capital (~12% no Brasil) significa que a empresa cria valor.</li>
+            <li><strong>Dívida Líquida/EBITDA:</strong> quantos anos de geração de caixa para quitar a dívida. Saudável: abaixo de 3x; alerta: acima de 4x.</li>
+            <li><strong>Margem Líquida:</strong> percentual do faturamento que vira lucro. Varia por setor: bancos 25-35%, varejo 2-6%, software 15-30%.</li>
+            <li><strong>Payout:</strong> percentual do lucro distribuído em dividendos. Sustentável: 40-60% para empresas tradicionais; FIIs distribuem 95%+ por lei.</li>
+            <li><strong>Dividend Yield (DY):</strong> dividendos anuais sobre o preço atual. Bazin exige no mínimo 6% para considerar a ação atrativa.</li>
+          </ul>
+        </div>
 
         <h2>Exemplos Práticos</h2>
 
@@ -334,6 +368,43 @@
           </div>
         </div>
 
+        <h2>Value Investing vs Growth Investing</h2>
+        <p class="leading-relaxed">
+          A calculadora de preço teto é uma ferramenta clássica do value investing, escola que busca empresas negociadas abaixo do valor intrínseco. Antes de aplicar as fórmulas, vale entender se o ativo analisado faz sentido pra essa filosofia ou se ele pertence ao outro lado, growth investing.
+        </p>
+        <div class="grid gap-4 md:grid-cols-2">
+          <div
+            class="brand-card border p-5"
+            :style="{
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
+            }"
+          >
+            <h4 class="mb-2 text-secondary">Value Investing</h4>
+            <p class="text-sm">
+              Foco em preço teto, fórmulas Graham e Bazin, dividendos consistentes, ROE alto, P/L baixo e margem de segurança. O investidor procura empresas maduras pagando bom dividendo, com lucro previsível e múltiplos esticados pra baixo. Resultado costuma vir devagar, com renda recorrente.
+            </p>
+            <p class="mt-2 text-xs" :style="{ color: 'var(--brand-text-muted)' }">
+              Exemplos clássicos na B3: ITUB4, BBAS3, TAEE11.
+            </p>
+          </div>
+          <div
+            class="brand-card border p-5"
+            :style="{
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
+            }"
+          >
+            <h4 class="mb-2 text-secondary">Growth Investing</h4>
+            <p class="text-sm">
+              Foco em receita crescente, reinvestimento de lucros e expansão de margem futura. P/L alto é tolerado quando justificado por crescimento de dois dígitos por vários anos. As fórmulas tradicionais subestimam essas empresas porque o lucro presente é pequeno comparado ao potencial. Para essas, prefira múltiplos de receita (P/S, EV/Sales) ou fluxo de caixa descontado (DCF).
+            </p>
+            <p class="mt-2 text-xs" :style="{ color: 'var(--brand-text-muted)' }">
+              Exemplos: WEGE3, MGLU3 (em fase forte), Stone, Magalu nos anos bons.
+            </p>
+          </div>
+        </div>
+
         <h2>Limitações e Quando NÃO Usar</h2>
         <div class="space-y-3">
           <div
@@ -389,6 +460,22 @@
         <h2>Perguntas Frequentes</h2>
 
         <div class="space-y-4">
+          <details
+            class="group brand-card border p-4"
+            :style="{
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
+            }"
+          >
+            <summary class="cursor-pointer list-none flex items-center justify-between">
+              Qual a diferença entre preço teto e preço justo?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
+            </summary>
+            <p class="mt-3 text-sm">
+              São praticamente sinônimos. "Preço teto" enfatiza o limite máximo aceitável de compra (com margem de segurança); "preço justo" enfatiza o valor intrínseco da empresa pelos fundamentos. As 4 metodologias (Graham, Bazin, P/L Setorial, VPA) calculam o preço justo, e por convenção esse valor é tratado como o preço teto, ou seja, o limite acima do qual a ação fica cara.
+            </p>
+          </details>
+
           <details
             class="group brand-card border p-4"
             :style="{
@@ -720,12 +807,26 @@ const assets = computed(() => assetsData.value ?? [])
 const assetsLoading = computed(() => assetsPending.value)
 const sectors = computed(() => sectorsData.value ?? [])
 
+// Freshness signal — bump CONTENT_VERSION quando reformular o conteudo
+// (novas FAQs, mudanca em metodologia, ano novo). Google usa
+// dateModified como sinal de relevancia, manter mensal evita pagina
+// "envelhecer" no indice.
+const CONTENT_VERSION = '2026-05-01'
+const lastUpdated = new Date(CONTENT_VERSION)
+const lastUpdatedText = lastUpdated.toLocaleDateString('pt-BR', {
+  day: '2-digit',
+  month: 'long',
+  year: 'numeric',
+})
+const lastUpdatedISO = lastUpdated.toISOString().slice(0, 10)
+
 const popularTickers = [
   { ticker: 'PETR4', name: 'Petrobras' },
   { ticker: 'ITUB4', name: 'Itaú Unibanco' },
   { ticker: 'VALE3', name: 'Vale' },
   { ticker: 'BBAS3', name: 'Banco do Brasil' },
   { ticker: 'BBDC4', name: 'Bradesco' },
+  { ticker: 'BBSE3', name: 'BB Seguridade' },
   { ticker: 'WEGE3', name: 'WEG' },
   { ticker: 'ITSA4', name: 'Itaúsa' },
   { ticker: 'B3SA3', name: 'B3' },
@@ -735,14 +836,18 @@ const popularTickers = [
   { ticker: 'RENT3', name: 'Localiza' },
 ]
 
-const pageTitle = `Calculadora de Preço Teto 2026: Graham, Bazin, P/L e VPA | ${brand.name}`
+const pageTitle = `Calculadora de Preço Teto 2026 - Grátis | ${brand.name}`
 const pageDescription =
-  'Calculadora gratuita de preço teto de ações da B3. Escolha o ticker e veja na hora o preço justo por Graham, Bazin, P/L setorial e VPA, com margem de segurança, consenso e recomendação de compra. Dados atualizados, sem planilha, sem cadastro.'
+  'Calcule o preço teto e preço justo de qualquer ação da B3 por Graham, Bazin, P/L e VPA em 1 clique. Veja margem de segurança e veredito. Grátis.'
 
 const faqItems = [
   {
     q: 'O que é preço teto e por que calcular?',
     a: 'Preço teto é o valor máximo que um investidor deveria pagar por uma ação considerando seus fundamentos e uma margem de segurança. É a referência central da análise fundamentalista: se a ação estiver negociando abaixo do preço teto, pode estar barata; se estiver acima, pode estar cara.',
+  },
+  {
+    q: 'Qual a diferença entre preço teto e preço justo?',
+    a: 'São praticamente sinônimos. "Preço teto" enfatiza o limite máximo aceitável de compra (com margem de segurança); "preço justo" enfatiza o valor intrínseco da empresa pelos fundamentos. As 4 metodologias (Graham, Bazin, P/L Setorial, VPA) calculam o preço justo, e por convenção esse valor é tratado como o preço teto, ou seja, o limite acima do qual a ação fica cara.',
   },
   {
     q: 'Qual a melhor metodologia: Graham ou Bazin?',
@@ -794,23 +899,15 @@ usePageSeo({
   structuredData: [
     {
       '@context': 'https://schema.org',
-      '@type': 'SoftwareApplication',
+      '@type': 'WebApplication',
       name: `Calculadora de Preço Teto ${brand.name}`,
       applicationCategory: 'FinanceApplication',
-      applicationSubCategory: 'Análise fundamentalista',
       operatingSystem: 'Web',
       inLanguage: 'pt-BR',
       offers: {
         '@type': 'Offer',
         price: '0',
         priceCurrency: 'BRL',
-      },
-      aggregateRating: {
-        '@type': 'AggregateRating',
-        ratingValue: '4.9',
-        ratingCount: '1824',
-        bestRating: '5',
-        worstRating: '1',
       },
       description:
         'Calculadora gratuita de preço teto para ações da B3. Calcula Graham, Bazin, P/L setorial e valor patrimonial automaticamente a partir do ticker.',
@@ -824,91 +921,10 @@ usePageSeo({
         'Consenso e recomendação de compra',
         'Comparação visual entre métodos',
       ],
-    },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'Article',
-      headline:
-        'Calculadora de Preço Teto: Graham, Bazin, P/L Setorial e VPA',
-      description: pageDescription,
-      author: {
-        '@type': 'Organization',
-        name: brand.name,
-        url: brand.url,
-      },
-      publisher: {
-        '@type': 'Organization',
-        name: brand.name,
-        url: brand.url,
-        logo: {
-          '@type': 'ImageObject',
-          url: `${brand.url || ''}/512x512.png`,
-        },
-      },
-      inLanguage: 'pt-BR',
-      datePublished: '2024-06-01',
-      dateModified: new Date().toISOString().slice(0, 10),
-      mainEntityOfPage: {
-        '@type': 'WebPage',
-        '@id': `${brand.url || ''}/calculadora/preco-teto`,
-      },
       about: [
-        { '@type': 'Thing', name: 'Análise fundamentalista' },
-        { '@type': 'Thing', name: 'Value investing' },
-        { '@type': 'Thing', name: 'Preço justo de ações' },
+        { '@type': 'Organization', name: 'B3', url: 'https://www.b3.com.br' },
+        { '@type': 'Organization', name: 'CVM', url: 'https://www.gov.br/cvm' },
         { '@type': 'Person', name: 'Benjamin Graham' },
-        { '@type': 'Person', name: 'Décio Bazin' },
-      ],
-    },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'HowTo',
-      name: 'Como calcular o preço teto de uma ação',
-      description:
-        'Passo a passo para calcular o preço teto de qualquer ação da B3 usando Graham, Bazin, P/L setorial e valor patrimonial.',
-      totalTime: 'PT2M',
-      estimatedCost: {
-        '@type': 'MonetaryAmount',
-        currency: 'BRL',
-        value: '0',
-      },
-      supply: [
-        { '@type': 'HowToSupply', name: 'LPA (Lucro por Ação)' },
-        { '@type': 'HowToSupply', name: 'VPA (Valor Patrimonial por Ação)' },
-        { '@type': 'HowToSupply', name: 'Dividendos dos últimos 12 meses' },
-        { '@type': 'HowToSupply', name: 'P/L médio do setor' },
-      ],
-      step: [
-        {
-          '@type': 'HowToStep',
-          position: 1,
-          name: 'Escolha a ação',
-          text: 'Digite o ticker da ação (ex.: PETR4, ITUB4, VALE3) no campo de busca da calculadora.',
-        },
-        {
-          '@type': 'HowToStep',
-          position: 2,
-          name: 'Receba os fundamentos automaticamente',
-          text: 'A calculadora busca preço atual, LPA, VPA, dividendo anual e P/L do setor automaticamente a partir de fontes oficiais.',
-        },
-        {
-          '@type': 'HowToStep',
-          position: 3,
-          name: 'Analise as 4 metodologias',
-          text: 'Graham (conservador), Bazin (dividendos), P/L Setorial (relativo) e VPA (patrimonial) são calculados simultaneamente.',
-        },
-        {
-          '@type': 'HowToStep',
-          position: 4,
-          name: 'Leia o consenso e a margem',
-          text: 'Veja a média dos preços teto, a margem de segurança em relação ao preço atual e a recomendação final: Comprar, Neutro ou Caro.',
-        },
-        {
-          '@type': 'HowToStep',
-          position: 5,
-          name: 'Combine com outros indicadores',
-          text: 'Confira ROE, endividamento, crescimento de receita e perspectivas do setor antes de tomar a decisão final de compra.',
-        },
       ],
     },
     {

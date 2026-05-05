@@ -217,6 +217,7 @@
 </template>
 
 <script setup lang="ts">
+const route = useRoute()
 const operationType = ref<'swing' | 'day'>('swing')
 
 const form = ref({
@@ -224,6 +225,76 @@ const form = ref({
   totalSales: 0,
   profitLoss: 0,
   accumulatedLoss: 0,
+})
+
+// ====================================================================
+// Deep-link via query params — abilita URLs canonicas para landings
+// virtuais (ex: /calculadora/imposto-renda?type=swing&sales=25000&profit=2000).
+// Cada cenario vira indexavel pelo Google sem duplicar a pagina,
+// capturando long-tails como "calcular IR day trade R$ 5000",
+// "DARF swing trade R$ 25 mil", "IR isencao 20 mil", etc.
+//
+// Params suportados:
+//   ?type=swing|day      tipo de operacao (Swing ou Day Trade)
+//   ?sales=25000         total de vendas no mes em R$
+//   ?profit=2000         lucro (positivo) ou prejuizo (negativo) em R$
+//   ?loss=500            prejuizos acumulados em R$ (so swing)
+//   ?month=2026-01       mes de referencia (formato AAAA-MM)
+//   ?auto=1              dispara o calculo apos hidratar
+// ====================================================================
+
+function parseNumberParam(value: unknown): number | null {
+  if (value === undefined || value === null) return null
+  const raw = Array.isArray(value) ? value[0] : value
+  if (typeof raw !== 'string' || raw.trim() === '') return null
+  const normalized = raw.replace(',', '.')
+  const num = Number(normalized)
+  return Number.isFinite(num) ? num : null
+}
+
+function parseStringParam(value: unknown): string | null {
+  if (value === undefined || value === null) return null
+  const raw = Array.isArray(value) ? value[0] : value
+  if (typeof raw !== 'string' || raw.trim() === '') return null
+  return raw.trim()
+}
+
+onMounted(() => {
+  const q = route.query
+  const type = parseStringParam(q.type)
+  const sales = parseNumberParam(q.sales)
+  const profit = parseNumberParam(q.profit)
+  const loss = parseNumberParam(q.loss)
+  const month = parseStringParam(q.month)
+  const auto = parseStringParam(q.auto)
+
+  if (type === 'swing' || type === 'day') operationType.value = type
+  if (sales !== null) form.value.totalSales = sales
+  if (profit !== null) form.value.profitLoss = profit
+  if (loss !== null) form.value.accumulatedLoss = loss
+  if (month && /^\d{4}-\d{2}$/.test(month)) form.value.month = month
+
+  const hasInputs = sales !== null || profit !== null
+
+  // Se chegou via deep-link com inputs mas sem month, default pro mes
+  // anterior ao corrente (mais util pro caso de uso real, calcular o
+  // DARF do mes que acabou). Pula essa logica se o usuario abriu sem
+  // params, pra nao esconder o campo vazio na primeira visita.
+  if (!form.value.month && hasInputs) {
+    const now = new Date()
+    const prevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+    const yyyy = prevMonth.getFullYear()
+    const mm = String(prevMonth.getMonth() + 1).padStart(2, '0')
+    form.value.month = `${yyyy}-${mm}`
+  }
+
+  const hasMonth = !!form.value.month
+  const shouldAutoCalc =
+    (hasMonth && hasInputs) || auto === '1' || auto === 'true'
+
+  if (shouldAutoCalc && hasMonth) {
+    nextTick(() => calculate())
+  }
 })
 
 interface Results {

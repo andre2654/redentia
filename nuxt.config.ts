@@ -423,8 +423,68 @@ export default defineNuxtConfig({
         // Backend indisponível no build — sitemap ignora setores nesta iteração
       }
 
+      // Cenários long-tail das calculadoras: cada combinação aporte+prazo+taxa
+      // virou uma página canônica própria (path-based, NÃO query string),
+      // entrega answer-first paragraph + FAQ específica + WebApplication schema.
+      // Sem essas entradas o Google não descobre os paths dinâmicos
+      // /calculadora/<calc>/[scenario], que é justamente o ponto da estratégia
+      // programmatic-SEO de capturar long-tails como "quanto rende 500 por mês".
+      const calculadoraScenarios = [
+        // Juros compostos (5)
+        '/calculadora/juros-compostos/500-reais-por-mes',
+        '/calculadora/juros-compostos/1000-reais-por-mes',
+        '/calculadora/juros-compostos/aposentar-com-1-milhao',
+        '/calculadora/juros-compostos/100-mil-em-5-anos',
+        '/calculadora/juros-compostos/dobrar-dinheiro-regra-72',
+        // Aposentadoria (4)
+        '/calculadora/aposentadoria/aposentar-com-5000-mes',
+        '/calculadora/aposentadoria/aposentar-com-10000-mes',
+        '/calculadora/aposentadoria/regra-dos-4-por-cento',
+        '/calculadora/aposentadoria/aposentadoria-fire-aos-45',
+        // Quanto investir (4)
+        '/calculadora/quanto-investir/juntar-1-milhao',
+        '/calculadora/quanto-investir/juntar-100-mil',
+        '/calculadora/quanto-investir/entrada-imovel',
+        '/calculadora/quanto-investir/aposentadoria-2-milhoes',
+      ].map((loc) => ({
+        loc,
+        priority: 0.7 as const,
+        changefreq: 'monthly' as const,
+      }))
+
+      // Páginas /dividendos/[ticker] — uma página dedicada por ticker, com
+      // histórico real de pagamentos puxado da API. Long-tail prime: queries
+      // do tipo "dividendos PETR4", "quando paga dividendo ITUB4" etc. são
+      // altíssimo volume mensal. Lista mantida em sincronia com TICKERS_INFO
+      // em /pages/dividendos/[ticker].vue. Adicione aqui se expandir lá.
+      const dividendosTickers = [
+        'itub4', 'petr4', 'vale3', 'itsa4', 'bbas3', 'bbdc4',
+        'bbse3', 'taee11', 'abev3', 'mxrf11', 'kncr11', 'hglg11',
+      ].map((ticker) => ({
+        loc: `/dividendos/${ticker}`,
+        priority: 0.8 as const,
+        changefreq: 'weekly' as const,
+      }))
+
+      // /metodologia — E-E-A-T page (YMYL trust signal pra finanças). Atualizada
+      // pouco mas crítica pra Google entender autoria e fontes.
+      const editorialUrls = [
+        {
+          loc: '/metodologia',
+          priority: 0.6 as const,
+          changefreq: 'monthly' as const,
+        },
+      ]
+
       // Rotas dinâmicas (assets) são fornecidas exclusivamente via /api/__sitemap__/urls
-      return [...staticUrls, ...glossarioUrls, ...sectorUrls]
+      return [
+        ...staticUrls,
+        ...glossarioUrls,
+        ...sectorUrls,
+        ...calculadoraScenarios,
+        ...dividendosTickers,
+        ...editorialUrls,
+      ]
     },
     exclude: [
       // Páginas de autenticação

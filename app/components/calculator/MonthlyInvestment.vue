@@ -256,6 +256,56 @@ const form = ref({
   inflation: 4,
 })
 
+// ====================================================================
+// Deep-link via query params — abilita URLs canonicas pra cenarios
+// populares (ex: /calculadora/quanto-investir?goal=1000000&years=20).
+// Cada combinacao vira uma "landing page" virtual indexavel pelo
+// Google sem precisar duplicar a pagina.
+//
+// Params suportados:
+//   ?goal=500000         meta financeira em R$ (numero)
+//   ?years=10            prazo em anos
+//   ?wealth=50000        patrimonio atual em R$ (alias: ?atual=)
+//   ?rate=10             taxa em % a.a.
+//   ?inflation=4         inflacao em % a.a. (ativa o ajuste)
+//   ?auto=1              dispara o calculo automaticamente apos hidratar
+// ====================================================================
+const route = useRoute()
+
+function parseNumberParam(value: unknown): number | null {
+  if (value === undefined || value === null) return null
+  const raw = Array.isArray(value) ? value[0] : value
+  if (typeof raw !== 'string' || raw.trim() === '') return null
+  // Aceita "10.5" e "10,5" (Brasil), Number() so entende ponto.
+  const normalized = raw.replace(',', '.')
+  const num = Number(normalized)
+  return Number.isFinite(num) ? num : null
+}
+
+onMounted(() => {
+  const q = route.query
+  const goal = parseNumberParam(q.goal)
+  const years = parseNumberParam(q.years)
+  const wealth = parseNumberParam(q.wealth ?? q.atual)
+  const rate = parseNumberParam(q.rate)
+  const inflation = parseNumberParam(q.inflation)
+
+  if (goal !== null) form.value.goal = goal
+  if (years !== null) form.value.years = years
+  if (wealth !== null) form.value.currentWealth = wealth
+  if (rate !== null) form.value.returnRate = rate
+  if (inflation !== null) {
+    form.value.inflation = inflation
+    form.value.inflationAdjust = true
+  }
+
+  const hasAnyInput =
+    goal !== null || years !== null || wealth !== null || rate !== null || inflation !== null
+  if (hasAnyInput || q.auto === '1' || q.auto === 'true') {
+    nextTick(() => calculate())
+  }
+})
+
 interface Results {
   monthlyContribution: number
   totalInvested: number

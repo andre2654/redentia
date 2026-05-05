@@ -588,6 +588,57 @@ const stockResults = ref<StockSimulationResult[]>([])
 const resultsStale = ref(false)
 const searchTerm = ref('')
 
+// ====================================================================
+// Deep-link via query params, abilita URLs canonicas pra cenarios
+// populares (ex: /calculadora/acoes?initial=10000&monthly=500&years=10
+// &reinvest=1&tickers=ITUB4,VALE3,PETR4). Cada combinacao vira uma
+// "landing page" virtual indexavel pelo Google sem precisar duplicar
+// a pagina.
+//
+// Params suportados:
+//   ?initial=10000                  aporte inicial total em R$
+//   ?monthly=500                    aporte mensal total em R$
+//   ?years=10                       periodo em anos
+//   ?reinvest=1|0|true|false        reinvestir dividendos
+//   ?tickers=ITUB4,VALE3,PETR4      tickers separados por virgula
+//   ?auto=1                         dispara o calculo automaticamente
+// ====================================================================
+const route = useRoute()
+
+function parseNumberParam(value: unknown): number | null {
+  if (value === undefined || value === null) return null
+  const raw = Array.isArray(value) ? value[0] : value
+  if (typeof raw !== 'string' || raw.trim() === '') return null
+  // Aceita "10.5" e "10,5" (Brasil), Number() so entende ponto.
+  const normalized = raw.replace(',', '.')
+  const num = Number(normalized)
+  return Number.isFinite(num) ? num : null
+}
+
+function parseBoolParam(value: unknown): boolean | null {
+  if (value === undefined || value === null) return null
+  const raw = Array.isArray(value) ? value[0] : value
+  if (typeof raw !== 'string') return null
+  const normalized = raw.trim().toLowerCase()
+  if (normalized === '1' || normalized === 'true' || normalized === 'sim') return true
+  if (normalized === '0' || normalized === 'false' || normalized === 'nao') return false
+  return null
+}
+
+function parseTickersParam(value: unknown): string[] {
+  if (value === undefined || value === null) return []
+  const raw = Array.isArray(value) ? value[0] : value
+  if (typeof raw !== 'string') return []
+  return raw
+    .split(',')
+    .map((t) => t.trim().toUpperCase())
+    .filter((t) => t.length > 0)
+}
+
+const deepLinkApplied = ref(false)
+const pendingTickers = ref<string[]>([])
+const pendingAutoFire = ref(false)
+
 const assetsLoading = computed(() => props.assetsLoading ?? false)
 
 const normalizedAssets = computed<AssetSelectItem[]>(() => {
@@ -774,6 +825,37 @@ let resizeObserver: ResizeObserver | null = null
 onMounted(() => {
   if (!import.meta.client) return
 
+  // Deep-link: le query params e popula o form. Tickers aguardam o
+  // `props.assets` chegar (watcher abaixo) porque dependem do lookup
+  // pela lista carregada via API. Auto-fire so dispara apos os
+  // tickers entrarem em portfolioAssets.
+  const q = route.query
+  const initial = parseNumberParam(q.initial)
+  const monthly = parseNumberParam(q.monthly)
+  const years = parseNumberParam(q.years)
+  const reinvest = parseBoolParam(q.reinvest)
+  const tickers = parseTickersParam(q.tickers)
+
+  if (initial !== null) stockForm.value.initialInvestment = initial
+  if (monthly !== null) stockForm.value.monthlyInvestment = monthly
+  if (years !== null && years > 0) stockForm.value.periodYears = years
+  if (reinvest !== null) stockForm.value.reinvestDividends = reinvest
+
+  pendingTickers.value = tickers
+  const hasAnyInput =
+    initial !== null ||
+    monthly !== null ||
+    years !== null ||
+    reinvest !== null ||
+    tickers.length > 0
+  pendingAutoFire.value =
+    hasAnyInput || q.auto === '1' || q.auto === 'true'
+
+  // Tenta resolver tickers imediatamente caso `props.assets` ja tenha
+  // sido populado (assets = computed prop, costuma chegar antes do
+  // mount completar).
+  tryResolvePendingTickers()
+
   nextTick(() => {
     if (listContainer.value) {
       containerHeight.value =
@@ -789,6 +871,44 @@ onMounted(() => {
     }
   })
 })
+
+// Watcher que escuta a chegada de `props.assets` para resolver os
+// tickers pendentes (vindos do query param `?tickers=ITUB4,VALE3`)
+// e fazer push em portfolioAssets. Necessario porque assets carrega
+// async via useAsyncData e raramente esta pronto no onMounted.
+watch(
+  () => props.assets,
+  () => {
+    tryResolvePendingTickers()
+  },
+  { immediate: true, deep: false }
+)
+
+function tryResolvePendingTickers() {
+  if (deepLinkApplied.value) return
+  if (!pendingTickers.value.length && !pendingAutoFire.value) return
+  // Se ha tickers pendentes mas a lista ainda nao carregou, espera o
+  // proximo tick do watcher.
+  if (pendingTickers.value.length && !normalizedAssets.value.length) return
+
+  const tickerSet = new Set(pendingTickers.value)
+  if (tickerSet.size > 0) {
+    const matches = normalizedAssets.value.filter((asset) =>
+      tickerSet.has(asset.id.toUpperCase())
+    )
+    if (matches.length > 0) {
+      portfolioAssets.value = matches
+    }
+  }
+
+  deepLinkApplied.value = true
+
+  if (pendingAutoFire.value && portfolioAssets.value.length) {
+    nextTick(() => {
+      calculateStockHistory()
+    })
+  }
+}
 
 onBeforeUnmount(() => {
   resizeObserver?.disconnect()

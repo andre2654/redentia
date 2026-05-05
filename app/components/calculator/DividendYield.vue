@@ -353,6 +353,7 @@ const props = withDefaults(defineProps<Props>(), {
 const mode = ref<'simple' | 'onCost' | 'projection'>('simple')
 const searchTerm = ref('')
 const selectedAsset = ref<IAsset | null>(null)
+const route = useRoute()
 
 const filteredAssets = computed(() => {
   const term = searchTerm.value.trim().toLowerCase()
@@ -397,6 +398,137 @@ const form = ref({
   payout: 50,
   growth: 10,
 })
+
+// ====================================================================
+// Deep-link via query params — abilita URLs canonicas para landings
+// virtuais (ex: /calculadora/dividend-yield?ticker=PETR4 ou
+// ?price=28&dividend=1.80). Cada combinacao vira indexavel pelo
+// Google sem duplicar a pagina, capturando long-tails como
+// "calcular dividend yield ITUB4", "DY on cost PETR4", etc.
+//
+// Params suportados:
+//   ?ticker=PETR4         pre-seleciona ativo da lista (Modo Simples)
+//   ?price=28             preco da acao (Modo Simples / Projecao)
+//   ?dividend=1.80        dividendos anuais (Modo Simples)
+//   ?purchase=20          preco de compra (Modo On Cost)
+//   ?current=30           preco atual (Modo On Cost)
+//   ?div=1.50             dividendo atual (Modo On Cost)
+//   ?lpa=3                lucro por acao (Modo Projecao)
+//   ?payout=50            payout em % (Modo Projecao)
+//   ?growth=10            crescimento em % a.a. (Modo Projecao)
+//   ?mode=simple|onCost|projection
+//   ?auto=1               dispara o calculo apos hidratar
+// ====================================================================
+
+function parseNumberParam(value: unknown): number | null {
+  if (value === undefined || value === null) return null
+  const raw = Array.isArray(value) ? value[0] : value
+  if (typeof raw !== 'string' || raw.trim() === '') return null
+  const normalized = raw.replace(',', '.')
+  const num = Number(normalized)
+  return Number.isFinite(num) ? num : null
+}
+
+function parseStringParam(value: unknown): string | null {
+  if (value === undefined || value === null) return null
+  const raw = Array.isArray(value) ? value[0] : value
+  if (typeof raw !== 'string' || raw.trim() === '') return null
+  return raw.trim()
+}
+
+// Tenta casar ticker com props.assets pra preencher selectedAsset.
+// Roda no mount + sempre que assets terminar de carregar.
+function tryPreselectFromTicker(ticker: string) {
+  const upper = ticker.toUpperCase()
+  form.value.ticker = upper
+  const match = (props.assets || []).find(
+    (a) => (a.ticker || '').toUpperCase() === upper
+  )
+  if (match) selectedAsset.value = match
+}
+
+const initialQuery = (() => {
+  const q = route.query
+  return {
+    ticker: parseStringParam(q.ticker),
+    price: parseNumberParam(q.price),
+    dividend: parseNumberParam(q.dividend),
+    purchase: parseNumberParam(q.purchase),
+    current: parseNumberParam(q.current),
+    div: parseNumberParam(q.div),
+    lpa: parseNumberParam(q.lpa),
+    payout: parseNumberParam(q.payout),
+    growth: parseNumberParam(q.growth),
+    mode: parseStringParam(q.mode),
+    auto: parseStringParam(q.auto),
+  }
+})()
+
+onMounted(() => {
+  const q = initialQuery
+
+  // Modo: prioriza ?mode= explicito; senao infere pelos params presentes.
+  if (q.mode === 'simple' || q.mode === 'onCost' || q.mode === 'projection') {
+    mode.value = q.mode
+  } else if (q.purchase !== null || q.current !== null || q.div !== null) {
+    mode.value = 'onCost'
+  } else if (q.lpa !== null || q.payout !== null || q.growth !== null) {
+    mode.value = 'projection'
+  }
+
+  // Simples
+  if (q.price !== null) {
+    form.value.price = q.price
+    form.value.priceProjection = q.price
+  }
+  if (q.dividend !== null) form.value.annualDividend = q.dividend
+
+  // On Cost
+  if (q.purchase !== null) form.value.purchasePrice = q.purchase
+  if (q.current !== null) form.value.currentPrice = q.current
+  if (q.div !== null) form.value.currentDividend = q.div
+
+  // Projection
+  if (q.lpa !== null) form.value.lpa = q.lpa
+  if (q.payout !== null) form.value.payout = q.payout
+  if (q.growth !== null) form.value.growth = q.growth
+
+  // Ticker pode chegar antes ou depois de assets carregar — primeira tentativa.
+  if (q.ticker) tryPreselectFromTicker(q.ticker)
+
+  // Verifica se temos inputs numericos suficientes pro modo atual antes de
+  // disparar o calculo automatico, pra evitar o alert() de "preencha tudo"
+  // quando o usuario chega via deep-link parcial (ex: so ticker).
+  const canCalcSimple = q.price !== null && q.dividend !== null
+  const canCalcOnCost =
+    q.purchase !== null && q.current !== null && q.div !== null
+  const canCalcProjection =
+    q.lpa !== null && q.payout !== null && q.price !== null
+
+  const shouldAutoCalc =
+    (mode.value === 'simple' && canCalcSimple) ||
+    (mode.value === 'onCost' && canCalcOnCost) ||
+    (mode.value === 'projection' && canCalcProjection) ||
+    q.auto === '1' ||
+    q.auto === 'true'
+
+  if (shouldAutoCalc) {
+    nextTick(() => calculate())
+  }
+})
+
+// Quando assets terminar de carregar (vem da page via prop), tenta de
+// novo preencher ticker selecionado, caso o usuario tenha chegado
+// via URL antes da lista hidratar.
+watch(
+  () => props.assets,
+  (assets) => {
+    if (!assets || assets.length === 0) return
+    const ticker = initialQuery.ticker || form.value.ticker
+    if (ticker && !selectedAsset.value) tryPreselectFromTicker(ticker)
+  },
+  { immediate: false }
+)
 
 interface Results {
   label: string

@@ -23,21 +23,90 @@
               lineHeight: 1.05,
               letterSpacing: '-0.7px',
             }"
-          >Calculadora de Juros Compostos: Simule Seu Investimento</h1>
+          >Calculadora de Juros Compostos 2026: Simulador com Aportes Mensais</h1>
         </div>
-        <p class="text-base md:text-lg">
-          Calcule quanto seus investimentos vão render com juros compostos ao longo do tempo. Simule aportes mensais, diferentes taxas de retorno e veja a evolução do seu patrimônio em gráficos interativos.
+        <p class="text-base md:text-lg" :style="{ color: 'var(--brand-text)' }">
+          Juros compostos são os juros sobre juros, calculados pela fórmula M = C×(1+i)ⁿ. Exemplo: R$ 500 investidos por mês a 10,5% ao ano durante 20 anos viram R$ 410.000, sendo R$ 290.000 só de juros. Quanto maior o prazo, mais o rendimento cresce de forma exponencial.
         </p>
-        <p class="text-xs">
-          Última atualização: {{ lastUpdatedText }} · Calculadora gratuita · Sem cadastro · Sem anúncios
+        <p class="text-base md:text-lg">
+          Simule na hora quanto R$ 100, R$ 500 ou R$ 1.000 por mês rendem em 5, 10, 20 ou 30 anos. Calculadora gratuita com gráfico interativo, comparação entre cenários e ajuste de taxa, ideal pra planejar aposentadoria, reserva de emergência ou metas de longo prazo. Sem planilha, sem cadastro.
+        </p>
+        <div class="flex flex-wrap items-center gap-2 text-xs">
+          <span class="flex items-center gap-1">
+            <UIcon name="i-lucide-check-circle" class="size-4" :style="{ color: 'var(--brand-positive)' }" />
+            100% gratuito
+          </span>
+          <span>·</span>
+          <span class="flex items-center gap-1">
+            <UIcon name="i-lucide-zap" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
+            Cálculo instantâneo
+          </span>
+          <span>·</span>
+          <span class="flex items-center gap-1">
+            <UIcon name="i-lucide-bar-chart-3" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
+            Gráfico mês a mês
+          </span>
+          <span>·</span>
+          <span class="flex items-center gap-1">
+            <UIcon name="i-lucide-share-2" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
+            Link compartilhável
+          </span>
+        </div>
+        <p class="text-[11px]" :style="{ color: 'var(--brand-text-muted)' }">
+          Última atualização: {{ lastUpdatedText }}
         </p>
       </div>
 
       <!-- Calculadora -->
       <CalculatorCompound />
 
+      <!-- Cenarios populares (internal linking + deep-links) -->
+      <!--
+        Cada link e uma "landing page virtual" que o Google indexa
+        independente. Compound.vue le `?monthly=`, `?rate=`, `?years=`
+        e ja dispara o calculo no mount. Padrao identico aos popular
+        tickers da preco-teto, adaptado pra long-tails de simulacao
+        ("calculadora juros compostos R$ 500", "rendimento 10 anos",
+        "quanto rende R$ 1000 por mes", etc).
+      -->
+      <div
+        class="flex flex-col gap-3 rounded-[30px] border p-6"
+        :style="{
+          backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+          borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
+        }"
+      >
+        <h2>Cenários populares de investimento</h2>
+        <p class="text-sm">
+          Veja na hora o resultado dos cenários mais buscados, basta clicar e a simulação carrega já preenchida.
+        </p>
+        <div class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4">
+          <NuxtLink
+            v-for="s in popularScenarios"
+            :key="s.label"
+            :to="s.to"
+            class="group flex flex-col gap-0.5 rounded-xl border px-3 py-3 transition hover:border-secondary/40 hover:bg-secondary/10"
+            :style="{
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
+            }"
+          >
+            <span class="flex items-center gap-1.5 text-sm font-medium">
+              <UIcon :name="s.icon" class="size-4 text-secondary" />
+              {{ s.label }}
+            </span>
+            <span class="text-[11px] line-clamp-1" :style="{ color: 'var(--brand-text-muted)' }">{{ s.sub }}</span>
+          </NuxtLink>
+        </div>
+      </div>
+
       <!-- Conteúdo Educacional -->
       <div class="max-w-none">
+        <h2>Simulador de juros compostos grátis e online</h2>
+        <p class="leading-relaxed">
+          Use a calculadora acima para simular o rendimento de qualquer aporte com juros compostos em segundos. Ideal pra planejar aposentadoria, metas e reserva de longo prazo.
+        </p>
+
         <h2>O que são Juros Compostos?</h2>
         <p class="leading-relaxed">
           Juros compostos são os "juros sobre juros", ou seja, quando você ganha retorno não apenas sobre o capital inicial, mas também sobre os rendimentos acumulados. É o conceito mais poderoso das finanças pessoais e o segredo para construir riqueza a longo prazo.
@@ -102,6 +171,20 @@
             </h4>
             <p class="text-sm">
               Com taxas de retorno acima da inflação, seu poder de compra cresce ao longo do tempo, garantindo um futuro mais confortável.
+            </p>
+          </div>
+          <div
+            class="brand-card border p-5"
+            :style="{
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
+            }"
+          >
+            <h4 class="mb-2 text-secondary">
+              Ibovespa: ~14% a.a. histórica
+            </h4>
+            <p class="text-sm">
+              O índice Ibovespa, referência da bolsa brasileira, entregou cerca de 14% a.a. nos últimos 30 anos. É um benchmark útil pra calibrar a taxa real que você usa nas simulações de longo prazo.
             </p>
           </div>
         </div>
@@ -330,6 +413,59 @@
           </table>
         </div>
 
+        <h2>Poupança vs Juros Compostos: Por Que a Poupança é o Pior Investimento</h2>
+        <p class="leading-relaxed">
+          A poupança rende 70% da Selic + TR (quando Selic está acima ou igual a 8,5%) ou 0,5% ao mês + TR (quando Selic abaixo de 8,5%). Em 2026 com Selic em 12%, poupança rende cerca de 6,5% a.a. Já o Tesouro Selic, considerado o investimento mais seguro do Brasil, rende próximo da Selic integral, ou seja, ~12% a.a. Mesmo após o IR, ainda ganha de longe da poupança.
+        </p>
+        <div class="overflow-x-auto">
+          <table class="w-full border-collapse">
+            <thead
+              :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))' }"
+            >
+              <tr>
+                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)' }">Investimento</th>
+                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)' }">Taxa Bruta</th>
+                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)' }">Após IR</th>
+                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)' }">Total em 20 anos</th>
+                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)' }">Diferença vs Poupança</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)' }">Poupança</td>
+                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)' }">6,5% a.a.</td>
+                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)' }">6,5% (isenta)</td>
+                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)' }">R$ 244.000</td>
+                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)' }">base</td>
+              </tr>
+              <tr :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 30%, transparent)' }">
+                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)' }">Tesouro Selic</td>
+                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)' }">12% a.a.</td>
+                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)' }">10,2% (15% IR)</td>
+                <td class="border px-4 py-2 text-secondary" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)' }">R$ 410.000</td>
+                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)' }">+R$ 166.000</td>
+              </tr>
+              <tr>
+                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)' }">CDB 110% CDI</td>
+                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)' }">13,2% a.a.</td>
+                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)' }">11,2% (15% IR)</td>
+                <td class="border px-4 py-2 text-secondary" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)' }">R$ 460.000</td>
+                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)' }">+R$ 216.000</td>
+              </tr>
+              <tr :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 30%, transparent)' }">
+                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)' }">LCI/LCA 95% CDI</td>
+                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)' }">11,4% a.a.</td>
+                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)' }">11,4% (isenta)</td>
+                <td class="border px-4 py-2 text-secondary" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)' }">R$ 472.000</td>
+                <td class="border px-4 py-2" :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)' }">+R$ 228.000</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="text-sm">
+          Cenário: aporte de R$ 500/mês durante 20 anos. A poupança não acompanha a inflação na maioria dos cenários. Mesmo com a isenção de IR, perde pra Tesouro Selic e CDB com folga.
+        </p>
+
         <h2>Como Usar a Calculadora de Juros Compostos</h2>
         <div class="space-y-4">
           <div class="flex gap-4">
@@ -386,6 +522,61 @@
                 Veja o montante final, total de juros ganhos e um gráfico mostrando a evolução do seu patrimônio mês a mês.
               </p>
             </div>
+          </div>
+        </div>
+
+        <h2>Tesouro Direto, CDB, LCI e LCA: Onde Aplicar Juros Compostos</h2>
+        <p class="leading-relaxed">
+          Os juros compostos só funcionam de verdade quando você aplica em produtos com retorno consistente. Os 4 mais usados no Brasil hoje:
+        </p>
+        <div class="grid gap-4 md:grid-cols-2">
+          <div
+            class="brand-card border p-5"
+            :style="{
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
+            }"
+          >
+            <h4 class="mb-2 text-secondary">Tesouro Selic 2030</h4>
+            <p class="text-sm">
+              Liquidez diária, rende próximo da Selic, ideal pra reserva de emergência e capital que você pode precisar a qualquer momento. IR regressivo de 22,5% a 15% conforme o tempo.
+            </p>
+          </div>
+          <div
+            class="brand-card border p-5"
+            :style="{
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
+            }"
+          >
+            <h4 class="mb-2 text-secondary">Tesouro IPCA+ 2035</h4>
+            <p class="text-sm">
+              Protege da inflação, juros reais ~6% acima do IPCA. Ideal pra metas de longo prazo (aposentadoria, faculdade dos filhos). Marcação a mercado pode oscilar antes do vencimento.
+            </p>
+          </div>
+          <div
+            class="brand-card border p-5"
+            :style="{
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
+            }"
+          >
+            <h4 class="mb-2 text-secondary">CDB com liquidez diária</h4>
+            <p class="text-sm">
+              Costuma render 90-100% do CDI em bancos grandes. Conta com a proteção do FGC até R$ 250 mil por CPF e por instituição. Bom substituto pro Tesouro Selic em alguns cenários.
+            </p>
+          </div>
+          <div
+            class="brand-card border p-5"
+            :style="{
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
+            }"
+          >
+            <h4 class="mb-2 text-secondary">LCI/LCA</h4>
+            <p class="text-sm">
+              Costumam render 90-100% do CDI e são isentas de IR pra pessoa física. Carência de 90 dias a 3 anos, então só servem pra capital que você não vai mexer nesse prazo. Também cobertas pelo FGC.
+            </p>
           </div>
         </div>
 
@@ -453,6 +644,54 @@
             </summary>
             <p class="mt-3 text-sm">
               Use a "Regra de 72": divida 72 pela taxa de juros anual para saber em quantos anos seu dinheiro dobra. Exemplos: a 6% a.a. = 12 anos (72÷6), a 10% a.a. = 7,2 anos (72÷10), a 12% a.a. = 6 anos (72÷12). Esta é uma aproximação, mas bem precisa para taxas entre 6% e 15%.
+            </p>
+          </details>
+
+          <details
+            class="group brand-card border p-4"
+            :style="{
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
+            }"
+          >
+            <summary class="cursor-pointer list-none flex items-center justify-between">
+              Poupança ou Tesouro Selic: qual rende mais?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
+            </summary>
+            <p class="mt-3 text-sm">
+              Tesouro Selic SEMPRE rende mais que poupança. Em 2026, com Selic em 12%, poupança rende 6,5% a.a. (70% da Selic + TR), Tesouro Selic rende ~12% a.a. (descontado 15% IR após 2 anos = 10,2% líquido). Em 20 anos com R$ 500/mês, a diferença passa de R$ 165 mil. A única vantagem da poupança é simplicidade extrema. Pra qualquer valor acima de R$ 100, Tesouro Selic é estritamente melhor.
+            </p>
+          </details>
+
+          <details
+            class="group brand-card border p-4"
+            :style="{
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
+            }"
+          >
+            <summary class="cursor-pointer list-none flex items-center justify-between">
+              LCI e LCA valem a pena com juros compostos?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
+            </summary>
+            <p class="mt-3 text-sm">
+              Sim, especialmente pra investidor com IR alto. LCI/LCA são isentas, então 95% CDI rende como ~11,4% a.a. líquido. Comparado a CDB de 110% CDI (rende ~11,2% a.a. líquido após 15% IR), LCI/LCA empata ou ganha. Desvantagem: prazo de carência de 90 dias a 3 anos. Use pra capital que você não vai precisar nesse prazo.
+            </p>
+          </details>
+
+          <details
+            class="group brand-card border p-4"
+            :style="{
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
+            }"
+          >
+            <summary class="cursor-pointer list-none flex items-center justify-between">
+              Como funciona a Regra de 72?
+              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
+            </summary>
+            <p class="mt-3 text-sm">
+              A Regra de 72 estima em quanto tempo seu dinheiro dobra: divida 72 pela taxa anual. A 6% a.a. = 12 anos. A 10% a.a. = 7,2 anos. A 12% a.a. = 6 anos. A 15% = 4,8 anos. É uma aproximação muito boa pra taxas entre 6% e 15%. Tripla? Use Regra de 114. Quadruplicar? Regra de 144.
             </p>
           </details>
 
@@ -740,7 +979,7 @@ const layoutName = computed(() =>
 // dateModified como sinal de frescor; atualizar mensalmente mantém a página
 // "fresca" sem trabalho manual. Se houver mudança real na calculadora, um
 // bump em `CONTENT_VERSION` força refresh.
-const CONTENT_VERSION = '2026-04-01'
+const CONTENT_VERSION = '2026-05-01'
 const lastUpdated = new Date(CONTENT_VERSION)
 const lastUpdatedText = lastUpdated.toLocaleDateString('pt-BR', {
   day: '2-digit',
@@ -749,10 +988,105 @@ const lastUpdatedText = lastUpdated.toLocaleDateString('pt-BR', {
 })
 const lastUpdatedISO = lastUpdated.toISOString()
 
+// ====================================================================
+// Cenarios populares — long-tail SEO via deep-links.
+// Cada cenario combina aporte+prazo+taxa em uma URL canonica que o
+// Compound.vue ja le no mount (via parseNumberParam) e dispara o
+// calculo automaticamente. O Google indexa cada combinacao como
+// "landing virtual" sem custo de duplicacao de pagina — sitemap+
+// canonical apontam pra rota mae, mas snippets capturam queries
+// "quanto rende R$ 500 por mes", "rendimento 10 anos 1000 reais", etc.
+//
+// Mantenha alinhado com os cenarios mais buscados no GSC. Atualizar
+// periodicamente conforme novas queries emergem ("quanto rende
+// 200 mil", "aposentadoria 5000 reais", etc).
+// ====================================================================
+const popularScenarios = [
+  { label: 'R$ 100/mês por 30 anos', sub: 'Começando do zero', icon: 'i-lucide-sprout', to: '/calculadora/juros-compostos?initial=0&monthly=100&rate=10.5&years=30' },
+  { label: 'R$ 500/mês por 20 anos', sub: 'Cenário clássico', icon: 'i-lucide-target', to: '/calculadora/juros-compostos?initial=0&monthly=500&rate=10.5&years=20' },
+  { label: 'R$ 1.000/mês por 10 anos', sub: 'Médio prazo', icon: 'i-lucide-zap', to: '/calculadora/juros-compostos?initial=0&monthly=1000&rate=10.5&years=10' },
+  { label: 'R$ 2.000/mês por 15 anos', sub: 'Acelerado', icon: 'i-lucide-rocket', to: '/calculadora/juros-compostos?initial=0&monthly=2000&rate=10.5&years=15' },
+  { label: 'R$ 10.000 inicial + R$ 500/mês', sub: 'Com capital inicial', icon: 'i-lucide-piggy-bank', to: '/calculadora/juros-compostos?initial=10000&monthly=500&rate=10.5&years=20' },
+  { label: 'R$ 50.000 inicial sem aporte', sub: 'Renda passiva', icon: 'i-lucide-wallet', to: '/calculadora/juros-compostos?initial=50000&monthly=0&rate=10.5&years=20' },
+  { label: 'Aposentadoria — R$ 1.000/mês 35 anos', sub: 'Começando aos 30', icon: 'i-lucide-armchair', to: '/calculadora/juros-compostos?initial=0&monthly=1000&rate=10.5&years=35' },
+  { label: '1 milhão em 20 anos', sub: 'Quanto investir por mês', icon: 'i-lucide-trophy', to: '/calculadora/juros-compostos?initial=0&monthly=1300&rate=10.5&years=20' },
+  { label: 'Tesouro Selic — R$ 500/mês', sub: 'Taxa ~12% a.a.', icon: 'i-lucide-shield-check', to: '/calculadora/juros-compostos?initial=0&monthly=500&rate=12&years=20' },
+  { label: 'Reserva de emergência', sub: 'R$ 300/mês por 2 anos', icon: 'i-lucide-life-buoy', to: '/calculadora/juros-compostos?initial=0&monthly=300&rate=12&years=2' },
+  { label: 'CDB 110% CDI — R$ 1.000/mês', sub: 'Taxa ~13% a.a.', icon: 'i-lucide-landmark', to: '/calculadora/juros-compostos?initial=0&monthly=1000&rate=13&years=10' },
+  { label: 'Bolsa B3 — R$ 500/mês', sub: 'Taxa histórica ~14% a.a.', icon: 'i-lucide-bar-chart-3', to: '/calculadora/juros-compostos?initial=0&monthly=500&rate=14&years=20' },
+] as const
+
+// FAQs duplicados aqui pra manter a fonte unica entre o HTML
+// (renderizado nos `<details>`) e o FAQPage schema (mainEntity).
+// Antes o schema tinha so 3 perguntas e o HTML 11 — Google ignora
+// FAQs nao espelhados, perdendo rich snippet em 8 perguntas. Agora
+// um array so popula os dois lados.
+const faqItems = [
+  {
+    q: 'Qual a diferença entre juros simples e compostos?',
+    a: 'Juros simples incidem apenas sobre o capital inicial, resultando em crescimento linear. Juros compostos incidem sobre o capital + rendimentos acumulados, gerando crescimento exponencial. Exemplo: R$ 1.000 a 10% a.a. por 10 anos rende R$ 2.000 com juros simples, mas R$ 2.594 com compostos. Em prazos longos a diferença é gigante.',
+  },
+  {
+    q: 'Qual é uma taxa de retorno realista para investimentos no Brasil?',
+    a: 'Depende do produto: Tesouro Selic e CDBs de bancões pagam ~CDI (12-13% a.a. em 2026). Tesouro IPCA+ paga IPCA + 6% a.a. (~10-12% nominal). FIIs costumam render 8-12% a.a. em dividendos + valorização. Bolsa B3 historicamente entrega 12-15% a.a., mas com forte volatilidade. Carteira diversificada (60% renda variável + 40% renda fixa) tende a 10-12% a.a. no longo prazo.',
+  },
+  {
+    q: 'É melhor investir tudo no início ou fazer aportes mensais?',
+    a: 'Se você tem um valor grande disponível, investir tudo no início geralmente rende mais porque o dinheiro fica mais tempo aplicado. Aportes mensais têm vantagens: reduzem risco de timing (você compra em diferentes momentos), facilitam disciplina financeira e permitem começar mesmo sem muito capital. O ideal é combinar: investir o que tem disponível + manter aportes regulares automáticos.',
+  },
+  {
+    q: 'Quanto tempo leva para dobrar meu dinheiro? (Regra de 72)',
+    a: 'Use a Regra de 72: divida 72 pela taxa de juros anual para saber em quantos anos seu dinheiro dobra. A 6% a.a. = 12 anos (72÷6). A 10% a.a. = 7,2 anos (72÷10). A 12% a.a. = 6 anos (72÷12). A 15% a.a. = 4,8 anos (72÷15). É uma aproximação muito precisa para taxas entre 6% e 15%.',
+  },
+  {
+    q: 'Poupança ou Tesouro Selic: qual rende mais?',
+    a: 'Tesouro Selic SEMPRE rende mais que poupança. Em 2026, com Selic em 12%, poupança rende 6,5% a.a. (70% da Selic + TR), Tesouro Selic rende ~12% a.a. (descontado 15% IR após 2 anos = 10,2% líquido). Em 20 anos com R$ 500/mês, a diferença passa de R$ 165 mil. A única vantagem da poupança é simplicidade extrema. Pra qualquer valor acima de R$ 100, Tesouro Selic é estritamente melhor.',
+  },
+  {
+    q: 'LCI e LCA valem a pena com juros compostos?',
+    a: 'Sim, especialmente pra investidor com IR alto. LCI/LCA são isentas, então 95% CDI rende como ~11,4% a.a. líquido. Comparado a CDB de 110% CDI (rende ~11,2% a.a. líquido após 15% IR), LCI/LCA empata ou ganha. Desvantagem: prazo de carência de 90 dias a 3 anos. Use pra capital que você não vai precisar nesse prazo.',
+  },
+  {
+    q: 'Como funciona a Regra de 72?',
+    a: 'A Regra de 72 estima em quanto tempo seu dinheiro dobra: divida 72 pela taxa anual. A 6% a.a. = 12 anos. A 10% a.a. = 7,2 anos. A 12% a.a. = 6 anos. A 15% = 4,8 anos. É uma aproximação muito boa pra taxas entre 6% e 15%. Tripla? Use Regra de 114. Quadruplicar? Regra de 144.',
+  },
+  {
+    q: 'Os impostos afetam os juros compostos? Quanto?',
+    a: 'Sim, e bastante. Renda fixa tem IR regressivo: 22,5% (até 180 dias) → 20% → 17,5% → 15% (após 720 dias). Ações têm 15% sobre ganho de capital se vendas mensais > R$ 20 mil; dividendos isentos. FIIs têm dividendos isentos e 20% sobre ganho de capital. LCI/LCA são isentos. Idealmente simule com retornos líquidos: subtraia ~15-20% nas projeções de longo prazo.',
+  },
+  {
+    q: 'Devo considerar a inflação no cálculo dos juros compostos?',
+    a: 'Absolutamente. Se você rende 10% mas a inflação foi 5%, seu retorno real é cerca de 5% (poder de compra). Para metas de longo prazo (aposentadoria, educação dos filhos), pense sempre em taxas reais (acima da inflação). No Brasil, inflação histórica média gira em 4-6% a.a. Busque retornos que entreguem pelo menos 5-8% acima da inflação após impostos.',
+  },
+  {
+    q: 'Posso usar essa calculadora para qualquer tipo de investimento?',
+    a: 'Sim, mas com escopos diferentes: para renda fixa (Tesouro, CDB, LCI/LCA) o resultado é bem preciso, já que a taxa é contratada. Para ações e FIIs, use médias históricas, mas lembre que o retorno real flutua, alguns anos sobem 30%, outros caem 20%. Para análise de ações específicas com dados reais use o nosso simulador de ações.',
+  },
+  {
+    q: 'Qual o impacto de aumentar o aporte mensal em 20%?',
+    a: 'Bem maior do que parece. Investindo R$ 500/mês a 10% a.a. por 20 anos: R$ 380 mil. Aumentando 20% para R$ 600/mês: R$ 458 mil. Diferença de R$ 78 mil. Em 30 anos a diferença passa de R$ 200 mil. Pequenos aumentos consistentes em aportes mensais valem mais do que grandes aportes esporádicos.',
+  },
+  {
+    q: 'Com que frequência devo revisar meus investimentos?',
+    a: 'Revise a estratégia geral a cada 6-12 meses ou em mudanças significativas (aumento de renda, novo objetivo, evento de mercado). Evite mexer em investimentos de longo prazo com frequência, isso quebra o efeito dos juros compostos e pode disparar IR. Mantenha a disciplina: aporte automático mensal + revisão semestral é o suficiente.',
+  },
+  {
+    q: 'Qual a importância de começar a investir cedo?',
+    a: 'Decisiva. R$ 300/mês a 10% a.a.: começando aos 25 até os 65 (40 anos) = R$ 1,9 milhão. Aos 35 até 65 (30 anos) = R$ 679 mil. Aos 45 até 65 (20 anos) = R$ 229 mil. Cada década perdida custa ~3x o valor final. Mesmo R$ 50/mês começando aos 20 supera R$ 500/mês começando aos 40, em montante final.',
+  },
+  {
+    q: 'Como compartilhar uma simulação específica?',
+    a: `Basta copiar a URL com os parâmetros: ${brand.url || 'https://redentia.com.br'}/calculadora/juros-compostos?initial=10000&monthly=500&rate=10.5&years=20 já abre a calculadora preenchida e calcula automaticamente. Útil pra mandar para o cônjuge, planejador financeiro ou salvar a meta nos favoritos.`,
+  },
+] as const
+
+const pageTitle = `Calculadora de Juros Compostos 2026 - Grátis | ${brand.name}`
+const pageDescription =
+  'Calcule juros compostos com aportes mensais. Poupança vs Tesouro Selic vs CDB, regra de 72, simulação 5 a 30 anos. Gráfico interativo. Grátis.'
+
 usePageSeo({
-  title: `Calculadora de Juros Compostos: Simule Seu Investimento | ${brand.name}`,
-  description:
-    'Calcule quanto seus investimentos vão render com juros compostos. Simule aportes mensais, taxas de retorno e veja a evolução do seu patrimônio em gráficos interativos. Gratuito!',
+  title: pageTitle,
+  description: pageDescription,
   path: '/calculadora/juros-compostos',
   breadcrumbs: [
     { name: 'Home', path: '/' },
@@ -762,56 +1096,48 @@ usePageSeo({
   structuredData: [
     {
       '@context': 'https://schema.org',
-      '@type': 'SoftwareApplication',
+      '@type': 'WebApplication',
       name: `Calculadora de Juros Compostos ${brand.name}`,
       applicationCategory: 'FinanceApplication',
+      operatingSystem: 'Web',
+      inLanguage: 'pt-BR',
       offers: {
         '@type': 'Offer',
         price: '0',
         priceCurrency: 'BRL',
       },
-      operatingSystem: 'Web',
       dateModified: lastUpdatedISO,
       description:
-        'Calculadora gratuita de juros compostos para simular investimentos de longo prazo com aportes mensais. Mostra evolução patrimonial em gráficos interativos e tabela comparativa em diferentes prazos (5, 10, 20 e 30 anos).',
+        'Calculadora gratuita de juros compostos com aportes mensais. Mostra evolução patrimonial em gráfico interativo, tabela comparativa por horizonte (5, 10, 20, 30 anos), comparação simples vs compostos e cenários populares pré-preenchidos via URL.',
       featureList: [
         'Cálculo de juros compostos com aportes mensais',
-        'Simulação de 5 a 40 anos',
+        'Simulação de 1 a 40 anos',
         'Gráfico de evolução patrimonial mês a mês',
-        'Comparação de cenários com diferentes taxas',
+        'Comparação de cenários com taxas distintas',
         'Regra de 72 integrada',
         'Tabela de rendimento por horizonte temporal',
+        'Deep-link compartilhável com inputs pré-preenchidos',
+        'Cenários populares 1 clique (R$ 100, R$ 500, R$ 1.000/mês)',
+        'Suporta capitalização ao ano e ao mês',
+      ],
+      about: [
+        { '@type': 'Organization', name: 'Banco Central do Brasil', url: 'https://www.bcb.gov.br' },
+        { '@type': 'Organization', name: 'B3', url: 'https://www.b3.com.br' },
+        { '@type': 'Thing', name: 'Juros compostos' },
+        { '@type': 'Thing', name: 'Regra de 72' },
       ],
     },
     {
       '@context': 'https://schema.org',
       '@type': 'FAQPage',
-      mainEntity: [
-        {
-          '@type': 'Question',
-          name: 'Qual a diferença entre juros simples e compostos?',
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: 'Juros simples são calculados apenas sobre o capital inicial, resultando em crescimento linear. Juros compostos incidem sobre o capital inicial + rendimentos acumulados, gerando crescimento exponencial.',
-          },
+      mainEntity: faqItems.map((item) => ({
+        '@type': 'Question',
+        name: item.q,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: item.a,
         },
-        {
-          '@type': 'Question',
-          name: 'Qual é uma taxa de retorno realista para investimentos?',
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: 'Depende do tipo de investimento. Renda fixa: 10-13% a.a. Fundos imobiliários: 8-12% a.a. Ações: historicamente 12-15% a.a., mas com volatilidade.',
-          },
-        },
-        {
-          '@type': 'Question',
-          name: 'Quanto tempo leva para dobrar meu dinheiro?',
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: 'Use a Regra de 72: divida 72 pela taxa de juros anual. Por exemplo, a 10% a.a., leva 7,2 anos para dobrar o capital.',
-          },
-        },
-      ],
+      })),
     },
   ],
 })

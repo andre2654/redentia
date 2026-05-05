@@ -305,6 +305,77 @@ const form = ref({
   inss: 0,
 })
 
+// ====================================================================
+// Deep-link via query params — abilita URLs canonicas pra cenarios
+// populares (ex: /calculadora/aposentadoria?age=30&retire=55&income=10000).
+// Cada combinacao vira uma "landing page" virtual indexavel pelo
+// Google sem precisar duplicar a pagina.
+//
+// Params suportados:
+//   ?age=35              idade atual
+//   ?retire=60           idade de aposentadoria
+//   ?life=85             expectativa de vida
+//   ?income=5000         renda mensal desejada em R$
+//   ?wealth=50000        patrimonio atual em R$ (alias: ?atual=)
+//   ?monthly=2000        aporte mensal em R$
+//   ?rate=10             retorno na acumulacao em % a.a.
+//   ?withdrawal=6        retorno na fruicao em % a.a.
+//   ?inflation=4         inflacao em % a.a.
+//   ?inss=2000           INSS estimado em R$
+//   ?auto=1              dispara o calculo automaticamente apos hidratar
+// ====================================================================
+const route = useRoute()
+
+function parseNumberParam(value: unknown): number | null {
+  if (value === undefined || value === null) return null
+  const raw = Array.isArray(value) ? value[0] : value
+  if (typeof raw !== 'string' || raw.trim() === '') return null
+  // Aceita "10.5" e "10,5" (Brasil), Number() so entende ponto.
+  const normalized = raw.replace(',', '.')
+  const num = Number(normalized)
+  return Number.isFinite(num) ? num : null
+}
+
+onMounted(() => {
+  const q = route.query
+  const age = parseNumberParam(q.age)
+  const retire = parseNumberParam(q.retire)
+  const life = parseNumberParam(q.life)
+  const income = parseNumberParam(q.income)
+  const wealth = parseNumberParam(q.wealth ?? q.atual)
+  const monthly = parseNumberParam(q.monthly)
+  const rate = parseNumberParam(q.rate)
+  const withdrawal = parseNumberParam(q.withdrawal)
+  const inflation = parseNumberParam(q.inflation)
+  const inss = parseNumberParam(q.inss)
+
+  if (age !== null) form.value.currentAge = age
+  if (retire !== null) form.value.retirementAge = retire
+  if (life !== null) form.value.lifeExpectancy = life
+  if (income !== null) form.value.monthlyIncome = income
+  if (wealth !== null) form.value.currentWealth = wealth
+  if (monthly !== null) form.value.monthlyContribution = monthly
+  if (rate !== null) form.value.returnRate = rate
+  if (withdrawal !== null) form.value.withdrawalRate = withdrawal
+  if (inflation !== null) form.value.inflation = inflation
+  if (inss !== null) form.value.inss = inss
+
+  const hasAnyInput =
+    age !== null ||
+    retire !== null ||
+    life !== null ||
+    income !== null ||
+    wealth !== null ||
+    monthly !== null ||
+    rate !== null ||
+    withdrawal !== null ||
+    inflation !== null ||
+    inss !== null
+  if (hasAnyInput || q.auto === '1' || q.auto === 'true') {
+    nextTick(() => calculate())
+  }
+})
+
 interface Results {
   viable: boolean
   message: string

@@ -13,7 +13,11 @@
  * STRATEGY DE LOAD:
  * Lazy via requestIdleCallback (mesmo padrao do meta-pixel.client.ts).
  * Pixel + Clarity carregam APOS LCP, nao competem com criatico/CSS.
- * Tradeoff: sessoes < 2.5s nao sao gravadas, mas sao bounces irrelevantes.
+ *
+ * IMPORTANTE: o fallback setTimeout era 2500ms — perdia tudo do tráfego
+ * pago do Instagram in-app browser (iOS Safari < 17.4 sem rIC, user sai
+ * em 1-3s). Reduzido pra 500ms pra capturar ~95% das sessões sem
+ * prejudicar LCP perceptível.
  *
  * Project ID: wmh9pyc3io (Redentia, criado 2026-05-05).
  * Lê de runtimeConfig.public.clarityProjectId — fallback hardcoded
@@ -75,11 +79,13 @@ export default defineNuxtPlugin(() => {
   }
 
   // requestIdleCallback respeita o motor de prioridade do browser e nao
-  // dispara durante input lag. Fallback setTimeout 2.5s pra Safari.
+  // dispara durante input lag. Fallback setTimeout 500ms pra Safari /
+  // IG in-app browser (iOS WebKit < 17.4 sem rIC). Antes era 2500ms,
+  // reduziu pra capturar usuarios que bouncam em 1-3s no fluxo Instagram.
   if ('requestIdleCallback' in window) {
     ;(window as Window & { requestIdleCallback: (cb: IdleRequestCallback, opts?: IdleRequestOptions) => number }).requestIdleCallback(installClarity, { timeout: 4000 })
   }
   else {
-    setTimeout(installClarity, 2500)
+    setTimeout(installClarity, 500)
   }
 })

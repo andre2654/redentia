@@ -181,6 +181,63 @@ const compoundForm = ref<CompoundForm>({
 
 const compoundResult = ref<CompoundResult | null>(null)
 
+// ====================================================================
+// Deep-link via query params — abilita URLs canonicas pra cenarios
+// populares (ex: /calculadora/juros-compostos?monthly=500&years=20).
+// Cada combinacao vira uma "landing page" virtual indexavel pelo
+// Google sem precisar duplicar a pagina. Os hreflang sao gerados pelo
+// Nuxt SSR; o usePageSeo da rota mae cobre todas as variacoes.
+//
+// Params suportados:
+//   ?initial=10000       valor inicial em R$ (numero)
+//   ?monthly=500         aporte mensal em R$
+//   ?rate=10.5           taxa em % (a.a. por padrao)
+//   ?years=20            periodo em anos (sobrepoe `months`)
+//   ?months=240          periodo em meses
+//   ?auto=1              dispara o calculo automaticamente apos hidratar
+// ====================================================================
+const route = useRoute()
+
+function parseNumberParam(value: unknown): number | null {
+  if (value === undefined || value === null) return null
+  const raw = Array.isArray(value) ? value[0] : value
+  if (typeof raw !== 'string' || raw.trim() === '') return null
+  // Aceita "10.5" e "10,5" (Brasil) — Number() so entende ponto.
+  const normalized = raw.replace(',', '.')
+  const num = Number(normalized)
+  return Number.isFinite(num) ? num : null
+}
+
+onMounted(() => {
+  const q = route.query
+  const initial = parseNumberParam(q.initial)
+  const monthly = parseNumberParam(q.monthly)
+  const rate = parseNumberParam(q.rate)
+  const years = parseNumberParam(q.years)
+  const months = parseNumberParam(q.months)
+
+  if (initial !== null) compoundForm.value.initialValue = initial
+  if (monthly !== null) compoundForm.value.monthlyValue = monthly
+  if (rate !== null) compoundForm.value.interestRate = rate
+  if (years !== null) {
+    compoundForm.value.period = years
+    compoundForm.value.periodType = { label: 'Anos', value: 'years' }
+  } else if (months !== null) {
+    compoundForm.value.period = months
+    compoundForm.value.periodType = { label: 'Meses', value: 'months' }
+  }
+
+  // Auto-fire o calculo se algum param de input foi passado — usuario
+  // chegou aqui via deep-link (compartilhamento, snippet do Google,
+  // landing interna), entao a expectativa e ver o resultado direto.
+  const hasAnyInput =
+    initial !== null || monthly !== null || rate !== null || years !== null || months !== null
+  if (hasAnyInput || q.auto === '1' || q.auto === 'true') {
+    // nextTick pra garantir que o v-model atualizou os children inputs
+    nextTick(() => calculateCompoundInterest())
+  }
+})
+
 async function calculateCompoundInterest() {
   const initial = compoundForm.value.initialValue || 0
   const monthly = compoundForm.value.monthlyValue || 0
