@@ -19,12 +19,12 @@
       <header class="mx-auto -mt-2 flex max-w-2xl flex-col items-center gap-3 text-center">
         <span
           class="font-mono-tab text-[11px] font-medium uppercase"
-          :style="{ letterSpacing: '0.18em', color: brand.colors.primary }"
+          :style="{ letterSpacing: '0.18em', color: 'var(--brand-primary)' }"
         >Ferramentas · Gratuitas</span>
         <h1
           class="font-light"
           :style="{
-            color: brand.colors.text,
+            color: 'var(--brand-text)',
             fontSize: 'clamp(28px, 4vw, 36px)',
             lineHeight: 1.05,
             letterSpacing: '-0.7px',
@@ -34,7 +34,7 @@
           :style="{
             fontSize: '17.5px',
             lineHeight: 1.55,
-            color: `color-mix(in srgb, ${brand.colors.text} 72%, transparent)`,
+            color: `color-mix(in srgb, var(--brand-text) 72%, transparent)`,
           }"
         >Simule investimentos, analise histórico real de ações e planeje seu patrimônio. Decisões com dados da B3, sem misticismo.</p>
       </header>
@@ -62,7 +62,7 @@
             <UIcon
               name="i-lucide-arrow-up-right"
               class="size-4 opacity-50 transition-[transform,opacity] group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:opacity-100"
-              :style="{ color: brand.colors.primary }"
+              :style="{ color: 'var(--brand-primary)' }"
             />
           </div>
           <div class="flex flex-col gap-1.5">
@@ -70,13 +70,13 @@
               class="font-mono-tab text-[10.5px] font-medium uppercase"
               :style="{
                 letterSpacing: '0.18em',
-                color: `color-mix(in srgb, ${brand.colors.text} 50%, transparent)`,
+                color: `color-mix(in srgb, var(--brand-text) 50%, transparent)`,
               }"
             >{{ calc.eyebrow }}</span>
             <h2
               class="!mt-0 !mb-0 text-[18px] font-medium"
               :style="{
-                color: brand.colors.text,
+                color: 'var(--brand-text)',
                 lineHeight: 1.25,
                 letterSpacing: '-0.22px',
               }"
@@ -85,13 +85,13 @@
               class="!mb-0 text-[14px]"
               :style="{
                 lineHeight: 1.55,
-                color: `color-mix(in srgb, ${brand.colors.text} 68%, transparent)`,
+                color: `color-mix(in srgb, var(--brand-text) 68%, transparent)`,
               }"
             >{{ calc.body }}</p>
           </div>
           <span
             class="mt-2 inline-flex items-center gap-1.5 text-[13px] font-medium"
-            :style="{ color: brand.colors.primary }"
+            :style="{ color: 'var(--brand-primary)' }"
           >
             {{ calc.cta }}
             <UIcon name="i-lucide-arrow-right" class="size-3.5" />
@@ -116,17 +116,17 @@
             <UIcon
               :name="r.icon"
               class="size-5"
-              :style="{ color: brand.colors.primary }"
+              :style="{ color: 'var(--brand-primary)' }"
             />
             <h3
               class="!mt-0 !mb-0 text-[15px] font-medium"
-              :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }"
+              :style="{ color: 'var(--brand-text)', letterSpacing: '-0.005em' }"
             >{{ r.title }}</h3>
             <p
               class="!mb-0 text-[13.5px]"
               :style="{
                 lineHeight: 1.55,
-                color: `color-mix(in srgb, ${brand.colors.text} 65%, transparent)`,
+                color: `color-mix(in srgb, var(--brand-text) 65%, transparent)`,
               }"
             >{{ r.body }}</p>
           </article>
@@ -153,12 +153,12 @@
                 class="font-mono-tab text-[10.5px] font-medium uppercase"
                 :style="{
                   letterSpacing: '0.18em',
-                  color: brand.colors.primary,
+                  color: 'var(--brand-primary)',
                 }"
               >Use se…</span>
               <h3
                 class="!mt-1 !mb-0 text-[16px] font-medium"
-                :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }"
+                :style="{ color: 'var(--brand-text)', letterSpacing: '-0.005em' }"
               >{{ g.title }}</h3>
             </div>
             <ul class="flex flex-1 flex-col gap-1.5">
@@ -168,12 +168,12 @@
                 class="flex items-start gap-2 text-[14px]"
                 :style="{
                   lineHeight: 1.55,
-                  color: `color-mix(in srgb, ${brand.colors.text} 70%, transparent)`,
+                  color: `color-mix(in srgb, var(--brand-text) 70%, transparent)`,
                 }"
               >
                 <span
                   class="mt-2 size-1 shrink-0 rounded-full"
-                  :style="{ backgroundColor: brand.colors.primary }"
+                  :style="{ backgroundColor: 'var(--brand-primary)' }"
                 />
                 <span>{{ point }}</span>
               </li>
@@ -200,18 +200,18 @@
               class="font-mono-tab text-[10.5px] font-medium uppercase"
               :style="{
                 letterSpacing: '0.18em',
-                color: `color-mix(in srgb, ${brand.colors.text} 50%, transparent)`,
+                color: `color-mix(in srgb, var(--brand-text) 50%, transparent)`,
               }"
             >Dica</span>
             <h3
               class="!mt-0 !mb-0 text-[15.5px] font-medium"
-              :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }"
+              :style="{ color: 'var(--brand-text)', letterSpacing: '-0.005em' }"
             >{{ tip.title }}</h3>
             <p
               class="!mb-0 text-[14px]"
               :style="{
                 lineHeight: 1.55,
-                color: `color-mix(in srgb, ${brand.colors.text} 68%, transparent)`,
+                color: `color-mix(in srgb, var(--brand-text) 68%, transparent)`,
               }"
             >{{ tip.body }}</p>
           </article>
@@ -267,8 +267,8 @@ usePageSeo({
 })
 
 const cardStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 55%, ${brand.colors.background})`,
-  borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
+  backgroundColor: `color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))`,
+  borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
 }))
 
 // Tint resolvido a partir do brand do tenant ativo. Mantém variação
@@ -280,7 +280,7 @@ const calculators = computed(() => [
   {
     to: '/calculadora/preco-teto',
     icon: 'i-lucide-target',
-    tint: brand.colors.primary,
+    tint: 'var(--brand-primary)',
     eyebrow: 'Valuation',
     title: 'Preço Teto',
     body: 'Calcule o preço justo de ações usando Graham, Bazin, P/L setorial e valor patrimonial. Saiba se está barata ou cara.',
@@ -289,7 +289,7 @@ const calculators = computed(() => [
   {
     to: '/calculadora/aposentadoria',
     icon: 'i-lucide-piggy-bank',
-    tint: brand.colors.positive,
+    tint: 'var(--brand-positive)',
     eyebrow: 'Long-term',
     title: 'Aposentadoria',
     body: 'Calcule quanto investir pra se aposentar. Considera INSS, inflação, expectativa de vida e a regra dos 4%.',
@@ -298,7 +298,7 @@ const calculators = computed(() => [
   {
     to: '/calculadora/dividend-yield',
     icon: 'i-lucide-coins',
-    tint: brand.colors.positive,
+    tint: 'var(--brand-positive)',
     eyebrow: 'Renda passiva',
     title: 'Dividend Yield',
     body: 'Calcule DY atual, projetado e histórico de ações e FIIs. Compare ativos e ache os melhores pagadores.',
@@ -307,7 +307,7 @@ const calculators = computed(() => [
   {
     to: '/calculadora/quanto-investir',
     icon: 'i-lucide-wallet',
-    tint: brand.colors.primary,
+    tint: 'var(--brand-primary)',
     eyebrow: 'Aporte',
     title: 'Quanto Investir',
     body: 'Descubra quanto investir mensalmente pra atingir uma meta financeira. Aportes precisos, sem chute.',
@@ -316,7 +316,7 @@ const calculators = computed(() => [
   {
     to: '/calculadora/imposto-renda',
     icon: 'i-lucide-receipt-text',
-    tint: brand.colors.negative,
+    tint: 'var(--brand-negative)',
     eyebrow: 'Tributação',
     title: 'Imposto de Renda',
     body: 'Calcule IR sobre day trade e swing trade. Gera DARF automático, compensa prejuízos e fica em dia com a Receita.',
@@ -325,7 +325,7 @@ const calculators = computed(() => [
   {
     to: '/calculadora/juros-compostos',
     icon: 'i-lucide-trending-up',
-    tint: brand.colors.positive,
+    tint: 'var(--brand-positive)',
     eyebrow: 'Simulação',
     title: 'Juros Compostos',
     body: 'Simule rendimento de investimentos ao longo do tempo. Inclui aportes mensais e gráfico de evolução.',
@@ -334,7 +334,7 @@ const calculators = computed(() => [
   {
     to: '/calculadora/acoes',
     icon: 'i-lucide-chart-line',
-    tint: brand.colors.primary,
+    tint: 'var(--brand-primary)',
     eyebrow: 'Backtest',
     title: 'Investimento em Ações',
     body: 'Quanto teria ganho investindo em ações específicas? Análise com dados históricos reais e dividendos reinvestidos.',
@@ -343,7 +343,7 @@ const calculators = computed(() => [
   {
     to: '/calculadora/planejamento',
     icon: 'i-lucide-target',
-    tint: brand.colors.primary,
+    tint: 'var(--brand-primary)',
     eyebrow: 'Estratégia',
     title: 'Planejamento Patrimonial',
     body: 'Calcule quanto tempo e quanto investir pra atingir metas. Estratégias com dados reais da B3.',

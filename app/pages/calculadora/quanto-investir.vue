@@ -5,7 +5,7 @@
       <NuxtLink
         to="/calculadora"
         class="flex items-center gap-1 text-xs transition hover:opacity-80"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
       >
         <UIcon name="i-lucide-chevron-left" class="size-3" />
         Todas as calculadoras
@@ -17,7 +17,7 @@
           <h1
             class="font-light"
             :style="{
-              color: brand.colors.text,
+              color: 'var(--brand-text)',
               fontSize: 'clamp(28px, 4vw, 36px)',
               lineHeight: 1.05,
               letterSpacing: '-0.7px',
@@ -42,8 +42,8 @@
           <div
             class="brand-card border p-5"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <h4 class="mb-2 text-secondary">R$ 100.000 em 5 anos</h4>
@@ -54,8 +54,8 @@
           <div
             class="brand-card border p-5"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <h4 class="mb-2 text-secondary">R$ 500.000 em 10 anos</h4>
@@ -66,8 +66,8 @@
           <div
             class="brand-card border p-5"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <h4 class="mb-2 text-secondary">R$ 1 milhão em 15 anos</h4>
@@ -78,8 +78,8 @@
           <div
             class="brand-card border p-5"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <h4 class="mb-2 text-secondary">R$ 2 milhões em 20 anos</h4>
@@ -95,8 +95,8 @@
           <details
             class="group brand-card border p-4"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <summary class="cursor-pointer list-none flex items-center justify-between">
@@ -111,8 +111,8 @@
           <details
             class="group brand-card border p-4"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <summary class="cursor-pointer list-none flex items-center justify-between">
@@ -128,7 +128,7 @@
 
       <div
         class="flex flex-col gap-4 rounded-[30px] p-6"
-        :style="{ backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }"
+        :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))' }"
       >
         <h2>Outras Ferramentas</h2>
         <div class="grid gap-4 md:grid-cols-2">
@@ -136,8 +136,8 @@
             to="/calculadora/juros-compostos"
             class="group flex items-center gap-4 brand-card border p-4 transition hover:border-secondary/50"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <UIcon name="i-lucide-trending-up" class="text-secondary size-8 shrink-0" />
@@ -150,8 +150,8 @@
             to="/calculadora/aposentadoria"
             class="group flex items-center gap-4 brand-card border p-4 transition hover:border-secondary/50"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <UIcon name="i-lucide-piggy-bank" class="text-secondary size-8 shrink-0" />

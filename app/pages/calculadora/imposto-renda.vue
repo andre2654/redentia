@@ -5,7 +5,7 @@
       <NuxtLink
         to="/calculadora"
         class="flex items-center gap-1 text-xs transition hover:opacity-80"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
       >
         <UIcon name="i-lucide-chevron-left" class="size-3" />
         Todas as calculadoras
@@ -17,7 +17,7 @@
           <h1
             class="font-light"
             :style="{
-              color: brand.colors.text,
+              color: 'var(--brand-text)',
               fontSize: 'clamp(28px, 4vw, 36px)',
               lineHeight: 1.05,
               letterSpacing: '-0.7px',
@@ -42,8 +42,8 @@
           <div
             class="brand-card border p-5"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <h4 class="mb-2 text-secondary">Swing Trade (Normal)</h4>
@@ -58,8 +58,8 @@
           <div
             class="brand-card border p-5"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <h4 class="mb-2 text-secondary">Day Trade</h4>
@@ -138,8 +138,8 @@
           <details
             class="group brand-card border p-4"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <summary class="cursor-pointer list-none flex items-center justify-between">
@@ -154,8 +154,8 @@
           <details
             class="group brand-card border p-4"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <summary class="cursor-pointer list-none flex items-center justify-between">
@@ -170,8 +170,8 @@
           <details
             class="group brand-card border p-4"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <summary class="cursor-pointer list-none flex items-center justify-between">
@@ -186,8 +186,8 @@
           <details
             class="group brand-card border p-4"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <summary class="cursor-pointer list-none flex items-center justify-between">
@@ -202,8 +202,8 @@
           <details
             class="group brand-card border p-4"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <summary class="cursor-pointer list-none flex items-center justify-between">
@@ -221,11 +221,11 @@
           <div
             class="brand-card border p-4"
             :style="{
-              borderColor: `color-mix(in srgb, ${brand.colors.negative} 25%, transparent)`,
-              backgroundColor: `color-mix(in srgb, ${brand.colors.negative} 8%, transparent)`,
+              borderColor: `color-mix(in srgb, var(--brand-negative) 25%, transparent)`,
+              backgroundColor: `color-mix(in srgb, var(--brand-negative) 8%, transparent)`,
             }"
           >
-            <h4 class="mb-1" :style="{ color: brand.colors.negative }">Não Controlar as Operações</h4>
+            <h4 class="mb-1" :style="{ color: 'var(--brand-negative)' }">Não Controlar as Operações</h4>
             <p class="text-sm">
               Use planilha ou software. Não dá para confiar apenas na memória ou esperar a corretora fazer tudo.
             </p>
@@ -233,11 +233,11 @@
           <div
             class="brand-card border p-4"
             :style="{
-              borderColor: `color-mix(in srgb, ${brand.colors.negative} 25%, transparent)`,
-              backgroundColor: `color-mix(in srgb, ${brand.colors.negative} 8%, transparent)`,
+              borderColor: `color-mix(in srgb, var(--brand-negative) 25%, transparent)`,
+              backgroundColor: `color-mix(in srgb, var(--brand-negative) 8%, transparent)`,
             }"
           >
-            <h4 class="mb-1" :style="{ color: brand.colors.negative }">Esquecer de Pagar o DARF</h4>
+            <h4 class="mb-1" :style="{ color: 'var(--brand-negative)' }">Esquecer de Pagar o DARF</h4>
             <p class="text-sm">
               Multa de 0,33% ao dia. Configure lembretes! Último dia útil do mês seguinte.
             </p>
@@ -245,11 +245,11 @@
           <div
             class="brand-card border p-4"
             :style="{
-              borderColor: `color-mix(in srgb, ${brand.colors.negative} 25%, transparent)`,
-              backgroundColor: `color-mix(in srgb, ${brand.colors.negative} 8%, transparent)`,
+              borderColor: `color-mix(in srgb, var(--brand-negative) 25%, transparent)`,
+              backgroundColor: `color-mix(in srgb, var(--brand-negative) 8%, transparent)`,
             }"
           >
-            <h4 class="mb-1" :style="{ color: brand.colors.negative }">Não Declarar Operações Isentas</h4>
+            <h4 class="mb-1" :style="{ color: 'var(--brand-negative)' }">Não Declarar Operações Isentas</h4>
             <p class="text-sm">
               Mesmo isento, você DEVE declarar no IRPF anual. Omissão gera malha fina.
             </p>
@@ -257,11 +257,11 @@
           <div
             class="brand-card border p-4"
             :style="{
-              borderColor: `color-mix(in srgb, ${brand.colors.negative} 25%, transparent)`,
-              backgroundColor: `color-mix(in srgb, ${brand.colors.negative} 8%, transparent)`,
+              borderColor: `color-mix(in srgb, var(--brand-negative) 25%, transparent)`,
+              backgroundColor: `color-mix(in srgb, var(--brand-negative) 8%, transparent)`,
             }"
           >
-            <h4 class="mb-1" :style="{ color: brand.colors.negative }">Misturar Swing e Day Trade</h4>
+            <h4 class="mb-1" :style="{ color: 'var(--brand-negative)' }">Misturar Swing e Day Trade</h4>
             <p class="text-sm">
               São tratados separadamente. Prejuízo de um não compensa lucro do outro.
             </p>
@@ -271,7 +271,7 @@
 
       <div
         class="flex flex-col gap-4 rounded-[30px] p-6"
-        :style="{ backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }"
+        :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))' }"
       >
         <h2>Outras Ferramentas</h2>
         <div class="grid gap-4 md:grid-cols-2">
@@ -279,8 +279,8 @@
             to="/calculadora/acoes"
             class="group flex items-center gap-4 brand-card border p-4 transition hover:border-secondary/50"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <UIcon name="i-lucide-chart-line" class="text-secondary size-8 shrink-0" />
@@ -293,8 +293,8 @@
             to="/calculadora/preco-teto"
             class="group flex items-center gap-4 brand-card border p-4 transition hover:border-secondary/50"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <UIcon name="i-lucide-target" class="text-secondary size-8 shrink-0" />

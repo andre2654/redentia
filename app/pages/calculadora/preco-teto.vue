@@ -5,7 +5,7 @@
       <NuxtLink
         to="/calculadora"
         class="flex items-center gap-1 text-xs transition hover:opacity-80"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
       >
         <UIcon name="i-lucide-chevron-left" class="size-3" />
         Todas as calculadoras
@@ -18,7 +18,7 @@
           <h1
             class="font-light"
             :style="{
-              color: brand.colors.text,
+              color: 'var(--brand-text)',
               fontSize: 'clamp(28px, 4vw, 36px)',
               lineHeight: 1.05,
               letterSpacing: '-0.7px',
@@ -30,22 +30,22 @@
         </p>
         <div class="flex flex-wrap items-center gap-2 text-xs">
           <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-check-circle" class="size-4" :style="{ color: brand.colors.positive }" />
+            <UIcon name="i-lucide-check-circle" class="size-4" :style="{ color: 'var(--brand-positive)' }" />
             100% gratuito
           </span>
           <span>·</span>
           <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-zap" class="size-4" :style="{ color: brand.colors.primary }" />
+            <UIcon name="i-lucide-zap" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
             Cálculo instantâneo
           </span>
           <span>·</span>
           <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-database" class="size-4" :style="{ color: brand.colors.primary }" />
+            <UIcon name="i-lucide-database" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
             Dados oficiais da B3
           </span>
           <span>·</span>
           <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-layers" class="size-4" :style="{ color: brand.colors.primary }" />
+            <UIcon name="i-lucide-layers" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
             Graham · Bazin · P/L · VPA
           </span>
         </div>
@@ -62,8 +62,8 @@
       <div
         class="flex flex-col gap-3 rounded-[30px] border p-6"
         :style="{
-          backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-          borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+          backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+          borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
         }"
       >
         <h2>Ações populares para calcular preço teto</h2>
@@ -77,8 +77,8 @@
             :to="`/calculadora/preco-teto?ticker=${t.ticker}`"
             class="group flex items-center gap-2 rounded-xl border px-3 py-2 transition hover:border-secondary/40 hover:bg-secondary/10"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <UIcon name="i-lucide-target" class="size-4 text-secondary" />
@@ -164,8 +164,8 @@
         <div
           class="brand-card border p-5"
           :style="{
-            backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-            borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+            backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+            borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
           }"
         >
           <h4 class="mb-3">Dados (valores ilustrativos):</h4>
@@ -179,28 +179,28 @@
           <div class="grid gap-3 md:grid-cols-2">
             <div
               class="rounded-lg p-3"
-              :style="{ backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 75%, ' + brand.colors.background + ')' }"
+              :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 75%, var(--brand-background))' }"
             >
               <p class="text-xs">Graham</p>
               <p>√(22.5 × 3.50 × 18) = R$ 35,55</p>
             </div>
             <div
               class="rounded-lg p-3"
-              :style="{ backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 75%, ' + brand.colors.background + ')' }"
+              :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 75%, var(--brand-background))' }"
             >
               <p class="text-xs">Bazin</p>
               <p>1.80 ÷ 0.06 = R$ 30,00</p>
             </div>
             <div
               class="rounded-lg p-3"
-              :style="{ backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 75%, ' + brand.colors.background + ')' }"
+              :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 75%, var(--brand-background))' }"
             >
               <p class="text-xs">P/L Setorial</p>
               <p>3.50 × 10 = R$ 35,00</p>
             </div>
             <div
               class="rounded-lg p-3"
-              :style="{ backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 75%, ' + brand.colors.background + ')' }"
+              :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 75%, var(--brand-background))' }"
             >
               <p class="text-xs">Valor Patrimonial</p>
               <p>18 × 1.5 = R$ 27,00</p>
@@ -220,8 +220,8 @@
         <div
           class="brand-card border p-5"
           :style="{
-            backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-            borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+            backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+            borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
           }"
         >
           <h4 class="mb-3">Dados (valores ilustrativos):</h4>
@@ -235,28 +235,28 @@
           <div class="grid gap-3 md:grid-cols-2">
             <div
               class="rounded-lg p-3"
-              :style="{ backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 75%, ' + brand.colors.background + ')' }"
+              :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 75%, var(--brand-background))' }"
             >
               <p class="text-xs">Graham</p>
               <p>√(22.5 × 8 × 35) = R$ 79,37</p>
             </div>
             <div
               class="rounded-lg p-3"
-              :style="{ backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 75%, ' + brand.colors.background + ')' }"
+              :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 75%, var(--brand-background))' }"
             >
               <p class="text-xs">Bazin</p>
               <p>5 ÷ 0.06 = R$ 83,33</p>
             </div>
             <div
               class="rounded-lg p-3"
-              :style="{ backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 75%, ' + brand.colors.background + ')' }"
+              :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 75%, var(--brand-background))' }"
             >
               <p class="text-xs">P/L Setorial</p>
               <p>8 × 6 = R$ 48,00</p>
             </div>
             <div
               class="rounded-lg p-3"
-              :style="{ backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 75%, ' + brand.colors.background + ')' }"
+              :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 75%, var(--brand-background))' }"
             >
               <p class="text-xs">Valor Patrimonial</p>
               <p>35 × 1.5 = R$ 52,50</p>
@@ -264,9 +264,9 @@
           </div>
           <div
             class="mt-4 rounded-lg p-3"
-            :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.positive} 20%, transparent)` }"
+            :style="{ backgroundColor: `color-mix(in srgb, var(--brand-positive) 20%, transparent)` }"
           >
-            <p class="text-sm" :style="{ color: brand.colors.positive }">
+            <p class="text-sm" :style="{ color: 'var(--brand-positive)' }">
               Preço Teto Médio: R$ 65,80
             </p>
             <p class="text-xs mt-1">
@@ -339,11 +339,11 @@
           <div
             class="brand-card border p-4"
             :style="{
-              borderColor: `color-mix(in srgb, ${brand.colors.negative} 25%, transparent)`,
-              backgroundColor: `color-mix(in srgb, ${brand.colors.negative} 8%, transparent)`,
+              borderColor: `color-mix(in srgb, var(--brand-negative) 25%, transparent)`,
+              backgroundColor: `color-mix(in srgb, var(--brand-negative) 8%, transparent)`,
             }"
           >
-            <h4 class="mb-1" :style="{ color: brand.colors.negative }">Empresas de Crescimento (Growth)</h4>
+            <h4 class="mb-1" :style="{ color: 'var(--brand-negative)' }">Empresas de Crescimento (Growth)</h4>
             <p class="text-sm">
               Empresas como Magazine Luiza, Mercado Livre, que crescem rápido mas têm lucro baixo ou prejuízo, não funcionam bem com essas fórmulas. Prefira análise de múltiplos de receita ou fluxo de caixa descontado.
             </p>
@@ -351,11 +351,11 @@
           <div
             class="brand-card border p-4"
             :style="{
-              borderColor: `color-mix(in srgb, ${brand.colors.negative} 25%, transparent)`,
-              backgroundColor: `color-mix(in srgb, ${brand.colors.negative} 8%, transparent)`,
+              borderColor: `color-mix(in srgb, var(--brand-negative) 25%, transparent)`,
+              backgroundColor: `color-mix(in srgb, var(--brand-negative) 8%, transparent)`,
             }"
           >
-            <h4 class="mb-1" :style="{ color: brand.colors.negative }">Empresas com Prejuízo</h4>
+            <h4 class="mb-1" :style="{ color: 'var(--brand-negative)' }">Empresas com Prejuízo</h4>
             <p class="text-sm">
               Se o LPA é negativo, as fórmulas não funcionam. A empresa pode estar em reestruturação ou em setor cíclico no momento ruim.
             </p>
@@ -363,11 +363,11 @@
           <div
             class="brand-card border p-4"
             :style="{
-              borderColor: `color-mix(in srgb, ${brand.colors.negative} 25%, transparent)`,
-              backgroundColor: `color-mix(in srgb, ${brand.colors.negative} 8%, transparent)`,
+              borderColor: `color-mix(in srgb, var(--brand-negative) 25%, transparent)`,
+              backgroundColor: `color-mix(in srgb, var(--brand-negative) 8%, transparent)`,
             }"
           >
-            <h4 class="mb-1" :style="{ color: brand.colors.negative }">Setores Muito Cíclicos</h4>
+            <h4 class="mb-1" :style="{ color: 'var(--brand-negative)' }">Setores Muito Cíclicos</h4>
             <p class="text-sm">
               Commodities (mineração, siderurgia) têm lucros que variam muito. Use LPA médio de vários anos ou análise de ciclos.
             </p>
@@ -375,11 +375,11 @@
           <div
             class="brand-card border p-4"
             :style="{
-              borderColor: `color-mix(in srgb, ${brand.colors.negative} 25%, transparent)`,
-              backgroundColor: `color-mix(in srgb, ${brand.colors.negative} 8%, transparent)`,
+              borderColor: `color-mix(in srgb, var(--brand-negative) 25%, transparent)`,
+              backgroundColor: `color-mix(in srgb, var(--brand-negative) 8%, transparent)`,
             }"
           >
-            <h4 class="mb-1" :style="{ color: brand.colors.negative }">Empresas com Dívida Altíssima</h4>
+            <h4 class="mb-1" :style="{ color: 'var(--brand-negative)' }">Empresas com Dívida Altíssima</h4>
             <p class="text-sm">
               Se a empresa está super endividada, o valor patrimonial pode estar inflado. Verifique Dívida Líquida / EBITDA antes.
             </p>
@@ -392,8 +392,8 @@
           <details
             class="group brand-card border p-4"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <summary class="cursor-pointer list-none flex items-center justify-between">
@@ -408,8 +408,8 @@
           <details
             class="group brand-card border p-4"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <summary class="cursor-pointer list-none flex items-center justify-between">
@@ -424,8 +424,8 @@
           <details
             class="group brand-card border p-4"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <summary class="cursor-pointer list-none flex items-center justify-between">
@@ -440,8 +440,8 @@
           <details
             class="group brand-card border p-4"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <summary class="cursor-pointer list-none flex items-center justify-between">
@@ -456,8 +456,8 @@
           <details
             class="group brand-card border p-4"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <summary class="cursor-pointer list-none flex items-center justify-between">
@@ -472,8 +472,8 @@
           <details
             class="group brand-card border p-4"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <summary class="cursor-pointer list-none flex items-center justify-between">
@@ -488,8 +488,8 @@
           <details
             class="group brand-card border p-4"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <summary class="cursor-pointer list-none flex items-center justify-between">
@@ -504,8 +504,8 @@
           <details
             class="group brand-card border p-4"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <summary class="cursor-pointer list-none flex items-center justify-between">
@@ -520,8 +520,8 @@
           <details
             class="group brand-card border p-4"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <summary class="cursor-pointer list-none flex items-center justify-between">
@@ -536,8 +536,8 @@
           <details
             class="group brand-card border p-4"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <summary class="cursor-pointer list-none flex items-center justify-between">
@@ -555,8 +555,8 @@
           <div
             class="brand-card border p-5"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <h4 class="mb-2 text-secondary">
@@ -569,8 +569,8 @@
           <div
             class="brand-card border p-5"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <h4 class="mb-2 text-secondary">
@@ -583,8 +583,8 @@
           <div
             class="brand-card border p-5"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <h4 class="mb-2 text-secondary">
@@ -597,8 +597,8 @@
           <div
             class="brand-card border p-5"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <h4 class="mb-2 text-secondary">
@@ -611,8 +611,8 @@
           <div
             class="brand-card border p-5"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <h4 class="mb-2 text-secondary">
@@ -625,8 +625,8 @@
           <div
             class="brand-card border p-5"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <h4 class="mb-2 text-secondary">
@@ -642,7 +642,7 @@
       <!-- Calculadoras Relacionadas -->
       <div
         class="flex flex-col gap-4 rounded-[30px] p-6"
-        :style="{ backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')' }"
+        :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))' }"
       >
         <h2>Outras Ferramentas</h2>
         <div class="grid gap-4 md:grid-cols-2">
@@ -650,8 +650,8 @@
             to="/calculadora/dividend-yield"
             class="group flex items-center gap-4 brand-card border p-4 transition hover:border-secondary/50"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <UIcon
@@ -669,8 +669,8 @@
             to="/calculadora/acoes"
             class="group flex items-center gap-4 brand-card border p-4 transition hover:border-secondary/50"
             :style="{
-              backgroundColor: 'color-mix(in srgb, ' + brand.colors.surface + ' 55%, ' + brand.colors.background + ')',
-              borderColor: 'color-mix(in srgb, ' + brand.colors.border + ' 50%, transparent)',
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
             }"
           >
             <UIcon

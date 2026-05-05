@@ -5,7 +5,7 @@
       <NuxtLink
         to="/calculadora"
         class="flex items-center gap-1 text-xs transition hover:opacity-80"
-        :style="{ color: brand.colors.textMuted }"
+        :style="{ color: 'var(--brand-text-muted)' }"
       >
         <UIcon name="i-lucide-chevron-left" class="size-3" />
         Todas as calculadoras
@@ -18,14 +18,14 @@
           <h1
             class="font-light"
             :style="{
-              color: brand.colors.text,
+              color: 'var(--brand-text)',
               fontSize: 'clamp(28px, 4vw, 36px)',
               lineHeight: 1.05,
               letterSpacing: '-0.7px',
             }"
           >Simulador de Investimento em Ações com Dividendos</h1>
         </div>
-        <p class="text-base md:text-lg" :style="{ color: brand.colors.textMuted }">
+        <p class="text-base md:text-lg" :style="{ color: 'var(--brand-text-muted)' }">
           Descubra quanto você teria ganho investindo em ações da B3. Análise baseada em dados históricos reais, incluindo reinvestimento de dividendos e simulação com múltiplos ativos.
         </p>
       </div>
@@ -34,7 +34,7 @@
       <CalculatorStock :assets="assets" :assets-loading="assetsLoading" />
 
       <!-- Conteúdo Educacional -->
-      <div class="prose max-w-none" :style="{ color: brand.colors.text }">
+      <div class="prose max-w-none" :style="{ color: 'var(--brand-text)' }">
         <h2>Como Funciona o Simulador de Ações</h2>
         <p class="leading-relaxed">
           Nosso simulador usa dados históricos reais da Bolsa de Valores brasileira (B3) para mostrar exatamente quanto você teria ganho (ou perdido) investindo em ações específicas. Diferente de calculadoras genéricas que usam taxas fixas, aqui você vê o resultado real, com todas as oscilações do mercado.
@@ -45,7 +45,7 @@
 
         <h3>Por que Simular Investimentos em Ações?</h3>
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="brand-card border p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+          <div class="brand-card border p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
             <h4 class="mb-2 text-secondary">
               Aprender com o Passado
             </h4>
@@ -53,7 +53,7 @@
               Entenda como diferentes ações se comportaram em crises, recuperações e momentos de euforia. O passado não garante o futuro, mas ensina muito.
             </p>
           </div>
-          <div class="brand-card border p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+          <div class="brand-card border p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
             <h4 class="mb-2 text-secondary">
               Testar Estratégias
             </h4>
@@ -61,7 +61,7 @@
               Compare diferentes abordagens: aporte único vs aportes mensais, reinvestir dividendos vs sacar, concentrar em poucas ações vs diversificar.
             </p>
           </div>
-          <div class="brand-card border p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+          <div class="brand-card border p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
             <h4 class="mb-2 text-secondary">
               Avaliar Dividendos
             </h4>
@@ -69,7 +69,7 @@
               Veja o impacto real dos dividendos no retorno total. Muitas vezes, proventos representam 30-50% do ganho total em ações de qualidade.
             </p>
           </div>
-          <div class="brand-card border p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+          <div class="brand-card border p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
             <h4 class="mb-2 text-secondary">
               Comparar Ativos
             </h4>
@@ -145,19 +145,19 @@
 
         <h3>Tipos de Proventos</h3>
         <div class="space-y-3">
-          <div class="brand-card border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+          <div class="brand-card border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
             <h4 class="mb-1 text-secondary">Dividendos</h4>
             <p class="text-sm">
               Distribuição de lucro líquido. Isentos de IR. Pagos periodicamente por empresas lucrativas.
             </p>
           </div>
-          <div class="brand-card border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+          <div class="brand-card border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
             <h4 class="mb-1 text-secondary">Juros sobre Capital Próprio (JCP)</h4>
             <p class="text-sm">
               Remuneração aos acionistas que a empresa pode deduzir do IR. Tem 15% de IR retido na fonte, mas ainda assim vantajoso.
             </p>
           </div>
-          <div class="brand-card border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+          <div class="brand-card border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
             <h4 class="mb-1 text-secondary">Bonificações</h4>
             <p class="text-sm">
               Novas ações distribuídas gratuitamente aos acionistas, geralmente quando a empresa capitaliza reservas.
@@ -170,17 +170,17 @@
           <div
             class="brand-card border p-5"
             :style="{
-              borderColor: `color-mix(in srgb, ${brand.colors.positive} 20%, transparent)`,
-              backgroundColor: `color-mix(in srgb, ${brand.colors.positive} 5%, transparent)`,
+              borderColor: `color-mix(in srgb, var(--brand-positive) 20%, transparent)`,
+              backgroundColor: `color-mix(in srgb, var(--brand-positive) 5%, transparent)`,
             }"
           >
-            <h4 class="mb-2" :style="{ color: brand.colors.positive }">
+            <h4 class="mb-2" :style="{ color: 'var(--brand-positive)' }">
               Reinvestindo Dividendos
             </h4>
             <p class="text-sm mb-3">
               Você compra mais ações com os dividendos recebidos, acelerando o crescimento exponencial.
             </p>
-            <div class="rounded-lg p-3" :style="{ backgroundColor: brand.colors.border }">
+            <div class="rounded-lg p-3" :style="{ backgroundColor: 'var(--brand-border)' }">
               <p class="text-xs opacity-60">Exemplo: R$ 10.000 em ITUB4 por 10 anos</p>
               <p class="text-sm">
                 Com reinvestimento: R$ 45.000
@@ -188,14 +188,14 @@
               <p class="text-xs opacity-60">Rentabilidade: 350%</p>
             </div>
           </div>
-          <div class="brand-card border p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+          <div class="brand-card border p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
             <h4 class="mb-2">
               Sacando Dividendos
             </h4>
             <p class="text-sm mb-3">
               Você usa os dividendos para renda passiva, mas perde o efeito composto.
             </p>
-            <div class="rounded-lg p-3" :style="{ backgroundColor: brand.colors.border }">
+            <div class="rounded-lg p-3" :style="{ backgroundColor: 'var(--brand-border)' }">
               <p class="text-xs opacity-60">Exemplo: R$ 10.000 em ITUB4 por 10 anos</p>
               <p class="text-sm">
                 Sem reinvestimento: R$ 28.000
@@ -211,7 +211,7 @@
         <h2>Exemplos de Simulações</h2>
 
         <h3>Exemplo 1: Blue Chips - Petrobras (PETR4)</h3>
-        <div class="brand-card border p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+        <div class="brand-card border p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
           <div class="mb-4">
             <h4>Cenário</h4>
             <ul class="text-sm">
@@ -235,7 +235,7 @@
         </div>
 
         <h3>Exemplo 2: Dividendos Consistentes - Itaú (ITUB4)</h3>
-        <div class="brand-card border p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+        <div class="brand-card border p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
           <div class="mb-4">
             <h4>Cenário</h4>
             <ul class="text-sm">
@@ -259,7 +259,7 @@
         </div>
 
         <h3>Exemplo 3: Growth Stock - Magazine Luiza (MGLU3)</h3>
-        <div class="brand-card border p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+        <div class="brand-card border p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
           <div class="mb-4">
             <h4>Cenário</h4>
             <ul class="text-sm">
@@ -271,7 +271,7 @@
           </div>
           <div
             class="rounded-lg p-4"
-            :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.negative} 20%, transparent)` }"
+            :style="{ backgroundColor: `color-mix(in srgb, var(--brand-negative) 20%, transparent)` }"
           >
             <p class="text-sm">
               Resultado aproximado: R$ 15.000 - R$ 25.000
@@ -296,7 +296,7 @@
         <h3>Exemplo de Carteira Diversificada</h3>
         <div class="overflow-x-auto">
           <table class="w-full border-collapse">
-            <thead :style="{ backgroundColor: brand.colors.surface }">
+            <thead :style="{ backgroundColor: 'var(--brand-surface)' }">
               <tr>
                 <th class="border px-4 py-2 text-left">Ticker</th>
                 <th class="border px-4 py-2 text-left">Empresa</th>
@@ -311,7 +311,7 @@
                 <td class="border px-4 py-2 opacity-80">Bancos</td>
                 <td class="border px-4 py-2 text-secondary">20%</td>
               </tr>
-              <tr :style="{ backgroundColor: brand.colors.surface }">
+              <tr :style="{ backgroundColor: 'var(--brand-surface)' }">
                 <td class="border px-4 py-2">VALE3</td>
                 <td class="border px-4 py-2 opacity-80">Vale</td>
                 <td class="border px-4 py-2 opacity-80">Mineração</td>
@@ -323,7 +323,7 @@
                 <td class="border px-4 py-2 opacity-80">Bens Industriais</td>
                 <td class="border px-4 py-2 text-secondary">15%</td>
               </tr>
-              <tr :style="{ backgroundColor: brand.colors.surface }">
+              <tr :style="{ backgroundColor: 'var(--brand-surface)' }">
                 <td class="border px-4 py-2">PETR4</td>
                 <td class="border px-4 py-2 opacity-80">Petrobras</td>
                 <td class="border px-4 py-2 opacity-80">Petróleo</td>
@@ -335,7 +335,7 @@
                 <td class="border px-4 py-2 opacity-80">Bancos</td>
                 <td class="border px-4 py-2 text-secondary">15%</td>
               </tr>
-              <tr :style="{ backgroundColor: brand.colors.surface }">
+              <tr :style="{ backgroundColor: 'var(--brand-surface)' }">
                 <td class="border px-4 py-2">BBAS3</td>
                 <td class="border px-4 py-2 opacity-80">Banco do Brasil</td>
                 <td class="border px-4 py-2 opacity-80">Bancos</td>
@@ -357,7 +357,7 @@
         <h2>Perguntas Frequentes</h2>
         
         <div class="space-y-4">
-          <details class="group brand-card border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+          <details class="group brand-card border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
             <summary class="cursor-pointer list-none flex items-center justify-between">
               Os resultados do simulador são precisos?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -367,7 +367,7 @@
             </p>
           </details>
 
-          <details class="group brand-card border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+          <details class="group brand-card border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
             <summary class="cursor-pointer list-none flex items-center justify-between">
               Por que reinvestir dividendos é importante?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -377,7 +377,7 @@
             </p>
           </details>
 
-          <details class="group brand-card border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+          <details class="group brand-card border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
             <summary class="cursor-pointer list-none flex items-center justify-between">
               Qual a diferença entre ações ON e PN?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -387,7 +387,7 @@
             </p>
           </details>
 
-          <details class="group brand-card border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+          <details class="group brand-card border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
             <summary class="cursor-pointer list-none flex items-center justify-between">
               Quantas ações devo ter na carteira?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -397,7 +397,7 @@
             </p>
           </details>
 
-          <details class="group brand-card border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+          <details class="group brand-card border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
             <summary class="cursor-pointer list-none flex items-center justify-between">
               Quando é melhor fazer aporte único vs aportes mensais?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -407,7 +407,7 @@
             </p>
           </details>
 
-          <details class="group brand-card border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+          <details class="group brand-card border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
             <summary class="cursor-pointer list-none flex items-center justify-between">
               O simulador considera custos e impostos?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -417,7 +417,7 @@
             </p>
           </details>
 
-          <details class="group brand-card border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+          <details class="group brand-card border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
             <summary class="cursor-pointer list-none flex items-center justify-between">
               Devo investir em ações de alto dividendo?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -427,7 +427,7 @@
             </p>
           </details>
 
-          <details class="group brand-card border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+          <details class="group brand-card border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
             <summary class="cursor-pointer list-none flex items-center justify-between">
               Ações ou FIIs: qual é melhor para dividendos?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -437,7 +437,7 @@
             </p>
           </details>
 
-          <details class="group brand-card border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+          <details class="group brand-card border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
             <summary class="cursor-pointer list-none flex items-center justify-between">
               Como escolher boas ações para investir?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -447,7 +447,7 @@
             </p>
           </details>
 
-          <details class="group brand-card border p-4" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+          <details class="group brand-card border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
             <summary class="cursor-pointer list-none flex items-center justify-between">
               Qual o melhor período para simular?
               <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
@@ -460,7 +460,7 @@
 
         <h2>Dicas para Investir em Ações</h2>
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="brand-card border p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+          <div class="brand-card border p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
             <h4 class="mb-2 text-secondary">
               1. Invista no Longo Prazo
             </h4>
@@ -468,7 +468,7 @@
               Ações são voláteis no curto prazo, mas historicamente rentáveis em 10+ anos. Não invista dinheiro que você vai precisar em menos de 5 anos.
             </p>
           </div>
-          <div class="brand-card border p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+          <div class="brand-card border p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
             <h4 class="mb-2 text-secondary">
               2. Diversifique Sempre
             </h4>
@@ -476,7 +476,7 @@
               Nunca coloque todos os ovos na mesma cesta. Diversifique entre setores e tipos de ações. Use o simulador para testar diferentes combinações.
             </p>
           </div>
-          <div class="brand-card border p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+          <div class="brand-card border p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
             <h4 class="mb-2 text-secondary">
               3. Reinvista os Dividendos
             </h4>
@@ -484,7 +484,7 @@
               Principalmente na fase de acumulação. O efeito composto dos dividendos pode dobrar seu patrimônio ao longo de 20-30 anos.
             </p>
           </div>
-          <div class="brand-card border p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+          <div class="brand-card border p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
             <h4 class="mb-2 text-secondary">
               4. Estude as Empresas
             </h4>
@@ -492,7 +492,7 @@
               Não compre ações só porque alguém recomendou. Entenda o negócio, analise fundamentos e use o simulador para ver o histórico.
             </p>
           </div>
-          <div class="brand-card border p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+          <div class="brand-card border p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
             <h4 class="mb-2 text-secondary">
               5. Mantenha Aportes Regulares
             </h4>
@@ -500,7 +500,7 @@
               Invista mensalmente, independente do momento do mercado. Isso reduz risco de timing e constrói disciplina.
             </p>
           </div>
-          <div class="brand-card border p-5" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+          <div class="brand-card border p-5" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
             <h4 class="mb-2 text-secondary">
               6. Não Se Desespere em Crises
             </h4>
@@ -512,13 +512,13 @@
       </div>
 
       <!-- Calculadoras Relacionadas -->
-      <div class="flex flex-col gap-4 rounded-[30px] p-6" :style="{ backgroundColor: brand.colors.surface }">
+      <div class="flex flex-col gap-4 rounded-[30px] p-6" :style="{ backgroundColor: 'var(--brand-surface)' }">
         <h2>Outras Ferramentas</h2>
         <div class="grid gap-4 md:grid-cols-2">
           <NuxtLink
             to="/calculadora/juros-compostos"
             class="group flex items-center gap-4 brand-card border p-4 transition hover:border-secondary/50"
-            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+            :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
           >
             <UIcon
               name="i-lucide-trending-up"
@@ -534,7 +534,7 @@
           <NuxtLink
             to="/calculadora/planejamento"
             class="group flex items-center gap-4 brand-card border p-4 transition hover:border-secondary/50"
-            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+            :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
           >
             <UIcon
               name="i-lucide-target"
