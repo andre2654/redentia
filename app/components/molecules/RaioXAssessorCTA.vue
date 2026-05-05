@@ -46,7 +46,7 @@ const features = [
       class="rx-assessor__glow"
       aria-hidden="true"
       :style="{
-        background: `radial-gradient(ellipse 70% 60% at 50% 40%, color-mix(in srgb, ${brand.colors.primary} 22%, transparent), transparent 65%)`,
+        background: `radial-gradient(ellipse 70% 60% at 50% 40%, color-mix(in srgb, var(--brand-primary) 22%, transparent), transparent 65%)`,
       }"
     />
 
@@ -55,7 +55,7 @@ const features = [
 
       <h2 class="rx-assessor__title">
         Quer ir mais fundo, com nosso
-        <em :style="{ color: brand.colors.primary, fontFamily: 'Instrument Serif, serif', fontStyle: 'italic' }">assessor inteligente?</em>
+        <em :style="{ color: 'var(--brand-primary)', fontFamily: 'Instrument Serif, serif', fontStyle: 'italic' }">assessor inteligente?</em>
       </h2>
 
       <p class="rx-assessor__intro">
@@ -68,7 +68,7 @@ const features = [
       <ul class="rx-assessor__features">
         <li v-for="(feat, idx) in features" :key="idx">
           <span class="rx-assessor__feat-icon" aria-hidden="true">
-            <UIcon :name="feat.icon" class="size-4" :style="{ color: brand.colors.primary }" />
+            <UIcon :name="feat.icon" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
           </span>
           <span class="rx-assessor__feat-label">{{ feat.label }}</span>
         </li>

@@ -101,8 +101,8 @@ const layoutName = computed(() => 'unauthenticated')
           <div
             class="magic-verify__spinner"
             :style="{
-              borderColor: `color-mix(in srgb, ${brand.colors.primary} 25%, transparent)`,
-              borderTopColor: brand.colors.primary,
+              borderColor: `color-mix(in srgb, var(--brand-primary) 25%, transparent)`,
+              borderTopColor: 'var(--brand-primary)',
             }"
           />
           <h1 class="magic-verify__title">

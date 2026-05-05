@@ -29,11 +29,11 @@ function formatPercent(v: number, decimals = 1): string {
 
 function thesisStatusColor(status?: string): string {
   switch (status) {
-    case 'forte': return brand.colors.positive
+    case 'forte': return 'var(--brand-positive)'
     case 'fraca':
-    case 'em-risco': return brand.colors.negative
+    case 'em-risco': return 'var(--brand-negative)'
     case 'neutra':
-    default: return brand.colors.primary
+    default: return 'var(--brand-primary)'
   }
 }
 
@@ -123,9 +123,9 @@ const hasLocked = computed(() => lockedAssets.value.length > 0)
             <strong
               :style="{
                 color: asset.fundamentals.roe < 0
-                  ? brand.colors.negative
+                  ? 'var(--brand-negative)'
                   : asset.fundamentals.roe > 15
-                    ? brand.colors.positive
+                    ? 'var(--brand-positive)'
                     : 'var(--text-heading)'
               }"
             >{{ formatPercent(asset.fundamentals.roe) }}</strong>
@@ -134,7 +134,7 @@ const hasLocked = computed(() => lockedAssets.value.length > 0)
             <span>DY</span>
             <strong
               :style="{
-                color: asset.dy > 8 ? brand.colors.positive : 'var(--text-heading)'
+                color: asset.dy > 8 ? 'var(--brand-positive)' : 'var(--text-heading)'
               }"
             >{{ formatPercent(asset.dy) }}</strong>
           </li>
@@ -143,9 +143,9 @@ const hasLocked = computed(() => lockedAssets.value.length > 0)
             <strong
               :style="{
                 color: asset.fundamentals.netDebtEbitda > 3
-                  ? brand.colors.negative
+                  ? 'var(--brand-negative)'
                   : asset.fundamentals.netDebtEbitda < 1
-                    ? brand.colors.positive
+                    ? 'var(--brand-positive)'
                     : 'var(--text-heading)'
               }"
             >{{ asset.fundamentals.netDebtEbitda.toFixed(1) }}</strong>
@@ -158,7 +158,7 @@ const hasLocked = computed(() => lockedAssets.value.length > 0)
             <span>Vacância</span>
             <strong
               :style="{
-                color: asset.fundamentals.vacancia > 8 ? brand.colors.negative : 'var(--text-heading)'
+                color: asset.fundamentals.vacancia > 8 ? 'var(--brand-negative)' : 'var(--text-heading)'
               }"
             >{{ formatPercent(asset.fundamentals.vacancia) }}</strong>
           </li>
@@ -171,9 +171,9 @@ const hasLocked = computed(() => lockedAssets.value.length > 0)
             <strong
               :style="{
                 color: asset.fundamentals.earningsCagr5y < 0
-                  ? brand.colors.negative
+                  ? 'var(--brand-negative)'
                   : asset.fundamentals.earningsCagr5y > 15
-                    ? brand.colors.positive
+                    ? 'var(--brand-positive)'
                     : 'var(--text-heading)'
               }"
             >{{ asset.fundamentals.earningsCagr5y > 0 ? '+' : '' }}{{ formatPercent(asset.fundamentals.earningsCagr5y) }}</strong>
@@ -184,7 +184,7 @@ const hasLocked = computed(() => lockedAssets.value.length > 0)
           </li>
           <li>
             <span>Peso</span>
-            <strong :style="{ color: brand.colors.primary }">
+            <strong :style="{ color: 'var(--brand-primary)' }">
               {{ formatPercent(asset.weight * 100, 0) }}
             </strong>
           </li>
@@ -215,9 +215,9 @@ const hasLocked = computed(() => lockedAssets.value.length > 0)
             <span
               class="rx-deep__thesis"
               :style="{
-                color: brand.colors.primary,
-                background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`,
-                borderColor: `color-mix(in srgb, ${brand.colors.primary} 30%, transparent)`,
+                color: 'var(--brand-primary)',
+                background: `color-mix(in srgb, var(--brand-primary) 14%, transparent)`,
+                borderColor: `color-mix(in srgb, var(--brand-primary) 30%, transparent)`,
               }"
             >Avaliando</span>
           </header>

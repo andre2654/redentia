@@ -106,7 +106,7 @@ const fmtBRL = (v: number) => v.toLocaleString('pt-BR', {
       <p class="eyebrow">CONTEÚDO LIBERADO COM CADASTRO</p>
       <h2 class="rx-locked__title">
         Tem
-        <em :style="{ color: brand.colors.primary, fontFamily: 'Instrument Serif, serif', fontStyle: 'italic' }">
+        <em :style="{ color: 'var(--brand-primary)', fontFamily: 'Instrument Serif, serif', fontStyle: 'italic' }">
           muito mais
         </em>
         pra explorar
@@ -119,7 +119,7 @@ const fmtBRL = (v: number) => v.toLocaleString('pt-BR', {
         <!-- 1. Calendário de dividendos -->
         <article class="rx-locked__card">
           <header class="rx-locked__card-head">
-            <UIcon name="i-lucide-calendar-days" class="size-4" :style="{ color: brand.colors.primary }" />
+            <UIcon name="i-lucide-calendar-days" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
             <span class="eyebrow">Calendário de dividendos</span>
           </header>
           <div class="rx-locked__calendar-list">
@@ -137,7 +137,7 @@ const fmtBRL = (v: number) => v.toLocaleString('pt-BR', {
         <!-- 2. Eventos do mercado -->
         <article class="rx-locked__card">
           <header class="rx-locked__card-head">
-            <UIcon name="i-lucide-newspaper" class="size-4" :style="{ color: brand.colors.primary }" />
+            <UIcon name="i-lucide-newspaper" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
             <span class="eyebrow">Eventos do mercado</span>
           </header>
           <ul class="rx-locked__events-list">
@@ -146,7 +146,7 @@ const fmtBRL = (v: number) => v.toLocaleString('pt-BR', {
               :key="idx"
               class="rx-locked__event-row"
             >
-              <span class="rx-locked__event-dot" :style="{ background: brand.colors.primary }" />
+              <span class="rx-locked__event-dot" :style="{ background: 'var(--brand-primary)' }" />
               <div class="rx-locked__event-content">
                 <span class="rx-locked__event-title">{{ ev.title }}</span>
                 <span class="rx-locked__event-date">{{ ev.date }}</span>
@@ -158,7 +158,7 @@ const fmtBRL = (v: number) => v.toLocaleString('pt-BR', {
         <!-- 3. Comparação com benchmarks -->
         <article class="rx-locked__card">
           <header class="rx-locked__card-head">
-            <UIcon name="i-lucide-bar-chart-3" class="size-4" :style="{ color: brand.colors.primary }" />
+            <UIcon name="i-lucide-bar-chart-3" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
             <span class="eyebrow">vs Benchmarks</span>
           </header>
           <div class="rx-locked__bench-list">
@@ -173,7 +173,7 @@ const fmtBRL = (v: number) => v.toLocaleString('pt-BR', {
                   class="rx-locked__bench-bar"
                   :style="{
                     width: `${Math.min(100, (b.value / 15) * 100)}%`,
-                    background: idx === 0 ? brand.colors.primary : `color-mix(in srgb, ${brand.colors.primary} 35%, transparent)`,
+                    background: idx === 0 ? 'var(--brand-primary)' : `color-mix(in srgb, var(--brand-primary) 35%, transparent)`,
                   }"
                 />
               </div>
@@ -185,7 +185,7 @@ const fmtBRL = (v: number) => v.toLocaleString('pt-BR', {
         <!-- 4. Alocação por classe -->
         <article class="rx-locked__card">
           <header class="rx-locked__card-head">
-            <UIcon name="i-lucide-pie-chart" class="size-4" :style="{ color: brand.colors.primary }" />
+            <UIcon name="i-lucide-pie-chart" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
             <span class="eyebrow">Alocação por classe</span>
           </header>
           <div class="rx-locked__alloc-list">
@@ -200,7 +200,7 @@ const fmtBRL = (v: number) => v.toLocaleString('pt-BR', {
                   class="rx-locked__alloc-bar"
                   :style="{
                     width: `${c.pct}%`,
-                    background: `color-mix(in srgb, ${brand.colors.primary} ${60 - idx * 10}%, transparent)`,
+                    background: `color-mix(in srgb, var(--brand-primary) ${60 - idx * 10}%, transparent)`,
                   }"
                 />
               </div>
@@ -213,7 +213,7 @@ const fmtBRL = (v: number) => v.toLocaleString('pt-BR', {
       <!-- Overlay com cadeado -->
       <div class="rx-locked__overlay">
         <div class="rx-locked__lock-icon" aria-hidden="true">
-          <UIcon name="i-lucide-lock-keyhole" class="size-8" :style="{ color: brand.colors.primary }" />
+          <UIcon name="i-lucide-lock-keyhole" class="size-8" :style="{ color: 'var(--brand-primary)' }" />
         </div>
         <p class="rx-locked__cta">
           Calendário de dividendos, eventos do mercado, comparação com benchmarks e mais.

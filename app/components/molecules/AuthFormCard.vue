@@ -167,7 +167,7 @@ function onGoogleSuccess() {
     <div v-if="currentStep === 1" class="auth-form__step">
       <div class="auth-form__header">
         <div class="auth-form__logo" aria-hidden="true">
-          <UIcon name="i-lucide-radar" class="size-7" :style="{ color: brand.colors.primary }" />
+          <UIcon name="i-lucide-radar" class="size-7" :style="{ color: 'var(--brand-primary)' }" />
         </div>
         <h2 class="auth-form__title">
           {{ formMode === 'register' ? 'Qual seu e-mail?' : 'Bem-vindo de volta' }}
@@ -247,7 +247,7 @@ function onGoogleSuccess() {
     <div v-else class="auth-form__step">
       <div class="auth-form__header">
         <div class="auth-form__icon-success" aria-hidden="true">
-          <UIcon name="i-lucide-mail-check" class="size-8" :style="{ color: brand.colors.primary }" />
+          <UIcon name="i-lucide-mail-check" class="size-8" :style="{ color: 'var(--brand-primary)' }" />
         </div>
         <h2 class="auth-form__title">
           Link enviado pro seu e-mail

@@ -215,11 +215,11 @@ const stressTest = computed(() => {
 // Cor do score baseada na band
 const scoreBandColor = computed(() => {
   switch (props.report.band) {
-    case 'critico': return brand.colors.negative
+    case 'critico': return 'var(--brand-negative)'
     case 'atencao': return '#F59E0B'
-    case 'bom': return brand.colors.primary
-    case 'excelente': return brand.colors.positive
-    default: return brand.colors.primary
+    case 'bom': return 'var(--brand-primary)'
+    case 'excelente': return 'var(--brand-positive)'
+    default: return 'var(--brand-primary)'
   }
 })
 
@@ -341,7 +341,7 @@ const heroSubhead = computed(() => {
           <p
             class="rx-hero__stat-sub"
             :style="{
-              color: vsCdi.positive ? brand.colors.positive : brand.colors.negative,
+              color: vsCdi.positive ? 'var(--brand-positive)' : 'var(--brand-negative)',
             }"
           >
             <UIcon
@@ -400,7 +400,7 @@ const heroSubhead = computed(() => {
       <header class="rx-hero__section-header">
         <span class="eyebrow">TESTE DE STRESS</span>
         <h2 class="rx-hero__section-title">
-          E se acontecer: <em :style="{ color: brand.colors.primary, fontFamily: 'Instrument Serif, serif', fontStyle: 'italic' }">Covid</em>
+          E se acontecer: <em :style="{ color: 'var(--brand-primary)', fontFamily: 'Instrument Serif, serif', fontStyle: 'italic' }">Covid</em>
         </h2>
         <p class="rx-hero__stress-context">{{ stressTest.scenarioDescription }}</p>
       </header>
@@ -411,7 +411,7 @@ const heroSubhead = computed(() => {
             <span class="rx-hero__stress-name">Sua carteira</span>
             <span
               class="rx-hero__stress-value"
-              :style="{ color: brand.colors.negative }"
+              :style="{ color: 'var(--brand-negative)' }"
             >
               {{ stressTest.portfolioImpact.toFixed(1) }}%
             </span>
@@ -421,7 +421,7 @@ const heroSubhead = computed(() => {
               class="rx-hero__stress-bar"
               :style="{
                 width: `${stressTest.portfolioPct}%`,
-                background: brand.colors.negative,
+                background: 'var(--brand-negative)',
               }"
             />
           </div>
@@ -430,12 +430,12 @@ const heroSubhead = computed(() => {
         <div class="rx-hero__stress-row">
           <div class="rx-hero__stress-label">
             <span class="rx-hero__stress-name">
-              <UIcon name="i-lucide-sparkles" class="size-3.5 inline-block" :style="{ color: brand.colors.primary }" aria-hidden="true" />
+              <UIcon name="i-lucide-sparkles" class="size-3.5 inline-block" :style="{ color: 'var(--brand-primary)' }" aria-hidden="true" />
               Carteira recomendada Redent.IA
             </span>
             <span
               class="rx-hero__stress-value"
-              :style="{ color: brand.colors.primary }"
+              :style="{ color: 'var(--brand-primary)' }"
             >
               {{ stressTest.recommendedImpact.toFixed(1) }}%
             </span>
@@ -445,7 +445,7 @@ const heroSubhead = computed(() => {
               class="rx-hero__stress-bar"
               :style="{
                 width: `${stressTest.recommendedPct}%`,
-                background: brand.colors.primary,
+                background: 'var(--brand-primary)',
               }"
             />
           </div>
@@ -453,7 +453,7 @@ const heroSubhead = computed(() => {
       </div>
 
       <p class="rx-hero__stress-conclusion">
-        <UIcon name="i-lucide-shield-check" class="size-4 inline-block" :style="{ color: brand.colors.positive }" aria-hidden="true" />
+        <UIcon name="i-lucide-shield-check" class="size-4 inline-block" :style="{ color: 'var(--brand-positive)' }" aria-hidden="true" />
         Com a recomendação da Redent.IA, você teria perdido
         <strong>{{ Math.abs(stressTest.protectionPct) }}% menos</strong>
         nesse cenário.

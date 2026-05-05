@@ -105,7 +105,7 @@ async function resendLink() {
         <UIcon
           name="i-lucide-lock-keyhole-open"
           class="size-7"
-          :style="{ color: brand.colors.primary }"
+          :style="{ color: 'var(--brand-primary)' }"
         />
       </div>
 
@@ -118,15 +118,15 @@ async function resendLink() {
 
       <ul class="rx-gate__bullets">
         <li>
-          <UIcon name="i-lucide-check" class="size-4" :style="{ color: brand.colors.primary }" />
+          <UIcon name="i-lucide-check" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
           Sua carteira monitorada todos os dias
         </li>
         <li>
-          <UIcon name="i-lucide-check" class="size-4" :style="{ color: brand.colors.primary }" />
+          <UIcon name="i-lucide-check" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
           Alertas de mudanças nos seus ativos
         </li>
         <li>
-          <UIcon name="i-lucide-check" class="size-4" :style="{ color: brand.colors.primary }" />
+          <UIcon name="i-lucide-check" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
           Acesso à plataforma completa
         </li>
       </ul>
@@ -179,7 +179,7 @@ async function resendLink() {
         <UIcon
           name="i-lucide-mail-check"
           class="size-7"
-          :style="{ color: brand.colors.primary }"
+          :style="{ color: 'var(--brand-primary)' }"
         />
       </div>
 
@@ -192,11 +192,11 @@ async function resendLink() {
 
       <ul class="rx-gate__bullets rx-gate__bullets--hints">
         <li>
-          <UIcon name="i-lucide-clock" class="size-4" :style="{ color: brand.colors.primary }" />
+          <UIcon name="i-lucide-clock" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
           O link expira em 15 minutos
         </li>
         <li>
-          <UIcon name="i-lucide-search" class="size-4" :style="{ color: brand.colors.primary }" />
+          <UIcon name="i-lucide-search" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
           Não chegou? Verifique a pasta de spam
         </li>
       </ul>

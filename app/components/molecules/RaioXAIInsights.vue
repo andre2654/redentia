@@ -42,7 +42,7 @@ const insights = computed(() => props.report.aiInsights || [])
           <UIcon
             :name="insight.icon || 'i-lucide-sparkles'"
             class="size-5"
-            :style="{ color: brand.colors.primary }"
+            :style="{ color: 'var(--brand-primary)' }"
           />
         </div>
         <p class="rx-insights__text">
