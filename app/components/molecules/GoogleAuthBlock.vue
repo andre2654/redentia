@@ -45,10 +45,14 @@ const props = withDefaults(
     mode?: 'signin' | 'signup'
     /** Optional override for the OR divider text. Defaults to "ou". */
     dividerLabel?: string
+    /** Destination after successful Google auth. Defaults to "/" mas
+     *  componentes consumidores podem mandar pra /wallet, /onboarding etc. */
+    redirectTo?: string
   }>(),
   {
     mode: 'signin',
     dividerLabel: 'ou',
+    redirectTo: '/',
   },
 )
 
@@ -99,7 +103,7 @@ onMounted(async () => {
         showSuccessNotification('Bem-vindo!', 'Carregando seu painel…')
         emit('success')
         // Small beat so the toast paints before the redirect.
-        setTimeout(() => router.push('/'), 200)
+        setTimeout(() => router.push(props.redirectTo), 200)
         break
       } catch (e) {
         const msg =

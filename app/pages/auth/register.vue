@@ -56,97 +56,24 @@
           </div>
         </div>
 
-        <UForm
-          :schema="schema"
-          :state="state"
+        <!-- Form de cadastro/login via componente compartilhado.
+             Mesmo componente do hard gate (RaioXSimulationModal) e do
+             /auth/login. Visual amber/light, 3 campos so, label hint
+             inline. UX provada com gate (3x conversao vs form antigo). -->
+        <div
           class="flex w-full max-w-md flex-col gap-5 rounded-lg border p-8"
           :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.surface}E6` }"
-          @submit="onSubmit"
         >
-          <div class="flex items-center justify-end border-b pb-4" :style="{ borderColor: brand.colors.border }">
-            <span class="font-mono-tab text-[10px]" :style="{ color: brand.colors.textMuted }">v2.1 · INIT</span>
-          </div>
+          <MoleculesAuthFormCard
+            mode="register"
+            redirect-to="/"
+            pixel-context="auth_page_register"
+          />
 
-          <UFormField name="name">
-            <template #label>
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">&gt; FULL_NAME</span>
-            </template>
-            <AtomsFormInput v-model="state.name" type="text" placeholder="Seu nome completo" size="lg" class="w-full" />
-          </UFormField>
-
-          <UFormField name="login">
-            <template #label>
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">&gt; USER_ID</span>
-            </template>
-            <AtomsFormInput v-model="state.login" type="text" placeholder="investidor123" size="lg" class="w-full" />
-          </UFormField>
-
-          <UFormField name="celular">
-            <template #label>
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">&gt; PHONE</span>
-            </template>
-            <AtomsFormInput
-              v-model="state.celular"
-              v-maska="'+55 (##) # ####-####'"
-              type="tel"
-              autocomplete="tel"
-              inputmode="tel"
-              placeholder="+55 (11) 9 9999-9999"
-              size="lg"
-              class="w-full"
-            />
-          </UFormField>
-
-          <UFormField name="email">
-            <template #label>
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">&gt; EMAIL</span>
-            </template>
-            <AtomsFormInput v-model="state.email" type="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="voce@exemplo.com" size="lg" class="w-full" />
-          </UFormField>
-
-          <UFormField name="password">
-            <template #label>
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">&gt; PASSWORD</span>
-            </template>
-            <AtomsFormInputPassword v-model="state.password" :aria-invalid="score < 4" class="w-full" />
-          </UFormField>
-
-          <UFormField name="password_confirmation">
-            <template #label>
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">&gt; PASSWORD_CONFIRM</span>
-            </template>
-            <AtomsFormInputPassword v-model="state.password_confirmation" placeholder="Confirme a senha" class="w-full" />
-          </UFormField>
-
-          <p
-            class="!m-0 flex items-center gap-1.5 !text-[13px] !leading-tight transition-colors"
-            :style="{ color: score >= 1 ? brand.colors.positive : brand.colors.textMuted }"
-            aria-live="polite"
-          >
-            <UIcon
-              :name="score >= 1 ? 'i-lucide-circle-check' : 'i-lucide-circle'"
-              class="size-3.5 shrink-0"
-              aria-hidden="true"
-            />
-            <span class="!text-[13px] !leading-tight">A senha deve ter pelo menos 8 caracteres</span>
-          </p>
-
-          <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="w-full justify-center font-mono-tab text-xs tracking-[0.15em]">
-            Criar sessão
-          </AtomsButton>
-
-          <MoleculesGoogleAuthBlock mode="signup" divider-label="OU" />
-
-          <div class="flex items-center justify-between border-t pt-4" :style="{ borderColor: brand.colors.border }">
-            <NuxtLink to="/auth/login" class="font-mono-tab text-[10px] uppercase tracking-[0.15em] transition hover:opacity-80" :style="{ color: brand.colors.primary }">
-              &gt; LOGIN
-            </NuxtLink>
-            <span class="font-mono-tab text-[10px]" :style="{ color: brand.colors.textMuted }">ENC · TLS</span>
-          </div>
-          <p class="font-mono-tab text-[10px]" :style="{ color: brand.colors.textMuted }">
+          <p class="font-mono-tab text-[10px] mt-2" :style="{ color: brand.colors.textMuted }">
             {{ brand.auth.termsText }}
           </p>
-        </UForm>
+        </div>
       </div>
     </section>
 
@@ -1034,12 +961,13 @@
           </p>
         </div>
 
-        <UForm
-          :schema="schema"
-          :state="state"
+        <!-- Form de cadastro/login via componente compartilhado (mesma UX
+             do hard gate /raio-x). 3 campos so (sem confirmacao de senha,
+             sem celular, sem login custom — tudo derivado), label hint
+             inline, Google abaixo do submit. UX provada com gate. -->
+        <div
           class="flex w-full max-w-md flex-col gap-5 rounded-[32px] border px-8 py-10 shadow-[0_25px_60px_-15px_rgba(15,23,42,0.5)] backdrop-blur-2xl"
           :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
-          @submit="onSubmit"
         >
           <div class="space-y-2 text-center md:text-left">
             <span class="text-xs font-medium uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
@@ -1051,65 +979,16 @@
             </p>
           </div>
 
-          <!-- Cadastro reduzido — Redentia v3: nome + email + senha.
-               Login derivado do email (alphanumeric, auto-set no submit).
-               advisor_code removido — vincula em /settings depois.
-               Celular removido — agora opcional no backend (migration
-               2026_05_02_180000), coletado depois em /settings. -->
-          <UFormField name="name">
-            <AtomsFormInput v-model="state.name" type="text" autocomplete="name" placeholder="Nome completo" size="lg" class="w-full" />
-          </UFormField>
+          <MoleculesAuthFormCard
+            mode="register"
+            redirect-to="/"
+            pixel-context="auth_page_register"
+          />
 
-          <UFormField name="email">
-            <AtomsFormInput v-model="state.email" type="email" autocomplete="email" inputmode="email" spellcheck="false" placeholder="E-mail" size="lg" class="w-full" />
-          </UFormField>
-
-          <UFormField name="password">
-            <AtomsFormInputPassword v-model="state.password" autocomplete="new-password" :aria-invalid="score < 1" class="w-full" />
-          </UFormField>
-
-          <UFormField name="password_confirmation">
-            <AtomsFormInputPassword v-model="state.password_confirmation" autocomplete="new-password" placeholder="Confirme a senha" class="w-full" />
-          </UFormField>
-
-          <p
-            class="!m-0 flex items-center gap-1.5 !text-[13px] !leading-tight transition-colors"
-            :style="{ color: score >= 1 ? brand.colors.positive : brand.colors.textMuted }"
-            aria-live="polite"
-          >
-            <UIcon
-              :name="score >= 1 ? 'i-lucide-circle-check' : 'i-lucide-circle'"
-              class="size-3.5 shrink-0"
-              aria-hidden="true"
-            />
-            <span class="!text-[13px] !leading-tight">A senha deve ter pelo menos 8 caracteres</span>
+          <p class="text-[11px] leading-relaxed text-center md:text-left mt-2" :style="{ color: brand.colors.textMuted }">
+            {{ brand.auth.termsText }}
           </p>
-
-          <!-- Submit unificado (variant default → Redentia + tenants sem
-               variant proprio). bg var(--brand-primary) + texto branco. -->
-          <button
-            type="submit"
-            :disabled="submitting || landing"
-            class="inline-flex w-full items-center justify-center gap-2 rounded-md px-5 py-3 text-[15px] font-semibold transition-[filter,box-shadow] duration-200 disabled:cursor-not-allowed disabled:opacity-60"
-            :style="{ backgroundColor: 'var(--brand-primary)', color: 'var(--text-on-primary)' }"
-            @mouseenter="($event.currentTarget as HTMLElement).style.filter = 'brightness(0.94)'"
-            @mouseleave="($event.currentTarget as HTMLElement).style.filter = 'brightness(1)'"
-          >
-            <UIcon v-if="submitting" name="i-lucide-loader-2" class="size-4 animate-spin" aria-hidden="true" />
-            <span>{{ brand.nav.register }}</span>
-          </button>
-
-          <MoleculesGoogleAuthBlock mode="signup" />
-
-          <div class="flex flex-col gap-2 text-center md:text-left">
-            <NuxtLink to="/auth/login" class="text-sm font-medium transition hover:opacity-80" :style="{ color: brand.colors.primary }">
-              Já tem uma conta? Faça login
-            </NuxtLink>
-            <p class="text-[11px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
-              {{ brand.auth.termsText }}
-            </p>
-          </div>
-        </UForm>
+        </div>
       </div>
     </section>
 

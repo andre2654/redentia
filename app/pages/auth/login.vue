@@ -58,47 +58,28 @@
           </div>
         </div>
 
-        <UForm
-          :schema="schema"
-          :state="state"
+        <!-- Form de auth via componente compartilhado MoleculesAuthFormCard.
+             Mesma UX do hard gate (RaioXSimulationModal) e do /auth/register.
+             3 campos so (Email/Senha pra login), label hint inline, Google
+             abaixo do botao primary. AuthFormCard ja inclui toggle pra
+             register, entao o link "REGISTER_NEW" do footer e redundante
+             mas mantido pra A/B (alguns users buscam o link no rodape). -->
+        <div
           class="flex w-full max-w-md flex-col gap-5 rounded-lg border p-8"
           :style="{ borderColor: brand.colors.border, backgroundColor: `${brand.colors.surface}E6` }"
-          @submit="onSubmit"
         >
-          <div class="flex items-center justify-end border-b pb-4" :style="{ borderColor: brand.colors.border }">
-            <span class="font-mono-tab text-[10px]" :style="{ color: brand.colors.textMuted }">ENC · TLS</span>
-          </div>
+          <MoleculesAuthFormCard
+            mode="login"
+            redirect-to="/"
+            pixel-context="auth_page_login"
+          />
 
-          <UFormField name="login">
-            <template #label>
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">&gt; USER_ID / EMAIL</span>
-            </template>
-            <AtomsFormInput v-model="state.login" type="text" autocomplete="username" spellcheck="false" placeholder="usuário ou e-mail" size="lg" class="w-full" />
-          </UFormField>
-
-          <UFormField name="password">
-            <template #label>
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: brand.colors.textMuted }">&gt; PASSWORD</span>
-            </template>
-            <AtomsFormInputPassword v-model="state.password" class="w-full" />
-          </UFormField>
-
-          <AtomsButton type="submit" color="secondary" size="lg" :loading="submitting" :disabled="submitting || landing" class="mt-2 w-full justify-center font-mono-tab text-xs tracking-[0.15em]">
-            Autenticar
-          </AtomsButton>
-
-          <MoleculesGoogleAuthBlock mode="signin" divider-label="OU" />
-
-          <div class="flex items-center justify-between border-t pt-4" :style="{ borderColor: brand.colors.border }">
-            <NuxtLink to="/auth/register" class="font-mono-tab text-[10px] uppercase tracking-[0.15em] transition hover:opacity-80" :style="{ color: brand.colors.primary }">
-              &gt; REGISTER_NEW
-            </NuxtLink>
+          <div class="flex items-center justify-end pt-2">
             <NuxtLink to="/auth/forgot-password" class="font-mono-tab text-[10px] uppercase tracking-[0.15em] transition hover:opacity-80" :style="{ color: brand.colors.textMuted }">
-              &gt; FORGOT_PWD
+              &gt; ESQUECI A SENHA
             </NuxtLink>
-            <span class="font-mono-tab text-[10px]" :style="{ color: brand.colors.textMuted }">{{ sessionTime }}</span>
           </div>
-        </UForm>
+        </div>
       </div>
     </section>
 
@@ -760,12 +741,12 @@
           </p>
         </div>
 
-        <UForm
-          :schema="schema"
-          :state="state"
+        <!-- Form de login via componente compartilhado MoleculesAuthFormCard
+             (mesma UX do hard gate /raio-x e do /auth/register). Toggle pra
+             register integrado, Google embaixo, label hint inline. -->
+        <div
           class="flex w-full max-w-md flex-col gap-5 rounded-[32px] border px-8 py-10 shadow-[0_25px_60px_-15px_rgba(15,23,42,0.5)] backdrop-blur-2xl"
           :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
-          @submit="onSubmit"
         >
           <div class="space-y-2 text-center md:text-left">
             <span class="text-xs font-medium uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
@@ -779,44 +760,21 @@
             </p>
           </div>
 
-          <UFormField name="login">
-            <AtomsFormInput v-model="state.login" type="text" autocomplete="username" spellcheck="false" placeholder="Usuário ou e-mail" size="lg" class="w-full" />
-          </UFormField>
+          <MoleculesAuthFormCard
+            mode="login"
+            redirect-to="/"
+            pixel-context="auth_page_login"
+          />
 
-          <UFormField name="password">
-            <AtomsFormInputPassword v-model="state.password" class="w-full" />
-          </UFormField>
-
-          <!-- Submit unificado (variant default → Redentia + tenants sem
-               variant proprio). Mesmo padrao do .quiet-btn-primary global:
-               bg var(--brand-primary) + texto/icones brancos. Loader inline
-               aparece enquanto submitting=true. -->
-          <button
-            type="submit"
-            :disabled="submitting || landing"
-            class="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-md px-5 py-3 text-[15px] font-semibold transition-[filter,box-shadow] duration-200 disabled:cursor-not-allowed disabled:opacity-60"
-            :style="{ backgroundColor: 'var(--brand-primary)', color: 'var(--text-on-primary)' }"
-            @mouseenter="($event.currentTarget as HTMLElement).style.filter = 'brightness(0.94)'"
-            @mouseleave="($event.currentTarget as HTMLElement).style.filter = 'brightness(1)'"
-          >
-            <UIcon v-if="submitting" name="i-lucide-loader-2" class="size-4 animate-spin" aria-hidden="true" />
-            <span>{{ brand.nav.login }}</span>
-          </button>
-
-          <MoleculesGoogleAuthBlock mode="signin" />
-
-          <div class="flex flex-col gap-2 text-center md:text-left">
+          <div class="flex flex-col gap-2 text-center md:text-left mt-2">
             <NuxtLink to="/auth/forgot-password" class="text-sm font-medium transition hover:opacity-80" :style="{ color: brand.colors.textMuted }">
               Esqueci minha senha
-            </NuxtLink>
-            <NuxtLink to="/auth/register" class="text-sm font-medium transition hover:opacity-80" :style="{ color: brand.colors.primary }">
-              Ainda não tem conta? Cadastre-se agora
             </NuxtLink>
             <p class="text-[11px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
               {{ brand.auth.termsText }}
             </p>
           </div>
-        </UForm>
+        </div>
       </div>
     </section>
 

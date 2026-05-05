@@ -164,37 +164,45 @@ function resetAnalysis() {
   router.push({ path: '/raio-x' })
 }
 
-// ============ SIMULATION MODAL — pop-up depois de 5s no resultado ============
-// Modal sobe 5s depois do diagnostico carregar. CTA primario manda pro
-// /auth/register, secundario fecha e deixa o usuario seguir vendo o demo.
+// ============ HARD GATE MODAL ============
+// Modal sobe IMEDIATAMENTE quando ha tickers e usuario
+// nao-autenticado, e SO sai com cadastro/login. Sem timer, sem botao de
+// fechar, sem Esc. Resultado fica visivel POR TRAS do modal (em blur)
+// como "produto premium por tras do paywall" (NYT/FT/Stripe pattern).
 //
-// IMPORTANTE: nao bloqueamos com sessionStorage. Se o usuario gerou um
-// novo Raio-X na mesma sessao, o modal volta — cada nova analise e um
-// novo "momento de valor" e a oferta de cadastro segue valida. Pra evitar
-// re-spam dentro DA MESMA analise, o `simModalSeenForCurrent` trava ate
-// o usuario sair do estado (gerar outra carteira / voltar ao seletor).
-const simModalOpen = ref(false)
-const simModalSeenForCurrent = ref(false)
+// Quando user JA esta logado, /raio-x e redundante — pessoa deve estar
+// na /wallet montando carteira real. Redirecionamos imediatamente apos
+// mount no client (SSR ignora pra evitar flash de redirect na hidrate).
+const authStore = useAuthStore()
 const pendingTickers = computed(() => tickersFromUrl.value)
 
-let simModalTimer: ReturnType<typeof setTimeout> | null = null
-
-function clearSimModalTimer() {
-  if (simModalTimer) {
-    clearTimeout(simModalTimer)
-    simModalTimer = null
+onMounted(() => {
+  if (authStore.isAuthenticated) {
+    // replace pra nao adicionar /raio-x ao history — pessoa logada nunca
+    // deveria voltar pra /raio-x via "back" do navegador.
+    router.replace('/wallet')
   }
-}
+})
 
-function scheduleSimModal() {
-  clearSimModalTimer()
-  if (simModalSeenForCurrent.value) return
-  if (typeof window === 'undefined') return
-  simModalTimer = setTimeout(() => {
-    simModalOpen.value = true
-    simModalSeenForCurrent.value = true
-  }, 5000)
-}
+const shouldGate = computed(
+  () => hasTickers.value && !!report.value && !authStore.isAuthenticated,
+)
+
+// Quando shouldGate vira true, salva os tickers em sessionStorage. Apos
+// cadastro, /wallet pode ler 'redentia.raiox.pendingTickers' pra montar
+// a carteira real automaticamente.
+watch(shouldGate, (gate) => {
+  if (!gate) return
+  try {
+    sessionStorage.setItem(
+      'redentia.raiox.pendingTickers',
+      JSON.stringify(tickersFromUrl.value),
+    )
+  } catch {
+    // sessionStorage indisponivel (Safari private mode) — ignora,
+    // cadastro continua funcionando, so perde o auto-import.
+  }
+}, { immediate: true })
 
 // Picker @submit agora apenas navega — o modal nao aparece nesse momento.
 function onPickerSubmit(tickers: string[]) {
@@ -235,40 +243,31 @@ function onQuizFallback() {
   heroMode.value = 'picker'
 }
 
-// Confirmar (botao "Continuar vendo o demo") apenas fecha — o usuario ja
-// esta na pagina do diagnostico, segue olhando.
+// Stub handlers — modal NAO emite mais confirm/close em hard-gate eterno
+// (sem botao de voltar/fechar). Mantidos por contrato com o componente
+// caso algum dia volte. Se chamados, no-op.
 function onSimModalConfirm() {
-  simModalOpen.value = false
+  /* no-op */
 }
 
 function onSimModalClose() {
-  simModalOpen.value = false
+  /* no-op */
 }
 
 const onboarding = useOnboardingChecklist()
 
-// Sempre que entra/sai do estado de resultado, agendamos/limpamos o
-// timer e resetamos a trava quando sai (pra que a proxima analise dispare
-// o modal de novo). Tambem marca o passo "Gerar Raio-X" como concluido
-// na primeira vez que o report fica pronto — idempotente.
+// Quando o resultado fica pronto, marca o passo no onboarding (idempotente).
+// Modal e reativo via shouldGate (computed), entao nao precisa de timer
+// nem de open/close manual.
 watch(
   () => hasTickers.value && !!report.value,
   (ready) => {
     if (ready) {
-      scheduleSimModal()
       onboarding.markStepDone('raio-x')
-    } else {
-      clearSimModalTimer()
-      simModalSeenForCurrent.value = false
-      simModalOpen.value = false
     }
   },
   { immediate: true },
 )
-
-onBeforeUnmount(() => {
-  clearSimModalTimer()
-})
 
 // SEO
 const siteUrl = computed(() => {
@@ -382,11 +381,15 @@ usePageSeo({
                 <ul class="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[12px]" :style="{ color: 'var(--text-muted)' }">
                   <li class="flex items-center gap-1.5">
                     <span class="size-1 rounded-full" :style="{ background: brand.colors.primary }" />
-                    Sem cadastro
+                    100% gratuito
                   </li>
                   <li class="flex items-center gap-1.5">
                     <span class="size-1 rounded-full" :style="{ background: brand.colors.primary }" />
-                    100% gratuito
+                    Sem cartão
+                  </li>
+                  <li class="flex items-center gap-1.5">
+                    <span class="size-1 rounded-full" :style="{ background: brand.colors.primary }" />
+                    Cadastro em 30s
                   </li>
                 </ul>
               </div>
@@ -631,9 +634,12 @@ usePageSeo({
       </Transition>
     </ClientOnly>
 
-    <!-- ============ SIMULATION DISCLAIMER MODAL ============ -->
+    <!-- ============ HARD GATE MODAL ============
+         Sobe quando ha tickers + report + usuario nao-autenticado.
+         Form de cadastro/login embedded, sem botao de fechar. Resultado
+         atras fica visivel mas blureado pelo backdrop do modal. -->
     <MoleculesRaioXSimulationModal
-      :open="simModalOpen"
+      :open="shouldGate"
       :tickers="pendingTickers"
       @confirm="onSimModalConfirm"
       @close="onSimModalClose"
