@@ -88,6 +88,17 @@ const canSubmit = computed(() => {
   return true
 })
 
+// Texto do botao submit consolidado em UM computed pra eliminar hydration
+// mismatch que duplicava texto no botao ("Criar conta gratuitaCriar conta
+// gratuita"). Antes usava v-if/v-else em dois spans separados — Vue tinha
+// dificuldade de reconciliar SSR vs client e ambos ficavam visiveis.
+const submitButtonText = computed(() => {
+  if (formMode.value === 'register') {
+    return submitting.value ? 'Criando conta…' : 'Criar conta gratuita'
+  }
+  return submitting.value ? 'Entrando…' : 'Entrar'
+})
+
 function deriveLoginFromEmail(email: string): string {
   const local = (email.split('@')[0] ?? '').toLowerCase()
   const sanitized = local.replace(/[^a-z0-9]/g, '')
@@ -261,23 +272,17 @@ function onGoogleSuccess() {
         :disabled="!canSubmit"
       >
         <UIcon
-          v-if="submitting"
-          name="i-lucide-loader-2"
-          class="size-4 motion-safe:animate-spin"
-          aria-hidden="true"
-        />
-        <UIcon
-          v-else
-          name="i-lucide-sparkles"
+          :name="submitting ? 'i-lucide-loader-2' : 'i-lucide-sparkles'"
           class="size-4"
+          :class="submitting ? 'motion-safe:animate-spin' : ''"
           aria-hidden="true"
         />
-        <span v-if="formMode === 'register'">
-          {{ submitting ? 'Criando conta…' : 'Criar conta gratuita' }}
-        </span>
-        <span v-else>
-          {{ submitting ? 'Entrando…' : 'Entrar' }}
-        </span>
+        <!-- Texto unificado em UM span (computed) pra eliminar hydration
+             mismatch que duplicava texto ("Criar conta gratuitaCriar conta
+             gratuita"). Antes usava v-if/v-else em dois spans separados —
+             SSR renderizava um state, client renderizava outro, Vue nao
+             conseguia reconciliar e ambos ficavam visiveis. -->
+        <span>{{ submitButtonText }}</span>
       </button>
 
       <p class="auth-form__toggle">
