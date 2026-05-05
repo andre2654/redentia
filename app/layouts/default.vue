@@ -570,16 +570,16 @@ const brand = useBrand()
 // a aparecer na mesma sessao. Pode preencher depois em /settings.
 const route = useRoute()
 const router = useRouter()
-const authStoreLayout = useAuthStore()
+const authStore = useAuthStore()
 const onboardingDismissed = ref(false)
 
 const showOnboardingModal = computed(() => {
   if (onboardingDismissed.value) return false
-  if (!authStoreLayout.isAuthenticated) return false
+  if (!authStore.isAuthenticated) return false
   // Sempre que ?onboarding=true esta presente, mostra
   if (route.query.onboarding === 'true') return true
   // Fallback: nome vazio = mostra ate preencher
-  if (!authStoreLayout.me?.name?.trim()) return true
+  if (!authStore.me?.name?.trim()) return true
   return false
 })
 
@@ -595,9 +595,7 @@ function closeOnboarding() {
 
 const allAttrs = useAttrs()
 const interfaceStore = useInterfaceStore()
-const authStore = useAuthStore()
-const router = useRouter()
-const route = useRoute()
+// route/router/authStore ja declarados acima (linhas 571-573) pro onboarding modal — reusa.
 
 // Onboarding checklist (3 passos pos-cadastro). Renderiza no card
 // "Próximos passos" da sidebar acima e some sozinho quando o usuario

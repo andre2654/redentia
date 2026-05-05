@@ -1,5 +1,5 @@
 <template>
-  <NuxtLayout name="static" title="" :show-logo="false">
+  <NuxtLayout name="unauthenticated" title="">
     <!-- ========== TERMINAL VARIANT (Redentia) ========== -->
     <section
       v-if="variant === 'terminal'"
