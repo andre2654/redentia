@@ -146,7 +146,6 @@
                 :src="emptyDemoVideoSrc"
                 controls
                 playsinline
-                preload="none"
                 aria-label="Tutorial: como gerar o Raio-X da sua carteira na Redent.IA"
               />
             </div>
