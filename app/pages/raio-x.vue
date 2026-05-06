@@ -662,19 +662,14 @@ usePageSeo({
                  6. Assessor CTA — "Avaliacao continua" (cross-sell premium)
                PortfolioDiagnosis original (1442 linhas) ficou desabilitado
                aqui — referencia mantida no codebase pra rollback se preciso. -->
-          <!-- Lazy* prefix faz Nuxt code-split esses componentes em chunks
-               separados — so baixam quando o template renderiza (com tickers).
-               No estado inicial /raio-x (so o quiz), o navegador NAO baixa
-               esses chunks, libera 6-10 modulepreloads e acelera o paint
-               critico no IG Sponsored Browser. -->
-          <LazyMoleculesRaioXHeroResult :report="report" />
+          <MoleculesRaioXHeroResult :report="report" />
 
-          <LazyMoleculesRaioXAIInsights :report="report" />
+          <MoleculesRaioXAIInsights :report="report" />
 
-          <LazyMoleculesRaioXAssetDeepDive :report="report" />
+          <MoleculesRaioXAssetDeepDive :report="report" />
 
           <!-- Soft gate (apenas pra nao-autenticados): campo email + magic link -->
-          <LazyMoleculesRaioXSoftGate
+          <MoleculesRaioXSoftGate
             v-if="showSoftGate"
             :report="report"
           />

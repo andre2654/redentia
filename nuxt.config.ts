@@ -12,30 +12,21 @@ export default defineNuxtConfig({
   // ============================================================
   // O IG Sponsored Browser (mais restritivo que o IG in-app comum)
   // tinha 87/88 sessions de paid traffic dando bounce em 1s. Causa:
-  // 24 modulepreloads + 7 stylesheets + video 36MB autoplay competindo
-  // por banda. Replays do Clarity mostravam DOM unstyled (CSS ainda nao
-  // tinha aplicado quando user fechou).
+  // video 36MB autoplay competindo por banda com CSS/JS critico.
   //
-  // Mudancas:
+  // Mudancas mantidas (todas testadas como ganho liquido):
   //   1. video re-encoded 36MB → 2.8MB (1080p → 720p, sem audio, CRF 30)
   //      + lazy load via IntersectionObserver (so baixa quando entra
   //      no viewport, depois do paint inicial)
-  //   2. inlineStyles: true (default em Nuxt 3, mas explicita pra
-  //      garantir que CSS critico fica no <head> em vez de <link>)
-  //   3. payloadExtraction: false reduz round-trips iniciais
-  //   4. renderJsonPayloads: false impede o JSON Hash payload extra
-  //   5. asyncContext + treeshakeClientOnly mantidos default
+  //   2. inlineStyles: true (default Nuxt 3, mas explicita)
+  //
+  // Tentamos mas REVERTIDO (testes mostraram regressao em slow 4g):
+  //   - payloadExtraction:false → HTML inflava demais
+  //   - crossOriginPrefetch:true → prefetch agressivo machucava
+  //   - Lazy* nos componentes do result → chunks sequenciais piores
+  //     que os pre-carregados em paralelo
   features: {
     inlineStyles: true,
-  },
-  experimental: {
-    // Em vez de servir _payload.json separado, serializa direto no
-    // HTML. Reduz round-trip extra que era especialmente caro no IG
-    // Sponsored Browser (limita conexoes paralelas).
-    payloadExtraction: false,
-    // Garante que prefetches sejam feitos so depois da pagina ja ter
-    // pintado, nao competindo com critical resources.
-    crossOriginPrefetch: true,
   },
 
   modules: [
