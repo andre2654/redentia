@@ -159,6 +159,36 @@ function loadDemo() {
 // Video src as a runtime-resolved string (see comment near the <video>
 // element for why the binding is dynamic instead of static).
 const videoSrc = '/assets/videos/raio-x.mp4'
+const videoPoster = '/assets/videos/raio-x-poster.jpg'
+
+// LAZY VIDEO LOAD: o video MP4 (mesmo otimizado pra 2.8MB) ainda compete
+// com CSS/JS no IG Sponsored Browser. Soluçao: so carrega quando entra
+// no viewport. Antes disso mostra apenas o poster.
+//
+// Em desktop o video aparece colado no hero (visivel direto), entao
+// IntersectionObserver dispara quase imediato — mas DEPOIS da primeira
+// pintura, o que garante que o quiz fique interativo sem competir com
+// download do MP4. Em mobile, video fica em order=1 (acima do quiz),
+// entao tambem entra em viewport rapido — mas tambem so depois do paint.
+const videoActive = ref(false)
+const videoEl = ref<HTMLVideoElement | null>(null)
+
+onMounted(() => {
+  if (!videoEl.value || !('IntersectionObserver' in window)) {
+    videoActive.value = true
+    return
+  }
+  const observer = new IntersectionObserver(
+    (entries) => {
+      if (entries[0]?.isIntersecting) {
+        videoActive.value = true
+        observer.disconnect()
+      }
+    },
+    { rootMargin: '200px' },
+  )
+  observer.observe(videoEl.value)
+})
 
 function resetAnalysis() {
   router.push({ path: '/raio-x' })
@@ -402,22 +432,42 @@ usePageSeo({
                  cabecalho ate o video entrar em viewport, evitando custo
                  de banda em quem nem rolou ate la. -->
             <figure class="order-1 md:col-span-6 md:order-1">
-              <div class="raio-x__video-frame">
+              <div ref="videoEl" class="raio-x__video-frame">
                 <!-- :src (dynamic binding) instead of src="..." because the
                      Vite/Vue template compiler tries to "resolve" static `src`
                      attrs on <video>/<img> as project assets, rewriting them
                      to /_nuxt/@fs/... which 404s. Dynamic binding ships the
                      literal string at runtime and the dev server serves it
-                     straight out of public/ as expected. -->
+                     straight out of public/ as expected.
+
+                     LAZY LOAD: só monta o `src` depois que entra em viewport
+                     (videoActive). Antes disso mostra so o poster, que tem 29KB
+                     vs 2.8MB do MP4. Mantém UX igual no desktop (video colado
+                     no hero ja entra em viewport ~imediato apos primeiro paint)
+                     e drasticamente mais leve no IG Sponsored Browser.
+
+                     preload="none" + autoplay so dispara apos `src` ser setado,
+                     entao o navegador nao baixa NADA ate o IntersectionObserver
+                     decidir que e hora de carregar. -->
                 <video
+                  v-if="videoActive"
                   class="raio-x__video"
                   :src="videoSrc"
+                  :poster="videoPoster"
                   autoplay
                   muted
                   loop
                   playsinline
-                  preload="metadata"
+                  preload="none"
                   aria-label="Apresentacao em video do Raio-X da Redent.IA"
+                />
+                <img
+                  v-else
+                  :src="videoPoster"
+                  alt="Apresentacao do Raio-X da Redent.IA"
+                  class="raio-x__video"
+                  loading="lazy"
+                  decoding="async"
                 />
               </div>
               <figcaption class="mt-3 text-center text-[12px] md:text-left" :style="{ color: 'var(--text-muted)' }">
@@ -612,14 +662,19 @@ usePageSeo({
                  6. Assessor CTA — "Avaliacao continua" (cross-sell premium)
                PortfolioDiagnosis original (1442 linhas) ficou desabilitado
                aqui — referencia mantida no codebase pra rollback se preciso. -->
-          <MoleculesRaioXHeroResult :report="report" />
+          <!-- Lazy* prefix faz Nuxt code-split esses componentes em chunks
+               separados — so baixam quando o template renderiza (com tickers).
+               No estado inicial /raio-x (so o quiz), o navegador NAO baixa
+               esses chunks, libera 6-10 modulepreloads e acelera o paint
+               critico no IG Sponsored Browser. -->
+          <LazyMoleculesRaioXHeroResult :report="report" />
 
-          <MoleculesRaioXAIInsights :report="report" />
+          <LazyMoleculesRaioXAIInsights :report="report" />
 
-          <MoleculesRaioXAssetDeepDive :report="report" />
+          <LazyMoleculesRaioXAssetDeepDive :report="report" />
 
           <!-- Soft gate (apenas pra nao-autenticados): campo email + magic link -->
-          <MoleculesRaioXSoftGate
+          <LazyMoleculesRaioXSoftGate
             v-if="showSoftGate"
             :report="report"
           />
@@ -628,13 +683,13 @@ usePageSeo({
                com blur (calendario de dividendos, eventos do mercado,
                benchmarks, alocacao por classe) reforcando "tem mais conteudo
                trancado". So renderiza junto com o soft gate. -->
-          <MoleculesRaioXLockedPreview
+          <LazyMoleculesRaioXLockedPreview
             v-if="showSoftGate"
             :report="report"
           />
 
           <!-- Assessor Inteligente CTA — cross-sell premium apos o gate -->
-          <MoleculesRaioXAssessorCTA />
+          <LazyMoleculesRaioXAssessorCTA />
         </div>
       </section>
     </main>

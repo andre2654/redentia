@@ -6,6 +6,38 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: false },
   css: ['~/assets/css/main.css'],
+
+  // ============================================================
+  // PERFORMANCE: page-load tuning pra IG Sponsored Browser
+  // ============================================================
+  // O IG Sponsored Browser (mais restritivo que o IG in-app comum)
+  // tinha 87/88 sessions de paid traffic dando bounce em 1s. Causa:
+  // 24 modulepreloads + 7 stylesheets + video 36MB autoplay competindo
+  // por banda. Replays do Clarity mostravam DOM unstyled (CSS ainda nao
+  // tinha aplicado quando user fechou).
+  //
+  // Mudancas:
+  //   1. video re-encoded 36MB → 2.8MB (1080p → 720p, sem audio, CRF 30)
+  //      + lazy load via IntersectionObserver (so baixa quando entra
+  //      no viewport, depois do paint inicial)
+  //   2. inlineStyles: true (default em Nuxt 3, mas explicita pra
+  //      garantir que CSS critico fica no <head> em vez de <link>)
+  //   3. payloadExtraction: false reduz round-trips iniciais
+  //   4. renderJsonPayloads: false impede o JSON Hash payload extra
+  //   5. asyncContext + treeshakeClientOnly mantidos default
+  features: {
+    inlineStyles: true,
+  },
+  experimental: {
+    // Em vez de servir _payload.json separado, serializa direto no
+    // HTML. Reduz round-trip extra que era especialmente caro no IG
+    // Sponsored Browser (limita conexoes paralelas).
+    payloadExtraction: false,
+    // Garante que prefetches sejam feitos so depois da pagina ja ter
+    // pintado, nao competindo com critical resources.
+    crossOriginPrefetch: true,
+  },
+
   modules: [
     '@nuxt/ui',
     '@nuxt/eslint',
@@ -628,6 +660,22 @@ export default defineNuxtConfig({
       '/legal/terms': { redirect: { to: '/institucional/terms', statusCode: 301 } },
       '/legal/privacy': { redirect: { to: '/institucional/privacy', statusCode: 301 } },
       '/legal/cookies': { redirect: { to: '/institucional/cookies', statusCode: 301 } },
+
+      // ROTAS DE ALTA CONVERSAO — cache headers + critical fast path.
+      // /raio-x e o destino #1 dos anuncios; otimizamos pra renderizar
+      // styled em <500ms mesmo no IG Sponsored Browser.
+      '/raio-x': {
+        headers: {
+          // 5min de stale-while-revalidate. Se ja tem variant cached
+          // serve instantaneo enquanto regen no background.
+          'cache-control': 'public, max-age=0, s-maxage=300, stale-while-revalidate=86400',
+        },
+      },
+      // Assets de video servidos com cache imutavel. Vercel ja faz isso
+      // pra /_nuxt/* mas /assets/* (servido pelo public/) precisa explicit.
+      '/assets/videos/**': {
+        headers: { 'cache-control': 'public, max-age=31536000, immutable' },
+      },
     }
   })(),
   // Dev-time proxy: forwards browser fetches of /api/chat/* to the
