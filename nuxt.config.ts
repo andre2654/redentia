@@ -14,20 +14,18 @@ export default defineNuxtConfig({
   // tinha 87/88 sessions de paid traffic dando bounce em 1s. Causa:
   // video 36MB autoplay competindo por banda com CSS/JS critico.
   //
-  // Mudancas mantidas (todas testadas como ganho liquido):
-  //   1. video re-encoded 36MB → 2.8MB (1080p → 720p, sem audio, CRF 30)
-  //      + lazy load via IntersectionObserver (so baixa quando entra
-  //      no viewport, depois do paint inicial)
-  //   2. inlineStyles: true (default Nuxt 3, mas explicita)
+  // Mudancas mantidas (testadas como ganho liquido):
+  //   - video re-encoded 36MB → 2.8MB (1080p → 720p, sem audio, CRF 30)
+  //   - lazy load via IntersectionObserver (so baixa quando entra
+  //     no viewport, depois do paint inicial)
   //
   // Tentamos mas REVERTIDO (testes mostraram regressao em slow 4g):
-  //   - payloadExtraction:false → HTML inflava demais
+  //   - features.inlineStyles:true → inflava HTML de 140KB pra 529KB
+  //     (Nuxt inlinava CSS de TODOS os componentes, incluindo non-critical)
+  //   - payloadExtraction:false → HTML inflava ainda mais
   //   - crossOriginPrefetch:true → prefetch agressivo machucava
   //   - Lazy* nos componentes do result → chunks sequenciais piores
   //     que os pre-carregados em paralelo
-  features: {
-    inlineStyles: true,
-  },
 
   modules: [
     '@nuxt/ui',
