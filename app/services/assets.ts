@@ -341,6 +341,13 @@ export const useAssetsService = () => {
     days = 30,
   ) => fetchRanking('news-mentions', type, limit, { days: String(days) })
 
+  // Meta-ranking Redentia — score 0-10 que agrega 15 rankings positivos.
+  // Cada ticker recebe `redentia_score`, `ranking_count` (em quantos
+  // rankings aparece) e `ranking_breakdown` ({slug: position}) pra
+  // transparencia do calculo na pagina dedicada.
+  const getRedentiaScore = (type: 'STOCK' | 'REIT' | 'ETF' | 'BDR' | null = null, limit = 30) =>
+    fetchRanking('redentia-score', type, limit)
+
   async function getUpcomingDividends(days = 60, limit = 200) {
     const url = `${API}/dividends/upcoming?days=${days}&limit=${limit}`
     const resp = await preventWithCache(
@@ -428,6 +435,7 @@ export const useAssetsService = () => {
     getNetIncomeGrowth5Y,
     getNeverLoss,
     getNewsMentions,
+    getRedentiaScore,
     getUpcomingDividends,
     getRecentDividends,
     getSectors,
