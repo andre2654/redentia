@@ -43,6 +43,146 @@
         >20 rankings atualizados diariamente: maiores dividend yields, maior valor de mercado, mais baratas (Graham/Bazin), buy and hold, ROE, margem líquida, e muito mais.</p>
       </header>
 
+      <!-- ============ Featured: Redentia Score (flagship) ============ -->
+      <article
+        class="rs-featured relative overflow-hidden rounded-2xl border p-6 md:p-8"
+        :style="{
+          borderColor: 'color-mix(in srgb, var(--brand-primary) 40%, var(--brand-border))',
+          background: 'linear-gradient(135deg, color-mix(in srgb, var(--brand-primary) 12%, var(--brand-surface)) 0%, color-mix(in srgb, var(--brand-secondary) 8%, var(--brand-surface)) 100%)',
+        }"
+      >
+        <!-- Ambient glow -->
+        <div
+          class="pointer-events-none absolute -right-20 -top-20 size-[280px] rounded-full opacity-50 blur-3xl"
+          :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-primary) 22%, transparent)' }"
+        />
+        <div
+          class="pointer-events-none absolute -bottom-16 -left-16 size-[220px] rounded-full opacity-30 blur-3xl"
+          :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-secondary) 22%, transparent)' }"
+        />
+
+        <div class="relative flex flex-col gap-5 md:gap-6 lg:flex-row lg:items-start lg:gap-10">
+          <!-- Header column -->
+          <header class="flex max-w-md flex-col gap-3">
+            <span
+              class="font-mono-tab w-fit rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em]"
+              :style="{
+                color: 'var(--brand-primary)',
+                borderColor: 'color-mix(in srgb, var(--brand-primary) 40%, transparent)',
+                backgroundColor: 'color-mix(in srgb, var(--brand-primary) 10%, transparent)',
+              }"
+            >Exclusivo Redentia</span>
+            <h2
+              class="font-light"
+              :style="{
+                color: 'var(--brand-text)',
+                fontSize: 'clamp(28px, 3.8vw, 38px)',
+                lineHeight: 1.05,
+                letterSpacing: '-0.8px',
+              }"
+            >Redentia Score</h2>
+            <p
+              class="text-sm md:text-base"
+              :style="{
+                color: 'color-mix(in srgb, var(--brand-text) 72%, transparent)',
+                lineHeight: 1.55,
+              }"
+            >Score 0 a 10 que combina 15 rankings fundamentalistas pra classificar a qualidade de cada ação da B3 numa única nota.</p>
+            <NuxtLink
+              to="/ranking/redentia-score"
+              class="rs-featured-cta mt-2 inline-flex w-fit items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition"
+              :style="{
+                backgroundColor: 'var(--brand-primary)',
+                color: 'var(--brand-on-primary, #0a0a0a)',
+              }"
+            >
+              Ver ranking completo
+              <UIcon name="i-lucide-arrow-right" class="size-4" />
+            </NuxtLink>
+          </header>
+
+          <!-- Mini-table top 5 -->
+          <div class="flex-1">
+            <div
+              class="flex items-center justify-between border-b pb-2 text-[10px] font-medium uppercase tracking-[0.14em]"
+              :style="{
+                borderColor: 'color-mix(in srgb, var(--brand-border) 60%, transparent)',
+                color: 'color-mix(in srgb, var(--brand-text) 55%, transparent)',
+              }"
+            >
+              <span>Top 5 ativos</span>
+              <span class="hidden md:inline">Score · Aparece em</span>
+            </div>
+            <ol class="flex flex-col">
+              <li
+                v-for="(row, idx) in (redentiaScoreTop || []).slice(0, 5)"
+                :key="row.ticker"
+                class="border-b last:border-b-0"
+                :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 30%, transparent)' }"
+              >
+                <NuxtLink
+                  :to="`/asset/${row.ticker.toLowerCase()}`"
+                  class="rs-featured-row flex items-center gap-3 py-2.5 text-sm transition-colors"
+                >
+                  <span
+                    class="w-5 shrink-0 text-right font-mono-tab text-xs tabular-nums"
+                    :style="{ color: 'color-mix(in srgb, var(--brand-text) 50%, transparent)' }"
+                  >{{ idx + 1 }}</span>
+                  <span class="flex min-w-0 flex-1 items-baseline gap-2">
+                    <span
+                      class="font-mono-tab font-semibold"
+                      :style="{ color: 'var(--brand-text)' }"
+                    >{{ row.ticker }}</span>
+                    <span
+                      class="hidden truncate text-xs md:inline"
+                      :style="{ color: 'color-mix(in srgb, var(--brand-text) 50%, transparent)' }"
+                    >{{ truncateName(row.name) }}</span>
+                  </span>
+                  <span
+                    class="font-mono-tab text-base font-light tabular-nums"
+                    :style="{
+                      color: 'var(--brand-primary)',
+                      letterSpacing: '-0.3px',
+                    }"
+                  >{{ formatScoreVal(row.redentia_score) }}<span
+                    class="text-[11px] font-medium opacity-50"
+                  >/10</span></span>
+                  <span
+                    class="hidden w-20 shrink-0 text-right font-mono-tab text-[11px] tabular-nums md:inline-block"
+                    :style="{ color: 'color-mix(in srgb, var(--brand-text) 60%, transparent)' }"
+                  >{{ row.ranking_count || 0 }}/15</span>
+                </NuxtLink>
+              </li>
+              <li
+                v-if="!redentiaScorePending && !(redentiaScoreTop || []).length"
+                class="py-6 text-center text-xs"
+                :style="{ color: 'color-mix(in srgb, var(--brand-text) 50%, transparent)' }"
+              >Sem dados no momento.</li>
+              <li
+                v-else-if="redentiaScorePending && !(redentiaScoreTop || []).length"
+                v-for="n in 5"
+                :key="`skel-${n}`"
+                class="flex items-center gap-3 border-b py-2.5 last:border-b-0"
+                :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 30%, transparent)' }"
+              >
+                <span
+                  class="w-5 text-right font-mono-tab text-xs tabular-nums"
+                  :style="{ color: 'color-mix(in srgb, var(--brand-text) 35%, transparent)' }"
+                >{{ n }}</span>
+                <span
+                  class="ranking-skel h-3.5 flex-1 rounded"
+                  :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-text) 7%, transparent)' }"
+                />
+                <span
+                  class="ranking-skel h-3.5 w-12 rounded"
+                  :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-text) 7%, transparent)' }"
+                />
+              </li>
+            </ol>
+          </div>
+        </div>
+      </article>
+
       <!-- ============ 20 Ranking sections ============ -->
       <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
         <article
@@ -452,6 +592,36 @@ const rankings: Ranking[] = [
 ]
 
 // ====================================================================
+// Featured Redentia Score top 5 — busca SEPARADA do dicionario de
+// rankings padrao porque a shape (`redentia_score`, `ranking_count`)
+// nao bate com as outras paginas. Renderizado no card destaque.
+// ====================================================================
+interface RedentiaScoreTopRow {
+  ticker: string
+  name: string | null
+  redentia_score: number
+  ranking_count: number
+}
+const { data: redentiaScoreTop, pending: redentiaScorePending } = await useAsyncData(
+  'rankings-hub-redentia-score-top5',
+  async () => {
+    try {
+      const res = (await service.getRedentiaScore(null, 5)) as RedentiaScoreTopRow[]
+      return res || []
+    } catch {
+      return [] as RedentiaScoreTopRow[]
+    }
+  },
+  { default: () => [] as RedentiaScoreTopRow[] },
+)
+
+function formatScoreVal(v: unknown): string {
+  const n = typeof v === 'number' ? v : Number(v)
+  if (!Number.isFinite(n)) return '-'
+  return n.toFixed(2).replace('.', ',')
+}
+
+// ====================================================================
 // Single useAsyncData com Promise.all parallel pra TODOS os rankings.
 // Backend cache 15min torna o custo agregado baixo. Cada slug vira
 // chave do dicionario rankingData.
@@ -693,6 +863,25 @@ useHead({
 
 .ranking-row:hover {
   background-color: color-mix(in srgb, var(--brand-text) 4%, transparent);
+}
+
+/* Featured Redentia Score card */
+.rs-featured {
+  isolation: isolate;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+.rs-featured:hover {
+  border-color: color-mix(in srgb, var(--brand-primary) 60%, transparent) !important;
+  box-shadow:
+    0 18px 40px -20px color-mix(in srgb, var(--brand-primary) 35%, transparent),
+    0 6px 16px -8px rgba(0, 0, 0, 0.12);
+}
+.rs-featured-cta:hover {
+  filter: brightness(1.05);
+  transform: translateX(2px);
+}
+.rs-featured-row:hover {
+  background-color: color-mix(in srgb, var(--brand-primary) 6%, transparent);
 }
 
 .ranking-skel {

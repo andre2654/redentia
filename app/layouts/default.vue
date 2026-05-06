@@ -307,6 +307,7 @@
             icon="i-lucide-trophy"
             :child-paths="[
               '/ranking',
+              '/ranking/redentia-score',
               '/ranking/maiores-altas-mes',
               '/ranking/maiores-baixas-mes',
               '/ranking/maiores-dividend-yield',
@@ -318,6 +319,7 @@
               '/dividendos/calendario',
             ]"
           >
+            <AtomsSidebarButton to="/ranking/redentia-score" text="Redentia Score" icon="i-lucide-sparkles" is-sub-item />
             <AtomsSidebarButton to="/ranking" text="Ver todos os rankings" is-sub-item />
             <AtomsSidebarButton to="/ranking/maiores-altas-mes" text="Maiores altas do mês" is-sub-item />
             <AtomsSidebarButton to="/ranking/maiores-baixas-mes" text="Maiores baixas do mês" is-sub-item />

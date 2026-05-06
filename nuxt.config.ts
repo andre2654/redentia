@@ -551,6 +551,17 @@ export default defineNuxtConfig({
         changefreq: 'daily' as const,
       }))
 
+      // /ranking/redentia-score — flagship metric, priority 0.9 (acima
+      // dos demais rankings 0.7) porque e a feature signature do
+      // produto. Atualizado diariamente igual aos outros rankings.
+      const redentiaScoreUrl = [
+        {
+          loc: '/ranking/redentia-score',
+          priority: 0.9 as const,
+          changefreq: 'daily' as const,
+        },
+      ]
+
       // /metodologia — E-E-A-T page (YMYL trust signal pra finanças). Atualizada
       // pouco mas crítica pra Google entender autoria e fontes.
       const editorialUrls = [
@@ -568,6 +579,7 @@ export default defineNuxtConfig({
         ...sectorUrls,
         ...calculadoraScenarios,
         ...dividendosTickers,
+        ...redentiaScoreUrl,
         ...newRankings,
         ...editorialUrls,
       ]
