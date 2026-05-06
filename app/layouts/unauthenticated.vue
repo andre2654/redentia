@@ -317,6 +317,7 @@ const navGroups = computed<Array<
     kind: 'simple',
     width: 300,
     items: [
+      { label: 'Redentia Score', to: '/ranking/redentia-score' },
       { label: 'Ver todos os rankings', to: '/ranking' },
       { label: 'Maiores altas do mês', to: '/ranking/maiores-altas-mes' },
       { label: 'Maiores baixas do mês', to: '/ranking/maiores-baixas-mes' },

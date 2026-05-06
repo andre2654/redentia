@@ -158,26 +158,27 @@
                 class="py-6 text-center text-xs"
                 :style="{ color: 'color-mix(in srgb, var(--brand-text) 50%, transparent)' }"
               >Sem dados no momento.</li>
-              <li
-                v-else-if="redentiaScorePending && !(redentiaScoreTop || []).length"
-                v-for="n in 5"
-                :key="`skel-${n}`"
-                class="flex items-center gap-3 border-b py-2.5 last:border-b-0"
-                :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 30%, transparent)' }"
-              >
-                <span
-                  class="w-5 text-right font-mono-tab text-xs tabular-nums"
-                  :style="{ color: 'color-mix(in srgb, var(--brand-text) 35%, transparent)' }"
-                >{{ n }}</span>
-                <span
-                  class="ranking-skel h-3.5 flex-1 rounded"
-                  :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-text) 7%, transparent)' }"
-                />
-                <span
-                  class="ranking-skel h-3.5 w-12 rounded"
-                  :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-text) 7%, transparent)' }"
-                />
-              </li>
+              <template v-else-if="redentiaScorePending && !(redentiaScoreTop || []).length">
+                <li
+                  v-for="n in 5"
+                  :key="`skel-${n}`"
+                  class="flex items-center gap-3 border-b py-2.5 last:border-b-0"
+                  :style="{ borderColor: 'color-mix(in srgb, var(--brand-border) 30%, transparent)' }"
+                >
+                  <span
+                    class="w-5 text-right font-mono-tab text-xs tabular-nums"
+                    :style="{ color: 'color-mix(in srgb, var(--brand-text) 35%, transparent)' }"
+                  >{{ n }}</span>
+                  <span
+                    class="ranking-skel h-3.5 flex-1 rounded"
+                    :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-text) 7%, transparent)' }"
+                  />
+                  <span
+                    class="ranking-skel h-3.5 w-12 rounded"
+                    :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-text) 7%, transparent)' }"
+                  />
+                </li>
+              </template>
             </ol>
           </div>
         </div>

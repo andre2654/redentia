@@ -718,7 +718,7 @@ usePageSeo({
       itemListElement: (rows.value || []).slice(0, 10).map((r, i) => ({
         '@type': 'ListItem',
         position: i + 1,
-        name: `${r.ticker} — Score ${formatScore(r.redentia_score)}`,
+        name: `${r.ticker}, Score ${formatScore(r.redentia_score)}`,
         url: `https://www.redentia.com.br/asset/${r.ticker.toLowerCase()}`,
       })),
     },
