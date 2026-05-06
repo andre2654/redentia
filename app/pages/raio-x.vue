@@ -61,6 +61,12 @@ const submitting = ref(false)
 const submitted = ref(false)
 const errorMsg = ref('')
 
+// Dedup do Lead: se user submete email, espera, depois clica no
+// "Reenviar" ou submete de novo, NAO duplicamos o evento na Meta.
+// `leadFiredOnce` mantém estado pra a sessao toda. Se quiser permitir
+// re-fire (ex: outro email), reseta esse flag manualmente.
+const leadFiredOnce = ref(false)
+
 const isValid = computed(() => {
   const e = email.value.trim()
   return e.includes('@') && e.length > 4 && !submitting.value
@@ -75,12 +81,23 @@ async function submitEmail() {
       email: email.value.trim().toLowerCase(),
       redirect_to: '/wallet?from=raiox',
     })
-    track('Lead', {
-      content_name: 'Landing RaioX Magic Link',
-      content_category: 'landing_conversion',
-      currency: 'BRL',
-      value: 5,
-    })
+    // ============ Lead Pixel/CAPI ============
+    // Padronizado com content_ids: ['raio-x'] pra Meta agrupar
+    // ViewContent → Lead → CompleteRegistration no mesmo funnel.
+    // value=5: Lead vale ~10x menos que CR no nosso modelo de funnel
+    // (~10% Lead → CR conversao historica). Dedup via leadFiredOnce
+    // pra nao inflar metricas quando user clica resend.
+    if (!leadFiredOnce.value) {
+      track('Lead', {
+        content_name: 'Landing RaioX Magic Link',
+        content_category: 'landing_conversion',
+        content_ids: ['raio-x'],
+        content_type: 'product',
+        currency: 'BRL',
+        value: 5,
+      })
+      leadFiredOnce.value = true
+    }
     submitted.value = true
   }
   catch (err: unknown) {
@@ -105,10 +122,15 @@ const counterFormatted = computed(() => counter.value.toLocaleString('pt-BR'))
 let counterTimer: ReturnType<typeof setInterval> | null = null
 
 onMounted(() => {
-  // Lead event ao chegar na landing (top-of-funnel)
+  // ViewContent ao chegar na landing (top-of-funnel).
+  // value=1 sinaliza que e tracking de visita — nao e a conversao.
+  // content_ids agrupa com Lead/CompleteRegistration na mesma campanha
+  // pra Meta correlacionar quem viu → cadastrou.
   track('ViewContent', {
     content_name: 'Landing RaioX',
     content_category: 'landing_conversion',
+    content_ids: ['raio-x'],
+    content_type: 'product',
     currency: 'BRL',
     value: 1,
   })
@@ -141,9 +163,14 @@ function playVideo() {
       // user clica de novo no controle nativo se precisar
     })
   })
+  // CustomizeProduct = engajamento intermediario. Indica intent
+  // entre "viu a page" e "cadastrou". Bom sinal pra Meta calibrar
+  // audiencias de tipo "scrolla + assiste video" mesmo se nao virou Lead.
   track('CustomizeProduct', {
     content_name: 'Landing RaioX Video Play',
     content_category: 'landing_engagement',
+    content_ids: ['raio-x'],
+    content_type: 'product',
     currency: 'BRL',
     value: 0,
   })

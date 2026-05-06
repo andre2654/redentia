@@ -54,9 +54,19 @@ async function processToken() {
     // Pixel: dispara CompleteRegistration so quando o user de fato entra
     // (Lead ja foi disparado no request). Disparar aqui evita inflar CR
     // com requests sem clique.
+    //
+    // Padronizado com content_ids matching da source page (raio-x ou
+    // outro flow). Permite Meta atribuir CR ao funnel correto.
+    // value=20 pra novos users (a metrica de negocio que importa),
+    // value=0 pra returning (so login, ja convertia antes).
+    const sourcePath = resp.redirect_to?.includes('from=raiox')
+      ? 'raio-x'
+      : (resp.redirect_to?.includes('from=comece') ? 'raio-x' : 'auth')
     track('CompleteRegistration', {
       content_name: resp.is_new_user ? 'Magic Link First Login' : 'Magic Link Returning User',
       content_category: 'magic_link_verify',
+      content_ids: [sourcePath],
+      content_type: 'product',
       status: true,
       currency: 'BRL',
       value: resp.is_new_user ? 20 : 0,
