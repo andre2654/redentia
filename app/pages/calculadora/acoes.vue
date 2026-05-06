@@ -588,6 +588,37 @@
         </div>
       </div>
 
+      <!-- Rankings Relacionados -->
+      <div
+        class="mt-8 flex flex-col gap-4 rounded-[30px] p-6"
+        :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))' }"
+      >
+        <div>
+          <h2>Rankings Relacionados</h2>
+          <p class="text-sm" :style="{ color: 'var(--brand-text-muted)' }">
+            Explore listas atualizadas diariamente com os melhores ativos da B3 para complementar sua análise.
+          </p>
+        </div>
+        <div class="grid gap-4 md:grid-cols-3">
+          <NuxtLink
+            v-for="r in relatedRankings"
+            :key="r.to"
+            :to="r.to"
+            class="group flex items-center gap-4 brand-card border p-4 transition hover:border-secondary/50"
+            :style="{
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
+            }"
+          >
+            <UIcon :name="r.icon" class="text-secondary size-8 shrink-0" />
+            <div>
+              <h3>{{ r.title }}</h3>
+              <p class="text-sm" :style="{ color: 'var(--brand-text-muted)' }">{{ r.sub }}</p>
+            </div>
+          </NuxtLink>
+        </div>
+      </div>
+
       <!-- Calculadoras Relacionadas -->
       <div class="flex flex-col gap-4 rounded-[30px] p-6" :style="{ backgroundColor: 'var(--brand-surface)' }">
         <h2>Outras Ferramentas</h2>
@@ -655,6 +686,29 @@ const authStore = useAuthStore()
 const layoutName = computed(() =>
   authStore.isAuthenticated ? 'default' : 'unauthenticated'
 )
+
+// Rankings relacionados — pontes pra movimentacao recente (alta 30d e
+// 12m) e maiores receitas, complementares ao simulador de acoes.
+const relatedRankings = [
+  {
+    to: '/ranking/maiores-altas-mes',
+    icon: 'i-lucide-trending-up',
+    title: 'Maiores altas do mês',
+    sub: 'Top performers nos últimos 30 dias',
+  },
+  {
+    to: '/ranking/maiores-altas-12-meses',
+    icon: 'i-lucide-arrow-up-right',
+    title: 'Maiores altas de 12 meses',
+    sub: 'Quem mais valorizou no último ano',
+  },
+  {
+    to: '/ranking/maiores-receitas',
+    icon: 'i-lucide-banknote',
+    title: 'Maiores receitas',
+    sub: 'Top empresas por faturamento TTM',
+  },
+] as const
 
 const assets = computed(() => assetsData.value ?? [])
 const assetsLoading = computed(() => assetsPending.value)

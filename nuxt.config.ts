@@ -466,6 +466,32 @@ export default defineNuxtConfig({
         changefreq: 'weekly' as const,
       }))
 
+      // Rankings programáticos (/ranking/[slug]) — 13 páginas SEO geradas
+      // via dispatch table em /pages/ranking/[slug].vue (RANKINGS_INFO).
+      // Cada uma indexa um ranking fundamentalista (market cap, ROE, P/L,
+      // Graham, Bazin, etc.) com long-tail próprio. Atualizadas diariamente
+      // pra capturar fluxo de busca recorrente em rankings de bolsa.
+      // Adicione aqui se RANKINGS_INFO crescer no [slug].vue.
+      const newRankings = [
+        '/ranking/maiores-valor-mercado',
+        '/ranking/mais-baratas-graham',
+        '/ranking/mais-baratas-bazin',
+        '/ranking/maiores-margem-liquida',
+        '/ranking/buy-and-hold',
+        '/ranking/maiores-receitas',
+        '/ranking/maiores-lucros',
+        '/ranking/maiores-roe',
+        '/ranking/menores-pl',
+        '/ranking/maiores-altas-12-meses',
+        '/ranking/maiores-baixas-12-meses',
+        '/ranking/maiores-caixa',
+        '/ranking/maior-potencial-upside',
+      ].map((loc) => ({
+        loc,
+        priority: 0.7 as const,
+        changefreq: 'daily' as const,
+      }))
+
       // /metodologia — E-E-A-T page (YMYL trust signal pra finanças). Atualizada
       // pouco mas crítica pra Google entender autoria e fontes.
       const editorialUrls = [
@@ -483,6 +509,7 @@ export default defineNuxtConfig({
         ...sectorUrls,
         ...calculadoraScenarios,
         ...dividendosTickers,
+        ...newRankings,
         ...editorialUrls,
       ]
     },

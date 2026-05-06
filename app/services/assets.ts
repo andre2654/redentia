@@ -257,6 +257,71 @@ export const useAssetsService = () => {
     }
   }
 
+  // ====================================================================
+  // Generic ranking fetch — DRY pra os 11 endpoints novos do RankingController.
+  // Cada chamada vai pra /api/rankings/<endpoint>?type=...&limit=... .
+  // O resource backend (RankingResource) retorna sempre o mesmo shape, todos
+  // os campos numericos novos (roe, net_margin, total_revenue, etc.) ficam
+  // disponiveis no IAsset enriquecido — frontend escolhe o que renderizar.
+  // ====================================================================
+  async function fetchRanking(
+    endpoint: string,
+    type: 'STOCK' | 'REIT' | 'ETF' | 'BDR' | null = null,
+    limit = 30,
+    extraParams: Record<string, string> = {},
+  ): Promise<IAsset[]> {
+    const params = new URLSearchParams({ limit: String(limit), ...extraParams })
+    if (type) params.set('type', type)
+    const url = `${API}/rankings/${endpoint}?${params.toString()}`
+    const resp = await preventWithCache(
+      url,
+      async () => await $fetch<IAsset[]>(url, { method: 'GET' }),
+    )
+    return unwrapArray<IAsset>(resp)
+  }
+
+  // Wrappers tipados — 1 por ranking. Mantem a API do service consistente
+  // (`getTopX(type, limit)`) pra que cada page chame `service.getTopX(...)`
+  // sem precisar lembrar do nome do endpoint REST.
+  const getTopMarketCap = (type: 'STOCK' | 'REIT' | 'ETF' | 'BDR' | null = null, limit = 30) =>
+    fetchRanking('top-market-cap', type, limit)
+
+  const getTopNetMargin = (type: 'STOCK' | 'REIT' | 'ETF' | 'BDR' | null = null, limit = 30) =>
+    fetchRanking('top-net-margin', type, limit)
+
+  const getTopRevenue = (type: 'STOCK' | 'REIT' | 'ETF' | 'BDR' | null = null, limit = 30) =>
+    fetchRanking('top-revenue', type, limit)
+
+  const getTopNetIncome = (type: 'STOCK' | 'REIT' | 'ETF' | 'BDR' | null = null, limit = 30) =>
+    fetchRanking('top-net-income', type, limit)
+
+  const getTopROE = (type: 'STOCK' | 'REIT' | 'ETF' | 'BDR' | null = null, limit = 30) =>
+    fetchRanking('top-roe', type, limit)
+
+  const getLowPE = (type: 'STOCK' | 'REIT' | 'ETF' | 'BDR' | null = null, limit = 30) =>
+    fetchRanking('low-pe', type, limit)
+
+  const getTopCash = (type: 'STOCK' | 'REIT' | 'ETF' | 'BDR' | null = null, limit = 30) =>
+    fetchRanking('top-cash', type, limit)
+
+  const getYearlyChange = (
+    side: 'top' | 'bottom' = 'top',
+    type: 'STOCK' | 'REIT' | 'ETF' | 'BDR' | null = null,
+    limit = 30,
+  ) => fetchRanking('yearly-change', type, limit, { side })
+
+  const getGrahamDiscount = (type: 'STOCK' | 'REIT' | 'ETF' | 'BDR' | null = null, limit = 30) =>
+    fetchRanking('graham-discount', type, limit)
+
+  const getBazinDiscount = (type: 'STOCK' | 'REIT' | 'ETF' | 'BDR' | null = null, limit = 30) =>
+    fetchRanking('bazin-discount', type, limit)
+
+  const getBuyAndHold = (type: 'STOCK' | 'REIT' | 'ETF' | 'BDR' | null = null, limit = 30) =>
+    fetchRanking('buy-and-hold', type, limit)
+
+  const getUpsidePotential = (type: 'STOCK' | 'REIT' | 'ETF' | 'BDR' | null = null, limit = 30) =>
+    fetchRanking('upside-potential', type, limit)
+
   async function getUpcomingDividends(days = 60, limit = 200) {
     const url = `${API}/dividends/upcoming?days=${days}&limit=${limit}`
     const resp = await preventWithCache(
@@ -328,6 +393,18 @@ export const useAssetsService = () => {
     getIndiceHistoricPrices,
     getTopDividendYield,
     getMonthlyChange,
+    getYearlyChange,
+    getTopMarketCap,
+    getTopNetMargin,
+    getTopRevenue,
+    getTopNetIncome,
+    getTopROE,
+    getLowPE,
+    getTopCash,
+    getGrahamDiscount,
+    getBazinDiscount,
+    getBuyAndHold,
+    getUpsidePotential,
     getUpcomingDividends,
     getRecentDividends,
     getSectors,

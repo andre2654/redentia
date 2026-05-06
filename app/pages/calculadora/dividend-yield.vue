@@ -319,6 +319,37 @@
         </div>
       </div>
 
+      <!-- Rankings Relacionados -->
+      <div
+        class="mt-8 flex flex-col gap-4 rounded-[30px] p-6"
+        :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))' }"
+      >
+        <div>
+          <h2>Rankings Relacionados</h2>
+          <p class="text-sm" :style="{ color: 'var(--brand-text-muted)' }">
+            Explore listas atualizadas diariamente com os melhores ativos da B3 para complementar sua análise.
+          </p>
+        </div>
+        <div class="grid gap-4 md:grid-cols-3">
+          <NuxtLink
+            v-for="r in relatedRankings"
+            :key="r.to"
+            :to="r.to"
+            class="group flex items-center gap-4 brand-card border p-4 transition hover:border-secondary/50"
+            :style="{
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
+            }"
+          >
+            <UIcon :name="r.icon" class="text-secondary size-8 shrink-0" />
+            <div>
+              <h3>{{ r.title }}</h3>
+              <p class="text-sm" :style="{ color: 'var(--brand-text-muted)' }">{{ r.sub }}</p>
+            </div>
+          </NuxtLink>
+        </div>
+      </div>
+
       <div
         class="flex flex-col gap-4 rounded-[30px] p-6"
         :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))' }"
@@ -423,6 +454,29 @@ const lastUpdatedText = lastUpdated.toLocaleDateString('pt-BR', {
   year: 'numeric',
 })
 const lastUpdatedISO = lastUpdated.toISOString()
+
+// Rankings relacionados — pontes pra listas de DY, buy and hold e
+// Bazin que continuam a jornada do user que acabou de calcular DY.
+const relatedRankings = [
+  {
+    to: '/ranking/maiores-dividend-yield',
+    icon: 'i-lucide-coins',
+    title: 'Maiores DY da B3',
+    sub: 'Top 50 ações e FIIs por dividend yield',
+  },
+  {
+    to: '/ranking/buy-and-hold',
+    icon: 'i-lucide-shield-check',
+    title: 'Buy and Hold (score 10)',
+    sub: 'Carteira otimizada pra longo prazo',
+  },
+  {
+    to: '/ranking/mais-baratas-bazin',
+    icon: 'i-lucide-tag',
+    title: 'Mais baratas pelo Bazin',
+    sub: 'Desconto pelo método de Décio Bazin',
+  },
+] as const
 
 // ====================================================================
 // Cenarios populares — long-tail SEO via deep-links.

@@ -13,6 +13,15 @@
       <div class="w-24 text-right">Cotação</div>
       <div v-if="showColumn('dy')" class="w-24 text-right">DY (12m)</div>
       <div v-if="showColumn('pe')" class="w-20 text-right">P/L</div>
+      <div v-if="showColumn('roe')" class="w-20 text-right">ROE</div>
+      <div v-if="showColumn('netMargin')" class="w-24 text-right">Margem Líq.</div>
+      <div v-if="showColumn('revenue')" class="w-24 text-right">Receita</div>
+      <div v-if="showColumn('netIncome')" class="w-24 text-right">Lucro</div>
+      <div v-if="showColumn('cash')" class="w-24 text-right">Caixa</div>
+      <div v-if="showColumn('grahamPrice')" class="w-28 text-right">Preço Graham</div>
+      <div v-if="showColumn('bazinPrice')" class="w-28 text-right">Preço Bazin</div>
+      <div v-if="showColumn('upsidePct')" class="w-24 text-right">Upside</div>
+      <div v-if="showColumn('buyHoldScore')" class="w-32 text-right">Buy & Hold</div>
       <div v-if="showColumn('change')" class="w-24 text-right">
         {{ changeLabel }}
       </div>
@@ -106,6 +115,132 @@
             {{ row.trailing_pe != null ? Number(row.trailing_pe).toFixed(1) : '-' }}
           </div>
 
+          <!-- ROE -->
+          <div
+            v-if="showColumn('roe')"
+            class="hidden w-20 text-right text-sm font-semibold tabular-nums md:block"
+            :style="{ color: 'var(--brand-primary)' }"
+          >
+            {{ formatPercent(row.roe, true) }}
+          </div>
+
+          <!-- Net Margin -->
+          <div
+            v-if="showColumn('netMargin')"
+            class="hidden w-24 text-right text-sm font-semibold tabular-nums md:block"
+            :style="{ color: 'var(--brand-primary)' }"
+          >
+            {{ formatPercent(row.net_margin, true) }}
+          </div>
+
+          <!-- Revenue -->
+          <div
+            v-if="showColumn('revenue')"
+            class="hidden w-24 text-right text-xs tabular-nums md:block"
+            :style="{ color: 'var(--brand-text)' }"
+          >
+            {{ formatBigBrl(row.total_revenue) }}
+          </div>
+
+          <!-- Net Income -->
+          <div
+            v-if="showColumn('netIncome')"
+            class="hidden w-24 text-right text-xs tabular-nums md:block"
+            :style="{ color: 'var(--brand-text)' }"
+          >
+            {{ formatBigBrl(row.net_income) }}
+          </div>
+
+          <!-- Cash -->
+          <div
+            v-if="showColumn('cash')"
+            class="hidden w-24 text-right text-xs tabular-nums md:block"
+            :style="{ color: 'var(--brand-text)' }"
+          >
+            {{ formatBigBrl(row.total_cash) }}
+          </div>
+
+          <!-- Graham Price -->
+          <div
+            v-if="showColumn('grahamPrice')"
+            class="hidden w-28 text-right md:flex md:flex-col md:items-end"
+          >
+            <span
+              class="text-sm font-semibold tabular-nums"
+              :style="{ color: 'var(--brand-text)' }"
+            >
+              {{ formatBrl(row.graham_price) }}
+            </span>
+            <span
+              v-if="row.upside_pct != null"
+              class="text-[10px] tabular-nums"
+              :style="{
+                color: Number(row.upside_pct) >= 0 ? brand.colors.positive : 'var(--brand-negative)',
+              }"
+            >
+              {{ formatPercent(row.upside_pct) }}
+            </span>
+          </div>
+
+          <!-- Bazin Price -->
+          <div
+            v-if="showColumn('bazinPrice')"
+            class="hidden w-28 text-right md:flex md:flex-col md:items-end"
+          >
+            <span
+              class="text-sm font-semibold tabular-nums"
+              :style="{ color: 'var(--brand-text)' }"
+            >
+              {{ formatBrl(row.bazin_price) }}
+            </span>
+            <span
+              v-if="row.upside_pct != null"
+              class="text-[10px] tabular-nums"
+              :style="{
+                color: Number(row.upside_pct) >= 0 ? brand.colors.positive : 'var(--brand-negative)',
+              }"
+            >
+              {{ formatPercent(row.upside_pct) }}
+            </span>
+          </div>
+
+          <!-- Upside Pct -->
+          <div
+            v-if="showColumn('upsidePct')"
+            class="hidden w-24 text-right text-sm font-semibold tabular-nums md:block"
+            :style="{
+              color: Number(row.upside_pct) >= 0 ? brand.colors.positive : 'var(--brand-negative)',
+            }"
+          >
+            {{ formatPercent(row.upside_pct) }}
+          </div>
+
+          <!-- Buy & Hold Score -->
+          <div
+            v-if="showColumn('buyHoldScore')"
+            class="hidden w-32 text-right md:flex md:flex-col md:items-end md:gap-1"
+          >
+            <span
+              class="text-sm font-semibold tabular-nums"
+              :style="{ color: 'var(--brand-text)' }"
+            >
+              {{ row.buy_hold_score != null ? `${row.buy_hold_score}/10` : '-' }}
+            </span>
+            <div
+              v-if="row.buy_hold_score != null"
+              class="h-1.5 w-full overflow-hidden rounded-full"
+              :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-border) 60%, transparent)' }"
+            >
+              <div
+                class="h-full transition-all"
+                :style="{
+                  width: `${Math.max(0, Math.min(100, Number(row.buy_hold_score) * 10))}%`,
+                  backgroundColor: 'var(--brand-primary)',
+                }"
+              />
+            </div>
+          </div>
+
           <!-- Change -->
           <div
             v-if="showColumn('change')"
@@ -127,6 +262,10 @@
           </div>
 
           <!-- Mobile-only secondary metric -->
+          <!-- Order priority: dy > grahamPrice > bazinPrice > upsidePct >
+               buyHoldScore > roe > netMargin > revenue > netIncome > cash >
+               change. The first column in props.columns whose key matches a
+               supported metric is the one that wins. -->
           <div class="md:hidden flex flex-col items-end">
             <div
               v-if="showColumn('dy')"
@@ -134,6 +273,91 @@
               :style="{ color: dyColor }"
             >
               {{ formatPercent(row.dividend_yield, true) }}
+            </div>
+            <div
+              v-else-if="showColumn('grahamPrice')"
+              class="flex flex-col items-end"
+            >
+              <span class="text-sm font-semibold tabular-nums" :style="{ color: 'var(--brand-text)' }">
+                {{ formatBrl(row.graham_price) }}
+              </span>
+              <span
+                v-if="row.upside_pct != null"
+                class="text-[10px] tabular-nums"
+                :style="{
+                  color: Number(row.upside_pct) >= 0 ? brand.colors.positive : 'var(--brand-negative)',
+                }"
+              >
+                {{ formatPercent(row.upside_pct) }}
+              </span>
+            </div>
+            <div
+              v-else-if="showColumn('bazinPrice')"
+              class="flex flex-col items-end"
+            >
+              <span class="text-sm font-semibold tabular-nums" :style="{ color: 'var(--brand-text)' }">
+                {{ formatBrl(row.bazin_price) }}
+              </span>
+              <span
+                v-if="row.upside_pct != null"
+                class="text-[10px] tabular-nums"
+                :style="{
+                  color: Number(row.upside_pct) >= 0 ? brand.colors.positive : 'var(--brand-negative)',
+                }"
+              >
+                {{ formatPercent(row.upside_pct) }}
+              </span>
+            </div>
+            <div
+              v-else-if="showColumn('upsidePct')"
+              class="text-sm font-semibold tabular-nums"
+              :style="{
+                color: Number(row.upside_pct) >= 0 ? brand.colors.positive : 'var(--brand-negative)',
+              }"
+            >
+              {{ formatPercent(row.upside_pct) }}
+            </div>
+            <div
+              v-else-if="showColumn('buyHoldScore')"
+              class="text-sm font-semibold tabular-nums"
+              :style="{ color: 'var(--brand-primary)' }"
+            >
+              {{ row.buy_hold_score != null ? `${row.buy_hold_score}/10` : '-' }}
+            </div>
+            <div
+              v-else-if="showColumn('roe')"
+              class="text-sm font-semibold tabular-nums"
+              :style="{ color: 'var(--brand-primary)' }"
+            >
+              {{ formatPercent(row.roe, true) }}
+            </div>
+            <div
+              v-else-if="showColumn('netMargin')"
+              class="text-sm font-semibold tabular-nums"
+              :style="{ color: 'var(--brand-primary)' }"
+            >
+              {{ formatPercent(row.net_margin, true) }}
+            </div>
+            <div
+              v-else-if="showColumn('revenue')"
+              class="text-xs tabular-nums"
+              :style="{ color: 'var(--brand-text)' }"
+            >
+              {{ formatBigBrl(row.total_revenue) }}
+            </div>
+            <div
+              v-else-if="showColumn('netIncome')"
+              class="text-xs tabular-nums"
+              :style="{ color: 'var(--brand-text)' }"
+            >
+              {{ formatBigBrl(row.net_income) }}
+            </div>
+            <div
+              v-else-if="showColumn('cash')"
+              class="text-xs tabular-nums"
+              :style="{ color: 'var(--brand-text)' }"
+            >
+              {{ formatBigBrl(row.total_cash) }}
             </div>
             <div
               v-else-if="showColumn('change')"
@@ -163,7 +387,20 @@
 <script setup lang="ts">
 import { dividendAccent, hoverBg } from '~/utils/color'
 
-type Column = 'dy' | 'pe' | 'change' | 'marketCap'
+type Column =
+  | 'dy'
+  | 'pe'
+  | 'change'
+  | 'marketCap'
+  | 'roe'
+  | 'netMargin'
+  | 'revenue'
+  | 'netIncome'
+  | 'cash'
+  | 'grahamPrice'
+  | 'bazinPrice'
+  | 'upsidePct'
+  | 'buyHoldScore'
 
 interface RankingRow {
   ticker: string
@@ -175,6 +412,17 @@ interface RankingRow {
   dividend_yield?: number | string | null
   trailing_pe?: number | string | null
   sector?: string | null
+  // Extended ranking fields — all optional, nullable; populated only by
+  // endpoints that surface that specific metric (RankingResource shape).
+  roe?: number | string | null
+  net_margin?: number | string | null
+  total_revenue?: number | string | null
+  net_income?: number | string | null
+  total_cash?: number | string | null
+  graham_price?: number | string | null
+  bazin_price?: number | string | null
+  upside_pct?: number | string | null
+  buy_hold_score?: number | string | null
 }
 
 const props = withDefaults(
@@ -210,7 +458,8 @@ function showColumn(col: Column): boolean {
   return props.columns.includes(col)
 }
 
-function formatBrl(value: number | string): string {
+function formatBrl(value: number | string | null | undefined): string {
+  if (value == null) return '-'
   const num = typeof value === 'number' ? value : Number(value)
   if (!Number.isFinite(num)) return '-'
   return num.toLocaleString('pt-BR', {
@@ -218,6 +467,27 @@ function formatBrl(value: number | string): string {
     currency: 'BRL',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
+  })
+}
+
+// Big-money format with B/M abbreviation. Used for revenue, net income,
+// cash, etc. — fields where the absolute value is in the billions and the
+// 2-decimal BRL format would overflow the column width.
+function formatBigBrl(value: number | string | null | undefined): string {
+  if (value == null) return '-'
+  const num = typeof value === 'number' ? value : Number(value)
+  if (!Number.isFinite(num)) return '-'
+  const abs = Math.abs(num)
+  const sign = num < 0 ? '-' : ''
+  if (abs >= 1_000_000_000_000) return `${sign}R$ ${(abs / 1_000_000_000_000).toFixed(1)}T`
+  if (abs >= 1_000_000_000) return `${sign}R$ ${(abs / 1_000_000_000).toFixed(1)}B`
+  if (abs >= 1_000_000) return `${sign}R$ ${(abs / 1_000_000).toFixed(1)}M`
+  if (abs >= 1_000) return `${sign}R$ ${(abs / 1_000).toFixed(1)}K`
+  return num.toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
   })
 }
 

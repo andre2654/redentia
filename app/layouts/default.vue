@@ -310,13 +310,23 @@
               '/ranking/maiores-altas-mes',
               '/ranking/maiores-baixas-mes',
               '/ranking/maiores-dividend-yield',
+              '/ranking/maiores-valor-mercado',
+              '/ranking/mais-baratas-graham',
+              '/ranking/buy-and-hold',
+              '/ranking/maiores-roe',
+              '/ranking/maior-potencial-upside',
               '/dividendos/calendario',
             ]"
           >
-            <AtomsSidebarButton to="/ranking" text="Todos os rankings" is-sub-item />
+            <AtomsSidebarButton to="/ranking" text="Ver todos os rankings" is-sub-item />
             <AtomsSidebarButton to="/ranking/maiores-altas-mes" text="Maiores altas do mês" is-sub-item />
             <AtomsSidebarButton to="/ranking/maiores-baixas-mes" text="Maiores baixas do mês" is-sub-item />
             <AtomsSidebarButton to="/ranking/maiores-dividend-yield" text="Maiores dividend yield" is-sub-item />
+            <AtomsSidebarButton to="/ranking/maiores-valor-mercado" text="Maiores Valor de Mercado" is-sub-item />
+            <AtomsSidebarButton to="/ranking/mais-baratas-graham" text="Mais Baratas (Graham)" is-sub-item />
+            <AtomsSidebarButton to="/ranking/buy-and-hold" text="Buy and Hold" is-sub-item />
+            <AtomsSidebarButton to="/ranking/maiores-roe" text="Maiores ROEs" is-sub-item />
+            <AtomsSidebarButton to="/ranking/maior-potencial-upside" text="Maior Potencial de Upside" is-sub-item />
             <AtomsSidebarButton
               v-if="brand.features?.showDividendCalendar"
               to="/dividendos/calendario"

@@ -381,6 +381,37 @@
         </div>
       </div>
 
+      <!-- Rankings Relacionados -->
+      <div
+        class="mt-8 flex flex-col gap-4 rounded-[30px] p-6"
+        :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))' }"
+      >
+        <div>
+          <h2>Rankings Relacionados</h2>
+          <p class="text-sm" :style="{ color: 'var(--brand-text-muted)' }">
+            Explore listas atualizadas diariamente com os melhores ativos da B3 para complementar sua análise.
+          </p>
+        </div>
+        <div class="grid gap-4 md:grid-cols-2">
+          <NuxtLink
+            v-for="r in relatedRankings"
+            :key="r.to"
+            :to="r.to"
+            class="group flex items-center gap-4 brand-card border p-4 transition hover:border-secondary/50"
+            :style="{
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
+            }"
+          >
+            <UIcon :name="r.icon" class="text-secondary size-8 shrink-0" />
+            <div>
+              <h3>{{ r.title }}</h3>
+              <p class="text-sm" :style="{ color: 'var(--brand-text-muted)' }">{{ r.sub }}</p>
+            </div>
+          </NuxtLink>
+        </div>
+      </div>
+
       <div
         class="flex flex-col gap-4 rounded-[30px] p-6"
         :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))' }"
@@ -462,6 +493,23 @@ const authStore = useAuthStore()
 const layoutName = computed(() =>
   authStore.isAuthenticated ? 'default' : 'unauthenticated'
 )
+
+// Rankings relacionados — ponte pra dividendos (isento de IR ate o
+// limite mensal) e maiores altas (planejar venda com base em ganho).
+const relatedRankings = [
+  {
+    to: '/ranking/maiores-dividend-yield',
+    icon: 'i-lucide-coins',
+    title: 'Dividendos isentos de IR',
+    sub: 'Maiores DY pra renda passiva sem IR',
+  },
+  {
+    to: '/ranking/maiores-altas-mes',
+    icon: 'i-lucide-trending-up',
+    title: 'Maiores altas (planejar venda)',
+    sub: 'Top performers nos últimos 30 dias',
+  },
+] as const
 
 // Refresh signal — `dateModified` no JSON-LD vem deste valor.
 // Bump CONTENT_VERSION quando houver mudanca real na calculadora,

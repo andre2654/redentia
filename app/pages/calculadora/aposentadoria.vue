@@ -610,6 +610,37 @@
         </div>
       </div>
 
+      <!-- Rankings Relacionados -->
+      <div
+        class="mt-8 flex flex-col gap-4 rounded-[30px] p-6"
+        :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))' }"
+      >
+        <div>
+          <h2>Rankings Relacionados</h2>
+          <p class="text-sm" :style="{ color: 'var(--brand-text-muted)' }">
+            Explore listas atualizadas diariamente com os melhores ativos da B3 para complementar sua análise.
+          </p>
+        </div>
+        <div class="grid gap-4 md:grid-cols-2">
+          <NuxtLink
+            v-for="r in relatedRankings"
+            :key="r.to"
+            :to="r.to"
+            class="group flex items-center gap-4 brand-card border p-4 transition hover:border-secondary/50"
+            :style="{
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
+            }"
+          >
+            <UIcon :name="r.icon" class="text-secondary size-8 shrink-0" />
+            <div>
+              <h3>{{ r.title }}</h3>
+              <p class="text-sm" :style="{ color: 'var(--brand-text-muted)' }">{{ r.sub }}</p>
+            </div>
+          </NuxtLink>
+        </div>
+      </div>
+
       <!-- Calculadoras Relacionadas -->
       <div
         class="flex flex-col gap-4 rounded-[30px] p-6"
@@ -694,6 +725,23 @@ const authStore = useAuthStore()
 const layoutName = computed(() =>
   authStore.isAuthenticated ? 'default' : 'unauthenticated'
 )
+
+// Rankings relacionados — pontes pra carteiras de renda passiva e
+// dividendos, alvo natural de quem planeja aposentadoria.
+const relatedRankings = [
+  {
+    to: '/ranking/maiores-dividend-yield',
+    icon: 'i-lucide-coins',
+    title: 'Maiores pagadores de dividendos',
+    sub: 'Top 50 ações e FIIs por DY na B3',
+  },
+  {
+    to: '/ranking/buy-and-hold',
+    icon: 'i-lucide-shield-check',
+    title: 'Carteira Buy and Hold',
+    sub: 'Score Redent pra horizonte longo',
+  },
+] as const
 
 // Data de atualização dinâmica para sinal de frescor pro Google.
 const CONTENT_VERSION = '2026-05-01'

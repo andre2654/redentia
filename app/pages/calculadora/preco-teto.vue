@@ -726,6 +726,38 @@
         </div>
       </div>
 
+      <!-- Rankings Relacionados — pontes pra listas atualizadas que
+           complementam o calculo de preco teto (Graham, Bazin, upside). -->
+      <div
+        class="mt-8 flex flex-col gap-4 rounded-[30px] p-6"
+        :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))' }"
+      >
+        <div>
+          <h2>Rankings Relacionados</h2>
+          <p class="text-sm" :style="{ color: 'var(--brand-text-muted)' }">
+            Explore listas atualizadas diariamente com os melhores ativos da B3 para complementar sua análise.
+          </p>
+        </div>
+        <div class="grid gap-4 md:grid-cols-3">
+          <NuxtLink
+            v-for="r in relatedRankings"
+            :key="r.to"
+            :to="r.to"
+            class="group flex items-center gap-4 brand-card border p-4 transition hover:border-secondary/50"
+            :style="{
+              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
+              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
+            }"
+          >
+            <UIcon :name="r.icon" class="text-secondary size-8 shrink-0" />
+            <div>
+              <h3>{{ r.title }}</h3>
+              <p class="text-sm" :style="{ color: 'var(--brand-text-muted)' }">{{ r.sub }}</p>
+            </div>
+          </NuxtLink>
+        </div>
+      </div>
+
       <!-- Calculadoras Relacionadas -->
       <div
         class="flex flex-col gap-4 rounded-[30px] p-6"
@@ -819,6 +851,30 @@ const lastUpdatedText = lastUpdated.toLocaleDateString('pt-BR', {
   year: 'numeric',
 })
 const lastUpdatedISO = lastUpdated.toISOString().slice(0, 10)
+
+// Rankings relacionados — listas atualizadas que ampliam a analise do
+// preco teto (Graham, Bazin, upside potencial). Usadas no card de
+// "Rankings Relacionados" antes do bloco de Outras Ferramentas.
+const relatedRankings = [
+  {
+    to: '/ranking/mais-baratas-graham',
+    icon: 'i-lucide-percent',
+    title: 'Ações mais baratas pelo Graham',
+    sub: 'Maior desconto em relação ao preço justo de Graham',
+  },
+  {
+    to: '/ranking/mais-baratas-bazin',
+    icon: 'i-lucide-tag',
+    title: 'Ações mais baratas pelo Bazin',
+    sub: 'Top desconto pelo método de Décio Bazin',
+  },
+  {
+    to: '/ranking/maior-potencial-upside',
+    icon: 'i-lucide-rocket',
+    title: 'Maior potencial de upside',
+    sub: 'Consenso de analistas vs preço atual',
+  },
+] as const
 
 const popularTickers = [
   { ticker: 'PETR4', name: 'Petrobras' },
