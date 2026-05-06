@@ -1,5 +1,5 @@
 <!--
-  /ranking/[slug] — Dynamic SEO landing page for the 13 fundamentalist
+  /ranking/[slug] — Dynamic SEO landing page for the 17 fundamentalist
   rankings powered by the new RankingController endpoints.
 
   Each slug resolves to a typed RankingConfig in RANKINGS_INFO. Unknown
@@ -237,7 +237,7 @@
 
 <script setup lang="ts">
 // ====================================================================
-// /ranking/[slug] — typed dispatch table for the 13 fundamentalist
+// /ranking/[slug] — typed dispatch table for the 17 fundamentalist
 // rankings. Each entry owns: copy (h1, subtitle, meta), behaviour
 // (icon, columns, fetcher) and SEO (faqItems, educational content).
 //
@@ -326,7 +326,7 @@ const linkOutrosRankings: CrossLink = {
   to: '/ranking',
   icon: 'i-lucide-list',
   title: 'Outros rankings',
-  sub: 'Veja todos os 13 rankings disponíveis na Redentia.',
+  sub: 'Veja todos os rankings disponíveis na Redentia.',
 }
 
 const linkPrecoTeto: CrossLink = {
@@ -1275,6 +1275,331 @@ const RANKINGS_INFO: Record<string, RankingConfig> = {
       {
         q: 'Como combinar este ranking com os outros?',
         a: 'Cruze o ranking de upside com o de Buy and Hold (qualidade) e Maiores ROEs. Empresas que aparecem com upside alto E qualidade alta são as melhores oportunidades estatisticamente. Empresas com upside alto MAS qualidade baixa devem ser tratadas como apostas, não como investimento de longo prazo.',
+      },
+    ],
+  },
+
+  // ============================================================
+  // 14. Maior Crescimento de Receita (5 anos)
+  // ============================================================
+  'crescimento-receita-5-anos': {
+    slug: 'crescimento-receita-5-anos',
+    title: 'Maior Crescimento de Receita (5 anos)',
+    metaTitle: 'Maior Crescimento de Receita 5 Anos B3 | Redentia',
+    metaDescription:
+      'Empresas da B3 que mais cresceram em receita nos últimos 5 anos. CAGR calculado a partir de balanços anuais oficiais. Top 50 atualizados.',
+    h1: 'Empresas com Maior Crescimento de Receita em 5 Anos',
+    subtitle:
+      'CAGR de receita líquida calculado a partir dos balanços anuais oficiais das empresas listadas na B3.',
+    icon: 'i-lucide-trending-up',
+    iconColor: 'positive',
+    badges: [
+      { icon: 'i-lucide-bar-chart-3', text: 'CAGR 5 anos' },
+      { icon: 'i-lucide-database', text: 'Dados B3' },
+      { icon: 'i-lucide-calendar', text: 'Atualizado diariamente' },
+      { icon: 'i-lucide-trending-up', text: 'Top crescimento' },
+    ],
+    columns: ['revenue', 'change', 'marketCap', 'pe'],
+    fetcher: (s, type) => s.getRevenueGrowth5Y(type, 50),
+    educationalSections: [
+      {
+        h2: 'O que é CAGR de receita?',
+        paragraphs: [
+          'CAGR (Compound Annual Growth Rate) é a taxa anual composta de crescimento, métrica que mostra o ritmo médio de expansão de uma variável (receita, lucro, patrimônio) num período de vários anos. A fórmula é simples: pegue o valor final, divida pelo valor inicial, eleve à potência de 1 dividido pelo número de anos e subtraia 1.',
+          'No ranking, calculamos o CAGR da receita líquida dos últimos 5 anos a partir dos balanços anuais oficiais. Empresa que faturou R$ 10 bilhões em 2020 e R$ 20 bilhões em 2025 tem CAGR de aproximadamente 14,9 por cento ao ano. Isso suaviza ruídos de um ano específico e mostra tendência estrutural de expansão.',
+        ],
+      },
+      {
+        h2: 'Por que crescimento de receita importa?',
+        paragraphs: [
+          'Crescimento de receita é o motor primário de criação de valor. Sem novas vendas, não há mais lucro pra distribuir, não há mais caixa pra reinvestir e não há aumento de market share. Empresas com CAGR alto tendem a multiplicar valor de mercado no longo prazo, mesmo que o múltiplo (P/L, P/VPA) se mantenha estável.',
+          'Investidores de growth investing buscam exatamente isso: empresas que crescem receita acima da média do setor, ganhando espaço de concorrentes. CAGR de 15 por cento ao ano sustentado por uma década dobra a receita aproximadamente a cada 5 anos, efeito de composição que muda escala da empresa por completo.',
+        ],
+      },
+      {
+        h2: 'Limitações: alto crescimento nem sempre vira lucro',
+        paragraphs: [
+          'Crescimento de receita não garante criação de valor. Empresa pode crescer 30 por cento ao ano queimando caixa, oferecendo descontos agressivos ou expandindo via aquisições caras sem sinergia. Sempre cruze CAGR de receita com margem líquida e ROE: o ideal é receita E margem subindo juntas.',
+          'Outro ponto: empresas em fase inicial (small caps, tech) costumam crescer rapidamente da base baixa, mas desaceleram conforme amadurecem. CAGR de 30 por cento por 5 anos seguidos é raríssimo e geralmente envolve setores cíclicos, fusões ou efeito base. Use o ranking pra triagem, depois investigue qualidade do crescimento.',
+        ],
+      },
+    ],
+    crossLinks: [
+      linkPrecoTeto,
+      linkSimuladorAcoes,
+      {
+        to: '/ranking/maiores-receitas',
+        icon: 'i-lucide-bar-chart-3',
+        title: 'Maiores Receitas',
+        sub: 'Ranking pelo tamanho absoluto da receita anual.',
+      },
+      linkOutrosRankings,
+    ],
+    faqItems: [
+      {
+        q: 'O que é CAGR e como é calculado?',
+        a: 'CAGR (Compound Annual Growth Rate) é a taxa anual composta de crescimento. Fórmula: (valor_final / valor_inicial)^(1/n_anos) - 1. Exemplo: empresa que faturou R$ 10 bi em 2020 e R$ 20 bi em 2025 (5 anos) tem CAGR de aproximadamente 14,87 por cento. Mostra ritmo médio anual de crescimento, suavizando volatilidade de cada ano.',
+      },
+      {
+        q: 'Qual é uma boa taxa de crescimento de receita?',
+        a: 'Depende muito do setor. Em geral, no Brasil, CAGR acima de 10 por cento ao ano já é considerado bom (acima da inflação histórica). Acima de 15 por cento sinaliza crescimento forte. Acima de 25 por cento é excepcional e geralmente vem com volatilidade. Em setores maduros (utilities, bancos), 5-8 por cento já é satisfatório.',
+      },
+      {
+        q: 'Crescimento alto sempre é positivo?',
+        a: 'Não automaticamente. Crescimento via aquisições caras pode destruir valor mesmo aumentando receita. Crescimento via descontos agressivos comprime margem e pode levar a prejuízo. Sempre cruze CAGR de receita com margem líquida estável ou crescente. O ideal é receita E rentabilidade subindo juntas, sinal de modelo escalável.',
+      },
+      {
+        q: 'Como comparar empresas de setores diferentes?',
+        a: 'Comparação justa só dentro do mesmo setor. Empresa de tecnologia crescendo 25 por cento ao ano é normal; banco crescendo 25 por cento ao ano é excepcional. Use os pares setoriais como benchmark. Cruze também com crescimento do PIB e do setor pra identificar quem está ganhando market share.',
+      },
+      {
+        q: 'CAGR de 5 anos ou de 10 anos, qual é melhor?',
+        a: 'CAGR de 5 anos mostra a fase atual da empresa (mais relevante pra decisão de hoje). CAGR de 10 anos mostra resiliência ao ciclo (atravessa pelo menos uma crise). Use 5 anos pra ranking comparativo e 10 anos pra validar consistência de longo prazo. Empresa boa tem CAGR positivo nos dois períodos.',
+      },
+    ],
+  },
+
+  // ============================================================
+  // 15. Maior Crescimento de Lucro (5 anos)
+  // ============================================================
+  'crescimento-lucro-5-anos': {
+    slug: 'crescimento-lucro-5-anos',
+    title: 'Maior Crescimento de Lucro (5 anos)',
+    metaTitle: 'Maior Crescimento de Lucro 5 Anos B3 | Redentia',
+    metaDescription:
+      'Empresas que mais cresceram em lucro líquido nos últimos 5 anos na B3. Ranking pelo CAGR calculado de balanços anuais. Top 50 atualizados.',
+    h1: 'Empresas com Maior Crescimento de Lucro em 5 Anos',
+    subtitle:
+      'Pelo lucro líquido, ranking calculado por CAGR (taxa de crescimento anual composta) dos últimos 5 balanços.',
+    icon: 'i-lucide-trending-up',
+    iconColor: 'positive',
+    badges: [
+      { icon: 'i-lucide-bar-chart-3', text: 'CAGR 5 anos' },
+      { icon: 'i-lucide-database', text: 'Dados B3' },
+      { icon: 'i-lucide-calendar', text: 'Atualizado diariamente' },
+      { icon: 'i-lucide-coins', text: 'Lucro líquido' },
+    ],
+    columns: ['netIncome', 'revenue', 'marketCap', 'change'],
+    fetcher: (s, type) => s.getNetIncomeGrowth5Y(type, 50),
+    educationalSections: [
+      {
+        h2: 'O que esse ranking mostra?',
+        paragraphs: [
+          'Lista as 50 empresas da B3 com maior CAGR (taxa anual composta de crescimento) do lucro líquido nos últimos 5 anos. O cálculo usa o lucro líquido de cada balanço anual oficial, suavizando picos pontuais e mostrando ritmo estrutural de criação de valor pros acionistas.',
+          'É um dos rankings mais relevantes pra investidor de longo prazo. Empresa que cresce lucro 15 por cento ao ano por uma década tende a multiplicar valor de mercado, mesmo sem expansão de múltiplo. CAGR de lucro acima de receita indica ganho de eficiência operacional (margem subindo), sinal poderoso de qualidade.',
+        ],
+      },
+      {
+        h2: 'Como interpretar',
+        paragraphs: [
+          'CAGR de lucro entre 10-15 por cento: bom, próximo da média de empresas saudáveis. CAGR entre 15-25 por cento: muito bom, sinal de empresa em ciclo virtuoso (receita crescendo + margem expandindo + alavancagem operacional). CAGR acima de 25 por cento: excepcional, geralmente envolve recuperação de base baixa ou setor em forte expansão.',
+          'Cruze sempre com o CAGR de receita. Lucro crescendo mais que receita significa margem subindo (excelente). Lucro crescendo menos que receita significa margem comprimindo (cuidado). Empresa que dobra lucro com receita estagnada está apenas otimizando custos, ganho não sustentável no infinito.',
+        ],
+      },
+      {
+        h2: 'Limitações',
+        paragraphs: [
+          'CAGR de lucro pode ser distorcido por base baixa ou negativa. Empresa que saiu do prejuízo pra lucro grande tem CAGR matemático imenso ou indefinido. Sempre olhe os números absolutos junto com o CAGR pra contextualizar. Recuperação não é o mesmo que crescimento estrutural.',
+          'Itens não recorrentes (venda de ativos, créditos fiscais) inflam o lucro de um ano específico e podem distorcer o CAGR. Olhe o lucro recorrente quando disponível, ou faça a média de 3 anos pra suavizar eventos pontuais. Combine este ranking com o de Maiores Receitas pra validar consistência.',
+        ],
+      },
+    ],
+    crossLinks: [
+      linkPrecoTeto,
+      linkSimuladorAcoes,
+      {
+        to: '/ranking/maiores-lucros',
+        icon: 'i-lucide-coins',
+        title: 'Maiores Lucros',
+        sub: 'Ranking pelo lucro líquido absoluto dos últimos 12 meses.',
+      },
+      linkOutrosRankings,
+    ],
+    faqItems: [
+      {
+        q: 'Por que CAGR de lucro é mais difícil de manter alto que CAGR de receita?',
+        a: 'Lucro depende de margem, e margem tem teto natural (concorrência, custo de matéria prima, salários, impostos). Empresa pode crescer receita em 20 por cento por décadas, mas crescer lucro em 20 por cento por décadas exige expansão contínua de margem, raríssimo. Por isso CAGR de lucro alto sustentado por anos é forte sinal de qualidade.',
+      },
+      {
+        q: 'CAGR de lucro pode ser maior que CAGR de receita?',
+        a: 'Sim, e é o cenário mais desejável. Significa que a empresa está ganhando alavancagem operacional, ou seja, custos crescem menos que receita e a margem se expande. Tipicamente acontece em empresas escaláveis (software, marketplaces) ou em fase de maturação onde custos fixos diluem.',
+      },
+      {
+        q: 'O que faz uma empresa crescer lucro consistentemente?',
+        a: 'Combinação de fatores: vantagem competitiva (marca, custo, switching cost), expansão de market share, eficiência operacional (margem subindo), alocação inteligente de capital (recompras, dividendos, aquisições com sinergia), gestão experiente. Empresas com CAGR alto sustentado tem pelo menos 3-4 desses pilares.',
+      },
+      {
+        q: 'Como diferenciar CAGR de qualidade vs CAGR de base baixa?',
+        a: 'CAGR de qualidade vem de receita crescente E margem estável ou expandindo. CAGR de base baixa vem de recuperação após um ano ruim (prejuízo, queda de margem). Olhe sempre o lucro absoluto ano a ano. Empresa que saiu de R$ 100 milhões pra R$ 1 bilhão tem CAGR aparentemente lindo, mas pode ser apenas normalização.',
+      },
+      {
+        q: 'Vale a pena comprar empresa com CAGR de lucro acima de 30 por cento?',
+        a: 'Geralmente sim, MAS com cuidado. Esse ritmo é raríssimo de manter por mais de 3-5 anos. Antes de comprar, investigue: o crescimento é real (não contábil), o setor é estruturalmente crescente, o múltiplo já não está precificando isso. Empresa caríssima com CAGR alto pode ainda subir, mas a margem de segurança é baixa.',
+      },
+    ],
+  },
+
+  // ============================================================
+  // 16. Empresas que Nunca Tiveram Prejuízo (5+ anos)
+  // ============================================================
+  'nunca-tiveram-prejuizo': {
+    slug: 'nunca-tiveram-prejuizo',
+    title: 'Empresas que Nunca Tiveram Prejuízo (5+ anos)',
+    metaTitle: 'Empresas Nunca Tiveram Prejuízo B3 | Redentia',
+    metaDescription:
+      'Empresas da B3 que mantiveram lucro líquido positivo todos os anos nos últimos 5+ anos. Ativos resilientes ao ciclo econômico. Top 50.',
+    h1: 'Empresas que Nunca Tiveram Prejuízo (Últimos 5+ Anos)',
+    subtitle:
+      'Ativos resilientes ao ciclo econômico que mantiveram lucro positivo em todos os balanços anuais dos últimos 5 anos ou mais.',
+    icon: 'i-lucide-shield-check',
+    iconColor: 'positive',
+    badges: [
+      { icon: 'i-lucide-shield-check', text: 'Resiliência' },
+      { icon: 'i-lucide-database', text: 'Dados B3' },
+      { icon: 'i-lucide-calendar-check', text: '5+ anos seguidos' },
+      { icon: 'i-lucide-trophy', text: 'Top 50' },
+    ],
+    columns: ['netIncome', 'roe', 'marketCap', 'dy'],
+    fetcher: (s, type) => s.getNeverLoss(type, 50),
+    educationalSections: [
+      {
+        h2: 'Por que ausência de prejuízo importa?',
+        paragraphs: [
+          'Empresa que mantém lucro positivo por 5+ anos seguidos atravessou pelo menos um ciclo econômico difícil sem ficar no vermelho. Isso é um filtro de qualidade poderoso: separa negócios resilientes (modelo de receita previsível, baixa alavancagem operacional, gestão prudente) de negócios voláteis que oscilam entre lucro e prejuízo conforme o vento muda.',
+          'Pra investidor de buy and hold, essa consistência reduz drasticamente o risco. Quando uma empresa nunca teve prejuízo nos últimos 5-10 anos, a chance de ter prejuízo no próximo é estatisticamente menor que de uma empresa cíclica. Não elimina o risco (qualquer empresa pode ter ano ruim), mas inclina a probabilidade pro lado favorável.',
+        ],
+      },
+      {
+        h2: 'Setores típicos que aparecem',
+        paragraphs: [
+          'Bancos e seguradoras dominam por modelo de receita estável (juros, prêmios, taxas). Utilities (energia, saneamento) também aparecem com frequência por contratos de longo prazo regulados. Bolsas (B3SA3) e marketplaces consolidados costumam estar na lista por modelo capital-light com receita recorrente.',
+          'Já varejo, construção, commodities e empresas cíclicas raramente aparecem. Vale e Petrobras tem histórico de prejuízo em ciclos ruins de minério ou petróleo, mesmo sendo gigantes. Pra carteira defensiva (aposentadoria, renda passiva), priorize ativos deste ranking sobre empresas cíclicas.',
+        ],
+      },
+      {
+        h2: 'Limitações',
+        paragraphs: [
+          'Lucro positivo não significa lucro suficiente. Empresa pode ter lucro irrisório em relação ao patrimônio (ROE baixo) e ainda assim aparecer no ranking. Sempre cruze com ROE e crescimento de lucro pra distinguir empresa "estável boa" de empresa "estável medíocre". O ideal é ausência de prejuízo + ROE acima de 15 por cento.',
+          'Histórico passado não garante futuro. Empresa pode ter mantido lucro por 10 anos e ter prejuízo no 11º por mudança regulatória, choque setorial ou má gestão. Use este ranking como filtro de triagem, depois faça análise atual da tese (margens, dívida, contexto setorial) antes de decidir entrar.',
+        ],
+      },
+    ],
+    crossLinks: [
+      linkPrecoTeto,
+      linkDividendYield,
+      {
+        to: '/ranking/buy-and-hold',
+        icon: 'i-lucide-shield-check',
+        title: 'Buy and Hold (Score)',
+        sub: 'Ranking de qualidade combinado pra estratégia de longo prazo.',
+      },
+      linkOutrosRankings,
+    ],
+    faqItems: [
+      {
+        q: 'Por que algumas empresas nunca têm prejuízo?',
+        a: 'Geralmente é combinação de: modelo de receita previsível (contratos, recorrência, regulação), baixa alavancagem operacional (custos variáveis em vez de fixos), gestão financeira prudente (caixa alto, dívida baixa), setor com barreiras de entrada (bancos, utilities reguladas). Quando esses pilares estão presentes, a empresa absorve choques sem ficar no vermelho.',
+      },
+      {
+        q: 'Vale a pena pagar mais caro por empresa que nunca teve prejuízo?',
+        a: 'Sim, e o mercado costuma cobrar premium por isso. Empresas resilientes negociam P/L acima da média do setor justamente por ter risco menor. Pra investidor de buy and hold ou aposentadoria, esse premium se justifica. Pra investidor focado em retorno máximo, o premium reduz upside.',
+      },
+      {
+        q: 'Como combinar este ranking com Buy and Hold?',
+        a: 'Empresas que aparecem nos dois rankings são as candidatas mais sólidas pra carteira de longo prazo. Aqui você filtra resiliência (sem prejuízo). No Buy and Hold, filtra qualidade (ROE alto, dividendo consistente, dívida controlada). Interseção das duas listas é o universo de "core positions" defensivas.',
+      },
+      {
+        q: 'Esse ranking funciona pra FIIs?',
+        a: 'FIIs distribuem rendimentos mensais (não tem conceito clássico de prejuízo), então o ranking foca em ações e ETFs. Pra FIIs, o equivalente é checar histórico de distribuição: FIIs que pagaram rendimento todos os meses por 5+ anos sem interrupção tem mesmo perfil de resiliência.',
+      },
+      {
+        q: 'Como saber se uma empresa pode ter prejuízo no futuro?',
+        a: 'Sinais de alerta: queda consecutiva de margem, dívida crescendo mais que EBITDA, perda de market share, mudança regulatória adversa, troca frequente de gestão, queda de demanda estrutural no setor. Acompanhe releases trimestrais e revise a tese se vários sinais aparecerem juntos.',
+      },
+    ],
+  },
+
+  // ============================================================
+  // 17. Tickers Mais Mencionados em Notícias (30 dias)
+  // ============================================================
+  'mais-aparece-noticias': {
+    slug: 'mais-aparece-noticias',
+    title: 'Tickers Mais Mencionados em Notícias (30 dias)',
+    metaTitle: 'Tickers Mais Citados em Notícias B3 | Redentia',
+    metaDescription:
+      'Ações e FIIs mais mencionados em notícias do mercado financeiro brasileiro nos últimos 30 dias. Termômetro de atenção do investidor.',
+    h1: 'Tickers Mais Mencionados em Notícias (Últimos 30 Dias)',
+    subtitle:
+      'Termômetro de atenção do mercado: ações e FIIs com mais menções em portais de notícias financeiras nos últimos 30 dias.',
+    icon: 'i-lucide-newspaper',
+    iconColor: 'primary',
+    badges: [
+      { icon: 'i-lucide-newspaper', text: 'Notícias 30 dias' },
+      { icon: 'i-lucide-database', text: 'Múltiplos portais' },
+      { icon: 'i-lucide-calendar', text: 'Atualizado diariamente' },
+      { icon: 'i-lucide-radio', text: 'Buzz do mercado' },
+    ],
+    columns: ['change', 'marketCap', 'dy', 'pe'],
+    fetcher: (s, type) => s.getNewsMentions(type, 50, 30),
+    educationalSections: [
+      {
+        h2: 'O que esse ranking mostra?',
+        paragraphs: [
+          'Lista os 50 tickers (ações e FIIs) com maior número de menções em notícias do mercado financeiro brasileiro nos últimos 30 dias. Cada matéria que cita o ticker (release de balanço, fato relevante, análise de casa de research, comentário de mercado) entra na contagem. É o termômetro mais direto de atenção do investidor e da imprensa.',
+          'Empresas no topo costumam estar passando por algo relevante: divulgação de resultado, fusão ou aquisição, mudança de gestão, mudança regulatória que afeta o setor, ou simplesmente forte oscilação de preço que chama atenção da mídia. Acompanhar esse ranking ajuda a captar narrativas de mercado em tempo real.',
+        ],
+      },
+      {
+        h2: 'Por que prestar atenção em menções?',
+        paragraphs: [
+          'Atenção da mídia muitas vezes precede ou acompanha movimento de preço. Empresa que de repente aparece em todas as manchetes financeiras tende a ter maior volatilidade nos dias seguintes (boa notícia ou má notícia). Pra investidor ativo, isso é oportunidade de identificar catalisadores antes do mercado precificar completamente.',
+          'Buzz alto também sinaliza upcoming catalysts: vésperas de resultado trimestral, reuniões com analistas, conferências de investidores, mudanças regulatórias em discussão. Combinar buzz com fundamentos sólidos pode ajudar a posicionar antes de movimento esperado.',
+        ],
+      },
+      {
+        h2: 'Riscos do hype trading',
+        paragraphs: [
+          'Cuidado com o efeito manada. Ticker que aparece em todas as manchetes pode atrair fluxo especulativo de curto prazo (FOMO), causando overshoot do preço acima do valor fundamentado. Comprar pelo buzz isolado é estratégia perigosa, pode ser entrada no topo de movimento de curto prazo.',
+          'Outro risco: notícia ruim também conta como menção. Empresa pode estar nos holofotes por escândalo de governança, problema regulatório ou fraude descoberta. Sempre leia o tipo de notícia antes de associar buzz a oportunidade. Use este ranking como ponto de partida pra investigação, nunca como decisão direta.',
+        ],
+      },
+    ],
+    crossLinks: [
+      {
+        to: '/help',
+        icon: 'i-lucide-message-circle',
+        title: 'Pergunte ao assistente',
+        sub: 'Use a IA da Redentia pra resumir o que está acontecendo com qualquer ticker.',
+      },
+      linkSimuladorAcoes,
+      {
+        to: '/ranking/maiores-altas-mes',
+        icon: 'i-lucide-trending-up',
+        title: 'Maiores Altas (30 dias)',
+        sub: 'Cruze atenção com performance recente pra identificar movimentos.',
+      },
+      linkOutrosRankings,
+    ],
+    faqItems: [
+      {
+        q: 'Como o número de menções é calculado?',
+        a: 'A Redentia coleta diariamente notícias de portais financeiros brasileiros (InfoMoney, Money Times, Valor, Brazil Journal, Suno, etc.) e conta quantas matérias citam cada ticker nos últimos 30 dias. Quanto mais menções, maior a posição no ranking. Atualizado diariamente.',
+      },
+      {
+        q: 'Por que algumas ações pequenas aparecem entre as mais mencionadas?',
+        a: 'Notícia específica pode catapultar uma small cap pro topo: descoberta de fraude, fusão anunciada, novo contrato relevante, mudança de controle. Isso costuma ser pontual (poucos dias) e some quando o assunto perde calor. Acompanhar o ranking ao longo das semanas mostra quem é buzz duradouro vs ruído passageiro.',
+      },
+      {
+        q: 'Buzz alto significa que devo comprar?',
+        a: 'Não automaticamente. Buzz é informação sobre atenção, não sobre qualidade ou preço justo. Use o ranking pra descobrir o que está movimentando o mercado, depois investigue a tese fundamental antes de qualquer decisão. Comprar só pelo hype é estratégia de curto prazo com alta volatilidade.',
+      },
+      {
+        q: 'Qual é a diferença entre menções positivas e negativas?',
+        a: 'O ranking conta TODAS as menções, sem distinguir tom. Empresa em escândalo pode dominar manchetes (menções negativas) tanto quanto empresa em alta de fato relevante (menções positivas). Sempre leia as matérias do topo do ranking pra entender o contexto antes de tirar conclusão.',
+      },
+      {
+        q: 'Como combinar buzz com fundamentos?',
+        a: 'Estratégia comum: filtrar tickers do ranking de buzz que TAMBÉM aparecem em rankings de qualidade (Buy and Hold, ROE alto, lucro consistente). Buzz alto + fundamentos sólidos = catalisador potencial pra valorização. Buzz alto + fundamentos fracos = especulação ou problema real, evitar.',
       },
     ],
   },

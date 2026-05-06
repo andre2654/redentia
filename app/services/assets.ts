@@ -322,6 +322,25 @@ export const useAssetsService = () => {
   const getUpsidePotential = (type: 'STOCK' | 'REIT' | 'ETF' | 'BDR' | null = null, limit = 30) =>
     fetchRanking('upside-potential', type, limit)
 
+  // Series historicas (income_statements anuais + news_articles).
+  // Esses 4 endpoints partem de tabelas diferentes do financial_indicators
+  // (TTM): income_statements pra crescimento/never-loss e news_articles
+  // pra mentions. Mesma assinatura, mesma forma de retorno.
+  const getRevenueGrowth5Y = (type: 'STOCK' | 'REIT' | 'ETF' | 'BDR' | null = null, limit = 30) =>
+    fetchRanking('revenue-growth-5y', type, limit)
+
+  const getNetIncomeGrowth5Y = (type: 'STOCK' | 'REIT' | 'ETF' | 'BDR' | null = null, limit = 30) =>
+    fetchRanking('net-income-growth-5y', type, limit)
+
+  const getNeverLoss = (type: 'STOCK' | 'REIT' | 'ETF' | 'BDR' | null = null, limit = 30) =>
+    fetchRanking('never-loss', type, limit)
+
+  const getNewsMentions = (
+    type: 'STOCK' | 'REIT' | 'ETF' | 'BDR' | null = null,
+    limit = 30,
+    days = 30,
+  ) => fetchRanking('news-mentions', type, limit, { days: String(days) })
+
   async function getUpcomingDividends(days = 60, limit = 200) {
     const url = `${API}/dividends/upcoming?days=${days}&limit=${limit}`
     const resp = await preventWithCache(
@@ -405,6 +424,10 @@ export const useAssetsService = () => {
     getBazinDiscount,
     getBuyAndHold,
     getUpsidePotential,
+    getRevenueGrowth5Y,
+    getNetIncomeGrowth5Y,
+    getNeverLoss,
+    getNewsMentions,
     getUpcomingDividends,
     getRecentDividends,
     getSectors,

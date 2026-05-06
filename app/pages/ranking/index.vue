@@ -7,7 +7,7 @@
   os 50". Cards ativos buscam dados via useAssetsService(). Cards "em
   breve" ficam disabled com badge.
 
-  Loading strategy: TODOS os 16 rankings ativos sao buscados em
+  Loading strategy: TODOS os 20 rankings ativos sao buscados em
   paralelo via Promise.all dentro de um unico useAsyncData. Cache de
   15min no backend torna isso barato. Cada card renderiza skeleton
   enquanto pending, aparece quando promise resolve.
@@ -231,9 +231,9 @@ usePageSeo({
 })
 
 // ====================================================================
-// 16 rankings ATIVOS + 4 stubs "Em breve". Cada entry traz slug, copy,
-// icon, tint, metrica usada no resumo top10 e a fn de fetch (`fetcher`)
-// que sera chamada em paralelo no useAsyncData unico abaixo.
+// 20 rankings ATIVOS. Cada entry traz slug, copy, icon, tint, metrica
+// usada no resumo top10 e a fn de fetch (`fetcher`) que sera chamada
+// em paralelo no useAsyncData unico abaixo.
 // ====================================================================
 type Metric =
   | 'marketCap'
@@ -252,6 +252,10 @@ type Metric =
   | 'yearlyChangeBottom'
   | 'cash'
   | 'upside'
+  | 'revenueGrowth5Y'
+  | 'netIncomeGrowth5Y'
+  | 'consecutiveProfitYears'
+  | 'mentionCount'
 
 type Ranking = {
   slug: string
@@ -409,24 +413,23 @@ const rankings: Ranking[] = [
     metric: 'upside',
     fetcher: () => service.getUpsidePotential(null, 10),
   },
-  // ============ STUBS "Em breve" ============
-  {
-    slug: 'crescimento-lucro-5-anos',
-    title: 'Crescimento Lucro (5 anos)',
-    eyebrow: 'CAGR · lucro',
-    icon: 'i-lucide-trending-up',
-    tint: '#a78bfa',
-    metric: 'roe',
-    soon: true,
-  },
   {
     slug: 'crescimento-receita-5-anos',
     title: 'Crescimento Receita (5 anos)',
     eyebrow: 'CAGR · receita',
     icon: 'i-lucide-line-chart',
     tint: '#34d399',
-    metric: 'revenue',
-    soon: true,
+    metric: 'revenueGrowth5Y',
+    fetcher: () => service.getRevenueGrowth5Y(null, 10),
+  },
+  {
+    slug: 'crescimento-lucro-5-anos',
+    title: 'Crescimento Lucro (5 anos)',
+    eyebrow: 'CAGR · lucro',
+    icon: 'i-lucide-trending-up',
+    tint: '#a78bfa',
+    metric: 'netIncomeGrowth5Y',
+    fetcher: () => service.getNetIncomeGrowth5Y(null, 10),
   },
   {
     slug: 'nunca-tiveram-prejuizo',
@@ -434,8 +437,8 @@ const rankings: Ranking[] = [
     eyebrow: 'Consistência · histórico',
     icon: 'i-lucide-shield-check',
     tint: '#fbbf24',
-    metric: 'netIncome',
-    soon: true,
+    metric: 'consecutiveProfitYears',
+    fetcher: () => service.getNeverLoss(null, 10),
   },
   {
     slug: 'mais-aparece-noticias',
@@ -443,8 +446,8 @@ const rankings: Ranking[] = [
     eyebrow: 'Buzz · imprensa',
     icon: 'i-lucide-newspaper',
     tint: '#fb923c',
-    metric: 'marketCap',
-    soon: true,
+    metric: 'mentionCount',
+    fetcher: () => service.getNewsMentions(null, 10, 30),
   },
 ]
 
@@ -561,6 +564,23 @@ function formatMetric(metric: Metric, row: any): string {
       const v = pickFirst(row.buy_and_hold_score, row.score)
       return Number.isFinite(v) ? v.toFixed(1) : '-'
     }
+    case 'revenueGrowth5Y':
+    case 'netIncomeGrowth5Y': {
+      const v = pickFirst(row.revenue_growth_5y, row.net_income_growth_5y, row.cagr_5y)
+      // Backend pode devolver decimal (0.15) ou percent (15.0); detecta automaticamente.
+      const fromDecimal = Math.abs(v) < 5 && v !== 0
+      const sign = v >= 0 ? '+' : ''
+      const fmt = formatPctVal(v, fromDecimal)
+      return fmt === '-' ? '-' : `${sign}${fmt}`
+    }
+    case 'consecutiveProfitYears': {
+      const v = pickFirst(row.consecutive_profit_years, row.profit_years)
+      return Number.isFinite(v) ? `${Math.round(v)} anos` : '-'
+    }
+    case 'mentionCount': {
+      const v = pickFirst(row.mention_count, row.mentions)
+      return Number.isFinite(v) ? `${Math.round(v)} menções` : '-'
+    }
     default:
       return formatBrl(Number(row.market_price) || 0)
   }
@@ -578,6 +598,14 @@ function metricColor(metric: Metric, row: any): string {
   if (metric === 'dividendYield' || metric === 'buyAndHoldScore') {
     return 'var(--brand-primary)'
   }
+  if (
+    metric === 'revenueGrowth5Y' ||
+    metric === 'netIncomeGrowth5Y'
+  ) return 'var(--brand-positive)'
+  if (
+    metric === 'consecutiveProfitYears' ||
+    metric === 'mentionCount'
+  ) return 'var(--brand-primary)'
   // change_percent fallback colorizado se aparecer:
   const v = Number(row?.change_percent)
   if (Number.isFinite(v) && (metric === 'marketCap' || metric === 'revenue')) {

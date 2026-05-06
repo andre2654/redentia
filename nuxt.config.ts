@@ -466,7 +466,7 @@ export default defineNuxtConfig({
         changefreq: 'weekly' as const,
       }))
 
-      // Rankings programáticos (/ranking/[slug]) — 13 páginas SEO geradas
+      // Rankings programáticos (/ranking/[slug]) — 17 páginas SEO geradas
       // via dispatch table em /pages/ranking/[slug].vue (RANKINGS_INFO).
       // Cada uma indexa um ranking fundamentalista (market cap, ROE, P/L,
       // Graham, Bazin, etc.) com long-tail próprio. Atualizadas diariamente
@@ -486,6 +486,10 @@ export default defineNuxtConfig({
         '/ranking/maiores-baixas-12-meses',
         '/ranking/maiores-caixa',
         '/ranking/maior-potencial-upside',
+        '/ranking/crescimento-receita-5-anos',
+        '/ranking/crescimento-lucro-5-anos',
+        '/ranking/nunca-tiveram-prejuizo',
+        '/ranking/mais-aparece-noticias',
       ].map((loc) => ({
         loc,
         priority: 0.7 as const,
