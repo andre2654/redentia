@@ -26,6 +26,24 @@ export default defineNuxtConfig({
   //   - crossOriginPrefetch:true → prefetch agressivo machucava
   //   - Lazy* nos componentes do result → chunks sequenciais piores
   //     que os pre-carregados em paralelo
+  //
+  // O QUE FUNCIONOU (manter):
+  //   - NuxtLink prefetch=hover ao inves de in-viewport. Antes a nav
+  //     pre-baixava 23 chunks de outras rotas competindo com critical
+  //     resources em Slow 4G. Agora so pre-baixa quando user passa o
+  //     mouse/foca. Em mobile (touch), nunca pre-baixa.
+  //
+  experimental: {
+    defaults: {
+      nuxtLink: {
+        // Sem prefetch automatico. Reduz ~700KB-1MB de bandwidth
+        // desperdicado na primeira pintura. Em desktop o user faz hover
+        // antes de clicar, prefetch ainda dispara em tempo. Em mobile
+        // economiza data + acelera critical path.
+        prefetch: false,
+      },
+    },
+  },
 
   modules: [
     '@nuxt/ui',
