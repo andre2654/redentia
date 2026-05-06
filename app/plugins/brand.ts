@@ -380,6 +380,12 @@ export default defineNuxtPlugin({
         key: 'brand-google-font',
         rel: 'stylesheet',
         href: computed(() => googleFontsUrl(brand.font.google)),
+        // crossorigin="anonymous" pra que o stylesheet seja legível pelo
+        // motor de replay do Microsoft Clarity (que reusa o CSS no <iframe>
+        // sandbox da gravação). Sem isso, replays renderizam com fonte
+        // default do browser e parecem "site sem CSS". O preconnect pra
+        // fonts.gstatic.com no nuxt.config.ts já tem o mesmo attr.
+        crossorigin: 'anonymous',
       },
     ],
   })
