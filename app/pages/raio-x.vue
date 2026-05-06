@@ -1208,7 +1208,11 @@ usePageSeo({
 /* IMPORTANTE: removi rotateY/rotateX (3D transforms). Em scroll, browsers
    recalculam transform de elementos com 3D pra resolver z-index, causando
    stutter especialmente em mobile. Mantive translateY no hover (2D, barato)
-   + box-shadow expansion pra dar sensacao de "lift" sem custo de scroll. */
+   + box-shadow expansion pra dar sensacao de "lift" sem custo de scroll.
+
+   REMOVI overflow:hidden — estava clipando os floats (badges "Alerta..."
+   e "Dividendo..."). Substitui por border-radius nos elementos internos
+   (head/body) pra manter visualmente os rounded corners. */
 .lp-mockup {
   position: relative;
   width: 100%;
@@ -1219,12 +1223,10 @@ usePageSeo({
   box-shadow:
     0 32px 80px -24px color-mix(in srgb, var(--brand-primary) 32%, transparent),
     0 16px 40px -12px rgba(0, 0, 0, 0.18);
-  overflow: hidden;
   transition: transform 320ms cubic-bezier(0.22, 0.61, 0.36, 1), box-shadow 320ms;
   /* Cria camada compositor propria, isola dos repaints da page */
   will-change: transform;
   transform: translateZ(0);
-  contain: layout paint;
 }
 @media (min-width: 1024px) {
   .lp-mockup:hover {
@@ -1242,6 +1244,8 @@ usePageSeo({
   padding: 12px 16px;
   background: color-mix(in srgb, var(--brand-background) 50%, var(--brand-surface));
   border-bottom: 1px solid color-mix(in srgb, var(--brand-border) 50%, transparent);
+  /* Rounded matching mockup top corners (sem overflow:hidden no parent) */
+  border-radius: 22px 22px 0 0;
 }
 .lp-mockup__dots {
   display: flex;
