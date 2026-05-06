@@ -382,7 +382,6 @@ usePageSeo({
         <div class="lp-tickerbar__sources">
           <span class="lp-tickerbar__source-label">Dados auditáveis:</span>
           <span class="lp-tickerbar__source">B3</span>
-          <span class="lp-tickerbar__source">StatusInvest</span>
           <span class="lp-tickerbar__source">Tesouro Direto</span>
           <span class="lp-tickerbar__source">11 fontes de notícias</span>
         </div>
@@ -747,7 +746,7 @@ usePageSeo({
           </div>
           <div class="lp-inside__stat">
             <div class="lp-inside__stat-num" :style="{ color: brand.colors.primary }">100%</div>
-            <div class="lp-inside__stat-label">dados auditáveis<br>(StatusInvest, B3, BCB)</div>
+            <div class="lp-inside__stat-label">dados auditáveis<br>(B3, Tesouro, BCB)</div>
           </div>
           <div class="lp-inside__stat">
             <div class="lp-inside__stat-num" :style="{ color: brand.colors.primary }">24/7</div>
