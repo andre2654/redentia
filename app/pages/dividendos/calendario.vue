@@ -195,10 +195,10 @@
                 class="font-mono-tab text-[12px] font-semibold tabular-nums"
                 :style="{
                   color: cell.isToday
-                    ? var(--brand-primary)
+                    ? 'var(--brand-primary)'
                     : cell.inMonth
-                      ? var(--brand-text)
-                      : `color-mix(in srgb, var(--brand-text) 30%, transparent)`,
+                      ? 'var(--brand-text)'
+                      : 'color-mix(in srgb, var(--brand-text) 30%, transparent)',
                 }"
               >{{ cell.day }}</span>
               <span
@@ -220,8 +220,8 @@
                 :style="{
                   backgroundColor: `color-mix(in srgb, ${labelColor(item.label)} 12%, transparent)`,
                   color: cell.inMonth
-                    ? var(--brand-text)
-                    : `color-mix(in srgb, var(--brand-text) 50%, transparent)`,
+                    ? 'var(--brand-text)'
+                    : 'color-mix(in srgb, var(--brand-text) 50%, transparent)',
                 }"
               >
                 <span
@@ -854,7 +854,7 @@ const layoutName = computed(() =>
 )
 
 const rateAccent = computed(() =>
-  dividendAccent(var(--brand-primary), 'var(--brand-negative)', var(--brand-positive)),
+  dividendAccent('var(--brand-primary)', 'var(--brand-negative)', 'var(--brand-positive)'),
 )
 
 // FAQ data — populated below before usePageSeo runs.
