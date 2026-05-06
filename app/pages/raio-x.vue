@@ -365,7 +365,12 @@ usePageSeo({
               </div>
 
               <div v-else class="w-full">
-                <MoleculesPortfolioAssetPicker
+                <!-- Lazy* aqui é seguro: o picker só renderiza se user
+                     clicar "já tenho carteira pronta" no quiz. Espera
+                     200ms pra chunk arrivar é OK pq foi acao deliberada
+                     do user. Economiza ~9KB de CSS inline da renderizacao
+                     inicial. -->
+                <LazyMoleculesPortfolioAssetPicker
                   cta-label="Gerar Raio-X"
                   cta-label-short="Gerar Raio-X"
                   :initial="tickersFromUrl"
@@ -584,7 +589,10 @@ usePageSeo({
           </p>
 
           <div class="mx-auto max-w-2xl">
-            <MoleculesPortfolioAssetPicker
+            <!-- Final CTA picker: também lazy. Tá abaixo da fold do hero,
+                 user faz scroll antes de chegar aqui — mais que tempo
+                 suficiente pra chunk carregar em background. -->
+            <LazyMoleculesPortfolioAssetPicker
               cta-label="Gerar Raio-X"
               cta-label-short="Gerar Raio-X"
               :initial="tickersFromUrl"

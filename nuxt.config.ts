@@ -45,6 +45,21 @@ export default defineNuxtConfig({
     },
   },
 
+  // ============================================================
+  // @nuxt/fonts — limitar subsets pra reduzir CSS inline
+  // ============================================================
+  // O modulo (transitivo via @nuxt/ui) baixa as fontes e inlina os
+  // @font-face no <head> com TODOS os subsets disponiveis (Latin,
+  // Latin Extended, Vietnamese, Cyrillic). Pra um produto pt-BR isso
+  // ~36KB de metadata desperdicado em cada page load.
+  //
+  // Limitando a 'latin' apenas reduz pra ~9KB (75% menos).
+  fonts: {
+    defaults: {
+      subsets: ['latin'],
+    },
+  },
+
   modules: [
     '@nuxt/ui',
     '@nuxt/eslint',
