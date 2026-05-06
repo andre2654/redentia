@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-6">
+  <div ref="calcRoot" class="space-y-6">
     <div
       class="flex flex-col gap-6 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6"
     >
@@ -509,6 +509,19 @@ const selectedAsset = ref<IAsset | null>(null)
 const isSearchFocused = ref(false)
 const isFetching = ref(false)
 
+const calcRoot = ref<HTMLElement | null>(null)
+
+function scrollToCalc() {
+  if (typeof window === 'undefined') return
+  // nextTick garante que o DOM atualizou (form re-renderizou) antes de scrollar
+  nextTick(() => {
+    calcRoot.value?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    })
+  })
+}
+
 function handleSearchBlur() {
   setTimeout(() => {
     isSearchFocused.value = false
@@ -799,10 +812,30 @@ function getStatusText(ratio: number): string {
   return 'Caro'
 }
 
-onMounted(() => {
+function applyQueryParams() {
   const queryTicker = (route.query.ticker as string) || props.initialTicker || ''
-  if (queryTicker) selectByTicker(queryTicker)
+  if (!queryTicker) return
+  // Guard: if the requested ticker is already the active one, no-op.
+  // Prevents re-fetch loop with selectByTicker -> router.replace -> watcher.
+  if (form.value.ticker.toUpperCase() === queryTicker.toUpperCase()) return
+  selectByTicker(queryTicker)
+}
+
+onMounted(() => {
+  applyQueryParams()
 })
+
+// Re-apply when query changes (user clicked a scenario chip on the same page)
+// In this path, ALSO scroll to the calculator so the user sees the result.
+// {immediate: false} (default) garante que o scroll do mount inicial não dispare.
+watch(
+  () => route.query,
+  () => {
+    applyQueryParams()
+    scrollToCalc()
+  },
+  { deep: true },
+)
 
 watch(
   () => props.assets,

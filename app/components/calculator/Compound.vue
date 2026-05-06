@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-6">
+  <div ref="calcRoot" class="space-y-6">
     <div
       class="flex flex-col gap-6 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6"
     >
@@ -181,6 +181,19 @@ const compoundForm = ref<CompoundForm>({
 
 const compoundResult = ref<CompoundResult | null>(null)
 
+const calcRoot = ref<HTMLElement | null>(null)
+
+function scrollToCalc() {
+  if (typeof window === 'undefined') return
+  // nextTick garante que o DOM atualizou (form re-renderizou) antes de scrollar
+  nextTick(() => {
+    calcRoot.value?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    })
+  })
+}
+
 // ====================================================================
 // Deep-link via query params — abilita URLs canonicas pra cenarios
 // populares (ex: /calculadora/juros-compostos?monthly=500&years=20).
@@ -208,7 +221,7 @@ function parseNumberParam(value: unknown): number | null {
   return Number.isFinite(num) ? num : null
 }
 
-onMounted(() => {
+function applyQueryParams() {
   const q = route.query
   const initial = parseNumberParam(q.initial)
   const monthly = parseNumberParam(q.monthly)
@@ -236,7 +249,23 @@ onMounted(() => {
     // nextTick pra garantir que o v-model atualizou os children inputs
     nextTick(() => calculateCompoundInterest())
   }
+}
+
+onMounted(() => {
+  applyQueryParams()
 })
+
+// Re-apply when query changes (user clicked a scenario chip on the same page)
+// In this path, ALSO scroll to the calculator so the user sees the result.
+// {immediate: false} (default) garante que o scroll do mount inicial não dispare.
+watch(
+  () => route.query,
+  () => {
+    applyQueryParams()
+    scrollToCalc()
+  },
+  { deep: true },
+)
 
 async function calculateCompoundInterest() {
   const initial = compoundForm.value.initialValue || 0

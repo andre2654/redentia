@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-6">
+  <div ref="calcRoot" class="space-y-6">
     <div
       class="flex flex-col gap-6 rounded-[30px] p-6"
       :style="{ backgroundColor: 'var(--brand-surface)' }"
@@ -588,6 +588,19 @@ const stockResults = ref<StockSimulationResult[]>([])
 const resultsStale = ref(false)
 const searchTerm = ref('')
 
+const calcRoot = ref<HTMLElement | null>(null)
+
+function scrollToCalc() {
+  if (typeof window === 'undefined') return
+  // nextTick garante que o DOM atualizou (form re-renderizou) antes de scrollar
+  nextTick(() => {
+    calcRoot.value?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    })
+  })
+}
+
 // ====================================================================
 // Deep-link via query params, abilita URLs canonicas pra cenarios
 // populares (ex: /calculadora/acoes?initial=10000&monthly=500&years=10
@@ -822,7 +835,7 @@ function onScroll() {
 
 let resizeObserver: ResizeObserver | null = null
 
-onMounted(() => {
+function applyQueryParams() {
   if (!import.meta.client) return
 
   // Deep-link: le query params e popula o form. Tickers aguardam o
@@ -851,10 +864,20 @@ onMounted(() => {
   pendingAutoFire.value =
     hasAnyInput || q.auto === '1' || q.auto === 'true'
 
+  // Reset deepLinkApplied so a fresh query change (user clicking a new
+  // scenario chip on the same page) can re-fire the resolution.
+  deepLinkApplied.value = false
+
   // Tenta resolver tickers imediatamente caso `props.assets` ja tenha
   // sido populado (assets = computed prop, costuma chegar antes do
   // mount completar).
   tryResolvePendingTickers()
+}
+
+onMounted(() => {
+  if (!import.meta.client) return
+
+  applyQueryParams()
 
   nextTick(() => {
     if (listContainer.value) {
@@ -871,6 +894,18 @@ onMounted(() => {
     }
   })
 })
+
+// Re-apply when query changes (user clicked a scenario chip on the same page)
+// In this path, ALSO scroll to the calculator so the user sees the result.
+// {immediate: false} (default) garante que o scroll do mount inicial não dispare.
+watch(
+  () => route.query,
+  () => {
+    applyQueryParams()
+    scrollToCalc()
+  },
+  { deep: true },
+)
 
 // Watcher que escuta a chegada de `props.assets` para resolver os
 // tickers pendentes (vindos do query param `?tickers=ITUB4,VALE3`)

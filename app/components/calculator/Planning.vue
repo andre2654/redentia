@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-6">
+  <div ref="calcRoot" class="space-y-6">
     <div
       class="flex flex-col gap-6 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6"
     >
@@ -343,6 +343,19 @@ const planningLoading = ref(false)
 const planningError = ref('')
 const planningResult = ref<PlanningResult | null>(null)
 
+const calcRoot = ref<HTMLElement | null>(null)
+
+function scrollToCalc() {
+  if (typeof window === 'undefined') return
+  // nextTick garante que o DOM atualizou (form re-renderizou) antes de scrollar
+  nextTick(() => {
+    calcRoot.value?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    })
+  })
+}
+
 // ====================================================================
 // Deep-link via query params, abilita URLs canonicas pra cenarios
 // populares (ex: /calculadora/planejamento?goal=500000&monthly=1500).
@@ -379,7 +392,7 @@ function parseStrategyParam(value: unknown): PlanningStrategy | null {
   return null
 }
 
-onMounted(() => {
+function applyQueryParams() {
   const q = route.query
   const goal = parseNumberParam(q.goal)
   const monthly = parseNumberParam(q.monthly)
@@ -396,7 +409,23 @@ onMounted(() => {
   if (hasAnyInput || q.auto === '1' || q.auto === 'true') {
     nextTick(() => calculatePlanningStrategy())
   }
+}
+
+onMounted(() => {
+  applyQueryParams()
 })
+
+// Re-apply when query changes (user clicked a scenario chip on the same page)
+// In this path, ALSO scroll to the calculator so the user sees the result.
+// {immediate: false} (default) garante que o scroll do mount inicial não dispare.
+watch(
+  () => route.query,
+  () => {
+    applyQueryParams()
+    scrollToCalc()
+  },
+  { deep: true },
+)
 
 function formatTimeLabel(months: number) {
   if (months <= 0) return 'menos de 1 mês'

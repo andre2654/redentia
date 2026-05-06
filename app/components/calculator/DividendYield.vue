@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-6">
+  <div ref="calcRoot" class="space-y-6">
     <div
       class="flex flex-col gap-6 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6"
     >
@@ -355,6 +355,19 @@ const searchTerm = ref('')
 const selectedAsset = ref<IAsset | null>(null)
 const route = useRoute()
 
+const calcRoot = ref<HTMLElement | null>(null)
+
+function scrollToCalc() {
+  if (typeof window === 'undefined') return
+  // nextTick garante que o DOM atualizou (form re-renderizou) antes de scrollar
+  nextTick(() => {
+    calcRoot.value?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    })
+  })
+}
+
 const filteredAssets = computed(() => {
   const term = searchTerm.value.trim().toLowerCase()
   if (!term) return []
@@ -447,25 +460,37 @@ function tryPreselectFromTicker(ticker: string) {
   if (match) selectedAsset.value = match
 }
 
-const initialQuery = (() => {
-  const q = route.query
-  return {
-    ticker: parseStringParam(q.ticker),
-    price: parseNumberParam(q.price),
-    dividend: parseNumberParam(q.dividend),
-    purchase: parseNumberParam(q.purchase),
-    current: parseNumberParam(q.current),
-    div: parseNumberParam(q.div),
-    lpa: parseNumberParam(q.lpa),
-    payout: parseNumberParam(q.payout),
-    growth: parseNumberParam(q.growth),
-    mode: parseStringParam(q.mode),
-    auto: parseStringParam(q.auto),
-  }
-})()
+const initialQuery = ref({
+  ticker: parseStringParam(route.query.ticker),
+  price: parseNumberParam(route.query.price),
+  dividend: parseNumberParam(route.query.dividend),
+  purchase: parseNumberParam(route.query.purchase),
+  current: parseNumberParam(route.query.current),
+  div: parseNumberParam(route.query.div),
+  lpa: parseNumberParam(route.query.lpa),
+  payout: parseNumberParam(route.query.payout),
+  growth: parseNumberParam(route.query.growth),
+  mode: parseStringParam(route.query.mode),
+  auto: parseStringParam(route.query.auto),
+})
 
-onMounted(() => {
-  const q = initialQuery
+function applyQueryParams() {
+  const rq = route.query
+  // Refresh initialQuery from current route.query (used by the assets watcher)
+  initialQuery.value = {
+    ticker: parseStringParam(rq.ticker),
+    price: parseNumberParam(rq.price),
+    dividend: parseNumberParam(rq.dividend),
+    purchase: parseNumberParam(rq.purchase),
+    current: parseNumberParam(rq.current),
+    div: parseNumberParam(rq.div),
+    lpa: parseNumberParam(rq.lpa),
+    payout: parseNumberParam(rq.payout),
+    growth: parseNumberParam(rq.growth),
+    mode: parseStringParam(rq.mode),
+    auto: parseStringParam(rq.auto),
+  }
+  const q = initialQuery.value
 
   // Modo: prioriza ?mode= explicito; senao infere pelos params presentes.
   if (q.mode === 'simple' || q.mode === 'onCost' || q.mode === 'projection') {
@@ -515,7 +540,23 @@ onMounted(() => {
   if (shouldAutoCalc) {
     nextTick(() => calculate())
   }
+}
+
+onMounted(() => {
+  applyQueryParams()
 })
+
+// Re-apply when query changes (user clicked a scenario chip on the same page)
+// In this path, ALSO scroll to the calculator so the user sees the result.
+// {immediate: false} (default) garante que o scroll do mount inicial não dispare.
+watch(
+  () => route.query,
+  () => {
+    applyQueryParams()
+    scrollToCalc()
+  },
+  { deep: true },
+)
 
 // Quando assets terminar de carregar (vem da page via prop), tenta de
 // novo preencher ticker selecionado, caso o usuario tenha chegado
@@ -524,7 +565,7 @@ watch(
   () => props.assets,
   (assets) => {
     if (!assets || assets.length === 0) return
-    const ticker = initialQuery.ticker || form.value.ticker
+    const ticker = initialQuery.value.ticker || form.value.ticker
     if (ticker && !selectedAsset.value) tryPreselectFromTicker(ticker)
   },
   { immediate: false }

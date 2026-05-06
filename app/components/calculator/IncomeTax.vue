@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-6">
+  <div ref="calcRoot" class="space-y-6">
     <div
       class="flex flex-col gap-6 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6"
     >
@@ -227,6 +227,19 @@ const form = ref({
   accumulatedLoss: 0,
 })
 
+const calcRoot = ref<HTMLElement | null>(null)
+
+function scrollToCalc() {
+  if (typeof window === 'undefined') return
+  // nextTick garante que o DOM atualizou (form re-renderizou) antes de scrollar
+  nextTick(() => {
+    calcRoot.value?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    })
+  })
+}
+
 // ====================================================================
 // Deep-link via query params — abilita URLs canonicas para landings
 // virtuais (ex: /calculadora/imposto-renda?type=swing&sales=25000&profit=2000).
@@ -259,7 +272,7 @@ function parseStringParam(value: unknown): string | null {
   return raw.trim()
 }
 
-onMounted(() => {
+function applyQueryParams() {
   const q = route.query
   const type = parseStringParam(q.type)
   const sales = parseNumberParam(q.sales)
@@ -295,7 +308,23 @@ onMounted(() => {
   if (shouldAutoCalc && hasMonth) {
     nextTick(() => calculate())
   }
+}
+
+onMounted(() => {
+  applyQueryParams()
 })
+
+// Re-apply when query changes (user clicked a scenario chip on the same page)
+// In this path, ALSO scroll to the calculator so the user sees the result.
+// {immediate: false} (default) garante que o scroll do mount inicial não dispare.
+watch(
+  () => route.query,
+  () => {
+    applyQueryParams()
+    scrollToCalc()
+  },
+  { deep: true },
+)
 
 interface Results {
   taxDue: number
