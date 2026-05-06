@@ -63,6 +63,7 @@ export default defineNuxtConfig({
   modules: [
     '@nuxt/ui',
     '@nuxt/eslint',
+    '@nuxt/fonts',  // explicito (era transitivo via @nuxt/ui) pra pegar subsets:['latin']
     '@nuxt/image',
     '@pinia/nuxt',
     '@pinia-plugin-persistedstate/nuxt',
