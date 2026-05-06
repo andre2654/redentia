@@ -538,15 +538,21 @@ function formatMetric(metric: Metric, row: any): string {
     case 'grahamDiscount':
     case 'bazinDiscount':
     case 'upside': {
+      // Backend devolve `upside_pct` (sempre em %, ex: 25.5 = +25,5%) calculado
+      // como ((preco_justo - preco_atual) / preco_atual) * 100. Os fields
+      // `graham_price`/`bazin_price` sao os preços alvo absolutos; aqui
+      // exibimos so o upside %, que e o que importa pra ranking de "mais
+      // baratas". Mantemos os fallbacks legacy pra robustez.
       const v = pickFirst(
+        row.upside_pct,
         row.graham_discount,
         row.bazin_discount,
         row.upside_potential,
         row.upside,
         row.discount,
       )
-      const fromDecimal = Math.abs(v) < 5
-      return formatPctVal(v, fromDecimal)
+      // upside_pct ja vem em percent (25.5 = 25.5%), nao decimal
+      return formatPctVal(v, false)
     }
     case 'pe': {
       const v = pickFirst(row.trailing_pe, row.pe, row.price_to_earnings)
@@ -561,8 +567,11 @@ function formatMetric(metric: Metric, row: any): string {
       return Number.isFinite(v) ? `${sign}${v.toFixed(1).replace('.', ',')}%` : '-'
     }
     case 'buyAndHoldScore': {
-      const v = pickFirst(row.buy_and_hold_score, row.score)
-      return Number.isFinite(v) ? v.toFixed(1) : '-'
+      // Backend retorna `buy_hold_score` (int 0-10, ja calculado por 5
+      // criterios x 2 pontos cada). Renderizamos como "X/10" pra deixar
+      // claro a escala. Fallbacks legacy pra robustez.
+      const v = pickFirst(row.buy_hold_score, row.buy_and_hold_score, row.score)
+      return Number.isFinite(v) ? `${Math.round(v)}/10` : '-'
     }
     case 'revenueGrowth5Y':
     case 'netIncomeGrowth5Y': {
