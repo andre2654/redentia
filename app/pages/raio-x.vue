@@ -241,7 +241,7 @@ usePageSeo({
 
             <p class="lp-hero__lead">
               Análise da sua carteira cruzando notícias, fundamentos
-              e contexto macro — com IA. Em 2 minutos.
+              e contexto macro, com IA. Em 2 minutos.
             </p>
 
             <!-- CTA primário grande -->
@@ -510,7 +510,7 @@ usePageSeo({
               </svg>
             </div>
             <h3>Avisa <em>quando</em> comprar e <em>quando</em> vender</h3>
-            <p>Você não fica adivinhando. A IA monitora seus ativos 24/7 e te avisa quando algo muda — antes da concorrência reagir.</p>
+            <p>Você não fica adivinhando. A IA monitora seus ativos 24/7 e te avisa quando algo muda, antes da concorrência reagir.</p>
             <div class="lp-feat__alerts">
               <div class="lp-feat__alert">
                 <span class="lp-feat__alert-pulse" :style="{ background: brand.colors.primary }" />
@@ -573,7 +573,7 @@ usePageSeo({
               </svg>
             </div>
             <h3>Pergunta. A IA responde.</h3>
-            <p>"Por que minha carteira caiu hoje?" "Qual minha exposição a commodities?" "Devo comprar mais ITUB4?" — pergunta no app <strong>ou no WhatsApp</strong>, ela responde com dados.</p>
+            <p>"Por que minha carteira caiu hoje?" "Qual minha exposição a commodities?" "Devo comprar mais ITUB4?", pergunta no app <strong>ou no WhatsApp</strong>, ela responde com dados.</p>
             <div class="lp-feat__chat">
               <div class="lp-feat__chat-msg lp-feat__chat-msg--user">
                 Por que minha carteira caiu?
@@ -1058,8 +1058,8 @@ usePageSeo({
                 <div class="lp-chat__msg lp-chat__msg--ai">
                   Sua queda de <strong>-2,4%</strong> hoje veio principalmente de:
                   <ul class="lp-chat__list">
-                    <li>PETR4 <strong style="color: var(--brand-negative, #dc2626)">-3,8%</strong> — petróleo recuou após reunião OPEC</li>
-                    <li>VALE3 <strong style="color: var(--brand-negative, #dc2626)">-2,1%</strong> — minério caiu na China</li>
+                    <li>PETR4 <strong style="color: var(--brand-negative, #dc2626)">-3,8%</strong>, petróleo recuou após reunião OPEC</li>
+                    <li>VALE3 <strong style="color: var(--brand-negative, #dc2626)">-2,1%</strong>, minério caiu na China</li>
                   </ul>
                   Sua exposição a commodities tá em <strong>42%</strong>. Quer que eu analise alternativas pra rebalancear?
                 </div>

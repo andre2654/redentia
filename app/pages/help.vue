@@ -52,6 +52,7 @@
         @pin="onPinSession"
         @rename="onRenameSession"
         @open-panel="onOpenPanel"
+        @close-sidebar="onCloseSidebar"
       />
     </template>
 
@@ -385,6 +386,12 @@ const composerRef = ref<{
   insertAtCursor: (text: string) => void
 } | null>(null)
 const sidebarOpen = ref(false)
+// Handler do @close-sidebar emitido pelo Layout (click no backdrop ou
+// botao X do mobile sheet). Sem essa funcao o emit ficava sem listener
+// e o backdrop click nao fechava nada.
+function onCloseSidebar() {
+  sidebarOpen.value = false
+}
 // Desktop-only: when true, the sidebar is hidden entirely (collapsed
 // by the user clicking the « button). Mobile uses `sidebarOpen` instead.
 const sidebarCollapsed = ref(false)

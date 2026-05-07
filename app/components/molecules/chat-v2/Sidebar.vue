@@ -31,9 +31,13 @@
       <NuxtLink to="/" class="chat-brand-mark inline-flex items-center" aria-label="Ir pra home">
         <BrandLogo variant="full" mode="auto" class="h-7 w-auto" />
       </NuxtLink>
+      <!-- O botao de colapsar so faz sentido no mobile (fecha o sheet).
+           Em desktop a sidebar e permanente — escondemos com xl:hidden
+           pra nao confundir o usuario com um botao que sumiria a
+           sidebar inteira sem ter um caminho de volta visivel. -->
       <button
         type="button"
-        class="collapse-btn flex size-8 shrink-0 items-center justify-center rounded-md transition-colors"
+        class="collapse-btn flex size-8 shrink-0 items-center justify-center rounded-md transition-colors xl:hidden"
         :style="{ color: 'var(--brand-text-muted)' }"
         aria-label="Recolher conversas"
         @click="$emit('close-sidebar')"
