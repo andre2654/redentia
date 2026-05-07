@@ -269,6 +269,48 @@
           <p class="text-[12px] max-lg:text-center" :style="{ color: 'var(--brand-text-muted)' }">
             {{ brand.tagline }}
           </p>
+          <!-- Contatos da Redentia — so renderizam no tenant Redentia.
+               WhatsApp via wa.me sem + e com country code 55. Email
+               via mailto: pra abrir o cliente nativo do user. -->
+          <div v-if="brand.slug === 'redentia'" class="flex flex-col gap-2.5 max-lg:items-center">
+            <a
+              href="https://wa.me/551153042570"
+              target="_blank"
+              rel="noopener"
+              class="inline-flex items-center gap-2 text-[13px] font-medium transition-opacity hover:opacity-80"
+              :style="{ color: 'var(--brand-text)' }"
+            >
+              <span
+                class="flex size-7 items-center justify-center rounded-full"
+                style="background: #25d366; color: #fff;"
+                aria-hidden="true"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.2-.2.3-.7.9-.9 1.1-.2.2-.3.2-.6.1-1.7-.8-2.8-1.5-3.9-3.4-.3-.5.3-.5.8-1.5.1-.2 0-.3 0-.5 0-.1-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4s-1 1-1 2.4 1 2.8 1.2 3c.1.2 2 3.1 4.9 4.4.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.4M12 21.7c-1.7 0-3.4-.5-4.9-1.3l-3.5.9.9-3.4C3.5 16 3 14.1 3 12.2 3 7.2 7.1 3.1 12 3.1S21 7.2 21 12.2 16.9 21.7 12 21.7M12 1c-6.1 0-11 4.9-11 11 0 1.9.5 3.7 1.4 5.4L1 23l5.7-1.4c1.6.9 3.4 1.4 5.3 1.4 6.1 0 11-4.9 11-11S18.1 1 12 1z"/></svg>
+              </span>
+              <span class="flex flex-col leading-tight">
+                <span class="text-[10px] uppercase tracking-[0.14em]" :style="{ color: 'var(--brand-text-muted)' }">WhatsApp</span>
+                <span class="font-mono-tab tabular-nums">+55 11 5304-2570</span>
+              </span>
+            </a>
+
+            <a
+              href="mailto:contato@redentia.com.br"
+              class="inline-flex items-center gap-2 text-[13px] font-medium transition-opacity hover:opacity-80"
+              :style="{ color: 'var(--brand-text)' }"
+            >
+              <span
+                class="flex size-7 items-center justify-center rounded-full"
+                :style="{ background: 'var(--brand-primary)', color: 'var(--text-on-primary, var(--brand-background, #fff))' }"
+                aria-hidden="true"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              </span>
+              <span class="flex flex-col leading-tight">
+                <span class="text-[10px] uppercase tracking-[0.14em]" :style="{ color: 'var(--brand-text-muted)' }">Email</span>
+                <span>contato@redentia.com.br</span>
+              </span>
+            </a>
+          </div>
         </div>
         
         <div class="flex items-center gap-3">
