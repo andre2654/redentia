@@ -1,80 +1,65 @@
 <!--
   GoalsCard — Metas pulled from /api/goals.
 
-  Empty-aware: shows a CTA card to define a goal in the chat when
-  the user has none. Otherwise renders progress bars + classification
-  badges.
+  Versao MINIMALISTA: header pequeno + lista enxuta. Cada meta = 1
+  linha com title + bar + %. Sem section heading interna (pai cuida).
+
+  Empty: 1 linha com CTA inline pra adicionar meta no chat.
 -->
 <template>
-  <article class="flex flex-col gap-4 rounded-xl border p-6" :style="cardStyle">
-    <div class="flex items-baseline justify-between">
-      <SectionHeading
-        :brand="brand"
-        eyebrow="Metas · Definidas no chat"
-        title="Onde você quer chegar"
-        size="md"
-      />
-      <NuxtLink
-        to="/help?intent=set-goal"
-        class="font-mono-tab text-[10.5px] font-medium uppercase"
-        :style="{ letterSpacing: '0.16em', color: brand.colors.primary }"
-      >+ Nova meta</NuxtLink>
-    </div>
-    <div v-if="!goals.length" class="flex flex-col gap-2 py-4">
-      <p class="text-[13px]" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 70%, transparent)`, lineHeight: 1.5 }">
-        Defina uma meta no chat (aposentadoria, reserva de emergência, casa) e ela aparece aqui com o progresso atualizado.
-      </p>
-      <NuxtLink
-        to="/help?intent=set-goal"
-        class="inline-flex items-center gap-1.5 self-start font-mono-tab text-[11px] font-medium uppercase"
-        :style="{ letterSpacing: '0.18em', color: brand.colors.primary }"
-      >Definir minha primeira meta
-        <UIcon name="i-lucide-arrow-up-right" class="size-3" />
+  <article class="goals-card">
+    <header class="goals-card__head">
+      <div class="goals-card__title-group">
+        <span class="goals-card__eyebrow">Metas</span>
+        <h3 class="goals-card__title">Onde você quer chegar</h3>
+      </div>
+      <NuxtLink to="/help?intent=set-goal" class="goals-card__add" aria-label="Nova meta no chat">
+        <UIcon name="i-lucide-plus" class="size-3" aria-hidden="true" />
+        <span>Nova</span>
       </NuxtLink>
-    </div>
-    <div v-else class="flex flex-col gap-4">
-      <div
-        v-for="goal in goals"
-        :key="goal.id"
-        class="flex flex-col gap-1.5 border-b pb-4 last:border-b-0 last:pb-0"
-        :style="{ borderColor: `color-mix(in srgb, ${brand.colors.border} 35%, transparent)` }"
-      >
-        <div class="flex items-center justify-between gap-2">
-          <span class="text-[14px] font-medium" :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }">{{ goal.title }}</span>
-          <span
-            class="rounded-md px-2 py-0.5 font-mono-tab text-[10px] font-medium uppercase"
+    </header>
+
+    <!-- Empty -->
+    <NuxtLink v-if="!goals.length" to="/help?intent=set-goal" class="goals-card__empty">
+      <UIcon name="i-lucide-target" class="size-4 shrink-0" aria-hidden="true" />
+      <span>Defina sua primeira meta no chat</span>
+      <UIcon name="i-lucide-arrow-up-right" class="size-3 shrink-0 ml-auto" aria-hidden="true" />
+    </NuxtLink>
+
+    <!-- List -->
+    <ul v-else class="goals-card__list">
+      <li v-for="goal in goals" :key="goal.id" class="goals-card__item">
+        <div class="goals-card__row">
+          <span class="goals-card__name">{{ goal.title }}</span>
+          <span class="goals-card__pct">{{ progressPct(goal).toFixed(0) }}%</span>
+        </div>
+        <div class="goals-card__bar" aria-hidden="true">
+          <div
+            class="goals-card__bar-fill"
             :style="{
-              letterSpacing: '0.14em',
+              width: Math.min(progressPct(goal), 100) + '%',
+              background: goal.classification === 'achieved'
+                ? 'var(--brand-positive, #16a34a)'
+                : 'linear-gradient(90deg, var(--brand-primary) 0%, var(--brand-positive, #16a34a) 100%)',
+            }"
+          />
+        </div>
+        <div class="goals-card__meta">
+          <span class="goals-card__values">
+            {{ maskedBRL(goal.current_progress || 0) }}
+            <span class="goals-card__values-target">/ {{ maskedBRL(goal.target_value) }}</span>
+          </span>
+          <span
+            v-if="goal.classification"
+            class="goals-card__badge"
+            :style="{
               backgroundColor: badgeBg(goal.classification),
               color: badgeColor(goal.classification),
             }"
           >{{ classificationLabel(goal.classification) }}</span>
         </div>
-        <div class="flex items-baseline justify-between font-mono-tab text-[12.5px] tabular-nums" :style="{ color: brand.colors.text }">
-          <span>{{ maskedBRL(goal.current_progress || 0) }} <span :style="{ color: `color-mix(in srgb, ${brand.colors.text} 50%, transparent)` }">/ {{ maskedBRL(goal.target_value) }}</span></span>
-          <span :style="{ color: `color-mix(in srgb, ${brand.colors.text} 65%, transparent)` }">{{ progressPct(goal).toFixed(1) }}%</span>
-        </div>
-        <div
-          class="h-1.5 w-full overflow-hidden rounded-full"
-          :style="{ backgroundColor: `color-mix(in srgb, ${brand.colors.text} 7%, transparent)` }"
-        >
-          <div
-            class="h-full rounded-full"
-            :style="{
-              width: Math.min(progressPct(goal), 100) + '%',
-              background: goal.classification === 'achieved'
-                ? brand.colors.positive
-                : `linear-gradient(90deg, ${brand.colors.primary} 0%, ${brand.colors.positive} 100%)`,
-            }"
-          />
-        </div>
-        <p
-          v-if="goal.note"
-          class="mt-1 text-[12px]"
-          :style="{ color: `color-mix(in srgb, ${brand.colors.text} 65%, transparent)`, lineHeight: 1.5 }"
-        >{{ goal.note }}</p>
-      </div>
-    </div>
+      </li>
+    </ul>
   </article>
 </template>
 
@@ -85,13 +70,6 @@ interface Props {
   goals: WalletGoal[]
 }
 defineProps<Props>()
-
-const brand = useBrand()
-
-const cardStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 55%, ${brand.colors.background})`,
-  borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
-}))
 
 function progressPct(goal: WalletGoal): number {
   if (!goal.target_value) return 0
@@ -109,18 +87,15 @@ function classificationLabel(c?: string): string {
 }
 
 function badgeColor(c?: string): string {
-  if (c === 'achieved') return brand.colors.positive
-  if (c === 'unfeasible') return brand.colors.negative
-  if (c === 'aggressive') return (brand.colors as { warning?: string }).warning || '#f59e0b'
-  return brand.colors.primary
+  if (c === 'achieved') return 'var(--brand-positive, #16a34a)'
+  if (c === 'unfeasible') return 'var(--brand-negative, #dc2626)'
+  if (c === 'aggressive') return '#f59e0b'
+  return 'var(--brand-primary)'
 }
 function badgeBg(c?: string): string {
   return `color-mix(in srgb, ${badgeColor(c)} 14%, transparent)`
 }
 
-// Mascarar metas (current + target) quando reveal=false. Goals
-// expoem aspiracao financeira do user — privacidade igual a do
-// patrimonio. Progresso % fica visivel (ratio nao expoe R$).
 const interfaceStore = useInterfaceStore()
 
 function formatBRL(n: number): string {
@@ -135,3 +110,177 @@ function maskedBRL(n: number): string {
   return formatBRL(n)
 }
 </script>
+
+<style scoped>
+.goals-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 50%, transparent);
+  background: color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background));
+  transition: border-color 180ms;
+}
+
+.goals-card:hover {
+  border-color: color-mix(in srgb, var(--brand-border) 75%, transparent);
+}
+
+/* ============ HEAD ============ */
+.goals-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.goals-card__title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.goals-card__eyebrow {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--brand-primary);
+}
+
+.goals-card__title {
+  margin: 0;
+  font-family: var(--brand-font);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.012em;
+  color: var(--text-heading, var(--brand-text));
+}
+
+.goals-card__add {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 9px;
+  border-radius: 7px;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--brand-primary);
+  background: color-mix(in srgb, var(--brand-primary) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 25%, transparent);
+  text-decoration: none;
+  transition: background 150ms;
+  flex-shrink: 0;
+}
+
+.goals-card__add:hover {
+  background: color-mix(in srgb, var(--brand-primary) 18%, transparent);
+}
+
+/* ============ EMPTY ============ */
+.goals-card__empty {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--brand-text) 3%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--brand-border) 55%, transparent);
+  font-size: 12.5px;
+  color: color-mix(in srgb, var(--brand-text) 65%, transparent);
+  text-decoration: none;
+  transition: background 150ms, border-color 150ms;
+}
+
+.goals-card__empty:hover {
+  background: color-mix(in srgb, var(--brand-primary) 5%, transparent);
+  border-color: color-mix(in srgb, var(--brand-primary) 35%, transparent);
+  color: var(--brand-primary);
+}
+
+/* ============ LIST ============ */
+.goals-card__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.goals-card__item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.goals-card__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.goals-card__name {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: var(--brand-text);
+}
+
+.goals-card__pct {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-variant-numeric: tabular-nums;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--brand-text) 70%, transparent);
+}
+
+.goals-card__bar {
+  height: 4px;
+  width: 100%;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--brand-text) 7%, transparent);
+  overflow: hidden;
+}
+
+.goals-card__bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 600ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.goals-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.goals-card__values {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-variant-numeric: tabular-nums;
+  font-size: 11px;
+  color: var(--brand-text);
+}
+
+.goals-card__values-target {
+  color: color-mix(in srgb, var(--brand-text) 50%, transparent);
+}
+
+.goals-card__badge {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 5px;
+}
+</style>

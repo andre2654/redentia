@@ -230,6 +230,7 @@
           <span class="platform-sidebar-eyebrow">{{ brand.nav.menuLabel }}</span>
           <AtomsSidebarButton to="/" :text="brand.nav.overview" icon="i-lucide-layout-dashboard" />
           <AtomsSidebarButton to="/wallet" :text="brand.nav.wallet" icon="i-lucide-wallet" />
+          <AtomsSidebarButton to="/wallet/integracoes" text="Integrações" icon="i-lucide-link-2" is-sub-item />
           <AtomsSidebarButton to="/help" :text="brand.nav.chat" icon="i-lucide-message-circle" />
           <AtomsSidebarButton v-if="authStore.me?.role === 'advisor'" to="/advisor" :text="brand.nav.advisorArea" icon="i-lucide-users" />
           <AtomsSidebarButton to="/settings" :text="brand.nav.settings" icon="i-lucide-settings" />
@@ -501,10 +502,20 @@
         </template>
       </div>
       <div v-bind="containerProps" class="flex min-h-0 flex-1 flex-col">
+        <!-- Banner top sticky controlado pelo admin via /admin/comunicacoes.
+             Renderiza so quando ha campanha active com type=banner +
+             placement=top que se aplica ao user atual. -->
+        <MoleculesCommunicationsTopBanner />
+
         <slot />
       </div>
     </div>
   </div>
+
+  <!-- ModalManager — popup centralizado de modal/enquete.
+       1× por session, vive no <body> via Teleport. Carrega
+       campanhas com placement=modal aplicaveis ao user. -->
+  <MoleculesCommunicationsModalManager />
 
   <!-- The floating QuickSearch pill is hidden on /help — the chat page
        has its own dedicated composer and the two would overlap. -->

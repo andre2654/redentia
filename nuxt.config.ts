@@ -592,6 +592,7 @@ export default defineNuxtConfig({
 
       // Áreas privadas
       '/wallet',
+      '/wallet/integracoes',
       '/settings',
       '/step-by-step',
       '/planejador',

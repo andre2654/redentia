@@ -42,37 +42,10 @@
           >{{ positionsCount }} ativos<span v-if="ytdPct !== null"> · YTD {{ formatPct(ytdPct) }}</span><span v-if="vsCdiPct !== null"> · {{ formatPct(vsCdiPct) }} vs CDI</span></span>
         </div>
       </div>
-      <div class="flex shrink-0 items-center gap-2">
-        <button
-          type="button"
-          class="inline-flex items-center gap-2 rounded-lg border px-4 py-2.5 text-[13px] font-medium transition-[background-color]"
-          :style="{
-            borderColor: `color-mix(in srgb, ${brand.colors.border} 60%, transparent)`,
-            color: brand.colors.text,
-          }"
-          :disabled="refreshing"
-          @click="$emit('refresh')"
-        >
-          <UIcon
-            name="i-lucide-rotate-ccw"
-            class="size-4"
-            :class="{ 'motion-safe:animate-spin': refreshing }"
-          />
-          Atualizar dados
-        </button>
-        <NuxtLink
-          to="/help?intent=import-portfolio"
-          class="inline-flex items-center gap-2 rounded-lg px-4 py-2.5 text-[13px] font-medium transition-[background-color]"
-          :style="{
-            backgroundColor: brand.colors.primary,
-            color: brand.colors.background,
-            boxShadow: `0 8px 18px -10px color-mix(in srgb, ${brand.colors.primary} 60%, transparent)`,
-          }"
-        >
-          <UIcon name="i-lucide-sparkles" class="size-4" />
-          Atualizar via chat
-        </NuxtLink>
-      </div>
+      <!-- Botoes "Atualizar dados" e "Atualizar via chat" removidos
+           daqui — agora ficam no ActionBar unificado no topo do
+           dashboard, que tambem mostra status do Open Finance. -->
+
     </div>
   </header>
 </template>
@@ -86,6 +59,7 @@ interface Props {
   ytdPct?: number | null
   vsCdiPct?: number | null
   updatedLabel?: string
+  /** Mantido por compat — refresh foi movido pro ActionBar topo. */
   refreshing?: boolean
 }
 const props = withDefaults(defineProps<Props>(), {
@@ -96,10 +70,6 @@ const props = withDefaults(defineProps<Props>(), {
   updatedLabel: 'Atualizada agora',
   refreshing: false,
 })
-
-defineEmits<{
-  (e: 'refresh'): void
-}>()
 
 void props
 

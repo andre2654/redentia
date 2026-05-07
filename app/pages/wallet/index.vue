@@ -22,14 +22,15 @@
         <UIcon name="i-lucide-loader-2" class="size-8 motion-safe:animate-spin" :style="{ color: brand.colors.primary }" />
       </div>
 
-      <!-- Empty state -->
+      <!-- Empty state — substitui o hero antigo (video + 3 cards "Depois
+           do import" + lista de selos de seguranca) por <MoleculesWalletEmptyState>.
+           A nova hierarquia coloca o Pluggy/Open Finance como CTA primario
+           (taxa de retencao maior do que XLSX), com planilha e adicionar
+           manualmente como caminhos secundarios. O contextual banner do
+           fluxo "Gerar Raio-X" permanece pra preservar o entry-point do
+           onboarding existente. -->
       <template v-else-if="!positions.length">
-        <div class="flex flex-col items-center gap-12 px-6 py-16">
-          <!-- Contextual banner — so aparece quando o usuario clica em
-               "Gerar Raio-X da sua carteira" no onboarding (rota
-               /wallet?from=onboarding-raio-x). Conecta o passo do
-               checklist ao fluxo natural: pra gerar o raio-x da
-               CARTEIRA, voce precisa primeiro ter uma carteira. -->
+        <div class="flex flex-col items-center gap-8 px-6 py-12">
           <div
             v-if="cameFromRaioXOnboarding"
             class="flex w-full max-w-2xl items-start gap-3 rounded-xl border px-4 py-3"
@@ -53,236 +54,69 @@
                 class="text-[13.5px] leading-snug"
                 :style="{ color: brand.colors.text }"
               >
-                Adicione seus ativos abaixo e o Raio-X é gerado automaticamente — Score 0–100, riscos, dividendos esperados, tudo.
+                Adicione seus ativos abaixo e o Raio-X é gerado automaticamente. Score 0 a 100, riscos, dividendos esperados, tudo.
               </p>
             </div>
           </div>
 
-          <header class="flex max-w-xl flex-col items-center gap-4 text-center">
-            <span
-              class="font-mono-tab text-[11px] font-medium uppercase"
-              :style="{ letterSpacing: '0.18em', color: brand.colors.primary }"
-            >Carteira</span>
-            <h1
-              class="font-light"
-              :style="{
-                color: brand.colors.text,
-                fontSize: 'clamp(32px, 5vw, 44px)',
-                lineHeight: 1.05,
-                letterSpacing: '-1.2px',
-              }"
-            >Cadê seus ativos?</h1>
-            <p
-              class="max-w-md"
-              :style="{
-                fontSize: '17px',
-                lineHeight: 1.55,
-                color: `color-mix(in srgb, ${brand.colors.text} 72%, transparent)`,
-              }"
-            >Importe sua carteira pelo chat e a gente faz o resto. Você fala, manda a planilha do CEI ou colado, a IA processa e popula tudo aqui.</p>
-
-            <div class="mt-2 flex flex-wrap items-center justify-center gap-3">
-              <NuxtLink
-                to="/help?intent=import-portfolio"
-                class="inline-flex items-center gap-2 rounded-lg px-5 py-3 text-[14px] font-medium"
-                :style="{
-                  backgroundColor: brand.colors.primary,
-                  color: brand.colors.background,
-                  boxShadow: `0 12px 24px -10px color-mix(in srgb, ${brand.colors.primary} 70%, transparent), 0 4px 10px -6px rgba(0,0,0,0.10)`,
-                }"
-              >
-                <UIcon name="i-lucide-sparkles" class="size-4" />
-                Importar via chat
-                <UIcon name="i-lucide-arrow-up-right" class="size-3.5 opacity-80" />
-              </NuxtLink>
-              <NuxtLink
-                to="/guias/como-baixar-cei"
-                class="inline-flex items-center gap-2 rounded-lg border px-5 py-3 text-[14px] font-medium transition-[background-color]"
-                :style="{
-                  borderColor: `color-mix(in srgb, ${brand.colors.border} 60%, transparent)`,
-                  color: brand.colors.text,
-                }"
-              >
-                <UIcon name="i-lucide-help-circle" class="size-4" />
-                Como baixar do CEI
-              </NuxtLink>
-            </div>
-          </header>
-
-          <!-- Tutorial video — `preload="none"` pq o arquivo tem ~28MB
-               e em 4G/movel baixar tudo no load mata a UX. Browser so
-               fetch quando o user clica play. Sem autoplay/loop/muted
-               pq agora e tutorial narrado (5min com audio), nao mais
-               loop demo silencioso. `controls` deixa o user pausar e
-               escolher quando assistir. Sem poster ainda — caixa
-               preta com play button serve por enquanto; quando rolar,
-               extrai um frame com ffmpeg pra poster image (TODO). -->
-          <figure class="flex w-full max-w-2xl flex-col items-center gap-3">
-            <div
-              class="relative aspect-video w-full overflow-hidden rounded-2xl border"
-              :style="{
-                borderColor: `color-mix(in srgb, ${brand.colors.border} 55%, transparent)`,
-                backgroundColor: brand.colors.surface,
-                boxShadow: `0 24px 60px -24px color-mix(in srgb, ${brand.colors.primary} 22%, transparent), 0 12px 30px -12px rgba(0,0,0,0.10)`,
-              }"
-            >
-              <span
-                class="pointer-events-none absolute left-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase backdrop-blur"
-                :style="{
-                  letterSpacing: '0.16em',
-                  backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 88%, transparent)`,
-                  border: `1px solid color-mix(in srgb, ${brand.colors.border} 55%, transparent)`,
-                  color: brand.colors.text,
-                }"
-              >
-                <span
-                  class="size-1.5 animate-pulse rounded-full"
-                  :style="{ backgroundColor: brand.colors.primary }"
-                />
-                Tutorial
-              </span>
-              <video
-                class="absolute inset-0 size-full object-cover"
-                :src="emptyDemoVideoSrc"
-                controls
-                playsinline
-                aria-label="Tutorial: como gerar o Raio-X da sua carteira na Redent.IA"
-              />
-            </div>
-            <figcaption
-              class="text-[12.5px]"
-              :style="{ color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }"
-            >
-              Tutorial: como adicionar sua carteira e gerar o Raio-X.
-            </figcaption>
-          </figure>
-
-          <section class="grid w-full max-w-4xl grid-cols-1 gap-4 md:grid-cols-3">
-            <article
-              v-for="card in afterImportCards"
-              :key="card.title"
-              class="flex flex-col gap-3 rounded-xl border p-5"
-              :style="emptyCardStyle"
-            >
-              <span
-                class="flex size-9 items-center justify-center rounded-lg"
-                :style="{ backgroundColor: `color-mix(in srgb, ${card.tint} 14%, transparent)` }"
-              >
-                <UIcon :name="card.icon" class="size-5" :style="{ color: card.tint }" />
-              </span>
-              <span
-                class="font-mono-tab text-[10.5px] font-medium uppercase"
-                :style="{
-                  letterSpacing: '0.18em',
-                  color: `color-mix(in srgb, ${brand.colors.text} 50%, transparent)`,
-                }"
-              >Depois do import</span>
-              <h3
-                class="text-[16px] font-medium"
-                :style="{ color: brand.colors.text, letterSpacing: '-0.005em' }"
-              >{{ card.title }}</h3>
-              <p
-                class="text-[13px]"
-                :style="{
-                  lineHeight: 1.55,
-                  color: `color-mix(in srgb, ${brand.colors.text} 65%, transparent)`,
-                }"
-              >{{ card.body }}</p>
-            </article>
-          </section>
-
-          <ul
-            class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[12.5px]"
-            :style="{ color: `color-mix(in srgb, ${brand.colors.text} 55%, transparent)` }"
-          >
-            <li class="flex items-center gap-2">
-              <span class="size-1 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
-              Dados criptografados
-            </li>
-            <li class="flex items-center gap-2">
-              <span class="size-1 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
-              Não compartilhamos com terceiros
-            </li>
-            <li class="flex items-center gap-2">
-              <span class="size-1 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
-              Análise sem viés comercial
-            </li>
-          </ul>
+          <MoleculesWalletEmptyState
+            @connected="onPluggyConnected"
+            @upload-xlsx="onUploadXlsxRequest"
+            @add-manual="onAddManualRequest"
+          />
         </div>
       </template>
 
-      <!-- Dashboard -->
-      <div v-else class="flex flex-col gap-10 px-6 py-8">
-        <MoleculesWalletHeroPatrimony
-          :total-value="totalValue"
-          :pnl-amount="pnlAmount"
-          :pnl-pct="pnlPct"
-          :positions-count="positions.length"
-          :ytd-pct="null"
-          :vs-cdi-pct="null"
+      <!-- Dashboard
+           Ordem reformulada: ActionBar unificado no TOPO (status Open
+           Finance + CTA raio-X + sync). Hero focado em FOTO. Saldos
+           Open Finance logo abaixo. Composicao (allocation + positions)
+           vem ANTES do raio-x. Raio-x (com stress test embutido) e a
+           CAMADA QUALITATIVA. Calendar/events/goals/watchlist pareados
+           em grids 2-col. -->
+      <div v-else class="flex flex-col gap-9 px-6 py-8">
+        <!-- ============ 0. ACTION BAR ============
+             Banner unificado no TOPO. Mostra status Open Finance,
+             botao de sincronizar tudo, CTA pra atualizar/gerar
+             analise, botao limpar. Substitui ConnectionStatus +
+             botoes do hero antigo. -->
+        <MoleculesWalletActionBar
+          :has-analysis="!!analysis"
+          :generated-label="generatedLabel"
+          :wiping="wiping"
           :refreshing="refreshing"
-          @refresh="reload"
+          :syncing="syncingPrimary"
+          :connections="connections"
+          :primary-connection="primaryConnection"
+          @wipe="onWipeClick"
+          @sync-and-refresh="onSyncAndRefresh"
+          @connected="onPluggyConnected"
         />
 
-        <!--
-          Action header — two CTAs sit just below the hero so the user
-          can either kick off a fresh raio-X (sends the chat the right
-          intent message and force-MAX) OR wipe the entire portfolio
-          (positions + analysis snapshot + chat memories) in one shot.
-          The wipe is destructive so it requires a JS `confirm` step
-          before firing the two parallel deletes.
-        -->
-        <div
-          class="flex flex-wrap items-center justify-between gap-3 rounded-xl border px-5 py-4"
-          :style="actionBarStyle"
-        >
-          <div class="flex flex-col gap-0.5">
-            <span
-              class="font-mono-tab text-[10.5px] font-medium uppercase"
-              :style="{ letterSpacing: '0.18em', color: brand.colors.primary }"
-            >Ações da carteira</span>
-            <span
-              class="text-[12.5px]"
-              :style="{ color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }"
-            >
-              {{ analysis
-                ? `Última análise: ${generatedLabel}`
-                : 'Você ainda não rodou um raio-X completo.' }}
-            </span>
-          </div>
-          <div class="flex flex-wrap items-center gap-2">
-            <NuxtLink
-              :to="`/help?intent=${analysis ? 'reanalyze-portfolio' : 'analyze-portfolio'}`"
-              class="inline-flex items-center gap-2 rounded-lg px-4 py-2 text-[13px] font-medium"
-              :style="{
-                backgroundColor: brand.colors.primary,
-                color: brand.colors.background,
-                boxShadow: `0 8px 18px -10px color-mix(in srgb, ${brand.colors.primary} 60%, transparent)`,
-              }"
-            >
-              <UIcon name="i-lucide-sparkles" class="size-4" />
-              {{ analysis ? 'Atualizar raio-X' : 'Gerar raio-X' }}
-            </NuxtLink>
-            <button
-              type="button"
-              class="inline-flex items-center gap-2 rounded-lg border px-3.5 py-2 text-[12.5px] font-medium transition-[background-color]"
-              :style="{
-                borderColor: `color-mix(in srgb, ${brand.colors.negative} 35%, transparent)`,
-                color: brand.colors.negative,
-                backgroundColor: 'transparent',
-              }"
-              :disabled="wiping"
-              @click="onWipeClick"
-            >
-              <UIcon
-                :name="wiping ? 'i-lucide-loader-2' : 'i-lucide-trash-2'"
-                :class="['size-3.5', wiping && 'motion-safe:animate-spin']"
-              />
-              {{ wiping ? 'Limpando...' : 'Limpar carteira' }}
-            </button>
-          </div>
-        </div>
+        <!-- ============ 1. HEADER DO DASHBOARD ============
+             Hero (foto do patrimonio) + saldos bancarios. Tudo o
+             que responde "quanto eu tenho hoje" fica agrupado aqui.
+             Sem botoes — esses migraram pro ActionBar acima. -->
+        <section class="flex flex-col gap-4">
+          <MoleculesWalletHeroPatrimony
+            :total-value="totalValue"
+            :pnl-amount="pnlAmount"
+            :pnl-pct="pnlPct"
+            :positions-count="positions.length"
+            :ytd-pct="null"
+            :vs-cdi-pct="null"
+            :refreshing="refreshing"
+          />
 
+          <MoleculesWalletBankAccountsCard
+            v-if="bankAccounts.length > 0"
+            :accounts="bankAccounts"
+            :totals="accountTotals"
+            :pending="bankAccountsPending"
+          />
+        </section>
+
+        <!-- ============ 2. METRICAS-RESUMO ============ -->
         <MoleculesWalletMetricsGrid
           :total-value="totalValue"
           :pnl-pct="pnlPct"
@@ -293,38 +127,82 @@
           :benchmarks="benchmarksMini"
         />
 
-        <!-- Snowflake — 5-axis radar collapsing the diagnosis into a
-             single shape (SimplyWall.st-style). Only renders when an
-             analysis snapshot exists; the action bar above already
-             nudges the user to "Gerar raio-X" otherwise. -->
-        <MoleculesWalletSnowflake
-          v-if="snowflakeAxes.length"
-          :axes="snowflakeAxes"
-          :headline="snowflakeHeadline"
-          :subline="snowflakeSubline"
-        />
-
-        <!-- Full raio-X surface (dimensions + diagnostic + thesis +
-             stress + macro + alternatives). Hidden when no snapshot
-             exists — the action bar above is enough CTA. -->
-        <MoleculesWalletRaioXFull v-if="analysis" :analysis="analysis" />
-
-        <MoleculesWalletAllocationSection
-          :by-class="allocationByClass"
-          :sectors="allocationBySector"
-          :geography="geography"
-        />
-
-        <MoleculesWalletPositionsTable :positions="positions" :total-value="totalValue" />
-
-        <section class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <!-- ============ 2.5 METAS + WATCHLIST ============
+             Cards minimalistas pareados, logo apos os KPIs. Antes
+             ficavam no rodape; agora ja aparecem na "primeira tela"
+             porque traduzem foco do user (onde quer chegar + o
+             que esta acompanhando) — informacao tao importante
+             quanto KPIs. -->
+        <section class="grid grid-cols-1 gap-4 md:grid-cols-2">
           <MoleculesWalletGoalsCard :goals="goals" />
           <MoleculesWalletWatchlistCard :items="watchlist" />
         </section>
 
-        <MoleculesWalletDividendCalendarCard :events="dividendEvents" />
+        <!-- ============ 3. COMPOSICAO ============
+             Um unico bloco "Como sua carteira esta distribuida":
+             allocation (donut + setores + geografia) + tabela de
+             posicoes com tese expansivel. Antes eram 2 sections com
+             headings duplicados ("Alocacao" e "Posicoes"); agora UM
+             heading guarda-chuva que cobre os dois (por que ambos
+             respondem a mesma pergunta da composicao). -->
+        <section class="flex flex-col gap-6">
+          <SectionHeading
+            :brand="brand"
+            eyebrow="Composição"
+            title="Como sua carteira está distribuída"
+          />
 
-        <MoleculesWalletEventsList :events="upcomingEvents" />
+          <MoleculesWalletAllocationSection
+            :by-class="allocationByClass"
+            :sectors="allocationBySector"
+            :geography="geography"
+          />
+
+          <MoleculesWalletPositionsTable
+            :positions="positions"
+            :total-value="totalValue"
+            :connection-map="connectionMap"
+            :analysis="analysis"
+          />
+        </section>
+
+        <!-- ============ 4. RAIO-X (analise IA) ============
+             Heading + summary movem pra ANTES do snowflake porque
+             introduzem TODA a zona de raio-X (snowflake +
+             dimensions + diagnostic + thesis + stress + macro +
+             alternatives). So renderiza com analysis. -->
+        <template v-if="analysis">
+          <SectionHeading
+            :brand="brand"
+            eyebrow="9 dimensões"
+            title="Como cada eixo da sua carteira está pontuando"
+            :lead="analysis.summary_md || undefined"
+          />
+
+          <MoleculesWalletSnowflake
+            v-if="snowflakeAxes.length"
+            :axes="snowflakeAxes"
+            :headline="snowflakeHeadline"
+            :subline="snowflakeSubline"
+          />
+
+          <MoleculesWalletRaioXFull
+            :analysis="analysis"
+            :positions="positions"
+            :total-value="totalValue"
+          />
+        </template>
+
+        <!-- ============ 5. CALENDARIO UNIFICADO ============
+             Big calendar mensal que agrega proventos (dividendos +
+             JCP + rendimentos) + eventos (ex-date + earnings +
+             rotacoes + vencimentos). Substitui os 2 cards
+             antigos (DividendCalendarCard + EventsList) por uma
+             unica visao igual a /dividendos/calendario publico. -->
+        <MoleculesWalletEventsCalendar
+          :dividends="dividendEvents"
+          :events="upcomingEvents"
+        />
       </div>
     </div>
   </NuxtLayout>
@@ -333,6 +211,7 @@
 <script setup lang="ts">
 import type { UnifiedPosition } from '~/services/portfolio'
 import type { WalletGoal, WatchlistItem, PortfolioAnalysis } from '~/services/walletData'
+import type { PluggyConnection } from '~/services/pluggy'
 import {
   analyzePortfolio,
   type PortfolioReport,
@@ -360,6 +239,185 @@ const analysis = ref<PortfolioAnalysis | null>(null)
 
 const authStore = useAuthStore()
 const onboarding = useOnboardingChecklist()
+const router = useRouter()
+const pluggy = usePluggyService()
+
+// ============ PLUGGY / OPEN FINANCE ============
+// Lista de conexoes Pluggy do user. Carregada uma vez junto com positions
+// (loadAll). Usada pra:
+//   1. Decidir se mostra o banner "Conectar Open Finance" (quando o user
+//      tem positions mas zero conexao)
+//   2. Renderizar a status row no topo do dashboard quando >= 1 conexao
+//   3. Construir o connectionMap pra o PositionsTable mostrar o badge
+//      "via XP/BTG/etc." em posicoes Pluggy
+const connections = ref<PluggyConnection[]>([])
+const syncingPrimary = ref(false)
+
+// connectionMap: id -> { id, institution_name }. Usado pelo PositionsTable
+// pra resolver pluggy_connection_id -> nome da instituicao no badge da
+// posicao. Construido como objeto puro (nao Map) pra serializar bem
+// como prop reativa no Vue.
+const connectionMap = computed<Record<number, { id: number; institution_name: string }>>(() => {
+  const out: Record<number, { id: number; institution_name: string }> = {}
+  for (const c of connections.value) {
+    out[c.id] = { id: c.id, institution_name: c.institution_name }
+  }
+  return out
+})
+
+const primaryConnection = computed<PluggyConnection | null>(() => {
+  if (!connections.value.length) return null
+  // Preferir uma conexao "saudavel" como destaque do status row. Se
+  // todas estao em estado problematico, mostra a primeira mesmo
+  // assim, o user ve o estado real e clica pra gerenciar.
+  const healthy = connections.value.find((c) => c.status === 'UPDATED')
+  return healthy ?? connections.value[0]!
+})
+
+// Banner welcome ("conecte Open Finance"): mostra quando o user TEM
+// positions mas ZERO conexoes Pluggy. localStorage por-user pra
+// dismissal persistente entre sessoes (chave inclui id pra nao vazar
+// dismiss entre contas no mesmo browser).
+const pluggyWelcomeDismissed = ref(false)
+
+function pluggyDismissKey(): string | null {
+  const uid = authStore.me?.id
+  if (!uid) return null
+  return `pluggy:dismissed:welcome:${uid}`
+}
+
+function loadPluggyWelcomeDismissed() {
+  if (typeof localStorage === 'undefined') return
+  const key = pluggyDismissKey()
+  if (!key) return
+  pluggyWelcomeDismissed.value = localStorage.getItem(key) === '1'
+}
+
+function dismissPluggyWelcome() {
+  pluggyWelcomeDismissed.value = true
+  if (typeof localStorage === 'undefined') return
+  const key = pluggyDismissKey()
+  if (!key) return
+  try { localStorage.setItem(key, '1') } catch { /* quota / disabled storage */ }
+}
+
+const showPluggyWelcome = computed(() => {
+  if (pluggyWelcomeDismissed.value) return false
+  if (!positions.value.length) return false
+  if (connections.value.length > 0) return false
+  return true
+})
+
+// formatConnectionTimeSince movido pra MoleculesWalletConnectionStatus
+// (extraido na refatoracao de organizacao do dashboard).
+
+async function loadConnections() {
+  try {
+    connections.value = await pluggy.listConnections()
+  } catch (err) {
+    // Silent fail — sem conexoes carregadas, o banner de welcome
+    // sumira (showPluggyWelcome trata vazio como "tem conexoes ja").
+    // Logamos pro console pra debugging.
+    console.warn('[wallet] failed to load pluggy connections', err)
+    connections.value = []
+  }
+}
+
+// Bank accounts (saldos bancarios + cartoes de credito) vindos via
+// Open Finance. Carregados em paralelo com positions/connections.
+// Renderizam no <MoleculesWalletBankAccountsCard> ACIMA da carteira.
+const bankAccounts = ref<import('~/services/pluggy').PluggyAccount[]>([])
+const accountTotals = ref<import('~/services/pluggy').AccountTotals | null>(null)
+const bankAccountsPending = ref(false)
+
+async function loadBankAccounts() {
+  bankAccountsPending.value = true
+  try {
+    const resp = await pluggy.listAccounts()
+    bankAccounts.value = resp.data
+    accountTotals.value = resp.totals
+  } catch (err) {
+    console.warn('[wallet] failed to load bank accounts', err)
+    bankAccounts.value = []
+    accountTotals.value = null
+  } finally {
+    bankAccountsPending.value = false
+  }
+}
+
+async function syncPrimaryConnection() {
+  if (!primaryConnection.value || syncingPrimary.value) return
+  syncingPrimary.value = true
+  try {
+    const result = await pluggy.syncConnection(primaryConnection.value.id)
+    if (result.status === 'rate_limited') {
+      const minutes = result.retry_after_minutes ?? 60
+      showSuccessNotification(
+        'Dados atualizados recentemente',
+        `${primaryConnection.value.institution_name} foi sincronizado há pouco. Próximo refresh completo em ~${minutes} min.`,
+      )
+    } else {
+      showSuccessNotification(
+        'Sincronização iniciada',
+        `Buscando dados atualizados em ${primaryConnection.value.institution_name}.`,
+      )
+    }
+    // Re-fetch connections + positions juntos pra refletir o sync.
+    await Promise.all([loadConnections(), reload()])
+  } catch (err) {
+    const msg
+      = (err as { message?: string })?.message
+      || 'Não foi possível iniciar a sincronização.'
+    showErrorNotification('Erro ao sincronizar', msg)
+  } finally {
+    syncingPrimary.value = false
+  }
+}
+
+/**
+ * Handler unificado pro botao "Sincronizar dados" do ActionBar.
+ * Quando ha conexao Pluggy ativa, dispara sync + reload (mesmo caminho
+ * do syncPrimaryConnection). Sem conexao, faz so reload das positions
+ * (caso o user queira reler dados que possam ter sido atualizados em
+ * outra aba/contexto).
+ */
+async function onSyncAndRefresh() {
+  if (primaryConnection.value) {
+    // Reusa o syncPrimaryConnection que ja orquestra sync Pluggy +
+    // reload + tratamento de rate-limit + notificacoes. Centralizar
+    // aqui mantem 1 caminho pra "atualizar tudo".
+    await syncPrimaryConnection()
+    return
+  }
+  // Sem conexao: so reload local
+  await reload()
+  showSuccessNotification('Atualizado', 'Posições recarregadas.')
+}
+
+// Handlers do empty state + banner. Pluggy success: refetch tudo.
+// Upload XLSX e Manual: redirecionam pro chat (XLSX) ou abre futura
+// pagina de adicao manual. Por enquanto, ambos vao pro chat com intent
+// distinto pra a IA orientar a forma certa.
+async function onPluggyConnected(_payload: { itemId: string }) {
+  showSuccessNotification(
+    'Conta conectada',
+    'Sincronização inicial em andamento. Atualizando sua carteira.',
+  )
+  await Promise.all([loadConnections(), reload()])
+}
+
+function onUploadXlsxRequest() {
+  // O fluxo XLSX migrou pro chat (vide /help?intent=import-portfolio)
+  // — laravel /api/portfolio/upload esta @deprecated. Mantemos o
+  // emit pra UX consistente caso um dia volte um picker nativo.
+  router.push('/help?intent=import-portfolio')
+}
+
+function onAddManualRequest() {
+  // Adicao manual ainda nao tem pagina propria; encaminha pra chat
+  // com intent que orienta a IA a guiar o user.
+  router.push('/help?intent=add-position-manual')
+}
 
 // Sinaliza se o usuario veio do step "Gerar Raio-X da sua carteira" do
 // onboarding. Usado pra mostrar o banner contextual no empty state
@@ -397,10 +455,7 @@ const emptyCardStyle = computed(() => ({
   borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
 }))
 
-const actionBarStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 55%, ${brand.colors.background})`,
-  borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
-}))
+// actionBarStyle movido pra MoleculesWalletActionBar (extraido).
 
 // Friendly timestamp shown next to the raio-X CTA so the user knows
 // how fresh the analysis is. Falls back to empty string when the
@@ -826,6 +881,14 @@ async function loadAll() {
   // positions list is populated. Non-blocking — the rest of the
   // dashboard renders without waiting on it.
   void loadLiveDividendCalendar()
+  // Pluggy connections sao independentes de positions, mas a ordem
+  // importa pra UX: showPluggyWelcome depende de ambos (positions
+  // > 0 AND connections.length === 0). Disparado em paralelo ao
+  // calendario, sem bloquear o resto do dashboard.
+  void loadConnections()
+  // Saldos bancarios (Pluggy accounts) — independente de positions e
+  // connections, render proprio. Disparado em paralelo.
+  void loadBankAccounts()
 }
 
 async function reload() {
@@ -839,6 +902,10 @@ async function reload() {
 
 onMounted(async () => {
   loading.value = true
+  // Carrega o estado de dismiss do banner Pluggy ANTES de mostrar o
+  // dashboard (depende do user.id, que ja esta no authStore quando
+  // cheganos aqui pq middleware/auth.global garantiu).
+  loadPluggyWelcomeDismissed()
   try {
     await loadAll()
   } finally {

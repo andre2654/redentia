@@ -1,48 +1,42 @@
 <!--
-  WatchlistCard — tickers the user is following.
+  WatchlistCard — tickers que o user esta acompanhando.
 
-  Light read-only list. The "+ Adicionar" link routes to the chat
-  with an intent so the LLM can run search + save_memory there
-  (rather than wiring a modal here).
+  Versao MINIMALISTA: header pequeno + lista enxuta. Cada ticker
+  vira 1 linha bem compacta com nome + preco + variacao.
 -->
 <template>
-  <article class="flex flex-col gap-4 rounded-xl border p-6" :style="cardStyle">
-    <div class="flex items-baseline justify-between">
-      <SectionHeading
-        :brand="brand"
-        eyebrow="Watchlist · Vigiando"
-        title="Ativos que você acompanha"
-        size="md"
-      />
-      <NuxtLink
-        to="/help?intent=add-watchlist"
-        class="font-mono-tab text-[10.5px] font-medium uppercase"
-        :style="{ letterSpacing: '0.16em', color: brand.colors.primary }"
-      >+ Adicionar</NuxtLink>
-    </div>
-    <div v-if="!items.length" class="py-4">
-      <p class="text-[13px]" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 70%, transparent)`, lineHeight: 1.5 }">
-        Adicione tickers pelo chat e a gente acompanha aqui (preço, variação, dividendos).
-      </p>
-    </div>
-    <ul v-else class="flex flex-col">
-      <li
-        v-for="(w, i) in items"
-        :key="w.ticker"
-        class="flex items-center gap-3 py-2.5"
-        :style="{ borderBottom: i < items.length - 1 ? `1px solid color-mix(in srgb, ${brand.colors.border} 30%, transparent)` : 'none' }"
-      >
-        <span class="font-mono-tab text-[13px] font-medium w-16" :style="{ color: brand.colors.text }">{{ w.ticker }}</span>
-        <span class="flex-1 truncate text-[11.5px]" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 55%, transparent)` }">{{ w.name || w.note || '—' }}<span v-if="w.sector"> · {{ w.sector }}</span></span>
+  <article class="watch-card">
+    <header class="watch-card__head">
+      <div class="watch-card__title-group">
+        <span class="watch-card__eyebrow">Watchlist</span>
+        <h3 class="watch-card__title">Ativos que você acompanha</h3>
+      </div>
+      <NuxtLink to="/help?intent=add-watchlist" class="watch-card__add" aria-label="Adicionar ticker no chat">
+        <UIcon name="i-lucide-plus" class="size-3" aria-hidden="true" />
+        <span>Nova</span>
+      </NuxtLink>
+    </header>
+
+    <!-- Empty -->
+    <NuxtLink v-if="!items.length" to="/help?intent=add-watchlist" class="watch-card__empty">
+      <UIcon name="i-lucide-eye" class="size-4 shrink-0" aria-hidden="true" />
+      <span>Adicione tickers pelo chat e a gente acompanha aqui</span>
+      <UIcon name="i-lucide-arrow-up-right" class="size-3 shrink-0 ml-auto" aria-hidden="true" />
+    </NuxtLink>
+
+    <!-- List -->
+    <ul v-else class="watch-card__list">
+      <li v-for="w in items" :key="w.ticker" class="watch-card__item">
+        <span class="watch-card__ticker">{{ w.ticker }}</span>
+        <span class="watch-card__name">{{ w.name || w.note || '—' }}</span>
         <span
           v-if="w.current_price !== undefined && w.current_price !== null"
-          class="font-mono-tab text-[12px] tabular-nums"
-          :style="{ color: brand.colors.text }"
+          class="watch-card__price"
         >{{ formatBRL2(w.current_price) }}</span>
         <span
           v-if="w.change_pct !== undefined && w.change_pct !== null"
-          class="font-mono-tab text-[11.5px] tabular-nums w-14 text-right"
-          :style="{ color: w.change_pct >= 0 ? brand.colors.positive : brand.colors.negative }"
+          class="watch-card__change"
+          :class="w.change_pct >= 0 ? 'watch-card__change--pos' : 'watch-card__change--neg'"
         >{{ formatPct(w.change_pct) }}</span>
       </li>
     </ul>
@@ -57,13 +51,6 @@ interface Props {
 }
 defineProps<Props>()
 
-const brand = useBrand()
-
-const cardStyle = computed(() => ({
-  backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 55%, ${brand.colors.background})`,
-  borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`,
-}))
-
 function formatBRL2(n: number): string {
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
@@ -77,3 +64,161 @@ function formatPct(n: number): string {
   return `${sign}${n.toFixed(2).replace('.', ',')}%`
 }
 </script>
+
+<style scoped>
+.watch-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 50%, transparent);
+  background: color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background));
+  transition: border-color 180ms;
+}
+
+.watch-card:hover {
+  border-color: color-mix(in srgb, var(--brand-border) 75%, transparent);
+}
+
+/* ============ HEAD ============ */
+.watch-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.watch-card__title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.watch-card__eyebrow {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--brand-primary);
+}
+
+.watch-card__title {
+  margin: 0;
+  font-family: var(--brand-font);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.012em;
+  color: var(--text-heading, var(--brand-text));
+}
+
+.watch-card__add {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 9px;
+  border-radius: 7px;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--brand-primary);
+  background: color-mix(in srgb, var(--brand-primary) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 25%, transparent);
+  text-decoration: none;
+  transition: background 150ms;
+  flex-shrink: 0;
+}
+
+.watch-card__add:hover {
+  background: color-mix(in srgb, var(--brand-primary) 18%, transparent);
+}
+
+/* ============ EMPTY ============ */
+.watch-card__empty {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--brand-text) 3%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--brand-border) 55%, transparent);
+  font-size: 12.5px;
+  color: color-mix(in srgb, var(--brand-text) 65%, transparent);
+  text-decoration: none;
+  transition: background 150ms, border-color 150ms;
+}
+
+.watch-card__empty:hover {
+  background: color-mix(in srgb, var(--brand-primary) 5%, transparent);
+  border-color: color-mix(in srgb, var(--brand-primary) 35%, transparent);
+  color: var(--brand-primary);
+}
+
+/* ============ LIST ============ */
+.watch-card__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.watch-card__item {
+  display: grid;
+  grid-template-columns: 56px 1fr auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--brand-border) 25%, transparent);
+}
+
+.watch-card__item:last-child {
+  border-bottom: none;
+}
+
+.watch-card__ticker {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  color: var(--brand-text);
+}
+
+.watch-card__name {
+  font-size: 11.5px;
+  color: color-mix(in srgb, var(--brand-text) 55%, transparent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.watch-card__price {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-variant-numeric: tabular-nums;
+  font-size: 11.5px;
+  color: var(--brand-text);
+}
+
+.watch-card__change {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-variant-numeric: tabular-nums;
+  font-size: 11px;
+  font-weight: 600;
+  min-width: 56px;
+  text-align: right;
+}
+
+.watch-card__change--pos {
+  color: var(--brand-positive, #16a34a);
+}
+
+.watch-card__change--neg {
+  color: var(--brand-negative, #dc2626);
+}
+</style>

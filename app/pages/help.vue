@@ -794,10 +794,17 @@ const INTENT_MAP: Record<string, IntentSpec> = {
   'add-watchlist': {
     prompt:
       'Quero adicionar ativos à minha watchlist. Olha minha carteira e me sugere 3-5 tickers que faria sentido acompanhar (correlação útil, complemento de classe ou geografia, ou potencial de valuation). Lista os candidatos com tese curta de cada um.',
+    // MAX: sugestao precisa olhar carteira + correlacoes + valuation,
+    // varias ferramentas em sequencia. Basic tem 4 iters/topK 6,
+    // ideal 8 iters/topK 12 do MAX.
+    tier: 'max',
   },
   'set-goal': {
     prompt:
       'Quero definir uma nova meta financeira. Abre o formulário guiado pra eu preencher.',
+    // MAX: validacao de meta usa bisect de CAGR + macro snapshot +
+    // analise da carteira existente, fluxo multi-step.
+    tier: 'max',
   },
   // No-prompt intents — just bring the user to the chat. Useful when
   // the action requires the user to attach a file or type something.

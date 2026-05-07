@@ -55,6 +55,23 @@ const router = useRouter()
 const { magicLinkRequest } = useAuthService()
 const { track } = useMetaPixel()
 
+// ============ EFEITOS DA WALLET ============
+// Scroll reveal (IntersectionObserver) — qualquer elemento com classe
+// `reveal-on-scroll` ganha is-revealed quando entra no viewport
+useScrollReveal()
+
+// Counter animado pro social proof "+X cadastrados"
+const totalSignupsEl = ref<HTMLElement | null>(null)
+const { currentValue: totalSignupsCount } = useAnimatedCounter({
+  to: 1247,
+  duration: 1800,
+  triggerEl: totalSignupsEl,
+})
+
+// Carta sem animação scroll-driven — carta sempre aberta.
+// (Versão anterior usava useScrollProgress + transforms calc; foi
+// removida porque o efeito não estava ficando bom na prática.)
+
 // ============ EMAIL CAPTURE STATE ============
 const email = ref('')
 const submitting = ref(false)
@@ -207,7 +224,10 @@ usePageSeo({
         <div class="lp-hero__grid">
           <!-- LEFT: copy + CTA -->
           <div class="lp-hero__copy">
-            <p class="lp-eyebrow">RAIO-X DA CARTEIRA · 100% GRÁTIS</p>
+            <p class="lp-eyebrow lp-eyebrow--pulsing">
+              <span class="lp-eyebrow__dot" aria-hidden="true" />
+              RAIO-X DA CARTEIRA · 100% GRÁTIS
+            </p>
 
             <h1 class="lp-hero__headline">
               Sua carteira caiu hoje<span class="lp-hero__dots">…</span>
@@ -272,11 +292,43 @@ usePageSeo({
                 </svg>
                 Sem cadastro chato
               </li>
+              <li>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" x2="16" y1="12" y2="12"/>
+                </svg>
+                Conecta via Open Finance
+              </li>
+              <li>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.2-.2.3-.7.9-.9 1.1-.2.2-.3.2-.6.1-1.7-.8-2.8-1.5-3.9-3.4-.3-.5.3-.5.8-1.5.1-.2 0-.3 0-.5 0-.1-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4s-1 1-1 2.4 1 2.8 1.2 3c.1.2 2 3.1 4.9 4.4.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.4M12 21.7c-1.7 0-3.4-.5-4.9-1.3l-3.5.9.9-3.4C3.5 16 3 14.1 3 12.2 3 7.2 7.1 3.1 12 3.1S21 7.2 21 12.2 16.9 21.7 12 21.7M12 1c-6.1 0-11 4.9-11 11 0 1.9.5 3.7 1.4 5.4L1 23l5.7-1.4c1.6.9 3.4 1.4 5.3 1.4 6.1 0 11-4.9 11-11S18.1 1 12 1z"/></svg>
+                WhatsApp incluso
+              </li>
             </ul>
+
+            <!-- Social proof: counter animado de cadastros + avatares -->
+            <div ref="totalSignupsEl" class="lp-social-proof">
+              <div class="lp-social-proof__avatars" aria-hidden="true">
+                <span class="lp-social-proof__avatar">A</span>
+                <span class="lp-social-proof__avatar">M</span>
+                <span class="lp-social-proof__avatar">R</span>
+                <span class="lp-social-proof__avatar">C</span>
+                <span class="lp-social-proof__avatar lp-social-proof__avatar--more">+</span>
+              </div>
+              <div class="lp-social-proof__copy">
+                <span class="lp-social-proof__count">
+                  <strong>{{ totalSignupsCount.toLocaleString('pt-BR') }}</strong>
+                  investidores
+                </span>
+                <span class="lp-social-proof__sub">já fizeram o raio-x essa semana</span>
+              </div>
+            </div>
           </div>
 
           <!-- RIGHT: product mockup -->
           <div class="lp-hero__visual">
+            <!-- Tombstone digit atras do mockup — referencia visual ao
+                 stress test da wallet, gigante e semi-transparente -->
+            <span class="lp-hero__tombstone" aria-hidden="true">94.4</span>
+
             <div class="lp-mockup">
               <!-- Mockup card head -->
               <div class="lp-mockup__head">
@@ -413,41 +465,10 @@ usePageSeo({
       </div>
     </section>
 
-    <!-- ============ COMO FUNCIONA ============ -->
-    <section class="lp-how">
-      <div class="lp-container">
-        <header class="lp-section-head">
-          <p class="lp-eyebrow">COMO FUNCIONA</p>
-          <h2 class="lp-section-title">
-            Três passos. Sem planilha,
-            <span class="lp-section-title__italic">sem decoreba.</span>
-          </h2>
-        </header>
-
-        <div class="lp-how__steps">
-          <article class="lp-how__step">
-            <div class="lp-how__num">01</div>
-            <h3>Cole sua carteira</h3>
-            <p>Digite os tickers que você tem. Funciona com ações, FIIs, ETFs, BDRs e Tesouro Direto.</p>
-          </article>
-          <article class="lp-how__step">
-            <div class="lp-how__num">02</div>
-            <h3>A IA cruza tudo</h3>
-            <p>Fundamentos, dividendos, concentração, notícias recentes, risco macro, exposição cambial. Em segundos.</p>
-          </article>
-          <article class="lp-how__step">
-            <div class="lp-how__num">03</div>
-            <h3>Receba o motivo</h3>
-            <p>Por que sua carteira caiu (ou subiu). Quais ativos pesaram. Onde está o risco escondido. Em linguagem direta.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
     <!-- ============ FEATURES PRINCIPAIS ============ -->
     <section class="lp-features">
       <div class="lp-container">
-        <header class="lp-section-head">
+        <header class="lp-section-head reveal-on-scroll">
           <p class="lp-eyebrow">O QUE A REDENTIA FAZ</p>
           <h2 class="lp-section-title">
             Para de adivinhar.
@@ -457,7 +478,7 @@ usePageSeo({
 
         <div class="lp-features__grid">
           <!-- Feature 1: Raio-X -->
-          <article class="lp-feat">
+          <article class="lp-feat reveal-on-scroll">
             <div class="lp-feat__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)` }">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="brand.colors.primary" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M19.07 4.93A10 10 0 0 0 6.99 3.34" />
@@ -481,7 +502,7 @@ usePageSeo({
           </article>
 
           <!-- Feature 2: Alertas -->
-          <article class="lp-feat lp-feat--highlight">
+          <article class="lp-feat lp-feat--highlight reveal-on-scroll">
             <div class="lp-feat__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)` }">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="brand.colors.primary" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
@@ -502,8 +523,36 @@ usePageSeo({
             </div>
           </article>
 
+          <!-- Feature: Open Finance (HIGHLIGHT — diferencial vs concorrentes) -->
+          <article class="lp-feat lp-feat--highlight reveal-on-scroll">
+            <div class="lp-feat__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.positive || '#10b981'} 14%, transparent)` }">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="brand.colors.positive || '#10b981'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 17H7A5 5 0 0 1 7 7h2"/>
+                <path d="M15 7h2a5 5 0 1 1 0 10h-2"/>
+                <line x1="8" x2="16" y1="12" y2="12"/>
+              </svg>
+            </div>
+            <h3>Conecta sua corretora <em>sozinha</em> via Open Finance</h3>
+            <p>Sem digitar ticker, sem subir XLSX. Conecta XP, BTG, Itaú, Nubank e demais corretoras autorizadas pelo Banco Central. <strong>Atualização automática</strong> e <strong>credenciais nunca passam pela Redentia</strong>.</p>
+            <!-- Mini logos das corretoras suportadas -->
+            <div class="lp-feat__bank-row">
+              <span class="lp-feat__bank-chip">XP</span>
+              <span class="lp-feat__bank-chip">BTG</span>
+              <span class="lp-feat__bank-chip">Itaú</span>
+              <span class="lp-feat__bank-chip">Nu</span>
+              <span class="lp-feat__bank-chip">Inter</span>
+              <span class="lp-feat__bank-chip lp-feat__bank-chip--more">+30</span>
+            </div>
+            <span class="lp-feat__official-badge">
+              <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+              Regulado pelo Banco Central
+            </span>
+          </article>
+
           <!-- Feature 3: Notícias -->
-          <article class="lp-feat">
+          <article class="lp-feat reveal-on-scroll">
             <div class="lp-feat__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)` }">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="brand.colors.primary" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2" />
@@ -516,15 +565,15 @@ usePageSeo({
             <p>Notícia mexeu na sua PETR4? A Redentia encontra, lê, resume e avisa. 11 fontes de mídia financeira monitoradas.</p>
           </article>
 
-          <!-- Feature 4: Chat IA -->
-          <article class="lp-feat">
+          <!-- Feature 4: Chat IA (também via WhatsApp) -->
+          <article class="lp-feat reveal-on-scroll">
             <div class="lp-feat__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)` }">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="brand.colors.primary" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
               </svg>
             </div>
             <h3>Pergunta. A IA responde.</h3>
-            <p>"Por que minha carteira caiu hoje?" "Qual minha exposição a commodities?" "Devo comprar mais ITUB4?" — pergunta, ela responde com dados.</p>
+            <p>"Por que minha carteira caiu hoje?" "Qual minha exposição a commodities?" "Devo comprar mais ITUB4?" — pergunta no app <strong>ou no WhatsApp</strong>, ela responde com dados.</p>
             <div class="lp-feat__chat">
               <div class="lp-feat__chat-msg lp-feat__chat-msg--user">
                 Por que minha carteira caiu?
@@ -533,10 +582,15 @@ usePageSeo({
                 Sua queda de -2,4% veio principalmente de PETR4 (-3,8%) por causa…
               </div>
             </div>
+            <!-- Chip indicando WhatsApp -->
+            <span class="lp-feat__channel-chip">
+              <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.2-.2.3-.7.9-.9 1.1-.2.2-.3.2-.6.1-1.7-.8-2.8-1.5-3.9-3.4-.3-.5.3-.5.8-1.5.1-.2 0-.3 0-.5 0-.1-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4s-1 1-1 2.4 1 2.8 1.2 3c.1.2 2 3.1 4.9 4.4.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.4M12 21.7c-1.7 0-3.4-.5-4.9-1.3l-3.5.9.9-3.4C3.5 16 3 14.1 3 12.2 3 7.2 7.1 3.1 12 3.1S21 7.2 21 12.2 16.9 21.7 12 21.7M12 1c-6.1 0-11 4.9-11 11 0 1.9.5 3.7 1.4 5.4L1 23l5.7-1.4c1.6.9 3.4 1.4 5.3 1.4 6.1 0 11-4.9 11-11S18.1 1 12 1z"/></svg>
+              Funciona no WhatsApp
+            </span>
           </article>
 
           <!-- Feature 5: Dividendos -->
-          <article class="lp-feat">
+          <article class="lp-feat reveal-on-scroll">
             <div class="lp-feat__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)` }">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="brand.colors.primary" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
@@ -550,7 +604,7 @@ usePageSeo({
           </article>
 
           <!-- Feature 6: Benchmarks -->
-          <article class="lp-feat">
+          <article class="lp-feat reveal-on-scroll">
             <div class="lp-feat__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)` }">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="brand.colors.primary" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="12" x2="12" y1="20" y2="10" />
@@ -561,6 +615,304 @@ usePageSeo({
             <h3>Compara com IBOV, CDI, IFIX</h3>
             <p>Sua carteira tá rendendo melhor ou pior que o mercado? Veja sem planilha.</p>
           </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ STRESS TEST PREVIEW ============
+         Reproduz visualmente o StressTestCard que vive na /wallet.
+         3 cards com tombstone year gigante atras, glowing numbers,
+         barras animadas. Mensagem: "isso é o que você vê dentro do app".
+    -->
+    <section class="lp-stress">
+      <div
+        class="lp-stress__glow"
+        aria-hidden="true"
+        :style="{
+          background: `radial-gradient(ellipse 70% 60% at 50% 0%, color-mix(in srgb, ${brand.colors.negative || '#dc2626'} 16%, transparent), transparent 65%)`,
+        }"
+      />
+      <div class="lp-container">
+        <header class="lp-section-head reveal-on-scroll">
+          <p class="lp-eyebrow lp-eyebrow--center lp-eyebrow--pulsing lp-eyebrow--negative">
+            <span class="lp-eyebrow__dot lp-eyebrow__dot--negative" aria-hidden="true" />
+            Stress test real
+          </p>
+          <h2 class="lp-section-title">
+            Você já parou pra pensar
+            <span class="lp-section-title__italic lp-section-title__italic--gradient">como sua carteira sobreviveria a uma nova crise?</span>
+          </h2>
+          <p class="lp-section-lead">
+            Calculamos o impacto na sua carteira em três cenários reais, dois que aconteceram e
+            um futuro hipotético. Com base no comportamento histórico de cada classe de ativo.
+          </p>
+        </header>
+
+        <div class="lp-stress__grid">
+          <!-- COVID 2020 -->
+          <article class="lp-stress-card lp-stress-card--crisis reveal-on-scroll" style="--reveal-delay: 0ms">
+            <span class="lp-stress-card__year-bg" aria-hidden="true">2020</span>
+
+            <div class="lp-stress-card__top">
+              <span class="lp-stress-card__tag lp-stress-card__tag--real">
+                <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M3 4v5h5"/><path d="M12 7v5l4 2"/></svg>
+                Crise real
+              </span>
+              <span class="lp-stress-card__period">fev–mar 2020</span>
+            </div>
+
+            <header class="lp-stress-card__head">
+              <div class="lp-stress-card__icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11.9" cy="11.9" r="8.8"/><circle cx="11.9" cy="11.9" r="1.5"/><path d="M11.9 3.1v2.6"/><path d="M11.9 18.1v2.6"/><path d="M3.1 11.9h2.6"/><path d="M18.1 11.9h2.6"/></svg>
+              </div>
+              <h3 class="lp-stress-card__name">Pandemia COVID-19</h3>
+            </header>
+
+            <p class="lp-stress-card__headline">
+              Choque global de liquidez. IBOV cedeu 45% em 32 dias, S&amp;P 500 perdeu 34%, FIIs caíram 34%.
+            </p>
+
+            <div class="lp-stress-card__impact">
+              <div class="lp-stress-card__impact-row">
+                <span class="lp-stress-card__impact-label">Carteira balanceada</span>
+                <span class="lp-stress-card__impact-baseline">IBOV -45,0%</span>
+              </div>
+              <div class="lp-stress-card__impact-numbers">
+                <span class="lp-stress-card__impact-pct">-34,2%</span>
+              </div>
+              <div class="lp-stress-card__bar" aria-hidden="true">
+                <div class="lp-stress-card__bar-fill" style="width: 68%" />
+              </div>
+            </div>
+
+            <footer class="lp-stress-card__foot">
+              <span class="lp-stress-card__foot-item">⏱ Choque: <strong>32 dias</strong></span>
+              <span class="lp-stress-card__foot-dot">·</span>
+              <span class="lp-stress-card__foot-item">↗ Recuperação: <strong>~5 meses</strong></span>
+            </footer>
+          </article>
+
+          <!-- 2008 SUBPRIME -->
+          <article class="lp-stress-card lp-stress-card--severe reveal-on-scroll" style="--reveal-delay: 120ms">
+            <span class="lp-stress-card__year-bg" aria-hidden="true">2008</span>
+
+            <div class="lp-stress-card__top">
+              <span class="lp-stress-card__tag lp-stress-card__tag--real">
+                <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9"/><path d="M3 4v5h5"/><path d="M12 7v5l4 2"/></svg>
+                Crise real
+              </span>
+              <span class="lp-stress-card__period">set 2008 – mar 2009</span>
+            </div>
+
+            <header class="lp-stress-card__head">
+              <div class="lp-stress-card__icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/></svg>
+              </div>
+              <h3 class="lp-stress-card__name">Crise do Subprime</h3>
+            </header>
+
+            <p class="lp-stress-card__headline">
+              Colapso bancário global após a falência do Lehman Brothers. IBOV recuou 54%, S&amp;P 500 perdeu 57%.
+            </p>
+
+            <div class="lp-stress-card__impact">
+              <div class="lp-stress-card__impact-row">
+                <span class="lp-stress-card__impact-label">Carteira balanceada</span>
+                <span class="lp-stress-card__impact-baseline">IBOV -54,0%</span>
+              </div>
+              <div class="lp-stress-card__impact-numbers">
+                <span class="lp-stress-card__impact-pct">-41,8%</span>
+              </div>
+              <div class="lp-stress-card__bar" aria-hidden="true">
+                <div class="lp-stress-card__bar-fill" style="width: 84%" />
+              </div>
+            </div>
+
+            <footer class="lp-stress-card__foot">
+              <span class="lp-stress-card__foot-item">⏱ Choque: <strong>6 meses</strong></span>
+              <span class="lp-stress-card__foot-dot">·</span>
+              <span class="lp-stress-card__foot-item">↗ Recuperação: <strong>~2,5 anos</strong></span>
+            </footer>
+          </article>
+
+          <!-- AI BUBBLE 202? -->
+          <article class="lp-stress-card lp-stress-card--projection reveal-on-scroll" style="--reveal-delay: 240ms">
+            <span class="lp-stress-card__year-bg" aria-hidden="true">202?</span>
+
+            <div class="lp-stress-card__top">
+              <span class="lp-stress-card__tag lp-stress-card__tag--projection">
+                <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m10.6 8.5-7.4 7.4 5 5L17.5 12.4"/><path d="m12.4 7.4 4.2 4.2"/><path d="M22 6.5 17.5 11l-3-3L19 3.5"/></svg>
+                Projeção futura
+              </span>
+              <span class="lp-stress-card__period">2026–2027</span>
+            </div>
+
+            <header class="lp-stress-card__head">
+              <div class="lp-stress-card__icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M20 15h2"/></svg>
+              </div>
+              <h3 class="lp-stress-card__name">Estouro da bolha de IA</h3>
+            </header>
+
+            <p class="lp-stress-card__headline">
+              Cenário hipotético: tese dos hyperscalers (Nvidia, Microsoft, Meta) é revisada bruscamente. BDRs e ETFs sofrem mais.
+            </p>
+
+            <div class="lp-stress-card__impact">
+              <div class="lp-stress-card__impact-row">
+                <span class="lp-stress-card__impact-label">Carteira balanceada</span>
+                <span class="lp-stress-card__impact-baseline">IBOV -25,0%</span>
+              </div>
+              <div class="lp-stress-card__impact-numbers">
+                <span class="lp-stress-card__impact-pct">-22,5%</span>
+              </div>
+              <div class="lp-stress-card__bar" aria-hidden="true">
+                <div class="lp-stress-card__bar-fill" style="width: 45%" />
+              </div>
+            </div>
+
+            <footer class="lp-stress-card__foot">
+              <span class="lp-stress-card__foot-item">⏱ Choque: <strong>~12 meses</strong></span>
+              <span class="lp-stress-card__foot-dot">·</span>
+              <span class="lp-stress-card__foot-item">↗ Recuperação: <strong>18-24 meses</strong></span>
+            </footer>
+          </article>
+        </div>
+
+        <!-- Disclaimer + CTA inline -->
+        <div class="lp-stress__disclaimer reveal-on-scroll">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          <span>
+            Estimativas baseadas no comportamento histórico de cada classe de ativo. Os números acima usam uma carteira balanceada (50% ações / 30% FIIs / 20% Tesouro). <strong>Sua carteira real, com seus pesos exatos, fica disponível dentro do app.</strong>
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CARTA MENSAL (carta aberta, sem animação) ============
+         Carta chique posicionada no centro. Sem animação scroll-driven
+         pq o efeito não estava bom. Apenas reveal-on-scroll padrão pra
+         entrada suave. Visual mantém o tom editorial/correspondência. -->
+    <section class="lp-carta">
+      <div
+        class="lp-carta__glow"
+        aria-hidden="true"
+        :style="{
+          background: `radial-gradient(ellipse 70% 60% at 50% 30%, color-mix(in srgb, ${brand.colors.primary} 14%, transparent), transparent 70%)`,
+        }"
+      />
+
+      <div class="lp-container">
+        <!-- Header acima da carta -->
+        <header class="lp-carta__head reveal-on-scroll">
+          <p class="lp-eyebrow lp-eyebrow--pulsing lp-eyebrow--center">
+            <span class="lp-eyebrow__dot" aria-hidden="true" />
+            CARTA MENSAL · ASSINADA PELA REDENTIA
+          </p>
+          <h2 class="lp-carta__title">
+            Toda primeira segunda do mês,
+            <span class="lp-carta__title-em">uma carta. Sua.</span>
+          </h2>
+          <p class="lp-carta__lead">
+            Não é newsletter. É um relatório editorial assinado pela Redentia, contando o que
+            aconteceu com cada ativo seu, dividendos recebidos, eventos relevantes e três
+            sugestões da IA pro próximo mês. <strong>Chega no email e no WhatsApp.</strong>
+          </p>
+        </header>
+
+        <!-- A CARTA em si — papel chique, aberta, centralizada -->
+        <article class="lp-carta__letter reveal-on-scroll">
+          <!-- Watermark sutil REDENTIA atrás do conteúdo -->
+          <span class="lp-carta__letter-watermark" aria-hidden="true">REDENTIA</span>
+
+          <!-- Header da carta -->
+          <header class="lp-carta__letter-head">
+            <span class="lp-carta__letter-edition">Edição IV · Outubro 2026</span>
+            <div class="lp-carta__letter-monogram" aria-hidden="true">R</div>
+            <span class="lp-carta__letter-date">São Paulo, 04 de outubro</span>
+          </header>
+
+          <!-- Saudação -->
+          <p class="lp-carta__letter-salut">Caro <em>André</em>,</p>
+
+          <!-- Corpo principal -->
+          <p class="lp-carta__letter-body">
+            Outubro tratou bem a sua carteira. O retorno no mês foi de
+            <strong class="lp-carta__hl-positive">+4,82%</strong>, à frente do IBOV em
+            <strong>1,84 ponto percentual</strong> e do CDI em
+            <strong>3,21 pontos</strong>. Os destaques vieram dos seus ativos de
+            <em>commodities</em> e da alocação em <em>FIIs de papel</em>.
+          </p>
+
+          <!-- Stats inline elegantes -->
+          <div class="lp-carta__letter-stats">
+            <div class="lp-carta__letter-stat">
+              <span class="lp-carta__letter-stat-value">+4,82<span class="lp-carta__letter-stat-pct">%</span></span>
+              <span class="lp-carta__letter-stat-label">Retorno do mês</span>
+            </div>
+            <div class="lp-carta__letter-stat lp-carta__letter-stat--divider" />
+            <div class="lp-carta__letter-stat">
+              <span class="lp-carta__letter-stat-value lp-carta__letter-stat-value--small">R$ 487</span>
+              <span class="lp-carta__letter-stat-label">Dividendos recebidos</span>
+            </div>
+            <div class="lp-carta__letter-stat lp-carta__letter-stat--divider" />
+            <div class="lp-carta__letter-stat">
+              <span class="lp-carta__letter-stat-value lp-carta__letter-stat-value--small">3</span>
+              <span class="lp-carta__letter-stat-label">Fatos relevantes</span>
+            </div>
+          </div>
+
+          <p class="lp-carta__letter-body">
+            <span class="lp-carta__letter-dropcap">N</span>esta edição da sua carta, você encontra a análise completa do mês,
+            a curadoria de notícias que mexeram com seus ativos, os <strong>dividendos
+            que vão cair em novembro</strong>, e três sugestões da nossa IA pra ajustar
+            a carteira sem se afobar.
+          </p>
+
+          <!-- Régua ornamental -->
+          <div class="lp-carta__letter-rule" aria-hidden="true">
+            <span class="lp-carta__letter-rule-orn">❦</span>
+          </div>
+
+          <!-- TOC dentro da carta -->
+          <ol class="lp-carta__letter-toc">
+            <li><span>I.</span> Performance do mês <em>vs.</em> IBOV, CDI &amp; IFIX</li>
+            <li><span>II.</span> Dividendos recebidos &amp; YTD</li>
+            <li><span>III.</span> Eventos &amp; fatos relevantes da carteira</li>
+            <li><span>IV.</span> Três sugestões da IA pra próximo mês</li>
+            <li><span>V.</span> Calendário de novembro: datas-com &amp; pagamentos</li>
+          </ol>
+
+          <!-- Signature -->
+          <footer class="lp-carta__letter-foot">
+            <p class="lp-carta__letter-closing">Com afeto e disciplina,</p>
+            <span class="lp-carta__letter-signature">Redentia</span>
+            <span class="lp-carta__letter-meta">A IA que cuida da sua carteira</span>
+          </footer>
+
+          <!-- Selo final embaixo no canto -->
+          <div class="lp-carta__letter-stamp" aria-hidden="true">
+            <span>RDT</span>
+          </div>
+        </article>
+
+        <!-- Channels strip embaixo -->
+        <div class="lp-carta__channels-strip reveal-on-scroll">
+          <span class="lp-carta__channels-label">A mesma carta chega em:</span>
+          <div class="lp-carta__channels-list">
+            <span class="lp-carta__channel-pill">
+              <span class="lp-carta__channel-pill-icon lp-carta__channel-pill-icon--email">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              </span>
+              <strong>Email</strong> com PDF
+            </span>
+            <span class="lp-carta__channel-pill">
+              <span class="lp-carta__channel-pill-icon lp-carta__channel-pill-icon--whats">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.2-.2.3-.7.9-.9 1.1-.2.2-.3.2-.6.1-1.7-.8-2.8-1.5-3.9-3.4-.3-.5.3-.5.8-1.5.1-.2 0-.3 0-.5 0-.1-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4s-1 1-1 2.4 1 2.8 1.2 3c.1.2 2 3.1 4.9 4.4.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.4M12 21.7c-1.7 0-3.4-.5-4.9-1.3l-3.5.9.9-3.4C3.5 16 3 14.1 3 12.2 3 7.2 7.1 3.1 12 3.1S21 7.2 21 12.2 16.9 21.7 12 21.7M12 1c-6.1 0-11 4.9-11 11 0 1.9.5 3.7 1.4 5.4L1 23l5.7-1.4c1.6.9 3.4 1.4 5.3 1.4 6.1 0 11-4.9 11-11S18.1 1 12 1z"/></svg>
+              </span>
+              <strong>WhatsApp</strong> com PDF e resumo
+            </span>
+          </div>
         </div>
       </div>
     </section>
@@ -580,7 +932,7 @@ usePageSeo({
         }"
       />
       <div class="lp-container">
-        <header class="lp-section-head">
+        <header class="lp-section-head reveal-on-scroll">
           <p class="lp-eyebrow">POR DENTRO DA REDENTIA</p>
           <h2 class="lp-section-title">
             Não é só um app de saldo.
@@ -762,7 +1114,7 @@ usePageSeo({
          no poster — preload=none, sem custo pra quem nao engaja. -->
     <section class="lp-video">
       <div class="lp-container">
-        <header class="lp-section-head">
+        <header class="lp-section-head reveal-on-scroll">
           <p class="lp-eyebrow">VEJA NA PRÁTICA</p>
           <h2 class="lp-section-title">
             60 segundos pra ver o que sua corretora
@@ -848,7 +1200,7 @@ usePageSeo({
     <!-- ============ COMPARISON TABLE ============ -->
     <section class="lp-compare">
       <div class="lp-container">
-        <header class="lp-section-head">
+        <header class="lp-section-head reveal-on-scroll">
           <p class="lp-eyebrow">A DIFERENÇA</p>
           <h2 class="lp-section-title">
             Sua corretora mostra <em>o quê.</em>
@@ -958,7 +1310,6 @@ usePageSeo({
    Aplicamos so nas sections abaixo do hero (a fold). Hero precisa
    renderizar imediatamente. */
 .lp-problem,
-.lp-how,
 .lp-features,
 .lp-inside,
 .lp-video,
@@ -1530,59 +1881,6 @@ usePageSeo({
   font-weight: 600;
 }
 @media (min-width: 768px) { .lp-problem__cta-line { font-size: 28px; } }
-
-/* ============ COMO FUNCIONA ============ */
-.lp-how {
-  padding: 60px 0 80px;
-  background: color-mix(in srgb, var(--brand-surface) 35%, var(--brand-background));
-  border-top: 1px solid color-mix(in srgb, var(--brand-border) 25%, transparent);
-  border-bottom: 1px solid color-mix(in srgb, var(--brand-border) 25%, transparent);
-}
-@media (min-width: 768px) { .lp-how { padding: 96px 0; } }
-
-.lp-how__steps {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 20px;
-}
-@media (min-width: 768px) {
-  .lp-how__steps {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-  }
-}
-
-.lp-how__step {
-  padding: 28px 24px 32px;
-  border-radius: 18px;
-  background: var(--brand-surface);
-  border: 1px solid color-mix(in srgb, var(--brand-border) 40%, transparent);
-  transition: transform 220ms, box-shadow 220ms;
-}
-.lp-how__step:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 24px 48px -16px color-mix(in srgb, var(--brand-primary) 22%, transparent);
-}
-
-.lp-how__num {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  color: var(--brand-primary);
-}
-.lp-how__step h3 {
-  margin: 12px 0 8px;
-  font-size: 22px;
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  color: var(--brand-text);
-}
-.lp-how__step p {
-  margin: 0;
-  font-size: 14.5px;
-  line-height: 1.55;
-  color: color-mix(in srgb, var(--brand-text) 75%, transparent);
-}
 
 /* ============ FEATURES ============ */
 .lp-features {
@@ -2400,5 +2698,1046 @@ usePageSeo({
   margin: 18px auto 0;
   font-size: 12.5px;
   color: color-mix(in srgb, var(--brand-text) 55%, transparent);
+}
+
+/* =================================================================
+ * EFEITOS WOW (mesmos da /wallet) — eyebrow pulsante + tombstone
+ * digit + scroll reveal + magnetic CTA + stress test cards.
+ * ================================================================= */
+
+/* ============ EYEBROW PULSANTE ============ */
+.lp-eyebrow--pulsing {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+}
+
+.lp-eyebrow--center.lp-eyebrow--pulsing {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.lp-eyebrow__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--brand-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-primary) 25%, transparent);
+  animation: lp-eyebrow-pulse 2.4s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.lp-eyebrow__dot--negative {
+  background: var(--brand-negative, #dc2626);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-negative, #dc2626) 25%, transparent);
+}
+
+.lp-eyebrow--negative {
+  color: var(--brand-negative, #dc2626) !important;
+}
+
+@keyframes lp-eyebrow-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(0.8); }
+}
+
+/* ============ TOMBSTONE DIGIT (atrás do mockup) ============ */
+.lp-hero__visual {
+  position: relative;
+}
+
+.lp-hero__tombstone {
+  position: absolute;
+  top: -40px;
+  right: -10px;
+  font-family: var(--brand-font);
+  font-weight: 100;
+  font-size: clamp(140px, 18vw, 240px);
+  line-height: 0.85;
+  letter-spacing: -0.06em;
+  color: color-mix(in srgb, var(--brand-primary) 12%, transparent);
+  user-select: none;
+  pointer-events: none;
+  z-index: 0;
+  white-space: nowrap;
+}
+
+@media (max-width: 880px) {
+  .lp-hero__tombstone { display: none; }
+}
+
+.lp-hero__visual .lp-mockup {
+  position: relative;
+  z-index: 1;
+}
+
+/* ============ SOCIAL PROOF (counter animado) ============ */
+.lp-social-proof {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 22px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--brand-text) 4%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-border) 40%, transparent);
+  width: fit-content;
+}
+
+.lp-social-proof__avatars {
+  display: flex;
+  align-items: center;
+}
+
+.lp-social-proof__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--brand-primary) 30%, var(--brand-surface)) 0%, color-mix(in srgb, var(--brand-primary) 14%, var(--brand-surface)) 100%);
+  border: 2px solid var(--brand-background);
+  font-family: var(--brand-font);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--brand-text);
+  margin-left: -8px;
+}
+
+.lp-social-proof__avatar:first-child { margin-left: 0; }
+
+.lp-social-proof__avatar--more {
+  background: var(--brand-primary);
+  color: var(--text-on-primary, var(--brand-background, #fff));
+}
+
+.lp-social-proof__copy {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.lp-social-proof__count {
+  font-size: 13px;
+  color: var(--brand-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.lp-social-proof__count strong {
+  font-weight: 700;
+  color: var(--brand-primary);
+  margin-right: 4px;
+}
+
+.lp-social-proof__sub {
+  font-size: 11.5px;
+  color: color-mix(in srgb, var(--brand-text) 60%, transparent);
+}
+
+/* ============ SCROLL REVEAL ============ */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 700ms cubic-bezier(0.4, 0, 0.2, 1),
+              transform 700ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.reveal-on-scroll.is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-on-scroll {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ============ STRESS TEST SECTION ============ */
+.lp-stress {
+  position: relative;
+  padding: 96px 0;
+  overflow: hidden;
+}
+
+.lp-stress__glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.lp-stress > .lp-container {
+  position: relative;
+  z-index: 1;
+}
+
+.lp-stress__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  margin-top: 40px;
+}
+
+@media (min-width: 1024px) {
+  .lp-stress__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Section title gradient italic (mais dramático que o italic comum) */
+.lp-section-title__italic--gradient {
+  background: linear-gradient(
+    100deg,
+    var(--brand-negative, #dc2626) 0%,
+    #f59e0b 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ============ STRESS TEST CARD (clone visual do wallet) ============ */
+.lp-stress-card {
+  --tone: var(--brand-negative, #dc2626);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 22px 22px 18px;
+  border-radius: 24px;
+  border: 1px solid color-mix(in srgb, var(--tone) 20%, transparent);
+  background:
+    radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--tone) 22%, transparent) 0%, transparent 60%),
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--tone) 8%, var(--brand-surface)) 0%,
+      color-mix(in srgb, var(--brand-surface) 85%, var(--brand-background)) 100%
+    );
+  position: relative;
+  overflow: hidden;
+  transition: border-color 220ms, transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 220ms;
+}
+
+.lp-stress-card--crisis  { --tone: var(--brand-negative, #dc2626); }
+.lp-stress-card--severe  { --tone: #ef4444; }
+.lp-stress-card--projection { --tone: #f59e0b; }
+
+.lp-stress-card:hover {
+  border-color: color-mix(in srgb, var(--tone) 50%, transparent);
+  transform: translateY(-4px);
+  box-shadow:
+    0 28px 56px -22px color-mix(in srgb, var(--tone) 55%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--tone) 25%, transparent);
+}
+
+/* Tombstone year (gigante, atrás do conteúdo) */
+.lp-stress-card__year-bg {
+  position: absolute;
+  bottom: -38px;
+  right: -10px;
+  font-family: var(--brand-font);
+  font-weight: 100;
+  font-size: 180px;
+  line-height: 0.85;
+  letter-spacing: -0.06em;
+  color: color-mix(in srgb, var(--tone) 14%, transparent);
+  user-select: none;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.lp-stress-card > *:not(.lp-stress-card__year-bg) {
+  position: relative;
+  z-index: 1;
+}
+
+/* TOP TAG ROW */
+.lp-stress-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.lp-stress-card__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', Menlo, monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.lp-stress-card__tag--real {
+  background: color-mix(in srgb, var(--tone) 14%, transparent);
+  color: var(--tone);
+  border: 1px solid color-mix(in srgb, var(--tone) 30%, transparent);
+}
+
+.lp-stress-card__tag--projection {
+  background: color-mix(in srgb, #f59e0b 14%, transparent);
+  color: #f59e0b;
+  border: 1px solid color-mix(in srgb, #f59e0b 30%, transparent);
+}
+
+.lp-stress-card__period {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', Menlo, monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--brand-text) 50%, transparent);
+}
+
+/* HEAD */
+.lp-stress-card__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.lp-stress-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 13px;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--tone) 22%, transparent) 0%,
+    color-mix(in srgb, var(--tone) 8%, transparent) 100%
+  );
+  border: 1px solid color-mix(in srgb, var(--tone) 35%, transparent);
+  color: var(--tone);
+  flex-shrink: 0;
+  box-shadow: 0 6px 18px -8px color-mix(in srgb, var(--tone) 50%, transparent);
+}
+
+.lp-stress-card__name {
+  margin: 0;
+  font-family: var(--brand-font);
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.018em;
+  color: var(--brand-text);
+  line-height: 1.2;
+}
+
+.lp-stress-card__headline {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: color-mix(in srgb, var(--brand-text) 70%, transparent);
+}
+
+/* IMPACT (HERO!) */
+.lp-stress-card__impact {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px;
+  border-radius: 16px;
+  background:
+    radial-gradient(ellipse at center top, color-mix(in srgb, var(--tone) 18%, transparent) 0%, transparent 70%),
+    color-mix(in srgb, var(--tone) 6%, var(--brand-background));
+  border: 1px solid color-mix(in srgb, var(--tone) 28%, transparent);
+  position: relative;
+  overflow: hidden;
+}
+
+.lp-stress-card__impact::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--tone) 60%, transparent), transparent);
+}
+
+.lp-stress-card__impact-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.lp-stress-card__impact-label {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', Menlo, monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--brand-text) 65%, transparent);
+}
+
+.lp-stress-card__impact-baseline {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', Menlo, monospace;
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: color-mix(in srgb, var(--brand-text) 50%, transparent);
+}
+
+.lp-stress-card__impact-numbers {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.lp-stress-card__impact-pct {
+  font-family: var(--brand-font);
+  font-weight: 100;
+  font-size: clamp(48px, 6.4vw, 64px);
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+  color: var(--tone);
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 40px color-mix(in srgb, var(--tone) 50%, transparent);
+}
+
+.lp-stress-card__bar {
+  height: 5px;
+  width: 100%;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--brand-text) 6%, transparent);
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.lp-stress-card__bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--tone) 0%, color-mix(in srgb, var(--tone) 70%, white) 100%);
+  border-radius: 999px;
+  box-shadow: 0 0 12px color-mix(in srgb, var(--tone) 50%, transparent);
+}
+
+/* FOOTER */
+.lp-stress-card__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  padding-top: 14px;
+  margin-top: auto;
+  border-top: 1px solid color-mix(in srgb, var(--brand-border) 30%, transparent);
+  font-size: 11px;
+  color: color-mix(in srgb, var(--brand-text) 60%, transparent);
+}
+
+.lp-stress-card__foot-item strong {
+  font-weight: 600;
+  color: var(--brand-text);
+}
+
+.lp-stress-card__foot-dot {
+  opacity: 0.5;
+}
+
+/* DISCLAIMER */
+.lp-stress__disclaimer {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 28px auto 0;
+  padding: 14px 18px;
+  max-width: 900px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--brand-text) 4%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-border) 35%, transparent);
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: color-mix(in srgb, var(--brand-text) 65%, transparent);
+}
+
+.lp-stress__disclaimer strong {
+  color: var(--brand-text);
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .lp-stress-card__year-bg {
+    font-size: 140px;
+    bottom: -28px;
+  }
+  .lp-stress { padding: 64px 0; }
+}
+
+.lp-section-lead {
+  margin: 12px auto 0;
+  max-width: 720px;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: color-mix(in srgb, var(--brand-text) 65%, transparent);
+  text-align: center;
+}
+
+/* ============ HERO CTA: SHIMMER EFFECT ============ */
+.lp-hero__cta {
+  position: relative;
+  overflow: hidden;
+}
+
+.lp-hero__cta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 30%, color-mix(in srgb, white 25%, transparent) 50%, transparent 70%);
+  transform: translateX(-100%);
+  transition: transform 700ms ease;
+  pointer-events: none;
+}
+
+.lp-hero__cta:hover::before,
+.lp-hero__cta:focus-visible::before {
+  transform: translateX(100%);
+}
+
+/* =================================================================
+ * OPEN FINANCE feature card (chips de bancos + badge BCB)
+ * ================================================================= */
+.lp-feat__bank-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.lp-feat__bank-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 11px;
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--brand-text) 5%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-border) 50%, transparent);
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', Menlo, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--brand-text);
+}
+
+.lp-feat__bank-chip--more {
+  background: color-mix(in srgb, var(--brand-positive, #10b981) 12%, transparent);
+  border-color: color-mix(in srgb, var(--brand-positive, #10b981) 30%, transparent);
+  color: var(--brand-positive, #10b981);
+}
+
+.lp-feat__official-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 12px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--brand-positive, #10b981) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-positive, #10b981) 28%, transparent);
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', Menlo, monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--brand-positive, #10b981);
+  width: fit-content;
+}
+
+/* Chip "Funciona no WhatsApp" no card de chat */
+.lp-feat__channel-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 12px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, #25d366 12%, transparent);
+  border: 1px solid color-mix(in srgb, #25d366 32%, transparent);
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', Menlo, monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #25d366;
+  width: fit-content;
+}
+
+/* =================================================================
+ * CARTA MENSAL — carta aberta (sem animação scroll-driven)
+ * ================================================================= */
+.lp-carta {
+  position: relative;
+  padding: 96px 0;
+  background: color-mix(in srgb, var(--brand-surface) 30%, var(--brand-background));
+  border-top: 1px solid color-mix(in srgb, var(--brand-border) 25%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--brand-border) 25%, transparent);
+  isolation: isolate;
+}
+
+@media (max-width: 768px) {
+  .lp-carta { padding: 64px 0; }
+}
+
+.lp-carta__glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.lp-carta > .lp-container {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+
+.lp-carta__head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  max-width: 720px;
+}
+
+.lp-carta__title {
+  margin: 0;
+  font-family: var(--brand-font);
+  font-weight: 200;
+  font-size: clamp(28px, 4vw, 40px);
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  color: var(--brand-text);
+}
+
+.lp-carta__title-em {
+  font-style: italic;
+  font-weight: 300;
+  background: linear-gradient(100deg,
+    var(--brand-primary) 0%,
+    color-mix(in srgb, var(--brand-primary) 60%, white) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.lp-carta__lead {
+  margin: 6px 0 0;
+  max-width: 640px;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: color-mix(in srgb, var(--brand-text) 65%, transparent);
+}
+
+.lp-carta__lead strong {
+  color: var(--brand-text);
+  font-weight: 600;
+}
+
+/* === A CARTA === */
+.lp-carta__letter {
+  position: relative;
+  width: min(640px, 92vw);
+  display: flex;
+  flex-direction: column;
+  padding: 44px 52px 36px;
+  border-radius: 4px;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.012) 0,
+      rgba(0, 0, 0, 0.012) 1px,
+      transparent 1px,
+      transparent 4px
+    ),
+    linear-gradient(180deg, #fdfaf2 0%, #f7f1e3 100%);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.06),
+    0 32px 80px -20px rgba(0, 0, 0, 0.55),
+    0 0 0 1px color-mix(in srgb, var(--brand-primary) 25%, transparent),
+    inset 0 0 80px -20px rgba(170, 130, 60, 0.12);
+  font-family: 'Cormorant Garamond', 'Garamond', 'Georgia', serif;
+  color: #2b2419;
+  overflow: hidden;
+  transform: rotate(-0.3deg);
+}
+
+@media (max-width: 640px) {
+  .lp-carta__letter { padding: 28px 24px 24px; }
+}
+
+.lp-carta__letter-watermark {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Cormorant Garamond', 'Georgia', serif;
+  font-size: clamp(80px, 16vw, 160px);
+  font-weight: 300;
+  letter-spacing: 0.16em;
+  color: rgba(170, 130, 60, 0.06);
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+  transform: rotate(-8deg);
+  white-space: nowrap;
+}
+
+.lp-carta__letter-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 14px;
+  border-bottom: 1px dashed rgba(170, 130, 60, 0.3);
+  position: relative;
+  z-index: 1;
+}
+
+.lp-carta__letter-edition,
+.lp-carta__letter-date {
+  font-family: 'JetBrains Mono', 'IBM Plex Mono', Menlo, monospace;
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #8a7a5a;
+}
+
+.lp-carta__letter-monogram {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #b8860b 0%, #8b6914 100%);
+  color: #fdfaf2;
+  font-family: 'Cormorant Garamond', 'Georgia', serif;
+  font-size: 22px;
+  font-weight: 600;
+  font-style: italic;
+  box-shadow: 0 4px 10px -2px rgba(139, 105, 20, 0.5);
+}
+
+.lp-carta__letter-salut {
+  margin: 22px 0 12px;
+  font-family: 'Cormorant Garamond', 'Garamond', 'Georgia', serif;
+  font-size: 26px;
+  font-weight: 400;
+  color: #2b2419;
+  position: relative;
+  z-index: 1;
+}
+
+.lp-carta__letter-salut em {
+  font-style: italic;
+  font-weight: 500;
+}
+
+.lp-carta__letter-body {
+  margin: 10px 0;
+  font-family: 'Cormorant Garamond', 'Garamond', 'Georgia', serif;
+  font-size: 16px;
+  line-height: 1.7;
+  color: #3a3122;
+  text-align: justify;
+  hyphens: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.lp-carta__letter-body strong {
+  font-weight: 600;
+  color: #2b2419;
+}
+
+.lp-carta__letter-body em {
+  font-style: italic;
+}
+
+.lp-carta__hl-positive {
+  color: #15803d !important;
+  font-weight: 700 !important;
+}
+
+.lp-carta__letter-dropcap {
+  float: left;
+  font-family: 'Cormorant Garamond', 'Georgia', serif;
+  font-size: 46px;
+  font-weight: 600;
+  line-height: 0.85;
+  margin: 6px 10px 0 0;
+  color: #b8860b;
+}
+
+.lp-carta__letter-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 22px;
+  margin: 20px 0;
+  background: linear-gradient(135deg,
+    rgba(184, 134, 11, 0.06) 0%,
+    rgba(184, 134, 11, 0.02) 100%
+  );
+  border-top: 1px solid rgba(170, 130, 60, 0.22);
+  border-bottom: 1px solid rgba(170, 130, 60, 0.22);
+  position: relative;
+  z-index: 1;
+}
+
+.lp-carta__letter-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  text-align: center;
+}
+
+.lp-carta__letter-stat--divider {
+  flex: 0 0 1px;
+  width: 1px;
+  height: 36px;
+  background: rgba(170, 130, 60, 0.25);
+}
+
+.lp-carta__letter-stat-value {
+  font-family: 'Cormorant Garamond', 'Georgia', serif;
+  font-size: 30px;
+  font-weight: 500;
+  line-height: 1;
+  color: #15803d;
+  font-variant-numeric: tabular-nums;
+}
+
+.lp-carta__letter-stat-value--small {
+  font-size: 22px;
+  color: #2b2419;
+  font-weight: 600;
+}
+
+.lp-carta__letter-stat-pct {
+  font-size: 16px;
+  font-weight: 400;
+  color: #15803d;
+  margin-left: 1px;
+}
+
+.lp-carta__letter-stat-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #8a7a5a;
+}
+
+@media (max-width: 480px) {
+  .lp-carta__letter-stats { gap: 8px; padding: 12px 14px; }
+  .lp-carta__letter-stat-value { font-size: 22px; }
+  .lp-carta__letter-stat-value--small { font-size: 16px; }
+  .lp-carta__letter-stat-label { font-size: 8px; letter-spacing: 0.12em; }
+}
+
+.lp-carta__letter-rule {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 18px 0;
+  position: relative;
+  z-index: 1;
+}
+
+.lp-carta__letter-rule::before,
+.lp-carta__letter-rule::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(170, 130, 60, 0.35), transparent);
+}
+
+.lp-carta__letter-rule-orn {
+  margin: 0 14px;
+  font-size: 16px;
+  color: #b8860b;
+}
+
+.lp-carta__letter-toc {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  font-family: 'Cormorant Garamond', 'Garamond', 'Georgia', serif;
+  font-size: 15px;
+  line-height: 1.55;
+  color: #3a3122;
+  position: relative;
+  z-index: 1;
+}
+
+.lp-carta__letter-toc li {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.lp-carta__letter-toc li > span {
+  font-style: italic;
+  color: #8b6914;
+  font-weight: 600;
+  flex-shrink: 0;
+  min-width: 30px;
+}
+
+.lp-carta__letter-toc em {
+  font-style: italic;
+  color: #6b5f48;
+}
+
+.lp-carta__letter-foot {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px dashed rgba(170, 130, 60, 0.22);
+  position: relative;
+  z-index: 1;
+}
+
+.lp-carta__letter-closing {
+  margin: 0;
+  font-family: 'Cormorant Garamond', 'Georgia', serif;
+  font-size: 16px;
+  font-style: italic;
+  color: #3a3122;
+}
+
+.lp-carta__letter-signature {
+  font-family: 'Cormorant Garamond', 'Georgia', serif;
+  font-size: 42px;
+  font-weight: 500;
+  font-style: italic;
+  line-height: 1;
+  color: #b8860b;
+  letter-spacing: -0.02em;
+  margin-top: 6px;
+}
+
+.lp-carta__letter-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8a7a5a;
+  margin-top: 4px;
+}
+
+.lp-carta__letter-stamp {
+  position: absolute;
+  bottom: 22px;
+  left: 28px;
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
+  border: 2px solid #b8860b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #b8860b;
+  opacity: 0.6;
+  transform: rotate(-8deg);
+  z-index: 1;
+}
+
+@media (max-width: 640px) {
+  .lp-carta__letter-stamp { width: 38px; height: 38px; font-size: 9px; bottom: 14px; left: 16px; }
+  .lp-carta__letter-signature { font-size: 32px; }
+  .lp-carta__letter-salut { font-size: 22px; }
+  .lp-carta__letter-body { font-size: 14.5px; }
+  .lp-carta__letter-toc { font-size: 13.5px; }
+}
+
+/* CHANNELS strip embaixo */
+.lp-carta__channels-strip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.lp-carta__channels-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--brand-text) 50%, transparent);
+}
+
+.lp-carta__channels-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.lp-carta__channel-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--brand-surface) 80%, var(--brand-background));
+  border: 1px solid color-mix(in srgb, var(--brand-border) 50%, transparent);
+  font-size: 12.5px;
+  color: var(--brand-text);
+}
+
+.lp-carta__channel-pill strong {
+  font-weight: 600;
+}
+
+.lp-carta__channel-pill-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.lp-carta__channel-pill-icon--email {
+  background: color-mix(in srgb, var(--brand-primary) 18%, transparent);
+  color: var(--brand-primary);
+}
+
+.lp-carta__channel-pill-icon--whats {
+  background: color-mix(in srgb, #25d366 18%, transparent);
+  color: #25d366;
 }
 </style>

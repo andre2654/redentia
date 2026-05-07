@@ -18,17 +18,12 @@
 -->
 <template>
   <div v-if="analysis" class="flex flex-col gap-12">
-    <!-- 9 dimensões em largura total. O score em si já aparece no
-         tile compacto da MetricsGrid logo acima do raio-X — sem
-         duplicar a gauge. summary_md, quando presente, vira um lead
-         do header em vez de prosa centralizada dentro de um card. -->
+    <!-- 9 dimensoes em largura total. O SectionHeading deste bloco
+         + analysis.summary_md foram MOVIDOS pra acima do Snowflake
+         em wallet/index.vue, pois introduzem toda a zona de raio-X
+         (snowflake + dimensoes + diagnostico + ...). Aqui sobra so o
+         article com as barras das 9 dimensoes. -->
     <section class="flex flex-col gap-5">
-      <SectionHeading
-        :brand="brand"
-        eyebrow="9 dimensões"
-        title="Como cada eixo da sua carteira está pontuando"
-        :lead="analysis.summary_md || undefined"
-      />
       <article class="flex flex-col gap-4 rounded-2xl border p-6" :style="cardStyle">
         <ul v-if="analysis.dimensions?.length" class="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
           <li v-for="d in analysis.dimensions" :key="d.key" class="flex flex-col gap-1.5">
@@ -142,82 +137,31 @@
     </section>
 
     <!-- Per-asset thesis -->
-    <section v-if="analysis.thesis_per_asset?.length" class="flex flex-col gap-5">
-      <SectionHeading
-        :brand="brand"
-        eyebrow="Tese por ativo"
-        title="Como cada posição se mantém à luz dos fundamentos"
-      />
-      <article class="overflow-hidden rounded-xl border" :style="cardStyle">
-        <div class="overflow-x-auto">
-          <table class="w-full">
-            <thead>
-              <tr :style="{ borderBottom: `1px solid color-mix(in srgb, ${brand.colors.border} 40%, transparent)` }">
-                <th class="th">Ativo</th>
-                <th class="th">Tese</th>
-                <th class="th">Status</th>
-                <th class="th th-num">P/L</th>
-                <th class="th th-num">P/VP</th>
-                <th class="th th-num">ROE</th>
-                <th class="th th-num">12m</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="t in analysis.thesis_per_asset"
-                :key="t.ticker"
-                :style="{ borderBottom: `1px solid color-mix(in srgb, ${brand.colors.border} 25%, transparent)` }"
-              >
-                <td class="td">
-                  <div class="flex items-center gap-2.5">
-                    <AtomsTickerLogo
-                      :ticker="t.ticker"
-                      :logo="snapshots.get(t.ticker.toUpperCase())?.logo ?? null"
-                      :size="28"
-                    />
-                    <div class="flex flex-col leading-tight">
-                      <span class="font-mono-tab text-[12.5px] font-medium" :style="{ color: brand.colors.text }">{{ t.ticker }}</span>
-                      <span
-                        v-if="t.metrics?.name || snapshots.get(t.ticker.toUpperCase())?.name"
-                        class="text-[10.5px]"
-                        :style="{ color: `color-mix(in srgb, ${brand.colors.text} 55%, transparent)` }"
-                      >{{ t.metrics?.name || snapshots.get(t.ticker.toUpperCase())?.name }}</span>
-                    </div>
-                  </div>
-                </td>
-                <td class="td">
-                  <span class="text-[12px]" :style="{ color: `color-mix(in srgb, ${brand.colors.text} 70%, transparent)`, lineHeight: 1.5 }">{{ t.thesis }}</span>
-                </td>
-                <td class="td">
-                  <span
-                    class="rounded-md px-2 py-0.5 font-mono-tab text-[10px] font-medium uppercase"
-                    :style="{
-                      letterSpacing: '0.14em',
-                      backgroundColor: `color-mix(in srgb, ${thesisStatusColor(t.status)} 14%, transparent)`,
-                      color: thesisStatusColor(t.status),
-                    }"
-                  >{{ thesisStatusLabel(t.status) }}</span>
-                </td>
-                <td class="td td-num">{{ t.metrics?.pl ?? '—' }}</td>
-                <td class="td td-num">{{ t.metrics?.pvp ?? '—' }}</td>
-                <td class="td td-num">{{ t.metrics?.roe != null ? `${t.metrics.roe}%` : '—' }}</td>
-                <td
-                  class="td td-num"
-                  :style="{ color: (t.metrics?.var12m ?? 0) >= 0 ? brand.colors.positive : brand.colors.negative }"
-                >{{ t.metrics?.var12m != null ? formatPctSigned(t.metrics.var12m) : '—' }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </article>
-    </section>
+    <!-- "Tese por ativo" foi UNIFICADA com PositionsTable. Cada
+         posicao na tabela principal agora ganha um dot de status +
+         linha expansivel com tese + multiplos. Evita 2 tabelas
+         redundantes sobre o mesmo dado. -->
 
-    <!-- Stress test -->
-    <section v-if="analysis.stress_scenarios?.length" class="flex flex-col gap-5">
+
+    <!-- Stress test — usa cenarios historicos REAIS (COVID, 2008) +
+         1 cenario futuro (bolha de IA). Calcula impacto na carteira
+         do user a partir da composicao por asset_class. Renderiza
+         apenas se temos positions; AI-generated stress_scenarios
+         agora sao opcionais e aparecem como "Cenários adicionais"
+         quando o modelo trouxe contexto especifico que nao cabe nos
+         3 canonicos. -->
+    <MoleculesWalletStressTestCard
+      v-if="positions && positions.length > 0"
+      :positions="positions"
+      :total-value="totalValue || 0"
+    />
+
+    <!-- Cenarios extras vindos da IA (custom, nao-historicos) -->
+    <section v-if="analysis.stress_scenarios?.length && (!positions || !positions.length)" class="flex flex-col gap-5">
       <SectionHeading
         :brand="brand"
-        eyebrow="Stress test"
-        title="Como sua carteira reage em cenários adversos"
+        eyebrow="Cenários adicionais"
+        title="Outros riscos sinalizados pela análise"
       />
       <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <article
@@ -320,9 +264,15 @@
 
 <script setup lang="ts">
 import type { PortfolioAnalysis } from '~/services/walletData'
+import type { UnifiedPosition } from '~/services/portfolio'
 
 interface Props {
   analysis: PortfolioAnalysis | null
+  // positions/totalValue sao opcionais — quando presentes, o
+  // StressTestCard usa pra calcular o impacto historico real
+  // ponderado pela composicao da carteira do user.
+  positions?: UnifiedPosition[]
+  totalValue?: number
 }
 const props = defineProps<Props>()
 
@@ -398,24 +348,9 @@ function severityColor(s: 'low' | 'medium' | 'high'): string {
        : s === 'medium' ? warnColor.value
        : brand.colors.primary
 }
-function thesisStatusLabel(s: string): string {
-  switch (s) {
-    case 'maintained': return 'Saudável'
-    case 'at-risk': return 'Em risco'
-    case 'weakened': return 'Pressionada'
-    case 'broken': return 'Quebrada'
-    default: return s
-  }
-}
-function thesisStatusColor(s: string): string {
-  switch (s) {
-    case 'maintained': return brand.colors.positive
-    case 'at-risk': return warnColor.value
-    case 'weakened': return '#fb923c'
-    case 'broken': return brand.colors.negative
-    default: return brand.colors.text
-  }
-}
+// thesisStatusLabel/thesisStatusColor moveram pro PositionsTable
+// (a tese agora vive como linha expansivel da tabela unificada).
+
 function macroIcon(label: string): string {
   const l = label.toLowerCase()
   if (l.includes('selic') || l.includes('juro')) return 'i-lucide-trending-up'
