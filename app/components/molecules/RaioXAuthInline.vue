@@ -54,9 +54,22 @@ const { magicLinkRequest, magicPinRequest, magicPinVerify, magicPinResend } = us
 const { track } = useMetaPixel()
 const authStore = useAuthStore()
 
-// Default = WhatsApp PIN. Toggle "Prefere por email?" troca pra email.
+// Default = WhatsApp PIN. Se backend reportar WhatsApp off, vai pra email
+// no onMounted (vide useAuthChannels abaixo). Toggle manual "Prefere por
+// email?" continua disponivel.
 const channel = ref<'phone' | 'email'>('phone')
 const step = ref<'input' | 'pin' | 'sent'>('input')
+
+// Auto-fallback baseado em health do Evolution. Cache 30s na ponta +
+// 30s no backend = no max 1 fetch por minuto por usuario.
+const { fetchStatus, isWhatsAppAvailable } = useAuthChannels()
+
+onMounted(async () => {
+  await fetchStatus()
+  if (!isWhatsAppAvailable.value) {
+    channel.value = 'email'
+  }
+})
 
 // Phone state
 const phoneRaw = ref('')
@@ -384,6 +397,15 @@ async function submitEmail() {
 
     <!-- =========== EMAIL INPUT (fallback channel) =========== -->
     <template v-else-if="channel === 'email' && step === 'input'">
+      <!-- Banner sutil quando o backend reportou WhatsApp off e ja
+           caiu pra email automaticamente. Sem alarme, so contexto. -->
+      <div v-if="!isWhatsAppAvailable" class="raiox-auth__degraded" role="status">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/>
+        </svg>
+        <span>WhatsApp temporariamente indisponível. Use email pra entrar.</span>
+      </div>
+
       <form class="lp-hero__form" novalidate @submit.prevent="submitEmail">
         <input
           v-model="email"
@@ -404,7 +426,13 @@ async function submitEmail() {
         </button>
       </form>
       <p v-if="errorMsg" class="raiox-auth__error" role="alert">{{ errorMsg }}</p>
-      <button type="button" class="raiox-auth__toggle" @click="switchTo('phone')">
+      <!-- "Voltar pra WhatsApp" so se ele estiver disponivel -->
+      <button
+        v-if="isWhatsAppAvailable"
+        type="button"
+        class="raiox-auth__toggle"
+        @click="switchTo('phone')"
+      >
         Prefere por WhatsApp? <span>Clique aqui</span>
       </button>
     </template>
@@ -521,6 +549,25 @@ async function submitEmail() {
   line-height: 1.4;
   color: var(--brand-negative, #dc2626);
   margin: 0;
+}
+
+/* Banner amber sutil quando WhatsApp esta off (auto-fallback). */
+.raiox-auth__degraded {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  line-height: 1.35;
+  color: color-mix(in srgb, var(--brand-text, #111) 80%, transparent);
+  background: color-mix(in srgb, #f59e0b 8%, transparent);
+  border: 1px solid color-mix(in srgb, #f59e0b 28%, transparent);
+}
+
+.raiox-auth__degraded svg {
+  color: #d97706;
+  flex-shrink: 0;
 }
 
 /* ============ PHONE INPUT GROUP (BR flag + +55 fixo + numero local) ============

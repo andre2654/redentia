@@ -68,7 +68,22 @@ const emit = defineEmits<{
 const router = useRouter()
 
 // Default = phone (WhatsApp). User pode trocar pra email com 1 click.
+// Se o backend reportar WhatsApp off, mudamos pra email automaticamente
+// no onMounted (vide useAuthChannels abaixo).
 const channel = ref<'phone' | 'email'>('phone')
+
+// Status dos canais — usado pra auto-fallback e pra mostrar banner
+// quando o WhatsApp estiver fora do ar. fetchStatus tem cache de 30s
+// no frontend + 30s no backend, entao montagens repetidas nao geram
+// trafego excessivo.
+const { fetchStatus, isWhatsAppAvailable, whatsappState } = useAuthChannels()
+
+onMounted(async () => {
+  await fetchStatus()
+  if (!isWhatsAppAvailable.value) {
+    channel.value = 'email'
+  }
+})
 
 function switchToEmail() {
   channel.value = 'email'
@@ -97,6 +112,18 @@ function onError(msg: string) {
 
 <template>
   <div class="auth-choice">
+    <!-- Banner de degradacao: aparece quando o backend reporta WhatsApp
+         off. So renderiza no canal email pq se o user esta no canal
+         phone e tentou ir, ja vai ter erro real e o feedback esta ali. -->
+    <div
+      v-if="channel === 'email' && !isWhatsAppAvailable"
+      class="auth-choice__degraded"
+      role="status"
+    >
+      <UIcon name="i-lucide-alert-circle" class="size-3.5 shrink-0" aria-hidden="true" />
+      <span>WhatsApp temporariamente indisponível. Use email pra entrar.</span>
+    </div>
+
     <!-- ============ PHONE-FIRST (default) ============ -->
     <Transition name="auth-choice-fade" mode="out-in">
       <MoleculesPhoneFirstAuthCard
@@ -120,8 +147,9 @@ function onError(msg: string) {
           @error="onError"
         />
 
+        <!-- Botao "Voltar pra WhatsApp" so se WhatsApp estiver disponivel -->
         <button
-          v-if="showPhoneFallback"
+          v-if="showPhoneFallback && isWhatsAppAvailable"
           type="button"
           class="auth-choice__back-to-phone"
           @click="switchToPhone"
@@ -137,6 +165,28 @@ function onError(msg: string) {
 <style scoped>
 .auth-choice {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Banner de degradacao quando o backend reporta WhatsApp off.
+   Cor: amarelo/amber sutil pra avisar sem alarmar. */
+.auth-choice__degraded {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--text-body);
+  background: color-mix(in srgb, #f59e0b 10%, transparent);
+  border: 1px solid color-mix(in srgb, #f59e0b 30%, transparent);
+}
+
+.auth-choice__degraded :deep(svg) {
+  color: #d97706;
 }
 
 .auth-choice__email-wrap {
