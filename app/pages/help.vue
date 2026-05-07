@@ -306,14 +306,17 @@
     @mark-read="(id) => alertsState.markRead(id)"
   />
 
-  <!-- Gate de telefone — abre automaticamente quando o usuario logado
-       chega no /help sem ter cadastrado celular. Bloqueia o uso do
-       chat ate que ele salve o numero (vamos enviar codigo via WhatsApp
-       depois). Some sozinho assim que `me.celular` aparece via
-       updateProfile chamada no proprio modal — `phoneGateOpen` e
-       computed em cima de authStore.me.celular, entao a reatividade
-       fecha o modal sem precisar de @saved/@close handlers explicitos. -->
-  <MoleculesPhoneGateModal :open="phoneGateOpen" />
+  <!-- Gate de contatos — abre automaticamente quando o usuario logado
+       chega no /help sem ter cadastrado telefone OU email. Bloqueia o
+       uso do chat ate que ele complete os 2 contatos (telefone via
+       PIN no WhatsApp + email via magic link). Some sozinho quando
+       authStore.me.{celular,email} ficam preenchidos — o computed
+       `contactGateOpen` re-avalia sem precisar de @ready handler
+       explicito (mas mantemos pro early-close case). -->
+  <MoleculesHelpContactGate
+    :open="contactGateOpen"
+    @ready="onContactGateReady"
+  />
 </template>
 
 <script setup lang="ts">
@@ -340,13 +343,24 @@ const brand = useBrand()
 const authStore = useAuthStore()
 const onboarding = useOnboardingChecklist()
 
-// Phone gate — abre quando o usuario logado entra no /help sem celular
-// cadastrado. Reativo: assim que `me.celular` aparece (via salvamento
-// no proprio modal), o gate some sozinho. Sem flag de dismissal porque
-// o gate e obrigatorio (anti-fraude + canal de alertas).
-const phoneGateOpen = computed(
-  () => authStore.isAuthenticated && !authStore.me?.celular,
+// Contact gate — abre quando o usuario logado entra no /help sem celular
+// OU email cadastrado. Reativo: assim que `me.celular` E `me.email`
+// estao preenchidos, o gate some sozinho. Sem flag de dismissal porque
+// e obrigatorio (anti-fraude + canal de alertas + recovery).
+//
+// Fluxo passwordless cria users com so um dos contatos (phone ou email).
+// O gate cobre o gap. Substitui o antigo PhoneGateModal que so cuidava
+// do telefone.
+const contactGateOpen = computed(
+  () => authStore.isAuthenticated && (!authStore.me?.celular || !authStore.me?.email),
 )
+
+function onContactGateReady() {
+  // No-op — o gate fecha sozinho via reatividade do computed assim que
+  // o store recebe me.{celular,email} via setMeFromUser. Mantemos o
+  // handler pra forcar refetch caso o store fique stale.
+  authStore.fetchProfile().catch(() => {})
+}
 
 /**
  * Mobile-header title. Mirrors the active session title from the

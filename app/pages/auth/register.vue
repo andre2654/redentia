@@ -64,10 +64,11 @@
           class="flex w-full max-w-md flex-col gap-5 rounded-lg border p-8"
           :style="{ borderColor: 'var(--brand-border)', backgroundColor: `color-mix(in srgb, var(--brand-surface) 90%, transparent)` }"
         >
-          <MoleculesAuthFormCard
-            mode="register"
+          <MoleculesAuthChoiceCard
             redirect-to="/"
             pixel-context="auth_page_register"
+            mode="register"
+            :auto-navigate="true"
           />
 
           <p class="font-mono-tab text-[10px] mt-2" :style="{ color: 'var(--brand-text-muted)' }">
@@ -961,17 +962,19 @@
           </p>
         </div>
 
-        <!-- Form de cadastro via AuthFormCard. O componente já trás header
-             próprio (logo radar + "Qual seu e-mail?" + subtítulo) — header
-             externo eyebrow/h1/subtitle foi REMOVIDO porque duplicava. -->
+        <!-- Form de cadastro via AuthChoiceCard. Default WhatsApp PIN com
+             fallback email. O componente já trás header próprio (logo +
+             "Continue pelo WhatsApp" + subtítulo) — header externo
+             eyebrow/h1/subtitle foi REMOVIDO porque duplicava. -->
         <div
           class="flex w-full max-w-md flex-col gap-5 rounded-[32px] border px-8 py-10 shadow-[0_25px_60px_-15px_rgba(15,23,42,0.5)] backdrop-blur-2xl"
           :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
         >
-          <MoleculesAuthFormCard
-            mode="register"
+          <MoleculesAuthChoiceCard
             redirect-to="/"
             pixel-context="auth_page_register"
+            mode="register"
+            :auto-navigate="true"
           />
 
           <p class="text-[11px] leading-relaxed text-center md:text-left" :style="{ color: 'var(--brand-text-muted)' }">

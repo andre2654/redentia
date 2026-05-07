@@ -51,8 +51,6 @@ definePageMeta({
 })
 
 const brand = useBrand()
-const router = useRouter()
-const { magicLinkRequest } = useAuthService()
 const { track } = useMetaPixel()
 
 // ============ EFEITOS DA WALLET ============
@@ -72,61 +70,10 @@ const { currentValue: totalSignupsCount } = useAnimatedCounter({
 // (Versão anterior usava useScrollProgress + transforms calc; foi
 // removida porque o efeito não estava ficando bom na prática.)
 
-// ============ EMAIL CAPTURE STATE ============
-const email = ref('')
-const submitting = ref(false)
-const submitted = ref(false)
-const errorMsg = ref('')
-
-// Dedup do Lead: se user submete email, espera, depois clica no
-// "Reenviar" ou submete de novo, NAO duplicamos o evento na Meta.
-// `leadFiredOnce` mantém estado pra a sessao toda. Se quiser permitir
-// re-fire (ex: outro email), reseta esse flag manualmente.
-const leadFiredOnce = ref(false)
-
-const isValid = computed(() => {
-  const e = email.value.trim()
-  return e.includes('@') && e.length > 4 && !submitting.value
-})
-
-async function submitEmail() {
-  if (!isValid.value) return
-  submitting.value = true
-  errorMsg.value = ''
-  try {
-    await magicLinkRequest({
-      email: email.value.trim().toLowerCase(),
-      redirect_to: '/wallet?from=raiox',
-    })
-    // ============ Lead Pixel/CAPI ============
-    // Padronizado com content_ids: ['raio-x'] pra Meta agrupar
-    // ViewContent → Lead → CompleteRegistration no mesmo funnel.
-    // value=5: Lead vale ~10x menos que CR no nosso modelo de funnel
-    // (~10% Lead → CR conversao historica). Dedup via leadFiredOnce
-    // pra nao inflar metricas quando user clica resend.
-    if (!leadFiredOnce.value) {
-      track('Lead', {
-        content_name: 'Landing RaioX Magic Link',
-        content_category: 'landing_conversion',
-        content_ids: ['raio-x'],
-        content_type: 'product',
-        currency: 'BRL',
-        value: 5,
-      })
-      leadFiredOnce.value = true
-    }
-    submitted.value = true
-  }
-  catch (err: unknown) {
-    const apiError = err as { data?: { message?: string } }
-    errorMsg.value
-      = apiError?.data?.message
-      || (err instanceof Error ? err.message : 'Erro ao enviar. Tente novamente.')
-  }
-  finally {
-    submitting.value = false
-  }
-}
+// ============ EMAIL CAPTURE STATE — extraido pro MoleculesRaioXAuthInline ============
+// Pixel events Lead/CompleteRegistration agora disparam dentro do componente,
+// que tambem cuida do magic-pin (default) + magic-link (fallback). Mantemos
+// aqui apenas o tracking do counter animado e do video play.
 
 // ============ ANIMATED COUNTER ============
 // Conta carteiras analisadas — começa em 33000, sobe ~1/segundo
@@ -244,34 +191,12 @@ usePageSeo({
               e contexto macro, com IA. Em 2 minutos.
             </p>
 
-            <!-- CTA primário grande -->
-            <form class="lp-hero__form" novalidate @submit.prevent="submitEmail">
-              <input
-                v-model="email"
-                type="email"
-                class="lp-hero__input"
-                placeholder="Digite seu email"
-                autocomplete="email"
-                inputmode="email"
-                spellcheck="false"
-                autocapitalize="none"
-                required
-              >
-              <button
-                type="submit"
-                class="lp-hero__cta"
-                :disabled="!isValid"
-              >
-                <span>{{ submitting ? 'Enviando…' : (submitted ? 'Verifique seu email ✓' : 'Faça o Raio-X grátis') }}</span>
-                <svg v-if="!submitting && !submitted" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M5 12h14m-7-7l7 7l-7 7" />
-                </svg>
-              </button>
-            </form>
-
-            <p v-if="errorMsg" class="lp-hero__error" role="alert">
-              {{ errorMsg }}
-            </p>
+            <!-- CTA primário grande — phone-first via WhatsApp PIN com fallback email -->
+            <MoleculesRaioXAuthInline
+              cta-text="Faça o Raio-X grátis"
+              redirect-to="/wallet?from=raiox"
+              pixel-context="landing_raiox_hero"
+            />
 
             <ul class="lp-hero__trust">
               <li>
@@ -1170,29 +1095,16 @@ usePageSeo({
           <p class="lp-video__cta-line">
             Convencido? <strong>Faça o seu Raio-X agora.</strong>
           </p>
-          <form class="lp-video__form" novalidate @submit.prevent="submitEmail">
-            <input
-              v-model="email"
-              type="email"
-              class="lp-hero__input"
-              placeholder="Digite seu email"
-              autocomplete="email"
-              inputmode="email"
-              spellcheck="false"
-              autocapitalize="none"
-              required
-            >
-            <button
-              type="submit"
-              class="lp-hero__cta"
-              :disabled="!isValid"
-            >
-              <span>{{ submitting ? 'Enviando…' : (submitted ? 'Verifique seu email ✓' : 'Faça meu Raio-X grátis') }}</span>
-              <svg v-if="!submitting && !submitted" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M5 12h14m-7-7l7 7l-7 7" />
-              </svg>
-            </button>
-          </form>
+          <!-- NAO passa class="lp-video__form" aqui! Esse class tem
+               flex-direction:row que vaza pro componente e quebra o
+               stacking interno (form vira linha com o "Prefere por
+               email" colado no lado). O proprio componente ja tem
+               .lp-hero__form interno que cuida do layout do form. -->
+          <MoleculesRaioXAuthInline
+            cta-text="Faça meu Raio-X grátis"
+            redirect-to="/wallet?from=raiox"
+            pixel-context="landing_raiox_video"
+          />
         </div>
       </div>
     </section>
@@ -1255,32 +1167,16 @@ usePageSeo({
             Em 30 segundos você cadastra. Em 2 minutos vê o motivo de cada ativo da sua carteira.
           </p>
 
-          <form class="lp-final__form" novalidate @submit.prevent="submitEmail">
-            <input
-              v-model="email"
-              type="email"
-              class="lp-hero__input"
-              placeholder="Digite seu email"
-              autocomplete="email"
-              inputmode="email"
-              spellcheck="false"
-              autocapitalize="none"
-              required
-            >
-            <button
-              type="submit"
-              class="lp-hero__cta"
-              :disabled="!isValid"
-            >
-              <span>{{ submitting ? 'Enviando…' : (submitted ? 'Verifique seu email ✓' : 'Faça meu Raio-X grátis') }}</span>
-              <svg v-if="!submitting && !submitted" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M5 12h14m-7-7l7 7l-7 7" />
-              </svg>
-            </button>
-          </form>
+          <!-- Mesmo motivo do video: lp-final__form tem flex-direction:row
+               que quebra o stacking interno do componente. -->
+          <MoleculesRaioXAuthInline
+            cta-text="Faça meu Raio-X grátis"
+            redirect-to="/wallet?from=raiox"
+            pixel-context="landing_raiox_final"
+          />
 
           <p class="lp-final__legal">
-            Te enviamos um link mágico no email. Sem senha pra criar.
+            Recebe o código no WhatsApp. Sem senha pra criar.
           </p>
         </div>
       </div>

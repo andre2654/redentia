@@ -91,15 +91,17 @@ onBeforeUnmount(() => {
             </p>
           </header>
 
-          <!-- Form de auth via componente compartilhado MoleculesAuthFormCard.
-               Mesmo componente usado em /auth/register e /auth/login pra DRY.
+          <!-- Form de auth via MoleculesAuthChoiceCard. Default = WhatsApp PIN
+               (magic-pin/request → magic-pin/verify), com fallback "continuar
+               por email" expondo o magic link tradicional.
                pixel-context="raio_x_gate" diferencia tracking dos outros
-               surfaces no Events Manager. -->
+               surfaces no Events Manager (sufixos _phone/_email automaticos). -->
           <div class="raio-x-sim__form-wrap">
-            <MoleculesAuthFormCard
-              mode="register"
+            <MoleculesAuthChoiceCard
               redirect-to="/wallet?from=raiox"
               pixel-context="raio_x_gate"
+              :auto-navigate="true"
+              mode="register"
             />
             <p class="raio-x-sim__footer-note">
               <UIcon name="i-lucide-shield-check" class="size-3.5" aria-hidden="true" />

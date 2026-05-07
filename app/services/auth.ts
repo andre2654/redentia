@@ -198,6 +198,105 @@ export const useAuthService = () => {
     })
   }
 
+  // ============================================================
+  // MAGIC PIN via WhatsApp — auth passwordless primaria.
+  // Mesma logica do magicLink mas com PIN curto via WhatsApp.
+  // ============================================================
+
+  /**
+   * Step 1: solicita PIN. Backend gera PIN de 6 digitos, envia via
+   * WhatsApp pro telefone informado. Retorna 200 sempre (anti-enum).
+   */
+  async function magicPinRequest(body: {
+    phone: string
+    redirect_to?: string
+  }): Promise<{ message: string }> {
+    return await $fetch<{ message: string }>(`${baseURL}/magic-pin/request`, {
+      method: 'POST',
+      credentials: 'include',
+      body,
+    })
+  }
+
+  /**
+   * Step 2: valida PIN digitado pelo user. Em sucesso retorna token
+   * Sanctum + dados do user (cria user se for novo).
+   */
+  async function magicPinVerify(body: {
+    phone: string
+    pin: string
+  }): Promise<{
+    token: string
+    user: { id: number; name: string | null; email: string | null; celular: string | null; role: string; tenant_id?: number | null }
+    redirect_to: string
+    is_new_user: boolean
+  }> {
+    return await $fetch(`${baseURL}/magic-pin/verify`, {
+      method: 'POST',
+      credentials: 'include',
+      body,
+    })
+  }
+
+  async function magicPinResend(body: {
+    phone: string
+    redirect_to?: string
+  }): Promise<{ message: string }> {
+    return await $fetch<{ message: string }>(`${baseURL}/magic-pin/resend`, {
+      method: 'POST',
+      credentials: 'include',
+      body,
+    })
+  }
+
+  // ============================================================
+  // CONTACT GATE — adiciona telefone OU email faltante no user
+  // ja autenticado (in-app, no /help).
+  // ============================================================
+
+  function authHeaders(): Record<string, string> {
+    const authStore = useAuthStore()
+    return authStore.token ? { Authorization: `Bearer ${authStore.token}` } : {}
+  }
+
+  async function requestPhonePin(phone: string): Promise<{ message: string }> {
+    return await $fetch<{ message: string }>(`${baseURL}/me/phone/request-pin`, {
+      method: 'POST',
+      headers: authHeaders(),
+      body: { phone },
+    })
+  }
+
+  async function verifyPhonePin(phone: string, pin: string): Promise<{
+    message: string
+    user: { id: number; name: string | null; email: string | null; celular: string | null; role: string }
+  }> {
+    return await $fetch(`${baseURL}/me/phone/verify-pin`, {
+      method: 'POST',
+      headers: authHeaders(),
+      body: { phone, pin },
+    })
+  }
+
+  async function requestEmailLink(email: string): Promise<{ message: string }> {
+    return await $fetch<{ message: string }>(`${baseURL}/me/email/request-link`, {
+      method: 'POST',
+      headers: authHeaders(),
+      body: { email },
+    })
+  }
+
+  async function verifyEmailLink(token: string): Promise<{
+    message: string
+    user: { id: number; name: string | null; email: string | null; celular: string | null; role: string }
+  }> {
+    return await $fetch(`${baseURL}/me/email/verify-link`, {
+      method: 'POST',
+      headers: authHeaders(),
+      body: { token },
+    })
+  }
+
   return {
     register,
     login,
@@ -211,5 +310,12 @@ export const useAuthService = () => {
     resetPassword,
     magicLinkRequest,
     magicLinkVerify,
+    magicPinRequest,
+    magicPinVerify,
+    magicPinResend,
+    requestPhonePin,
+    verifyPhonePin,
+    requestEmailLink,
+    verifyEmailLink,
   }
 }

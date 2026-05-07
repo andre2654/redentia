@@ -58,20 +58,19 @@
           </div>
         </div>
 
-        <!-- Form de auth via componente compartilhado MoleculesAuthFormCard.
-             Mesma UX do hard gate (RaioXSimulationModal) e do /auth/register.
-             3 campos so (Email/Senha pra login), label hint inline, Google
-             abaixo do botao primary. AuthFormCard ja inclui toggle pra
-             register, entao o link "REGISTER_NEW" do footer e redundante
-             mas mantido pra A/B (alguns users buscam o link no rodape). -->
+        <!-- Form de auth via MoleculesAuthChoiceCard. Default = WhatsApp PIN
+             (magic-pin/request → magic-pin/verify), com fallback "continuar
+             por email" expondo o magic link tradicional. Mesma UX do hard
+             gate (RaioXSimulationModal) e do /auth/register. -->
         <div
           class="flex w-full max-w-md flex-col gap-5 rounded-lg border p-8"
           :style="{ borderColor: 'var(--brand-border)', backgroundColor: `color-mix(in srgb, var(--brand-surface) 90%, transparent)` }"
         >
-          <MoleculesAuthFormCard
-            mode="login"
+          <MoleculesAuthChoiceCard
             redirect-to="/"
             pixel-context="auth_page_login"
+            mode="login"
+            :auto-navigate="true"
           />
 
           <div class="flex items-center justify-end pt-2">
@@ -741,19 +740,19 @@
           </p>
         </div>
 
-        <!-- Form de login via componente compartilhado MoleculesAuthFormCard.
-             O componente já traz seu próprio header (logo radar + título +
-             subtítulo) — o card aqui é só o frame visual (border, padding,
-             shadow). Header eyebrow/h1/subtitle externos foram REMOVIDOS
-             porque duplicavam o header interno do AuthFormCard. -->
+        <!-- Form de login via MoleculesAuthChoiceCard. Default WhatsApp PIN
+             com fallback email. O AuthChoiceCard já traz seu próprio header
+             (logo + título + subtítulo). Header eyebrow/h1/subtitle externos
+             foram REMOVIDOS porque duplicavam o header interno do componente. -->
         <div
           class="flex w-full max-w-md flex-col gap-5 rounded-[32px] border px-8 py-10 shadow-[0_25px_60px_-15px_rgba(15,23,42,0.5)] backdrop-blur-2xl"
           :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
         >
-          <MoleculesAuthFormCard
-            mode="login"
+          <MoleculesAuthChoiceCard
             redirect-to="/"
             pixel-context="auth_page_login"
+            mode="login"
+            :auto-navigate="true"
           />
 
           <div class="flex flex-col gap-2 text-center md:text-left">
