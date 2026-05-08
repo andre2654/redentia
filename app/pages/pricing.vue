@@ -181,7 +181,7 @@
             <span
               v-if="plan.slug === 'max'"
               class="lp-plan__badge"
-              :style="{ background: brand.colors.primary, color: '#1A0A2E' }"
+              :style="{ background: 'var(--brand-primary)', color: 'var(--text-on-primary)' }"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
                 <path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/>
@@ -221,7 +221,7 @@
               <button
                 v-if="plan.trial_days && cycle === 'monthly'"
                 type="button"
-                class="lp-cta lp-cta--primary"
+                class="quiet-btn-primary lp-cta--full"
                 :disabled="busyPlanId === plan.id"
                 @click="onStartTrial(plan.id)"
               >
@@ -238,7 +238,7 @@
               <button
                 v-else
                 type="button"
-                class="lp-cta lp-cta--primary"
+                class="quiet-btn-primary lp-cta--full"
                 :disabled="busyPlanId === plan.id"
                 @click="onCheckout(plan.id, cycle)"
               >
@@ -250,14 +250,6 @@
                 <span>{{ busyPlanId === plan.id ? 'Carregando…' : `Assinar ${plan.name}` }}</span>
               </button>
 
-              <button
-                v-if="plan.trial_days && cycle === 'monthly'"
-                type="button"
-                class="lp-cta lp-cta--ghost"
-                @click="onCheckout(plan.id, cycle)"
-              >
-                ou assinar direto sem trial
-              </button>
             </footer>
           </article>
         </div>
@@ -346,7 +338,7 @@
         </p>
         <button
           type="button"
-          class="lp-cta lp-cta--primary lp-cta--big"
+          class="quiet-btn-primary lp-cta--big"
           :disabled="!proPlan || busyPlanId === proPlan?.id"
           @click="proPlan && onStartTrial(proPlan.id)"
         >
@@ -553,32 +545,33 @@ async function loadPlans() {
 }
 
 async function onStartTrial(planId: number) {
-  const auth = useAuthStore()
-  if (!auth.token) {
-    router.push({ path: '/auth/register', query: { redirect: '/pricing', plan: String(planId) } })
-    return
-  }
-  busyPlanId.value = planId
-  try {
-    await billingService.startTrial(planId)
-    toast.add({ title: 'Trial iniciado', description: '7 dias grátis liberados na sua conta.', color: 'success' })
-    router.push('/wallet')
-  } catch (err: any) {
-    toast.add({ title: 'Não foi possível iniciar o trial', description: err?.data?.message ?? 'Tente novamente.', color: 'error' })
-  } finally {
-    busyPlanId.value = null
-  }
+  // Trial agora vai pelo Stripe Checkout direto (com trial_period_days
+  // na subscription). Stripe cuida da pagina, coleta cartao, manda emails
+  // de transicao trial→active automaticamente. Mais limpo que criar a sub
+  // via API e ficar gerenciando emails na nossa.
+  await onCheckout(planId, 'monthly', { with_trial: true })
 }
 
-async function onCheckout(planId: number, c: 'monthly' | 'yearly') {
+async function onCheckout(
+  planId: number,
+  c: 'monthly' | 'yearly',
+  opts?: { with_trial?: boolean },
+) {
   const auth = useAuthStore()
   if (!auth.token) {
-    router.push({ path: '/auth/register', query: { redirect: '/pricing', plan: String(planId), cycle: c } })
+    router.push({
+      path: '/auth/register',
+      query: { redirect: '/pricing', plan: String(planId), cycle: c, ...(opts?.with_trial ? { trial: '1' } : {}) },
+    })
     return
   }
   busyPlanId.value = planId
   try {
-    const data = await billingService.createCheckout({ plan_id: planId, cycle: c })
+    const data = await billingService.createCheckout({
+      plan_id: planId,
+      cycle: c,
+      ...(opts?.with_trial ? { with_trial: true } : {}),
+    })
     const payload = (data as any)?.data ?? data
     if (payload?.checkout_url) {
       window.location.href = payload.checkout_url
@@ -1088,52 +1081,27 @@ onMounted(() => {
   margin-top: auto;
 }
 
-/* ============ CTA buttons ============ */
-.lp-cta {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+/* CTA modifiers em cima dos helpers .quiet-btn-* (que ja respeitam
+   --text-on-primary dinamico — preto em light, branco em dark). */
+.lp-cta--full {
+  width: 100%;
   padding: 14px 22px;
-  border-radius: 12px;
-  border: 0;
-  font-family: var(--brand-font);
   font-size: 14.5px;
-  font-weight: 600;
-  letter-spacing: -0.005em;
-  cursor: pointer;
-  transition: transform 200ms, filter 200ms, box-shadow 200ms, background 200ms;
-  white-space: nowrap;
-}
-.lp-cta:disabled { opacity: 0.55; cursor: not-allowed; }
-
-.lp-cta--primary {
-  background: var(--brand-primary);
-  color: #1A0A2E;
   box-shadow: 0 14px 32px -12px color-mix(in srgb, var(--brand-primary) 65%, transparent);
 }
-.lp-cta--primary:hover:not(:disabled) {
-  filter: brightness(0.94);
+.lp-cta--full:hover:not(:disabled) {
   transform: translateY(-1px);
   box-shadow: 0 18px 40px -12px color-mix(in srgb, var(--brand-primary) 75%, transparent);
-}
-
-.lp-cta--ghost {
-  background: transparent;
-  border: 1px solid color-mix(in srgb, var(--brand-border) 60%, transparent);
-  color: color-mix(in srgb, var(--brand-text) 70%, transparent);
-  font-size: 12.5px;
-  font-weight: 500;
-}
-.lp-cta--ghost:hover:not(:disabled) {
-  border-color: color-mix(in srgb, var(--brand-primary) 35%, transparent);
-  color: var(--brand-primary);
 }
 
 .lp-cta--big {
   padding: 18px 32px;
   font-size: 16px;
   border-radius: 14px;
+  box-shadow: 0 18px 40px -12px color-mix(in srgb, var(--brand-primary) 65%, transparent);
+}
+.lp-cta--big:hover:not(:disabled) {
+  transform: translateY(-1px);
 }
 
 /* ============ COMPARATIVA ============ */

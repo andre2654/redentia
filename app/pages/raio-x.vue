@@ -30,7 +30,7 @@
     - Sua corretora mostra o saldo. A Redentia mostra o motivo.
     - Hoje voce compete com IA, nao outros investidores. Use IA.
     - Avisa QUANDO comprar e QUANDO vender.
-    - 100% gratis, sem cartao, sem enrolacao.
+    - 7 dias gratis no Pro, sem cartao pra comecar, cancela em 1 click.
 
   ============ PERFORMANCE ============
   Layout `landing` minimo (sem nav/sidebar/footer pesado). Toda
@@ -149,7 +149,7 @@ const siteUrl = computed(() => {
 
 usePageSeo({
   title: `Por que sua carteira caiu hoje? | ${brand.name}`,
-  description: 'Sua corretora mostra o saldo. A Redentia mostra o motivo. Análise da carteira com IA, em 2 minutos. 100% grátis, sem cartão.',
+  description: 'Sua corretora mostra o saldo. A Redentia mostra o motivo. Análise da carteira com IA, em 2 minutos. Comece com 7 dias grátis no Pro, sem cartão pra começar.',
   path: '/raio-x',
 })
 </script>
@@ -173,7 +173,7 @@ usePageSeo({
           <div class="lp-hero__copy">
             <p class="lp-eyebrow lp-eyebrow--pulsing">
               <span class="lp-eyebrow__dot" aria-hidden="true" />
-              RAIO-X DA CARTEIRA · 100% GRÁTIS
+              RAIO-X DA CARTEIRA · 7 DIAS GRÁTIS NO PRO
             </p>
 
             <h1 class="lp-hero__headline">
@@ -193,7 +193,7 @@ usePageSeo({
 
             <!-- CTA primário grande — phone-first via WhatsApp PIN com fallback email -->
             <MoleculesRaioXAuthInline
-              cta-text="Faça o Raio-X grátis"
+              cta-text="Começar 7 dias grátis"
               redirect-to="/wallet?from=raiox"
               pixel-context="landing_raiox_hero"
             />
@@ -203,19 +203,19 @@ usePageSeo({
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M20 6L9 17l-5-5" />
                 </svg>
-                100% gratuito
+                7 dias grátis
               </li>
               <li>
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M20 6L9 17l-5-5" />
                 </svg>
-                Sem cartão
+                Sem cartão pra começar
               </li>
               <li>
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M20 6L9 17l-5-5" />
                 </svg>
-                Sem cadastro chato
+                Cancele em 1 click
               </li>
               <li>
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -1101,7 +1101,7 @@ usePageSeo({
                email" colado no lado). O proprio componente ja tem
                .lp-hero__form interno que cuida do layout do form. -->
           <MoleculesRaioXAuthInline
-            cta-text="Faça meu Raio-X grátis"
+            cta-text="Começar 7 dias grátis"
             redirect-to="/wallet?from=raiox"
             pixel-context="landing_raiox_video"
           />
@@ -1160,23 +1160,23 @@ usePageSeo({
         <div class="lp-final__inner">
           <p class="lp-eyebrow">PRONTO QUANDO VOCÊ ESTIVER</p>
           <h2 class="lp-section-title">
-            Comece grátis.
-            <span class="lp-section-title__italic">Sem cartão. Sem enrolação.</span>
+            7 dias pra ver o motivo.
+            <span class="lp-section-title__italic">Sem cartão pra começar.</span>
           </h2>
           <p class="lp-final__lead">
-            Em 30 segundos você cadastra. Em 2 minutos vê o motivo de cada ativo da sua carteira.
+            Em 30 segundos você cadastra. Em 2 minutos vê o motivo de cada ativo da sua carteira. Cancele em 1 click se não quiser continuar.
           </p>
 
           <!-- Mesmo motivo do video: lp-final__form tem flex-direction:row
                que quebra o stacking interno do componente. -->
           <MoleculesRaioXAuthInline
-            cta-text="Faça meu Raio-X grátis"
+            cta-text="Começar 7 dias grátis"
             redirect-to="/wallet?from=raiox"
             pixel-context="landing_raiox_final"
           />
 
           <p class="lp-final__legal">
-            Recebe o código no WhatsApp. Sem senha pra criar.
+            Recebe o código no WhatsApp. Sem senha pra criar. Após o trial, R$ 49/mês no Pro.
           </p>
         </div>
       </div>

@@ -59,6 +59,16 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  /**
+   * Quando true, active apenas se path for IGUAL a `to` (sem matching
+   * de subrota). Use em items pai dentro de drawer com filhos
+   * (ex: /settings vs /settings/integracoes — sem exact, "/settings"
+   * fica ativo em todas as subpages).
+   */
+  exact: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const brand = useBrand()
@@ -69,11 +79,37 @@ const route = useRoute()
 // light up for every other path (startsWith('/') would match anything).
 const activeMatch = computed(() => {
   if (!props.to) return false
+
+  // Separa path e query do `to` pra comparar cada um.
+  // Items com query string (ex: /search?group=stocks vs /search?group=stocks&ch_min=0)
+  // precisam matching estrito de query — sem isso, o pai /search ficaria
+  // ativo em todas as subrotas e os filhos ativariam todos juntos.
+  const [rawTargetPath, rawTargetQuery = ''] = String(props.to).split('?')
   const current = route.path.replace(/\/$/, '') || '/'
-  const target = String(props.to).replace(/\/$/, '') || '/'
-  if (current === target) return true
-  if (target !== '/' && current.startsWith(target + '/')) return true
-  return false
+  const target = rawTargetPath.replace(/\/$/, '') || '/'
+
+  // ---- Path ----
+  let pathMatches = false
+  if (current === target) {
+    pathMatches = true
+  } else if (!props.exact && target !== '/' && current.startsWith(target + '/')) {
+    pathMatches = true
+  }
+  if (!pathMatches) return false
+
+  // ---- Query (estrito) ----
+  // Conjunto de chaves e valores tem que ser identico. Item sem query
+  // so ativa em rota sem query; item com query so ativa quando todos os
+  // params declarados batem exato com a rota.
+  const targetParams = new URLSearchParams(rawTargetQuery)
+  const targetKeys = Array.from(targetParams.keys())
+  const routeKeys = Object.keys(route.query)
+  if (routeKeys.length !== targetKeys.length) return false
+  for (const [k, v] of targetParams.entries()) {
+    if (String(route.query[k] ?? '') !== v) return false
+  }
+
+  return true
 })
 
 function onEnter(e: MouseEvent) {

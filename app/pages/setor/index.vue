@@ -1,5 +1,5 @@
 <template>
-  <NuxtLayout name="static" title="Setores da Bolsa Brasileira">
+  <NuxtLayout name="default" title="Setores da Bolsa Brasileira">
     <section class="flex flex-col gap-8 px-6 py-8">
       <div class="flex flex-col gap-3">
         <div class="flex items-center gap-3">

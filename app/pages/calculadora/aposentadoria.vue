@@ -1,5 +1,5 @@
 <template>
-  <NuxtLayout :name="layoutName" title="Calculadora de Aposentadoria">
+  <NuxtLayout name="default" title="Calculadora de Aposentadoria">
     <section class="flex flex-col gap-8 px-6 py-8">
       <!-- Back-link to parent listing -->
       <NuxtLink

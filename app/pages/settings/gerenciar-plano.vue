@@ -5,11 +5,15 @@
   - Renderiza PlanBadge + status detalhado + 3 acoes principais
 -->
 <template>
-  <NuxtLayout :title="'Assinatura'" name="settings">
+  <NuxtLayout :title="'Assinatura'">
     <div v-if="loading" class="settings-billing__loading">
       <UIcon name="i-lucide-loader-2" class="size-6 motion-safe:animate-spin" :style="{ color: 'var(--brand-primary)' }" />
     </div>
     <div v-else class="settings-billing">
+      <NuxtLink to="/settings" class="settings-billing__back">
+        <UIcon name="i-lucide-arrow-left" class="size-3.5" aria-hidden="true" />
+        <span>Voltar para configurações do usuário</span>
+      </NuxtLink>
       <header class="settings-billing__header">
         <span class="eyebrow">Assinatura</span>
         <h1 class="settings-billing__title">Plano atual</h1>
@@ -152,8 +156,6 @@ async function onCancel() {
   flex-direction: column;
   gap: 24px;
   padding: 32px 24px;
-  max-width: 720px;
-  margin: 0 auto;
   width: 100%;
 }
 .settings-billing__loading {
@@ -161,6 +163,21 @@ async function onCancel() {
   align-items: center;
   justify-content: center;
   padding: 80px 0;
+}
+.settings-billing__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: color-mix(in srgb, var(--brand-text) 60%, transparent);
+  text-decoration: none;
+  width: fit-content;
+  transition: color 150ms;
+}
+.settings-billing__back:hover {
+  color: var(--brand-primary);
 }
 .settings-billing__header {
   display: flex;

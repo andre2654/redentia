@@ -52,6 +52,7 @@ export const useBillingService = () => {
     cycle: 'monthly' | 'yearly'
     payment_method?: 'card' | 'pix' | 'boleto'
     promo_code?: string
+    with_trial?: boolean
   }) {
     return authFetch<{ checkout_url: string }>(`${baseURL}/billing/checkout`, {
       method: 'POST',

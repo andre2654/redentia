@@ -229,20 +229,21 @@
         <section class="flex flex-col gap-0.5">
           <span class="platform-sidebar-eyebrow">{{ brand.nav.menuLabel }}</span>
           <AtomsSidebarButton to="/" :text="brand.nav.overview" icon="i-lucide-layout-dashboard" />
-          <!-- "Sua carteira" como drawer expandable (igual Renda Variável):
-               agrupa Visão geral + Integrações. Auto-abre quando o user
-               esta em /wallet/*. -->
-          <AtomsSidebarGroup
-            :label="brand.nav.wallet"
-            icon="i-lucide-wallet"
-            :child-paths="['/wallet', '/wallet/integracoes']"
-          >
-            <AtomsSidebarButton to="/wallet" text="Visão geral" is-sub-item />
-            <AtomsSidebarButton to="/wallet/integracoes" text="Integrações" is-sub-item />
-          </AtomsSidebarGroup>
+          <AtomsSidebarButton to="/wallet" :text="brand.nav.wallet" icon="i-lucide-wallet" />
           <AtomsSidebarButton to="/help" :text="brand.nav.chat" icon="i-lucide-message-circle" />
           <AtomsSidebarButton v-if="authStore.me?.role === 'advisor'" to="/advisor" :text="brand.nav.advisorArea" icon="i-lucide-users" />
-          <AtomsSidebarButton to="/settings" :text="brand.nav.settings" icon="i-lucide-settings" />
+          <!-- "Configurações" como drawer expandable: Usuário (perfil)
+               + Integrações (Open Finance) + Gerenciar plano (billing).
+               Auto-abre quando user esta em /settings/*. -->
+          <AtomsSidebarGroup
+            :label="brand.nav.settings"
+            icon="i-lucide-settings"
+            :child-paths="['/settings', '/settings/integracoes', '/settings/gerenciar-plano']"
+          >
+            <AtomsSidebarButton to="/settings" text="Usuário" is-sub-item exact />
+            <AtomsSidebarButton to="/settings/integracoes" text="Integrações" is-sub-item />
+            <AtomsSidebarButton to="/settings/gerenciar-plano" text="Gerenciar plano" is-sub-item />
+          </AtomsSidebarGroup>
         </section>
 
         <!-- ===== Explorar ===== -->
@@ -260,7 +261,7 @@
               '/search?group=stocks&p_max=20',
             ]"
           >
-            <AtomsSidebarButton to="/search" text="Todos os ativos" is-sub-item />
+            <AtomsSidebarButton to="/search" text="Ver todos" is-sub-item exact />
             <AtomsSidebarButton to="/search?group=stocks" text="Todas as ações" is-sub-item />
             <AtomsSidebarButton to="/search?group=stocks&ch_min=0" text="Ações em alta hoje" is-sub-item />
             <AtomsSidebarButton to="/search?group=stocks&ch_max=0" text="Ações em queda hoje" is-sub-item />
@@ -279,7 +280,7 @@
               '/search?group=etfs',
             ]"
           >
-            <AtomsSidebarButton to="/search?group=reits" text="Todos os FIIs" is-sub-item />
+            <AtomsSidebarButton to="/search?group=reits" text="Ver todos" is-sub-item />
             <AtomsSidebarButton to="/search?group=reits&ch_min=0" text="FIIs em alta" is-sub-item />
             <AtomsSidebarButton to="/search?group=reits&ch_max=0" text="FIIs em queda" is-sub-item />
             <AtomsSidebarButton to="/search?group=bdrs" text="BDRs" is-sub-item />
@@ -287,30 +288,65 @@
           </AtomsSidebarGroup>
 
           <AtomsSidebarGroup
-            label="Renda Fixa & Cripto"
-            icon="i-lucide-coins"
+            label="Renda Fixa"
+            icon="i-lucide-banknote"
             :child-paths="[
               '/search?indexer=IPCA',
               '/search?indexer=SELIC',
               '/search?indexer=PREFIXADO',
-              '/search?crypto=1&sort=MCAP',
-              '/search?crypto=1&sort=UP',
-              '/search?crypto=1&sort=DOWN',
             ]"
           >
             <AtomsSidebarButton to="/search?indexer=IPCA" text="Tesouro IPCA+" is-sub-item />
             <AtomsSidebarButton to="/search?indexer=SELIC" text="Tesouro SELIC" is-sub-item />
             <AtomsSidebarButton to="/search?indexer=PREFIXADO" text="Tesouro Prefixado" is-sub-item />
-            <AtomsSidebarButton to="/search?crypto=1&sort=MCAP" text="Criptos por Market Cap" is-sub-item />
-            <AtomsSidebarButton to="/search?crypto=1&sort=UP" text="Criptos em alta 24h" is-sub-item />
-            <AtomsSidebarButton to="/search?crypto=1&sort=DOWN" text="Criptos em queda 24h" is-sub-item />
+          </AtomsSidebarGroup>
+
+          <AtomsSidebarGroup
+            label="Cripto"
+            icon="i-lucide-bitcoin"
+            :child-paths="[
+              '/search?crypto=1&sort=MCAP',
+              '/search?crypto=1&sort=UP',
+              '/search?crypto=1&sort=DOWN',
+            ]"
+          >
+            <AtomsSidebarButton to="/search?crypto=1&sort=MCAP" text="Por Market Cap" is-sub-item />
+            <AtomsSidebarButton to="/search?crypto=1&sort=UP" text="Em alta 24h" is-sub-item />
+            <AtomsSidebarButton to="/search?crypto=1&sort=DOWN" text="Em queda 24h" is-sub-item />
           </AtomsSidebarGroup>
         </section>
 
         <!-- ===== Ferramentas ===== -->
         <section class="flex flex-col gap-0.5">
           <span class="platform-sidebar-eyebrow">{{ brand.nav.toolsLabel }}</span>
-          <AtomsSidebarButton to="/calculadora" :text="brand.nav.calculators" icon="i-lucide-calculator" />
+          <!-- "Calculadoras" como drawer expandable: lista as calculadoras
+               principais como sub-items. Auto-abre quando user esta em
+               /calculadora/*. -->
+          <AtomsSidebarGroup
+            :label="brand.nav.calculators"
+            icon="i-lucide-calculator"
+            :child-paths="[
+              '/calculadora',
+              '/calculadora/acoes',
+              '/calculadora/dividend-yield',
+              '/calculadora/preco-teto',
+              '/calculadora/imposto-renda',
+              '/calculadora/aposentadoria',
+              '/calculadora/juros-compostos',
+              '/calculadora/quanto-investir',
+              '/calculadora/planejamento',
+            ]"
+          >
+            <AtomsSidebarButton to="/calculadora" text="Ver todas" is-sub-item exact />
+            <AtomsSidebarButton to="/calculadora/acoes" text="Ações" is-sub-item />
+            <AtomsSidebarButton to="/calculadora/dividend-yield" text="Dividend Yield" is-sub-item />
+            <AtomsSidebarButton to="/calculadora/preco-teto" text="Preço teto" is-sub-item />
+            <AtomsSidebarButton to="/calculadora/imposto-renda" text="Imposto de renda" is-sub-item />
+            <AtomsSidebarButton to="/calculadora/aposentadoria" text="Aposentadoria" is-sub-item />
+            <AtomsSidebarButton to="/calculadora/juros-compostos" text="Juros compostos" is-sub-item />
+            <AtomsSidebarButton to="/calculadora/quanto-investir" text="Quanto investir" is-sub-item />
+            <AtomsSidebarButton to="/calculadora/planejamento" text="Planejamento" is-sub-item />
+          </AtomsSidebarGroup>
           <AtomsSidebarGroup
             v-if="brand.features?.showDividendYieldRanking || brand.features?.showMonthlyMoversRanking"
             label="Rankings"
@@ -329,8 +365,8 @@
               '/dividendos/calendario',
             ]"
           >
+            <AtomsSidebarButton to="/ranking" text="Ver todos" is-sub-item exact />
             <AtomsSidebarButton to="/ranking/redentia-score" text="Redentia Score" icon="i-lucide-sparkles" is-sub-item />
-            <AtomsSidebarButton to="/ranking" text="Ver todos os rankings" is-sub-item />
             <AtomsSidebarButton to="/ranking/maiores-altas-mes" text="Maiores altas do mês" is-sub-item />
             <AtomsSidebarButton to="/ranking/maiores-baixas-mes" text="Maiores baixas do mês" is-sub-item />
             <AtomsSidebarButton to="/ranking/maiores-dividend-yield" text="Maiores dividend yield" is-sub-item />
@@ -346,12 +382,42 @@
               is-sub-item
             />
           </AtomsSidebarGroup>
-          <AtomsSidebarButton
+          <!-- "Setores" como drawer expandable: 10 setores principais
+               (slugs em ingles vindos do backend, nomes traduzidos pra
+               PT na UI) + link pra todos. Rota real e /setor/{slug}/
+               comparativo. Auto-abre em /setor/*. -->
+          <AtomsSidebarGroup
             v-if="brand.features?.showSectorComparatives"
-            to="/setor"
-            text="Setores"
+            label="Setores"
             icon="i-lucide-layers"
-          />
+            :child-paths="[
+              '/setor',
+              '/setor/real-estate/comparativo',
+              '/setor/financial-services/comparativo',
+              '/setor/consumer-cyclical/comparativo',
+              '/setor/industrials/comparativo',
+              '/setor/technology/comparativo',
+              '/setor/healthcare/comparativo',
+              '/setor/utilities/comparativo',
+              '/setor/basic-materials/comparativo',
+              '/setor/consumer-defensive/comparativo',
+              '/setor/communication-services/comparativo',
+              '/setor/energy/comparativo',
+            ]"
+          >
+            <AtomsSidebarButton to="/setor" text="Ver todos" is-sub-item exact />
+            <AtomsSidebarButton to="/setor/real-estate/comparativo" text="Imobiliário (FIIs)" is-sub-item />
+            <AtomsSidebarButton to="/setor/financial-services/comparativo" text="Serviços financeiros" is-sub-item />
+            <AtomsSidebarButton to="/setor/consumer-cyclical/comparativo" text="Consumo cíclico" is-sub-item />
+            <AtomsSidebarButton to="/setor/industrials/comparativo" text="Industriais" is-sub-item />
+            <AtomsSidebarButton to="/setor/technology/comparativo" text="Tecnologia" is-sub-item />
+            <AtomsSidebarButton to="/setor/healthcare/comparativo" text="Saúde" is-sub-item />
+            <AtomsSidebarButton to="/setor/utilities/comparativo" text="Utilidades públicas" is-sub-item />
+            <AtomsSidebarButton to="/setor/basic-materials/comparativo" text="Materiais básicos" is-sub-item />
+            <AtomsSidebarButton to="/setor/consumer-defensive/comparativo" text="Consumo defensivo" is-sub-item />
+            <AtomsSidebarButton to="/setor/communication-services/comparativo" text="Comunicação" is-sub-item />
+            <AtomsSidebarButton to="/setor/energy/comparativo" text="Energia" is-sub-item />
+          </AtomsSidebarGroup>
           <AtomsSidebarButton to="/guias" :text="brand.nav.guides" icon="i-lucide-book-open" />
           <!-- Antes "Proventos" → /dividendos. Renomeado pra "Calendário
                de Dividendos" e re-rotado pra /dividendos/calendario, que
@@ -410,10 +476,11 @@
            logout). O olhinho saiu daqui — virou a linha de "Modo
            privacidade" acima, com label e badge On/Off. -->
       <div
-        class="platform-user-row flex flex-shrink-0 items-center gap-2 border-t px-3 py-3"
-        :style="{ borderColor: `color-mix(in srgb, ${brand.colors.border} 50%, transparent)` }"
+        :class="['platform-user-row flex flex-shrink-0 items-center gap-2 border-t px-3 py-3', userRowVariantClass]"
+        :style="userRowStyle"
       >
-        <div class="relative shrink-0">
+        <!-- Avatar com ring sutil em Pro / glow forte em Max -->
+        <div class="relative shrink-0" :class="userPlanIsMax ? 'platform-user-avatar--max' : (userPlanIsPro ? 'platform-user-avatar--pro' : '')">
           <UAvatar :alt="authStore.me?.name || 'Usuário'" size="sm" />
           <span
             class="absolute -bottom-0.5 -right-0.5 size-2 rounded-full"
@@ -430,13 +497,22 @@
             {{ authStore.me?.name || 'Usuário' }}
           </span>
           <span
-            class="platform-user-plan truncate text-[10px] font-medium uppercase"
-            :style="{
-              color: `color-mix(in srgb, ${brand.colors.text} 48%, transparent)`,
-              letterSpacing: '0.16em',
-            }"
+            class="platform-user-plan flex items-center gap-1 truncate text-[10px] font-semibold uppercase"
+            :style="userPlanLabelStyle"
           >
-            {{ brand.sidebar.planLabel }}
+            <UIcon
+              v-if="userPlanIsMax"
+              name="i-lucide-crown"
+              class="size-3 shrink-0"
+              aria-hidden="true"
+            />
+            <UIcon
+              v-else-if="userPlanIsPro"
+              name="i-lucide-sparkles"
+              class="size-3 shrink-0"
+              aria-hidden="true"
+            />
+            {{ userPlanDisplay }}
           </span>
         </div>
         <button
@@ -650,6 +726,61 @@ const aiCtaLabel = computed(() =>
 )
 
 const menuMobileActive = ref(false)
+
+// ===== Plano do user na sidebar =====
+// Lê do useEntitlements; o composable trata billing.enabled=false
+// (retorna 'unlimited') e cacheia 60s. Resultado decide tanto o
+// rotulo (Pro / Max / Plano gratuito) quanto o tratamento visual
+// premium do user-row.
+const ent = useEntitlements()
+onMounted(() => { ent.refresh() })
+
+const userPlanSlug = computed(() => ent.planSlug())
+const userPlanIsPro = computed(() => userPlanSlug.value === 'pro')
+const userPlanIsMax = computed(() => userPlanSlug.value === 'max')
+const userPlanIsTrialing = computed(() => ent.subscriptionStatus() === 'trialing')
+
+const userPlanDisplay = computed(() => {
+  if (userPlanIsMax.value) return 'Plano Max'
+  if (userPlanIsPro.value) return userPlanIsTrialing.value ? 'Pro · Trial' : 'Plano Pro'
+  if (userPlanSlug.value === 'unlimited') return 'Acesso completo'
+  return brand.sidebar.planLabel
+})
+
+const userRowVariantClass = computed(() => {
+  if (userPlanIsMax.value) return 'platform-user-row--max'
+  if (userPlanIsPro.value) return 'platform-user-row--pro'
+  return ''
+})
+
+const userRowStyle = computed(() => {
+  const baseBorder = `color-mix(in srgb, ${brand.colors.border} 50%, transparent)`
+  if (userPlanIsMax.value) {
+    return {
+      borderColor: `color-mix(in srgb, ${brand.colors.primary} 38%, transparent)`,
+      backgroundImage: `linear-gradient(180deg, color-mix(in srgb, ${brand.colors.primary} 12%, transparent) 0%, transparent 100%)`,
+    }
+  }
+  if (userPlanIsPro.value) {
+    return {
+      borderColor: `color-mix(in srgb, ${brand.colors.primary} 22%, transparent)`,
+    }
+  }
+  return { borderColor: baseBorder }
+})
+
+const userPlanLabelStyle = computed(() => {
+  if (userPlanIsMax.value || userPlanIsPro.value) {
+    return {
+      color: brand.colors.primary,
+      letterSpacing: '0.14em',
+    }
+  }
+  return {
+    color: `color-mix(in srgb, ${brand.colors.text} 48%, transparent)`,
+    letterSpacing: '0.16em',
+  }
+})
 // PWA removida em 2026-05-04. Detectar "instalado" agora depende
 // apenas de display-mode standalone e do flag iOS — sem `usePWA()`.
 const isAppInstalledReal = computed(() => {
@@ -1054,8 +1185,52 @@ onMounted(() => {
    container handles the separation; this layer adds the
    inline icon button polish (hover bg, focus ring). */
 .platform-user-row {
-  transition: background-color 160ms ease-out;
+  transition: background-color 160ms ease-out, border-color 160ms ease-out;
 }
+
+/* ===== Pro: tratamento amber sutil =====
+   Border top em amber 22%, plan label colorido (via :style inline).
+   Avatar com ring de 1.5px em amber.
+   Mantem-se discreto. */
+.platform-user-row--pro {
+  position: relative;
+}
+.platform-user-avatar--pro :deep(.u-avatar),
+.platform-user-avatar--pro :deep([role="presentation"]) {
+  box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--brand-primary) 55%, transparent);
+}
+
+/* ===== Max: gradient amber, ring forte, halo pulsando =====
+   Visual mais alto da hierarquia. Background gradient sutil de cima
+   pra baixo, avatar com ring duplo + glow amber pulsante. */
+.platform-user-row--max {
+  position: relative;
+}
+.platform-user-row--max::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--brand-primary) 8%, transparent) 0%,
+    transparent 60%
+  );
+  z-index: 0;
+}
+.platform-user-row--max > * {
+  position: relative;
+  z-index: 1;
+}
+.platform-user-avatar--max {
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--brand-primary) 35%, transparent));
+}
+.platform-user-avatar--max :deep(.u-avatar),
+.platform-user-avatar--max :deep([role="presentation"]) {
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--brand-primary) 75%, transparent),
+    0 0 0 4px color-mix(in srgb, var(--brand-primary) 25%, transparent);
+}
+
 .platform-icon-btn {
   transition:
     background-color 140ms ease-out,

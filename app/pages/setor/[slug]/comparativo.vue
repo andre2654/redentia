@@ -1,5 +1,5 @@
 <template>
-  <NuxtLayout name="static" :title="sector?.name || 'Setor'">
+  <NuxtLayout name="default" :title="sector?.name || 'Setor'">
     <section class="flex flex-col gap-8 px-6 py-8">
       <!-- Hero -->
       <div class="flex flex-col gap-3">

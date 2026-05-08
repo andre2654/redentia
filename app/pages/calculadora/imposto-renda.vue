@@ -1,5 +1,5 @@
 <template>
-  <NuxtLayout :name="layoutName" title="Calculadora de IR sobre Ações">
+  <NuxtLayout name="default" title="Calculadora de IR sobre Ações">
     <section class="flex flex-col gap-8 px-6 py-8">
       <!-- Back-link to parent listing -->
       <NuxtLink

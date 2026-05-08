@@ -1,5 +1,5 @@
 <template>
-  <NuxtLayout :name="layoutName" title="Simulador de Investimento em Ações">
+  <NuxtLayout name="default" title="Simulador de Investimento em Ações">
     <section class="flex flex-col gap-8 px-6 py-8">
       <!-- Back-link to parent listing -->
       <NuxtLink

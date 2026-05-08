@@ -1,7 +1,7 @@
 <!--
   /settings — surface autenticada de configuracoes da conta.
 
-  Padrao visual segue o mesmo da /wallet/integracoes:
+  Padrao visual segue o mesmo da /settings/integracoes:
     - hero com eyebrow + H1 (font-light, clamp(28-36)) + subtitle
     - blocos por secao com eyebrow proprio + titulo
     - cards usando tokens var(--brand-*) (anti-flash em SSR)
@@ -11,7 +11,7 @@
     1. Perfil (nome / telefone / senha)
     2. Vinculo com assessor (se nao for advisor)
     3. Conta de assessor (codigo / virar assessor)
-    4. Integracoes Open Finance (link pra /wallet/integracoes)
+    4. Integracoes Open Finance (link pra /settings/integracoes)
 
   SEO:
     noindex,nofollow — pagina autenticada.
@@ -129,7 +129,7 @@
         </NuxtLink>
       </section>
 
-      <!-- Integrações Open Finance (link para /wallet/integracoes) -->
+      <!-- Integrações Open Finance (link para /settings/integracoes) -->
       <section class="set-section">
         <div class="set-section__head">
           <span class="set-section__eyebrow">Open Finance</span>
@@ -138,7 +138,7 @@
             Conecte corretoras e bancos para sincronização automática da carteira.
           </p>
         </div>
-        <NuxtLink to="/wallet/integracoes" class="set-link-card">
+        <NuxtLink to="/settings/integracoes" class="set-link-card">
           <span class="set-link-card__icon" aria-hidden="true">
             <UIcon name="i-lucide-link-2" class="size-5" />
           </span>
@@ -233,8 +233,6 @@ async function onLogout() {
   flex-direction: column;
   gap: 28px;
   padding: 24px 24px 64px;
-  max-width: 980px;
-  margin: 0 auto;
   width: 100%;
 }
 

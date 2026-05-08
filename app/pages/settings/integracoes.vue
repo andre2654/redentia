@@ -1,5 +1,5 @@
 <!--
-  /wallet/integracoes — surface autenticada de gerenciamento de
+  /settings/integracoes — surface autenticada de gerenciamento de
   conexoes Open Finance (Pluggy).
 
   RESPONSABILIDADES:
@@ -31,7 +31,7 @@ usePageSeo({
   title: 'Integrações Open Finance | Redentia',
   description:
     'Conecte suas corretoras e bancos via Open Finance para sincronizar automaticamente sua carteira na Redentia.',
-  path: '/wallet/integracoes',
+  path: '/settings/integracoes',
   robots: 'noindex,nofollow',
 })
 
@@ -254,9 +254,9 @@ function formatBRL(value: number): string {
   <NuxtLayout title="Integrações Open Finance">
     <div class="integ-page">
       <!-- Back link -->
-      <NuxtLink to="/wallet" class="integ-back">
+      <NuxtLink to="/settings" class="integ-back">
         <UIcon name="i-lucide-arrow-left" class="size-3.5" aria-hidden="true" />
-        <span>Voltar pra carteira</span>
+        <span>Voltar para configurações do usuário</span>
       </NuxtLink>
 
       <!-- Header -->
@@ -472,8 +472,6 @@ function formatBRL(value: number): string {
   flex-direction: column;
   gap: 24px;
   padding: 24px 24px 64px;
-  max-width: 980px;
-  margin: 0 auto;
   width: 100%;
 }
 

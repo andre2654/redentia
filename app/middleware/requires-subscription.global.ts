@@ -15,6 +15,7 @@ const SUBSCRIPTION_REQUIRED_PATH_PREFIXES = [
   '/wallet',
   '/help',
   '/settings/gerenciar-plano',
+  '/settings/integracoes',
 ]
 
 function requiresSubscription(path: string): boolean {

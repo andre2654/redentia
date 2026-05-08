@@ -76,7 +76,7 @@
             <span>{{ syncing || refreshing ? 'Sincronizando...' : 'Sincronizar dados' }}</span>
           </button>
           <NuxtLink
-            to="/wallet/integracoes"
+            to="/settings/integracoes"
             class="action-bar__status-link action-bar__status-link--ghost"
           >
             <UIcon name="i-lucide-settings-2" class="size-3.5" aria-hidden="true" />

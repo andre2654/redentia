@@ -8,7 +8,7 @@
   brand-bound colors — no `font-bold`, no `text-gray-*`.
 -->
 <template>
-  <NuxtLayout :name="layoutName" title="Calculadoras Financeiras">
+  <NuxtLayout name="default" title="Calculadoras Financeiras">
     <section class="flex flex-col gap-14 px-6 py-10">
       <!-- ============ Hero ============
            Page-level h1 is rendered ALWAYS. The static layout cascade

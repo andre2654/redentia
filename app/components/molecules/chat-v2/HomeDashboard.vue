@@ -32,24 +32,25 @@
   it to chat.send().
 -->
 <template>
-  <!-- The dashboard is the only scrollable surface when there are no
-       messages — Thread.vue handles its own scroll once messages exist.
-       `h-full overflow-y-auto` makes vertical scroll work inside the
-       layout's flexbox column.
-       pb-40/md:pb-48 reserves vertical space for the composer overlay
-       so the last section doesn't sit underneath the input pill. -->
+  <!-- Two-layer scroller. Outer ocupa 100% da largura e segura o
+       overflow-y; inner mantem mx-auto + max-w-5xl pro layout
+       centralizado. Sem isso, o wheel so capturava no centro porque
+       o scroll-container tinha max-width e as laterais ficavam fora.
+       pb-40/md:pb-48 reserva espaco vertical pra composer overlay. -->
   <div
     ref="dashRef"
-    class="home-dashboard relative mx-auto flex h-full w-full max-w-5xl flex-col gap-10 overflow-y-auto px-4 pb-40 pt-8 md:gap-12 md:px-6 md:pb-48 md:pt-12"
+    class="home-dashboard-scroller relative h-full w-full overflow-y-auto"
     @scroll="onDashScroll"
   >
-    <!-- Atmospheric radial — subtle amber glow offset top-right (stripe-style) -->
+    <!-- Atmospheric radial vive no scroller (que ocupa 100% da largura),
+         nao no home-dashboard (max-w-5xl). Sem isso, o glow ficava preso
+         dentro do max-width central. Agora cobre canto a canto. -->
     <div
       class="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
       aria-hidden="true"
     >
       <div
-        class="absolute right-[-15%] top-[-20%] h-[60%] w-[55%]"
+        class="absolute right-[-10%] top-[-15%] h-[55%] w-[60%]"
         :style="{
           background: `radial-gradient(ellipse, color-mix(in srgb, var(--brand-primary) 22%, transparent), transparent 60%)`,
           filter: 'blur(160px)',
@@ -57,6 +58,10 @@
         }"
       />
     </div>
+
+    <div
+      class="home-dashboard relative mx-auto flex w-full max-w-5xl flex-col gap-10 px-4 pb-40 pt-8 md:gap-12 md:px-6 md:pb-48 md:pt-12"
+    >
 
     <!-- ============ 1. Hero greeting ============ -->
     <header class="flex flex-col gap-4">
@@ -791,6 +796,7 @@
       <template v-if="tier === 'max'">Redentia MAX · análise rigorosa</template>
       <template v-else>Redentia Basic · Redentia MAX</template>
     </p>
+    </div>
   </div>
 </template>
 

@@ -1,5 +1,5 @@
 <template>
-  <NuxtLayout :name="layoutName" title="Calculadora: Quanto Investir por Mês">
+  <NuxtLayout name="default" title="Calculadora: Quanto Investir por Mês">
     <section class="flex flex-col gap-8 px-6 py-8">
       <!-- Back-link to parent listing -->
       <NuxtLink

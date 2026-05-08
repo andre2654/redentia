@@ -1,5 +1,5 @@
 <template>
-  <NuxtLayout :name="layoutName" title="Calculadora de Preço Teto">
+  <NuxtLayout name="default" title="Calculadora de Preço Teto">
     <section class="flex flex-col gap-8 px-6 py-8">
       <!-- Back-link to parent listing -->
       <NuxtLink

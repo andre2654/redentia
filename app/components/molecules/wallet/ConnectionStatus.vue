@@ -53,7 +53,7 @@
         <span>{{ syncing ? 'Sincronizando...' : 'Atualizar agora' }}</span>
       </button>
       <NuxtLink
-        to="/wallet/integracoes"
+        to="/settings/integracoes"
         class="conn-banner__btn conn-banner__btn--ghost"
       >
         <UIcon name="i-lucide-settings-2" class="size-3.5" aria-hidden="true" />
