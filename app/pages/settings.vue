@@ -93,6 +93,42 @@
         </div>
       </section>
 
+      <!-- Plano (assinatura) — só renderiza se tenant tem billing on -->
+      <section v-if="showBillingSection" class="set-section">
+        <div class="set-section__head">
+          <span class="set-section__eyebrow">Assinatura</span>
+          <h2 class="set-section__title">Seu plano</h2>
+          <p class="set-section__subtitle">
+            <template v-if="planLabel">
+              Você está no plano <strong>{{ planLabel }}</strong><template v-if="trialDaysLabel"> · {{ trialDaysLabel }}</template>.
+            </template>
+            <template v-else>
+              Você ainda não tem uma assinatura ativa.
+            </template>
+          </p>
+        </div>
+        <NuxtLink to="/settings/gerenciar-plano" class="set-link-card">
+          <span class="set-link-card__icon" aria-hidden="true">
+            <UIcon name="i-lucide-credit-card" class="size-5" />
+          </span>
+          <span class="set-link-card__copy">
+            <span class="set-link-card__title">
+              <template v-if="planLabel">Gerenciar plano</template>
+              <template v-else>Escolher um plano</template>
+            </span>
+            <span class="set-link-card__subtitle">
+              <template v-if="planLabel">
+                Trocar de plano, atualizar pagamento, baixar recibos ou cancelar assinatura.
+              </template>
+              <template v-else>
+                Veja os planos Pro e Max e comece com 7 dias grátis no Pro.
+              </template>
+            </span>
+          </span>
+          <UIcon name="i-lucide-arrow-right" class="set-link-card__arrow" aria-hidden="true" />
+        </NuxtLink>
+      </section>
+
       <!-- Integrações Open Finance (link para /wallet/integracoes) -->
       <section class="set-section">
         <div class="set-section__head">
@@ -152,8 +188,33 @@ usePageSeo({
 
 const authStore = useAuthStore()
 const router = useRouter()
+const ent = useEntitlements()
 
 const isAdvisor = computed(() => authStore.me?.role === 'advisor')
+
+// ===== Billing summary =====
+// Renderiza so se tenant tem billing.enabled=true. Em tenants
+// gratuitos (white-label sem cobranca), a section some.
+onMounted(() => {
+  ent.refresh()
+})
+
+const showBillingSection = computed(() => ent.isBillingEnabled())
+
+const planLabel = computed(() => {
+  const slug = ent.planSlug()
+  if (!slug || slug === 'unlimited') return null
+  return slug.charAt(0).toUpperCase() + slug.slice(1)
+})
+
+const trialDaysLabel = computed(() => {
+  if (ent.subscriptionStatus() !== 'trialing') return null
+  const days = ent.trialDaysRemaining()
+  if (days === null) return null
+  if (days <= 0) return 'trial expira hoje'
+  if (days === 1) return '1 dia restante de trial'
+  return `${days} dias restantes de trial`
+})
 
 async function onLogout() {
   try {

@@ -65,10 +65,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 
-definePageMeta({
-  layout: 'default',
-  middleware: ['requires-subscription'],
-})
+definePageMeta({ layout: 'default' })
+// Paywall vive em middleware/requires-subscription.global.ts.
 
 usePageSeo({
   title: 'Assinatura',

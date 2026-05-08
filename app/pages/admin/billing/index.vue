@@ -69,6 +69,20 @@
                   </span>
                 </td>
                 <td class="px-4 py-3 text-right">
+                  <button
+                    type="button"
+                    :disabled="togglingId === t.id"
+                    class="font-mono-tab text-[10px] uppercase tracking-[0.15em] rounded-sm border px-3 py-1.5 mr-2 disabled:opacity-50"
+                    :style="{ borderColor: t.config?.billing?.enabled ? C.negative : C.positive, color: t.config?.billing?.enabled ? C.negative : C.positive }"
+                    @click="onToggleBilling(t)"
+                  >
+                    <UIcon
+                      v-if="togglingId === t.id"
+                      name="i-lucide-loader-2"
+                      class="size-3 motion-safe:animate-spin"
+                    />
+                    {{ t.config?.billing?.enabled ? 'DESATIVAR' : 'ATIVAR' }}
+                  </button>
                   <NuxtLink
                     :to="`/admin/tenants/${t.id}/plans`"
                     class="font-mono-tab text-[10px] uppercase tracking-[0.15em] rounded-sm border px-3 py-1.5 mr-2"
@@ -102,14 +116,46 @@ definePageMeta({ middleware: ['admin-panel'] })
 
 const billing = useAdminBillingService()
 const tenantsService = useTenantsService()
+const toast = useToast()
 
 const stats = ref<ISubscriptionStats | null>(null)
 const tenantsBilling = ref<any[]>([])
 const loading = ref(true)
+const togglingId = ref<number | null>(null)
 
 function formatBRL(n: number) {
   if (!Number.isFinite(n)) return '0,00'
   return n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
+
+async function onToggleBilling(t: any) {
+  const next = !t.config?.billing?.enabled
+  const verb = next ? 'ATIVAR' : 'DESATIVAR'
+  const warning = next
+    ? 'Atenção: users sem subscription ativa serão bouncados pra /pricing.'
+    : 'Atenção: tudo será liberado (unlimited synthetic) pros users desse tenant.'
+  if (!confirm(`${verb} billing pro tenant "${t.name}"?\n\n${warning}`)) return
+
+  togglingId.value = t.id
+  try {
+    const newConfig = { ...(t.config || {}) }
+    newConfig.billing = {
+      ...(newConfig.billing || {}),
+      enabled: next,
+      currency: newConfig.billing?.currency || 'BRL',
+      trial_days_pro: newConfig.billing?.trial_days_pro ?? 7,
+    }
+    const resp = await tenantsService.update(t.id, { config: newConfig })
+    const updated = (resp as any)?.data || resp
+    // Atualiza inline pra evitar refetch da lista inteira
+    const idx = tenantsBilling.value.findIndex((x) => x.id === t.id)
+    if (idx >= 0) tenantsBilling.value[idx] = updated
+    toast.add({ title: next ? 'Billing ativado' : 'Billing desativado', color: next ? 'success' : 'info' })
+  } catch (err: any) {
+    toast.add({ title: 'Erro ao alternar billing', description: err?.data?.message ?? 'Tente novamente.', color: 'error' })
+  } finally {
+    togglingId.value = null
+  }
 }
 
 onMounted(async () => {

@@ -217,12 +217,9 @@ import {
   type PortfolioReport,
 } from '~/composables/usePortfolioScore'
 
-definePageMeta({
-  layout: 'default',
-  // Bouncia user logado sem subscription ativa pra /pricing.
-  // Tenants com billing.enabled=false fazem bypass automatico.
-  middleware: ['requires-subscription'],
-})
+definePageMeta({ layout: 'default' })
+// Paywall agora vive em middleware/requires-subscription.global.ts —
+// cobre toda a arvore /wallet/** automaticamente.
 
 usePageSeo({
   title: 'Minha Carteira',

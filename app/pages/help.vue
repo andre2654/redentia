@@ -336,10 +336,9 @@ definePageMeta({
   // banner is recoverable from /home or /wallet, so suppress it
   // here for a clean chat experience.
   hideInstallAppBanner: true,
-  // Bouncia user LOGADO sem subscription ativa pra /pricing. User
-  // unlogged passa direto (vê o showcase). Middleware checa token
-  // antes de tudo, retorna early se nao tem.
-  middleware: ['requires-subscription'],
+  // Paywall vive em middleware/requires-subscription.global.ts pra
+  // cobrir todas as rotas gated. User unlogged passa direto (ve o
+  // showcase pq middleware retorna se !auth.token).
 })
 
 const route = useRoute()
