@@ -19,21 +19,18 @@
             </span>
           </NuxtLink>
           <nav class="hidden items-center gap-7 md:flex">
-            <a href="#manifesto" class="text-[13px] transition-colors hover:opacity-70" :style="{ color: C.textMuted }">
-              Manifesto
+            <a href="#plataforma" class="text-[13px] transition-colors hover:opacity-70" :style="{ color: C.textMuted }">
+              Plataforma
+            </a>
+            <a href="#redacao" class="text-[13px] transition-colors hover:opacity-70" :style="{ color: C.textMuted }">
+              Redação
             </a>
             <a href="#tenants" class="text-[13px] transition-colors hover:opacity-70" :style="{ color: C.textMuted }">
               Quem já usa
             </a>
-            <a href="#stack" class="text-[13px] transition-colors hover:opacity-70" :style="{ color: C.textMuted }">
-              O que vem
-            </a>
             <a href="#pricing" class="text-[13px] transition-colors hover:opacity-70" :style="{ color: C.textMuted }">
               Investimento
             </a>
-            <NuxtLink to="/redacao" class="text-[13px] transition-colors hover:opacity-70" :style="{ color: C.textMuted }">
-              Redação
-            </NuxtLink>
           </nav>
           <div class="flex-1" />
           <button
@@ -52,152 +49,227 @@
       </header>
 
       <!-- ============================================================
-           HERO, Linear-style editorial: headline breathes, no noise
+           HERO, tight + focused
            ============================================================ -->
       <section class="relative overflow-hidden">
-        <!-- Single radial glow, no dot grids, no scanlines -->
         <div class="pointer-events-none absolute inset-0">
           <div
-            class="absolute left-1/2 top-0 h-[800px] w-[1200px] -translate-x-1/2 rounded-full blur-3xl opacity-20"
+            class="absolute left-1/2 top-0 h-[600px] w-[1000px] -translate-x-1/2 rounded-full blur-3xl opacity-20"
             :style="{ background: `radial-gradient(ellipse at center, ${C.primary}, transparent 65%)` }"
           />
         </div>
 
-        <div class="relative mx-auto max-w-5xl px-6 pb-20 pt-24 md:px-10 md:pb-28 md:pt-32">
+        <div class="relative mx-auto max-w-4xl px-6 pb-14 pt-16 text-center md:px-10 md:pb-20 md:pt-24">
           <!-- Pill badge -->
-          <div class="mb-10 flex justify-center lg:justify-start">
-            <div class="inline-flex items-center gap-2.5 rounded-full border px-4 py-1.5" :style="{ borderColor: `${C.primary}40`, backgroundColor: `${C.primary}08` }">
+          <div class="mb-7 flex justify-center">
+            <div class="inline-flex items-center gap-2.5 rounded-full border px-3.5 py-1.5" :style="{ borderColor: `${C.primary}40`, backgroundColor: `${C.primary}08` }">
               <span class="relative flex size-1.5">
                 <span class="absolute inline-flex size-1.5 motion-safe:animate-ping rounded-full opacity-75" :style="{ backgroundColor: C.primary }" />
                 <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: C.primary }" />
               </span>
               <span class="text-[11px] font-medium uppercase tracking-[0.2em]" :style="{ color: C.primary }">
-                5 marcas no ar
+                Plataforma + Redação · 5 marcas no ar
               </span>
             </div>
           </div>
 
-          <!-- Title, huge, clean, let it breathe -->
+          <!-- Title, tighter -->
           <h1
-            class="mb-8 text-center leading-[0.88] tracking-tighter lg:text-left"
+            class="mb-6 leading-[0.9] tracking-tighter"
             :style="{
               color: C.text,
               fontFamily: F.display,
-              fontSize: 'clamp(3.5rem, 9vw, 8.5rem)',
+              fontSize: 'clamp(2.75rem, 6.5vw, 5.5rem)',
             }"
           >
             Sua marca,<br />
-            <span class="italic" :style="{ color: C.primary }">nossa infra.</span>
+            <span class="italic" :style="{ color: C.primary }">nossa infra e redação.</span>
           </h1>
 
-          <!-- Subtitle, centered on mobile, left on desktop -->
-          <p class="mx-auto mb-14 max-w-xl text-center text-[17px] leading-[1.6] md:text-[19px] lg:mx-0 lg:text-left" :style="{ color: `${C.text}C0` }">
-            Plataforma de investimentos completa em <strong :style="{ color: C.text }">menos de 7 dias</strong>, com seu logo, suas cores, seu domínio. Sem time de engenharia.
+          <!-- Subtitle, sharper -->
+          <p class="mx-auto mb-9 max-w-xl text-[15px] leading-[1.55] md:text-[17px]" :style="{ color: `${C.text}B0` }">
+            Plataforma de investimentos no seu domínio em 7 dias. Redação financeira no seu visual. Os dois, ou só um.
           </p>
 
           <!-- CTAs -->
-          <div class="mb-10 flex flex-col items-center gap-4 sm:flex-row lg:justify-start">
+          <div class="flex flex-col items-center justify-center gap-3 sm:flex-row">
             <button
-              class="group inline-flex items-center gap-3 rounded-full px-8 py-4 text-[14px] font-semibold transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-0.5"
+              class="group inline-flex items-center gap-3 rounded-full px-7 py-3.5 text-[14px] font-semibold transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-0.5"
               :style="{
                 backgroundColor: C.primary,
                 color: C.background,
-                boxShadow: `0 16px 50px -16px ${C.primary}A0`,
+                boxShadow: `0 14px 40px -14px ${C.primary}A0`,
               }"
               @click="openLeadModal()"
             >
-              Quero meu white-label
+              Falar com o time
               <span class="inline-block transition-transform group-hover:translate-x-1">→</span>
             </button>
             <a
-              href="#tenants"
+              href="#plataforma"
               class="inline-flex items-center gap-2 px-2 py-2 text-[14px] font-medium transition-opacity hover:opacity-70"
               :style="{ color: C.text }"
             >
-              <span class="border-b pb-0.5" :style="{ borderColor: C.text }">Ver quem já usa</span>
+              <span class="border-b pb-0.5" :style="{ borderColor: C.text }">Ver o produto</span>
               <span>↓</span>
             </a>
-          </div>
-
-          <!-- Tenant logo strip, clean, Vercel "trusted by" style -->
-          <div class="border-t pt-10" :style="{ borderColor: `${C.border}60` }">
-            <p class="mb-6 text-center text-[11px] uppercase tracking-[0.22em] lg:text-left" :style="{ color: C.textMuted }">
-              Mesma infra, 5 identidades radicalmente distintas
-            </p>
-            <div class="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 lg:justify-start">
-              <span
-                v-for="t in tenants.filter(t => t.slug !== 'your-brand')"
-                :key="t.slug"
-                class="text-[20px] leading-none tracking-tight transition-opacity hover:opacity-100 md:text-[24px]"
-                style="opacity: 0.5;"
-                :style="{
-                  color: t.accent,
-                  fontFamily: t.font,
-                  fontWeight: t.weight,
-                  fontStyle: t.italic ? 'italic' : 'normal',
-                }"
-              >
-                {{ t.name }}
-              </span>
-            </div>
-          </div>
-
-          <!-- Stats row, with Lucide icons, not emojis -->
-          <div class="mt-14 grid grid-cols-3 gap-8">
-            <div class="flex items-start gap-3">
-              <UIcon name="i-lucide-layers" class="mt-0.5 size-5 shrink-0" :style="{ color: C.primary }" />
-              <div>
-                <div class="text-[14px] font-medium" :style="{ color: C.text }">Stack completa</div>
-                <div class="text-[12px]" :style="{ color: C.textMuted }">Frontend + backend + dados B3</div>
-              </div>
-            </div>
-            <div class="flex items-start gap-3">
-              <UIcon name="i-lucide-zap" class="mt-0.5 size-5 shrink-0" :style="{ color: C.primary }" />
-              <div>
-                <div class="text-[14px] font-medium" :style="{ color: C.text }">Deploy em 7 dias</div>
-                <div class="text-[12px]" :style="{ color: C.textMuted }">Da call ao ar em uma semana</div>
-              </div>
-            </div>
-            <div class="flex items-start gap-3">
-              <UIcon name="i-lucide-palette" class="mt-0.5 size-5 shrink-0" :style="{ color: C.primary }" />
-              <div>
-                <div class="text-[14px] font-medium" :style="{ color: C.text }">100% custom</div>
-                <div class="text-[12px]" :style="{ color: C.textMuted }">Cores, fontes, hero, domínio</div>
-              </div>
-            </div>
           </div>
         </div>
       </section>
 
       <!-- ============================================================
-           MANIFESTO STRIP, editorial pull quote
+           DOIS PRODUTOS, the map of the offer
            ============================================================ -->
-      <section
-        id="manifesto"
-        class="relative border-b"
-        :style="{ borderColor: `${C.border}`, backgroundColor: C.surfaceLight }"
-      >
-        <div class="mx-auto max-w-5xl px-6 py-24 text-center md:px-10 md:py-32">
-          <div class="text-[60px] leading-none" :style="{ color: C.primary, fontFamily: F.display }">"</div>
-          <p
-            class="-mt-6 italic"
-            :style="{
-              color: C.text,
-              fontFamily: F.display,
-              fontSize: 'clamp(1.75rem, 4vw, 3rem)',
-              lineHeight: '1.2',
-            }"
+      <section class="relative border-b" :style="{ borderColor: C.border }">
+        <div class="mx-auto max-w-7xl px-6 py-20 md:px-10 md:py-28">
+          <div class="mb-12 max-w-3xl">
+            <div class="text-[12px] uppercase tracking-[0.22em]" :style="{ color: C.primary }">, Como a Redentia atua</div>
+            <h2
+              class="mt-4 leading-[0.95] tracking-tight"
+              :style="{
+                color: C.text,
+                fontFamily: F.display,
+                fontSize: 'clamp(2.25rem, 5vw, 4rem)',
+              }"
+            >
+              Dois produtos.<br />
+              <span class="italic" :style="{ color: C.primary }">Pode pegar um, pode pegar os dois.</span>
+            </h2>
+            <p class="mt-6 text-[15px] leading-relaxed" :style="{ color: `${C.text}B0` }">
+              Cada produto resolve um problema. A plataforma resolve "não tenho infra pra investidor". A redação resolve "não tenho conteúdo pra essa infra". Compram juntos pelo combo, ou separados, do jeito que fizer sentido pra você.
+            </p>
+          </div>
+
+          <div class="grid gap-5 md:grid-cols-2 md:gap-6">
+            <!-- Card Produto 01 -->
+            <a
+              href="#plataforma"
+              class="group relative flex flex-col gap-6 overflow-hidden rounded-3xl border p-8 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-1 md:p-10"
+              :style="{ borderColor: C.border, backgroundColor: C.surface }"
+            >
+              <div
+                class="pointer-events-none absolute -right-20 -top-20 size-72 rounded-full opacity-25 blur-3xl transition-opacity group-hover:opacity-40"
+                :style="{ background: C.primary }"
+              />
+              <div class="relative">
+                <div class="flex items-center gap-3 text-[11px] uppercase tracking-[0.22em]" :style="{ color: C.primary, fontFamily: F.mono }">
+                  <span class="rounded-full border px-2.5 py-0.5 tabular-nums" :style="{ borderColor: `${C.primary}50`, color: C.primary }">PRODUTO 01</span>
+                  <span>Plataforma</span>
+                </div>
+                <h3
+                  class="mt-5 leading-[0.95] tracking-tight"
+                  :style="{
+                    color: C.text,
+                    fontFamily: F.display,
+                    fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
+                  }"
+                >
+                  Sua plataforma de<br />
+                  investimentos<br />
+                  <span class="italic" :style="{ color: C.primary }">no ar em 7 dias.</span>
+                </h3>
+                <p class="mt-5 text-[14px] leading-relaxed" :style="{ color: `${C.text}B0` }">
+                  Frontend + backend + dados B3 + IA + calculadoras + creative. Seu domínio, suas cores, seu logo. Tudo o que a Redentia tem, vestido com a sua marca.
+                </p>
+                <ul class="mt-6 flex flex-col gap-2.5 text-[13px]">
+                  <li class="flex items-start gap-2" :style="{ color: `${C.text}D0` }">
+                    <UIcon name="i-lucide-check-circle-2" class="mt-0.5 size-4 shrink-0" :style="{ color: C.primary }" />
+                    <span>Identidade visual 100% custom</span>
+                  </li>
+                  <li class="flex items-start gap-2" :style="{ color: `${C.text}D0` }">
+                    <UIcon name="i-lucide-check-circle-2" class="mt-0.5 size-4 shrink-0" :style="{ color: C.primary }" />
+                    <span>Dados da B3 em tempo real, calculadoras, IA</span>
+                  </li>
+                  <li class="flex items-start gap-2" :style="{ color: `${C.text}D0` }">
+                    <UIcon name="i-lucide-check-circle-2" class="mt-0.5 size-4 shrink-0" :style="{ color: C.primary }" />
+                    <span>Da call ao deploy em 7 dias</span>
+                  </li>
+                  <li class="flex items-start gap-2" :style="{ color: `${C.text}D0` }">
+                    <UIcon name="i-lucide-check-circle-2" class="mt-0.5 size-4 shrink-0" :style="{ color: C.primary }" />
+                    <span>Zero menção de "Redentia" no produto final</span>
+                  </li>
+                </ul>
+                <div class="mt-8 flex items-center gap-2 text-[13px] font-semibold" :style="{ color: C.primary }">
+                  <span class="border-b transition-[transform,opacity,box-shadow,background-color,border-color,filter] group-hover:translate-x-1" :style="{ borderColor: C.primary }">Ver detalhes da plataforma</span>
+                  <span>↓</span>
+                </div>
+              </div>
+            </a>
+
+            <!-- Card Produto 02 -->
+            <a
+              href="#redacao"
+              class="group relative flex flex-col gap-6 overflow-hidden rounded-3xl border p-8 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-1 md:p-10"
+              :style="{ borderColor: C.border, backgroundColor: C.surface }"
+            >
+              <div
+                class="pointer-events-none absolute -left-20 -bottom-20 size-72 rounded-full opacity-25 blur-3xl transition-opacity group-hover:opacity-40"
+                :style="{ background: C.primary }"
+              />
+              <div class="relative">
+                <div class="flex items-center gap-3 text-[11px] uppercase tracking-[0.22em]" :style="{ color: C.primary, fontFamily: F.mono }">
+                  <span class="rounded-full border px-2.5 py-0.5 tabular-nums" :style="{ borderColor: `${C.primary}50`, color: C.primary }">PRODUTO 02</span>
+                  <span>Redação</span>
+                </div>
+                <h3
+                  class="mt-5 leading-[0.95] tracking-tight"
+                  :style="{
+                    color: C.text,
+                    fontFamily: F.display,
+                    fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)',
+                  }"
+                >
+                  Conteúdo financeiro<br />
+                  pronto, com a<br />
+                  <span class="italic" :style="{ color: C.primary }">sua marca em cima.</span>
+                </h3>
+                <p class="mt-5 text-[14px] leading-relaxed" :style="{ color: `${C.text}B0` }">
+                  Notícias agregadas de 15 feeds, editoriais únicos por ativo, carrosseis pra redes, briefing diário. Saída por API, RSS ou direto no white-label.
+                </p>
+                <ul class="mt-6 flex flex-col gap-2.5 text-[13px]">
+                  <li class="flex items-start gap-2" :style="{ color: `${C.text}D0` }">
+                    <UIcon name="i-lucide-check-circle-2" class="mt-0.5 size-4 shrink-0" :style="{ color: C.primary }" />
+                    <span>15 feeds, 7 fontes, atualizadas a cada 10 min</span>
+                  </li>
+                  <li class="flex items-start gap-2" :style="{ color: `${C.text}D0` }">
+                    <UIcon name="i-lucide-check-circle-2" class="mt-0.5 size-4 shrink-0" :style="{ color: C.primary }" />
+                    <span>Editoriais originais ~1.800 palavras por ticker</span>
+                  </li>
+                  <li class="flex items-start gap-2" :style="{ color: `${C.text}D0` }">
+                    <UIcon name="i-lucide-check-circle-2" class="mt-0.5 size-4 shrink-0" :style="{ color: C.primary }" />
+                    <span>Carrosseis e news posts no padrão visual da sua marca</span>
+                  </li>
+                  <li class="flex items-start gap-2" :style="{ color: `${C.text}D0` }">
+                    <UIcon name="i-lucide-check-circle-2" class="mt-0.5 size-4 shrink-0" :style="{ color: C.primary }" />
+                    <span>Briefing diário 06h pra alimentar sua newsletter</span>
+                  </li>
+                </ul>
+                <div class="mt-8 flex items-center gap-2 text-[13px] font-semibold" :style="{ color: C.primary }">
+                  <span class="border-b transition-[transform,opacity,box-shadow,background-color,border-color,filter] group-hover:translate-x-1" :style="{ borderColor: C.primary }">Ver detalhes da redação</span>
+                  <span>↓</span>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <!-- Combo note -->
+          <div
+            class="mt-8 flex flex-col items-center justify-center gap-3 rounded-2xl border p-5 sm:flex-row"
+            :style="{ borderColor: `${C.primary}40`, backgroundColor: `${C.primary}08` }"
           >
-            Construir uma plataforma de investimentos do zero é caro, lento e arriscado.<br />
-            <span :style="{ color: C.primary }">Nós já fizemos isso.</span> Agora é só vestir a sua marca.
-          </p>
-          <div class="mx-auto mt-10 inline-flex items-center gap-3 text-[12px] uppercase tracking-[0.2em]" :style="{ color: C.textMuted }">
-            <span class="h-px w-12" :style="{ backgroundColor: C.border }" />
-            <span>O time da Redentia</span>
-            <span class="h-px w-12" :style="{ backgroundColor: C.border }" />
+            <UIcon name="i-lucide-package" class="size-4" :style="{ color: C.primary }" />
+            <span class="text-[13px] tracking-wide" :style="{ color: C.text }">
+              Combo Plataforma + Redação:
+              <strong :style="{ color: C.primary }">15% off</strong>
+              no total quando contratados juntos.
+            </span>
+            <span class="text-[11px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">
+              · ver no pricing
+            </span>
           </div>
         </div>
       </section>
+
 
       <!-- ============================================================
            TENANTS GALLERY, visual showcase, full-width tiles
@@ -337,27 +409,36 @@
       </section>
 
       <!-- ============================================================
-           STACK INCLUDED, features in colored cards
+           PRODUTO 01, Plataforma — feature grid (no live components)
            ============================================================ -->
       <section
-        id="stack"
+        id="plataforma"
         class="relative border-b"
         :style="{ borderColor: `${C.border}`, backgroundColor: C.surfaceLight }"
       >
         <div class="mx-auto max-w-7xl px-6 py-24 md:px-10 md:py-32">
-          <div class="mb-16">
-            <div class="text-[12px] uppercase tracking-[0.22em]" :style="{ color: C.primary }">, O que vem no pacote</div>
-            <h2
-              class="mt-4 max-w-3xl leading-[0.95] tracking-tight"
-              :style="{
-                color: C.text,
-                fontFamily: F.display,
-                fontSize: 'clamp(2.5rem, 6vw, 5rem)',
-              }"
-            >
-              Tudo o que a Redentia tem.<br />
-              <span class="italic" :style="{ color: C.primary }">Vestido com a sua marca.</span>
-            </h2>
+          <div class="mb-16 grid items-end gap-8 md:grid-cols-12">
+            <div class="md:col-span-7">
+              <div class="flex items-center gap-3 text-[11px] uppercase tracking-[0.22em]" :style="{ color: C.primary, fontFamily: F.mono }">
+                <span class="rounded-full border px-2.5 py-0.5 tabular-nums" :style="{ borderColor: `${C.primary}50`, color: C.primary }">PRODUTO 01</span>
+                <span class="h-px w-8" :style="{ backgroundColor: C.border }" />
+                <span>Plataforma white-label</span>
+              </div>
+              <h2
+                class="mt-4 leading-[0.95] tracking-tight"
+                :style="{
+                  color: C.text,
+                  fontFamily: F.display,
+                  fontSize: 'clamp(2.5rem, 6vw, 5rem)',
+                }"
+              >
+                Tudo o que a Redentia tem.<br />
+                <span class="italic" :style="{ color: C.primary }">Vestido com a sua marca.</span>
+              </h2>
+            </div>
+            <p class="text-[15px] leading-relaxed md:col-span-5" :style="{ color: `${C.text}B0` }">
+              Frontend, backend, dados da B3, IA, calculadoras, consolidador, creative. Mesmo stack que serve as 5 marcas no ar, com a sua identidade na frente.
+            </p>
           </div>
 
           <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
@@ -366,7 +447,7 @@
               :key="feat.title"
               class="group relative flex flex-col gap-4 overflow-hidden rounded-2xl border p-7 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-1"
               :style="{
-                borderColor: `${C.border}`,
+                borderColor: C.border,
                 backgroundColor: idx % 4 === 0 ? `${C.primary}08` : C.background,
               }"
             >
@@ -388,13 +469,29 @@
       </section>
 
       <!-- ============================================================
-           HOW IT WORKS, 3 step horizontal timeline
+           PRODUTO 2, Redação / Newsroom-as-a-service
            ============================================================ -->
-      <section class="relative border-b" :style="{ borderColor: `${C.border}` }">
-        <div class="mx-auto max-w-7xl px-6 py-24 md:px-10 md:py-32">
+      <section
+        id="redacao"
+        class="relative overflow-hidden border-b"
+        :style="{ borderColor: C.border }"
+      >
+        <div class="pointer-events-none absolute inset-0">
+          <div
+            class="absolute right-0 top-0 h-[600px] w-[600px] rounded-full blur-3xl opacity-15"
+            :style="{ background: `radial-gradient(circle at top right, ${C.primary}, transparent 60%)` }"
+          />
+        </div>
+
+        <div class="relative mx-auto max-w-7xl px-6 py-24 md:px-10 md:py-32">
+          <!-- Section header -->
           <div class="mb-16 grid items-end gap-8 md:grid-cols-12">
-            <div class="md:col-span-8">
-              <div class="text-[12px] uppercase tracking-[0.22em]" :style="{ color: C.primary }">, Como funciona</div>
+            <div class="md:col-span-7">
+              <div class="flex items-center gap-3 text-[11px] uppercase tracking-[0.22em]" :style="{ color: C.primary, fontFamily: F.mono }">
+                <span class="rounded-full border px-2.5 py-0.5 tabular-nums" :style="{ borderColor: `${C.primary}50`, color: C.primary }">PRODUTO 02</span>
+                <span class="h-px w-8" :style="{ backgroundColor: C.border }" />
+                <span>Redação / newsroom-as-a-service</span>
+              </div>
               <h2
                 class="mt-4 leading-[0.95] tracking-tight"
                 :style="{
@@ -403,248 +500,185 @@
                   fontSize: 'clamp(2.5rem, 6vw, 5rem)',
                 }"
               >
-                Da call ao ar em<br />
-                <span class="italic" :style="{ color: C.primary }">uma semana.</span>
+                Jornalismo que<br />
+                <span class="italic" :style="{ color: C.primary }">cabe na sua marca.</span>
               </h2>
             </div>
-            <p class="text-[15px] md:col-span-4" :style="{ color: `${C.text}B0` }">
-              Sem milestones de 6 meses. Sem reunião de descoberta de 3 semanas. A gente prefere mostrar do que falar.
+            <p class="text-[15px] leading-relaxed md:col-span-5" :style="{ color: `${C.text}B0` }">
+              Notícias, análises e editoriais escritos por uma redação profissional, com horário de fechamento. Mesmo padrão do app principal, vestido com a sua identidade. Saída via API, RSS, painel ou direto no white-label.
             </p>
           </div>
 
-          <div class="relative grid gap-8 md:grid-cols-3 md:gap-12">
-            <!-- Connector line desktop -->
-            <div class="absolute left-0 right-0 top-8 hidden h-px md:block" :style="{ background: `linear-gradient(90deg, transparent, ${C.primary}50, transparent)` }" />
+          <!-- Sources strip, slim -->
+          <div class="mb-20 border-y py-8" :style="{ borderColor: `${C.border}80` }">
+            <p class="mb-5 text-[11px] uppercase tracking-[0.22em]" :style="{ color: C.textMuted }">
+              Fontes monitoradas em tempo real · 15 feeds, 7 fontes
+            </p>
+            <div class="flex flex-wrap items-center gap-x-7 gap-y-2.5">
+              <span
+                v-for="src in sources"
+                :key="src"
+                class="text-[15px] leading-none tracking-tight"
+                :style="{ color: `${C.text}A0`, fontFamily: F.display, fontStyle: 'italic' }"
+              >
+                {{ src }}
+              </span>
+            </div>
+          </div>
 
-            <div
-              v-for="(step, idx) in steps"
-              :key="idx"
-              class="relative flex flex-col gap-5"
-            >
-              <!-- Step number circle -->
-              <div
-                class="relative z-10 flex size-16 items-center justify-center rounded-full border-2 text-[24px] font-medium tabular-nums"
+          <!-- Formats grid -->
+          <div class="mb-20">
+            <div class="mb-10 flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
+              <h3
+                class="leading-[1] tracking-tight"
                 :style="{
-                  borderColor: C.primary,
-                  backgroundColor: C.background,
-                  color: C.primary,
+                  color: C.text,
                   fontFamily: F.display,
+                  fontSize: 'clamp(1.75rem, 3.5vw, 2.5rem)',
                 }"
               >
-                {{ idx + 1 }}
-              </div>
-
-              <div class="text-[11px] font-medium uppercase tracking-[0.18em]" :style="{ color: C.primary }">
-                {{ step.duration }}
-              </div>
-              <h3 class="text-[24px] font-medium leading-tight tracking-tight" :style="{ color: C.text, letterSpacing: '-0.005em' }">
-                {{ step.title }}
+                Cinco formatos editoriais
               </h3>
-              <p class="text-[14px] leading-relaxed" :style="{ color: C.textMuted }">
-                {{ step.description }}
-              </p>
-              <div class="flex flex-wrap gap-2 pt-2">
-                <span
-                  v-for="d in step.deliverables"
-                  :key="d"
-                  class="rounded-full border px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-[0.12em]"
-                  :style="{ borderColor: `${C.border}`, color: C.textMuted }"
-                >
-                  {{ d }}
-                </span>
-              </div>
+              <span class="text-[11px] uppercase tracking-[0.2em]" :style="{ color: C.textMuted }">
+                Mesma voz, mesmo padrão · saídas diferentes
+              </span>
             </div>
-          </div>
-        </div>
-      </section>
 
-      <!-- ============================================================
-           PERSONAS, who it's for, big editorial cards
-           ============================================================ -->
-      <section class="relative border-b" :style="{ borderColor: `${C.border}`, backgroundColor: C.surfaceLight }">
-        <div class="mx-auto max-w-7xl px-6 py-24 md:px-10 md:py-32">
-          <div class="mb-16 max-w-3xl">
-            <div class="text-[12px] uppercase tracking-[0.22em]" :style="{ color: C.primary }">, Pra quem é</div>
-            <h2
-              class="mt-4 leading-[0.95] tracking-tight"
-              :style="{
-                color: C.text,
-                fontFamily: F.display,
-                fontSize: 'clamp(2.5rem, 6vw, 5rem)',
-              }"
-            >
-              Se você fala com<br />
-              <span class="italic" :style="{ color: C.primary }">investidores</span>, é pra você.
-            </h2>
-          </div>
-
-          <div class="grid gap-6 md:grid-cols-3">
-            <div
-              v-for="(persona, idx) in personas"
-              :key="persona.name"
-              class="relative flex flex-col gap-5 overflow-hidden rounded-3xl border p-8 md:p-10"
-              :style="{
-                borderColor: `${C.border}`,
-                backgroundColor: C.background,
-              }"
-            >
-              <div
-                class="absolute right-0 top-0 size-32 rounded-full opacity-30 blur-3xl"
-                :style="{ background: C.primary }"
-              />
-              <div class="relative z-10">
-                <div class="mb-5 inline-flex size-14 items-center justify-center rounded-2xl" :style="{ backgroundColor: `${C.primary}20`, color: C.primary }">
-                  <UIcon :name="persona.icon" class="size-7" />
-                </div>
-                <h3 class="text-[24px] font-medium tracking-tight" :style="{ color: C.text, letterSpacing: '-0.005em' }">
-                  {{ persona.name }}
-                </h3>
-                <p class="mt-3 text-[14px] leading-relaxed" :style="{ color: `${C.text}B0` }">
-                  {{ persona.pitch }}
-                </p>
-                <ul class="mt-6 flex flex-col gap-2.5">
-                  <li
-                    v-for="bullet in persona.bullets"
-                    :key="bullet"
-                    class="flex items-start gap-2 text-[13px]"
-                    :style="{ color: C.text }"
+            <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+              <article
+                v-for="(fmt, idx) in formats"
+                :key="fmt.title"
+                class="group relative flex flex-col gap-4 overflow-hidden rounded-2xl border p-7 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-1"
+                :class="idx === 0 || idx === 4 ? 'lg:col-span-2' : ''"
+                :style="{
+                  borderColor: C.border,
+                  backgroundColor: C.surface,
+                }"
+              >
+                <div class="relative z-10 flex h-full flex-col">
+                  <div class="mb-4 flex items-center gap-3">
+                    <span
+                      class="tabular-nums text-[11px] font-medium uppercase tracking-[0.18em]"
+                      :style="{ color: C.primary, fontFamily: F.mono }"
+                    >
+                      Nº {{ String(idx + 1).padStart(2, '0') }}
+                    </span>
+                    <span class="h-px flex-1" :style="{ backgroundColor: `${C.border}80` }" />
+                    <span class="text-[10px] uppercase tracking-[0.2em]" :style="{ color: C.textMuted }">
+                      {{ fmt.cadence }}
+                    </span>
+                  </div>
+                  <h4
+                    class="text-[24px] leading-[1.05] tracking-tight md:text-[28px]"
+                    :style="{ color: C.text, fontFamily: F.display }"
                   >
-                    <UIcon name="i-lucide-check-circle-2" class="mt-0.5 size-4 shrink-0" :style="{ color: C.primary }" />
-                    <span>{{ bullet }}</span>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ============================================================
-           NEWSROOM CROSS-LINK, bridge to /redacao
-           ============================================================ -->
-      <section class="relative border-b" :style="{ borderColor: C.border }">
-        <div class="mx-auto max-w-7xl px-6 py-20 md:px-10 md:py-24">
-          <div
-            class="relative overflow-hidden rounded-3xl border"
-            :style="{ borderColor: C.border, backgroundColor: C.surface }"
-          >
-            <div
-              class="pointer-events-none absolute -right-32 -top-32 h-[500px] w-[500px] rounded-full blur-3xl opacity-25"
-              :style="{ background: `radial-gradient(circle, ${C.primary}, transparent 60%)` }"
-            />
-            <div class="relative grid items-center gap-10 p-10 md:grid-cols-12 md:gap-14 md:p-14">
-              <div class="md:col-span-7">
-                <div class="mb-5 inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-[10px] uppercase tracking-[0.2em]" :style="{ borderColor: `${C.primary}50`, color: C.primary, backgroundColor: `${C.primary}10` }">
-                  <UIcon name="i-lucide-newspaper" class="size-3.5" />
-                  Novo · Newsroom-as-a-service
-                </div>
-                <h2
-                  class="leading-[0.95] tracking-tight"
-                  :style="{
-                    color: C.text,
-                    fontFamily: F.display,
-                    fontSize: 'clamp(2.25rem, 5vw, 4rem)',
-                  }"
-                >
-                  Mais que infra:<br />
-                  <span class="italic" :style="{ color: C.primary }">também tem redação.</span>
-                </h2>
-                <p class="mt-6 max-w-xl text-[15px] leading-relaxed" :style="{ color: `${C.text}B0` }">
-                  A plataforma é o continente. O conteúdo é o que prende o usuário lá dentro. Por isso a Redentia oferece também a redação financeira plugada na sua marca: notícias agregadas, editoriais por ativo, carrosseis, briefing diário. Tudo no seu visual.
-                </p>
-                <div class="mt-8 flex flex-col gap-3 sm:flex-row">
-                  <NuxtLink
-                    to="/redacao"
-                    class="group inline-flex items-center justify-center gap-3 rounded-full px-7 py-3.5 text-[13px] font-semibold transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-0.5"
-                    :style="{
-                      backgroundColor: C.primary,
-                      color: C.background,
-                      boxShadow: `0 12px 40px -16px ${C.primary}A0`,
-                    }"
-                  >
-                    Ver a redação
-                    <span class="inline-block transition-transform group-hover:translate-x-1">→</span>
-                  </NuxtLink>
-                  <button
-                    class="inline-flex items-center justify-center gap-2 rounded-full border px-5 py-3.5 text-[13px] font-medium transition-opacity hover:opacity-70"
-                    :style="{ borderColor: C.border, color: C.text }"
-                    @click="openLeadModal('newsroom')"
-                  >
-                    Pacote infra + redação
-                  </button>
-                </div>
-              </div>
-
-              <div class="md:col-span-5">
-                <div
-                  class="grid gap-px overflow-hidden rounded-2xl border"
-                  :style="{ borderColor: C.border, backgroundColor: C.border }"
-                >
-                  <div
-                    v-for="item in newsroomBridge"
-                    :key="item.label"
-                    class="flex items-center gap-4 p-5"
-                    :style="{ backgroundColor: C.surface }"
-                  >
-                    <UIcon :name="item.icon" class="size-5 shrink-0" :style="{ color: C.primary }" />
-                    <div class="flex-1">
-                      <div class="text-[13px] font-medium" :style="{ color: C.text }">
-                        {{ item.label }}
-                      </div>
-                      <div class="text-[11px]" :style="{ color: C.textMuted }">
-                        {{ item.note }}
-                      </div>
-                    </div>
-                    <span class="text-[10px] uppercase tracking-[0.16em] tabular-nums" :style="{ color: C.primary, fontFamily: F.mono }">
-                      {{ item.spec }}
+                    {{ fmt.title }}
+                  </h4>
+                  <p class="mt-3 text-[14px] leading-relaxed" :style="{ color: `${C.text}B0` }">
+                    {{ fmt.description }}
+                  </p>
+                  <div class="mt-auto flex items-center justify-between border-t pt-5" :style="{ borderColor: `${C.border}80`, marginTop: '1.25rem' }">
+                    <span class="text-[11px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">
+                      {{ fmt.distribution }}
+                    </span>
+                    <span class="text-[11px] tabular-nums" :style="{ color: C.primary, fontFamily: F.mono }">
+                      {{ fmt.spec }}
                     </span>
                   </div>
                 </div>
+              </article>
+            </div>
+          </div>
+
+          <!-- Distribution channels -->
+          <div class="mb-20">
+            <div class="mb-10 flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
+              <h3
+                class="leading-[1] tracking-tight"
+                :style="{
+                  color: C.text,
+                  fontFamily: F.display,
+                  fontSize: 'clamp(1.75rem, 3.5vw, 2.5rem)',
+                }"
+              >
+                Três canais de saída
+              </h3>
+              <span class="text-[11px] uppercase tracking-[0.2em]" :style="{ color: C.textMuted }">
+                A redação escreve uma vez · roda em todo lugar
+              </span>
+            </div>
+
+            <div class="grid gap-5 md:grid-cols-3">
+              <div
+                v-for="ch in channels"
+                :key="ch.name"
+                class="relative flex flex-col gap-5 overflow-hidden rounded-3xl border p-8"
+                :style="{ borderColor: C.border, backgroundColor: C.surface }"
+              >
+                <div class="flex items-center gap-3">
+                  <UIcon :name="ch.icon" class="size-5" :style="{ color: C.primary }" />
+                  <span class="text-[11px] uppercase tracking-[0.2em]" :style="{ color: C.primary, fontFamily: F.mono }">
+                    {{ ch.kicker }}
+                  </span>
+                </div>
+                <h4 class="text-[24px] leading-tight tracking-tight" :style="{ color: C.text, fontFamily: F.display }">
+                  {{ ch.name }}
+                </h4>
+                <p class="text-[14px] leading-relaxed" :style="{ color: `${C.text}B0` }">
+                  {{ ch.description }}
+                </p>
+                <div class="mt-auto flex items-center gap-2 text-[11px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">
+                  <span class="size-1.5 rounded-full" :style="{ backgroundColor: C.primary }" />
+                  {{ ch.metric }}
+                </div>
               </div>
             </div>
           </div>
+
         </div>
       </section>
 
       <!-- ============================================================
-           PRICING, Stripe-style unified container
+           PRICING, single 3-plan grid (Só Plataforma · Combo · Só Redação)
            ============================================================ -->
       <section
         id="pricing"
         class="relative"
       >
         <div class="mx-auto max-w-6xl px-6 py-20 md:px-10 md:py-28">
-          <div class="mb-16 max-w-2xl">
+          <div class="mb-12 max-w-2xl">
+            <div class="text-[11px] uppercase tracking-[0.22em]" :style="{ color: C.primary, fontFamily: F.mono }">
+              , Investimento
+            </div>
             <h2
-              class="leading-[0.95] tracking-tight"
+              class="mt-3 leading-[0.95] tracking-tight"
               :style="{
                 color: C.text,
                 fontFamily: F.display,
                 fontSize: 'clamp(2.5rem, 6vw, 4.5rem)',
               }"
             >
-              Sem letrinha miúda.
+              Pegue um.<br />
+              <span class="italic" :style="{ color: C.primary }">Pegue os dois com 15% off.</span>
             </h2>
-            <p class="mt-6 text-[16px] leading-relaxed" :style="{ color: C.textMuted }">
-              Deploy + setup + suporte + atualizações inclusos. Assina mensal, cancela quando quiser.
+            <p class="mt-5 text-[14px] leading-relaxed" :style="{ color: C.textMuted }">
+              Mensal, sem fidelidade. Setup, deploy, suporte e atualizações inclusos.
             </p>
           </div>
 
-          <!-- Unified container with shared borders -->
           <div
-            class="grid overflow-hidden rounded-xl border md:grid-cols-3"
+            class="grid overflow-hidden rounded-2xl border md:grid-cols-3"
             :style="{ borderColor: C.border }"
           >
             <div
-              v-for="plan in plans"
+              v-for="plan in unifiedPlans"
               :key="plan.slug"
-              class="relative flex flex-col gap-6 border-b p-8 md:border-b-0 md:border-r md:p-10 last:border-b-0 last:border-r-0"
+              class="relative flex flex-col gap-5 border-b p-7 md:border-b-0 md:border-r md:p-9 last:border-b-0 last:border-r-0"
               :style="{
                 borderColor: C.border,
-                backgroundColor: plan.popular ? `${C.primary}06` : 'transparent',
+                backgroundColor: plan.popular ? `${C.primary}08` : 'transparent',
               }"
             >
-              <!-- Popular accent, top border only -->
               <div
                 v-if="plan.popular"
                 class="absolute inset-x-0 top-0 h-0.5"
@@ -652,15 +686,21 @@
               />
 
               <div class="flex items-center gap-3">
-                <h3 class="text-[15px] font-medium" :style="{ color: C.text, letterSpacing: '-0.005em' }">
+                <span
+                  class="rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-[0.16em] tabular-nums"
+                  :style="{ borderColor: `${C.primary}50`, color: C.primary, fontFamily: F.mono }"
+                >
+                  {{ plan.tag }}
+                </span>
+                <h3 class="text-[15px] font-medium" :style="{ color: C.text }">
                   {{ plan.name }}
                 </h3>
                 <span
                   v-if="plan.popular"
-                  class="rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider"
+                  class="rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider"
                   :style="{ backgroundColor: `${C.primary}20`, color: C.primary }"
                 >
-                  Popular
+                  Combo
                 </span>
               </div>
 
@@ -668,14 +708,13 @@
                 {{ plan.description }}
               </p>
 
-              <!-- Price, gigantic numbers, tiny unit -->
               <div class="flex items-baseline gap-1">
                 <span
                   class="tabular-nums leading-none tracking-tight"
                   :style="{
                     color: C.text,
                     fontFamily: F.display,
-                    fontSize: 'clamp(3rem, 5vw, 4.5rem)',
+                    fontSize: 'clamp(2.5rem, 4.5vw, 3.5rem)',
                   }"
                 >
                   {{ plan.price }}
@@ -688,16 +727,15 @@
                 {{ plan.priceNote }}
               </p>
 
-              <!-- Features, clean list, no card wrapping -->
-              <ul class="flex flex-col gap-2.5 border-t pt-6 text-[13px]" :style="{ borderColor: `${C.border}80` }">
+              <ul class="flex flex-col gap-2 border-t pt-5 text-[13px]" :style="{ borderColor: `${C.border}80` }">
                 <li v-for="feat in plan.features" :key="feat" class="flex items-start gap-2" :style="{ color: `${C.text}D0` }">
-                  <span :style="{ color: C.primary }">-</span>
+                  <UIcon name="i-lucide-check" class="mt-0.5 size-3.5 shrink-0" :style="{ color: C.primary }" />
                   <span>{{ feat }}</span>
                 </li>
               </ul>
 
               <button
-                class="mt-auto inline-flex w-full items-center justify-center gap-2 rounded-lg px-5 py-3 text-[13px] font-semibold transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:opacity-90"
+                class="mt-auto inline-flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-[13px] font-semibold transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:opacity-90"
                 :style="{
                   backgroundColor: plan.popular ? C.primary : 'transparent',
                   color: plan.popular ? C.background : C.text,
@@ -1010,31 +1048,7 @@ const tenants = [
 ]
 
 // ============================================================
-// HOW IT WORKS, 3 steps
-// ============================================================
-const steps = [
-  {
-    title: 'Briefing visual',
-    duration: 'DIA 1',
-    description: 'Call de 60 minutos pra entender seu público, sua voz, seu visual. Mostramos os 5 tenants no ar e você escolhe direções de referência.',
-    deliverables: ['CALL 60min', 'BENCHMARKS', 'BRIEFING'],
-  },
-  {
-    title: 'Protótipo clicável',
-    duration: 'DIAS 2–3',
-    description: 'Desenhamos o hero, a home, a asset page e o auth com o seu visual. Você navega num ambiente real, não num Figma estático.',
-    deliverables: ['FIGMA', 'PREVIEW URL', '3 VARIANTS'],
-  },
-  {
-    title: 'Deploy em produção',
-    duration: 'DIAS 4–7',
-    description: 'Seu domínio conectado, certificado TLS, brand config no banco, CDN configurada. A gente aperta o botão e o ar é seu.',
-    deliverables: ['DOMÍNIO', 'TLS', 'CDN', 'ANALYTICS'],
-  },
-]
-
-// ============================================================
-// FEATURES INCLUDED
+// PRODUTO 01, feature grid (no live components)
 // ============================================================
 const features = [
   {
@@ -1080,130 +1094,134 @@ const features = [
 ]
 
 // ============================================================
-// PERSONAS, who it's for
+// REDACAO / PRODUTO 02 — sources, formats, channels
 // ============================================================
-const personas = [
-  {
-    icon: 'i-lucide-megaphone',
-    name: 'Influenciadores',
-    pitch: 'Você tem audiência em renda variável e quer monetizar além de AdSense e cursos. Lance seu próprio app sem ter CTO.',
-    bullets: [
-      'Converter seguidor em usuário recorrente',
-      'Distribuir conteúdo exclusivo dentro do app',
-      'Revenue share ou assinatura recorrente',
-    ],
-  },
-  {
-    icon: 'i-lucide-briefcase',
-    name: 'Assessorias',
-    pitch: 'Você é uma assessoria e precisa de uma plataforma pros clientes que NÃO seja a do banco. Portal white-label com a sua marca.',
-    bullets: [
-      'Sua marca no portal do cliente',
-      'Consolidação via Open Finance',
-      'Controle de acesso por assessor',
-    ],
-  },
-  {
-    icon: 'i-lucide-zap',
-    name: 'Fintechs',
-    pitch: 'Você está validando um produto no espaço de investimentos e precisa de MVP em semanas. Branca a plataforma, testa a tese, depois custom.',
-    bullets: [
-      'MVP em 1 semana, não em 6 meses',
-      'Infra pronta pra escalar',
-      'Time-to-market absurdamente curto',
-    ],
-  },
+const sources = [
+  'InfoMoney',
+  'Valor Investe',
+  'Brazil Journal',
+  'Money Times',
+  'Seu Dinheiro',
+  'Suno',
+  'CNN Brasil',
+  'B3 Comunicados',
+  'CVM',
+  'Bacen',
 ]
 
-// ============================================================
-// NEWSROOM BRIDGE, cross-link items to /redacao
-// ============================================================
-const newsroomBridge = [
+const formats = [
   {
-    icon: 'i-lucide-rss',
-    label: 'Notícias agregadas',
-    note: '15 feeds, dedup, tagging por ticker',
-    spec: 'a cada 10min',
-  },
-  {
-    icon: 'i-lucide-file-text',
-    label: 'Editoriais por ativo',
-    note: 'Conteúdo único pra rankear no Google',
+    title: 'Editoriais por ativo',
+    description: 'Texto único de 1.500 a 2.000 palavras pra cada ticker coberto. Tese, peers, histórico, FAQ. Construído pra rankear no Google e ensinar de verdade.',
+    cadence: 'Por ticker',
+    distribution: 'SEO · long-form',
     spec: '~1.800 palavras',
   },
   {
-    icon: 'i-lucide-image',
-    label: 'Carrosseis e news posts',
-    note: 'Visual no padrão da sua marca',
-    spec: '5–8/semana',
+    title: 'News headlines',
+    description: 'Post unitário 1080×1350 com manchete editorial, dek e CTA. Distribuído no Instagram, X e LinkedIn no mesmo dia que a notícia rompe.',
+    cadence: 'Diário',
+    distribution: 'Instagram · X · LinkedIn',
+    spec: '1080×1350',
   },
   {
-    icon: 'i-lucide-mail',
-    label: 'Briefing diário',
-    note: 'Newsletter matinal branded',
-    spec: '06h diário',
+    title: 'Carrosseis didáticos',
+    description: 'Carrossel de 8 a 12 slides. Tema profundo, narrativa que prende, dado por trás de cada afirmação. Mais salvo que dado de oração da família.',
+    cadence: 'Semanal',
+    distribution: 'Instagram · LinkedIn',
+    spec: '1080×1350',
+  },
+  {
+    title: 'Briefing do dia',
+    description: 'Email matinal de 5 minutos com o que move o mercado, fechamento dos EUA, prévia do dia, agenda macro e três tickers pra ficar de olho.',
+    cadence: '06h diariamente',
+    distribution: 'Email · App',
+    spec: '~600 palavras',
+  },
+  {
+    title: 'Análises long-form',
+    description: 'Reportagem mais profunda, 2.500+ palavras. Setor inteiro, comparação multi-empresa, deep-dive em balanço, narrativa de tese. Sai quando vale, não quando enche.',
+    cadence: 'Quinzenal',
+    distribution: 'Site · Newsletter',
+    spec: '~3.000 palavras',
+  },
+]
+
+const channels = [
+  {
+    icon: 'i-lucide-app-window',
+    kicker: 'Canal #1',
+    name: 'Dentro do app',
+    description: 'A redação alimenta o feed, o asset page, o briefing in-app e o chat com IA. Conteúdo que dá contexto pro número que o usuário acabou de ver.',
+    metric: 'Render direto no produto',
+  },
+  {
+    icon: 'i-lucide-share-2',
+    kicker: 'Canal #2',
+    name: 'Redes sociais',
+    description: 'Instagram, X e LinkedIn no mesmo dia. Carrossel, news headline, citação. Identidade visual da sua marca, voz editorial firme.',
+    metric: 'Posts diários · 3 plataformas',
+  },
+  {
+    icon: 'i-lucide-tag',
+    kicker: 'Canal #3',
+    name: 'White-label',
+    description: 'Tenants da Redentia recebem a mesma redação vestida com a marca deles. Plugado por API, RSS ou painel. Mesmo padrão, branding diferente.',
+    metric: 'Plugado em 5 marcas hoje',
   },
 ]
 
 // ============================================================
-// PRICING
+// PRICING, single 3-plan grid (Só Redação · Combo · Só Plataforma)
 // ============================================================
-const plans = [
+const unifiedPlans = [
   {
-    slug: 'starter',
-    name: 'Starter',
-    description: 'Pra influenciadores validando a tese.',
-    price: 'R$ 2.500',
+    slug: 'newsroom',
+    tag: '02',
+    name: 'Só Redação',
+    description: 'Conteúdo agregado e originais com a sua marca.',
+    price: 'R$ 1.800',
     priceUnit: 'mês',
-    priceNote: 'Setup único: R$ 5.000',
+    priceNote: 'Setup zero · saída por API/RSS',
     features: [
-      'Até 500 usuários ativos',
-      'Domínio customizado + TLS',
-      '1 variant visual completo',
-      'Dados da B3 em tempo real',
-      'Consolidador de carteira',
+      '15 feeds, dedup, tagging por ticker',
+      'Atualização a cada 10 min',
       'Suporte por email',
     ],
-    cta: 'Começar',
+    cta: 'Quero a redação',
     popular: false,
   },
   {
-    slug: 'growth',
-    name: 'Growth',
-    description: 'Pra quem já tem audiência e quer escalar.',
-    price: 'R$ 6.800',
+    slug: 'combo',
+    tag: '01 + 02',
+    name: 'Combo Plataforma + Redação',
+    description: 'Os dois produtos com 15% off no total.',
+    price: 'R$ 8.900',
     priceUnit: 'mês',
-    priceNote: 'Setup único: R$ 8.000',
+    priceNote: 'Setup R$ 11.000 · deploy em 7 dias',
     features: [
-      'Até 10.000 usuários ativos',
-      'Tudo do Starter, mais:',
-      'Variants visuais ilimitados',
-      'Redentia Creative incluso',
-      '8 calculadoras + IA',
-      'Notificações push',
-      'Analytics dashboard',
-      'Suporte prioritário',
+      'Plataforma white-label completa',
+      'Redação plugada na sua marca',
+      'Editoriais + carrosseis + briefing',
+      'Suporte prioritário em Slack',
     ],
-    cta: 'Escolher Growth',
+    cta: 'Quero o combo',
     popular: true,
   },
   {
-    slug: 'enterprise',
-    name: 'Enterprise',
-    description: 'Pra fintechs e assessorias grandes.',
-    price: 'Custom',
-    priceUnit: 'tier',
-    priceNote: 'Contrato anual · negociado',
+    slug: 'platform',
+    tag: '01',
+    name: 'Só Plataforma',
+    description: 'Frontend, backend, dados B3, calculadoras, IA.',
+    price: 'R$ 6.800',
+    priceUnit: 'mês',
+    priceNote: 'Setup R$ 8.000 · deploy em 7 dias',
     features: [
-      'Usuários ilimitados',
-      'Tudo do Growth, mais:',
-      'API REST dedicada',
-      'SLA 99.9% com multa',
-      'Deploy em cloud própria',
-      'Suporte 24/7 via Slack',
-      'Feature requests priorizadas',
+      'Identidade 100% custom + domínio',
+      'Dados B3 + 8 calculadoras + IA',
+      'Multi-usuário e push',
     ],
-    cta: 'Falar com sales',
+    cta: 'Quero a plataforma',
     popular: false,
   },
 ]
@@ -1221,20 +1239,20 @@ const faqs = [
     a: 'Pode. O brand config fica no banco e atualiza ao vivo. Mudanças leves (cor, fonte) são instantâneas; mudanças estruturais (variant da hero) entram no próximo deploy.',
   },
   {
-    q: 'O que acontece se eu cancelar?',
-    a: 'Você tem 30 dias pra exportar tudo (banco de dados, brand config, ativos do design). Depois disso, o tenant é desativado mas a base fica arquivada por 90 dias caso você mude de ideia.',
-  },
-  {
-    q: 'Vocês têm limites de chamadas à API?',
-    a: 'O plano Starter cobre até 100k chamadas/dia, Growth 1M/dia, Enterprise sem limite. Cache inteligente reduz chamadas em 80%, na prática quase ninguém estoura.',
-  },
-  {
-    q: 'Posso usar minha cloud (AWS, GCP, etc)?',
-    a: 'No Enterprise, sim. Subimos a stack inteira na sua conta e cobramos só a licença. Você fica responsável pela infra; nós fornecemos updates e suporte.',
-  },
-  {
     q: 'A Redentia aparece em algum lugar do meu app?',
     a: 'Em lugar nenhum. Nem favicon, nem footer, nem meta tag. O nome só existe no contrato e na NF que entra na sua contabilidade.',
+  },
+  {
+    q: 'Preciso contratar a plataforma pra ter a redação?',
+    a: 'Não. Os dois produtos são independentes. Você pode pegar só a redação pra alimentar o seu site, suas redes ou sua newsletter, mesmo sem ter tenant white-label conosco. Quem pega os dois ganha 15% off no combo.',
+  },
+  {
+    q: 'O conteúdo da redação é original ou agregado?',
+    a: 'Os dois. Agregamos 15 feeds RSS com dedup e tagging por ticker. Originamos editoriais por ativo, carrosseis, news posts e briefing diário escritos pela equipe. Tudo separado e sinalizado, nunca passamos agregação como original.',
+  },
+  {
+    q: 'O que acontece se eu cancelar?',
+    a: 'Você tem 30 dias pra exportar tudo (banco de dados, brand config, ativos do design). Depois disso, o tenant é desativado mas a base fica arquivada por 90 dias caso você mude de ideia.',
   },
 ]
 
