@@ -11,14 +11,14 @@
       </div>
       <div class="flex items-center gap-3">
         <NuxtLink
-          v-if="!isNew && form.id"
-          :to="`/admin/tenants/${form.id}/plans`"
+          v-if="!isNew && props.initial?.id"
+          :to="`/admin/tenants/${props.initial?.id}/plans`"
           class="font-mono-tab text-[10px] uppercase tracking-[0.15em] rounded-sm border px-3 py-1.5 hover:opacity-80"
           :style="{ borderColor: C.primary, color: C.primary }"
         >PLANOS</NuxtLink>
         <NuxtLink
-          v-if="!isNew && form.id"
-          :to="`/admin/tenants/${form.id}/subscriptions`"
+          v-if="!isNew && props.initial?.id"
+          :to="`/admin/tenants/${props.initial?.id}/subscriptions`"
           class="font-mono-tab text-[10px] uppercase tracking-[0.15em] rounded-sm border px-3 py-1.5 hover:opacity-80"
           :style="{ borderColor: C.primary, color: C.primary }"
         >ASSINANTES</NuxtLink>

@@ -141,6 +141,7 @@ const postizUrl = computed(() => {
 const mainNav = [
   { to: '/admin', label: 'Dashboard', icon: 'i-lucide-layout-dashboard' },
   { to: '/admin/tenants', label: 'Tenants', icon: 'i-lucide-building-2' },
+  { to: '/admin/billing', label: 'Billing', icon: 'i-lucide-credit-card' },
   { to: '/admin/users', label: 'Usuários', icon: 'i-lucide-users' },
   { to: '/admin/comunicacoes', label: 'Comunicações', icon: 'i-lucide-megaphone' },
   { to: '/admin/leads', label: 'Leads', icon: 'i-lucide-magnet' },
