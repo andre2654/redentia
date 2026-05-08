@@ -217,7 +217,12 @@ import {
   type PortfolioReport,
 } from '~/composables/usePortfolioScore'
 
-definePageMeta({ layout: 'default' })
+definePageMeta({
+  layout: 'default',
+  // Bouncia user logado sem subscription ativa pra /pricing.
+  // Tenants com billing.enabled=false fazem bypass automatico.
+  middleware: ['requires-subscription'],
+})
 
 usePageSeo({
   title: 'Minha Carteira',

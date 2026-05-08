@@ -14,6 +14,10 @@
     />
     -->
     <NuxtPage />
+    <!-- Modal global de upgrade — montado uma vez aqui pra qualquer
+         page poder abrir via useUpgradeModal().open(). Em tenants com
+         billing.enabled=false o composable e no-op (modal nunca abre). -->
+    <MoleculesUpgradeModal />
   </UApp>
 </template>
 
