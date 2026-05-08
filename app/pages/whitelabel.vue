@@ -31,6 +31,9 @@
             <a href="#pricing" class="text-[13px] transition-colors hover:opacity-70" :style="{ color: C.textMuted }">
               Investimento
             </a>
+            <NuxtLink to="/redacao" class="text-[13px] transition-colors hover:opacity-70" :style="{ color: C.textMuted }">
+              Redação
+            </NuxtLink>
           </nav>
           <div class="flex-1" />
           <button
@@ -510,6 +513,93 @@
                     <span>{{ bullet }}</span>
                   </li>
                 </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           NEWSROOM CROSS-LINK, bridge to /redacao
+           ============================================================ -->
+      <section class="relative border-b" :style="{ borderColor: C.border }">
+        <div class="mx-auto max-w-7xl px-6 py-20 md:px-10 md:py-24">
+          <div
+            class="relative overflow-hidden rounded-3xl border"
+            :style="{ borderColor: C.border, backgroundColor: C.surface }"
+          >
+            <div
+              class="pointer-events-none absolute -right-32 -top-32 h-[500px] w-[500px] rounded-full blur-3xl opacity-25"
+              :style="{ background: `radial-gradient(circle, ${C.primary}, transparent 60%)` }"
+            />
+            <div class="relative grid items-center gap-10 p-10 md:grid-cols-12 md:gap-14 md:p-14">
+              <div class="md:col-span-7">
+                <div class="mb-5 inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-[10px] uppercase tracking-[0.2em]" :style="{ borderColor: `${C.primary}50`, color: C.primary, backgroundColor: `${C.primary}10` }">
+                  <UIcon name="i-lucide-newspaper" class="size-3.5" />
+                  Novo · Newsroom-as-a-service
+                </div>
+                <h2
+                  class="leading-[0.95] tracking-tight"
+                  :style="{
+                    color: C.text,
+                    fontFamily: F.display,
+                    fontSize: 'clamp(2.25rem, 5vw, 4rem)',
+                  }"
+                >
+                  Mais que infra:<br />
+                  <span class="italic" :style="{ color: C.primary }">também tem redação.</span>
+                </h2>
+                <p class="mt-6 max-w-xl text-[15px] leading-relaxed" :style="{ color: `${C.text}B0` }">
+                  A plataforma é o continente. O conteúdo é o que prende o usuário lá dentro. Por isso a Redentia oferece também a redação financeira plugada na sua marca: notícias agregadas, editoriais por ativo, carrosseis, briefing diário. Tudo no seu visual.
+                </p>
+                <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+                  <NuxtLink
+                    to="/redacao"
+                    class="group inline-flex items-center justify-center gap-3 rounded-full px-7 py-3.5 text-[13px] font-semibold transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:-translate-y-0.5"
+                    :style="{
+                      backgroundColor: C.primary,
+                      color: C.background,
+                      boxShadow: `0 12px 40px -16px ${C.primary}A0`,
+                    }"
+                  >
+                    Ver a redação
+                    <span class="inline-block transition-transform group-hover:translate-x-1">→</span>
+                  </NuxtLink>
+                  <button
+                    class="inline-flex items-center justify-center gap-2 rounded-full border px-5 py-3.5 text-[13px] font-medium transition-opacity hover:opacity-70"
+                    :style="{ borderColor: C.border, color: C.text }"
+                    @click="openLeadModal('newsroom')"
+                  >
+                    Pacote infra + redação
+                  </button>
+                </div>
+              </div>
+
+              <div class="md:col-span-5">
+                <div
+                  class="grid gap-px overflow-hidden rounded-2xl border"
+                  :style="{ borderColor: C.border, backgroundColor: C.border }"
+                >
+                  <div
+                    v-for="item in newsroomBridge"
+                    :key="item.label"
+                    class="flex items-center gap-4 p-5"
+                    :style="{ backgroundColor: C.surface }"
+                  >
+                    <UIcon :name="item.icon" class="size-5 shrink-0" :style="{ color: C.primary }" />
+                    <div class="flex-1">
+                      <div class="text-[13px] font-medium" :style="{ color: C.text }">
+                        {{ item.label }}
+                      </div>
+                      <div class="text-[11px]" :style="{ color: C.textMuted }">
+                        {{ item.note }}
+                      </div>
+                    </div>
+                    <span class="text-[10px] uppercase tracking-[0.16em] tabular-nums" :style="{ color: C.primary, fontFamily: F.mono }">
+                      {{ item.spec }}
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -1032,6 +1122,36 @@ const personas = [
       'Infra pronta pra escalar',
       'Time-to-market absurdamente curto',
     ],
+  },
+]
+
+// ============================================================
+// NEWSROOM BRIDGE, cross-link items to /redacao
+// ============================================================
+const newsroomBridge = [
+  {
+    icon: 'i-lucide-rss',
+    label: 'Notícias agregadas',
+    note: '15 feeds, dedup, tagging por ticker',
+    spec: 'a cada 10min',
+  },
+  {
+    icon: 'i-lucide-file-text',
+    label: 'Editoriais por ativo',
+    note: 'Conteúdo único pra rankear no Google',
+    spec: '~1.800 palavras',
+  },
+  {
+    icon: 'i-lucide-image',
+    label: 'Carrosseis e news posts',
+    note: 'Visual no padrão da sua marca',
+    spec: '5–8/semana',
+  },
+  {
+    icon: 'i-lucide-mail',
+    label: 'Briefing diário',
+    note: 'Newsletter matinal branded',
+    spec: '06h diário',
   },
 ]
 
