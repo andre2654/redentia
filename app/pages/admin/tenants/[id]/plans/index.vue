@@ -166,7 +166,7 @@
         <div class="grid gap-4 md:grid-cols-2">
           <label class="flex flex-col gap-2">
             <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">SLUG *</span>
-            <input v-model="editing.slug" type="text" required pattern="[-_a-z0-9]+" maxlength="60" class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none" :style="{ borderColor: C.border, color: C.text }" />
+            <input v-model="editing.slug" type="text" required pattern="[\-_a-z0-9]+" maxlength="60" class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none" :style="{ borderColor: C.border, color: C.text }" />
           </label>
           <label class="flex flex-col gap-2">
             <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">NOME *</span>

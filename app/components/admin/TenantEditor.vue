@@ -39,7 +39,7 @@
             v-model="form.slug"
             type="text"
             required
-            pattern="[-a-z0-9]+"
+            pattern="[\-a-z0-9]+"
             maxlength="60"
             :disabled="!isNew"
             class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none disabled:opacity-60"
