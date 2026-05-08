@@ -9,11 +9,25 @@
           {{ form.name || form.slug || 'Tenant sem nome' }}
         </h1>
       </div>
-      <NuxtLink
-        to="/admin/tenants"
-        class="font-mono-tab text-[10px] uppercase tracking-[0.15em]"
-        :style="{ color: C.textMuted }"
-      >← VOLTAR</NuxtLink>
+      <div class="flex items-center gap-3">
+        <NuxtLink
+          v-if="!isNew && form.id"
+          :to="`/admin/tenants/${form.id}/plans`"
+          class="font-mono-tab text-[10px] uppercase tracking-[0.15em] rounded-sm border px-3 py-1.5 hover:opacity-80"
+          :style="{ borderColor: C.primary, color: C.primary }"
+        >PLANOS</NuxtLink>
+        <NuxtLink
+          v-if="!isNew && form.id"
+          :to="`/admin/tenants/${form.id}/subscriptions`"
+          class="font-mono-tab text-[10px] uppercase tracking-[0.15em] rounded-sm border px-3 py-1.5 hover:opacity-80"
+          :style="{ borderColor: C.primary, color: C.primary }"
+        >ASSINANTES</NuxtLink>
+        <NuxtLink
+          to="/admin/tenants"
+          class="font-mono-tab text-[10px] uppercase tracking-[0.15em]"
+          :style="{ color: C.textMuted }"
+        >← VOLTAR</NuxtLink>
+      </div>
     </header>
 
     <form class="flex flex-col gap-5" @submit.prevent="handleSubmit">
