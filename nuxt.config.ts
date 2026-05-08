@@ -642,6 +642,10 @@ export default defineNuxtConfig({
       // /raio-x. Fallback hardcoded garante que funciona sem .env.
       // Deixar string vazia na env desliga em qualquer ambiente.
       clarityProjectId: process.env.NUXT_PUBLIC_CLARITY_PROJECT_ID || 'wmh9pyc3io',
+      // Google Analytics 4 measurement ID. Carregado lazy via
+      // requestIdleCallback no plugin google-analytics.client.ts pra
+      // não bloquear LCP. Empty string desliga em qualquer ambiente.
+      gaId: process.env.NUXT_PUBLIC_GA_ID || 'G-F2QGZNWJTM',
       // Google OAuth Web client ID — public by design (browsers
       // need it to ask Google Identity Services for an id_token).
       // The matching client_secret stays in the Laravel backend
