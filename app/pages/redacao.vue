@@ -512,7 +512,7 @@
                 fontSize: 'clamp(2.25rem, 5vw, 4rem)',
               }"
             >
-              Sete regras que<br />
+              Seis regras que<br />
               <span class="italic" :style="{ color: C.primary }">não negociamos.</span>
             </h2>
           </div>
