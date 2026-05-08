@@ -76,6 +76,73 @@
         </label>
       </div>
 
+      <!-- Billing settings — atalho UI pro config.billing JSON -->
+      <fieldset
+        class="flex flex-col gap-3 rounded-sm border p-4"
+        :style="{ borderColor: billingEnabled ? `color-mix(in srgb, ${C.primary} 32%, transparent)` : C.border, backgroundColor: C.surface }"
+      >
+        <legend class="font-mono-tab px-2 text-[10px] uppercase tracking-[0.18em]" :style="{ color: billingEnabled ? C.primary : C.textMuted }">
+          &gt; BILLING
+        </legend>
+
+        <label class="flex cursor-pointer items-center gap-2">
+          <input
+            type="checkbox"
+            class="size-4"
+            :checked="billingEnabled"
+            @change="toggleBilling(($event.target as HTMLInputElement).checked)"
+          />
+          <span class="text-[13px]" :style="{ color: C.text }">
+            Billing habilitado (pricing page ativa, paywall em /wallet e /help)
+          </span>
+        </label>
+        <p
+          v-if="!billingEnabled"
+          class="font-mono-tab text-[10px] uppercase leading-[1.5] tracking-[0.12em]"
+          :style="{ color: C.textMuted }"
+        >
+          &gt; OFF: TUDO LIBERADO PROS USERS DESSE TENANT (UNLIMITED SYNTHETIC).
+        </p>
+        <p
+          v-else
+          class="font-mono-tab text-[10px] uppercase leading-[1.5] tracking-[0.12em]"
+          :style="{ color: '#f59e0b' }"
+        >
+          &gt; ATENCAO: USERS SEM SUBSCRIPTION ATIVA SAO BOUNCEADOS PRA /pricing.
+        </p>
+
+        <div v-if="billingEnabled" class="grid gap-4 md:grid-cols-2">
+          <label class="flex flex-col gap-2">
+            <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">
+              &gt; MOEDA
+            </span>
+            <input
+              type="text"
+              :value="billingCurrency"
+              maxlength="3"
+              placeholder="BRL"
+              class="rounded-sm border bg-transparent px-3 py-2 font-mono-tab text-[12px] uppercase outline-none"
+              :style="{ borderColor: C.border, color: C.text }"
+              @change="setBillingField('currency', ($event.target as HTMLInputElement).value.toUpperCase())"
+            />
+          </label>
+          <label class="flex flex-col gap-2">
+            <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">
+              &gt; DIAS DE TRIAL DO PRO
+            </span>
+            <input
+              type="number"
+              :value="billingTrialDays"
+              min="0"
+              max="365"
+              class="rounded-sm border bg-transparent px-3 py-2 font-mono-tab text-[12px] outline-none tabular-nums"
+              :style="{ borderColor: C.border, color: C.text }"
+              @change="setBillingField('trial_days_pro', Number(($event.target as HTMLInputElement).value) || 0)"
+            />
+          </label>
+        </div>
+      </fieldset>
+
       <!-- Config JSON -->
       <div class="flex flex-col gap-2">
         <div class="flex items-baseline justify-between">
@@ -129,6 +196,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { REDENTIA_COLORS as C, REDENTIA_FONTS as F } from '~/utils/redentiaCreativeColors'
 
 const props = defineProps<{ initial: any; isNew: boolean }>()
@@ -148,6 +216,37 @@ const configError = ref<string | null>(null)
 const configValidAt = ref<number | null>(Date.now())
 const submitting = ref(false)
 const error = ref<string | null>(null)
+
+// ===== BILLING UI =====
+// Os campos billing.enabled / currency / trial_days_pro tem UI propria
+// mas continuam vivendo no config JSON. As 3 funcoes abaixo fazem
+// parse → mutate → stringify pra manter a textarea como source of truth.
+const parsedConfig = computed(() => {
+  try { return JSON.parse(configText.value) || {} } catch { return {} }
+})
+const billingEnabled = computed(() => Boolean(parsedConfig.value?.billing?.enabled))
+const billingCurrency = computed(() => parsedConfig.value?.billing?.currency || 'BRL')
+const billingTrialDays = computed(() => Number(parsedConfig.value?.billing?.trial_days_pro ?? 7))
+
+function toggleBilling(enabled: boolean) {
+  let parsed: any = {}
+  try { parsed = JSON.parse(configText.value) } catch { parsed = {} }
+  parsed.billing = parsed.billing || {}
+  parsed.billing.enabled = enabled
+  if (parsed.billing.currency === undefined) parsed.billing.currency = 'BRL'
+  if (parsed.billing.trial_days_pro === undefined) parsed.billing.trial_days_pro = 7
+  configText.value = JSON.stringify(parsed, null, 2)
+  validateConfig()
+}
+
+function setBillingField(key: 'currency' | 'trial_days_pro', value: any) {
+  let parsed: any = {}
+  try { parsed = JSON.parse(configText.value) } catch { parsed = {} }
+  parsed.billing = parsed.billing || {}
+  parsed.billing[key] = value
+  configText.value = JSON.stringify(parsed, null, 2)
+  validateConfig()
+}
 
 function validateConfig() {
   try {
