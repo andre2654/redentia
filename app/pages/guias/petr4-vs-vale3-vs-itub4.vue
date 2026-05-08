@@ -37,7 +37,7 @@ usePageSeo({
 </script>
 
 <template>
-  <NuxtLayout name="static" title="PETR4 vs VALE3 vs ITUB4">
+  <NuxtLayout name="default" title="PETR4 vs VALE3 vs ITUB4">
     <article class="mx-auto flex w-full max-w-4xl flex-col gap-8 px-6 py-12 md:py-16">
       <NuxtLink
         to="/guias"
@@ -192,7 +192,7 @@ usePageSeo({
           Use nossa plataforma gratuita pra comparar qualquer ação da B3 lado a lado: dividendos, indicadores, histórico de 20 anos.
         </p>
         <div class="flex flex-wrap justify-center gap-3">
-          <UButton to="/acoes" size="lg" color="primary">Explorar ações</UButton>
+          <NuxtLink to="/acoes" class="quiet-btn-primary">Explorar ações</NuxtLink>
           <UButton to="/ranking/maiores-dividend-yield" size="lg" variant="outline" color="neutral">Top dividendos</UButton>
         </div>
       </div>

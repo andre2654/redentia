@@ -37,7 +37,7 @@ usePageSeo({
 </script>
 
 <template>
-  <NuxtLayout name="static" title="FIRE Brasil">
+  <NuxtLayout name="default" title="FIRE Brasil">
     <article class="mx-auto flex w-full max-w-4xl flex-col gap-8 px-6 py-12 md:py-16">
       <NuxtLink
         to="/guias"
@@ -185,7 +185,7 @@ usePageSeo({
           Use a calculadora de aposentadoria da Redentia pra descobrir em minutos quanto você precisa acumular e quando chega a independência.
         </p>
         <div class="flex flex-wrap justify-center gap-3">
-          <UButton to="/calculadora/aposentadoria" size="lg" color="primary">Calcular minha idade FIRE</UButton>
+          <NuxtLink to="/calculadora/aposentadoria" class="quiet-btn-primary">Calcular minha idade FIRE</NuxtLink>
           <UButton to="/calculadora/juros-compostos" size="lg" variant="outline" color="neutral">Calculadora juros compostos</UButton>
         </div>
       </div>

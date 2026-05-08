@@ -37,7 +37,7 @@ usePageSeo({
 </script>
 
 <template>
-  <NuxtLayout name="static" title="Declarar Ações no IR 2026">
+  <NuxtLayout name="default" title="Declarar Ações no IR 2026">
     <article class="mx-auto flex w-full max-w-4xl flex-col gap-8 px-6 py-12 md:py-16">
       <NuxtLink
         to="/guias"
@@ -184,7 +184,7 @@ usePageSeo({
           Nossa calculadora de IR sobre ações aplica todas as regras (R$ 20k, day trade, FIIs) e gera o valor exato que você vai pagar de DARF.
         </p>
         <div class="flex flex-wrap justify-center gap-3">
-          <UButton to="/calculadora/imposto-renda" size="lg" color="primary">Calculadora de IR</UButton>
+          <NuxtLink to="/calculadora/imposto-renda" class="quiet-btn-primary">Calculadora de IR</NuxtLink>
           <UButton to="/guias" size="lg" variant="outline" color="neutral">Mais guias</UButton>
         </div>
       </div>

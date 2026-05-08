@@ -1,5 +1,5 @@
 <template>
-  <NuxtLayout name="static" title="Como Investir na Bolsa: Guias, Dividendos e Análises">
+  <NuxtLayout name="default" title="Como Investir na Bolsa: Guias, Dividendos e Análises">
     <div class="flex flex-col gap-8 px-6 py-8">
       <!-- Header -->
       <section class="flex flex-col gap-4">

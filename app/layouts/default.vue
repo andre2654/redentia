@@ -1,4 +1,25 @@
 <template>
+  <!--
+    Default layout dual-mode:
+
+    - Unauthenticated: delega pro layout `unauthenticated` (header
+      publico de marketing com nav explorar/rankings/ferramentas + Entrar,
+      footer publico). Páginas como /calculadora, /acoes, /fiis, /dividendos
+      sao acessiveis por visitantes — sem essa branch, o shell de plataforma
+      (sidebar interna + brand subtitle) vazaria pra quem nao esta logado.
+    - Autenticada: renderiza o shell completo (sidebar + header platform
+      + slot). Comportamento original do layout.
+
+    O switch eh feito aqui dentro do default.vue (em vez de cada pagina
+    fazer `layout: isAuth ? 'default' : 'unauthenticated'`) pra que
+    qualquer pagina que use `definePageMeta({ layout: 'default' })`
+    automaticamente herde o comportamento correto.
+  -->
+  <NuxtLayout v-if="!authStore.isAuthenticated" name="unauthenticated">
+    <slot />
+  </NuxtLayout>
+
+  <template v-else>
   <MoleculesMobileMenuOverlay v-model:open="menuMobileActive" mode="auth" />
 
 
@@ -645,6 +666,7 @@
     :open="showOnboardingModal"
     @close="closeOnboarding"
   />
+  </template>
 </template>
 
 <script lang="ts" setup>

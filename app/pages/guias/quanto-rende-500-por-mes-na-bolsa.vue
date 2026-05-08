@@ -42,7 +42,7 @@ usePageSeo({
 </script>
 
 <template>
-  <NuxtLayout name="static" title="Quanto Rende R$ 500 Por Mês na Bolsa">
+  <NuxtLayout name="default" title="Quanto Rende R$ 500 Por Mês na Bolsa">
     <article class="static-content mx-auto flex w-full max-w-4xl flex-col gap-8 px-6 py-12 md:py-16">
       <NuxtLink
         to="/guias"
@@ -199,7 +199,7 @@ usePageSeo({
           Ajuste aporte, taxa e prazo na nossa calculadora gratuita e veja o gráfico de evolução patrimonial mês a mês.
         </p>
         <div class="flex flex-wrap justify-center gap-3">
-          <UButton to="/calculadora/juros-compostos" size="lg" color="primary">Abrir calculadora</UButton>
+          <NuxtLink to="/calculadora/juros-compostos" class="quiet-btn-primary">Abrir calculadora</NuxtLink>
           <UButton to="/guias" size="lg" variant="outline" color="neutral">Ver mais guias</UButton>
         </div>
       </div>

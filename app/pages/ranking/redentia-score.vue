@@ -14,7 +14,7 @@
   HowTo ou Article.
 -->
 <template>
-  <NuxtLayout :name="layoutName" title="Redentia Score">
+  <NuxtLayout name="default" title="Redentia Score">
     <section class="flex flex-col gap-10 px-6 py-8 md:py-12">
       <!-- ============ Back link ============ -->
       <NuxtLink
@@ -525,10 +525,6 @@ definePageMeta({
 })
 
 const brand = useBrand()
-const authStore = useAuthStore()
-const layoutName = computed(() =>
-  authStore.isAuthenticated ? 'default' : 'static',
-)
 const service = useAssetsService()
 
 // ----- Type filter ---------------------------------------------------

@@ -1,5 +1,5 @@
 <template>
-  <NuxtLayout :name="layoutName" title="Maiores Baixas do Mês">
+  <NuxtLayout name="default" title="Maiores Baixas do Mês">
     <section class="flex flex-col gap-8 px-6 py-8">
       <div class="flex flex-col gap-3">
         <NuxtLink
@@ -406,10 +406,6 @@ definePageMeta({
 import { readableOn } from '~/utils/color'
 
 const brand = useBrand()
-const authStore = useAuthStore()
-const layoutName = computed(() =>
-  authStore.isAuthenticated ? 'default' : 'static'
-)
 const service = useAssetsService()
 
 const faqItems = [

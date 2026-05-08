@@ -194,6 +194,9 @@ function cancelRename(): void {
 </script>
 
 <style scoped>
+.session-row {
+  cursor: pointer;
+}
 .session-row:hover {
   background-color: color-mix(in srgb, var(--brand-text) 4%, transparent);
 }

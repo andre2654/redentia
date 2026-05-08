@@ -974,7 +974,7 @@
             <!-- Trust -->
             <p class="flex items-center gap-2 text-xs" :style="{ color: `rgb(var(--brand-overlay) / 0.4)` }">
               <UIcon name="i-lucide-shield-check" class="h-3 w-3" />
-              100% gratuito • Sem cadastro de cartão
+              7 dias grátis no Pro • Sem cartão pra começar
             </p>
           </div>
         </div>

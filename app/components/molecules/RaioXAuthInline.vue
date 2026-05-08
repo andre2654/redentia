@@ -541,7 +541,7 @@ async function submitEmail() {
   flex-direction: column;
   gap: 8px;
   width: 100%;
-  align-items: stretch;
+  align-items: center;
 }
 
 .raiox-auth__error {

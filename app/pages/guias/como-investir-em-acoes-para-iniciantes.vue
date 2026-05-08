@@ -1,5 +1,5 @@
 <template>
-  <NuxtLayout name="static" title="Como Investir em Ações para Iniciantes">
+  <NuxtLayout name="default" title="Como Investir em Ações para Iniciantes">
     <section class="flex flex-col gap-8 px-6 py-8">
       <!-- Hero Section -->
       <div class="flex flex-col gap-4">

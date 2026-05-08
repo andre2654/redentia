@@ -2506,11 +2506,11 @@ const redentia: BrandConfig = {
     title: 'Descubra os riscos escondidos da sua {em}carteira{/em} em 2 minutos.',
     subtitle: 'Adicione seus ativos e a Redent.IA cruza fundamentos, notícias, dividendos, concentração e mercado para mostrar o que esta bom, o que esta ruim e o que mudou.',
     founderQuote: '',
-    ctaLabel: 'Analisar minha carteira grátis',
+    ctaLabel: 'Começar 7 dias grátis',
     ctaSecondaryLabel: 'Ver exemplo de análise',
     ctaIcon: 'i-lucide-sparkles',
     eyebrow: 'PLATAFORMA DE IA PARA SUA CARTEIRA',
-    trustIndicators: ['Sem cadastro', 'Resultado em 2 min', 'Sempre grátis'],
+    trustIndicators: ['Sem cartão pra começar', 'Resultado em 2 min', 'Cancele em 1 click'],
   },
 
   header: {

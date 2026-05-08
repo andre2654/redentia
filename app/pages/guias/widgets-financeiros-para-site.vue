@@ -105,7 +105,7 @@ usePageSeo({
 </script>
 
 <template>
-  <NuxtLayout name="static" title="Widgets Financeiros para Site">
+  <NuxtLayout name="default" title="Widgets Financeiros para Site">
     <article class="mx-auto flex w-full max-w-4xl flex-col gap-8 px-6 py-12 md:py-16">
       <!-- Back-link to parent listing -->
       <NuxtLink
@@ -263,7 +263,7 @@ usePageSeo({
         <p class="mx-auto mb-5 max-w-xl" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 60%, transparent)' }">
           Abra a página de embeds, escolha um widget e cole o código. Em 2 minutos seu conteúdo tá com dados ao vivo da B3.
         </p>
-        <UButton to="/embed" size="lg" color="primary">Abrir lista de widgets</UButton>
+        <NuxtLink to="/embed" class="quiet-btn-primary">Abrir lista de widgets</NuxtLink>
       </div>
     </article>
   </NuxtLayout>

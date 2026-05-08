@@ -1,5 +1,5 @@
 <template>
-  <NuxtLayout name="static" title="Calculadora de Dividendos">
+  <NuxtLayout name="default" title="Calculadora de Dividendos">
     <section class="flex flex-col gap-8 px-6 py-8">
       <!-- Hero Section -->
       <div class="flex flex-col gap-4">

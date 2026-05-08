@@ -1,5 +1,5 @@
 <template>
-  <NuxtLayout name="static" title="Análise PETR4">
+  <NuxtLayout name="default" title="Análise PETR4">
     <section class="flex flex-col gap-8 px-6 py-8">
       <!-- Hero Section -->
       <div class="flex flex-col gap-4">

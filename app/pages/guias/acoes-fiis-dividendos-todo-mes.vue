@@ -59,7 +59,7 @@ const acoesRecorrentes = [
 </script>
 
 <template>
-  <NuxtLayout name="static" title="Dividendos Todo Mês">
+  <NuxtLayout name="default" title="Dividendos Todo Mês">
     <article class="mx-auto flex w-full max-w-4xl flex-col gap-8 px-6 py-12 md:py-16">
       <NuxtLink
         to="/guias"
@@ -211,7 +211,7 @@ const acoesRecorrentes = [
           Explore todos os FIIs e ações pagadoras da B3 com DY atualizado em tempo real, filtros por segmento e histórico de 5 anos.
         </p>
         <div class="flex flex-wrap justify-center gap-3">
-          <UButton to="/fiis" size="lg" color="primary">Explorar FIIs</UButton>
+          <NuxtLink to="/fiis" class="quiet-btn-primary">Explorar FIIs</NuxtLink>
           <UButton to="/ranking/maiores-dividend-yield" size="lg" variant="outline" color="neutral">Top DY</UButton>
         </div>
       </div>

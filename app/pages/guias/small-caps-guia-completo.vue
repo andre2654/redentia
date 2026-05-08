@@ -1,5 +1,5 @@
 <template>
-  <NuxtLayout name="static" title="Small Caps: Guia Completo">
+  <NuxtLayout name="default" title="Small Caps: Guia Completo">
     <section class="static-content flex flex-col gap-8 px-6 py-8">
       <!-- Hero Section -->
       <div class="flex flex-col gap-4">

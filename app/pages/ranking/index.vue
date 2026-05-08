@@ -16,7 +16,7 @@
   pra evitar SSR flash quando o tenant muda.
 -->
 <template>
-  <NuxtLayout :name="layoutName" title="Rankings da B3 2026">
+  <NuxtLayout name="default" title="Rankings da B3 2026">
     <section class="flex flex-col gap-12 px-6 py-10 md:py-14">
       <!-- ============ Hero ============ -->
       <header class="flex max-w-3xl flex-col gap-3">
@@ -352,11 +352,6 @@ definePageMeta({
   isPublicRoute: true,
   hideInstallAppBanner: true,
 })
-
-const authStore = useAuthStore()
-const layoutName = computed(() =>
-  authStore.isAuthenticated ? 'default' : 'static'
-)
 
 const service = useAssetsService()
 

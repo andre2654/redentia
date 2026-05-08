@@ -1,9 +1,9 @@
 <template>
-  <NuxtLayout :name="layoutName" title="Como baixar a planilha da sua carteira no CEI">
+  <NuxtLayout name="default" title="Como baixar a planilha da sua carteira no CEI">
     <section class="flex flex-col gap-12 px-6 py-10">
       <!-- ============ Lead + primary CTA ============ -->
       <NuxtLink
-        v-if="layoutName === 'static'"
+        v-if="!authStore.isAuthenticated"
         to="/guias"
         class="flex items-center gap-1 text-xs transition hover:opacity-80"
         :style="{ color: brand.colors.textMuted }"
@@ -256,12 +256,6 @@ definePageMeta({
 
 const brand = useBrand()
 const authStore = useAuthStore()
-
-// Auth-aware layout: logado mostra sidebar (default); visitante usa
-// static (SEO-friendly com hero centralizado do layout).
-const layoutName = computed(() =>
-  authStore.isAuthenticated ? 'default' : 'static',
-)
 
 usePageSeo({
   title: 'Como baixar sua carteira no CEI da B3 (passo a passo) | Redentia',

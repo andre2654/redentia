@@ -18,7 +18,7 @@
   ruleset for these pages.
 -->
 <template>
-  <NuxtLayout :name="layoutName" :title="config.h1">
+  <NuxtLayout name="default" :title="config.h1">
     <section class="flex flex-col gap-8 px-6 py-8">
       <!-- ============ Hero ============ -->
       <div class="flex flex-col gap-3">
@@ -1620,10 +1620,6 @@ const config = computed<RankingConfig>(() => {
 // ----- Layout / brand -----------------------------------------------
 
 const brand = useBrand()
-const authStore = useAuthStore()
-const layoutName = computed(() =>
-  authStore.isAuthenticated ? 'default' : 'static',
-)
 
 // Cor de contraste pra texto do tab ativo. Calculada uma vez no setup
 // pra que SSR e CSR produzam o mesmo valor estavel (anti-hydration flash).

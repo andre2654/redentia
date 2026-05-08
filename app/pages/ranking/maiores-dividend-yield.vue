@@ -1,5 +1,5 @@
 <template>
-  <NuxtLayout :name="layoutName" title="Maiores Dividend Yields da Bolsa">
+  <NuxtLayout name="default" title="Maiores Dividend Yields da Bolsa">
     <section class="flex flex-col gap-8 px-6 py-8">
       <!-- Hero -->
       <div class="flex flex-col gap-3">
@@ -423,10 +423,6 @@ definePageMeta({
 import { readableOn } from '~/utils/color'
 
 const brand = useBrand()
-const authStore = useAuthStore()
-const layoutName = computed(() =>
-  authStore.isAuthenticated ? 'default' : 'static'
-)
 const service = useAssetsService()
 
 // Cor de contraste pra texto do tab ativo. Calculada uma vez no setup

@@ -305,38 +305,36 @@ const risksPreview = computed(() => demoReport.value.risks.slice(0, 3))
             Adicione seus ativos e a Redent.IA cruza fundamentos, notícias, dividendos, concentração e mercado para mostrar o que está bom, o que está ruim e o que mudou.
           </p>
 
-          <!-- CTA simples: empurra o usuario direto pra /raio-x onde o input
-               de tickers + Score completo moram. Antes vivia aqui no hero um
-               <AtomsPortfolioInput> in-place — funcionava mas competia com o
-               headline pelo foco e enchia a primeira dobra de affordances
-               (input, chips, botao, microcopy). Movido pra /raio-x consolida
-               o fluxo e libera o hero pra cumprir o papel de eyebrow + headline
-               + CTA unico, classico playbook B2C SaaS. -->
+          <!-- CTA: empurra direto pra /raio-x onde o flow de signup +
+               trial Pro acontece. Copy alinhada com /pricing e /raio-x:
+               "7 dias grátis no Pro" e a promessa real, depois R$ 49/mes.
+               Antes era "Analisar minha carteira grátis" + "Sem cadastro"
+               — desalinhado com o billing Pro/Max ja em producao. -->
           <div class="mb-3 md:mb-5">
             <NuxtLink
               to="/raio-x"
               class="hero-radiograph__cta quiet-btn-primary inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[15px] font-semibold transition-shadow md:text-[16px]"
             >
               <UIcon name="i-lucide-sparkles" class="size-4" aria-hidden="true" />
-              <span>Analisar minha carteira grátis</span>
+              <span>Começar 7 dias grátis</span>
               <UIcon name="i-lucide-arrow-right" class="size-4" aria-hidden="true" />
             </NuxtLink>
           </div>
 
-          <!-- Trust signals: ficam só os dois que continuam verdadeiros
-               em qualquer plano. "Sempre grátis" foi removido porque a
-               plataforma vai entrar no modelo Free/Pro/Max e o
-               freemium não cobre todas as funções, então prometer
-               "sempre grátis" no hero principal seria propaganda
-               enganosa cedo demais. -->
+          <!-- Trust signals alinhados com o trial Pro real:
+               sem cartao pra comecar, resultado em 2 min, cancele em 1 click. -->
           <ul class="hero-radiograph__trust">
             <li>
               <UIcon name="i-lucide-shield-check" class="size-3.5 shrink-0" :style="{ color: 'var(--brand-primary)' }" aria-hidden="true" />
-              <span>Sem cadastro</span>
+              <span>Sem cartão pra começar</span>
             </li>
             <li>
               <UIcon name="i-lucide-clock" class="size-3.5 shrink-0" :style="{ color: 'var(--brand-primary)' }" aria-hidden="true" />
               <span>Resultado em 2 min</span>
+            </li>
+            <li>
+              <UIcon name="i-lucide-undo-2" class="size-3.5 shrink-0" :style="{ color: 'var(--brand-primary)' }" aria-hidden="true" />
+              <span>Cancele em 1 click</span>
             </li>
           </ul>
         </div>
