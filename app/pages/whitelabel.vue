@@ -798,16 +798,6 @@
               Quero meu white-label
               <span class="inline-block transition-transform group-hover:translate-x-1">→</span>
             </button>
-            <a
-              href="https://wa.me/5511999999999"
-              target="_blank"
-              rel="noopener"
-              class="inline-flex items-center gap-2 px-2 py-2 text-[14px] font-medium transition-opacity hover:opacity-70"
-              :style="{ color: C.text }"
-            >
-              <UIcon name="i-lucide-message-circle" class="size-4" />
-              <span class="border-b pb-0.5" :style="{ borderColor: C.text }">WhatsApp</span>
-            </a>
           </div>
 
           <p class="mt-16 text-[12px] tracking-wider" :style="{ color: C.textMuted }">

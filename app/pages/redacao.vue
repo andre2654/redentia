@@ -373,105 +373,66 @@
       </section>
 
       <!-- ============================================================
-           FRONT PAGE, mock recent edition
+           FRONT PAGE, live news from /api/news/latest
            ============================================================ -->
       <section class="relative border-b" :style="{ borderColor: C.border }">
-        <div class="mx-auto max-w-6xl px-6 py-24 md:px-10 md:py-32">
-          <div class="mb-12 flex items-end justify-between gap-6">
-            <div>
-              <div class="text-[12px] uppercase tracking-[0.22em]" :style="{ color: C.primary }">, Manchetes recentes</div>
+        <div class="mx-auto max-w-7xl px-6 py-24 md:px-10 md:py-32">
+          <!-- Editorial masthead for the live edition -->
+          <div
+            class="mb-12 flex flex-col items-start justify-between gap-6 border-b pb-8 md:flex-row md:items-end md:gap-12"
+            :style="{ borderColor: `${C.border}80` }"
+          >
+            <div class="max-w-3xl">
+              <div class="flex items-center gap-3 text-[11px] uppercase tracking-[0.22em]" :style="{ color: C.primary, fontFamily: F.mono }">
+                <span class="relative flex size-1.5">
+                  <span class="absolute inline-flex size-1.5 motion-safe:animate-ping rounded-full opacity-75" :style="{ backgroundColor: C.primary }" />
+                  <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: C.primary }" />
+                </span>
+                <span>, A primeira página · ao vivo</span>
+              </div>
               <h2
                 class="mt-4 leading-[0.95] tracking-tight"
                 :style="{
                   color: C.text,
                   fontFamily: F.display,
-                  fontSize: 'clamp(2rem, 5vw, 3.75rem)',
+                  fontSize: 'clamp(2.25rem, 5.5vw, 4.5rem)',
                 }"
               >
-                A primeira página<br />
-                <span class="italic" :style="{ color: C.primary }">desta semana.</span>
+                Manchetes desta hora,<br />
+                <span class="italic" :style="{ color: C.primary }">do mercado pra você.</span>
               </h2>
+              <p class="mt-6 max-w-2xl text-[15px] leading-relaxed" :style="{ color: `${C.text}B0` }">
+                Feed monitorado em tempo real. As notícias abaixo vêm direto da redação, agrupadas pelos tickers que movem o dia. Mesmo conteúdo que serve o app principal, exposto aqui pra você ver o ritmo da casa.
+              </p>
             </div>
-            <div class="hidden text-right text-[11px] uppercase tracking-[0.18em] md:block" :style="{ color: C.textMuted }">
-              Edição rotativa<br />
-              atualiza diariamente
+            <div class="flex flex-col items-start gap-2 text-[11px] uppercase tracking-[0.2em] md:items-end md:text-right" :style="{ color: C.textMuted }">
+              <span class="tabular-nums" :style="{ color: C.primary, fontFamily: F.mono }">edição #{{ editionNumber }}</span>
+              <span>{{ todayLabel }}</span>
+              <span>15 feeds · 7 fontes · 100+ tickers</span>
             </div>
           </div>
 
-          <!-- Front-page grid -->
-          <div class="grid gap-6 md:grid-cols-12">
-            <!-- Lead story -->
-            <article
-              class="group relative col-span-12 flex flex-col gap-5 overflow-hidden rounded-2xl border p-8 md:col-span-7 md:p-10"
-              :style="{ borderColor: C.border, backgroundColor: C.surface }"
-            >
-              <div class="flex items-center gap-3">
-                <span
-                  class="rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em]"
-                  :style="{ backgroundColor: `${C.primary}20`, color: C.primary }"
-                >
-                  Manchete · Macro
-                </span>
-                <span class="text-[11px] tabular-nums" :style="{ color: C.textMuted, fontFamily: F.mono }">
-                  ed. #{{ editionNumber }} · 06h12
-                </span>
-              </div>
-              <h3
-                class="leading-[0.95] tracking-tight"
-                :style="{
-                  color: C.text,
-                  fontFamily: F.display,
-                  fontSize: 'clamp(1.85rem, 3.5vw, 2.75rem)',
-                }"
-              >
-                Selic cai pra 14,50% e Copom abre porta pra ciclo de cortes.
-              </h3>
-              <p class="text-[15px] leading-relaxed" :style="{ color: `${C.text}B0` }">
-                Comunicado mais dovish que o consenso. IBOV reage com alta nas ações de varejo e construção. Renda fixa pré-fixada vê demanda subir. Curva curta cede 30 bps em poucos minutos.
-              </p>
-              <div class="mt-auto flex flex-wrap gap-2">
-                <span
-                  v-for="t in ['SELIC', 'COPOM', 'IBOV', 'PREFIXADO']"
-                  :key="t"
-                  class="rounded-full border px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-[0.14em]"
-                  :style="{ borderColor: C.border, color: C.textMuted }"
-                >
-                  {{ t }}
-                </span>
-              </div>
-            </article>
-
-            <!-- Sidebar stories -->
-            <div class="col-span-12 grid gap-4 md:col-span-5">
-              <article
-                v-for="story in sideStories"
-                :key="story.title"
-                class="group flex flex-col gap-3 rounded-2xl border p-6"
-                :style="{ borderColor: C.border, backgroundColor: C.background }"
-              >
-                <div class="flex items-center gap-3">
-                  <span class="text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
-                    {{ story.beat }}
-                  </span>
-                  <span class="text-[11px] tabular-nums" :style="{ color: C.textMuted, fontFamily: F.mono }">
-                    {{ story.time }}
-                  </span>
-                </div>
-                <h4
-                  class="leading-tight tracking-tight"
-                  :style="{
-                    color: C.text,
-                    fontFamily: F.display,
-                    fontSize: '1.35rem',
-                  }"
-                >
-                  {{ story.title }}
-                </h4>
-                <p class="text-[13px] leading-relaxed" :style="{ color: `${C.text}A0` }">
-                  {{ story.lede }}
-                </p>
-              </article>
-            </div>
+          <!-- Live news section, same component used on the home page -->
+          <!-- Vars overridden to keep the news block consistent with the dark amber masthead -->
+          <div
+            class="rd-news"
+            :style="{
+              '--brand-primary': C.primary,
+              '--brand-text': C.text,
+              '--brand-text-muted': C.textMuted,
+              '--brand-surface': C.surface,
+              '--brand-surface-hover': C.surfaceLight,
+              '--brand-border': C.border,
+              '--text-heading': C.text,
+              '--text-body': C.textMuted,
+              '--text-muted': C.textMuted,
+              '--bg-elevated': C.surface,
+              '--border-default': C.border,
+              '--border-subtle': `${C.border}80`,
+              '--text-on-primary': C.background,
+            }"
+          >
+            <MoleculesNewsSection />
           </div>
         </div>
       </section>
@@ -1034,27 +995,6 @@ const formats = [
   },
 ]
 
-const sideStories = [
-  {
-    beat: 'Bolsa',
-    time: '08h47',
-    title: 'IBOV abre em alta com varejo e construção liderando após Copom.',
-    lede: 'MGLU3, LREN3 e CYRE3 sobem mais de 3%. Bancos seguem laterais.',
-  },
-  {
-    beat: 'Renda fixa',
-    time: '09h12',
-    title: 'Curva de juros cede 30 bps no curto e prêmio pré some.',
-    lede: 'Mercado precifica três cortes seguidos até a próxima Copom.',
-  },
-  {
-    beat: 'Internacional',
-    time: '07h30',
-    title: 'Wall Street futuros operam de lado com Fed em silêncio.',
-    lede: 'Yields do T-bond de 10 anos voltam a 4,40% após payroll forte.',
-  },
-]
-
 const channels = [
   {
     icon: 'i-lucide-app-window',
@@ -1087,10 +1027,6 @@ const principles = [
   {
     title: 'Conclusão na primeira linha',
     body: 'Lede não é introdução. É manchete em forma de parágrafo. Se o leitor parou ali, ele já sabe o que importa.',
-  },
-  {
-    title: 'Sem em-dash em copy pública',
-    body: 'O em-dash entrega texto de IA. Trocamos por vírgula sempre. Português brasileiro respira melhor com vírgula mesmo.',
   },
   {
     title: 'Sem hype, sem clickbait',
