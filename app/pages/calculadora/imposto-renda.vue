@@ -1,61 +1,24 @@
 <template>
   <NuxtLayout name="default" title="Calculadora de IR sobre Ações">
     <section class="flex flex-col gap-8 px-6 py-8">
-      <!-- Back-link to parent listing -->
-      <NuxtLink
-        to="/calculadora"
-        class="flex items-center gap-1 text-xs transition hover:opacity-80"
-        :style="{ color: 'var(--brand-text-muted)' }"
-      >
-        <UIcon name="i-lucide-chevron-left" class="size-3" />
-        Todas as calculadoras
-      </NuxtLink>
+      <MoleculesPageHeader
+        :back-link="{ to: '/calculadora', label: 'Todas as calculadoras' }"
+        icon="i-lucide-receipt-text"
+        icon-color="secondary"
+        title="Calculadora de IR sobre Ações 2026: Day Trade, Swing Trade e DARF"
+        description="O IR sobre ações no Brasil é 15% (swing trade) ou 20% (day trade) sobre o lucro mensal. Vendas até R$ 20.000/mês em swing trade são isentas. Exemplo: vendeu R$ 25.000 com R$ 3.000 de lucro? Paga 15% × R$ 3.000 = R$ 450 via DARF código 6015 até o último dia útil do mês seguinte."
+        :chips="[
+          { icon: 'i-lucide-check-circle', label: '100% gratuito', color: 'positive' },
+          { icon: 'i-lucide-zap', label: 'Cálculo instantâneo', color: 'primary' },
+          { icon: 'i-lucide-file-text', label: 'DARF pronto (6015 / 8523)', color: 'primary' },
+          { icon: 'i-lucide-calendar', label: 'Compensa prejuízos', color: 'primary' },
+        ]"
+        :meta="`Última atualização: ${ lastUpdatedText }`"
+      />
 
-      <!-- Hero Section -->
-      <div class="flex flex-col gap-4">
-        <div class="flex items-center gap-2">
-          <UIcon name="i-lucide-receipt-text" class="text-secondary h-8 w-8" />
-          <h1
-            class="font-light"
-            :style="{
-              color: 'var(--brand-text)',
-              fontSize: 'clamp(28px, 4vw, 36px)',
-              lineHeight: 1.05,
-              letterSpacing: '-0.7px',
-            }"
-          >Calculadora de IR sobre Ações 2026: Day Trade, Swing Trade e DARF</h1>
-        </div>
-        <p class="text-base md:text-lg" :style="{ color: 'var(--brand-text)' }">
-          O IR sobre ações no Brasil é 15% (swing trade) ou 20% (day trade) sobre o lucro mensal. Vendas até R$ 20.000/mês em swing trade são isentas. Exemplo: vendeu R$ 25.000 com R$ 3.000 de lucro? Paga 15% × R$ 3.000 = R$ 450 via DARF código 6015 até o último dia útil do mês seguinte.
-        </p>
-        <p class="text-base md:text-lg">
-          Calcule na hora o imposto de renda sobre suas operações na B3. Cobre swing trade (alíquota 15%, isenção até R$ 20 mil/mês de vendas, código DARF 6015) e day trade (20% sem isenção, código DARF 8523), com compensação automática de prejuízos e cálculo do vencimento do DARF. Sem planilha, sem cadastro, sem propaganda.
-        </p>
-        <div class="flex flex-wrap items-center gap-2 text-xs">
-          <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-check-circle" class="size-4" :style="{ color: 'var(--brand-positive)' }" />
-            100% gratuito
-          </span>
-          <span>·</span>
-          <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-zap" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
-            Cálculo instantâneo
-          </span>
-          <span>·</span>
-          <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-file-text" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
-            DARF pronto (6015 / 8523)
-          </span>
-          <span>·</span>
-          <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-calendar" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
-            Compensa prejuízos
-          </span>
-        </div>
-        <p class="text-[11px]" :style="{ color: 'var(--brand-text-muted)' }">
-          Última atualização: {{ lastUpdatedText }}
-        </p>
-      </div>
+      <p class="text-base md:text-lg" :style="{ color: 'var(--brand-text-muted)' }">
+        Calcule na hora o imposto de renda sobre suas operações na B3. Cobre swing trade (alíquota 15%, isenção até R$ 20 mil/mês de vendas, código DARF 6015) e day trade (20% sem isenção, código DARF 8523), com compensação automática de prejuízos e cálculo do vencimento do DARF. Sem planilha, sem cadastro, sem propaganda.
+      </p>
 
       <CalculatorIncomeTax />
 
@@ -69,7 +32,7 @@
         "compensar prejuizo IR", etc.
       -->
       <div
-        class="flex flex-col gap-3 rounded-[30px] border p-6"
+        class="flex flex-col gap-3 rounded-lg border p-6"
         :style="{
           backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
           borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
@@ -368,7 +331,7 @@
 
       <!-- Rankings Relacionados -->
       <div
-        class="mt-8 flex flex-col gap-4 rounded-[30px] p-6"
+        class="mt-8 flex flex-col gap-4 rounded-lg p-6"
         :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))' }"
       >
         <div>
@@ -398,7 +361,7 @@
       </div>
 
       <div
-        class="flex flex-col gap-4 rounded-[30px] p-6"
+        class="flex flex-col gap-4 rounded-lg p-6"
         :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))' }"
       >
         <h2>Outras Ferramentas</h2>

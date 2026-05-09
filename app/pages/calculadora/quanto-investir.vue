@@ -1,61 +1,24 @@
 <template>
   <NuxtLayout name="default" title="Calculadora: Quanto Investir por Mês">
     <section class="flex flex-col gap-8 px-6 py-8">
-      <!-- Back-link to parent listing -->
-      <NuxtLink
-        to="/calculadora"
-        class="flex items-center gap-1 text-xs transition hover:opacity-80"
-        :style="{ color: 'var(--brand-text-muted)' }"
-      >
-        <UIcon name="i-lucide-chevron-left" class="size-3" />
-        Todas as calculadoras
-      </NuxtLink>
+      <MoleculesPageHeader
+        :back-link="{ to: '/calculadora', label: 'Todas as calculadoras' }"
+        icon="i-lucide-wallet"
+        icon-color="secondary"
+        title="Calculadora 2026: Quanto Investir por Mês para Sua Meta Financeira"
+        description="Esta calculadora descobre quanto você precisa investir por mês para atingir uma meta financeira específica. Usa a fórmula do valor presente de uma série de pagamentos, considerando taxa de juros e prazo. Exemplo: pra juntar R$ 500.000 em 10 anos a 10% ao ano, você precisa aportar cerca de R$ 2.412 por mês, totalizando R$ 289.440 investidos e R$ 210.560 em juros."
+        :chips="[
+          { icon: 'i-lucide-check-circle', label: '100% gratuito', color: 'positive' },
+          { icon: 'i-lucide-zap', label: 'Cálculo instantâneo', color: 'primary' },
+          { icon: 'i-lucide-target', label: 'Cálculo reverso por meta', color: 'primary' },
+          { icon: 'i-lucide-share-2', label: 'Link compartilhável', color: 'primary' },
+        ]"
+        :meta="`Última atualização: ${ lastUpdatedText }`"
+      />
 
-      <!-- Hero Section -->
-      <div class="flex flex-col gap-4">
-        <div class="flex items-center gap-2">
-          <UIcon name="i-lucide-wallet" class="text-secondary h-8 w-8" />
-          <h1
-            class="font-light"
-            :style="{
-              color: 'var(--brand-text)',
-              fontSize: 'clamp(28px, 4vw, 36px)',
-              lineHeight: 1.05,
-              letterSpacing: '-0.7px',
-            }"
-          >Calculadora 2026: Quanto Investir por Mês para Sua Meta Financeira</h1>
-        </div>
-        <p class="text-base md:text-lg" :style="{ color: 'var(--brand-text)' }">
-          Esta calculadora descobre quanto você precisa investir por mês para atingir uma meta financeira específica. Usa a fórmula do valor presente de uma série de pagamentos, considerando taxa de juros e prazo. Exemplo: pra juntar R$ 500.000 em 10 anos a 10% ao ano, você precisa aportar cerca de R$ 2.412 por mês, totalizando R$ 289.440 investidos e R$ 210.560 em juros.
-        </p>
-        <p class="text-base md:text-lg">
-          Descubra na hora quanto você precisa aportar mensalmente pra ter R$ 100 mil, R$ 500 mil ou R$ 1 milhão em 5, 10, 15 ou 20 anos. Calculadora reversa de juros compostos, considera patrimônio inicial, taxa de retorno realista e ajuste pela inflação. Gratuito, sem cadastro, sem planilha.
-        </p>
-        <div class="flex flex-wrap items-center gap-2 text-xs">
-          <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-check-circle" class="size-4" :style="{ color: 'var(--brand-positive)' }" />
-            100% gratuito
-          </span>
-          <span>·</span>
-          <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-zap" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
-            Cálculo instantâneo
-          </span>
-          <span>·</span>
-          <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-target" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
-            Cálculo reverso por meta
-          </span>
-          <span>·</span>
-          <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-share-2" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
-            Link compartilhável
-          </span>
-        </div>
-        <p class="text-[11px]" :style="{ color: 'var(--brand-text-muted)' }">
-          Última atualização: {{ lastUpdatedText }}
-        </p>
-      </div>
+      <p class="text-base md:text-lg" :style="{ color: 'var(--brand-text-muted)' }">
+        Descubra na hora quanto você precisa aportar mensalmente pra ter R$ 100 mil, R$ 500 mil ou R$ 1 milhão em 5, 10, 15 ou 20 anos. Calculadora reversa de juros compostos, considera patrimônio inicial, taxa de retorno realista e ajuste pela inflação. Gratuito, sem cadastro, sem planilha.
+      </p>
 
       <!-- Calculadora -->
       <CalculatorMonthlyInvestment />
@@ -71,7 +34,7 @@
         imovel", etc).
       -->
       <div
-        class="flex flex-col gap-3 rounded-[30px] border p-6"
+        class="flex flex-col gap-3 rounded-lg border p-6"
         :style="{
           backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
           borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
@@ -631,7 +594,7 @@
 
       <!-- Rankings Relacionados -->
       <div
-        class="mt-8 flex flex-col gap-4 rounded-[30px] p-6"
+        class="mt-8 flex flex-col gap-4 rounded-lg p-6"
         :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))' }"
       >
         <div>
@@ -662,7 +625,7 @@
 
       <!-- Calculadoras Relacionadas -->
       <div
-        class="flex flex-col gap-4 rounded-[30px] p-6"
+        class="flex flex-col gap-4 rounded-lg p-6"
         :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))' }"
       >
         <h2>Outras Calculadoras</h2>

@@ -1,8 +1,5 @@
 <template>
   <NuxtLayout name="default" title="Como Investir na Bolsa: Guias, Dividendos e Análises">
-    <!-- CTA contextual — full-bleed, fora do wrapper padded -->
-    <MoleculesCommunicationsCTASlot placement="guias-top" />
-
     <div class="flex flex-col gap-8 px-6 py-8">
       <!-- Header -->
       <section class="flex flex-col gap-4">

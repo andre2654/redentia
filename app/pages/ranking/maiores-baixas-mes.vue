@@ -1,53 +1,15 @@
 <template>
   <NuxtLayout name="default" title="Maiores Baixas do Mês">
     <section class="flex flex-col gap-8 px-6 py-8">
-      <div class="flex flex-col gap-3">
-        <NuxtLink
-          to="/ranking"
-          class="flex items-center gap-1 text-xs transition hover:opacity-80"
-          :style="{ color: 'var(--brand-text-muted)' }"
-        >
-          <UIcon name="i-lucide-chevron-left" class="size-3" />
-          Todos os rankings
-        </NuxtLink>
-        <div class="flex items-center gap-3">
-          <div
-            class="flex size-12 items-center justify-center rounded-xl"
-            :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-negative) 14%, transparent)' }"
-          >
-            <UIcon
-              name="i-lucide-trending-down"
-              class="size-6"
-              :style="{ color: 'var(--brand-negative)' }"
-            />
-          </div>
-          <div>
-            <p
-              class="text-[10px] font-medium uppercase tracking-[0.15em]"
-              :style="{ color: 'var(--brand-text-muted)' }"
-            >
-              Ranking
-            </p>
-            <h1
-              class="font-light"
-              :style="{
-                color: 'var(--brand-text)',
-                fontSize: 'clamp(28px, 4vw, 36px)',
-                lineHeight: 1.05,
-                letterSpacing: '-0.7px',
-              }"
-            >Maiores Baixas do Mês: Ações que Mais Caíram na Bolsa B3 2026</h1>
-          </div>
-        </div>
-        <p class="max-w-2xl text-base" :style="{ color: 'var(--brand-text-muted)' }">
-          As 50 ações e FIIs que mais caíram nos últimos 30 dias na B3,
-          ordenadas por queda percentual. Lista pode revelar oportunidades de
-          compra (ações baratas, value plays) OU armadilhas de valor (value
-          traps). Inclui blue chips em correção (VALE3, BBDC4, ITUB4, ABEV3),
-          FIIs em desconto (HGLG11, MXRF11, KNIP11) e ativos com problemas
-          específicos. Atualizado diariamente após pregão.
-        </p>
-      </div>
+      <MoleculesPageHeader
+        :back-link="{ to: '/ranking', label: 'Todos os rankings' }"
+        icon="i-lucide-trending-down"
+        icon-style="circle"
+        icon-color="negative"
+        eyebrow="Ranking"
+        title="Maiores Baixas do Mês: Ações que Mais Caíram na Bolsa B3 2026"
+        description="As 50 ações e FIIs que mais caíram nos últimos 30 dias na B3, ordenadas por queda percentual. Lista pode revelar oportunidades de compra (ações baratas, value plays) OU armadilhas de valor (value traps). Inclui blue chips em correção (VALE3, BBDC4, ITUB4, ABEV3), FIIs em desconto (HGLG11, MXRF11, KNIP11) e ativos com problemas específicos. Atualizado diariamente após pregão."
+      />
 
       <!-- Answer-first paragraph -->
       <div

@@ -1,61 +1,24 @@
 <template>
   <NuxtLayout name="default" title="Simulador de Investimento em Ações">
     <section class="flex flex-col gap-8 px-6 py-8">
-      <!-- Back-link to parent listing -->
-      <NuxtLink
-        to="/calculadora"
-        class="flex items-center gap-1 text-xs transition hover:opacity-80"
-        :style="{ color: 'var(--brand-text-muted)' }"
-      >
-        <UIcon name="i-lucide-chevron-left" class="size-3" />
-        Todas as calculadoras
-      </NuxtLink>
+      <MoleculesPageHeader
+        :back-link="{ to: '/calculadora', label: 'Todas as calculadoras' }"
+        icon="i-lucide-chart-line"
+        icon-color="secondary"
+        title="Simulador de Investimento em Ações 2026: Histórico Real da B3 com Dividendos"
+        description="Este simulador mostra quanto você teria ganhado investindo em qualquer ação da B3 usando dados históricos reais, incluindo dividendos e JCP reinvestidos. Você escolhe ticker(s), valor inicial, aporte mensal e período. Exemplo: R$ 10.000 + R$ 500/mês em ITUB4 nos últimos 10 anos, com dividendos reinvestidos, viraria R$ 280.000-320.000."
+        :chips="[
+          { icon: 'i-lucide-check-circle', label: '100% gratuito', color: 'positive' },
+          { icon: 'i-lucide-zap', label: 'Cálculo instantâneo', color: 'primary' },
+          { icon: 'i-lucide-database', label: 'Dados reais da B3', color: 'primary' },
+          { icon: 'i-lucide-coins', label: 'Dividendos e JCP reinvestidos', color: 'primary' },
+        ]"
+        :meta="`Última atualização: ${ lastUpdatedText }`"
+      />
 
-      <!-- Hero Section -->
-      <div class="flex flex-col gap-4">
-        <div class="flex items-center gap-2">
-          <UIcon name="i-lucide-chart-line" class="text-secondary h-8 w-8" />
-          <h1
-            class="font-light"
-            :style="{
-              color: 'var(--brand-text)',
-              fontSize: 'clamp(28px, 4vw, 36px)',
-              lineHeight: 1.05,
-              letterSpacing: '-0.7px',
-            }"
-          >Simulador de Investimento em Ações 2026: Histórico Real da B3 com Dividendos</h1>
-        </div>
-        <p class="text-base md:text-lg" :style="{ color: 'var(--brand-text)' }">
-          Este simulador mostra quanto você teria ganhado investindo em qualquer ação da B3 usando dados históricos reais, incluindo dividendos e JCP reinvestidos. Você escolhe ticker(s), valor inicial, aporte mensal e período. Exemplo: R$ 10.000 + R$ 500/mês em ITUB4 nos últimos 10 anos, com dividendos reinvestidos, viraria R$ 280.000-320.000.
-        </p>
-        <p class="text-base md:text-lg">
-          Descubra na hora quanto R$ 10.000 + R$ 500/mês teriam virado em PETR4, ITUB4, VALE3 ou em uma carteira diversificada nos últimos 5, 10 ou 20 anos. Simulação com preços reais da B3, dividendos e JCP reinvestidos automaticamente, comparação entre múltiplos ativos e gráfico de evolução. Gratuito, sem cadastro, sem planilha.
-        </p>
-        <div class="flex flex-wrap items-center gap-2 text-xs">
-          <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-check-circle" class="size-4" :style="{ color: 'var(--brand-positive)' }" />
-            100% gratuito
-          </span>
-          <span>·</span>
-          <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-zap" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
-            Cálculo instantâneo
-          </span>
-          <span>·</span>
-          <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-database" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
-            Dados reais da B3
-          </span>
-          <span>·</span>
-          <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-coins" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
-            Dividendos e JCP reinvestidos
-          </span>
-        </div>
-        <p class="text-[11px]" :style="{ color: 'var(--brand-text-muted)' }">
-          Última atualização: {{ lastUpdatedText }}
-        </p>
-      </div>
+      <p class="text-base md:text-lg" :style="{ color: 'var(--brand-text-muted)' }">
+        Descubra na hora quanto R$ 10.000 + R$ 500/mês teriam virado em PETR4, ITUB4, VALE3 ou em uma carteira diversificada nos últimos 5, 10 ou 20 anos. Simulação com preços reais da B3, dividendos e JCP reinvestidos automaticamente, comparação entre múltiplos ativos e gráfico de evolução. Gratuito, sem cadastro, sem planilha.
+      </p>
 
       <!-- Simulador -->
       <CalculatorStock :assets="assets" :assets-loading="assetsLoading" />
@@ -69,7 +32,7 @@
         "carteira blue chips 5 anos", "PETR4 vs VALE3", etc).
       -->
       <div
-        class="flex flex-col gap-3 rounded-[30px] border p-6"
+        class="flex flex-col gap-3 rounded-lg border p-6"
         :style="{
           backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
           borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
@@ -576,7 +539,7 @@
 
       <!-- Rankings Relacionados -->
       <div
-        class="mt-8 flex flex-col gap-4 rounded-[30px] p-6"
+        class="mt-8 flex flex-col gap-4 rounded-lg p-6"
         :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))' }"
       >
         <div>
@@ -606,7 +569,7 @@
       </div>
 
       <!-- Calculadoras Relacionadas -->
-      <div class="flex flex-col gap-4 rounded-[30px] p-6" :style="{ backgroundColor: 'var(--brand-surface)' }">
+      <div class="flex flex-col gap-4 rounded-lg p-6" :style="{ backgroundColor: 'var(--brand-surface)' }">
         <h2>Outras Ferramentas</h2>
         <div class="grid gap-4 md:grid-cols-2">
           <NuxtLink

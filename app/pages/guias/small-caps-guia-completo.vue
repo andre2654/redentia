@@ -1,18 +1,12 @@
 <template>
   <NuxtLayout name="default" title="Small Caps: Guia Completo">
     <section class="static-content flex flex-col gap-8 px-6 py-8">
-      <!-- Hero Section -->
-      <div class="flex flex-col gap-4">
-        <div class="flex items-center gap-2">
-          <UIcon name="i-lucide-rocket" class="text-secondary h-8 w-8" />
-          <h1 class="md:text-4xl">
-            Small Caps: Guia Completo
-          </h1>
-        </div>
-        <p class="text-base md:text-lg">
-          Tudo sobre ações de pequenas empresas: o que são, como escolher, riscos envolvidos e estratégias para maximizar retornos investindo em small caps.
-        </p>
-      </div>
+      <MoleculesPageHeader
+        icon="i-lucide-rocket"
+        icon-color="secondary"
+        title="Small Caps: Guia Completo"
+        description="Tudo sobre ações de pequenas empresas: o que são, como escolher, riscos envolvidos e estratégias para maximizar retornos investindo em small caps."
+      />
 
       <!-- Conteúdo Educacional -->
       <div class="flex flex-col gap-6 max-w-none">

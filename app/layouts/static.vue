@@ -32,6 +32,12 @@
       </div>
     </header>
 
+    <!-- CTA contextual — placement derivado da rota. Cobre todas as
+         paginas-filho de /guias/*, /glossario/*, /dividendos/*, etc.
+         que usam esse layout. Vai antes do <main> pra ficar acima do
+         padding-top hero (pt-32). -->
+    <MoleculesCommunicationsCTASlot />
+
     <main class="relative px-6 pb-20 pt-32">
       <!-- Background Effects -->
       <div class="pointer-events-none absolute inset-0 overflow-hidden">

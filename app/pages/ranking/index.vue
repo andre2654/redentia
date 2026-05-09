@@ -17,11 +17,6 @@
 -->
 <template>
   <NuxtLayout name="default" title="Rankings da B3 2026">
-    <!-- CTA contextual — banner topo full-bleed, encosta no header
-         e nas bordas. Vive FORA do <section> abaixo pra escapar do
-         padding (px-6 py-10) e ficar grudado. -->
-    <MoleculesCommunicationsCTASlot placement="ranking-top" />
-
     <section class="flex flex-col gap-12 px-6 py-10 md:py-14">
       <!-- ============ Hero ============ -->
       <header class="flex max-w-3xl flex-col gap-3">

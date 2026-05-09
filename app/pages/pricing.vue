@@ -15,9 +15,6 @@
 -->
 <template>
   <NuxtLayout :title="'Planos'">
-    <!-- CTA contextual — full-bleed, fora do .lp wrapper -->
-    <MoleculesCommunicationsCTASlot placement="pricing-top" />
-
     <div class="lp">
     <!-- ============ HERO ============ -->
     <section class="lp-hero">

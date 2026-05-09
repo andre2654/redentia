@@ -10,7 +10,7 @@
         <p class="mb-2 text-xs uppercase tracking-[0.2em]" :style="{ color: 'var(--brand-text-muted)' }">
           {{ brand.products.sectionSubtitle }}
         </p>
-        <h2 class="text-2xl font-bold md:text-3xl" :style="{ color: 'var(--brand-text)' }">
+        <h2 class="text-2xl md:text-3xl" :style="{ color: 'var(--brand-text)' }">
           {{ brand.products.sectionTitle }}
         </h2>
       </div>

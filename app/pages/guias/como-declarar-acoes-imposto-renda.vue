@@ -39,24 +39,12 @@ usePageSeo({
 <template>
   <NuxtLayout name="default" title="Declarar Ações no IR 2026">
     <article class="mx-auto flex w-full max-w-4xl flex-col gap-8 px-6 py-12 md:py-16">
-      <NuxtLink
-        to="/guias"
-        class="flex items-center gap-1 text-xs transition hover:opacity-80"
-        :style="{ color: brand.colors.textMuted }"
-      >
-        <UIcon name="i-lucide-chevron-left" class="size-3" />
-        Todos os guias
-      </NuxtLink>
-
-      <header class="flex flex-col gap-4">
-        <h1 class="text-3xl md:text-5xl" :class="[brand.font.headingWeight]" :style="{ color: brand.colors.text }">
-          Como Declarar Ações no Imposto de Renda 2026: Guia Completo
-        </h1>
-        <p class="text-lg">
-          Se você comprou, vendeu ou recebeu dividendos em 2025, a declaração 2026 te alcança. O bom é que com a calculadora certa, 90% da complexidade desaparece.
-        </p>
-        <p class="text-sm" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 60%, transparent)' }">Atualizado em {{ lastUpdatedText }} · Leitura de 12 minutos</p>
-      </header>
+      <MoleculesPageHeader
+        :back-link="{ to: '/guias', label: 'Todos os guias' }"
+        title="Como Declarar Ações no Imposto de Renda 2026: Guia Completo"
+        description="Se você comprou, vendeu ou recebeu dividendos em 2025, a declaração 2026 te alcança. O bom é que com a calculadora certa, 90% da complexidade desaparece."
+        :meta="`Atualizado em ${lastUpdatedText} · Leitura de 12 minutos`"
+      />
 
       <section class="flex flex-col gap-8">
         <h2>O essencial em 30 segundos</h2>

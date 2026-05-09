@@ -1,18 +1,12 @@
 <template>
   <NuxtLayout name="default" title="Como Investir em Ações para Iniciantes">
     <section class="flex flex-col gap-8 px-6 py-8">
-      <!-- Hero Section -->
-      <div class="flex flex-col gap-4">
-        <div class="flex items-center gap-2">
-          <UIcon name="i-lucide-trending-up" class="text-secondary h-8 w-8" />
-          <h1 :style="{ color: brand.colors.text }">
-            Como Investir em Ações para Iniciantes
-          </h1>
-        </div>
-        <p class="text-base md:text-lg">
-          Guia completo e passo a passo para você começar a investir na bolsa de valores brasileira. Aprenda desde o básico até estratégias práticas.
-        </p>
-      </div>
+      <MoleculesPageHeader
+        icon="i-lucide-trending-up"
+        icon-color="secondary"
+        title="Como Investir em Ações para Iniciantes"
+        description="Guia completo e passo a passo para você começar a investir na bolsa de valores brasileira. Aprenda desde o básico até estratégias práticas."
+      />
 
       <!-- Conteúdo Educacional -->
       <div class="flex flex-col gap-6">

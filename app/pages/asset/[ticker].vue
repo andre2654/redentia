@@ -3,9 +3,6 @@
     :name="layoutName"
     container-class="md:px-0"
   >
-    <!-- CTA contextual — banner topo de qualquer ativo, full-width -->
-    <MoleculesCommunicationsCTASlot placement="asset-top" />
-
     <!-- ========== RESEARCH VARIANT (Investidor Sardinha, AUVP analyst desk) ========== -->
     <div
       v-if="brand.assetPage.variant === 'research'"

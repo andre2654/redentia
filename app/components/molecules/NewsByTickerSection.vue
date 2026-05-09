@@ -16,7 +16,7 @@
         <span aria-hidden="true" :style="{ color: 'var(--brand-border)' }">·</span>
         <span :style="{ color: 'var(--brand-text-muted)' }">{{ articles.length }} MATÉRIAS · {{ sources.length }} FONTES</span>
       </div>
-      <h2 class="text-xl font-semibold md:text-2xl" :style="{ color: 'var(--brand-text)' }">
+      <h2 class="text-xl md:text-2xl" :style="{ color: 'var(--brand-text)' }">
         Últimas notícias
       </h2>
     </header>

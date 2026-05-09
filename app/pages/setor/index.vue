@@ -1,8 +1,5 @@
 <template>
   <NuxtLayout name="default" title="Setores da Bolsa Brasileira">
-    <!-- CTA contextual — full-bleed, fora do section padded -->
-    <MoleculesCommunicationsCTASlot placement="setor-top" />
-
     <section class="flex flex-col gap-8 px-6 py-8">
       <div class="flex flex-col gap-3">
         <div class="flex items-center gap-3">

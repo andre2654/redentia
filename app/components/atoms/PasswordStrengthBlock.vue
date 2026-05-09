@@ -10,7 +10,7 @@
 
     <div class="mt-4 flex flex-col gap-3 text-sm font-medium">
       <span class="text-center text-[13px] font-light" :style="{ color: 'var(--brand-text)' }">{{ text }}</span>
-      <span class="text-[13px] font-extralight" :style="{ color: 'var(--brand-text-muted)' }">
+      <span class="text-[13px] font-light" :style="{ color: 'var(--brand-text-muted)' }">
         Sua senha precisa ter:
       </span>
     </div>

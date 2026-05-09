@@ -7,7 +7,7 @@
           <UIcon name="i-lucide-bar-chart-2" class="h-5 w-5" :style="{ color: 'var(--brand-text-muted)' }" />
         </div>
         <div>
-          <h2 class="text-lg font-semibold" :style="{ color: 'var(--brand-text)' }">Histórico de Dividendos</h2>
+          <h2 class="text-lg" :style="{ color: 'var(--brand-text)' }">Histórico de Dividendos</h2>
           <p class="text-xs" :style="{ color: 'var(--brand-text-muted)' }">Pagamentos e dividend yield</p>
         </div>
       </div>

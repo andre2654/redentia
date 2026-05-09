@@ -108,27 +108,12 @@ usePageSeo({
   <NuxtLayout name="default" title="Widgets Financeiros para Site">
     <article class="mx-auto flex w-full max-w-4xl flex-col gap-8 px-6 py-12 md:py-16">
       <!-- Back-link to parent listing -->
-      <NuxtLink
-        to="/guias"
-        class="flex items-center gap-1 text-xs transition hover:opacity-80"
-        :style="{ color: brand.colors.textMuted }"
-      >
-        <UIcon name="i-lucide-chevron-left" class="size-3" />
-        Todos os guias
-      </NuxtLink>
-
-      <!-- Header -->
-      <header class="flex flex-col gap-4">
-        <h1 class="text-3xl md:text-5xl" :class="[brand.font.headingWeight]" :style="{ color: brand.colors.text }">
-          Widgets Financeiros Grátis para Seu Site: Guia Completo 2026
-        </h1>
-        <p class="text-lg">
-          Como adicionar cotações da B3, calculadoras, mapas de calor e rankings em qualquer blog, newsletter ou site, sem cadastro, sem mensalidade, em 2 minutos.
-        </p>
-        <p class="text-sm" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 60%, transparent)' }">
-          Publicado e atualizado em {{ lastUpdatedText }} · Leitura de 8 minutos
-        </p>
-      </header>
+      <MoleculesPageHeader
+        :back-link="{ to: '/guias', label: 'Todos os guias' }"
+        title="Widgets Financeiros Grátis para Seu Site: Guia Completo 2026"
+        description="Como adicionar cotações da B3, calculadoras, mapas de calor e rankings em qualquer blog, newsletter ou site, sem cadastro, sem mensalidade, em 2 minutos."
+        :meta="`Publicado e atualizado em ${lastUpdatedText} · Leitura de 8 minutos`"
+      />
 
       <!-- Intro -->
       <section class="flex flex-col gap-8">

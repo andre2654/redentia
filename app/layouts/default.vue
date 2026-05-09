@@ -658,6 +658,14 @@
           <MoleculesCommunicationsAnnouncementsFeed />
         </div>
 
+        <!-- CTA contextual — placement derivado da rota atual:
+             /calculadora/* -> calculadora-top, /ranking/* -> ranking-top,
+             etc. Mountado uma vez aqui pra cobrir TODAS as paginas-filho
+             da categoria, em vez de cada page ter que mountar manualmente.
+             Componente faz a derivacao internamente quando prop
+             `placement` nao e passada. -->
+        <MoleculesCommunicationsCTASlot />
+
         <slot />
       </div>
     </div>

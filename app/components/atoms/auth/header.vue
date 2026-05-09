@@ -4,7 +4,7 @@
       <BrandLogo variant="full" class="h-auto w-[180px]" />
     </NuxtLink>
 
-    <p class="text-[15px] font-extralight">
+    <p class="text-[15px] font-light">
       {{ brand.subtitle }}
     </p>
     <AtomsTickerCarousel class="w-[335px]" no-control />

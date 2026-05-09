@@ -294,13 +294,13 @@ useHead({
   text-overflow: ellipsis;
 }
 .admin-sidebar__user-role--super {
-  color: #34d399;
-  background: color-mix(in srgb, #10b981 14%, transparent);
-  border: 1px solid color-mix(in srgb, #10b981 30%, transparent);
-  border-radius: 3px;
+  color: var(--brand-positive);
+  background: color-mix(in srgb, var(--brand-positive) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-positive) 30%, transparent);
+  border-radius: 4px;
   padding: 1px 5px;
   letter-spacing: 0.12em;
-  font-weight: 700;
+  font-weight: 500;
 }
 .admin-sidebar__user-logout {
   border-radius: 4px;

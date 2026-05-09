@@ -233,6 +233,11 @@
       class="md:px-4 md:py-4"
       :style="{ scrollMarginTop: '80px' }"
     >
+      <!-- CTA contextual — placement derivado da rota (calculadora-top,
+           ranking-top, asset-top, etc.). Mount unico cobre todas as
+           paginas-filho da categoria. -->
+      <MoleculesCommunicationsCTASlot />
+
       <slot />
     </main>
     <!-- Global floating quick search (public layout) — hidden on

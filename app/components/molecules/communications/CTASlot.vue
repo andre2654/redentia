@@ -107,12 +107,46 @@ import type { CommunicationPlacement, CommunicationPublic } from '~/services/com
 import { sanitizeHtml } from '~/utils/sanitizeHtml'
 
 interface Props {
-  placement: CommunicationPlacement
+  /**
+   * Placement explicito (calculadora-top, ranking-top, asset-top, etc.).
+   * Quando omitido, o componente deriva o placement da rota atual via
+   * o composable useTopCtaPlacement(). Assim, o mesmo `<CTASlot />`
+   * renderiza um CTA diferente ao navegar entre /calculadora/X e
+   * /ranking/Y sem cada page precisar passar a prop.
+   */
+  placement?: CommunicationPlacement | null
 }
 const props = defineProps<Props>()
 
+const route = useRoute()
 const service = useCommunicationsService()
 const cta = ref<CommunicationPublic | null>(null)
+
+/**
+ * Deriva placement automatico a partir do prefixo da rota. Usado quando
+ * `props.placement` nao foi explicitamente setado — permite mountar
+ * uma vez no layout e cobrir todas as paginas-filho da categoria.
+ *
+ * Mapeamento direto: /calculadora/* -> calculadora-top, etc.
+ * Retorna null pra rotas que nao tem placement contextual.
+ */
+function derivePlacementFromRoute(path: string): CommunicationPlacement | null {
+  if (path.startsWith('/calculadora')) return 'calculadora-top'
+  if (path.startsWith('/ranking')) return 'ranking-top'
+  if (path.startsWith('/guias')) return 'guias-top'
+  if (path.startsWith('/dividendos')) return 'dividendos-top'
+  if (path.startsWith('/glossario')) return 'glossario-top'
+  if (path.startsWith('/setor')) return 'setor-top'
+  if (path.startsWith('/tesouro')) return 'tesouro-top'
+  if (path.startsWith('/crypto')) return 'crypto-top'
+  if (path.startsWith('/asset/')) return 'asset-top'
+  if (path === '/pricing') return 'pricing-top'
+  return null
+}
+
+const effectivePlacement = computed<CommunicationPlacement | null>(() => {
+  return props.placement ?? derivePlacementFromRoute(route.path)
+})
 
 /**
  * Detecta o modo a partir dos dados:
@@ -143,8 +177,14 @@ function isExternal(url: string | null | undefined): boolean {
 }
 
 async function load() {
+  // Sem placement (rota nao mapeada e prop nao passada) — nao busca nada.
+  const placement = effectivePlacement.value
+  if (!placement) {
+    cta.value = null
+    return
+  }
   try {
-    const items = await service.listActive(props.placement)
+    const items = await service.listActive(placement)
     cta.value = items.find((c) => c.type === 'cta') ?? null
     if (cta.value) void service.markSeen(cta.value.id)
   } catch (e) {
@@ -164,7 +204,14 @@ async function onDismiss() {
   await service.markDismissed(id)
 }
 
-watch(() => props.placement, load, { immediate: false })
+// Reload quando placement efetivo muda — cobre tanto navegação SPA
+// (rota muda → effectivePlacement muda) quanto re-mount com prop nova.
+// Reseta o cta atual antes de carregar pra não mostrar conteúdo de
+// outra rota durante o fetch (flash visual).
+watch(effectivePlacement, () => {
+  cta.value = null
+  void load()
+})
 onMounted(() => load())
 </script>
 

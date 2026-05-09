@@ -1,18 +1,12 @@
 <template>
   <NuxtLayout name="default" title="Melhores FIIs para Investir em 2026">
     <section class="static-content flex flex-col gap-8 px-6 py-8">
-      <!-- Hero Section -->
-      <div class="flex flex-col gap-4">
-        <div class="flex items-center gap-2">
-          <UIcon name="i-lucide-building-2" class="text-secondary h-8 w-8" />
-          <h1 class="md:text-4xl">
-            Melhores FIIs para Investir em 2026
-          </h1>
-        </div>
-        <p class="text-base md:text-lg">
-          Descubra os fundos imobiliários mais promissores para 2026. Análise completa de segmentos, indicadores e estratégias para construir sua carteira de FIIs.
-        </p>
-      </div>
+      <MoleculesPageHeader
+        icon="i-lucide-building-2"
+        icon-color="secondary"
+        title="Melhores FIIs para Investir em 2026"
+        description="Descubra os fundos imobiliários mais promissores para 2026. Análise completa de segmentos, indicadores e estratégias para construir sua carteira de FIIs."
+      />
 
       <!-- Conteúdo Educacional -->
       <div class="flex flex-col gap-6 max-w-none">

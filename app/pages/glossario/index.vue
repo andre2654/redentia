@@ -1,8 +1,5 @@
 <template>
   <NuxtLayout name="static" title="">
-    <!-- CTA contextual — full-bleed -->
-    <MoleculesCommunicationsCTASlot placement="glossario-top" />
-
     <div class="flex flex-col gap-8 px-6 py-8">
       <!-- Header -->
       <section class="flex flex-col gap-4">

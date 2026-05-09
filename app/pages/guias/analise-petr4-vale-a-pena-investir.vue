@@ -2,20 +2,16 @@
   <NuxtLayout name="default" title="Análise PETR4">
     <section class="flex flex-col gap-8 px-6 py-8">
       <!-- Hero Section -->
-      <div class="flex flex-col gap-4">
-        <div class="flex items-center gap-2">
-          <UIcon name="i-lucide-chart-line" class="text-secondary h-8 w-8" />
-          <h1 :style="{ color: brand.colors.text }">
-            Análise PETR4: Vale a Pena Investir?
-          </h1>
-        </div>
-        <div class="flex items-center gap-2">
-          <AtomsTickerEmbed ticker="PETR4" size="lg" />
-          <span class="text-sm" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 60%, transparent)' }">Dados em tempo real</span>
-        </div>
-        <p class="text-base md:text-lg">
-          Análise completa das ações da Petrobras. Fundamentos, riscos, oportunidades e perspectivas para 2026. Tudo que você precisa saber antes de investir.
-        </p>
+      <MoleculesPageHeader
+        icon="i-lucide-chart-line"
+        icon-color="secondary"
+        title="Análise PETR4: Vale a Pena Investir?"
+        description="Análise completa das ações da Petrobras. Fundamentos, riscos, oportunidades e perspectivas para 2026. Tudo que você precisa saber antes de investir."
+      />
+
+      <div class="flex items-center gap-2">
+        <AtomsTickerEmbed ticker="PETR4" size="lg" />
+        <span class="text-sm" :style="{ color: 'var(--text-muted)' }">Dados em tempo real</span>
       </div>
 
       <!-- Conteúdo Educacional -->

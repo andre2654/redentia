@@ -63,7 +63,7 @@
                 <div class="text-[10px] font-bold uppercase tracking-[0.2em]" :style="{ color: 'var(--brand-primary)' }">
                   {{ source === 'whitelabel' ? 'White-Label' : 'API' }}{{ plan ? ` · ${plan.toUpperCase()}` : '' }}
                 </div>
-                <h2 class="mt-1 text-lg font-bold" :style="{ color: 'var(--brand-text)' }">
+                <h2 class="mt-1 text-lg" :style="{ color: 'var(--brand-text)' }">
                   {{ title || (source === 'whitelabel' ? 'Fale com o time' : 'Solicitar acesso') }}
                 </h2>
               </div>

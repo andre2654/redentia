@@ -87,7 +87,7 @@
         <div class="grid gap-8 md:grid-cols-5">
         <!-- LEFT: Config panel (2 cols) -->
         <div class="flex flex-col gap-5 md:col-span-2">
-          <h2 class="text-xl font-semibold" :style="{ color: REDENTIA_COLORS.text }">
+          <h2 class="text-xl" :style="{ color: REDENTIA_COLORS.text }">
             Customizar
           </h2>
 
@@ -196,7 +196,7 @@
 
         <!-- RIGHT: Preview (3 cols) -->
         <div class="flex flex-col gap-4 md:col-span-3">
-          <h2 class="text-xl font-semibold" :style="{ color: REDENTIA_COLORS.text }">
+          <h2 class="text-xl" :style="{ color: REDENTIA_COLORS.text }">
             Pré-visualização
           </h2>
           <div
@@ -235,7 +235,7 @@
 
       <!-- Outros creatives (cross-link, estilo embed playground) -->
       <div class="mx-auto w-full max-w-5xl">
-        <h2 class="mb-3 text-xl font-semibold" :style="{ color: REDENTIA_COLORS.text }">
+        <h2 class="mb-3 text-xl" :style="{ color: REDENTIA_COLORS.text }">
           Outros creatives
         </h2>
         <div class="flex flex-wrap gap-2">

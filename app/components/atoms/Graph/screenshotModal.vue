@@ -28,7 +28,7 @@
   >
     <div class="flex flex-col gap-5 p-6">
       <header class="flex items-start justify-between gap-4">
-        <h2 class="text-lg font-semibold" :style="{ color: 'var(--brand-text)' }">
+        <h2 class="text-lg" :style="{ color: 'var(--brand-text)' }">
           Compartilhar imagem
         </h2>
         <button

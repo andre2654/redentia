@@ -61,24 +61,12 @@ const acoesRecorrentes = [
 <template>
   <NuxtLayout name="default" title="Dividendos Todo Mês">
     <article class="mx-auto flex w-full max-w-4xl flex-col gap-8 px-6 py-12 md:py-16">
-      <NuxtLink
-        to="/guias"
-        class="flex items-center gap-1 text-xs transition hover:opacity-80"
-        :style="{ color: brand.colors.textMuted }"
-      >
-        <UIcon name="i-lucide-chevron-left" class="size-3" />
-        Todos os guias
-      </NuxtLink>
-
-      <header class="flex flex-col gap-4">
-        <h1 class="text-3xl md:text-5xl" :class="[brand.font.headingWeight]" :style="{ color: brand.colors.text }">
-          15 Ações e FIIs que Pagam Dividendos Todo Mês em 2026
-        </h1>
-        <p class="text-lg">
-          A fórmula preferida de quem vive de renda passiva: pingos mensais na conta sem precisar vender ativo. Selecionamos 10 FIIs e 5 ações com histórico consistente de pagamento.
-        </p>
-        <p class="text-sm" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 60%, transparent)' }">Atualizado em {{ lastUpdatedText }} · Leitura de 10 minutos</p>
-      </header>
+      <MoleculesPageHeader
+        :back-link="{ to: '/guias', label: 'Todos os guias' }"
+        title="15 Ações e FIIs que Pagam Dividendos Todo Mês em 2026"
+        description="A fórmula preferida de quem vive de renda passiva: pingos mensais na conta sem precisar vender ativo. Selecionamos 10 FIIs e 5 ações com histórico consistente de pagamento."
+        :meta="`Atualizado em ${lastUpdatedText} · Leitura de 10 minutos`"
+      />
 
       <section class="flex flex-col gap-8">
         <h2>Por que buscar dividendos mensais?</h2>

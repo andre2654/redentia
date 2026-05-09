@@ -5,7 +5,7 @@
         <p class="mb-2 text-xs uppercase tracking-[0.2em]" :style="{ color: 'var(--brand-text-muted)' }">
           Conteudo educacional
         </p>
-        <h2 class="text-2xl font-bold md:text-3xl" :style="{ color: 'var(--brand-text)' }">
+        <h2 class="text-2xl md:text-3xl" :style="{ color: 'var(--brand-text)' }">
           {{ brand.educational.sectionTitle }}
         </h2>
         <p class="mt-3" :style="{ color: 'var(--brand-text-muted)' }">

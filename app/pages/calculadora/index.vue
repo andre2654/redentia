@@ -9,10 +9,6 @@
 -->
 <template>
   <NuxtLayout name="default" title="Calculadoras Financeiras">
-    <!-- CTA contextual — banner topo full-bleed, fora do section
-         padded pra encostar no header e nas bordas. -->
-    <MoleculesCommunicationsCTASlot placement="calculadora-top" />
-
     <section class="flex flex-col gap-14 px-6 py-10">
       <!-- ============ Hero ============
            Page-level h1 is rendered ALWAYS. The static layout cascade

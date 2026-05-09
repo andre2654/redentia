@@ -1,61 +1,24 @@
 <template>
   <NuxtLayout name="default" title="Calculadora de Aposentadoria">
     <section class="flex flex-col gap-8 px-6 py-8">
-      <!-- Back-link to parent listing -->
-      <NuxtLink
-        to="/calculadora"
-        class="flex items-center gap-1 text-xs transition hover:opacity-80"
-        :style="{ color: 'var(--brand-text-muted)' }"
-      >
-        <UIcon name="i-lucide-chevron-left" class="size-3" />
-        Todas as calculadoras
-      </NuxtLink>
+      <MoleculesPageHeader
+        :back-link="{ to: '/calculadora', label: 'Todas as calculadoras' }"
+        icon="i-lucide-piggy-bank"
+        icon-color="secondary"
+        title="Calculadora de Aposentadoria 2026: Quanto Preciso para Me Aposentar?"
+        description="Esta calculadora estima quanto você precisa investir hoje pra se aposentar com a renda mensal desejada. Aplica a regra dos 4% (saque seguro): patrimônio = renda mensal × 12 ÷ 0,04. Exemplo: pra ter R$ 5.000 por mês na aposentadoria, você precisa de R$ 1,5 milhão investidos. Considera INSS, inflação, idade atual e expectativa de vida."
+        :chips="[
+          { icon: 'i-lucide-check-circle', label: '100% gratuito', color: 'positive' },
+          { icon: 'i-lucide-zap', label: 'Cálculo instantâneo', color: 'primary' },
+          { icon: 'i-lucide-flame', label: 'Regra dos 4% e FIRE', color: 'primary' },
+          { icon: 'i-lucide-share-2', label: 'Link compartilhável', color: 'primary' },
+        ]"
+        :meta="`Última atualização: ${ lastUpdatedText }`"
+      />
 
-      <!-- Hero Section -->
-      <div class="flex flex-col gap-4">
-        <div class="flex items-center gap-2">
-          <UIcon name="i-lucide-piggy-bank" class="text-secondary h-8 w-8" />
-          <h1
-            class="font-light"
-            :style="{
-              color: 'var(--brand-text)',
-              fontSize: 'clamp(28px, 4vw, 36px)',
-              lineHeight: 1.05,
-              letterSpacing: '-0.7px',
-            }"
-          >Calculadora de Aposentadoria 2026: Quanto Preciso para Me Aposentar?</h1>
-        </div>
-        <p class="text-base md:text-lg" :style="{ color: 'var(--brand-text)' }">
-          Esta calculadora estima quanto você precisa investir hoje pra se aposentar com a renda mensal desejada. Aplica a regra dos 4% (saque seguro): patrimônio = renda mensal × 12 ÷ 0,04. Exemplo: pra ter R$ 5.000 por mês na aposentadoria, você precisa de R$ 1,5 milhão investidos. Considera INSS, inflação, idade atual e expectativa de vida.
-        </p>
-        <p class="text-base md:text-lg">
-          Descubra na hora quanto patrimônio você precisa pra aposentar com R$ 5.000, R$ 10.000 ou R$ 20.000 por mês. Calculadora completa com regra dos 4%, INSS, expectativa de vida, ajuste pela inflação e simulação FIRE (Lean, Regular e Fat). Ideal pra planejar aposentadoria antecipada ou complementar o INSS, gratuito, sem cadastro.
-        </p>
-        <div class="flex flex-wrap items-center gap-2 text-xs">
-          <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-check-circle" class="size-4" :style="{ color: 'var(--brand-positive)' }" />
-            100% gratuito
-          </span>
-          <span>·</span>
-          <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-zap" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
-            Cálculo instantâneo
-          </span>
-          <span>·</span>
-          <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-flame" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
-            Regra dos 4% e FIRE
-          </span>
-          <span>·</span>
-          <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-share-2" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
-            Link compartilhável
-          </span>
-        </div>
-        <p class="text-[11px]" :style="{ color: 'var(--brand-text-muted)' }">
-          Última atualização: {{ lastUpdatedText }}
-        </p>
-      </div>
+      <p class="text-base md:text-lg" :style="{ color: 'var(--brand-text-muted)' }">
+        Descubra na hora quanto patrimônio você precisa pra aposentar com R$ 5.000, R$ 10.000 ou R$ 20.000 por mês. Calculadora completa com regra dos 4%, INSS, expectativa de vida, ajuste pela inflação e simulação FIRE (Lean, Regular e Fat). Ideal pra planejar aposentadoria antecipada ou complementar o INSS, gratuito, sem cadastro.
+      </p>
 
       <!-- Calculadora -->
       <CalculatorRetirement />
@@ -69,7 +32,7 @@
         "aposentar aos 50", "regra dos 4%".
       -->
       <div
-        class="flex flex-col gap-3 rounded-[30px] border p-6"
+        class="flex flex-col gap-3 rounded-lg border p-6"
         :style="{
           backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
           borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
@@ -595,7 +558,7 @@
 
       <!-- Rankings Relacionados -->
       <div
-        class="mt-8 flex flex-col gap-4 rounded-[30px] p-6"
+        class="mt-8 flex flex-col gap-4 rounded-lg p-6"
         :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))' }"
       >
         <div>
@@ -626,7 +589,7 @@
 
       <!-- Calculadoras Relacionadas -->
       <div
-        class="flex flex-col gap-4 rounded-[30px] p-6"
+        class="flex flex-col gap-4 rounded-lg p-6"
         :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))' }"
       >
         <h2>Outras Calculadoras</h2>

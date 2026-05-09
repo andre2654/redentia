@@ -1,61 +1,24 @@
 <template>
   <NuxtLayout name="default" title="Calculadora de Planejamento Patrimonial">
     <section class="flex flex-col gap-8 px-6 py-8">
-      <!-- Back-link to parent listing -->
-      <NuxtLink
-        to="/calculadora"
-        class="flex items-center gap-1 text-xs transition hover:opacity-80"
-        :style="{ color: 'var(--brand-text-muted)' }"
-      >
-        <UIcon name="i-lucide-chevron-left" class="size-3" />
-        Todas as calculadoras
-      </NuxtLink>
+      <MoleculesPageHeader
+        :back-link="{ to: '/calculadora', label: 'Todas as calculadoras' }"
+        icon="i-lucide-target"
+        icon-color="secondary"
+        title="Calculadora de Planejamento Patrimonial 2026: Caminho para a Liberdade Financeira"
+        description="Esta calculadora monta uma carteira recomendada da B3 com base em dados históricos reais pra atingir sua meta. Você define meta + aporte mensal + estratégia (rentabilidade ou segurança), e ela retorna 5-10 ativos com pesos específicos e projeção de quando você atinge o objetivo. Exemplo: meta de R$ 1 milhão com R$ 2.000/mês na estratégia rentabilidade leva ~18 anos."
+        :chips="[
+          { icon: 'i-lucide-check-circle', label: '100% gratuito', color: 'positive' },
+          { icon: 'i-lucide-zap', label: 'Cálculo instantâneo', color: 'primary' },
+          { icon: 'i-lucide-layers', label: 'Carteira sugerida com pesos', color: 'primary' },
+          { icon: 'i-lucide-database', label: 'Dados históricos reais B3', color: 'primary' },
+        ]"
+        :meta="`Última atualização: ${ lastUpdatedText }`"
+      />
 
-      <!-- Hero Section -->
-      <div class="flex flex-col gap-4">
-        <div class="flex items-center gap-2">
-          <UIcon name="i-lucide-target" class="text-secondary h-8 w-8" />
-          <h1
-            class="font-light"
-            :style="{
-              color: 'var(--brand-text)',
-              fontSize: 'clamp(28px, 4vw, 36px)',
-              lineHeight: 1.05,
-              letterSpacing: '-0.7px',
-            }"
-          >Calculadora de Planejamento Patrimonial 2026: Caminho para a Liberdade Financeira</h1>
-        </div>
-        <p class="text-base md:text-lg" :style="{ color: 'var(--brand-text)' }">
-          Esta calculadora monta uma carteira recomendada da B3 com base em dados históricos reais pra atingir sua meta. Você define meta + aporte mensal + estratégia (rentabilidade ou segurança), e ela retorna 5-10 ativos com pesos específicos e projeção de quando você atinge o objetivo. Exemplo: meta de R$ 1 milhão com R$ 2.000/mês na estratégia rentabilidade leva ~18 anos.
-        </p>
-        <p class="text-base md:text-lg">
-          Descubra na hora quanto tempo leva para atingir R$ 500 mil, R$ 1 milhão ou aposentadoria com aporte de R$ 500, R$ 1.500 ou R$ 3.000/mês. Receba uma carteira sugerida com pesos exatos baseada em dados históricos reais da B3, escolha entre estratégia de rentabilidade ou segurança e veja a projeção mês a mês. Gratuito, sem cadastro, sem planilha.
-        </p>
-        <div class="flex flex-wrap items-center gap-2 text-xs">
-          <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-check-circle" class="size-4" :style="{ color: 'var(--brand-positive)' }" />
-            100% gratuito
-          </span>
-          <span>·</span>
-          <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-zap" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
-            Cálculo instantâneo
-          </span>
-          <span>·</span>
-          <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-layers" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
-            Carteira sugerida com pesos
-          </span>
-          <span>·</span>
-          <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-database" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
-            Dados históricos reais B3
-          </span>
-        </div>
-        <p class="text-[11px]" :style="{ color: 'var(--brand-text-muted)' }">
-          Última atualização: {{ lastUpdatedText }}
-        </p>
-      </div>
+      <p class="text-base md:text-lg" :style="{ color: 'var(--brand-text-muted)' }">
+        Descubra na hora quanto tempo leva para atingir R$ 500 mil, R$ 1 milhão ou aposentadoria com aporte de R$ 500, R$ 1.500 ou R$ 3.000/mês. Receba uma carteira sugerida com pesos exatos baseada em dados históricos reais da B3, escolha entre estratégia de rentabilidade ou segurança e veja a projeção mês a mês. Gratuito, sem cadastro, sem planilha.
+      </p>
 
       <!-- Calculadora -->
       <CalculatorPlanning :assets="assets" />
@@ -69,7 +32,7 @@
         15 anos", "entrada de imovel R$ 150 mil", etc).
       -->
       <div
-        class="flex flex-col gap-3 rounded-[30px] border p-6"
+        class="flex flex-col gap-3 rounded-lg border p-6"
         :style="{
           backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
           borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
@@ -691,7 +654,7 @@
 
       <!-- Rankings Relacionados -->
       <div
-        class="mt-8 flex flex-col gap-4 rounded-[30px] p-6"
+        class="mt-8 flex flex-col gap-4 rounded-lg p-6"
         :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))' }"
       >
         <div>
@@ -722,7 +685,7 @@
 
       <!-- Calculadoras Relacionadas -->
       <div
-        class="flex flex-col gap-4 rounded-[30px] p-6"
+        class="flex flex-col gap-4 rounded-lg p-6"
         :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))' }"
       >
         <h2>Outras Ferramentas</h2>

@@ -1,61 +1,24 @@
 <template>
   <NuxtLayout name="default" title="Calculadora de Preço Teto">
     <section class="flex flex-col gap-8 px-6 py-8">
-      <!-- Back-link to parent listing -->
-      <NuxtLink
-        to="/calculadora"
-        class="flex items-center gap-1 text-xs transition hover:opacity-80"
-        :style="{ color: 'var(--brand-text-muted)' }"
-      >
-        <UIcon name="i-lucide-chevron-left" class="size-3" />
-        Todas as calculadoras
-      </NuxtLink>
+      <MoleculesPageHeader
+        :back-link="{ to: '/calculadora', label: 'Todas as calculadoras' }"
+        icon="i-lucide-target"
+        icon-color="secondary"
+        title="Calculadora de Preço Teto e Preço Justo 2026: Graham, Bazin, P/L e VPA"
+        description="O preço teto é o valor máximo que vale pagar por uma ação considerando seus fundamentos. Calcula-se por Graham (√(22.5×LPA×VPA)), Bazin (Dividendo÷0,06), P/L setorial ou VPA×1,5. Exemplo: ITUB4 com LPA R$ 3,50 e VPA R$ 18,00 tem preço teto Graham de R$ 35,55, ou seja, vale a compra abaixo desse valor."
+        :chips="[
+          { icon: 'i-lucide-check-circle', label: '100% gratuito', color: 'positive' },
+          { icon: 'i-lucide-zap', label: 'Cálculo instantâneo', color: 'primary' },
+          { icon: 'i-lucide-database', label: 'Dados oficiais da B3', color: 'primary' },
+          { icon: 'i-lucide-layers', label: 'Graham · Bazin · P/L · VPA', color: 'primary' },
+        ]"
+        :meta="`Última atualização: ${ lastUpdatedText }`"
+      />
 
-      <!-- Hero Section -->
-      <div class="flex flex-col gap-4">
-        <div class="flex items-center gap-2">
-          <UIcon name="i-lucide-target" class="text-secondary h-8 w-8" />
-          <h1
-            class="font-light"
-            :style="{
-              color: 'var(--brand-text)',
-              fontSize: 'clamp(28px, 4vw, 36px)',
-              lineHeight: 1.05,
-              letterSpacing: '-0.7px',
-            }"
-          >Calculadora de Preço Teto e Preço Justo 2026: Graham, Bazin, P/L e VPA</h1>
-        </div>
-        <p class="text-base md:text-lg" :style="{ color: 'var(--brand-text)' }">
-          O preço teto é o valor máximo que vale pagar por uma ação considerando seus fundamentos. Calcula-se por Graham (√(22.5×LPA×VPA)), Bazin (Dividendo÷0,06), P/L setorial ou VPA×1,5. Exemplo: ITUB4 com LPA R$ 3,50 e VPA R$ 18,00 tem preço teto Graham de R$ 35,55, ou seja, vale a compra abaixo desse valor.
-        </p>
-        <p class="text-base md:text-lg">
-          Escolha uma ação da B3 e receba na hora o preço justo calculado pelas 4 principais metodologias da análise fundamentalista, com dados atualizados, consenso de margem de segurança e veredito de compra. Sem planilhas, sem cadastro.
-        </p>
-        <div class="flex flex-wrap items-center gap-2 text-xs">
-          <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-check-circle" class="size-4" :style="{ color: 'var(--brand-positive)' }" />
-            100% gratuito
-          </span>
-          <span>·</span>
-          <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-zap" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
-            Cálculo instantâneo
-          </span>
-          <span>·</span>
-          <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-database" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
-            Dados oficiais da B3
-          </span>
-          <span>·</span>
-          <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-layers" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
-            Graham · Bazin · P/L · VPA
-          </span>
-        </div>
-        <p class="text-[11px]" :style="{ color: 'var(--brand-text-muted)' }">
-          Última atualização: {{ lastUpdatedText }}
-        </p>
-      </div>
+      <p class="text-base md:text-lg" :style="{ color: 'var(--brand-text-muted)' }">
+        Escolha uma ação da B3 e receba na hora o preço justo calculado pelas 4 principais metodologias da análise fundamentalista, com dados atualizados, consenso de margem de segurança e veredito de compra. Sem planilhas, sem cadastro.
+      </p>
 
       <!-- Calculadora -->
       <CalculatorFairPrice
@@ -66,7 +29,7 @@
 
       <!-- Ações Populares (internal linking + deep links para SEO) -->
       <div
-        class="flex flex-col gap-3 rounded-[30px] border p-6"
+        class="flex flex-col gap-3 rounded-lg border p-6"
         :style="{
           backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
           borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
@@ -554,7 +517,7 @@
       <!-- Rankings Relacionados — pontes pra listas atualizadas que
            complementam o calculo de preco teto (Graham, Bazin, upside). -->
       <div
-        class="mt-8 flex flex-col gap-4 rounded-[30px] p-6"
+        class="mt-8 flex flex-col gap-4 rounded-lg p-6"
         :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))' }"
       >
         <div>
@@ -585,7 +548,7 @@
 
       <!-- Calculadoras Relacionadas -->
       <div
-        class="flex flex-col gap-4 rounded-[30px] p-6"
+        class="flex flex-col gap-4 rounded-lg p-6"
         :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))' }"
       >
         <h2>Outras Ferramentas</h2>

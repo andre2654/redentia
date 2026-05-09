@@ -1,18 +1,12 @@
 <template>
   <NuxtLayout name="default" title="Calculadora de Dividendos">
     <section class="flex flex-col gap-8 px-6 py-8">
-      <!-- Hero Section -->
-      <div class="flex flex-col gap-4">
-        <div class="flex items-center gap-2">
-          <UIcon name="i-lucide-coins" class="text-secondary h-8 w-8" />
-          <h1 :style="{ color: brand.colors.text }">
-            Calculadora de Dividendos: Quanto Receber Mensalmente
-          </h1>
-        </div>
-        <p class="text-base md:text-lg">
-          Aprenda a calcular quanto você precisa investir para atingir sua meta de renda passiva com dividendos. Fórmulas, exemplos práticos e estratégias.
-        </p>
-      </div>
+      <MoleculesPageHeader
+        icon="i-lucide-coins"
+        icon-color="secondary"
+        title="Calculadora de Dividendos: Quanto Receber Mensalmente"
+        description="Aprenda a calcular quanto você precisa investir para atingir sua meta de renda passiva com dividendos. Fórmulas, exemplos práticos e estratégias."
+      />
 
       <!-- Conteúdo Educacional -->
       <div class="flex flex-col gap-6">

@@ -226,7 +226,7 @@
             </header>
             <div class="flex flex-1 flex-col gap-5 overflow-y-auto p-5">
               <section>
-                <h2 class="text-[20px] font-semibold leading-tight" :style="{ color: C.text }">{{ selected.title }}</h2>
+                <h2 class="text-[20px] leading-tight" :style="{ color: C.text }">{{ selected.title }}</h2>
                 <p class="mt-2 whitespace-pre-wrap text-[13px] leading-[1.6]" :style="{ color: C.text }">
                   {{ selected.description }}
                 </p>

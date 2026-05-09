@@ -1,61 +1,24 @@
 <template>
   <NuxtLayout name="default" title="Calculadora de Juros Compostos">
     <section class="flex flex-col gap-8 px-6 py-8">
-      <!-- Back-link to parent listing -->
-      <NuxtLink
-        to="/calculadora"
-        class="flex items-center gap-1 text-xs transition hover:opacity-80"
-        :style="{ color: 'var(--brand-text-muted)' }"
-      >
-        <UIcon name="i-lucide-chevron-left" class="size-3" />
-        Todas as calculadoras
-      </NuxtLink>
+      <MoleculesPageHeader
+        :back-link="{ to: '/calculadora', label: 'Todas as calculadoras' }"
+        icon="i-lucide-trending-up"
+        icon-color="secondary"
+        title="Calculadora de Juros Compostos 2026: Simulador com Aportes Mensais"
+        description="Juros compostos são os juros sobre juros, calculados pela fórmula M = C×(1+i)ⁿ. Exemplo: R$ 500 investidos por mês a 10,5% ao ano durante 20 anos viram R$ 410.000, sendo R$ 290.000 só de juros. Quanto maior o prazo, mais o rendimento cresce de forma exponencial."
+        :chips="[
+          { icon: 'i-lucide-check-circle', label: '100% gratuito', color: 'positive' },
+          { icon: 'i-lucide-zap', label: 'Cálculo instantâneo', color: 'primary' },
+          { icon: 'i-lucide-bar-chart-3', label: 'Gráfico mês a mês', color: 'primary' },
+          { icon: 'i-lucide-share-2', label: 'Link compartilhável', color: 'primary' },
+        ]"
+        :meta="`Última atualização: ${ lastUpdatedText }`"
+      />
 
-      <!-- Hero Section -->
-      <div class="flex flex-col gap-4">
-        <div class="flex items-center gap-2">
-          <UIcon name="i-lucide-trending-up" class="text-secondary h-8 w-8" />
-          <h1
-            class="font-light"
-            :style="{
-              color: 'var(--brand-text)',
-              fontSize: 'clamp(28px, 4vw, 36px)',
-              lineHeight: 1.05,
-              letterSpacing: '-0.7px',
-            }"
-          >Calculadora de Juros Compostos 2026: Simulador com Aportes Mensais</h1>
-        </div>
-        <p class="text-base md:text-lg" :style="{ color: 'var(--brand-text)' }">
-          Juros compostos são os juros sobre juros, calculados pela fórmula M = C×(1+i)ⁿ. Exemplo: R$ 500 investidos por mês a 10,5% ao ano durante 20 anos viram R$ 410.000, sendo R$ 290.000 só de juros. Quanto maior o prazo, mais o rendimento cresce de forma exponencial.
-        </p>
-        <p class="text-base md:text-lg">
-          Simule na hora quanto R$ 100, R$ 500 ou R$ 1.000 por mês rendem em 5, 10, 20 ou 30 anos. Calculadora gratuita com gráfico interativo, comparação entre cenários e ajuste de taxa, ideal pra planejar aposentadoria, reserva de emergência ou metas de longo prazo. Sem planilha, sem cadastro.
-        </p>
-        <div class="flex flex-wrap items-center gap-2 text-xs">
-          <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-check-circle" class="size-4" :style="{ color: 'var(--brand-positive)' }" />
-            100% gratuito
-          </span>
-          <span>·</span>
-          <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-zap" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
-            Cálculo instantâneo
-          </span>
-          <span>·</span>
-          <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-bar-chart-3" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
-            Gráfico mês a mês
-          </span>
-          <span>·</span>
-          <span class="flex items-center gap-1">
-            <UIcon name="i-lucide-share-2" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
-            Link compartilhável
-          </span>
-        </div>
-        <p class="text-[11px]" :style="{ color: 'var(--brand-text-muted)' }">
-          Última atualização: {{ lastUpdatedText }}
-        </p>
-      </div>
+      <p class="text-base md:text-lg" :style="{ color: 'var(--brand-text-muted)' }">
+        Simule na hora quanto R$ 100, R$ 500 ou R$ 1.000 por mês rendem em 5, 10, 20 ou 30 anos. Calculadora gratuita com gráfico interativo, comparação entre cenários e ajuste de taxa, ideal pra planejar aposentadoria, reserva de emergência ou metas de longo prazo. Sem planilha, sem cadastro.
+      </p>
 
       <!-- Calculadora -->
       <CalculatorCompound />
@@ -70,7 +33,7 @@
         "quanto rende R$ 1000 por mes", etc).
       -->
       <div
-        class="flex flex-col gap-3 rounded-[30px] border p-6"
+        class="flex flex-col gap-3 rounded-lg border p-6"
         :style="{
           backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
           borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
@@ -676,7 +639,7 @@
 
       <!-- Rankings Relacionados -->
       <div
-        class="mt-8 flex flex-col gap-4 rounded-[30px] p-6"
+        class="mt-8 flex flex-col gap-4 rounded-lg p-6"
         :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))' }"
       >
         <div>
@@ -707,7 +670,7 @@
 
       <!-- Calculadoras Relacionadas -->
       <div
-        class="flex flex-col gap-4 rounded-[30px] p-6"
+        class="flex flex-col gap-4 rounded-lg p-6"
         :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))' }"
       >
         <h2>Outras Calculadoras</h2>

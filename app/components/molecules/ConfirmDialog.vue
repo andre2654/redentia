@@ -34,7 +34,7 @@
           <UIcon name="i-lucide-alert-triangle" class="size-5" />
         </div>
         <div class="flex flex-col gap-1">
-          <h2 class="text-lg font-semibold" :style="{ color: 'var(--brand-text)' }">
+          <h2 class="text-lg" :style="{ color: 'var(--brand-text)' }">
             {{ state.title }}
           </h2>
           <p v-if="state.description" class="text-sm" :style="{ color: 'var(--brand-text-muted)' }">

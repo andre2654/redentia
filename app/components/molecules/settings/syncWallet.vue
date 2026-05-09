@@ -2,7 +2,7 @@
   <div class="flex flex-col gap-6 p-6">
     <div class="flex flex-col">
       <h3 class="text-[18px] font-bold">Sincronização de carteira</h3>
-      <p class="text-[13px] font-extralight">
+      <p class="text-[13px] font-light">
         Caros clientes, por enquanto não temos integração automática, assista ao
         vídeo abaixo para aprender a consolidar sua carteira
       </p>

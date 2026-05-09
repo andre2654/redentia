@@ -1,8 +1,5 @@
 <template>
   <NuxtLayout :name="layoutName">
-    <!-- CTA contextual — full-bleed -->
-    <MoleculesCommunicationsCTASlot placement="crypto-top" />
-
     <div class="relative z-10 flex flex-col px-4 pt-4">
       <div class="flex flex-col">
         <!-- Hero Dashboard Card: ambient gradient + sparkline -->

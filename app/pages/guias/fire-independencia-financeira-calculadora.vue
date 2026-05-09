@@ -39,24 +39,12 @@ usePageSeo({
 <template>
   <NuxtLayout name="default" title="FIRE Brasil">
     <article class="mx-auto flex w-full max-w-4xl flex-col gap-8 px-6 py-12 md:py-16">
-      <NuxtLink
-        to="/guias"
-        class="flex items-center gap-1 text-xs transition hover:opacity-80"
-        :style="{ color: brand.colors.textMuted }"
-      >
-        <UIcon name="i-lucide-chevron-left" class="size-3" />
-        Todos os guias
-      </NuxtLink>
-
-      <header class="flex flex-col gap-4">
-        <h1 class="text-3xl md:text-5xl" :class="[brand.font.headingWeight]" :style="{ color: brand.colors.text }">
-          Quantos Anos Faltam Pra Você Se Aposentar?
-        </h1>
-        <p class="text-lg">
-          O movimento FIRE (Financial Independence, Retire Early) diz que dá pra largar o trabalho décadas antes dos 65. A matemática é simples, a disciplina não. Vamos aos números.
-        </p>
-        <p class="text-sm" :style="{ color: 'color-mix(in srgb, ' + brand.colors.text + ' 60%, transparent)' }">Atualizado em {{ lastUpdatedText }} · Leitura de 11 minutos</p>
-      </header>
+      <MoleculesPageHeader
+        :back-link="{ to: '/guias', label: 'Todos os guias' }"
+        title="Quantos Anos Faltam Pra Você Se Aposentar?"
+        description="O movimento FIRE (Financial Independence, Retire Early) diz que dá pra largar o trabalho décadas antes dos 65. A matemática é simples, a disciplina não. Vamos aos números."
+        :meta="`Atualizado em ${lastUpdatedText} · Leitura de 11 minutos`"
+      />
 
       <section class="flex flex-col gap-8">
         <h2>A fórmula que mudou tudo: regra dos 4%</h2>

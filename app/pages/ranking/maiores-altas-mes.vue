@@ -1,53 +1,15 @@
 <template>
   <NuxtLayout name="default" title="Maiores Altas do Mês">
     <section class="flex flex-col gap-8 px-6 py-8">
-      <div class="flex flex-col gap-3">
-        <NuxtLink
-          to="/ranking"
-          class="flex items-center gap-1 text-xs transition hover:opacity-80"
-          :style="{ color: 'var(--brand-text-muted)' }"
-        >
-          <UIcon name="i-lucide-chevron-left" class="size-3" />
-          Todos os rankings
-        </NuxtLink>
-        <div class="flex items-center gap-3">
-          <div
-            class="flex size-12 items-center justify-center rounded-xl"
-            :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-positive) 14%, transparent)' }"
-          >
-            <UIcon
-              name="i-lucide-trending-up"
-              class="size-6"
-              :style="{ color: 'var(--brand-positive)' }"
-            />
-          </div>
-          <div>
-            <p
-              class="text-[10px] font-medium uppercase tracking-[0.15em]"
-              :style="{ color: 'var(--brand-text-muted)' }"
-            >
-              Ranking
-            </p>
-            <h1
-              class="font-light"
-              :style="{
-                color: 'var(--brand-text)',
-                fontSize: 'clamp(28px, 4vw, 36px)',
-                lineHeight: 1.05,
-                letterSpacing: '-0.7px',
-              }"
-            >Maiores Altas do Mês: Ações que Mais Subiram na Bolsa B3 2026</h1>
-          </div>
-        </div>
-        <p class="max-w-2xl text-base" :style="{ color: 'var(--brand-text-muted)' }">
-          As 50 ações e FIIs que mais subiram nos últimos 30 dias na B3 (Bolsa,
-          Brasil, Balcão), com performance comparada ao Ibovespa e desempenho
-          setorial. Top gainers da semana e do mês incluem ações de bancos,
-          FIIs de logística e papel, blue chips brasileiras como VALE3, ITUB4,
-          ABEV3, B3SA3 e fundos imobiliários como HGLG11, XPML11, KNIP11.
-          Atualizado diariamente após pregão.
-        </p>
-      </div>
+      <MoleculesPageHeader
+        :back-link="{ to: '/ranking', label: 'Todos os rankings' }"
+        icon="i-lucide-trending-up"
+        icon-style="circle"
+        icon-color="positive"
+        eyebrow="Ranking"
+        title="Maiores Altas do Mês: Ações que Mais Subiram na Bolsa B3 2026"
+        description="As 50 ações e FIIs que mais subiram nos últimos 30 dias na B3 (Bolsa, Brasil, Balcão), com performance comparada ao Ibovespa e desempenho setorial. Top gainers da semana e do mês incluem ações de bancos, FIIs de logística e papel, blue chips brasileiras como VALE3, ITUB4, ABEV3, B3SA3 e fundos imobiliários como HGLG11, XPML11, KNIP11. Atualizado diariamente após pregão."
+      />
 
       <!-- Answer-first paragraph -->
       <div
