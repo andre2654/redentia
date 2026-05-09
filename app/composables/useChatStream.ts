@@ -1107,6 +1107,18 @@ export function useChatStream(opts: UseChatStreamOptions) {
         assistant.proposals.push({ ...p, state: p.state ?? 'pending' })
         break
       }
+      case 'max.blocked': {
+        // Backend sinaliza que o user atingiu o cap diario do tier MAX.
+        // Disparado em vez de invocar o modelo (zero custo IA). Frontend
+        // usa pra abrir modal global + travar botao MAX com countdown.
+        try {
+          const block = useMaxBlock()
+          block.applyBlock(data as { used: number; limit: number; resetAt: string; planSlug: string | null })
+        } catch {
+          /* composable unavailable in tests */
+        }
+        break
+      }
       case 'alert.fired': {
         // Watchlist alert (cron) OR agent-inline insight. Append to
         // the current message (so it shows up under the answer) and

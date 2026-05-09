@@ -249,6 +249,7 @@ const typeTabs: { value: CommunicationType | ''; label: string; icon?: string }[
   { value: 'cta', label: 'CTAs', icon: 'i-lucide-mouse-pointer-click' },
   { value: 'modal', label: 'Modais', icon: 'i-lucide-square-stack' },
   { value: 'poll', label: 'Enquetes', icon: 'i-lucide-bar-chart-3' },
+  { value: 'notification', label: 'Notificações', icon: 'i-lucide-bell' },
   { value: 'email', label: 'Emails', icon: 'i-lucide-mail' },
 ]
 
@@ -327,6 +328,7 @@ function typeLabel(t: CommunicationType): string {
     cta: 'CTA',
     modal: 'Modal',
     poll: 'Enquete',
+    notification: 'Notificação',
     email: 'Email',
   } as const)[t]
 }
@@ -338,6 +340,7 @@ function typeIcon(t: CommunicationType): string {
     cta: 'i-lucide-mouse-pointer-click',
     modal: 'i-lucide-square-stack',
     poll: 'i-lucide-bar-chart-3',
+    notification: 'i-lucide-bell',
     email: 'i-lucide-mail',
   } as const)[t]
 }
@@ -349,6 +352,7 @@ function typeChipStyle(t: CommunicationType) {
     cta: '#f59e0b',
     modal: '#06b6d4',
     poll: '#ec4899',
+    notification: '#a855f7',
     email: '#10b981',
   } as const)[t]
   return {
@@ -401,6 +405,7 @@ function placementLabel(p: CommunicationPlacement): string {
     'home-cta': 'Home',
     'feed': 'Feed',
     'modal': 'Modal',
+    'inbox': 'Inbox',
   } as Record<string, string>)[p] || p
 }
 
@@ -429,7 +434,7 @@ onMounted(() => reload())
   font-size: clamp(26px, 4vw, 32px);
   line-height: 1.1;
   letter-spacing: -0.025em;
-  color: rgba(255, 255, 255, 0.95);
+  color: color-mix(in srgb, var(--brand-text) 95%, transparent);
   margin: 0;
 }
 
@@ -438,7 +443,7 @@ onMounted(() => reload())
   max-width: 580px;
   font-size: 13px;
   line-height: 1.55;
-  color: rgba(255, 255, 255, 0.6);
+  color: color-mix(in srgb, var(--brand-text) 60%, transparent);
 }
 
 .primary-cta {
@@ -472,7 +477,7 @@ onMounted(() => reload())
   justify-content: space-between;
   gap: 12px 16px;
   padding-bottom: 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid color-mix(in srgb, var(--brand-text) 6%, transparent);
 }
 
 .filters__tabs {
@@ -492,14 +497,14 @@ onMounted(() => reload())
   font-size: 12.5px;
   font-weight: 500;
   letter-spacing: -0.005em;
-  color: rgba(255, 255, 255, 0.55);
+  color: color-mix(in srgb, var(--brand-text) 55%, transparent);
   cursor: pointer;
   transition: background 150ms, color 150ms, border-color 150ms;
 }
 
 .filter-tab:hover {
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(255, 255, 255, 0.85);
+  background: color-mix(in srgb, var(--brand-text) 4%, transparent);
+  color: color-mix(in srgb, var(--brand-text) 85%, transparent);
 }
 
 .filter-tab--active {
@@ -515,7 +520,7 @@ onMounted(() => reload())
   font-weight: 600;
   padding: 1px 6px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--brand-text) 8%, transparent);
 }
 
 .filter-tab--active .filter-tab__count {
@@ -534,7 +539,7 @@ onMounted(() => reload())
   align-items: center;
   justify-content: center;
   padding: 60px 0;
-  color: rgba(255, 255, 255, 0.5);
+  color: color-mix(in srgb, var(--brand-text) 50%, transparent);
 }
 
 .empty {
@@ -545,8 +550,8 @@ onMounted(() => reload())
   gap: 10px;
   padding: 60px 24px;
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px dashed rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--brand-text) 2%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--brand-text) 10%, transparent);
 }
 
 .empty__icon {
@@ -565,14 +570,14 @@ onMounted(() => reload())
   font-family: var(--brand-font);
   font-size: 18px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.9);
+  color: color-mix(in srgb, var(--brand-text) 90%, transparent);
 }
 
 .empty__subtitle {
   margin: 0 0 12px;
   font-size: 13px;
   max-width: 380px;
-  color: rgba(255, 255, 255, 0.55);
+  color: color-mix(in srgb, var(--brand-text) 55%, transparent);
 }
 
 /* ============ CARDS GRID ============ */
@@ -597,15 +602,15 @@ onMounted(() => reload())
   gap: 12px;
   padding: 16px 18px;
   border-radius: 13px;
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--brand-text) 2.5%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-text) 8%, transparent);
   cursor: pointer;
   transition: border-color 200ms, transform 200ms, box-shadow 200ms;
   overflow: hidden;
 }
 
 .card:hover {
-  border-color: rgba(255, 255, 255, 0.16);
+  border-color: color-mix(in srgb, var(--brand-text) 16%, transparent);
   transform: translateY(-2px);
   box-shadow: 0 14px 30px -16px rgba(0, 0, 0, 0.5);
 }
@@ -626,6 +631,7 @@ onMounted(() => reload())
 .card--cta { --card-accent: #f59e0b; }
 .card--modal { --card-accent: #06b6d4; }
 .card--poll { --card-accent: #ec4899; }
+.card--notification { --card-accent: #a855f7; }
 .card--email { --card-accent: #10b981; }
 
 /* TOP: type chip + status */
@@ -674,9 +680,9 @@ onMounted(() => reload())
   animation: status-pulse 2.4s ease-in-out infinite;
 }
 .card__status--scheduled { color: #06b6d4; }
-.card__status--draft { color: rgba(255, 255, 255, 0.5); }
+.card__status--draft { color: color-mix(in srgb, var(--brand-text) 50%, transparent); }
 .card__status--paused { color: #f59e0b; }
-.card__status--ended { color: rgba(255, 255, 255, 0.4); }
+.card__status--ended { color: color-mix(in srgb, var(--brand-text) 40%, transparent); }
 
 @keyframes status-pulse {
   0%, 100% { opacity: 1; transform: scale(1); }
@@ -698,7 +704,7 @@ onMounted(() => reload())
   font-weight: 500;
   letter-spacing: -0.012em;
   line-height: 1.3;
-  color: rgba(255, 255, 255, 0.95);
+  color: color-mix(in srgb, var(--brand-text) 95%, transparent);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -709,14 +715,14 @@ onMounted(() => reload())
   margin: 0;
   font-size: 12px;
   line-height: 1.5;
-  color: rgba(255, 255, 255, 0.55);
+  color: color-mix(in srgb, var(--brand-text) 55%, transparent);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-.card__snippet--empty { color: rgba(255, 255, 255, 0.3); font-style: italic; }
+.card__snippet--empty { color: color-mix(in srgb, var(--brand-text) 30%, transparent); font-style: italic; }
 
 /* META chips */
 .card__meta {
@@ -731,16 +737,16 @@ onMounted(() => reload())
   gap: 4px;
   padding: 2px 7px;
   border-radius: 5px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: color-mix(in srgb, var(--brand-text) 5%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-text) 6%, transparent);
   font-size: 10.5px;
   font-weight: 500;
   letter-spacing: -0.005em;
-  color: rgba(255, 255, 255, 0.7);
+  color: color-mix(in srgb, var(--brand-text) 70%, transparent);
 }
 
 .card__chip--muted {
-  color: rgba(255, 255, 255, 0.5);
+  color: color-mix(in srgb, var(--brand-text) 50%, transparent);
 }
 
 /* STATS */
@@ -749,7 +755,7 @@ onMounted(() => reload())
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
   padding-top: 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid color-mix(in srgb, var(--brand-text) 6%, transparent);
 }
 
 .card__stats:has(.card__stat:nth-child(4)) {
@@ -768,7 +774,7 @@ onMounted(() => reload())
   font-weight: 500;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.4);
+  color: color-mix(in srgb, var(--brand-text) 40%, transparent);
 }
 
 .card__stat-value {
@@ -776,7 +782,7 @@ onMounted(() => reload())
   font-variant-numeric: tabular-nums;
   font-size: 14px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.92);
+  color: color-mix(in srgb, var(--brand-text) 92%, transparent);
 }
 
 /* ACTIONS overlay */
@@ -790,7 +796,7 @@ onMounted(() => reload())
   border-radius: 7px;
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid color-mix(in srgb, var(--brand-text) 8%, transparent);
   opacity: 0;
   transform: translateY(-4px);
   transition: opacity 180ms, transform 180ms;
@@ -810,14 +816,14 @@ onMounted(() => reload())
   border-radius: 5px;
   background: transparent;
   border: 0;
-  color: rgba(255, 255, 255, 0.7);
+  color: color-mix(in srgb, var(--brand-text) 70%, transparent);
   cursor: pointer;
   transition: background 150ms, color 150ms;
 }
 
 .card__action:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 1);
+  background: color-mix(in srgb, var(--brand-text) 8%, transparent);
+  color: color-mix(in srgb, var(--brand-text) 100%, transparent);
 }
 
 .card__action--danger:hover {
@@ -840,17 +846,17 @@ onMounted(() => reload())
   gap: 4px;
   padding: 7px 13px;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--brand-text) 4%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-text) 10%, transparent);
   font-size: 12px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.85);
+  color: color-mix(in srgb, var(--brand-text) 85%, transparent);
   cursor: pointer;
   transition: background 150ms, opacity 150ms;
 }
 
 .page-btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--brand-text) 8%, transparent);
 }
 
 .page-btn:disabled {
@@ -862,6 +868,6 @@ onMounted(() => reload())
   font-family: 'JetBrains Mono', monospace;
   font-size: 11.5px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.55);
+  color: color-mix(in srgb, var(--brand-text) 55%, transparent);
 }
 </style>

@@ -55,9 +55,12 @@
 
       <!-- Prev-close pill minimalista: pill compacto inline, sem glow,
            apenas border subtle e bg semi-transparente. Eyebrow muted +
-           valor tabular na mesma linha, separados por middle dot. -->
+           valor tabular na mesma linha, separados por middle dot.
+           Gated em `showPrevClose` pra que graficos como o /wallet/resultado
+           (que nao tem semantica de "fechamento anterior") nao mostrem nem
+           a linha nem o pill. -->
       <div
-        v-if="prevClosePillPos && prevClosePillPos.visible"
+        v-if="showPrevClose && prevClosePillPos && prevClosePillPos.visible"
         class="pointer-events-none absolute z-[4] inline-flex items-center gap-2 whitespace-nowrap rounded-md border px-2.5 py-1"
         :style="{
           left: `${prevClosePillPos.right - 12}px`,
@@ -76,7 +79,13 @@
         </span>
       </div>
 
-      <!-- Marker overlay (HTML icons positioned above chart points) -->
+      <!-- Marker overlay (HTML icons positioned above chart points).
+           Cada marker se autocoloriza pelo sinal do `changePercent` do
+           primeiro item: trending-up + verde pra alta, trending-down +
+           vermelho pra queda. Nao reusamos `dynamicColor` (que e a
+           direcao do grafico inteiro) porque cada marker tem sua propria
+           direcao, e visualmente um marker de queda no meio de um grafico
+           positivo deve aparecer vermelho, nao verde. -->
       <div class="pointer-events-none absolute inset-0 z-[5]">
         <button
           v-for="group in markerPositions"
@@ -85,24 +94,29 @@
           class="marker-pin pointer-events-auto absolute"
           :style="{
             left: `${group.x}px`,
-            top: `${Math.max(12, group.y - 28)}px`,
+            top: `${Math.max(13, group.y)}px`,
           }"
           :class="activeMarkerIdx === group.idx && 'is-active'"
           @click.stop="onMarkerIconClick(group)"
         >
           <span
             class="marker-icon-wrap"
-            :style="{
-              backgroundColor: activeMarkerIdx === group.idx ? dynamicColor : `${dynamicColor}e6`,
-              boxShadow: `0 2px 8px ${dynamicColor}40`,
-            }"
+            :style="markerIconStyle(group.items[0]?.changePercent ?? 0, activeMarkerIdx === group.idx)"
           >
-            <UIcon name="i-lucide-sparkles" class="size-3 text-white" />
+            <UIcon
+              :name="markerIconName(group.items[0]?.changePercent ?? 0)"
+              class="size-3.5"
+              :style="{ color: markerAccentColor(group.items[0]?.changePercent ?? 0) }"
+            />
           </span>
           <span
             v-if="group.items.length > 1"
             class="marker-badge"
-            :style="{ backgroundColor: dynamicColor }"
+            :style="{
+              backgroundColor: markerAccentColor(group.items[0]?.changePercent ?? 0),
+              color: 'var(--bg-elevated, #fff)',
+              borderColor: 'var(--bg-elevated, #fff)',
+            }"
           >
             +{{ group.items.length - 1 }}
           </span>
@@ -445,6 +459,14 @@ interface Props {
   locale?: string
   currency?: string
   markers?: IChartMarker[]
+  /**
+   * Render the "Fech. anterior" reference line + pill. Default true
+   * because most consumers (price charts in /asset/[ticker]) want it.
+   * Set to false when the chart represents data that has no notion of
+   * "previous close" (e.g. cumulative P&L curve in /wallet/resultado,
+   * where the reference line just adds noise).
+   */
+  showPrevClose?: boolean
 }
 
 /* ========== Configurações padrão ========== */
@@ -470,6 +492,7 @@ const props = withDefaults(defineProps<Props>(), {
   locale: 'pt-BR',
   currency: 'R$',
   markers: () => [],
+  showPrevClose: true,
 })
 
 const emit = defineEmits<{
@@ -1718,6 +1741,48 @@ function dynamicLineColor(index: number, fallback = true): string {
   return fallback ? dynamicColor.value : 'rgba(148, 163, 184, 0.6)'
 }
 
+/**
+ * Helpers de marker — derivam cor + icone do `changePercent` de cada
+ * marker individualmente (nao do grafico inteiro). Permitem que um
+ * mesmo grafico tenha markers verdes (alta) e vermelhos (queda)
+ * coexistindo. Uso pra markers no /asset/[ticker] (eventos por ticker)
+ * e /wallet/resultado (dias notaveis de gain/loss).
+ */
+function markerAccentColor(changePercent: number): string {
+  if (changePercent > 0) return DEFAULTS.POSITIVE_COLOR
+  if (changePercent < 0) return DEFAULTS.NEGATIVE_COLOR
+  return cc.tickColorMuted
+}
+
+function markerIconName(changePercent: number): string {
+  if (changePercent > 0) return 'i-lucide-trending-up'
+  if (changePercent < 0) return 'i-lucide-trending-down'
+  return 'i-lucide-circle-dot'
+}
+
+function markerIconStyle(
+  changePercent: number,
+  active: boolean,
+): Record<string, string> {
+  const accent = markerAccentColor(changePercent)
+  // BG: surface elevada (bg-elevated) — neutro, deixa o icone colorido
+  // ser o foco. Active: ganha tint sutil pra "iluminar" sem trocar
+  // a cor de fundo (evita o look de pill solida que feio com white
+  // text).
+  const bg = active
+    ? `color-mix(in srgb, ${accent} 12%, var(--bg-elevated, #fff))`
+    : 'var(--bg-elevated, #fff)'
+  return {
+    backgroundColor: bg,
+    // Border tinted: tira o branco hardcoded, ganha cor sutil que
+    // amarra com o icone interno.
+    borderColor: `color-mix(in srgb, ${accent} ${active ? 70 : 45}%, transparent)`,
+    boxShadow: active
+      ? `0 6px 18px color-mix(in srgb, ${accent} 38%, transparent)`
+      : `0 3px 10px color-mix(in srgb, ${accent} 22%, transparent)`,
+  }
+}
+
 const hoverLinePlugin: Plugin<'line'> = {
   id: 'hover-line-plugin',
   afterDraw: (chart) => {
@@ -1743,6 +1808,7 @@ const hoverLinePlugin: Plugin<'line'> = {
         (chart as any)._segmentOrientations ?? []
 
       if (
+        props.showPrevClose &&
         !props.loading &&
         props.data.length > 0 &&
         hasReferenceVariation.value
@@ -1849,6 +1915,88 @@ const closingDeltaFillPlugin: Plugin<'line'> = {
     const segmentColors: ('above' | 'below' | 'mixed')[] = []
     try {
       if (!isDataValid.value || props.loading) return
+
+      // Quando o consumer desliga a referencia de fechamento anterior
+      // (showPrevClose=false), entramos em "mono mode": sem split
+      // verde-acima/vermelho-abaixo, mas MANTEMOS area fill com
+      // gradiente + linha colorida — a curva inteira fica verde
+      // OU vermelha baseado no sinal do valor final. Funciona pra
+      // graficos de P&L acumulado, onde a referencia natural e zero
+      // e o que importa visualmente e "terminei no azul ou no
+      // vermelho?".
+      //
+      // Implementacao: em vez de calcular closingY a partir do
+      // closingValue (preco anterior), travamos closingY no edge
+      // oposto a direcao escolhida — chartBottom pra positivo
+      // (gradiente preenche tudo de cima pra baixo), chartTop pra
+      // negativo. fillRegionBetween e o mesmo helper usado no modo
+      // normal, so mudamos os parametros.
+      if (!props.showPrevClose) {
+        const stats = datasetStats.value
+        const meta = chart.getDatasetMeta(0)
+        if (!stats || !meta || !Array.isArray(meta.data) || meta.data.length < 2) {
+          ;(chart as any)._segmentOrientations = []
+          return
+        }
+
+        const { chartArea } = chart
+        if (!chartArea) {
+          ;(chart as any)._segmentOrientations = []
+          return
+        }
+
+        const isPositive = stats.last >= 0
+        const orientation: 'above' | 'below' = isPositive ? 'above' : 'below'
+        const closingY = isPositive ? chartArea.bottom : chartArea.top
+
+        const ctx = chart.ctx
+        ctx.save()
+        ctx.beginPath()
+        ctx.rect(
+          chartArea.left,
+          chartArea.top,
+          chartArea.right - chartArea.left,
+          chartArea.bottom - chartArea.top
+        )
+        ctx.clip()
+
+        // Gradiente mono: opaco no topo da regiao preenchida →
+        // transparente no edge oposto. Mesma intensidade dos pastel
+        // gradients usados no split mode (alpha 0.22) pra manter
+        // peso visual consistente entre os dois modos.
+        const monoGradient = ctx.createLinearGradient(
+          0,
+          chartArea.top,
+          0,
+          chartArea.bottom
+        )
+        if (isPositive) {
+          monoGradient.addColorStop(0, 'rgba(134, 239, 172, 0.22)')
+          monoGradient.addColorStop(1, 'rgba(134, 239, 172, 0)')
+        } else {
+          monoGradient.addColorStop(0, 'rgba(252, 165, 165, 0)')
+          monoGradient.addColorStop(1, 'rgba(252, 165, 165, 0.22)')
+        }
+
+        for (let i = 1; i < meta.data.length; i++) {
+          const previousPoint = meta.data[i - 1] as unknown as ChartPointLike
+          const currentPoint = meta.data[i] as unknown as ChartPointLike
+
+          fillRegionBetween(
+            ctx,
+            previousPoint,
+            currentPoint,
+            closingY,
+            orientation,
+            monoGradient
+          )
+          segmentColors.push(orientation)
+        }
+
+        ctx.restore()
+        ;(chart as any)._segmentOrientations = segmentColors
+        return
+      }
 
       const closeValue = closingLineValue.value
       if (closeValue === null) return
@@ -2496,7 +2644,12 @@ const onRootMouseLeave = (): void => {
    ============================================================ */
 
 .marker-pin {
-  transform: translate(-50%, 0);
+  /* `translate(-50%, -50%)` centra o marker EM CIMA do ponto da
+     curva (eixo X: meio do botao alinhado a x do dado; eixo Y:
+     meio do botao alinhado a y do dado). Antes era translate(-50%, 0)
+     com top = y - 28, o que punha o marker visivelmente acima da
+     linha (~6px acima do ponto). Agora cai exatamente em cima. */
+  transform: translate(-50%, -50%);
   padding: 0;
   background: none;
   border: none;
@@ -2507,7 +2660,9 @@ const onRootMouseLeave = (): void => {
 
 .marker-pin:hover,
 .marker-pin.is-active {
-  transform: translate(-50%, -4px);
+  /* Hover/active levanta 4px alem do centro pra dar feedback tatil,
+     sem mexer no centramento horizontal. */
+  transform: translate(-50%, calc(-50% - 4px));
 }
 
 .marker-icon-wrap {
@@ -2518,8 +2673,19 @@ const onRootMouseLeave = (): void => {
   width: 22px;
   height: 22px;
   border-radius: 9999px;
-  border: 2px solid #fff;
-  transition: box-shadow 0.2s ease;
+  /* Border tinted (color via inline style — color-mix com accent).
+     Antes: 2px solid #fff hardcoded, que em dark mode dava aquela
+     borda branca esquisita ao redor do icone branco. Agora a borda
+     pega cor do proprio marker (verde/vermelho/muted) num alpha
+     baixo, ficando integrado a paleta. */
+  border: 1.5px solid;
+  transition: box-shadow 0.2s ease, transform 0.2s ease,
+              background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.marker-pin:hover .marker-icon-wrap,
+.marker-pin.is-active .marker-icon-wrap {
+  transform: scale(1.08);
 }
 
 .marker-pin::after {
@@ -2544,23 +2710,27 @@ const onRootMouseLeave = (): void => {
   padding: 0 4px;
   border-radius: 9999px;
   font-size: 9px;
-  font-weight: 600;
-  color: #fff;
+  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1.5px solid #fff;
+  /* Border + color injetados via inline (matching var(--bg-elevated))
+     pra que o badge sempre "knock-out" do background do grafico,
+     mesmo em dark mode. Hardcoded #fff foi removido. */
+  border: 1.5px solid;
   line-height: 1;
 }
 
 @keyframes marker-drop {
   from {
     opacity: 0;
-    transform: translate(-50%, -8px) scale(0.6);
+    /* Inicia 8px acima do estado final (que e -50% via centramento)
+       pra criar o efeito de "cair no ponto". */
+    transform: translate(-50%, calc(-50% - 8px)) scale(0.6);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, 0) scale(1);
+    transform: translate(-50%, -50%) scale(1);
   }
 }
 

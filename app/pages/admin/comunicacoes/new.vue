@@ -334,11 +334,11 @@ function defaultPlacement(type: CommunicationType) {
   align-items: center;
   gap: 4px;
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.55);
+  color: color-mix(in srgb, var(--brand-text) 55%, transparent);
   width: fit-content;
   transition: color 150ms;
 }
-.back-link:hover { color: rgba(255, 255, 255, 0.85); }
+.back-link:hover { color: color-mix(in srgb, var(--brand-text) 85%, transparent); }
 
 .display-h1 {
   font-family: var(--brand-font);
@@ -346,7 +346,7 @@ function defaultPlacement(type: CommunicationType) {
   font-size: clamp(28px, 4vw, 36px);
   line-height: 1.05;
   letter-spacing: -0.025em;
-  color: rgba(255, 255, 255, 0.95);
+  color: color-mix(in srgb, var(--brand-text) 95%, transparent);
   margin: 0;
 }
 
@@ -355,7 +355,7 @@ function defaultPlacement(type: CommunicationType) {
   max-width: 620px;
   font-size: 14px;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.6);
+  color: color-mix(in srgb, var(--brand-text) 60%, transparent);
 }
 
 /* ============ TYPE CARD ============ */
@@ -363,8 +363,8 @@ function defaultPlacement(type: CommunicationType) {
   display: flex;
   flex-direction: column;
   text-align: left;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--brand-text) 2%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-text) 8%, transparent);
   border-radius: 14px;
   overflow: hidden;
   cursor: pointer;
@@ -372,7 +372,7 @@ function defaultPlacement(type: CommunicationType) {
 }
 
 .type-card:hover:not(:disabled) {
-  border-color: rgba(255, 255, 255, 0.18);
+  border-color: color-mix(in srgb, var(--brand-text) 18%, transparent);
   transform: translateY(-3px);
   box-shadow: 0 18px 38px -18px rgba(0, 0, 0, 0.5);
 }
@@ -391,7 +391,7 @@ function defaultPlacement(type: CommunicationType) {
   height: 110px;
   position: relative;
   overflow: hidden;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid color-mix(in srgb, var(--brand-text) 6%, transparent);
 }
 
 /* Body */
@@ -421,14 +421,14 @@ function defaultPlacement(type: CommunicationType) {
   font-size: 15px;
   font-weight: 600;
   letter-spacing: -0.012em;
-  color: rgba(255, 255, 255, 0.95);
+  color: color-mix(in srgb, var(--brand-text) 95%, transparent);
 }
 
 .type-card__desc {
   margin: 0;
   font-size: 12.5px;
   line-height: 1.5;
-  color: rgba(255, 255, 255, 0.65);
+  color: color-mix(in srgb, var(--brand-text) 65%, transparent);
 }
 
 .type-card__use-case {
@@ -437,8 +437,8 @@ function defaultPlacement(type: CommunicationType) {
   gap: 3px;
   padding: 9px 11px;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px dashed rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--brand-text) 2.5%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--brand-text) 8%, transparent);
 }
 
 .type-card__use-case-label {
@@ -447,14 +447,14 @@ function defaultPlacement(type: CommunicationType) {
   font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.45);
+  color: color-mix(in srgb, var(--brand-text) 45%, transparent);
 }
 
 .type-card__use-case-text {
   margin: 0;
   font-size: 11.5px;
   line-height: 1.5;
-  color: rgba(255, 255, 255, 0.7);
+  color: color-mix(in srgb, var(--brand-text) 70%, transparent);
 }
 
 .type-card__cta {
@@ -496,7 +496,7 @@ function defaultPlacement(type: CommunicationType) {
   flex-shrink: 0;
 }
 :deep(.preview-banner__line) {
-  height: 5px; border-radius: 2px; background: rgba(255,255,255,0.4);
+  height: 5px; border-radius: 2px; background: color-mix(in srgb, var(--brand-text) 40%, transparent);
   flex: 1;
 }
 :deep(.preview-banner__line--w50) { max-width: 50%; }
@@ -507,7 +507,7 @@ function defaultPlacement(type: CommunicationType) {
 }
 :deep(.preview-banner__page) {
   height: 50px; border-radius: 5px;
-  background: rgba(255,255,255,0.04);
+  background: color-mix(in srgb, var(--brand-text) 4%, transparent);
 }
 
 @keyframes slide-in {
@@ -543,7 +543,7 @@ function defaultPlacement(type: CommunicationType) {
 }
 :deep(.preview-feed__line) {
   height: 6px; border-radius: 2px;
-  background: rgba(255,255,255,0.18);
+  background: color-mix(in srgb, var(--brand-text) 18%, transparent);
   flex: 1;
 }
 :deep(.preview-feed__line--w70) { max-width: 70%; }
@@ -574,7 +574,7 @@ function defaultPlacement(type: CommunicationType) {
 }
 :deep(.preview-cta__line) {
   height: 6px; border-radius: 2px;
-  background: rgba(255, 255, 255, 0.5);
+  background: color-mix(in srgb, var(--brand-text) 50%, transparent);
 }
 :deep(.preview-cta__line--w70) { max-width: 70%; }
 :deep(.preview-cta__line--w50) { max-width: 50%; }
@@ -612,7 +612,7 @@ function defaultPlacement(type: CommunicationType) {
 }
 :deep(.preview-modal__line) {
   height: 5px; border-radius: 2px;
-  background: rgba(255, 255, 255, 0.4);
+  background: color-mix(in srgb, var(--brand-text) 40%, transparent);
 }
 :deep(.preview-modal__line--w60) { max-width: 60%; }
 :deep(.preview-modal__line--w90) { max-width: 90%; }
@@ -638,7 +638,7 @@ function defaultPlacement(type: CommunicationType) {
 }
 :deep(.preview-poll__line) {
   height: 6px; border-radius: 2px;
-  background: rgba(255, 255, 255, 0.4);
+  background: color-mix(in srgb, var(--brand-text) 40%, transparent);
   margin-bottom: 4px;
 }
 :deep(.preview-poll__line--w70) { max-width: 70%; }
@@ -677,7 +677,7 @@ function defaultPlacement(type: CommunicationType) {
   gap: 6px;
   padding: 12px 14px;
   border-radius: 5px;
-  background: rgba(255, 255, 255, 0.04);
+  background: color-mix(in srgb, var(--brand-text) 4%, transparent);
   border: 1px solid rgba(16, 185, 129, 0.3);
   position: relative;
 }
@@ -691,7 +691,7 @@ function defaultPlacement(type: CommunicationType) {
 }
 :deep(.preview-email__line) {
   height: 5px; border-radius: 2px;
-  background: rgba(255, 255, 255, 0.25);
+  background: color-mix(in srgb, var(--brand-text) 25%, transparent);
 }
 :deep(.preview-email__line--w50) { max-width: 50%; }
 :deep(.preview-email__line--w80) { max-width: 80%; }

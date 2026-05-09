@@ -542,7 +542,14 @@
                 @click.stop="onAddWatch(t)"
               >
                 <UIcon name="i-lucide-bell-plus" class="size-3.5" :style="{ color: 'var(--brand-primary)' }" />
-                Adicionar à watchlist
+                <span class="flex-1">Adicionar à watchlist</span>
+                <span
+                  class="rounded px-1.5 py-0.5 font-mono-tab text-[9.5px] font-semibold uppercase tracking-[0.14em]"
+                  :style="{
+                    backgroundColor: `color-mix(in srgb, var(--brand-primary) 16%, transparent)`,
+                    color: 'var(--brand-primary)',
+                  }"
+                >MAX</span>
               </button>
               <NuxtLink
                 :to="`/asset/${t.ticker.toLowerCase()}`"
@@ -701,7 +708,14 @@
                 @click.stop="onAskImpact(n)"
               >
                 <UIcon name="i-lucide-pie-chart" class="size-3.5" :style="{ color: 'var(--brand-primary)' }" />
-                Impacto na minha carteira
+                <span class="flex-1">Impacto na minha carteira</span>
+                <span
+                  class="rounded px-1.5 py-0.5 font-mono-tab text-[9.5px] font-semibold uppercase tracking-[0.14em]"
+                  :style="{
+                    backgroundColor: `color-mix(in srgb, var(--brand-primary) 16%, transparent)`,
+                    color: 'var(--brand-primary)',
+                  }"
+                >MAX</span>
               </button>
               <button
                 type="button"
@@ -1860,6 +1874,7 @@ function formatRelativeTime(iso: string): string {
 .news-menu-item:hover {
   background-color: color-mix(in srgb, var(--brand-primary) 8%, transparent) !important;
 }
+
 
 .news-menu-enter-active,
 .news-menu-leave-active {

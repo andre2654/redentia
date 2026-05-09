@@ -29,6 +29,17 @@ export interface IAdminUser {
     advisor_code: string | null
   } | null
   approval_status: ApprovalStatus | null
+  /** ID do tenant ao qual o user pertence. Adicionado pela migration
+   *  2026_05_09_140000. Antes disso era impossivel saber. */
+  tenant_id: number | null
+  /** Eager-loaded pelo controller. Mostra slug+name no UI da tabela. */
+  tenant: {
+    id: number
+    slug: string
+    name: string
+  } | null
+  /** Superadmin pode manipular tenants e ver dados cross-tenant. */
+  is_super_admin?: boolean
   email_verified_at: string | null
   created_at: string
   updated_at: string

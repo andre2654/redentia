@@ -89,6 +89,22 @@
         :id="idParam"
       />
 
+      <!-- ============ BRANCH ESPECÍFICO PARA BANNER ============
+           Editor dedicado: sections pensadas pra banner (placement
+           top vs sidebar com mockup, audience com user picker em
+           lista live, vigência, status), preview ao vivo da barra,
+           analytics. Os outros tipos seguem usando o editor abaixo
+           até serem refatorados um a um. -->
+      <AdminComunicacoesEditorBanner
+        v-else-if="form.type === 'banner'"
+        :form="form"
+        :saving="saving"
+        :analytics="analytics"
+        :tenant-options="tenantOptions"
+        v-model:selected-user-ids="selectedUserIds"
+        @save="onSave"
+      />
+
       <!-- Editor body (todos os outros tipos) -->
       <div v-else class="editor__body">
         <!-- ============ LEFT: FORM ============ -->
@@ -626,14 +642,38 @@ const form = reactive<CommunicationAdminPayload & {
 // Two-way binding pro user picker (audience=specific). target_user_ids
 // no backend e jsonb (lista de ids); local convertemos pra array de
 // numbers que o picker manipula. Sync via watcher abaixo.
+//
+// IMPORTANTE: equalArrays() guarda contra loop infinito. Vue compara
+// arrays por reference — toda vez que um watcher cria um array novo
+// (via .map/.filter/spread), o outro watcher dispara mesmo se o
+// conteudo for igual, criando outro array novo, ciclando ate o limit
+// "Maximum recursive updates exceeded". Comparamos elemento-a-elemento
+// e so atribuimos se REALMENTE mudou.
 const selectedUserIds = ref<number[]>([])
 
+function equalArrays(a: number[] | null | undefined, b: number[] | null | undefined): boolean {
+  const aa = a ?? []
+  const bb = b ?? []
+  if (aa.length !== bb.length) return false
+  for (let i = 0; i < aa.length; i++) if (Number(aa[i]) !== Number(bb[i])) return false
+  return true
+}
+
 watch(() => form.target_user_ids, (next) => {
-  selectedUserIds.value = Array.isArray(next) ? next.map((id: any) => Number(id)).filter(Number.isFinite) : []
+  const normalized = Array.isArray(next)
+    ? next.map((id: any) => Number(id)).filter(Number.isFinite)
+    : []
+  if (!equalArrays(selectedUserIds.value, normalized)) {
+    selectedUserIds.value = normalized
+  }
 }, { immediate: true })
 
 watch(selectedUserIds, (next) => {
-  form.target_user_ids = next.length ? next : null
+  const desired = next.length ? next : null
+  // Compara contra o valor atual em form pra evitar disparar watcher A
+  if (!equalArrays(form.target_user_ids as number[] | null, desired)) {
+    form.target_user_ids = desired
+  }
 })
 
 // Tenant options carregados do backend
@@ -940,9 +980,9 @@ onMounted(() => {
   align-items: center;
   gap: 12px;
   padding: 14px 24px;
-  background: rgba(15, 18, 22, 0.85);
+  background: color-mix(in srgb, var(--brand-surface) 85%, transparent);
   backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid color-mix(in srgb, var(--brand-text) 6%, transparent);
 }
 
 .back-link {
@@ -950,10 +990,10 @@ onMounted(() => {
   align-items: center;
   gap: 4px;
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.55);
+  color: color-mix(in srgb, var(--brand-text) 55%, transparent);
   transition: color 150ms;
 }
-.back-link:hover { color: rgba(255, 255, 255, 0.85); }
+.back-link:hover { color: color-mix(in srgb, var(--brand-text) 85%, transparent); }
 
 .editor__title-row {
   display: flex;
@@ -984,7 +1024,7 @@ onMounted(() => {
   font-size: 18px;
   font-weight: 500;
   letter-spacing: -0.012em;
-  color: rgba(255, 255, 255, 0.95);
+  color: color-mix(in srgb, var(--brand-text) 95%, transparent);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1011,10 +1051,10 @@ onMounted(() => {
   box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
   animation: status-pulse 2.4s ease-in-out infinite;
 }
-.editor__status--draft { color: rgba(255, 255, 255, 0.5); }
+.editor__status--draft { color: color-mix(in srgb, var(--brand-text) 50%, transparent); }
 .editor__status--paused { color: #f59e0b; }
 .editor__status--scheduled { color: #06b6d4; }
-.editor__status--ended { color: rgba(255, 255, 255, 0.4); }
+.editor__status--ended { color: color-mix(in srgb, var(--brand-text) 40%, transparent); }
 @keyframes status-pulse {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.6; transform: scale(0.85); }
@@ -1033,17 +1073,17 @@ onMounted(() => {
   padding: 7px 12px;
   border-radius: 8px;
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid color-mix(in srgb, var(--brand-text) 10%, transparent);
   font-size: 12px;
   font-weight: 500;
   letter-spacing: -0.005em;
-  color: rgba(255, 255, 255, 0.75);
+  color: color-mix(in srgb, var(--brand-text) 75%, transparent);
   cursor: pointer;
   transition: background 150ms, border-color 150ms;
 }
 .ghost-btn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.18);
+  background: color-mix(in srgb, var(--brand-text) 4%, transparent);
+  border-color: color-mix(in srgb, var(--brand-text) 18%, transparent);
 }
 .ghost-btn:disabled { opacity: 0.45; cursor: not-allowed; }
 .ghost-btn--icon { padding: 7px; }
@@ -1075,7 +1115,7 @@ onMounted(() => {
 .loading {
   display: flex; align-items: center; justify-content: center;
   padding: 80px 0;
-  color: rgba(255, 255, 255, 0.5);
+  color: color-mix(in srgb, var(--brand-text) 50%, transparent);
 }
 
 /* ============ BODY (2 col) ============ */
@@ -1108,8 +1148,8 @@ onMounted(() => {
   gap: 8px;
   padding: 14px 16px;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--brand-text) 2.5%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-text) 8%, transparent);
 }
 .quick-status__label {
   font-family: 'JetBrains Mono', monospace;
@@ -1117,7 +1157,7 @@ onMounted(() => {
   font-weight: 500;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.55);
+  color: color-mix(in srgb, var(--brand-text) 55%, transparent);
 }
 .quick-status__buttons {
   display: flex;
@@ -1130,22 +1170,22 @@ onMounted(() => {
   padding: 7px 12px;
   border-radius: 7px;
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid color-mix(in srgb, var(--brand-text) 10%, transparent);
   font-size: 12px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.75);
+  color: color-mix(in srgb, var(--brand-text) 75%, transparent);
   cursor: pointer;
   transition: background 150ms, border-color 150ms, color 150ms;
 }
 .status-chip__dot {
   width: 7px; height: 7px; border-radius: 999px;
 }
-.status-chip__dot--draft { background: rgba(255, 255, 255, 0.4); }
+.status-chip__dot--draft { background: color-mix(in srgb, var(--brand-text) 40%, transparent); }
 .status-chip__dot--active { background: #10b981; }
 .status-chip__dot--paused { background: #f59e0b; }
 .status-chip:hover {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.18);
+  background: color-mix(in srgb, var(--brand-text) 4%, transparent);
+  border-color: color-mix(in srgb, var(--brand-text) 18%, transparent);
 }
 .status-chip--active {
   background: color-mix(in srgb, var(--brand-primary) 12%, transparent);
@@ -1156,8 +1196,8 @@ onMounted(() => {
 /* SECTIONS */
 :deep(.form-section) {
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--brand-text) 2.5%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-text) 8%, transparent);
   overflow: hidden;
 }
 :deep(.form-section__head) {
@@ -1172,7 +1212,7 @@ onMounted(() => {
   text-align: left;
 }
 :deep(.form-section__head:hover) {
-  background: rgba(255, 255, 255, 0.025);
+  background: color-mix(in srgb, var(--brand-text) 2.5%, transparent);
 }
 :deep(.form-section__icon) {
   display: inline-flex;
@@ -1191,10 +1231,10 @@ onMounted(() => {
   font-size: 14px;
   font-weight: 500;
   letter-spacing: -0.012em;
-  color: rgba(255, 255, 255, 0.92);
+  color: color-mix(in srgb, var(--brand-text) 92%, transparent);
 }
 :deep(.form-section__chevron) {
-  color: rgba(255, 255, 255, 0.4);
+  color: color-mix(in srgb, var(--brand-text) 40%, transparent);
 }
 :deep(.form-section__body) {
   padding: 0 16px 16px;
@@ -1228,14 +1268,14 @@ onMounted(() => {
   font-weight: 500;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.55);
+  color: color-mix(in srgb, var(--brand-text) 55%, transparent);
 }
 :deep(.field__control) {
   display: block;
 }
 :deep(.field__hint) {
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.4);
+  color: color-mix(in srgb, var(--brand-text) 40%, transparent);
   line-height: 1.4;
 }
 
@@ -1256,15 +1296,15 @@ onMounted(() => {
   gap: 4px;
   padding: 10px 12px;
   border-radius: 9px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--brand-text) 3%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-text) 8%, transparent);
   text-align: left;
   cursor: pointer;
   transition: border-color 150ms, background 150ms;
 }
 .audience-option:hover {
-  border-color: rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.05);
+  border-color: color-mix(in srgb, var(--brand-text) 18%, transparent);
+  background: color-mix(in srgb, var(--brand-text) 5%, transparent);
 }
 .audience-option--active {
   background: color-mix(in srgb, var(--brand-primary) 10%, transparent);
@@ -1276,11 +1316,11 @@ onMounted(() => {
 .audience-option__label {
   font-size: 12.5px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.92);
+  color: color-mix(in srgb, var(--brand-text) 92%, transparent);
 }
 .audience-option__desc {
   font-size: 10.5px;
-  color: rgba(255, 255, 255, 0.5);
+  color: color-mix(in srgb, var(--brand-text) 50%, transparent);
 }
 
 /* PLACEMENT GRID with mockups */
@@ -1303,14 +1343,14 @@ onMounted(() => {
   gap: 6px;
   padding: 10px;
   border-radius: 9px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--brand-text) 3%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-text) 8%, transparent);
   text-align: left;
   cursor: pointer;
   transition: border-color 150ms, background 150ms;
 }
 .placement-option:hover {
-  border-color: rgba(255, 255, 255, 0.18);
+  border-color: color-mix(in srgb, var(--brand-text) 18%, transparent);
 }
 .placement-option--active {
   background: color-mix(in srgb, var(--brand-primary) 10%, transparent);
@@ -1322,21 +1362,21 @@ onMounted(() => {
   width: 100%;
   height: 56px;
   border-radius: 5px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: color-mix(in srgb, var(--brand-text) 4%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-text) 6%, transparent);
   overflow: hidden;
 }
 .placement-mockup__sidebar {
   position: absolute;
   left: 0; top: 0; bottom: 0;
   width: 14px;
-  background: rgba(255, 255, 255, 0.06);
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  background: color-mix(in srgb, var(--brand-text) 6%, transparent);
+  border-right: 1px solid color-mix(in srgb, var(--brand-text) 5%, transparent);
 }
 .placement-mockup__main {
   position: absolute;
   left: 14px; right: 0; top: 0; bottom: 0;
-  background: rgba(255, 255, 255, 0.02);
+  background: color-mix(in srgb, var(--brand-text) 2%, transparent);
 }
 .placement-mockup__highlight {
   position: absolute;
@@ -1369,11 +1409,11 @@ onMounted(() => {
 .placement-option__label {
   font-size: 12px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.92);
+  color: color-mix(in srgb, var(--brand-text) 92%, transparent);
 }
 .placement-option__desc {
   font-size: 10.5px;
-  color: rgba(255, 255, 255, 0.5);
+  color: color-mix(in srgb, var(--brand-text) 50%, transparent);
   line-height: 1.4;
 }
 
@@ -1390,12 +1430,12 @@ onMounted(() => {
   gap: 6px;
   padding: 10px;
   border-radius: 9px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--brand-text) 3%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-text) 8%, transparent);
   cursor: pointer;
   transition: border-color 150ms;
 }
-.size-option:hover { border-color: rgba(255, 255, 255, 0.18); }
+.size-option:hover { border-color: color-mix(in srgb, var(--brand-text) 18%, transparent); }
 .size-option--active {
   background: color-mix(in srgb, var(--brand-primary) 10%, transparent);
   border-color: color-mix(in srgb, var(--brand-primary) 40%, transparent);
@@ -1403,19 +1443,19 @@ onMounted(() => {
 .size-option__label {
   font-size: 12px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.92);
+  color: color-mix(in srgb, var(--brand-text) 92%, transparent);
 }
 .size-option__desc {
   font-family: 'JetBrains Mono', monospace;
   font-size: 10px;
-  color: rgba(255, 255, 255, 0.4);
+  color: color-mix(in srgb, var(--brand-text) 40%, transparent);
 }
 .size-mockup {
   width: 100%;
   height: 22px;
   border-radius: 3px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--brand-text) 6%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-text) 8%, transparent);
   position: relative;
 }
 .size-mockup::before {
@@ -1463,8 +1503,8 @@ onMounted(() => {
   padding: 6px 12px;
   border-radius: 7px;
   background: transparent;
-  border: 1px dashed rgba(255, 255, 255, 0.18);
-  color: rgba(255, 255, 255, 0.65);
+  border: 1px dashed color-mix(in srgb, var(--brand-text) 18%, transparent);
+  color: color-mix(in srgb, var(--brand-text) 65%, transparent);
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
@@ -1490,8 +1530,8 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--brand-text) 2.5%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-text) 8%, transparent);
   overflow: hidden;
 }
 
@@ -1500,8 +1540,8 @@ onMounted(() => {
   align-items: center;
   justify-content: space-between;
   padding: 11px 16px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid color-mix(in srgb, var(--brand-text) 6%, transparent);
+  background: color-mix(in srgb, var(--brand-text) 2%, transparent);
 }
 .preview-frame__eyebrow {
   font-family: 'JetBrains Mono', monospace;
@@ -1513,14 +1553,14 @@ onMounted(() => {
 }
 .preview-frame__type {
   font-size: 10.5px;
-  color: rgba(255, 255, 255, 0.45);
+  color: color-mix(in srgb, var(--brand-text) 45%, transparent);
 }
 
 .preview-frame__stage {
   padding: 24px;
   background:
-    repeating-linear-gradient(45deg, rgba(255,255,255,0.015) 0, rgba(255,255,255,0.015) 10px, transparent 10px, transparent 20px),
-    rgba(15, 18, 22, 0.5);
+    repeating-linear-gradient(45deg, color-mix(in srgb, var(--brand-text) 1.5%, transparent) 0, color-mix(in srgb, var(--brand-text) 1.5%, transparent) 10px, transparent 10px, transparent 20px),
+    color-mix(in srgb, var(--brand-surface) 70%, transparent);
   min-height: 280px;
   display: flex;
   align-items: stretch;
@@ -1562,11 +1602,11 @@ onMounted(() => {
 .prev-banner__title {
   font-size: 13px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.95);
+  color: color-mix(in srgb, var(--brand-text) 95%, transparent);
 }
 .prev-banner__body {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.6);
+  color: color-mix(in srgb, var(--brand-text) 60%, transparent);
 }
 .prev-banner__cta {
   display: inline-flex;
@@ -1586,7 +1626,7 @@ onMounted(() => {
   width: 24px; height: 24px;
   border-radius: 6px;
   background: transparent;
-  color: rgba(255, 255, 255, 0.5);
+  color: color-mix(in srgb, var(--brand-text) 50%, transparent);
 }
 .prev-banner__pagepart {
   flex: 1;
@@ -1600,7 +1640,7 @@ onMounted(() => {
   display: block;
   height: 8px;
   border-radius: 3px;
-  background: rgba(255, 255, 255, 0.06);
+  background: color-mix(in srgb, var(--brand-text) 6%, transparent);
 }
 .prev-page-line--w70 { width: 70%; }
 .prev-page-line--w50 { width: 50%; }
@@ -1613,8 +1653,8 @@ onMounted(() => {
   flex-direction: column;
   gap: 0;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--brand-text) 2.5%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-text) 8%, transparent);
   overflow: hidden;
 }
 .prev-feed__head {
@@ -1643,18 +1683,18 @@ onMounted(() => {
   flex: 1;
   font-size: 12.5px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.9);
+  color: color-mix(in srgb, var(--brand-text) 90%, transparent);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.prev-feed__chevron { color: rgba(255, 255, 255, 0.5); }
+.prev-feed__chevron { color: color-mix(in srgb, var(--brand-text) 50%, transparent); }
 .prev-feed__item {
   display: flex;
   align-items: flex-start;
   gap: 10px;
   padding: 12px 14px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid color-mix(in srgb, var(--brand-text) 6%, transparent);
 }
 .prev-feed__item-icon { color: var(--brand-primary); margin-top: 2px; }
 .prev-feed__item-body {
@@ -1665,13 +1705,13 @@ onMounted(() => {
 .prev-feed__item-title {
   font-size: 12.5px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.9);
+  color: color-mix(in srgb, var(--brand-text) 90%, transparent);
 }
 .prev-feed__item-text {
   margin: 0;
   font-size: 12px;
   line-height: 1.5;
-  color: rgba(255, 255, 255, 0.6);
+  color: color-mix(in srgb, var(--brand-text) 60%, transparent);
   white-space: pre-line;
 }
 .prev-feed__item-link {
@@ -1724,7 +1764,7 @@ onMounted(() => {
   font-family: var(--brand-font);
   font-size: 16px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.95);
+  color: color-mix(in srgb, var(--brand-text) 95%, transparent);
 }
 .prev-cta__close {
   display: inline-flex;
@@ -1732,14 +1772,14 @@ onMounted(() => {
   justify-content: center;
   width: 24px; height: 24px;
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(255, 255, 255, 0.5);
+  background: color-mix(in srgb, var(--brand-text) 4%, transparent);
+  color: color-mix(in srgb, var(--brand-text) 50%, transparent);
 }
 .prev-cta__body {
   margin: 0;
   font-size: 12.5px;
   line-height: 1.55;
-  color: rgba(255, 255, 255, 0.65);
+  color: color-mix(in srgb, var(--brand-text) 65%, transparent);
   white-space: pre-line;
   position: relative;
 }
@@ -1776,7 +1816,7 @@ onMounted(() => {
   position: relative;
   border-radius: 14px;
   background: rgba(40, 44, 52, 0.98);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid color-mix(in srgb, var(--brand-text) 10%, transparent);
   box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
   max-height: 280px;
   overflow-y: auto;
@@ -1793,8 +1833,8 @@ onMounted(() => {
   justify-content: center;
   width: 24px; height: 24px;
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.65);
+  background: color-mix(in srgb, var(--brand-text) 6%, transparent);
+  color: color-mix(in srgb, var(--brand-text) 65%, transparent);
   z-index: 1;
 }
 .prev-modal__img {
@@ -1820,13 +1860,13 @@ onMounted(() => {
   font-family: var(--brand-font);
   font-size: 16px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.95);
+  color: color-mix(in srgb, var(--brand-text) 95%, transparent);
 }
 .prev-modal__body {
   margin: 0;
   font-size: 12px;
   line-height: 1.5;
-  color: rgba(255, 255, 255, 0.65);
+  color: color-mix(in srgb, var(--brand-text) 65%, transparent);
   white-space: pre-line;
 }
 .prev-modal__btn {
@@ -1855,8 +1895,8 @@ onMounted(() => {
   padding: 9px 11px;
   border-radius: 8px;
   background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.85);
+  border: 1px solid color-mix(in srgb, var(--brand-text) 10%, transparent);
+  color: color-mix(in srgb, var(--brand-text) 85%, transparent);
   font-size: 11.5px;
   text-align: left;
 }
@@ -1878,8 +1918,8 @@ onMounted(() => {
   width: 100%;
   max-width: 380px;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--brand-text) 3%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-text) 8%, transparent);
   overflow: hidden;
 }
 .prev-email__client-bar {
@@ -1887,12 +1927,12 @@ onMounted(() => {
   align-items: center;
   gap: 5px;
   padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.04);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: color-mix(in srgb, var(--brand-text) 4%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--brand-text) 6%, transparent);
 }
 .prev-email__client-dot {
   width: 8px; height: 8px; border-radius: 999px;
-  background: rgba(255, 255, 255, 0.18);
+  background: color-mix(in srgb, var(--brand-text) 18%, transparent);
 }
 .prev-email__envelope {
   padding: 16px 18px;
@@ -1922,19 +1962,19 @@ onMounted(() => {
 .prev-email__sender {
   font-size: 12.5px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.92);
+  color: color-mix(in srgb, var(--brand-text) 92%, transparent);
 }
 .prev-email__address {
   font-family: 'JetBrains Mono', monospace;
   font-size: 10px;
-  color: rgba(255, 255, 255, 0.45);
+  color: color-mix(in srgb, var(--brand-text) 45%, transparent);
 }
 .prev-email__subject {
   margin: 0;
   font-family: var(--brand-font);
   font-size: 16px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.95);
+  color: color-mix(in srgb, var(--brand-text) 95%, transparent);
 }
 .prev-email__img {
   width: 100%;
@@ -1946,7 +1986,7 @@ onMounted(() => {
   margin: 0;
   font-size: 12px;
   line-height: 1.55;
-  color: rgba(255, 255, 255, 0.65);
+  color: color-mix(in srgb, var(--brand-text) 65%, transparent);
   white-space: pre-line;
 }
 .prev-email__btn {
@@ -1969,8 +2009,8 @@ onMounted(() => {
   gap: 12px;
   padding: 16px 18px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--brand-text) 2.5%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-text) 8%, transparent);
 }
 .analytics-card__eyebrow {
   font-family: 'JetBrains Mono', monospace;
@@ -1999,7 +2039,7 @@ onMounted(() => {
   font-weight: 500;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.45);
+  color: color-mix(in srgb, var(--brand-text) 45%, transparent);
 }
 .analytics-stat__value {
   font-family: var(--brand-font);
@@ -2007,18 +2047,18 @@ onMounted(() => {
   font-size: 22px;
   line-height: 1.1;
   letter-spacing: -0.025em;
-  color: rgba(255, 255, 255, 0.95);
+  color: color-mix(in srgb, var(--brand-text) 95%, transparent);
 }
 .analytics-stat__sub {
   font-size: 10.5px;
-  color: rgba(255, 255, 255, 0.5);
+  color: color-mix(in srgb, var(--brand-text) 50%, transparent);
 }
 .poll-results {
   display: flex;
   flex-direction: column;
   gap: 6px;
   padding-top: 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid color-mix(in srgb, var(--brand-text) 6%, transparent);
 }
 .poll-results__label {
   font-family: 'JetBrains Mono', monospace;
@@ -2026,7 +2066,7 @@ onMounted(() => {
   font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.45);
+  color: color-mix(in srgb, var(--brand-text) 45%, transparent);
   margin-bottom: 4px;
 }
 .poll-result-row {
@@ -2037,7 +2077,7 @@ onMounted(() => {
 }
 .poll-result-row__name {
   font-size: 11.5px;
-  color: rgba(255, 255, 255, 0.85);
+  color: color-mix(in srgb, var(--brand-text) 85%, transparent);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -2046,7 +2086,7 @@ onMounted(() => {
   display: block;
   height: 4px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--brand-text) 8%, transparent);
   overflow: hidden;
 }
 .poll-result-row__fill {
@@ -2062,6 +2102,6 @@ onMounted(() => {
   font-size: 11px;
   font-weight: 600;
   text-align: right;
-  color: rgba(255, 255, 255, 0.75);
+  color: color-mix(in srgb, var(--brand-text) 75%, transparent);
 }
 </style>

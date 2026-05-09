@@ -12,6 +12,9 @@ type ApiUser = {
   advisor_code?: string | null
   advisor_id?: number | null
   advisor?: { id: number; name: string } | null
+  tenant_id?: number | null
+  tenant?: { id: number; slug: string; name: string } | null
+  is_super_admin?: boolean
 }
 
 function toProfile(user: ApiUser | null | undefined): IProfile | null {
@@ -29,6 +32,10 @@ function toProfile(user: ApiUser | null | undefined): IProfile | null {
     advisor_code: user.advisor_code ?? null,
     advisor_id: user.advisor_id ?? null,
     advisor: user.advisor ?? null,
+    tenant_id: user.tenant_id ?? null,
+    tenant_slug: user.tenant?.slug ?? null,
+    tenant_name: user.tenant?.name ?? null,
+    is_super_admin: !!user.is_super_admin,
   }
 }
 

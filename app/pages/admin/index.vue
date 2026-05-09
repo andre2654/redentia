@@ -512,7 +512,7 @@ const AdoptionCard = defineComponent({
   justify-content: space-between;
   gap: 12px;
   padding-bottom: 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid color-mix(in srgb, var(--brand-text) 6%, transparent);
 }
 
 .section-head__left {
@@ -540,7 +540,7 @@ const AdoptionCard = defineComponent({
   font-size: 18px;
   font-weight: 500;
   letter-spacing: -0.012em;
-  color: rgba(255, 255, 255, 0.92);
+  color: color-mix(in srgb, var(--brand-text) 92%, transparent);
 }
 
 .section-head__link {
@@ -561,7 +561,7 @@ const AdoptionCard = defineComponent({
   font-family: 'JetBrains Mono', monospace;
   font-size: 10.5px;
   letter-spacing: 0.04em;
-  color: rgba(255, 255, 255, 0.45);
+  color: color-mix(in srgb, var(--brand-text) 45%, transparent);
 }
 
 /* ============ METRICS GRID ============ */
@@ -582,8 +582,8 @@ const AdoptionCard = defineComponent({
   gap: 8px;
   padding: 14px 16px;
   border-radius: 11px;
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--brand-text) 2.5%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-text) 8%, transparent);
   transition: border-color 200ms, transform 180ms, box-shadow 200ms;
   position: relative;
   overflow: hidden;
@@ -604,7 +604,7 @@ const AdoptionCard = defineComponent({
 :deep(.metric-card--highlight) {
   background:
     radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--accent) 14%, transparent) 0%, transparent 60%),
-    rgba(255, 255, 255, 0.025);
+    color-mix(in srgb, var(--brand-text) 2.5%, transparent);
   border-color: color-mix(in srgb, var(--accent) 28%, transparent);
 }
 
@@ -631,7 +631,7 @@ const AdoptionCard = defineComponent({
   font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.6);
+  color: color-mix(in srgb, var(--brand-text) 60%, transparent);
   flex: 1;
 }
 
@@ -647,12 +647,12 @@ const AdoptionCard = defineComponent({
   font-size: clamp(22px, 2.4vw, 28px);
   line-height: 1.05;
   letter-spacing: -0.025em;
-  color: rgba(255, 255, 255, 0.95);
+  color: color-mix(in srgb, var(--brand-text) 95%, transparent);
   font-variant-numeric: tabular-nums;
 }
 
 :deep(.metric-card__loader) {
-  color: rgba(255, 255, 255, 0.5);
+  color: color-mix(in srgb, var(--brand-text) 50%, transparent);
 }
 
 :deep(.metric-card__sub) {
@@ -660,13 +660,13 @@ const AdoptionCard = defineComponent({
   font-size: 10px;
   font-weight: 500;
   letter-spacing: 0.06em;
-  color: rgba(255, 255, 255, 0.5);
+  color: color-mix(in srgb, var(--brand-text) 50%, transparent);
 }
 
 :deep(.metric-card__progress) {
   margin-top: 2px;
   height: 3px;
-  background: rgba(255, 255, 255, 0.06);
+  background: color-mix(in srgb, var(--brand-text) 6%, transparent);
   border-radius: 999px;
   overflow: hidden;
 }
@@ -685,8 +685,8 @@ const AdoptionCard = defineComponent({
   gap: 14px;
   padding: 14px 16px;
   border-radius: 11px;
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--brand-text) 2.5%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-text) 8%, transparent);
   grid-column: span 1;
 }
 
@@ -700,7 +700,7 @@ const AdoptionCard = defineComponent({
   font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.6);
+  color: color-mix(in srgb, var(--brand-text) 60%, transparent);
 }
 
 .dau-card__row {
@@ -719,7 +719,7 @@ const AdoptionCard = defineComponent({
 
 .dau-card__divider {
   width: 1px;
-  background: rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--brand-text) 8%, transparent);
   margin: 4px 8px;
 }
 
@@ -738,13 +738,13 @@ const AdoptionCard = defineComponent({
   font-size: 26px;
   line-height: 1;
   letter-spacing: -0.025em;
-  color: rgba(255, 255, 255, 0.95);
+  color: color-mix(in srgb, var(--brand-text) 95%, transparent);
   font-variant-numeric: tabular-nums;
 }
 
 .dau-card__hint {
   font-size: 10px;
-  color: rgba(255, 255, 255, 0.4);
+  color: color-mix(in srgb, var(--brand-text) 40%, transparent);
 }
 
 .dau-card__stickiness {
@@ -752,7 +752,7 @@ const AdoptionCard = defineComponent({
   align-items: center;
   gap: 10px;
   padding-top: 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid color-mix(in srgb, var(--brand-text) 6%, transparent);
 }
 
 .dau-card__stickiness-label {
@@ -763,14 +763,14 @@ const AdoptionCard = defineComponent({
   font-size: 10px;
   font-weight: 500;
   letter-spacing: 0.04em;
-  color: rgba(255, 255, 255, 0.55);
+  color: color-mix(in srgb, var(--brand-text) 55%, transparent);
   white-space: nowrap;
 }
 
 .dau-card__stickiness-bar {
   flex: 1;
   height: 4px;
-  background: rgba(255, 255, 255, 0.06);
+  background: color-mix(in srgb, var(--brand-text) 6%, transparent);
   border-radius: 999px;
   overflow: hidden;
 }
@@ -798,8 +798,8 @@ const AdoptionCard = defineComponent({
   gap: 8px;
   padding: 14px 16px;
   border-radius: 11px;
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--brand-text) 2.5%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-text) 8%, transparent);
 }
 
 :deep(.adoption-card__head) {
@@ -825,7 +825,7 @@ const AdoptionCard = defineComponent({
   font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.6);
+  color: color-mix(in srgb, var(--brand-text) 60%, transparent);
   flex: 1;
 }
 
@@ -846,7 +846,7 @@ const AdoptionCard = defineComponent({
 
 :deep(.adoption-card__progress) {
   height: 5px;
-  background: rgba(255, 255, 255, 0.06);
+  background: color-mix(in srgb, var(--brand-text) 6%, transparent);
   border-radius: 999px;
   overflow: hidden;
 }
@@ -870,12 +870,12 @@ const AdoptionCard = defineComponent({
   font-variant-numeric: tabular-nums;
   font-size: 11px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.85);
+  color: color-mix(in srgb, var(--brand-text) 85%, transparent);
 }
 
 :deep(.adoption-card__desc) {
   font-size: 10.5px;
-  color: rgba(255, 255, 255, 0.45);
+  color: color-mix(in srgb, var(--brand-text) 45%, transparent);
 }
 
 /* ============ OPS CARD ============ */
@@ -893,14 +893,14 @@ const AdoptionCard = defineComponent({
   gap: 12px;
   padding: 12px 16px;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: color-mix(in srgb, var(--brand-text) 2.5%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-text) 8%, transparent);
   text-decoration: none;
   transition: background 150ms, border-color 150ms, transform 150ms;
 }
 .ops-card:hover {
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.18);
+  background: color-mix(in srgb, var(--brand-text) 4%, transparent);
+  border-color: color-mix(in srgb, var(--brand-text) 18%, transparent);
   transform: translateY(-1px);
 }
 .ops-card > div {
@@ -911,16 +911,16 @@ const AdoptionCard = defineComponent({
 .ops-card__title {
   font-size: 13px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.92);
+  color: color-mix(in srgb, var(--brand-text) 92%, transparent);
 }
 .ops-card__sub {
   font-family: 'JetBrains Mono', monospace;
   font-size: 10.5px;
   letter-spacing: 0.04em;
-  color: rgba(255, 255, 255, 0.5);
+  color: color-mix(in srgb, var(--brand-text) 50%, transparent);
 }
 .ops-card__arrow {
-  color: rgba(255, 255, 255, 0.45);
+  color: color-mix(in srgb, var(--brand-text) 45%, transparent);
 }
 .ops-card:hover .ops-card__arrow {
   color: var(--brand-primary);
@@ -934,7 +934,7 @@ const AdoptionCard = defineComponent({
   gap: 8px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 10.5px;
-  color: rgba(255, 255, 255, 0.4);
+  color: color-mix(in srgb, var(--brand-text) 40%, transparent);
   padding-top: 6px;
 }
 

@@ -333,6 +333,27 @@ export function useAdminCommunicationsService() {
     return resp.data
   }
 
+  /**
+   * Live audience preview — aceita params do form sem precisar salvar.
+   * Diferente de recipientsPreview (que le do registro persistido), esse
+   * roda a query com os valores atuais da tela. Retorna count + sample +
+   * by_role pra UI mostrar EXATAMENTE quem vai receber.
+   */
+  async function audiencePreview(payload: {
+    type?: CommunicationType
+    tenant_id?: number | null
+    target_audience: CommunicationAudience
+    target_user_ids?: number[] | null
+    target_min_aum?: number | null
+    target_has_connections?: boolean | null
+  }): Promise<AudiencePreview> {
+    const resp = await $fetch<{ data: AudiencePreview }>(
+      `${API}/admin/communications/audience-preview`,
+      { method: 'POST', headers: headers(), body: payload },
+    )
+    return resp.data
+  }
+
   // ============ Email-specific endpoints ============
 
   async function recipientsPreview(id: number): Promise<RecipientsPreview> {
@@ -381,8 +402,30 @@ export function useAdminCommunicationsService() {
 
   return {
     list, get, create, update, destroy, toggle, duplicate, analytics,
+    audiencePreview,
     recipientsPreview, testSend, sendNow, deliveries, emailStats,
   }
+}
+
+/**
+ * Resposta do endpoint audience-preview. Sample tem 5 users (top da
+ * tabela), by_role e o breakdown agregado, count e o total exato.
+ *
+ * Quando audience='guests', count vem null + is_anonymous=true (nao
+ * temos como contar visitantes — apenas qualitativo "vai pra guests").
+ */
+export interface AudiencePreview {
+  count: number | null
+  count_label?: string
+  sample: { id: number; name: string | null; email: string | null; role: string }[]
+  by_role: Record<string, number>
+  audience: string
+  tenant_id: number | null
+  filters: {
+    min_aum: number | null
+    has_connections: boolean | null
+  }
+  is_anonymous?: boolean
 }
 
 // ============ Email-specific types ============

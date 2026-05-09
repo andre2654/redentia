@@ -297,15 +297,25 @@
             role="radio"
             :aria-checked="tier === opt.value"
             :disabled="props.tierLocked && tier !== opt.value"
+            :aria-disabled="opt.value === 'max' && maxIsBlocked ? 'true' : undefined"
             class="chat-tier-btn inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold transition-all disabled:cursor-not-allowed disabled:opacity-40"
+            :class="{ 'chat-tier-btn--locked': opt.value === 'max' && maxIsBlocked }"
             :style="tierBtnStyle(opt.value)"
-            :title="props.tierLocked && tier !== opt.value
-              ? 'Tier travado nesta conversa — abra uma Nova conversa para mudar'
-              : opt.tagline"
-            @click="onTierClick(opt.value)"
+            :title="opt.value === 'max' && maxIsBlocked
+              ? `Limite MAX atingido. Próxima janela em ${maxTimeRemaining}.`
+              : props.tierLocked && tier !== opt.value
+                ? 'Tier travado nesta conversa — abra uma Nova conversa para mudar'
+                : opt.tagline"
+            @click="opt.value === 'max' && maxIsBlocked ? maxBlock.openModal() : onTierClick(opt.value)"
           >
             <UIcon
-              v-if="opt.icon"
+              v-if="opt.value === 'max' && maxIsBlocked"
+              name="i-lucide-lock"
+              class="size-3"
+              :style="{ color: 'var(--brand-primary)' }"
+            />
+            <UIcon
+              v-else-if="opt.icon"
               :name="opt.icon"
               class="size-3"
               :style="
@@ -316,7 +326,13 @@
                     : { color: 'inherit' }
               "
             />
-            {{ opt.label }}
+            <template v-if="opt.value === 'max' && maxIsBlocked">
+              <span class="chat-tier-btn-label">MAX em</span>
+              <span class="chat-tier-btn-timer">{{ maxTimeRemaining }}</span>
+            </template>
+            <template v-else>
+              {{ opt.label }}
+            </template>
           </button>
         </div>
 
@@ -455,6 +471,25 @@ const emit = defineEmits<{
 }>()
 
 const brand = useBrand()
+
+// Bloqueio diario do tier MAX — quando o user atinge o cap (4/dia
+// no plano Pro), o botao MAX vira disabled com lock + countdown
+// HH:MM:SS ate desbloquear (00:00 UTC). Click no botao bloqueado
+// reabre o modal explicativo.
+const maxBlock = useMaxBlock()
+const maxIsBlocked = maxBlock.isBlocked
+// Mostra HH:MM:SS completo no botao (igual ao modal) — antes tinha
+// formato compacto que diferenciava do modal e confundia o user.
+const maxTimeRemaining = maxBlock.timeRemaining
+
+// Auto-flip tier pra basic se o user esta selecionado em max e fica
+// bloqueado (ex: chegou da rota anterior em max, ou recebeu
+// max.blocked durante o stream). Evita que ele tente enviar e leve
+// o feedback so apos clicar.
+watch(maxIsBlocked, (blocked) => {
+  if (blocked && tier.value === 'max') tier.value = 'basic'
+}, { immediate: true })
+
 // `value` mirrors the editor's serialized prose (innerText with
 // chip text expanded inline). Reactive so canSend / watchers /
 // the existing submit() pipeline keep working without changes.
@@ -1519,6 +1554,35 @@ defineExpose({
 }
 .chat-tier-btn:hover {
   filter: brightness(1.06);
+}
+
+/* Estado bloqueado do tier MAX — botao fica clicavel mas nao alterna
+   tier; abre modal explicativo. Lock + countdown no lugar do label. */
+.chat-tier-btn--locked {
+  cursor: pointer;
+  opacity: 0.85;
+  background: color-mix(in srgb, var(--brand-primary) 6%, transparent) !important;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--brand-primary) 22%, transparent) !important;
+}
+.chat-tier-btn--locked:hover {
+  opacity: 1;
+  background: color-mix(in srgb, var(--brand-primary) 10%, transparent) !important;
+}
+.chat-tier-btn-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+.chat-tier-btn-timer {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  color: var(--brand-primary);
 }
 
 /* MAX mode — quiet visual identity:

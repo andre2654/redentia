@@ -20,6 +20,7 @@ export const useAdminUsersService = () => {
     approval?: ApprovalStatus
     since?: string
     page?: number
+    tenant_id?: number | null
   }) {
     const query = new URLSearchParams()
     if (params?.search) query.set('search', params.search)
@@ -27,6 +28,9 @@ export const useAdminUsersService = () => {
     if (params?.approval) query.set('approval', params.approval)
     if (params?.since) query.set('since', params.since)
     if (params?.page) query.set('page', String(params.page))
+    if (params?.tenant_id !== undefined && params?.tenant_id !== null) {
+      query.set('tenant_id', String(params.tenant_id))
+    }
     const qs = query.toString()
     return authFetch<IPaginatedResponse<IAdminUser>>(`${baseURL}${qs ? `?${qs}` : ''}`)
   }
@@ -70,5 +74,31 @@ export const useAdminUsersService = () => {
     }>(`${baseURL}/${id}/impersonate`, { method: 'POST' })
   }
 
-  return { list, show, stats, updateRole, updateApproval, impersonate }
+  /**
+   * Update geral de campos do user (name, email, login, celular, role,
+   * approval_status, tenant_id). Backend faz scoping por tenant + valida
+   * privilegio (so superadmin pode mudar tenant_id).
+   */
+  async function update(id: number, payload: {
+    name?: string
+    email?: string
+    login?: string | null
+    celular?: string | null
+    role?: UserRole
+    approval_status?: ApprovalStatus | null
+    tenant_id?: number | null
+  }) {
+    return authFetch<{ data: IAdminUser }>(`${baseURL}/${id}`, {
+      method: 'PATCH',
+      body: payload,
+    })
+  }
+
+  async function destroy(id: number) {
+    return authFetch<{ message: string; deleted_id: number }>(`${baseURL}/${id}`, {
+      method: 'DELETE',
+    })
+  }
+
+  return { list, show, stats, updateRole, updateApproval, impersonate, update, destroy }
 }

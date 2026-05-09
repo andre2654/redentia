@@ -22,7 +22,11 @@
         />
         <div class="comm-banner__content">
           <span class="comm-banner__title">{{ banner.title }}</span>
-          <span v-if="banner.body" class="comm-banner__body">{{ banner.body }}</span>
+          <span
+            v-if="banner.body"
+            class="comm-banner__body"
+            v-html="renderedBody"
+          />
         </div>
         <a
           v-if="banner.link_url"
@@ -51,9 +55,17 @@
 
 <script setup lang="ts">
 import type { CommunicationPublic } from '~/services/communications'
+import { sanitizeHtml } from '~/utils/sanitizeHtml'
 
 const service = useCommunicationsService()
 const banner = ref<CommunicationPublic | null>(null)
+
+/**
+ * Body do banner vem como HTML cru (TipTap output armazenado no DB).
+ * Sanitiza com level='inline' antes de renderizar via v-html — so
+ * passa <strong>, <em>, <a> com target=_blank rel=noopener.
+ */
+const renderedBody = computed(() => sanitizeHtml(banner.value?.body || '', 'inline'))
 
 async function load() {
   try {
@@ -124,6 +136,21 @@ onMounted(() => load())
 .comm-banner__body {
   font-size: 12.5px;
   color: color-mix(in srgb, var(--brand-text) 70%, transparent);
+}
+/* Inline markdown: bold/italic/link rendered via v-html */
+.comm-banner__body :deep(strong) {
+  font-weight: 600;
+  color: var(--brand-text);
+}
+.comm-banner__body :deep(em) {
+  font-style: italic;
+  font-family: 'Instrument Serif', Georgia, serif;
+}
+.comm-banner__body :deep(a) {
+  color: var(--brand-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: color-mix(in srgb, var(--brand-primary) 50%, transparent);
 }
 
 .comm-banner__cta {

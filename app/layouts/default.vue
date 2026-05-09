@@ -250,7 +250,17 @@
         <section class="flex flex-col gap-0.5">
           <span class="platform-sidebar-eyebrow">{{ brand.nav.menuLabel }}</span>
           <AtomsSidebarButton to="/" :text="brand.nav.overview" icon="i-lucide-layout-dashboard" />
-          <AtomsSidebarButton to="/wallet" :text="brand.nav.wallet" icon="i-lucide-wallet" />
+          <!-- "Carteira" como drawer expandable: Visao geral (dashboard
+               atual) + Resultado (P&L, trades, day-trade vs swing vs
+               hold). Auto-abre quando user esta em /wallet ou /wallet/*. -->
+          <AtomsSidebarGroup
+            :label="brand.nav.wallet"
+            icon="i-lucide-wallet"
+            :child-paths="['/wallet', '/wallet/resultado']"
+          >
+            <AtomsSidebarButton to="/wallet" text="Visão geral" is-sub-item exact />
+            <AtomsSidebarButton to="/wallet/resultado" text="Resultado" is-sub-item />
+          </AtomsSidebarGroup>
           <AtomsSidebarButton to="/help" :text="brand.nav.chat" icon="i-lucide-message-circle" />
           <AtomsSidebarButton v-if="authStore.me?.role === 'advisor'" to="/advisor" :text="brand.nav.advisorArea" icon="i-lucide-users" />
           <!-- "Configurações" como drawer expandable: Usuário (perfil)

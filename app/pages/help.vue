@@ -309,6 +309,12 @@
     :open="contactGateOpen"
     @ready="onContactGateReady"
   />
+
+  <!-- Modal global do limite MAX. Abre quando o backend emite
+       `max.blocked` durante um stream OU quando o user clica no
+       botao MAX bloqueado pra rever o motivo. State em
+       `useMaxBlock` (composable global, persistido em localStorage). -->
+  <ChatV2MaxBlockedModal />
 </template>
 
 <script setup lang="ts">

@@ -38,14 +38,14 @@
     </div>
 
     <!-- Search input -->
-    <div class="user-picker__search">
+    <div ref="searchInputWrapper" class="user-picker__search">
       <UIcon name="i-lucide-search" class="user-picker__search-icon size-4" />
       <input
         v-model="search"
         type="text"
         placeholder="Buscar por nome, email, login ou celular…"
         class="user-picker__input"
-        @focus="open = true"
+        @focus="onFocusSearch"
         @input="onSearchInput"
       />
       <button
@@ -59,39 +59,46 @@
       </button>
     </div>
 
-    <!-- Results dropdown -->
-    <div v-if="open && (loading || results.length || (search && !loading))" class="user-picker__results">
-      <div v-if="loading" class="user-picker__state">
-        <UIcon name="i-lucide-loader-2" class="size-4 motion-safe:animate-spin" />
-        Buscando…
+    <!-- Results dropdown — teleportado pro body pra escapar overflow de
+         ancestrais (cards, sections), posicionado via fixed coords. -->
+    <Teleport to="body">
+      <div
+        v-if="open && (loading || results.length || (search && !loading))"
+        class="user-picker__results"
+        :style="popStyle"
+      >
+        <div v-if="loading" class="user-picker__state">
+          <UIcon name="i-lucide-loader-2" class="size-4 motion-safe:animate-spin" />
+          Buscando…
+        </div>
+        <div v-else-if="!results.length && search" class="user-picker__state">
+          <UIcon name="i-lucide-search-x" class="size-4" />
+          Nenhum usuário encontrado.
+        </div>
+        <ul v-else class="user-picker__list">
+          <li
+            v-for="u in results"
+            :key="u.id"
+            class="user-picker__item"
+            :class="{ 'user-picker__item--selected': isSelected(u.id) }"
+            @mousedown="onItemMousedown($event, u)"
+          >
+            <span class="user-picker__check">
+              <UIcon
+                v-if="isSelected(u.id)"
+                name="i-lucide-check"
+                class="size-3.5"
+              />
+            </span>
+            <div class="user-picker__item-main">
+              <span class="user-picker__item-name">{{ u.name || u.login || `#${u.id}` }}</span>
+              <span class="user-picker__item-meta">{{ u.email || u.celular || '—' }}</span>
+            </div>
+            <span class="user-picker__item-role" :data-role="u.role">{{ roleLabel(u.role) }}</span>
+          </li>
+        </ul>
       </div>
-      <div v-else-if="!results.length && search" class="user-picker__state">
-        <UIcon name="i-lucide-search-x" class="size-4" />
-        Nenhum usuário encontrado.
-      </div>
-      <ul v-else class="user-picker__list">
-        <li
-          v-for="u in results"
-          :key="u.id"
-          class="user-picker__item"
-          :class="{ 'user-picker__item--selected': isSelected(u.id) }"
-          @click="toggle(u.id, u)"
-        >
-          <span class="user-picker__check">
-            <UIcon
-              v-if="isSelected(u.id)"
-              name="i-lucide-check"
-              class="size-3.5"
-            />
-          </span>
-          <div class="user-picker__item-main">
-            <span class="user-picker__item-name">{{ u.name || u.login || `#${u.id}` }}</span>
-            <span class="user-picker__item-meta">{{ u.email || u.celular || '—' }}</span>
-          </div>
-          <span class="user-picker__item-role" :data-role="u.role">{{ roleLabel(u.role) }}</span>
-        </li>
-      </ul>
-    </div>
+    </Teleport>
 
     <p v-if="!selectedUsers.length && !search" class="user-picker__hint">
       <UIcon name="i-lucide-info" class="size-3.5" />
@@ -126,6 +133,42 @@ const results = ref<PickerUser[]>([])
 // Cache pra reidratar chips quando o componente carrega com IDs ja selecionados
 // (ex: edicao de comunicacao com target_user_ids preexistente).
 const selectedCache = ref<Map<number, PickerUser>>(new Map())
+
+// Refs pra calculo de posicao do popover teleportado pro body. O
+// dropdown e teleportado pra escapar overflow:hidden de ancestrais
+// (admin section cards), entao precisa ser posicionado via fixed
+// coords calculadas do bounding rect do search input.
+const searchInputWrapper = ref<HTMLDivElement | null>(null)
+const popPos = reactive({ top: 0, left: 0, width: 320 })
+const POP_MAX_HEIGHT = 320
+const POP_MIN_WIDTH = 320
+const POP_GAP = 4
+
+function updatePopPos() {
+  const t = searchInputWrapper.value
+  if (!t) return
+  const rect = t.getBoundingClientRect()
+  const vh = window.innerHeight
+  const spaceBelow = vh - rect.bottom
+  const spaceAbove = rect.top
+  const width = Math.max(rect.width, POP_MIN_WIDTH)
+  const openUp = spaceBelow < POP_MAX_HEIGHT && spaceAbove > spaceBelow
+  popPos.top = openUp
+    ? Math.max(8, rect.top - POP_GAP - POP_MAX_HEIGHT)
+    : rect.bottom + POP_GAP
+  popPos.left = rect.left
+  popPos.width = width
+}
+
+/**
+ * Style do popover — computed defensivo pra que durante HMR (quando
+ * popPos pode estar transientemente indefinido), o template nao crashe.
+ */
+const popStyle = computed(() => ({
+  top: (popPos?.top ?? 0) + 'px',
+  left: (popPos?.left ?? 0) + 'px',
+  width: (popPos?.width ?? 320) + 'px',
+}))
 
 let searchTimer: ReturnType<typeof setTimeout> | null = null
 
@@ -183,13 +226,44 @@ function toggle(id: number, user?: PickerUser) {
   const next = isSelected(id)
     ? props.modelValue.filter(x => x !== id)
     : [...props.modelValue, id]
+  // Debug: descomentar pra rastrear o ciclo de seleção
+  // eslint-disable-next-line no-console
+  console.log('[user-picker] toggle', { id, wasSelected: isSelected(id), prev: props.modelValue, next })
   emit('update:modelValue', next)
+}
+
+/**
+ * Handler de mousedown na <li>: usa mousedown (em vez de click) pra
+ * seleção pq:
+ *   1. Mousedown dispara ANTES do blur do input — sem preventDefault
+ *      o input perderia foco quando user clica numa item, fechando o
+ *      dropdown via re-render.
+ *   2. preventDefault no mousedown impede o focus shift, mantendo o
+ *      input focado pra continuar buscando/selecionando varios users.
+ *
+ * stopPropagation evita que o event bubbling acione listeners
+ * ancestrais (admin layout, etc) que possam interferir.
+ */
+function onItemMousedown(e: MouseEvent, u: PickerUser) {
+  e.preventDefault()
+  e.stopPropagation()
+  toggle(u.id, u)
 }
 
 function onSearchInput() {
   open.value = true
   if (searchTimer) clearTimeout(searchTimer)
   searchTimer = setTimeout(loadResults, 300)
+}
+
+function onFocusSearch() {
+  open.value = true
+  // Recalcula posicao apos abrir (precisa do nextTick pra DOM montar)
+  nextTick(() => updatePopPos())
+}
+
+function onScrollOrResize() {
+  if (open.value) updatePopPos()
 }
 
 function clearSearch() {
@@ -206,10 +280,15 @@ function roleLabel(role: string): string {
   return map[role] || role.toUpperCase()
 }
 
-// Click fora fecha o dropdown
+// Click fora fecha o dropdown. Como o dropdown esta teleportado pro
+// body, precisa verificar tanto `.user-picker` (input + chips) quanto
+// `.user-picker__results` (dropdown). Senao clicks em items fechariam
+// o dropdown logo apos selecionar e travariam multi-select.
 function onClickOutside(e: MouseEvent) {
   const target = e.target as HTMLElement
-  if (!target.closest('.user-picker')) open.value = false
+  if (!target.closest('.user-picker') && !target.closest('.user-picker__results')) {
+    open.value = false
+  }
 }
 
 watch(() => props.tenantId, () => {
@@ -219,12 +298,27 @@ watch(() => props.tenantId, () => {
   if (search.value) loadResults()
 })
 
+// Watch open: liga/desliga listeners de reposicao enquanto aberto
+watch(open, (v) => {
+  if (v) {
+    nextTick(() => updatePopPos())
+    // capture: true pra pegar scroll em ancestrais (admin content scroller)
+    window.addEventListener('scroll', onScrollOrResize, true)
+    window.addEventListener('resize', onScrollOrResize)
+  } else {
+    window.removeEventListener('scroll', onScrollOrResize, true)
+    window.removeEventListener('resize', onScrollOrResize)
+  }
+})
+
 onMounted(() => {
   document.addEventListener('click', onClickOutside)
   hydrateCache()
 })
 onBeforeUnmount(() => {
   document.removeEventListener('click', onClickOutside)
+  window.removeEventListener('scroll', onScrollOrResize, true)
+  window.removeEventListener('resize', onScrollOrResize)
   if (searchTimer) clearTimeout(searchTimer)
 })
 </script>
@@ -342,13 +436,10 @@ onBeforeUnmount(() => {
 }
 
 .user-picker__results {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  margin-top: 4px;
-  z-index: 20;
-  max-height: 300px;
+  /* Teleportado pro body — posicionado via fixed coords inline */
+  position: fixed;
+  z-index: 1000;
+  max-height: 320px;
   overflow-y: auto;
   border-radius: 8px;
   border: 1px solid color-mix(in srgb, var(--brand-text) 12%, transparent);

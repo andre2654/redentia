@@ -1390,13 +1390,15 @@ onMounted(() => {
   if (typeof navigator !== 'undefined' && !/Mac|iP(hone|ad)/.test(navigator.platform)) {
     shortcutModifier.value = 'Ctrl'
   }
-  // Espera 2 rAFs antes de revelar — garante que o style innerHTML do
-  // brand plugin ja foi aplicado (1 rAF) e que o browser fez o reflow
-  // com as vars certas (2 rAF). 32ms invisivel < flash visivel.
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
+  // Revela depois que o brand plugin sincronizou os colors. nextTick
+  // garante que rodamos depois da hidratacao DOM; o setTimeout(50ms)
+  // adiciona uma pequena margem pro reflow assentar com as CSS vars
+  // corretas. Usar setTimeout em vez de rAF porque rAF e throttled
+  // em tabs background/headless e a janela nunca abria.
+  nextTick(() => {
+    setTimeout(() => {
       mounted.value = true
-    })
+    }, 50)
   })
   // Kick off rotation. Data may still be loading, in which case the pool
   // contains only category suggestions (no ticker variants); the watcher
@@ -1422,6 +1424,20 @@ watch(open, (val) => {
 </script>
 
 <style scoped>
+/* ============================================================
+   Anti-flash gate. SSR emite o markup com opacity:0; o
+   `mounted` ref vira true depois de 2 rAFs no client (apos o
+   brand plugin aplicar mode + CSS vars resolverem). Janela
+   onde light/dark mode poderia flashar fica invisivel.
+   ============================================================ */
+.quick-search-root {
+  opacity: 0;
+}
+.quick-search-root.quick-search-root--ready {
+  opacity: 1;
+  transition: opacity 140ms ease-out;
+}
+
 /* ============================================================
    Panel — translucent glass surface. The blur is here (not
    inline) so the browser composites it once and we keep
