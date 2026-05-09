@@ -411,7 +411,7 @@ interface BrandConfig {
     register: string               // "Cadastrar"
     // Mobile menu
     mobileAiLabel: string          // "Assessoria IA"
-    mobileAiAccess: string         // "Acesse de graca"
+    mobileAiAccess: string         // "Conversar agora"
     mobileAiLocked: string         // "Assessoria IA bloqueada"
     mobileAiLockedSub: string      // "Faca login para acessar"
     mobileAiDescription: string    // "Assessoria com Inteligencia Artificial"
@@ -938,7 +938,7 @@ const primoRico: BrandConfig = {
     login: 'Entrar',
     register: 'Cadastrar',
     mobileAiLabel: 'Assessoria IA',
-    mobileAiAccess: 'Acesse de graca',
+    mobileAiAccess: 'Conversar agora',
     mobileAiLocked: 'Assessoria IA bloqueada',
     mobileAiLockedSub: 'Faca login para acessar',
     mobileAiDescription: 'Assessoria com Inteligencia Artificial',
@@ -1501,7 +1501,7 @@ const mePoupe: BrandConfig = {
     login: 'Entrar',
     register: 'Cadastrar',
     mobileAiLabel: 'Na_th IA',
-    mobileAiAccess: 'Acesse de graca!',
+    mobileAiAccess: 'Conversar agora',
     mobileAiLocked: 'Na_th IA bloqueada',
     mobileAiLockedSub: 'Faz login pra acessar!',
     mobileAiDescription: 'Sua assessora pessoal com IA',
@@ -2682,7 +2682,7 @@ const redentia: BrandConfig = {
     login: 'Entrar',
     register: 'Cadastrar',
     mobileAiLabel: 'Assessoria IA',
-    mobileAiAccess: 'Acesse de graca',
+    mobileAiAccess: 'Conversar agora',
     mobileAiLocked: 'Assessoria IA bloqueada',
     mobileAiLockedSub: 'Faca login para acessar',
     mobileAiDescription: 'Assessoria com Inteligencia Artificial',

@@ -29,6 +29,7 @@
   <div
     ref="rootEl"
     class="quick-search-root fixed inset-x-0 bottom-4 z-50 flex justify-center px-4 pointer-events-none md:bottom-6"
+    :class="{ 'quick-search-root--ready': mounted }"
     :style="{ paddingBottom: 'env(safe-area-inset-bottom)' }"
   >
     <div
@@ -544,6 +545,12 @@ interface Group {
 const brand = useBrand()
 const failedLogos = useFailedLogos()
 const open = ref(false)
+// Gate de visibilidade pos-hidratacao. SSR emite o markup pra que a
+// hidratacao seja limpa, mas a opacidade fica em 0 ate `onMounted`
+// rodar — janela onde as CSS vars podem estar com o mode errado
+// (entre paint inicial e applyMode do brand plugin) fica invisivel.
+// Evita flash light/dark visivel pro user na primeira visita.
+const mounted = ref(false)
 const searchTerm = ref('')
 const focusedKey = ref<string | null>(null)
 const isLoading = ref(false)
@@ -1383,6 +1390,14 @@ onMounted(() => {
   if (typeof navigator !== 'undefined' && !/Mac|iP(hone|ad)/.test(navigator.platform)) {
     shortcutModifier.value = 'Ctrl'
   }
+  // Espera 2 rAFs antes de revelar — garante que o style innerHTML do
+  // brand plugin ja foi aplicado (1 rAF) e que o browser fez o reflow
+  // com as vars certas (2 rAF). 32ms invisivel < flash visivel.
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      mounted.value = true
+    })
+  })
   // Kick off rotation. Data may still be loading, in which case the pool
   // contains only category suggestions (no ticker variants); the watcher
   // below will refresh once tickers arrive.

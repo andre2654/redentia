@@ -18,6 +18,11 @@
          page poder abrir via useUpgradeModal().open(). Em tenants com
          billing.enabled=false o composable e no-op (modal nunca abre). -->
     <MoleculesUpgradeModal />
+    <!-- Inbox drawer global (alerts do chat + notices do admin).
+         Mount unico aqui pra que qualquer surface (sino do chat,
+         sino do platform sidebar) abra o mesmo drawer via
+         useInbox().openDrawer(). -->
+    <MoleculesInboxDrawer />
   </UApp>
 </template>
 

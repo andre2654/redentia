@@ -108,8 +108,8 @@
           </button>
 
           <ChatV2NotificationBell
-            :unread-count="alertsState.unreadCount.value"
-            @open="notificationsOpen = true"
+            :unread-count="inbox.unreadCount.value"
+            @open="inbox.openDrawer()"
           />
 
           <NuxtLink
@@ -145,8 +145,8 @@
         <!-- Desktop top-right cluster: bell + close -->
         <div class="absolute right-5 top-5 z-10 hidden items-center gap-2 xl:flex">
           <ChatV2NotificationBell
-            :unread-count="alertsState.unreadCount.value"
-            @open="notificationsOpen = true"
+            :unread-count="inbox.unreadCount.value"
+            @open="inbox.openDrawer()"
           />
           <NuxtLink
             to="/"
@@ -291,20 +291,12 @@
     @chat-prompt="onChatPromptFromPanel"
   />
 
-  <!-- Notifications drawer — opens from the bell button at the top
-       of the chat. Routes alert clicks the same way the old Painel
-       Alertas tab did (jump to source session, or seed a follow-up
-       turn referencing the ticker). -->
-  <ChatV2NotificationsDrawer
-    :open="notificationsOpen"
-    :alerts="alertsState.alerts.value"
-    :loading="alertsState.loading.value"
-    @close="notificationsOpen = false"
-    @select="onSelectAlertFromBell"
-    @dismiss="(id) => alertsState.dismiss(id)"
-    @dismiss-all="() => alertsState.dismissAll()"
-    @mark-read="(id) => alertsState.markRead(id)"
-  />
+  <!-- Drawer de notificacoes vive globalmente em app.vue
+       (<MoleculesInboxDrawer />), unificado pra alerts do chat
+       + notices do admin. Aqui no /help, o bell apenas dispara
+       useInbox().openDrawer() (ver wire-up acima). O antigo
+       ChatV2NotificationsDrawer foi descontinuado. -->
+
 
   <!-- Gate de contatos — abre automaticamente quando o usuario logado
        chega no /help sem ter cadastrado telefone OU email. Bloqueia o
@@ -434,10 +426,10 @@ const panelInitialSection = ref<
   'goals' | 'decisions' | 'watchlist' | 'memory' | 'activity'
 >('goals')
 
-// Notifications drawer — separate from the audit panel. Bell button
-// at the top of the chat opens this; bell shows unread badge driven
-// by alertsState.unreadCount.
-const notificationsOpen = ref(false)
+// O drawer de notificacoes vive globalmente em app.vue
+// (<MoleculesInboxDrawer />). Aqui o sino do chat (que fica no header
+// do thread) chama `inbox.openDrawer()` pra abrir o mesmo drawer
+// unificado. Badge driven by `inbox.unreadCount` (alerts + admin notices).
 const { goals, refresh: refreshGoals, linkSession, unlinkSession, findById: findGoalById } = useGoals()
 const {
   refresh: refreshDecisions,
@@ -1027,6 +1019,10 @@ async function onJumpToDecisionSession(sessionId: string) {
 // ---- Watchlist + alerts handlers --------------------------------
 const watchlistState = useWatchlist()
 const alertsState = useAlerts()
+// Inbox unificado (alerts do chat + notices do admin). O sino do
+// chat consome `inbox.unreadCount` e abre o drawer global via
+// `inbox.openDrawer()`. O drawer em si vive no app.vue (mount unico).
+const inbox = useInbox()
 
 // ---- Audit drawer handlers --------------------------------------
 function onOpenPanel(
@@ -1034,9 +1030,9 @@ function onOpenPanel(
 ) {
   // The audit panel no longer hosts an Alertas section — clicks
   // from the sidebar's Alertas counter are redirected to the
-  // notifications drawer.
+  // unified inbox drawer (montado em app.vue).
   if (section === 'alerts') {
-    notificationsOpen.value = true
+    inbox.openDrawer()
     return
   }
   panelInitialSection.value = section
@@ -1071,20 +1067,6 @@ function onChatPromptFromPanel(text: string) {
   panelOpen.value = false
   if (!authStore.isAuthenticated || !text.trim()) return
   void chat.send(text)
-}
-
-function onSelectAlertFromBell(alert: { id: string; ticker: string | null; sessionId: string | null }) {
-  notificationsOpen.value = false
-  void alertsState.markRead(alert.id)
-  if (alert.sessionId) {
-    void onSelectSession(alert.sessionId)
-    return
-  }
-  if (alert.ticker) {
-    void chat.send(
-      `Recebi um alerta de watchlist para ${alert.ticker}. Pode me explicar o que mudou e se devo agir?`,
-    )
-  }
 }
 
 function onSelectAlertInline(alert: { id: string; ticker: string | null }) {

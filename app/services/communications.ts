@@ -16,7 +16,7 @@
 // =============================================================
 // Types
 // =============================================================
-export type CommunicationType = 'banner' | 'announcement' | 'cta' | 'modal' | 'poll' | 'email'
+export type CommunicationType = 'banner' | 'announcement' | 'cta' | 'modal' | 'poll' | 'email' | 'notification'
 export type CommunicationStatus = 'draft' | 'scheduled' | 'active' | 'paused' | 'ended'
 export type CommunicationPlacement =
   | 'top'
@@ -26,6 +26,7 @@ export type CommunicationPlacement =
   | 'home-cta'
   | 'feed'
   | 'modal'
+  | 'inbox'
 export type CommunicationAudience =
   | 'all'
   | 'authenticated'

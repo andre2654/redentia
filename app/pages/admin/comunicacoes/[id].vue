@@ -256,6 +256,18 @@
               </div>
             </Field>
 
+            <!-- USER PICKER (audience=specific) -->
+            <Field
+              v-if="form.target_audience === 'specific'"
+              label="Selecionar usuários"
+              hint="Busca por nome, email, login ou celular. Filtra pelo tenant selecionado abaixo."
+            >
+              <AdminUserPicker
+                v-model="selectedUserIds"
+                :tenant-id="form.tenant_id ?? null"
+              />
+            </Field>
+
             <FieldGroup columns="2">
               <Field label="Tenant" hint="Vazio = todos os tenants (global)">
                 <USelect
@@ -611,6 +623,19 @@ const form = reactive<CommunicationAdminPayload & {
   poll_results_visible: false,
 })
 
+// Two-way binding pro user picker (audience=specific). target_user_ids
+// no backend e jsonb (lista de ids); local convertemos pra array de
+// numbers que o picker manipula. Sync via watcher abaixo.
+const selectedUserIds = ref<number[]>([])
+
+watch(() => form.target_user_ids, (next) => {
+  selectedUserIds.value = Array.isArray(next) ? next.map((id: any) => Number(id)).filter(Number.isFinite) : []
+}, { immediate: true })
+
+watch(selectedUserIds, (next) => {
+  form.target_user_ids = next.length ? next : null
+})
+
 // Tenant options carregados do backend
 const tenantOptions = ref<{ label: string; value: number | null }[]>([
   { label: 'Global (todos os tenants)', value: null },
@@ -705,6 +730,7 @@ const audienceOptions = [
   { value: 'investors', label: 'Investidores', icon: 'i-lucide-trending-up', desc: 'role = investor' },
   { value: 'advisors', label: 'Assessores', icon: 'i-lucide-briefcase', desc: 'role = advisor' },
   { value: 'admins', label: 'Admins', icon: 'i-lucide-shield', desc: 'Só admins' },
+  { value: 'specific', label: 'Específicos', icon: 'i-lucide-user-plus', desc: 'Lista manual de users' },
 ]
 
 const placementOptionsForType = computed(() => {

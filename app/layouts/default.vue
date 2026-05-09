@@ -590,6 +590,12 @@
             </div>
           </div>
         </slot>
+        <!-- Right-side cluster: notification bell. justify-between no
+             header empurra esse bloco pro lado direito. So renderiza
+             quando autenticado (proprio InboxBell faz o gate). -->
+        <div class="flex items-center gap-2">
+          <MoleculesInboxBell />
+        </div>
       </header>
       <!-- Banner status assessor (investidor): só pendente ou recusado -->
       <div

@@ -151,6 +151,22 @@ const PreviewPoll = () =>
     ]),
   ])
 
+const PreviewNotification = () =>
+  h('div', { class: 'preview-notification' }, [
+    h('div', { class: 'preview-notification__bell' }, [
+      h('div', { class: 'preview-notification__badge' }),
+    ]),
+    h('div', { class: 'preview-notification__drawer' }, [
+      h('div', { class: 'preview-notification__item preview-notification__item--unread' }, [
+        h('div', { class: 'preview-notification__dot' }),
+        h('div', { class: 'preview-notification__line preview-notification__line--w70' }),
+      ]),
+      h('div', { class: 'preview-notification__item' }, [
+        h('div', { class: 'preview-notification__line preview-notification__line--w60' }),
+      ]),
+    ]),
+  ])
+
 const PreviewEmail = () =>
   h('div', { class: 'preview-email' }, [
     h('div', { class: 'preview-email__envelope' }, [
@@ -227,6 +243,16 @@ const types: TypeOption[] = [
     preview: PreviewPoll,
   },
   {
+    value: 'notification',
+    title: 'Notificação',
+    icon: 'i-lucide-bell',
+    color: '#a855f7',
+    bgGradient: 'linear-gradient(135deg, rgba(168,85,247,0.18) 0%, rgba(168,85,247,0.04) 100%)',
+    description: 'Aparece num inbox/sino com badge de unread.',
+    useCase: 'Avisos personalizados pra um user ou lista (suporte, alerta de carteira, lembrete de tarefa). Não interrompe — o usuário lê quando quiser.',
+    preview: PreviewNotification,
+  },
+  {
     value: 'email',
     title: 'Email broadcast',
     icon: 'i-lucide-mail',
@@ -275,6 +301,7 @@ function defaultTitle(type: CommunicationType): string {
     modal: 'Novo modal',
     poll: 'Nova enquete',
     email: 'Novo email',
+    notification: 'Nova notificação',
   } as const)[type]
 }
 
@@ -286,6 +313,7 @@ function defaultPlacement(type: CommunicationType) {
     modal: 'modal',
     poll: 'modal',
     email: null,
+    notification: 'inbox',
   } as const)[type]
 }
 </script>
