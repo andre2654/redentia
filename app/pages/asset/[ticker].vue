@@ -3,10 +3,8 @@
     :name="layoutName"
     container-class="md:px-0"
   >
-    <!-- CTA contextual — banner topo de qualquer ativo, antes da variant -->
-    <div class="mx-auto w-full max-w-6xl px-6 pt-4 md:px-10">
-      <MoleculesCommunicationsCTASlot placement="asset-top" />
-    </div>
+    <!-- CTA contextual — banner topo de qualquer ativo, full-width -->
+    <MoleculesCommunicationsCTASlot placement="asset-top" />
 
     <!-- ========== RESEARCH VARIANT (Investidor Sardinha, AUVP analyst desk) ========== -->
     <div

@@ -18,10 +18,8 @@
 <template>
   <NuxtLayout name="default" title="Rankings da B3 2026">
     <section class="flex flex-col gap-12 px-6 py-10 md:py-14">
-      <!-- CTA contextual — promo no topo dos rankings -->
-      <div class="w-full max-w-3xl">
-        <MoleculesCommunicationsCTASlot placement="ranking-top" />
-      </div>
+      <!-- CTA contextual — promo no topo dos rankings, full-width -->
+      <MoleculesCommunicationsCTASlot placement="ranking-top" />
 
       <!-- ============ Hero ============ -->
       <header class="flex max-w-3xl flex-col gap-3">

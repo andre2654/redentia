@@ -10,10 +10,10 @@
 <template>
   <NuxtLayout name="default" title="Calculadoras Financeiras">
     <section class="flex flex-col gap-14 px-6 py-10">
-      <!-- CTA contextual — admin pode posicionar promo no topo do hub -->
-      <div class="mx-auto w-full max-w-3xl">
-        <MoleculesCommunicationsCTASlot placement="calculadora-top" />
-      </div>
+      <!-- CTA contextual — admin pode posicionar promo no topo do hub.
+           Ocupa toda a largura disponível (sem max-width) pra dar
+           presença total ao banner. -->
+      <MoleculesCommunicationsCTASlot placement="calculadora-top" />
 
       <!-- ============ Hero ============
            Page-level h1 is rendered ALWAYS. The static layout cascade
