@@ -28,12 +28,28 @@
        sidebar inherits from <body> which is set via CSS vars injected in
        plugins/brand.ts, and that injection path can lag behind the reactive
        updates when a tenant changes (producing mixed Redentia-dark sidebar
-       with Norte-cream main content). -->
+       with Norte-cream main content).
+
+       Wrapper agora é flex-col pra acomodar TopBanner full-width acima
+       de TUDO (incluindo a sidebar). O hideFooter (chat full-screen)
+       é tratado movendo h-screen + overflow-hidden pra dentro do row
+       container, preservando o banner como item natural acima. -->
   <div
-    class="flex w-full"
-    :class="hideFooter ? 'h-screen overflow-hidden' : 'min-h-screen'"
+    class="flex w-full flex-col"
+    :class="hideFooter ? 'h-screen' : 'min-h-screen'"
     :style="{ backgroundColor: brand.colors.background, color: brand.colors.text }"
   >
+    <!-- TopBanner — full-width, no topo absoluto, acima da sidebar.
+         So renderiza quando ha campanha active com type=banner +
+         placement=top que se aplica ao user atual. -->
+    <MoleculesCommunicationsTopBanner />
+
+    <!-- Row container: sidebar + main content. Aqui que o
+         hideFooter aplica overflow-hidden pra chat full-height. -->
+    <div
+      class="flex w-full"
+      :class="hideFooter ? 'flex-1 min-h-0 overflow-hidden' : 'flex-1'"
+    >
     <!-- Sidebar Desktop — Redentia × Stripe-style. Same visual language
          as the chat sidebar (ChatV2Sidebar): solid brand-surface
          background, amber-tinted shadows, eyebrow-driven section
@@ -459,6 +475,14 @@
         </section>
       </nav>
 
+      <!-- Sidebar banner (placement=sidebar das comunicacoes admin).
+           Renderiza UM banner por vez baseado em targeting (audience,
+           tenant, user_ids). Mount aqui pra ficar entre o nav scrollável
+           e o footer fixo (privacy toggle + logout). -->
+      <div class="px-3 pb-2">
+        <MoleculesCommunicationsSidebarBanner />
+      </div>
+
       <!-- Market strip IBOV/IFIX removida — ja existe um ticker rail
            (AtomsTickerCarousel) no topo da home com dados mais ricos
            (logo + price + change), e a strip da sidebar duplicava esse
@@ -624,15 +648,11 @@
         </template>
       </div>
       <div v-bind="containerProps" class="flex min-h-0 flex-1 flex-col">
-        <!-- Banner top sticky controlado pelo admin via /admin/comunicacoes.
-             Renderiza so quando ha campanha active com type=banner +
-             placement=top que se aplica ao user atual. -->
-        <MoleculesCommunicationsTopBanner />
-
         <slot />
       </div>
     </div>
-  </div>
+    </div><!-- /row container (sidebar + main) -->
+  </div><!-- /outer flex-col wrapper -->
 
   <!-- ModalManager — popup centralizado de modal/enquete.
        1× por session, vive no <body> via Teleport. Carrega

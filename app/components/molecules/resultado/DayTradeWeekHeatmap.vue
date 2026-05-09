@@ -114,48 +114,31 @@
       </div>
     </div>
 
-    <!-- Insights derivados embaixo: 3 panels com peak / dreno / overall -->
-    <div v-if="hasData" class="dt-week__insights">
-      <div v-if="peakCell" class="dt-week__insight">
-        <UIcon name="i-lucide-trophy" class="size-4 shrink-0" :style="{ color: brand.colors.primary }" />
-        <div class="flex flex-col gap-0.5 min-w-0">
-          <span class="dt-week__insight-label">Pico semanal</span>
-          <span class="dt-week__insight-value" :style="{ color: brand.colors.text }">
-            {{ DAY_LABELS[peakCell.dayIdx] }} às {{ peakCell.hour }}h
-          </span>
-          <span class="dt-week__insight-detail tabular-nums">
-            {{ peakCell.count }} {{ peakCell.count === 1 ? 'op' : 'ops' }} ·
-            {{ Math.round(peakCell.winRate * 100) }}% WR ·
-            <span :style="{ color: brand.colors.positive }">{{ formatPnl(peakCell.pnl) }}</span>
-          </span>
-        </div>
-      </div>
-      <div v-if="worstCell" class="dt-week__insight">
-        <UIcon name="i-lucide-alert-triangle" class="size-4 shrink-0" :style="{ color: brand.colors.negative }" />
-        <div class="flex flex-col gap-0.5 min-w-0">
-          <span class="dt-week__insight-label">Vale semanal</span>
-          <span class="dt-week__insight-value" :style="{ color: brand.colors.text }">
-            {{ DAY_LABELS[worstCell.dayIdx] }} às {{ worstCell.hour }}h
-          </span>
-          <span class="dt-week__insight-detail tabular-nums">
-            {{ worstCell.count }} {{ worstCell.count === 1 ? 'op' : 'ops' }} ·
-            {{ Math.round(worstCell.winRate * 100) }}% WR ·
-            <span :style="{ color: brand.colors.negative }">{{ formatPnl(worstCell.pnl) }}</span>
-          </span>
-        </div>
-      </div>
-      <div class="dt-week__insight">
-        <UIcon name="i-lucide-grid-3x3" class="size-4 shrink-0" :style="{ color: brand.colors.text }" />
-        <div class="flex flex-col gap-0.5 min-w-0">
-          <span class="dt-week__insight-label">Cobertura</span>
-          <span class="dt-week__insight-value" :style="{ color: brand.colors.text }">
-            {{ filledCells }} de 40 slots
-          </span>
-          <span class="dt-week__insight-detail">
-            {{ Math.round((filledCells / 40) * 100) }}% da semana operada
-          </span>
-        </div>
-      </div>
+    <!-- Sub-stats embaixo (mesma receita do CarteiraHeatmap em modo huge):
+         label compacto em coluna + value tabular grande, sem card,
+         sem icones. Border-top sutil + gap generoso. -->
+    <div v-if="hasData" class="dt-week__stats">
+      <span v-if="peakCell" class="dt-week__stat">
+        <span class="dt-week__stat-label">Pico semanal</span>
+        <span
+          class="dt-week__stat-value tabular-nums"
+          :style="{ color: brand.colors.positive }"
+        >{{ DAY_LABELS[peakCell.dayIdx] }} {{ peakCell.hour }}h · {{ formatPnl(peakCell.pnl) }}</span>
+      </span>
+      <span v-if="worstCell" class="dt-week__stat">
+        <span class="dt-week__stat-label">Vale semanal</span>
+        <span
+          class="dt-week__stat-value tabular-nums"
+          :style="{ color: brand.colors.negative }"
+        >{{ DAY_LABELS[worstCell.dayIdx] }} {{ worstCell.hour }}h · {{ formatPnl(worstCell.pnl) }}</span>
+      </span>
+      <span class="dt-week__stat">
+        <span class="dt-week__stat-label">Cobertura</span>
+        <span
+          class="dt-week__stat-value tabular-nums"
+          :style="{ color: brand.colors.text }"
+        >{{ filledCells }} / 40 slots</span>
+      </span>
     </div>
 
     <!-- ============ DRILL-DOWN POPOVER ============ -->
@@ -664,48 +647,42 @@ const drillCardStyle = computed(() => ({
   font-variant-numeric: tabular-nums;
 }
 
-/* ============ INSIGHTS embaixo ============ */
-.dt-week__insights {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 10px;
-  padding-top: 16px;
+/* ============ STATS FOOTER ============
+   Mesma receita visual do CarteiraHeatmap (modo huge): label mono
+   uppercase em cima + value tabular forte embaixo, sem card de
+   fundo, sem icones. Border-top sutil separa o footer do grid de
+   celulas. */
+.dt-week__stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 36px;
+  padding-top: 12px;
+  margin-top: 4px;
   border-top: 1px solid color-mix(in srgb, var(--brand-text) 8%, transparent);
 }
 
-.dt-week__insight {
-  display: flex;
+.dt-week__stat {
+  display: inline-flex;
+  flex-direction: column;
   align-items: flex-start;
-  gap: 10px;
-  padding: 12px 14px;
-  border-radius: 10px;
-  background-color: color-mix(in srgb, var(--brand-text) 4%, transparent);
+  gap: 4px;
 }
 
-.dt-week__insight-label {
-  font-size: 9.5px;
-  font-weight: 600;
-  letter-spacing: 0.2em;
+.dt-week__stat-label {
+  font-family: var(--font-mono, 'JetBrains Mono', ui-monospace, monospace);
+  font-size: 11px;
+  font-weight: 500;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--brand-text) 50%, transparent);
+  letter-spacing: 0.18em;
+  color: color-mix(in srgb, var(--brand-text) 55%, transparent);
 }
 
-.dt-week__insight-value {
-  font-size: 14px;
+.dt-week__stat-value {
+  font-size: 17px;
   font-weight: 600;
-  letter-spacing: -0.005em;
-}
-
-.dt-week__insight-detail {
-  font-size: 11.5px;
-  letter-spacing: 0.04em;
-  color: color-mix(in srgb, var(--brand-text) 60%, transparent);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .dt-week__cell--clickable:hover {
-    transform: none;
-  }
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
 }
 
 @media (max-width: 720px) {
@@ -715,7 +692,7 @@ const drillCardStyle = computed(() => ({
   .dt-week__day-labels,
   .dt-week__grid {
     grid-template-columns: 36px repeat(5, 1fr);
-    gap: 6px;
+    gap: 1px;
   }
   .dt-week__grid {
     grid-auto-rows: minmax(40px, 1fr);

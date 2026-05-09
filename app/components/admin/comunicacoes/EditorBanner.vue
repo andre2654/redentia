@@ -514,20 +514,123 @@
         @toggle="open.schedule = !open.schedule"
       >
         <span class="section-lead">
-          Quando o banner deve começar e terminar. Vazio significa sem limite de tempo.
+          Quando a campanha deve <strong>começar</strong> e <strong>terminar</strong>. Vazio significa sem limite.
         </span>
 
+        <!-- ============ STATUS + TIMELINE VISUAL ============ -->
+        <div class="vig-status-card" :data-state="schedStatus.kind">
+          <div class="vig-status-card__head">
+            <span class="vig-status-card__badge">
+              <UIcon :name="schedStatus.icon" class="size-3" />
+              {{ schedStatus.label }}
+            </span>
+            <span class="vig-status-card__duration">
+              <UIcon name="i-lucide-timer" class="size-3" />
+              {{ durationLabel }}
+            </span>
+          </div>
+
+          <div class="vig-timeline">
+            <div class="vig-timeline__node vig-timeline__node--start" :class="{ 'vig-timeline__node--unset': !form.starts_at }">
+              <span class="vig-timeline__dot" />
+              <span class="vig-timeline__label">Início</span>
+              <span class="vig-timeline__when">{{ formatDateTime(form.starts_at) || 'imediato' }}</span>
+            </div>
+            <div class="vig-timeline__bar" :class="`vig-timeline__bar--${schedStatus.kind}`" />
+            <div class="vig-timeline__node vig-timeline__node--end" :class="{ 'vig-timeline__node--unset': !form.ends_at }">
+              <span class="vig-timeline__dot" />
+              <span class="vig-timeline__label">Fim</span>
+              <span class="vig-timeline__when">{{ formatDateTime(form.ends_at) || 'sem limite' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============ ATALHOS ============ -->
+        <div class="vig-presets">
+          <span class="vig-presets__label">Atalhos:</span>
+          <button
+            v-for="p in schedulePresets"
+            :key="p.id"
+            type="button"
+            class="vig-preset"
+            :class="{ 'vig-preset--active': activePreset === p.id }"
+            :title="p.desc"
+            @click="applySchedulePreset(p.id)"
+          >
+            <UIcon :name="p.icon" class="size-3" />
+            {{ p.label }}
+          </button>
+        </div>
+
+        <!-- ============ DATETIME INPUTS ============ -->
         <div class="grid-2">
-          <Field label="Início" hint="Vazio = vale a partir de já (assim que ativar).">
-            <UInput v-model="form.starts_at" type="datetime-local" size="md" />
+          <Field label="Início" hint="Quando o banner começa a aparecer. Vazio = imediato (assim que ativar).">
+            <div class="vig-input">
+              <UIcon name="i-lucide-play" class="size-3.5 vig-input__icon" />
+              <UInput v-model="form.starts_at" type="datetime-local" size="md" class="vig-input__field" />
+              <button
+                v-if="form.starts_at"
+                type="button"
+                class="vig-input__clear"
+                aria-label="Limpar início"
+                @click="form.starts_at = null"
+              >
+                <UIcon name="i-lucide-x" class="size-3" />
+              </button>
+            </div>
           </Field>
-          <Field label="Fim" hint="Vazio = nunca expira. Recomendado definir uma data pra evitar banners esquecidos.">
-            <UInput v-model="form.ends_at" type="datetime-local" size="md" />
+          <Field label="Fim" hint="Quando o banner para de aparecer. Vazio = roda indefinidamente.">
+            <div class="vig-input">
+              <UIcon name="i-lucide-square" class="size-3.5 vig-input__icon" />
+              <UInput v-model="form.ends_at" type="datetime-local" size="md" class="vig-input__field" />
+              <button
+                v-if="form.ends_at"
+                type="button"
+                class="vig-input__clear"
+                aria-label="Limpar fim"
+                @click="form.ends_at = null"
+              >
+                <UIcon name="i-lucide-x" class="size-3" />
+              </button>
+            </div>
           </Field>
         </div>
 
-        <Field label="Prioridade" hint="Quando há vários banners ativos pra mesma audiência+placement, o de maior prioridade aparece primeiro.">
-          <UInput v-model.number="form.priority" type="number" size="md" placeholder="0" />
+        <!-- ============ PRIORIDADE ============ -->
+        <Field
+          label="Prioridade"
+          hint="Quando há vários banners ativos pra mesma audiência+placement, o de maior prioridade aparece primeiro."
+        >
+          <div class="vig-priority">
+            <div class="vig-priority__row">
+              <input
+                v-model.number="priorityValue"
+                type="range"
+                min="0"
+                max="1000"
+                step="10"
+                class="vig-priority__slider"
+                :style="{ '--pct': `${(priorityValue / 1000) * 100}%` }"
+              />
+              <span class="vig-priority__value" :data-tier="priorityTier.kind">
+                {{ priorityValue }}
+              </span>
+            </div>
+            <div class="vig-priority__presets">
+              <button
+                v-for="p in priorityPresets"
+                :key="p.value"
+                type="button"
+                class="vig-priority__preset"
+                :class="{ 'vig-priority__preset--active': priorityTier.kind === p.kind }"
+                :data-tier="p.kind"
+                :title="p.desc"
+                @click="form.priority = p.value"
+              >
+                {{ p.label }}
+              </button>
+            </div>
+          </div>
         </Field>
       </Section>
     </form>
@@ -943,6 +1046,197 @@ function onAumPaste(e: ClipboardEvent): void {
     aumInputEl.value.setSelectionRange(len, len)
   })
 }
+
+// =================================================================
+// Vigência (schedule) helpers
+// =================================================================
+
+/**
+ * Status semântico da vigência calculado em tempo real.
+ *   - always: sem datas → roda indefinidamente
+ *   - scheduled: starts_at no futuro
+ *   - active: starts_at já passou e ends_at no futuro (ou null)
+ *   - expired: ends_at já passou
+ */
+type SchedKind = 'always' | 'scheduled' | 'active' | 'expired'
+interface SchedStatus { kind: SchedKind; label: string; icon: string }
+
+const schedStatus = computed<SchedStatus>(() => {
+  const now = Date.now()
+  const start = props.form.starts_at ? new Date(props.form.starts_at).getTime() : null
+  const end = props.form.ends_at ? new Date(props.form.ends_at).getTime() : null
+
+  if (end && end < now) return { kind: 'expired', label: 'Expirou', icon: 'i-lucide-x-circle' }
+  if (start && start > now) return { kind: 'scheduled', label: 'Agendado', icon: 'i-lucide-clock' }
+  if (!start && !end) return { kind: 'always', label: 'Sem limite', icon: 'i-lucide-infinity' }
+  return { kind: 'active', label: 'Vai rodar agora', icon: 'i-lucide-check-circle-2' }
+})
+
+/**
+ * Texto humanizado de duração: "Roda por 7 dias 4h", "Indefinido",
+ * "Expirou há 2 dias", "Começa em 3 horas".
+ */
+const durationLabel = computed<string>(() => {
+  const now = Date.now()
+  const start = props.form.starts_at ? new Date(props.form.starts_at).getTime() : null
+  const end = props.form.ends_at ? new Date(props.form.ends_at).getTime() : null
+
+  if (!start && !end) return 'Roda indefinidamente'
+  if (end && end < now) {
+    const diff = now - end
+    return `Expirou há ${humanizeDuration(diff)}`
+  }
+  if (start && start > now) {
+    const diff = start - now
+    return `Começa em ${humanizeDuration(diff)}`
+  }
+  // Active
+  if (end) {
+    const diff = end - now
+    return `Termina em ${humanizeDuration(diff)}`
+  }
+  return 'Sem fim definido'
+})
+
+function humanizeDuration(ms: number): string {
+  const sec = Math.floor(ms / 1000)
+  const min = Math.floor(sec / 60)
+  const hr = Math.floor(min / 60)
+  const day = Math.floor(hr / 24)
+  if (day >= 7) return `${day} dias`
+  if (day >= 1) {
+    const remHr = hr - day * 24
+    return remHr > 0 ? `${day}d ${remHr}h` : `${day} ${day === 1 ? 'dia' : 'dias'}`
+  }
+  if (hr >= 1) {
+    const remMin = min - hr * 60
+    return remMin > 0 ? `${hr}h ${remMin}m` : `${hr} ${hr === 1 ? 'hora' : 'horas'}`
+  }
+  if (min >= 1) return `${min} min`
+  return 'menos de 1 min'
+}
+
+function formatDateTime(iso: string | null | undefined): string {
+  if (!iso) return ''
+  try {
+    const d = new Date(iso)
+    if (Number.isNaN(d.getTime())) return ''
+    const sameYear = d.getFullYear() === new Date().getFullYear()
+    return d.toLocaleString('pt-BR', {
+      day: '2-digit',
+      month: 'short',
+      year: sameYear ? undefined : 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+  } catch {
+    return iso
+  }
+}
+
+/**
+ * Atalhos: agora, +24h, +7d, +30d, indefinido. Setam starts_at e
+ * ends_at relativos ao "agora" no formato datetime-local (sem fuso).
+ */
+type SchedPresetId = 'now-24h' | 'now-7d' | 'now-30d' | 'tomorrow' | 'unlimited'
+interface SchedPreset {
+  id: SchedPresetId
+  label: string
+  icon: string
+  desc: string
+}
+
+const schedulePresets: SchedPreset[] = [
+  { id: 'now-24h', label: 'Próximas 24h', icon: 'i-lucide-clock', desc: 'Inicia agora, termina em 24 horas' },
+  { id: 'now-7d', label: '7 dias', icon: 'i-lucide-calendar', desc: 'Inicia agora, termina em 7 dias' },
+  { id: 'now-30d', label: '30 dias', icon: 'i-lucide-calendar-days', desc: 'Inicia agora, termina em 30 dias' },
+  { id: 'tomorrow', label: 'Amanhã 9h', icon: 'i-lucide-sunrise', desc: 'Programa pra começar amanhã às 9h' },
+  { id: 'unlimited', label: 'Indefinido', icon: 'i-lucide-infinity', desc: 'Roda indefinidamente até admin pausar' },
+]
+
+/**
+ * Formata Date pra string aceitavel pelo <input type="datetime-local">
+ * (formato: YYYY-MM-DDTHH:MM, sem timezone, no fuso local).
+ */
+function toDatetimeLocal(d: Date): string {
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
+
+function applySchedulePreset(id: SchedPresetId) {
+  const now = new Date()
+  switch (id) {
+    case 'now-24h':
+      props.form.starts_at = toDatetimeLocal(now)
+      props.form.ends_at = toDatetimeLocal(new Date(now.getTime() + 24 * 60 * 60 * 1000))
+      break
+    case 'now-7d':
+      props.form.starts_at = toDatetimeLocal(now)
+      props.form.ends_at = toDatetimeLocal(new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000))
+      break
+    case 'now-30d':
+      props.form.starts_at = toDatetimeLocal(now)
+      props.form.ends_at = toDatetimeLocal(new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000))
+      break
+    case 'tomorrow': {
+      const t = new Date(now)
+      t.setDate(t.getDate() + 1)
+      t.setHours(9, 0, 0, 0)
+      props.form.starts_at = toDatetimeLocal(t)
+      props.form.ends_at = null as any
+      break
+    }
+    case 'unlimited':
+      props.form.starts_at = null as any
+      props.form.ends_at = null as any
+      break
+  }
+}
+
+/**
+ * Detecta qual preset está ativo comparando datas atuais. Acerto
+ * tolerante (~5 min de skew) pra UX não ficar perdendo o highlight
+ * porque clicou há 30s e o "agora" já passou.
+ */
+const activePreset = computed<SchedPresetId | null>(() => {
+  const start = props.form.starts_at ? new Date(props.form.starts_at).getTime() : null
+  const end = props.form.ends_at ? new Date(props.form.ends_at).getTime() : null
+
+  if (!start && !end) return 'unlimited'
+  if (start && !end) return null  // só início preenchido (custom)
+  if (start && end) {
+    const dur = end - start
+    const day = 24 * 60 * 60 * 1000
+    const startMatchNow = Math.abs(start - Date.now()) < 10 * 60 * 1000  // 10 min tolerance
+    if (!startMatchNow) return null
+    if (Math.abs(dur - day) < 60 * 60 * 1000) return 'now-24h'
+    if (Math.abs(dur - 7 * day) < 60 * 60 * 1000) return 'now-7d'
+    if (Math.abs(dur - 30 * day) < 60 * 60 * 1000) return 'now-30d'
+  }
+  return null
+})
+
+// Two-way binding pra slider (form.priority pode ser undefined inicialmente)
+const priorityValue = computed<number>({
+  get: () => props.form.priority ?? 0,
+  set: (v) => { props.form.priority = v },
+})
+
+interface PriorityPreset { value: number; label: string; kind: 'low' | 'medium' | 'high' | 'urgent'; desc: string }
+const priorityPresets: PriorityPreset[] = [
+  { value: 0, kind: 'low', label: 'Baixa', desc: 'Cede vez pra outros banners' },
+  { value: 100, kind: 'medium', label: 'Média', desc: 'Default, fila normal' },
+  { value: 500, kind: 'high', label: 'Alta', desc: 'Sobre quase todos os outros' },
+  { value: 1000, kind: 'urgent', label: 'Urgente', desc: 'Override total — usar com moderação' },
+]
+
+const priorityTier = computed<PriorityPreset>(() => {
+  const v = priorityValue.value
+  if (v >= 800) return priorityPresets[3]
+  if (v >= 250) return priorityPresets[2]
+  if (v >= 50) return priorityPresets[1]
+  return priorityPresets[0]
+})
 
 // =================================================================
 // Sub-components inline (Section, Field) — específicos pra esse editor.
@@ -2206,6 +2500,379 @@ const Field = defineComponent({
 .aud-expand-leave-from {
   opacity: 1;
   max-height: 800px;
+}
+
+/* =========================================================
+   Vigência section — status + timeline + presets + slider
+   ========================================================= */
+
+/* Status card com timeline visual */
+.vig-status-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--brand-text) 2%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-text) 8%, transparent);
+  transition: border-color 200ms, background 200ms;
+}
+.vig-status-card[data-state='active'] {
+  border-color: color-mix(in srgb, #10b981 35%, transparent);
+  background: color-mix(in srgb, #10b981 6%, transparent);
+}
+.vig-status-card[data-state='scheduled'] {
+  border-color: color-mix(in srgb, #06b6d4 35%, transparent);
+  background: color-mix(in srgb, #06b6d4 6%, transparent);
+}
+.vig-status-card[data-state='expired'] {
+  border-color: color-mix(in srgb, #ef4444 35%, transparent);
+  background: color-mix(in srgb, #ef4444 6%, transparent);
+}
+.vig-status-card[data-state='always'] {
+  border-color: color-mix(in srgb, var(--brand-primary) 30%, transparent);
+  background: color-mix(in srgb, var(--brand-primary) 5%, transparent);
+}
+
+.vig-status-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.vig-status-card__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  background: color-mix(in srgb, var(--brand-text) 5%, transparent);
+  color: var(--brand-text);
+}
+.vig-status-card[data-state='active'] .vig-status-card__badge {
+  background: color-mix(in srgb, #10b981 18%, transparent);
+  color: #34d399;
+}
+.vig-status-card[data-state='scheduled'] .vig-status-card__badge {
+  background: color-mix(in srgb, #06b6d4 18%, transparent);
+  color: #67e8f9;
+}
+.vig-status-card[data-state='expired'] .vig-status-card__badge {
+  background: color-mix(in srgb, #ef4444 18%, transparent);
+  color: #fca5a5;
+}
+.vig-status-card[data-state='always'] .vig-status-card__badge {
+  background: color-mix(in srgb, var(--brand-primary) 18%, transparent);
+  color: var(--brand-primary);
+}
+.vig-status-card__duration {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  color: color-mix(in srgb, var(--brand-text) 70%, transparent);
+}
+
+/* Timeline visual */
+.vig-timeline {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 8px;
+}
+.vig-timeline__node {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--brand-text) 4%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-text) 8%, transparent);
+  position: relative;
+}
+.vig-timeline__node--unset {
+  background: transparent;
+  border-style: dashed;
+  border-color: color-mix(in srgb, var(--brand-text) 14%, transparent);
+}
+.vig-timeline__node--end {
+  text-align: right;
+}
+.vig-timeline__dot {
+  position: absolute;
+  top: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--brand-primary);
+}
+.vig-timeline__node--start .vig-timeline__dot { left: 8px; }
+.vig-timeline__node--end .vig-timeline__dot { right: 8px; }
+.vig-timeline__node--unset .vig-timeline__dot {
+  background: color-mix(in srgb, var(--brand-text) 30%, transparent);
+}
+.vig-timeline__label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--brand-text) 50%, transparent);
+  padding: 0 12px;
+}
+.vig-timeline__when {
+  font-family: var(--brand-font);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--brand-text);
+  padding: 0 12px;
+}
+.vig-timeline__node--unset .vig-timeline__when {
+  color: color-mix(in srgb, var(--brand-text) 45%, transparent);
+  font-style: italic;
+}
+.vig-timeline__bar {
+  height: 2px;
+  width: 36px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--brand-text) 18%, transparent),
+    var(--brand-primary)
+  );
+  border-radius: 999px;
+}
+.vig-timeline__bar--expired {
+  background: linear-gradient(90deg, transparent, #ef4444);
+  opacity: 0.5;
+}
+.vig-timeline__bar--scheduled {
+  background: linear-gradient(90deg, transparent, #06b6d4);
+}
+.vig-timeline__bar--always {
+  background: linear-gradient(90deg, var(--brand-primary), var(--brand-primary));
+  opacity: 0.4;
+}
+
+/* Atalhos */
+.vig-presets {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+}
+.vig-presets__label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--brand-text) 45%, transparent);
+  margin-right: 2px;
+}
+.vig-preset {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid color-mix(in srgb, var(--brand-text) 10%, transparent);
+  background: color-mix(in srgb, var(--brand-text) 3%, transparent);
+  color: color-mix(in srgb, var(--brand-text) 70%, transparent);
+  font-family: var(--brand-font);
+  font-size: 11.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 150ms, border-color 150ms, color 150ms, transform 100ms;
+}
+.vig-preset:hover {
+  background: color-mix(in srgb, var(--brand-primary) 8%, transparent);
+  border-color: color-mix(in srgb, var(--brand-primary) 30%, transparent);
+  color: var(--brand-text);
+  transform: translateY(-1px);
+}
+.vig-preset--active {
+  background: color-mix(in srgb, var(--brand-primary) 14%, transparent);
+  border-color: color-mix(in srgb, var(--brand-primary) 40%, transparent);
+  color: var(--brand-primary);
+}
+
+/* Datetime input com X clear */
+.vig-input {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 6px 0 10px;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--brand-text) 12%, transparent);
+  background: color-mix(in srgb, var(--brand-text) 4%, transparent);
+  transition: border-color 150ms, box-shadow 150ms;
+}
+.vig-input:focus-within {
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-primary) 18%, transparent);
+}
+.vig-input__icon {
+  color: color-mix(in srgb, var(--brand-text) 50%, transparent);
+  flex-shrink: 0;
+}
+.vig-input__field {
+  flex: 1;
+}
+.vig-input__field :deep(input) {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding-left: 0 !important;
+}
+.vig-input__clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  background: transparent;
+  color: color-mix(in srgb, var(--brand-text) 50%, transparent);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 150ms, color 150ms;
+}
+.vig-input__clear:hover {
+  background: color-mix(in srgb, #ef4444 12%, transparent);
+  color: #fca5a5;
+}
+
+/* Priority slider + presets */
+.vig-priority {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.vig-priority__row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.vig-priority__slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--brand-primary) 0%,
+    var(--brand-primary) var(--pct, 0%),
+    color-mix(in srgb, var(--brand-text) 12%, transparent) var(--pct, 0%),
+    color-mix(in srgb, var(--brand-text) 12%, transparent) 100%
+  );
+  outline: none;
+  cursor: pointer;
+}
+.vig-priority__slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--brand-primary);
+  border: 3px solid var(--brand-surface);
+  box-shadow: 0 2px 8px -2px color-mix(in srgb, var(--brand-primary) 50%, transparent);
+  cursor: grab;
+  transition: transform 100ms;
+}
+.vig-priority__slider::-webkit-slider-thumb:active {
+  transform: scale(1.15);
+  cursor: grabbing;
+}
+.vig-priority__slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--brand-primary);
+  border: 3px solid var(--brand-surface);
+  cursor: grab;
+}
+.vig-priority__value {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 56px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  font-weight: 700;
+  background: color-mix(in srgb, var(--brand-text) 5%, transparent);
+  color: var(--brand-text);
+  border: 1px solid color-mix(in srgb, var(--brand-text) 10%, transparent);
+}
+.vig-priority__value[data-tier='low'] {
+  color: color-mix(in srgb, var(--brand-text) 70%, transparent);
+}
+.vig-priority__value[data-tier='medium'] {
+  color: var(--brand-primary);
+  background: color-mix(in srgb, var(--brand-primary) 12%, transparent);
+  border-color: color-mix(in srgb, var(--brand-primary) 30%, transparent);
+}
+.vig-priority__value[data-tier='high'] {
+  color: #f59e0b;
+  background: color-mix(in srgb, #f59e0b 14%, transparent);
+  border-color: color-mix(in srgb, #f59e0b 40%, transparent);
+}
+.vig-priority__value[data-tier='urgent'] {
+  color: #ef4444;
+  background: color-mix(in srgb, #ef4444 14%, transparent);
+  border-color: color-mix(in srgb, #ef4444 40%, transparent);
+}
+
+.vig-priority__presets {
+  display: flex;
+  gap: 4px;
+}
+.vig-priority__preset {
+  flex: 1;
+  padding: 5px 8px;
+  border-radius: 6px;
+  border: 1px solid color-mix(in srgb, var(--brand-text) 10%, transparent);
+  background: color-mix(in srgb, var(--brand-text) 3%, transparent);
+  font-family: var(--brand-font);
+  font-size: 11px;
+  font-weight: 500;
+  color: color-mix(in srgb, var(--brand-text) 65%, transparent);
+  cursor: pointer;
+  transition: background 150ms, border-color 150ms, color 150ms;
+}
+.vig-priority__preset:hover {
+  background: color-mix(in srgb, var(--brand-text) 5%, transparent);
+}
+.vig-priority__preset--active[data-tier='low'] {
+  background: color-mix(in srgb, var(--brand-text) 8%, transparent);
+  color: var(--brand-text);
+}
+.vig-priority__preset--active[data-tier='medium'] {
+  background: color-mix(in srgb, var(--brand-primary) 14%, transparent);
+  border-color: color-mix(in srgb, var(--brand-primary) 35%, transparent);
+  color: var(--brand-primary);
+}
+.vig-priority__preset--active[data-tier='high'] {
+  background: color-mix(in srgb, #f59e0b 14%, transparent);
+  border-color: color-mix(in srgb, #f59e0b 40%, transparent);
+  color: #f59e0b;
+}
+.vig-priority__preset--active[data-tier='urgent'] {
+  background: color-mix(in srgb, #ef4444 14%, transparent);
+  border-color: color-mix(in srgb, #ef4444 40%, transparent);
+  color: #ef4444;
 }
 
 /* =========================================================
