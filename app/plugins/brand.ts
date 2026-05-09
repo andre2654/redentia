@@ -70,6 +70,11 @@ function buildVarsBody(b: typeof defaultBrand, mode: 'dark' | 'light'): string {
   --brand-positive: ${c.positive};
   --brand-negative: ${c.negative};
   --brand-neutral: ${c.neutral};
+  /* warning: estado intermediario (pausado, pendente, atencao moderada).
+     Sem token explicito por tenant — derivamos amber-laranja universal
+     que funciona em qualquer paleta. Usado em status dots, banners de
+     "ação requerida", chips paused, validation warnings. */
+  --brand-warning: #F59E0B;
   --brand-background: ${c.background};
   --brand-surface: ${c.surface};
   --brand-surface-hover: ${c.surfaceHover};

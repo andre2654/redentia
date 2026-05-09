@@ -1160,9 +1160,9 @@ const Field = defineComponent({
   flex-shrink: 0;
 }
 .poll-option-row__remove:hover {
-  background: color-mix(in srgb, #ef4444 12%, transparent);
-  color: #fca5a5;
-  border-color: color-mix(in srgb, #ef4444 35%, transparent);
+  background: color-mix(in srgb, var(--brand-negative) 12%, transparent);
+  color: var(--brand-negative);
+  border-color: color-mix(in srgb, var(--brand-negative) 35%, transparent);
 }
 .poll-option-row__add {
   align-self: flex-start;
@@ -1192,8 +1192,8 @@ const Field = defineComponent({
   gap: 6px;
   padding: 7px 10px;
   border-radius: 6px;
-  background: color-mix(in srgb, #f59e0b 12%, transparent);
-  color: #fcd34d;
+  background: color-mix(in srgb, var(--brand-warning) 12%, transparent);
+  color: var(--brand-warning);
   font-size: 11.5px;
   margin-top: 8px;
 }

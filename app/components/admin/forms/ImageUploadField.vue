@@ -506,8 +506,8 @@ function onImgError(): void {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  background: color-mix(in srgb, #ef4444 15%, transparent);
-  color: #fca5a5;
+  background: color-mix(in srgb, var(--brand-negative) 15%, transparent);
+  color: var(--brand-negative);
   font-size: 11.5px;
   font-style: italic;
 }
@@ -542,9 +542,9 @@ function onImgError(): void {
   flex-shrink: 0;
 }
 .image-upload__filled-source[data-kind='internal'] {
-  color: #34d399;
-  background: color-mix(in srgb, #10b981 12%, transparent);
-  border-color: color-mix(in srgb, #10b981 35%, transparent);
+  color: var(--brand-positive);
+  background: color-mix(in srgb, var(--brand-positive) 12%, transparent);
+  border-color: color-mix(in srgb, var(--brand-positive) 35%, transparent);
 }
 .image-upload__filled-source[data-kind='external'] {
   color: #38bdf8;
@@ -596,9 +596,9 @@ function onImgError(): void {
   color: var(--brand-text);
 }
 .image-upload__action--danger:hover {
-  background: color-mix(in srgb, #ef4444 12%, transparent);
-  border-color: color-mix(in srgb, #ef4444 35%, transparent);
-  color: #fca5a5;
+  background: color-mix(in srgb, var(--brand-negative) 12%, transparent);
+  border-color: color-mix(in srgb, var(--brand-negative) 35%, transparent);
+  color: var(--brand-negative);
 }
 .image-upload__action:disabled {
   opacity: 0.5;
@@ -644,8 +644,8 @@ function onImgError(): void {
   gap: 6px;
   padding: 6px 10px;
   border-radius: 6px;
-  background: color-mix(in srgb, #ef4444 12%, transparent);
-  color: #fca5a5;
+  background: color-mix(in srgb, var(--brand-negative) 12%, transparent);
+  color: var(--brand-negative);
   font-size: 11.5px;
 }
 

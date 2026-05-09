@@ -1132,10 +1132,10 @@ const Field = defineComponent({
   width: 7px; height: 7px; border-radius: 999px; background: currentColor;
 }
 .status-chip__dot--draft { color: color-mix(in srgb, var(--brand-text) 50%, transparent); }
-.status-chip__dot--active { color: #10b981; }
-.status-chip__dot--paused { color: #f59e0b; }
+.status-chip__dot--active { color: var(--brand-positive); }
+.status-chip__dot--paused { color: var(--brand-warning); }
 .status-chip--active .status-chip__dot--active {
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-positive) 20%, transparent);
 }
 
 /* =========================================================
@@ -1235,7 +1235,7 @@ const Field = defineComponent({
   font-size: 9.5px;
   color: color-mix(in srgb, var(--brand-text) 40%, transparent);
 }
-.field-counter--warn { color: #f59e0b; }
+.field-counter--warn { color: var(--brand-warning); }
 
 .section-lead {
   font-size: 12.5px;
@@ -1295,8 +1295,8 @@ const Field = defineComponent({
   transition: background 150ms, color 150ms;
 }
 .modal-image-input__clear:hover {
-  background: color-mix(in srgb, #ef4444 12%, transparent);
-  color: #fca5a5;
+  background: color-mix(in srgb, var(--brand-negative) 12%, transparent);
+  color: var(--brand-negative);
 }
 
 /* =========================================================
@@ -1509,9 +1509,9 @@ const Field = defineComponent({
 .cta-url-input__icon[data-type='internal'] { color: var(--brand-primary); }
 .cta-url-input__icon[data-type='external'] { color: #38bdf8; }
 .cta-url-input__icon[data-type='email'] { color: #a78bfa; }
-.cta-url-input__icon[data-type='tel'] { color: #34d399; }
-.cta-url-input__icon[data-type='anchor'] { color: #f59e0b; }
-.cta-url-input__icon[data-type='unknown'] { color: #ef4444; }
+.cta-url-input__icon[data-type='tel'] { color: var(--brand-positive); }
+.cta-url-input__icon[data-type='anchor'] { color: var(--brand-warning); }
+.cta-url-input__icon[data-type='unknown'] { color: var(--brand-negative); }
 .cta-url-input__field { flex: 1; }
 .cta-url-input__field :deep(input) {
   border: 0 !important;
@@ -1546,19 +1546,19 @@ const Field = defineComponent({
   background: rgba(167, 139, 250, 0.1);
 }
 .cta-url-input__badge[data-type='tel'] {
-  color: #34d399;
+  color: var(--brand-positive);
   border-color: rgba(52, 211, 153, 0.35);
   background: rgba(52, 211, 153, 0.1);
 }
 .cta-url-input__badge[data-type='anchor'] {
-  color: #f59e0b;
-  border-color: rgba(245, 158, 11, 0.35);
-  background: rgba(245, 158, 11, 0.1);
+  color: var(--brand-warning);
+  border-color: color-mix(in srgb, var(--brand-warning) 35%, transparent);
+  background: color-mix(in srgb, var(--brand-warning) 10%, transparent);
 }
 .cta-url-input__badge[data-type='unknown'] {
-  color: #ef4444;
-  border-color: rgba(239, 68, 68, 0.35);
-  background: rgba(239, 68, 68, 0.1);
+  color: var(--brand-negative);
+  border-color: color-mix(in srgb, var(--brand-negative) 35%, transparent);
+  background: color-mix(in srgb, var(--brand-negative) 10%, transparent);
 }
 .cta-url-suggestions {
   display: flex;
@@ -1676,9 +1676,9 @@ const Field = defineComponent({
   line-height: 1;
 }
 .aud-layer__count[data-state='empty'] {
-  border-color: color-mix(in srgb, #f59e0b 35%, transparent);
-  background: color-mix(in srgb, #f59e0b 12%, transparent);
-  color: #fcd34d;
+  border-color: color-mix(in srgb, var(--brand-warning) 35%, transparent);
+  background: color-mix(in srgb, var(--brand-warning) 12%, transparent);
+  color: var(--brand-warning);
 }
 .aud-layer__count-label {
   font-family: 'JetBrains Mono', monospace;
@@ -1703,9 +1703,9 @@ const Field = defineComponent({
   transition: background 150ms, color 150ms, border-color 150ms;
 }
 .aud-layer__action:hover {
-  background: color-mix(in srgb, #ef4444 10%, transparent);
-  color: #fca5a5;
-  border-color: color-mix(in srgb, #ef4444 35%, transparent);
+  background: color-mix(in srgb, var(--brand-negative) 10%, transparent);
+  color: var(--brand-negative);
+  border-color: color-mix(in srgb, var(--brand-negative) 35%, transparent);
 }
 .aud-base-grid {
   display: grid;
@@ -2003,8 +2003,8 @@ const Field = defineComponent({
   transition: background 150ms, color 150ms;
 }
 .aud-currency-input__clear:hover {
-  background: color-mix(in srgb, #ef4444 10%, transparent);
-  color: #fca5a5;
+  background: color-mix(in srgb, var(--brand-negative) 10%, transparent);
+  color: var(--brand-negative);
 }
 .aud-currency-input__chips {
   display: flex;
@@ -2050,8 +2050,8 @@ const Field = defineComponent({
   gap: 6px;
   padding: 7px 10px;
   border-radius: 6px;
-  background: color-mix(in srgb, #f59e0b 12%, transparent);
-  color: #fcd34d;
+  background: color-mix(in srgb, var(--brand-warning) 12%, transparent);
+  color: var(--brand-warning);
   font-size: 11.5px;
 }
 .aud-expand-enter-active,
@@ -2085,16 +2085,16 @@ const Field = defineComponent({
   transition: border-color 200ms, background 200ms;
 }
 .vig-status-card[data-state='active'] {
-  border-color: color-mix(in srgb, #10b981 35%, transparent);
-  background: color-mix(in srgb, #10b981 6%, transparent);
+  border-color: color-mix(in srgb, var(--brand-positive) 35%, transparent);
+  background: color-mix(in srgb, var(--brand-positive) 6%, transparent);
 }
 .vig-status-card[data-state='scheduled'] {
   border-color: color-mix(in srgb, #06b6d4 35%, transparent);
   background: color-mix(in srgb, #06b6d4 6%, transparent);
 }
 .vig-status-card[data-state='expired'] {
-  border-color: color-mix(in srgb, #ef4444 35%, transparent);
-  background: color-mix(in srgb, #ef4444 6%, transparent);
+  border-color: color-mix(in srgb, var(--brand-negative) 35%, transparent);
+  background: color-mix(in srgb, var(--brand-negative) 6%, transparent);
 }
 .vig-status-card[data-state='always'] {
   border-color: color-mix(in srgb, var(--brand-primary) 30%, transparent);
@@ -2122,16 +2122,16 @@ const Field = defineComponent({
   color: var(--brand-text);
 }
 .vig-status-card[data-state='active'] .vig-status-card__badge {
-  background: color-mix(in srgb, #10b981 18%, transparent);
-  color: #34d399;
+  background: color-mix(in srgb, var(--brand-positive) 18%, transparent);
+  color: var(--brand-positive);
 }
 .vig-status-card[data-state='scheduled'] .vig-status-card__badge {
   background: color-mix(in srgb, #06b6d4 18%, transparent);
   color: #67e8f9;
 }
 .vig-status-card[data-state='expired'] .vig-status-card__badge {
-  background: color-mix(in srgb, #ef4444 18%, transparent);
-  color: #fca5a5;
+  background: color-mix(in srgb, var(--brand-negative) 18%, transparent);
+  color: var(--brand-negative);
 }
 .vig-status-card[data-state='always'] .vig-status-card__badge {
   background: color-mix(in srgb, var(--brand-primary) 18%, transparent);
@@ -2208,7 +2208,7 @@ const Field = defineComponent({
   border-radius: 999px;
 }
 .vig-timeline__bar--expired {
-  background: linear-gradient(90deg, transparent, #ef4444);
+  background: linear-gradient(90deg, transparent, var(--brand-negative));
   opacity: 0.5;
 }
 .vig-timeline__bar--scheduled {
@@ -2298,8 +2298,8 @@ const Field = defineComponent({
   transition: background 150ms, color 150ms;
 }
 .vig-input__clear:hover {
-  background: color-mix(in srgb, #ef4444 12%, transparent);
-  color: #fca5a5;
+  background: color-mix(in srgb, var(--brand-negative) 12%, transparent);
+  color: var(--brand-negative);
 }
 .vig-priority {
   display: flex;
@@ -2373,14 +2373,14 @@ const Field = defineComponent({
   border-color: color-mix(in srgb, var(--brand-primary) 30%, transparent);
 }
 .vig-priority__value[data-tier='high'] {
-  color: #f59e0b;
-  background: color-mix(in srgb, #f59e0b 14%, transparent);
-  border-color: color-mix(in srgb, #f59e0b 40%, transparent);
+  color: var(--brand-warning);
+  background: color-mix(in srgb, var(--brand-warning) 14%, transparent);
+  border-color: color-mix(in srgb, var(--brand-warning) 40%, transparent);
 }
 .vig-priority__value[data-tier='urgent'] {
-  color: #ef4444;
-  background: color-mix(in srgb, #ef4444 14%, transparent);
-  border-color: color-mix(in srgb, #ef4444 40%, transparent);
+  color: var(--brand-negative);
+  background: color-mix(in srgb, var(--brand-negative) 14%, transparent);
+  border-color: color-mix(in srgb, var(--brand-negative) 40%, transparent);
 }
 .vig-priority__presets { display: flex; gap: 4px; }
 .vig-priority__preset {
@@ -2407,14 +2407,14 @@ const Field = defineComponent({
   color: var(--brand-primary);
 }
 .vig-priority__preset--active[data-tier='high'] {
-  background: color-mix(in srgb, #f59e0b 14%, transparent);
-  border-color: color-mix(in srgb, #f59e0b 40%, transparent);
-  color: #f59e0b;
+  background: color-mix(in srgb, var(--brand-warning) 14%, transparent);
+  border-color: color-mix(in srgb, var(--brand-warning) 40%, transparent);
+  color: var(--brand-warning);
 }
 .vig-priority__preset--active[data-tier='urgent'] {
-  background: color-mix(in srgb, #ef4444 14%, transparent);
-  border-color: color-mix(in srgb, #ef4444 40%, transparent);
-  color: #ef4444;
+  background: color-mix(in srgb, var(--brand-negative) 14%, transparent);
+  border-color: color-mix(in srgb, var(--brand-negative) 40%, transparent);
+  color: var(--brand-negative);
 }
 
 /* =========================================================

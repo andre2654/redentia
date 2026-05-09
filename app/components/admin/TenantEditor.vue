@@ -400,7 +400,7 @@ async function handleSubmit() {
   color: color-mix(in srgb, var(--brand-text) 60%, transparent);
 }
 .tenant-billing__caption--warn {
-  color: #f59e0b;
+  color: var(--brand-warning);
 }
 .tenant-billing__caption code {
   font-family: 'JetBrains Mono', monospace;

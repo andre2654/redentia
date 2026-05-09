@@ -216,8 +216,8 @@ const types: TypeOption[] = [
     value: 'cta',
     title: 'CTA contextual',
     icon: 'i-lucide-mouse-pointer-click',
-    color: '#f59e0b',
-    bgGradient: 'linear-gradient(135deg, rgba(245,158,11,0.18) 0%, rgba(245,158,11,0.04) 100%)',
+    color: 'var(--brand-warning)',
+    bgGradient: 'linear-gradient(135deg, color-mix(in srgb, var(--brand-warning) 18%, transparent) 0%, color-mix(in srgb, var(--brand-warning) 4%, transparent) 100%)',
     description: 'Card com chamada pra ação em pontos estratégicos.',
     useCase: 'Conversão de feature, promoções, upgrade pra MAX, convite pra conectar Open Finance, ações que aumentam engajamento.',
     preview: PreviewCta,
@@ -256,8 +256,8 @@ const types: TypeOption[] = [
     value: 'email',
     title: 'Email broadcast',
     icon: 'i-lucide-mail',
-    color: '#10b981',
-    bgGradient: 'linear-gradient(135deg, rgba(16,185,129,0.18) 0%, rgba(16,185,129,0.04) 100%)',
+    color: 'var(--brand-positive)',
+    bgGradient: 'linear-gradient(135deg, color-mix(in srgb, var(--brand-positive) 18%, transparent) 0%, color-mix(in srgb, var(--brand-positive) 4%, transparent) 100%)',
     description: 'Email enviado pra inbox dos usuários.',
     useCase: 'Newsletter mensal, anúncios fora da plataforma, lembretes de tarefas, recapturar usuários inativos.',
     preview: PreviewEmail,
@@ -569,8 +569,8 @@ function defaultPlacement(type: CommunicationType) {
   gap: 7px;
   padding: 11px 13px;
   border-radius: 9px;
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.22) 0%, rgba(245, 158, 11, 0.04) 100%);
-  border: 1px solid rgba(245, 158, 11, 0.4);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--brand-warning) 22%, transparent) 0%, color-mix(in srgb, var(--brand-warning) 4%, transparent) 100%);
+  border: 1px solid color-mix(in srgb, var(--brand-warning) 40%, transparent);
 }
 :deep(.preview-cta__line) {
   height: 6px; border-radius: 2px;
@@ -580,7 +580,7 @@ function defaultPlacement(type: CommunicationType) {
 :deep(.preview-cta__line--w50) { max-width: 50%; }
 :deep(.preview-cta__btn) {
   width: 70px; height: 18px; border-radius: 5px;
-  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+  background: linear-gradient(135deg, var(--brand-warning) 0%, #fbbf24 100%);
   margin-top: 2px;
   align-self: flex-start;
 }
@@ -678,7 +678,7 @@ function defaultPlacement(type: CommunicationType) {
   padding: 12px 14px;
   border-radius: 5px;
   background: color-mix(in srgb, var(--brand-text) 4%, transparent);
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  border: 1px solid color-mix(in srgb, var(--brand-positive) 30%, transparent);
   position: relative;
 }
 :deep(.preview-email__envelope::before) {
@@ -686,7 +686,7 @@ function defaultPlacement(type: CommunicationType) {
   position: absolute;
   top: -1px; left: -1px;
   width: 36px; height: 12px;
-  background: rgba(16, 185, 129, 0.6);
+  background: color-mix(in srgb, var(--brand-positive) 60%, transparent);
   border-top-left-radius: 5px;
 }
 :deep(.preview-email__line) {

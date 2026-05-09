@@ -596,7 +596,7 @@ defineExpose({ editor })
   color: color-mix(in srgb, var(--brand-text, #fff) 40%, transparent);
   letter-spacing: 0.04em;
 }
-.rich-field__counter--warn { color: #f59e0b; }
+.rich-field__counter--warn { color: var(--brand-warning); }
 
 /* LINK MODAL */
 .rich-modal__backdrop {

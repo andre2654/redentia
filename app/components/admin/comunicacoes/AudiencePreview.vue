@@ -377,9 +377,9 @@ function initialsOf(s: string): string {
   gap: 8px;
   padding: 10px 12px;
   border-radius: 8px;
-  background: color-mix(in srgb, #ef4444 12%, transparent);
-  border: 1px solid color-mix(in srgb, #ef4444 30%, transparent);
-  color: #fca5a5;
+  background: color-mix(in srgb, var(--brand-negative) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-negative) 30%, transparent);
+  color: var(--brand-negative);
   font-size: 12px;
 }
 .audience-preview__error-body {
@@ -395,7 +395,7 @@ function initialsOf(s: string): string {
   font-size: 10.5px;
   padding: 5px 8px;
   border-radius: 5px;
-  background: color-mix(in srgb, #ef4444 8%, transparent);
+  background: color-mix(in srgb, var(--brand-negative) 8%, transparent);
   color: #fecaca;
   white-space: pre-wrap;
   word-break: break-word;
@@ -410,15 +410,15 @@ function initialsOf(s: string): string {
   padding: 4px 10px;
   border-radius: 6px;
   background: transparent;
-  border: 1px solid color-mix(in srgb, #ef4444 35%, transparent);
-  color: #fca5a5;
+  border: 1px solid color-mix(in srgb, var(--brand-negative) 35%, transparent);
+  color: var(--brand-negative);
   font-size: 11px;
   font-weight: 500;
   cursor: pointer;
   transition: background 150ms;
 }
 .audience-preview__error-retry:hover {
-  background: color-mix(in srgb, #ef4444 15%, transparent);
+  background: color-mix(in srgb, var(--brand-negative) 15%, transparent);
 }
 
 /* ANONYMOUS */
@@ -464,7 +464,7 @@ function initialsOf(s: string): string {
   line-height: 1;
   color: color-mix(in srgb, var(--brand-text) 95%, transparent);
 }
-.audience-preview__count--zero { color: #f59e0b; }
+.audience-preview__count--zero { color: var(--brand-warning); }
 .audience-preview__count-label {
   font-family: var(--brand-font);
   font-size: 13px;
@@ -478,8 +478,8 @@ function initialsOf(s: string): string {
   gap: 6px;
   padding: 8px 12px;
   border-radius: 7px;
-  background: color-mix(in srgb, #f59e0b 12%, transparent);
-  color: #fcd34d;
+  background: color-mix(in srgb, var(--brand-warning) 12%, transparent);
+  color: var(--brand-warning);
   font-size: 11.5px;
   line-height: 1.4;
 }
@@ -508,7 +508,7 @@ function initialsOf(s: string): string {
   font-size: 11.5px;
 }
 .role-chip span { color: color-mix(in srgb, var(--brand-text) 55%, transparent); }
-.role-chip--investor { color: #34d399; border-color: rgba(52, 211, 153, 0.25); }
+.role-chip--investor { color: var(--brand-positive); border-color: rgba(52, 211, 153, 0.25); }
 .role-chip--advisor { color: #c084fc; border-color: rgba(192, 132, 252, 0.25); }
 .role-chip--admin { color: var(--brand-primary); border-color: color-mix(in srgb, var(--brand-primary) 30%, transparent); }
 
@@ -598,7 +598,7 @@ function initialsOf(s: string): string {
   border: 1px solid color-mix(in srgb, var(--brand-text) 10%, transparent);
   color: color-mix(in srgb, var(--brand-text) 55%, transparent);
 }
-.sample-row__role[data-role='investor'] { color: #34d399; border-color: rgba(52, 211, 153, 0.3); }
+.sample-row__role[data-role='investor'] { color: var(--brand-positive); border-color: rgba(52, 211, 153, 0.3); }
 .sample-row__role[data-role='advisor'] { color: #c084fc; border-color: rgba(192, 132, 252, 0.3); }
 .sample-row__role[data-role='admin'] { color: var(--brand-primary); border-color: color-mix(in srgb, var(--brand-primary) 35%, transparent); }
 

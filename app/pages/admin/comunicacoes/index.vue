@@ -172,7 +172,7 @@
               type="button"
               class="card__action"
               :title="row.status === 'active' ? 'Pausar' : 'Ativar'"
-              :style="{ color: row.status === 'active' ? '#f59e0b' : '#10b981' }"
+              :style="{ color: row.status === 'active' ? 'var(--brand-warning)' : 'var(--brand-positive)' }"
               @click.stop="onToggle(row)"
             >
               <UIcon
@@ -349,11 +349,11 @@ function typeChipStyle(t: CommunicationType) {
   const color = ({
     banner: '#3b82f6',
     announcement: '#8b5cf6',
-    cta: '#f59e0b',
+    cta: 'var(--brand-warning)',
     modal: '#06b6d4',
     poll: '#ec4899',
     notification: '#a855f7',
-    email: '#10b981',
+    email: 'var(--brand-positive)',
   } as const)[t]
   return {
     backgroundColor: `${color}1a`,
@@ -628,11 +628,11 @@ onMounted(() => reload())
 
 .card--banner { --card-accent: #3b82f6; }
 .card--announcement { --card-accent: #8b5cf6; }
-.card--cta { --card-accent: #f59e0b; }
+.card--cta { --card-accent: var(--brand-warning); }
 .card--modal { --card-accent: #06b6d4; }
 .card--poll { --card-accent: #ec4899; }
 .card--notification { --card-accent: #a855f7; }
-.card--email { --card-accent: #10b981; }
+.card--email { --card-accent: var(--brand-positive); }
 
 /* TOP: type chip + status */
 .card__top {
@@ -674,14 +674,14 @@ onMounted(() => reload())
   background: currentColor;
 }
 
-.card__status--active { color: #10b981; }
+.card__status--active { color: var(--brand-positive); }
 .card__status--active .card__status-dot {
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-positive) 20%, transparent);
   animation: status-pulse 2.4s ease-in-out infinite;
 }
 .card__status--scheduled { color: #06b6d4; }
 .card__status--draft { color: color-mix(in srgb, var(--brand-text) 50%, transparent); }
-.card__status--paused { color: #f59e0b; }
+.card__status--paused { color: var(--brand-warning); }
 .card__status--ended { color: color-mix(in srgb, var(--brand-text) 40%, transparent); }
 
 @keyframes status-pulse {
@@ -828,7 +828,7 @@ onMounted(() => reload())
 
 .card__action--danger:hover {
   background: rgba(220, 38, 38, 0.15);
-  color: #ef4444;
+  color: var(--brand-negative);
 }
 
 /* ============ PAGINATION ============ */

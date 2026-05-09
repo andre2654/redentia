@@ -975,7 +975,7 @@ function typeIcon(t: CommunicationType): string {
   return ({ banner: 'i-lucide-flag', announcement: 'i-lucide-megaphone', cta: 'i-lucide-mouse-pointer-click', modal: 'i-lucide-square-stack', poll: 'i-lucide-bar-chart-3', email: 'i-lucide-mail' } as const)[t]
 }
 function typeChipStyle(t: CommunicationType) {
-  const color = ({ banner: '#3b82f6', announcement: '#8b5cf6', cta: '#f59e0b', modal: '#06b6d4', poll: '#ec4899', email: '#10b981' } as const)[t]
+  const color = ({ banner: '#3b82f6', announcement: '#8b5cf6', cta: 'var(--brand-warning)', modal: '#06b6d4', poll: '#ec4899', email: 'var(--brand-positive)' } as const)[t]
   return { backgroundColor: `${color}1a`, color, borderColor: `${color}40` }
 }
 function statusLabel(s: CommunicationStatus): string {
@@ -1126,13 +1126,13 @@ onMounted(() => {
   width: 6px; height: 6px; border-radius: 999px;
   background: currentColor;
 }
-.editor__status--active { color: #10b981; }
+.editor__status--active { color: var(--brand-positive); }
 .editor__status--active .editor__status-dot {
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-positive) 20%, transparent);
   animation: status-pulse 2.4s ease-in-out infinite;
 }
 .editor__status--draft { color: color-mix(in srgb, var(--brand-text) 50%, transparent); }
-.editor__status--paused { color: #f59e0b; }
+.editor__status--paused { color: var(--brand-warning); }
 .editor__status--scheduled { color: #06b6d4; }
 .editor__status--ended { color: color-mix(in srgb, var(--brand-text) 40%, transparent); }
 @keyframes status-pulse {
@@ -1167,7 +1167,7 @@ onMounted(() => {
 }
 .ghost-btn:disabled { opacity: 0.45; cursor: not-allowed; }
 .ghost-btn--icon { padding: 7px; }
-.ghost-btn--danger { color: #ef4444; border-color: rgba(220, 38, 38, 0.3); }
+.ghost-btn--danger { color: var(--brand-negative); border-color: rgba(220, 38, 38, 0.3); }
 .ghost-btn--danger:hover:not(:disabled) {
   background: rgba(220, 38, 38, 0.08);
   border-color: rgba(220, 38, 38, 0.5);
@@ -1261,8 +1261,8 @@ onMounted(() => {
   width: 7px; height: 7px; border-radius: 999px;
 }
 .status-chip__dot--draft { background: color-mix(in srgb, var(--brand-text) 40%, transparent); }
-.status-chip__dot--active { background: #10b981; }
-.status-chip__dot--paused { background: #f59e0b; }
+.status-chip__dot--active { background: var(--brand-positive); }
+.status-chip__dot--paused { background: var(--brand-warning); }
 .status-chip:hover {
   background: color-mix(in srgb, var(--brand-text) 4%, transparent);
   border-color: color-mix(in srgb, var(--brand-text) 18%, transparent);

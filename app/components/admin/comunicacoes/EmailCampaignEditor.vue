@@ -116,9 +116,6 @@
             size="md"
             required
           />
-          <span class="field-counter" :data-state="subjectMeter">
-            {{ (form.title || '').length }} caracteres · {{ subjectMeterLabel }}
-          </span>
         </Field>
 
         <Field
@@ -831,26 +828,6 @@ const campaignSubtitle = computed(() => {
 })
 
 // =================================================================
-// Subject meter — feedback de tamanho ideal
-// =================================================================
-type SubjectMeterState = 'short' | 'optimal' | 'long' | 'too-long' | 'idle'
-const subjectMeter = computed<SubjectMeterState>(() => {
-  const len = (props.form.title || '').length
-  if (len === 0) return 'idle'
-  if (len < 25) return 'short'
-  if (len <= 50) return 'optimal'
-  if (len <= 70) return 'long'
-  return 'too-long'
-})
-const subjectMeterLabel = computed(() => ({
-  idle: 'comece a digitar',
-  short: 'curto demais — adicione contexto',
-  optimal: 'tamanho ideal',
-  long: 'um pouco longo — vai cortar em mobile',
-  'too-long': 'muito longo — corta em quase todos clientes',
-}[subjectMeter.value]))
-
-// =================================================================
 // Body rendering (markdown via TipTap level=full -> HTML sanitizado)
 // =================================================================
 const renderedBody = computed(() => sanitizeHtml(props.form.body || '', 'full'))
@@ -1233,12 +1210,12 @@ const Field = defineComponent({
 }
 .campaign-header[data-state='sent'] {
   background:
-    radial-gradient(circle at 100% 0%, color-mix(in srgb, #10b981 14%, transparent) 0%, transparent 55%),
+    radial-gradient(circle at 100% 0%, color-mix(in srgb, var(--brand-positive) 14%, transparent) 0%, transparent 55%),
     color-mix(in srgb, var(--brand-text) 3%, transparent);
-  border-color: color-mix(in srgb, #10b981 25%, transparent);
+  border-color: color-mix(in srgb, var(--brand-positive) 25%, transparent);
 }
 .campaign-header[data-state='failed'] {
-  border-color: color-mix(in srgb, #ef4444 30%, transparent);
+  border-color: color-mix(in srgb, var(--brand-negative) 30%, transparent);
 }
 .campaign-header[data-state='sending'] {
   border-color: color-mix(in srgb, #06b6d4 30%, transparent);
@@ -1314,14 +1291,14 @@ const Field = defineComponent({
   color: #67e8f9;
 }
 .campaign-header__state-pill[data-state='sent'] {
-  border-color: color-mix(in srgb, #10b981 35%, transparent);
-  background: color-mix(in srgb, #10b981 14%, transparent);
-  color: #34d399;
+  border-color: color-mix(in srgb, var(--brand-positive) 35%, transparent);
+  background: color-mix(in srgb, var(--brand-positive) 14%, transparent);
+  color: var(--brand-positive);
 }
 .campaign-header__state-pill[data-state='failed'] {
-  border-color: color-mix(in srgb, #ef4444 35%, transparent);
-  background: color-mix(in srgb, #ef4444 14%, transparent);
-  color: #fca5a5;
+  border-color: color-mix(in srgb, var(--brand-negative) 35%, transparent);
+  background: color-mix(in srgb, var(--brand-negative) 14%, transparent);
+  color: var(--brand-negative);
 }
 .campaign-header__state-dot {
   width: 6px;
@@ -1401,15 +1378,6 @@ const Field = defineComponent({
   font-weight: 700;
   margin-left: 2px;
 }
-
-/* =========================================================
-   Subject meter
-   ========================================================= */
-.field-counter[data-state='idle']      { color: color-mix(in srgb, var(--brand-text) 40%, transparent); }
-.field-counter[data-state='short']     { color: #fcd34d; }
-.field-counter[data-state='optimal']   { color: #34d399; }
-.field-counter[data-state='long']      { color: #fcd34d; }
-.field-counter[data-state='too-long']  { color: #fca5a5; }
 
 /* =========================================================
    Compose: CTA pair (link + label) compacto
@@ -1536,8 +1504,8 @@ const Field = defineComponent({
   gap: 6px;
   padding: 12px;
   border-radius: 7px;
-  background: color-mix(in srgb, #f59e0b 8%, transparent);
-  color: #fcd34d;
+  background: color-mix(in srgb, var(--brand-warning) 8%, transparent);
+  color: var(--brand-warning);
   font-size: 11.5px;
 }
 
@@ -1663,8 +1631,8 @@ const Field = defineComponent({
   transition: background 150ms;
 }
 .send-card__clear:hover {
-  background: color-mix(in srgb, #ef4444 12%, transparent);
-  color: #fca5a5;
+  background: color-mix(in srgb, var(--brand-negative) 12%, transparent);
+  color: var(--brand-negative);
 }
 
 /* =========================================================
@@ -1753,7 +1721,7 @@ const Field = defineComponent({
   transition: width 250ms cubic-bezier(0.2, 0.7, 0.3, 1);
 }
 .perf-funnel__bar--queued  { background: color-mix(in srgb, var(--brand-text) 15%, transparent); }
-.perf-funnel__bar--sent    { background: color-mix(in srgb, #10b981 35%, transparent); }
+.perf-funnel__bar--sent    { background: color-mix(in srgb, var(--brand-positive) 35%, transparent); }
 .perf-funnel__bar--opened  { background: color-mix(in srgb, #06b6d4 35%, transparent); }
 .perf-funnel__bar--clicked { background: color-mix(in srgb, var(--brand-primary) 50%, transparent); }
 .perf-funnel__bar-label {
@@ -1791,14 +1759,14 @@ const Field = defineComponent({
   color: #67e8f9;
 }
 .perf-secondary__pill[data-state='failed'] {
-  border-color: color-mix(in srgb, #f59e0b 30%, transparent);
-  background: color-mix(in srgb, #f59e0b 10%, transparent);
-  color: #fcd34d;
+  border-color: color-mix(in srgb, var(--brand-warning) 30%, transparent);
+  background: color-mix(in srgb, var(--brand-warning) 10%, transparent);
+  color: var(--brand-warning);
 }
 .perf-secondary__pill[data-state='bounced'] {
-  border-color: color-mix(in srgb, #ef4444 30%, transparent);
-  background: color-mix(in srgb, #ef4444 10%, transparent);
-  color: #fca5a5;
+  border-color: color-mix(in srgb, var(--brand-negative) 30%, transparent);
+  background: color-mix(in srgb, var(--brand-negative) 10%, transparent);
+  color: var(--brand-negative);
 }
 .perf-secondary__pill-label {
   opacity: 0.7;
@@ -1908,7 +1876,7 @@ const Field = defineComponent({
 }
 .history-row[data-status='failed'],
 .history-row[data-status='bounced'] {
-  background: color-mix(in srgb, #ef4444 5%, transparent);
+  background: color-mix(in srgb, var(--brand-negative) 5%, transparent);
 }
 .history-cell {
   display: flex;
@@ -1946,9 +1914,9 @@ const Field = defineComponent({
   align-self: flex-start;
 }
 .history-status[data-status='sent'] {
-  border-color: color-mix(in srgb, #10b981 35%, transparent);
-  background: color-mix(in srgb, #10b981 12%, transparent);
-  color: #34d399;
+  border-color: color-mix(in srgb, var(--brand-positive) 35%, transparent);
+  background: color-mix(in srgb, var(--brand-positive) 12%, transparent);
+  color: var(--brand-positive);
 }
 .history-status[data-status='queued'],
 .history-status[data-status='pending'] {
@@ -1957,14 +1925,14 @@ const Field = defineComponent({
   color: #67e8f9;
 }
 .history-status[data-status='failed'] {
-  border-color: color-mix(in srgb, #f59e0b 35%, transparent);
-  background: color-mix(in srgb, #f59e0b 12%, transparent);
-  color: #fcd34d;
+  border-color: color-mix(in srgb, var(--brand-warning) 35%, transparent);
+  background: color-mix(in srgb, var(--brand-warning) 12%, transparent);
+  color: var(--brand-warning);
 }
 .history-status[data-status='bounced'] {
-  border-color: color-mix(in srgb, #ef4444 35%, transparent);
-  background: color-mix(in srgb, #ef4444 12%, transparent);
-  color: #fca5a5;
+  border-color: color-mix(in srgb, var(--brand-negative) 35%, transparent);
+  background: color-mix(in srgb, var(--brand-negative) 12%, transparent);
+  color: var(--brand-negative);
 }
 .history-status[data-status='unsubscribed'] {
   border-color: color-mix(in srgb, var(--brand-text) 25%, transparent);
@@ -1973,7 +1941,7 @@ const Field = defineComponent({
 }
 .history-status__error {
   font-size: 10.5px;
-  color: #fca5a5;
+  color: var(--brand-negative);
   font-style: italic;
   white-space: nowrap;
   overflow: hidden;

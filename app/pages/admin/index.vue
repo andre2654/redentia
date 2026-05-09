@@ -36,7 +36,7 @@
             :value="formatAum(business?.aum_total)"
             :sub="business?.aum_users ? `${business.aum_users} ${business.aum_users === 1 ? 'investidor' : 'investidores'}` : '—'"
             icon="i-lucide-trending-up"
-            color="#10b981"
+            color="var(--brand-positive)"
             highlight
             :loading="loading"
           />
@@ -69,7 +69,7 @@
             :value="business?.raiox_score_avg != null ? `${business.raiox_score_avg.toFixed(1).replace('.', ',')}` : '—'"
             :sub="business?.raiox_total ? `${business.raiox_total} análises` : '—'"
             icon="i-lucide-scan-line"
-            color="#f59e0b"
+            color="var(--brand-warning)"
             :loading="loading"
             :max-value="100"
             show-progress
@@ -193,7 +193,7 @@
             :count="adoption?.open_finance_users"
             :total="adoption?.users_with_positions"
             icon="i-lucide-link-2"
-            color="#10b981"
+            color="var(--brand-positive)"
             desc="conectaram corretora"
             :loading="loading"
           />
@@ -203,7 +203,7 @@
             :count="adoption?.raiox_users"
             :total="adoption?.users_with_positions"
             icon="i-lucide-scan-line"
-            color="#f59e0b"
+            color="var(--brand-warning)"
             desc="rodaram análise IA"
             :loading="loading"
           />
@@ -415,7 +415,7 @@ const MetricCard = defineComponent({
     value: { type: String, required: true },
     sub: { type: String, default: '' },
     icon: { type: String, required: true },
-    color: { type: String, default: '#f59e0b' },
+    color: { type: String, default: 'var(--brand-warning)' },
     loading: { type: Boolean, default: false },
     highlight: { type: Boolean, default: false },
     showProgress: { type: Boolean, default: false },
@@ -464,7 +464,7 @@ const AdoptionCard = defineComponent({
     count: { type: Number, default: 0 },
     total: { type: Number, default: 0 },
     icon: { type: String, required: true },
-    color: { type: String, default: '#f59e0b' },
+    color: { type: String, default: 'var(--brand-warning)' },
     desc: { type: String, default: '' },
     loading: { type: Boolean, default: false },
   },

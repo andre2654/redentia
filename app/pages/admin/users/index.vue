@@ -1061,8 +1061,8 @@ onMounted(() => {
   gap: 6px;
   padding: 8px 10px;
   border-radius: 6px;
-  background: color-mix(in srgb, #ef4444 12%, transparent);
-  color: #fca5a5;
+  background: color-mix(in srgb, var(--brand-negative) 12%, transparent);
+  color: var(--brand-negative);
   font-size: 11.5px;
   line-height: 1.45;
 }

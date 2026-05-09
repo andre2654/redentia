@@ -950,9 +950,9 @@ const Field = defineComponent({
 .cta-url-input__icon[data-type='internal'] { color: var(--brand-primary); }
 .cta-url-input__icon[data-type='external'] { color: #38bdf8; }
 .cta-url-input__icon[data-type='email'] { color: #a78bfa; }
-.cta-url-input__icon[data-type='tel'] { color: #34d399; }
-.cta-url-input__icon[data-type='anchor'] { color: #f59e0b; }
-.cta-url-input__icon[data-type='unknown'] { color: #ef4444; }
+.cta-url-input__icon[data-type='tel'] { color: var(--brand-positive); }
+.cta-url-input__icon[data-type='anchor'] { color: var(--brand-warning); }
+.cta-url-input__icon[data-type='unknown'] { color: var(--brand-negative); }
 .cta-url-input__field { flex: 1; }
 .cta-url-input__field :deep(input) {
   border: 0 !important;
@@ -987,19 +987,19 @@ const Field = defineComponent({
   background: rgba(167, 139, 250, 0.1);
 }
 .cta-url-input__badge[data-type='tel'] {
-  color: #34d399;
+  color: var(--brand-positive);
   border-color: rgba(52, 211, 153, 0.35);
   background: rgba(52, 211, 153, 0.1);
 }
 .cta-url-input__badge[data-type='anchor'] {
-  color: #f59e0b;
-  border-color: rgba(245, 158, 11, 0.35);
-  background: rgba(245, 158, 11, 0.1);
+  color: var(--brand-warning);
+  border-color: color-mix(in srgb, var(--brand-warning) 35%, transparent);
+  background: color-mix(in srgb, var(--brand-warning) 10%, transparent);
 }
 .cta-url-input__badge[data-type='unknown'] {
-  color: #ef4444;
-  border-color: rgba(239, 68, 68, 0.35);
-  background: rgba(239, 68, 68, 0.1);
+  color: var(--brand-negative);
+  border-color: color-mix(in srgb, var(--brand-negative) 35%, transparent);
+  background: color-mix(in srgb, var(--brand-negative) 10%, transparent);
 }
 .cta-url-suggestions {
   display: flex;
