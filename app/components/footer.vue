@@ -35,7 +35,7 @@
     <!-- Seção Termos do Mercado -->
     <div class="w-full py-12">
       <div class="mx-auto max-w-[1400px] px-4">
-        <h2 class="mb-6 text-center text-2xl font-bold uppercase tracking-wide md:text-3xl" :style="{ color: 'var(--brand-text)' }">
+        <h2 class="mb-6 text-center text-2xl uppercase tracking-wide md:text-3xl" :style="{ color: 'var(--brand-text)' }">
           {{ brand.nav.footerGlossaryTitle }}
         </h2>
         <div class="flex flex-wrap items-center justify-center gap-3 text-lg font-semibold md:gap-5 md:text-xl">

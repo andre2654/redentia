@@ -650,8 +650,11 @@
         <!-- Feed de comunicados (placement=feed). Card colapsavel
              que mostra anúncios ativos com title/body/CTA/dismiss.
              Só renderiza quando o user tem ao menos um anúncio
-             ativo aplicável (componente faz o gate via v-if). -->
-        <div class="px-4 pt-3 xl:px-0">
+             ativo aplicável (componente faz o gate via v-if).
+             [&:empty]:p-0 mata o padding quando AnnouncementsFeed
+             nao tem items — assim o slot abaixo (CTA topo full-bleed,
+             etc.) cola no header sem gap residual. -->
+        <div class="px-4 pt-3 xl:px-0 [&:empty]:p-0">
           <MoleculesCommunicationsAnnouncementsFeed />
         </div>
 

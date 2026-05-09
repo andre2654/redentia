@@ -1401,11 +1401,14 @@
          Ancora long-tails de busca ("redentia e gratis", "redentia confiavel",
          "como funciona redentia"), com schema FAQPage emitido pelo proprio
          componente. Container max-w-3xl pra leitura confortavel + spacing
-         vertical generoso (quiet-section). -->
+         vertical generoso (quiet-section).
+         `order: 999` força esta seção para o FIM do flex container — todas
+         as outras sections usam `:style="{ order: sectionOrder(id) }"` com
+         valores derivados de brand.homeSections (tipicamente 0-30). -->
     <section
       v-if="!authStore.isAuthenticated"
       class="quiet-section relative"
-      :style="{ borderColor: 'var(--brand-border)' }"
+      :style="{ order: 999, borderColor: 'var(--brand-border)' }"
     >
       <div class="mx-auto max-w-3xl px-6">
         <MoleculesFAQ

@@ -73,18 +73,18 @@
 
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-          <p class="text-[13px] font-light text-gray-400">
+          <p class="text-[13px] font-light text-[var(--text-muted)]">
             Tempo estimado para alcançar a meta
           </p>
           <p class="text-xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
             {{ planningResult.timeToGoalLabel }}
           </p>
-          <p class="text-xs text-gray-400">
+          <p class="text-xs text-[var(--text-muted)]">
             Aproximadamente até {{ planningResult.targetDateLabel }}
           </p>
         </div>
         <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-          <p class="text-[13px] font-light text-gray-400">
+          <p class="text-[13px] font-light text-[var(--text-muted)]">
             Aportes totais até a meta
           </p>
           <p class="text-xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
@@ -97,7 +97,7 @@
           </p>
         </div>
         <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-          <p class="text-[13px] font-light text-gray-400">
+          <p class="text-[13px] font-light text-[var(--text-muted)]">
             Resultado projetado
           </p>
           <p class="text-secondary text-xl font-bold">
@@ -108,7 +108,7 @@
               }).format(planningResult.estimatedFinalValue)
             }}
           </p>
-          <p class="text-xs text-green-400">
+          <p class="text-xs text-[var(--brand-positive)]">
             Ganho estimado de
             {{
               new Intl.NumberFormat('pt-BR', {
@@ -119,7 +119,7 @@
           </p>
         </div>
         <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-          <p class="text-[13px] font-light text-gray-400">
+          <p class="text-[13px] font-light text-[var(--text-muted)]">
             Rentabilidade média mensal esperada
           </p>
           <p class="text-xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
@@ -132,17 +132,17 @@
         class="grid grid-cols-1 gap-4 rounded-2xl bg-white/5 p-4 md:grid-cols-2"
       >
         <div class="flex flex-col gap-2">
-          <p class="text-sm font-semibold text-white">
+          <p class="text-sm font-semibold text-[var(--text-heading)]">
             Se tivesse investido nos últimos
             {{ planningResult.historicalYears.toFixed(1) }} anos
           </p>
-          <p class="text-xs text-gray-400">
+          <p class="text-xs text-[var(--text-muted)]">
             Considerando o mesmo aporte mensal e a carteira recomendada.
           </p>
           <div class="mt-2 flex flex-col gap-2">
             <div class="flex items-center justify-between">
-              <span class="text-sm text-gray-400">Total investido</span>
-              <span class="text-sm font-semibold text-white">
+              <span class="text-sm text-[var(--text-muted)]">Total investido</span>
+              <span class="text-sm font-semibold text-[var(--text-heading)]">
                 {{
                   new Intl.NumberFormat('pt-BR', {
                     style: 'currency',
@@ -152,7 +152,7 @@
               </span>
             </div>
             <div class="flex items-center justify-between">
-              <span class="text-sm text-gray-400">Valor final</span>
+              <span class="text-sm text-[var(--text-muted)]">Valor final</span>
               <span class="text-secondary text-sm font-semibold">
                 {{
                   new Intl.NumberFormat('pt-BR', {
@@ -163,8 +163,8 @@
               </span>
             </div>
             <div class="flex items-center justify-between">
-              <span class="text-sm text-gray-400">Lucro histórico</span>
-              <span class="text-sm font-semibold text-green-400">
+              <span class="text-sm text-[var(--text-muted)]">Lucro histórico</span>
+              <span class="text-sm font-semibold text-[var(--brand-positive)]">
                 {{
                   new Intl.NumberFormat('pt-BR', {
                     style: 'currency',
@@ -176,7 +176,7 @@
           </div>
         </div>
         <div class="flex flex-col gap-2">
-          <p class="text-sm font-semibold text-white">Projeção de patrimônio</p>
+          <p class="text-sm font-semibold text-[var(--text-heading)]">Projeção de patrimônio</p>
           <div class="h-[240px]">
             <AtomsGraphLine
               :data="planningResult.chartData"
@@ -191,9 +191,9 @@
       <div class="flex flex-col gap-3">
         <div class="flex items-center gap-3">
           <UIcon name="i-lucide-layers" class="text-secondary size-5" />
-          <h4 class="text-lg font-semibold text-white">Carteira sugerida</h4>
+          <h4 class="text-lg font-semibold text-[var(--text-heading)]">Carteira sugerida</h4>
         </div>
-        <p class="text-xs text-gray-400">
+        <p class="text-xs text-[var(--text-muted)]">
           Distribuição baseada no desempenho histórico e nos critérios da
           estratégia escolhida.
         </p>
@@ -207,18 +207,18 @@
         >
           <div class="flex items-start justify-between gap-3">
             <div>
-              <p class="text-[11px] uppercase tracking-wide text-gray-400">
+              <p class="text-[11px] uppercase tracking-wide text-[var(--text-muted)]">
                 {{ asset.category }}
               </p>
-              <h5 class="text-lg font-semibold text-white">
+              <h5 class="text-lg font-semibold text-[var(--text-heading)]">
                 {{ asset.ticker }}
               </h5>
-              <p class="text-xs text-gray-400">
+              <p class="text-xs text-[var(--text-muted)]">
                 {{ asset.name }}
               </p>
             </div>
             <div class="text-right">
-              <p class="text-xs text-gray-400">Peso</p>
+              <p class="text-xs text-[var(--text-muted)]">Peso</p>
               <p class="text-secondary text-2xl font-bold">
                 {{ (asset.weight * 100).toFixed(0) }}%
               </p>
@@ -226,33 +226,33 @@
           </div>
           <div class="grid grid-cols-2 gap-3 text-sm">
             <div>
-              <p class="text-gray-400">
+              <p class="text-[var(--text-muted)]">
                 Retorno {{ planningResult.historicalYears.toFixed(0) }} anos
               </p>
               <p
                 class="font-semibold"
                 :class="
-                  asset.totalReturn >= 0 ? 'text-green-400' : 'text-red-400'
+                  asset.totalReturn >= 0 ? 'text-[var(--brand-positive)]' : 'text-[var(--brand-negative)]'
                 "
               >
                 {{ (asset.totalReturn * 100).toFixed(1) }}%
               </p>
             </div>
             <div>
-              <p class="text-gray-400">CAGR anual</p>
-              <p class="font-semibold text-white">
+              <p class="text-[var(--text-muted)]">CAGR anual</p>
+              <p class="font-semibold text-[var(--text-heading)]">
                 {{ (asset.cagr * 100).toFixed(1) }}%
               </p>
             </div>
             <div>
-              <p class="text-gray-400">Retorno mensal</p>
-              <p class="font-semibold text-white">
+              <p class="text-[var(--text-muted)]">Retorno mensal</p>
+              <p class="font-semibold text-[var(--text-heading)]">
                 {{ (asset.monthlyRate * 100).toFixed(2) }}%
               </p>
             </div>
             <div>
-              <p class="text-gray-400">Dividendos reinvestidos</p>
-              <p class="font-semibold text-green-400">
+              <p class="text-[var(--text-muted)]">Dividendos reinvestidos</p>
+              <p class="font-semibold text-[var(--brand-positive)]">
                 {{
                   new Intl.NumberFormat('pt-BR', {
                     style: 'currency',

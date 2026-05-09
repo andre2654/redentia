@@ -19,16 +19,15 @@
       (negrito, italico, links, listas, etc).
 -->
 <template>
-  <Transition name="cta-fade">
-    <component
-      :is="mode === 'image' && cta?.link_url ? 'a' : 'article'"
-      v-if="cta"
-      :href="mode === 'image' && cta.link_url ? cta.link_url : undefined"
-      :target="mode === 'image' && isExternal(cta.link_url) ? '_blank' : undefined"
-      :rel="mode === 'image' && isExternal(cta.link_url) ? 'noopener' : undefined"
-      :class="['cta-slot', `cta-slot--${mode}`]"
-      @click="mode === 'image' ? onClick() : undefined"
-    >
+  <component
+    :is="mode === 'image' && cta?.link_url ? 'a' : 'article'"
+    v-if="cta"
+    :href="mode === 'image' && cta.link_url ? cta.link_url : undefined"
+    :target="mode === 'image' && isExternal(cta.link_url) ? '_blank' : undefined"
+    :rel="mode === 'image' && isExternal(cta.link_url) ? 'noopener' : undefined"
+    :class="['cta-slot', `cta-slot--${mode}`]"
+    @click="mode === 'image' ? onClick() : undefined"
+  >
       <!-- ================ MODE: IMAGE-ONLY ================
            Imagem inteira clickable. Sem chrome de card. -->
       <template v-if="mode === 'image'">
@@ -101,7 +100,6 @@
         </a>
       </template>
     </component>
-  </Transition>
 </template>
 
 <script setup lang="ts">
@@ -172,33 +170,37 @@ onMounted(() => load())
 
 <style scoped>
 /* =========================================================
-   Modo IMAGE-ONLY — imagem inteira clickable.
-   Sem padding/borda/chrome. So a imagem.
+   Modo IMAGE-ONLY — banner full-bleed.
+   Edge-to-edge, sem rounded corners, encosta no header e nas
+   bordas do container. Negative margins escapam do padding
+   xl:px-4 xl:py-4 do layout default (16px no xl+).
    ========================================================= */
 .cta-slot--image {
   display: block;
   position: relative;
-  border-radius: 14px;
+  border-radius: 0;
   overflow: hidden;
   text-decoration: none;
   cursor: pointer;
-  box-shadow: 0 8px 24px -10px color-mix(in srgb, var(--brand-primary) 28%, transparent);
-  transition: transform 200ms cubic-bezier(0.2, 0.7, 0.3, 1), box-shadow 200ms;
+  transition: filter 180ms;
   line-height: 0;
+  /* Bleed negativo pra encostar nas bordas do main content wrapper.
+     Mobile/tablet o layout nao tem padding (xl: prefix), entao 0. */
+  margin: 0;
+}
+@media (min-width: 1280px) {
+  .cta-slot--image {
+    margin: -16px -16px 0;
+  }
 }
 .cta-slot--image:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 30px -10px color-mix(in srgb, var(--brand-primary) 35%, transparent);
+  filter: brightness(1.04);
 }
 .cta-slot__image {
   display: block;
   width: 100%;
   height: auto;
   object-fit: cover;
-  transition: transform 280ms cubic-bezier(0.2, 0.7, 0.3, 1);
-}
-.cta-slot--image:hover .cta-slot__image {
-  transform: scale(1.015);
 }
 .cta-slot__close--floating {
   position: absolute;
@@ -222,20 +224,27 @@ onMounted(() => load())
 }
 
 /* =========================================================
-   Modo CONTENT — card editorial.
+   Modo CONTENT — card editorial full-bleed quando usado como
+   banner topo. Mesmo bleed-x/bleed-top do modo IMAGEM.
    ========================================================= */
 .cta-slot--content {
   display: flex;
   flex-direction: column;
   gap: 10px;
   padding: 18px 22px;
-  border-radius: 16px;
-  border: 1px solid color-mix(in srgb, var(--brand-primary) 25%, transparent);
+  border-radius: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--brand-primary) 25%, transparent);
   background:
     radial-gradient(circle at 0% 0%, color-mix(in srgb, var(--brand-primary) 14%, transparent) 0%, transparent 55%),
     color-mix(in srgb, var(--brand-surface) 70%, var(--brand-background));
   position: relative;
   overflow: hidden;
+  margin: 0;
+}
+@media (min-width: 1280px) {
+  .cta-slot--content {
+    margin: -16px -16px 0;
+  }
 }
 
 .cta-slot__glow {
@@ -366,12 +375,4 @@ onMounted(() => load())
   box-shadow: 0 12px 24px -8px color-mix(in srgb, var(--brand-primary) 70%, transparent);
 }
 
-/* Transition */
-.cta-fade-enter-active, .cta-fade-leave-active {
-  transition: opacity 200ms, transform 200ms;
-}
-.cta-fade-enter-from, .cta-fade-leave-to {
-  opacity: 0;
-  transform: translateY(8px);
-}
 </style>

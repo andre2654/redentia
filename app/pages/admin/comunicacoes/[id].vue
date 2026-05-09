@@ -152,6 +152,38 @@
         @save="onSave"
       />
 
+      <!-- ============ BRANCH ESPECÍFICO PARA POLL ============
+           Editor de enquete (poll). Renderiza pelo MESMO ModalManager
+           dos modals (placement='modal'), mas com UI dedicada:
+             - section "Pergunta" + section "Opcoes" (2-10 builder)
+             - comportamento: single vs multi-choice + results visible
+             - preview com radio/checkbox + botao Votar
+             - tally por opcao no card de analytics -->
+      <AdminComunicacoesEditorPoll
+        v-else-if="form.type === 'poll'"
+        :form="form"
+        :saving="saving"
+        :analytics="analytics"
+        :tenant-options="tenantOptions"
+        v-model:selected-user-ids="selectedUserIds"
+        @save="onSave"
+      />
+
+      <!-- ============ BRANCH ESPECÍFICO PARA NOTIFICATION ============
+           Editor de notificacao passiva. placement='inbox' sempre.
+           Aparece no sino do header com badge de unread, abre num
+           drawer (`InboxDrawer`). Diferente dos popups: persistente,
+           sem session gate, marca como lida quando user clica. -->
+      <AdminComunicacoesEditorNotification
+        v-else-if="form.type === 'notification'"
+        :form="form"
+        :saving="saving"
+        :analytics="analytics"
+        :tenant-options="tenantOptions"
+        v-model:selected-user-ids="selectedUserIds"
+        @save="onSave"
+      />
+
       <!-- Editor body (todos os outros tipos) -->
       <div v-else class="editor__body">
         <!-- ============ LEFT: FORM ============ -->

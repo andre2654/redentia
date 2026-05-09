@@ -193,8 +193,8 @@
               to="/auth/register"
               class="group relative inline-flex items-center gap-3 px-8 py-4 font-showtime-label transition-transform hover:-translate-y-0.5"
               :style="{
-                backgroundColor: brand.colors.primary,
-                color: brand.colors.background,
+                backgroundColor: 'var(--brand-primary)',
+                color: 'var(--brand-background)',
                 borderRadius: '14px',
                 boxShadow: `0 6px 0 ${brand.colors.secondary}, 0 16px 40px ${brand.colors.primary}55`,
               }"
@@ -206,7 +206,7 @@
             <NuxtLink
               to="/auth/login"
               class="font-showtime-body text-base underline underline-offset-4 transition-opacity hover:opacity-70"
-              :style="{ color: `${brand.colors.text}CC`, textDecorationColor: brand.colors.primary }"
+              :style="{ color: `${brand.colors.text}CC`, textDecorationColor: 'var(--brand-primary)' }"
             >
               {{ brand.hero.ctaSecondaryLabel }}
             </NuxtLink>
@@ -221,12 +221,12 @@
               :style="{
                 borderColor: `${brand.colors.primary}70`,
                 backgroundColor: `${brand.colors.primary}15`,
-                color: brand.colors.text,
+                color: 'var(--brand-text)',
               }"
             >
               <span
                 class="inline-block size-1.5 rounded-full"
-                :style="{ backgroundColor: brand.colors.primary }"
+                :style="{ backgroundColor: 'var(--brand-primary)' }"
               />
               {{ indicator }}
             </div>
@@ -279,7 +279,7 @@
       </div>
 
       <!-- QUADRO 1, Elenco / Characters -->
-      <div class="relative py-20 md:py-24" :style="{ backgroundColor: brand.colors.surface }">
+      <div class="relative py-20 md:py-24" :style="{ backgroundColor: 'var(--brand-surface)' }">
         <div class="mx-auto max-w-6xl px-6 md:px-10">
           <div class="mb-12 flex flex-wrap items-end justify-between gap-4">
             <div>
@@ -287,11 +287,11 @@
               <h2
                 class="font-showtime-display mt-5"
                 :style="{
-                  color: brand.colors.text,
+                  color: 'var(--brand-text)',
                   fontSize: 'clamp(2.5rem, 5vw, 4rem)',
                 }"
               >
-                A <span class="highlighter" :style="{ color: brand.colors.primary }">galera</span> que faz<br />
+                A <span class="highlighter" :style="{ color: 'var(--brand-primary)' }">galera</span> que faz<br />
                 o programa acontecer.
               </h2>
               <p class="font-showtime-body mt-4 max-w-xl text-base" :style="{ color: `${brand.colors.text}CC` }">
@@ -307,7 +307,7 @@
               :key="char.name"
               class="showtime-frame relative overflow-visible rounded-[28px] p-6"
               :class="idx % 2 === 0 ? 'showtime-frame--tilt-left' : 'showtime-frame--tilt-right'"
-              :style="{ backgroundColor: brand.colors.background }"
+              :style="{ backgroundColor: 'var(--brand-background)' }"
             >
               <div class="washi-tape" />
 
@@ -322,17 +322,17 @@
                 <UIcon
                   :name="char.icon"
                   class="size-12"
-                  :style="{ color: brand.colors.background }"
+                  :style="{ color: 'var(--brand-background)' }"
                 />
               </div>
 
               <div class="text-center">
-                <span class="font-showtime-label" :style="{ color: brand.colors.primary }">
+                <span class="font-showtime-label" :style="{ color: 'var(--brand-primary)' }">
                   {{ char.role }}
                 </span>
                 <h3
                   class="font-showtime-display mt-2"
-                  :style="{ color: brand.colors.text, fontSize: '2rem' }"
+                  :style="{ color: 'var(--brand-text)', fontSize: '2rem' }"
                 >
                   {{ char.name }}
                 </h3>
@@ -348,7 +348,7 @@
                 <NuxtLink
                   to="/help"
                   class="mt-5 inline-flex items-center gap-1 font-showtime-label transition-transform hover:translate-x-1"
-                  :style="{ color: brand.colors.primary }"
+                  :style="{ color: 'var(--brand-primary)' }"
                 >
                   {{ char.cta }} →
                 </NuxtLink>
@@ -366,15 +366,15 @@
             <h2
               class="font-showtime-display mt-5"
               :style="{
-                color: brand.colors.text,
+                color: 'var(--brand-text)',
                 fontSize: 'clamp(2.25rem, 4vw, 3.5rem)',
               }"
             >
               Pergunta sem medo,<br />
-              <span class="highlighter" :style="{ color: brand.colors.primary }">criatura!</span>
+              <span class="highlighter" :style="{ color: 'var(--brand-primary)' }">criatura!</span>
             </h2>
             <p class="font-showtime-body mt-6 text-base" :style="{ color: `${brand.colors.text}CC` }">
-              A <strong :style="{ color: brand.colors.primary }">Na_th IA</strong> responde qualquer dúvida sobre dinheiro como sua melhor amiga explicaria. Sem jargão, sem julgamento, sem cara feia. E fica disponível 24h, até de madrugada, quando bate aquela crise existencial sobre o boleto.
+              A <strong :style="{ color: 'var(--brand-primary)' }">Na_th IA</strong> responde qualquer dúvida sobre dinheiro como sua melhor amiga explicaria. Sem jargão, sem julgamento, sem cara feia. E fica disponível 24h, até de madrugada, quando bate aquela crise existencial sobre o boleto.
             </p>
             <div class="mt-8 flex flex-wrap items-center gap-3">
               <div
@@ -382,7 +382,7 @@
                 :style="{
                   borderColor: `${brand.colors.primary}70`,
                   backgroundColor: `${brand.colors.primary}15`,
-                  color: brand.colors.text,
+                  color: 'var(--brand-text)',
                 }"
               >
                 ⚡ RESPOSTA EM ~3s
@@ -392,7 +392,7 @@
                 :style="{
                   borderColor: `${brand.colors.primary}70`,
                   backgroundColor: `${brand.colors.primary}15`,
-                  color: brand.colors.text,
+                  color: 'var(--brand-text)',
                 }"
               >
                 💛 SEM JULGAMENTO
@@ -402,7 +402,7 @@
                 :style="{
                   borderColor: `${brand.colors.primary}70`,
                   backgroundColor: `${brand.colors.primary}15`,
-                  color: brand.colors.text,
+                  color: 'var(--brand-text)',
                 }"
               >
                 ∞ ILIMITADO
@@ -418,13 +418,13 @@
                 to="/help"
                 class="showtime-frame relative flex cursor-pointer items-start gap-3 rounded-2xl p-5 transition-transform hover:-translate-y-1"
                 :class="idx % 2 === 0 ? 'showtime-frame--tilt-left' : 'showtime-frame--tilt-right'"
-                :style="{ backgroundColor: brand.colors.surface }"
+                :style="{ backgroundColor: 'var(--brand-surface)' }"
               >
                 <span
                   class="flex size-10 shrink-0 items-center justify-center rounded-xl"
                   :style="{
                     backgroundColor: `${brand.colors.primary}25`,
-                    color: brand.colors.primary,
+                    color: 'var(--brand-primary)',
                   }"
                 >
                   <UIcon :name="q.icon" class="size-5" />
@@ -438,12 +438,12 @@
                   </span>
                   <span
                     class="font-showtime-body mt-1 text-base font-semibold"
-                    :style="{ color: brand.colors.text }"
+                    :style="{ color: 'var(--brand-text)' }"
                   >
                     {{ q.text }}
                   </span>
                 </span>
-                <span class="font-showtime-label" :style="{ color: brand.colors.primary }">
+                <span class="font-showtime-label" :style="{ color: 'var(--brand-primary)' }">
                   →
                 </span>
               </NuxtLink>
@@ -453,7 +453,7 @@
       </div>
 
       <!-- Wooden spoon divider -->
-      <div class="flex items-center justify-center gap-6 py-6" :style="{ backgroundColor: brand.colors.surface }">
+      <div class="flex items-center justify-center gap-6 py-6" :style="{ backgroundColor: 'var(--brand-surface)' }">
         <div
           class="h-[2px] max-w-[180px] flex-1"
           :style="{ backgroundColor: `${brand.colors.primary}55` }"
@@ -474,12 +474,12 @@
       <div class="relative overflow-hidden py-20 md:py-24">
         <!-- Confetti dots background -->
         <div class="pointer-events-none absolute inset-0 opacity-20">
-          <div class="absolute left-[8%] top-[12%] size-3 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
-          <div class="absolute left-[18%] top-[34%] size-2 rounded-full" :style="{ backgroundColor: brand.colors.secondary }" />
-          <div class="absolute left-[85%] top-[20%] size-4 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
-          <div class="absolute left-[72%] top-[60%] size-2 rounded-full" :style="{ backgroundColor: brand.colors.positive }" />
-          <div class="absolute left-[30%] top-[82%] size-3 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
-          <div class="absolute left-[90%] top-[88%] size-2 rounded-full" :style="{ backgroundColor: brand.colors.secondary }" />
+          <div class="absolute left-[8%] top-[12%] size-3 rounded-full" :style="{ backgroundColor: 'var(--brand-primary)' }" />
+          <div class="absolute left-[18%] top-[34%] size-2 rounded-full" :style="{ backgroundColor: 'var(--brand-secondary)' }" />
+          <div class="absolute left-[85%] top-[20%] size-4 rounded-full" :style="{ backgroundColor: 'var(--brand-primary)' }" />
+          <div class="absolute left-[72%] top-[60%] size-2 rounded-full" :style="{ backgroundColor: 'var(--brand-positive)' }" />
+          <div class="absolute left-[30%] top-[82%] size-3 rounded-full" :style="{ backgroundColor: 'var(--brand-primary)' }" />
+          <div class="absolute left-[90%] top-[88%] size-2 rounded-full" :style="{ backgroundColor: 'var(--brand-secondary)' }" />
         </div>
 
         <div class="relative mx-auto max-w-6xl px-6 md:px-10">
@@ -488,12 +488,12 @@
             <h2
               class="font-showtime-display mt-5"
               :style="{
-                color: brand.colors.text,
+                color: 'var(--brand-text)',
                 fontSize: 'clamp(2.5rem, 5vw, 4rem)',
               }"
             >
               Quem tá bombando<br />
-              <span class="highlighter" :style="{ color: brand.colors.primary }">e quem tá tomando chá de sumiço</span>
+              <span class="highlighter" :style="{ color: 'var(--brand-primary)' }">e quem tá tomando chá de sumiço</span>
             </h2>
             <p class="font-showtime-body mx-auto mt-6 max-w-2xl text-base" :style="{ color: `${brand.colors.text}CC` }">
               Nem todo dia é dia de festa, criatura. Mas saber o que subiu e o que desceu é o primeiro passo pra entender o mercado, sem entrar em pânico.
@@ -504,7 +504,7 @@
             <!-- As Queridinhas (gainers) -->
             <div
               class="showtime-frame showtime-frame--tilt-left relative rounded-[28px] p-6"
-              :style="{ backgroundColor: brand.colors.surface }"
+              :style="{ backgroundColor: 'var(--brand-surface)' }"
             >
               <div class="washi-tape" />
               <div class="mb-5 flex items-center gap-3">
@@ -515,12 +515,12 @@
                   🚀
                 </div>
                 <div>
-                  <span class="font-showtime-label" :style="{ color: brand.colors.positive }">
+                  <span class="font-showtime-label" :style="{ color: 'var(--brand-positive)' }">
                     AS QUERIDINHAS DE HOJE
                   </span>
                   <h3
                     class="font-showtime-display"
-                    :style="{ color: brand.colors.text, fontSize: '1.5rem' }"
+                    :style="{ color: 'var(--brand-text)', fontSize: '1.5rem' }"
                   >
                     Subiram mais
                   </h3>
@@ -532,18 +532,18 @@
                   v-for="(row, idx) in showtimeGainers"
                   :key="`gain-${row.ticker}`"
                   class="flex items-center gap-3 rounded-2xl p-3 transition-transform hover:translate-x-1"
-                  :style="{ backgroundColor: brand.colors.background }"
+                  :style="{ backgroundColor: 'var(--brand-background)' }"
                 >
                   <span
                     class="flex size-7 shrink-0 items-center justify-center rounded-full font-showtime-label text-[11px]"
-                    :style="{ backgroundColor: `${brand.colors.primary}25`, color: brand.colors.primary }"
+                    :style="{ backgroundColor: `${brand.colors.primary}25`, color: 'var(--brand-primary)' }"
                   >
                     {{ idx + 1 }}
                   </span>
                   <div class="min-w-0 flex-1">
                     <div
                       class="font-showtime-body truncate text-base font-bold"
-                      :style="{ color: brand.colors.text }"
+                      :style="{ color: 'var(--brand-text)' }"
                     >
                       {{ row.ticker }}
                     </div>
@@ -558,7 +558,7 @@
                     class="font-showtime-label shrink-0 rounded-full px-3 py-1 text-[11px]"
                     :style="{
                       backgroundColor: `${brand.colors.positive}20`,
-                      color: brand.colors.positive,
+                      color: 'var(--brand-positive)',
                     }"
                   >
                     +{{ row.change.toFixed(2) }}%
@@ -569,7 +569,7 @@
               <NuxtLink
                 to="/ranking/maiores-altas-mes"
                 class="mt-5 inline-flex items-center gap-1 font-showtime-label"
-                :style="{ color: brand.colors.primary }"
+                :style="{ color: 'var(--brand-primary)' }"
               >
                 Ver o ranking completo →
               </NuxtLink>
@@ -578,7 +578,7 @@
             <!-- As Chatas (losers) -->
             <div
               class="showtime-frame showtime-frame--tilt-right relative rounded-[28px] p-6"
-              :style="{ backgroundColor: brand.colors.surface }"
+              :style="{ backgroundColor: 'var(--brand-surface)' }"
             >
               <div class="washi-tape" />
               <div class="mb-5 flex items-center gap-3">
@@ -589,12 +589,12 @@
                   😬
                 </div>
                 <div>
-                  <span class="font-showtime-label" :style="{ color: brand.colors.negative }">
+                  <span class="font-showtime-label" :style="{ color: 'var(--brand-negative)' }">
                     CAIU FEIO HOJE
                   </span>
                   <h3
                     class="font-showtime-display"
-                    :style="{ color: brand.colors.text, fontSize: '1.5rem' }"
+                    :style="{ color: 'var(--brand-text)', fontSize: '1.5rem' }"
                   >
                     Caíram mais
                   </h3>
@@ -606,18 +606,18 @@
                   v-for="(row, idx) in showtimeLosers"
                   :key="`lose-${row.ticker}`"
                   class="flex items-center gap-3 rounded-2xl p-3 transition-transform hover:translate-x-1"
-                  :style="{ backgroundColor: brand.colors.background }"
+                  :style="{ backgroundColor: 'var(--brand-background)' }"
                 >
                   <span
                     class="flex size-7 shrink-0 items-center justify-center rounded-full font-showtime-label text-[11px]"
-                    :style="{ backgroundColor: `${brand.colors.primary}25`, color: brand.colors.primary }"
+                    :style="{ backgroundColor: `${brand.colors.primary}25`, color: 'var(--brand-primary)' }"
                   >
                     {{ idx + 1 }}
                   </span>
                   <div class="min-w-0 flex-1">
                     <div
                       class="font-showtime-body truncate text-base font-bold"
-                      :style="{ color: brand.colors.text }"
+                      :style="{ color: 'var(--brand-text)' }"
                     >
                       {{ row.ticker }}
                     </div>
@@ -632,7 +632,7 @@
                     class="font-showtime-label shrink-0 rounded-full px-3 py-1 text-[11px]"
                     :style="{
                       backgroundColor: `${brand.colors.negative}20`,
-                      color: brand.colors.negative,
+                      color: 'var(--brand-negative)',
                     }"
                   >
                     {{ row.change.toFixed(2) }}%
@@ -643,7 +643,7 @@
               <NuxtLink
                 to="/ranking/maiores-baixas-mes"
                 class="mt-5 inline-flex items-center gap-1 font-showtime-label"
-                :style="{ color: brand.colors.primary }"
+                :style="{ color: 'var(--brand-primary)' }"
               >
                 Ver o ranking completo →
               </NuxtLink>
@@ -660,7 +660,7 @@
           >
             <NuxtImg src="/brand/mepoupe/margarete.svg" alt="" role="presentation" width="56" height="56" loading="lazy" decoding="async" class="h-14 shrink-0" />
             <p class="font-showtime-body text-sm italic" :style="{ color: `${brand.colors.text}CC` }">
-              <strong :style="{ color: brand.colors.primary }">Margarete diz:</strong>
+              <strong :style="{ color: 'var(--brand-primary)' }">Margarete diz:</strong>
               subiu muito? Respira. Caiu muito? Respira de novo. Investir não é torcer pra time de futebol, criatura, é uma maratona de 20 anos. O importante é continuar aportando todo mês.
             </p>
           </div>
@@ -668,19 +668,19 @@
       </div>
 
       <!-- QUADRO 4, Histórias reais -->
-      <div class="relative py-20 md:py-24" :style="{ backgroundColor: brand.colors.surface }">
+      <div class="relative py-20 md:py-24" :style="{ backgroundColor: 'var(--brand-surface)' }">
         <div class="mx-auto max-w-6xl px-6 md:px-10">
           <div class="mb-12">
             <span class="lower-third">QUADRO 04 · HISTÓRIAS REAIS</span>
             <h2
               class="font-showtime-display mt-5"
               :style="{
-                color: brand.colors.text,
+                color: 'var(--brand-text)',
                 fontSize: 'clamp(2.5rem, 5vw, 4rem)',
               }"
             >
               Gente igual a você que<br />
-              <span class="highlighter" :style="{ color: brand.colors.primary }">dominou o próprio dinheiro.</span>
+              <span class="highlighter" :style="{ color: 'var(--brand-primary)' }">dominou o próprio dinheiro.</span>
             </h2>
           </div>
 
@@ -690,7 +690,7 @@
               :key="story.name"
               class="showtime-frame rounded-[24px] p-6"
               :class="idx === 1 ? 'showtime-frame--tilt-right' : 'showtime-frame--tilt-left'"
-              :style="{ backgroundColor: brand.colors.background }"
+              :style="{ backgroundColor: 'var(--brand-background)' }"
             >
               <p
                 class="font-showtime-body text-base italic leading-relaxed"
@@ -702,7 +702,7 @@
                 <div v-for="stat in story.stats" :key="stat.label" class="flex flex-col">
                   <span
                     class="font-showtime-display"
-                    :style="{ color: brand.colors.primary, fontSize: '1.75rem' }"
+                    :style="{ color: 'var(--brand-primary)', fontSize: '1.75rem' }"
                   >
                     {{ stat.value }}
                   </span>
@@ -718,8 +718,8 @@
                 <div
                   class="flex size-10 items-center justify-center rounded-full font-showtime-label"
                   :style="{
-                    backgroundColor: brand.colors.primary,
-                    color: brand.colors.background,
+                    backgroundColor: 'var(--brand-primary)',
+                    color: 'var(--brand-background)',
                   }"
                 >
                   {{ story.initials }}
@@ -727,7 +727,7 @@
                 <div class="flex flex-col">
                   <span
                     class="font-showtime-body text-sm font-semibold"
-                    :style="{ color: brand.colors.text }"
+                    :style="{ color: 'var(--brand-text)' }"
                   >
                     {{ story.name }}
                   </span>
@@ -751,12 +751,12 @@
           <h2
             class="font-showtime-display chunky-shadow mt-8"
             :style="{
-              color: brand.colors.text,
+              color: 'var(--brand-text)',
               fontSize: 'clamp(3rem, 8vw, 7rem)',
             }"
           >
             BORA COMEÇAR,<br />
-            <span :style="{ color: brand.colors.primary }">CRIATURA?</span>
+            <span :style="{ color: 'var(--brand-primary)' }">CRIATURA?</span>
           </h2>
           <p
             class="font-showtime-body mt-8 text-lg italic"
@@ -773,8 +773,8 @@
               to="/auth/register"
               class="group relative inline-flex items-center gap-3 px-10 py-5 font-showtime-label transition-transform hover:-translate-y-0.5"
               :style="{
-                backgroundColor: brand.colors.primary,
-                color: brand.colors.background,
+                backgroundColor: 'var(--brand-primary)',
+                color: 'var(--brand-background)',
                 borderRadius: '16px',
                 fontSize: '13px',
                 boxShadow: `0 6px 0 ${brand.colors.secondary}, 0 20px 50px ${brand.colors.primary}60`,
@@ -819,16 +819,16 @@
           <div class="flex flex-1 flex-col items-center text-center md:items-start md:text-left">
             <!-- Badge energetico -->
             <div class="mb-6 inline-flex items-center gap-2 px-4 py-2 brand-card-sm" :style="{ backgroundColor: `${brand.colors.primary}1A`, border: `1px solid ${brand.colors.primary}33` }">
-              <span class="text-sm font-semibold" :style="{ color: brand.colors.primary }">{{ brand.hero.badge }}</span>
+              <span class="text-sm font-semibold" :style="{ color: 'var(--brand-primary)' }">{{ brand.hero.badge }}</span>
             </div>
 
-            <h2 class="mb-4 text-4xl leading-[1.1] sm:text-5xl md:text-6xl" :class="[brand.font.headingWeight, brand.font.headingStyle]" :style="{ color: brand.colors.text }">
+            <h2 class="mb-4 text-4xl leading-[1.1] sm:text-5xl md:text-6xl" :class="[brand.font.headingWeight, brand.font.headingStyle]" :style="{ color: 'var(--brand-text)' }">
               <template v-for="(line, idx) in brand.hero.title.split('\n')" :key="idx">
                 <br v-if="idx > 0" />{{ line }}
               </template>
             </h2>
 
-            <p class="mb-8 max-w-md text-base md:text-lg" :style="{ color: brand.colors.textMuted }">
+            <p class="mb-8 max-w-md text-base md:text-lg" :style="{ color: 'var(--brand-text-muted)' }">
               {{ brand.hero.subtitle }}
             </p>
 
@@ -843,7 +843,7 @@
               <UButton to="/auth/register" color="secondary" size="xl" :icon="brand.hero.ctaIcon" class="group px-8 transition-[transform,opacity,box-shadow,background-color,border-color] duration-200 hover:scale-105">
                 {{ brand.hero.ctaLabel }}
               </UButton>
-              <UButton to="/auth/login" variant="ghost" size="xl" :style="{ color: brand.colors.textMuted }">
+              <UButton to="/auth/login" variant="ghost" size="xl" :style="{ color: 'var(--brand-text-muted)' }">
                 {{ brand.hero.ctaSecondaryLabel }}
               </UButton>
             </div>
@@ -851,7 +851,7 @@
             <!-- Trust inline -->
             <div class="mt-8 flex flex-wrap items-center gap-4 text-xs" :style="{ color: `${brand.colors.text}66` }">
               <div v-for="(indicator, idx) in brand.hero.trustIndicators" :key="idx" class="flex items-center gap-1.5">
-                <UIcon name="i-lucide-check-circle" class="h-3 w-3" :style="{ color: brand.colors.secondary }" />
+                <UIcon name="i-lucide-check-circle" class="h-3 w-3" :style="{ color: 'var(--brand-secondary)' }" />
                 <span>{{ indicator }}</span>
               </div>
             </div>
@@ -859,14 +859,14 @@
 
           <!-- Right: quote card fallback (when NO hero.image) -->
           <div v-if="!brand.hero.image" class="flex flex-1 flex-col items-center gap-4">
-            <div class="w-full max-w-sm border p-6 backdrop-blur-sm brand-card" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+            <div class="w-full max-w-sm border p-6 backdrop-blur-sm brand-card" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
               <div class="mb-4 flex items-center gap-3">
                 <div class="flex h-12 w-12 items-center justify-center rounded-full" :style="{ backgroundColor: `${brand.colors.primary}26` }">
                   <BrandLogo variant="icon" class="h-7 w-7" />
                 </div>
                 <div>
-                  <p class="text-sm font-semibold" :style="{ color: brand.colors.text }">{{ brand.founder.name }}</p>
-                  <p class="text-xs" :style="{ color: brand.colors.textMuted }">{{ brand.founder.role }}</p>
+                  <p class="text-sm font-semibold" :style="{ color: 'var(--brand-text)' }">{{ brand.founder.name }}</p>
+                  <p class="text-xs" :style="{ color: 'var(--brand-text-muted)' }">{{ brand.founder.role }}</p>
                 </div>
               </div>
               <p class="text-base italic leading-relaxed" :style="{ color: `${brand.colors.text}B3` }">"{{ brand.hero.founderQuote }}"</p>
@@ -880,21 +880,21 @@
     <!-- ========== HERO: RESEARCH (Investidor Sardinha, AUVP data-heavy analyst desk) ========== -->
     <section
       v-if="brand.hero.variant === 'research'"
-      :style="{ backgroundColor: brand.colors.background, color: brand.colors.text }"
+      :style="{ backgroundColor: 'var(--brand-background)', color: 'var(--brand-text)' }"
       class="relative"
     >
       <!-- Paper masthead -->
-      <div class="border-b" :style="{ borderColor: brand.colors.border }">
+      <div class="border-b" :style="{ borderColor: 'var(--brand-border)' }">
         <div class="mx-auto flex max-w-6xl items-start justify-between gap-6 px-6 pt-10 md:px-10 md:pt-12">
           <div class="flex flex-col gap-0.5">
-            <span class="font-academic-label" :style="{ color: brand.colors.primary }">
+            <span class="font-academic-label" :style="{ color: 'var(--brand-primary)' }">
               {{ brand.hero.badge }}
             </span>
-            <span class="font-academic-body text-[12px] italic" :style="{ color: brand.colors.textMuted }">
+            <span class="font-academic-body text-[12px] italic" :style="{ color: 'var(--brand-text-muted)' }">
               {{ researchDate }}
             </span>
           </div>
-          <span class="font-academic-mono text-[11px] uppercase tabular-nums" :style="{ color: brand.colors.textMuted }">
+          <span class="font-academic-mono text-[11px] uppercase tabular-nums" :style="{ color: 'var(--brand-text-muted)' }">
             B3 · BOLSA DE VALORES DE SÃO PAULO
           </span>
         </div>
@@ -903,23 +903,23 @@
       <!-- Cover block: compact title + key market numbers on the right -->
       <div class="mx-auto max-w-6xl px-6 py-14 md:grid md:grid-cols-12 md:gap-10 md:px-10 md:py-20">
         <div class="md:col-span-7">
-          <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">
+          <span class="font-academic-label" :style="{ color: 'var(--brand-text-muted)' }">
             mesa de análise AUVP
           </span>
           <h1
             class="font-academic-display mt-6"
             :style="{
-              color: brand.colors.text,
+              color: 'var(--brand-text)',
               fontSize: 'clamp(2.75rem, 5.5vw, 4.75rem)',
             }"
           >
             <template v-for="(line, idx) in brand.hero.title.split('\n')" :key="idx">
               <br v-if="idx > 0" />
-              <span v-if="idx === 1" class="italic" :style="{ color: brand.colors.primary }">{{ line }}</span>
+              <span v-if="idx === 1" class="italic" :style="{ color: 'var(--brand-primary)' }">{{ line }}</span>
               <span v-else>{{ line }}</span>
             </template>
           </h1>
-          <p class="font-academic-body mt-6 max-w-xl" :style="{ color: brand.colors.text, fontSize: '16px' }">
+          <p class="font-academic-body mt-6 max-w-xl" :style="{ color: 'var(--brand-text)', fontSize: '16px' }">
             <span class="red-pen">Os dados abaixo não são opinião.</span> São o que a mesa olhou hoje. Se quiser o método por trás de cada leitura, o caminho é a <span class="red-pen-underline">AUVP Escola</span>.
           </p>
           <div class="mt-8 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:gap-6">
@@ -927,9 +927,9 @@
               to="/auth/register"
               class="group inline-flex items-center gap-3 border-2 px-5 py-2.5 font-academic-label transition-colors"
               :style="{
-                backgroundColor: brand.colors.primary,
-                color: brand.colors.background,
-                borderColor: brand.colors.primary,
+                backgroundColor: 'var(--brand-primary)',
+                color: 'var(--brand-background)',
+                borderColor: 'var(--brand-primary)',
               }"
             >
               <span>{{ brand.hero.ctaLabel.toUpperCase() }}</span>
@@ -940,9 +940,9 @@
               target="_blank"
               rel="noopener noreferrer"
               class="font-academic-body text-base italic transition-opacity hover:opacity-70"
-              :style="{ color: brand.colors.text }"
+              :style="{ color: 'var(--brand-text)' }"
             >
-              Conhecer a AUVP Escola <span :style="{ color: brand.colors.primary }">→</span>
+              Conhecer a AUVP Escola <span :style="{ color: 'var(--brand-primary)' }">→</span>
             </a>
           </div>
         </div>
@@ -951,46 +951,46 @@
         <div class="mt-10 md:col-span-5 md:mt-0">
           <div
             class="border p-6"
-            :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+            :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
           >
             <div class="flex items-start justify-between">
-              <span class="font-academic-label" :style="{ color: brand.colors.primary }">
+              <span class="font-academic-label" :style="{ color: 'var(--brand-primary)' }">
                 Panorama do pregão
               </span>
-              <span class="font-academic-mono text-[10px] uppercase tabular-nums" :style="{ color: brand.colors.textMuted }">
+              <span class="font-academic-mono text-[10px] uppercase tabular-nums" :style="{ color: 'var(--brand-text-muted)' }">
                 {{ researchDate }}
               </span>
             </div>
-            <dl class="mt-6 flex flex-col divide-y" :style="{ borderColor: brand.colors.border }">
+            <dl class="mt-6 flex flex-col divide-y" :style="{ borderColor: 'var(--brand-border)' }">
               <div
                 v-for="row in researchHeroMarket"
                 :key="row.label"
                 class="flex items-baseline justify-between py-3"
-                :style="{ borderColor: brand.colors.border }"
+                :style="{ borderColor: 'var(--brand-border)' }"
               >
                 <dt class="flex flex-col">
-                  <span class="font-academic-display text-[15px]" :style="{ color: brand.colors.text }">
+                  <span class="font-academic-display text-[15px]" :style="{ color: 'var(--brand-text)' }">
                     {{ row.label }}
                   </span>
-                  <span class="font-academic-body text-[11px] italic" :style="{ color: brand.colors.textMuted }">
+                  <span class="font-academic-body text-[11px] italic" :style="{ color: 'var(--brand-text-muted)' }">
                     {{ row.note }}
                   </span>
                 </dt>
                 <dd class="text-right">
-                  <span class="font-academic-display tabular-nums text-xl" :style="{ color: brand.colors.text }">
+                  <span class="font-academic-display tabular-nums text-xl" :style="{ color: 'var(--brand-text)' }">
                     {{ row.value }}
                   </span>
                   <br />
                   <span
                     class="font-academic-mono text-[11px] tabular-nums"
-                    :style="{ color: (row.changePct || 0) >= 0 ? brand.colors.positive : brand.colors.primary }"
+                    :style="{ color: (row.changePct || 0) >= 0 ? 'var(--brand-positive)' : 'var(--brand-primary)' }"
                   >
                     {{ (row.changePct || 0) >= 0 ? '+' : '' }}{{ (row.changePct || 0).toFixed(2).replace('.', ',') }}%
                   </span>
                 </dd>
               </div>
             </dl>
-            <p class="font-academic-body mt-5 text-[11px] italic" :style="{ color: brand.colors.textMuted }">
+            <p class="font-academic-body mt-5 text-[11px] italic" :style="{ color: 'var(--brand-text-muted)' }">
               Dados de fechamento do último pregão. Atualização diária às 19h.
             </p>
           </div>
@@ -1003,22 +1003,22 @@
       <div class="mx-auto max-w-6xl px-6 py-16 md:px-10 md:py-20">
         <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <span class="font-academic-label" :style="{ color: brand.colors.primary }">
+            <span class="font-academic-label" :style="{ color: 'var(--brand-primary)' }">
               §1 · Radar do pregão
             </span>
-            <h2 class="font-academic-display mt-2 text-3xl md:text-4xl" :style="{ color: brand.colors.text }">
+            <h2 class="font-academic-display mt-2 text-3xl md:text-4xl" :style="{ color: 'var(--brand-text)' }">
               Quem subiu, quem caiu
             </h2>
-            <p class="font-academic-body mt-3 max-w-2xl text-[13px] italic" :style="{ color: brand.colors.textMuted }">
+            <p class="font-academic-body mt-3 max-w-2xl text-[13px] italic" :style="{ color: 'var(--brand-text-muted)' }">
               Movimentos do último pregão. Esta é a <span class="red-pen">leitura do radar</span>, não uma recomendação, variações de curto prazo rara­mente alteram uma tese de longo prazo.<sup class="footnote-marker">¹</sup>
             </p>
           </div>
           <NuxtLink
             to="/acoes"
             class="font-academic-body text-[13px] italic transition-opacity hover:opacity-70"
-            :style="{ color: brand.colors.text }"
+            :style="{ color: 'var(--brand-text)' }"
           >
-            Ver todas as ações <span :style="{ color: brand.colors.primary }">→</span>
+            Ver todas as ações <span :style="{ color: 'var(--brand-primary)' }">→</span>
           </NuxtLink>
         </div>
 
@@ -1026,20 +1026,20 @@
           <!-- Top altas -->
           <div>
             <div class="mb-3 flex items-baseline justify-between">
-              <span class="font-academic-label" :style="{ color: brand.colors.text }">
+              <span class="font-academic-label" :style="{ color: 'var(--brand-text)' }">
                 ↗ Maiores altas
               </span>
-              <span class="font-academic-mono text-[11px] tabular-nums" :style="{ color: brand.colors.textMuted }">
+              <span class="font-academic-mono text-[11px] tabular-nums" :style="{ color: 'var(--brand-text-muted)' }">
                 TOP 10
               </span>
             </div>
-            <table class="w-full border-t font-academic-body text-[13px]" :style="{ borderColor: brand.colors.text }">
+            <table class="w-full border-t font-academic-body text-[13px]" :style="{ borderColor: 'var(--brand-text)' }">
               <thead>
-                <tr class="border-b" :style="{ borderColor: brand.colors.border }">
-                  <th class="font-academic-label py-2 text-left" :style="{ color: brand.colors.textMuted }">§</th>
-                  <th class="font-academic-label py-2 text-left" :style="{ color: brand.colors.textMuted }">Ticker</th>
-                  <th class="font-academic-label py-2 text-right" :style="{ color: brand.colors.textMuted }">Preço</th>
-                  <th class="font-academic-label py-2 text-right" :style="{ color: brand.colors.textMuted }">Δ</th>
+                <tr class="border-b" :style="{ borderColor: 'var(--brand-border)' }">
+                  <th class="font-academic-label py-2 text-left" :style="{ color: 'var(--brand-text-muted)' }">§</th>
+                  <th class="font-academic-label py-2 text-left" :style="{ color: 'var(--brand-text-muted)' }">Ticker</th>
+                  <th class="font-academic-label py-2 text-right" :style="{ color: 'var(--brand-text-muted)' }">Preço</th>
+                  <th class="font-academic-label py-2 text-right" :style="{ color: 'var(--brand-text-muted)' }">Δ</th>
                 </tr>
               </thead>
               <tbody>
@@ -1047,10 +1047,10 @@
                   v-for="(row, idx) in researchTopGainers"
                   :key="`up-${row.ticker}`"
                   class="border-b"
-                  :style="{ borderColor: brand.colors.border }"
+                  :style="{ borderColor: 'var(--brand-border)' }"
                 >
                   <td class="py-2.5 pr-2">
-                    <span class="font-academic-mono text-[11px] tabular-nums" :style="{ color: brand.colors.textMuted }">
+                    <span class="font-academic-mono text-[11px] tabular-nums" :style="{ color: 'var(--brand-text-muted)' }">
                       {{ String(idx + 1).padStart(2, '0') }}
                     </span>
                   </td>
@@ -1059,21 +1059,21 @@
                       :to="`/asset/${row.ticker.toLowerCase()}`"
                       class="flex flex-col"
                     >
-                      <span class="font-academic-display text-[15px]" :style="{ color: brand.colors.text }">
+                      <span class="font-academic-display text-[15px]" :style="{ color: 'var(--brand-text)' }">
                         {{ row.ticker }}
                       </span>
-                      <span v-if="row.name" class="font-academic-body truncate text-[11px] italic" :style="{ color: brand.colors.textMuted }">
+                      <span v-if="row.name" class="font-academic-body truncate text-[11px] italic" :style="{ color: 'var(--brand-text-muted)' }">
                         {{ row.name }}
                       </span>
                     </NuxtLink>
                   </td>
                   <td class="py-2.5 text-right">
-                    <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.text }">
+                    <span class="font-academic-mono tabular-nums" :style="{ color: 'var(--brand-text)' }">
                       {{ formatSardinhaPrice(row.price) }}
                     </span>
                   </td>
                   <td class="py-2.5 text-right">
-                    <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.positive }">
+                    <span class="font-academic-mono tabular-nums" :style="{ color: 'var(--brand-positive)' }">
                       +{{ Number(row.change || 0).toFixed(2).replace('.', ',') }}%
                     </span>
                   </td>
@@ -1085,20 +1085,20 @@
           <!-- Top baixas -->
           <div>
             <div class="mb-3 flex items-baseline justify-between">
-              <span class="font-academic-label" :style="{ color: brand.colors.text }">
+              <span class="font-academic-label" :style="{ color: 'var(--brand-text)' }">
                 ↘ Maiores baixas
               </span>
-              <span class="font-academic-mono text-[11px] tabular-nums" :style="{ color: brand.colors.textMuted }">
+              <span class="font-academic-mono text-[11px] tabular-nums" :style="{ color: 'var(--brand-text-muted)' }">
                 TOP 10
               </span>
             </div>
-            <table class="w-full border-t font-academic-body text-[13px]" :style="{ borderColor: brand.colors.text }">
+            <table class="w-full border-t font-academic-body text-[13px]" :style="{ borderColor: 'var(--brand-text)' }">
               <thead>
-                <tr class="border-b" :style="{ borderColor: brand.colors.border }">
-                  <th class="font-academic-label py-2 text-left" :style="{ color: brand.colors.textMuted }">§</th>
-                  <th class="font-academic-label py-2 text-left" :style="{ color: brand.colors.textMuted }">Ticker</th>
-                  <th class="font-academic-label py-2 text-right" :style="{ color: brand.colors.textMuted }">Preço</th>
-                  <th class="font-academic-label py-2 text-right" :style="{ color: brand.colors.textMuted }">Δ</th>
+                <tr class="border-b" :style="{ borderColor: 'var(--brand-border)' }">
+                  <th class="font-academic-label py-2 text-left" :style="{ color: 'var(--brand-text-muted)' }">§</th>
+                  <th class="font-academic-label py-2 text-left" :style="{ color: 'var(--brand-text-muted)' }">Ticker</th>
+                  <th class="font-academic-label py-2 text-right" :style="{ color: 'var(--brand-text-muted)' }">Preço</th>
+                  <th class="font-academic-label py-2 text-right" :style="{ color: 'var(--brand-text-muted)' }">Δ</th>
                 </tr>
               </thead>
               <tbody>
@@ -1106,10 +1106,10 @@
                   v-for="(row, idx) in researchTopLosers"
                   :key="`down-${row.ticker}`"
                   class="border-b"
-                  :style="{ borderColor: brand.colors.border }"
+                  :style="{ borderColor: 'var(--brand-border)' }"
                 >
                   <td class="py-2.5 pr-2">
-                    <span class="font-academic-mono text-[11px] tabular-nums" :style="{ color: brand.colors.textMuted }">
+                    <span class="font-academic-mono text-[11px] tabular-nums" :style="{ color: 'var(--brand-text-muted)' }">
                       {{ String(idx + 1).padStart(2, '0') }}
                     </span>
                   </td>
@@ -1118,21 +1118,21 @@
                       :to="`/asset/${row.ticker.toLowerCase()}`"
                       class="flex flex-col"
                     >
-                      <span class="font-academic-display text-[15px]" :style="{ color: brand.colors.text }">
+                      <span class="font-academic-display text-[15px]" :style="{ color: 'var(--brand-text)' }">
                         {{ row.ticker }}
                       </span>
-                      <span v-if="row.name" class="font-academic-body truncate text-[11px] italic" :style="{ color: brand.colors.textMuted }">
+                      <span v-if="row.name" class="font-academic-body truncate text-[11px] italic" :style="{ color: 'var(--brand-text-muted)' }">
                         {{ row.name }}
                       </span>
                     </NuxtLink>
                   </td>
                   <td class="py-2.5 text-right">
-                    <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.text }">
+                    <span class="font-academic-mono tabular-nums" :style="{ color: 'var(--brand-text)' }">
                       {{ formatSardinhaPrice(row.price) }}
                     </span>
                   </td>
                   <td class="py-2.5 text-right">
-                    <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.primary }">
+                    <span class="font-academic-mono tabular-nums" :style="{ color: 'var(--brand-primary)' }">
                       {{ Number(row.change || 0).toFixed(2).replace('.', ',') }}%
                     </span>
                   </td>
@@ -1148,40 +1148,40 @@
       <!-- §2 Screener fundamentalista AUVP -->
       <div
         class="py-16 md:py-20"
-        :style="{ backgroundColor: brand.colors.surface }"
+        :style="{ backgroundColor: 'var(--brand-surface)' }"
       >
         <div class="mx-auto max-w-6xl px-6 md:px-10">
           <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
             <div>
-              <span class="font-academic-label" :style="{ color: brand.colors.primary }">
+              <span class="font-academic-label" :style="{ color: 'var(--brand-primary)' }">
                 §2 · Screener fundamentalista
               </span>
-              <h2 class="font-academic-display mt-2 text-3xl md:text-4xl" :style="{ color: brand.colors.text }">
+              <h2 class="font-academic-display mt-2 text-3xl md:text-4xl" :style="{ color: 'var(--brand-text)' }">
                 O que passa no filtro AUVP
               </h2>
-              <p class="font-academic-body mt-3 max-w-2xl text-[13px] italic" :style="{ color: brand.colors.textMuted }">
+              <p class="font-academic-body mt-3 max-w-2xl text-[13px] italic" :style="{ color: 'var(--brand-text-muted)' }">
                 Ações que atravessaram os <span class="red-pen">quatro filtros do método</span>: ROE ≥ 10%, margem líquida ≥ 10%, dívida sob controle e múltiplo razoável.<sup class="footnote-marker">²</sup>
               </p>
             </div>
             <NuxtLink
               to="/ranking/maiores-dividend-yield"
               class="font-academic-body text-[13px] italic transition-opacity hover:opacity-70"
-              :style="{ color: brand.colors.text }"
+              :style="{ color: 'var(--brand-text)' }"
             >
-              Expandir screener <span :style="{ color: brand.colors.primary }">→</span>
+              Expandir screener <span :style="{ color: 'var(--brand-primary)' }">→</span>
             </NuxtLink>
           </div>
 
-          <table class="w-full border-t font-academic-body text-[13px]" :style="{ borderColor: brand.colors.text }">
+          <table class="w-full border-t font-academic-body text-[13px]" :style="{ borderColor: 'var(--brand-text)' }">
             <thead>
-              <tr class="border-b" :style="{ borderColor: brand.colors.border }">
-                <th class="font-academic-label py-3 text-left" :style="{ color: brand.colors.textMuted }">§</th>
-                <th class="font-academic-label py-3 text-left" :style="{ color: brand.colors.textMuted }">Ticker</th>
-                <th class="hidden font-academic-label py-3 text-left md:table-cell" :style="{ color: brand.colors.textMuted }">Setor</th>
-                <th class="font-academic-label py-3 text-right" :style="{ color: brand.colors.textMuted }">P/L</th>
-                <th class="font-academic-label py-3 text-right" :style="{ color: brand.colors.textMuted }">P/VP</th>
-                <th class="font-academic-label py-3 text-right" :style="{ color: brand.colors.textMuted }">ROE</th>
-                <th class="font-academic-label py-3 text-right" :style="{ color: brand.colors.textMuted }">DY</th>
+              <tr class="border-b" :style="{ borderColor: 'var(--brand-border)' }">
+                <th class="font-academic-label py-3 text-left" :style="{ color: 'var(--brand-text-muted)' }">§</th>
+                <th class="font-academic-label py-3 text-left" :style="{ color: 'var(--brand-text-muted)' }">Ticker</th>
+                <th class="hidden font-academic-label py-3 text-left md:table-cell" :style="{ color: 'var(--brand-text-muted)' }">Setor</th>
+                <th class="font-academic-label py-3 text-right" :style="{ color: 'var(--brand-text-muted)' }">P/L</th>
+                <th class="font-academic-label py-3 text-right" :style="{ color: 'var(--brand-text-muted)' }">P/VP</th>
+                <th class="font-academic-label py-3 text-right" :style="{ color: 'var(--brand-text-muted)' }">ROE</th>
+                <th class="font-academic-label py-3 text-right" :style="{ color: 'var(--brand-text-muted)' }">DY</th>
               </tr>
             </thead>
             <tbody>
@@ -1189,52 +1189,52 @@
                 v-for="(row, idx) in researchScreener"
                 :key="`screener-${row.ticker}`"
                 class="border-b"
-                :style="{ borderColor: brand.colors.border }"
+                :style="{ borderColor: 'var(--brand-border)' }"
               >
                 <td class="py-3 pr-2">
-                  <span class="font-academic-mono text-[11px] tabular-nums" :style="{ color: brand.colors.textMuted }">
+                  <span class="font-academic-mono text-[11px] tabular-nums" :style="{ color: 'var(--brand-text-muted)' }">
                     2.{{ idx + 1 }}
                   </span>
                 </td>
                 <td class="py-3">
                   <NuxtLink :to="`/asset/${row.ticker.toLowerCase()}`" class="flex flex-col">
-                    <span class="font-academic-display text-[15px]" :style="{ color: brand.colors.text }">
+                    <span class="font-academic-display text-[15px]" :style="{ color: 'var(--brand-text)' }">
                       {{ row.ticker }}
                     </span>
-                    <span class="font-academic-body truncate text-[11px] italic" :style="{ color: brand.colors.textMuted }">
+                    <span class="font-academic-body truncate text-[11px] italic" :style="{ color: 'var(--brand-text-muted)' }">
                       {{ row.name }}
                     </span>
                   </NuxtLink>
                 </td>
                 <td class="hidden py-3 md:table-cell">
-                  <span class="font-academic-body text-[12px]" :style="{ color: brand.colors.textMuted }">
+                  <span class="font-academic-body text-[12px]" :style="{ color: 'var(--brand-text-muted)' }">
                     {{ row.sector }}
                   </span>
                 </td>
                 <td class="py-3 text-right">
-                  <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.text }">
+                  <span class="font-academic-mono tabular-nums" :style="{ color: 'var(--brand-text)' }">
                     {{ row.pl }}
                   </span>
                 </td>
                 <td class="py-3 text-right">
-                  <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.text }">
+                  <span class="font-academic-mono tabular-nums" :style="{ color: 'var(--brand-text)' }">
                     {{ row.pvp }}
                   </span>
                 </td>
                 <td class="py-3 text-right">
-                  <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.text }">
+                  <span class="font-academic-mono tabular-nums" :style="{ color: 'var(--brand-text)' }">
                     {{ row.roe }}
                   </span>
                 </td>
                 <td class="py-3 text-right">
-                  <span class="font-academic-mono tabular-nums font-semibold" :style="{ color: brand.colors.primary }">
+                  <span class="font-academic-mono tabular-nums font-semibold" :style="{ color: 'var(--brand-primary)' }">
                     {{ row.dy }}
                   </span>
                 </td>
               </tr>
             </tbody>
           </table>
-          <p class="font-academic-body mt-4 text-[11px] italic" :style="{ color: brand.colors.textMuted }">
+          <p class="font-academic-body mt-4 text-[11px] italic" :style="{ color: 'var(--brand-text-muted)' }">
             Critério de corte aplicado: ROE ≥ 10%, margem líquida ≥ 10%, D/E ≤ 1,0 e P/L ≤ 15. Dados do último fechamento disponível.
           </p>
         </div>
@@ -1245,26 +1245,26 @@
       <!-- §3 Setores comparativos -->
       <div class="mx-auto max-w-6xl px-6 py-16 md:px-10 md:py-20">
         <div class="mb-8">
-          <span class="font-academic-label" :style="{ color: brand.colors.primary }">
+          <span class="font-academic-label" :style="{ color: 'var(--brand-primary)' }">
             §3 · Setores em análise
           </span>
-          <h2 class="font-academic-display mt-2 text-3xl md:text-4xl" :style="{ color: brand.colors.text }">
+          <h2 class="font-academic-display mt-2 text-3xl md:text-4xl" :style="{ color: 'var(--brand-text)' }">
             O mercado visto por setor
           </h2>
-          <p class="font-academic-body mt-3 max-w-2xl text-[13px] italic" :style="{ color: brand.colors.textMuted }">
+          <p class="font-academic-body mt-3 max-w-2xl text-[13px] italic" :style="{ color: 'var(--brand-text-muted)' }">
             Médias setoriais em tempo real. Comparar empresas isoladamente sem contextualizar pelo setor é <span class="red-pen-underline">erro de iniciante</span>.
           </p>
         </div>
 
-        <table class="w-full border-t font-academic-body text-[13px]" :style="{ borderColor: brand.colors.text }">
+        <table class="w-full border-t font-academic-body text-[13px]" :style="{ borderColor: 'var(--brand-text)' }">
           <thead>
-            <tr class="border-b" :style="{ borderColor: brand.colors.border }">
-              <th class="font-academic-label py-3 text-left" :style="{ color: brand.colors.textMuted }">§</th>
-              <th class="font-academic-label py-3 text-left" :style="{ color: brand.colors.textMuted }">Setor</th>
-              <th class="font-academic-label py-3 text-right" :style="{ color: brand.colors.textMuted }">Empresas</th>
-              <th class="font-academic-label py-3 text-right" :style="{ color: brand.colors.textMuted }">P/L médio</th>
-              <th class="font-academic-label py-3 text-right" :style="{ color: brand.colors.textMuted }">DY médio</th>
-              <th class="hidden font-academic-label py-3 text-right md:table-cell" :style="{ color: brand.colors.textMuted }">Destaque</th>
+            <tr class="border-b" :style="{ borderColor: 'var(--brand-border)' }">
+              <th class="font-academic-label py-3 text-left" :style="{ color: 'var(--brand-text-muted)' }">§</th>
+              <th class="font-academic-label py-3 text-left" :style="{ color: 'var(--brand-text-muted)' }">Setor</th>
+              <th class="font-academic-label py-3 text-right" :style="{ color: 'var(--brand-text-muted)' }">Empresas</th>
+              <th class="font-academic-label py-3 text-right" :style="{ color: 'var(--brand-text-muted)' }">P/L médio</th>
+              <th class="font-academic-label py-3 text-right" :style="{ color: 'var(--brand-text-muted)' }">DY médio</th>
+              <th class="hidden font-academic-label py-3 text-right md:table-cell" :style="{ color: 'var(--brand-text-muted)' }">Destaque</th>
             </tr>
           </thead>
           <tbody>
@@ -1272,35 +1272,35 @@
               v-for="(row, idx) in researchSectors"
               :key="row.sector"
               class="border-b"
-              :style="{ borderColor: brand.colors.border }"
+              :style="{ borderColor: 'var(--brand-border)' }"
             >
               <td class="py-3 pr-2">
-                <span class="font-academic-mono text-[11px] tabular-nums" :style="{ color: brand.colors.textMuted }">
+                <span class="font-academic-mono text-[11px] tabular-nums" :style="{ color: 'var(--brand-text-muted)' }">
                   3.{{ idx + 1 }}
                 </span>
               </td>
               <td class="py-3">
-                <span class="font-academic-display text-[15px]" :style="{ color: brand.colors.text }">
+                <span class="font-academic-display text-[15px]" :style="{ color: 'var(--brand-text)' }">
                   {{ row.sector }}
                 </span>
               </td>
               <td class="py-3 text-right">
-                <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.text }">
+                <span class="font-academic-mono tabular-nums" :style="{ color: 'var(--brand-text)' }">
                   {{ row.count }}
                 </span>
               </td>
               <td class="py-3 text-right">
-                <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.text }">
+                <span class="font-academic-mono tabular-nums" :style="{ color: 'var(--brand-text)' }">
                   {{ row.avgPL }}
                 </span>
               </td>
               <td class="py-3 text-right">
-                <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.primary }">
+                <span class="font-academic-mono tabular-nums" :style="{ color: 'var(--brand-primary)' }">
                   {{ row.avgDY }}
                 </span>
               </td>
               <td class="hidden py-3 text-right md:table-cell">
-                <span class="font-academic-body text-[12px] italic" :style="{ color: brand.colors.textMuted }">
+                <span class="font-academic-body text-[12px] italic" :style="{ color: 'var(--brand-text-muted)' }">
                   {{ row.highlight }}
                 </span>
               </td>
@@ -1314,39 +1314,39 @@
       <!-- §4 Calendário de proventos -->
       <div
         class="py-16 md:py-20"
-        :style="{ backgroundColor: brand.colors.surface }"
+        :style="{ backgroundColor: 'var(--brand-surface)' }"
       >
         <div class="mx-auto max-w-6xl px-6 md:px-10">
           <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
             <div>
-              <span class="font-academic-label" :style="{ color: brand.colors.primary }">
+              <span class="font-academic-label" :style="{ color: 'var(--brand-primary)' }">
                 §4 · Calendário de proventos
               </span>
-              <h2 class="font-academic-display mt-2 text-3xl md:text-4xl" :style="{ color: brand.colors.text }">
+              <h2 class="font-academic-display mt-2 text-3xl md:text-4xl" :style="{ color: 'var(--brand-text)' }">
                 Próximos pagamentos
               </h2>
-              <p class="font-academic-body mt-3 max-w-2xl text-[13px] italic" :style="{ color: brand.colors.textMuted }">
+              <p class="font-academic-body mt-3 max-w-2xl text-[13px] italic" :style="{ color: 'var(--brand-text-muted)' }">
                 Janela dos próximos 30 dias. Proventos isentos ficam em <span class="red-pen">destaque vermelho</span>; JCP é tributado na fonte.
               </p>
             </div>
             <NuxtLink
               to="/dividendos/calendario"
               class="font-academic-body text-[13px] italic transition-opacity hover:opacity-70"
-              :style="{ color: brand.colors.text }"
+              :style="{ color: 'var(--brand-text)' }"
             >
-              Ver calendário completo <span :style="{ color: brand.colors.primary }">→</span>
+              Ver calendário completo <span :style="{ color: 'var(--brand-primary)' }">→</span>
             </NuxtLink>
           </div>
 
-          <table class="w-full border-t font-academic-body text-[13px]" :style="{ borderColor: brand.colors.text }">
+          <table class="w-full border-t font-academic-body text-[13px]" :style="{ borderColor: 'var(--brand-text)' }">
             <thead>
-              <tr class="border-b" :style="{ borderColor: brand.colors.border }">
-                <th class="font-academic-label py-3 text-left" :style="{ color: brand.colors.textMuted }">Data-com</th>
-                <th class="font-academic-label py-3 text-left" :style="{ color: brand.colors.textMuted }">Data-pag</th>
-                <th class="font-academic-label py-3 text-left" :style="{ color: brand.colors.textMuted }">Ticker</th>
-                <th class="font-academic-label py-3 text-left" :style="{ color: brand.colors.textMuted }">Tipo</th>
-                <th class="font-academic-label py-3 text-right" :style="{ color: brand.colors.textMuted }">Valor</th>
-                <th class="hidden font-academic-label py-3 text-right md:table-cell" :style="{ color: brand.colors.textMuted }">DY unit.</th>
+              <tr class="border-b" :style="{ borderColor: 'var(--brand-border)' }">
+                <th class="font-academic-label py-3 text-left" :style="{ color: 'var(--brand-text-muted)' }">Data-com</th>
+                <th class="font-academic-label py-3 text-left" :style="{ color: 'var(--brand-text-muted)' }">Data-pag</th>
+                <th class="font-academic-label py-3 text-left" :style="{ color: 'var(--brand-text-muted)' }">Ticker</th>
+                <th class="font-academic-label py-3 text-left" :style="{ color: 'var(--brand-text-muted)' }">Tipo</th>
+                <th class="font-academic-label py-3 text-right" :style="{ color: 'var(--brand-text-muted)' }">Valor</th>
+                <th class="hidden font-academic-label py-3 text-right md:table-cell" :style="{ color: 'var(--brand-text-muted)' }">DY unit.</th>
               </tr>
             </thead>
             <tbody>
@@ -1354,38 +1354,38 @@
                 v-for="row in researchDividends"
                 :key="`${row.ticker}-${row.exDate}`"
                 class="border-b"
-                :style="{ borderColor: brand.colors.border }"
+                :style="{ borderColor: 'var(--brand-border)' }"
               >
                 <td class="py-3 pr-4">
-                  <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.text }">
+                  <span class="font-academic-mono tabular-nums" :style="{ color: 'var(--brand-text)' }">
                     {{ row.exDate }}
                   </span>
                 </td>
                 <td class="py-3 pr-4">
-                  <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.textMuted }">
+                  <span class="font-academic-mono tabular-nums" :style="{ color: 'var(--brand-text-muted)' }">
                     {{ row.payDate }}
                   </span>
                 </td>
                 <td class="py-3">
-                  <span class="font-academic-display text-[15px]" :style="{ color: brand.colors.text }">
+                  <span class="font-academic-display text-[15px]" :style="{ color: 'var(--brand-text)' }">
                     {{ row.ticker }}
                   </span>
                 </td>
                 <td class="py-3">
                   <span
                     class="font-academic-label"
-                    :style="{ color: row.type === 'Dividendo' ? brand.colors.primary : brand.colors.textMuted }"
+                    :style="{ color: row.type === 'Dividendo' ? 'var(--brand-primary)' : 'var(--brand-text-muted)' }"
                   >
                     {{ row.type }}
                   </span>
                 </td>
                 <td class="py-3 text-right">
-                  <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.text }">
+                  <span class="font-academic-mono tabular-nums" :style="{ color: 'var(--brand-text)' }">
                     R$ {{ row.amount }}
                   </span>
                 </td>
                 <td class="hidden py-3 text-right md:table-cell">
-                  <span class="font-academic-mono tabular-nums" :style="{ color: brand.colors.primary }">
+                  <span class="font-academic-mono tabular-nums" :style="{ color: 'var(--brand-primary)' }">
                     {{ row.unitDY }}
                   </span>
                 </td>
@@ -1400,13 +1400,13 @@
       <!-- §5 Notas do professor (últimas análises publicadas) -->
       <div class="mx-auto max-w-6xl px-6 py-16 md:px-10 md:py-20">
         <div class="mb-8">
-          <span class="font-academic-label" :style="{ color: brand.colors.primary }">
+          <span class="font-academic-label" :style="{ color: 'var(--brand-primary)' }">
             §5 · Notas do professor
           </span>
-          <h2 class="font-academic-display mt-2 text-3xl md:text-4xl" :style="{ color: brand.colors.text }">
+          <h2 class="font-academic-display mt-2 text-3xl md:text-4xl" :style="{ color: 'var(--brand-text)' }">
             Últimas análises publicadas
           </h2>
-          <p class="font-academic-body mt-3 max-w-2xl text-[13px] italic" :style="{ color: brand.colors.textMuted }">
+          <p class="font-academic-body mt-3 max-w-2xl text-[13px] italic" :style="{ color: 'var(--brand-text-muted)' }">
             Anotações recentes da mesa. Cada título leva para o estudo completo do ativo.
           </p>
         </div>
@@ -1416,18 +1416,18 @@
             v-for="(note, idx) in researchAnalystNotes"
             :key="note.ticker"
             class="grid items-start gap-4 border-t py-5 md:grid-cols-12 md:gap-8"
-            :style="{ borderColor: brand.colors.border }"
+            :style="{ borderColor: 'var(--brand-border)' }"
           >
             <div class="md:col-span-1">
-              <span class="font-academic-mono text-[11px] tabular-nums" :style="{ color: brand.colors.textMuted }">
+              <span class="font-academic-mono text-[11px] tabular-nums" :style="{ color: 'var(--brand-text-muted)' }">
                 5.{{ idx + 1 }}
               </span>
             </div>
             <div class="md:col-span-2">
-              <span class="font-academic-display text-lg" :style="{ color: brand.colors.text }">
+              <span class="font-academic-display text-lg" :style="{ color: 'var(--brand-text)' }">
                 {{ note.ticker }}
               </span>
-              <span class="mt-0.5 block font-academic-mono text-[10px] uppercase tabular-nums" :style="{ color: brand.colors.textMuted }">
+              <span class="mt-0.5 block font-academic-mono text-[10px] uppercase tabular-nums" :style="{ color: 'var(--brand-text-muted)' }">
                 {{ note.date }}
               </span>
             </div>
@@ -1435,17 +1435,17 @@
               <NuxtLink
                 :to="`/asset/${note.ticker.toLowerCase()}`"
                 class="font-academic-display text-lg transition-opacity hover:opacity-70"
-                :style="{ color: brand.colors.text }"
+                :style="{ color: 'var(--brand-text)' }"
               >
                 {{ note.title }}
               </NuxtLink>
-              <p class="font-academic-body mt-1 text-[13px] italic" :style="{ color: brand.colors.textMuted }">
+              <p class="font-academic-body mt-1 text-[13px] italic" :style="{ color: 'var(--brand-text-muted)' }">
                 {{ note.excerpt }}
               </p>
             </div>
             <div class="md:col-span-3 md:text-right">
-              <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">Veredicto</span>
-              <span class="mt-1 block font-academic-display text-[15px]" :style="{ color: brand.colors.primary }">
+              <span class="font-academic-label" :style="{ color: 'var(--brand-text-muted)' }">Veredicto</span>
+              <span class="mt-1 block font-academic-display text-[15px]" :style="{ color: 'var(--brand-primary)' }">
                 {{ note.verdict }}
               </span>
             </div>
@@ -1458,19 +1458,19 @@
       <!-- §6 Ecossistema AUVP -->
       <div class="mx-auto max-w-6xl px-6 py-20 md:px-10 md:py-24">
         <div class="mb-10">
-          <span class="font-academic-label" :style="{ color: brand.colors.primary }">
+          <span class="font-academic-label" :style="{ color: 'var(--brand-primary)' }">
             §6 · Ecossistema AUVP
           </span>
-          <h2 class="font-academic-display mt-2 text-3xl md:text-4xl" :style="{ color: brand.colors.text }">
+          <h2 class="font-academic-display mt-2 text-3xl md:text-4xl" :style="{ color: 'var(--brand-text)' }">
             Continuar o estudo vai muito além desta página
           </h2>
-          <p class="font-academic-body mt-4 max-w-2xl" :style="{ color: brand.colors.text, fontSize: '15px' }">
+          <p class="font-academic-body mt-4 max-w-2xl" :style="{ color: 'var(--brand-text)', fontSize: '15px' }">
             A plataforma é o <span class="red-pen">terminal de dados</span>. O método, a comunidade e a escola são o que transformam dados em decisão. Tudo isso vive dentro da AUVP.
           </p>
         </div>
 
-        <div class="grid gap-px border" :style="{ borderColor: brand.colors.text, backgroundColor: brand.colors.text }">
-          <div class="grid md:grid-cols-2" :style="{ gap: '1px', backgroundColor: brand.colors.text }">
+        <div class="grid gap-px border" :style="{ borderColor: 'var(--brand-text)', backgroundColor: 'var(--brand-text)' }">
+          <div class="grid md:grid-cols-2" :style="{ gap: '1px', backgroundColor: 'var(--brand-text)' }">
             <a
               v-for="(item, idx) in researchAUVPEcosystem"
               :key="item.title"
@@ -1478,30 +1478,30 @@
               target="_blank"
               rel="noopener noreferrer"
               class="group flex flex-col gap-3 border-0 p-8 transition-colors md:p-10"
-              :style="{ backgroundColor: brand.colors.background }"
-              @mouseenter="($event.currentTarget as HTMLElement).style.backgroundColor = brand.colors.surface"
-              @mouseleave="($event.currentTarget as HTMLElement).style.backgroundColor = brand.colors.background"
+              :style="{ backgroundColor: 'var(--brand-background)' }"
+              @mouseenter="($event.currentTarget as HTMLElement).style.backgroundColor = 'var(--brand-surface)'"
+              @mouseleave="($event.currentTarget as HTMLElement).style.backgroundColor = 'var(--brand-background)'"
             >
               <div class="flex items-start justify-end">
-                <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">
+                <span class="font-academic-label" :style="{ color: 'var(--brand-text-muted)' }">
                   {{ item.kind }}
                 </span>
               </div>
               <h3
                 class="font-academic-display"
                 :style="{
-                  color: brand.colors.text,
+                  color: 'var(--brand-text)',
                   fontSize: 'clamp(1.5rem, 2.5vw, 2rem)',
                   lineHeight: '1.05',
                 }"
               >
                 {{ item.title }}
               </h3>
-              <p class="font-academic-body" :style="{ color: brand.colors.text, fontSize: '14px' }">
+              <p class="font-academic-body" :style="{ color: 'var(--brand-text)', fontSize: '14px' }">
                 {{ item.body }}
               </p>
-              <div class="mt-2 flex items-center gap-3 border-t pt-4" :style="{ borderColor: brand.colors.border }">
-                <span class="font-academic-label transition-transform group-hover:translate-x-1" :style="{ color: brand.colors.primary }">
+              <div class="mt-2 flex items-center gap-3 border-t pt-4" :style="{ borderColor: 'var(--brand-border)' }">
+                <span class="font-academic-label transition-transform group-hover:translate-x-1" :style="{ color: 'var(--brand-primary)' }">
                   {{ item.cta }} →
                 </span>
               </div>
@@ -1513,42 +1513,42 @@
       <!-- §7 Closing: signature + founder quote + footnotes -->
       <div
         class="py-20 md:py-24"
-        :style="{ backgroundColor: brand.colors.surface, borderTop: `1px solid ${brand.colors.border}` }"
+        :style="{ backgroundColor: 'var(--brand-surface)', borderTop: `1px solid ${brand.colors.border}` }"
       >
         <div class="mx-auto max-w-6xl px-6 md:px-10">
-          <span class="font-academic-label" :style="{ color: brand.colors.primary }">
+          <span class="font-academic-label" :style="{ color: 'var(--brand-primary)' }">
             Considerações finais
           </span>
           <h2
             class="font-academic-display mt-4"
             :style="{
-              color: brand.colors.text,
+              color: 'var(--brand-text)',
               fontSize: 'clamp(2.25rem, 4.5vw, 3.75rem)',
             }"
           >
-            A única verdade possível <span class="italic" :style="{ color: brand.colors.primary }">é o conhecimento.</span>
+            A única verdade possível <span class="italic" :style="{ color: 'var(--brand-primary)' }">é o conhecimento.</span>
           </h2>
 
           <blockquote
             class="font-academic-body mt-8 max-w-3xl border-l-2 pl-6 italic"
             :style="{
-              color: brand.colors.text,
-              borderColor: brand.colors.primary,
+              color: 'var(--brand-text)',
+              borderColor: 'var(--brand-primary)',
               fontSize: '18px',
             }"
           >
             "{{ brand.hero.founderQuote }}"
           </blockquote>
 
-          <div class="mt-14 flex flex-wrap items-start justify-between gap-6 border-t pt-10" :style="{ borderColor: brand.colors.border }">
+          <div class="mt-14 flex flex-wrap items-start justify-between gap-6 border-t pt-10" :style="{ borderColor: 'var(--brand-border)' }">
             <div class="flex flex-col gap-1">
-              <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">
+              <span class="font-academic-label" :style="{ color: 'var(--brand-text-muted)' }">
                 Assinado por
               </span>
-              <span class="font-academic-display text-2xl" :style="{ color: brand.colors.text }">
+              <span class="font-academic-display text-2xl" :style="{ color: 'var(--brand-text)' }">
                 {{ brand.founder?.name || 'Raul Sena' }}
               </span>
-              <span class="font-academic-body text-[13px] italic" :style="{ color: brand.colors.textMuted }">
+              <span class="font-academic-body text-[13px] italic" :style="{ color: 'var(--brand-text-muted)' }">
                 Fundador · AUVP, A Única Verdade Possível
               </span>
             </div>
@@ -1557,9 +1557,9 @@
                 to="/auth/register"
                 class="inline-flex items-center gap-3 border-2 px-5 py-2.5 font-academic-label transition-colors"
                 :style="{
-                  backgroundColor: brand.colors.primary,
-                  color: brand.colors.background,
-                  borderColor: brand.colors.primary,
+                  backgroundColor: 'var(--brand-primary)',
+                  color: 'var(--brand-background)',
+                  borderColor: 'var(--brand-primary)',
                 }"
               >
                 <span>ACESSAR A PLATAFORMA</span>
@@ -1570,26 +1570,26 @@
                 target="_blank"
                 rel="noopener noreferrer"
                 class="font-academic-body text-[13px] italic transition-opacity hover:opacity-70"
-                :style="{ color: brand.colors.text }"
+                :style="{ color: 'var(--brand-text)' }"
               >
-                Conhecer a AUVP Escola <span :style="{ color: brand.colors.primary }">→</span>
+                Conhecer a AUVP Escola <span :style="{ color: 'var(--brand-primary)' }">→</span>
               </a>
             </div>
           </div>
 
           <!-- Footnotes -->
-          <div class="mt-14 border-t pt-6" :style="{ borderColor: brand.colors.border }">
-            <span class="font-academic-label" :style="{ color: brand.colors.textMuted }">
+          <div class="mt-14 border-t pt-6" :style="{ borderColor: 'var(--brand-border)' }">
+            <span class="font-academic-label" :style="{ color: 'var(--brand-text-muted)' }">
               Notas de rodapé
             </span>
             <ol class="mt-4 flex flex-col gap-3">
-              <li class="font-academic-body text-[12px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
+              <li class="font-academic-body text-[12px] leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
                 <sup class="footnote-marker">¹</sup> Variação diária é ruído. O analista olha o radar do pregão para checar contexto, não para tomar decisão.
               </li>
-              <li class="font-academic-body text-[12px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
+              <li class="font-academic-body text-[12px] leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
                 <sup class="footnote-marker">²</sup> Os filtros do método AUVP são detalhados no curso AUVP Escola, cada corte tem justificativa histórica e comparativa.
               </li>
-              <li class="font-academic-body text-[12px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
+              <li class="font-academic-body text-[12px] leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
                 <sup class="footnote-marker">³</sup> Esta publicação não constitui recomendação de compra ou venda. AUVP não opera aconselhamento individualizado, oferece método e plataforma de estudo.
               </li>
             </ol>
@@ -1599,26 +1599,26 @@
     </section>
 
     <!-- ========== HERO: MINIMAL (Sardinha, compacto, data-first, sem firula) ========== -->
-    <section v-if="brand.hero.variant === 'minimal'" :style="{ borderColor: brand.colors.border }" class="relative overflow-hidden border-b">
+    <section v-if="brand.hero.variant === 'minimal'" :style="{ borderColor: 'var(--brand-border)' }" class="relative overflow-hidden border-b">
       <div class="relative px-6 py-10 md:py-14">
         <div class="mx-auto max-w-5xl">
           <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between md:gap-12">
             <!-- Left: brand + headline compact -->
             <div class="flex-1">
               <BrandLogo variant="full" class="mb-4 h-8 md:h-10" />
-              <h2 class="mb-3 text-2xl leading-tight sm:text-3xl md:text-4xl" :class="[brand.font.headingWeight, brand.font.headingStyle]" :style="{ color: brand.colors.text }">
+              <h2 class="mb-3 text-2xl leading-tight sm:text-3xl md:text-4xl" :class="[brand.font.headingWeight, brand.font.headingStyle]" :style="{ color: 'var(--brand-text)' }">
                 <template v-for="(line, idx) in brand.hero.title.split('\n')" :key="idx">
                   <br v-if="idx > 0" />{{ line }}
                 </template>
               </h2>
-              <p class="mb-6 max-w-lg text-sm md:text-base" :style="{ color: brand.colors.textMuted }">
+              <p class="mb-6 max-w-lg text-sm md:text-base" :style="{ color: 'var(--brand-text-muted)' }">
                 {{ brand.hero.subtitle }}
               </p>
               <div class="flex items-center gap-3">
                 <UButton to="/auth/register" color="secondary" size="lg" :icon="brand.hero.ctaIcon" class="transition-[transform,opacity,box-shadow,background-color,border-color] hover:scale-[1.02]">
                   {{ brand.hero.ctaLabel }}
                 </UButton>
-                <UButton to="/auth/login" variant="ghost" size="lg" :style="{ color: brand.colors.textMuted }">
+                <UButton to="/auth/login" variant="ghost" size="lg" :style="{ color: 'var(--brand-text-muted)' }">
                   {{ brand.hero.ctaSecondaryLabel }}
                 </UButton>
               </div>
@@ -1626,15 +1626,15 @@
 
             <!-- Right: key metrics preview -->
             <div class="flex flex-col gap-3">
-              <div class="flex items-center gap-2 border-l-2 pl-4 brand-card-sm" :style="{ borderColor: brand.colors.primary }">
+              <div class="flex items-center gap-2 border-l-2 pl-4 brand-card-sm" :style="{ borderColor: 'var(--brand-primary)' }">
                 <div>
-                  <p class="text-xs" :style="{ color: brand.colors.textMuted }">{{ brand.founder.name }}</p>
+                  <p class="text-xs" :style="{ color: 'var(--brand-text-muted)' }">{{ brand.founder.name }}</p>
                   <p class="text-sm italic" :style="{ color: `${brand.colors.text}99` }">"{{ brand.hero.founderQuote }}"</p>
                 </div>
               </div>
-              <div class="flex flex-wrap gap-4 text-xs" :style="{ color: brand.colors.textMuted }">
+              <div class="flex flex-wrap gap-4 text-xs" :style="{ color: 'var(--brand-text-muted)' }">
                 <div v-for="(indicator, idx) in brand.hero.trustIndicators" :key="idx" class="flex items-center gap-1">
-                  <span class="h-1.5 w-1.5 rounded-full" :style="{ backgroundColor: brand.colors.primary }" />
+                  <span class="h-1.5 w-1.5 rounded-full" :style="{ backgroundColor: 'var(--brand-primary)' }" />
                   <span>{{ indicator }}</span>
                 </div>
               </div>
@@ -1723,13 +1723,13 @@
     <!-- ========== HERO: MENTOR (Primo Rico, book-cover / masterclass aesthetic) ========== -->
     <section
       v-if="brand.hero.variant === 'mentor'"
-      :style="{ backgroundColor: brand.colors.background, color: brand.colors.text }"
+      :style="{ backgroundColor: 'var(--brand-background)', color: 'var(--brand-text)' }"
       class="relative overflow-hidden"
     >
       <!-- Top tape: thick orange strip with "MANUAL DO PRIMO" breadcrumb -->
       <div
         class="relative flex items-center gap-4 px-6 py-3 md:px-10"
-        :style="{ backgroundColor: brand.colors.primary, color: brand.colors.background }"
+        :style="{ backgroundColor: 'var(--brand-primary)', color: 'var(--brand-background)' }"
       >
         <span class="font-mentor-eyebrow">{{ brand.hero.badge }}</span>
         <span class="flex-1 border-t" :style="{ borderColor: `${brand.colors.background}40` }" />
@@ -1741,7 +1741,7 @@
         <!-- Portrait column (decorative B&W placeholder with orange blend) -->
         <div
           class="relative aspect-[4/5] overflow-hidden md:col-span-5 md:aspect-auto md:min-h-[720px]"
-          :style="{ backgroundColor: brand.colors.tertiary }"
+          :style="{ backgroundColor: 'var(--brand-tertiary)' }"
         >
           <!-- Photo layer: high-contrast B&W with orange multiply overlay -->
           <div
@@ -1769,12 +1769,12 @@
           />
           <!-- Bottom-left: founder name plate -->
           <div class="absolute bottom-6 left-6 right-6 flex flex-col gap-1">
-            <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
+            <span class="font-mentor-eyebrow" :style="{ color: 'var(--brand-primary)' }">
               SEU MENTOR
             </span>
             <span
               class="font-mentor-display text-3xl md:text-4xl"
-              :style="{ color: brand.colors.background + 'F2' }"
+              :style="{ color: 'var(--brand-background)' + 'F2' }"
             >
               {{ brand.founder?.name || 'Thiago Nigro' }}
             </span>
@@ -1788,7 +1788,7 @@
           <!-- Vertical orange ticker on the far right edge of the image -->
           <div
             class="absolute right-0 top-0 h-full w-1"
-            :style="{ backgroundColor: brand.colors.primary }"
+            :style="{ backgroundColor: 'var(--brand-primary)' }"
           />
         </div>
 
@@ -1796,14 +1796,14 @@
         <div class="flex flex-col justify-center px-6 py-16 md:col-span-7 md:px-14 md:py-20">
           <span
             class="font-mentor-eyebrow"
-            :style="{ color: brand.colors.primary }"
+            :style="{ color: 'var(--brand-primary)' }"
           >
             CAPÍTULO I · CONSTRUÇÃO DE PATRIMÔNIO
           </span>
           <h1
             class="font-mentor-display mt-6 leading-[0.85]"
             :style="{
-              color: brand.colors.text,
+              color: 'var(--brand-text)',
               fontSize: 'clamp(3.5rem, 8vw, 8rem)',
             }"
           >
@@ -1811,7 +1811,7 @@
               <br v-if="idx > 0" />
               <span
                 v-if="idx === 1"
-                :style="{ color: brand.colors.primary }"
+                :style="{ color: 'var(--brand-primary)' }"
               >{{ line }}</span>
               <span v-else>{{ line }}</span>
             </template>
@@ -1820,7 +1820,7 @@
           <!-- Chunky 4px orange rule -->
           <hr
             class="mentor-rule mt-8 max-w-[5rem]"
-            :style="{ backgroundColor: brand.colors.primary }"
+            :style="{ backgroundColor: 'var(--brand-primary)' }"
           />
 
           <p
@@ -1836,8 +1836,8 @@
               to="/auth/register"
               class="group inline-flex items-center gap-3 px-8 py-4 font-mentor-eyebrow text-[12px] transition-transform hover:-translate-y-0.5"
               :style="{
-                backgroundColor: brand.colors.primary,
-                color: brand.colors.background,
+                backgroundColor: 'var(--brand-primary)',
+                color: 'var(--brand-background)',
                 letterSpacing: '0.15em',
               }"
             >
@@ -1848,7 +1848,7 @@
               to="/auth/login"
               class="font-mentor-eyebrow border-b pb-1 transition-opacity hover:opacity-70"
               :style="{
-                color: brand.colors.text,
+                color: 'var(--brand-text)',
                 borderColor: `${brand.colors.text}40`,
               }"
             >
@@ -1865,13 +1865,13 @@
             >
               <span
                 class="font-mentor-eyebrow"
-                :style="{ color: brand.colors.primary }"
+                :style="{ color: 'var(--brand-primary)' }"
               >
                 {{ String(i + 1).padStart(2, '0') }}
               </span>
               <span
                 class="text-sm font-bold leading-tight md:text-base"
-                :style="{ color: brand.colors.text, textTransform: 'uppercase', letterSpacing: '0.02em' }"
+                :style="{ color: 'var(--brand-text)', textTransform: 'uppercase', letterSpacing: '0.02em' }"
               >
                 {{ indicator }}
               </span>
@@ -1885,24 +1885,24 @@
         class="relative border-t border-b py-20 md:py-28"
         :style="{
           borderColor: `${brand.colors.text}15`,
-          backgroundColor: brand.colors.surface,
+          backgroundColor: 'var(--brand-surface)',
         }"
       >
         <div class="mx-auto max-w-6xl px-6 md:px-10">
-          <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
+          <span class="font-mentor-eyebrow" :style="{ color: 'var(--brand-primary)' }">
             O LIVRO · DO MIL AO MILHÃO
           </span>
           <blockquote
             class="font-mentor-quote mt-6 leading-[0.95]"
             :style="{
-              color: brand.colors.text,
+              color: 'var(--brand-text)',
               fontSize: 'clamp(2.5rem, 6.5vw, 6rem)',
             }"
           >
             "{{ brand.hero.founderQuote || brand.founder?.signaturePhrase || 'Liberdade ou mediocridade. A escolha é sua.' }}"
           </blockquote>
           <div class="mt-10 flex items-center gap-4">
-            <div class="h-[2px] w-12" :style="{ backgroundColor: brand.colors.primary }" />
+            <div class="h-[2px] w-12" :style="{ backgroundColor: 'var(--brand-primary)' }" />
             <span class="font-mentor-eyebrow" :style="{ color: `${brand.colors.text}99` }">
               {{ (brand.founder?.name || 'THIAGO NIGRO').toUpperCase() }} · AUTOR DO BEST-SELLER
             </span>
@@ -1913,13 +1913,13 @@
       <!-- Chapter II: Method ARCA, 4 pillars -->
       <div class="mx-auto max-w-6xl px-6 py-20 md:px-10 md:py-28">
         <div class="mb-12 flex flex-col gap-3">
-          <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
+          <span class="font-mentor-eyebrow" :style="{ color: 'var(--brand-primary)' }">
             CAPÍTULO II
           </span>
           <h2
             class="font-mentor-display"
             :style="{
-              color: brand.colors.text,
+              color: 'var(--brand-text)',
               fontSize: 'clamp(2.5rem, 5vw, 4.5rem)',
             }"
           >
@@ -1945,7 +1945,7 @@
             <div class="md:col-span-1">
               <span
                 class="font-mentor-display text-5xl md:text-6xl"
-                :style="{ color: brand.colors.primary }"
+                :style="{ color: 'var(--brand-primary)' }"
               >
                 {{ String(idx + 1).padStart(2, '0') }}
               </span>
@@ -1954,7 +1954,7 @@
             <div class="md:col-span-3 md:pl-2">
               <span
                 class="font-mentor-display text-3xl md:text-4xl"
-                :style="{ color: brand.colors.text }"
+                :style="{ color: 'var(--brand-text)' }"
               >
                 {{ pillar.letter }}
               </span>
@@ -1977,12 +1977,12 @@
                 :to="pillar.to"
                 class="group/link inline-flex items-center gap-2 border-b pb-1 font-mentor-eyebrow transition-colors"
                 :style="{
-                  color: brand.colors.text,
-                  borderColor: brand.colors.primary,
+                  color: 'var(--brand-text)',
+                  borderColor: 'var(--brand-primary)',
                 }"
               >
                 <span>EXPLORAR</span>
-                <span class="inline-block transition-transform group-hover/link:translate-x-1" :style="{ color: brand.colors.primary }">→</span>
+                <span class="inline-block transition-transform group-hover/link:translate-x-1" :style="{ color: 'var(--brand-primary)' }">→</span>
               </NuxtLink>
             </div>
           </div>
@@ -1994,11 +1994,11 @@
         class="border-t border-b py-16 md:py-20"
         :style="{
           borderColor: `${brand.colors.text}15`,
-          backgroundColor: brand.colors.surface,
+          backgroundColor: 'var(--brand-surface)',
         }"
       >
         <div class="mx-auto max-w-6xl px-6 md:px-10">
-          <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
+          <span class="font-mentor-eyebrow" :style="{ color: 'var(--brand-primary)' }">
             OS NÚMEROS
           </span>
           <div class="mt-8 grid gap-px md:grid-cols-4" :style="{ backgroundColor: `${brand.colors.text}18` }">
@@ -2006,12 +2006,12 @@
               v-for="(stat, idx) in mentorStats"
               :key="stat.label"
               class="flex flex-col gap-2 px-6 py-8 md:py-10"
-              :style="{ backgroundColor: brand.colors.surface }"
+              :style="{ backgroundColor: 'var(--brand-surface)' }"
             >
               <span
                 class="font-mentor-display tabular-nums"
                 :style="{
-                  color: brand.colors.text,
+                  color: 'var(--brand-text)',
                   fontSize: 'clamp(2.5rem, 4.5vw, 4rem)',
                 }"
               >
@@ -2030,19 +2030,19 @@
 
       <!-- Closing CTA: monumental "A ESCOLHA É SUA" -->
       <div class="mx-auto max-w-6xl px-6 py-24 text-center md:px-10 md:py-32">
-        <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
+        <span class="font-mentor-eyebrow" :style="{ color: 'var(--brand-primary)' }">
           CAPÍTULO FINAL
         </span>
         <h2
           class="font-mentor-display mt-6"
           :style="{
-            color: brand.colors.text,
+            color: 'var(--brand-text)',
             fontSize: 'clamp(3rem, 10vw, 10rem)',
           }"
         >
           A ESCOLHA
           <br />
-          <span :style="{ color: brand.colors.primary }">É SUA.</span>
+          <span :style="{ color: 'var(--brand-primary)' }">É SUA.</span>
         </h2>
         <p
           class="mx-auto mt-8 max-w-xl text-base md:text-lg"
@@ -2055,8 +2055,8 @@
             to="/auth/register"
             class="group inline-flex items-center gap-3 px-10 py-5 font-mentor-eyebrow text-[13px] transition-transform hover:-translate-y-0.5"
             :style="{
-              backgroundColor: brand.colors.primary,
-              color: brand.colors.background,
+              backgroundColor: 'var(--brand-primary)',
+              color: 'var(--brand-background)',
               letterSpacing: '0.18em',
             }"
           >
@@ -2073,7 +2073,7 @@
     <!-- ========== HERO: EDITORIAL (Norte Capital, letter from your advisor, private-bank tone) ========== -->
     <section
       v-if="brand.hero.variant === 'editorial'"
-      :style="{ backgroundColor: brand.colors.background }"
+      :style="{ backgroundColor: 'var(--brand-background)' }"
       class="relative"
     >
       <!-- Page header strip: eyebrow + date + "page number" counter -->
@@ -2083,20 +2083,20 @@
         <div class="flex flex-col gap-0.5">
           <span
             class="font-small-caps text-[11px]"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
           >
             Norte Capital &nbsp;·&nbsp; Assessoria de Investimentos
           </span>
           <span
             class="font-editorial-body text-[12px] italic"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
           >
             {{ editorialDate }}
           </span>
         </div>
         <span
           class="font-editorial-body text-[11px] italic tabular-nums"
-          :style="{ color: brand.colors.textMuted }"
+          :style="{ color: 'var(--brand-text-muted)' }"
         >
           Carta Mensal · {{ editorialDate }}
         </span>
@@ -2106,11 +2106,11 @@
       <div class="mx-auto max-w-5xl px-6 pb-6 pt-16 md:px-12 md:pt-24">
         <h1
           class="font-editorial-display max-w-4xl leading-[0.92] tracking-tight"
-          :style="{ color: brand.colors.text, fontSize: 'clamp(3.5rem, 9vw, 7.5rem)' }"
+          :style="{ color: 'var(--brand-text)', fontSize: 'clamp(3.5rem, 9vw, 7.5rem)' }"
         >
           <template v-for="(line, idx) in brand.hero.title.split('\n')" :key="idx">
             <br v-if="idx > 0" />
-            <span v-if="idx === 1" class="italic" :style="{ color: brand.colors.secondary }">{{ line }}</span>
+            <span v-if="idx === 1" class="italic" :style="{ color: 'var(--brand-secondary)' }">{{ line }}</span>
             <span v-else>{{ line }}</span>
           </template>
         </h1>
@@ -2119,7 +2119,7 @@
 
         <p
           class="font-editorial-body max-w-2xl"
-          :style="{ color: brand.colors.text, fontSize: 'clamp(1.15rem, 1.4vw, 1.35rem)' }"
+          :style="{ color: 'var(--brand-text)', fontSize: 'clamp(1.15rem, 1.4vw, 1.35rem)' }"
         >
           {{ brand.hero.subtitle }}
         </p>
@@ -2131,19 +2131,19 @@
             to="/auth/register"
             class="group inline-flex items-center gap-3 border-b pb-1 font-editorial-body text-lg transition-colors"
             :style="{
-              borderColor: brand.colors.secondary,
-              color: brand.colors.text,
+              borderColor: 'var(--brand-secondary)',
+              color: 'var(--brand-text)',
             }"
-            @mouseenter="($event.currentTarget as HTMLElement).style.borderColor = brand.colors.text"
-            @mouseleave="($event.currentTarget as HTMLElement).style.borderColor = brand.colors.secondary"
+            @mouseenter="($event.currentTarget as HTMLElement).style.borderColor = 'var(--brand-text)'"
+            @mouseleave="($event.currentTarget as HTMLElement).style.borderColor = 'var(--brand-secondary)'"
           >
             <span>{{ brand.hero.ctaLabel }}</span>
-            <span class="inline-block transition-transform group-hover:translate-x-1" :style="{ color: brand.colors.secondary }">-→</span>
+            <span class="inline-block transition-transform group-hover:translate-x-1" :style="{ color: 'var(--brand-secondary)' }">-→</span>
           </NuxtLink>
           <NuxtLink
             to="/auth/login"
             class="font-editorial-body text-lg italic transition-opacity hover:opacity-70"
-            :style="{ color: brand.colors.textMuted }"
+            :style="{ color: 'var(--brand-text-muted)' }"
           >
             {{ brand.hero.ctaSecondaryLabel }}
           </NuxtLink>
@@ -2155,13 +2155,13 @@
         <div class="md:col-span-4">
           <span
             class="font-small-caps text-[11px]"
-            :style="{ color: brand.colors.secondary }"
+            :style="{ color: 'var(--brand-secondary)' }"
           >
             Capítulo I
           </span>
           <h2
             class="font-editorial-display mt-1 text-3xl leading-tight md:text-4xl"
-            :style="{ color: brand.colors.text }"
+            :style="{ color: 'var(--brand-text)' }"
           >
             Como trabalhamos
           </h2>
@@ -2169,13 +2169,13 @@
         <div class="mt-6 md:col-span-7 md:col-start-6 md:mt-0">
           <p
             class="font-editorial-body dropcap"
-            :style="{ color: brand.colors.text, fontSize: '1.15rem' }"
+            :style="{ color: 'var(--brand-text)', fontSize: '1.15rem' }"
           >
             Nossa equipe de oito assessores certificados CFA atende um número limitado de famílias. Cada carteira é construída a partir de uma conversa, sobre seus objetivos, seu horizonte, suas obrigações de médio prazo, e não a partir de um formulário preenchido na pressa.
           </p>
           <p
             class="font-editorial-body mt-6"
-            :style="{ color: brand.colors.text, fontSize: '1.15rem' }"
+            :style="{ color: 'var(--brand-text)', fontSize: '1.15rem' }"
           >
             Uma vez construída, sua carteira é revisada trimestralmente em reunião presencial ou por vídeo. Entre as reuniões, você acompanha tudo por esta plataforma, recebe a <em>carta mensal</em> do seu assessor e pode falar conosco quando precisar, sem secretária eletrônica e sem fila de atendimento.
           </p>
@@ -2189,13 +2189,13 @@
         <div class="md:col-span-4">
           <span
             class="font-small-caps text-[11px]"
-            :style="{ color: brand.colors.secondary }"
+            :style="{ color: 'var(--brand-secondary)' }"
           >
             Capítulo II
           </span>
           <h2
             class="font-editorial-display mt-1 text-3xl leading-tight md:text-4xl"
-            :style="{ color: brand.colors.text }"
+            :style="{ color: 'var(--brand-text)' }"
           >
             Ritual mensal
           </h2>
@@ -2211,20 +2211,20 @@
             >
               <span
                 class="font-editorial-display text-3xl italic leading-none"
-                :style="{ color: brand.colors.secondary }"
+                :style="{ color: 'var(--brand-secondary)' }"
               >
                 {{ romanNumeral(idx + 1) }}
               </span>
               <div class="flex flex-col gap-1.5">
                 <h3
                   class="font-editorial-display text-xl"
-                  :style="{ color: brand.colors.text }"
+                  :style="{ color: 'var(--brand-text)' }"
                 >
                   {{ item.title }}
                 </h3>
                 <p
                   class="font-editorial-body"
-                  :style="{ color: brand.colors.text, fontSize: '1rem' }"
+                  :style="{ color: 'var(--brand-text)', fontSize: '1rem' }"
                 >
                   {{ item.body }}
                 </p>
@@ -2241,13 +2241,13 @@
         <div class="mb-10 flex flex-col gap-1">
           <span
             class="font-small-caps text-[11px]"
-            :style="{ color: brand.colors.secondary }"
+            :style="{ color: 'var(--brand-secondary)' }"
           >
             Capítulo III
           </span>
           <h2
             class="font-editorial-display text-3xl leading-tight md:text-4xl"
-            :style="{ color: brand.colors.text }"
+            :style="{ color: 'var(--brand-text)' }"
           >
             Números que importam
           </h2>
@@ -2258,27 +2258,27 @@
           <div v-for="metric in editorialMetrics" :key="metric.label" class="flex flex-col gap-3">
             <span
               class="font-small-caps text-[10px]"
-              :style="{ color: brand.colors.textMuted }"
+              :style="{ color: 'var(--brand-text-muted)' }"
             >
               {{ metric.label }}
             </span>
             <div class="flex items-baseline gap-2">
               <span
                 class="font-editorial-display font-serif-numeric text-6xl leading-none"
-                :style="{ color: brand.colors.text }"
+                :style="{ color: 'var(--brand-text)' }"
               >
                 {{ metric.value }}
               </span>
               <span
                 class="font-editorial-display text-2xl italic"
-                :style="{ color: brand.colors.secondary }"
+                :style="{ color: 'var(--brand-secondary)' }"
               >
                 {{ metric.unit }}
               </span>
             </div>
             <p
               class="font-editorial-body italic"
-              :style="{ color: brand.colors.textMuted, fontSize: '0.95rem' }"
+              :style="{ color: 'var(--brand-text-muted)', fontSize: '0.95rem' }"
             >
               {{ metric.note }}
             </p>
@@ -2293,19 +2293,19 @@
         <div class="md:col-span-4">
           <span
             class="font-small-caps text-[11px]"
-            :style="{ color: brand.colors.secondary }"
+            :style="{ color: 'var(--brand-secondary)' }"
           >
             Capítulo IV
           </span>
           <h2
             class="font-editorial-display mt-1 text-3xl leading-tight md:text-4xl"
-            :style="{ color: brand.colors.text }"
+            :style="{ color: 'var(--brand-text)' }"
           >
             Pauta do dia
           </h2>
           <p
             class="font-editorial-body mt-4 italic"
-            :style="{ color: brand.colors.textMuted, fontSize: '0.95rem' }"
+            :style="{ color: 'var(--brand-text-muted)', fontSize: '0.95rem' }"
           >
             Uma leitura editorial do pregão, curada pela mesa. Não é recomendação nem alerta, apenas o que vale comentar hoje.
           </p>
@@ -2316,7 +2316,7 @@
           <div class="mb-10">
             <span
               class="font-small-caps text-[11px]"
-              :style="{ color: brand.colors.text }"
+              :style="{ color: 'var(--brand-text)' }"
             >
               Altas em destaque
             </span>
@@ -2331,19 +2331,19 @@
                   <div class="flex items-baseline gap-3">
                     <span
                       class="font-editorial-display text-2xl italic"
-                      :style="{ color: brand.colors.secondary }"
+                      :style="{ color: 'var(--brand-secondary)' }"
                     >
                      ,
                     </span>
                     <span
                       class="font-editorial-display text-xl"
-                      :style="{ color: brand.colors.text }"
+                      :style="{ color: 'var(--brand-text)' }"
                     >
                       {{ mover.name || mover.ticker }}
                     </span>
                     <span
                       class="font-editorial-body text-[11px] italic"
-                      :style="{ color: brand.colors.textMuted }"
+                      :style="{ color: 'var(--brand-text-muted)' }"
                     >
                       {{ mover.ticker }}
                     </span>
@@ -2351,13 +2351,13 @@
                   <div class="flex items-baseline gap-3">
                     <span
                       class="font-serif-numeric text-lg"
-                      :style="{ color: brand.colors.text }"
+                      :style="{ color: 'var(--brand-text)' }"
                     >
                       {{ formatMoverPrice(mover.price) }}
                     </span>
                     <span
                       class="font-serif-numeric text-lg italic"
-                      :style="{ color: brand.colors.positive }"
+                      :style="{ color: 'var(--brand-positive)' }"
                     >
                       {{ formatMoverChange(mover.change) }}
                     </span>
@@ -2365,7 +2365,7 @@
                 </div>
                 <p
                   class="font-editorial-body italic pl-8"
-                  :style="{ color: brand.colors.textMuted, fontSize: '0.95rem' }"
+                  :style="{ color: 'var(--brand-text-muted)', fontSize: '0.95rem' }"
                 >
                   {{ mover.note }}
                 </p>
@@ -2377,7 +2377,7 @@
           <div>
             <span
               class="font-small-caps text-[11px]"
-              :style="{ color: brand.colors.text }"
+              :style="{ color: 'var(--brand-text)' }"
             >
               Quedas em destaque
             </span>
@@ -2392,19 +2392,19 @@
                   <div class="flex items-baseline gap-3">
                     <span
                       class="font-editorial-display text-2xl italic"
-                      :style="{ color: brand.colors.secondary }"
+                      :style="{ color: 'var(--brand-secondary)' }"
                     >
                      ,
                     </span>
                     <span
                       class="font-editorial-display text-xl"
-                      :style="{ color: brand.colors.text }"
+                      :style="{ color: 'var(--brand-text)' }"
                     >
                       {{ mover.name || mover.ticker }}
                     </span>
                     <span
                       class="font-editorial-body text-[11px] italic"
-                      :style="{ color: brand.colors.textMuted }"
+                      :style="{ color: 'var(--brand-text-muted)' }"
                     >
                       {{ mover.ticker }}
                     </span>
@@ -2412,13 +2412,13 @@
                   <div class="flex items-baseline gap-3">
                     <span
                       class="font-serif-numeric text-lg"
-                      :style="{ color: brand.colors.text }"
+                      :style="{ color: 'var(--brand-text)' }"
                     >
                       {{ formatMoverPrice(mover.price) }}
                     </span>
                     <span
                       class="font-serif-numeric text-lg italic"
-                      :style="{ color: brand.colors.negative }"
+                      :style="{ color: 'var(--brand-negative)' }"
                     >
                       {{ formatMoverChange(mover.change) }}
                     </span>
@@ -2426,7 +2426,7 @@
                 </div>
                 <p
                   class="font-editorial-body italic pl-8"
-                  :style="{ color: brand.colors.textMuted, fontSize: '0.95rem' }"
+                  :style="{ color: 'var(--brand-text-muted)', fontSize: '0.95rem' }"
                 >
                   {{ mover.note }}
                 </p>
@@ -2437,14 +2437,14 @@
           <!-- Quiet footnote + discrete link to the client's own portfolio -->
           <p
             class="font-editorial-body mt-10 italic"
-            :style="{ color: brand.colors.textMuted, fontSize: '0.85rem' }"
+            :style="{ color: 'var(--brand-text-muted)', fontSize: '0.85rem' }"
           >
             Acompanhamento editorial. Para movimentações em tempo real,
             <NuxtLink
               to="/wallet"
               class="border-b pb-[1px] transition-colors"
               :style="{
-                color: brand.colors.text,
+                color: 'var(--brand-text)',
                 borderColor: `color-mix(in srgb, ${brand.colors.text} 40%, transparent)`,
               }"
             >consulte sua carteira</NuxtLink>.
@@ -2459,13 +2459,13 @@
         <div class="md:col-span-7">
           <p
             class="font-editorial-display leading-[1.15]"
-            :style="{ color: brand.colors.text, fontSize: 'clamp(1.75rem, 3vw, 2.75rem)' }"
+            :style="{ color: 'var(--brand-text)', fontSize: 'clamp(1.75rem, 3vw, 2.75rem)' }"
           >
-            Se tudo isso ressoa com a forma como você quer cuidar do seu patrimônio, <em :style="{ color: brand.colors.secondary }">converse conosco.</em>
+            Se tudo isso ressoa com a forma como você quer cuidar do seu patrimônio, <em :style="{ color: 'var(--brand-secondary)' }">converse conosco.</em>
           </p>
           <p
             class="font-editorial-body mt-6 max-w-lg italic"
-            :style="{ color: brand.colors.textMuted, fontSize: '1rem' }"
+            :style="{ color: 'var(--brand-text-muted)', fontSize: '1rem' }"
           >
             Uma primeira conversa de 45 minutos, sem custo e sem compromisso. Você explica o que procura, nós explicamos como trabalhamos. Se fizer sentido, seguimos adiante.
           </p>
@@ -2474,18 +2474,18 @@
               to="/auth/register"
               class="group inline-flex items-center gap-3 border-b pb-1 font-editorial-body text-lg transition-colors"
               :style="{
-                borderColor: brand.colors.secondary,
-                color: brand.colors.text,
+                borderColor: 'var(--brand-secondary)',
+                color: 'var(--brand-text)',
               }"
-              @mouseenter="($event.currentTarget as HTMLElement).style.borderColor = brand.colors.text"
-              @mouseleave="($event.currentTarget as HTMLElement).style.borderColor = brand.colors.secondary"
+              @mouseenter="($event.currentTarget as HTMLElement).style.borderColor = 'var(--brand-text)'"
+              @mouseleave="($event.currentTarget as HTMLElement).style.borderColor = 'var(--brand-secondary)'"
             >
               <span>Agendar uma conversa</span>
-              <span :style="{ color: brand.colors.secondary }">-→</span>
+              <span :style="{ color: 'var(--brand-secondary)' }">-→</span>
             </NuxtLink>
             <span
               class="font-editorial-body text-[12px] italic"
-              :style="{ color: brand.colors.textMuted }"
+              :style="{ color: 'var(--brand-text-muted)' }"
             >
               Ou ligue: (11) 4000-2780
             </span>
@@ -2505,7 +2505,7 @@
         class="mx-auto flex max-w-5xl items-center justify-between border-t px-6 py-6 font-editorial-body text-[11px] italic md:px-12"
         :style="{
           borderColor: `color-mix(in srgb, ${brand.colors.text} 12%, transparent)`,
-          color: brand.colors.textMuted,
+          color: 'var(--brand-text-muted)',
         }"
       >
         <span>Credenciada CVM · Ancord · Certificações CFA</span>
@@ -2565,14 +2565,14 @@
             <div
               class="pb-badge mb-8 inline-flex items-center gap-2.5 rounded-full px-5 py-2"
               :style="{
-                backgroundColor: brand.colors.primary,
-                color: brand.colors.background,
+                backgroundColor: 'var(--brand-primary)',
+                color: 'var(--brand-background)',
                 boxShadow: `0 8px 30px -8px ${brand.colors.primary}80, 0 0 0 3px ${brand.colors.background}, 0 0 0 5px ${brand.colors.primary}40`,
               }"
             >
               <span class="relative flex size-1.5">
-                <span class="absolute inline-flex size-1.5 rounded-full opacity-75 motion-safe:animate-ping" :style="{ backgroundColor: brand.colors.background }" />
-                <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: brand.colors.background }" />
+                <span class="absolute inline-flex size-1.5 rounded-full opacity-75 motion-safe:animate-ping" :style="{ backgroundColor: 'var(--brand-background)' }" />
+                <span class="relative inline-flex size-1.5 rounded-full" :style="{ backgroundColor: 'var(--brand-background)' }" />
               </span>
               <span class="pb-badge-text text-[11px] font-bold uppercase tracking-[0.15em]">
                 {{ brand.hero.badge }}
@@ -2583,16 +2583,16 @@
             <h1
               class="pb-title mb-8 leading-[0.92] tracking-tight"
               :style="{
-                color: brand.colors.text,
+                color: 'var(--brand-text)',
                 fontSize: 'clamp(2.75rem, 7vw, 6.5rem)',
               }"
             >
               <template v-for="(line, idx) in brand.hero.title.split('\n')" :key="idx">
                 <br v-if="idx > 0" />
                 <span v-if="idx === 1">
-                  Sem <span class="pb-sticker" :style="{ color: brand.colors.primary }">grito.</span>
+                  Sem <span class="pb-sticker" :style="{ color: 'var(--brand-primary)' }">grito.</span>
                   <br />
-                  Sem <span class="pb-sticker pb-sticker-outline" :style="{ '--sticker-bg': brand.colors.text, '--sticker-fg': brand.colors.background }">guru.</span>
+                  Sem <span class="pb-sticker pb-sticker-outline" :style="{ '--sticker-bg': 'var(--brand-text)', '--sticker-fg': 'var(--brand-background)' }">guru.</span>
                 </span>
                 <span v-else>{{ line }}</span>
               </template>
@@ -2609,8 +2609,8 @@
                 to="/auth/register"
                 class="pb-cta-primary group inline-flex items-center gap-3 rounded-full px-8 py-4 text-[14px] font-bold transition-[transform,opacity,box-shadow,background-color,border-color] hover:-translate-y-0.5"
                 :style="{
-                  backgroundColor: brand.colors.primary,
-                  color: brand.colors.background,
+                  backgroundColor: 'var(--brand-primary)',
+                  color: 'var(--brand-background)',
                   boxShadow: `0 16px 50px -16px ${brand.colors.primary}A0, 0 0 0 2px ${brand.colors.background}, 0 0 0 4px ${brand.colors.primary}`,
                 }"
               >
@@ -2621,9 +2621,9 @@
               <NuxtLink
                 to="/auth/login"
                 class="inline-flex items-center gap-2 px-2 py-2 text-[14px] font-semibold transition-opacity hover:opacity-70"
-                :style="{ color: brand.colors.text }"
+                :style="{ color: 'var(--brand-text)' }"
               >
-                <span class="border-b-2 pb-0.5" :style="{ borderColor: brand.colors.text }">{{ brand.hero.ctaSecondaryLabel }}</span>
+                <span class="border-b-2 pb-0.5" :style="{ borderColor: 'var(--brand-text)' }">{{ brand.hero.ctaSecondaryLabel }}</span>
               </NuxtLink>
             </div>
 
@@ -2635,7 +2635,7 @@
                 class="flex items-center gap-2 text-[12px] font-medium"
                 :style="{ color: `${brand.colors.text}A0` }"
               >
-                <UIcon name="i-lucide-check-circle-2" class="size-3.5" :style="{ color: brand.colors.primary }" />
+                <UIcon name="i-lucide-check-circle-2" class="size-3.5" :style="{ color: 'var(--brand-primary)' }" />
                 {{ t }}
               </div>
             </div>
@@ -2648,7 +2648,7 @@
               <div
                 class="pb-author-circle absolute left-1/2 top-1/2 aspect-square w-[82%] -translate-x-1/2 -translate-y-1/2 rounded-full"
                 :style="{
-                  backgroundColor: brand.colors.primary,
+                  backgroundColor: 'var(--brand-primary)',
                   boxShadow: `0 40px 100px -30px ${brand.colors.primary}A0`,
                 }"
               />
@@ -2669,7 +2669,7 @@
               <div
                 v-else
                 class="relative z-10 flex aspect-square w-[82%] items-center justify-center rounded-full"
-                :style="{ backgroundColor: brand.colors.primary, color: brand.colors.background }"
+                :style="{ backgroundColor: 'var(--brand-primary)', color: 'var(--brand-background)' }"
               >
                 <div class="text-center">
                   <div class="text-[120px] font-black leading-none">AS</div>
@@ -2687,24 +2687,24 @@
       <div class="relative border-y" :style="{ borderColor: `${brand.colors.border}`, backgroundColor: `${brand.colors.surface}60` }">
         <div class="mx-auto max-w-6xl px-6 py-24 md:px-10 md:py-32">
           <div class="mb-8 flex items-center gap-3">
-            <span class="h-px w-12" :style="{ backgroundColor: brand.colors.primary }" />
-            <span class="pb-eyebrow text-[11px] font-bold uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
+            <span class="h-px w-12" :style="{ backgroundColor: 'var(--brand-primary)' }" />
+            <span class="pb-eyebrow text-[11px] font-bold uppercase tracking-[0.22em]" :style="{ color: 'var(--brand-primary)' }">
               O Manifesto
             </span>
           </div>
           <div
             class="pb-manifesto leading-[0.95] tracking-tight"
             :style="{
-              color: brand.colors.text,
+              color: 'var(--brand-text)',
               fontSize: 'clamp(2.5rem, 6.5vw, 5.75rem)',
             }"
           >
             Não existe atalho.<br />
-            Existe <span class="pb-sticker" :style="{ color: brand.colors.primary }">método</span>,
-            <span class="pb-sticker" :style="{ color: brand.colors.primary }">paciência</span><br />
-            e <span class="pb-sticker pb-sticker-outline" :style="{ '--sticker-bg': brand.colors.text, '--sticker-fg': brand.colors.background }">juros compostos.</span>
+            Existe <span class="pb-sticker" :style="{ color: 'var(--brand-primary)' }">método</span>,
+            <span class="pb-sticker" :style="{ color: 'var(--brand-primary)' }">paciência</span><br />
+            e <span class="pb-sticker pb-sticker-outline" :style="{ '--sticker-bg': 'var(--brand-text)', '--sticker-fg': 'var(--brand-background)' }">juros compostos.</span>
           </div>
-          <div class="mt-12 flex items-center gap-4 text-[13px]" :style="{ color: brand.colors.textMuted }">
+          <div class="mt-12 flex items-center gap-4 text-[13px]" :style="{ color: 'var(--brand-text-muted)' }">
             <div class="h-px flex-1 max-w-20" :style="{ backgroundColor: `${brand.colors.border}` }" />
             <span class="font-medium italic">, {{ brand.founder.name }}</span>
           </div>
@@ -2736,24 +2736,24 @@
           <!-- Section header -->
           <div class="mb-16 grid items-end gap-8 md:grid-cols-12">
             <div class="md:col-span-7">
-              <div class="pb-eyebrow mb-4 text-[11px] font-bold uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
+              <div class="pb-eyebrow mb-4 text-[11px] font-bold uppercase tracking-[0.22em]" :style="{ color: 'var(--brand-primary)' }">
                , Personagens
               </div>
               <h2
                 class="leading-[0.95] tracking-tight"
                 :style="{
-                  color: brand.colors.text,
+                  color: 'var(--brand-text)',
                   fontSize: 'clamp(2.5rem, 6vw, 5rem)',
                   fontFamily: `'Fredoka', 'Inter', sans-serif`,
                   fontWeight: 700,
                 }"
               >
-                <span class="pb-sticker pb-sticker-cold" :style="{ color: brand.colors.primary }">Cabeça Fria</span> vs.<br />
+                <span class="pb-sticker pb-sticker-cold" :style="{ color: 'var(--brand-primary)' }">Cabeça Fria</span> vs.<br />
                 <span class="pb-sticker pb-sticker-hot">Cabeça Quente.</span>
               </h2>
             </div>
             <p class="text-[15px] leading-relaxed md:col-span-5" :style="{ color: `${brand.colors.text}B0` }">
-              Dois jeitos de ler o mesmo ranking. Um respira fundo e segura a posição por 10 anos. O outro vende tudo em pânico no fim do dia. <strong :style="{ color: brand.colors.text }">Adivinha qual deles fica rico.</strong>
+              Dois jeitos de ler o mesmo ranking. Um respira fundo e segura a posição por 10 anos. O outro vende tudo em pânico no fim do dia. <strong :style="{ color: 'var(--brand-text)' }">Adivinha qual deles fica rico.</strong>
             </p>
           </div>
 
@@ -2785,13 +2785,13 @@
               <div class="text-[10px] font-bold uppercase tracking-[0.2em]" style="color: #EF4444;">
                 O VILÃO · NÃO FAÇA ISSO
               </div>
-              <div class="pb-villain-name mt-2 text-[28px] font-black leading-none md:text-[40px]" :style="{ color: brand.colors.text, fontFamily: `'Fredoka', sans-serif` }">
+              <div class="pb-villain-name mt-2 text-[28px] font-black leading-none md:text-[40px]" :style="{ color: 'var(--brand-text)', fontFamily: `'Fredoka', sans-serif` }">
                 Cabeça Quente.
               </div>
               <div class="pb-villain-quote mt-4 text-[15px] italic md:text-[17px]" :style="{ color: `${brand.colors.text}D0` }">
                 "CAIU 2%?! VENDE TUDO! SUBIU 3%?! COMPRA MAIS! CADÊ A IA?! AINDA DÁ TEMPO?!"
               </div>
-              <div class="mt-3 text-[13px]" :style="{ color: brand.colors.textMuted }">
+              <div class="mt-3 text-[13px]" :style="{ color: 'var(--brand-text-muted)' }">
                 Checa o gráfico de 5 em 5 minutos. Já vendeu PETR4 3 vezes só em abril. Segue 40 gurus no Twitter.
               </div>
             </div>
@@ -2802,13 +2802,13 @@
             <!-- TOP ALTAS -->
             <div
               class="pb-ranking flex flex-col gap-4 rounded-3xl border p-6 md:p-7"
-              :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+              :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
             >
               <div class="flex items-center justify-between">
-                <div class="text-[10px] font-bold uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
+                <div class="text-[10px] font-bold uppercase tracking-[0.18em]" :style="{ color: 'var(--brand-primary)' }">
                   Top Altas do Dia
                 </div>
-                <UIcon name="i-lucide-trending-up" class="size-4" :style="{ color: brand.colors.positive }" />
+                <UIcon name="i-lucide-trending-up" class="size-4" :style="{ color: 'var(--brand-positive)' }" />
               </div>
               <!-- Cabeça Quente reaction -->
               <div class="flex items-start gap-2 rounded-xl border px-3 py-2.5" style="border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.08);">
@@ -2824,42 +2824,42 @@
                   :key="'top-' + (stock?.ticker || i)"
                   :to="`/asset/${stock?.ticker?.toLowerCase()}`"
                   class="pb-ranking-row flex items-center justify-between gap-3 rounded-lg px-2 py-1.5 transition-colors"
-                  :style="{ color: brand.colors.text }"
+                  :style="{ color: 'var(--brand-text)' }"
                 >
                   <div class="flex items-center gap-3 min-w-0">
-                    <span class="text-[10px] font-bold tabular-nums w-4" :style="{ color: brand.colors.textMuted }">{{ i + 1 }}</span>
+                    <span class="text-[10px] font-bold tabular-nums w-4" :style="{ color: 'var(--brand-text-muted)' }">{{ i + 1 }}</span>
                     <NuxtImg
                       v-if="stock?.logo && !failedLogos.isFailed(stock.logo)"
                       :src="stock.logo"
                       :alt="stock?.ticker"
                       class="size-7 rounded-md object-cover"
-                      :style="{ backgroundColor: brand.colors.background }"
+                      :style="{ backgroundColor: 'var(--brand-background)' }"
                       @error="failedLogos.markFailed(stock.logo)"
                     />
                     <div
                       v-else
                       class="flex size-7 items-center justify-center rounded-md text-[9px] font-bold"
-                      :style="{ backgroundColor: brand.colors.primary, color: brand.colors.background }"
+                      :style="{ backgroundColor: 'var(--brand-primary)', color: 'var(--brand-background)' }"
                     >
                       {{ (stock?.ticker || '??').slice(0, 2) }}
                     </div>
                     <div class="flex flex-col min-w-0">
                       <span class="text-[12px] font-bold leading-none">{{ stock?.ticker || '-' }}</span>
-                      <span class="text-[10px] truncate" :style="{ color: brand.colors.textMuted }">
+                      <span class="text-[10px] truncate" :style="{ color: 'var(--brand-text-muted)' }">
                         {{ (stock?.name || '').slice(0, 18) }}
                       </span>
                     </div>
                   </div>
-                  <span class="text-[12px] font-bold tabular-nums" :style="{ color: brand.colors.positive }">
+                  <span class="text-[12px] font-bold tabular-nums" :style="{ color: 'var(--brand-positive)' }">
                     +{{ Number(stock?.change_percent || 0).toFixed(1) }}%
                   </span>
                 </NuxtLink>
               </div>
               <!-- Cabeça Fria counter -->
-              <div class="mt-auto flex items-start gap-2 border-t pt-4" :style="{ borderColor: brand.colors.border }">
-                <UIcon name="i-lucide-snowflake" class="size-3.5 shrink-0 mt-0.5" :style="{ color: brand.colors.primary }" />
-                <span class="text-[11px] leading-snug" :style="{ color: brand.colors.textMuted }">
-                  <strong :style="{ color: brand.colors.primary }">Cabeça fria:</strong> +5% num dia é ruído. Mostra o mesmo ativo daqui a 5 anos.
+              <div class="mt-auto flex items-start gap-2 border-t pt-4" :style="{ borderColor: 'var(--brand-border)' }">
+                <UIcon name="i-lucide-snowflake" class="size-3.5 shrink-0 mt-0.5" :style="{ color: 'var(--brand-primary)' }" />
+                <span class="text-[11px] leading-snug" :style="{ color: 'var(--brand-text-muted)' }">
+                  <strong :style="{ color: 'var(--brand-primary)' }">Cabeça fria:</strong> +5% num dia é ruído. Mostra o mesmo ativo daqui a 5 anos.
                 </span>
               </div>
             </div>
@@ -2867,13 +2867,13 @@
             <!-- TOP BAIXAS -->
             <div
               class="pb-ranking flex flex-col gap-4 rounded-3xl border p-6 md:p-7"
-              :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+              :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
             >
               <div class="flex items-center justify-between">
-                <div class="text-[10px] font-bold uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
+                <div class="text-[10px] font-bold uppercase tracking-[0.18em]" :style="{ color: 'var(--brand-primary)' }">
                   Top Quedas do Dia
                 </div>
-                <UIcon name="i-lucide-trending-down" class="size-4" :style="{ color: brand.colors.negative }" />
+                <UIcon name="i-lucide-trending-down" class="size-4" :style="{ color: 'var(--brand-negative)' }" />
               </div>
               <div class="flex items-start gap-2 rounded-xl border px-3 py-2.5" style="border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.08);">
                 <UIcon name="i-lucide-flame" class="size-3.5 shrink-0 mt-0.5" style="color: #EF4444;" />
@@ -2887,41 +2887,41 @@
                   :key="'bot-' + (stock?.ticker || i)"
                   :to="`/asset/${stock?.ticker?.toLowerCase()}`"
                   class="pb-ranking-row flex items-center justify-between gap-3 rounded-lg px-2 py-1.5 transition-colors"
-                  :style="{ color: brand.colors.text }"
+                  :style="{ color: 'var(--brand-text)' }"
                 >
                   <div class="flex items-center gap-3 min-w-0">
-                    <span class="text-[10px] font-bold tabular-nums w-4" :style="{ color: brand.colors.textMuted }">{{ i + 1 }}</span>
+                    <span class="text-[10px] font-bold tabular-nums w-4" :style="{ color: 'var(--brand-text-muted)' }">{{ i + 1 }}</span>
                     <NuxtImg
                       v-if="stock?.logo && !failedLogos.isFailed(stock.logo)"
                       :src="stock.logo"
                       :alt="stock?.ticker"
                       class="size-7 rounded-md object-cover"
-                      :style="{ backgroundColor: brand.colors.background }"
+                      :style="{ backgroundColor: 'var(--brand-background)' }"
                       @error="failedLogos.markFailed(stock.logo)"
                     />
                     <div
                       v-else
                       class="flex size-7 items-center justify-center rounded-md text-[9px] font-bold"
-                      :style="{ backgroundColor: brand.colors.primary, color: brand.colors.background }"
+                      :style="{ backgroundColor: 'var(--brand-primary)', color: 'var(--brand-background)' }"
                     >
                       {{ (stock?.ticker || '??').slice(0, 2) }}
                     </div>
                     <div class="flex flex-col min-w-0">
                       <span class="text-[12px] font-bold leading-none">{{ stock?.ticker || '-' }}</span>
-                      <span class="text-[10px] truncate" :style="{ color: brand.colors.textMuted }">
+                      <span class="text-[10px] truncate" :style="{ color: 'var(--brand-text-muted)' }">
                         {{ (stock?.name || '').slice(0, 18) }}
                       </span>
                     </div>
                   </div>
-                  <span class="text-[12px] font-bold tabular-nums" :style="{ color: brand.colors.negative }">
+                  <span class="text-[12px] font-bold tabular-nums" :style="{ color: 'var(--brand-negative)' }">
                     {{ Number(stock?.change_percent || 0).toFixed(1) }}%
                   </span>
                 </NuxtLink>
               </div>
-              <div class="mt-auto flex items-start gap-2 border-t pt-4" :style="{ borderColor: brand.colors.border }">
-                <UIcon name="i-lucide-snowflake" class="size-3.5 shrink-0 mt-0.5" :style="{ color: brand.colors.primary }" />
-                <span class="text-[11px] leading-snug" :style="{ color: brand.colors.textMuted }">
-                  <strong :style="{ color: brand.colors.primary }">Cabeça fria:</strong> queda boa é desconto. Estuda os fundamentos antes de fugir.
+              <div class="mt-auto flex items-start gap-2 border-t pt-4" :style="{ borderColor: 'var(--brand-border)' }">
+                <UIcon name="i-lucide-snowflake" class="size-3.5 shrink-0 mt-0.5" :style="{ color: 'var(--brand-primary)' }" />
+                <span class="text-[11px] leading-snug" :style="{ color: 'var(--brand-text-muted)' }">
+                  <strong :style="{ color: 'var(--brand-primary)' }">Cabeça fria:</strong> queda boa é desconto. Estuda os fundamentos antes de fugir.
                 </span>
               </div>
             </div>
@@ -2929,13 +2929,13 @@
             <!-- TOP FIIS -->
             <div
               class="pb-ranking flex flex-col gap-4 rounded-3xl border p-6 md:p-7"
-              :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
+              :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
             >
               <div class="flex items-center justify-between">
-                <div class="text-[10px] font-bold uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
+                <div class="text-[10px] font-bold uppercase tracking-[0.18em]" :style="{ color: 'var(--brand-primary)' }">
                   Top FIIs do Dia
                 </div>
-                <UIcon name="i-lucide-building-2" class="size-4" :style="{ color: brand.colors.primary }" />
+                <UIcon name="i-lucide-building-2" class="size-4" :style="{ color: 'var(--brand-primary)' }" />
               </div>
               <div class="flex items-start gap-2 rounded-xl border px-3 py-2.5" style="border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.08);">
                 <UIcon name="i-lucide-flame" class="size-3.5 shrink-0 mt-0.5" style="color: #EF4444;" />
@@ -2949,41 +2949,41 @@
                   :key="'reit-' + (reit?.ticker || i)"
                   :to="`/asset/${reit?.ticker?.toLowerCase()}`"
                   class="pb-ranking-row flex items-center justify-between gap-3 rounded-lg px-2 py-1.5 transition-colors"
-                  :style="{ color: brand.colors.text }"
+                  :style="{ color: 'var(--brand-text)' }"
                 >
                   <div class="flex items-center gap-3 min-w-0">
-                    <span class="text-[10px] font-bold tabular-nums w-4" :style="{ color: brand.colors.textMuted }">{{ i + 1 }}</span>
+                    <span class="text-[10px] font-bold tabular-nums w-4" :style="{ color: 'var(--brand-text-muted)' }">{{ i + 1 }}</span>
                     <NuxtImg
                       v-if="reit?.logo && !failedLogos.isFailed(reit.logo)"
                       :src="reit.logo"
                       :alt="reit?.ticker"
                       class="size-7 rounded-md object-cover"
-                      :style="{ backgroundColor: brand.colors.background }"
+                      :style="{ backgroundColor: 'var(--brand-background)' }"
                       @error="failedLogos.markFailed(reit.logo)"
                     />
                     <div
                       v-else
                       class="flex size-7 items-center justify-center rounded-md text-[9px] font-bold"
-                      :style="{ backgroundColor: brand.colors.primary, color: brand.colors.background }"
+                      :style="{ backgroundColor: 'var(--brand-primary)', color: 'var(--brand-background)' }"
                     >
                       {{ (reit?.ticker || '??').slice(0, 2) }}
                     </div>
                     <div class="flex flex-col min-w-0">
                       <span class="text-[12px] font-bold leading-none">{{ reit?.ticker || '-' }}</span>
-                      <span class="text-[10px] truncate" :style="{ color: brand.colors.textMuted }">
+                      <span class="text-[10px] truncate" :style="{ color: 'var(--brand-text-muted)' }">
                         {{ (reit?.name || '').slice(0, 18) }}
                       </span>
                     </div>
                   </div>
-                  <span class="text-[12px] font-bold tabular-nums" :style="{ color: brand.colors.positive }">
+                  <span class="text-[12px] font-bold tabular-nums" :style="{ color: 'var(--brand-positive)' }">
                     +{{ Number(reit?.change_percent || 0).toFixed(1) }}%
                   </span>
                 </NuxtLink>
               </div>
-              <div class="mt-auto flex items-start gap-2 border-t pt-4" :style="{ borderColor: brand.colors.border }">
-                <UIcon name="i-lucide-snowflake" class="size-3.5 shrink-0 mt-0.5" :style="{ color: brand.colors.primary }" />
-                <span class="text-[11px] leading-snug" :style="{ color: brand.colors.textMuted }">
-                  <strong :style="{ color: brand.colors.primary }">Cabeça fria:</strong> DY alto sem histórico de 5 anos é armadilha. Olha consistência.
+              <div class="mt-auto flex items-start gap-2 border-t pt-4" :style="{ borderColor: 'var(--brand-border)' }">
+                <UIcon name="i-lucide-snowflake" class="size-3.5 shrink-0 mt-0.5" :style="{ color: 'var(--brand-primary)' }" />
+                <span class="text-[11px] leading-snug" :style="{ color: 'var(--brand-text-muted)' }">
+                  <strong :style="{ color: 'var(--brand-primary)' }">Cabeça fria:</strong> DY alto sem histórico de 5 anos é armadilha. Olha consistência.
                 </span>
               </div>
             </div>
@@ -2993,7 +2993,7 @@
           <div
             class="pb-hero-card mt-10 flex flex-col items-start gap-6 rounded-3xl border-2 p-8 md:flex-row md:items-center md:gap-10 md:p-12"
             :style="{
-              borderColor: brand.colors.primary,
+              borderColor: 'var(--brand-primary)',
               backgroundColor: `${brand.colors.primary}08`,
             }"
           >
@@ -3005,7 +3005,7 @@
                 :alt="brand.founder.name"
                 class="size-24 rounded-full object-cover md:size-32"
                 :style="{
-                  backgroundColor: brand.colors.primary,
+                  backgroundColor: 'var(--brand-primary)',
                   boxShadow: `0 0 0 4px ${brand.colors.background}, 0 0 0 7px ${brand.colors.primary}, 0 20px 40px -10px ${brand.colors.primary}80`,
                 }"
               />
@@ -3013,19 +3013,19 @@
                 v-else
                 class="flex size-24 items-center justify-center rounded-full md:size-32"
                 :style="{
-                  backgroundColor: brand.colors.primary,
+                  backgroundColor: 'var(--brand-primary)',
                   boxShadow: `0 0 0 4px ${brand.colors.background}, 0 0 0 7px ${brand.colors.primary}, 0 20px 40px -10px ${brand.colors.primary}80`,
                 }"
               >
-                <UIcon name="i-lucide-snowflake" class="size-12 md:size-16" :style="{ color: brand.colors.background }" />
+                <UIcon name="i-lucide-snowflake" class="size-12 md:size-16" :style="{ color: 'var(--brand-background)' }" />
               </div>
             </div>
 
             <div class="flex-1">
-              <div class="text-[10px] font-bold uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
+              <div class="text-[10px] font-bold uppercase tracking-[0.2em]" :style="{ color: 'var(--brand-primary)' }">
                 O HERÓI · O QUE FAZER
               </div>
-              <div class="mt-2 text-[28px] font-black leading-none md:text-[40px]" :style="{ color: brand.colors.text, fontFamily: `'Fredoka', sans-serif` }">
+              <div class="mt-2 text-[28px] font-black leading-none md:text-[40px]" :style="{ color: 'var(--brand-text)', fontFamily: `'Fredoka', sans-serif` }">
                 Cabeça Fria.
               </div>
               <div class="mt-4 text-[15px] italic md:text-[17px]" :style="{ color: `${brand.colors.text}D0` }">
@@ -3036,8 +3036,8 @@
                   to="/auth/register"
                   class="group inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-[12px] font-bold transition-[transform,opacity,box-shadow,background-color,border-color] hover:-translate-y-0.5"
                   :style="{
-                    backgroundColor: brand.colors.primary,
-                    color: brand.colors.background,
+                    backgroundColor: 'var(--brand-primary)',
+                    color: 'var(--brand-background)',
                     boxShadow: `0 8px 24px -8px ${brand.colors.primary}80`,
                   }"
                 >
@@ -3049,8 +3049,8 @@
                   to="/calculadora/juros-compostos"
                   class="inline-flex items-center gap-2 rounded-full border-2 px-5 py-2.5 text-[12px] font-bold transition-opacity hover:opacity-70"
                   :style="{
-                    borderColor: brand.colors.border,
-                    color: brand.colors.text,
+                    borderColor: 'var(--brand-border)',
+                    color: 'var(--brand-text)',
                   }"
                 >
                   Ver juros compostos →
@@ -3068,17 +3068,17 @@
         <div class="mx-auto max-w-7xl px-6 py-24 md:px-10 md:py-32">
           <div class="mb-14 grid items-end gap-8 md:grid-cols-12">
             <div class="md:col-span-7">
-              <div class="pb-eyebrow mb-4 text-[11px] font-bold uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
+              <div class="pb-eyebrow mb-4 text-[11px] font-bold uppercase tracking-[0.22em]" :style="{ color: 'var(--brand-primary)' }">
                , 4 pilares
               </div>
               <h2
                 class="pb-section-title leading-[0.95] tracking-tight"
                 :style="{
-                  color: brand.colors.text,
+                  color: 'var(--brand-text)',
                   fontSize: 'clamp(2.25rem, 5vw, 4rem)',
                 }"
               >
-                O playbook em <span class="pb-sticker" :style="{ color: brand.colors.primary }">4 passos.</span>
+                O playbook em <span class="pb-sticker" :style="{ color: 'var(--brand-primary)' }">4 passos.</span>
               </h2>
             </div>
             <p class="text-[15px] leading-relaxed md:col-span-5" :style="{ color: `${brand.colors.text}B0` }">
@@ -3092,8 +3092,8 @@
               :key="pillar.title"
               class="pb-pillar group relative flex flex-col gap-5 overflow-hidden rounded-3xl border p-8 transition-[transform,opacity,box-shadow,background-color,border-color] hover:-translate-y-1 md:p-10"
               :style="{
-                borderColor: brand.colors.border,
-                backgroundColor: brand.colors.surface,
+                borderColor: 'var(--brand-border)',
+                backgroundColor: 'var(--brand-surface)',
               }"
             >
               <!-- Big number outline background -->
@@ -3109,20 +3109,20 @@
 
               <div
                 class="relative flex size-12 items-center justify-center rounded-2xl"
-                :style="{ backgroundColor: `${brand.colors.primary}20`, color: brand.colors.primary }"
+                :style="{ backgroundColor: `${brand.colors.primary}20`, color: 'var(--brand-primary)' }"
               >
                 <UIcon :name="pillar.icon" class="size-6" />
               </div>
 
-              <h3 class="relative text-[20px] font-bold leading-tight tracking-tight" :style="{ color: brand.colors.text }">
+              <h3 class="relative text-[20px] font-bold leading-tight tracking-tight" :style="{ color: 'var(--brand-text)' }">
                 {{ pillar.title }}
               </h3>
 
-              <p class="relative text-[13px] leading-relaxed" :style="{ color: brand.colors.textMuted }">
+              <p class="relative text-[13px] leading-relaxed" :style="{ color: 'var(--brand-text-muted)' }">
                 {{ pillar.description }}
               </p>
 
-              <div class="relative mt-auto inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.15em]" :style="{ color: brand.colors.primary }">
+              <div class="relative mt-auto inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.15em]" :style="{ color: 'var(--brand-primary)' }">
                 <span>{{ pillar.tag }}</span>
               </div>
             </div>
@@ -3144,13 +3144,13 @@
         <div class="relative mx-auto max-w-5xl px-6 py-24 md:px-10 md:py-32">
           <div class="mb-8 text-center">
             <div class="inline-block">
-              <div class="text-[80px] leading-none" :style="{ color: brand.colors.primary }">"</div>
+              <div class="text-[80px] leading-none" :style="{ color: 'var(--brand-primary)' }">"</div>
             </div>
           </div>
           <blockquote
             class="pb-quote text-center leading-[1.2]"
             :style="{
-              color: brand.colors.text,
+              color: 'var(--brand-text)',
               fontSize: 'clamp(1.75rem, 4vw, 3rem)',
             }"
           >
@@ -3160,8 +3160,8 @@
             <div
               class="pb-quote-author inline-flex items-center gap-3 rounded-full px-6 py-3"
               :style="{
-                backgroundColor: brand.colors.primary,
-                color: brand.colors.background,
+                backgroundColor: 'var(--brand-primary)',
+                color: 'var(--brand-background)',
                 boxShadow: `0 0 0 3px ${brand.colors.background}, 0 0 0 6px ${brand.colors.primary}, 0 20px 40px -15px ${brand.colors.primary}A0`,
               }"
             >
@@ -3180,18 +3180,18 @@
            ============================================================ -->
       <div class="relative">
         <div class="mx-auto max-w-5xl px-6 py-24 text-center md:px-10 md:py-32">
-          <div class="pb-eyebrow mb-6 text-[11px] font-bold uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
+          <div class="pb-eyebrow mb-6 text-[11px] font-bold uppercase tracking-[0.22em]" :style="{ color: 'var(--brand-primary)' }">
            , Começar hoje
           </div>
           <h2
             class="pb-final-title leading-[0.92] tracking-tight"
             :style="{
-              color: brand.colors.text,
+              color: 'var(--brand-text)',
               fontSize: 'clamp(2.5rem, 6vw, 5rem)',
             }"
           >
             Sua carteira em<br />
-            <span class="pb-sticker" :style="{ color: brand.colors.primary }">modo método.</span>
+            <span class="pb-sticker" :style="{ color: 'var(--brand-primary)' }">modo método.</span>
           </h2>
           <p class="mx-auto mt-8 max-w-xl text-[16px] leading-relaxed" :style="{ color: `${brand.colors.text}B0` }">
             Grátis pra sempre. Sem cartão, sem trial, sem pegadinha. Você entra e começa hoje.
@@ -3201,8 +3201,8 @@
               to="/auth/register"
               class="pb-cta-primary group inline-flex items-center gap-3 rounded-full px-10 py-5 text-[15px] font-bold transition-[transform,opacity,box-shadow,background-color,border-color] hover:-translate-y-0.5"
               :style="{
-                backgroundColor: brand.colors.primary,
-                color: brand.colors.background,
+                backgroundColor: 'var(--brand-primary)',
+                color: 'var(--brand-background)',
                 boxShadow: `0 20px 60px -15px ${brand.colors.primary}A0, 0 0 0 2px ${brand.colors.background}, 0 0 0 4px ${brand.colors.primary}`,
               }"
             >
@@ -3211,7 +3211,7 @@
               <span class="inline-block transition-transform group-hover:translate-x-1">→</span>
             </NuxtLink>
           </div>
-          <p class="mt-10 text-[11px] font-bold uppercase tracking-[0.2em]" :style="{ color: brand.colors.textMuted }">
+          <p class="mt-10 text-[11px] font-bold uppercase tracking-[0.2em]" :style="{ color: 'var(--brand-text-muted)' }">
             cabeça fria · sem grito · sem guru
           </p>
         </div>
@@ -3244,22 +3244,22 @@
            ============================================================ -->
       <div
         class="hl-strip relative z-10 border-b"
-        :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.background }"
+        :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-background)' }"
       >
         <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4 md:px-10">
           <div class="flex items-center gap-4">
-            <span class="hl-mono text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
+            <span class="hl-mono text-[10px] uppercase tracking-[0.18em]" :style="{ color: 'var(--brand-primary)' }">
               Hold
             </span>
-            <span class="hl-mono text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
+            <span class="hl-mono text-[10px] uppercase tracking-[0.18em]" :style="{ color: 'var(--brand-text-muted)' }">
               EDIÇÃO 01 · {{ holderEditionDate }}
             </span>
           </div>
           <div class="flex items-center gap-4">
-            <span class="hl-mono text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
+            <span class="hl-mono text-[10px] uppercase tracking-[0.18em]" :style="{ color: 'var(--brand-text-muted)' }">
               06 CAPÍTULOS
             </span>
-            <span class="hl-mono text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.primary }">
+            <span class="hl-mono text-[10px] uppercase tracking-[0.18em]" :style="{ color: 'var(--brand-primary)' }">
               ⊕
             </span>
           </div>
@@ -3272,9 +3272,9 @@
       <div class="relative">
         <div class="mx-auto grid max-w-7xl grid-cols-12 gap-0 px-6 md:px-10">
           <!-- LEFT: manifesto + giant headline -->
-          <div class="col-span-12 flex flex-col justify-center border-b py-20 lg:col-span-7 lg:border-b-0 lg:border-r lg:py-32 lg:pr-16" :style="{ borderColor: brand.colors.border }">
+          <div class="col-span-12 flex flex-col justify-center border-b py-20 lg:col-span-7 lg:border-b-0 lg:border-r lg:py-32 lg:pr-16" :style="{ borderColor: 'var(--brand-border)' }">
             <!-- Chapter number -->
-            <div class="hl-mono mb-6 text-[10px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.textMuted }">
+            <div class="hl-mono mb-6 text-[10px] uppercase tracking-[0.22em]" :style="{ color: 'var(--brand-text-muted)' }">
               01 · O Manifesto
             </div>
 
@@ -3282,7 +3282,7 @@
             <h1
               class="hl-serif mb-10 leading-[1.1] tracking-tight"
               :style="{
-                color: brand.colors.text,
+                color: 'var(--brand-text)',
                 fontSize: 'clamp(2.5rem, 5vw, 4.5rem)',
                 fontFamily: `'Spectral', 'Georgia', serif`,
                 fontWeight: 400,
@@ -3290,7 +3290,7 @@
             >
               <template v-for="(line, idx) in brand.hero.title.split('\n')" :key="idx">
                 <br v-if="idx > 0" />
-                <span v-if="idx === 1" class="italic" :style="{ color: brand.colors.primary, fontWeight: 500 }">{{ line }}</span>
+                <span v-if="idx === 1" class="italic" :style="{ color: 'var(--brand-primary)', fontWeight: 500 }">{{ line }}</span>
                 <span v-else>{{ line }}</span>
               </template>
             </h1>
@@ -3312,8 +3312,8 @@
                 to="/auth/register"
                 class="hl-cta-primary group inline-flex items-center gap-3 px-7 py-4 text-[12px] font-bold uppercase tracking-[0.18em] transition-[transform,opacity,box-shadow,background-color,border-color] hover:-translate-y-0.5"
                 :style="{
-                  backgroundColor: brand.colors.primary,
-                  color: brand.colors.text,
+                  backgroundColor: 'var(--brand-primary)',
+                  color: 'var(--brand-text)',
                 }"
               >
                 <UIcon :name="brand.hero.ctaIcon" class="size-4" />
@@ -3323,21 +3323,21 @@
               <NuxtLink
                 to="/auth/login"
                 class="inline-flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.18em] transition-opacity hover:opacity-70"
-                :style="{ color: brand.colors.text }"
+                :style="{ color: 'var(--brand-text)' }"
               >
-                <span class="border-b-2 pb-1" :style="{ borderColor: brand.colors.text }">{{ brand.hero.ctaSecondaryLabel }}</span>
+                <span class="border-b-2 pb-1" :style="{ borderColor: 'var(--brand-text)' }">{{ brand.hero.ctaSecondaryLabel }}</span>
               </NuxtLink>
             </div>
 
             <!-- Trust indicators, minimal, sober -->
-            <div class="flex flex-wrap items-center gap-x-6 gap-y-2 border-t pt-6" :style="{ borderColor: brand.colors.border }">
+            <div class="flex flex-wrap items-center gap-x-6 gap-y-2 border-t pt-6" :style="{ borderColor: 'var(--brand-border)' }">
               <div
                 v-for="(t, i) in brand.hero.trustIndicators"
                 :key="i"
                 class="hl-mono flex items-center gap-2 text-[10px] uppercase tracking-[0.18em]"
-                :style="{ color: brand.colors.textMuted }"
+                :style="{ color: 'var(--brand-text-muted)' }"
               >
-                <span :style="{ color: brand.colors.primary }">·</span>
+                <span :style="{ color: 'var(--brand-primary)' }">·</span>
                 {{ t }}
               </div>
             </div>
@@ -3350,7 +3350,7 @@
               <div
                 class="hl-display absolute left-6 top-6 z-10 select-none text-[80px] leading-none md:left-10 md:top-10 md:text-[100px]"
                 :style="{
-                  color: brand.colors.primary,
+                  color: 'var(--brand-primary)',
                   fontFamily: `'Anton', 'Bebas Neue', sans-serif`,
                   fontWeight: 400,
                 }"
@@ -3370,12 +3370,12 @@
               <div
                 v-else
                 class="absolute inset-0 flex items-end justify-center pb-16"
-                :style="{ backgroundColor: brand.colors.surface }"
+                :style="{ backgroundColor: 'var(--brand-surface)' }"
               >
                 <div
                   class="hl-display text-[100px] leading-none md:text-[140px]"
                   :style="{
-                    color: brand.colors.primary,
+                    color: 'var(--brand-primary)',
                     fontFamily: `'Anton', 'Bebas Neue', sans-serif`,
                   }"
                 >
@@ -3398,7 +3398,7 @@
            loop infinito, sem hype. Movimento lento e calmo, igual o
            pitch da marca.
       -->
-      <div class="hl-marquee-band relative overflow-hidden border-y" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.background }">
+      <div class="hl-marquee-band relative overflow-hidden border-y" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-background)' }">
         <div class="hl-marquee py-8 md:py-10">
           <div class="hl-marquee-track">
             <!-- Render the ticker list TWICE so the loop is seamless -->
@@ -3411,7 +3411,7 @@
                 <span
                   class="hl-mono text-[14px] tabular-nums md:text-[16px]"
                   :style="{
-                    color: brand.colors.primary,
+                    color: 'var(--brand-primary)',
                     fontFamily: `'JetBrains Mono', monospace`,
                     letterSpacing: '0.03em',
                   }"
@@ -3430,7 +3430,7 @@
                 <span
                   class="hl-mono text-[14px] tabular-nums md:text-[16px]"
                   :style="{
-                    color: (t.change ?? 0) >= 0 ? brand.colors.positive : brand.colors.negative,
+                    color: (t.change ?? 0) >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)',
                     fontFamily: `'JetBrains Mono', monospace`,
                   }"
                 >
@@ -3454,24 +3454,24 @@
       <div class="relative">
         <div class="mx-auto grid max-w-6xl grid-cols-12 gap-12 px-6 py-24 md:px-10 md:py-32">
           <div class="col-span-12 md:col-span-3">
-            <div class="hl-mono mb-3 text-[10px] uppercase tracking-[0.22em] sticky top-24" :style="{ color: brand.colors.primary }">
+            <div class="hl-mono mb-3 text-[10px] uppercase tracking-[0.22em] sticky top-24" :style="{ color: 'var(--brand-primary)' }">
               02 · A Doutrina
             </div>
           </div>
           <div class="col-span-12 md:col-span-9">
-            <div class="hl-serif flex flex-col gap-8 text-[19px] leading-[1.7] md:text-[22px]" :style="{ color: brand.colors.text, fontFamily: `'Spectral', 'Georgia', serif` }">
+            <div class="hl-serif flex flex-col gap-8 text-[19px] leading-[1.7] md:text-[22px]" :style="{ color: 'var(--brand-text)', fontFamily: `'Spectral', 'Georgia', serif` }">
               <p>
-                Quem compra ação olha pro gráfico. Quem compra empresa olha pro balanço. <em :style="{ color: brand.colors.primary }">A primeira é apostar. A segunda é investir.</em>
+                Quem compra ação olha pro gráfico. Quem compra empresa olha pro balanço. <em :style="{ color: 'var(--brand-primary)' }">A primeira é apostar. A segunda é investir.</em>
               </p>
               <p>
                 Eu não dou sinal de compra. Eu te ensino a pensar como dono de negócio, e quando você internalizar, não precisa mais de mim.
               </p>
             </div>
             <!-- Signature -->
-            <div class="hl-mono mt-16 flex items-center gap-4 text-[11px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.textMuted }">
-              <span class="h-px flex-1 max-w-12" :style="{ backgroundColor: brand.colors.border }" />
-              <span :style="{ color: brand.colors.primary }">, @holder</span>
-              <span class="h-px flex-1" :style="{ backgroundColor: brand.colors.border }" />
+            <div class="hl-mono mt-16 flex items-center gap-4 text-[11px] uppercase tracking-[0.22em]" :style="{ color: 'var(--brand-text-muted)' }">
+              <span class="h-px flex-1 max-w-12" :style="{ backgroundColor: 'var(--brand-border)' }" />
+              <span :style="{ color: 'var(--brand-primary)' }">, @holder</span>
+              <span class="h-px flex-1" :style="{ backgroundColor: 'var(--brand-border)' }" />
             </div>
           </div>
         </div>
@@ -3480,30 +3480,30 @@
       <!-- ============================================================
            3.01 · TRADER vs HOLDER, comparative table
            ============================================================ -->
-      <div class="relative border-y" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+      <div class="relative border-y" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
         <div class="mx-auto max-w-7xl px-6 py-24 md:px-10 md:py-32">
           <div class="mb-14">
-            <div class="hl-mono mb-3 text-[10px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
+            <div class="hl-mono mb-3 text-[10px] uppercase tracking-[0.22em]" :style="{ color: 'var(--brand-primary)' }">
               03 · Comparativo
             </div>
             <h2
               class="hl-serif leading-[1.1]"
               :style="{
-                color: brand.colors.text,
+                color: 'var(--brand-text)',
                 fontFamily: `'Spectral', 'Georgia', serif`,
                 fontSize: 'clamp(2.25rem, 4.5vw, 3.75rem)',
                 fontWeight: 400,
               }"
             >
               Trader vs.<br />
-              <em :style="{ color: brand.colors.primary, fontWeight: 500 }">Holder.</em>
+              <em :style="{ color: 'var(--brand-primary)', fontWeight: 500 }">Holder.</em>
             </h2>
-            <p class="hl-serif mt-6 max-w-xl text-[16px] italic" :style="{ color: brand.colors.textMuted, fontFamily: `'Spectral', 'Georgia', serif` }">
+            <p class="hl-serif mt-6 max-w-xl text-[16px] italic" :style="{ color: 'var(--brand-text-muted)', fontFamily: `'Spectral', 'Georgia', serif` }">
               Dois jeitos de existir no mercado. Apenas um sobrevive a um ciclo completo.
             </p>
           </div>
 
-          <div class="grid gap-px overflow-hidden border" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.border }">
+          <div class="grid gap-px overflow-hidden border" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-border)' }">
             <div class="grid gap-px md:grid-cols-2">
               <div
                 v-for="(row, idx) in holderTraderTable"
@@ -3511,9 +3511,9 @@
                 class="hl-mono px-6 py-5 text-[11px] uppercase tracking-[0.18em]"
                 :class="idx === 1 ? 'border-l-2' : ''"
                 :style="{
-                  backgroundColor: brand.colors.background,
-                  borderColor: idx === 1 ? brand.colors.primary : 'transparent',
-                  color: idx === 1 ? brand.colors.primary : brand.colors.textMuted,
+                  backgroundColor: 'var(--brand-background)',
+                  borderColor: idx === 1 ? 'var(--brand-primary)' : 'transparent',
+                  color: idx === 1 ? 'var(--brand-primary)' : 'var(--brand-text-muted)',
                 }"
               >
                 {{ idx === 0 ? 'TRADER' : 'HOLDER' }}
@@ -3524,11 +3524,11 @@
               :key="'row-' + idx"
               class="grid gap-px md:grid-cols-2"
             >
-              <div class="px-6 py-5 text-[14px]" :style="{ backgroundColor: brand.colors.background, color: brand.colors.textMuted, fontFamily: `'Spectral', 'Georgia', serif` }">
+              <div class="px-6 py-5 text-[14px]" :style="{ backgroundColor: 'var(--brand-background)', color: 'var(--brand-text-muted)', fontFamily: `'Spectral', 'Georgia', serif` }">
                 {{ row.trader }}
               </div>
-              <div class="border-l-2 px-6 py-5 text-[14px]" :style="{ backgroundColor: brand.colors.background, borderColor: brand.colors.primary, color: brand.colors.text, fontFamily: `'Spectral', 'Georgia', serif` }">
-                <strong :style="{ color: brand.colors.primary }">→</strong> {{ row.holder }}
+              <div class="border-l-2 px-6 py-5 text-[14px]" :style="{ backgroundColor: 'var(--brand-background)', borderColor: 'var(--brand-primary)', color: 'var(--brand-text)', fontFamily: `'Spectral', 'Georgia', serif` }">
+                <strong :style="{ color: 'var(--brand-primary)' }">→</strong> {{ row.holder }}
               </div>
             </div>
           </div>
@@ -3542,67 +3542,67 @@
         <div class="mx-auto max-w-6xl px-6 py-24 md:px-10 md:py-32">
           <div class="mb-12 grid items-end gap-8 md:grid-cols-12">
             <div class="md:col-span-7">
-              <div class="hl-mono mb-3 text-[10px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
+              <div class="hl-mono mb-3 text-[10px] uppercase tracking-[0.22em]" :style="{ color: 'var(--brand-primary)' }">
                 04 · Posições
               </div>
               <h2
                 class="hl-serif leading-[1.1]"
                 :style="{
-                  color: brand.colors.text,
+                  color: 'var(--brand-text)',
                   fontFamily: `'Spectral', 'Georgia', serif`,
                   fontSize: 'clamp(2rem, 4.5vw, 3.5rem)',
                   fontWeight: 400,
                 }"
               >
                 Eu detenho<br />
-                <em :style="{ color: brand.colors.primary, fontWeight: 500 }">apenas estas.</em>
+                <em :style="{ color: 'var(--brand-primary)', fontWeight: 500 }">apenas estas.</em>
               </h2>
             </div>
-            <p class="hl-serif text-[15px] italic md:col-span-5" :style="{ color: brand.colors.textMuted, fontFamily: `'Spectral', 'Georgia', serif` }">
+            <p class="hl-serif text-[15px] italic md:col-span-5" :style="{ color: 'var(--brand-text-muted)', fontFamily: `'Spectral', 'Georgia', serif` }">
               Eu revelo a carteira inteira uma vez por trimestre. Sempre as mesmas. Quase nunca trocadas. A última vez que mudei algo foi há oito meses.
             </p>
           </div>
 
           <!-- Position cards, minimal, sharp -->
-          <div class="grid gap-0 border" :style="{ borderColor: brand.colors.border }">
+          <div class="grid gap-0 border" :style="{ borderColor: 'var(--brand-border)' }">
             <div
               v-for="(pos, idx) in holderPositions"
               :key="pos.ticker"
               class="grid grid-cols-12 items-center gap-4 border-b px-6 py-6 last:border-b-0 md:px-10"
-              :style="{ borderColor: brand.colors.border }"
+              :style="{ borderColor: 'var(--brand-border)' }"
             >
               <!-- Index -->
-              <div class="col-span-1 hl-mono text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
+              <div class="col-span-1 hl-mono text-[10px] uppercase tracking-[0.18em]" :style="{ color: 'var(--brand-text-muted)' }">
                 {{ String(idx + 1).padStart(2, '0') }}
               </div>
               <!-- Ticker -->
               <div class="col-span-3 md:col-span-2">
-                <div class="hl-mono text-[20px] tabular-nums md:text-[24px]" :style="{ color: brand.colors.primary, fontFamily: `'JetBrains Mono', monospace`, letterSpacing: '0.02em' }">
+                <div class="hl-mono text-[20px] tabular-nums md:text-[24px]" :style="{ color: 'var(--brand-primary)', fontFamily: `'JetBrains Mono', monospace`, letterSpacing: '0.02em' }">
                   {{ pos.ticker }}
                 </div>
               </div>
               <!-- Name + thesis -->
               <div class="col-span-8 md:col-span-7">
-                <div class="hl-mono text-[10px] uppercase tracking-[0.16em]" :style="{ color: brand.colors.primary }">
+                <div class="hl-mono text-[10px] uppercase tracking-[0.16em]" :style="{ color: 'var(--brand-primary)' }">
                   {{ pos.sector }}
                 </div>
-                <div class="hl-serif mt-1 text-[14px] italic md:text-[15px]" :style="{ color: brand.colors.text, fontFamily: `'Spectral', 'Georgia', serif` }">
+                <div class="hl-serif mt-1 text-[14px] italic md:text-[15px]" :style="{ color: 'var(--brand-text)', fontFamily: `'Spectral', 'Georgia', serif` }">
                   "{{ pos.thesis }}"
                 </div>
               </div>
               <!-- Held since -->
               <div class="col-span-12 md:col-span-2 md:text-right">
-                <div class="hl-mono text-[10px] uppercase tracking-[0.18em]" :style="{ color: brand.colors.textMuted }">
+                <div class="hl-mono text-[10px] uppercase tracking-[0.18em]" :style="{ color: 'var(--brand-text-muted)' }">
                   Detido desde
                 </div>
-                <div class="hl-mono mt-0.5 text-[15px] tabular-nums" :style="{ color: brand.colors.text }">
+                <div class="hl-mono mt-0.5 text-[15px] tabular-nums" :style="{ color: 'var(--brand-text)' }">
                   {{ pos.since }}
                 </div>
               </div>
             </div>
           </div>
 
-          <p class="hl-mono mt-8 text-center text-[10px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.textMuted }">
+          <p class="hl-mono mt-8 text-center text-[10px] uppercase tracking-[0.22em]" :style="{ color: 'var(--brand-text-muted)' }">
             ⊕ próxima revelação · Q3 · 30 jun
           </p>
         </div>
@@ -3611,11 +3611,11 @@
       <!-- ============================================================
            5.01 · § POR QUÊ, long-form intro
            ============================================================ -->
-      <div class="relative border-y" :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }">
+      <div class="relative border-y" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
         <div class="mx-auto max-w-6xl px-6 py-24 md:px-10 md:py-32">
           <div class="grid grid-cols-12 gap-12">
             <div class="col-span-12 md:col-span-3">
-              <div class="hl-mono mb-3 text-[10px] uppercase tracking-[0.22em] sticky top-24" :style="{ color: brand.colors.primary }">
+              <div class="hl-mono mb-3 text-[10px] uppercase tracking-[0.22em] sticky top-24" :style="{ color: 'var(--brand-primary)' }">
                 05 · Por Quê
               </div>
             </div>
@@ -3623,22 +3623,22 @@
               <h2
                 class="hl-serif leading-[1.1]"
                 :style="{
-                  color: brand.colors.text,
+                  color: 'var(--brand-text)',
                   fontFamily: `'Spectral', 'Georgia', serif`,
                   fontSize: 'clamp(2rem, 4.5vw, 3.25rem)',
                   fontWeight: 400,
                 }"
               >
                 Por que ainda<br />
-                <em :style="{ color: brand.colors.primary, fontWeight: 500 }">detenho ITUB4.</em>
+                <em :style="{ color: 'var(--brand-primary)', fontWeight: 500 }">detenho ITUB4.</em>
               </h2>
               <p class="hl-serif mt-10 text-[19px] leading-[1.7]" :style="{ color: `${brand.colors.text}D0`, fontFamily: `'Spectral', 'Georgia', serif` }">
-                Comprei a R$&nbsp;26,80 em 2014. Hoje a R$&nbsp;46. <em :style="{ color: brand.colors.primary }">A parte do gráfico é a menos importante</em>, o que importa são os 9 anos de dividendos pagos no meio do caminho, sem precisar vender uma posição.
+                Comprei a R$&nbsp;26,80 em 2014. Hoje a R$&nbsp;46. <em :style="{ color: 'var(--brand-primary)' }">A parte do gráfico é a menos importante</em>, o que importa são os 9 anos de dividendos pagos no meio do caminho, sem precisar vender uma posição.
               </p>
               <NuxtLink
                 to="#"
                 class="hl-mono mt-12 inline-flex items-center gap-3 border-b-2 pb-2 text-[11px] uppercase tracking-[0.22em]"
-                :style="{ color: brand.colors.primary, borderColor: brand.colors.primary }"
+                :style="{ color: 'var(--brand-primary)', borderColor: 'var(--brand-primary)' }"
               >
                 Continuar leitura →
               </NuxtLink>
@@ -3652,13 +3652,13 @@
            ============================================================ -->
       <div class="relative">
         <div class="mx-auto max-w-5xl px-6 py-24 text-center md:px-10 md:py-32">
-          <div class="hl-mono mb-8 text-[10px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.primary }">
+          <div class="hl-mono mb-8 text-[10px] uppercase tracking-[0.22em]" :style="{ color: 'var(--brand-primary)' }">
             06 · Assinatura
           </div>
           <blockquote
             class="hl-serif italic leading-[1.25]"
             :style="{
-              color: brand.colors.text,
+              color: 'var(--brand-text)',
               fontFamily: `'Spectral', 'Georgia', serif`,
               fontSize: 'clamp(1.5rem, 3.5vw, 2.5rem)',
               fontWeight: 400,
@@ -3666,10 +3666,10 @@
           >
             "{{ brand.hero.founderQuote }}"
           </blockquote>
-          <div class="hl-mono mt-12 flex items-center justify-center gap-4 text-[11px] uppercase tracking-[0.22em]" :style="{ color: brand.colors.textMuted }">
-            <span class="h-px w-12" :style="{ backgroundColor: brand.colors.border }" />
-            <span :style="{ color: brand.colors.primary }">, @holder</span>
-            <span class="h-px w-12" :style="{ backgroundColor: brand.colors.border }" />
+          <div class="hl-mono mt-12 flex items-center justify-center gap-4 text-[11px] uppercase tracking-[0.22em]" :style="{ color: 'var(--brand-text-muted)' }">
+            <span class="h-px w-12" :style="{ backgroundColor: 'var(--brand-border)' }" />
+            <span :style="{ color: 'var(--brand-primary)' }">, @holder</span>
+            <span class="h-px w-12" :style="{ backgroundColor: 'var(--brand-border)' }" />
           </div>
 
           <div class="mt-16">
@@ -3677,8 +3677,8 @@
               to="/auth/register"
               class="hl-cta-primary group inline-flex items-center gap-3 px-10 py-5 text-[12px] font-bold uppercase tracking-[0.18em] transition-[transform,opacity,box-shadow,background-color,border-color] hover:-translate-y-0.5"
               :style="{
-                backgroundColor: brand.colors.primary,
-                color: brand.colors.text,
+                backgroundColor: 'var(--brand-primary)',
+                color: 'var(--brand-text)',
               }"
             >
               <UIcon name="i-lucide-anchor" class="size-4" />
@@ -3687,7 +3687,7 @@
             </NuxtLink>
           </div>
 
-          <p class="hl-display mt-16 text-[60px] leading-none md:text-[80px]" :style="{ color: brand.colors.primary, fontFamily: `'Anton', sans-serif`, letterSpacing: '0.02em' }">
+          <p class="hl-display mt-16 text-[60px] leading-none md:text-[80px]" :style="{ color: 'var(--brand-primary)', fontFamily: `'Anton', sans-serif`, letterSpacing: '0.02em' }">
             HOLD.
           </p>
         </div>

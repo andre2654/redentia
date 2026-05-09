@@ -1605,6 +1605,8 @@ const config = computed<RankingConfig>(() => {
 
 // ----- Layout / brand -----------------------------------------------
 
+const brand = useBrand()
+
 // Icone color/bg derivados do iconColor declarado na config. Mantemos
 // 3 cores semanticas (primary/positive/negative) pra contraste consistente.
 const iconColor = computed(() => {

@@ -967,7 +967,7 @@
              "Continue pelo WhatsApp" + subtítulo) — header externo
              eyebrow/h1/subtitle foi REMOVIDO porque duplicava. -->
         <div
-          class="flex w-full max-w-md flex-col gap-5 rounded-[32px] border px-8 py-10 shadow-[0_25px_60px_-15px_rgba(15,23,42,0.5)] backdrop-blur-2xl"
+          class="flex w-full max-w-md flex-col gap-5 rounded-lg border px-8 py-10 shadow-[var(--shadow-card)] backdrop-blur-2xl"
           :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
         >
           <MoleculesAuthChoiceCard

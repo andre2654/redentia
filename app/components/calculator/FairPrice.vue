@@ -8,8 +8,8 @@
 
       <div v-if="!selectedAsset" class="flex flex-col gap-3">
         <label class="flex items-center justify-between">
-          <span class="text-sm font-semibold text-white">Selecione a ação</span>
-          <span class="hidden items-center gap-1 text-[11px] uppercase tracking-wider text-gray-500 md:flex">
+          <span class="text-sm font-semibold text-[var(--text-heading)]">Selecione a ação</span>
+          <span class="hidden items-center gap-1 text-[11px] uppercase tracking-wider text-[var(--text-muted)] md:flex">
             <UIcon name="i-lucide-keyboard" class="size-3" />
             Digite o ticker ou nome da empresa
           </span>
@@ -26,13 +26,13 @@
           >
             <UIcon
               :name="assetsLoading ? 'i-lucide-loader-circle' : 'i-lucide-search'"
-              class="size-5 shrink-0 text-gray-400"
+              class="size-5 shrink-0 text-[var(--text-muted)]"
               :class="{ 'motion-safe:animate-spin': assetsLoading }"
             />
             <input
               v-model="searchTerm"
               type="text"
-              class="flex-1 bg-transparent text-base font-medium text-white placeholder:text-gray-500 focus:outline-none md:text-lg"
+              class="flex-1 bg-transparent text-base font-medium text-[var(--text-heading)] placeholder:text-[var(--text-muted)] focus:outline-none md:text-lg"
               placeholder="Ex: PETR4, Petrobras, Itaú..."
               spellcheck="false"
               autocomplete="off"
@@ -42,7 +42,7 @@
             <button
               v-if="searchTerm"
               type="button"
-              class="flex size-7 items-center justify-center rounded-full text-gray-400 transition hover:bg-white/10 hover:text-white"
+              class="flex size-7 items-center justify-center rounded-full text-[var(--text-muted)] transition hover:bg-white/10 hover:text-[var(--text-heading)]"
               aria-label="Limpar busca"
               @click="searchTerm = ''"
             >
@@ -50,7 +50,7 @@
             </button>
             <span
               v-else
-              class="hidden items-center gap-1 rounded-md border border-white/10 bg-white/5 px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-gray-400 md:flex"
+              class="hidden items-center gap-1 rounded-md border border-white/10 bg-white/5 px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)] md:flex"
             >
               /
             </span>
@@ -66,7 +66,7 @@
             v-if="searchTerm && filteredAssets.length > 0"
             class="overflow-hidden rounded-2xl border border-white/10 bg-[#0b0d10]/95 shadow-2xl backdrop-blur"
           >
-            <div class="flex items-center justify-between border-b border-white/5 px-4 py-2 text-[11px] uppercase tracking-wider text-gray-500">
+            <div class="flex items-center justify-between border-b border-white/5 px-4 py-2 text-[11px] uppercase tracking-wider text-[var(--text-muted)]">
               <span>{{ filteredAssets.length }} resultado{{ filteredAssets.length === 1 ? '' : 's' }}</span>
               <span>Ação · B3</span>
             </div>
@@ -91,22 +91,22 @@
                   </span>
                 </div>
                 <div class="flex min-w-0 flex-1 flex-col">
-                  <span class="font-mono text-sm font-bold tracking-wide text-white">
+                  <span class="font-mono text-sm font-bold tracking-wide text-[var(--text-heading)]">
                     {{ (asset.ticker || asset.stock || '').toUpperCase() }}
                   </span>
-                  <span class="truncate text-xs text-gray-400">
+                  <span class="truncate text-xs text-[var(--text-muted)]">
                     {{ asset.name }}
                   </span>
                 </div>
                 <span
                   v-if="asset.sector"
-                  class="hidden shrink-0 rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-medium text-gray-300 md:block"
+                  class="hidden shrink-0 rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-medium text-[var(--text-heading)] md:block"
                 >
                   {{ asset.sector }}
                 </span>
                 <UIcon
                   name="i-lucide-arrow-right"
-                  class="size-4 shrink-0 text-gray-600 transition-[transform,opacity,box-shadow,background-color,border-color,filter] group-hover:translate-x-0.5 group-hover:text-secondary"
+                  class="size-4 shrink-0 text-[var(--text-muted)] transition-[transform,opacity,box-shadow,background-color,border-color,filter] group-hover:translate-x-0.5 group-hover:text-secondary"
                 />
               </button>
             </div>
@@ -115,12 +115,12 @@
 
         <div
           v-if="searchTerm && filteredAssets.length === 0 && !assetsLoading"
-          class="flex items-center gap-3 rounded-2xl border border-dashed border-white/10 bg-white/5 px-4 py-3 text-sm text-gray-400"
+          class="flex items-center gap-3 rounded-2xl border border-dashed border-white/10 bg-white/5 px-4 py-3 text-sm text-[var(--text-muted)]"
         >
-          <UIcon name="i-lucide-search-x" class="size-5 text-gray-500" />
+          <UIcon name="i-lucide-search-x" class="size-5 text-[var(--text-muted)]" />
           <span>
             Nenhuma ação encontrada para
-            <strong class="text-white">"{{ searchTerm }}"</strong>. Tente um ticker como PETR4 ou ITUB4.
+            <strong class="text-[var(--text-heading)]">"{{ searchTerm }}"</strong>. Tente um ticker como PETR4 ou ITUB4.
           </span>
         </div>
       </div>
@@ -146,32 +146,32 @@
             </div>
             <div class="flex min-w-0 flex-col gap-1">
               <div class="flex items-center gap-2">
-                <span class="font-mono text-xl font-bold tracking-wide text-white md:text-2xl">
+                <span class="font-mono text-xl font-bold tracking-wide text-[var(--text-heading)] md:text-2xl">
                   {{ (selectedAsset.ticker || selectedAsset.stock || '').toUpperCase() }}
                 </span>
                 <span class="rounded-md border border-secondary/30 bg-secondary/15 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-secondary">
                   Selecionada
                 </span>
               </div>
-              <p class="truncate text-sm text-gray-300">{{ selectedAsset.name }}</p>
+              <p class="truncate text-sm text-[var(--text-heading)]">{{ selectedAsset.name }}</p>
               <div class="mt-0.5 flex flex-wrap items-center gap-1.5">
                 <span
                   v-if="selectedAsset.sector"
-                  class="flex items-center gap-1 rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-medium text-gray-300"
+                  class="flex items-center gap-1 rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-medium text-[var(--text-heading)]"
                 >
                   <UIcon name="i-lucide-layers" class="size-3 text-secondary" />
                   {{ selectedAsset.sector }}
                 </span>
                 <span
                   v-if="(selectedAsset.type || '').toString().toUpperCase()"
-                  class="rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-gray-300"
+                  class="rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-[var(--text-heading)]"
                 >
                   {{ (selectedAsset.type || '').toString().toUpperCase() }}
                 </span>
                 <span
-                  class="flex items-center gap-1 rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-medium text-gray-300"
+                  class="flex items-center gap-1 rounded-md border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-medium text-[var(--text-heading)]"
                 >
-                  <UIcon name="i-lucide-building-2" class="size-3 text-blue-400" />
+                  <UIcon name="i-lucide-building-2" class="size-3 text-[var(--brand-primary)]" />
                   B3
                 </span>
               </div>
@@ -180,7 +180,7 @@
 
           <button
             type="button"
-            class="flex shrink-0 items-center gap-2 self-start rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-gray-300 transition hover:border-white/20 hover:bg-white/10 hover:text-white md:self-center"
+            class="flex shrink-0 items-center gap-2 self-start rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-[var(--text-heading)] transition hover:border-white/20 hover:bg-white/10 hover:text-[var(--text-heading)] md:self-center"
             @click="clearSelection"
           >
             <UIcon name="i-lucide-refresh-cw" class="size-3.5" />
@@ -191,7 +191,7 @@
 
       <div
         v-if="isFetching"
-        class="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-4 text-sm text-gray-300"
+        class="flex items-center gap-3 rounded-xl border border-white/10 bg-white/5 px-4 py-4 text-sm text-[var(--text-heading)]"
       >
         <UIcon name="i-lucide-loader-circle" class="size-5 motion-safe:animate-spin text-secondary" />
         Buscando fundamentos e calculando todas as metodologias...
@@ -199,13 +199,13 @@
 
       <div
         v-if="fetchError && !isFetching"
-        class="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-200"
+        class="rounded-xl border border-[color-mix(in_srgb,var(--brand-negative)_30%,transparent)] bg-[color-mix(in_srgb,var(--brand-negative)_10%,transparent)] p-4 text-sm text-red-200"
       >
         <strong>Não foi possível carregar os fundamentos:</strong> {{ fetchError }}. Tente outra ação ou preencha os campos manualmente no modo avançado.
       </div>
 
       <details v-if="selectedAsset" class="group rounded-xl border border-white/10 bg-white/5 p-4">
-        <summary class="flex cursor-pointer items-center justify-between text-sm font-semibold text-white list-none">
+        <summary class="flex cursor-pointer items-center justify-between text-sm font-semibold text-[var(--text-heading)] list-none">
           <span class="flex items-center gap-2">
             <UIcon name="i-lucide-sliders-horizontal" class="size-4 text-secondary" />
             Ajuste manual (opcional)
@@ -279,82 +279,82 @@
 
       <div class="grid grid-cols-1 gap-3 md:grid-cols-5">
         <div class="rounded-xl border border-white/10 bg-white/5 p-3">
-          <p class="text-xs text-gray-400">Preço Atual</p>
-          <p class="mt-1 text-lg font-bold text-white tabular-nums">{{ formatCurrency(form.currentPrice) }}</p>
+          <p class="text-xs text-[var(--text-muted)]">Preço Atual</p>
+          <p class="mt-1 text-lg font-bold text-[var(--text-heading)] tabular-nums">{{ formatCurrency(form.currentPrice) }}</p>
         </div>
         <div class="rounded-xl border border-white/10 bg-white/5 p-3">
-          <p class="text-xs text-gray-400">LPA (12m)</p>
-          <p class="mt-1 text-lg font-bold text-white tabular-nums">{{ formatCurrency(form.lpa) }}</p>
+          <p class="text-xs text-[var(--text-muted)]">LPA (12m)</p>
+          <p class="mt-1 text-lg font-bold text-[var(--text-heading)] tabular-nums">{{ formatCurrency(form.lpa) }}</p>
         </div>
         <div class="rounded-xl border border-white/10 bg-white/5 p-3">
-          <p class="text-xs text-gray-400">VPA</p>
-          <p class="mt-1 text-lg font-bold text-white tabular-nums">{{ formatCurrency(form.vpa) }}</p>
+          <p class="text-xs text-[var(--text-muted)]">VPA</p>
+          <p class="mt-1 text-lg font-bold text-[var(--text-heading)] tabular-nums">{{ formatCurrency(form.vpa) }}</p>
         </div>
         <div class="rounded-xl border border-white/10 bg-white/5 p-3">
-          <p class="text-xs text-gray-400">Dividendo 12m</p>
-          <p class="mt-1 text-lg font-bold text-white tabular-nums">{{ formatCurrency(form.dividend) }}</p>
+          <p class="text-xs text-[var(--text-muted)]">Dividendo 12m</p>
+          <p class="mt-1 text-lg font-bold text-[var(--text-heading)] tabular-nums">{{ formatCurrency(form.dividend) }}</p>
         </div>
         <div class="rounded-xl border border-white/10 bg-white/5 p-3">
-          <p class="text-xs text-gray-400">P/L Setor</p>
-          <p class="mt-1 text-lg font-bold text-white tabular-nums">{{ form.sectorPL.toFixed(1) }}</p>
+          <p class="text-xs text-[var(--text-muted)]">P/L Setor</p>
+          <p class="mt-1 text-lg font-bold text-[var(--text-heading)] tabular-nums">{{ form.sectorPL.toFixed(1) }}</p>
         </div>
       </div>
 
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div class="rounded-xl border p-4" :class="getStatusClass(results.graham.ratio)">
           <div class="mb-3 flex items-center justify-between">
-            <h4 class="font-semibold text-white">Fórmula de Graham</h4>
+            <h4 class="font-semibold text-[var(--text-heading)]">Fórmula de Graham</h4>
             <UBadge :color="getStatusColor(results.graham.ratio)" variant="soft">
               {{ getStatusText(results.graham.ratio) }}
             </UBadge>
           </div>
-          <p class="mb-1 text-2xl font-bold text-white">
+          <p class="mb-1 text-2xl font-bold text-[var(--text-heading)]">
             {{ formatCurrency(results.graham.fairPrice) }}
           </p>
-          <p class="text-sm text-gray-400">Margem: {{ (results.graham.margin * 100).toFixed(1) }}%</p>
-          <p class="mt-2 text-xs text-gray-500">√(22.5 × LPA × VPA)</p>
+          <p class="text-sm text-[var(--text-muted)]">Margem: {{ (results.graham.margin * 100).toFixed(1) }}%</p>
+          <p class="mt-2 text-xs text-[var(--text-muted)]">√(22.5 × LPA × VPA)</p>
         </div>
 
         <div class="rounded-xl border p-4" :class="getStatusClass(results.bazin.ratio)">
           <div class="mb-3 flex items-center justify-between">
-            <h4 class="font-semibold text-white">Método Bazin</h4>
+            <h4 class="font-semibold text-[var(--text-heading)]">Método Bazin</h4>
             <UBadge :color="getStatusColor(results.bazin.ratio)" variant="soft">
               {{ getStatusText(results.bazin.ratio) }}
             </UBadge>
           </div>
-          <p class="mb-1 text-2xl font-bold text-white">
+          <p class="mb-1 text-2xl font-bold text-[var(--text-heading)]">
             {{ formatCurrency(results.bazin.fairPrice) }}
           </p>
-          <p class="text-sm text-gray-400">Margem: {{ (results.bazin.margin * 100).toFixed(1) }}%</p>
-          <p class="mt-2 text-xs text-gray-500">Dividendo ÷ 0.06 (DY mín 6%)</p>
+          <p class="text-sm text-[var(--text-muted)]">Margem: {{ (results.bazin.margin * 100).toFixed(1) }}%</p>
+          <p class="mt-2 text-xs text-[var(--text-muted)]">Dividendo ÷ 0.06 (DY mín 6%)</p>
         </div>
 
         <div class="rounded-xl border p-4" :class="getStatusClass(results.plSector.ratio)">
           <div class="mb-3 flex items-center justify-between">
-            <h4 class="font-semibold text-white">P/L Setorial</h4>
+            <h4 class="font-semibold text-[var(--text-heading)]">P/L Setorial</h4>
             <UBadge :color="getStatusColor(results.plSector.ratio)" variant="soft">
               {{ getStatusText(results.plSector.ratio) }}
             </UBadge>
           </div>
-          <p class="mb-1 text-2xl font-bold text-white">
+          <p class="mb-1 text-2xl font-bold text-[var(--text-heading)]">
             {{ formatCurrency(results.plSector.fairPrice) }}
           </p>
-          <p class="text-sm text-gray-400">Margem: {{ (results.plSector.margin * 100).toFixed(1) }}%</p>
-          <p class="mt-2 text-xs text-gray-500">LPA × P/L Médio do Setor</p>
+          <p class="text-sm text-[var(--text-muted)]">Margem: {{ (results.plSector.margin * 100).toFixed(1) }}%</p>
+          <p class="mt-2 text-xs text-[var(--text-muted)]">LPA × P/L Médio do Setor</p>
         </div>
 
         <div class="rounded-xl border p-4" :class="getStatusClass(results.bookValue.ratio)">
           <div class="mb-3 flex items-center justify-between">
-            <h4 class="font-semibold text-white">Valor Patrimonial</h4>
+            <h4 class="font-semibold text-[var(--text-heading)]">Valor Patrimonial</h4>
             <UBadge :color="getStatusColor(results.bookValue.ratio)" variant="soft">
               {{ getStatusText(results.bookValue.ratio) }}
             </UBadge>
           </div>
-          <p class="mb-1 text-2xl font-bold text-white">
+          <p class="mb-1 text-2xl font-bold text-[var(--text-heading)]">
             {{ formatCurrency(results.bookValue.fairPrice) }}
           </p>
-          <p class="text-sm text-gray-400">Margem: {{ (results.bookValue.margin * 100).toFixed(1) }}%</p>
-          <p class="mt-2 text-xs text-gray-500">VPA × 1.5 (margem Graham)</p>
+          <p class="text-sm text-[var(--text-muted)]">Margem: {{ (results.bookValue.margin * 100).toFixed(1) }}%</p>
+          <p class="mt-2 text-xs text-[var(--text-muted)]">VPA × 1.5 (margem Graham)</p>
         </div>
       </div>
 
@@ -365,43 +365,43 @@
         </div>
         <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
           <div>
-            <p class="mb-1 text-sm text-gray-400">Preço Teto Médio</p>
+            <p class="mb-1 text-sm text-[var(--text-muted)]">Preço Teto Médio</p>
             <p class="text-2xl font-bold text-secondary">
               {{ formatCurrency(results.consensus.averageFairPrice) }}
             </p>
           </div>
           <div>
-            <p class="mb-1 text-sm text-gray-400">Margem de Segurança Média</p>
-            <p class="text-2xl font-bold text-white">
+            <p class="mb-1 text-sm text-[var(--text-muted)]">Margem de Segurança Média</p>
+            <p class="text-2xl font-bold text-[var(--text-heading)]">
               {{ (results.consensus.averageMargin * 100).toFixed(1) }}%
             </p>
           </div>
           <div>
-            <p class="mb-1 text-sm text-gray-400">Recomendação</p>
+            <p class="mb-1 text-sm text-[var(--text-muted)]">Recomendação</p>
             <p
               class="text-2xl font-bold"
               :class="{
-                'text-green-400': results.consensus.recommendation === 'Comprar',
-                'text-yellow-400': results.consensus.recommendation === 'Neutro',
-                'text-red-400': results.consensus.recommendation === 'Caro',
+                'text-[var(--brand-positive)]': results.consensus.recommendation === 'Comprar',
+                'text-[var(--brand-primary)]': results.consensus.recommendation === 'Neutro',
+                'text-[var(--brand-negative)]': results.consensus.recommendation === 'Caro',
               }"
             >
               {{ results.consensus.recommendation }}
             </p>
           </div>
         </div>
-        <p class="mt-4 text-sm text-gray-300">
+        <p class="mt-4 text-sm text-[var(--text-heading)]">
           {{ results.consensus.explanation }}
         </p>
       </div>
 
       <div class="rounded-xl border border-white/10 bg-white/5 p-4">
-        <h4 class="mb-4 font-semibold text-white">Comparação Visual</h4>
+        <h4 class="mb-4 font-semibold text-[var(--text-heading)]">Comparação Visual</h4>
         <div class="space-y-3">
           <div>
             <div class="mb-1 flex items-center justify-between text-sm">
-              <span class="text-gray-400">Preço Atual</span>
-              <span class="font-semibold text-white">{{ formatCurrency(form.currentPrice) }}</span>
+              <span class="text-[var(--text-muted)]">Preço Atual</span>
+              <span class="font-semibold text-[var(--text-heading)]">{{ formatCurrency(form.currentPrice) }}</span>
             </div>
             <div class="h-2 w-full rounded-full bg-white/10">
               <div class="h-2 rounded-full bg-white" :style="{ width: '100%' }" />
@@ -409,8 +409,8 @@
           </div>
           <div v-for="method in visualMethods" :key="method.key">
             <div class="mb-1 flex items-center justify-between text-sm">
-              <span class="text-gray-400">{{ method.label }}</span>
-              <span class="font-semibold text-white">{{ formatCurrency(method.fairPrice) }}</span>
+              <span class="text-[var(--text-muted)]">{{ method.label }}</span>
+              <span class="font-semibold text-[var(--text-heading)]">{{ formatCurrency(method.fairPrice) }}</span>
             </div>
             <div class="h-2 w-full rounded-full bg-white/10">
               <div
@@ -443,7 +443,7 @@
         </UButton>
       </div>
 
-      <div class="rounded-xl border border-yellow-500/20 bg-yellow-500/10 p-4 text-sm text-yellow-200">
+      <div class="rounded-xl border border-[color-mix(in_srgb,var(--brand-primary)_20%,transparent)] bg-[color-mix(in_srgb,var(--brand-primary)_10%,transparent)] p-4 text-sm text-yellow-200">
         <strong>Fonte dos dados:</strong> preço e fundamentos calculados com dados públicos da B3, fechamento do último pregão. O preço teto é uma referência, não uma garantia. Analise sempre os fundamentos da empresa, perspectivas futuras e seu perfil de risco antes de investir.
       </div>
     </div>
@@ -452,20 +452,20 @@
       v-else-if="!selectedAsset"
       class="rounded-lg border border-dashed border-white/10 bg-white/5 p-8 text-center"
     >
-      <UIcon name="i-lucide-search" class="mx-auto size-10 text-gray-500" />
-      <p class="mt-3 text-lg font-medium text-white">
+      <UIcon name="i-lucide-search" class="mx-auto size-10 text-[var(--text-muted)]" />
+      <p class="mt-3 text-lg font-medium text-[var(--text-heading)]">
         Escolha uma ação para começar
       </p>
-      <p class="mt-1 text-sm text-gray-400">
+      <p class="mt-1 text-sm text-[var(--text-muted)]">
         Os preços teto de Graham, Bazin, P/L setorial e VPA aparecem automaticamente.
       </p>
       <div class="mt-5 flex flex-wrap items-center justify-center gap-2">
-        <span class="text-xs uppercase tracking-wider text-gray-500">Populares:</span>
+        <span class="text-xs uppercase tracking-wider text-[var(--text-muted)]">Populares:</span>
         <button
           v-for="t in popularTickers"
           :key="t"
           type="button"
-          class="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-white transition hover:border-secondary/40 hover:bg-secondary/10"
+          class="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-[var(--text-heading)] transition hover:border-secondary/40 hover:bg-secondary/10"
           @click="selectByTicker(t)"
         >
           {{ t }}
@@ -791,9 +791,9 @@ function formatCurrency(value: number): string {
 
 function getStatusClass(ratio: number): string {
   if (!ratio) return 'border-white/10 bg-white/5'
-  if (ratio <= 0.8) return 'border-green-500/50 bg-green-500/10'
-  if (ratio <= 1.0) return 'border-yellow-500/50 bg-yellow-500/10'
-  return 'border-red-500/50 bg-red-500/10'
+  if (ratio <= 0.8) return 'border-[color-mix(in_srgb,var(--brand-positive)_50%,transparent)] bg-[color-mix(in_srgb,var(--brand-positive)_10%,transparent)]'
+  if (ratio <= 1.0) return 'border-[color-mix(in_srgb,var(--brand-primary)_50%,transparent)] bg-[color-mix(in_srgb,var(--brand-primary)_10%,transparent)]'
+  return 'border-[color-mix(in_srgb,var(--brand-negative)_50%,transparent)] bg-[color-mix(in_srgb,var(--brand-negative)_10%,transparent)]'
 }
 
 function getStatusColor(ratio: number): string {

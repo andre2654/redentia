@@ -16,10 +16,10 @@
 -->
 <template>
   <NuxtLayout name="static" title="Dividendos">
-    <section class="flex flex-col gap-16 px-6 py-10 md:py-14">
-      <!-- CTA contextual — promo no topo do hub de dividendos, full-width -->
-      <MoleculesCommunicationsCTASlot placement="dividendos-top" />
+    <!-- CTA contextual — full-bleed, fora do section pra encostar nas bordas -->
+    <MoleculesCommunicationsCTASlot placement="dividendos-top" />
 
+    <section class="flex flex-col gap-16 px-6 py-10 md:py-14">
       <!-- ============ Hero ============ -->
       <header class="flex max-w-3xl flex-col gap-3">
         <span

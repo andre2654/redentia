@@ -144,21 +144,21 @@
       <div
         class="rounded-xl border p-6"
         :class="{
-          'border-green-500/50 bg-green-500/10': results.viable,
-          'border-red-500/50 bg-red-500/10': !results.viable,
+          'border-[color-mix(in_srgb,var(--brand-positive)_50%,transparent)] bg-[color-mix(in_srgb,var(--brand-positive)_10%,transparent)]': results.viable,
+          'border-[color-mix(in_srgb,var(--brand-negative)_50%,transparent)] bg-[color-mix(in_srgb,var(--brand-negative)_10%,transparent)]': !results.viable,
         }"
       >
         <div class="flex items-center gap-3">
           <UIcon
             :name="results.viable ? 'i-lucide-check-circle' : 'i-lucide-alert-circle'"
-            :class="results.viable ? 'text-green-400' : 'text-red-400'"
+            :class="results.viable ? 'text-[var(--brand-positive)]' : 'text-[var(--brand-negative)]'"
             class="size-8"
           />
           <div>
             <h4 class="text-xl">
               {{ results.viable ? 'Plano Viável!' : 'Ajustes Necessários' }}
             </h4>
-            <p class="text-sm text-gray-300">
+            <p class="text-sm text-[var(--text-heading)]">
               {{ results.message }}
             </p>
           </div>
@@ -168,25 +168,25 @@
       <!-- Métricas Principais -->
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <div class="rounded-xl border border-white/10 bg-white/5 p-4">
-          <p class="mb-1 text-sm text-gray-400">Anos até Aposentar</p>
+          <p class="mb-1 text-sm text-[var(--text-muted)]">Anos até Aposentar</p>
           <p class="text-2xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
             {{ results.yearsToRetirement }} anos
           </p>
         </div>
         <div class="rounded-xl border border-white/10 bg-white/5 p-4">
-          <p class="mb-1 text-sm text-gray-400">Patrimônio Projetado</p>
+          <p class="mb-1 text-sm text-[var(--text-muted)]">Patrimônio Projetado</p>
           <p class="text-2xl font-bold text-secondary">
             {{ formatCurrency(results.projectedWealth) }}
           </p>
         </div>
         <div class="rounded-xl border border-white/10 bg-white/5 p-4">
-          <p class="mb-1 text-sm text-gray-400">Patrimônio Necessário</p>
+          <p class="mb-1 text-sm text-[var(--text-muted)]">Patrimônio Necessário</p>
           <p class="text-2xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
             {{ formatCurrency(results.requiredWealth) }}
           </p>
         </div>
         <div class="rounded-xl border border-white/10 bg-white/5 p-4">
-          <p class="mb-1 text-sm text-gray-400">Total Investido</p>
+          <p class="mb-1 text-sm text-[var(--text-muted)]">Total Investido</p>
           <p class="text-2xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
             {{ formatCurrency(results.totalInvested) }}
           </p>
@@ -198,20 +198,20 @@
         <h4 class="mb-4 text-lg font-medium" :style="{ color: 'var(--text-heading)' }">Renda na Aposentadoria</h4>
         <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
           <div>
-            <p class="mb-1 text-sm text-gray-400">Renda Desejada (hoje)</p>
+            <p class="mb-1 text-sm text-[var(--text-muted)]">Renda Desejada (hoje)</p>
             <p class="text-xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
               {{ formatCurrency(form.monthlyIncome) }}/mês
             </p>
           </div>
           <div>
-            <p class="mb-1 text-sm text-gray-400">Renda Ajustada (futuro)</p>
+            <p class="mb-1 text-sm text-[var(--text-muted)]">Renda Ajustada (futuro)</p>
             <p class="text-xl font-bold text-secondary">
               {{ formatCurrency(results.adjustedIncome) }}/mês
             </p>
-            <p class="text-xs text-gray-400">Corrigida pela inflação</p>
+            <p class="text-xs text-[var(--text-muted)]">Corrigida pela inflação</p>
           </div>
           <div>
-            <p class="mb-1 text-sm text-gray-400">INSS Estimado</p>
+            <p class="mb-1 text-sm text-[var(--text-muted)]">INSS Estimado</p>
             <p class="text-xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
               {{ formatCurrency(form.inss) }}/mês
             </p>
@@ -221,19 +221,19 @@
 
       <!-- Regra dos 4% -->
       <div class="rounded-xl border border-white/10 bg-white/5 p-5">
-        <h4 class="mb-3 font-semibold text-white">Regra dos 4% (Saque Seguro Anual)</h4>
-        <p class="mb-3 text-sm text-gray-300">
+        <h4 class="mb-3 font-semibold text-[var(--text-heading)]">Regra dos 4% (Saque Seguro Anual)</h4>
+        <p class="mb-3 text-sm text-[var(--text-heading)]">
           Segundo a regra dos 4%, você pode sacar 4% do patrimônio por ano (0.33% ao mês) mantendo o capital principal indefinidamente com ajuste pela inflação.
         </p>
         <div class="grid gap-3 md:grid-cols-2">
           <div class="rounded-lg bg-white/10 p-3">
-            <p class="text-xs text-gray-400">Com seu patrimônio projetado</p>
-            <p class="text-lg font-semibold text-white">
+            <p class="text-xs text-[var(--text-muted)]">Com seu patrimônio projetado</p>
+            <p class="text-lg font-semibold text-[var(--text-heading)]">
               {{ formatCurrency(results.projectedWealth * 0.04 / 12) }}/mês
             </p>
           </div>
           <div class="rounded-lg bg-white/10 p-3">
-            <p class="text-xs text-gray-400">Duração estimada do patrimônio</p>
+            <p class="text-xs text-[var(--text-muted)]">Duração estimada do patrimônio</p>
             <p class="text-lg font-semibold text-secondary">
               {{ results.wealthDuration }} anos
             </p>
@@ -243,13 +243,13 @@
 
       <!-- Cenários -->
       <div class="rounded-xl border border-white/10 bg-white/5 p-5">
-        <h4 class="mb-4 font-semibold text-white">Cenários Alternativos</h4>
+        <h4 class="mb-4 font-semibold text-[var(--text-heading)]">Cenários Alternativos</h4>
         <div class="space-y-3">
           <div class="rounded-lg border border-white/10 bg-white/5 p-3">
             <div class="flex items-center justify-between">
               <div>
-                <p class="font-semibold text-white">Trabalhar mais 3 anos</p>
-                <p class="text-xs text-gray-400">Aposentar aos {{ form.retirementAge + 3 }}</p>
+                <p class="font-semibold text-[var(--text-heading)]">Trabalhar mais 3 anos</p>
+                <p class="text-xs text-[var(--text-muted)]">Aposentar aos {{ form.retirementAge + 3 }}</p>
               </div>
               <p class="text-secondary font-bold">
                 {{ formatCurrency(results.scenarios.work3More) }}
@@ -259,8 +259,8 @@
           <div class="rounded-lg border border-white/10 bg-white/5 p-3">
             <div class="flex items-center justify-between">
               <div>
-                <p class="font-semibold text-white">Aumentar aporte em 20%</p>
-                <p class="text-xs text-gray-400">Investir {{ formatCurrency(form.monthlyContribution * 1.2) }}/mês</p>
+                <p class="font-semibold text-[var(--text-heading)]">Aumentar aporte em 20%</p>
+                <p class="text-xs text-[var(--text-muted)]">Investir {{ formatCurrency(form.monthlyContribution * 1.2) }}/mês</p>
               </div>
               <p class="text-secondary font-bold">
                 {{ formatCurrency(results.scenarios.increase20Percent) }}
@@ -270,8 +270,8 @@
           <div class="rounded-lg border border-white/10 bg-white/5 p-3">
             <div class="flex items-center justify-between">
               <div>
-                <p class="font-semibold text-white">Reduzir renda em 20%</p>
-                <p class="text-xs text-gray-400">Viver com {{ formatCurrency(form.monthlyIncome * 0.8) }}/mês</p>
+                <p class="font-semibold text-[var(--text-heading)]">Reduzir renda em 20%</p>
+                <p class="text-xs text-[var(--text-muted)]">Viver com {{ formatCurrency(form.monthlyIncome * 0.8) }}/mês</p>
               </div>
               <p class="text-secondary font-bold">
                 {{ formatCurrency(results.scenarios.reduce20Percent) }}
@@ -282,7 +282,7 @@
       </div>
 
       <!-- Aviso -->
-      <div class="rounded-xl border border-yellow-500/20 bg-yellow-500/10 p-4 text-sm text-yellow-200">
+      <div class="rounded-xl border border-[color-mix(in_srgb,var(--brand-primary)_20%,transparent)] bg-[color-mix(in_srgb,var(--brand-primary)_10%,transparent)] p-4 text-sm text-yellow-200">
         <strong>Lembre-se:</strong> Esta é uma projeção baseada nos parâmetros fornecidos. Retornos reais podem variar. Revise seu planejamento anualmente e ajuste conforme necessário.
       </div>
     </div>

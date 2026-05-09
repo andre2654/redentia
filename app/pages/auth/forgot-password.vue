@@ -674,7 +674,7 @@
         <UForm
           :schema="schema"
           :state="state"
-          class="flex w-full max-w-md flex-col gap-5 rounded-[32px] border px-8 py-10 shadow-[0_25px_60px_-15px_rgba(15,23,42,0.5)] backdrop-blur-2xl"
+          class="flex w-full max-w-md flex-col gap-5 rounded-lg border px-8 py-10 shadow-[var(--shadow-card)] backdrop-blur-2xl"
           :style="{ borderColor: brand.colors.border, backgroundColor: brand.colors.surface }"
           @submit="onSubmit"
         >
@@ -682,7 +682,7 @@
             <span class="text-xs font-medium uppercase tracking-[0.2em]" :style="{ color: brand.colors.primary }">
               Recuperação
             </span>
-            <h1 class="text-2xl font-semibold" :style="{ color: brand.colors.text }">
+            <h1 class="text-2xl " :style="{ color: brand.colors.text }">
               Esqueceu sua senha?
             </h1>
             <p class="text-sm" :style="{ color: brand.colors.textMuted }">

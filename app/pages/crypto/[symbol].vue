@@ -1,9 +1,9 @@
 <template>
   <NuxtLayout :name="layoutName">
-    <div class="relative z-10 flex flex-col px-4 pt-4">
-      <!-- CTA contextual — promo no topo de cripto -->
-      <MoleculesCommunicationsCTASlot placement="crypto-top" />
+    <!-- CTA contextual — full-bleed -->
+    <MoleculesCommunicationsCTASlot placement="crypto-top" />
 
+    <div class="relative z-10 flex flex-col px-4 pt-4">
       <div class="flex flex-col">
         <!-- Hero Dashboard Card: ambient gradient + sparkline -->
         <section class="border-b pb-8" :style="{ borderColor: brand.colors.border }">

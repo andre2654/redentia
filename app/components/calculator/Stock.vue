@@ -87,7 +87,7 @@
                 >
                   <UIcon
                     name="i-lucide-loader-2"
-                    class="size-5 motion-safe:animate-spin text-white"
+                    class="size-5 motion-safe:animate-spin text-[var(--text-heading)]"
                   />
                 </div>
               </div>
