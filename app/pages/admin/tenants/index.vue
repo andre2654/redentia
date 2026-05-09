@@ -1,126 +1,149 @@
+<!--
+  /admin/tenants — listagem de white-labels.
+
+  Visual: usa o admin design system. Toggle de status inline (clica
+  no badge). Acoes: editar, clonar, deletar. CTA "Novo tenant" no
+  header direito.
+-->
 <template>
   <NuxtLayout name="admin-panel">
-    <div class="mx-auto flex max-w-6xl flex-col gap-6">
-      <header class="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">Tenants</span>
-          <h1 class="mt-2 text-[28px] leading-tight md:text-[36px]" :style="{ color: C.text, fontFamily: F.display }">
-            White-labels cadastrados.
-          </h1>
+    <div class="admin-page">
+      <!-- ============ HEADER ============ -->
+      <header class="admin-page__head">
+        <div class="admin-page__head-left">
+          <span class="admin-page__eyebrow">
+            <UIcon name="i-lucide-building-2" />
+            Tenants
+          </span>
+          <h1 class="admin-page__title">White-labels cadastrados.</h1>
+          <p class="admin-page__lead">
+            Cada tenant é uma marca isolada com domínio, brand config e billing próprios.
+          </p>
         </div>
-        <NuxtLink
-          to="/admin/tenants/new"
-          class="inline-flex items-center gap-2 rounded-sm px-4 py-2.5 font-mono-tab text-[11px] font-bold uppercase tracking-[0.15em] transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:opacity-90"
-          :style="{ backgroundColor: C.primary, color: C.background }"
-        >
+        <NuxtLink to="/admin/tenants/new" class="admin-btn admin-btn--primary">
           <UIcon name="i-lucide-plus" class="size-4" />
-          NOVO TENANT
+          Novo tenant
         </NuxtLink>
       </header>
 
-      <!-- Filters -->
-      <div class="flex flex-wrap items-center gap-3">
+      <!-- ============ TOOLBAR ============ -->
+      <div class="admin-toolbar">
         <input
           v-model="search"
           type="text"
           placeholder="Buscar por slug ou nome…"
-          class="flex-1 min-w-[200px] rounded-sm border bg-transparent px-4 py-2 text-[13px] outline-none transition-colors"
-          :style="{ borderColor: C.border, color: C.text }"
+          class="admin-input admin-input--flex"
           @input="debouncedRefresh"
         />
-        <select
-          v-model="activeFilter"
-          class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none"
-          :style="{ borderColor: C.border, color: C.text, backgroundColor: C.surface }"
-          @change="refresh"
-        >
+        <select v-model="activeFilter" class="admin-select" @change="refresh">
           <option value="">Todos os status</option>
           <option value="true">Apenas ativos</option>
           <option value="false">Apenas inativos</option>
         </select>
       </div>
 
-      <!-- Table -->
-      <div class="overflow-hidden rounded-sm border" :style="{ borderColor: C.border }">
-        <table class="w-full text-left">
-          <caption class="sr-only">Lista de tenants</caption>
-          <thead class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted, backgroundColor: C.surface }">
-            <tr>
-              <th scope="col" class="px-4 py-3">SLUG</th>
-              <th scope="col" class="px-4 py-3">NOME</th>
-              <th scope="col" class="px-4 py-3">DOMÍNIO</th>
-              <th scope="col" class="px-4 py-3 text-center">STATUS</th>
-              <th scope="col" class="px-4 py-3 tabular-nums">ATUALIZADO</th>
-              <th scope="col" class="px-4 py-3 text-right">AÇÕES</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-if="loading">
-              <td colspan="6" class="p-8 text-center" :style="{ color: C.textMuted }">
-                <UIcon name="i-lucide-loader-2" class="size-5 motion-safe:animate-spin" />
-              </td>
-            </tr>
-            <tr v-else-if="items.length === 0">
-              <td colspan="6" class="p-8 text-center text-[13px]" :style="{ color: C.textMuted }">
-                Nenhum tenant encontrado.
-              </td>
-            </tr>
-            <tr
-              v-for="t in items"
-              v-else
-              :key="t.id"
-              class="border-t transition-colors hover:brightness-110"
-              :style="{ borderColor: C.border, backgroundColor: C.surface }"
-            >
-              <td class="px-4 py-3 font-mono-tab text-[12px]" :style="{ color: C.primary }">{{ t.slug }}</td>
-              <th scope="row" class="px-4 py-3 text-[13px] font-normal text-left" :style="{ color: C.text }">{{ t.name }}</th>
-              <td class="px-4 py-3 text-[12px]" :style="{ color: C.textMuted }">{{ t.domain || '—' }}</td>
-              <td class="px-4 py-3 text-center">
-                <button
-                  type="button"
-                  class="inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 font-mono-tab text-[10px] uppercase tracking-[0.15em] transition-colors hover:opacity-80"
-                  :style="t.is_active
-                    ? { borderColor: C.positive, color: C.positive }
-                    : { borderColor: C.border, color: C.textMuted }"
-                  :disabled="busyIds.has(t.id)"
-                  @click="handleToggle(t)"
-                >
-                  <span class="size-1.5 rounded-full" :style="{ backgroundColor: t.is_active ? C.positive : C.textMuted }" />
-                  {{ t.is_active ? 'ATIVO' : 'INATIVO' }}
-                </button>
-              </td>
-              <td class="px-4 py-3 text-[12px] tabular-nums" :style="{ color: C.textMuted }">
-                {{ formatDate(t.updated_at) }}
-              </td>
-              <td class="px-4 py-3 text-right">
-                <div class="inline-flex gap-2">
-                  <NuxtLink
-                    :to="`/admin/tenants/${t.id}`"
-                    class="rounded-sm border px-2 py-1 font-mono-tab text-[10px] uppercase tracking-[0.15em] transition-colors hover:opacity-80"
-                    :style="{ borderColor: C.border, color: C.text }"
-                  >EDITAR</NuxtLink>
+      <!-- ============ TABLE ============ -->
+      <div class="admin-table">
+        <div class="admin-table__scroll">
+          <table>
+            <caption class="sr-only">Lista de tenants</caption>
+            <thead>
+              <tr>
+                <th scope="col">Slug</th>
+                <th scope="col">Nome</th>
+                <th scope="col">Domínio</th>
+                <th scope="col" class="admin-table__center">Status</th>
+                <th scope="col">Atualizado</th>
+                <th scope="col" class="admin-table__right">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-if="loading">
+                <td colspan="6">
+                  <div class="admin-loading">
+                    <span class="admin-loading__icon">
+                      <UIcon name="i-lucide-loader-2" class="size-4 motion-safe:animate-spin" />
+                    </span>
+                    <span class="admin-loading__title">Carregando tenants…</span>
+                  </div>
+                </td>
+              </tr>
+              <tr v-else-if="items.length === 0">
+                <td colspan="6">
+                  <div class="admin-empty">
+                    <span class="admin-empty__icon">
+                      <UIcon name="i-lucide-building" class="size-4" />
+                    </span>
+                    <span class="admin-empty__title">Nenhum tenant encontrado</span>
+                    <span class="admin-empty__sub">Tente outros filtros ou crie um novo.</span>
+                  </div>
+                </td>
+              </tr>
+              <tr v-for="t in items" v-else :key="t.id">
+                <td>
+                  <span class="tenant-slug">{{ t.slug }}</span>
+                </td>
+                <th scope="row">
+                  <span class="admin-table__primary-name">{{ t.name }}</span>
+                </th>
+                <td class="admin-table__cell-muted">{{ t.domain || '—' }}</td>
+                <td class="admin-table__center">
                   <button
                     type="button"
+                    class="admin-badge"
+                    :class="t.is_active ? 'admin-badge--positive' : ''"
+                    style="cursor: pointer;"
                     :disabled="busyIds.has(t.id)"
-                    class="rounded-sm border px-2 py-1 font-mono-tab text-[10px] uppercase tracking-[0.15em] transition-colors hover:opacity-80 disabled:opacity-40"
-                    :style="{ borderColor: C.border, color: C.textMuted }"
-                    @click="handleDuplicate(t)"
-                  >CLONAR</button>
-                  <button
-                    type="button"
-                    :disabled="busyIds.has(t.id)"
-                    class="rounded-sm border px-2 py-1 font-mono-tab text-[10px] uppercase tracking-[0.15em] transition-colors hover:opacity-80 disabled:opacity-40"
-                    :style="{ borderColor: C.negative, color: C.negative }"
-                    @click="handleDelete(t)"
-                  >DELETAR</button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                    :title="t.is_active ? 'Clique pra desativar' : 'Clique pra ativar'"
+                    @click="handleToggle(t)"
+                  >
+                    <span
+                      class="admin-stat__dot"
+                      :style="{ backgroundColor: t.is_active ? 'var(--brand-positive, #10b981)' : 'currentColor' }"
+                    />
+                    {{ t.is_active ? 'Ativo' : 'Inativo' }}
+                  </button>
+                </td>
+                <td class="admin-table__cell-muted">
+                  {{ formatDate(t.updated_at) }}
+                </td>
+                <td class="admin-table__right">
+                  <div class="admin-actions">
+                    <NuxtLink
+                      :to="`/admin/tenants/${t.id}`"
+                      class="admin-btn admin-btn--ghost admin-btn--xs"
+                    >
+                      <UIcon name="i-lucide-pencil" class="size-3" />
+                      Editar
+                    </NuxtLink>
+                    <button
+                      type="button"
+                      :disabled="busyIds.has(t.id)"
+                      class="admin-btn admin-btn--ghost admin-btn--xs"
+                      @click="handleDuplicate(t)"
+                    >
+                      <UIcon name="i-lucide-copy" class="size-3" />
+                      Clonar
+                    </button>
+                    <button
+                      type="button"
+                      :disabled="busyIds.has(t.id)"
+                      class="admin-btn admin-btn--danger admin-btn--xs"
+                      @click="handleDelete(t)"
+                    >
+                      <UIcon name="i-lucide-trash-2" class="size-3" />
+                      Deletar
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <div v-if="error" class="rounded-sm border px-4 py-3 text-[13px]" :style="{ borderColor: C.negative, color: C.negative }">
+      <div v-if="error" class="admin-error">
+        <UIcon name="i-lucide-alert-circle" class="size-4 shrink-0" />
         {{ error }}
       </div>
     </div>
@@ -129,8 +152,6 @@
 </template>
 
 <script setup lang="ts">
-import { REDENTIA_COLORS as C, REDENTIA_FONTS as F } from '~/utils/redentiaCreativeColors'
-
 definePageMeta({ middleware: ['admin-panel'] })
 
 const tenantsService = useTenantsService()
@@ -219,5 +240,22 @@ onMounted(refresh)
 </script>
 
 <style scoped>
-.font-mono-tab { font-family: 'JetBrains Mono', 'IBM Plex Mono', Menlo, monospace; font-feature-settings: 'tnum' 1; }
+.tenant-slug {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--brand-primary);
+  letter-spacing: -0.005em;
+}
+
+.admin-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--brand-negative, #ef4444) 40%, transparent);
+  background: color-mix(in srgb, var(--brand-negative, #ef4444) 8%, transparent);
+  color: var(--brand-negative, #ef4444);
+  font-size: 13px;
+}
 </style>

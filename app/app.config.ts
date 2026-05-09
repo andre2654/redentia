@@ -8,9 +8,11 @@ export default defineAppConfig({
     },
     button: {
       // QUIET defaults — radii conservadores 6px, weight 500, focus ring amber.
-      // O `text-[#1A0A2E]` no primary garante contraste >= 7:1 sobre amber em
-      // qualquer tenant (independe de mode). Hover usa filter brightness em vez
-      // de opacity para manter saturacao da marca.
+      // text-on-primary e calculado dinamicamente em plugins/brand.ts:
+      // light = branco / dark = onyx warm #1A0A2E. Centraliza a regra de
+      // contraste num token unico em vez de hex hardcoded (que travava preto
+      // em ambos os modos). Hover usa filter brightness em vez de opacity
+      // para manter saturacao da marca.
       slots: {
         base: 'rounded-[6px] font-medium transition-all duration-200 focus-visible:outline-none active:translate-y-px',
       },
@@ -19,7 +21,7 @@ export default defineAppConfig({
           color: 'primary',
           variant: 'solid',
           class: {
-            base: 'bg-primary text-[#1A0A2E] hover:brightness-90 active:brightness-90 disabled:bg-primary disabled:opacity-50 aria-disabled:bg-primary focus-visible:shadow-[var(--shadow-ring-focus)]',
+            base: 'bg-primary text-[var(--text-on-primary)] hover:brightness-90 active:brightness-90 disabled:bg-primary disabled:opacity-50 aria-disabled:bg-primary focus-visible:shadow-[var(--shadow-ring-focus)]',
           },
         },
         {

@@ -59,14 +59,14 @@ function handleHome() {
     </p>
 
     <div class="flex flex-col gap-3 sm:flex-row">
-      <UButton
-        size="lg"
-        color="primary"
-        icon="i-lucide-home"
+      <button
+        type="button"
+        class="quiet-btn-primary"
         @click="handleHome"
       >
+        <UIcon name="i-lucide-home" class="size-4" />
         Voltar para o início
-      </UButton>
+      </button>
       <UButton
         size="lg"
         variant="outline"

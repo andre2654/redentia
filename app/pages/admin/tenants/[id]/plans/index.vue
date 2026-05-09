@@ -1,223 +1,258 @@
+<!--
+  /admin/tenants/[id]/plans — planos do tenant.
+
+  Visual: usa o admin design system. Cards de plano com header (slug +
+  status), grid de pricing (mensal / anual / trial / Stripe), features
+  como chips, limits em <details> JSON. Modal de editor com form
+  unificado pra create/edit.
+-->
 <template>
   <NuxtLayout name="admin-panel">
-    <div class="mx-auto flex max-w-6xl flex-col gap-6">
-      <header class="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
+    <div class="admin-page">
+      <!-- ============ HEADER ============ -->
+      <header class="admin-page__head">
+        <div class="admin-page__head-left">
+          <span class="admin-page__eyebrow">
+            <UIcon name="i-lucide-package" />
             Planos do tenant
           </span>
-          <h1 class="mt-2 text-[28px] leading-tight md:text-[36px]" :style="{ color: C.text, fontFamily: F.display }">
-            {{ tenant?.name || 'Carregando…' }}
-          </h1>
-          <div class="mt-2 flex gap-3 text-[12px]" :style="{ color: C.textMuted }">
-            <NuxtLink :to="`/admin/tenants/${tenantId}`" class="hover:underline">← Editor do tenant</NuxtLink>
-            <NuxtLink :to="`/admin/tenants/${tenantId}/subscriptions`" class="hover:underline">Assinantes →</NuxtLink>
+          <h1 class="admin-page__title">{{ tenant?.name || 'Carregando…' }}</h1>
+          <div class="plan-page__nav">
+            <NuxtLink :to="`/admin/tenants/${tenantId}`" class="plan-page__nav-link">
+              <UIcon name="i-lucide-arrow-left" class="size-3" />
+              Editor do tenant
+            </NuxtLink>
+            <span class="admin-stat__sep" />
+            <NuxtLink :to="`/admin/tenants/${tenantId}/subscriptions`" class="plan-page__nav-link">
+              Assinantes
+              <UIcon name="i-lucide-arrow-right" class="size-3" />
+            </NuxtLink>
           </div>
         </div>
-        <div class="flex items-center gap-3">
-          <span
-            v-if="!billingEnabled"
-            class="font-mono-tab text-[10px] uppercase tracking-[0.18em] rounded-sm border px-3 py-1.5"
-            :style="{ borderColor: C.negative, color: C.negative }"
-          >
-            BILLING DESATIVADO NESSE TENANT
+        <div class="admin-page__actions">
+          <span v-if="!billingEnabled" class="admin-stat admin-stat--negative">
+            <UIcon name="i-lucide-alert-triangle" class="size-3" />
+            Billing desativado
           </span>
           <button
             type="button"
-            class="inline-flex items-center gap-2 rounded-sm px-4 py-2.5 font-mono-tab text-[11px] font-bold uppercase tracking-[0.15em] transition hover:opacity-90"
-            :style="{ backgroundColor: C.primary, color: C.background }"
+            class="admin-btn admin-btn--primary"
             @click="onCreate"
           >
             <UIcon name="i-lucide-plus" class="size-4" />
-            NOVO PLANO
+            Novo plano
           </button>
         </div>
       </header>
 
-      <div v-if="loading" class="rounded-sm border p-8 text-center" :style="{ borderColor: C.border, color: C.textMuted }">
-        <UIcon name="i-lucide-loader-2" class="size-5 motion-safe:animate-spin" />
+      <!-- ============ LOADING / EMPTY ============ -->
+      <div v-if="loading" class="admin-loading">
+        <span class="admin-loading__icon">
+          <UIcon name="i-lucide-loader-2" class="size-4 motion-safe:animate-spin" />
+        </span>
+        <span class="admin-loading__title">Carregando planos…</span>
       </div>
 
-      <div v-else-if="!plans.length" class="rounded-sm border p-8 text-center text-[13px]" :style="{ borderColor: C.border, color: C.textMuted }">
-        Nenhum plano cadastrado nesse tenant.
+      <div v-else-if="!plans.length" class="admin-empty">
+        <span class="admin-empty__icon">
+          <UIcon name="i-lucide-package" class="size-4" />
+        </span>
+        <span class="admin-empty__title">Nenhum plano cadastrado</span>
+        <span class="admin-empty__sub">Comece criando o primeiro plano pra esse tenant.</span>
         <button
           type="button"
-          class="mt-4 inline-flex items-center gap-2 rounded-sm border px-4 py-2 font-mono-tab text-[11px] uppercase"
-          :style="{ borderColor: C.primary, color: C.primary }"
+          class="admin-btn admin-btn--ghost admin-btn--sm"
+          style="margin-top: 6px; color: var(--brand-primary); border-color: color-mix(in srgb, var(--brand-primary) 35%, transparent);"
           @click="onCreate"
         >
-          + CRIAR PRIMEIRO
+          <UIcon name="i-lucide-plus" class="size-3.5" />
+          Criar primeiro
         </button>
       </div>
 
-      <div v-else class="grid gap-4 md:grid-cols-2">
+      <!-- ============ PLAN CARDS ============ -->
+      <div v-else class="admin-grid admin-grid--2">
         <article
           v-for="plan in plans"
           :key="plan.id"
-          class="flex flex-col gap-4 rounded-sm border p-5"
-          :style="{ borderColor: C.border, backgroundColor: C.surface }"
+          class="admin-card plan-card"
+          :class="{ 'plan-card--inactive': !plan.is_active }"
         >
-          <header class="flex items-start justify-between gap-2">
-            <div>
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: plan.is_active ? C.primary : C.textMuted }">
-                {{ plan.slug }}
-              </span>
-              <h2 class="mt-1 text-[20px]" :style="{ color: C.text, fontFamily: F.display }">{{ plan.name }}</h2>
-              <p v-if="plan.description" class="mt-1 text-[12.5px] leading-snug" :style="{ color: C.textMuted }">
+          <header class="plan-card__head">
+            <div class="plan-card__title">
+              <span
+                class="plan-card__slug"
+                :style="{ color: plan.is_active ? 'var(--brand-primary)' : 'color-mix(in srgb, var(--brand-text) 50%, transparent)' }"
+              >{{ plan.slug }}</span>
+              <h2 class="plan-card__name">{{ plan.name }}</h2>
+              <p v-if="plan.description" class="plan-card__desc">
                 {{ plan.description }}
               </p>
             </div>
             <span
-              class="font-mono-tab text-[10px] uppercase rounded-sm border px-2 py-0.5"
-              :style="{ borderColor: plan.is_active ? C.positive : C.negative, color: plan.is_active ? C.positive : C.negative }"
+              class="admin-badge"
+              :class="plan.is_active ? 'admin-badge--positive' : 'admin-badge--negative'"
             >
-              {{ plan.is_active ? 'ATIVO' : 'INATIVO' }}
+              {{ plan.is_active ? 'Ativo' : 'Inativo' }}
             </span>
           </header>
 
-          <dl class="grid grid-cols-2 gap-3 text-[13px]">
+          <dl class="plan-card__pricing">
             <div>
-              <dt class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: C.textMuted }">Mensal</dt>
-              <dd class="tabular-nums" :style="{ color: C.text }">
-                {{ plan.price_brl_monthly ? `R$ ${formatBRL(plan.price_brl_monthly)}` : '—' }}
-              </dd>
+              <dt>Mensal</dt>
+              <dd>{{ plan.price_brl_monthly ? `R$ ${formatBRL(plan.price_brl_monthly)}` : '—' }}</dd>
             </div>
             <div>
-              <dt class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: C.textMuted }">Anual</dt>
-              <dd class="tabular-nums" :style="{ color: C.text }">
-                {{ plan.price_brl_yearly ? `R$ ${formatBRL(plan.price_brl_yearly)}` : '—' }}
-              </dd>
+              <dt>Anual</dt>
+              <dd>{{ plan.price_brl_yearly ? `R$ ${formatBRL(plan.price_brl_yearly)}` : '—' }}</dd>
             </div>
             <div>
-              <dt class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: C.textMuted }">Trial dias</dt>
-              <dd class="tabular-nums" :style="{ color: C.text }">{{ plan.trial_days ?? '—' }}</dd>
+              <dt>Trial</dt>
+              <dd>{{ plan.trial_days != null ? `${plan.trial_days} dias` : '—' }}</dd>
             </div>
             <div>
-              <dt class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: C.textMuted }">Stripe</dt>
-              <dd :style="{ color: plan.stripe_price_id_monthly ? C.positive : C.negative }">
+              <dt>Stripe</dt>
+              <dd :style="{ color: plan.stripe_price_id_monthly ? 'var(--brand-positive, #10b981)' : 'var(--brand-negative, #ef4444)' }">
                 {{ plan.stripe_price_id_monthly ? 'OK' : 'sem price IDs' }}
               </dd>
             </div>
           </dl>
 
-          <div class="flex flex-wrap gap-2">
+          <div v-if="(plan.features || []).length" class="plan-card__features">
             <span
               v-for="feat in (plan.features || [])"
               :key="feat"
-              class="font-mono-tab text-[9.5px] uppercase tracking-[0.12em] rounded-sm border px-2 py-0.5"
-              :style="{ borderColor: C.border, color: C.textMuted }"
+              class="admin-badge"
             >{{ feat }}</span>
           </div>
 
-          <details class="text-[12px]" :style="{ color: C.textMuted }">
-            <summary class="cursor-pointer font-mono-tab text-[10px] uppercase tracking-[0.15em]">limits</summary>
-            <pre class="mt-2 overflow-x-auto rounded-sm border p-2 tabular-nums" :style="{ borderColor: C.border, color: C.text }">{{ JSON.stringify(plan.limits, null, 2) }}</pre>
+          <details class="plan-card__limits">
+            <summary>Limits</summary>
+            <pre>{{ JSON.stringify(plan.limits, null, 2) }}</pre>
           </details>
 
-          <footer class="flex flex-wrap gap-2 pt-2">
+          <footer class="plan-card__actions">
             <button
               type="button"
-              class="font-mono-tab text-[10px] uppercase tracking-[0.15em] rounded-sm border px-3 py-1.5 hover:opacity-80"
-              :style="{ borderColor: C.primary, color: C.primary }"
+              class="admin-btn admin-btn--ghost admin-btn--xs"
+              style="color: var(--brand-primary); border-color: color-mix(in srgb, var(--brand-primary) 35%, transparent);"
               @click="onEdit(plan)"
             >
-              EDITAR
+              <UIcon name="i-lucide-pencil" class="size-3" />
+              Editar
             </button>
             <button
               type="button"
-              class="font-mono-tab text-[10px] uppercase tracking-[0.15em] rounded-sm border px-3 py-1.5 hover:opacity-80"
-              :style="{ borderColor: C.border, color: C.text }"
+              class="admin-btn admin-btn--ghost admin-btn--xs"
+              :style="!plan.is_active ? 'color: var(--brand-positive, #10b981); border-color: color-mix(in srgb, var(--brand-positive, #10b981) 35%, transparent);' : ''"
               @click="onToggleActive(plan)"
             >
-              {{ plan.is_active ? 'DESATIVAR' : 'ATIVAR' }}
+              <UIcon :name="plan.is_active ? 'i-lucide-pause' : 'i-lucide-play'" class="size-3" />
+              {{ plan.is_active ? 'Desativar' : 'Ativar' }}
             </button>
             <button
               type="button"
-              class="font-mono-tab text-[10px] uppercase tracking-[0.15em] rounded-sm border px-3 py-1.5 hover:opacity-80"
-              :style="{ borderColor: C.negative, color: C.negative }"
+              class="admin-btn admin-btn--danger admin-btn--xs"
               @click="onDelete(plan)"
             >
-              DELETAR
+              <UIcon name="i-lucide-trash-2" class="size-3" />
+              Deletar
             </button>
           </footer>
         </article>
       </div>
     </div>
 
-    <!-- Editor inline (modal-like) -->
+    <!-- ============ EDITOR MODAL ============ -->
     <dialog
       ref="editorEl"
-      class="rounded-sm border p-0 backdrop:bg-black/70"
-      :style="{ borderColor: C.border, backgroundColor: C.surface, color: C.text, maxWidth: '720px', width: '92vw' }"
+      class="plan-modal"
     >
-      <form v-if="editing" class="flex flex-col gap-4 p-6" @submit.prevent="onSave">
-        <header class="flex items-start justify-between">
-          <div>
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
+      <form v-if="editing" class="plan-modal__form" @submit.prevent="onSave">
+        <header class="plan-modal__head">
+          <div class="plan-modal__head-text">
+            <span class="admin-page__eyebrow">
               {{ editing.id ? 'Editar plano' : 'Novo plano' }}
             </span>
-            <h2 class="mt-1 text-[22px]" :style="{ color: C.text, fontFamily: F.display }">
-              {{ editing.name || editing.slug || 'Plano sem nome' }}
-            </h2>
+            <h2 class="plan-modal__title">{{ editing.name || editing.slug || 'Plano sem nome' }}</h2>
           </div>
-          <button type="button" :style="{ color: C.textMuted }" @click="closeEditor">✕</button>
+          <button
+            type="button"
+            class="admin-actions__icon-btn"
+            aria-label="Fechar"
+            @click="closeEditor"
+          >
+            <UIcon name="i-lucide-x" class="size-4" />
+          </button>
         </header>
 
-        <div class="grid gap-4 md:grid-cols-2">
-          <label class="flex flex-col gap-2">
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">SLUG *</span>
-            <input v-model="editing.slug" type="text" required pattern="[\-_a-z0-9]+" maxlength="60" class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none" :style="{ borderColor: C.border, color: C.text }" />
+        <div class="plan-modal__grid">
+          <label class="plan-field">
+            <span class="plan-field__label">Slug <span class="plan-field__required">*</span></span>
+            <input v-model="editing.slug" type="text" required pattern="[\-_a-z0-9]+" maxlength="60" class="admin-input" style="font-family: 'JetBrains Mono', monospace;" />
           </label>
-          <label class="flex flex-col gap-2">
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">NOME *</span>
-            <input v-model="editing.name" type="text" required maxlength="80" class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none" :style="{ borderColor: C.border, color: C.text }" />
+          <label class="plan-field">
+            <span class="plan-field__label">Nome <span class="plan-field__required">*</span></span>
+            <input v-model="editing.name" type="text" required maxlength="80" class="admin-input" />
           </label>
-          <label class="flex flex-col gap-2 md:col-span-2">
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">DESCRIÇÃO</span>
-            <textarea v-model="editing.description" rows="2" class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none" :style="{ borderColor: C.border, color: C.text }" />
+          <label class="plan-field plan-modal__grid-full">
+            <span class="plan-field__label">Descrição</span>
+            <textarea v-model="editing.description" rows="2" class="admin-input" style="resize: vertical;" />
           </label>
-          <label class="flex flex-col gap-2">
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">PREÇO MENSAL R$</span>
-            <input v-model.number="editing.price_brl_monthly" type="number" step="0.01" min="0" class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none tabular-nums" :style="{ borderColor: C.border, color: C.text }" />
+          <label class="plan-field">
+            <span class="plan-field__label">Preço mensal (R$)</span>
+            <input v-model.number="editing.price_brl_monthly" type="number" step="0.01" min="0" class="admin-input" style="font-variant-numeric: tabular-nums;" />
           </label>
-          <label class="flex flex-col gap-2">
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">PREÇO ANUAL R$</span>
-            <input v-model.number="editing.price_brl_yearly" type="number" step="0.01" min="0" class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none tabular-nums" :style="{ borderColor: C.border, color: C.text }" />
+          <label class="plan-field">
+            <span class="plan-field__label">Preço anual (R$)</span>
+            <input v-model.number="editing.price_brl_yearly" type="number" step="0.01" min="0" class="admin-input" style="font-variant-numeric: tabular-nums;" />
           </label>
-          <label class="flex flex-col gap-2">
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">STRIPE PRICE MENSAL</span>
-            <input v-model="editing.stripe_price_id_monthly" type="text" placeholder="price_xxx" class="rounded-sm border bg-transparent px-3 py-2 font-mono-tab text-[12px] outline-none" :style="{ borderColor: C.border, color: C.text }" />
+          <label class="plan-field">
+            <span class="plan-field__label">Stripe price mensal</span>
+            <input v-model="editing.stripe_price_id_monthly" type="text" placeholder="price_xxx" class="admin-input" style="font-family: 'JetBrains Mono', monospace; font-size: 12px;" />
           </label>
-          <label class="flex flex-col gap-2">
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">STRIPE PRICE ANUAL</span>
-            <input v-model="editing.stripe_price_id_yearly" type="text" placeholder="price_xxx" class="rounded-sm border bg-transparent px-3 py-2 font-mono-tab text-[12px] outline-none" :style="{ borderColor: C.border, color: C.text }" />
+          <label class="plan-field">
+            <span class="plan-field__label">Stripe price anual</span>
+            <input v-model="editing.stripe_price_id_yearly" type="text" placeholder="price_xxx" class="admin-input" style="font-family: 'JetBrains Mono', monospace; font-size: 12px;" />
           </label>
-          <label class="flex flex-col gap-2">
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">TRIAL DIAS</span>
-            <input v-model.number="editing.trial_days" type="number" min="0" max="365" class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none tabular-nums" :style="{ borderColor: C.border, color: C.text }" />
+          <label class="plan-field">
+            <span class="plan-field__label">Trial dias</span>
+            <input v-model.number="editing.trial_days" type="number" min="0" max="365" class="admin-input" style="font-variant-numeric: tabular-nums;" />
           </label>
-          <label class="flex flex-col gap-2">
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">SORT ORDER</span>
-            <input v-model.number="editing.sort_order" type="number" class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none tabular-nums" :style="{ borderColor: C.border, color: C.text }" />
+          <label class="plan-field">
+            <span class="plan-field__label">Sort order</span>
+            <input v-model.number="editing.sort_order" type="number" class="admin-input" style="font-variant-numeric: tabular-nums;" />
           </label>
-          <label class="flex flex-col gap-2 md:col-span-2">
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">FEATURES (slugs separadas por vírgula)</span>
-            <input v-model="featuresInput" type="text" placeholder="compare_assets, weekly_report, …" class="rounded-sm border bg-transparent px-3 py-2 font-mono-tab text-[12px] outline-none" :style="{ borderColor: C.border, color: C.text }" />
+          <label class="plan-field plan-modal__grid-full">
+            <span class="plan-field__label">
+              Features
+              <span class="plan-field__hint">slugs separadas por vírgula</span>
+            </span>
+            <input v-model="featuresInput" type="text" placeholder="compare_assets, weekly_report, …" class="admin-input" style="font-family: 'JetBrains Mono', monospace; font-size: 12px;" />
           </label>
-          <label class="flex flex-col gap-2 md:col-span-2">
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">LIMITS (JSON)</span>
-            <textarea v-model="limitsInput" rows="4" class="rounded-sm border bg-transparent px-3 py-2 font-mono-tab text-[12px] outline-none" :style="{ borderColor: C.border, color: C.text }" />
+          <label class="plan-field plan-modal__grid-full">
+            <span class="plan-field__label">Limits (JSON)</span>
+            <textarea v-model="limitsInput" rows="5" class="admin-input" style="font-family: 'JetBrains Mono', monospace; font-size: 12px; resize: vertical;" />
           </label>
-          <label class="flex items-center gap-2 md:col-span-2">
-            <input v-model="editing.is_active" type="checkbox" class="size-4" />
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: C.text }">PLANO ATIVO</span>
+          <label class="plan-field plan-field--inline plan-modal__grid-full">
+            <input v-model="editing.is_active" type="checkbox" class="plan-field__checkbox" />
+            <span>Plano ativo</span>
           </label>
         </div>
 
-        <footer class="flex justify-end gap-2 pt-2">
-          <button type="button" class="font-mono-tab text-[10px] uppercase tracking-[0.15em] rounded-sm border px-4 py-2" :style="{ borderColor: C.border, color: C.text }" @click="closeEditor">CANCELAR</button>
-          <button type="submit" :disabled="saving" class="font-mono-tab text-[10px] uppercase tracking-[0.15em] rounded-sm px-4 py-2 disabled:opacity-60" :style="{ backgroundColor: C.primary, color: C.background }">
-            {{ saving ? 'SALVANDO…' : (editing.id ? 'SALVAR' : 'CRIAR') }}
+        <footer class="plan-modal__actions">
+          <button
+            type="button"
+            class="admin-btn admin-btn--ghost"
+            @click="closeEditor"
+          >Cancelar</button>
+          <button
+            type="submit"
+            :disabled="saving"
+            class="admin-btn admin-btn--primary"
+          >
+            <UIcon v-if="saving" name="i-lucide-loader-2" class="size-3.5 motion-safe:animate-spin" />
+            {{ saving ? 'Salvando…' : (editing.id ? 'Salvar' : 'Criar') }}
           </button>
         </footer>
       </form>
@@ -227,7 +262,6 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref } from 'vue'
-import { REDENTIA_COLORS as C, REDENTIA_FONTS as F } from '~/utils/redentiaCreativeColors'
 import type { IPlan, IPlanPayload } from '~/types/plan'
 
 definePageMeta({ middleware: ['admin-panel'] })
@@ -256,7 +290,7 @@ async function loadAll() {
     tenant.value = (t as any)?.data ?? t
     const p = await billing.listPlans(tenantId.value)
     plans.value = ((p as any)?.data?.plans ?? (p as any)?.plans ?? []) as IPlan[]
-  } catch (err) {
+  } catch {
     toast.add({ title: 'Erro carregando planos', color: 'error' })
   } finally {
     loading.value = false
@@ -363,3 +397,232 @@ async function onDelete(plan: IPlan) {
 
 onMounted(loadAll)
 </script>
+
+<style scoped>
+.plan-page__nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--brand-text) 55%, transparent);
+}
+.plan-page__nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--brand-primary);
+  text-decoration: none;
+  transition: opacity 150ms;
+}
+.plan-page__nav-link:hover { opacity: 0.78; }
+
+/* ============ PLAN CARD ============ */
+.plan-card {
+  gap: 14px;
+  transition: border-color 200ms, box-shadow 200ms;
+}
+.plan-card:hover {
+  border-color: color-mix(in srgb, var(--brand-primary) 30%, transparent);
+}
+.plan-card--inactive {
+  opacity: 0.65;
+}
+
+.plan-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.plan-card__title { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.plan-card__slug {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.plan-card__name {
+  margin: 0;
+  font-family: var(--brand-font);
+  font-size: 19px;
+  font-weight: 500;
+  letter-spacing: -0.012em;
+  color: var(--brand-text);
+}
+.plan-card__desc {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--brand-text) 60%, transparent);
+}
+
+.plan-card__pricing {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin: 0;
+  padding: 12px 0;
+  border-top: 1px solid color-mix(in srgb, var(--brand-text) 6%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--brand-text) 6%, transparent);
+}
+.plan-card__pricing > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.plan-card__pricing dt {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--brand-text) 50%, transparent);
+}
+.plan-card__pricing dd {
+  margin: 0;
+  font-family: var(--brand-font);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--brand-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.plan-card__features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.plan-card__limits {
+  font-size: 12px;
+  color: color-mix(in srgb, var(--brand-text) 60%, transparent);
+}
+.plan-card__limits summary {
+  cursor: pointer;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--brand-text) 50%, transparent);
+  user-select: none;
+}
+.plan-card__limits summary:hover {
+  color: var(--brand-primary);
+}
+.plan-card__limits pre {
+  margin: 8px 0 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--brand-text) 8%, transparent);
+  background: color-mix(in srgb, var(--brand-text) 2%, transparent);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  line-height: 1.55;
+  color: var(--brand-text);
+  overflow-x: auto;
+  font-variant-numeric: tabular-nums;
+}
+
+.plan-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-top: 4px;
+}
+
+/* ============ MODAL ============ */
+.plan-modal {
+  border: 1px solid color-mix(in srgb, var(--brand-text) 12%, transparent);
+  border-radius: 14px;
+  padding: 0;
+  background: var(--brand-background);
+  color: var(--brand-text);
+  max-width: 760px;
+  width: 92vw;
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.5);
+}
+.plan-modal::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+}
+.plan-modal__form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 20px 22px;
+}
+.plan-modal__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.plan-modal__head-text { display: flex; flex-direction: column; gap: 4px; }
+.plan-modal__title {
+  margin: 0;
+  font-family: var(--brand-font);
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.018em;
+  color: var(--brand-text);
+}
+
+.plan-modal__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+@media (min-width: 600px) {
+  .plan-modal__grid { grid-template-columns: repeat(2, 1fr); }
+}
+.plan-modal__grid-full { grid-column: 1 / -1; }
+.plan-modal__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.plan-field { display: flex; flex-direction: column; gap: 6px; }
+.plan-field__label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--brand-text) 60%, transparent);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.plan-field__required {
+  color: var(--brand-primary);
+  font-size: 11px;
+  letter-spacing: 0;
+}
+.plan-field__hint {
+  text-transform: none;
+  letter-spacing: 0.04em;
+  font-weight: 400;
+  font-size: 10px;
+  color: color-mix(in srgb, var(--brand-text) 45%, transparent);
+}
+.plan-field--inline {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--brand-text);
+}
+.plan-field__checkbox {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--brand-primary);
+  cursor: pointer;
+}
+</style>

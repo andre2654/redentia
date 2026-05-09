@@ -1,131 +1,132 @@
 <template>
   <NuxtLayout name="admin-panel">
-    <div class="mx-auto flex max-w-6xl flex-col gap-6">
-      <header class="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
+    <div class="admin-page">
+      <header class="admin-page__head">
+        <div class="admin-page__head-left">
+          <span class="admin-page__eyebrow">
+            <UIcon name="i-lucide-zap" />
             Social · Automações
           </span>
-          <h1 class="mt-2 text-[28px] leading-tight md:text-[36px]" :style="{ color: C.text, fontFamily: F.display }">
-            Ações recorrentes.
-          </h1>
-          <p class="mt-3 max-w-2xl text-[13px]" :style="{ color: C.textMuted }">
+          <h1 class="admin-page__title">Ações recorrentes.</h1>
+          <p class="admin-page__lead">
             Escolha um preset, preencha o formulário visual e o agendador faz o resto.
             Nada de JSON cru, nada de cron mental.
           </p>
         </div>
         <button
           type="button"
-          class="inline-flex items-center gap-2 rounded-sm px-4 py-2.5 font-mono-tab text-[11px] font-bold uppercase tracking-[0.15em] transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:opacity-90"
-          :style="{ backgroundColor: C.primary, color: C.background }"
+          class="admin-btn admin-btn--primary"
           @click="openWizard(null)"
         >
           <UIcon name="i-lucide-plus" class="size-4" />
-          NOVA AUTOMAÇÃO
+          Nova automação
         </button>
       </header>
 
-      <div v-if="error" class="rounded-sm border px-4 py-3 text-[13px]" :style="{ borderColor: C.negative, color: C.negative }">
+      <div v-if="error" class="admin-error">
+        <UIcon name="i-lucide-alert-circle" class="size-4 shrink-0" />
         {{ error }}
       </div>
 
-      <div v-if="loading" class="py-10 text-center" :style="{ color: C.textMuted }">
-        <UIcon name="i-lucide-loader-2" class="size-5 motion-safe:animate-spin" />
+      <div v-if="loading" class="admin-loading">
+        <span class="admin-loading__icon">
+          <UIcon name="i-lucide-loader-2" class="size-4 motion-safe:animate-spin" />
+        </span>
+        <span class="admin-loading__title">Carregando automações…</span>
       </div>
 
-      <div
-        v-else-if="items.length === 0"
-        class="rounded-sm border p-8 text-center text-[13px]"
-        :style="{ borderColor: C.border, color: C.textMuted }"
-      >
-        Nenhuma automação cadastrada.
-        <button type="button" class="underline" :style="{ color: C.primary }" @click="openWizard(null)">
-          Criar a primeira
-        </button>.
+      <div v-else-if="items.length === 0" class="admin-empty">
+        <span class="admin-empty__icon">
+          <UIcon name="i-lucide-zap-off" class="size-4" />
+        </span>
+        <span class="admin-empty__title">Nenhuma automação cadastrada</span>
+        <span class="admin-empty__sub">
+          Comece com um preset pronto pra atalhar a configuração.
+          <button
+            type="button"
+            class="profile-instructions__link"
+            style="color: var(--brand-primary); text-decoration: underline; text-underline-offset: 2px; background: transparent; border: 0; cursor: pointer; font: inherit;"
+            @click="openWizard(null)"
+          >
+            Criar a primeira
+          </button>.
+        </span>
       </div>
 
       <section v-else class="flex flex-col gap-3">
         <article
           v-for="a in items"
           :key="a.id"
-          class="rounded-sm border p-5 transition-colors hover:brightness-110"
-          :style="{ borderColor: C.border, backgroundColor: C.surface }"
+          class="admin-card automation-card"
         >
-          <div class="flex flex-wrap items-start justify-between gap-4">
-            <div class="flex-1">
-              <div class="flex flex-wrap items-center gap-3">
+          <div class="automation-card__row">
+            <div class="automation-card__main">
+              <div class="automation-card__chips">
                 <span
-                  class="inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
-                  :style="a.enabled
-                    ? { borderColor: C.positive, color: C.positive }
-                    : { borderColor: C.border, color: C.textMuted }"
+                  class="admin-badge"
+                  :class="a.enabled ? 'admin-badge--positive' : ''"
                 >
-                  <span class="size-1.5 rounded-full" :style="{ backgroundColor: a.enabled ? C.positive : C.textMuted }" />
-                  {{ a.enabled ? 'ATIVA' : 'DESATIVADA' }}
+                  <span
+                    class="admin-stat__dot"
+                    :style="{ backgroundColor: a.enabled ? 'var(--brand-positive, #10b981)' : 'currentColor' }"
+                  />
+                  {{ a.enabled ? 'Ativa' : 'Desativada' }}
                 </span>
-                <span class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: C.primary }">
-                  {{ presetLabelOf(a) }}
-                </span>
-                <span
-                  v-if="humanizedScheduleOf(a)"
-                  class="font-mono-tab text-[10px]"
-                  :style="{ color: C.textMuted }"
-                >
-                  <UIcon name="i-lucide-calendar-clock" class="mr-0.5 inline size-3" />
+                <span class="admin-badge admin-badge--accent">{{ presetLabelOf(a) }}</span>
+                <span v-if="humanizedScheduleOf(a)" class="automation-card__schedule">
+                  <UIcon name="i-lucide-calendar-clock" class="size-3" />
                   {{ humanizedScheduleOf(a) }}
                 </span>
               </div>
-              <h3 class="mt-2 text-[18px] font-semibold" :style="{ color: C.text }">{{ a.title }}</h3>
-              <div
-                v-if="a.last_run_at"
-                class="mt-3 flex flex-wrap gap-4 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
-                :style="{ color: C.textMuted }"
-              >
-                <span>ÚLTIMA EXECUÇÃO: {{ formatDate(a.last_run_at) }}</span>
+              <h3 class="automation-card__title">{{ a.title }}</h3>
+              <div v-if="a.last_run_at" class="automation-card__meta">
+                <span>Última execução: {{ formatDate(a.last_run_at) }}</span>
                 <span v-if="a.last_result?.status" :style="{ color: statusColor(String(a.last_result.status)) }">
-                  STATUS: {{ String(a.last_result.status).toUpperCase() }}
+                  Status: {{ String(a.last_result.status).toUpperCase() }}
                 </span>
-                <span v-if="a.last_error" :style="{ color: C.negative }">ERRO: {{ a.last_error.slice(0, 60) }}…</span>
+                <span v-if="a.last_error" :style="{ color: 'var(--brand-negative, #ef4444)' }">
+                  Erro: {{ a.last_error.slice(0, 60) }}…
+                </span>
               </div>
             </div>
 
-            <div class="flex flex-wrap items-center gap-2">
+            <div class="admin-actions automation-card__actions">
               <button
                 type="button"
                 :disabled="busyIds.has(a.id)"
-                class="rounded-sm border px-3 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.15em] transition-colors hover:opacity-80 disabled:opacity-40"
-                :style="a.enabled
-                  ? { borderColor: C.textMuted, color: C.textMuted }
-                  : { borderColor: C.positive, color: C.positive }"
+                class="admin-btn admin-btn--ghost admin-btn--xs"
+                :style="!a.enabled ? 'color: var(--brand-positive, #10b981); border-color: color-mix(in srgb, var(--brand-positive, #10b981) 35%, transparent);' : ''"
                 @click="handleToggle(a)"
               >
-                {{ a.enabled ? 'DESATIVAR' : 'ATIVAR' }}
+                <UIcon :name="a.enabled ? 'i-lucide-pause' : 'i-lucide-play'" class="size-3" />
+                {{ a.enabled ? 'Desativar' : 'Ativar' }}
               </button>
               <button
                 type="button"
                 :disabled="busyIds.has(a.id)"
-                class="rounded-sm border px-3 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.15em] transition-colors hover:opacity-80 disabled:opacity-40"
-                :style="{ borderColor: C.primary, color: C.primary }"
+                class="admin-btn admin-btn--ghost admin-btn--xs"
+                style="color: var(--brand-primary); border-color: color-mix(in srgb, var(--brand-primary) 35%, transparent);"
                 @click="handleRunNow(a)"
               >
-                RODAR AGORA
+                <UIcon name="i-lucide-zap" class="size-3" />
+                Rodar agora
               </button>
               <button
                 type="button"
-                class="rounded-sm border px-3 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.15em] transition-colors hover:opacity-80"
-                :style="{ borderColor: C.border, color: C.text }"
+                class="admin-btn admin-btn--ghost admin-btn--xs"
                 @click="openWizard(a)"
               >
-                EDITAR
+                <UIcon name="i-lucide-pencil" class="size-3" />
+                Editar
               </button>
               <button
                 type="button"
                 :disabled="busyIds.has(a.id)"
-                class="rounded-sm border px-3 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.15em] transition-colors hover:opacity-80 disabled:opacity-40"
-                :style="{ borderColor: C.negative, color: C.negative }"
+                class="admin-btn admin-btn--danger admin-btn--xs"
                 @click="handleDelete(a)"
               >
-                DELETAR
+                <UIcon name="i-lucide-trash-2" class="size-3" />
+                Deletar
               </button>
             </div>
           </div>
@@ -986,4 +987,59 @@ onMounted(refresh)
   font-feature-settings: 'tnum' 1;
 }
 textarea:focus, input:focus, select:focus { outline: none !important; }
+
+/* ============ AUTOMATION CARD ============ */
+.automation-card { gap: 0; transition: border-color 200ms, box-shadow 200ms; }
+.automation-card:hover {
+  border-color: color-mix(in srgb, var(--brand-primary) 30%, transparent);
+}
+.automation-card__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.automation-card__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.automation-card__chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.automation-card__schedule {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10.5px;
+  color: color-mix(in srgb, var(--brand-text) 60%, transparent);
+}
+.automation-card__title {
+  margin: 0;
+  font-family: var(--brand-font);
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: -0.012em;
+  color: var(--brand-text);
+}
+.automation-card__meta {
+  margin-top: 2px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: color-mix(in srgb, var(--brand-text) 55%, transparent);
+}
+.automation-card__actions {
+  flex-wrap: wrap;
+}
 </style>

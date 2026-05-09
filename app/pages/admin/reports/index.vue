@@ -14,177 +14,175 @@
 -->
 <template>
   <NuxtLayout name="admin-panel">
-    <div class="mx-auto flex max-w-6xl flex-col gap-6">
-      <header class="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">Reports</span>
-          <h1 class="mt-2 text-[28px] leading-tight md:text-[36px]" :style="{ color: C.text, fontFamily: F.display }">
-            Problemas reportados.
-          </h1>
+    <div class="admin-page">
+      <header class="admin-page__head">
+        <div class="admin-page__head-left">
+          <span class="admin-page__eyebrow">
+            <UIcon name="i-lucide-life-buoy" />
+            Reports
+          </span>
+          <h1 class="admin-page__title">Problemas reportados.</h1>
+          <p class="admin-page__lead">
+            Triagem de bugs, sugestões e dúvidas dos usuários. Clique numa linha pra ver detalhes.
+          </p>
         </div>
-        <div class="flex flex-wrap items-center gap-2">
-          <span
-            class="inline-flex items-center gap-2 rounded-sm border px-3 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
-            :style="{ borderColor: C.border, color: C.textMuted }"
-          >
-            <span class="size-1.5 rounded-full" :style="{ backgroundColor: C.primary }" />
-            {{ stats?.total ?? 0 }} total
+        <div class="admin-page__actions">
+          <span class="admin-stat">
+            <span class="admin-stat__dot" />
+            <span class="admin-stat__value">{{ stats?.total ?? 0 }}</span>
+            total
             <template v-if="stats">
-              · +{{ stats.last_7d }} em 7d
+              <span class="admin-stat__sep" />
+              <span class="admin-stat__value">+{{ stats.last_7d }}</span>
+              em 7d
             </template>
           </span>
-          <span
-            v-if="stats && stats.open > 0"
-            class="inline-flex items-center gap-2 rounded-sm border px-3 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
-            :style="{ borderColor: C.primary, color: C.primary }"
-          >
+          <span v-if="stats && stats.open > 0" class="admin-stat admin-stat--accent">
             <UIcon name="i-lucide-alert-circle" class="size-3" />
-            {{ stats.open }} abertos
+            <span class="admin-stat__value">{{ stats.open }}</span>
+            abertos
           </span>
         </div>
       </header>
 
-      <!-- Filters -->
-      <div class="flex flex-wrap items-center gap-3">
+      <!-- ============ TOOLBAR ============ -->
+      <div class="admin-toolbar">
         <input
           v-model="search"
           type="text"
           placeholder="Buscar por título, descrição ou email do reporter..."
-          class="flex-1 min-w-[220px] rounded-sm border bg-transparent px-4 py-2 text-[13px] outline-none transition-colors"
-          :style="{ borderColor: C.border, color: C.text }"
+          class="admin-input admin-input--flex"
           @input="debouncedRefresh"
         />
-        <select
-          v-model="statusFilter"
-          class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none"
-          :style="{ borderColor: C.border, color: C.text, backgroundColor: C.surface }"
-          @change="refresh"
-        >
-          <option value="">Qualquer status</option>
-          <option value="open">Abertos</option>
-          <option value="in_progress">Em progresso</option>
-          <option value="resolved">Resolvidos</option>
-          <option value="wontfix">Wontfix</option>
-        </select>
-        <select
-          v-model="typeFilter"
-          class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none"
-          :style="{ borderColor: C.border, color: C.text, backgroundColor: C.surface }"
-          @change="refresh"
-        >
-          <option value="">Qualquer tipo</option>
-          <option value="bug">🐞 Bug</option>
-          <option value="suggestion">💡 Sugestão</option>
-          <option value="question">❓ Dúvida</option>
-          <option value="other">✏️ Outro</option>
-        </select>
-        <select
-          v-model="priorityFilter"
-          class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none"
-          :style="{ borderColor: C.border, color: C.text, backgroundColor: C.surface }"
-          @change="refresh"
-        >
-          <option value="">Qualquer prioridade</option>
-          <option value="high">Alta</option>
-          <option value="medium">Média</option>
-          <option value="low">Baixa</option>
-        </select>
-      </div>
-
-      <!-- Table -->
-      <div class="overflow-hidden rounded-sm border" :style="{ borderColor: C.border }">
-        <table class="w-full text-left">
-          <caption class="sr-only">Lista de reports</caption>
-          <thead
-            class="font-mono-tab text-[10px] uppercase tracking-[0.18em]"
-            :style="{ color: C.textMuted, backgroundColor: C.surface }"
-          >
-            <tr>
-              <th scope="col" class="px-4 py-3">CRIADO</th>
-              <th scope="col" class="px-4 py-3 text-center">TIPO</th>
-              <th scope="col" class="px-4 py-3">TÍTULO</th>
-              <th scope="col" class="px-4 py-3">REPORTER</th>
-              <th scope="col" class="px-4 py-3 text-center">STATUS</th>
-              <th scope="col" class="px-4 py-3 text-center">PRIO</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-if="loading">
-              <td colspan="6" class="p-8 text-center" :style="{ color: C.textMuted }">
-                <UIcon name="i-lucide-loader-2" class="size-5 motion-safe:animate-spin" />
-              </td>
-            </tr>
-            <tr v-else-if="items.length === 0">
-              <td colspan="6" class="p-8 text-center text-[13px]" :style="{ color: C.textMuted }">
-                Nenhum report com esses filtros.
-              </td>
-            </tr>
-            <tr
-              v-for="report in items"
-              v-else
-              :key="report.id"
-              class="border-t cursor-pointer transition-colors hover:brightness-110"
-              :style="{ borderColor: C.border, backgroundColor: C.surface }"
-              @click="openDetail(report)"
-            >
-              <td class="px-4 py-3 font-mono-tab text-[11px] tabular-nums" :style="{ color: C.textMuted }">
-                {{ formatDate(report.created_at) }}
-              </td>
-              <td class="px-4 py-3 text-center">
-                <span class="text-[14px]" :title="report.type">{{ TYPE_ICON[report.type] }}</span>
-              </td>
-              <th scope="row" class="px-4 py-3 text-left font-normal" :style="{ color: C.text }">
-                <span class="line-clamp-1 text-[13px] font-medium">{{ report.title }}</span>
-              </th>
-              <td class="px-4 py-3 font-mono-tab text-[11px]" :style="{ color: C.textMuted }">
-                {{ report.user?.email || report.guest_email || 'anônimo' }}
-              </td>
-              <td class="px-4 py-3 text-center">
-                <span
-                  class="inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
-                  :style="statusBadgeStyle(report.status)"
-                >
-                  <span class="size-1.5 rounded-full" :style="{ backgroundColor: 'currentColor' }" />
-                  {{ STATUS_LABEL[report.status] }}
-                </span>
-              </td>
-              <td class="px-4 py-3 text-center font-mono-tab text-[10px] uppercase tracking-[0.15em]">
-                <span v-if="report.priority" :style="priorityStyle(report.priority)">
-                  {{ report.priority }}
-                </span>
-                <span v-else :style="{ color: C.textMuted }">-</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Pagination -->
-      <div
-        v-if="meta && meta.last_page > 1"
-        class="flex items-center justify-between font-mono-tab text-[11px]"
-        :style="{ color: C.textMuted }"
-      >
-        <span>Página {{ meta.current_page }} de {{ meta.last_page }} · {{ meta.total }} resultados</span>
-        <div class="inline-flex gap-2">
-          <button
-            type="button"
-            class="rounded-sm border px-3 py-1.5 uppercase tracking-[0.15em] transition-colors hover:opacity-80 disabled:opacity-40"
-            :style="{ borderColor: C.border, color: C.text }"
-            :disabled="meta.current_page <= 1 || loading"
-            @click="changePage(meta.current_page - 1)"
-          >Anterior</button>
-          <button
-            type="button"
-            class="rounded-sm border px-3 py-1.5 uppercase tracking-[0.15em] transition-colors hover:opacity-80 disabled:opacity-40"
-            :style="{ borderColor: C.border, color: C.text }"
-            :disabled="meta.current_page >= meta.last_page || loading"
-            @click="changePage(meta.current_page + 1)"
-          >Próxima</button>
+        <div class="admin-toolbar__group">
+          <select v-model="statusFilter" class="admin-select" @change="refresh">
+            <option value="">Qualquer status</option>
+            <option value="open">Abertos</option>
+            <option value="in_progress">Em progresso</option>
+            <option value="resolved">Resolvidos</option>
+            <option value="wontfix">Wontfix</option>
+          </select>
+          <select v-model="typeFilter" class="admin-select" @change="refresh">
+            <option value="">Qualquer tipo</option>
+            <option value="bug">🐞 Bug</option>
+            <option value="suggestion">💡 Sugestão</option>
+            <option value="question">❓ Dúvida</option>
+            <option value="other">✏️ Outro</option>
+          </select>
+          <select v-model="priorityFilter" class="admin-select" @change="refresh">
+            <option value="">Qualquer prioridade</option>
+            <option value="high">Alta</option>
+            <option value="medium">Média</option>
+            <option value="low">Baixa</option>
+          </select>
         </div>
       </div>
 
-      <div v-if="error" class="rounded-sm border px-4 py-3 text-[13px]" :style="{ borderColor: C.negative, color: C.negative }">
+      <!-- ============ TABLE ============ -->
+      <div class="admin-table">
+        <div class="admin-table__scroll">
+          <table>
+            <caption class="sr-only">Lista de reports</caption>
+            <thead>
+              <tr>
+                <th scope="col">Criado</th>
+                <th scope="col" class="admin-table__center">Tipo</th>
+                <th scope="col">Título</th>
+                <th scope="col">Reporter</th>
+                <th scope="col" class="admin-table__center">Status</th>
+                <th scope="col" class="admin-table__center">Prio</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-if="loading">
+                <td colspan="6">
+                  <div class="admin-loading">
+                    <span class="admin-loading__icon">
+                      <UIcon name="i-lucide-loader-2" class="size-4 motion-safe:animate-spin" />
+                    </span>
+                    <span class="admin-loading__title">Carregando reports…</span>
+                  </div>
+                </td>
+              </tr>
+              <tr v-else-if="items.length === 0">
+                <td colspan="6">
+                  <div class="admin-empty">
+                    <span class="admin-empty__icon">
+                      <UIcon name="i-lucide-shield-check" class="size-4" />
+                    </span>
+                    <span class="admin-empty__title">Nenhum report</span>
+                    <span class="admin-empty__sub">Nada nos filtros atuais. Tudo limpo (ou tente outros filtros).</span>
+                  </div>
+                </td>
+              </tr>
+              <tr
+                v-for="report in items"
+                v-else
+                :key="report.id"
+                style="cursor: pointer;"
+                @click="openDetail(report)"
+              >
+                <td class="admin-table__cell-muted">
+                  {{ formatDate(report.created_at) }}
+                </td>
+                <td class="admin-table__center">
+                  <span style="font-size: 14px;" :title="report.type">{{ TYPE_ICON[report.type] }}</span>
+                </td>
+                <th scope="row">
+                  <span class="admin-table__primary-name line-clamp-1">{{ report.title }}</span>
+                </th>
+                <td class="admin-table__cell-muted">
+                  {{ report.user?.email || report.guest_email || 'anônimo' }}
+                </td>
+                <td class="admin-table__center">
+                  <span class="admin-badge" :class="reportStatusClass(report.status)">
+                    <span class="admin-stat__dot" style="background-color: currentColor;" />
+                    {{ STATUS_LABEL[report.status] }}
+                  </span>
+                </td>
+                <td class="admin-table__center">
+                  <span v-if="report.priority" class="admin-badge" :class="priorityClass(report.priority)">
+                    {{ report.priority }}
+                  </span>
+                  <span v-else class="admin-table__cell-muted">—</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ============ PAGINATION ============ -->
+      <div v-if="meta && meta.last_page > 1" class="admin-pagination">
+        <span class="admin-pagination__info">
+          Página <strong>{{ meta.current_page }}</strong> de {{ meta.last_page }}
+          <span class="admin-stat__sep" />
+          <strong>{{ meta.total }}</strong> resultados
+        </span>
+        <div class="admin-actions">
+          <button
+            type="button"
+            class="admin-btn admin-btn--ghost admin-btn--sm"
+            :disabled="meta.current_page <= 1 || loading"
+            @click="changePage(meta.current_page - 1)"
+          >
+            <UIcon name="i-lucide-chevron-left" class="size-3.5" />
+            Anterior
+          </button>
+          <button
+            type="button"
+            class="admin-btn admin-btn--ghost admin-btn--sm"
+            :disabled="meta.current_page >= meta.last_page || loading"
+            @click="changePage(meta.current_page + 1)"
+          >
+            Próxima
+            <UIcon name="i-lucide-chevron-right" class="size-3.5" />
+          </button>
+        </div>
+      </div>
+
+      <div v-if="error" class="admin-error">
+        <UIcon name="i-lucide-alert-circle" class="size-4 shrink-0" />
         {{ error }}
       </div>
     </div>
@@ -496,6 +494,25 @@ function statusBadgeStyle(status: ReportStatus) {
     wontfix: { borderColor: C.border, color: C.textMuted },
   }
   return map[status]
+}
+
+function reportStatusClass(status: ReportStatus): string {
+  const map: Record<ReportStatus, string> = {
+    open: 'admin-badge--accent',
+    in_progress: '',
+    resolved: 'admin-badge--positive',
+    wontfix: '',
+  }
+  return map[status] || ''
+}
+
+function priorityClass(priority: ReportPriority): string {
+  const map: Record<ReportPriority, string> = {
+    high: 'admin-badge--negative',
+    medium: 'admin-badge--accent',
+    low: '',
+  }
+  return map[priority] || ''
 }
 
 function statusSelectStyle(status: ReportStatus) {

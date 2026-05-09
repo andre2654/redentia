@@ -1,106 +1,144 @@
+<!--
+  /admin/billing — receita consolidada por tenant.
+
+  Visual: usa o admin design system. Stats card grande no topo, tabela
+  de tenants billing-on com ativar/desativar inline + atalhos pra Planos
+  e Assinantes do tenant especifico.
+-->
 <template>
   <NuxtLayout name="admin-panel">
-    <div class="mx-auto flex max-w-6xl flex-col gap-6">
-      <header class="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">Billing</span>
-          <h1 class="mt-2 text-[28px] leading-tight md:text-[36px]" :style="{ color: C.text, fontFamily: F.display }">
-            Receita e assinantes.
-          </h1>
+    <div class="admin-page">
+      <!-- ============ HEADER ============ -->
+      <header class="admin-page__head">
+        <div class="admin-page__head-left">
+          <span class="admin-page__eyebrow">
+            <UIcon name="i-lucide-credit-card" />
+            Billing
+          </span>
+          <h1 class="admin-page__title">Receita e assinantes.</h1>
+          <p class="admin-page__lead">
+            MRR consolidado, conversões de trial e tenants com billing habilitado.
+          </p>
         </div>
       </header>
 
-      <!-- Stats consolidadas -->
-      <div class="grid gap-4 md:grid-cols-3">
-        <article class="rounded-sm border p-5" :style="{ borderColor: C.border, backgroundColor: C.surface }">
-          <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">MRR (R$)</span>
-          <p class="mt-2 text-[32px] tabular-nums" :style="{ color: C.text, fontFamily: F.display }">
-            {{ stats ? formatBRL(stats.mrr_brl) : '—' }}
-          </p>
-          <p class="mt-1 text-[12px]" :style="{ color: C.textMuted }">Soma mensal de todos os tenants pagantes</p>
+      <!-- ============ KPI CARDS ============ -->
+      <div class="admin-grid admin-grid--3">
+        <article class="admin-card admin-card--accent billing-kpi">
+          <span class="billing-kpi__label">MRR (R$)</span>
+          <p class="billing-kpi__value">{{ stats ? formatBRL(stats.mrr_brl) : '—' }}</p>
+          <p class="billing-kpi__sub">Soma mensal de todos os tenants pagantes</p>
         </article>
-        <article class="rounded-sm border p-5" :style="{ borderColor: C.border, backgroundColor: C.surface }">
-          <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">Assinantes pagos</span>
-          <p class="mt-2 text-[32px] tabular-nums" :style="{ color: C.text, fontFamily: F.display }">
-            {{ stats?.paying_users ?? '—' }}
-          </p>
-          <p class="mt-1 text-[12px]" :style="{ color: C.textMuted }">Status active (Stripe)</p>
+        <article class="admin-card billing-kpi">
+          <span class="billing-kpi__label">Assinantes pagos</span>
+          <p class="billing-kpi__value">{{ stats?.paying_users ?? '—' }}</p>
+          <p class="billing-kpi__sub">Status active no Stripe</p>
         </article>
-        <article class="rounded-sm border p-5" :style="{ borderColor: C.border, backgroundColor: C.surface }">
-          <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">Em trial</span>
-          <p class="mt-2 text-[32px] tabular-nums" :style="{ color: C.text, fontFamily: F.display }">
-            {{ stats?.trial_users ?? '—' }}
-          </p>
-          <p class="mt-1 text-[12px]" :style="{ color: C.textMuted }">Trialing (sem cartão ou com cartão)</p>
+        <article class="admin-card billing-kpi">
+          <span class="billing-kpi__label">Em trial</span>
+          <p class="billing-kpi__value">{{ stats?.trial_users ?? '—' }}</p>
+          <p class="billing-kpi__sub">Trialing (com ou sem cartão)</p>
         </article>
       </div>
 
-      <!-- Tenants com billing on -->
-      <section class="flex flex-col gap-3">
-        <h2 class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
-          Tenants com billing
-        </h2>
-        <div v-if="loading" class="rounded-sm border p-6 text-center" :style="{ borderColor: C.border, color: C.textMuted }">
-          <UIcon name="i-lucide-loader-2" class="size-5 motion-safe:animate-spin" />
+      <!-- ============ TENANTS BILLING ============ -->
+      <section class="admin-section">
+        <div class="admin-section__head">
+          <div class="admin-section__head-left">
+            <span class="admin-section__eyebrow">
+              <UIcon name="i-lucide-building-2" />
+              Tenants
+            </span>
+            <h2 class="admin-section__title">Quem está cobrando hoje</h2>
+          </div>
         </div>
-        <div v-else-if="!tenantsBilling.length" class="rounded-sm border p-6 text-center text-[13px]" :style="{ borderColor: C.border, color: C.textMuted }">
-          Nenhum tenant com billing ativado. Habilite no editor de cada tenant (config.billing.enabled).
+
+        <div v-if="loading" class="admin-loading">
+          <span class="admin-loading__icon">
+            <UIcon name="i-lucide-loader-2" class="size-4 motion-safe:animate-spin" />
+          </span>
+          <span class="admin-loading__title">Carregando tenants…</span>
         </div>
-        <div v-else class="overflow-hidden rounded-sm border" :style="{ borderColor: C.border }">
-          <table class="w-full text-left">
-            <thead class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted, backgroundColor: C.surface }">
-              <tr>
-                <th class="px-4 py-3">SLUG</th>
-                <th class="px-4 py-3">NOME</th>
-                <th class="px-4 py-3 text-center">BILLING</th>
-                <th class="px-4 py-3 text-right">AÇÕES</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="t in tenantsBilling" :key="t.id" class="border-t" :style="{ borderColor: C.border, backgroundColor: C.surface }">
-                <td class="px-4 py-3 font-mono-tab text-[12px]" :style="{ color: C.primary }">{{ t.slug }}</td>
-                <td class="px-4 py-3 text-[13px]" :style="{ color: C.text }">{{ t.name }}</td>
-                <td class="px-4 py-3 text-center">
-                  <span
-                    class="font-mono-tab text-[10px] uppercase rounded-sm border px-2 py-0.5"
-                    :style="{ borderColor: t.config?.billing?.enabled ? C.positive : '#f59e0b', color: t.config?.billing?.enabled ? C.positive : '#f59e0b' }"
-                  >
-                    {{ t.config?.billing?.enabled ? 'ATIVO' : 'CONFIGURADO MAS DESATIVADO' }}
-                  </span>
-                </td>
-                <td class="px-4 py-3 text-right">
-                  <button
-                    type="button"
-                    :disabled="togglingId === t.id"
-                    class="font-mono-tab text-[10px] uppercase tracking-[0.15em] rounded-sm border px-3 py-1.5 mr-2 disabled:opacity-50"
-                    :style="{ borderColor: t.config?.billing?.enabled ? C.negative : C.positive, color: t.config?.billing?.enabled ? C.negative : C.positive }"
-                    @click="onToggleBilling(t)"
-                  >
-                    <UIcon
-                      v-if="togglingId === t.id"
-                      name="i-lucide-loader-2"
-                      class="size-3 motion-safe:animate-spin"
-                    />
-                    {{ t.config?.billing?.enabled ? 'DESATIVAR' : 'ATIVAR' }}
-                  </button>
-                  <NuxtLink
-                    :to="`/admin/tenants/${t.id}/plans`"
-                    class="font-mono-tab text-[10px] uppercase tracking-[0.15em] rounded-sm border px-3 py-1.5 mr-2"
-                    :style="{ borderColor: C.primary, color: C.primary }"
-                  >
-                    PLANOS
-                  </NuxtLink>
-                  <NuxtLink
-                    :to="`/admin/tenants/${t.id}/subscriptions`"
-                    class="font-mono-tab text-[10px] uppercase tracking-[0.15em] rounded-sm border px-3 py-1.5"
-                    :style="{ borderColor: C.primary, color: C.primary }"
-                  >
-                    ASSINANTES
-                  </NuxtLink>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+
+        <div v-else-if="!tenantsBilling.length" class="admin-empty">
+          <span class="admin-empty__icon">
+            <UIcon name="i-lucide-piggy-bank" class="size-4" />
+          </span>
+          <span class="admin-empty__title">Nenhum tenant com billing</span>
+          <span class="admin-empty__sub">
+            Habilite no editor de cada tenant em <code>config.billing.enabled</code>.
+          </span>
+        </div>
+
+        <div v-else class="admin-table">
+          <div class="admin-table__scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Slug</th>
+                  <th scope="col">Nome</th>
+                  <th scope="col" class="admin-table__center">Status</th>
+                  <th scope="col" class="admin-table__right">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="t in tenantsBilling" :key="t.id">
+                  <td>
+                    <span class="billing-slug">{{ t.slug }}</span>
+                  </td>
+                  <td>
+                    <span class="admin-table__primary-name">{{ t.name }}</span>
+                  </td>
+                  <td class="admin-table__center">
+                    <span
+                      class="admin-badge"
+                      :class="t.config?.billing?.enabled ? 'admin-badge--positive' : 'admin-badge--warning'"
+                    >
+                      {{ t.config?.billing?.enabled ? 'Ativo' : 'Desativado' }}
+                    </span>
+                  </td>
+                  <td class="admin-table__right">
+                    <div class="admin-actions">
+                      <button
+                        type="button"
+                        :disabled="togglingId === t.id"
+                        class="admin-btn admin-btn--xs"
+                        :class="t.config?.billing?.enabled ? 'admin-btn--danger' : 'admin-btn--ghost'"
+                        :style="!t.config?.billing?.enabled ? 'color: var(--brand-positive, #10b981); border-color: color-mix(in srgb, var(--brand-positive, #10b981) 35%, transparent);' : ''"
+                        @click="onToggleBilling(t)"
+                      >
+                        <UIcon
+                          v-if="togglingId === t.id"
+                          name="i-lucide-loader-2"
+                          class="size-3 motion-safe:animate-spin"
+                        />
+                        <UIcon
+                          v-else
+                          :name="t.config?.billing?.enabled ? 'i-lucide-pause' : 'i-lucide-play'"
+                          class="size-3"
+                        />
+                        {{ t.config?.billing?.enabled ? 'Desativar' : 'Ativar' }}
+                      </button>
+                      <NuxtLink
+                        :to="`/admin/tenants/${t.id}/plans`"
+                        class="admin-btn admin-btn--ghost admin-btn--xs"
+                      >
+                        <UIcon name="i-lucide-package" class="size-3" />
+                        Planos
+                      </NuxtLink>
+                      <NuxtLink
+                        :to="`/admin/tenants/${t.id}/subscriptions`"
+                        class="admin-btn admin-btn--ghost admin-btn--xs"
+                      >
+                        <UIcon name="i-lucide-users" class="size-3" />
+                        Assinantes
+                      </NuxtLink>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
     </div>
@@ -109,7 +147,6 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { REDENTIA_COLORS as C, REDENTIA_FONTS as F } from '~/utils/redentiaCreativeColors'
 import type { ISubscriptionStats } from '~/types/subscription'
 
 definePageMeta({ middleware: ['admin-panel'] })
@@ -147,7 +184,6 @@ async function onToggleBilling(t: any) {
     }
     const resp = await tenantsService.update(t.id, { config: newConfig })
     const updated = (resp as any)?.data || resp
-    // Atualiza inline pra evitar refetch da lista inteira
     const idx = tenantsBilling.value.findIndex((x) => x.id === t.id)
     if (idx >= 0) tenantsBilling.value[idx] = updated
     toast.add({ title: next ? 'Billing ativado' : 'Billing desativado', color: next ? 'success' : 'info' })
@@ -173,3 +209,38 @@ onMounted(async () => {
   }
 })
 </script>
+
+<style scoped>
+.billing-kpi { gap: 6px; }
+.billing-kpi__label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--brand-text) 60%, transparent);
+}
+.billing-kpi__value {
+  margin: 4px 0 2px;
+  font-family: var(--brand-font);
+  font-weight: 200;
+  font-size: clamp(28px, 3vw, 36px);
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  color: var(--brand-text);
+  font-variant-numeric: tabular-nums;
+}
+.billing-kpi__sub {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: color-mix(in srgb, var(--brand-text) 55%, transparent);
+}
+
+.billing-slug {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--brand-primary);
+  letter-spacing: -0.005em;
+}
+</style>

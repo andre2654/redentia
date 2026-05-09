@@ -1,153 +1,210 @@
+<!--
+  /admin/tenants/[id]/subscriptions — assinantes do tenant.
+
+  Visual: usa o admin design system. Tabela com user (nome+email),
+  plano, ciclo, status colorido, period_end. Filtros por status/cycle
+  e modal pra aplicar override manual (gratis pra founder/amigo/etc).
+-->
 <template>
   <NuxtLayout name="admin-panel">
-    <div class="mx-auto flex max-w-6xl flex-col gap-6">
-      <header class="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
+    <div class="admin-page">
+      <!-- ============ HEADER ============ -->
+      <header class="admin-page__head">
+        <div class="admin-page__head-left">
+          <span class="admin-page__eyebrow">
+            <UIcon name="i-lucide-users" />
             Assinantes
           </span>
-          <h1 class="mt-2 text-[28px] leading-tight md:text-[36px]" :style="{ color: C.text, fontFamily: F.display }">
-            {{ tenant?.name || 'Carregando…' }}
-          </h1>
-          <div class="mt-2 flex gap-3 text-[12px]" :style="{ color: C.textMuted }">
-            <NuxtLink :to="`/admin/tenants/${tenantId}`" class="hover:underline">← Editor do tenant</NuxtLink>
-            <NuxtLink :to="`/admin/tenants/${tenantId}/plans`" class="hover:underline">Planos →</NuxtLink>
+          <h1 class="admin-page__title">{{ tenant?.name || 'Carregando…' }}</h1>
+          <div class="sub-page__nav">
+            <NuxtLink :to="`/admin/tenants/${tenantId}`" class="sub-page__nav-link">
+              <UIcon name="i-lucide-arrow-left" class="size-3" />
+              Editor do tenant
+            </NuxtLink>
+            <span class="admin-stat__sep" />
+            <NuxtLink :to="`/admin/tenants/${tenantId}/plans`" class="sub-page__nav-link">
+              Planos
+              <UIcon name="i-lucide-arrow-right" class="size-3" />
+            </NuxtLink>
           </div>
         </div>
       </header>
 
-      <!-- Filtros -->
-      <div class="flex flex-wrap items-center gap-3">
-        <select v-model="statusFilter" class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none" :style="{ borderColor: C.border, color: C.text, backgroundColor: C.surface }" @change="refresh">
-          <option value="">Todos os status</option>
-          <option value="trialing">Trial</option>
-          <option value="active">Ativa</option>
-          <option value="past_due">Pagamento pendente</option>
-          <option value="canceled">Cancelada</option>
-          <option value="incomplete">Incompleta</option>
-        </select>
-        <select v-model="cycleFilter" class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none" :style="{ borderColor: C.border, color: C.text, backgroundColor: C.surface }" @change="refresh">
-          <option value="">Mensal + Anual</option>
-          <option value="monthly">Mensal</option>
-          <option value="yearly">Anual</option>
-        </select>
+      <!-- ============ TOOLBAR ============ -->
+      <div class="admin-toolbar">
+        <div class="admin-toolbar__group">
+          <select v-model="statusFilter" class="admin-select" @change="refresh">
+            <option value="">Todos os status</option>
+            <option value="trialing">Trial</option>
+            <option value="active">Ativa</option>
+            <option value="past_due">Pagamento pendente</option>
+            <option value="canceled">Cancelada</option>
+            <option value="incomplete">Incompleta</option>
+          </select>
+          <select v-model="cycleFilter" class="admin-select" @change="refresh">
+            <option value="">Mensal + Anual</option>
+            <option value="monthly">Mensal</option>
+            <option value="yearly">Anual</option>
+          </select>
+        </div>
+        <div class="admin-toolbar__spacer" />
         <button
           type="button"
-          class="font-mono-tab text-[10px] uppercase tracking-[0.15em] rounded-sm border px-3 py-1.5"
-          :style="{ borderColor: C.primary, color: C.primary }"
+          class="admin-btn admin-btn--ghost admin-btn--sm"
+          style="color: var(--brand-primary); border-color: color-mix(in srgb, var(--brand-primary) 35%, transparent);"
           @click="onOverrideOpen"
         >
-          + APLICAR OVERRIDE
+          <UIcon name="i-lucide-shield-plus" class="size-3.5" />
+          Aplicar override
         </button>
       </div>
 
-      <!-- Tabela -->
-      <div class="overflow-hidden rounded-sm border" :style="{ borderColor: C.border }">
-        <table class="w-full text-left">
-          <thead class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted, backgroundColor: C.surface }">
-            <tr>
-              <th class="px-4 py-3">USER</th>
-              <th class="px-4 py-3">PLANO</th>
-              <th class="px-4 py-3">CICLO</th>
-              <th class="px-4 py-3 text-center">STATUS</th>
-              <th class="px-4 py-3 tabular-nums">PERÍODO ATÉ</th>
-              <th class="px-4 py-3 text-right">AÇÕES</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-if="loading">
-              <td colspan="6" class="p-8 text-center" :style="{ color: C.textMuted }">
-                <UIcon name="i-lucide-loader-2" class="size-5 motion-safe:animate-spin" />
-              </td>
-            </tr>
-            <tr v-else-if="!items.length">
-              <td colspan="6" class="p-8 text-center text-[13px]" :style="{ color: C.textMuted }">
-                Nenhum assinante encontrado.
-              </td>
-            </tr>
-            <tr
-              v-for="sub in items"
-              v-else
-              :key="sub.id"
-              class="border-t transition-colors"
-              :style="{ borderColor: C.border, backgroundColor: C.surface }"
-            >
-              <td class="px-4 py-3 text-[13px]" :style="{ color: C.text }">
-                <div class="flex flex-col">
-                  <span>{{ sub.user?.name || '—' }}</span>
-                  <span class="text-[11px]" :style="{ color: C.textMuted }">{{ sub.user?.email || '—' }}</span>
-                </div>
-              </td>
-              <td class="px-4 py-3 font-mono-tab text-[12px]" :style="{ color: C.primary }">
-                {{ sub.plan?.slug || '—' }}
-              </td>
-              <td class="px-4 py-3 text-[12px]" :style="{ color: C.textMuted }">{{ sub.billing_cycle }}</td>
-              <td class="px-4 py-3 text-center">
-                <span
-                  class="font-mono-tab text-[10px] uppercase rounded-sm border px-2 py-0.5"
-                  :style="{ borderColor: statusColor(sub.status), color: statusColor(sub.status) }"
-                >{{ sub.status }}</span>
-              </td>
-              <td class="px-4 py-3 text-[12px] tabular-nums" :style="{ color: C.textMuted }">
-                {{ formatDate(sub.current_period_end) }}
-              </td>
-              <td class="px-4 py-3 text-right">
-                <button
-                  type="button"
-                  class="font-mono-tab text-[10px] uppercase tracking-[0.15em] rounded-sm border px-2 py-1"
-                  :style="{ borderColor: C.primary, color: C.primary }"
-                  @click="onOverrideForUser(sub)"
-                >
-                  OVERRIDE
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <!-- ============ TABLE ============ -->
+      <div class="admin-table">
+        <div class="admin-table__scroll">
+          <table>
+            <caption class="sr-only">Lista de assinantes do tenant</caption>
+            <thead>
+              <tr>
+                <th scope="col">User</th>
+                <th scope="col">Plano</th>
+                <th scope="col">Ciclo</th>
+                <th scope="col" class="admin-table__center">Status</th>
+                <th scope="col">Período até</th>
+                <th scope="col" class="admin-table__right">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-if="loading">
+                <td colspan="6">
+                  <div class="admin-loading">
+                    <span class="admin-loading__icon">
+                      <UIcon name="i-lucide-loader-2" class="size-4 motion-safe:animate-spin" />
+                    </span>
+                    <span class="admin-loading__title">Carregando assinantes…</span>
+                  </div>
+                </td>
+              </tr>
+              <tr v-else-if="!items.length">
+                <td colspan="6">
+                  <div class="admin-empty">
+                    <span class="admin-empty__icon">
+                      <UIcon name="i-lucide-user-x" class="size-4" />
+                    </span>
+                    <span class="admin-empty__title">Nenhum assinante</span>
+                    <span class="admin-empty__sub">Tente outros filtros ou aguarde os primeiros checkouts.</span>
+                  </div>
+                </td>
+              </tr>
+              <tr v-for="sub in items" v-else :key="sub.id">
+                <td>
+                  <div class="admin-table__primary">
+                    <span class="admin-table__primary-name">{{ sub.user?.name || '—' }}</span>
+                    <span class="admin-table__primary-sub">{{ sub.user?.email || '—' }}</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="sub-plan-slug">{{ sub.plan?.slug || '—' }}</span>
+                </td>
+                <td class="admin-table__cell-muted">{{ sub.billing_cycle }}</td>
+                <td class="admin-table__center">
+                  <span class="admin-badge" :class="statusBadgeClass(sub.status)">
+                    {{ sub.status }}
+                  </span>
+                </td>
+                <td class="admin-table__cell-muted">
+                  {{ formatDate(sub.current_period_end) }}
+                </td>
+                <td class="admin-table__right">
+                  <button
+                    type="button"
+                    class="admin-btn admin-btn--ghost admin-btn--xs"
+                    style="color: var(--brand-primary); border-color: color-mix(in srgb, var(--brand-primary) 35%, transparent);"
+                    @click="onOverrideForUser(sub)"
+                  >
+                    <UIcon name="i-lucide-shield-plus" class="size-3" />
+                    Override
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
-    <!-- Override modal -->
-    <dialog
-      ref="overrideEl"
-      class="rounded-sm border p-0 backdrop:bg-black/70"
-      :style="{ borderColor: C.border, backgroundColor: C.surface, color: C.text, maxWidth: '480px', width: '92vw' }"
-    >
-      <form v-if="overrideForm" class="flex flex-col gap-4 p-6" @submit.prevent="onOverrideSave">
-        <header>
-          <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">Aplicar override manual</span>
-          <h2 class="mt-1 text-[20px]" :style="{ color: C.text, fontFamily: F.display }">
-            Plano grátis pra um user
-          </h2>
-          <p class="mt-1 text-[12px]" :style="{ color: C.textMuted }">
-            Override tem precedência sobre subscription real.
-          </p>
+    <!-- ============ OVERRIDE MODAL ============ -->
+    <dialog ref="overrideEl" class="sub-modal">
+      <form v-if="overrideForm" class="sub-modal__form" @submit.prevent="onOverrideSave">
+        <header class="sub-modal__head">
+          <div>
+            <span class="admin-page__eyebrow">Aplicar override manual</span>
+            <h2 class="sub-modal__title">Plano grátis pra um user</h2>
+            <p class="sub-modal__sub">
+              Override tem precedência sobre subscription real (founder, amigo, influencer, etc).
+            </p>
+          </div>
+          <button
+            type="button"
+            class="admin-actions__icon-btn"
+            aria-label="Fechar"
+            @click="closeOverride"
+          >
+            <UIcon name="i-lucide-x" class="size-4" />
+          </button>
         </header>
 
-        <label class="flex flex-col gap-2">
-          <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">USER ID</span>
-          <input v-model.number="overrideForm.user_id" type="number" required class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none tabular-nums" :style="{ borderColor: C.border, color: C.text }" />
-        </label>
-        <label class="flex flex-col gap-2">
-          <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">PLANO</span>
-          <select v-model.number="overrideForm.plan_id" required class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none" :style="{ borderColor: C.border, color: C.text, backgroundColor: C.surface }">
-            <option v-for="p in plans" :key="p.id" :value="p.id">{{ p.name }} ({{ p.slug }})</option>
-          </select>
-        </label>
-        <label class="flex flex-col gap-2">
-          <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">MOTIVO *</span>
-          <input v-model="overrideForm.reason" type="text" required maxlength="255" placeholder="founder / amigo / influencer X" class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none" :style="{ borderColor: C.border, color: C.text }" />
-        </label>
-        <label class="flex flex-col gap-2">
-          <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">EXPIRA EM (opcional)</span>
-          <input v-model="overrideForm.expires_at" type="datetime-local" class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none tabular-nums" :style="{ borderColor: C.border, color: C.text }" />
-          <span class="text-[11px]" :style="{ color: C.textMuted }">Vazio = sem expiração</span>
-        </label>
+        <div class="sub-modal__fields">
+          <label class="sub-field">
+            <span class="sub-field__label">User ID</span>
+            <input
+              v-model.number="overrideForm.user_id"
+              type="number"
+              required
+              class="admin-input"
+              style="font-variant-numeric: tabular-nums;"
+            />
+          </label>
+          <label class="sub-field">
+            <span class="sub-field__label">Plano</span>
+            <select v-model.number="overrideForm.plan_id" required class="admin-select">
+              <option v-for="p in plans" :key="p.id" :value="p.id">{{ p.name }} ({{ p.slug }})</option>
+            </select>
+          </label>
+          <label class="sub-field">
+            <span class="sub-field__label">Motivo <span class="sub-field__required">*</span></span>
+            <input
+              v-model="overrideForm.reason"
+              type="text"
+              required
+              maxlength="255"
+              placeholder="founder / amigo / influencer X"
+              class="admin-input"
+            />
+          </label>
+          <label class="sub-field">
+            <span class="sub-field__label">
+              Expira em
+              <span class="sub-field__hint">vazio = sem expiração</span>
+            </span>
+            <input
+              v-model="overrideForm.expires_at"
+              type="datetime-local"
+              class="admin-input"
+              style="font-variant-numeric: tabular-nums;"
+            />
+          </label>
+        </div>
 
-        <footer class="flex justify-end gap-2 pt-2">
-          <button type="button" class="font-mono-tab text-[10px] uppercase tracking-[0.15em] rounded-sm border px-4 py-2" :style="{ borderColor: C.border, color: C.text }" @click="closeOverride">CANCELAR</button>
-          <button type="submit" :disabled="overrideSaving" class="font-mono-tab text-[10px] uppercase tracking-[0.15em] rounded-sm px-4 py-2 disabled:opacity-60" :style="{ backgroundColor: C.primary, color: C.background }">
-            {{ overrideSaving ? 'SALVANDO…' : 'APLICAR' }}
+        <footer class="sub-modal__actions">
+          <button type="button" class="admin-btn admin-btn--ghost" @click="closeOverride">Cancelar</button>
+          <button
+            type="submit"
+            :disabled="overrideSaving"
+            class="admin-btn admin-btn--primary"
+          >
+            <UIcon v-if="overrideSaving" name="i-lucide-loader-2" class="size-3.5 motion-safe:animate-spin" />
+            {{ overrideSaving ? 'Salvando…' : 'Aplicar' }}
           </button>
         </footer>
       </form>
@@ -157,7 +214,6 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref } from 'vue'
-import { REDENTIA_COLORS as C, REDENTIA_FONTS as F } from '~/utils/redentiaCreativeColors'
 import type { ISubscription } from '~/types/subscription'
 import type { IPlan } from '~/types/plan'
 
@@ -217,14 +273,14 @@ function formatDate(iso: string | null) {
   } catch { return iso }
 }
 
-function statusColor(s: string) {
-  switch (s) {
-    case 'active': return C.positive
-    case 'trialing': return C.primary
+function statusBadgeClass(status: string): string {
+  switch (status) {
+    case 'active': return 'admin-badge--positive'
+    case 'trialing': return 'admin-badge--accent'
     case 'past_due':
-    case 'incomplete': return '#f59e0b'
+    case 'incomplete': return 'admin-badge--warning'
     case 'canceled':
-    default: return C.textMuted
+    default: return ''
   }
 }
 
@@ -275,3 +331,108 @@ async function onOverrideSave() {
 
 onMounted(loadAll)
 </script>
+
+<style scoped>
+.sub-page__nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--brand-text) 55%, transparent);
+}
+.sub-page__nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--brand-primary);
+  text-decoration: none;
+  transition: opacity 150ms;
+}
+.sub-page__nav-link:hover { opacity: 0.78; }
+
+.sub-plan-slug {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--brand-primary);
+}
+
+/* ============ MODAL ============ */
+.sub-modal {
+  border: 1px solid color-mix(in srgb, var(--brand-text) 12%, transparent);
+  border-radius: 14px;
+  padding: 0;
+  background: var(--brand-background);
+  color: var(--brand-text);
+  max-width: 520px;
+  width: 92vw;
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.5);
+}
+.sub-modal::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+}
+.sub-modal__form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 20px 22px;
+}
+.sub-modal__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.sub-modal__title {
+  margin: 4px 0 0;
+  font-family: var(--brand-font);
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.018em;
+  color: var(--brand-text);
+}
+.sub-modal__sub {
+  margin: 4px 0 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--brand-text) 60%, transparent);
+}
+.sub-modal__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.sub-modal__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.sub-field { display: flex; flex-direction: column; gap: 6px; }
+.sub-field__label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--brand-text) 60%, transparent);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.sub-field__required {
+  color: var(--brand-primary);
+  font-size: 11px;
+  letter-spacing: 0;
+}
+.sub-field__hint {
+  text-transform: none;
+  letter-spacing: 0.04em;
+  font-weight: 400;
+  font-size: 10px;
+  color: color-mix(in srgb, var(--brand-text) 45%, transparent);
+}
+</style>

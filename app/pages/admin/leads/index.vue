@@ -1,194 +1,191 @@
 <!--
   /admin/leads — captured marketing leads.
 
-  Visual language follows /admin/tenants/index: same surface tones,
-  same mono-tab eyebrow + 28-36px display headline, same table chrome.
-  Filters the URL query string (search, source, since, until) so the
-  admin can bookmark a filtered view (e.g. "all whitelabel leads from
-  last week") and share the link with sales.
-
-  Detail drawer is server-driven: clicking a row fetches show()
-  instead of trusting the row payload, so the admin always sees
-  fresh metadata even if the list was paginated 2 minutes ago.
+  Visual: usa o admin design system (assets/css/admin.css). Tabela com
+  hover/zebra, drawer lateral pra detail (refetch on open pra metadata
+  fresca). Filtros operam tambem como query params pra que o admin
+  bookmarke uma view (ex: "whitelabel últimos 7d") e mande pro time.
 -->
 <template>
   <NuxtLayout name="admin-panel">
-    <div class="mx-auto flex max-w-6xl flex-col gap-6">
-      <header class="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">Leads</span>
-          <h1 class="mt-2 text-[28px] leading-tight md:text-[36px]" :style="{ color: C.text, fontFamily: F.display }">
-            Capturas das landings.
-          </h1>
+    <div class="admin-page">
+      <!-- ============ HEADER ============ -->
+      <header class="admin-page__head">
+        <div class="admin-page__head-left">
+          <span class="admin-page__eyebrow">
+            <UIcon name="i-lucide-magnet" />
+            Leads
+          </span>
+          <h1 class="admin-page__title">Capturas das landings.</h1>
+          <p class="admin-page__lead">
+            Whitelabel, API, ebooks e creative em um lugar. Clique numa linha pra ver metadata.
+          </p>
         </div>
-        <div class="flex items-center gap-2">
-          <span
-            class="inline-flex items-center gap-2 rounded-sm border px-3 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
-            :style="{ borderColor: C.border, color: C.textMuted }"
-          >
-            <span class="size-1.5 rounded-full" :style="{ backgroundColor: C.primary }" />
-            {{ stats?.total ?? 0 }} total
+        <div class="admin-page__actions">
+          <span class="admin-stat">
+            <span class="admin-stat__dot" />
+            <span class="admin-stat__value">{{ stats?.total ?? 0 }}</span>
+            total
             <template v-if="stats">
-              · +{{ stats.last_7d }} em 7d
+              <span class="admin-stat__sep" />
+              <span class="admin-stat__value">+{{ stats.last_7d }}</span>
+              em 7d
             </template>
           </span>
         </div>
       </header>
 
-      <!-- Filters -->
-      <div class="flex flex-wrap items-center gap-3">
+      <!-- ============ TOOLBAR ============ -->
+      <div class="admin-toolbar">
         <input
           v-model="search"
           type="text"
           placeholder="Buscar por nome, email ou empresa..."
-          class="flex-1 min-w-[200px] rounded-sm border bg-transparent px-4 py-2 text-[13px] outline-none transition-colors"
-          :style="{ borderColor: C.border, color: C.text }"
+          class="admin-input admin-input--flex"
           @input="debouncedRefresh"
         />
-        <select
-          v-model="sourceFilter"
-          class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none"
-          :style="{ borderColor: C.border, color: C.text, backgroundColor: C.surface }"
-          @change="refresh"
-        >
-          <option value="">Todas as origens</option>
-          <option value="whitelabel">Whitelabel</option>
-          <option value="api">API</option>
-          <option value="creative">Creative</option>
-          <option value="ebook">Ebook</option>
-          <option value="other">Outras</option>
-        </select>
-        <input
-          v-model="since"
-          type="date"
-          class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none"
-          :style="{ borderColor: C.border, color: C.text, backgroundColor: C.surface }"
-          @change="refresh"
-        />
-        <input
-          v-model="until"
-          type="date"
-          class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none"
-          :style="{ borderColor: C.border, color: C.text, backgroundColor: C.surface }"
-          @change="refresh"
-        />
-      </div>
-
-      <!-- Table -->
-      <div class="overflow-hidden rounded-sm border" :style="{ borderColor: C.border }">
-        <table class="w-full text-left">
-          <caption class="sr-only">Lista de leads capturados</caption>
-          <thead
-            class="font-mono-tab text-[10px] uppercase tracking-[0.18em]"
-            :style="{ color: C.textMuted, backgroundColor: C.surface }"
-          >
-            <tr>
-              <th scope="col" class="px-4 py-3">CAPTURADO</th>
-              <th scope="col" class="px-4 py-3">NOME / EMAIL</th>
-              <th scope="col" class="px-4 py-3">EMPRESA</th>
-              <th scope="col" class="px-4 py-3">CONTATO</th>
-              <th scope="col" class="px-4 py-3 text-center">ORIGEM</th>
-              <th scope="col" class="px-4 py-3 text-right">AÇÕES</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-if="loading">
-              <td colspan="6" class="p-8 text-center" :style="{ color: C.textMuted }">
-                <UIcon name="i-lucide-loader-2" class="size-5 motion-safe:animate-spin" />
-              </td>
-            </tr>
-            <tr v-else-if="items.length === 0">
-              <td colspan="6" class="p-8 text-center text-[13px]" :style="{ color: C.textMuted }">
-                Nenhum lead encontrado com esses filtros.
-              </td>
-            </tr>
-            <tr
-              v-for="lead in items"
-              v-else
-              :key="lead.id"
-              class="border-t cursor-pointer transition-colors hover:brightness-110"
-              :style="{ borderColor: C.border, backgroundColor: C.surface }"
-              @click="openDetail(lead)"
-            >
-              <td class="px-4 py-3 font-mono-tab text-[11px] tabular-nums" :style="{ color: C.textMuted }">
-                {{ formatDate(lead.created_at) }}
-              </td>
-              <th scope="row" class="px-4 py-3 text-left font-normal" :style="{ color: C.text }">
-                <div class="flex flex-col">
-                  <span class="text-[13px] font-medium">{{ lead.name }}</span>
-                  <span class="font-mono-tab text-[11px]" :style="{ color: C.textMuted }">{{ lead.email }}</span>
-                </div>
-              </th>
-              <td class="px-4 py-3 text-[12px]" :style="{ color: C.text }">
-                {{ lead.company || '-' }}
-              </td>
-              <td class="px-4 py-3 font-mono-tab text-[11px]" :style="{ color: C.textMuted }">
-                {{ lead.phone || '-' }}
-              </td>
-              <td class="px-4 py-3 text-center">
-                <span
-                  class="inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
-                  :style="sourceBadgeStyle(lead.source)"
-                >
-                  {{ lead.source }}
-                </span>
-              </td>
-              <td class="px-4 py-3 text-right">
-                <div class="inline-flex gap-2" @click.stop>
-                  <button
-                    type="button"
-                    :disabled="busyIds.has(lead.id)"
-                    class="rounded-sm border px-2 py-1 font-mono-tab text-[10px] uppercase tracking-[0.15em] transition-colors hover:opacity-80 disabled:opacity-40"
-                    :style="{ borderColor: C.border, color: C.text }"
-                    @click="copyEmail(lead.email)"
-                  >COPIAR EMAIL</button>
-                  <button
-                    type="button"
-                    :disabled="busyIds.has(lead.id)"
-                    class="rounded-sm border px-2 py-1 font-mono-tab text-[10px] uppercase tracking-[0.15em] transition-colors hover:opacity-80 disabled:opacity-40"
-                    :style="{ borderColor: C.negative, color: C.negative }"
-                    @click="handleDelete(lead)"
-                  >DELETAR</button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Pagination -->
-      <div
-        v-if="meta && meta.last_page > 1"
-        class="flex items-center justify-between font-mono-tab text-[11px]"
-        :style="{ color: C.textMuted }"
-      >
-        <span>Página {{ meta.current_page }} de {{ meta.last_page }} · {{ meta.total }} resultados</span>
-        <div class="inline-flex gap-2">
-          <button
-            type="button"
-            class="rounded-sm border px-3 py-1.5 uppercase tracking-[0.15em] transition-colors hover:opacity-80 disabled:opacity-40"
-            :style="{ borderColor: C.border, color: C.text }"
-            :disabled="meta.current_page <= 1 || loading"
-            @click="changePage(meta.current_page - 1)"
-          >Anterior</button>
-          <button
-            type="button"
-            class="rounded-sm border px-3 py-1.5 uppercase tracking-[0.15em] transition-colors hover:opacity-80 disabled:opacity-40"
-            :style="{ borderColor: C.border, color: C.text }"
-            :disabled="meta.current_page >= meta.last_page || loading"
-            @click="changePage(meta.current_page + 1)"
-          >Próxima</button>
+        <div class="admin-toolbar__group">
+          <select v-model="sourceFilter" class="admin-select" @change="refresh">
+            <option value="">Todas as origens</option>
+            <option value="whitelabel">Whitelabel</option>
+            <option value="api">API</option>
+            <option value="creative">Creative</option>
+            <option value="ebook">Ebook</option>
+            <option value="other">Outras</option>
+          </select>
+          <input v-model="since" type="date" class="admin-input" @change="refresh" />
+          <input v-model="until" type="date" class="admin-input" @change="refresh" />
         </div>
       </div>
 
-      <div v-if="error" class="rounded-sm border px-4 py-3 text-[13px]" :style="{ borderColor: C.negative, color: C.negative }">
+      <!-- ============ TABLE ============ -->
+      <div class="admin-table">
+        <div class="admin-table__scroll">
+          <table>
+            <caption class="sr-only">Lista de leads capturados</caption>
+            <thead>
+              <tr>
+                <th scope="col">Capturado</th>
+                <th scope="col">Nome / Email</th>
+                <th scope="col">Empresa</th>
+                <th scope="col">Contato</th>
+                <th scope="col" class="admin-table__center">Origem</th>
+                <th scope="col" class="admin-table__right">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-if="loading">
+                <td colspan="6">
+                  <div class="admin-loading">
+                    <span class="admin-loading__icon">
+                      <UIcon name="i-lucide-loader-2" class="size-4 motion-safe:animate-spin" />
+                    </span>
+                    <span class="admin-loading__title">Carregando leads…</span>
+                  </div>
+                </td>
+              </tr>
+              <tr v-else-if="items.length === 0">
+                <td colspan="6">
+                  <div class="admin-empty">
+                    <span class="admin-empty__icon">
+                      <UIcon name="i-lucide-inbox" class="size-4" />
+                    </span>
+                    <span class="admin-empty__title">Nenhum lead encontrado</span>
+                    <span class="admin-empty__sub">Tente outros filtros ou aguarde novas capturas.</span>
+                  </div>
+                </td>
+              </tr>
+              <tr
+                v-for="lead in items"
+                v-else
+                :key="lead.id"
+                class="admin-table__row-clickable"
+                @click="openDetail(lead)"
+              >
+                <td class="admin-table__cell-muted">
+                  {{ formatDate(lead.created_at) }}
+                </td>
+                <th scope="row">
+                  <div class="admin-table__primary">
+                    <span class="admin-table__primary-name">{{ lead.name }}</span>
+                    <span class="admin-table__primary-sub">{{ lead.email }}</span>
+                  </div>
+                </th>
+                <td>
+                  {{ lead.company || '—' }}
+                </td>
+                <td class="admin-table__cell-muted">
+                  {{ lead.phone || '—' }}
+                </td>
+                <td class="admin-table__center">
+                  <span class="admin-badge" :class="sourceBadgeClass(lead.source)">
+                    {{ lead.source }}
+                  </span>
+                </td>
+                <td class="admin-table__right" @click.stop>
+                  <div class="admin-actions">
+                    <button
+                      type="button"
+                      :disabled="busyIds.has(lead.id)"
+                      class="admin-btn admin-btn--ghost admin-btn--xs"
+                      @click="copyEmail(lead.email)"
+                    >
+                      <UIcon name="i-lucide-copy" class="size-3" />
+                      Copiar email
+                    </button>
+                    <button
+                      type="button"
+                      :disabled="busyIds.has(lead.id)"
+                      class="admin-btn admin-btn--danger admin-btn--xs"
+                      @click="handleDelete(lead)"
+                    >
+                      <UIcon name="i-lucide-trash-2" class="size-3" />
+                      Deletar
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ============ PAGINATION ============ -->
+      <div v-if="meta && meta.last_page > 1" class="admin-pagination">
+        <span class="admin-pagination__info">
+          Página <strong>{{ meta.current_page }}</strong> de {{ meta.last_page }}
+          <span class="admin-stat__sep" />
+          <strong>{{ meta.total }}</strong> resultados
+        </span>
+        <div class="admin-actions">
+          <button
+            type="button"
+            class="admin-btn admin-btn--ghost admin-btn--sm"
+            :disabled="meta.current_page <= 1 || loading"
+            @click="changePage(meta.current_page - 1)"
+          >
+            <UIcon name="i-lucide-chevron-left" class="size-3.5" />
+            Anterior
+          </button>
+          <button
+            type="button"
+            class="admin-btn admin-btn--ghost admin-btn--sm"
+            :disabled="meta.current_page >= meta.last_page || loading"
+            @click="changePage(meta.current_page + 1)"
+          >
+            Próxima
+            <UIcon name="i-lucide-chevron-right" class="size-3.5" />
+          </button>
+        </div>
+      </div>
+
+      <div v-if="error" class="admin-error">
+        <UIcon name="i-lucide-alert-circle" class="size-4 shrink-0" />
         {{ error }}
       </div>
     </div>
 
-    <!-- Detail drawer (right slide-over). Refetches on open so the
-         admin sees current `metadata` even if the list snapshot is
-         stale. Closes on backdrop click or Esc. -->
+    <!-- ============ DETAIL DRAWER ============ -->
     <Teleport to="body">
       <Transition name="lead-drawer">
         <div
@@ -198,82 +195,67 @@
         >
           <button
             type="button"
-            class="fixed inset-0"
-            :style="{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }"
+            class="lead-drawer__backdrop"
             aria-label="Fechar detalhe"
             @click="closeDetail"
           />
-          <aside
-            class="fixed bottom-0 right-0 top-0 z-10 flex w-full max-w-[480px] flex-col overflow-hidden border-l"
-            :style="{ backgroundColor: C.background, borderColor: C.border }"
-            @click.stop
-          >
-            <header
-              class="flex items-center justify-between border-b px-5 py-4"
-              :style="{ borderColor: C.border }"
-            >
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
-                LEAD #{{ selected.id }}
+          <aside class="lead-drawer__panel" @click.stop>
+            <header class="lead-drawer__head">
+              <span class="admin-page__eyebrow">
+                Lead #{{ selected.id }}
               </span>
               <button
                 type="button"
-                class="rounded-sm p-1.5 transition-colors hover:opacity-80"
-                :style="{ color: C.textMuted }"
+                class="admin-actions__icon-btn"
                 aria-label="Fechar"
                 @click="closeDetail"
               >
                 <UIcon name="i-lucide-x" class="size-4" />
               </button>
             </header>
-            <div class="flex flex-1 flex-col gap-5 overflow-y-auto p-5">
-              <section>
-                <h2 class="text-[20px] font-semibold" :style="{ color: C.text }">{{ selected.name }}</h2>
+            <div class="lead-drawer__body">
+              <section class="lead-drawer__hero">
+                <h2 class="lead-drawer__name">{{ selected.name }}</h2>
                 <a
                   :href="`mailto:${selected.email}`"
-                  class="mt-1 inline-flex items-center gap-1.5 font-mono-tab text-[12px] underline-offset-2 hover:underline"
-                  :style="{ color: C.primary }"
+                  class="lead-drawer__email"
                 >
                   <UIcon name="i-lucide-mail" class="size-3.5" />
                   {{ selected.email }}
                 </a>
               </section>
 
-              <dl class="grid grid-cols-2 gap-3 text-[12px]">
-                <div class="flex flex-col">
-                  <dt class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: C.textMuted }">Origem</dt>
-                  <dd :style="{ color: C.text }">{{ selected.source }}</dd>
+              <dl class="lead-drawer__grid">
+                <div>
+                  <dt>Origem</dt>
+                  <dd>{{ selected.source }}</dd>
                 </div>
-                <div class="flex flex-col">
-                  <dt class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: C.textMuted }">Plano</dt>
-                  <dd :style="{ color: C.text }">{{ selected.plan || '-' }}</dd>
+                <div>
+                  <dt>Plano</dt>
+                  <dd>{{ selected.plan || '—' }}</dd>
                 </div>
-                <div class="flex flex-col">
-                  <dt class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: C.textMuted }">Empresa</dt>
-                  <dd :style="{ color: C.text }">{{ selected.company || '-' }}</dd>
+                <div>
+                  <dt>Empresa</dt>
+                  <dd>{{ selected.company || '—' }}</dd>
                 </div>
-                <div class="flex flex-col">
-                  <dt class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: C.textMuted }">Telefone</dt>
-                  <dd :style="{ color: C.text }">{{ selected.phone || '-' }}</dd>
+                <div>
+                  <dt>Telefone</dt>
+                  <dd>{{ selected.phone || '—' }}</dd>
                 </div>
-                <div class="flex flex-col col-span-2">
-                  <dt class="font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: C.textMuted }">Capturado em</dt>
-                  <dd :style="{ color: C.text }">{{ formatFullDate(selected.created_at) }}</dd>
+                <div class="lead-drawer__grid-full">
+                  <dt>Capturado em</dt>
+                  <dd>{{ formatFullDate(selected.created_at) }}</dd>
                 </div>
               </dl>
 
-              <section v-if="selected.message">
-                <h3 class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: C.textMuted }">Mensagem</h3>
-                <p class="rounded-sm border p-3 text-[13px] leading-relaxed" :style="{ borderColor: C.border, color: C.text, backgroundColor: C.surface }">
-                  {{ selected.message }}
-                </p>
+              <section v-if="selected.message" class="lead-drawer__section">
+                <h3>Mensagem</h3>
+                <p class="lead-drawer__message">{{ selected.message }}</p>
               </section>
 
-              <section v-if="selected.metadata && Object.keys(selected.metadata).length > 0">
-                <h3 class="mb-2 font-mono-tab text-[10px] uppercase tracking-[0.15em]" :style="{ color: C.textMuted }">Metadata</h3>
-                <pre
-                  class="overflow-x-auto rounded-sm border p-3 font-mono-tab text-[11px] leading-relaxed"
-                  :style="{ borderColor: C.border, color: C.text, backgroundColor: C.surface }"
-                >{{ JSON.stringify(selected.metadata, null, 2) }}</pre>
+              <section v-if="selected.metadata && Object.keys(selected.metadata).length > 0" class="lead-drawer__section">
+                <h3>Metadata</h3>
+                <pre class="lead-drawer__metadata">{{ JSON.stringify(selected.metadata, null, 2) }}</pre>
               </section>
             </div>
           </aside>
@@ -286,7 +268,6 @@
 </template>
 
 <script setup lang="ts">
-import { REDENTIA_COLORS as C, REDENTIA_FONTS as F } from '~/utils/redentiaCreativeColors'
 import type { ILead, ILeadStats, LeadSource } from '~/types/lead'
 
 definePageMeta({ middleware: ['admin-panel'] })
@@ -341,15 +322,13 @@ async function refreshStats() {
   try {
     stats.value = await leadsService.stats()
   } catch {
-    // Stats failure is non-blocking, header just shows 0.
+    /* non-blocking */
   }
 }
 
 let searchTimer: ReturnType<typeof setTimeout> | null = null
 function debouncedRefresh() {
   if (searchTimer) clearTimeout(searchTimer)
-  // Reset to page 1 when filters change so the user doesn't land on
-  // page 4 of an empty filtered list.
   page.value = 1
   searchTimer = setTimeout(refresh, 300)
 }
@@ -360,8 +339,6 @@ function changePage(next: number) {
 }
 
 async function openDetail(lead: ILead) {
-  // Refetch fresh detail (metadata may have been mutated since the
-  // list was loaded). Optimistic open with the row data, then swap.
   selected.value = lead
   try {
     const resp = await leadsService.show(lead.id)
@@ -406,17 +383,15 @@ async function handleDelete(lead: ILead) {
   }
 }
 
-function sourceBadgeStyle(source: LeadSource) {
-  // Each source gets a subtle tint so the table is scannable. We
-  // only use the brand palette, no rainbow.
-  const map: Record<LeadSource, { borderColor: string; color: string }> = {
-    whitelabel: { borderColor: C.primary, color: C.primary },
-    api: { borderColor: C.positive, color: C.positive },
-    creative: { borderColor: C.secondary, color: C.secondary },
-    ebook: { borderColor: C.text, color: C.text },
-    other: { borderColor: C.border, color: C.textMuted },
+function sourceBadgeClass(source: LeadSource): string {
+  const map: Record<LeadSource, string> = {
+    whitelabel: 'admin-badge--accent',
+    api: 'admin-badge--positive',
+    creative: '',
+    ebook: '',
+    other: '',
   }
-  return map[source] ?? map.other
+  return map[source] ?? ''
 }
 
 function formatDate(iso: string): string {
@@ -438,25 +413,160 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.font-mono-tab {
-  font-family: 'JetBrains Mono', 'IBM Plex Mono', Menlo, monospace;
-  font-feature-settings: 'tnum' 1;
+.admin-table__row-clickable { cursor: pointer; }
+
+.admin-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--brand-text) 55%, transparent);
+}
+.admin-pagination__info {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.admin-pagination__info strong {
+  color: var(--brand-text);
+  font-weight: 600;
+}
+
+.admin-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--brand-negative, #ef4444) 40%, transparent);
+  background: color-mix(in srgb, var(--brand-negative, #ef4444) 8%, transparent);
+  color: var(--brand-negative, #ef4444);
+  font-size: 13px;
+}
+
+/* ============ DRAWER ============ */
+.lead-drawer__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  border: 0;
+  cursor: pointer;
+}
+.lead-drawer__panel {
+  position: fixed;
+  inset: 0 0 0 auto;
+  z-index: 10;
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-left: 1px solid color-mix(in srgb, var(--brand-text) 10%, transparent);
+  background: var(--brand-background);
+}
+.lead-drawer__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid color-mix(in srgb, var(--brand-text) 10%, transparent);
+}
+.lead-drawer__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.lead-drawer__hero { display: flex; flex-direction: column; gap: 4px; }
+.lead-drawer__name {
+  margin: 0;
+  font-family: var(--brand-font);
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.018em;
+  color: var(--brand-text);
+}
+.lead-drawer__email {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--brand-primary);
+  text-decoration: none;
+}
+.lead-drawer__email:hover { text-decoration: underline; text-underline-offset: 2px; }
+
+.lead-drawer__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin: 0;
+}
+.lead-drawer__grid > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.lead-drawer__grid dt {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--brand-text) 50%, transparent);
+}
+.lead-drawer__grid dd {
+  margin: 0;
+  font-size: 13px;
+  color: var(--brand-text);
+}
+.lead-drawer__grid-full { grid-column: span 2; }
+
+.lead-drawer__section h3 {
+  margin: 0 0 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--brand-text) 50%, transparent);
+}
+.lead-drawer__message {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--brand-text) 10%, transparent);
+  background: color-mix(in srgb, var(--brand-text) 3%, transparent);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--brand-text);
+}
+.lead-drawer__metadata {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--brand-text) 10%, transparent);
+  background: color-mix(in srgb, var(--brand-text) 3%, transparent);
+  overflow-x: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  line-height: 1.55;
+  color: var(--brand-text);
 }
 
 .lead-drawer-enter-active,
-.lead-drawer-leave-active {
-  transition: opacity 200ms ease-out;
-}
-.lead-drawer-enter-active aside,
-.lead-drawer-leave-active aside {
-  transition: transform 240ms cubic-bezier(0.2, 0.7, 0.3, 1);
-}
+.lead-drawer-leave-active { transition: opacity 200ms ease-out; }
+.lead-drawer-enter-active .lead-drawer__panel,
+.lead-drawer-leave-active .lead-drawer__panel { transition: transform 240ms cubic-bezier(0.2, 0.7, 0.3, 1); }
 .lead-drawer-enter-from,
-.lead-drawer-leave-to {
-  opacity: 0;
-}
-.lead-drawer-enter-from aside,
-.lead-drawer-leave-to aside {
-  transform: translateX(20px);
-}
+.lead-drawer-leave-to { opacity: 0; }
+.lead-drawer-enter-from .lead-drawer__panel,
+.lead-drawer-leave-to .lead-drawer__panel { transform: translateX(20px); }
 </style>

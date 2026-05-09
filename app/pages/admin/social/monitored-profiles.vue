@@ -1,192 +1,223 @@
+<!--
+  /admin/social/monitored-profiles — perfis de terceiros que a
+  automacao profile_auto_comment observa.
+
+  Visual: usa o admin design system. Modal de editor com form unificado
+  pra create/edit. Templates suportam placeholders {ticker}/{change}/{price}.
+-->
 <template>
   <NuxtLayout name="admin-panel">
-    <div class="mx-auto flex max-w-5xl flex-col gap-6">
-      <header class="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
+    <div class="admin-page admin-page--narrow">
+      <!-- ============ HEADER ============ -->
+      <header class="admin-page__head">
+        <div class="admin-page__head-left">
+          <span class="admin-page__eyebrow">
+            <UIcon name="i-lucide-eye" />
             Social · Perfis monitorados
           </span>
-          <h1 class="mt-2 text-[28px] leading-tight md:text-[36px]" :style="{ color: C.text, fontFamily: F.display }">
-            Quem a gente fica de olho.
-          </h1>
-          <p class="mt-3 max-w-2xl text-[13px]" :style="{ color: C.textMuted }">
-            Lista de perfis de terceiros que a automação <code>profile_auto_comment</code> observa.
-            Quando um perfil listado posta algo, o worker (ainda pendente) renderiza o <em>template</em>
-            com placeholders <code>{ticker}</code> / <code>{change}</code> e posta um comentário via Postiz.
+          <h1 class="admin-page__title">Quem a gente fica de olho.</h1>
+          <p class="admin-page__lead">
+            Perfis de terceiros observados pelo <code>profile_auto_comment</code>. Quando o perfil posta,
+            o worker renderiza o template com <code>{ticker}</code>, <code>{change}</code>, <code>{price}</code>
+            e comenta via Postiz.
           </p>
         </div>
         <button
           type="button"
-          class="inline-flex items-center gap-2 rounded-sm px-4 py-2.5 font-mono-tab text-[11px] font-bold uppercase tracking-[0.15em] transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:opacity-90"
-          :style="{ backgroundColor: C.primary, color: C.background }"
+          class="admin-btn admin-btn--primary"
           @click="openEditor(null)"
         >
           <UIcon name="i-lucide-plus" class="size-4" />
-          NOVO PERFIL
+          Novo perfil
         </button>
       </header>
 
-      <div v-if="error" class="rounded-sm border px-4 py-3 text-[13px]" :style="{ borderColor: C.negative, color: C.negative }">
+      <div v-if="error" class="admin-error">
+        <UIcon name="i-lucide-alert-circle" class="size-4 shrink-0" />
         {{ error }}
       </div>
 
-      <div v-if="loading" class="py-8 text-center" :style="{ color: C.textMuted }">
-        <UIcon name="i-lucide-loader-2" class="size-5 motion-safe:animate-spin" />
+      <div v-if="loading" class="admin-loading">
+        <span class="admin-loading__icon">
+          <UIcon name="i-lucide-loader-2" class="size-4 motion-safe:animate-spin" />
+        </span>
+        <span class="admin-loading__title">Carregando perfis…</span>
       </div>
 
-      <div
-        v-else-if="items.length === 0"
-        class="rounded-sm border p-8 text-center text-[13px]"
-        :style="{ borderColor: C.border, color: C.textMuted }"
-      >
-        Nenhum perfil monitorado ainda.
+      <div v-else-if="items.length === 0" class="admin-empty">
+        <span class="admin-empty__icon">
+          <UIcon name="i-lucide-eye-off" class="size-4" />
+        </span>
+        <span class="admin-empty__title">Nenhum perfil monitorado</span>
+        <span class="admin-empty__sub">Adicione um perfil pra começar a observar posts.</span>
       </div>
 
-      <div v-else class="overflow-hidden rounded-sm border" :style="{ borderColor: C.border }">
-        <table class="w-full text-left">
-          <caption class="sr-only">Perfis de redes sociais monitorados</caption>
-          <thead class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted, backgroundColor: C.surface }">
-            <tr>
-              <th scope="col" class="px-4 py-3">PLATAFORMA</th>
-              <th scope="col" class="px-4 py-3">HANDLE</th>
-              <th scope="col" class="px-4 py-3">NOME</th>
-              <th scope="col" class="px-4 py-3 text-center">STATUS</th>
-              <th scope="col" class="px-4 py-3">TEMPLATE</th>
-              <th scope="col" class="px-4 py-3 text-right">AÇÕES</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="p in items"
-              :key="p.id"
-              class="border-t" :style="{ borderColor: C.border, backgroundColor: C.surface }"
-            >
-              <td class="px-4 py-3 font-mono-tab text-[11px] uppercase" :style="{ color: C.primary }">{{ p.platform }}</td>
-              <th scope="row" class="px-4 py-3 font-mono-tab text-[12px] font-normal text-left" :style="{ color: C.text }">{{ p.handle }}</th>
-              <td class="px-4 py-3 text-[13px]" :style="{ color: C.text }">{{ p.display_name || '—' }}</td>
-              <td class="px-4 py-3 text-center">
-                <button
-                  type="button"
-                  :disabled="busyIds.has(p.id)"
-                  class="inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
-                  :style="p.enabled
-                    ? { borderColor: C.positive, color: C.positive }
-                    : { borderColor: C.border, color: C.textMuted }"
-                  @click="handleToggle(p)"
-                >
-                  <span class="size-1.5 rounded-full" :style="{ backgroundColor: p.enabled ? C.positive : C.textMuted }" />
-                  {{ p.enabled ? 'ATIVO' : 'PAUSADO' }}
-                </button>
-              </td>
-              <td class="px-4 py-3 text-[11px]" :style="{ color: C.textMuted }">
-                {{ (p.comment_template || '').slice(0, 50) }}{{ (p.comment_template || '').length > 50 ? '…' : '' }}
-              </td>
-              <td class="px-4 py-3 text-right">
-                <div class="inline-flex gap-2">
-                  <button
-                    type="button"
-                    class="rounded-sm border px-2 py-1 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
-                    :style="{ borderColor: C.border, color: C.text }"
-                    @click="openEditor(p)"
-                  >EDITAR</button>
+      <!-- ============ TABLE ============ -->
+      <div v-else class="admin-table">
+        <div class="admin-table__scroll">
+          <table>
+            <caption class="sr-only">Perfis de redes sociais monitorados</caption>
+            <thead>
+              <tr>
+                <th scope="col">Plataforma</th>
+                <th scope="col">Handle</th>
+                <th scope="col">Nome</th>
+                <th scope="col" class="admin-table__center">Status</th>
+                <th scope="col">Template</th>
+                <th scope="col" class="admin-table__right">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="p in items" :key="p.id">
+                <td>
+                  <span class="admin-badge admin-badge--accent">{{ p.platform }}</span>
+                </td>
+                <th scope="row">
+                  <span class="profile-handle">{{ p.handle }}</span>
+                </th>
+                <td>
+                  <span class="admin-table__primary-name">{{ p.display_name || '—' }}</span>
+                </td>
+                <td class="admin-table__center">
                   <button
                     type="button"
                     :disabled="busyIds.has(p.id)"
-                    class="rounded-sm border px-2 py-1 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
-                    :style="{ borderColor: C.negative, color: C.negative }"
-                    @click="handleDelete(p)"
-                  >DELETAR</button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                    class="admin-badge"
+                    :class="p.enabled ? 'admin-badge--positive' : ''"
+                    style="cursor: pointer;"
+                    @click="handleToggle(p)"
+                  >
+                    <span
+                      class="admin-stat__dot"
+                      :style="{ backgroundColor: p.enabled ? 'var(--brand-positive, #10b981)' : 'currentColor' }"
+                    />
+                    {{ p.enabled ? 'Ativo' : 'Pausado' }}
+                  </button>
+                </td>
+                <td class="admin-table__cell-muted">
+                  {{ (p.comment_template || '').slice(0, 50) }}{{ (p.comment_template || '').length > 50 ? '…' : '' }}
+                </td>
+                <td class="admin-table__right">
+                  <div class="admin-actions">
+                    <button
+                      type="button"
+                      class="admin-btn admin-btn--ghost admin-btn--xs"
+                      @click="openEditor(p)"
+                    >
+                      <UIcon name="i-lucide-pencil" class="size-3" />
+                      Editar
+                    </button>
+                    <button
+                      type="button"
+                      :disabled="busyIds.has(p.id)"
+                      class="admin-btn admin-btn--danger admin-btn--xs"
+                      @click="handleDelete(p)"
+                    >
+                      <UIcon name="i-lucide-trash-2" class="size-3" />
+                      Deletar
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
-    <!-- Editor modal -->
+    <!-- ============ EDITOR MODAL ============ -->
     <div
       v-if="editorOpen"
-      class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-6"
-      style="background-color: rgba(0,0,0,0.7)"
+      class="profile-modal__backdrop"
       @click.self="closeEditor"
     >
-      <div
-        class="my-auto w-full max-w-xl rounded-sm border p-6"
-        :style="{ borderColor: C.border, backgroundColor: C.background }"
-      >
-        <div class="mb-4 flex items-center justify-between">
-          <h2 class="font-mono-tab text-[11px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
+      <div class="profile-modal__panel">
+        <div class="profile-modal__head">
+          <span class="admin-page__eyebrow">
             {{ editorMode === 'create' ? 'Novo' : 'Editar' }} perfil
-          </h2>
-          <button type="button" class="font-mono-tab text-[12px]" :style="{ color: C.textMuted }" @click="closeEditor">✕</button>
+          </span>
+          <button
+            type="button"
+            class="admin-actions__icon-btn"
+            aria-label="Fechar"
+            @click="closeEditor"
+          >
+            <UIcon name="i-lucide-x" class="size-4" />
+          </button>
         </div>
-        <form class="flex flex-col gap-4" @submit.prevent="handleSave">
-          <div class="grid gap-3 md:grid-cols-2">
-            <label class="flex flex-col gap-1.5">
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">PLATAFORMA</span>
-              <select
-                v-model="draft.platform"
-                class="rounded-sm border bg-transparent px-3 py-2 text-[13px]"
-                :style="{ borderColor: C.border, color: C.text, backgroundColor: C.surface }"
-              >
-                <option value="instagram">instagram</option>
-                <option value="x">x</option>
-                <option value="threads">threads</option>
-                <option value="facebook">facebook</option>
+        <form class="profile-modal__form" @submit.prevent="handleSave">
+          <div class="profile-modal__grid">
+            <label class="profile-field">
+              <span class="profile-field__label">Plataforma</span>
+              <select v-model="draft.platform" class="admin-select">
+                <option value="instagram">Instagram</option>
+                <option value="x">X</option>
+                <option value="threads">Threads</option>
+                <option value="facebook">Facebook</option>
               </select>
             </label>
-            <label class="flex flex-col gap-1.5">
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">HANDLE</span>
+            <label class="profile-field">
+              <span class="profile-field__label">Handle</span>
               <input
                 v-model="draft.handle"
                 type="text"
                 required
                 placeholder="@usuario"
-                class="rounded-sm border bg-transparent px-3 py-2 font-mono-tab text-[12px]"
-                :style="{ borderColor: C.border, color: C.text }"
+                class="admin-input"
+                style="font-family: 'JetBrains Mono', monospace; font-size: 12px;"
               />
             </label>
-            <label class="flex flex-col gap-1.5 md:col-span-2">
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">NOME (opcional)</span>
+            <label class="profile-field profile-modal__grid-full">
+              <span class="profile-field__label">Nome (opcional)</span>
               <input
                 v-model="draft.display_name"
                 type="text"
-                class="rounded-sm border bg-transparent px-3 py-2 text-[13px]"
-                :style="{ borderColor: C.border, color: C.text }"
+                class="admin-input"
               />
             </label>
-            <label class="flex flex-col gap-1.5 md:col-span-2">
-              <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">
-                TEMPLATE DE COMENTÁRIO (placeholders: {ticker}, {change}, {price})
+            <label class="profile-field profile-modal__grid-full">
+              <span class="profile-field__label">
+                Template de comentário
+                <span class="profile-field__hint">placeholders: {ticker}, {change}, {price}</span>
               </span>
               <textarea
                 v-model="draft.comment_template"
                 rows="4"
                 placeholder="Hoje {ticker} está {change}% e cota R$ {price}. Mais em redentia.com.br/asset/{ticker}"
-                class="rounded-sm border bg-transparent px-3 py-2 text-[13px]"
-                :style="{ borderColor: C.border, color: C.text }"
+                class="admin-input"
+                style="resize: vertical; min-height: 96px; font-family: 'JetBrains Mono', monospace; font-size: 12px;"
               />
             </label>
-            <label class="flex items-center gap-2 md:col-span-2">
-              <input v-model="draft.enabled" type="checkbox" class="size-4" />
-              <span class="text-[13px]" :style="{ color: C.text }">Ativar monitoramento</span>
+            <label class="profile-field profile-field--inline profile-modal__grid-full">
+              <input v-model="draft.enabled" type="checkbox" class="profile-field__checkbox" />
+              <span>Ativar monitoramento</span>
             </label>
           </div>
 
-          <div v-if="editorError" class="rounded-sm border px-3 py-2 text-[12px]" :style="{ borderColor: C.negative, color: C.negative }">
+          <div v-if="editorError" class="admin-error">
+            <UIcon name="i-lucide-alert-circle" class="size-4 shrink-0" />
             {{ editorError }}
           </div>
 
-          <div class="flex items-center justify-end gap-3">
-            <button type="button" class="rounded-sm border px-4 py-2 font-mono-tab text-[11px] uppercase tracking-[0.15em]" :style="{ borderColor: C.border, color: C.text }" @click="closeEditor">CANCELAR</button>
+          <div class="profile-modal__actions">
+            <button
+              type="button"
+              class="admin-btn admin-btn--ghost"
+              @click="closeEditor"
+            >
+              Cancelar
+            </button>
             <button
               type="submit"
               :disabled="saving"
-              class="rounded-sm px-4 py-2 font-mono-tab text-[11px] font-bold uppercase tracking-[0.15em] disabled:opacity-40"
-              :style="{ backgroundColor: C.primary, color: C.background }"
+              class="admin-btn admin-btn--primary"
             >
-              {{ saving ? 'SALVANDO…' : (editorMode === 'create' ? 'CRIAR' : 'SALVAR') }}
+              <UIcon
+                v-if="saving"
+                name="i-lucide-loader-2"
+                class="size-3.5 motion-safe:animate-spin"
+              />
+              {{ saving ? 'Salvando…' : (editorMode === 'create' ? 'Criar' : 'Salvar') }}
             </button>
           </div>
         </form>
@@ -197,7 +228,6 @@
 </template>
 
 <script setup lang="ts">
-import { REDENTIA_COLORS as C, REDENTIA_FONTS as F } from '~/utils/redentiaCreativeColors'
 import type { IMonitoredProfile } from '~/services/monitoredProfiles'
 
 definePageMeta({ middleware: ['admin-panel'] })
@@ -321,6 +351,106 @@ onMounted(refresh)
 </script>
 
 <style scoped>
-.font-mono-tab { font-family: 'JetBrains Mono', 'IBM Plex Mono', Menlo, monospace; font-feature-settings: 'tnum' 1; }
-textarea:focus, input:focus { outline: none !important; }
+.profile-handle {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12.5px;
+  color: var(--brand-text);
+}
+
+.admin-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--brand-negative, #ef4444) 40%, transparent);
+  background: color-mix(in srgb, var(--brand-negative, #ef4444) 8%, transparent);
+  color: var(--brand-negative, #ef4444);
+  font-size: 13px;
+}
+
+/* ============ MODAL ============ */
+.profile-modal__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 24px;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+}
+.profile-modal__panel {
+  margin: auto;
+  width: 100%;
+  max-width: 580px;
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--brand-text) 12%, transparent);
+  background: var(--brand-background);
+  overflow: hidden;
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.5);
+}
+.profile-modal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid color-mix(in srgb, var(--brand-text) 8%, transparent);
+}
+.profile-modal__form {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.profile-modal__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+@media (min-width: 520px) {
+  .profile-modal__grid { grid-template-columns: repeat(2, 1fr); }
+}
+.profile-modal__grid-full { grid-column: 1 / -1; }
+.profile-modal__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.profile-field { display: flex; flex-direction: column; gap: 6px; }
+.profile-field__label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--brand-text) 60%, transparent);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.profile-field__hint {
+  text-transform: none;
+  letter-spacing: 0.04em;
+  font-weight: 400;
+  font-size: 10px;
+  color: color-mix(in srgb, var(--brand-text) 45%, transparent);
+}
+.profile-field--inline {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--brand-text);
+}
+.profile-field__checkbox {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--brand-primary);
+  cursor: pointer;
+}
 </style>

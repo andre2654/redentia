@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import '@nuxt/ui';
+@import './admin.css';
 
 :root {
   --ui-color-background: var(--brand-background, black);

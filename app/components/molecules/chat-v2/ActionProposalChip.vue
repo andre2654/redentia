@@ -206,9 +206,14 @@ function onSkip() {
         </dl>
         <p class="text-[11px] text-muted leading-snug">{{ aff.finePrint }}</p>
         <div class="flex items-center gap-2 pt-1">
-          <UButton color="primary" size="xs" :icon="aff.icon" @click="onConfirm">
+          <button
+            type="button"
+            class="quiet-btn-primary !px-3 !py-1.5 !text-[12px]"
+            @click="onConfirm"
+          >
+            <UIcon :name="aff.icon" class="size-3.5" />
             Confirmar
-          </UButton>
+          </button>
           <UButton color="neutral" variant="ghost" size="xs" @click="onSkip">
             Pular
           </UButton>

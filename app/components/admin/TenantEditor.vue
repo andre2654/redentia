@@ -1,194 +1,237 @@
 <template>
-  <div class="mx-auto flex max-w-4xl flex-col gap-6">
-    <header class="flex items-center justify-between gap-4">
-      <div>
-        <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">
+  <div class="admin-page admin-page--narrow tenant-editor">
+    <!-- ============ HEADER ============ -->
+    <header class="admin-page__head">
+      <div class="admin-page__head-left">
+        <span class="admin-page__eyebrow">
+          <UIcon name="i-lucide-building-2" />
           {{ isNew ? 'Novo tenant' : 'Editar tenant' }}
         </span>
-        <h1 class="mt-2 text-[28px] leading-tight md:text-[36px]" :style="{ color: C.text, fontFamily: F.display }">
+        <h1 class="admin-page__title">
           {{ form.name || form.slug || 'Tenant sem nome' }}
         </h1>
+        <p class="admin-page__lead">
+          Configure brand, domínio, billing e o JSON de config completo.
+        </p>
       </div>
-      <div class="flex items-center gap-3">
+      <div class="admin-page__actions">
         <NuxtLink
           v-if="!isNew && props.initial?.id"
           :to="`/admin/tenants/${props.initial?.id}/plans`"
-          class="font-mono-tab text-[10px] uppercase tracking-[0.15em] rounded-sm border px-3 py-1.5 hover:opacity-80"
-          :style="{ borderColor: C.primary, color: C.primary }"
-        >PLANOS</NuxtLink>
+          class="admin-btn admin-btn--ghost admin-btn--sm"
+        >
+          <UIcon name="i-lucide-package" class="size-3.5" />
+          Planos
+        </NuxtLink>
         <NuxtLink
           v-if="!isNew && props.initial?.id"
           :to="`/admin/tenants/${props.initial?.id}/subscriptions`"
-          class="font-mono-tab text-[10px] uppercase tracking-[0.15em] rounded-sm border px-3 py-1.5 hover:opacity-80"
-          :style="{ borderColor: C.primary, color: C.primary }"
-        >ASSINANTES</NuxtLink>
+          class="admin-btn admin-btn--ghost admin-btn--sm"
+        >
+          <UIcon name="i-lucide-users" class="size-3.5" />
+          Assinantes
+        </NuxtLink>
         <NuxtLink
           to="/admin/tenants"
-          class="font-mono-tab text-[10px] uppercase tracking-[0.15em]"
-          :style="{ color: C.textMuted }"
-        >← VOLTAR</NuxtLink>
+          class="admin-btn admin-btn--ghost admin-btn--sm"
+        >
+          <UIcon name="i-lucide-arrow-left" class="size-3.5" />
+          Voltar
+        </NuxtLink>
       </div>
     </header>
 
-    <form class="flex flex-col gap-5" @submit.prevent="handleSubmit">
-      <!-- Main fields -->
-      <div class="grid gap-4 md:grid-cols-2">
-        <label class="flex flex-col gap-2">
-          <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">&gt; SLUG *</span>
-          <input
-            v-model="form.slug"
-            type="text"
-            required
-            pattern="[\-a-z0-9]+"
-            maxlength="60"
-            :disabled="!isNew"
-            class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none disabled:opacity-60"
-            :style="{ borderColor: C.border, color: C.text }"
-          />
-          <span v-if="!isNew" class="font-mono-tab text-[9px] uppercase tracking-[0.15em]" :style="{ color: C.textMuted }">
-            SLUG IMUTÁVEL APÓS CRIAÇÃO
-          </span>
-        </label>
-        <label class="flex flex-col gap-2">
-          <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">&gt; NOME *</span>
-          <input
-            v-model="form.name"
-            type="text"
-            required
-            maxlength="120"
-            class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none"
-            :style="{ borderColor: C.border, color: C.text }"
-          />
-        </label>
-        <label class="flex flex-col gap-2 md:col-span-2">
-          <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">&gt; DOMÍNIO CUSTOM (opcional)</span>
-          <input
-            v-model="form.domain"
-            type="text"
-            placeholder="exemplo.com.br"
-            class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none"
-            :style="{ borderColor: C.border, color: C.text }"
-          />
-        </label>
-        <label class="flex items-center gap-2 md:col-span-2">
-          <input v-model="form.is_active" type="checkbox" class="size-4" />
-          <span class="text-[13px]" :style="{ color: C.text }">Tenant ativo</span>
-        </label>
-      </div>
-
-      <!-- Billing settings — atalho UI pro config.billing JSON -->
-      <fieldset
-        class="flex flex-col gap-3 rounded-sm border p-4"
-        :style="{ borderColor: billingEnabled ? `color-mix(in srgb, ${C.primary} 32%, transparent)` : C.border, backgroundColor: C.surface }"
-      >
-        <legend class="font-mono-tab px-2 text-[10px] uppercase tracking-[0.18em]" :style="{ color: billingEnabled ? C.primary : C.textMuted }">
-          &gt; BILLING
-        </legend>
-
-        <label class="flex cursor-pointer items-center gap-2">
-          <input
-            type="checkbox"
-            class="size-4"
-            :checked="billingEnabled"
-            @change="toggleBilling(($event.target as HTMLInputElement).checked)"
-          />
-          <span class="text-[13px]" :style="{ color: C.text }">
-            Billing habilitado (pricing page ativa, paywall em /wallet e /help)
-          </span>
-        </label>
-        <p
-          v-if="!billingEnabled"
-          class="font-mono-tab text-[10px] uppercase leading-[1.5] tracking-[0.12em]"
-          :style="{ color: C.textMuted }"
-        >
-          &gt; OFF: TUDO LIBERADO PROS USERS DESSE TENANT (UNLIMITED SYNTHETIC).
-        </p>
-        <p
-          v-else
-          class="font-mono-tab text-[10px] uppercase leading-[1.5] tracking-[0.12em]"
-          :style="{ color: '#f59e0b' }"
-        >
-          &gt; ATENCAO: USERS SEM SUBSCRIPTION ATIVA SAO BOUNCEADOS PRA /pricing.
-        </p>
-
-        <div v-if="billingEnabled" class="grid gap-4 md:grid-cols-2">
-          <label class="flex flex-col gap-2">
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">
-              &gt; MOEDA
+    <!-- ============ FORM ============ -->
+    <form class="tenant-editor__form" @submit.prevent="handleSubmit">
+      <!-- Basic info -->
+      <section class="admin-section">
+        <div class="admin-section__head">
+          <div class="admin-section__head-left">
+            <span class="admin-section__eyebrow">
+              <UIcon name="i-lucide-info" />
+              Identificação
             </span>
-            <input
-              type="text"
-              :value="billingCurrency"
-              maxlength="3"
-              placeholder="BRL"
-              class="rounded-sm border bg-transparent px-3 py-2 font-mono-tab text-[12px] uppercase outline-none"
-              :style="{ borderColor: C.border, color: C.text }"
-              @change="setBillingField('currency', ($event.target as HTMLInputElement).value.toUpperCase())"
-            />
-          </label>
-          <label class="flex flex-col gap-2">
-            <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">
-              &gt; DIAS DE TRIAL DO PRO
-            </span>
-            <input
-              type="number"
-              :value="billingTrialDays"
-              min="0"
-              max="365"
-              class="rounded-sm border bg-transparent px-3 py-2 font-mono-tab text-[12px] outline-none tabular-nums"
-              :style="{ borderColor: C.border, color: C.text }"
-              @change="setBillingField('trial_days_pro', Number(($event.target as HTMLInputElement).value) || 0)"
-            />
-          </label>
+            <h2 class="admin-section__title">Slug, nome e domínio</h2>
+          </div>
         </div>
-      </fieldset>
+
+        <div class="admin-card">
+          <div class="tenant-grid">
+            <label class="tenant-field">
+              <span class="tenant-field__label">
+                Slug
+                <span class="tenant-field__required">*</span>
+              </span>
+              <input
+                v-model="form.slug"
+                type="text"
+                required
+                pattern="[\-a-z0-9]+"
+                maxlength="60"
+                :disabled="!isNew"
+                class="admin-input"
+                style="font-family: 'JetBrains Mono', monospace;"
+              />
+              <span v-if="!isNew" class="tenant-field__hint">
+                Slug imutável após criação.
+              </span>
+            </label>
+            <label class="tenant-field">
+              <span class="tenant-field__label">
+                Nome
+                <span class="tenant-field__required">*</span>
+              </span>
+              <input
+                v-model="form.name"
+                type="text"
+                required
+                maxlength="120"
+                class="admin-input"
+              />
+            </label>
+            <label class="tenant-field tenant-grid--full">
+              <span class="tenant-field__label">Domínio custom (opcional)</span>
+              <input
+                v-model="form.domain"
+                type="text"
+                placeholder="exemplo.com.br"
+                class="admin-input"
+                style="font-family: 'JetBrains Mono', monospace;"
+              />
+            </label>
+            <label class="tenant-field tenant-field--inline tenant-grid--full">
+              <input v-model="form.is_active" type="checkbox" class="tenant-field__checkbox" />
+              <span>Tenant ativo</span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- Billing -->
+      <section class="admin-section">
+        <div class="admin-section__head">
+          <div class="admin-section__head-left">
+            <span class="admin-section__eyebrow">
+              <UIcon name="i-lucide-credit-card" />
+              Billing
+            </span>
+            <h2 class="admin-section__title">Pricing page e paywall</h2>
+          </div>
+          <span
+            class="admin-badge"
+            :class="billingEnabled ? 'admin-badge--positive' : ''"
+          >
+            <span class="admin-stat__dot" :style="{ backgroundColor: billingEnabled ? 'var(--brand-positive, #10b981)' : 'currentColor' }" />
+            {{ billingEnabled ? 'Habilitado' : 'Desligado' }}
+          </span>
+        </div>
+
+        <div class="admin-card" :class="{ 'admin-card--accent': billingEnabled }">
+          <label class="tenant-field tenant-field--inline">
+            <input
+              type="checkbox"
+              class="tenant-field__checkbox"
+              :checked="billingEnabled"
+              @change="toggleBilling(($event.target as HTMLInputElement).checked)"
+            />
+            <span>Billing habilitado (pricing page ativa, paywall em /wallet e /help)</span>
+          </label>
+          <p
+            v-if="!billingEnabled"
+            class="tenant-billing__caption"
+          >
+            <UIcon name="i-lucide-info" class="size-3.5" />
+            Off: tudo liberado pros users desse tenant (unlimited synthetic).
+          </p>
+          <p
+            v-else
+            class="tenant-billing__caption tenant-billing__caption--warn"
+          >
+            <UIcon name="i-lucide-alert-triangle" class="size-3.5" />
+            Atenção: users sem subscription ativa são bouncados pra <code>/pricing</code>.
+          </p>
+
+          <div v-if="billingEnabled" class="tenant-grid tenant-billing__fields">
+            <label class="tenant-field">
+              <span class="tenant-field__label">Moeda</span>
+              <input
+                type="text"
+                :value="billingCurrency"
+                maxlength="3"
+                placeholder="BRL"
+                class="admin-input"
+                style="font-family: 'JetBrains Mono', monospace; text-transform: uppercase;"
+                @change="setBillingField('currency', ($event.target as HTMLInputElement).value.toUpperCase())"
+              />
+            </label>
+            <label class="tenant-field">
+              <span class="tenant-field__label">Dias de trial do Pro</span>
+              <input
+                type="number"
+                :value="billingTrialDays"
+                min="0"
+                max="365"
+                class="admin-input"
+                style="font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums;"
+                @change="setBillingField('trial_days_pro', Number(($event.target as HTMLInputElement).value) || 0)"
+              />
+            </label>
+          </div>
+        </div>
+      </section>
 
       <!-- Config JSON -->
-      <div class="flex flex-col gap-2">
-        <div class="flex items-baseline justify-between">
-          <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.textMuted }">
-            &gt; CONFIG (JSON)
-          </span>
-          <span v-if="configError" class="font-mono-tab text-[10px]" :style="{ color: C.negative }">
+      <section class="admin-section">
+        <div class="admin-section__head">
+          <div class="admin-section__head-left">
+            <span class="admin-section__eyebrow">
+              <UIcon name="i-lucide-braces" />
+              Config (JSON)
+            </span>
+            <h2 class="admin-section__title">Brand config completo</h2>
+          </div>
+          <span v-if="configError" class="admin-badge admin-badge--negative">
+            <UIcon name="i-lucide-alert-circle" class="size-3" />
             {{ configError }}
           </span>
-          <span v-else-if="configValidAt" class="font-mono-tab text-[10px]" :style="{ color: C.positive }">
-            ✓ JSON VÁLIDO
+          <span v-else-if="configValidAt" class="admin-badge admin-badge--positive">
+            <UIcon name="i-lucide-check" class="size-3" />
+            JSON válido
           </span>
         </div>
-        <textarea
-          v-model="configText"
-          rows="20"
-          class="rounded-sm border bg-transparent px-3 py-2 font-mono-tab text-[12px] outline-none"
-          :style="{
-            borderColor: configError ? C.negative : C.border,
-            color: C.text,
-            backgroundColor: C.surface,
-          }"
-          spellcheck="false"
-          @input="validateConfig"
-        />
-        <p class="font-mono-tab text-[10px] uppercase leading-[1.5] tracking-[0.12em]" :style="{ color: C.textMuted }">
-          &gt; CAMPOS OBRIGATÓRIOS: COLORS.PRIMARY, COLORS.BACKGROUND, COLORS.TEXT, FONT.FAMILY. DEMAIS SÃO OPCIONAIS.
-        </p>
-      </div>
 
-      <!-- Error box -->
-      <div v-if="error" class="rounded-sm border px-4 py-3 text-[13px]" :style="{ borderColor: C.negative, color: C.negative }">
+        <div class="admin-card admin-card__padless">
+          <textarea
+            v-model="configText"
+            rows="20"
+            class="tenant-config__textarea"
+            :class="{ 'tenant-config__textarea--error': configError }"
+            spellcheck="false"
+            @input="validateConfig"
+          />
+        </div>
+        <p class="tenant-billing__caption">
+          <UIcon name="i-lucide-info" class="size-3.5" />
+          Campos obrigatórios: <code>colors.primary</code>, <code>colors.background</code>, <code>colors.text</code>, <code>font.family</code>. Demais são opcionais.
+        </p>
+      </section>
+
+      <!-- Error -->
+      <div v-if="error" class="admin-error">
+        <UIcon name="i-lucide-alert-circle" class="size-4 shrink-0" />
         {{ error }}
       </div>
 
       <!-- Actions -->
-      <div class="flex items-center justify-end gap-3">
+      <div class="tenant-editor__actions">
         <button
           type="submit"
           :disabled="submitting || !!configError"
-          class="inline-flex items-center gap-2 rounded-sm px-5 py-2.5 font-mono-tab text-[11px] font-bold uppercase tracking-[0.15em] transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
-          :style="{ backgroundColor: C.primary, color: C.background }"
+          class="admin-btn admin-btn--primary"
         >
           <UIcon v-if="submitting" name="i-lucide-loader-2" class="size-4 motion-safe:animate-spin" />
           <UIcon v-else :name="isNew ? 'i-lucide-plus' : 'i-lucide-save'" class="size-4" />
-          {{ isNew ? '[CRIAR TENANT]' : '[SALVAR ALTERAÇÕES]' }}
+          {{ isNew ? 'Criar tenant' : 'Salvar alterações' }}
         </button>
       </div>
     </form>
@@ -197,7 +240,6 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { REDENTIA_COLORS as C, REDENTIA_FONTS as F } from '~/utils/redentiaCreativeColors'
 
 const props = defineProps<{ initial: any; isNew: boolean }>()
 const emit = defineEmits<{ (e: 'saved', tenant: any): void }>()
@@ -217,10 +259,6 @@ const configValidAt = ref<number | null>(Date.now())
 const submitting = ref(false)
 const error = ref<string | null>(null)
 
-// ===== BILLING UI =====
-// Os campos billing.enabled / currency / trial_days_pro tem UI propria
-// mas continuam vivendo no config JSON. As 3 funcoes abaixo fazem
-// parse → mutate → stringify pra manter a textarea como source of truth.
 const parsedConfig = computed(() => {
   try { return JSON.parse(configText.value) || {} } catch { return {} }
 })
@@ -273,7 +311,6 @@ async function handleSubmit() {
       is_active: form.is_active,
       config: JSON.parse(configText.value),
     }
-    // slug is immutable on update per backend rule
     if (!props.isNew) delete body.slug
 
     const resp = props.isNew
@@ -294,6 +331,108 @@ async function handleSubmit() {
 </script>
 
 <style scoped>
-.font-mono-tab { font-family: 'JetBrains Mono', 'IBM Plex Mono', Menlo, monospace; font-feature-settings: 'tnum' 1; }
-textarea:focus { outline: none !important; }
+.tenant-editor__form {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+.tenant-editor__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.tenant-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+@media (min-width: 600px) {
+  .tenant-grid { grid-template-columns: repeat(2, 1fr); }
+}
+.tenant-grid--full { grid-column: 1 / -1; }
+
+.tenant-field { display: flex; flex-direction: column; gap: 6px; }
+.tenant-field__label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--brand-text) 60%, transparent);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.tenant-field__required {
+  color: var(--brand-primary);
+  font-size: 11px;
+  letter-spacing: 0;
+}
+.tenant-field__hint {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  letter-spacing: 0.04em;
+  color: color-mix(in srgb, var(--brand-text) 50%, transparent);
+}
+.tenant-field--inline {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--brand-text);
+}
+.tenant-field__checkbox {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--brand-primary);
+  cursor: pointer;
+}
+
+.tenant-billing__caption {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--brand-text) 60%, transparent);
+}
+.tenant-billing__caption--warn {
+  color: #f59e0b;
+}
+.tenant-billing__caption code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--brand-text) 6%, transparent);
+  color: var(--brand-text);
+}
+.tenant-billing__fields {
+  margin-top: 12px;
+}
+
+.tenant-config__textarea {
+  width: 100%;
+  display: block;
+  border: 0;
+  background: color-mix(in srgb, var(--brand-text) 1.5%, transparent);
+  color: var(--brand-text);
+  padding: 14px 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  line-height: 1.55;
+  outline: none;
+  resize: vertical;
+  min-height: 360px;
+  border-radius: 11px;
+}
+.tenant-config__textarea--error {
+  border: 1px solid color-mix(in srgb, var(--brand-negative, #ef4444) 50%, transparent);
+}
+.tenant-config__textarea:focus {
+  background: color-mix(in srgb, var(--brand-text) 3%, transparent);
+}
 </style>

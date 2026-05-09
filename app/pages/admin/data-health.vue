@@ -1,34 +1,43 @@
 <template>
   <NuxtLayout name="admin-panel">
-    <div class="mx-auto flex max-w-6xl flex-col gap-8">
-      <header class="flex flex-col gap-2">
-        <span class="font-mono-tab text-[10px] uppercase tracking-[0.2em]" :style="{ color: C.primary }">
-          Saúde dos dados
-        </span>
-        <h1 class="text-[32px] leading-tight md:text-[40px]" :style="{ color: C.text, fontFamily: F.display }">
-          Saúde dos pipelines
-        </h1>
-        <p class="max-w-2xl text-[14px] leading-[1.6]" :style="{ color: C.textMuted }">
-          Visão operacional do scraping de fundamentos, Tesouro Direto e news feed.
-          Atualizado em {{ generatedAtLabel }}.
-        </p>
-        <button
-          aria-label="Atualizar dados"
-          type="button"
-          class="mt-1 w-fit border px-3 py-1 font-mono-tab text-[10px] uppercase tracking-[0.18em] transition-opacity hover:opacity-75"
-          :style="{ borderColor: C.primary, color: C.primary }"
-          :disabled="loading"
-          @click="refresh()"
-        >
-          <UIcon :name="loading ? 'i-lucide-loader-2' : 'i-lucide-refresh-cw'" class="mr-1 h-3 w-3" :class="{ 'motion-safe:animate-spin': loading }" />
-          ATUALIZAR
-        </button>
+    <div class="admin-page">
+      <header class="admin-page__head">
+        <div class="admin-page__head-left">
+          <span class="admin-page__eyebrow">
+            <UIcon name="i-lucide-activity" />
+            Saúde dos dados
+          </span>
+          <h1 class="admin-page__title">Saúde dos pipelines</h1>
+          <p class="admin-page__lead">
+            Visão operacional do scraping de fundamentos, Tesouro Direto e news feed.
+            Atualizado em {{ generatedAtLabel }}.
+          </p>
+        </div>
+        <div class="admin-page__actions">
+          <button
+            aria-label="Atualizar dados"
+            type="button"
+            class="admin-btn admin-btn--ghost admin-btn--sm"
+            style="color: var(--brand-primary); border-color: color-mix(in srgb, var(--brand-primary) 35%, transparent);"
+            :disabled="loading"
+            @click="refresh()"
+          >
+            <UIcon
+              :name="loading ? 'i-lucide-loader-2' : 'i-lucide-refresh-cw'"
+              class="size-3.5"
+              :class="{ 'motion-safe:animate-spin': loading }"
+            />
+            Atualizar
+          </button>
+        </div>
       </header>
 
       <!-- Loading state -->
-      <div v-if="loading && !data" class="flex items-center gap-2 text-[12px]" :style="{ color: C.textMuted }">
-        <UIcon name="i-lucide-loader-2" class="h-4 w-4 motion-safe:animate-spin" />
-        Carregando dados...
+      <div v-if="loading && !data" class="admin-loading">
+        <span class="admin-loading__icon">
+          <UIcon name="i-lucide-loader-2" class="size-4 motion-safe:animate-spin" />
+        </span>
+        <span class="admin-loading__title">Carregando saúde dos pipelines…</span>
       </div>
 
       <template v-else-if="data">

@@ -1,7 +1,12 @@
 <template>
   <NuxtLayout name="admin-panel">
-    <div v-if="loading" class="flex items-center gap-3 text-[14px]" :style="{ color: C.textMuted }">
-      <UIcon name="i-lucide-loader-2" class="size-5 motion-safe:animate-spin" /> Carregando tenant…
+    <div v-if="loading" class="admin-page admin-page--narrow">
+      <div class="admin-loading">
+        <span class="admin-loading__icon">
+          <UIcon name="i-lucide-loader-2" class="size-4 motion-safe:animate-spin" />
+        </span>
+        <span class="admin-loading__title">Carregando tenant…</span>
+      </div>
     </div>
     <AdminTenantEditor
       v-else-if="tenant"
@@ -9,15 +14,19 @@
       :is-new="false"
       @saved="onSaved"
     />
-    <div v-else class="rounded-sm border p-6 text-center" :style="{ borderColor: C.border, color: C.textMuted }">
-      Tenant não encontrado.
+    <div v-else class="admin-page admin-page--narrow">
+      <div class="admin-empty">
+        <span class="admin-empty__icon">
+          <UIcon name="i-lucide-building" class="size-4" />
+        </span>
+        <span class="admin-empty__title">Tenant não encontrado</span>
+        <span class="admin-empty__sub">O ID solicitado não existe ou foi removido.</span>
+      </div>
     </div>
   </NuxtLayout>
 </template>
 
 <script setup lang="ts">
-import { REDENTIA_COLORS as C } from '~/utils/redentiaCreativeColors'
-
 definePageMeta({ middleware: ['admin-panel'] })
 
 const route = useRoute()

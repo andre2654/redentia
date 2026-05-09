@@ -1,275 +1,260 @@
 <!--
   /admin/users — platform users listing.
 
-  Same visual contract as /admin/leads and /admin/tenants. The role
-  column is interactive (admin / advisor / investor) so the panel
-  can promote/demote inline without a separate detail screen. The
-  approval column shows up only for advisors (the only role with a
-  pending state today); investors and admins render a dash.
+  Visual: usa o admin design system (assets/css/admin.css). Header com
+  eyebrow + title + stat chips a direita. Toolbar de filtros num bloco
+  unico. Tabela em card com hover/zebra. Selects de papel/aprovacao
+  mantem cor reativa pra escanear o status num pisco.
 
-  Self-demote is blocked server-side; we also disable the row's
-  role select for the active admin to make the affordance honest.
+  A coluna de papel e interativa (admin/advisor/investor) pra promover
+  ou demover sem detail screen. Self-demote bloqueado server-side e
+  tambem desabilitado no UI pra honestidade.
 -->
 <template>
   <NuxtLayout name="admin-panel">
-    <div class="mx-auto flex max-w-6xl flex-col gap-6">
-      <header class="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <span class="font-mono-tab text-[10px] uppercase tracking-[0.18em]" :style="{ color: C.primary }">Usuários</span>
-          <h1 class="mt-2 text-[28px] leading-tight md:text-[36px]" :style="{ color: C.text, fontFamily: F.display }">
-            Pessoas na plataforma.
-          </h1>
+    <div class="admin-page">
+      <!-- ============ HEADER ============ -->
+      <header class="admin-page__head">
+        <div class="admin-page__head-left">
+          <span class="admin-page__eyebrow">
+            <UIcon name="i-lucide-users" />
+            Usuários
+          </span>
+          <h1 class="admin-page__title">Pessoas na plataforma.</h1>
+          <p class="admin-page__lead">
+            Cadastros, papéis, aprovação de assessores e tração de carteira/raio-X.
+          </p>
         </div>
-        <div class="flex flex-wrap items-center gap-2">
-          <span
-            class="inline-flex items-center gap-2 rounded-sm border px-3 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
-            :style="{ borderColor: C.border, color: C.textMuted }"
-          >
-            <span class="size-1.5 rounded-full" :style="{ backgroundColor: C.primary }" />
-            {{ stats?.total ?? 0 }} total
+        <div class="admin-page__actions">
+          <span class="admin-stat">
+            <span class="admin-stat__dot" />
+            <span class="admin-stat__value">{{ stats?.total ?? 0 }}</span>
+            total
             <template v-if="stats">
-              · +{{ stats.last_7d }} em 7d
+              <span class="admin-stat__sep" />
+              <span class="admin-stat__value">+{{ stats.last_7d }}</span>
+              em 7d
             </template>
           </span>
-          <span
-            v-if="stats && stats.pendingApproval > 0"
-            class="inline-flex items-center gap-2 rounded-sm border px-3 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
-            :style="{ borderColor: C.primary, color: C.primary }"
-          >
+          <span v-if="stats && stats.pendingApproval > 0" class="admin-stat admin-stat--accent">
             <UIcon name="i-lucide-clock" class="size-3" />
-            {{ stats.pendingApproval }} aguardando aprovação
+            <span class="admin-stat__value">{{ stats.pendingApproval }}</span>
+            aguardando
           </span>
-          <!-- AUM: soma de todos os portfolios da plataforma. Mostra
-               valor + quantidade de investidores ativos contribuindo. -->
           <span
             v-if="stats && (stats.aum ?? 0) > 0"
-            class="inline-flex items-center gap-2 rounded-sm border px-3 py-1.5 font-mono-tab text-[10px] uppercase tracking-[0.15em]"
-            :style="{ borderColor: C.positive, color: C.positive, backgroundColor: `${C.positive}10` }"
+            class="admin-stat admin-stat--positive"
             title="Assets Under Management — soma de todas as carteiras"
           >
             <UIcon name="i-lucide-landmark" class="size-3" />
-            <span class="font-semibold tabular-nums" style="letter-spacing: 0;">
-              {{ formatBRL(stats.aum ?? 0) }}
-            </span>
-            <span :style="{ color: C.textMuted }">sob gestão</span>
-            <span v-if="stats.usersWithValue" class="border-l pl-2" :style="{ borderColor: `${C.positive}40`, color: C.textMuted }">
-              {{ stats.usersWithValue }} {{ stats.usersWithValue === 1 ? 'investidor' : 'investidores' }}
-            </span>
+            <span class="admin-stat__value">{{ formatBRL(stats.aum ?? 0) }}</span>
+            sob gestão
+            <template v-if="stats.usersWithValue">
+              <span class="admin-stat__sep" />
+              <span class="admin-stat__value">{{ stats.usersWithValue }}</span>
+              {{ stats.usersWithValue === 1 ? 'investidor' : 'investidores' }}
+            </template>
           </span>
         </div>
       </header>
 
-      <!-- Filters -->
-      <div class="flex flex-wrap items-center gap-3">
+      <!-- ============ TOOLBAR ============ -->
+      <div class="admin-toolbar">
         <input
           v-model="search"
           type="text"
           placeholder="Buscar por nome, email, login ou celular..."
-          class="flex-1 min-w-[220px] rounded-sm border bg-transparent px-4 py-2 text-[13px] outline-none transition-colors"
-          :style="{ borderColor: C.border, color: C.text }"
+          class="admin-input admin-input--flex"
           @input="debouncedRefresh"
         />
-        <select
-          v-model="roleFilter"
-          class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none"
-          :style="{ borderColor: C.border, color: C.text, backgroundColor: C.surface }"
-          @change="refresh"
-        >
-          <option value="">Todos os papéis</option>
-          <option value="admin">Admins</option>
-          <option value="advisor">Assessores</option>
-          <option value="investor">Investidores</option>
-        </select>
-        <select
-          v-model="approvalFilter"
-          class="rounded-sm border bg-transparent px-3 py-2 text-[13px] outline-none"
-          :style="{ borderColor: C.border, color: C.text, backgroundColor: C.surface }"
-          @change="refresh"
-        >
-          <option value="">Qualquer aprovação</option>
-          <option value="pending">Pendentes</option>
-          <option value="approved">Aprovados</option>
-          <option value="rejected">Rejeitados</option>
-        </select>
+        <div class="admin-toolbar__group">
+          <select v-model="roleFilter" class="admin-select" @change="refresh">
+            <option value="">Todos os papéis</option>
+            <option value="admin">Admins</option>
+            <option value="advisor">Assessores</option>
+            <option value="investor">Investidores</option>
+          </select>
+          <select v-model="approvalFilter" class="admin-select" @change="refresh">
+            <option value="">Qualquer aprovação</option>
+            <option value="pending">Pendentes</option>
+            <option value="approved">Aprovados</option>
+            <option value="rejected">Rejeitados</option>
+          </select>
+        </div>
       </div>
 
-      <!-- Table -->
-      <div class="overflow-hidden rounded-sm border" :style="{ borderColor: C.border }">
-        <table class="w-full text-left">
-          <caption class="sr-only">Lista de usuários da plataforma</caption>
-          <thead
-            class="font-mono-tab text-[10px] uppercase tracking-[0.18em]"
-            :style="{ color: C.textMuted, backgroundColor: C.surface }"
-          >
-            <tr>
-              <th scope="col" class="px-4 py-3">CADASTRADO</th>
-              <th scope="col" class="px-4 py-3">NOME / EMAIL</th>
-              <th scope="col" class="px-4 py-3">LOGIN / CELULAR</th>
-              <th scope="col" class="px-4 py-3 text-center">PAPEL</th>
-              <th scope="col" class="px-4 py-3 text-center">APROVAÇÃO</th>
-              <th scope="col" class="px-4 py-3 text-center">PROGRESSO</th>
-              <th scope="col" class="px-4 py-3 text-right">CARTEIRA</th>
-              <th scope="col" class="px-4 py-3">ASSESSOR</th>
-              <th scope="col" class="px-4 py-3 text-right">AÇÕES</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-if="loading">
-              <td colspan="9" class="p-8 text-center" :style="{ color: C.textMuted }">
-                <UIcon name="i-lucide-loader-2" class="size-5 motion-safe:animate-spin" />
-              </td>
-            </tr>
-            <tr v-else-if="items.length === 0">
-              <td colspan="9" class="p-8 text-center text-[13px]" :style="{ color: C.textMuted }">
-                Nenhum usuário encontrado com esses filtros.
-              </td>
-            </tr>
-            <tr
-              v-for="user in items"
-              v-else
-              :key="user.id"
-              class="border-t transition-colors"
-              :style="{ borderColor: C.border, backgroundColor: C.surface }"
-            >
-              <td class="px-4 py-3 font-mono-tab text-[11px] tabular-nums" :style="{ color: C.textMuted }">
-                {{ formatDate(user.created_at) }}
-              </td>
-              <th scope="row" class="px-4 py-3 text-left font-normal" :style="{ color: C.text }">
-                <div class="flex flex-col">
-                  <span class="text-[13px] font-medium">{{ user.name }}</span>
-                  <span class="font-mono-tab text-[11px]" :style="{ color: C.textMuted }">{{ user.email }}</span>
-                </div>
-              </th>
-              <td class="px-4 py-3">
-                <div class="flex flex-col">
-                  <span class="font-mono-tab text-[11px]" :style="{ color: C.text }">{{ user.login || '-' }}</span>
-                  <span class="font-mono-tab text-[11px]" :style="{ color: C.textMuted }">{{ user.celular || '-' }}</span>
-                </div>
-              </td>
-              <td class="px-4 py-3 text-center">
-                <select
-                  :value="user.role"
-                  :disabled="busyIds.has(user.id) || isSelf(user)"
-                  :title="isSelf(user) ? 'Você não pode alterar o próprio papel' : 'Alterar papel'"
-                  class="rounded-sm border bg-transparent px-2 py-1 font-mono-tab text-[10px] uppercase tracking-[0.15em] outline-none transition-colors disabled:opacity-50"
-                  :style="roleSelectStyle(user.role)"
-                  @change="(event) => handleRoleChange(user, event)"
-                >
-                  <option value="admin">ADMIN</option>
-                  <option value="advisor">ASSESSOR</option>
-                  <option value="investor">INVESTIDOR</option>
-                </select>
-              </td>
-              <td class="px-4 py-3 text-center">
-                <template v-if="user.role === 'advisor'">
+      <!-- ============ TABLE ============ -->
+      <div class="admin-table">
+        <div class="admin-table__scroll">
+          <table>
+            <caption class="sr-only">Lista de usuários da plataforma</caption>
+            <thead>
+              <tr>
+                <th scope="col">Cadastrado</th>
+                <th scope="col">Nome / Email</th>
+                <th scope="col">Login / Celular</th>
+                <th scope="col" class="admin-table__center">Papel</th>
+                <th scope="col" class="admin-table__center">Aprovação</th>
+                <th scope="col" class="admin-table__center">Progresso</th>
+                <th scope="col" class="admin-table__right">Carteira</th>
+                <th scope="col">Assessor</th>
+                <th scope="col" class="admin-table__right">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-if="loading">
+                <td colspan="9">
+                  <div class="admin-loading">
+                    <span class="admin-loading__icon">
+                      <UIcon name="i-lucide-loader-2" class="size-4 motion-safe:animate-spin" />
+                    </span>
+                    <span class="admin-loading__title">Carregando usuários…</span>
+                  </div>
+                </td>
+              </tr>
+              <tr v-else-if="items.length === 0">
+                <td colspan="9">
+                  <div class="admin-empty">
+                    <span class="admin-empty__icon">
+                      <UIcon name="i-lucide-search-x" class="size-4" />
+                    </span>
+                    <span class="admin-empty__title">Nenhum usuário encontrado</span>
+                    <span class="admin-empty__sub">Tente outros filtros ou limpe a busca.</span>
+                  </div>
+                </td>
+              </tr>
+              <tr v-for="user in items" v-else :key="user.id">
+                <td class="admin-table__cell-muted">
+                  {{ formatDate(user.created_at) }}
+                </td>
+                <th scope="row">
+                  <div class="admin-table__primary">
+                    <span class="admin-table__primary-name">{{ user.name }}</span>
+                    <span class="admin-table__primary-sub">{{ user.email }}</span>
+                  </div>
+                </th>
+                <td>
+                  <div class="admin-table__primary">
+                    <span class="admin-table__cell-num" style="font-size: 12px;">{{ user.login || '—' }}</span>
+                    <span class="admin-table__cell-muted">{{ user.celular || '—' }}</span>
+                  </div>
+                </td>
+                <td class="admin-table__center">
                   <select
+                    :value="user.role"
+                    :disabled="busyIds.has(user.id) || isSelf(user)"
+                    :title="isSelf(user) ? 'Você não pode alterar o próprio papel' : 'Alterar papel'"
+                    class="admin-pill-select"
+                    :data-tone="user.role"
+                    @change="(event) => handleRoleChange(user, event)"
+                  >
+                    <option value="admin">ADMIN</option>
+                    <option value="advisor">ASSESSOR</option>
+                    <option value="investor">INVESTIDOR</option>
+                  </select>
+                </td>
+                <td class="admin-table__center">
+                  <select
+                    v-if="user.role === 'advisor'"
                     :value="user.approval_status ?? 'pending'"
                     :disabled="busyIds.has(user.id)"
-                    class="rounded-sm border bg-transparent px-2 py-1 font-mono-tab text-[10px] uppercase tracking-[0.15em] outline-none transition-colors disabled:opacity-50"
-                    :style="approvalSelectStyle(user.approval_status)"
+                    class="admin-pill-select"
+                    :data-tone="user.approval_status ?? 'pending'"
                     @change="(event) => handleApprovalChange(user, event)"
                   >
                     <option value="pending">PENDENTE</option>
                     <option value="approved">APROVADO</option>
                     <option value="rejected">REJEITADO</option>
                   </select>
-                </template>
-                <span v-else :style="{ color: C.textMuted }">-</span>
-              </td>
-              <td class="px-4 py-3">
-                <!-- Two compact chips: "Carteira" + "Raio-X". Filled
-                     when the user has data (positive green), outlined
-                     when not yet (muted border). Lets the admin scan
-                     the funnel: signup → carteira → raio-x. -->
-                <div class="flex items-center justify-center gap-1.5">
-                  <span
-                    class="inline-flex items-center gap-1 rounded-sm border px-1.5 py-0.5 font-mono-tab text-[9px] uppercase tracking-[0.12em]"
-                    :title="user.has_portfolio ? 'Carteira preenchida' : 'Sem carteira'"
-                    :style="user.has_portfolio
-                      ? { borderColor: C.positive, color: C.positive, backgroundColor: `${C.positive}10` }
-                      : { borderColor: C.border, color: C.textMuted }"
-                  >
-                    <UIcon :name="user.has_portfolio ? 'i-lucide-check' : 'i-lucide-minus'" class="size-3" />
-                    Carteira
+                  <span v-else class="admin-table__cell-muted">—</span>
+                </td>
+                <td>
+                  <div class="user-progress-chips">
+                    <span
+                      class="admin-badge"
+                      :class="user.has_portfolio ? 'admin-badge--positive' : ''"
+                      :title="user.has_portfolio ? 'Carteira preenchida' : 'Sem carteira'"
+                    >
+                      <UIcon :name="user.has_portfolio ? 'i-lucide-check' : 'i-lucide-minus'" class="size-3" />
+                      Carteira
+                    </span>
+                    <span
+                      class="admin-badge"
+                      :class="user.has_xray ? 'admin-badge--positive' : ''"
+                      :title="user.has_xray ? 'Raio-X gerado' : 'Sem raio-X'"
+                    >
+                      <UIcon :name="user.has_xray ? 'i-lucide-check' : 'i-lucide-minus'" class="size-3" />
+                      Raio-X
+                    </span>
+                  </div>
+                </td>
+                <td class="admin-table__right admin-table__cell-num">
+                  <span v-if="(user.portfolio_value ?? 0) > 0" :title="`Valor de mercado das posições`">
+                    {{ formatBRL(user.portfolio_value!) }}
                   </span>
-                  <span
-                    class="inline-flex items-center gap-1 rounded-sm border px-1.5 py-0.5 font-mono-tab text-[9px] uppercase tracking-[0.12em]"
-                    :title="user.has_xray ? 'Raio-X gerado' : 'Sem raio-X'"
-                    :style="user.has_xray
-                      ? { borderColor: C.positive, color: C.positive, backgroundColor: `${C.positive}10` }
-                      : { borderColor: C.border, color: C.textMuted }"
+                  <span v-else class="admin-table__cell-muted">—</span>
+                </td>
+                <td>
+                  <template v-if="user.advisor">
+                    <span class="admin-table__primary-name" style="font-size: 12.5px;">{{ user.advisor.name }}</span>
+                    <span v-if="user.advisor.advisor_code" class="admin-table__cell-muted ml-1">
+                      ({{ user.advisor.advisor_code }})
+                    </span>
+                  </template>
+                  <span v-else class="admin-table__cell-muted">—</span>
+                </td>
+                <td class="admin-table__right">
+                  <button
+                    v-if="!isSelf(user) && user.role !== 'admin'"
+                    type="button"
+                    :disabled="busyIds.has(user.id)"
+                    class="admin-btn admin-btn--ghost admin-btn--xs"
+                    style="color: var(--brand-primary); border-color: color-mix(in srgb, var(--brand-primary) 35%, transparent);"
+                    :title="`Entrar na plataforma como ${user.name}`"
+                    @click="handleImpersonate(user)"
                   >
-                    <UIcon :name="user.has_xray ? 'i-lucide-check' : 'i-lucide-minus'" class="size-3" />
-                    Raio-X
-                  </span>
-                </div>
-              </td>
-              <td class="px-4 py-3 text-right font-mono-tab text-[12px] tabular-nums">
-                <span
-                  v-if="(user.portfolio_value ?? 0) > 0"
-                  :style="{ color: C.text }"
-                  :title="`Valor de mercado das ${user.has_portfolio ? '' : '(sem)'} posições`"
-                >{{ formatBRL(user.portfolio_value!) }}</span>
-                <span v-else :style="{ color: C.textMuted }">—</span>
-              </td>
-              <td class="px-4 py-3 font-mono-tab text-[11px]" :style="{ color: C.textMuted }">
-                <template v-if="user.advisor">
-                  <span :style="{ color: C.text }">{{ user.advisor.name }}</span>
-                  <span v-if="user.advisor.advisor_code" class="ml-1">({{ user.advisor.advisor_code }})</span>
-                </template>
-                <span v-else>-</span>
-              </td>
-              <td class="px-4 py-3 text-right">
-                <!-- Impersonate — opens the platform as this user. We
-                     hide the button for the current admin (own row) and
-                     for other admins (server also rejects, but UI
-                     should match). Hover tooltip clarifies what
-                     happens; confirm dialog gates the actual switch. -->
-                <button
-                  v-if="!isSelf(user) && user.role !== 'admin'"
-                  type="button"
-                  :disabled="busyIds.has(user.id)"
-                  class="inline-flex items-center gap-1.5 rounded-sm border px-2.5 py-1 font-mono-tab text-[10px] uppercase tracking-[0.15em] transition-colors hover:opacity-80 disabled:opacity-50"
-                  :style="{ borderColor: C.primary, color: C.primary }"
-                  :title="`Entrar na plataforma como ${user.name}`"
-                  @click="handleImpersonate(user)"
-                >
-                  <UIcon name="i-lucide-log-in" class="size-3" />
-                  Login como
-                </button>
-                <span v-else :style="{ color: C.textMuted }">-</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Pagination -->
-      <div
-        v-if="meta && meta.last_page > 1"
-        class="flex items-center justify-between font-mono-tab text-[11px]"
-        :style="{ color: C.textMuted }"
-      >
-        <span>Página {{ meta.current_page }} de {{ meta.last_page }} · {{ meta.total }} resultados</span>
-        <div class="inline-flex gap-2">
-          <button
-            type="button"
-            class="rounded-sm border px-3 py-1.5 uppercase tracking-[0.15em] transition-colors hover:opacity-80 disabled:opacity-40"
-            :style="{ borderColor: C.border, color: C.text }"
-            :disabled="meta.current_page <= 1 || loading"
-            @click="changePage(meta.current_page - 1)"
-          >Anterior</button>
-          <button
-            type="button"
-            class="rounded-sm border px-3 py-1.5 uppercase tracking-[0.15em] transition-colors hover:opacity-80 disabled:opacity-40"
-            :style="{ borderColor: C.border, color: C.text }"
-            :disabled="meta.current_page >= meta.last_page || loading"
-            @click="changePage(meta.current_page + 1)"
-          >Próxima</button>
+                    <UIcon name="i-lucide-log-in" class="size-3" />
+                    Login como
+                  </button>
+                  <span v-else class="admin-table__cell-muted">—</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
-      <div v-if="error" class="rounded-sm border px-4 py-3 text-[13px]" :style="{ borderColor: C.negative, color: C.negative }">
+      <!-- ============ PAGINATION ============ -->
+      <div v-if="meta && meta.last_page > 1" class="admin-pagination">
+        <span class="admin-pagination__info">
+          Página <strong>{{ meta.current_page }}</strong> de {{ meta.last_page }}
+          <span class="admin-stat__sep" />
+          <strong>{{ meta.total }}</strong> resultados
+        </span>
+        <div class="admin-actions">
+          <button
+            type="button"
+            class="admin-btn admin-btn--ghost admin-btn--sm"
+            :disabled="meta.current_page <= 1 || loading"
+            @click="changePage(meta.current_page - 1)"
+          >
+            <UIcon name="i-lucide-chevron-left" class="size-3.5" />
+            Anterior
+          </button>
+          <button
+            type="button"
+            class="admin-btn admin-btn--ghost admin-btn--sm"
+            :disabled="meta.current_page >= meta.last_page || loading"
+            @click="changePage(meta.current_page + 1)"
+          >
+            Próxima
+            <UIcon name="i-lucide-chevron-right" class="size-3.5" />
+          </button>
+        </div>
+      </div>
+
+      <div v-if="error" class="admin-error">
+        <UIcon name="i-lucide-alert-circle" class="size-4 shrink-0" />
         {{ error }}
       </div>
     </div>
@@ -277,7 +262,6 @@
 </template>
 
 <script setup lang="ts">
-import { REDENTIA_COLORS as C, REDENTIA_FONTS as F } from '~/utils/redentiaCreativeColors'
 import type { IAdminUser, IUserStats, UserRole, ApprovalStatus } from '~/types/admin-user'
 
 definePageMeta({ middleware: ['admin-panel'] })
@@ -297,9 +281,6 @@ const approvalFilter = ref<'' | ApprovalStatus>('')
 const page = ref(1)
 
 const busyIds = reactive(new Set<number>())
-// `auth.me.id` is normalised to a string by the auth store; the
-// user list comes back with numeric ids straight from the DB. We
-// compare as strings so the self-demote guard works regardless.
 const currentUserId = computed<string | null>(() => auth.me?.id ?? null)
 function isSelf(user: IAdminUser): boolean {
   return currentUserId.value !== null && String(user.id) === currentUserId.value
@@ -357,22 +338,12 @@ async function handleRoleChange(user: IAdminUser, event: Event) {
   } catch (e) {
     const err = e as { data?: { message?: string }; message?: string }
     error.value = err?.data?.message || err?.message || 'Erro ao atualizar papel.'
-    // Revert the visible select to the previous role on failure.
     target.value = user.role
   } finally {
     busyIds.delete(user.id)
   }
 }
 
-/**
- * Impersonate flow:
- *   1. Confirm with the admin (this is irreversible without a manual
- *      logout + re-login because the admin token is overwritten).
- *   2. Stash the current admin token in `auth:admin_token` cookie so
- *      a future "voltar a ser admin" button can restore it.
- *   3. Call backend → swap token → fetch new profile → push("/")
- *      so the platform mounts as the impersonated user.
- */
 const router = useRouter()
 async function handleImpersonate(user: IAdminUser) {
   if (busyIds.has(user.id)) return
@@ -390,8 +361,6 @@ async function handleImpersonate(user: IAdminUser) {
       error.value = 'Token de impersonate não recebido.'
       return
     }
-    // Stash the admin's own token before swap. Stored in a cookie
-    // (not localStorage) so SSR middlewares see it on the next nav.
     if (auth.token) {
       const adminCookie = useCookie<string | null>('auth:admin_token', { maxAge: 3600 * 8 })
       adminCookie.value = auth.token
@@ -399,7 +368,6 @@ async function handleImpersonate(user: IAdminUser) {
     auth.addToken(resp.access_token)
     await auth.fetchProfile()
     showSuccessNotification('Login efetuado', `Você está como ${user.name}.`)
-    // Send to root so the platform layout (not admin layout) mounts.
     setTimeout(() => router.push('/'), 200)
   } catch (e) {
     const err = e as { data?: { message?: string }; message?: string }
@@ -427,39 +395,12 @@ async function handleApprovalChange(user: IAdminUser, event: Event) {
   }
 }
 
-function roleSelectStyle(role: UserRole) {
-  // admin = primary amber, advisor = positive cyan, investor = neutral.
-  // Communicates "elevated privilege" without leaning on red.
-  const map: Record<UserRole, { borderColor: string; color: string }> = {
-    admin: { borderColor: C.primary, color: C.primary },
-    advisor: { borderColor: C.positive, color: C.positive },
-    investor: { borderColor: C.border, color: C.text },
-  }
-  return { ...map[role], backgroundColor: 'transparent' }
-}
-
-function approvalSelectStyle(status: ApprovalStatus | null) {
-  const safe: ApprovalStatus = status ?? 'pending'
-  const map: Record<ApprovalStatus, { borderColor: string; color: string }> = {
-    pending: { borderColor: C.primary, color: C.primary },
-    approved: { borderColor: C.positive, color: C.positive },
-    rejected: { borderColor: C.negative, color: C.negative },
-  }
-  return { ...map[safe], backgroundColor: 'transparent' }
-}
-
 function formatDate(iso: string): string {
   const d = new Date(iso)
   if (Number.isNaN(d.getTime())) return iso
   return d.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })
 }
 
-/**
- * BRL formatter compacto. Usa notação curta pra valores grandes
- * (R$ 2,1M / R$ 850k) que aparecem no card AUM, mas mantém o
- * formato cheio (R$ 1.234,56) na coluna por linha — controlado
- * pelo argumento `compact`.
- */
 const brlFull = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 2 })
 const brlCompact = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', notation: 'compact', maximumFractionDigits: 2 })
 function formatBRL(value: number, compact = false): string {
@@ -474,8 +415,87 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.font-mono-tab {
-  font-family: 'JetBrains Mono', 'IBM Plex Mono', Menlo, monospace;
-  font-feature-settings: 'tnum' 1;
+/* Pill-style select para role/approval. data-tone troca a cor da borda
+   sem precisar de :style binding por linha. */
+.admin-pill-select {
+  appearance: none;
+  border: 1px solid color-mix(in srgb, var(--brand-text) 14%, transparent);
+  background: transparent;
+  border-radius: 4px;
+  padding: 4px 22px 4px 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--brand-text) 70%, transparent);
+  outline: none;
+  cursor: pointer;
+  transition: border-color 150ms, color 150ms, background 150ms;
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position:
+    calc(100% - 12px) 50%,
+    calc(100% - 8px) 50%;
+  background-size: 4px 4px, 4px 4px;
+  background-repeat: no-repeat;
+}
+.admin-pill-select:disabled { opacity: 0.45; cursor: not-allowed; }
+.admin-pill-select[data-tone='admin'],
+.admin-pill-select[data-tone='pending'] {
+  color: var(--brand-primary);
+  border-color: color-mix(in srgb, var(--brand-primary) 45%, transparent);
+  background-color: color-mix(in srgb, var(--brand-primary) 8%, transparent);
+}
+.admin-pill-select[data-tone='advisor'],
+.admin-pill-select[data-tone='approved'] {
+  color: var(--brand-positive, #10b981);
+  border-color: color-mix(in srgb, var(--brand-positive, #10b981) 45%, transparent);
+  background-color: color-mix(in srgb, var(--brand-positive, #10b981) 8%, transparent);
+}
+.admin-pill-select[data-tone='rejected'] {
+  color: var(--brand-negative, #ef4444);
+  border-color: color-mix(in srgb, var(--brand-negative, #ef4444) 45%, transparent);
+  background-color: color-mix(in srgb, var(--brand-negative, #ef4444) 8%, transparent);
+}
+
+.user-progress-chips {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.admin-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--brand-text) 55%, transparent);
+}
+.admin-pagination__info {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.admin-pagination__info strong {
+  color: var(--brand-text);
+  font-weight: 600;
+}
+
+.admin-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--brand-negative, #ef4444) 40%, transparent);
+  background: color-mix(in srgb, var(--brand-negative, #ef4444) 8%, transparent);
+  color: var(--brand-negative, #ef4444);
+  font-size: 13px;
+  line-height: 1.5;
 }
 </style>
