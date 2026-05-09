@@ -16,6 +16,11 @@
 <template>
   <NuxtLayout :title="'Planos'">
     <div class="lp">
+    <!-- CTA contextual — promo no topo de pricing -->
+    <div class="lp-container" style="padding-top: 24px;">
+      <MoleculesCommunicationsCTASlot placement="pricing-top" />
+    </div>
+
     <!-- ============ HERO ============ -->
     <section class="lp-hero">
       <!-- Atmospheric amber radial -->

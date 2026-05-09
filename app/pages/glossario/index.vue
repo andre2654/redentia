@@ -1,6 +1,9 @@
 <template>
   <NuxtLayout name="static" title="">
     <div class="flex flex-col gap-8 px-6 py-8">
+      <!-- CTA contextual — promo no topo do glossário -->
+      <MoleculesCommunicationsCTASlot placement="glossario-top" />
+
       <!-- Header -->
       <section class="flex flex-col gap-4">
         <div class="flex items-center gap-2">

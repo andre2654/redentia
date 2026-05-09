@@ -17,8 +17,16 @@
 -->
 <template>
   <div class="flex flex-col gap-10">
-    <!-- ============ 1. HERO ============ -->
-    <MoleculesResultadoCarteiraHero :stats="stats" :period="period" />
+    <!-- ============ 1. HERO ============
+         Usa stats ALL-TIME (nao period-filtrado) — pra carteira, P&L
+         e o estado total HOJE: realizado historico + unrealized
+         atual + renda passiva total. Period selector afeta apenas
+         os blocos abaixo (curva, distribuicao, metricas). -->
+    <MoleculesResultadoCarteiraHero
+      :stats="allTimeStats"
+      :period="period"
+      label-override="Total da carteira"
+    />
 
     <!-- ============ 2. PERIOD SELECTOR ============
          Inline a direita, com label sutil a esquerda. Mais discreto que
@@ -56,8 +64,8 @@
         title="Como o P&L se acumulou"
       />
       <MoleculesResultadoCarteiraEquityCurve
-        :series="stats.cumulativeSeries"
-        :daily-series="stats.dailySeries"
+        :series="equityCurveSlice.length ? equityCurveSlice : stats.cumulativeSeries"
+        :daily-series="equityDailySlice.length ? equityDailySlice : stats.dailySeries"
         :trades="stats.trades"
       />
     </section>
@@ -127,6 +135,7 @@
 <script setup lang="ts">
 import type { MockTrade } from '~/composables/useMockTrades'
 import type { DailyPnLPoint, ResultPeriod } from '~/composables/useResultadoStats'
+import type { EquityCurvePoint } from '~/services/portfolioTrades'
 
 const props = defineProps<{
   trades: MockTrade[]
@@ -137,6 +146,76 @@ const period = ref<ResultPeriod>('30d')
 const tradesRef = computed(() => props.trades)
 const { stats: statsComputed } = useResultadoStats(tradesRef, period)
 const stats = computed(() => statsComputed.value)
+
+// Stats all-time pro Hero — P&L da carteira nao tem janela; mark-to-market
+// agregado e historico realizado sempre presentes. So gerou no Hero pra
+// nao reprocessar nas demais sections (que sao period-filtered).
+const allTimePeriod = ref<ResultPeriod>('all')
+const { stats: allTimeStatsComputed } = useResultadoStats(tradesRef, allTimePeriod)
+const allTimeStats = computed(() => allTimeStatsComputed.value)
+
+// ============ Equity curve REAL (mark-to-market diario) ============
+// Carrega do backend a evolucao do P&L da carteira dia a dia, com
+// preco historico de cada ativo. Diferente do cumulativeSeries
+// client-side (que so soma resultAmount em datas de close), essa
+// curva reflete a variacao real dos ativos ponderada pelo peso.
+const tradesService = usePortfolioTradesService()
+const equityCurveAll = ref<EquityCurvePoint[]>([])
+
+onMounted(async () => {
+  try {
+    const resp = await tradesService.getEquityCurve()
+    equityCurveAll.value = resp.data
+  } catch (err) {
+    console.warn('[carteira] equity-curve fetch failed', err)
+  }
+})
+
+// Recorta a curva pelo period selector: filtra pontos cuja data caia
+// na janela. Mantem o equity ABSOLUTO (nao re-baseia), pra que o
+// ultimo ponto sempre bata com o numero do Hero — independente do
+// period selecionado, o usuario sempre ve "onde a carteira esta hoje".
+const equityCurveSlice = computed<DailyPnLPoint[]>(() => {
+  const all = equityCurveAll.value
+  if (!all.length) return []
+
+  const now = Date.now()
+  const day = 24 * 60 * 60 * 1000
+  const startMs = (() => {
+    switch (period.value) {
+      case '7d': return now - 7 * day
+      case '30d': return now - 30 * day
+      case '90d': return now - 90 * day
+      case 'ytd': return new Date(new Date().getFullYear(), 0, 1).getTime()
+      case '12m': return now - 365 * day
+      case 'all': return 0
+    }
+  })()
+
+  const inWindow = all.filter((p) => new Date(p.date).getTime() >= startMs)
+  if (!inWindow.length) return []
+
+  return inWindow.map((p) => ({
+    date: p.date,
+    pnl: p.equity,
+    trades: 0,
+  }))
+})
+
+const equityDailySlice = computed<DailyPnLPoint[]>(() => {
+  // Variacao diaria (delta entre dias consecutivos) pra detectar dias notaveis
+  const slice = equityCurveSlice.value
+  if (slice.length < 2) return slice
+  const out: DailyPnLPoint[] = []
+  for (let i = 1; i < slice.length; i++) {
+    out.push({
+      date: slice[i]!.date,
+      pnl: slice[i]!.pnl - slice[i - 1]!.pnl,
+      trades: 0,
+    })
+  }
+  return out
+})
 
 // ============ 6-month daily series (calendario heatmap) ============
 // Janela fixa, sem depender do period selector. Agregamos `props.trades`

@@ -163,11 +163,17 @@ export function useResultadoStats(
       : null
 
     // ============ Daily series ============
-    // Agrupa trades por dia (data do close pra realizados, openedAt pra
-    // abertos / dividendos). Builds tanto diaria quanto cumulativa.
+    // Agrupa trades por dia. Pra trades fechados usa data de close; pra
+    // dividendos, data do credito; pra POSICOES ABERTAS, marca o dia de
+    // HOJE — porque o resultAmount delas e mark-to-market AGORA, nao na
+    // data de abertura. Marcar na openedAt distorce a curva (uma posicao
+    // de 2021 jogaria todo o lucro/prejuizo unrealized no extremo
+    // esquerdo do grafico).
+    const todayIso = new Date(now).toISOString().slice(0, 10)
     const dailyMap = new Map<string, { pnl: number; trades: number }>()
     for (const t of filtered) {
-      const ref = t.closedAt ?? t.openedAt
+      const isOpen = !t.closedAt && t.side !== 'DIVIDEND' && t.side !== 'JCP'
+      const ref = isOpen ? todayIso : (t.closedAt ?? t.openedAt)
       const date = ref.slice(0, 10) // YYYY-MM-DD
       const cur = dailyMap.get(date) || { pnl: 0, trades: 0 }
       cur.pnl += t.resultAmount ?? 0

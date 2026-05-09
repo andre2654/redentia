@@ -100,7 +100,7 @@
       </div>
 
       <!-- Conteúdo Educacional -->
-      <div class="prose max-w-none" :style="{ color: 'var(--brand-text)' }">
+      <div class="quiet-prose max-w-none" :style="{ color: 'var(--brand-text)' }">
         <h2>Calculadora de Investimento em Ações Online</h2>
         <h2>Como Funciona o Simulador de Ações</h2>
         <p class="leading-relaxed">
@@ -494,24 +494,10 @@
           Esta carteira diversifica entre setores (bancos, mineração, petróleo, industriais) reduzindo risco específico.
         </p>
 
-        <h2>Perguntas Frequentes</h2>
-
-        <div class="space-y-4">
-          <details
-            v-for="item in faqItems"
-            :key="item.q"
-            class="group brand-card border p-4"
-            :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
-          >
-            <summary class="cursor-pointer list-none flex items-center justify-between">
-              {{ item.q }}
-              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
-            </summary>
-            <p class="mt-3 text-sm">
-              {{ item.a }}
-            </p>
-          </details>
-        </div>
+        <MoleculesFAQ
+          title="Perguntas Frequentes"
+          :items="faqItems"
+        />
 
         <h2>Estratégia Buy and Hold: Comprar e Manter</h2>
         <p class="leading-relaxed">
@@ -760,64 +746,64 @@ const popularScenarios = [
 // um array so popula os dois lados.
 const faqItems = [
   {
-    q: 'Os resultados do simulador são precisos?',
-    a: 'Sim. Usamos dados históricos reais da B3, incluindo preços de fechamento ajustados, dividendos e JCP pagos. Lembre-se que rentabilidades passadas não garantem retornos futuros. O simulador serve para análise histórica e aprendizado, não para prever o futuro.',
+    question: 'Os resultados do simulador são precisos?',
+    answer: 'Sim. Usamos dados históricos reais da B3, incluindo preços de fechamento ajustados, dividendos e JCP pagos. Lembre-se que rentabilidades passadas não garantem retornos futuros. O simulador serve para análise histórica e aprendizado, não para prever o futuro.',
   },
   {
-    q: 'Por que reinvestir dividendos é importante?',
-    a: 'Reinvestir dividendos cria um efeito composto poderoso. Você usa os proventos para comprar mais ações, que geram mais dividendos, e assim por diante. Em 20-30 anos, a diferença entre reinvestir ou sacar pode representar 100-200% a mais de patrimônio. Para quem está acumulando riqueza, reinvestir é essencial.',
+    question: 'Por que reinvestir dividendos é importante?',
+    answer: 'Reinvestir dividendos cria um efeito composto poderoso. Você usa os proventos para comprar mais ações, que geram mais dividendos, e assim por diante. Em 20-30 anos, a diferença entre reinvestir ou sacar pode representar 100-200% a mais de patrimônio. Para quem está acumulando riqueza, reinvestir é essencial.',
   },
   {
-    q: 'Qual a diferença entre ações ON e PN?',
-    a: 'Ações ON (Ordinárias, terminadas em 3) dão direito a voto em assembleias. Ações PN (Preferenciais, terminadas em 4) geralmente não dão voto, mas têm preferência no recebimento de dividendos. Para investidores individuais focados em dividendos, PN costuma ser a escolha. ITUB4 é PN, PETR4 é PN, VALE3 é exceção (ON). Para quem quer participar de decisões da empresa ou compra grande volume, ON pode fazer sentido.',
+    question: 'Qual a diferença entre ações ON e PN?',
+    answer: 'Ações ON (Ordinárias, terminadas em 3) dão direito a voto em assembleias. Ações PN (Preferenciais, terminadas em 4) geralmente não dão voto, mas têm preferência no recebimento de dividendos. Para investidores individuais focados em dividendos, PN costuma ser a escolha. ITUB4 é PN, PETR4 é PN, VALE3 é exceção (ON). Para quem quer participar de decisões da empresa ou compra grande volume, ON pode fazer sentido.',
   },
   {
-    q: 'Quantas ações devo ter na carteira?',
-    a: 'Estudos mostram que 8-15 ações bem diversificadas (setores diferentes) eliminam a maior parte do risco não-sistemático. Menos de 5 ações = risco concentrado demais. Mais de 20 = difícil acompanhar e poucos ganhos adicionais de diversificação. Para iniciantes, começar com 5-8 blue chips de setores diferentes é um bom ponto de partida.',
+    question: 'Quantas ações devo ter na carteira?',
+    answer: 'Estudos mostram que 8-15 ações bem diversificadas (setores diferentes) eliminam a maior parte do risco não-sistemático. Menos de 5 ações = risco concentrado demais. Mais de 20 = difícil acompanhar e poucos ganhos adicionais de diversificação. Para iniciantes, começar com 5-8 blue chips de setores diferentes é um bom ponto de partida.',
   },
   {
-    q: 'Quando é melhor fazer aporte único vs aportes mensais?',
-    a: 'Se você tem um valor grande disponível, estatisticamente investir tudo imediatamente tende a render mais (70% das vezes o mercado sobe no longo prazo). Aportes mensais reduzem ansiedade, permitem comprar em diferentes momentos de preço (preço médio), facilitam disciplina e permitem começar mesmo sem muito capital. Uma estratégia mista é investir 50% imediatamente e o resto em aportes mensais.',
+    question: 'Quando é melhor fazer aporte único vs aportes mensais?',
+    answer: 'Se você tem um valor grande disponível, estatisticamente investir tudo imediatamente tende a render mais (70% das vezes o mercado sobe no longo prazo). Aportes mensais reduzem ansiedade, permitem comprar em diferentes momentos de preço (preço médio), facilitam disciplina e permitem começar mesmo sem muito capital. Uma estratégia mista é investir 50% imediatamente e o resto em aportes mensais.',
   },
   {
-    q: 'O simulador considera custos e impostos?',
-    a: 'O simulador não desconta corretagem, custódia ou imposto sobre ganho de capital (15% acima de R$ 20 mil/mês em vendas). Dividendos são isentos de IR para pessoa física, mas JCP tem 15% retido na fonte. Para resultados mais precisos, considere que seus ganhos reais serão cerca de 2-5% menores devido a esses custos, especialmente se você fizer muitas operações pequenas.',
+    question: 'O simulador considera custos e impostos?',
+    answer: 'O simulador não desconta corretagem, custódia ou imposto sobre ganho de capital (15% acima de R$ 20 mil/mês em vendas). Dividendos são isentos de IR para pessoa física, mas JCP tem 15% retido na fonte. Para resultados mais precisos, considere que seus ganhos reais serão cerca de 2-5% menores devido a esses custos, especialmente se você fizer muitas operações pequenas.',
   },
   {
-    q: 'Devo investir em ações de alto dividend yield?',
-    a: 'Não necessariamente. Dividend Yield alto pode indicar: 1) Empresa madura pagando bem os acionistas (bom), 2) Preço da ação caiu muito (cuidado), ou 3) Empresa distribuindo mais do que deveria. Avalie payout (% do lucro distribuído, ideal 40-60%), histórico de pagamentos consistentes, saúde financeira e potencial de crescimento. Empresas com DY médio mas crescimento forte podem ser melhores no longo prazo.',
+    question: 'Devo investir em ações de alto dividend yield?',
+    answer: 'Não necessariamente. Dividend Yield alto pode indicar: 1) Empresa madura pagando bem os acionistas (bom), 2) Preço da ação caiu muito (cuidado), ou 3) Empresa distribuindo mais do que deveria. Avalie payout (% do lucro distribuído, ideal 40-60%), histórico de pagamentos consistentes, saúde financeira e potencial de crescimento. Empresas com DY médio mas crescimento forte podem ser melhores no longo prazo.',
   },
   {
-    q: 'Ações ou FIIs, qual é melhor para dividendos?',
-    a: 'Depende do objetivo. FIIs pagam dividendos mensais e maiores (DY de 8-12%), mas têm menor potencial de valorização. Ações pagam menos em dividendos (DY de 3-8%) mas podem valorizar mais no longo prazo. O ideal é ter ambos: FIIs para renda passiva mensal estável, ações para crescimento de capital e proteção contra inflação. Carteira balanceada pode ter 40-60% ações e 40-60% FIIs, dependendo do perfil.',
+    question: 'Ações ou FIIs, qual é melhor para dividendos?',
+    answer: 'Depende do objetivo. FIIs pagam dividendos mensais e maiores (DY de 8-12%), mas têm menor potencial de valorização. Ações pagam menos em dividendos (DY de 3-8%) mas podem valorizar mais no longo prazo. O ideal é ter ambos: FIIs para renda passiva mensal estável, ações para crescimento de capital e proteção contra inflação. Carteira balanceada pode ter 40-60% ações e 40-60% FIIs, dependendo do perfil.',
   },
   {
-    q: 'Como escolher boas ações para investir?',
-    a: `Analise: 1) Fundamentos: lucro consistente, baixo endividamento, boa geração de caixa, 2) Dividendos: histórico de pagamentos, payout sustentável, 3) Setor: defensivos ou com boas perspectivas, 4) Preço: não pagar caro (P/L, P/VP razoáveis), 5) Gestão: empresa bem administrada, 6) Vantagem competitiva: diferenciação, marca forte. Use o simulador para ver como a ação performou no passado e leia análises na ${brand.name}.`,
+    question: 'Como escolher boas ações para investir?',
+    answer: `Analise: 1) Fundamentos: lucro consistente, baixo endividamento, boa geração de caixa, 2) Dividendos: histórico de pagamentos, payout sustentável, 3) Setor: defensivos ou com boas perspectivas, 4) Preço: não pagar caro (P/L, P/VP razoáveis), 5) Gestão: empresa bem administrada, 6) Vantagem competitiva: diferenciação, marca forte. Use o simulador para ver como a ação performou no passado e leia análises na ${brand.name}.`,
   },
   {
-    q: 'Qual o melhor período para simular?',
-    a: 'Teste diferentes períodos. 5 anos mostra ciclos recentes. 10 anos inclui crises e recuperações. 15-20 anos mostra o verdadeiro poder do longo prazo, mas nem todas as ações têm histórico tão longo. Períodos que incluem crises (2008, 2015-2016, 2020) são especialmente educativos para entender volatilidade e recuperação. Pense sempre no longo prazo, ações são investimentos de 10+ anos.',
+    question: 'Qual o melhor período para simular?',
+    answer: 'Teste diferentes períodos. 5 anos mostra ciclos recentes. 10 anos inclui crises e recuperações. 15-20 anos mostra o verdadeiro poder do longo prazo, mas nem todas as ações têm histórico tão longo. Períodos que incluem crises (2008, 2015-2016, 2020) são especialmente educativos para entender volatilidade e recuperação. Pense sempre no longo prazo, ações são investimentos de 10+ anos.',
   },
   {
-    q: 'Como funciona o reinvestimento automático de dividendos no simulador?',
-    a: 'Cada vez que a ação simulada paga dividendo ou JCP, o simulador soma o valor recebido e usa para comprar mais ações no preço de mercado da data do pagamento (frações de ação são permitidas no cálculo). Isso reflete o comportamento real de quem usa DRIP (Dividend Reinvestment Plan). O efeito é exponencial: mais ações geram mais dividendos no próximo ciclo, e assim por diante.',
+    question: 'Como funciona o reinvestimento automático de dividendos no simulador?',
+    answer: 'Cada vez que a ação simulada paga dividendo ou JCP, o simulador soma o valor recebido e usa para comprar mais ações no preço de mercado da data do pagamento (frações de ação são permitidas no cálculo). Isso reflete o comportamento real de quem usa DRIP (Dividend Reinvestment Plan). O efeito é exponencial: mais ações geram mais dividendos no próximo ciclo, e assim por diante.',
   },
   {
-    q: 'Posso compartilhar uma simulação específica?',
-    a: `Sim. A URL da página guarda os parâmetros: ${brand.url || 'https://redentia.com.br'}/calculadora/acoes?initial=10000&monthly=500&years=10&reinvest=1&tickers=ITUB4,VALE3 já abre o simulador preenchido e calcula automaticamente o histórico. Útil pra mandar para o cônjuge, planejador financeiro ou salvar a tese de carteira nos favoritos.`,
+    question: 'Posso compartilhar uma simulação específica?',
+    answer: `Sim. A URL da página guarda os parâmetros: ${brand.url || 'https://redentia.com.br'}/calculadora/acoes?initial=10000&monthly=500&years=10&reinvest=1&tickers=ITUB4,VALE3 já abre o simulador preenchido e calcula automaticamente o histórico. Útil pra mandar para o cônjuge, planejador financeiro ou salvar a tese de carteira nos favoritos.`,
   },
   {
-    q: 'PETR4 ou VALE3: qual investir?',
-    a: 'Ambas são gigantes commodities-exposure. PETR4 (Petrobras, óleo e gás) tem dividendos volúveis mas extraordinários em ciclos de alta. VALE3 (mineração de ferro) tem dividendos sazonais conforme preço de commodity. Ambas oferecem ~12-15% a.a. histórico em 10+ anos. Pra diversificar, prefira ter as DUAS em peso menor (10-15% cada) e adicionar bancos (ITUB4, BBAS3) e indústria (WEGE3) pra completar a carteira.',
+    question: 'PETR4 ou VALE3: qual investir?',
+    answer: 'Ambas são gigantes commodities-exposure. PETR4 (Petrobras, óleo e gás) tem dividendos volúveis mas extraordinários em ciclos de alta. VALE3 (mineração de ferro) tem dividendos sazonais conforme preço de commodity. Ambas oferecem ~12-15% a.a. histórico em 10+ anos. Pra diversificar, prefira ter as DUAS em peso menor (10-15% cada) e adicionar bancos (ITUB4, BBAS3) e indústria (WEGE3) pra completar a carteira.',
   },
   {
-    q: 'O que é estratégia Buy and Hold?',
-    a: 'Buy and Hold significa "comprar e manter". A estratégia consiste em comprar ações de empresas sólidas e segurá-las por anos ou décadas, ignorando oscilações de curto prazo. Defendida por Warren Buffett. Funciona melhor com blue chips brasileiras (ITUB4, ITSA4, BBAS3, BBSE3, WEGE3, ABEV3). Vantagem: você aproveita 100% dos dividendos compostos e não cristaliza prejuízos em crises.',
+    question: 'O que é estratégia Buy and Hold?',
+    answer: 'Buy and Hold significa "comprar e manter". A estratégia consiste em comprar ações de empresas sólidas e segurá-las por anos ou décadas, ignorando oscilações de curto prazo. Defendida por Warren Buffett. Funciona melhor com blue chips brasileiras (ITUB4, ITSA4, BBAS3, BBSE3, WEGE3, ABEV3). Vantagem: você aproveita 100% dos dividendos compostos e não cristaliza prejuízos em crises.',
   },
   {
-    q: 'Como meu retorno se compara ao Ibovespa?',
-    a: 'O Ibovespa rende historicamente ~14% a.a. nos últimos 30 anos. Use como benchmark: se sua carteira rende menos que o Ibovespa por 3+ anos consecutivos, vale revisar. Bater o índice consistentemente é difícil mesmo pra gestores profissionais (apenas ~30% conseguem em 10 anos). Se o objetivo é só acompanhar o índice, considere ETFs como BOVA11 (custo zero de gestão própria).',
+    question: 'Como meu retorno se compara ao Ibovespa?',
+    answer: 'O Ibovespa rende historicamente ~14% a.a. nos últimos 30 anos. Use como benchmark: se sua carteira rende menos que o Ibovespa por 3+ anos consecutivos, vale revisar. Bater o índice consistentemente é difícil mesmo pra gestores profissionais (apenas ~30% conseguem em 10 anos). Se o objetivo é só acompanhar o índice, considere ETFs como BOVA11 (custo zero de gestão própria).',
   },
 ] as const
 
@@ -871,18 +857,7 @@ usePageSeo({
         { '@type': 'Organization', name: 'IBGE', url: 'https://www.ibge.gov.br' },
       ],
     },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'FAQPage',
-      mainEntity: faqItems.map((item) => ({
-        '@type': 'Question',
-        name: item.q,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: item.a,
-        },
-      })),
-    },
+    // FAQPage schema é emitido pelo <MoleculesFAQ> via useHead — fonte unica.
   ],
 })
 

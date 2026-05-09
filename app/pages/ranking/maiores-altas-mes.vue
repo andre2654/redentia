@@ -67,24 +67,11 @@
         </p>
       </div>
 
-      <div
-        class="inline-flex gap-1 rounded-xl border p-1"
-        :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
-      >
-        <button
-          v-for="tab in tabs"
-          :key="tab.value ?? 'all'"
-          type="button"
-          class="rounded-lg px-3 py-1.5 text-xs font-medium transition"
-          :style="{
-            backgroundColor: activeType === tab.value ? 'var(--brand-positive)' : 'transparent',
-            color: activeType === tab.value ? readableOn(brand.colors.positive) : 'var(--brand-text-muted)',
-          }"
-          @click="activeType = tab.value"
-        >
-          {{ tab.label }}
-        </button>
-      </div>
+      <AtomsSegmented
+        v-model="activeType"
+        :options="tabs"
+        aria-label="Filtrar tipo de ativo"
+      />
 
       <div v-if="pending" class="flex items-center justify-center py-16">
         <UIcon name="i-lucide-loader" class="size-6 motion-safe:animate-spin" />
@@ -401,9 +388,6 @@ definePageMeta({
   hideInstallAppBanner: true,
 })
 
-import { readableOn } from '~/utils/color'
-
-const brand = useBrand()
 const service = useAssetsService()
 
 const faqItems = [
@@ -495,20 +479,23 @@ usePageSeo({
   ],
 })
 
-type TickerType = 'STOCK' | 'REIT' | 'ETF' | 'BDR' | null
+// AtomsSegmented exige value string|number, entao usamos 'all' como
+// sentinel para "sem filtro" e convertemos pra null antes de chamar o
+// service (que espera null pra retornar todos os tipos).
+type TickerFilter = 'all' | 'STOCK' | 'REIT' | 'ETF' | 'BDR'
 
-const tabs: Array<{ label: string; value: TickerType }> = [
-  { label: 'Todos', value: null },
+const tabs: Array<{ label: string; value: TickerFilter }> = [
+  { label: 'Todos', value: 'all' },
   { label: 'Ações', value: 'STOCK' },
   { label: 'FIIs', value: 'REIT' },
   { label: 'ETFs', value: 'ETF' },
 ]
 
-const activeType = ref<TickerType>(null)
+const activeType = ref<TickerFilter>('all')
 
 const { data: rows, pending } = await useAsyncData(
   'ranking-altas-mes',
-  () => service.getMonthlyChange('top', activeType.value, 50),
+  () => service.getMonthlyChange('top', activeType.value === 'all' ? null : activeType.value, 50),
   { watch: [activeType], default: () => [] }
 )
 </script>

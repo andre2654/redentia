@@ -53,9 +53,10 @@
          locale pt-BR, currency R$, com legenda mostrando o P&L
          atual no topo.
 
-         show-prev-close="false": P&L acumulado nao tem semantica de
-         "fechamento anterior" — a referencia e zero, nao o valor de
-         ontem. Tirar a linha tracejada limpa o grafico.
+         show-prev-close="true": linha tracejada de referencia no
+         valor da vespera (ultimo dia util anterior ao final da serie).
+         Da contexto temporal pro user — "estou X% acima do que estava
+         ontem".
 
          Markers: pinos clicaveis nos dias notaveis. Popover mostra
          titulo (motivo do dia) + variacao do dia em %. -->
@@ -65,7 +66,7 @@
       :legend="chartLegend"
       :colors="[lineColor]"
       :height="320"
-      :show-prev-close="false"
+      :show-prev-close="true"
       :markers="markers"
     />
   </article>
@@ -151,12 +152,24 @@ const dailyAvgLoss = computed(() => {
 })
 
 const THRESHOLD_MULTIPLIER = 1.2
+// Dias SEM trade fechado (so MTM) so viram marker se a variacao foi
+// realmente notavel — >= 1.5% do equity da vespera. Evita poluir a
+// curva com flutuacoes pequenas de holds em carteiras estaveis.
+const MTM_PCT_THRESHOLD = 1.5
 const MAX_MARKERS = 12
 
 interface ChartMarker {
   date: string
   title: string
   changePercent: number
+}
+
+function dayHasTrade(date: string): boolean {
+  for (const t of props.trades) {
+    if (t.openedAt.slice(0, 10) === date) return true
+    if (t.closedAt && t.closedAt.slice(0, 10) === date) return true
+  }
+  return false
 }
 
 const markers = computed<ChartMarker[]>(() => {
@@ -166,15 +179,26 @@ const markers = computed<ChartMarker[]>(() => {
 
   for (const day of props.dailySeries) {
     if (day.pnl === 0) continue
-    const ref = day.pnl > 0 ? dailyAvgGain.value : dailyAvgLoss.value
-    if (ref === 0) continue
     const magnitude = Math.abs(day.pnl)
-    if (magnitude < ref * THRESHOLD_MULTIPLIER) continue
+    const hasTrade = dayHasTrade(day.date)
+
+    if (hasTrade) {
+      // Dia com operacao: threshold relativo (1.2x media) — eventos
+      // de fato sao quase sempre notaveis no contexto operacional.
+      const ref = day.pnl > 0 ? dailyAvgGain.value : dailyAvgLoss.value
+      if (ref === 0) continue
+      if (magnitude < ref * THRESHOLD_MULTIPLIER) continue
+    } else {
+      // Dia so-MTM: threshold ABSOLUTO em % do equity da vespera.
+      // Sem essa barreira, holds que oscilam 0.3% poluiriam a curva.
+      const pct = Math.abs(percentForDay(day.date, day.pnl))
+      if (pct < MTM_PCT_THRESHOLD) continue
+    }
     candidates.push({ ...day, magnitude })
   }
 
   // Ordena por magnitude desc e cap em MAX_MARKERS pra evitar poluicao
-  // visual em periodos longos onde 25%+ dos dias podem passar do limiar.
+  // visual em periodos longos onde muitos dias podem passar do limiar.
   candidates.sort((a, b) => b.magnitude - a.magnitude)
   const top = candidates.slice(0, MAX_MARKERS)
 
@@ -250,7 +274,7 @@ function reasonForDay(date: string, dayPnl: number): string {
   })
 
   if (!dayTrades.length) {
-    return dayPnl > 0 ? 'Marca-a-mercado favorável' : 'Marca-a-mercado adversa'
+    return dayPnl > 0 ? 'Ativos valorizaram' : 'Ativos desvalorizaram'
   }
 
   // Trade dominante: maior |resultAmount| entre os trades do dia
@@ -298,8 +322,8 @@ function reasonForDay(date: string, dayPnl: number): string {
   // hold: posicao aberta ou fechada apos >30d
   if (!dominant.closedAt) {
     return isWin
-      ? `Marca-a-mercado favorável em ${ticker}`
-      : `Marca-a-mercado adversa em ${ticker}`
+      ? `${ticker} valorizou`
+      : `${ticker} desvalorizou`
   }
   return isWin
     ? `Realização de hold em ${ticker}`

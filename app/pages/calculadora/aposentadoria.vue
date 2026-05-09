@@ -100,7 +100,7 @@
       </div>
 
       <!-- Conteúdo Educacional -->
-      <div class="max-w-none">
+      <div class="quiet-prose max-w-none">
         <h2>Simulador de Aposentadoria grátis e online</h2>
         <h2>Como Planejar sua Aposentadoria no Brasil</h2>
         <p class="leading-relaxed">
@@ -499,27 +499,10 @@
           Investir direto em Tesouro IPCA+, FIIs e ações tem custos menores e flexibilidade maior, mas exige disciplina pra manter os aportes. Previdência privada é boa pra quem quer débito automático e benefício fiscal, mas só vale a pena com taxa de administração abaixo de 1% ao ano e fundo com bom histórico.
         </p>
 
-        <h2>Perguntas Frequentes sobre Aposentadoria</h2>
-
-        <div class="space-y-4">
-          <details
-            v-for="item in faqItems"
-            :key="item.q"
-            class="group brand-card border p-4"
-            :style="{
-              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
-              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
-            }"
-          >
-            <summary class="cursor-pointer list-none flex items-center justify-between">
-              {{ item.q }}
-              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
-            </summary>
-            <p class="mt-3 text-sm">
-              {{ item.a }}
-            </p>
-          </details>
-        </div>
+        <MoleculesFAQ
+          title="Perguntas Frequentes sobre Aposentadoria"
+          :items="faqItems"
+        />
 
         <h2>Dicas para Acelerar sua Aposentadoria</h2>
         <div class="grid gap-4 md:grid-cols-2">
@@ -781,60 +764,60 @@ const popularScenarios = [
 // (renderizado nos `<details>`) e o FAQPage schema (mainEntity).
 const faqItems = [
   {
-    q: 'Quanto preciso acumular para me aposentar?',
-    a: 'Use a regra dos 4%: multiplique sua despesa mensal desejada por 300. Para R$ 5.000/mês, você precisa de R$ 1,5 milhão. Para R$ 10.000/mês, R$ 3 milhões. Para R$ 20.000/mês (Fat FIRE), R$ 6 milhões. Ajuste pelo INSS que vai receber e considere a inflação acumulada até a aposentadoria, pode ser que R$ 5.000 daqui a 25 anos exija renda nominal de R$ 12.000 pra preservar o poder de compra.',
+    question: 'Quanto preciso acumular para me aposentar?',
+    answer: 'Use a regra dos 4%: multiplique sua despesa mensal desejada por 300. Para R$ 5.000/mês, você precisa de R$ 1,5 milhão. Para R$ 10.000/mês, R$ 3 milhões. Para R$ 20.000/mês (Fat FIRE), R$ 6 milhões. Ajuste pelo INSS que vai receber e considere a inflação acumulada até a aposentadoria, pode ser que R$ 5.000 daqui a 25 anos exija renda nominal de R$ 12.000 pra preservar o poder de compra.',
   },
   {
-    q: 'É possível se aposentar aos 40 ou 45 anos no Brasil (FIRE)?',
-    a: 'Sim, mas exige disciplina extrema e algumas condições. Você precisa: 1) Poupar 50-70% da renda durante 15-20 anos, 2) Começar cedo (idealmente aos 22-25 anos), 3) Ter renda alta ou múltiplas fontes (side hustles, freelas), 4) Investir bem (carteira diversificada com 11-12% a.a.), 5) Viver de forma frugal e estabelecer um padrão sustentável pro resto da vida. É desafiador mas comprovadamente viável, há comunidade FIRE crescente no Brasil.',
+    question: 'É possível se aposentar aos 40 ou 45 anos no Brasil (FIRE)?',
+    answer: 'Sim, mas exige disciplina extrema e algumas condições. Você precisa: 1) Poupar 50-70% da renda durante 15-20 anos, 2) Começar cedo (idealmente aos 22-25 anos), 3) Ter renda alta ou múltiplas fontes (side hustles, freelas), 4) Investir bem (carteira diversificada com 11-12% a.a.), 5) Viver de forma frugal e estabelecer um padrão sustentável pro resto da vida. É desafiador mas comprovadamente viável, há comunidade FIRE crescente no Brasil.',
   },
   {
-    q: 'Devo contar com o INSS no planejamento da aposentadoria?',
-    a: 'Depende muito da sua idade. Se você tem 45+ anos e contribui regularmente há 20+ anos, pode contar com INSS como complemento confiável (R$ 1.500-7.500 dependendo do salário de contribuição). Se tem 25-40 anos, seja conservador, o sistema previdenciário brasileiro pode mudar muito até você se aposentar (idade mínima, fator previdenciário, alíquotas). Trate o INSS como bônus de R$ 1.000-3.000/mês, não como pilar do seu plano.',
+    question: 'Devo contar com o INSS no planejamento da aposentadoria?',
+    answer: 'Depende muito da sua idade. Se você tem 45+ anos e contribui regularmente há 20+ anos, pode contar com INSS como complemento confiável (R$ 1.500-7.500 dependendo do salário de contribuição). Se tem 25-40 anos, seja conservador, o sistema previdenciário brasileiro pode mudar muito até você se aposentar (idade mínima, fator previdenciário, alíquotas). Trate o INSS como bônus de R$ 1.000-3.000/mês, não como pilar do seu plano.',
   },
   {
-    q: 'O que é a regra dos 4% (Safe Withdrawal Rate)?',
-    a: 'A regra dos 4% diz que você pode sacar 4% do seu patrimônio inicial por ano, corrigido pela inflação, com altíssima probabilidade (95%+) do dinheiro durar 30+ anos. Vem do Trinity Study (1998), que analisou dados históricos do mercado americano. Quem é mais conservador usa 3,5% (multiplicar despesa anual por ~285). Quem aceita mais risco de erosão usa 5% (multiplicar por 240). No Brasil, com taxa real de juros mais alta, a regra é até mais segura.',
+    question: 'O que é a regra dos 4% (Safe Withdrawal Rate)?',
+    answer: 'A regra dos 4% diz que você pode sacar 4% do seu patrimônio inicial por ano, corrigido pela inflação, com altíssima probabilidade (95%+) do dinheiro durar 30+ anos. Vem do Trinity Study (1998), que analisou dados históricos do mercado americano. Quem é mais conservador usa 3,5% (multiplicar despesa anual por ~285). Quem aceita mais risco de erosão usa 5% (multiplicar por 240). No Brasil, com taxa real de juros mais alta, a regra é até mais segura.',
   },
   {
-    q: 'Qual a taxa de retirada segura no Brasil?',
-    a: 'A regra clássica é 4% (Trinity Study, EUA). No Brasil, com Selic real historicamente maior, autores defendem 5% a 6% pra horizonte de 25 a 30 anos. Pra FIRE longo (40+ anos de retirada), use 3,5% pra ter mais segurança. Importante: 4% é sobre o saldo INICIAL, ajustado por inflação a cada ano, não recalculado sobre o saldo do ano corrente. Reavalie a SWR a cada 3 a 5 anos conforme o ambiente macro mudar.',
+    question: 'Qual a taxa de retirada segura no Brasil?',
+    answer: 'A regra clássica é 4% (Trinity Study, EUA). No Brasil, com Selic real historicamente maior, autores defendem 5% a 6% pra horizonte de 25 a 30 anos. Pra FIRE longo (40+ anos de retirada), use 3,5% pra ter mais segurança. Importante: 4% é sobre o saldo INICIAL, ajustado por inflação a cada ano, não recalculado sobre o saldo do ano corrente. Reavalie a SWR a cada 3 a 5 anos conforme o ambiente macro mudar.',
   },
   {
-    q: 'PGBL ou VGBL para aposentadoria?',
-    a: 'PGBL se você declara o IR completo, pode deduzir até 12% da renda bruta tributável (benefício fiscal forte na fase de aporte). VGBL se você declara simplificada OU quer planejamento sucessório (não entra em inventário, paga ITCMD reduzido). PGBL tributa sobre o TOTAL resgatado, VGBL só sobre os rendimentos. Tabela regressiva (10 anos = 10% de IR final) compensa muito a longo prazo. Em ambos, fuja de planos com taxa de administração acima de 1% ao ano.',
+    question: 'PGBL ou VGBL para aposentadoria?',
+    answer: 'PGBL se você declara o IR completo, pode deduzir até 12% da renda bruta tributável (benefício fiscal forte na fase de aporte). VGBL se você declara simplificada OU quer planejamento sucessório (não entra em inventário, paga ITCMD reduzido). PGBL tributa sobre o TOTAL resgatado, VGBL só sobre os rendimentos. Tabela regressiva (10 anos = 10% de IR final) compensa muito a longo prazo. Em ambos, fuja de planos com taxa de administração acima de 1% ao ano.',
   },
   {
-    q: 'Qual a diferença entre Lean FIRE, Regular FIRE e Fat FIRE?',
-    a: 'Lean FIRE: aposentar com renda mínima e estilo frugal (R$ 3-4 mil/mês, patrimônio R$ 900 mil a R$ 1,2 milhão). Regular FIRE: padrão médio de classe média (R$ 6-10 mil/mês, R$ 1,8 a 3 milhões de patrimônio). Fat FIRE: alto padrão de vida com folga (R$ 20 mil+/mês, R$ 6 milhões+ de patrimônio). A escolha depende do seu padrão atual, expectativas e quanto sacrifício você aceita na fase de acumulação.',
+    question: 'Qual a diferença entre Lean FIRE, Regular FIRE e Fat FIRE?',
+    answer: 'Lean FIRE: aposentar com renda mínima e estilo frugal (R$ 3-4 mil/mês, patrimônio R$ 900 mil a R$ 1,2 milhão). Regular FIRE: padrão médio de classe média (R$ 6-10 mil/mês, R$ 1,8 a 3 milhões de patrimônio). Fat FIRE: alto padrão de vida com folga (R$ 20 mil+/mês, R$ 6 milhões+ de patrimônio). A escolha depende do seu padrão atual, expectativas e quanto sacrifício você aceita na fase de acumulação.',
   },
   {
-    q: 'Como a inflação afeta o planejamento de aposentadoria?',
-    a: 'A inflação corrói brutalmente o poder de compra ao longo de 20-30 anos. Com inflação anual de 4,5% (média histórica brasileira), R$ 5.000 hoje viram R$ 16.500 em 25 anos só pra manter o mesmo padrão. Por isso a calculadora ajusta a renda desejada pela inflação até a aposentadoria, e em fase de fruição calcula o saque crescente nominal pra preservar o real. Sempre pense em renda real, não nominal.',
+    question: 'Como a inflação afeta o planejamento de aposentadoria?',
+    answer: 'A inflação corrói brutalmente o poder de compra ao longo de 20-30 anos. Com inflação anual de 4,5% (média histórica brasileira), R$ 5.000 hoje viram R$ 16.500 em 25 anos só pra manter o mesmo padrão. Por isso a calculadora ajusta a renda desejada pela inflação até a aposentadoria, e em fase de fruição calcula o saque crescente nominal pra preservar o real. Sempre pense em renda real, não nominal.',
   },
   {
-    q: 'Por que retorno na acumulação é diferente do retorno na fruição?',
-    a: 'Na acumulação você pode ter carteira mais agressiva (60% renda variável, 40% renda fixa) com retorno esperado de 10-12% a.a., porque tem 20-30 anos pra absorver volatilidade. Na fruição (já aposentado), prioridade é preservação de capital e renda estável, então a carteira fica mais conservadora (30% renda variável, 70% renda fixa) com retorno menor (5-8% a.a.). A calculadora separa as duas fases pra projetar com mais realismo.',
+    question: 'Por que retorno na acumulação é diferente do retorno na fruição?',
+    answer: 'Na acumulação você pode ter carteira mais agressiva (60% renda variável, 40% renda fixa) com retorno esperado de 10-12% a.a., porque tem 20-30 anos pra absorver volatilidade. Na fruição (já aposentado), prioridade é preservação de capital e renda estável, então a carteira fica mais conservadora (30% renda variável, 70% renda fixa) com retorno menor (5-8% a.a.). A calculadora separa as duas fases pra projetar com mais realismo.',
   },
   {
-    q: 'Vale a pena ter previdência privada (PGBL/VGBL)?',
-    a: 'Em casos específicos: PGBL faz sentido pra quem declara IR no modelo completo e quer reduzir base tributária no presente (até 12% da renda bruta). VGBL é melhor pra quem usa modelo simplificado ou já estourou o limite do PGBL. Em ambos, fuja de planos com taxa de administração acima de 1% a.a., a maioria entrega rendimento pior que Tesouro Direto comprado direto. Compare sempre o líquido após taxa.',
+    question: 'Vale a pena ter previdência privada (PGBL/VGBL)?',
+    answer: 'Em casos específicos: PGBL faz sentido pra quem declara IR no modelo completo e quer reduzir base tributária no presente (até 12% da renda bruta). VGBL é melhor pra quem usa modelo simplificado ou já estourou o limite do PGBL. Em ambos, fuja de planos com taxa de administração acima de 1% a.a., a maioria entrega rendimento pior que Tesouro Direto comprado direto. Compare sempre o líquido após taxa.',
   },
   {
-    q: 'Quanto preciso poupar por mês pra aposentar com R$ 5.000/mês?',
-    a: 'Depende do prazo: Em 30 anos a 10% a.a. (do zero), você precisa aportar R$ 745/mês. Em 25 anos, R$ 1.135/mês. Em 20 anos, R$ 1.973/mês. Em 15 anos, R$ 3.601/mês. Em 10 anos, R$ 7.221/mês. Note como cada década adicional reduz o aporte em 40-50%. Quem começa cedo tem vantagem desproporcional sobre quem começa tarde.',
+    question: 'Quanto preciso poupar por mês pra aposentar com R$ 5.000/mês?',
+    answer: 'Depende do prazo: Em 30 anos a 10% a.a. (do zero), você precisa aportar R$ 745/mês. Em 25 anos, R$ 1.135/mês. Em 20 anos, R$ 1.973/mês. Em 15 anos, R$ 3.601/mês. Em 10 anos, R$ 7.221/mês. Note como cada década adicional reduz o aporte em 40-50%. Quem começa cedo tem vantagem desproporcional sobre quem começa tarde.',
   },
   {
-    q: 'É melhor focar em acumular ou em renda passiva imediata (FIIs)?',
-    a: 'Depende do seu prazo e perfil. Quem tem 20+ anos pra aposentar deve focar em acumulação total (juros compostos sobre o patrimônio inteiro). Quem está perto da aposentadoria ou já aposentado deve gradualmente migrar pra ativos pagadores de renda (FIIs, ações dividendos, Tesouro IPCA+). Estratégia híbrida: 70% acumulação durante 20-30 anos, depois rebalanceia pra 50-50 nos últimos 5 anos antes de parar de trabalhar.',
+    question: 'É melhor focar em acumular ou em renda passiva imediata (FIIs)?',
+    answer: 'Depende do seu prazo e perfil. Quem tem 20+ anos pra aposentar deve focar em acumulação total (juros compostos sobre o patrimônio inteiro). Quem está perto da aposentadoria ou já aposentado deve gradualmente migrar pra ativos pagadores de renda (FIIs, ações dividendos, Tesouro IPCA+). Estratégia híbrida: 70% acumulação durante 20-30 anos, depois rebalanceia pra 50-50 nos últimos 5 anos antes de parar de trabalhar.',
   },
   {
-    q: 'O que faço se a calculadora mostrar que meu plano não é viável?',
-    a: 'Você tem 5 alavancas: 1) Aumentar aporte mensal (revisão do orçamento, side hustle), 2) Estender prazo até aposentar (trabalhar 3-5 anos a mais reduz drasticamente o aporte exigido), 3) Reduzir renda desejada (Fat FIRE para Regular, Regular para Lean), 4) Buscar maior retorno (carteira mais agressiva, com mais risco), 5) Aumentar a renda atual (promoção, mudança de carreira, empreendedorismo). A calculadora mostra os 3 cenários alternativos pra ajudar a escolher.',
+    question: 'O que faço se a calculadora mostrar que meu plano não é viável?',
+    answer: 'Você tem 5 alavancas: 1) Aumentar aporte mensal (revisão do orçamento, side hustle), 2) Estender prazo até aposentar (trabalhar 3-5 anos a mais reduz drasticamente o aporte exigido), 3) Reduzir renda desejada (Fat FIRE para Regular, Regular para Lean), 4) Buscar maior retorno (carteira mais agressiva, com mais risco), 5) Aumentar a renda atual (promoção, mudança de carreira, empreendedorismo). A calculadora mostra os 3 cenários alternativos pra ajudar a escolher.',
   },
   {
-    q: 'Como compartilhar uma simulação específica de aposentadoria?',
-    a: `Basta copiar a URL com os parâmetros: ${brand.url || 'https://redentia.com.br'}/calculadora/aposentadoria?age=30&retire=55&income=8000&monthly=4000&rate=11 já abre a calculadora preenchida e calcula automaticamente. Útil pra mandar para o cônjuge, planejador financeiro ou salvar diferentes cenários (otimista, realista, pessimista) nos favoritos.`,
+    question: 'Como compartilhar uma simulação específica de aposentadoria?',
+    answer: `Basta copiar a URL com os parâmetros: ${brand.url || 'https://redentia.com.br'}/calculadora/aposentadoria?age=30&retire=55&income=8000&monthly=4000&rate=11 já abre a calculadora preenchida e calcula automaticamente. Útil pra mandar para o cônjuge, planejador financeiro ou salvar diferentes cenários (otimista, realista, pessimista) nos favoritos.`,
   },
 ] as const
 
@@ -888,18 +871,7 @@ usePageSeo({
         { '@type': 'Organization', name: 'Receita Federal', url: 'https://www.gov.br/receitafederal' },
       ],
     },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'FAQPage',
-      mainEntity: faqItems.map((item) => ({
-        '@type': 'Question',
-        name: item.q,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: item.a,
-        },
-      })),
-    },
+    // FAQPage schema é emitido pelo <MoleculesFAQ> via useHead — fonte unica.
   ],
 })
 

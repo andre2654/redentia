@@ -1,11 +1,9 @@
 <template>
   <div ref="calcRoot" class="space-y-6">
-    <div
-      class="flex flex-col gap-6 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6"
-    >
+    <div class="quiet-card flex flex-col gap-6 p-6">
       <div class="flex items-center gap-3">
         <UIcon name="i-lucide-wallet" class="text-secondary size-6" />
-        <h2 class="text-xl font-bold text-white">Calcular Aporte Mensal Necessário</h2>
+        <h2 class="text-xl">Calcular Aporte Mensal Necessário</h2>
       </div>
 
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -75,7 +73,7 @@
       </div>
 
       <UButton
-        color="secondary"
+        color="primary"
         size="xl"
         block
         icon="i-lucide-calculator"
@@ -85,124 +83,157 @@
       </UButton>
     </div>
 
-    <div v-if="results" class="flex flex-col gap-6 rounded-[30px] p-6">
+    <div v-if="results" class="quiet-card flex flex-col gap-6 p-6">
       <div class="flex items-center gap-3">
         <UIcon name="i-lucide-target" class="text-secondary size-6" />
-        <h3 class="text-xl font-bold text-white">Plano de Aportes</h3>
+        <h3 class="text-xl">Plano de Aportes</h3>
       </div>
 
       <!-- Aporte Necessário -->
-      <div class="rounded-xl border border-secondary/30 bg-secondary/10 p-6">
-        <p class="mb-2 text-sm text-gray-400">Você precisa investir:</p>
-        <p class="text-5xl font-bold text-secondary">
+      <div
+        class="rounded-lg border p-6"
+        :style="{ borderColor: 'color-mix(in srgb, var(--brand-secondary) 30%, transparent)', backgroundColor: 'color-mix(in srgb, var(--brand-secondary) 10%, transparent)' }"
+      >
+        <p class="mb-2 text-sm" :style="{ color: 'var(--text-muted)' }">Você precisa investir:</p>
+        <p class="text-5xl font-light tabular-nums text-secondary">
           {{ formatCurrency(results.monthlyContribution) }}
         </p>
-        <p class="text-sm text-white">por mês durante {{ form.years }} anos</p>
+        <p class="text-sm" :style="{ color: 'var(--text-heading)' }">por mês durante {{ form.years }} anos</p>
       </div>
 
       <!-- Resumo -->
       <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <div class="rounded-xl border border-white/10 bg-white/5 p-4">
-          <p class="mb-1 text-sm text-gray-400">Total que será Investido</p>
-          <p class="text-2xl font-bold text-white">
+        <div
+          class="rounded-lg border p-4"
+          :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
+        >
+          <p class="mb-1 text-sm" :style="{ color: 'var(--text-muted)' }">Total que será Investido</p>
+          <p class="text-2xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
             {{ formatCurrency(results.totalInvested) }}
           </p>
         </div>
-        <div class="rounded-xl border border-white/10 bg-white/5 p-4">
-          <p class="mb-1 text-sm text-gray-400">Total de Juros</p>
-          <p class="text-2xl font-bold text-green-400">
+        <div
+          class="rounded-lg border p-4"
+          :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
+        >
+          <p class="mb-1 text-sm" :style="{ color: 'var(--text-muted)' }">Total de Juros</p>
+          <p class="text-2xl tabular-nums" :style="{ color: 'var(--brand-positive)' }">
             {{ formatCurrency(results.totalInterest) }}
           </p>
         </div>
-        <div class="rounded-xl border border-white/10 bg-white/5 p-4">
-          <p class="mb-1 text-sm text-gray-400">Meta Final</p>
-          <p class="text-2xl font-bold text-secondary">
+        <div
+          class="rounded-lg border p-4"
+          :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
+        >
+          <p class="mb-1 text-sm" :style="{ color: 'var(--text-muted)' }">Meta Final</p>
+          <p class="text-2xl tabular-nums text-secondary">
             {{ formatCurrency(form.goal) }}
           </p>
         </div>
       </div>
 
       <!-- Composição -->
-      <div class="rounded-xl border border-white/10 bg-white/5 p-5">
-        <h4 class="mb-3 font-semibold text-white">De Onde Vem o Dinheiro?</h4>
+      <div
+        class="rounded-lg border p-5"
+        :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
+      >
+        <h4 class="mb-3 font-medium" :style="{ color: 'var(--text-heading)' }">De Onde Vem o Dinheiro?</h4>
         <div class="space-y-3">
           <div class="flex items-center justify-between">
-            <span class="text-gray-300">Seus aportes</span>
-            <span class="font-semibold text-white">
+            <span :style="{ color: 'var(--text-body)' }">Seus aportes</span>
+            <span class="font-medium tabular-nums" :style="{ color: 'var(--text-heading)' }">
               {{ results.contributionPercent.toFixed(1) }}%
             </span>
           </div>
-          <div class="h-2 w-full rounded-full bg-white/10">
+          <div
+            class="h-2 w-full rounded-full"
+            :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-text) 10%, transparent)' }"
+          >
             <div
-              class="h-2 rounded-full bg-blue-400"
-              :style="{ width: `${results.contributionPercent}%` }"
+              class="h-2 rounded-full"
+              :style="{ width: `${results.contributionPercent}%`, backgroundColor: 'var(--brand-primary)' }"
             />
           </div>
 
           <div class="flex items-center justify-between">
-            <span class="text-gray-300">Juros compostos</span>
-            <span class="font-semibold text-green-400">
+            <span :style="{ color: 'var(--text-body)' }">Juros compostos</span>
+            <span class="font-medium tabular-nums" :style="{ color: 'var(--brand-positive)' }">
               {{ results.interestPercent.toFixed(1) }}%
             </span>
           </div>
-          <div class="h-2 w-full rounded-full bg-white/10">
+          <div
+            class="h-2 w-full rounded-full"
+            :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-text) 10%, transparent)' }"
+          >
             <div
-              class="h-2 rounded-full bg-green-400"
-              :style="{ width: `${results.interestPercent}%` }"
+              class="h-2 rounded-full"
+              :style="{ width: `${results.interestPercent}%`, backgroundColor: 'var(--brand-positive)' }"
             />
           </div>
         </div>
       </div>
 
       <!-- Cenários -->
-      <div class="rounded-xl border border-white/10 bg-white/5 p-5">
-        <h4 class="mb-4 font-semibold text-white">E Se...?</h4>
+      <div
+        class="rounded-lg border p-5"
+        :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
+      >
+        <h4 class="mb-4 font-medium" :style="{ color: 'var(--text-heading)' }">E Se...?</h4>
         <div class="space-y-3">
-          <div class="rounded-lg border border-white/10 bg-white/5 p-3">
+          <div
+            class="rounded-md border p-3"
+            :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }"
+          >
             <div class="flex items-center justify-between">
               <div>
-                <p class="font-semibold text-white">Aumentar aporte em 20%</p>
-                <p class="text-xs text-gray-400">Investir {{ formatCurrency(results.monthlyContribution * 1.2) }}/mês</p>
+                <p class="font-medium" :style="{ color: 'var(--text-heading)' }">Aumentar aporte em 20%</p>
+                <p class="text-xs" :style="{ color: 'var(--text-muted)' }">Investir {{ formatCurrency(results.monthlyContribution * 1.2) }}/mês</p>
               </div>
               <div class="text-right">
-                <p class="text-secondary font-bold">
+                <p class="text-secondary tabular-nums">
                   {{ formatCurrency(results.scenarios.increase20) }}
                 </p>
-                <p class="text-xs text-green-400">
+                <p class="text-xs tabular-nums" :style="{ color: 'var(--brand-positive)' }">
                   +{{ formatCurrency(results.scenarios.increase20 - form.goal) }}
                 </p>
               </div>
             </div>
           </div>
 
-          <div class="rounded-lg border border-white/10 bg-white/5 p-3">
+          <div
+            class="rounded-md border p-3"
+            :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }"
+          >
             <div class="flex items-center justify-between">
               <div>
-                <p class="font-semibold text-white">Reduzir aporte em 20%</p>
-                <p class="text-xs text-gray-400">Investir {{ formatCurrency(results.monthlyContribution * 0.8) }}/mês</p>
+                <p class="font-medium" :style="{ color: 'var(--text-heading)' }">Reduzir aporte em 20%</p>
+                <p class="text-xs" :style="{ color: 'var(--text-muted)' }">Investir {{ formatCurrency(results.monthlyContribution * 0.8) }}/mês</p>
               </div>
               <div class="text-right">
-                <p class="text-white font-bold">
+                <p class="tabular-nums" :style="{ color: 'var(--text-heading)' }">
                   {{ formatCurrency(results.scenarios.reduce20) }}
                 </p>
-                <p class="text-xs text-red-400">
+                <p class="text-xs tabular-nums" :style="{ color: 'var(--brand-negative)' }">
                   {{ formatCurrency(results.scenarios.reduce20 - form.goal) }}
                 </p>
               </div>
             </div>
           </div>
 
-          <div class="rounded-lg border border-white/10 bg-white/5 p-3">
+          <div
+            class="rounded-md border p-3"
+            :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-elevated)' }"
+          >
             <div class="flex items-center justify-between">
               <div>
-                <p class="font-semibold text-white">Estender prazo em 2 anos</p>
-                <p class="text-xs text-gray-400">Investir por {{ form.years + 2 }} anos</p>
+                <p class="font-medium" :style="{ color: 'var(--text-heading)' }">Estender prazo em 2 anos</p>
+                <p class="text-xs" :style="{ color: 'var(--text-muted)' }">Investir por {{ form.years + 2 }} anos</p>
               </div>
               <div class="text-right">
-                <p class="text-secondary font-bold">
+                <p class="text-secondary tabular-nums">
                   {{ formatCurrency(results.scenarios.extend2Years) }}
                 </p>
-                <p class="text-xs text-green-400">
+                <p class="text-xs tabular-nums" :style="{ color: 'var(--brand-positive)' }">
                   -{{ ((1 - results.scenarios.extend2Years / results.monthlyContribution) * 100).toFixed(0) }}% aporte
                 </p>
               </div>
@@ -212,24 +243,34 @@
       </div>
 
       <!-- Tabela de Sensibilidade -->
-      <div class="rounded-xl border border-white/10 bg-white/5 p-5">
-        <h4 class="mb-4 font-semibold text-white">Aporte Necessário por Taxa de Retorno</h4>
+      <div
+        class="rounded-lg border p-5"
+        :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
+      >
+        <h4 class="mb-4 font-medium" :style="{ color: 'var(--text-heading)' }">Aporte Necessário por Taxa de Retorno</h4>
         <div class="overflow-x-auto">
           <table class="w-full">
-            <thead class="bg-white/10">
+            <thead :style="{ backgroundColor: 'var(--bg-elevated)' }">
               <tr>
-                <th class="border border-white/20 px-4 py-2 text-left">Taxa a.a.</th>
-                <th class="border border-white/20 px-4 py-2 text-left">Aporte Mensal</th>
-                <th class="border border-white/20 px-4 py-2 text-left">Total Investido</th>
+                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'var(--border-subtle)' }">Taxa a.a.</th>
+                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'var(--border-subtle)' }">Aporte Mensal</th>
+                <th class="border px-4 py-2 text-left" :style="{ borderColor: 'var(--border-subtle)' }">Total Investido</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="rate in [6, 8, 10, 12, 15]" :key="rate" class="hover:bg-white/5">
-                <td class="border border-white/20 px-4 py-2">{{ rate }}%</td>
-                <td class="border border-white/20 px-4 py-2 font-semibold">
+              <tr
+                v-for="rate in [6, 8, 10, 12, 15]"
+                :key="rate"
+                class="hover:bg-[var(--bg-overlay)]"
+              >
+                <td class="border px-4 py-2 tabular-nums" :style="{ borderColor: 'var(--border-subtle)' }">{{ rate }}%</td>
+                <td class="border px-4 py-2 font-medium tabular-nums" :style="{ borderColor: 'var(--border-subtle)' }">
                   {{ formatCurrency(calculateForRate(rate)) }}
                 </td>
-                <td class="border border-white/20 px-4 py-2 text-gray-300">
+                <td
+                  class="border px-4 py-2 tabular-nums"
+                  :style="{ borderColor: 'var(--border-subtle)', color: 'var(--text-body)' }"
+                >
                   {{ formatCurrency(calculateForRate(rate) * form.years * 12) }}
                 </td>
               </tr>
@@ -239,8 +280,11 @@
       </div>
 
       <!-- Dica -->
-      <div class="rounded-xl border border-yellow-500/20 bg-yellow-500/10 p-4 text-sm text-yellow-200">
-        <strong>Importante:</strong> Este cálculo assume aportes mensais fixos. Se você ajustar os aportes pela inflação ou aumentar conforme sua renda cresce, alcançará a meta mais rapidamente.
+      <div
+        class="rounded-lg border p-4 text-sm"
+        :style="{ borderColor: 'color-mix(in srgb, var(--brand-primary) 25%, transparent)', backgroundColor: 'color-mix(in srgb, var(--brand-primary) 8%, transparent)', color: 'var(--text-body)' }"
+      >
+        <strong :style="{ color: 'var(--brand-primary)' }">Importante:</strong> Este cálculo assume aportes mensais fixos. Se você ajustar os aportes pela inflação ou aumentar conforme sua renda cresce, alcançará a meta mais rapidamente.
       </div>
     </div>
   </div>

@@ -10,6 +10,11 @@
 <template>
   <NuxtLayout name="default" title="Calculadoras Financeiras">
     <section class="flex flex-col gap-14 px-6 py-10">
+      <!-- CTA contextual — admin pode posicionar promo no topo do hub -->
+      <div class="mx-auto w-full max-w-3xl">
+        <MoleculesCommunicationsCTASlot placement="calculadora-top" />
+      </div>
+
       <!-- ============ Hero ============
            Page-level h1 is rendered ALWAYS. The static layout cascade
            hides any h1 inside `.static-content`, so on static this

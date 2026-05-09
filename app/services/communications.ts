@@ -27,6 +27,19 @@ export type CommunicationPlacement =
   | 'feed'
   | 'modal'
   | 'inbox'
+  // Placements de CTA contextual (banner faixa em paginas-alvo) —
+  // adicionados em 2026-05-09 pra que admin possa por CTA em cima
+  // das calculadoras, rankings, guias, etc.
+  | 'calculadora-top'
+  | 'ranking-top'
+  | 'guias-top'
+  | 'dividendos-top'
+  | 'asset-top'
+  | 'tesouro-top'
+  | 'crypto-top'
+  | 'setor-top'
+  | 'pricing-top'
+  | 'glossario-top'
 export type CommunicationAudience =
   | 'all'
   | 'authenticated'
@@ -87,6 +100,13 @@ export interface CommunicationAdmin {
   ends_at: string | null
   dismissible: boolean
   placement: CommunicationPlacement | null
+  /**
+   * Multi-placement (CTA pode aparecer em N lugares simultaneamente).
+   * Quando preenchido, sobrescreve `placement` (single) na resolucao do
+   * filtro user-side. Banner/announcement permanecem single-placement
+   * por design — top vs sidebar sao mutuamente exclusivos.
+   */
+  placements: CommunicationPlacement[] | null
   modal_size: 'sm' | 'md' | 'lg' | null
   poll_options: PollOption[] | null
   poll_multi_choice: boolean
@@ -245,6 +265,12 @@ export interface CommunicationAdminPayload {
   ends_at?: string | null
   dismissible?: boolean
   placement?: CommunicationPlacement | null
+  /**
+   * Multi-placement pra CTA. Quando enviado com 1+ items, backend
+   * marca `placement` = primeiro item (legacy) e mantem o array
+   * completo no JSONB. Vazio = usa `placement` single como fallback.
+   */
+  placements?: CommunicationPlacement[] | null
   modal_size?: 'sm' | 'md' | 'lg' | null
   poll_options?: PollOption[] | null
   poll_multi_choice?: boolean
@@ -400,9 +426,42 @@ export function useAdminCommunicationsService() {
     return resp.data
   }
 
+  /**
+   * Upload de imagem (cover de banner / announcement / cta / modal).
+   * Manda multipart/form-data com `file`. Retorna a URL pública pra
+   * ser salva no `image_url` da communication.
+   */
+  async function uploadImage(file: File): Promise<{ url: string; path: string; size: number; mime: string }> {
+    const fd = new FormData()
+    fd.append('file', file)
+    const resp = await $fetch<{ data: { url: string; path: string; size: number; mime: string } }>(
+      `${API}/admin/communications/upload-image`,
+      { method: 'POST', headers: headers(), body: fd },
+    )
+    return resp.data
+  }
+
+  /**
+   * Deleta uma imagem do storage. Usado quando admin clica "remover"
+   * antes de salvar (cleanup de orfão), ou quando troca a imagem
+   * antes do save (tira a antiga). Lifecycle hooks na model fazem
+   * cleanup também no save (image_url muda) e no destroy().
+   *
+   * URLs externas são aceitas mas o backend ignora silenciosamente
+   * (só deleta se for do nosso storage).
+   */
+  async function deleteImage(url: string): Promise<{ deleted: boolean }> {
+    const resp = await $fetch<{ data: { deleted: boolean } }>(
+      `${API}/admin/communications/upload-image`,
+      { method: 'DELETE', headers: headers(), body: { url } },
+    )
+    return resp.data
+  }
+
   return {
     list, get, create, update, destroy, toggle, duplicate, analytics,
     audiencePreview,
+    uploadImage, deleteImage,
     recipientsPreview, testSend, sendNow, deliveries, emailStats,
   }
 }

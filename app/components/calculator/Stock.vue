@@ -1,12 +1,9 @@
 <template>
   <div ref="calcRoot" class="space-y-6">
-    <div
-      class="flex flex-col gap-6 rounded-[30px] p-6"
-      :style="{ backgroundColor: 'var(--brand-surface)' }"
-    >
+    <div class="quiet-card flex flex-col gap-6 p-6">
       <div class="flex items-center gap-3">
         <UIcon name="i-lucide-chart-line" class="text-secondary size-6" />
-        <h2 class="text-xl font-bold" :style="{ color: 'var(--brand-text)' }">Análise de Histórico Real</h2>
+        <h2 class="text-xl">Análise de Histórico Real</h2>
       </div>
 
       <div class="space-y-4">
@@ -170,7 +167,7 @@
       </div>
 
       <UButton
-        color="secondary"
+        color="primary"
         size="xl"
         block
         icon="i-lucide-calculator"
@@ -203,19 +200,19 @@
 
     <div
       v-if="aggregatedSummary && !resultsStale"
-      class="flex flex-col gap-6 rounded-[30px] p-6"
+      class="quiet-card flex flex-col gap-6 p-6"
     >
       <div class="flex items-center gap-3">
         <UIcon name="i-lucide-bar-chart-3" class="text-secondary size-6" />
-        <h3 class="text-xl font-bold" :style="{ color: 'var(--brand-text)' }">Resumo do Portfólio</h3>
+        <h3 class="text-xl">Resumo do Portfólio</h3>
       </div>
 
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
-          <p class="text-[13px] font-extralight" :style="{ color: 'var(--brand-text-muted)' }">
+          <p class="text-[13px] font-light" :style="{ color: 'var(--brand-text-muted)' }">
             Total Investido
           </p>
-          <p class="text-xl font-bold" :style="{ color: 'var(--brand-text)' }">
+          <p class="text-xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
             {{
               new Intl.NumberFormat('pt-BR', {
                 style: 'currency',
@@ -225,7 +222,7 @@
           </p>
         </div>
         <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
-          <p class="text-[13px] font-extralight" :style="{ color: 'var(--brand-text-muted)' }">Valor Final</p>
+          <p class="text-[13px] font-light" :style="{ color: 'var(--brand-text-muted)' }">Valor Final</p>
           <p class="text-secondary text-xl font-bold">
             {{
               new Intl.NumberFormat('pt-BR', {
@@ -236,22 +233,20 @@
           </p>
         </div>
         <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
-          <p class="text-[13px] font-extralight" :style="{ color: 'var(--brand-text-muted)' }">Rentabilidade</p>
+          <p class="text-[13px] font-light" :style="{ color: 'var(--brand-text-muted)' }">Rentabilidade</p>
           <p
-            class="text-xl font-bold"
-            :class="
-              aggregatedSummary.return >= 0 ? 'text-green-400' : 'text-red-400'
-            "
+            class="text-xl tabular-nums"
+            :style="{ color: aggregatedSummary.return >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)' }"
           >
             {{ aggregatedSummary.return >= 0 ? '+' : ''
             }}{{ aggregatedSummary.return.toFixed(2) }}%
           </p>
         </div>
         <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
-          <p class="text-[13px] font-extralight" :style="{ color: 'var(--brand-text-muted)' }">
+          <p class="text-[13px] font-light" :style="{ color: 'var(--brand-text-muted)' }">
             Total de Proventos
           </p>
-          <p class="text-xl font-bold text-green-400">
+          <p class="text-xl tabular-nums" :style="{ color: 'var(--brand-positive)' }">
             {{
               new Intl.NumberFormat('pt-BR', {
                 style: 'currency',
@@ -272,12 +267,12 @@
       <div
         v-for="result in stockResults"
         :key="result.ticker"
-        class="flex flex-col gap-6 rounded-[30px] p-6"
+        class="quiet-card flex flex-col gap-6 p-6"
       >
         <div class="flex items-center gap-3">
           <UIcon name="i-lucide-bar-chart-3" class="text-secondary size-6" />
           <div>
-            <h3 class="text-xl font-bold" :style="{ color: 'var(--brand-text)' }">
+            <h3 class="text-xl">
               Resultados – {{ result.ticker }}
             </h3>
             <p v-if="result.name" class="text-xs" :style="{ color: 'var(--brand-text-muted)' }">
@@ -288,10 +283,10 @@
 
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
           <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
-            <p class="text-[13px] font-extralight" :style="{ color: 'var(--brand-text-muted)' }">
+            <p class="text-[13px] font-light" :style="{ color: 'var(--brand-text-muted)' }">
               Total Investido
             </p>
-            <p class="text-xl font-bold" :style="{ color: 'var(--brand-text)' }">
+            <p class="text-xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
               {{
                 new Intl.NumberFormat('pt-BR', {
                   style: 'currency',
@@ -301,7 +296,7 @@
             </p>
           </div>
           <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
-            <p class="text-[13px] font-extralight" :style="{ color: 'var(--brand-text-muted)' }">Valor Final</p>
+            <p class="text-[13px] font-light" :style="{ color: 'var(--brand-text-muted)' }">Valor Final</p>
             <p class="text-secondary text-xl font-bold">
               {{
                 new Intl.NumberFormat('pt-BR', {
@@ -312,21 +307,21 @@
             </p>
           </div>
           <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
-            <p class="text-[13px] font-extralight" :style="{ color: 'var(--brand-text-muted)' }">
+            <p class="text-[13px] font-light" :style="{ color: 'var(--brand-text-muted)' }">
               Rentabilidade
             </p>
             <p
-              class="text-xl font-bold"
-              :class="result.return >= 0 ? 'text-green-400' : 'text-red-400'"
+              class="text-xl tabular-nums"
+              :style="{ color: result.return >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)' }"
             >
               {{ result.return >= 0 ? '+' : '' }}{{ result.return.toFixed(2) }}%
             </p>
           </div>
           <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
-            <p class="text-[13px] font-extralight" :style="{ color: 'var(--brand-text-muted)' }">
+            <p class="text-[13px] font-light" :style="{ color: 'var(--brand-text-muted)' }">
               Total de Proventos
             </p>
-            <p class="text-xl font-bold text-green-400">
+            <p class="text-xl tabular-nums" :style="{ color: 'var(--brand-positive)' }">
               {{
                 new Intl.NumberFormat('pt-BR', {
                   style: 'currency',
@@ -339,10 +334,10 @@
 
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
-            <p class="text-[13px] font-extralight" :style="{ color: 'var(--brand-text-muted)' }">
+            <p class="text-[13px] font-light" :style="{ color: 'var(--brand-text-muted)' }">
               Preço Médio de Compra
             </p>
-            <p class="text-lg font-semibold" :style="{ color: 'var(--brand-text)' }">
+            <p class="text-lg font-medium" :style="{ color: 'var(--text-heading)' }">
               {{
                 new Intl.NumberFormat('pt-BR', {
                   style: 'currency',
@@ -352,10 +347,10 @@
             </p>
           </div>
           <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
-            <p class="text-[13px] font-extralight" :style="{ color: 'var(--brand-text-muted)' }">
+            <p class="text-[13px] font-light" :style="{ color: 'var(--brand-text-muted)' }">
               Quantidade de Ações
             </p>
-            <p class="text-lg font-semibold" :style="{ color: 'var(--brand-text)' }">
+            <p class="text-lg font-medium" :style="{ color: 'var(--text-heading)' }">
               {{ result.totalShares.toFixed(2) }}
             </p>
           </div>
@@ -383,23 +378,23 @@
         >
           <div class="flex items-center gap-3">
             <UIcon name="i-lucide-table" class="text-secondary size-6" />
-            <h3 class="text-xl font-bold" :style="{ color: 'var(--brand-text)' }">Histórico de Proventos</h3>
+            <h3 class="text-xl">Histórico de Proventos</h3>
           </div>
 
           <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
             <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
-              <p class="text-[13px] font-extralight" :style="{ color: 'var(--brand-text-muted)' }">
+              <p class="text-[13px] font-light" :style="{ color: 'var(--brand-text-muted)' }">
                 Total de Pagamentos
               </p>
-              <p class="text-xl font-bold" :style="{ color: 'var(--brand-text)' }">
+              <p class="text-xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
                 {{ result.dividendsHistory.length }}
               </p>
             </div>
             <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
-              <p class="text-[13px] font-extralight" :style="{ color: 'var(--brand-text-muted)' }">
+              <p class="text-[13px] font-light" :style="{ color: 'var(--brand-text-muted)' }">
                 Total Recebido
               </p>
-              <p class="text-xl font-bold text-green-400">
+              <p class="text-xl tabular-nums" :style="{ color: 'var(--brand-positive)' }">
                 {{
                   new Intl.NumberFormat('pt-BR', {
                     style: 'currency',
@@ -409,10 +404,10 @@
               </p>
             </div>
             <div class="flex flex-col gap-2 rounded-2xl border p-4" :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }">
-              <p class="text-[13px] font-extralight" :style="{ color: 'var(--brand-text-muted)' }">
+              <p class="text-[13px] font-light" :style="{ color: 'var(--brand-text-muted)' }">
                 Média por Pagamento
               </p>
-              <p class="text-xl font-bold" :style="{ color: 'var(--brand-text)' }">
+              <p class="text-xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
                 {{
                   new Intl.NumberFormat('pt-BR', {
                     style: 'currency',
@@ -476,7 +471,7 @@
                   <td class="px-4 py-3 text-sm" :style="{ color: 'var(--brand-text-muted)' }">
                     {{ (dividend.sharesAtTime || 0).toFixed(2) }}
                   </td>
-                  <td class="px-4 py-3 text-sm font-bold text-green-400">
+                  <td class="px-4 py-3 text-sm tabular-nums" :style="{ color: 'var(--brand-positive)' }">
                     {{
                       new Intl.NumberFormat('pt-BR', {
                         style: 'currency',
@@ -486,12 +481,8 @@
                   </td>
                   <td class="px-4 py-3">
                     <span
-                      class="rounded-full px-2 py-1 text-xs font-medium"
-                      :class="
-                        dividend.label === 'JCP'
-                          ? 'bg-blue-500/20 text-blue-400'
-                          : 'bg-green-500/20 text-green-400'
-                      "
+                      class="quiet-badge"
+                      :class="dividend.label === 'JCP' ? 'quiet-badge--brand' : 'quiet-badge--success'"
                     >
                       {{ dividend.label }}
                     </span>

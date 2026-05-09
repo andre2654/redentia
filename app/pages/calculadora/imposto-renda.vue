@@ -99,7 +99,7 @@
         </div>
       </div>
 
-      <div class="max-w-none">
+      <div class="quiet-prose max-w-none">
         <h2>Simulador de IR sobre ações grátis e online</h2>
         <p class="leading-relaxed">
           Use a calculadora acima para simular o imposto de renda devido em swing trade e day trade em segundos. Ideal pra apurar o DARF do mês antes do vencimento.
@@ -308,25 +308,10 @@
           Quem teve saldo superior a R$ 5.000 em criptomoedas em 31/12 deve declarar em Bens e Direitos com os códigos: 81 (Bitcoin), 82 (Ethereum) e 89 (demais criptoativos). As corretoras Mercado Bitcoin, Binance, Foxbit e demais geram relatórios anuais de movimentação que ajudam a preencher os campos. Quem opera há mais tempo precisa também observar a obrigação acessória mensal da IN 1.888 quando movimenta acima de R$ 30 mil em uma única exchange.
         </p>
 
-        <h2>Perguntas Frequentes sobre IR de Ações</h2>
-
-        <div class="space-y-4">
-          <details
-            v-for="item in faqItems"
-            :key="item.q"
-            class="group brand-card border p-4"
-            :style="{
-              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
-              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
-            }"
-          >
-            <summary class="cursor-pointer list-none flex items-center justify-between">
-              {{ item.q }}
-              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
-            </summary>
-            <p class="mt-3 text-sm">{{ item.a }}</p>
-          </details>
-        </div>
+        <MoleculesFAQ
+          title="Perguntas Frequentes sobre IR de Ações"
+          :items="faqItems"
+        />
 
         <h2>Evite Estes Erros</h2>
         <div class="space-y-3">
@@ -548,64 +533,64 @@ const popularScenarios = [
 // e o HTML 5 — Google ignora FAQs nao espelhados.
 const faqItems = [
   {
-    q: 'O que acontece se eu não pagar o IR sobre ações?',
-    a: 'Multa de 0,33% por dia de atraso (até o teto de 20%) somada aos juros Selic, mais cair na malha fina do IRPF anual. Em casos graves de omissão dolosa, configura crime contra a ordem tributária (Lei 8.137/90) com pena de 2 a 5 anos de reclusão. Se você esqueceu, pague o DARF em atraso o quanto antes, a multa é menor que sonegar.',
+    question: 'O que acontece se eu não pagar o IR sobre ações?',
+    answer: 'Multa de 0,33% por dia de atraso (até o teto de 20%) somada aos juros Selic, mais cair na malha fina do IRPF anual. Em casos graves de omissão dolosa, configura crime contra a ordem tributária (Lei 8.137/90) com pena de 2 a 5 anos de reclusão. Se você esqueceu, pague o DARF em atraso o quanto antes, a multa é menor que sonegar.',
   },
   {
-    q: 'Como funciona a isenção de R$ 20.000 em vendas?',
-    a: 'Para swing trade, se o total de vendas de ações no mês for até R$ 20.000, o lucro fica isento de IR. Atenção: é sobre VENDAS brutas, não lucro. Se vendeu R$ 19 mil e lucrou R$ 5 mil, está isento. Se vendeu R$ 21 mil e lucrou só R$ 100, paga 15% de IR sobre os R$ 100. Vale por mês fiscal e por modalidade. Day trade NÃO tem essa isenção. Importante: a isenção não vale para FIIs nem ETFs.',
+    question: 'Como funciona a isenção de R$ 20.000 em vendas?',
+    answer: 'Para swing trade, se o total de vendas de ações no mês for até R$ 20.000, o lucro fica isento de IR. Atenção: é sobre VENDAS brutas, não lucro. Se vendeu R$ 19 mil e lucrou R$ 5 mil, está isento. Se vendeu R$ 21 mil e lucrou só R$ 100, paga 15% de IR sobre os R$ 100. Vale por mês fiscal e por modalidade. Day trade NÃO tem essa isenção. Importante: a isenção não vale para FIIs nem ETFs.',
   },
   {
-    q: 'Posso compensar prejuízos de meses anteriores?',
-    a: 'Sim, e indefinidamente. Prejuízos no swing trade compensam lucros futuros do swing trade (gaveta separada). Prejuízos do day trade compensam lucros do day trade. Não cruzam: prejuízo de swing não abate lucro de day trade. Exemplo: prejuízo de R$ 3 mil em janeiro, lucro de R$ 5 mil em fevereiro = IR de 15% sobre apenas R$ 2 mil = R$ 300. Mantenha controle rigoroso, a Receita exige histórico.',
+    question: 'Posso compensar prejuízos de meses anteriores?',
+    answer: 'Sim, e indefinidamente. Prejuízos no swing trade compensam lucros futuros do swing trade (gaveta separada). Prejuízos do day trade compensam lucros do day trade. Não cruzam: prejuízo de swing não abate lucro de day trade. Exemplo: prejuízo de R$ 3 mil em janeiro, lucro de R$ 5 mil em fevereiro = IR de 15% sobre apenas R$ 2 mil = R$ 300. Mantenha controle rigoroso, a Receita exige histórico.',
   },
   {
-    q: 'Tenho que declarar operações isentas no IRPF?',
-    a: 'Sim, mesmo operações isentas (vendas abaixo de R$ 20 mil) precisam constar no IRPF anual. Você declara: 1) saldo de ações em 31/12 (ficha "Bens e Direitos"); 2) operações realizadas no ano (ficha "Renda Variável"); 3) dividendos recebidos (ficha "Rendimentos Isentos"); 4) prejuízos acumulados (ficha "Prejuízos Acumulados"). A Receita cruza com a declaração das corretoras (e-Financeira), omissão é detectada e cai na malha fina.',
+    question: 'Tenho que declarar operações isentas no IRPF?',
+    answer: 'Sim, mesmo operações isentas (vendas abaixo de R$ 20 mil) precisam constar no IRPF anual. Você declara: 1) saldo de ações em 31/12 (ficha "Bens e Direitos"); 2) operações realizadas no ano (ficha "Renda Variável"); 3) dividendos recebidos (ficha "Rendimentos Isentos"); 4) prejuízos acumulados (ficha "Prejuízos Acumulados"). A Receita cruza com a declaração das corretoras (e-Financeira), omissão é detectada e cai na malha fina.',
   },
   {
-    q: 'Corretagem e taxas podem ser deduzidas do lucro?',
-    a: 'Sim. Corretagem, emolumentos B3, taxa de custódia, ISS sobre corretagem e qualquer custo direto da operação são deduzidos do lucro tributável. Mantenha as notas de corretagem organizadas por mês. Exemplo: vendeu por R$ 10.000, comprou por R$ 8.000, pagou R$ 100 em custos totais. Lucro tributável = R$ 10.000 menos R$ 8.000 menos R$ 100, dá R$ 1.900. IR de 15% = R$ 285.',
+    question: 'Corretagem e taxas podem ser deduzidas do lucro?',
+    answer: 'Sim. Corretagem, emolumentos B3, taxa de custódia, ISS sobre corretagem e qualquer custo direto da operação são deduzidos do lucro tributável. Mantenha as notas de corretagem organizadas por mês. Exemplo: vendeu por R$ 10.000, comprou por R$ 8.000, pagou R$ 100 em custos totais. Lucro tributável = R$ 10.000 menos R$ 8.000 menos R$ 100, dá R$ 1.900. IR de 15% = R$ 285.',
   },
   {
-    q: 'Qual a diferença entre swing trade e day trade pra fins de IR?',
-    a: 'Day trade é a operação aberta e fechada no MESMO PREGÃO (mesmo dia, mesma corretora, mesmo ativo). Tudo o mais é swing trade, mesmo que você feche no dia seguinte. Swing: 15% de IR + isenção de R$ 20 mil/mês em vendas + DARF 6015. Day: 20% de IR + sem isenção + DARF 8523 + 1% retido na fonte como antecipação (você abate no DARF). São apurados separadamente, prejuízos não cruzam entre si.',
+    question: 'Qual a diferença entre swing trade e day trade pra fins de IR?',
+    answer: 'Day trade é a operação aberta e fechada no MESMO PREGÃO (mesmo dia, mesma corretora, mesmo ativo). Tudo o mais é swing trade, mesmo que você feche no dia seguinte. Swing: 15% de IR + isenção de R$ 20 mil/mês em vendas + DARF 6015. Day: 20% de IR + sem isenção + DARF 8523 + 1% retido na fonte como antecipação (você abate no DARF). São apurados separadamente, prejuízos não cruzam entre si.',
   },
   {
-    q: 'Quando vence o DARF de IR sobre ações?',
-    a: 'Último dia útil do mês seguinte ao das operações. Operações de janeiro = DARF vence em 28 de fevereiro (ou último dia útil). Operações de novembro = DARF vence em 31 de dezembro. Se o último dia cair em sábado/domingo/feriado, vai pro próximo dia útil. Atenção em dezembro, se o último dia útil cair antes de 31, conte com isso. Pague antes via Sicalc Web ou no internet banking, sem stress.',
+    question: 'Quando vence o DARF de IR sobre ações?',
+    answer: 'Último dia útil do mês seguinte ao das operações. Operações de janeiro = DARF vence em 28 de fevereiro (ou último dia útil). Operações de novembro = DARF vence em 31 de dezembro. Se o último dia cair em sábado/domingo/feriado, vai pro próximo dia útil. Atenção em dezembro, se o último dia útil cair antes de 31, conte com isso. Pague antes via Sicalc Web ou no internet banking, sem stress.',
   },
   {
-    q: 'Como gerar o DARF na prática?',
-    a: 'Três caminhos: 1) Sicalc Web da Receita Federal (gov.br/receitafederal), você preenche código (6015 ou 8523), valor, mês de competência e gera o boleto; 2) app do seu banco (Itaú, Bradesco, Nubank, etc), vá em "Pagar > Tributos" e siga; 3) gerador automático em corretoras (XP, Rico, NuInvest) que já calculam pra você. Use a calculadora desta página pra confirmar o valor antes.',
+    question: 'Como gerar o DARF na prática?',
+    answer: 'Três caminhos: 1) Sicalc Web da Receita Federal (gov.br/receitafederal), você preenche código (6015 ou 8523), valor, mês de competência e gera o boleto; 2) app do seu banco (Itaú, Bradesco, Nubank, etc), vá em "Pagar > Tributos" e siga; 3) gerador automático em corretoras (XP, Rico, NuInvest) que já calculam pra você. Use a calculadora desta página pra confirmar o valor antes.',
   },
   {
-    q: 'IR de FIIs é diferente de IR de ações?',
-    a: 'Sim. FIIs têm dividendos isentos de IR (igual ações), mas o ganho de capital tem alíquota de 20% (não 15%) e SEM isenção dos R$ 20 mil. Toda venda de FII com lucro paga IR de 20% sobre o ganho. Código DARF é 6015 também (mesmo de swing trade de ações), mas a alíquota é diferente. Prejuízos de FII compensam só lucros de FII, não cruzam com ações.',
+    question: 'IR de FIIs é diferente de IR de ações?',
+    answer: 'Sim. FIIs têm dividendos isentos de IR (igual ações), mas o ganho de capital tem alíquota de 20% (não 15%) e SEM isenção dos R$ 20 mil. Toda venda de FII com lucro paga IR de 20% sobre o ganho. Código DARF é 6015 também (mesmo de swing trade de ações), mas a alíquota é diferente. Prejuízos de FII compensam só lucros de FII, não cruzam com ações.',
   },
   {
-    q: 'IR sobre dividendos: tenho que pagar?',
-    a: 'Atualmente não. Dividendos de ações e FIIs são isentos de IR pra pessoa física no Brasil, é um dos atrativos da bolsa brasileira. Atenção: JCP (Juros sobre Capital Próprio) tem 15% retido na fonte, mas ainda compensa porque a empresa abate como despesa dedutível e paga menos IR corporativo (você recebe líquido, sem mais imposto a recolher). Reformas tributárias podem mudar a regra, sempre cheque a legislação vigente.',
+    question: 'IR sobre dividendos: tenho que pagar?',
+    answer: 'Atualmente não. Dividendos de ações e FIIs são isentos de IR pra pessoa física no Brasil, é um dos atrativos da bolsa brasileira. Atenção: JCP (Juros sobre Capital Próprio) tem 15% retido na fonte, mas ainda compensa porque a empresa abate como despesa dedutível e paga menos IR corporativo (você recebe líquido, sem mais imposto a recolher). Reformas tributárias podem mudar a regra, sempre cheque a legislação vigente.',
   },
   {
-    q: 'O que acontece se eu vender ações no exterior?',
-    a: 'Outras regras. Ganho de capital em ações estrangeiras (incluindo BDRs sem regime de fundos) tem alíquota progressiva de 15% a 22,5% conforme o lucro acumulado anual. BDRs negociados na B3 seguem regras de ações brasileiras (15% + isenção). REITs americanos têm dividendos com retenção na fonte de 30% (parte recuperável via tratado), e ganho de capital tributado pela tabela progressiva. Esta calculadora é focada em ações da B3, para o exterior consulte um contador.',
+    question: 'O que acontece se eu vender ações no exterior?',
+    answer: 'Outras regras. Ganho de capital em ações estrangeiras (incluindo BDRs sem regime de fundos) tem alíquota progressiva de 15% a 22,5% conforme o lucro acumulado anual. BDRs negociados na B3 seguem regras de ações brasileiras (15% + isenção). REITs americanos têm dividendos com retenção na fonte de 30% (parte recuperável via tratado), e ganho de capital tributado pela tabela progressiva. Esta calculadora é focada em ações da B3, para o exterior consulte um contador.',
   },
   {
-    q: 'Como declarar dividendos no IRPF?',
-    a: 'Dividendos são rendimentos isentos. Declare em "Rendimentos Isentos e Não Tributáveis" linha 9 (lucros e dividendos recebidos). JCP entra em "Rendimentos Sujeitos à Tributação Exclusiva" linha 6. Some os valores recebidos durante o ano por empresa, com CNPJ do pagador. Os informes de rendimentos das corretoras já trazem essa separação.',
+    question: 'Como declarar dividendos no IRPF?',
+    answer: 'Dividendos são rendimentos isentos. Declare em "Rendimentos Isentos e Não Tributáveis" linha 9 (lucros e dividendos recebidos). JCP entra em "Rendimentos Sujeitos à Tributação Exclusiva" linha 6. Some os valores recebidos durante o ano por empresa, com CNPJ do pagador. Os informes de rendimentos das corretoras já trazem essa separação.',
   },
   {
-    q: 'FIIs têm IR sobre os dividendos?',
-    a: 'Não. Dividendos mensais de FIIs negociados em bolsa são ISENTOS de IR pra pessoa física, desde que o FII tenha 50+ cotistas e o investidor não detenha mais de 10% das cotas. O ganho de capital na venda da cota tem 20% de IR (sem isenção R$ 20k que vale só pra ações). DARF código 6015.',
+    question: 'FIIs têm IR sobre os dividendos?',
+    answer: 'Não. Dividendos mensais de FIIs negociados em bolsa são ISENTOS de IR pra pessoa física, desde que o FII tenha 50+ cotistas e o investidor não detenha mais de 10% das cotas. O ganho de capital na venda da cota tem 20% de IR (sem isenção R$ 20k que vale só pra ações). DARF código 6015.',
   },
   {
-    q: 'Como funciona o IR sobre criptomoedas no Brasil?',
-    a: 'Vendas até R$ 35.000/mês são isentas. Acima, alíquota progressiva: 15% até R$ 5M, 17,5% até R$ 10M, 20% até R$ 30M, 22,5% acima. DARF código 4600, vence no último dia útil do mês seguinte. Saldo acima de R$ 5.000 em 31/12 deve constar em Bens e Direitos (código 81 BTC, 82 ETH, 89 outras).',
+    question: 'Como funciona o IR sobre criptomoedas no Brasil?',
+    answer: 'Vendas até R$ 35.000/mês são isentas. Acima, alíquota progressiva: 15% até R$ 5M, 17,5% até R$ 10M, 20% até R$ 30M, 22,5% acima. DARF código 4600, vence no último dia útil do mês seguinte. Saldo acima de R$ 5.000 em 31/12 deve constar em Bens e Direitos (código 81 BTC, 82 ETH, 89 outras).',
   },
   {
-    q: 'Como funciona a tributação de dividendos a partir de 2026?',
-    a: 'O PL 1.087/2025 propõe 10% retidos na fonte sobre dividendos pagos a PF acima de R$ 50.000 por mês. Investidores menores não seriam afetados. O PL foi aprovado na Câmara em 2025 e segue em discussão no Senado em 2026. Se aprovado, a vigência mais provável é 2027. FIIs continuam isentos no texto atual.',
+    question: 'Como funciona a tributação de dividendos a partir de 2026?',
+    answer: 'O PL 1.087/2025 propõe 10% retidos na fonte sobre dividendos pagos a PF acima de R$ 50.000 por mês. Investidores menores não seriam afetados. O PL foi aprovado na Câmara em 2025 e segue em discussão no Senado em 2026. Se aprovado, a vigência mais provável é 2027. FIIs continuam isentos no texto atual.',
   },
 ] as const
 
@@ -650,18 +635,7 @@ usePageSeo({
         'Sem cadastro, sem propaganda, gratuito',
       ],
     },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'FAQPage',
-      mainEntity: faqItems.map((item) => ({
-        '@type': 'Question',
-        name: item.q,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: item.a,
-        },
-      })),
-    },
+    // FAQPage schema é emitido pelo <MoleculesFAQ> via useHead — fonte unica.
   ],
 })
 

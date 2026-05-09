@@ -102,7 +102,7 @@
       </div>
 
       <!-- Conteúdo Educacional -->
-      <div class="max-w-none">
+      <div class="quiet-prose max-w-none">
         <h2>Simulador de Aporte Mensal grátis e online</h2>
         <h2>Como Calcular Quanto Investir por Mês</h2>
         <p class="leading-relaxed">
@@ -535,27 +535,10 @@
           O princípio é simples: quem começa cedo precisa investir menos por mês porque os juros compostos trabalham por mais tempo. Dos 20 aos 35 anos o foco é construir hábito e reserva. Dos 35 aos 55 é a década de maior acúmulo, quando renda profissional costuma estar no pico. Acima dos 56, prioridade muda pra preservação do patrimônio e geração de renda recorrente, reduzindo gradualmente a renda variável.
         </p>
 
-        <h2>Perguntas Frequentes sobre Aporte Mensal</h2>
-
-        <div class="space-y-4">
-          <details
-            v-for="item in faqItems"
-            :key="item.q"
-            class="group brand-card border p-4"
-            :style="{
-              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
-              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
-            }"
-          >
-            <summary class="cursor-pointer list-none flex items-center justify-between">
-              {{ item.q }}
-              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
-            </summary>
-            <p class="mt-3 text-sm">
-              {{ item.a }}
-            </p>
-          </details>
-        </div>
+        <MoleculesFAQ
+          title="Perguntas Frequentes sobre Aporte Mensal"
+          :items="faqItems"
+        />
 
         <h2>Dicas para Cumprir o Aporte Mensal Calculado</h2>
         <div class="grid gap-4 md:grid-cols-2">
@@ -819,64 +802,64 @@ const popularScenarios = [
 // (renderizado nos `<details>`) e o FAQPage schema (mainEntity).
 const faqItems = [
   {
-    q: 'Quanto da minha renda devo investir por mês?',
-    a: 'Regra 50/30/20: 50% necessidades, 30% desejos, 20% investimentos. Mínimo defensável é 10% da renda. Ideal é 20-30% para classe média construir patrimônio relevante. Quem busca FIRE (independência financeira antecipada) precisa chegar a 50-70% da renda. Se ganha R$ 5.000: investir R$ 500 (mínimo) a R$ 1.500 (ideal). Aumente o percentual conforme sua renda cresce.',
+    question: 'Quanto da minha renda devo investir por mês?',
+    answer: 'Regra 50/30/20: 50% necessidades, 30% desejos, 20% investimentos. Mínimo defensável é 10% da renda. Ideal é 20-30% para classe média construir patrimônio relevante. Quem busca FIRE (independência financeira antecipada) precisa chegar a 50-70% da renda. Se ganha R$ 5.000: investir R$ 500 (mínimo) a R$ 1.500 (ideal). Aumente o percentual conforme sua renda cresce.',
   },
   {
-    q: 'E se eu não conseguir investir o valor calculado pela calculadora?',
-    a: 'Você tem 4 opções práticas: 1) Estender o prazo (mais tempo reduz drasticamente o aporte por causa dos juros compostos), 2) Reduzir a meta para algo mais realista, 3) Buscar investimentos com maior retorno (e mais risco), 4) Aumentar a renda com side hustles ou negociação salarial. Comece com o que conseguir, é melhor investir R$ 300/mês por 15 anos do que esperar "ter condições" pra investir R$ 1.000. O tempo perdido não volta.',
+    question: 'E se eu não conseguir investir o valor calculado pela calculadora?',
+    answer: 'Você tem 4 opções práticas: 1) Estender o prazo (mais tempo reduz drasticamente o aporte por causa dos juros compostos), 2) Reduzir a meta para algo mais realista, 3) Buscar investimentos com maior retorno (e mais risco), 4) Aumentar a renda com side hustles ou negociação salarial. Comece com o que conseguir, é melhor investir R$ 300/mês por 15 anos do que esperar "ter condições" pra investir R$ 1.000. O tempo perdido não volta.',
   },
   {
-    q: 'Como o patrimônio atual influencia o aporte necessário?',
-    a: 'O patrimônio que você já tem entra na fórmula como valor presente (PV) e é multiplicado pelos juros compostos durante o prazo. Quanto mais alto, menor o aporte mensal exigido. Exemplo: R$ 1 milhão em 20 anos a 10% a.a. exige R$ 1.321/mês começando do zero. Com R$ 50 mil já investidos, cai para R$ 853/mês. Com R$ 100 mil, cai para R$ 386/mês. Por isso quem começa cedo e nunca para tem vantagem desproporcional.',
+    question: 'Como o patrimônio atual influencia o aporte necessário?',
+    answer: 'O patrimônio que você já tem entra na fórmula como valor presente (PV) e é multiplicado pelos juros compostos durante o prazo. Quanto mais alto, menor o aporte mensal exigido. Exemplo: R$ 1 milhão em 20 anos a 10% a.a. exige R$ 1.321/mês começando do zero. Com R$ 50 mil já investidos, cai para R$ 853/mês. Com R$ 100 mil, cai para R$ 386/mês. Por isso quem começa cedo e nunca para tem vantagem desproporcional.',
   },
   {
-    q: 'Qual a diferença entre meta nominal e meta ajustada pela inflação?',
-    a: 'Meta nominal é o valor absoluto de R$ no futuro (ex: "quero R$ 1 milhão em 2046"). Meta ajustada pela inflação é o equivalente do poder de compra de hoje (ex: "quero conseguir comprar hoje o que R$ 1 milhão compra agora"). Para metas de longo prazo (20+ anos), sempre pense em ajustar pela inflação, R$ 1 milhão em 30 anos pode comprar o equivalente a R$ 300 mil hoje, dependendo da inflação acumulada.',
+    question: 'Qual a diferença entre meta nominal e meta ajustada pela inflação?',
+    answer: 'Meta nominal é o valor absoluto de R$ no futuro (ex: "quero R$ 1 milhão em 2046"). Meta ajustada pela inflação é o equivalente do poder de compra de hoje (ex: "quero conseguir comprar hoje o que R$ 1 milhão compra agora"). Para metas de longo prazo (20+ anos), sempre pense em ajustar pela inflação, R$ 1 milhão em 30 anos pode comprar o equivalente a R$ 300 mil hoje, dependendo da inflação acumulada.',
   },
   {
-    q: 'Posso aumentar o aporte ao longo do tempo?',
-    a: 'Sim, e é altamente recomendado. A calculadora padrão assume aporte fixo, mas a vida real envolve aumento de renda. Aumentar o aporte em 5% ao ano (acompanhando inflação + crescimento salarial) reduz o esforço inicial e ainda garante a meta. Estratégia prática: aumente o aporte na mesma proporção do seu aumento salarial. Se ganhou 10% a mais, invista 10% a mais.',
+    question: 'Posso aumentar o aporte ao longo do tempo?',
+    answer: 'Sim, e é altamente recomendado. A calculadora padrão assume aporte fixo, mas a vida real envolve aumento de renda. Aumentar o aporte em 5% ao ano (acompanhando inflação + crescimento salarial) reduz o esforço inicial e ainda garante a meta. Estratégia prática: aumente o aporte na mesma proporção do seu aumento salarial. Se ganhou 10% a mais, invista 10% a mais.',
   },
   {
-    q: 'Devo investir o 13º salário e bônus na meta?',
-    a: 'Sim, sempre que possível. Aportes extras esporádicos (13º, PLR, restituição de IR, presentes) têm efeito desproporcional porque ficam aplicados o resto do prazo, ganhando juros compostos sobre tudo. Direcionar o 13º inteiro pra meta durante 20 anos pode reduzir o aporte mensal em 15-25%. Trate dinheiro extra como acelerador, não como diversão.',
+    question: 'Devo investir o 13º salário e bônus na meta?',
+    answer: 'Sim, sempre que possível. Aportes extras esporádicos (13º, PLR, restituição de IR, presentes) têm efeito desproporcional porque ficam aplicados o resto do prazo, ganhando juros compostos sobre tudo. Direcionar o 13º inteiro pra meta durante 20 anos pode reduzir o aporte mensal em 15-25%. Trate dinheiro extra como acelerador, não como diversão.',
   },
   {
-    q: 'Qual taxa de retorno usar no cálculo?',
-    a: 'Depende do produto e prazo: Tesouro Selic e CDBs líquidos pagam ~CDI (12-13% a.a. em 2026). Tesouro IPCA+ paga IPCA + 6% a.a. (~10-12% nominal). Carteira diversificada (60% renda variável + 40% renda fixa) tende a 10-12% a.a. no longo prazo. Bolsa pura entrega 12-15% historicamente, mas com volatilidade alta. Para metas de curto prazo (até 3 anos), use 10% a.a. conservador. Para longo prazo (10+ anos) com renda variável, 11-12% a.a. é razoável.',
+    question: 'Qual taxa de retorno usar no cálculo?',
+    answer: 'Depende do produto e prazo: Tesouro Selic e CDBs líquidos pagam ~CDI (12-13% a.a. em 2026). Tesouro IPCA+ paga IPCA + 6% a.a. (~10-12% nominal). Carteira diversificada (60% renda variável + 40% renda fixa) tende a 10-12% a.a. no longo prazo. Bolsa pura entrega 12-15% historicamente, mas com volatilidade alta. Para metas de curto prazo (até 3 anos), use 10% a.a. conservador. Para longo prazo (10+ anos) com renda variável, 11-12% a.a. é razoável.',
   },
   {
-    q: 'Como esticar o prazo afeta o aporte mensal?',
-    a: 'O efeito é exponencial e gigante. Para juntar R$ 1 milhão a 10% a.a.: em 10 anos o aporte é R$ 4.825/mês, em 15 anos cai pra R$ 2.404/mês (50% menos), em 20 anos cai pra R$ 1.321/mês (73% menos), em 30 anos cai pra R$ 442/mês (91% menos). Cada década adicional reduz o aporte em ~50%. Se você tem flexibilidade no prazo, esticar é o caminho mais barato pra qualquer meta.',
+    question: 'Como esticar o prazo afeta o aporte mensal?',
+    answer: 'O efeito é exponencial e gigante. Para juntar R$ 1 milhão a 10% a.a.: em 10 anos o aporte é R$ 4.825/mês, em 15 anos cai pra R$ 2.404/mês (50% menos), em 20 anos cai pra R$ 1.321/mês (73% menos), em 30 anos cai pra R$ 442/mês (91% menos). Cada década adicional reduz o aporte em ~50%. Se você tem flexibilidade no prazo, esticar é o caminho mais barato pra qualquer meta.',
   },
   {
-    q: 'Vale a pena começar com aporte pequeno?',
-    a: 'Sim, sempre. Os primeiros R$ 100 ou R$ 200/mês criam o hábito, que é o mais importante. Em 5 anos você terá R$ 7.000-15.000 acumulados, o que já parece patrimônio de verdade e cria disciplina pra aumentar o aporte com tempo. Quem espera "ter condições" pra investir valor "que vale a pena" geralmente nunca começa. Aporte pequeno feito hoje supera aporte grande feito daqui a 5 anos.',
+    question: 'Vale a pena começar com aporte pequeno?',
+    answer: 'Sim, sempre. Os primeiros R$ 100 ou R$ 200/mês criam o hábito, que é o mais importante. Em 5 anos você terá R$ 7.000-15.000 acumulados, o que já parece patrimônio de verdade e cria disciplina pra aumentar o aporte com tempo. Quem espera "ter condições" pra investir valor "que vale a pena" geralmente nunca começa. Aporte pequeno feito hoje supera aporte grande feito daqui a 5 anos.',
   },
   {
-    q: 'Como a inflação corrói o valor da minha meta no futuro?',
-    a: 'Com inflação de 4-5% a.a. (média histórica brasileira), R$ 1 milhão daqui a 20 anos vale aproximadamente R$ 380 mil em poder de compra de hoje. Em 30 anos, vale ~R$ 230 mil. Por isso, para metas de longo prazo, mire em valor inflado: se você quer "viver com R$ 5 mil/mês de hoje" daqui a 25 anos, precisa de R$ 12-15 mil/mês nominais, o que muda o tamanho da meta total.',
+    question: 'Como a inflação corrói o valor da minha meta no futuro?',
+    answer: 'Com inflação de 4-5% a.a. (média histórica brasileira), R$ 1 milhão daqui a 20 anos vale aproximadamente R$ 380 mil em poder de compra de hoje. Em 30 anos, vale ~R$ 230 mil. Por isso, para metas de longo prazo, mire em valor inflado: se você quer "viver com R$ 5 mil/mês de hoje" daqui a 25 anos, precisa de R$ 12-15 mil/mês nominais, o que muda o tamanho da meta total.',
   },
   {
-    q: 'Como compartilhar uma simulação específica desta calculadora?',
-    a: `Basta copiar a URL com os parâmetros: ${brand.url || 'https://redentia.com.br'}/calculadora/quanto-investir?goal=1000000&years=20&rate=10 já abre a calculadora preenchida e calcula automaticamente. Útil pra mandar para o cônjuge, planejador financeiro ou salvar a meta nos favoritos do navegador.`,
+    question: 'Como compartilhar uma simulação específica desta calculadora?',
+    answer: `Basta copiar a URL com os parâmetros: ${brand.url || 'https://redentia.com.br'}/calculadora/quanto-investir?goal=1000000&years=20&rate=10 já abre a calculadora preenchida e calcula automaticamente. Útil pra mandar para o cônjuge, planejador financeiro ou salvar a meta nos favoritos do navegador.`,
   },
   {
-    q: 'Quanto investir aos 30 anos?',
-    a: 'Aos 30 anos, o ideal é investir 20-25% da renda mensal. Quem ganha R$ 5.000 deveria aportar R$ 1.000-1.250/mês. A 10% a.a. ao longo de 30 anos, isso vira R$ 2,3-2,9 milhões. Antes de investir, garanta reserva de emergência (6-12 meses de despesas) em Tesouro Selic ou CDB com liquidez diária.',
+    question: 'Quanto investir aos 30 anos?',
+    answer: 'Aos 30 anos, o ideal é investir 20-25% da renda mensal. Quem ganha R$ 5.000 deveria aportar R$ 1.000-1.250/mês. A 10% a.a. ao longo de 30 anos, isso vira R$ 2,3-2,9 milhões. Antes de investir, garanta reserva de emergência (6-12 meses de despesas) em Tesouro Selic ou CDB com liquidez diária.',
   },
   {
-    q: 'Qual a diferença entre renda fixa e renda variável?',
-    a: 'Renda fixa tem rentabilidade contratada (Tesouro, CDB, LCI/LCA, fundos DI). O retorno é previsível, baixo risco, ideal pra reserva e curto prazo. Renda variável (ações, FIIs, ETFs) tem retorno incerto, maior risco, maior potencial. Carteira balanceada combina ambos: % de renda fixa = idade (30 anos = 30% RF, 60 anos = 60% RF) é uma regra clássica.',
+    question: 'Qual a diferença entre renda fixa e renda variável?',
+    answer: 'Renda fixa tem rentabilidade contratada (Tesouro, CDB, LCI/LCA, fundos DI). O retorno é previsível, baixo risco, ideal pra reserva e curto prazo. Renda variável (ações, FIIs, ETFs) tem retorno incerto, maior risco, maior potencial. Carteira balanceada combina ambos: % de renda fixa = idade (30 anos = 30% RF, 60 anos = 60% RF) é uma regra clássica.',
   },
   {
-    q: 'Onde investir o aporte mensal?',
-    a: 'Depende do perfil. Conservador: 100% renda fixa (Tesouro Selic, CDB liquidez diária, LCI/LCA). Moderado: 60% renda fixa + 30% FIIs + 10% ações. Arrojado: 70% renda variável + 30% renda fixa. Para todos: comece com a reserva de emergência em Tesouro Selic, depois alocação por perfil.',
+    question: 'Onde investir o aporte mensal?',
+    answer: 'Depende do perfil. Conservador: 100% renda fixa (Tesouro Selic, CDB liquidez diária, LCI/LCA). Moderado: 60% renda fixa + 30% FIIs + 10% ações. Arrojado: 70% renda variável + 30% renda fixa. Para todos: comece com a reserva de emergência em Tesouro Selic, depois alocação por perfil.',
   },
   {
-    q: 'Posso usar a mesma carteira a vida toda?',
-    a: 'Não. A regra geral é diminuir gradualmente a renda variável conforme se aproxima dos objetivos. Aos 25-35 anos, 70-80% renda variável. 35-50 anos, 50-60% renda variável. 50+ anos, 30-40% renda variável. Próximo do uso (1-2 anos), migre tudo pra renda fixa segura pra evitar perdas em crises.',
+    question: 'Posso usar a mesma carteira a vida toda?',
+    answer: 'Não. A regra geral é diminuir gradualmente a renda variável conforme se aproxima dos objetivos. Aos 25-35 anos, 70-80% renda variável. 35-50 anos, 50-60% renda variável. 50+ anos, 30-40% renda variável. Próximo do uso (1-2 anos), migre tudo pra renda fixa segura pra evitar perdas em crises.',
   },
 ] as const
 
@@ -930,18 +913,7 @@ usePageSeo({
         { '@type': 'Organization', name: 'Receita Federal', url: 'https://www.gov.br/receitafederal' },
       ],
     },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'FAQPage',
-      mainEntity: faqItems.map((item) => ({
-        '@type': 'Question',
-        name: item.q,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: item.a,
-        },
-      })),
-    },
+    // FAQPage schema é emitido pelo <MoleculesFAQ> via useHead — fonte unica.
   ],
 })
 

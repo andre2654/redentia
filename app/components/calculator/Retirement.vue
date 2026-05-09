@@ -1,11 +1,9 @@
 <template>
   <div ref="calcRoot" class="space-y-6">
-    <div
-      class="flex flex-col gap-6 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6"
-    >
+    <div class="quiet-card flex flex-col gap-6 p-6">
       <div class="flex items-center gap-3">
         <UIcon name="i-lucide-piggy-bank" class="text-secondary size-6" />
-        <h2 class="text-xl font-bold text-white">Planejar Aposentadoria</h2>
+        <h2 class="text-xl">Planejar Aposentadoria</h2>
       </div>
 
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -126,7 +124,7 @@
       </div>
 
       <UButton
-        color="secondary"
+        color="primary"
         size="xl"
         block
         icon="i-lucide-calculator"
@@ -136,10 +134,10 @@
       </UButton>
     </div>
 
-    <div v-if="results" class="flex flex-col gap-6 rounded-[30px] p-6">
+    <div v-if="results" class="quiet-card flex flex-col gap-6 p-6">
       <div class="flex items-center gap-3">
         <UIcon name="i-lucide-trending-up" class="text-secondary size-6" />
-        <h3 class="text-xl font-bold text-white">Resultados do Planejamento</h3>
+        <h3 class="text-xl">Resultados do Planejamento</h3>
       </div>
 
       <!-- Viabilidade -->
@@ -157,7 +155,7 @@
             class="size-8"
           />
           <div>
-            <h4 class="text-xl font-bold text-white">
+            <h4 class="text-xl">
               {{ results.viable ? 'Plano Viável!' : 'Ajustes Necessários' }}
             </h4>
             <p class="text-sm text-gray-300">
@@ -171,7 +169,7 @@
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <div class="rounded-xl border border-white/10 bg-white/5 p-4">
           <p class="mb-1 text-sm text-gray-400">Anos até Aposentar</p>
-          <p class="text-2xl font-bold text-white">
+          <p class="text-2xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
             {{ results.yearsToRetirement }} anos
           </p>
         </div>
@@ -183,13 +181,13 @@
         </div>
         <div class="rounded-xl border border-white/10 bg-white/5 p-4">
           <p class="mb-1 text-sm text-gray-400">Patrimônio Necessário</p>
-          <p class="text-2xl font-bold text-white">
+          <p class="text-2xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
             {{ formatCurrency(results.requiredWealth) }}
           </p>
         </div>
         <div class="rounded-xl border border-white/10 bg-white/5 p-4">
           <p class="mb-1 text-sm text-gray-400">Total Investido</p>
-          <p class="text-2xl font-bold text-white">
+          <p class="text-2xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
             {{ formatCurrency(results.totalInvested) }}
           </p>
         </div>
@@ -197,11 +195,11 @@
 
       <!-- Renda na Aposentadoria -->
       <div class="rounded-xl border border-secondary/30 bg-secondary/10 p-6">
-        <h4 class="mb-4 text-lg font-bold text-white">Renda na Aposentadoria</h4>
+        <h4 class="mb-4 text-lg font-medium" :style="{ color: 'var(--text-heading)' }">Renda na Aposentadoria</h4>
         <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
           <div>
             <p class="mb-1 text-sm text-gray-400">Renda Desejada (hoje)</p>
-            <p class="text-xl font-bold text-white">
+            <p class="text-xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
               {{ formatCurrency(form.monthlyIncome) }}/mês
             </p>
           </div>
@@ -214,7 +212,7 @@
           </div>
           <div>
             <p class="mb-1 text-sm text-gray-400">INSS Estimado</p>
-            <p class="text-xl font-bold text-white">
+            <p class="text-xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
               {{ formatCurrency(form.inss) }}/mês
             </p>
           </div>

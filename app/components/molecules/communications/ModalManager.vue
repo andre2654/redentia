@@ -53,7 +53,7 @@
               <h2 class="modal-card__title">{{ modal.title }}</h2>
             </header>
 
-            <p v-if="modal.body" class="modal-card__body">{{ modal.body }}</p>
+            <div v-if="modal.body" class="modal-card__body" v-html="renderedBody" />
 
             <!-- Poll options -->
             <div v-if="modal.type === 'poll' && !voted" class="modal-card__poll">
@@ -135,11 +135,20 @@
 
 <script setup lang="ts">
 import type { CommunicationPublic } from '~/services/communications'
+import { sanitizeHtml } from '~/utils/sanitizeHtml'
 
 const SESSION_KEY = 'redentia.modal_dismissed'
 
 const service = useCommunicationsService()
 const modal = ref<CommunicationPublic | null>(null)
+
+/**
+ * Body do modal vem como HTML cru quando criado pelo
+ * EditorAnnouncement (TipTap level=basic) ou EditorBanner / Modal
+ * em outros editores. Sanitiza com level='basic' antes do v-html
+ * — passa parágrafos, listas, citação, headings 3/4, links.
+ */
+const renderedBody = computed(() => sanitizeHtml(modal.value?.body || '', 'basic'))
 const sessionDismissed = ref<Set<number>>(new Set())
 const selectedOptions = ref<Set<string>>(new Set())
 const voted = ref(false)
@@ -170,10 +179,15 @@ async function load() {
   loadSessionDismissed()
   try {
     const items = await service.listActive('modal')
-    // Prioridade pra modal/poll que ainda nao foi visto na session
+    // listActive('modal') ja filtrou por placement=modal no backend.
+    // Aqui aceitamos QUALQUER type que veio (modal, poll, announcement)
+    // — placement=modal é o que importa pro overlay, type controla
+    // qual UI usar internamente (poll renderiza opcoes, announcement
+    // usa body+CTA, modal generico idem). Antes filtravamos so
+    // type=modal|poll, o que excluia announcements colocados em
+    // placement=modal.
     const candidate = items.find(
-      (c) => (c.type === 'modal' || c.type === 'poll')
-        && !sessionDismissed.value.has(c.id),
+      (c) => !sessionDismissed.value.has(c.id),
     )
     modal.value = candidate ?? null
     if (modal.value) {
@@ -318,12 +332,48 @@ onMounted(() => load())
 }
 
 .modal-card__body {
-  margin: 0;
   font-size: 14px;
   line-height: 1.6;
   color: color-mix(in srgb, var(--brand-text) 75%, transparent);
-  white-space: pre-line;
 }
+/* Rich text rendering — TipTap level=basic output via v-html */
+.modal-card__body :deep(p) { margin: 0 0 10px; }
+.modal-card__body :deep(p:last-child) { margin-bottom: 0; }
+.modal-card__body :deep(strong) {
+  font-weight: 600;
+  color: var(--brand-text);
+}
+.modal-card__body :deep(em) {
+  font-style: italic;
+  font-family: 'Instrument Serif', Georgia, serif;
+}
+.modal-card__body :deep(a) {
+  color: var(--brand-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.modal-card__body :deep(ul),
+.modal-card__body :deep(ol) {
+  margin: 6px 0 10px;
+  padding-left: 22px;
+}
+.modal-card__body :deep(li) { margin: 3px 0; }
+.modal-card__body :deep(blockquote) {
+  margin: 10px 0;
+  padding: 6px 14px;
+  border-left: 3px solid color-mix(in srgb, var(--brand-primary) 40%, transparent);
+  color: color-mix(in srgb, var(--brand-text) 80%, transparent);
+  font-style: italic;
+}
+.modal-card__body :deep(h3),
+.modal-card__body :deep(h4) {
+  font-family: var(--brand-font);
+  font-weight: 500;
+  margin: 12px 0 6px;
+  color: var(--brand-text);
+}
+.modal-card__body :deep(h3) { font-size: 16px; }
+.modal-card__body :deep(h4) { font-size: 14.5px; font-weight: 600; }
 
 .modal-card__poll {
   display: flex;

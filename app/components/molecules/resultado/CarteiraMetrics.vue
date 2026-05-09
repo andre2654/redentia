@@ -179,23 +179,14 @@
         <span class="metric-mini__hint">{{ worstHint }}</span>
       </article>
 
-      <!-- vs Benchmarks (CDI dominante) -->
+      <!-- vs IBOV — comparacao com Ibovespa real (indice_prices) -->
       <article class="metric-mini" :style="cardStyle">
-        <span class="metric-mini__eyebrow">vs CDI</span>
+        <span class="metric-mini__eyebrow">vs IBOV</span>
         <span
           class="metric-mini__value tabular-nums"
-          :style="{ color: cdiColor }"
-        >{{ cdiDelta }}</span>
-        <div class="metric-mini__benchmark-extra">
-          <span class="metric-mini__benchmark-row">
-            <span class="metric-mini__benchmark-label">IBOV</span>
-            <span class="tabular-nums" :style="{ color: ibovColor }">{{ ibovDelta }}</span>
-          </span>
-          <span class="metric-mini__benchmark-row">
-            <span class="metric-mini__benchmark-label">IPCA</span>
-            <span class="tabular-nums" :style="{ color: ipcaColor }">{{ ipcaDelta }}</span>
-          </span>
-        </div>
+          :style="{ color: ibovColor }"
+        >{{ ibovDelta }}</span>
+        <span class="metric-mini__hint">{{ ibovHint }}</span>
       </article>
     </div>
 
@@ -367,36 +358,32 @@ function kindLabel(k: string): string {
   return ({ day: 'Day', swing: 'Swing', hold: 'Hold' } as Record<string, string>)[k] ?? k
 }
 
-// ============ Benchmarks (mock — substituido por dados reais na Fase 3) ============
-const benchmarks: Record<ResultPeriod, { cdi: number; ibov: number; ipca: number }> = {
-  '7d': { cdi: 0.21, ibov: 1.04, ipca: 0.08 },
-  '30d': { cdi: 0.92, ibov: 3.18, ipca: 0.34 },
-  '90d': { cdi: 2.78, ibov: 8.62, ipca: 1.07 },
-  ytd: { cdi: 4.42, ibov: 11.34, ipca: 1.85 },
-  '12m': { cdi: 11.84, ibov: 18.71, ipca: 4.26 },
-  all: { cdi: 24.62, ibov: 38.45, ipca: 9.87 },
-}
+// ============ Benchmark IBOV (real, via /api/benchmarks/ibov) ============
+const periodRef = computed(() => props.period)
+const { pct: ibovPct, available: ibovAvailable } = useIbovBenchmark(periodRef)
 
 const userPctApprox = computed(() => {
   if (props.stats.totalVolume === 0) return 0
   return (props.stats.totalPnL / Math.max(props.stats.totalVolume, 1)) * 100
 })
 
-function deltaLabel(b: number): string {
-  const d = userPctApprox.value - b
+const ibovDelta = computed(() => {
+  if (!ibovAvailable.value) return '—'
+  const d = userPctApprox.value - ibovPct.value
   const sign = d >= 0 ? '+' : '−'
   return `${sign}${Math.abs(d).toFixed(2).replace('.', ',')}%`
-}
-function deltaColor(b: number): string {
-  return userPctApprox.value - b >= 0 ? brand.colors.positive : brand.colors.negative
-}
+})
 
-const cdiDelta = computed(() => deltaLabel(benchmarks[props.period].cdi))
-const ibovDelta = computed(() => deltaLabel(benchmarks[props.period].ibov))
-const ipcaDelta = computed(() => deltaLabel(benchmarks[props.period].ipca))
-const cdiColor = computed(() => deltaColor(benchmarks[props.period].cdi))
-const ibovColor = computed(() => deltaColor(benchmarks[props.period].ibov))
-const ipcaColor = computed(() => deltaColor(benchmarks[props.period].ipca))
+const ibovColor = computed(() => {
+  if (!ibovAvailable.value) return `color-mix(in srgb, ${brand.colors.text} 50%, transparent)`
+  return userPctApprox.value - ibovPct.value >= 0 ? brand.colors.positive : brand.colors.negative
+})
+
+const ibovHint = computed(() => {
+  if (!ibovAvailable.value) return 'Sem dados do IBOV no período'
+  const ibovStr = `${ibovPct.value >= 0 ? '+' : '−'}${Math.abs(ibovPct.value).toFixed(2).replace('.', ',')}%`
+  return `IBOV ${ibovStr} no período`
+})
 
 const volumeLabel = computed(() => brl(props.stats.totalVolume))
 const marginLabel = computed(() =>
@@ -640,27 +627,6 @@ const cardStyle = computed(() => ({
 
 .metric-mini__hint {
   font-size: 11px;
-  color: color-mix(in srgb, var(--brand-text) 50%, transparent);
-}
-
-.metric-mini__benchmark-extra {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  margin-top: 4px;
-}
-
-.metric-mini__benchmark-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 6px;
-  font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 11px;
-}
-
-.metric-mini__benchmark-label {
-  letter-spacing: 0.06em;
   color: color-mix(in srgb, var(--brand-text) 50%, transparent);
 }
 

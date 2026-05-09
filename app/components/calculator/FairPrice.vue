@@ -1,11 +1,9 @@
 <template>
   <div ref="calcRoot" class="space-y-6">
-    <div
-      class="flex flex-col gap-6 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6"
-    >
+    <div class="quiet-card flex flex-col gap-6 p-6">
       <div class="flex items-center gap-3">
         <UIcon name="i-lucide-target" class="text-secondary size-6" />
-        <h2 class="text-xl font-bold text-white">Calcular Preço Teto</h2>
+        <h2 class="text-xl">Calcular Preço Teto</h2>
       </div>
 
       <div v-if="!selectedAsset" class="flex flex-col gap-3">
@@ -271,10 +269,10 @@
       </details>
     </div>
 
-    <div v-if="results && selectedAsset" class="flex flex-col gap-6 rounded-[30px] p-6">
+    <div v-if="results && selectedAsset" class="quiet-card flex flex-col gap-6 p-6">
       <div class="flex items-center gap-3">
         <UIcon name="i-lucide-chart-no-axes-combined" class="text-secondary size-6" />
-        <h3 class="text-xl font-bold text-white">
+        <h3 class="text-xl">
           Resultados — {{ form.ticker }}
         </h3>
       </div>
@@ -360,10 +358,10 @@
         </div>
       </div>
 
-      <div class="rounded-xl border border-secondary/30 bg-secondary/10 p-6">
+      <div class="rounded-lg border border-secondary/30 bg-secondary/10 p-6">
         <div class="mb-4 flex items-center gap-3">
           <UIcon name="i-lucide-trending-up" class="text-secondary size-6" />
-          <h4 class="text-xl font-bold text-white">Consenso das Metodologias</h4>
+          <h4 class="text-xl font-medium">Consenso das Metodologias</h4>
         </div>
         <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
           <div>
@@ -452,10 +450,10 @@
 
     <div
       v-else-if="!selectedAsset"
-      class="rounded-[30px] border border-dashed border-white/10 bg-white/5 p-8 text-center"
+      class="rounded-lg border border-dashed border-white/10 bg-white/5 p-8 text-center"
     >
       <UIcon name="i-lucide-search" class="mx-auto size-10 text-gray-500" />
-      <p class="mt-3 text-lg font-semibold text-white">
+      <p class="mt-3 text-lg font-medium text-white">
         Escolha uma ação para começar
       </p>
       <p class="mt-1 text-sm text-gray-400">

@@ -539,10 +539,9 @@
           <UAvatar :alt="authStore.me?.name || 'Usuário'" size="sm" />
           <span
             class="absolute -bottom-0.5 -right-0.5 size-2 rounded-full"
-            style="background-color:#10b981"
-            :style="{ boxShadow: `0 0 0 2px ${brand.colors.surface}` }"
+            :style="{ backgroundColor: 'var(--brand-positive)', boxShadow: `0 0 0 2px ${brand.colors.surface}` }"
             aria-hidden="true"
-          />
+          ></span>
         </div>
         <div class="ml-0.5 flex min-w-0 flex-1 flex-col leading-tight">
           <span
@@ -588,7 +587,7 @@
           class="platform-icon-btn flex size-7 items-center justify-center rounded-md"
           :style="{ color: `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }"
           :title="brand.nav.logout"
-          @mouseover="(e) => { const el = e.currentTarget as HTMLElement; el.style.backgroundColor = 'rgba(239, 68, 68, 0.12)'; el.style.color = 'rgb(248, 113, 113)' }"
+          @mouseover="(e) => { const el = e.currentTarget as HTMLElement; el.style.backgroundColor = 'color-mix(in srgb, var(--brand-negative) 12%, transparent)'; el.style.color = 'var(--brand-negative)' }"
           @mouseleave="(e) => { const el = e.currentTarget as HTMLElement; el.style.backgroundColor = 'transparent'; el.style.color = `color-mix(in srgb, ${brand.colors.text} 60%, transparent)` }"
           @click="makeLogout"
         >
@@ -648,6 +647,14 @@
         </template>
       </div>
       <div v-bind="containerProps" class="flex min-h-0 flex-1 flex-col">
+        <!-- Feed de comunicados (placement=feed). Card colapsavel
+             que mostra anúncios ativos com title/body/CTA/dismiss.
+             Só renderiza quando o user tem ao menos um anúncio
+             ativo aplicável (componente faz o gate via v-if). -->
+        <div class="px-4 pt-3 xl:px-0">
+          <MoleculesCommunicationsAnnouncementsFeed />
+        </div>
+
         <slot />
       </div>
     </div>
@@ -684,7 +691,7 @@
         backgroundColor: `color-mix(in srgb, ${brand.colors.surface} 92%, transparent)`,
         border: `1px solid color-mix(in srgb, ${brand.colors.border} 65%, transparent)`,
         color: brand.colors.text,
-        boxShadow: '0 6px 20px -8px rgba(0, 0, 0, 0.28)',
+        boxShadow: 'var(--shadow-popover)',
       }"
       @click="menuMobileActive = true"
     >
@@ -993,36 +1000,37 @@ async function fetchPortfolioSnapshot() {
 // ============================================================
 // Quick actions (2x2 grid)
 // ============================================================
-// Static list — these don't depend on user state. Tints come from
-// hardcoded brand-friendly hues so each card has a distinct color
-// chip without us needing to extend the brand config.
+// Static list — these don't depend on user state. Cada categoria tem
+// um tint semantico via CSS var (--quick-tint-*) que cada tenant pode
+// override em config/brand.ts ou no plugins/brand.ts. Defaults
+// brand-friendly definidos em main.css §quick-action-tints.
 const quickActions = [
   {
     label: 'Calculadora',
     meta: brand.calculators?.pageTitle ? '12 ferramentas' : 'Várias',
     icon: 'i-lucide-calculator',
-    tint: '#a78bfa',
+    tint: 'var(--quick-tint-tools)',
     to: '/calculadora',
   },
   {
     label: 'Rankings',
     meta: 'Top altas / quedas',
     icon: 'i-lucide-trophy',
-    tint: '#fbbf24',
+    tint: 'var(--quick-tint-rank)',
     to: '/ranking',
   },
   {
     label: 'Dividendos',
     meta: 'Calendário próx.',
     icon: 'i-lucide-coins',
-    tint: '#34d399',
+    tint: 'var(--quick-tint-divi)',
     to: '/dividendos/calendario',
   },
   {
     label: 'Configurações',
     meta: 'Conta e plano',
     icon: 'i-lucide-settings',
-    tint: '#f87171',
+    tint: 'var(--quick-tint-settings)',
     to: '/settings',
   },
 ] as const
@@ -1157,7 +1165,7 @@ onMounted(() => {
   transform: translateY(-0.5px);
   box-shadow:
     0 12px 24px -10px color-mix(in srgb, var(--brand-primary) 70%, transparent),
-    0 6px 14px -8px rgba(0, 0, 0, 0.14) !important;
+    0 6px 14px -8px var(--shadow-amber-near) !important;
 }
 .platform-ai-cta:active {
   transform: translateY(0);

@@ -159,6 +159,20 @@ html {
 }
 
 /* ============================================================
+   Quick-action tints — chips de categoria do sidebar (Calculadora /
+   Rankings / Dividendos / Configurações). Não são brand colors, são
+   identifiers de categoria. Defaults brand-friendly que funcionam em
+   light e dark; tenants podem override em plugins/brand.ts se quiser
+   uma paleta de categoria propria.
+   ============================================================ */
+:root {
+  --quick-tint-tools: #a78bfa;
+  --quick-tint-rank: #fbbf24;
+  --quick-tint-divi: #34d399;
+  --quick-tint-settings: #f87171;
+}
+
+/* ============================================================
    QUIET typography defaults (redentia-stripe-style skill).
    Aplica em escala ao h1/h2/h3/body sem precisar reescrever cada
    componente. Light/dark adapta via tokens semanticos resolvidos
@@ -320,6 +334,87 @@ table td, table th, [data-tnum] {
   background: color-mix(in srgb, var(--brand-primary) 14%, transparent);
   color: color-mix(in srgb, var(--brand-primary) 90%, var(--text-heading, #000));
   border-color: color-mix(in srgb, var(--brand-primary) 30%, transparent);
+}
+
+/* ============================================================
+   QUIET PROSE — ritmo vertical entre headings e paragrafos.
+
+   Resolve o problema de "tudo colado" nas calculator pages e
+   guias quando a copy intercala h2/h3 + p sem mb-* explicito.
+   Aplique a class no wrapper de conteudo editorial:
+
+     <div class="quiet-prose max-w-none">
+       <h2>Title</h2>
+       <p>Body</p>
+       <h3>Sub</h3>
+       <p>Body</p>
+     </div>
+
+   Headings ja vem com font-weight/color/letter-spacing do reset
+   global do main.css, esta regra adiciona margens consistentes
+   na escala de 4px (8/12/16/24/32/48). Tabelas, listas e cards
+   internos tambem ganham spacing default.
+   ============================================================ */
+.quiet-prose > * + * {
+  margin-top: 1rem;
+}
+.quiet-prose > h2 {
+  margin-top: 3rem;
+  margin-bottom: 0.75rem;
+}
+.quiet-prose > h2:first-child {
+  margin-top: 0;
+}
+.quiet-prose > h3 {
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
+}
+.quiet-prose > h4 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+.quiet-prose > p {
+  line-height: 1.6;
+}
+.quiet-prose > h2 + p,
+.quiet-prose > h3 + p,
+.quiet-prose > h4 + p {
+  margin-top: 0;
+}
+.quiet-prose > ul,
+.quiet-prose > ol {
+  padding-left: 1.5rem;
+}
+.quiet-prose > ul > li,
+.quiet-prose > ol > li {
+  margin-top: 0.375rem;
+  line-height: 1.55;
+}
+.quiet-prose > ul {
+  list-style-type: disc;
+}
+.quiet-prose > ol {
+  list-style-type: decimal;
+}
+.quiet-prose > table {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.quiet-prose > .grid,
+.quiet-prose > .flex {
+  margin-top: 1.5rem;
+}
+.quiet-prose > h2 + .grid,
+.quiet-prose > h3 + .grid,
+.quiet-prose > h2 + .flex,
+.quiet-prose > h3 + .flex {
+  margin-top: 1rem;
+}
+/* Paragrafos dentro de cards filhos NAO herdam o gap (cards
+   tem o proprio padding). Apenas o nivel direto do prose ganha. */
+.quiet-prose strong {
+  color: var(--text-heading, var(--brand-text));
+  font-weight: 500;
 }
 
 /* Section rhythm helpers. Aplica padding vertical generoso default

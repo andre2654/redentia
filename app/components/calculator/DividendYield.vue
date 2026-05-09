@@ -1,36 +1,23 @@
 <template>
   <div ref="calcRoot" class="space-y-6">
-    <div
-      class="flex flex-col gap-6 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6"
-    >
+    <div class="quiet-card flex flex-col gap-6 p-6">
       <div class="flex items-center gap-3">
         <UIcon name="i-lucide-coins" class="text-secondary size-6" />
-        <h2 class="text-xl font-bold text-white">Calcular Dividend Yield</h2>
+        <h2 class="text-xl">Calcular Dividend Yield</h2>
       </div>
 
       <!-- Modo de Cálculo -->
       <div class="flex flex-col gap-3">
-        <p class="text-sm font-semibold text-white">Escolha o modo:</p>
-        <UButtonGroup orientation="horizontal" variant="soft">
-          <UButton
-            color="neutral"
-            :variant="mode === 'simple' ? 'soft' : 'link'"
-            label="Cálculo Simples"
-            @click="mode = 'simple'"
-          />
-          <UButton
-            color="neutral"
-            :variant="mode === 'onCost' ? 'soft' : 'link'"
-            label="DY On Cost"
-            @click="mode = 'onCost'"
-          />
-          <UButton
-            color="neutral"
-            :variant="mode === 'projection' ? 'soft' : 'link'"
-            label="Projeção"
-            @click="mode = 'projection'"
-          />
-        </UButtonGroup>
+        <p class="text-sm font-semibold" :style="{ color: 'var(--text-heading)' }">Escolha o modo:</p>
+        <AtomsSegmented
+          v-model="mode"
+          :options="[
+            { value: 'simple', label: 'Cálculo Simples' },
+            { value: 'onCost', label: 'DY On Cost' },
+            { value: 'projection', label: 'Projeção' },
+          ]"
+          aria-label="Modo de cálculo"
+        />
       </div>
 
       <!-- Modo Simples -->
@@ -48,13 +35,14 @@
             
             <div
               v-if="searchTerm && filteredAssets.length > 0"
-              class="max-h-[200px] overflow-y-auto rounded-xl border border-white/10 bg-white/5"
+              class="max-h-[200px] overflow-y-auto rounded-lg border"
+              :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
             >
               <button
                 v-for="asset in filteredAssets.slice(0, 10)"
                 :key="asset.ticker"
                 type="button"
-                class="flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-white/10"
+                class="flex w-full items-center gap-3 px-4 py-3 text-left transition hover:bg-[var(--bg-overlay)]"
                 @click="selectAsset(asset)"
               >
                 <UAvatar
@@ -66,13 +54,17 @@
                   {{ asset.ticker?.slice(0, 2) }}
                 </UAvatar>
                 <div class="flex-1">
-                  <p class="font-semibold text-white">{{ asset.ticker }}</p>
-                  <p class="text-xs text-gray-400 line-clamp-1">{{ asset.name }}</p>
+                  <p class="font-medium" :style="{ color: 'var(--text-heading)' }">{{ asset.ticker }}</p>
+                  <p class="text-xs line-clamp-1" :style="{ color: 'var(--text-muted)' }">{{ asset.name }}</p>
                 </div>
               </button>
             </div>
 
-            <div v-if="selectedAsset" class="flex items-center gap-3 rounded-xl border border-secondary/30 bg-secondary/10 px-4 py-3">
+            <div
+              v-if="selectedAsset"
+              class="flex items-center gap-3 rounded-lg border px-4 py-3"
+              :style="{ borderColor: 'color-mix(in srgb, var(--brand-secondary) 30%, transparent)', backgroundColor: 'color-mix(in srgb, var(--brand-secondary) 10%, transparent)' }"
+            >
               <UAvatar
                 size="md"
                 :src="selectedAsset.logo"
@@ -81,8 +73,8 @@
                 {{ selectedAsset.ticker?.slice(0, 2) }}
               </UAvatar>
               <div class="flex-1">
-                <p class="font-semibold text-white">{{ selectedAsset.ticker }}</p>
-                <p class="text-sm text-gray-300">{{ selectedAsset.name }}</p>
+                <p class="font-medium" :style="{ color: 'var(--text-heading)' }">{{ selectedAsset.ticker }}</p>
+                <p class="text-sm" :style="{ color: 'var(--text-body)' }">{{ selectedAsset.name }}</p>
               </div>
               <UButton
                 icon="i-lucide-x"
@@ -197,7 +189,7 @@
       </div>
 
       <UButton
-        color="secondary"
+        color="primary"
         size="xl"
         block
         icon="i-lucide-calculator"
@@ -207,115 +199,151 @@
       </UButton>
     </div>
 
-    <div v-if="results" class="flex flex-col gap-6 rounded-[30px] p-6">
+    <div v-if="results" class="quiet-card flex flex-col gap-6 p-6">
       <div class="flex items-center gap-3">
         <UIcon name="i-lucide-trending-up" class="text-secondary size-6" />
-        <h3 class="text-xl font-bold text-white">
+        <h3 class="text-xl">
           Resultados - {{ form.ticker || 'Ativo' }}
         </h3>
       </div>
 
       <!-- Resultado Principal -->
-      <div class="rounded-xl border border-secondary/30 bg-secondary/10 p-6">
-        <p class="mb-2 text-sm text-gray-400">{{ results.label }}</p>
-        <p class="text-5xl font-bold text-secondary">
+      <div
+        class="rounded-lg border p-6"
+        :style="{ borderColor: 'color-mix(in srgb, var(--brand-secondary) 30%, transparent)', backgroundColor: 'color-mix(in srgb, var(--brand-secondary) 10%, transparent)' }"
+      >
+        <p class="mb-2 text-sm" :style="{ color: 'var(--text-muted)' }">{{ results.label }}</p>
+        <p class="text-5xl font-light tabular-nums text-secondary">
           {{ results.dy.toFixed(2) }}%
         </p>
-        <p class="mt-2 text-sm text-gray-300">{{ results.description }}</p>
+        <p class="mt-2 text-sm" :style="{ color: 'var(--text-body)' }">{{ results.description }}</p>
       </div>
 
       <!-- Detalhes por Modo -->
       <div v-if="mode === 'simple'" class="grid gap-4 md:grid-cols-3">
-        <div class="rounded-xl border border-white/10 bg-white/5 p-4">
-          <p class="mb-1 text-sm text-gray-400">Preço da Ação</p>
-          <p class="text-xl font-bold text-white">
+        <div
+          class="rounded-lg border p-4"
+          :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
+        >
+          <p class="mb-1 text-sm" :style="{ color: 'var(--text-muted)' }">Preço da Ação</p>
+          <p class="text-xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
             {{ formatCurrency(form.price) }}
           </p>
         </div>
-        <div class="rounded-xl border border-white/10 bg-white/5 p-4">
-          <p class="mb-1 text-sm text-gray-400">Dividendos Anuais</p>
-          <p class="text-xl font-bold text-white">
+        <div
+          class="rounded-lg border p-4"
+          :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
+        >
+          <p class="mb-1 text-sm" :style="{ color: 'var(--text-muted)' }">Dividendos Anuais</p>
+          <p class="text-xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
             {{ formatCurrency(form.annualDividend) }}
           </p>
         </div>
-        <div class="rounded-xl border border-white/10 bg-white/5 p-4">
-          <p class="mb-1 text-sm text-gray-400">Dividendos Mensais</p>
-          <p class="text-xl font-bold text-green-400">
+        <div
+          class="rounded-lg border p-4"
+          :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
+        >
+          <p class="mb-1 text-sm" :style="{ color: 'var(--text-muted)' }">Dividendos Mensais</p>
+          <p class="text-xl tabular-nums" :style="{ color: 'var(--brand-positive)' }">
             {{ formatCurrency(form.annualDividend / 12) }}
           </p>
         </div>
       </div>
 
       <div v-else-if="mode === 'onCost'" class="grid gap-4 md:grid-cols-2">
-        <div class="rounded-xl border border-white/10 bg-white/5 p-4">
-          <p class="mb-1 text-sm text-gray-400">DY no Preço de Compra</p>
-          <p class="text-2xl font-bold text-secondary">
+        <div
+          class="rounded-lg border p-4"
+          :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
+        >
+          <p class="mb-1 text-sm" :style="{ color: 'var(--text-muted)' }">DY no Preço de Compra</p>
+          <p class="text-2xl tabular-nums text-secondary">
             {{ results.dyOnCost.toFixed(2) }}%
           </p>
-          <p class="text-xs text-gray-400 mt-1">
+          <p class="text-xs mt-1" :style="{ color: 'var(--text-muted)' }">
             Seu retorno real sobre o investimento
           </p>
         </div>
-        <div class="rounded-xl border border-white/10 bg-white/5 p-4">
-          <p class="mb-1 text-sm text-gray-400">DY no Preço Atual</p>
-          <p class="text-2xl font-bold text-white">
+        <div
+          class="rounded-lg border p-4"
+          :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
+        >
+          <p class="mb-1 text-sm" :style="{ color: 'var(--text-muted)' }">DY no Preço Atual</p>
+          <p class="text-2xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
             {{ results.dyCurrent.toFixed(2) }}%
           </p>
-          <p class="text-xs text-gray-400 mt-1">
+          <p class="text-xs mt-1" :style="{ color: 'var(--text-muted)' }">
             Retorno para quem comprar hoje
           </p>
         </div>
-        <div class="rounded-xl border border-white/10 bg-white/5 p-4">
-          <p class="mb-1 text-sm text-gray-400">Valorização</p>
+        <div
+          class="rounded-lg border p-4"
+          :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
+        >
+          <p class="mb-1 text-sm" :style="{ color: 'var(--text-muted)' }">Valorização</p>
           <p
-            class="text-2xl font-bold"
-            :class="results.appreciation >= 0 ? 'text-green-400' : 'text-red-400'"
+            class="text-2xl tabular-nums"
+            :style="{ color: results.appreciation >= 0 ? 'var(--brand-positive)' : 'var(--brand-negative)' }"
           >
             {{ results.appreciation >= 0 ? '+' : '' }}{{ results.appreciation.toFixed(1) }}%
           </p>
         </div>
-        <div class="rounded-xl border border-white/10 bg-white/5 p-4">
-          <p class="mb-1 text-sm text-gray-400">Ganho Total Anual</p>
-          <p class="text-2xl font-bold text-secondary">
+        <div
+          class="rounded-lg border p-4"
+          :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
+        >
+          <p class="mb-1 text-sm" :style="{ color: 'var(--text-muted)' }">Ganho Total Anual</p>
+          <p class="text-2xl tabular-nums text-secondary">
             {{ results.totalReturn.toFixed(2) }}%
           </p>
-          <p class="text-xs text-gray-400 mt-1">
+          <p class="text-xs mt-1" :style="{ color: 'var(--text-muted)' }">
             DY + Valorização
           </p>
         </div>
       </div>
 
       <div v-else class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <div class="rounded-xl border border-white/10 bg-white/5 p-4">
-          <p class="mb-1 text-sm text-gray-400">DY Atual</p>
-          <p class="text-2xl font-bold text-white">
+        <div
+          class="rounded-lg border p-4"
+          :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
+        >
+          <p class="mb-1 text-sm" :style="{ color: 'var(--text-muted)' }">DY Atual</p>
+          <p class="text-2xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
             {{ results.currentDY.toFixed(2) }}%
           </p>
         </div>
-        <div class="rounded-xl border border-white/10 bg-white/5 p-4">
-          <p class="mb-1 text-sm text-gray-400">DY Projetado (1 ano)</p>
-          <p class="text-2xl font-bold text-secondary">
+        <div
+          class="rounded-lg border p-4"
+          :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
+        >
+          <p class="mb-1 text-sm" :style="{ color: 'var(--text-muted)' }">DY Projetado (1 ano)</p>
+          <p class="text-2xl tabular-nums text-secondary">
             {{ results.projectedDY1y.toFixed(2) }}%
           </p>
         </div>
-        <div class="rounded-xl border border-white/10 bg-white/5 p-4">
-          <p class="mb-1 text-sm text-gray-400">DY Projetado (3 anos)</p>
-          <p class="text-2xl font-bold text-green-400">
+        <div
+          class="rounded-lg border p-4"
+          :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
+        >
+          <p class="mb-1 text-sm" :style="{ color: 'var(--text-muted)' }">DY Projetado (3 anos)</p>
+          <p class="text-2xl tabular-nums" :style="{ color: 'var(--brand-positive)' }">
             {{ results.projectedDY3y.toFixed(2) }}%
           </p>
         </div>
       </div>
 
       <!-- Análise -->
-      <div class="rounded-xl border border-white/10 bg-white/5 p-5">
-        <h4 class="mb-3 font-semibold text-white">Análise do Dividend Yield</h4>
-        <div class="space-y-2 text-sm text-gray-300">
+      <div
+        class="rounded-lg border p-5"
+        :style="{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg-overlay)' }"
+      >
+        <h4 class="mb-3 font-medium" :style="{ color: 'var(--text-heading)' }">Análise do Dividend Yield</h4>
+        <div class="space-y-2 text-sm" :style="{ color: 'var(--text-body)' }">
           <p v-if="results.dy < 3" class="flex items-start gap-2">
-            <UIcon name="i-lucide-info" class="text-blue-400 size-4 mt-0.5" />
+            <UIcon name="i-lucide-info" class="size-4 mt-0.5" :style="{ color: 'var(--brand-primary)' }" />
             <span>DY abaixo de 3% é considerado baixo. Pode indicar empresa de crescimento ou ação cara.</span>
           </p>
           <p v-else-if="results.dy >= 3 && results.dy < 6" class="flex items-start gap-2">
-            <UIcon name="i-lucide-check" class="text-green-400 size-4 mt-0.5" />
+            <UIcon name="i-lucide-check" class="size-4 mt-0.5" :style="{ color: 'var(--brand-positive)' }" />
             <span>DY entre 3-6% é considerado bom para ações. Equilibra dividendos e crescimento.</span>
           </p>
           <p v-else-if="results.dy >= 6 && results.dy < 10" class="flex items-start gap-2">
@@ -323,15 +351,18 @@
             <span>DY entre 6-10% é excelente! Típico de boas pagadoras de dividendos ou FIIs.</span>
           </p>
           <p v-else class="flex items-start gap-2">
-            <UIcon name="i-lucide-alert-triangle" class="text-yellow-400 size-4 mt-0.5" />
+            <UIcon name="i-lucide-alert-triangle" class="size-4 mt-0.5" :style="{ color: 'var(--brand-primary)' }" />
             <span>DY muito alto (>10%) pode indicar: ação em queda, dividendo extraordinário ou risco elevado. Investigue!</span>
           </p>
         </div>
       </div>
 
       <!-- Dica -->
-      <div class="rounded-xl border border-blue-500/20 bg-blue-500/10 p-4 text-sm text-blue-200">
-        <strong>Dica:</strong> Dividend Yield alto não é sempre bom. Verifique se os dividendos são sustentáveis analisando o Payout Ratio (ideal 40-60% para ações, 95%+ para FIIs).
+      <div
+        class="rounded-lg border p-4 text-sm"
+        :style="{ borderColor: 'color-mix(in srgb, var(--brand-primary) 25%, transparent)', backgroundColor: 'color-mix(in srgb, var(--brand-primary) 8%, transparent)', color: 'var(--text-body)' }"
+      >
+        <strong :style="{ color: 'var(--brand-primary)' }">Dica:</strong> Dividend Yield alto não é sempre bom. Verifique se os dividendos são sustentáveis analisando o Payout Ratio (ideal 40-60% para ações, 95%+ para FIIs).
       </div>
     </div>
   </div>

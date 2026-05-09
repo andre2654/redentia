@@ -99,7 +99,7 @@
         </div>
       </div>
 
-      <div class="max-w-none">
+      <div class="quiet-prose max-w-none">
         <h2>Simulador de dividend yield grátis e online</h2>
         <p class="leading-relaxed">
           Use a calculadora acima para simular o DY de qualquer ação ou FII da B3 em segundos. Ideal pra comparar pagadoras antes de montar a carteira de renda passiva.
@@ -298,25 +298,10 @@
           </div>
         </div>
 
-        <h2>Perguntas Frequentes sobre Dividend Yield</h2>
-
-        <div class="space-y-4">
-          <details
-            v-for="item in faqItems"
-            :key="item.q"
-            class="group brand-card border p-4"
-            :style="{
-              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
-              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
-            }"
-          >
-            <summary class="cursor-pointer list-none flex items-center justify-between">
-              {{ item.q }}
-              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
-            </summary>
-            <p class="mt-3 text-sm">{{ item.a }}</p>
-          </details>
-        </div>
+        <MoleculesFAQ
+          title="Perguntas Frequentes sobre Dividend Yield"
+          :items="faqItems"
+        />
       </div>
 
       <!-- Rankings Relacionados -->
@@ -510,52 +495,52 @@ const popularScenarios = [
 // e o HTML 5 — Google ignora FAQs nao espelhados.
 const faqItems = [
   {
-    q: 'Qual é um bom Dividend Yield?',
-    a: 'Para ações: 4-8% é considerado bom no Brasil. Menos de 3% é baixo (típico de empresas growth). Acima de 10% levanta suspeitas, pode ser ação em forte queda ou dividendo extraordinário não recorrente. Para FIIs: 8-12% é a média histórica. FIIs de papel pagam mais (9-13%) que FIIs de tijolo (8-12%). Acima de 13% num FII, investigue se é sustentável (vacância alta, distribuição de receita não recorrente).',
+    question: 'Qual é um bom Dividend Yield?',
+    answer: 'Para ações: 4-8% é considerado bom no Brasil. Menos de 3% é baixo (típico de empresas growth). Acima de 10% levanta suspeitas, pode ser ação em forte queda ou dividendo extraordinário não recorrente. Para FIIs: 8-12% é a média histórica. FIIs de papel pagam mais (9-13%) que FIIs de tijolo (8-12%). Acima de 13% num FII, investigue se é sustentável (vacância alta, distribuição de receita não recorrente).',
   },
   {
-    q: 'DY alto é sempre melhor?',
-    a: 'Não. DY muito alto pode indicar três armadilhas: 1) Preço da ação caiu muito por algum problema na empresa (DY virou alto matematicamente, mas o ativo está em crise); 2) Dividendo extraordinário pontual que não vai se repetir (venda de ativo, distribuição de reserva); 3) Payout insustentável, empresa distribui mais do que deveria e vai cortar dividendo no próximo ciclo. Sempre verifique payout ratio, lucro recorrente e dívida líquida antes de comprar por DY alto.',
+    question: 'DY alto é sempre melhor?',
+    answer: 'Não. DY muito alto pode indicar três armadilhas: 1) Preço da ação caiu muito por algum problema na empresa (DY virou alto matematicamente, mas o ativo está em crise); 2) Dividendo extraordinário pontual que não vai se repetir (venda de ativo, distribuição de reserva); 3) Payout insustentável, empresa distribui mais do que deveria e vai cortar dividendo no próximo ciclo. Sempre verifique payout ratio, lucro recorrente e dívida líquida antes de comprar por DY alto.',
   },
   {
-    q: 'O que é Payout Ratio e qual o ideal?',
-    a: 'Payout é a porcentagem do lucro líquido que a empresa distribui em dividendos. Payout = (Dividendos ÷ Lucro Líquido) × 100. Para ações: 40-60% é o ideal (a empresa equilibra dividendos com reinvestimento no negócio). Para FIIs: 95% ou mais é obrigatório por lei (Lei 8.668/93). Payout acima de 80% em ação tradicional é um sinal de alerta, qualquer queda no lucro força um corte do dividendo.',
+    question: 'O que é Payout Ratio e qual o ideal?',
+    answer: 'Payout é a porcentagem do lucro líquido que a empresa distribui em dividendos. Payout = (Dividendos ÷ Lucro Líquido) × 100. Para ações: 40-60% é o ideal (a empresa equilibra dividendos com reinvestimento no negócio). Para FIIs: 95% ou mais é obrigatório por lei (Lei 8.668/93). Payout acima de 80% em ação tradicional é um sinal de alerta, qualquer queda no lucro força um corte do dividendo.',
   },
   {
-    q: 'Como projetar o Dividend Yield futuro?',
-    a: 'Use a fórmula: DY Futuro = (LPA × Payout × (1 + Crescimento)^n) ÷ Preço Atual. Exemplo: ação a R$ 25, LPA de R$ 3, payout 50%, crescimento de 10% a.a. DY ano 1 = (3 × 1,1 × 0,5) ÷ 25 = 6,6%. DY ano 3 = (3 × 1,1³ × 0,5) ÷ 25 = 8%. DY ano 5 = (3 × 1,1⁵ × 0,5) ÷ 25 = 9,67%. Com crescimento consistente, o DY on cost dispara, é a "máquina de juros" do Bazin.',
+    question: 'Como projetar o Dividend Yield futuro?',
+    answer: 'Use a fórmula: DY Futuro = (LPA × Payout × (1 + Crescimento)^n) ÷ Preço Atual. Exemplo: ação a R$ 25, LPA de R$ 3, payout 50%, crescimento de 10% a.a. DY ano 1 = (3 × 1,1 × 0,5) ÷ 25 = 6,6%. DY ano 3 = (3 × 1,1³ × 0,5) ÷ 25 = 8%. DY ano 5 = (3 × 1,1⁵ × 0,5) ÷ 25 = 9,67%. Com crescimento consistente, o DY on cost dispara, é a "máquina de juros" do Bazin.',
   },
   {
-    q: 'Dividendos têm imposto de renda no Brasil?',
-    a: 'Atualmente, dividendos de ações e FIIs são isentos de IR para pessoa física, é um dos grandes atrativos do mercado brasileiro. Atenção a duas exceções: 1) JCP (Juros sobre Capital Próprio) tem 15% de IR retido na fonte, mas ainda compensa porque a empresa abate como despesa e paga menos IR corporativo; 2) ganho de capital (vender mais caro do que comprou) tem IR de 15% sobre o lucro acima de R$ 20 mil/mês de vendas. Reformas tributárias podem mudar isso, sempre verifique a legislação vigente.',
+    question: 'Dividendos têm imposto de renda no Brasil?',
+    answer: 'Atualmente, dividendos de ações e FIIs são isentos de IR para pessoa física, é um dos grandes atrativos do mercado brasileiro. Atenção a duas exceções: 1) JCP (Juros sobre Capital Próprio) tem 15% de IR retido na fonte, mas ainda compensa porque a empresa abate como despesa e paga menos IR corporativo; 2) ganho de capital (vender mais caro do que comprou) tem IR de 15% sobre o lucro acima de R$ 20 mil/mês de vendas. Reformas tributárias podem mudar isso, sempre verifique a legislação vigente.',
   },
   {
-    q: 'Como ficará a tributação de dividendos a partir de 2026?',
-    a: 'O PL 1.087/2025 propõe taxar dividendos pagos a pessoa física acima de R$ 50.000 por mês a 10% retidos na fonte. Investidores que recebem menos não seriam afetados. O PL foi aprovado na Câmara em 2025 e está sendo discutido no Senado. Se aprovado, a vigência mais provável é 2027. FIIs e dividendos pagos por empresas tributadas pelo Simples Nacional ficariam isentos pelo texto atual.',
+    question: 'Como ficará a tributação de dividendos a partir de 2026?',
+    answer: 'O PL 1.087/2025 propõe taxar dividendos pagos a pessoa física acima de R$ 50.000 por mês a 10% retidos na fonte. Investidores que recebem menos não seriam afetados. O PL foi aprovado na Câmara em 2025 e está sendo discutido no Senado. Se aprovado, a vigência mais provável é 2027. FIIs e dividendos pagos por empresas tributadas pelo Simples Nacional ficariam isentos pelo texto atual.',
   },
   {
-    q: 'Qual a diferença entre FIIs de tijolo e FIIs de papel?',
-    a: 'FIIs de tijolo investem em imóveis físicos (logística, lajes corporativas, shoppings, hospitais) e geram receita via aluguel. DY típico 8-10%, valor da cota oscila com o ciclo imobiliário. FIIs de papel investem em CRIs (Certificados de Recebíveis Imobiliários) e debêntures, recebem juros. DY típico 9-13%, mais correlacionado com Selic e CDI. Uma carteira diversificada costuma ter ambos.',
+    question: 'Qual a diferença entre FIIs de tijolo e FIIs de papel?',
+    answer: 'FIIs de tijolo investem em imóveis físicos (logística, lajes corporativas, shoppings, hospitais) e geram receita via aluguel. DY típico 8-10%, valor da cota oscila com o ciclo imobiliário. FIIs de papel investem em CRIs (Certificados de Recebíveis Imobiliários) e debêntures, recebem juros. DY típico 9-13%, mais correlacionado com Selic e CDI. Uma carteira diversificada costuma ter ambos.',
   },
   {
-    q: 'Qual a diferença entre DY atual e DY on cost?',
-    a: 'DY atual usa o preço de mercado de hoje. DY on cost usa o seu preço de compra. Exemplo: comprou ITUB4 a R$ 18 quando pagava R$ 1,20/ano. Hoje vale R$ 30 e paga R$ 1,80/ano. DY atual = 1,80÷30 = 6%. DY on cost = 1,80÷18 = 10%. O DY on cost é o seu retorno real e tende a crescer ao longo dos anos enquanto a empresa elevar dividendos. É a métrica que importa pra investidor de longo prazo.',
+    question: 'Qual a diferença entre DY atual e DY on cost?',
+    answer: 'DY atual usa o preço de mercado de hoje. DY on cost usa o seu preço de compra. Exemplo: comprou ITUB4 a R$ 18 quando pagava R$ 1,20/ano. Hoje vale R$ 30 e paga R$ 1,80/ano. DY atual = 1,80÷30 = 6%. DY on cost = 1,80÷18 = 10%. O DY on cost é o seu retorno real e tende a crescer ao longo dos anos enquanto a empresa elevar dividendos. É a métrica que importa pra investidor de longo prazo.',
   },
   {
-    q: 'DY de FII e DY de ação são comparáveis?',
-    a: 'Em parte. Ambos calculam dividendos sobre preço, mas são instrumentos diferentes. FIIs distribuem aluguéis ou juros recebidos (pago mensalmente, payout ~95%). Ações distribuem parte do lucro corporativo (frequência variável, payout 30-60% típico). FII de papel se compara mais com renda fixa indexada (CDI, IPCA+), enquanto FII de tijolo se compara com aluguel real. Ações de blue chip pagadoras (Itaú, Cemig, Taesa) competem mais com FIIs no perfil de renda passiva. Use sempre DY líquido (após custos) e considere volatilidade.',
+    question: 'DY de FII e DY de ação são comparáveis?',
+    answer: 'Em parte. Ambos calculam dividendos sobre preço, mas são instrumentos diferentes. FIIs distribuem aluguéis ou juros recebidos (pago mensalmente, payout ~95%). Ações distribuem parte do lucro corporativo (frequência variável, payout 30-60% típico). FII de papel se compara mais com renda fixa indexada (CDI, IPCA+), enquanto FII de tijolo se compara com aluguel real. Ações de blue chip pagadoras (Itaú, Cemig, Taesa) competem mais com FIIs no perfil de renda passiva. Use sempre DY líquido (após custos) e considere volatilidade.',
   },
   {
-    q: 'Quantas ações de dividendos preciso pra viver de renda?',
-    a: 'Depende do gasto mensal e DY médio da carteira. Fórmula: Patrimônio = (Gasto Anual ÷ DY líquido). Exemplo: gasto de R$ 8.000/mês = R$ 96.000/ano. Carteira com DY médio de 8% líquido = R$ 1,2 milhão de patrimônio. Se for DY 6% = R$ 1,6 milhão. Se for 10% = R$ 960 mil. Reserve uma margem de segurança (15-20%) pra inflação e cortes pontuais de dividendo. Diversifique em pelo menos 10-15 pagadoras pra reduzir risco específico.',
+    question: 'Quantas ações de dividendos preciso pra viver de renda?',
+    answer: 'Depende do gasto mensal e DY médio da carteira. Fórmula: Patrimônio = (Gasto Anual ÷ DY líquido). Exemplo: gasto de R$ 8.000/mês = R$ 96.000/ano. Carteira com DY médio de 8% líquido = R$ 1,2 milhão de patrimônio. Se for DY 6% = R$ 1,6 milhão. Se for 10% = R$ 960 mil. Reserve uma margem de segurança (15-20%) pra inflação e cortes pontuais de dividendo. Diversifique em pelo menos 10-15 pagadoras pra reduzir risco específico.',
   },
   {
-    q: 'Como o crescimento dos dividendos impacta o DY on cost no longo prazo?',
-    a: 'É o multiplicador silencioso. Empresas que aumentam o dividendo todo ano em ~8-10% (ex: Taesa, Itaú histórico) dobram o pagamento a cada 7-9 anos. Comprou ITUB4 a R$ 18 em 2010 com DY 6% (R$ 1,08). Em 2024 paga ~R$ 2,80, DY on cost de 15,5%. Em 20 anos vira 25%+. Por isso o segredo é comprar boas empresas no preço certo e segurar décadas, não capturar DY pontual de 12% que não cresce.',
+    question: 'Como o crescimento dos dividendos impacta o DY on cost no longo prazo?',
+    answer: 'É o multiplicador silencioso. Empresas que aumentam o dividendo todo ano em ~8-10% (ex: Taesa, Itaú histórico) dobram o pagamento a cada 7-9 anos. Comprou ITUB4 a R$ 18 em 2010 com DY 6% (R$ 1,08). Em 2024 paga ~R$ 2,80, DY on cost de 15,5%. Em 20 anos vira 25%+. Por isso o segredo é comprar boas empresas no preço certo e segurar décadas, não capturar DY pontual de 12% que não cresce.',
   },
   {
-    q: 'Posso usar essa calculadora para qualquer ativo?',
-    a: 'Sim, a fórmula DY = Dividendos ÷ Preço funciona pra qualquer ativo gerador de renda: ações brasileiras, FIIs, ETFs (cuidado com reinvestimento automático), BDRs (cota de empresa estrangeira), até REITs americanos. Para ETFs de dividendos (DIVO11, BOVA11), considere o yield distribuído líquido. Para investimentos no exterior, lembre da tributação local + tratado de bitributação. A calculadora cobre o caso brasileiro padrão; para outros mercados, ajuste o input manualmente.',
+    question: 'Posso usar essa calculadora para qualquer ativo?',
+    answer: 'Sim, a fórmula DY = Dividendos ÷ Preço funciona pra qualquer ativo gerador de renda: ações brasileiras, FIIs, ETFs (cuidado com reinvestimento automático), BDRs (cota de empresa estrangeira), até REITs americanos. Para ETFs de dividendos (DIVO11, BOVA11), considere o yield distribuído líquido. Para investimentos no exterior, lembre da tributação local + tratado de bitributação. A calculadora cobre o caso brasileiro padrão; para outros mercados, ajuste o input manualmente.',
   },
 ] as const
 
@@ -600,18 +585,7 @@ usePageSeo({
         'Sem cadastro, sem propaganda, gratuito',
       ],
     },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'FAQPage',
-      mainEntity: faqItems.map((item) => ({
-        '@type': 'Question',
-        name: item.q,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: item.a,
-        },
-      })),
-    },
+    // FAQPage schema é emitido pelo <MoleculesFAQ> via useHead — fonte unica.
   ],
 })
 

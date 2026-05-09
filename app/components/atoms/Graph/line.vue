@@ -75,7 +75,7 @@
           Fech. anterior
         </span>
         <span class="font-mono-tab text-[11px] font-medium tabular-nums" :style="{ color: 'var(--text-heading)' }" translate="no">
-          {{ currency }} {{ Number(prevClosePillPos.value).toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+          {{ currency }} {{ Number(prevClosePillPos.price).toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
         </span>
       </div>
 
@@ -557,7 +557,7 @@ const markerPositions = shallowRef<MarkerPosition[]>([])
 const prevClosePillPos = ref<{
   y: number
   right: number
-  value: number
+  price: number
   visible: boolean
 } | null>(null)
 
@@ -1837,7 +1837,7 @@ const hoverLinePlugin: Plugin<'line'> = {
           prevClosePillPos.value = {
             y: yPosition,
             right: right,
-            value: currentValue,
+            price: currentValue,
             visible: !isHovering.value,
           }
 
@@ -2562,6 +2562,18 @@ onMounted(async () => {
   // Listen globally to close popover when clicking outside
   document.addEventListener('click', onGlobalClick)
 })
+
+// Quando props.data ou showPrevClose mudam, vue-chartjs faz update mas
+// nem sempre dispara afterDraw — entao a pill de "fech. anterior" e
+// posicoes de markers ficavam vazias na 1a render. Forca draw apos
+// nextTick pra garantir que o plugin afterDraw rode com data atual.
+watch(
+  () => [props.data?.length ?? 0, props.showPrevClose, props.markers?.length ?? 0],
+  async () => {
+    await nextTick()
+    chartInstance.value?.draw()
+  },
+)
 
 onBeforeUnmount(() => {
   document.removeEventListener('click', onGlobalClick)

@@ -2,35 +2,22 @@
   <section class="border-y py-16" :style="{ borderColor: 'var(--brand-border)' }">
     <div class="mx-auto max-w-6xl px-6">
       <div class="mb-10 text-center">
-        <p class="mb-2 text-xs uppercase tracking-[0.2em]" :style="{ color: 'var(--brand-text-muted)' }">
+        <p class="eyebrow mb-2">
           Para cada perfil
         </p>
-        <h2 class="text-2xl font-bold md:text-3xl" :style="{ color: 'var(--brand-text)' }">
+        <h2 class="text-2xl md:text-3xl">
           Ferramentas para todo tipo de investidor
         </h2>
       </div>
 
       <!-- Tabs -->
-      <div
-        role="tablist"
-        aria-label="Perfis de investidor"
-        class="mb-8 flex flex-wrap justify-center gap-2 md:gap-3"
-      >
-        <button
-          v-for="tab in tabs"
-          :key="tab.id"
-          role="tab"
-          :aria-selected="activeTab === tab.id"
-          :tabindex="activeTab === tab.id ? 0 : -1"
-          class="rounded-full px-4 py-2 text-sm font-medium transition-[transform,opacity,box-shadow,background-color,border-color,filter] md:px-6 md:text-base"
-          :class="activeTab === tab.id
-            ? 'bg-secondary'
-            : 'border'"
-          :style="activeTab === tab.id ? { color: 'var(--brand-background)' } : { borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)', color: 'var(--brand-text-muted)' }"
-          @click="activeTab = tab.id"
-        >
-          {{ tab.label }}
-        </button>
+      <div class="mb-8 flex justify-center">
+        <AtomsSegmented
+          v-model="activeTab"
+          :options="tabs.map((t) => ({ value: t.id, label: t.label }))"
+          as="tabs"
+          aria-label="Perfis de investidor"
+        />
       </div>
 
       <!-- Tab Content -->
@@ -39,14 +26,13 @@
           v-for="feature in activeFeatures"
           :key="feature.title"
           :to="feature.to"
-          class="group flex flex-col gap-4 rounded-2xl border p-6 transition-[transform,opacity,box-shadow,background-color,border-color,filter] hover:border-secondary/30"
-          :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
+          class="quiet-card group flex flex-col gap-4 p-6 hover:border-secondary/30"
         >
-          <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary/20">
+          <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-secondary/20">
             <UIcon :name="feature.icon" class="h-6 w-6 text-secondary" />
           </div>
           <div>
-            <h3 class="mb-2 text-lg font-bold group-hover:text-secondary" :style="{ color: 'var(--brand-text)' }">
+            <h3 class="mb-2 text-lg group-hover:text-secondary">
               {{ feature.title }}
             </h3>
             <p class="text-sm" :style="{ color: 'var(--brand-text-muted)' }">
@@ -55,9 +41,9 @@
           </div>
           <div class="mt-auto flex items-center gap-2 text-sm font-medium text-secondary">
             <span>{{ feature.cta }}</span>
-            <UIcon 
-              name="i-lucide-arrow-right" 
-              class="h-4 w-4 transition-transform group-hover:translate-x-1" 
+            <UIcon
+              name="i-lucide-arrow-right"
+              class="h-4 w-4 transition-transform group-hover:translate-x-1"
             />
           </div>
         </NuxtLink>
@@ -67,8 +53,6 @@
 </template>
 
 <script setup lang="ts">
-const brand = useBrand()
-
 interface Feature {
   title: string
   description: string

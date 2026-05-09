@@ -82,24 +82,11 @@
       </div>
 
       <!-- ============ Type filter tabs ============ -->
-      <div
-        class="inline-flex gap-1 rounded-xl border p-1"
-        :style="{ borderColor: 'var(--brand-border)', backgroundColor: 'var(--brand-surface)' }"
-      >
-        <button
-          v-for="tab in tabs"
-          :key="tab.value ?? 'all'"
-          type="button"
-          class="rounded-lg px-3 py-1.5 text-xs font-medium transition"
-          :style="{
-            backgroundColor: activeType === tab.value ? 'var(--brand-primary)' : 'transparent',
-            color: activeType === tab.value ? activeTabColor : 'var(--brand-text-muted)',
-          }"
-          @click="activeType = tab.value"
-        >
-          {{ tab.label }}
-        </button>
-      </div>
+      <AtomsSegmented
+        v-model="activeType"
+        :options="tabs"
+        aria-label="Filtrar tipo de ativo"
+      />
 
       <!-- ============ Table ============ -->
       <div v-if="pending" class="flex items-center justify-center py-16">
@@ -252,7 +239,6 @@ definePageMeta({
   hideInstallAppBanner: true,
 })
 
-import { readableOn } from '~/utils/color'
 
 // ----- Types ---------------------------------------------------------
 
@@ -1619,12 +1605,6 @@ const config = computed<RankingConfig>(() => {
 
 // ----- Layout / brand -----------------------------------------------
 
-const brand = useBrand()
-
-// Cor de contraste pra texto do tab ativo. Calculada uma vez no setup
-// pra que SSR e CSR produzam o mesmo valor estavel (anti-hydration flash).
-const activeTabColor = readableOn(brand.colors.primary)
-
 // Icone color/bg derivados do iconColor declarado na config. Mantemos
 // 3 cores semanticas (primary/positive/negative) pra contraste consistente.
 const iconColor = computed(() => {
@@ -1645,22 +1625,27 @@ const iconBg = computed(() => {
 
 // ----- Tabs ---------------------------------------------------------
 
-const tabs: Array<{ label: string; value: TickerType }> = [
-  { label: 'Todos', value: null },
+// AtomsSegmented exige value string|number, entao usamos 'all' como
+// sentinel para "sem filtro" e convertemos pra null antes de chamar o
+// fetcher (TickerType ainda aceita null no nivel do service).
+type TickerFilter = 'all' | 'STOCK' | 'REIT' | 'ETF' | 'BDR'
+
+const tabs: Array<{ label: string; value: TickerFilter }> = [
+  { label: 'Todos', value: 'all' },
   { label: 'Ações', value: 'STOCK' },
   { label: 'FIIs', value: 'REIT' },
   { label: 'ETFs', value: 'ETF' },
 ]
 
-const activeType = ref<TickerType>(null)
+const activeType = ref<TickerFilter>('all')
 
 // ----- Data fetch ---------------------------------------------------
 
 const service = useAssetsService()
 
 const { data: rows, pending } = await useAsyncData(
-  () => `ranking-${slug.value}-${activeType.value || 'all'}`,
-  () => config.value.fetcher(service, activeType.value),
+  () => `ranking-${slug.value}-${activeType.value}`,
+  () => config.value.fetcher(service, activeType.value === 'all' ? null : activeType.value),
   {
     watch: [activeType],
     default: () => [],

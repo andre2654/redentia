@@ -1,11 +1,9 @@
 <template>
   <div ref="calcRoot" class="space-y-6">
-    <div
-      class="flex flex-col gap-6 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6"
-    >
+    <div class="quiet-card flex flex-col gap-6 p-6">
       <div class="flex items-center gap-3">
         <UIcon name="i-lucide-target" class="text-secondary size-6" />
-        <h2 class="text-xl font-bold text-white">Planejamento de Patrimônio</h2>
+        <h2 class="text-xl">Planejamento de Patrimônio</h2>
       </div>
 
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -31,30 +29,16 @@
       </div>
 
       <div class="flex flex-col gap-3">
-        <p class="text-sm font-semibold text-white">Estratégia</p>
-        <div class="flex gap-3 max-sm:flex-col">
-          <UButton
-            color="secondary"
-            :variant="
-              planningForm.strategy === 'rentabilidade' ? 'soft' : 'link'
-            "
-            class="flex-1 justify-start"
-            icon="i-lucide-rocket"
-            @click="planningForm.strategy = 'rentabilidade'"
-          >
-            Maior rentabilidade
-          </UButton>
-          <UButton
-            color="secondary"
-            :variant="planningForm.strategy === 'seguranca' ? 'soft' : 'link'"
-            class="flex-1 justify-start"
-            icon="i-lucide-shield"
-            @click="planningForm.strategy = 'seguranca'"
-          >
-            Maior segurança
-          </UButton>
-        </div>
-        <p class="text-xs text-gray-400">
+        <p class="text-sm font-semibold" :style="{ color: 'var(--text-heading)' }">Estratégia</p>
+        <AtomsSegmented
+          v-model="planningForm.strategy"
+          :options="[
+            { value: 'rentabilidade', label: 'Maior rentabilidade', icon: 'i-lucide-rocket' },
+            { value: 'seguranca', label: 'Maior segurança', icon: 'i-lucide-shield' },
+          ]"
+          aria-label="Estratégia de planejamento"
+        />
+        <p class="text-xs" :style="{ color: 'var(--text-muted)' }">
           Escolha entre maximizar ganhos com ativos de alta performance ou
           priorizar estabilidade com setores defensivos, FIIs consolidados e 10%
           de renda fixa.
@@ -62,7 +46,7 @@
       </div>
 
       <UButton
-        color="secondary"
+        color="primary"
         size="xl"
         block
         icon="i-lucide-calendar-clock"
@@ -81,18 +65,18 @@
       />
     </div>
 
-    <div v-if="planningResult" class="flex flex-col gap-6 rounded-[30px] p-6">
+    <div v-if="planningResult" class="quiet-card flex flex-col gap-6 p-6">
       <div class="flex items-center gap-3">
         <UIcon name="i-lucide-timer" class="text-secondary size-6" />
-        <h3 class="text-xl font-bold text-white">Plano recomendado</h3>
+        <h3 class="text-xl">Plano recomendado</h3>
       </div>
 
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-          <p class="text-[13px] font-extralight text-gray-400">
+          <p class="text-[13px] font-light text-gray-400">
             Tempo estimado para alcançar a meta
           </p>
-          <p class="text-xl font-bold text-white">
+          <p class="text-xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
             {{ planningResult.timeToGoalLabel }}
           </p>
           <p class="text-xs text-gray-400">
@@ -100,10 +84,10 @@
           </p>
         </div>
         <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-          <p class="text-[13px] font-extralight text-gray-400">
+          <p class="text-[13px] font-light text-gray-400">
             Aportes totais até a meta
           </p>
-          <p class="text-xl font-bold text-white">
+          <p class="text-xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
             {{
               new Intl.NumberFormat('pt-BR', {
                 style: 'currency',
@@ -113,7 +97,7 @@
           </p>
         </div>
         <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-          <p class="text-[13px] font-extralight text-gray-400">
+          <p class="text-[13px] font-light text-gray-400">
             Resultado projetado
           </p>
           <p class="text-secondary text-xl font-bold">
@@ -135,10 +119,10 @@
           </p>
         </div>
         <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-          <p class="text-[13px] font-extralight text-gray-400">
+          <p class="text-[13px] font-light text-gray-400">
             Rentabilidade média mensal esperada
           </p>
-          <p class="text-xl font-bold text-white">
+          <p class="text-xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
             {{ (planningResult.monthlyReturnRate * 100).toFixed(2) }}%
           </p>
         </div>

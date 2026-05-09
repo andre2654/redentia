@@ -190,25 +190,11 @@
 
       <!-- ============ Type filter tabs ============ -->
       <div class="flex items-center justify-between gap-3">
-        <div
-          class="inline-flex gap-1 rounded-xl border p-1"
-          :style="{
-            borderColor: 'var(--brand-border)',
-            backgroundColor: 'var(--brand-surface)',
-          }"
-        >
-          <button
-            v-for="tab in tabs"
-            :key="tab.value ?? 'all'"
-            type="button"
-            class="rounded-lg px-3 py-1.5 text-xs font-medium transition"
-            :style="{
-              backgroundColor: activeType === tab.value ? 'var(--brand-primary)' : 'transparent',
-              color: activeType === tab.value ? 'var(--brand-on-primary, #0a0a0a)' : 'var(--brand-text-muted)',
-            }"
-            @click="activeType = tab.value"
-          >{{ tab.label }}</button>
-        </div>
+        <AtomsSegmented
+          v-model="activeType"
+          :options="tabs"
+          aria-label="Filtrar tipo de ativo"
+        />
         <span
           class="hidden text-xs md:inline"
           :style="{ color: 'var(--brand-text-muted)' }"
@@ -529,12 +515,15 @@ const service = useAssetsService()
 
 // ----- Type filter ---------------------------------------------------
 
-type TickerType = 'STOCK' | 'REIT' | 'ETF' | null
+// AtomsSegmented exige value string|number, entao usamos 'all' como
+// sentinel para "sem filtro" e convertemos pra null antes de chamar o
+// service (que espera null pra retornar todos os tipos).
+type TickerFilter = 'all' | 'STOCK' | 'REIT' | 'ETF'
 
-const activeType = ref<TickerType>(null)
+const activeType = ref<TickerFilter>('all')
 
-const tabs: Array<{ label: string; value: TickerType }> = [
-  { label: 'Todos', value: null },
+const tabs: Array<{ label: string; value: TickerFilter }> = [
+  { label: 'Todos', value: 'all' },
   { label: 'Ações', value: 'STOCK' },
   { label: 'FIIs', value: 'REIT' },
   { label: 'ETFs', value: 'ETF' },
@@ -553,8 +542,8 @@ interface RedentiaScoreRow {
 }
 
 const { data: rows, pending } = await useAsyncData<RedentiaScoreRow[]>(
-  () => `redentia-score-${activeType.value || 'all'}`,
-  async () => (await service.getRedentiaScore(activeType.value, 50)) as RedentiaScoreRow[],
+  () => `redentia-score-${activeType.value}`,
+  async () => (await service.getRedentiaScore(activeType.value === 'all' ? null : activeType.value, 50)) as RedentiaScoreRow[],
   { watch: [activeType], default: () => [] as RedentiaScoreRow[] },
 )
 

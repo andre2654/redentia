@@ -42,7 +42,11 @@
           />
           <div class="feed-item__copy">
             <span class="feed-item__title">{{ item.title }}</span>
-            <p v-if="item.body" class="feed-item__body">{{ item.body }}</p>
+            <div
+              v-if="item.body"
+              class="feed-item__body"
+              v-html="renderBody(item.body)"
+            />
             <a
               v-if="item.link_url"
               :href="item.link_url"
@@ -72,10 +76,22 @@
 
 <script setup lang="ts">
 import type { CommunicationPublic } from '~/services/communications'
+import { sanitizeHtml } from '~/utils/sanitizeHtml'
 
 const service = useCommunicationsService()
 const items = ref<CommunicationPublic[]>([])
 const expanded = ref(false)
+
+/**
+ * Body de anúncios vem como HTML cru (TipTap output do
+ * EditorAnnouncement, level=basic). Sanitiza com level='basic' antes
+ * de renderizar — passa <p> <ul> <ol> <li> <blockquote> <h3> <h4>
+ * <strong> <em> <a> <span> <br>. Bloqueia <script> e atributos
+ * onerror/onclick/style.
+ */
+function renderBody(body: string | null | undefined): string {
+  return sanitizeHtml(body || '', 'basic')
+}
 
 async function load() {
   try {
@@ -110,6 +126,13 @@ onMounted(() => load())
   border: 1px solid color-mix(in srgb, var(--brand-border) 50%, transparent);
   background: color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background));
   overflow: hidden;
+  /* Espaço pro proximo bloco (carteira/raio-x card etc.) na home.
+     No próprio article (em vez do wrapper externo) pra que a margem
+     SO existe quando o feed realmente renderiza. */
+  margin-bottom: 16px;
+}
+@media (min-width: 1280px) {
+  .feed-card { margin-bottom: 20px; }
 }
 
 .feed-card__head {
@@ -207,10 +230,49 @@ onMounted(() => load())
 }
 
 .feed-item__body {
-  margin: 0;
   font-size: 12px;
-  line-height: 1.5;
-  color: color-mix(in srgb, var(--brand-text) 65%, transparent);
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--brand-text) 70%, transparent);
+}
+/* Rich text rendering — TipTap level=basic output via v-html */
+.feed-item__body :deep(p) {
+  margin: 0 0 6px;
+}
+.feed-item__body :deep(p:last-child) { margin-bottom: 0; }
+.feed-item__body :deep(strong) {
+  font-weight: 600;
+  color: var(--brand-text);
+}
+.feed-item__body :deep(em) {
+  font-style: italic;
+  font-family: 'Instrument Serif', Georgia, serif;
+}
+.feed-item__body :deep(a) {
+  color: var(--brand-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: color-mix(in srgb, var(--brand-primary) 50%, transparent);
+}
+.feed-item__body :deep(ul),
+.feed-item__body :deep(ol) {
+  margin: 4px 0 6px;
+  padding-left: 18px;
+}
+.feed-item__body :deep(li) { margin: 2px 0; }
+.feed-item__body :deep(blockquote) {
+  margin: 6px 0;
+  padding: 4px 12px;
+  border-left: 3px solid color-mix(in srgb, var(--brand-primary) 40%, transparent);
+  color: color-mix(in srgb, var(--brand-text) 75%, transparent);
+  font-style: italic;
+}
+.feed-item__body :deep(h3),
+.feed-item__body :deep(h4) {
+  font-family: var(--brand-font);
+  font-weight: 500;
+  font-size: 12.5px;
+  margin: 8px 0 4px;
+  color: var(--brand-text);
 }
 
 .feed-item__link {

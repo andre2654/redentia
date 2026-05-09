@@ -100,7 +100,7 @@
       </div>
 
       <!-- Conteúdo Educacional -->
-      <div class="max-w-none">
+      <div class="quiet-prose max-w-none">
         <h2>Simulador de Planejamento Patrimonial grátis e online</h2>
         <h2>O que é Planejamento Patrimonial?</h2>
         <p class="leading-relaxed">
@@ -531,27 +531,10 @@
           </div>
         </div>
 
-        <h2>Perguntas Frequentes</h2>
-
-        <div class="space-y-4">
-          <details
-            v-for="item in faqItems"
-            :key="item.q"
-            class="group brand-card border p-4"
-            :style="{
-              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
-              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
-            }"
-          >
-            <summary class="cursor-pointer list-none flex items-center justify-between">
-              {{ item.q }}
-              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
-            </summary>
-            <p class="mt-3 text-sm">
-              {{ item.a }}
-            </p>
-          </details>
-        </div>
+        <MoleculesFAQ
+          title="Perguntas Frequentes"
+          :items="faqItems"
+        />
 
         <h2>Dicas para Executar Seu Planejamento</h2>
         <div class="grid gap-4 md:grid-cols-2">
@@ -881,68 +864,68 @@ const popularScenarios = [
 // um array so popula os dois lados.
 const faqItems = [
   {
-    q: 'A carteira recomendada é garantida de funcionar?',
-    a: 'Não há garantias no mercado financeiro. A carteira é baseada em performance histórica real da B3, mas o futuro pode ser diferente. Use como ponto de partida, faça sua própria análise dos ativos e adapte conforme seu conhecimento e perfil de risco. Sempre diversifique e invista apenas o que você pode deixar investido no longo prazo.',
+    question: 'A carteira recomendada é garantida de funcionar?',
+    answer: 'Não há garantias no mercado financeiro. A carteira é baseada em performance histórica real da B3, mas o futuro pode ser diferente. Use como ponto de partida, faça sua própria análise dos ativos e adapte conforme seu conhecimento e perfil de risco. Sempre diversifique e invista apenas o que você pode deixar investido no longo prazo.',
   },
   {
-    q: 'Devo seguir a carteira exatamente como recomendada?',
-    a: 'Use como referência, não como lei absoluta. Se você já possui alguns ativos, considere-os no planejamento. Se algum ativo recomendado não te agrada ou você não conhece bem, substitua por similar do mesmo setor. O importante é manter a diversificação entre setores e não concentrar demais em poucos ativos. Os pesos podem variar ±5-10% sem grande impacto.',
+    question: 'Devo seguir a carteira exatamente como recomendada?',
+    answer: 'Use como referência, não como lei absoluta. Se você já possui alguns ativos, considere-os no planejamento. Se algum ativo recomendado não te agrada ou você não conhece bem, substitua por similar do mesmo setor. O importante é manter a diversificação entre setores e não concentrar demais em poucos ativos. Os pesos podem variar ±5-10% sem grande impacto.',
   },
   {
-    q: 'Com que frequência devo revisar meu planejamento?',
-    a: 'Revise seu planejamento a cada 6-12 meses, ou quando houver mudanças significativas (aumento de renda, mudança de meta, crise no mercado). Evite ficar alterando a carteira constantemente, isso gera custos e pode prejudicar o crescimento de longo prazo. Pequenas oscilações são normais e esperadas. Foque em manter a disciplina dos aportes mensais.',
+    question: 'Com que frequência devo revisar meu planejamento?',
+    answer: 'Revise seu planejamento a cada 6-12 meses, ou quando houver mudanças significativas (aumento de renda, mudança de meta, crise no mercado). Evite ficar alterando a carteira constantemente, isso gera custos e pode prejudicar o crescimento de longo prazo. Pequenas oscilações são normais e esperadas. Foque em manter a disciplina dos aportes mensais.',
   },
   {
-    q: 'O que fazer se eu não conseguir atingir minha meta no prazo desejado?',
-    a: 'Você tem três opções: 1) Aumentar o aporte mensal, 2) Estender o prazo (mais tempo = mais juros compostos), 3) Reduzir a meta. Muitas vezes, aumentar o aporte em 20-30% pode encurtar o prazo em anos. Alternativamente, trabalhar mais 2-3 anos pode permitir você atingir uma meta maior. Seja realista e escolha o que cabe no seu orçamento e planos de vida.',
+    question: 'O que fazer se eu não conseguir atingir minha meta no prazo desejado?',
+    answer: 'Você tem três opções: 1) Aumentar o aporte mensal, 2) Estender o prazo (mais tempo = mais juros compostos), 3) Reduzir a meta. Muitas vezes, aumentar o aporte em 20-30% pode encurtar o prazo em anos. Alternativamente, trabalhar mais 2-3 anos pode permitir você atingir uma meta maior. Seja realista e escolha o que cabe no seu orçamento e planos de vida.',
   },
   {
-    q: 'Qual a diferença entre retorno total e CAGR?',
-    a: 'Retorno total é quanto o ativo cresceu no período todo (ex: 150% em 10 anos). CAGR (Compound Annual Growth Rate) é a taxa média anual que geraria o mesmo resultado (ex: 9,6% a.a.). CAGR é melhor para comparar ativos porque normaliza pelo tempo. Um ativo com 100% em 2 anos (41% a.a.) é melhor que 150% em 10 anos (9,6% a.a.), mesmo tendo retorno total menor.',
+    question: 'Qual a diferença entre retorno total e CAGR?',
+    answer: 'Retorno total é quanto o ativo cresceu no período todo (ex: 150% em 10 anos). CAGR (Compound Annual Growth Rate) é a taxa média anual que geraria o mesmo resultado (ex: 9,6% a.a.). CAGR é melhor para comparar ativos porque normaliza pelo tempo. Um ativo com 100% em 2 anos (41% a.a.) é melhor que 150% em 10 anos (9,6% a.a.), mesmo tendo retorno total menor.',
   },
   {
-    q: 'Posso usar o planejamento para aposentadoria ou FIRE?',
-    a: 'Sim, é o uso clássico da calculadora. Para renda passiva mensal, divida a meta por 150 (regra conservadora: 0,67% a.m. = 8% a.a.). Ex: meta de R$ 1 milhão geraria cerca de R$ 6.600/mês. Se precisa de R$ 5.000/mês, sua meta é aproximadamente R$ 750 mil. Para FIRE (independência financeira antecipada), use a regra dos 25x: multiplique seu gasto anual desejado por 25. Nos últimos 5-10 anos antes da aposentadoria, migre gradualmente para estratégia de segurança.',
+    question: 'Posso usar o planejamento para aposentadoria ou FIRE?',
+    answer: 'Sim, é o uso clássico da calculadora. Para renda passiva mensal, divida a meta por 150 (regra conservadora: 0,67% a.m. = 8% a.a.). Ex: meta de R$ 1 milhão geraria cerca de R$ 6.600/mês. Se precisa de R$ 5.000/mês, sua meta é aproximadamente R$ 750 mil. Para FIRE (independência financeira antecipada), use a regra dos 25x: multiplique seu gasto anual desejado por 25. Nos últimos 5-10 anos antes da aposentadoria, migre gradualmente para estratégia de segurança.',
   },
   {
-    q: 'Como o planejamento considera crises e quedas de mercado?',
-    a: 'Nosso planejamento usa dados históricos reais que incluem crises (2008, 2015-2016, 2020). Os ativos recomendados já passaram por períodos difíceis e se recuperaram. Por isso os retornos projetados são realistas, não otimistas. Crises futuras podem ser diferentes. Mantenha sempre uma reserva de emergência fora dos investimentos e não entre em pânico vendendo em quedas, historicamente, quem manteve investido se recuperou.',
+    question: 'Como o planejamento considera crises e quedas de mercado?',
+    answer: 'Nosso planejamento usa dados históricos reais que incluem crises (2008, 2015-2016, 2020). Os ativos recomendados já passaram por períodos difíceis e se recuperaram. Por isso os retornos projetados são realistas, não otimistas. Crises futuras podem ser diferentes. Mantenha sempre uma reserva de emergência fora dos investimentos e não entre em pânico vendendo em quedas, historicamente, quem manteve investido se recuperou.',
   },
   {
-    q: 'Preciso rebalancear a carteira periodicamente?',
-    a: 'Sim, mas não com muita frequência. A cada 6-12 meses, verifique se os pesos dos ativos ainda estão próximos do planejado. Se um ativo valorizou muito e agora representa 35% da carteira quando deveria ser 20%, venda um pouco e reforce ativos que ficaram abaixo do peso. Ou simplesmente direcione novos aportes para os ativos que estão abaixo do peso ideal. Evite rebalancear a cada mês, gera custos desnecessários.',
+    question: 'Preciso rebalancear a carteira periodicamente?',
+    answer: 'Sim, mas não com muita frequência. A cada 6-12 meses, verifique se os pesos dos ativos ainda estão próximos do planejado. Se um ativo valorizou muito e agora representa 35% da carteira quando deveria ser 20%, venda um pouco e reforce ativos que ficaram abaixo do peso. Ou simplesmente direcione novos aportes para os ativos que estão abaixo do peso ideal. Evite rebalancear a cada mês, gera custos desnecessários.',
   },
   {
-    q: 'Devo incluir imóveis no planejamento patrimonial?',
-    a: 'Imóveis físicos são ilíquidos e difíceis de precificar, então nossa calculadora não os inclui. Você pode investir em Fundos Imobiliários (FIIs), que têm liquidez, diversificação e pagam dividendos mensais. FIIs entram nas carteiras recomendadas. Se você já tem imóveis próprios, considere-os como parte do patrimônio total e foque os investimentos em ações e FIIs para diversificação.',
+    question: 'Devo incluir imóveis no planejamento patrimonial?',
+    answer: 'Imóveis físicos são ilíquidos e difíceis de precificar, então nossa calculadora não os inclui. Você pode investir em Fundos Imobiliários (FIIs), que têm liquidez, diversificação e pagam dividendos mensais. FIIs entram nas carteiras recomendadas. Se você já tem imóveis próprios, considere-os como parte do patrimônio total e foque os investimentos em ações e FIIs para diversificação.',
   },
   {
-    q: 'Quanto da minha renda devo investir mensalmente?',
-    a: 'Uma regra comum é 20-30% da renda líquida, mínimo de 10%. Depende da sua situação: idade, dependentes, custo de vida, dívidas. Se você ganha R$ 5.000, investir R$ 500-1.500/mês é razoável. Comece com o que é confortável e aumente gradualmente. O mais importante é a consistência: melhor investir R$ 300/mês todo mês do que R$ 1.000 de forma irregular. Comece agora, mesmo que com pouco.',
+    question: 'Quanto da minha renda devo investir mensalmente?',
+    answer: 'Uma regra comum é 20-30% da renda líquida, mínimo de 10%. Depende da sua situação: idade, dependentes, custo de vida, dívidas. Se você ganha R$ 5.000, investir R$ 500-1.500/mês é razoável. Comece com o que é confortável e aumente gradualmente. O mais importante é a consistência: melhor investir R$ 300/mês todo mês do que R$ 1.000 de forma irregular. Comece agora, mesmo que com pouco.',
   },
   {
-    q: 'Qual a diferença entre estratégia de rentabilidade e segurança?',
-    a: 'Rentabilidade prioriza ativos com melhor performance histórica (80-90% ações + 10-20% FIIs), com retorno médio de 14-18% a.a. e maior volatilidade, ideal para horizontes de 10+ anos. Segurança mistura defensivos (50-60% bancos/energia/saneamento), 30-40% FIIs e 10% renda fixa, com retorno de 10-13% a.a. e menor oscilação, ideal para horizontes de 5-10 anos ou perfil conservador.',
+    question: 'Qual a diferença entre estratégia de rentabilidade e segurança?',
+    answer: 'Rentabilidade prioriza ativos com melhor performance histórica (80-90% ações + 10-20% FIIs), com retorno médio de 14-18% a.a. e maior volatilidade, ideal para horizontes de 10+ anos. Segurança mistura defensivos (50-60% bancos/energia/saneamento), 30-40% FIIs e 10% renda fixa, com retorno de 10-13% a.a. e menor oscilação, ideal para horizontes de 5-10 anos ou perfil conservador.',
   },
   {
-    q: 'Como compartilhar uma simulação específica de planejamento?',
-    a: `Basta copiar a URL com os parâmetros: ${brand.url || 'https://redentia.com.br'}/calculadora/planejamento?goal=500000&monthly=1500&strategy=rentabilidade já abre a calculadora preenchida e calcula automaticamente a carteira sugerida. Útil pra mandar para o cônjuge, planejador financeiro ou salvar a meta nos favoritos.`,
+    question: 'Como compartilhar uma simulação específica de planejamento?',
+    answer: `Basta copiar a URL com os parâmetros: ${brand.url || 'https://redentia.com.br'}/calculadora/planejamento?goal=500000&monthly=1500&strategy=rentabilidade já abre a calculadora preenchida e calcula automaticamente a carteira sugerida. Útil pra mandar para o cônjuge, planejador financeiro ou salvar a meta nos favoritos.`,
   },
   {
-    q: 'O que é asset allocation e por que importa?',
-    a: 'Asset allocation é a distribuição percentual da carteira entre classes de ativos (renda fixa, ações, FIIs, internacional, ouro). O estudo clássico Brinson (1986) mostra que 90% da variação de retorno de longo prazo vem da ALOCAÇÃO, não da escolha de ativos individuais. Por isso decidir "quanto em cada classe" é mais importante que "qual ação comprar". Exemplo: 60% renda variável + 40% renda fixa é moderado clássico.',
+    question: 'O que é asset allocation e por que importa?',
+    answer: 'Asset allocation é a distribuição percentual da carteira entre classes de ativos (renda fixa, ações, FIIs, internacional, ouro). O estudo clássico Brinson (1986) mostra que 90% da variação de retorno de longo prazo vem da ALOCAÇÃO, não da escolha de ativos individuais. Por isso decidir "quanto em cada classe" é mais importante que "qual ação comprar". Exemplo: 60% renda variável + 40% renda fixa é moderado clássico.',
   },
   {
-    q: 'Quando faz sentido fazer planejamento sucessório?',
-    a: 'Quando o patrimônio passa de R$ 500.000, você tem múltiplos herdeiros, ou conduz atividade empresarial. Instrumentos: testamento (define partilha), doação em vida com usufruto (você fica com renda enquanto vivo), holding familiar (PJ que centraliza ativos, economiza ITCMD), seguro de vida resgatável (não entra em inventário). ITCMD varia 4-8% por estado.',
+    question: 'Quando faz sentido fazer planejamento sucessório?',
+    answer: 'Quando o patrimônio passa de R$ 500.000, você tem múltiplos herdeiros, ou conduz atividade empresarial. Instrumentos: testamento (define partilha), doação em vida com usufruto (você fica com renda enquanto vivo), holding familiar (PJ que centraliza ativos, economiza ITCMD), seguro de vida resgatável (não entra em inventário). ITCMD varia 4-8% por estado.',
   },
   {
-    q: 'O que é uma holding familiar?',
-    a: 'É uma empresa (geralmente Ltda) criada pra centralizar o patrimônio da família. Vantagens: planejamento sucessório (cotas se transferem por procuração simples, sem inventário), economia de ITCMD (em alguns estados), proteção patrimonial (em casos específicos). Custos: R$ 5-15k/ano de contabilidade + ITBI/ITCMD na transferência inicial. Só vale a pena pra patrimônio acima de R$ 1 milhão.',
+    question: 'O que é uma holding familiar?',
+    answer: 'É uma empresa (geralmente Ltda) criada pra centralizar o patrimônio da família. Vantagens: planejamento sucessório (cotas se transferem por procuração simples, sem inventário), economia de ITCMD (em alguns estados), proteção patrimonial (em casos específicos). Custos: R$ 5-15k/ano de contabilidade + ITBI/ITCMD na transferência inicial. Só vale a pena pra patrimônio acima de R$ 1 milhão.',
   },
   {
-    q: 'Qual a diferença entre planejamento patrimonial e financeiro?',
-    a: 'Planejamento financeiro foca no curto-médio prazo (orçamento, dívidas, reserva de emergência, primeiros investimentos). Planejamento patrimonial é mais amplo: estratégia de longo prazo pra construir e GERIR um patrimônio relevante (asset allocation, diversificação, sucessão). Toda pessoa deveria ter um planejamento financeiro; planejamento patrimonial vira relevante a partir de R$ 200-500k em ativos.',
+    question: 'Qual a diferença entre planejamento patrimonial e financeiro?',
+    answer: 'Planejamento financeiro foca no curto-médio prazo (orçamento, dívidas, reserva de emergência, primeiros investimentos). Planejamento patrimonial é mais amplo: estratégia de longo prazo pra construir e GERIR um patrimônio relevante (asset allocation, diversificação, sucessão). Toda pessoa deveria ter um planejamento financeiro; planejamento patrimonial vira relevante a partir de R$ 200-500k em ativos.',
   },
 ] as const
 
@@ -996,18 +979,7 @@ usePageSeo({
         { '@type': 'Organization', name: 'IBGE', url: 'https://www.ibge.gov.br' },
       ],
     },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'FAQPage',
-      mainEntity: faqItems.map((item) => ({
-        '@type': 'Question',
-        name: item.q,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: item.a,
-        },
-      })),
-    },
+    // FAQPage schema é emitido pelo <MoleculesFAQ> via useHead — fonte unica.
   ],
 })
 

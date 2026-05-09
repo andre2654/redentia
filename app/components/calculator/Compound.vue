@@ -1,11 +1,9 @@
 <template>
   <div ref="calcRoot" class="space-y-6">
-    <div
-      class="flex flex-col gap-6 rounded-[30px] bg-gradient-to-t from-white/10 to-transparent p-6"
-    >
+    <div class="quiet-card flex flex-col gap-6 p-6">
       <div class="flex items-center gap-3">
         <UIcon name="i-lucide-trending-up" class="text-secondary size-6" />
-        <h2 class="text-xl font-bold text-white">Simulação de Investimento</h2>
+        <h2 class="text-xl">Simulação de Investimento</h2>
       </div>
 
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -78,7 +76,7 @@
       </div>
 
       <UButton
-        color="secondary"
+        color="primary"
         size="xl"
         block
         icon="i-lucide-calculator"
@@ -88,18 +86,21 @@
       </UButton>
     </div>
 
-    <div v-if="compoundResult" class="flex flex-col gap-6 rounded-[30px] p-6">
+    <div v-if="compoundResult" class="quiet-card flex flex-col gap-6 p-6">
       <div class="flex items-center gap-3">
         <UIcon name="i-lucide-bar-chart-3" class="text-secondary size-6" />
-        <h3 class="text-xl font-bold text-white">Resultados da Simulação</h3>
+        <h3 class="text-xl">Resultados da Simulação</h3>
       </div>
 
       <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-          <p class="text-[13px] font-extralight text-gray-400">
+        <div
+          class="flex flex-col gap-2 rounded-lg p-4"
+          :style="{ backgroundColor: 'var(--bg-overlay)' }"
+        >
+          <p class="text-[13px] font-light" :style="{ color: 'var(--text-muted)' }">
             Total Investido
           </p>
-          <p class="text-2xl font-bold text-white">
+          <p class="text-2xl tabular-nums" :style="{ color: 'var(--text-heading)' }">
             {{
               new Intl.NumberFormat('pt-BR', {
                 style: 'currency',
@@ -108,11 +109,14 @@
             }}
           </p>
         </div>
-        <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-          <p class="text-[13px] font-extralight text-gray-400">
+        <div
+          class="flex flex-col gap-2 rounded-lg p-4"
+          :style="{ backgroundColor: 'var(--bg-overlay)' }"
+        >
+          <p class="text-[13px] font-light" :style="{ color: 'var(--text-muted)' }">
             Total de Juros
           </p>
-          <p class="text-2xl font-bold text-green-400">
+          <p class="text-2xl tabular-nums" :style="{ color: 'var(--brand-positive)' }">
             {{
               new Intl.NumberFormat('pt-BR', {
                 style: 'currency',
@@ -121,9 +125,12 @@
             }}
           </p>
         </div>
-        <div class="flex flex-col gap-2 rounded-2xl bg-white/5 p-4">
-          <p class="text-[13px] font-extralight text-gray-400">Valor Final</p>
-          <p class="text-secondary text-2xl font-bold">
+        <div
+          class="flex flex-col gap-2 rounded-lg p-4"
+          :style="{ backgroundColor: 'var(--bg-overlay)' }"
+        >
+          <p class="text-[13px] font-light" :style="{ color: 'var(--text-muted)' }">Valor Final</p>
+          <p class="text-secondary text-2xl tabular-nums">
             {{
               new Intl.NumberFormat('pt-BR', {
                 style: 'currency',
@@ -135,7 +142,7 @@
       </div>
 
       <div class="flex flex-col gap-2">
-        <h4 class="text-[16px] font-semibold">Evolução do Patrimônio</h4>
+        <h4 class="text-[16px] font-medium">Evolução do Patrimônio</h4>
         <div class="h-[350px]">
           <AtomsGraphLine
             :data="compoundResult.chartData"

@@ -45,8 +45,8 @@
 
       <div class="field-row">
         <div class="field">
-          <span class="field__label">Imagem (URL, opcional)</span>
-          <UInput v-model="form.image_url" placeholder="https://..." size="md" />
+          <span class="field__label">Imagem do email (opcional)</span>
+          <AdminFormsImageUploadField v-model="form.image_url" :alt="form.title || ''" />
           <span class="field__hint">Aparece após o título. Largura máx ~600px.</span>
         </div>
       </div>

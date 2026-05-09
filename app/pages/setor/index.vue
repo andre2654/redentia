@@ -1,6 +1,9 @@
 <template>
   <NuxtLayout name="default" title="Setores da Bolsa Brasileira">
     <section class="flex flex-col gap-8 px-6 py-8">
+      <!-- CTA contextual — promo no topo dos setores -->
+      <MoleculesCommunicationsCTASlot placement="setor-top" />
+
       <div class="flex flex-col gap-3">
         <div class="flex items-center gap-3">
           <div

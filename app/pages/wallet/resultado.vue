@@ -208,7 +208,13 @@ async function loadAll() {
     hasConnection.value = connections.length > 0
 
     if (hasConnection.value) {
-      const resp = await tradesService.listTrades('12m').catch((err) => {
+      // Fetch 'all' do backend e deixa filtro de janela client-side
+      // (period selector dentro dos componentes Carteira/DayTrade ja
+      // filtra via useResultadoStats / useDayTradeStats). Backend
+      // backfill cobre 12m, mas users com historico pre-2025 (ex:
+      // sandbox Pluggy ou contas antigas) tem trades fora dessa
+      // janela e ficavam invisiveis com period=12m server-side.
+      const resp = await tradesService.listTrades('all').catch((err) => {
         console.warn('[resultado] listTrades failed', err)
         return { data: [], meta: null }
       })

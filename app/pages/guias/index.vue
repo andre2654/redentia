@@ -1,6 +1,9 @@
 <template>
   <NuxtLayout name="default" title="Como Investir na Bolsa: Guias, Dividendos e Análises">
     <div class="flex flex-col gap-8 px-6 py-8">
+      <!-- CTA contextual — promo no topo dos guias -->
+      <MoleculesCommunicationsCTASlot placement="guias-top" />
+
       <!-- Header -->
       <section class="flex flex-col gap-4">
         <p class="text-base md:text-lg" :style="{ color: brand.colors.textMuted }">

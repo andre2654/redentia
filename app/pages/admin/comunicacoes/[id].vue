@@ -105,6 +105,53 @@
         @save="onSave"
       />
 
+      <!-- ============ BRANCH ESPECÍFICO PARA ANNOUNCEMENT ============
+           Editor editorial: body com TipTap level=basic (parágrafo,
+           lista, citação, headings 3/4), suporte a imagem cover,
+           placement feed/modal com mockup, mesma audiência+vigência
+           do banner. Preview do card editorial ao vivo. -->
+      <AdminComunicacoesEditorAnnouncement
+        v-else-if="form.type === 'announcement'"
+        :form="form"
+        :saving="saving"
+        :analytics="analytics"
+        :tenant-options="tenantOptions"
+        v-model:selected-user-ids="selectedUserIds"
+        @save="onSave"
+      />
+
+      <!-- ============ BRANCH ESPECÍFICO PARA CTA ============
+           Editor de CTA com toggle entre "Conteúdo + CTA"
+           (título + corpo + ícone + botão) e "Imagem clicável"
+           (criativo único + link). Suporta múltiplos placements
+           (carteira, calculadoras, rankings, guias, etc). -->
+      <AdminComunicacoesEditorCta
+        v-else-if="form.type === 'cta'"
+        :form="form"
+        :saving="saving"
+        :analytics="analytics"
+        :tenant-options="tenantOptions"
+        v-model:selected-user-ids="selectedUserIds"
+        @save="onSave"
+      />
+
+      <!-- ============ BRANCH ESPECÍFICO PARA MODAL ============
+           Editor de modal popup centralizado. placement = 'modal'
+           sempre. Diferenças do CTA:
+             - tem modal_size picker (sm/md/lg) com mockup visual
+             - preview simula viewport com backdrop + card central
+             - dismissible vira "Como o user fecha" (X vs obrigatorio)
+             - sem placement picker (modal e um lugar so) -->
+      <AdminComunicacoesEditorModal
+        v-else-if="form.type === 'modal'"
+        :form="form"
+        :saving="saving"
+        :analytics="analytics"
+        :tenant-options="tenantOptions"
+        v-model:selected-user-ids="selectedUserIds"
+        @save="onSave"
+      />
+
       <!-- Editor body (todos os outros tipos) -->
       <div v-else class="editor__body">
         <!-- ============ LEFT: FORM ============ -->
@@ -633,6 +680,7 @@ const form = reactive<CommunicationAdminPayload & {
   ends_at: null,
   dismissible: true,
   placement: 'top',
+  placements: null,
   modal_size: 'md',
   poll_options: [],
   poll_multi_choice: false,

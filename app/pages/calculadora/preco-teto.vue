@@ -97,7 +97,7 @@
       </div>
 
       <!-- Conteúdo Educacional -->
-      <div class="max-w-none">
+      <div class="quiet-prose max-w-none">
         <h2>Simulador de preço teto grátis e online</h2>
         <p class="leading-relaxed">
           Use a calculadora acima para simular o preço teto de qualquer ação da B3 em segundos. Ideal pra quem busca uma referência rápida antes de comprar.
@@ -457,185 +457,10 @@
           </div>
         </div>
 
-        <h2>Perguntas Frequentes</h2>
-
-        <div class="space-y-4">
-          <details
-            class="group brand-card border p-4"
-            :style="{
-              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
-              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
-            }"
-          >
-            <summary class="cursor-pointer list-none flex items-center justify-between">
-              Qual a diferença entre preço teto e preço justo?
-              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
-            </summary>
-            <p class="mt-3 text-sm">
-              São praticamente sinônimos. "Preço teto" enfatiza o limite máximo aceitável de compra (com margem de segurança); "preço justo" enfatiza o valor intrínseco da empresa pelos fundamentos. As 4 metodologias (Graham, Bazin, P/L Setorial, VPA) calculam o preço justo, e por convenção esse valor é tratado como o preço teto, ou seja, o limite acima do qual a ação fica cara.
-            </p>
-          </details>
-
-          <details
-            class="group brand-card border p-4"
-            :style="{
-              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
-              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
-            }"
-          >
-            <summary class="cursor-pointer list-none flex items-center justify-between">
-              Qual a melhor metodologia: Graham ou Bazin?
-              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
-            </summary>
-            <p class="mt-3 text-sm">
-              Depende do seu perfil. Bazin é ideal para quem busca renda passiva com dividendos e foca em empresas consolidadas. Graham é mais conservador e equilibra lucro com patrimônio, sendo bom para quem busca segurança. Na prática, use as duas e compare com P/L setorial para ter uma visão completa.
-            </p>
-          </details>
-
-          <details
-            class="group brand-card border p-4"
-            :style="{
-              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
-              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
-            }"
-          >
-            <summary class="cursor-pointer list-none flex items-center justify-between">
-              Se a ação está abaixo do preço teto, é garantia de boa compra?
-              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
-            </summary>
-            <p class="mt-3 text-sm">
-              Não! O preço teto é um filtro inicial, não uma garantia. A ação pode estar "barata" porque o mercado antecipa problemas futuros: concorrência aumentando, setor em declínio, gestão ruim, mudanças regulatórias etc. Sempre analise o porquê a ação está abaixo do teto antes de comprar. Pode ser oportunidade ou "value trap" (armadilha de valor).
-            </p>
-          </details>
-
-          <details
-            class="group brand-card border p-4"
-            :style="{
-              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
-              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
-            }"
-          >
-            <summary class="cursor-pointer list-none flex items-center justify-between">
-              Como calcular a margem de segurança?
-              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
-            </summary>
-            <p class="mt-3 text-sm">
-              Margem de Segurança = (Preço Teto - Preço Atual) ÷ Preço Teto × 100. Por exemplo: se o teto é R$ 40 e a ação está R$ 30, margem = (40-30)/40 = 25%. Graham sugeria mínimo de 20-30% de margem para investir com segurança. Quanto maior a margem, menor o risco de erro de análise.
-            </p>
-          </details>
-
-          <details
-            class="group brand-card border p-4"
-            :style="{
-              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
-              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
-            }"
-          >
-            <summary class="cursor-pointer list-none flex items-center justify-between">
-              Vale usar preço teto para small caps?
-              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
-            </summary>
-            <p class="mt-3 text-sm">
-              Sim, mas com cautela. Small caps tendem a ter P/L mais alto porque o mercado paga pelo crescimento futuro. Use P/L setorial de small caps (pode ser 15-20 ao invés de 10-12). Além disso, small caps têm maior risco de liquidez e volatilidade, então exija margem de segurança maior (30-40%) e diversifique bem.
-            </p>
-          </details>
-
-          <details
-            class="group brand-card border p-4"
-            :style="{
-              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
-              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
-            }"
-          >
-            <summary class="cursor-pointer list-none flex items-center justify-between">
-              E para empresas de crescimento como Magazine Luiza?
-              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
-            </summary>
-            <p class="mt-3 text-sm">
-              Essas fórmulas tradicionais não funcionam bem para growth stocks. Empresas que reinvestem todo lucro no crescimento têm LPA baixo ou negativo, mas podem ter ótimo futuro. Para essas, use: múltiplos de receita (P/S ou EV/Sales), análise de fluxo de caixa descontado (DCF), comparação com pares de mercado ou múltiplos de EBITDA. Ou aguarde a empresa amadurecer e começar a gerar lucro consistente.
-            </p>
-          </details>
-
-          <details
-            class="group brand-card border p-4"
-            :style="{
-              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
-              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
-            }"
-          >
-            <summary class="cursor-pointer list-none flex items-center justify-between">
-              Com que frequência devo recalcular o preço teto?
-              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
-            </summary>
-            <p class="mt-3 text-sm">
-              Recalcule trimestralmente, após cada balanço da empresa. Os indicadores (LPA, VPA, dividendos) mudam a cada trimestre. Se você acompanha a empresa de perto, faça isso a cada 3 meses. Se é investidor de longo prazo, uma vez por ano pode ser suficiente. O importante é não se guiar apenas por um cálculo antigo, os fundamentos mudam.
-            </p>
-          </details>
-
-          <details
-            class="group brand-card border p-4"
-            :style="{
-              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
-              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
-            }"
-          >
-            <summary class="cursor-pointer list-none flex items-center justify-between">
-              Preço teto funciona para FIIs também?
-              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
-            </summary>
-            <p class="mt-3 text-sm">
-              Sim, mas adaptado. Para FIIs, use principalmente o Método Bazin (Dividendo ÷ Yield Mínimo) e análise de Preço / Valor Patrimonial (P/VP). FIIs devem negociar próximo ou abaixo do valor patrimonial. Um bom FII tem: P/VP < 1.0, Dividend Yield > 8%, vacância baixa, boa localização e gestão competente. A fórmula de Graham não se aplica bem porque FIIs não têm "lucro" tradicional.
-            </p>
-          </details>
-
-          <details
-            class="group brand-card border p-4"
-            :style="{
-              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
-              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
-            }"
-          >
-            <summary class="cursor-pointer list-none flex items-center justify-between">
-              O que fazer se as 4 metodologias derem resultados muito diferentes?
-              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
-            </summary>
-            <p class="mt-3 text-sm">
-              Isso é comum e normal! Cada método olha a empresa por um ângulo. Se Graham diz R$ 40, Bazin R$ 60, P/L R$ 35 e VPA R$ 25, analise: a empresa paga bons dividendos (por isso Bazin é alto), tem muito ativo (por isso VPA é baixo relativo). Entenda o que cada número está dizendo. Use a média com peso: dê mais importância ao método que faz mais sentido para aquela empresa específica. Bancos = VPA + P/L. Pagadoras de dividendos = Bazin. Industriais = Graham.
-            </p>
-          </details>
-
-          <details
-            class="group brand-card border p-4"
-            :style="{
-              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
-              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
-            }"
-          >
-            <summary class="cursor-pointer list-none flex items-center justify-between">
-              Onde encontro o P/L médio do setor?
-              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
-            </summary>
-            <p class="mt-3 text-sm">
-              Use a ferramenta de busca da Redentia: filtre por setor e pegue o P/L de 5-10 empresas comparáveis, depois calcule a média. Exemplos de P/L médio: Bancos (8-12), Energia (10-14), Varejo (12-18), Tecnologia (20-30), Seguradoras (8-10). Setores cíclicos tendem a ter P/L mais baixo, setores de crescimento mais alto.
-            </p>
-          </details>
-
-          <details
-            class="group brand-card border p-4"
-            :style="{
-              backgroundColor: 'color-mix(in srgb, var(--brand-surface) 55%, var(--brand-background))',
-              borderColor: 'color-mix(in srgb, var(--brand-border) 50%, transparent)',
-            }"
-          >
-            <summary class="cursor-pointer list-none flex items-center justify-between">
-              Posso usar LPA projetado ao invés de histórico?
-              <UIcon name="i-lucide-chevron-down" class="size-5 transition-transform group-open:rotate-180" />
-            </summary>
-            <p class="mt-3 text-sm">
-              Pode, mas com muita cautela. Projeções são incertas, analistas erram muito. Se você usar LPA projetado, use uma média das projeções de vários analistas (consenso de mercado) e aplique um desconto de segurança adicional (20-30%). Prefira sempre dados concretos e históricos. Se quiser considerar crescimento futuro, melhor usar fluxo de caixa descontado (DCF) que é mais apropriado para incorporar projeções.
-            </p>
-          </details>
-        </div>
+        <MoleculesFAQ
+          title="Perguntas Frequentes"
+          :items="faqItems"
+        />
 
         <h2>Dicas para Investir com Preço Teto</h2>
         <div class="grid gap-4 md:grid-cols-2">
@@ -898,48 +723,48 @@ const pageDescription =
 
 const faqItems = [
   {
-    q: 'O que é preço teto e por que calcular?',
-    a: 'Preço teto é o valor máximo que um investidor deveria pagar por uma ação considerando seus fundamentos e uma margem de segurança. É a referência central da análise fundamentalista: se a ação estiver negociando abaixo do preço teto, pode estar barata; se estiver acima, pode estar cara.',
+    question: 'O que é preço teto e por que calcular?',
+    answer: 'Preço teto é o valor máximo que um investidor deveria pagar por uma ação considerando seus fundamentos e uma margem de segurança. É a referência central da análise fundamentalista: se a ação estiver negociando abaixo do preço teto, pode estar barata; se estiver acima, pode estar cara.',
   },
   {
-    q: 'Qual a diferença entre preço teto e preço justo?',
-    a: 'São praticamente sinônimos. "Preço teto" enfatiza o limite máximo aceitável de compra (com margem de segurança); "preço justo" enfatiza o valor intrínseco da empresa pelos fundamentos. As 4 metodologias (Graham, Bazin, P/L Setorial, VPA) calculam o preço justo, e por convenção esse valor é tratado como o preço teto, ou seja, o limite acima do qual a ação fica cara.',
+    question: 'Qual a diferença entre preço teto e preço justo?',
+    answer: 'São praticamente sinônimos. "Preço teto" enfatiza o limite máximo aceitável de compra (com margem de segurança); "preço justo" enfatiza o valor intrínseco da empresa pelos fundamentos. As 4 metodologias (Graham, Bazin, P/L Setorial, VPA) calculam o preço justo, e por convenção esse valor é tratado como o preço teto, ou seja, o limite acima do qual a ação fica cara.',
   },
   {
-    q: 'Qual a melhor metodologia: Graham ou Bazin?',
-    a: 'Depende do perfil. Bazin é ideal para quem busca renda passiva com dividendos e exige DY mínimo de 6% ao ano. Graham é mais conservador e equilibra lucro e patrimônio líquido, sendo ideal para empresas maduras e rentáveis. Na prática, use as duas e compare com P/L setorial e VPA para ter uma visão completa.',
+    question: 'Qual a melhor metodologia: Graham ou Bazin?',
+    answer: 'Depende do perfil. Bazin é ideal para quem busca renda passiva com dividendos e exige DY mínimo de 6% ao ano. Graham é mais conservador e equilibra lucro e patrimônio líquido, sendo ideal para empresas maduras e rentáveis. Na prática, use as duas e compare com P/L setorial e VPA para ter uma visão completa.',
   },
   {
-    q: 'Se a ação está abaixo do preço teto, é garantia de boa compra?',
-    a: 'Não. O preço teto é um filtro inicial, não uma garantia. A ação pode estar barata porque o mercado antecipa problemas: queda de lucro, concorrência, setor em declínio ou mudança regulatória. Sempre investigue o porquê antes de comprar, para evitar caírem uma "value trap" (armadilha de valor).',
+    question: 'Se a ação está abaixo do preço teto, é garantia de boa compra?',
+    answer: 'Não. O preço teto é um filtro inicial, não uma garantia. A ação pode estar barata porque o mercado antecipa problemas: queda de lucro, concorrência, setor em declínio ou mudança regulatória. Sempre investigue o porquê antes de comprar, para evitar caírem uma "value trap" (armadilha de valor).',
   },
   {
-    q: 'Como calcular a margem de segurança?',
-    a: 'Margem de Segurança = (Preço Teto − Preço Atual) ÷ Preço Teto × 100. Se o teto é R$ 40 e a ação está R$ 30, a margem é de 25%. Benjamin Graham sugeria no mínimo 20% a 30% de margem para investir com segurança. Quanto maior a margem, menor o risco de erro de análise.',
+    question: 'Como calcular a margem de segurança?',
+    answer: 'Margem de Segurança = (Preço Teto − Preço Atual) ÷ Preço Teto × 100. Se o teto é R$ 40 e a ação está R$ 30, a margem é de 25%. Benjamin Graham sugeria no mínimo 20% a 30% de margem para investir com segurança. Quanto maior a margem, menor o risco de erro de análise.',
   },
   {
-    q: 'A calculadora serve para FIIs (Fundos Imobiliários)?',
-    a: 'Parcialmente. Para FIIs use principalmente o Método Bazin (Dividendo ÷ Yield mínimo) e a análise de P/VP. Um bom FII costuma ter P/VP abaixo de 1,0, DY acima de 8% e vacância baixa. A fórmula de Graham não se aplica bem porque FIIs não têm "lucro" tradicional.',
+    question: 'A calculadora serve para FIIs (Fundos Imobiliários)?',
+    answer: 'Parcialmente. Para FIIs use principalmente o Método Bazin (Dividendo ÷ Yield mínimo) e a análise de P/VP. Um bom FII costuma ter P/VP abaixo de 1,0, DY acima de 8% e vacância baixa. A fórmula de Graham não se aplica bem porque FIIs não têm "lucro" tradicional.',
   },
   {
-    q: 'E para empresas de crescimento como Magazine Luiza?',
-    a: 'As fórmulas tradicionais de preço teto não capturam bem growth stocks. Empresas que reinvestem todo o lucro têm LPA baixo ou negativo, mas podem ter um futuro excelente. Para essas, prefira múltiplos de receita (P/S ou EV/Sales), fluxo de caixa descontado (DCF) ou comparação com pares de mercado.',
+    question: 'E para empresas de crescimento como Magazine Luiza?',
+    answer: 'As fórmulas tradicionais de preço teto não capturam bem growth stocks. Empresas que reinvestem todo o lucro têm LPA baixo ou negativo, mas podem ter um futuro excelente. Para essas, prefira múltiplos de receita (P/S ou EV/Sales), fluxo de caixa descontado (DCF) ou comparação com pares de mercado.',
   },
   {
-    q: 'Com que frequência devo recalcular o preço teto?',
-    a: 'Recalcule trimestralmente, após cada balanço da empresa. LPA, VPA e dividendos mudam a cada trimestre. Se você acompanha a empresa de perto, revise a cada 3 meses. Para investidores de longo prazo, uma vez por ano pode bastar, desde que não haja eventos materiais no meio do caminho.',
+    question: 'Com que frequência devo recalcular o preço teto?',
+    answer: 'Recalcule trimestralmente, após cada balanço da empresa. LPA, VPA e dividendos mudam a cada trimestre. Se você acompanha a empresa de perto, revise a cada 3 meses. Para investidores de longo prazo, uma vez por ano pode bastar, desde que não haja eventos materiais no meio do caminho.',
   },
   {
-    q: 'De onde vêm os dados da calculadora?',
-    a: `A ${brand.name} utiliza dados públicos da B3 (Bolsa brasileira), Comissão de Valores Mobiliários (CVM) e demonstrações financeiras oficiais das empresas, atualizados automaticamente após cada pregão e divulgação de balanço.`,
+    question: 'De onde vêm os dados da calculadora?',
+    answer: `A ${brand.name} utiliza dados públicos da B3 (Bolsa brasileira), Comissão de Valores Mobiliários (CVM) e demonstrações financeiras oficiais das empresas, atualizados automaticamente após cada pregão e divulgação de balanço.`,
   },
   {
-    q: 'Vale usar preço teto para small caps?',
-    a: 'Sim, com cautela. Small caps tendem a ter P/L mais alto porque o mercado paga pelo crescimento futuro. Use P/L setorial ajustado para small caps (15-20), exija margem de segurança maior (30-40%) e diversifique, já que esses papéis têm volatilidade e risco de liquidez maiores.',
+    question: 'Vale usar preço teto para small caps?',
+    answer: 'Sim, com cautela. Small caps tendem a ter P/L mais alto porque o mercado paga pelo crescimento futuro. Use P/L setorial ajustado para small caps (15-20), exija margem de segurança maior (30-40%) e diversifique, já que esses papéis têm volatilidade e risco de liquidez maiores.',
   },
   {
-    q: 'O que fazer se as 4 metodologias derem resultados muito diferentes?',
-    a: 'É normal. Cada método olha a empresa por um ângulo. Se Graham, Bazin, P/L e VPA divergem bastante, dê mais peso ao método que faz mais sentido para aquela empresa: bancos tendem a responder bem a VPA e P/L, pagadoras de dividendos ao Bazin, industriais a Graham. Use a média ponderada como consenso.',
+    question: 'O que fazer se as 4 metodologias derem resultados muito diferentes?',
+    answer: 'É normal. Cada método olha a empresa por um ângulo. Se Graham, Bazin, P/L e VPA divergem bastante, dê mais peso ao método que faz mais sentido para aquela empresa: bancos tendem a responder bem a VPA e P/L, pagadoras de dividendos ao Bazin, industriais a Graham. Use a média ponderada como consenso.',
   },
 ]
 
@@ -983,18 +808,7 @@ usePageSeo({
         { '@type': 'Person', name: 'Benjamin Graham' },
       ],
     },
-    {
-      '@context': 'https://schema.org',
-      '@type': 'FAQPage',
-      mainEntity: faqItems.map((item) => ({
-        '@type': 'Question',
-        name: item.q,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: item.a,
-        },
-      })),
-    },
+    // FAQPage schema é emitido pelo <MoleculesFAQ> via useHead — fonte unica.
   ],
 })
 

@@ -55,7 +55,40 @@ export function usePortfolioTradesService() {
     return resp
   }
 
+  /**
+   * Equity curve com mark-to-market diario (preco historico de cada
+   * ativo). Cada ponto = realized acumulado + unrealized (MTM) +
+   * income, em uma data. Janela: do primeiro trade do user ate hoje,
+   * pulando fins de semana. Pra alimentar o grafico de Resultado.
+   */
+  async function getEquityCurve(): Promise<EquityCurveResponse> {
+    const resp = await $fetch<EquityCurveResponse>(
+      `${API}/portfolio/equity-curve`,
+      { headers: authHeaders() },
+    )
+    return resp
+  }
+
   return {
     listTrades,
+    getEquityCurve,
+  }
+}
+
+export interface EquityCurvePoint {
+  date: string
+  equity: number
+  realized: number
+  unrealized: number
+  income: number
+}
+
+export interface EquityCurveResponse {
+  data: EquityCurvePoint[]
+  meta: {
+    points: number
+    from: string
+    to: string
+    tickers: string[]
   }
 }
