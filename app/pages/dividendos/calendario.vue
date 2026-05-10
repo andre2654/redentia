@@ -7,20 +7,21 @@
   truncation badge for the rest). Clicking a day opens a drawer with
   the full list for that date.
 
-  Auth-aware layout: signed-in users get the platform shell (sidebar);
-  visitors get the static marketing layout (SEO surface).
+  Layout: SEMPRE default (sidebar + header da plataforma) tanto autenticado
+  quanto visitante. O default layout ja delega pra `unauthenticated` quando
+  `!authStore.isAuthenticated` (ver layouts/default.vue), entao o visitante
+  ainda ve o header publico de marketing — sem branching aqui.
 
   Data: pulls /api/dividends/upcoming + /api/dividends/recent at the
   full 180-day window each, then buckets the results into a Map keyed
   by ISO date so the grid lookup per cell is O(1).
 -->
 <template>
-  <NuxtLayout :name="layoutName" title="Calendário de Dividendos">
+  <NuxtLayout name="default" title="Calendário de Dividendos">
     <section class="flex flex-col gap-6 px-6 py-8">
       <!-- ============ Hero ============ -->
       <div class="flex flex-col gap-3">
         <NuxtLink
-          v-if="layoutName === 'static'"
           to="/dividendos"
           class="flex items-center gap-1 text-xs transition hover:opacity-80"
           :style="{ color: 'var(--brand-text-muted)' }"
@@ -842,16 +843,11 @@ import { dividendAccent, readableOn } from '~/utils/color'
 
 const brand = useBrand()
 const service = useAssetsService()
-const authStore = useAuthStore()
 
-// Auth-aware layout: authenticated users keep the platform shell
-// (sidebar with quick actions, market strip, etc.) so the calendar
-// reads as part of the app. Unauthenticated visitors get the
-// `static` marketing layout, where the calendar doubles as a SEO/
-// lead-capture surface.
-const layoutName = computed(() =>
-  authStore.isAuthenticated ? 'default' : 'static'
-)
+// Layout: usa `default` em todos os casos. O proprio layouts/default.vue ja
+// delega pra `unauthenticated` quando `!authStore.isAuthenticated`, entao
+// nao precisamos branchar aqui — visitante ve header publico, autenticado
+// ve sidebar de plataforma. Sem ramificar layoutName, sem `static`.
 
 const rateAccent = computed(() =>
   dividendAccent('var(--brand-primary)', 'var(--brand-negative)', 'var(--brand-positive)'),

@@ -15,7 +15,7 @@
   stays identical, so Google sees no diff.
 -->
 <template>
-  <NuxtLayout name="static" title="Dividendos">
+  <NuxtLayout name="default" title="Dividendos">
     <section class="flex flex-col gap-16 px-6 py-10 md:py-14">
       <!-- ============ Hero ============ -->
       <header class="flex max-w-3xl flex-col gap-3">
