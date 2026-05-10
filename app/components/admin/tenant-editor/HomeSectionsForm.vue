@@ -41,9 +41,17 @@
       </li>
     </ul>
 
-    <details class="home-sections-form__advanced">
-      <summary>+ Adicionar secao nova</summary>
-      <div class="home-sections-form__add">
+    <div class="home-sections-form__advanced">
+      <button
+        type="button"
+        class="home-sections-form__advanced-toggle"
+        :aria-expanded="addOpen"
+        @click="addOpen = !addOpen"
+      >
+        <span class="home-sections-form__advanced-arrow" :class="{ 'home-sections-form__advanced-arrow--open': addOpen }" aria-hidden="true">▸</span>
+        + Adicionar secao nova
+      </button>
+      <div v-if="addOpen" class="home-sections-form__add">
         <select v-model="newSectionId" class="admin-input">
           <option value="">Escolha um id…</option>
           <option v-for="id in availableNewSections" :key="id" :value="id">
@@ -60,7 +68,7 @@
           Adicionar
         </button>
       </div>
-    </details>
+    </div>
   </div>
 </template>
 
@@ -107,6 +115,7 @@ const availableNewSections = computed(() => {
 
 const draggingIdx = ref<number | null>(null)
 const newSectionId = ref('')
+const addOpen = ref(false)
 
 function onDragStart(ev: DragEvent, idx: number) {
   draggingIdx.value = idx
@@ -240,12 +249,27 @@ function onAdd() {
   font-weight: 600;
 }
 
-.home-sections-form__advanced summary {
+.home-sections-form__advanced-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 0;
+  padding: 4px 0;
   cursor: pointer;
   font-size: 12px;
   font-weight: 600;
+  color: var(--brand-text);
   user-select: none;
-  padding: 4px 0;
+}
+.home-sections-form__advanced-arrow {
+  display: inline-block;
+  transition: transform 0.15s ease;
+  font-size: 10px;
+  color: color-mix(in srgb, var(--brand-text) 50%, transparent);
+}
+.home-sections-form__advanced-arrow--open {
+  transform: rotate(90deg);
 }
 .home-sections-form__add {
   display: flex;
