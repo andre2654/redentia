@@ -1,62 +1,89 @@
 // ============================================================
-// tenant.server, populates the brand state from event.context
+// tenant.server — popula brand state a partir do middleware (Phase 1)
 // ============================================================
 //
-// This plugin runs once per request on the SERVER (note the `.server.ts`
-// suffix). It reads `event.context.tenantSlug`, set by the
-// `0-tenant-resolver` server middleware, and writes the corresponding
-// brand config into the `useState('brand:active')` store that
-// `useBrand()` reads.
+// Roda 1x por request no SSR (note `.server.ts` suffix). Lê o brand
+// JSON que o middleware `0-tenant-resolver.ts` escreveu em
+// `event.context.tenantBrand` (já fetchado do backend, cacheado em
+// Redis), e injeta em `useState('brand:active')`.
 //
-// Why a plugin and not `initBrandFromRoute()` in app.vue:
+// Diferenças vs versão anterior:
+//   - Antes: lia `event.context.tenantSlug` e buscava no `brands`
+//     map importado de `brand.ts` (4.355 linhas no bundle)
+//   - Agora: lê `event.context.tenantBrand` direto (já é a config
+//     completa). Sem dependência de `brand.ts`. Bundle frontend
+//     não cresce com N tenants.
 //
-//  - Plugins run BEFORE any component setup, including the root app.vue.
-//    That means the first time any component calls `useBrand()`, the state
-//    is already populated with the correct tenant. No race condition.
-//  - `event.context` is request-scoped, every incoming request gets a
-//    fresh context, so there's zero chance of state bleeding across
-//    concurrent requests (the classic SSR multi-tenant gotcha).
-//  - SSR output and client-side hydration produce identical trees because
-//    `useState` serializes across the boundary, the client receives the
-//    already-resolved tenant as part of the payload, no re-init needed.
-//
-// The client-side resolution path (`brand-router.client.ts`) is still
-// useful for client-side navigation with `?brand=` overrides. But the
-// initial render is now fully handled here.
+// Por que plugin e não `initBrand()` em app.vue:
+//   - Plugins rodam ANTES de qualquer setup() de componente — quando
+//     algum componente chama `useBrand()`, o state já tá populado
+//   - `event.context` é request-scoped — zero race entre tenants
+//   - SSR + hydration: state serializa no payload Nuxt, client
+//     recebe brand resolvida sem re-fetch
+// ============================================================
 
-import { brands, type BrandSlug } from '~/config/brand'
+import { seedBrand } from '~/config/seed-brand'
+
+/**
+ * Backend Laravel salva assets em `storage/app/public/...` e expoe via
+ * `/storage/...`. Mas o frontend roda em outro dominio (ex: redentia.com.br),
+ * onde `/storage/...` nao existe. Esta funcao prepende o host da API
+ * em qualquer logo path absoluto que comece com `/storage/`. Paths
+ * estaticos do bundle (`/brand/...`) e URLs absolutas (`https://`)
+ * passam intactos.
+ */
+function normalizeBrandAssets(brand: any, apiBase: string): any {
+  const out = { ...brand }
+  const apiOrigin = apiBase.replace(/\/api\/?$/, '')
+
+  const fixUrl = (url: any): any => {
+    if (typeof url !== 'string') return url
+    if (/^https?:\/\//.test(url)) return url
+    if (url.startsWith('/storage/')) return `${apiOrigin}${url}`
+    return url
+  }
+
+  if (out.logo && typeof out.logo === 'object') {
+    const logo: Record<string, any> = {}
+    for (const [k, v] of Object.entries(out.logo)) logo[k] = fixUrl(v)
+    out.logo = logo
+  }
+  return out
+}
 
 export default defineNuxtPlugin({
   name: 'tenant-server',
-  enforce: 'pre', // Run before other plugins that might read useBrand()
+  enforce: 'pre', // antes de plugins que possam ler useBrand()
   setup() {
-    // Only runs on server (filename suffix `.server.ts`), but guard anyway
-    // for type-safety and to make the intent explicit.
     if (!import.meta.server) return
 
     const event = useRequestEvent()
     if (!event) return
 
-    const slug = (event.context.tenantSlug || 'redentia') as BrandSlug
-    const config = brands[slug] || brands.redentia
+    const config = useRuntimeConfig()
+    const apiBase = (config.public?.apiBaseUrl as string) || ''
 
-    // Populate the shared state. The factory arg (`() => ...`) only runs
-    // if the state doesn't exist yet, which in a fresh SSR request, it
-    // doesn't. We deep-clone via JSON to get a plain object that reactive()
-    // can wrap without freezing the source config.
+    // Brand já foi resolvida pelo middleware. Se por algum motivo não
+    // veio (request fora do flow normal), cai no seed.
+    const rawBrand = (event.context.tenantBrand as any) || seedBrand
+    // Normaliza paths /storage/... pra absolute (Phase 2 logo upload).
+    const brand = normalizeBrandAssets(rawBrand, apiBase)
+    const slug = (event.context.tenantSlug as string) || brand.slug || 'redentia'
+
+    // useState com factory — só roda se state ainda não existe.
     const brandState = useState('brand:active', () =>
-      reactive(JSON.parse(JSON.stringify(config)))
+      reactive(JSON.parse(JSON.stringify(brand))),
     )
 
-    // Defensive: if the state already exists somehow (dev HMR, edge cases),
-    // overwrite it with the correct tenant for this request.
-    if (brandState.value.slug !== slug) {
-      Object.assign(brandState.value, JSON.parse(JSON.stringify(config)))
-    }
+    // SSR e per-request, mas o useState pode ja existir se algum codigo
+    // chamou useBrand() antes deste plugin (race com auto-imports). E o
+    // factory deep-clona seedBrand, entao SO confiar nele eh fragil. Aqui
+    // sobrescrevemos sempre — a fonte canonica do brand pra esta request
+    // eh o tenantBrand do middleware, ponto. Sem isto, ficamos presos
+    // num seed/state stale e o hero (variant=radiograph) nunca aparece.
+    Object.assign(brandState.value, JSON.parse(JSON.stringify(brand)))
 
-    // Also track the resolved slug separately so downstream code can
-    // check "was this request already resolved server-side?" without
-    // comparing full config objects.
+    // Slug separado pra checks rápidos sem comparar config inteira
     const resolvedSlug = useState<string | null>('brand:resolved-slug', () => null)
     resolvedSlug.value = slug
   },

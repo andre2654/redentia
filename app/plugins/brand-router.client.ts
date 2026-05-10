@@ -27,15 +27,18 @@ import { applyBrandOverride } from '~/composables/useBrand'
 export default defineNuxtPlugin(() => {
   const router = useRouter()
 
-  router.beforeEach((to, from) => {
+  router.beforeEach(async (to, from) => {
     const currentBrand = from.query.brand as string | undefined
     const targetBrand = to.query.brand as string | undefined
 
     // Case 1: target has an explicit brand override that differs from
     // the current one → apply it before navigation so the new page
     // renders already branded correctly.
+    //
+    // Phase 1: applyBrandOverride agora e ASYNC (fetch da API).
+    // Awaitamos antes de retornar — Vue Router suporta async guards.
     if (targetBrand && targetBrand !== currentBrand) {
-      applyBrandOverride(targetBrand)
+      await applyBrandOverride(targetBrand)
       return // Proceed with navigation as-is
     }
 

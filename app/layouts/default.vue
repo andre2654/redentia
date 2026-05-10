@@ -368,8 +368,10 @@
           <span class="platform-sidebar-eyebrow">{{ brand.nav.toolsLabel }}</span>
           <!-- "Calculadoras" como drawer expandable: lista as calculadoras
                principais como sub-items. Auto-abre quando user esta em
-               /calculadora/*. -->
+               /calculadora/*. Phase 6: gateado por features.showCalculators
+               (pra tenants white-label que nao querem expor calculadoras). -->
           <AtomsSidebarGroup
+            v-if="brand.features?.showCalculators !== false"
             :label="brand.nav.calculators"
             icon="i-lucide-calculator"
             :child-paths="[
@@ -394,8 +396,12 @@
             <AtomsSidebarButton to="/calculadora/quanto-investir" text="Quanto investir" is-sub-item />
             <AtomsSidebarButton to="/calculadora/planejamento" text="Planejamento" is-sub-item />
           </AtomsSidebarGroup>
+          <!-- Phase 6: master flag `showRankings` gateia o grupo inteiro.
+               Backward-compat: se o admin ainda usa flags granulares
+               antigos (showDividendYieldRanking / showMonthlyMoversRanking),
+               eles continuam habilitando o grupo. -->
           <AtomsSidebarGroup
-            v-if="brand.features?.showDividendYieldRanking || brand.features?.showMonthlyMoversRanking"
+            v-if="brand.features?.showRankings || brand.features?.showDividendYieldRanking || brand.features?.showMonthlyMoversRanking"
             label="Rankings"
             icon="i-lucide-trophy"
             :child-paths="[

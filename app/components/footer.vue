@@ -61,33 +61,35 @@
     <!-- Links Categorizados (estilo Zapier) -->
     <div class="w-full py-12" :style="{ borderTop: `1px solid var(--brand-border)` }">
       <div class="mx-auto flex max-w-[1400px] flex-wrap justify-center gap-x-16 gap-y-10 px-6 text-center md:justify-between md:text-left lg:gap-x-24">
-        <!-- Ferramentas -->
-        <div class="flex flex-col items-center md:items-start">
+        <!-- Ferramentas — Phase 6: gateado por features.showCalculators e showAIAdvisor -->
+        <div v-if="showFooterTools" class="flex flex-col items-center md:items-start">
           <h3 class="mb-5 text-sm font-semibold uppercase tracking-wider" :style="{ color: 'var(--brand-text)' }">
             {{ brand.footer.sections.tools }}
           </h3>
           <ul class="flex flex-col items-center gap-3 md:items-start">
-            <li>
-              <NuxtLink to="/calculadora" class="text-sm transition-colors hover:text-secondary" :style="{ color: 'var(--brand-text-muted)' }">
-                {{ brand.nav.footerCalc }}
-              </NuxtLink>
-            </li>
-            <li>
-              <NuxtLink to="/calculadora/juros-compostos" class="text-sm transition-colors hover:text-secondary" :style="{ color: 'var(--brand-text-muted)' }">
-                {{ brand.nav.footerJuros }}
-              </NuxtLink>
-            </li>
-            <li>
-              <NuxtLink to="/calculadora/preco-teto" class="text-sm transition-colors hover:text-secondary" :style="{ color: 'var(--brand-text-muted)' }">
-                {{ brand.nav.footerPrecoTeto }}
-              </NuxtLink>
-            </li>
-            <li>
-              <NuxtLink to="/calculadora/dividend-yield" class="text-sm transition-colors hover:text-secondary" :style="{ color: 'var(--brand-text-muted)' }">
-                {{ brand.nav.footerDY }}
-              </NuxtLink>
-            </li>
-            <li>
+            <template v-if="features.showCalculators !== false">
+              <li>
+                <NuxtLink to="/calculadora" class="text-sm transition-colors hover:text-secondary" :style="{ color: 'var(--brand-text-muted)' }">
+                  {{ brand.nav.footerCalc }}
+                </NuxtLink>
+              </li>
+              <li>
+                <NuxtLink to="/calculadora/juros-compostos" class="text-sm transition-colors hover:text-secondary" :style="{ color: 'var(--brand-text-muted)' }">
+                  {{ brand.nav.footerJuros }}
+                </NuxtLink>
+              </li>
+              <li>
+                <NuxtLink to="/calculadora/preco-teto" class="text-sm transition-colors hover:text-secondary" :style="{ color: 'var(--brand-text-muted)' }">
+                  {{ brand.nav.footerPrecoTeto }}
+                </NuxtLink>
+              </li>
+              <li>
+                <NuxtLink to="/calculadora/dividend-yield" class="text-sm transition-colors hover:text-secondary" :style="{ color: 'var(--brand-text-muted)' }">
+                  {{ brand.nav.footerDY }}
+                </NuxtLink>
+              </li>
+            </template>
+            <li v-if="features.showAIAdvisor !== false">
               <NuxtLink to="/help" class="text-sm transition-colors hover:text-secondary" :style="{ color: 'var(--brand-text-muted)' }">
                 {{ brand.nav.footerAI }}
               </NuxtLink>
@@ -95,18 +97,18 @@
           </ul>
         </div>
 
-        <!-- Recursos -->
-        <div class="flex flex-col items-center md:items-start">
+        <!-- Recursos — Phase 6: gateado por flags individuais -->
+        <div v-if="showFooterResources" class="flex flex-col items-center md:items-start">
           <h3 class="mb-5 text-sm font-semibold uppercase tracking-wider" :style="{ color: 'var(--brand-text)' }">
             {{ brand.footer.sections.resources }}
           </h3>
           <ul class="flex flex-col items-center gap-3 md:items-start">
-            <li>
+            <li v-if="features.showGuides !== false">
               <NuxtLink to="/guias" class="text-sm transition-colors hover:text-secondary" :style="{ color: 'var(--brand-text-muted)' }">
                 {{ brand.nav.footerGuides }}
               </NuxtLink>
             </li>
-            <li>
+            <li v-if="features.showGlossary !== false">
               <NuxtLink to="/glossario" class="text-sm transition-colors hover:text-secondary" :style="{ color: 'var(--brand-text-muted)' }">
                 {{ brand.nav.footerGlossary }}
               </NuxtLink>
@@ -121,7 +123,7 @@
                 {{ brand.nav.footerFiis }}
               </NuxtLink>
             </li>
-            <li>
+            <li v-if="features.showDividends !== false">
               <NuxtLink to="/dividendos" class="text-sm transition-colors hover:text-secondary" :style="{ color: 'var(--brand-text-muted)' }">
                 {{ brand.nav.footerDividends }}
               </NuxtLink>
@@ -129,8 +131,8 @@
           </ul>
         </div>
 
-        <!-- Rankings, top-level entry point for /ranking hub -->
-        <div class="flex flex-col items-center md:items-start">
+        <!-- Rankings — Phase 6: gateado por master flag showRankings (+ backward-compat) -->
+        <div v-if="rankingsEnabled" class="flex flex-col items-center md:items-start">
           <h3 class="mb-5 text-sm font-semibold uppercase tracking-wider" :style="{ color: 'var(--brand-text)' }">
             Rankings
           </h3>
@@ -140,22 +142,22 @@
                 Todos os rankings
               </NuxtLink>
             </li>
-            <li>
+            <li v-if="features.showDividendYieldRanking">
               <NuxtLink to="/ranking/maiores-dividend-yield" class="text-sm transition-colors hover:text-secondary" :style="{ color: 'var(--brand-text-muted)' }">
                 Maiores Dividend Yields
               </NuxtLink>
             </li>
-            <li>
+            <li v-if="features.showMonthlyMoversRanking">
               <NuxtLink to="/ranking/maiores-altas-mes" class="text-sm transition-colors hover:text-secondary" :style="{ color: 'var(--brand-text-muted)' }">
                 Maiores Altas do Mês
               </NuxtLink>
             </li>
-            <li>
+            <li v-if="features.showMonthlyMoversRanking">
               <NuxtLink to="/ranking/maiores-baixas-mes" class="text-sm transition-colors hover:text-secondary" :style="{ color: 'var(--brand-text-muted)' }">
                 Maiores Baixas do Mês
               </NuxtLink>
             </li>
-            <li>
+            <li v-if="features.showDividendCalendar">
               <NuxtLink to="/dividendos/calendario" class="text-sm transition-colors hover:text-secondary" :style="{ color: 'var(--brand-text-muted)' }">
                 Calendário de Dividendos
               </NuxtLink>
@@ -184,7 +186,7 @@
                 {{ brand.nav.footerContact }}
               </NuxtLink>
             </li>
-            <li>
+            <li v-if="appEnabled">
               <NuxtLink to="/download" class="text-sm transition-colors hover:text-secondary" :style="{ color: 'var(--brand-text-muted)' }">
                 {{ brand.nav.footerDownload }}
               </NuxtLink>
@@ -197,36 +199,29 @@
           </ul>
         </div>
 
-        <!-- Para Devs (apenas no tenant Redentia) -->
-        <div v-if="brand.slug === 'redentia'" class="flex flex-col items-center md:items-start">
+        <!-- Para Devs — só renderiza se o tenant tem brand.devPortalLinks
+             populado. Cada link pode ser URL absoluta (target=_blank) ou
+             path interno (NuxtLink). -->
+        <div v-if="brand.devPortalLinks?.length" class="flex flex-col items-center md:items-start">
           <h3 class="mb-5 text-sm font-semibold uppercase tracking-wider" :style="{ color: 'var(--brand-text)' }">
             Para Devs
           </h3>
           <ul class="flex flex-col items-center gap-3 md:items-start">
-            <li>
-              <a href="https://api.redentia.com.br" target="_blank" rel="noopener" class="text-sm transition-colors hover:text-secondary" :style="{ color: 'var(--brand-text-muted)' }">
-                Redentia API
-              </a>
-            </li>
-            <li>
-              <a href="https://creative.redentia.com.br" target="_blank" rel="noopener" class="text-sm transition-colors hover:text-secondary" :style="{ color: 'var(--brand-text-muted)' }">
-                Creative Studio
-              </a>
-            </li>
-            <li>
-              <a href="https://whitelabel.redentia.com.br" target="_blank" rel="noopener" class="text-sm transition-colors hover:text-secondary" :style="{ color: 'var(--brand-text-muted)' }">
-                White-Label
-              </a>
-            </li>
-            <li>
-              <a href="https://estudo.redentia.com.br" target="_blank" rel="noopener" class="text-sm transition-colors hover:text-secondary" :style="{ color: 'var(--brand-text-muted)' }">
-                Estudos
-              </a>
-            </li>
-            <li>
-              <NuxtLink to="/api-portal/docs" class="text-sm transition-colors hover:text-secondary" :style="{ color: 'var(--brand-text-muted)' }">
-                Documentação
-              </NuxtLink>
+            <li v-for="link in brand.devPortalLinks" :key="link.url">
+              <NuxtLink
+                v-if="link.url.startsWith('/')"
+                :to="link.url"
+                class="text-sm transition-colors hover:text-secondary"
+                :style="{ color: 'var(--brand-text-muted)' }"
+              >{{ link.label }}</NuxtLink>
+              <a
+                v-else
+                :href="link.url"
+                target="_blank"
+                rel="noopener"
+                class="text-sm transition-colors hover:text-secondary"
+                :style="{ color: 'var(--brand-text-muted)' }"
+              >{{ link.label }}</a>
             </li>
           </ul>
         </div>
@@ -269,12 +264,19 @@
           <p class="text-[12px] max-lg:text-center" :style="{ color: 'var(--brand-text-muted)' }">
             {{ brand.tagline }}
           </p>
-          <!-- Contatos da Redentia — so renderizam no tenant Redentia.
-               WhatsApp via wa.me sem + e com country code 55. Email
-               via mailto: pra abrir o cliente nativo do user. -->
-          <div v-if="brand.slug === 'redentia'" class="flex flex-col gap-2.5 max-lg:items-center">
+          <!-- Contatos do tenant — renderiza apenas se brand.support tem
+               canais configurados. Cada chave (whatsapp, email) é
+               opcional — admin so popula os que existem.
+               WhatsApp formatado: numero E.164 stored sem +; aqui
+               formatamos pra display ("+55 11 5304-2570") e link
+               wa.me/{number}. -->
+          <div
+            v-if="brand.support?.whatsapp || brand.support?.email"
+            class="flex flex-col gap-2.5 max-lg:items-center"
+          >
             <a
-              href="https://wa.me/551153042570"
+              v-if="brand.support?.whatsapp"
+              :href="`https://wa.me/${brand.support.whatsapp}`"
               target="_blank"
               rel="noopener"
               class="inline-flex items-center gap-2 text-[13px] font-medium transition-opacity hover:opacity-80"
@@ -289,12 +291,13 @@
               </span>
               <span class="flex flex-col leading-tight">
                 <span class="text-[10px] uppercase tracking-[0.14em]" :style="{ color: 'var(--brand-text-muted)' }">WhatsApp</span>
-                <span class="font-mono-tab tabular-nums">+55 11 5304-2570</span>
+                <span class="font-mono-tab tabular-nums">{{ formatWhatsApp(brand.support.whatsapp) }}</span>
               </span>
             </a>
 
             <a
-              href="mailto:contato@redentia.com.br"
+              v-if="brand.support?.email"
+              :href="`mailto:${brand.support.email}`"
               class="inline-flex items-center gap-2 text-[13px] font-medium transition-opacity hover:opacity-80"
               :style="{ color: 'var(--brand-text)' }"
             >
@@ -307,13 +310,17 @@
               </span>
               <span class="flex flex-col leading-tight">
                 <span class="text-[10px] uppercase tracking-[0.14em]" :style="{ color: 'var(--brand-text-muted)' }">Email</span>
-                <span>contato@redentia.com.br</span>
+                <span>{{ brand.support.email }}</span>
               </span>
             </a>
           </div>
         </div>
         
-        <div class="flex items-center gap-3">
+        <!-- Phase 6.x: app store icons gateado pelo master `showApp`
+             (com backward-compat pros flags legacy). Sem isso, tenants
+             white-label sem app PWA mostram badges fake que nao levam
+             pra lugar nenhum. -->
+        <div v-if="appEnabled" class="flex items-center gap-3">
           <NuxtLink to="/download" class="transition-opacity hover:opacity-80">
             <img
               src="/assets/icons/app-store.svg"
@@ -359,6 +366,55 @@
 <script setup lang="ts">
 const brand = useBrand()
 const alfabeto = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+
+// Phase 6: feature flags pra mostrar/esconder colunas inteiras do
+// footer. `features` undefined em tenants antigos = default-on
+// (backward-compat). Master flag `showRankings` cobre o caso mais
+// comum (white-label sem rankings).
+const features = computed(() => (brand as any).features ?? {})
+const rankingsEnabled = computed(() => {
+  const f = features.value
+  return f.showRankings === true
+    || f.showDividendYieldRanking === true
+    || f.showMonthlyMoversRanking === true
+})
+// Coluna "Ferramentas" so aparece se calc OU AI advisor estiverem on
+const showFooterTools = computed(() => {
+  const f = features.value
+  return f.showCalculators !== false || f.showAIAdvisor !== false
+})
+// Coluna "Recursos" so aparece se algum recurso estiver on. /acoes e
+// /fiis sao always-on (search baseline), entao a coluna sempre tem ao
+// menos 2 links — sempre visivel.
+const showFooterResources = computed(() => true)
+
+// App master flag (Phase 6.x): unifica `showApp` master + flags
+// legacy `showAppStoreLinks`/`showDownloadPage`. Liga: link /download
+// no footer + icones App Store / Google Play. Backward-compat: se
+// algum dos legacy estiver true, app aparece.
+const appEnabled = computed(() => {
+  const f = features.value
+  return f.showApp === true || f.showAppStoreLinks === true || f.showDownloadPage === true
+})
+
+/**
+ * Formata número de WhatsApp armazenado em E.164 sem '+'
+ * (ex: '551153042570') pra display friendly ('+55 11 5304-2570').
+ * Suporta formato BR (12 dígitos com 8-digit local) e mobile
+ * (13 dígitos com 9-digit local). Sem dependência externa.
+ */
+function formatWhatsApp(raw: string): string {
+  const digits = (raw || '').replace(/\D/g, '')
+  if (digits.length === 13) {
+    // +DD AA NNNNN-NNNN (mobile com 9o dígito)
+    return `+${digits.slice(0, 2)} ${digits.slice(2, 4)} ${digits.slice(4, 9)}-${digits.slice(9)}`
+  }
+  if (digits.length === 12) {
+    // +DD AA NNNN-NNNN (fixo)
+    return `+${digits.slice(0, 2)} ${digits.slice(2, 4)} ${digits.slice(4, 8)}-${digits.slice(8)}`
+  }
+  return digits ? `+${digits}` : ''
+}
 
 const route = useRoute()
 const { checkPermission, requestPermission, permissionStatus } =

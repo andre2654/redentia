@@ -1,92 +1,39 @@
 // ============================================================
-// tenant-resolver — server-first brand resolution
+// tenant-resolver — server-first brand resolution (Phase 1: API-backed)
 // ============================================================
 //
-// This middleware is the ONE place where the active tenant is
-// decided for any incoming request. It runs before every other
-// middleware (filename prefixed with `0-` so Nitro executes it
-// first alphabetically), and writes the resolved slug into
-// `event.context.tenantSlug`. A Nitro plugin then reads that
-// context and populates the `useState('brand:active')` store BEFORE
-// any Vue component runs `useBrand()`.
+// Roda antes de qualquer outra middleware (filename `0-` força ordem
+// alfabetica) em CADA request SSR. Resolve o tenant baseado em:
 //
-// Resolution order (user-approved):
-//   1. `?brand=<slug>` query string (explicit override — works in
-//      production and dev, lets you demo Saraiva on the Redentia
-//      domain with `/?brand=saraiva-invest`)
-//   2. Host header (production default — `saraivainvest.com.br`
-//      auto-resolves to `saraiva-invest` with zero query string)
-//   3. `redentia` default (fallback when nothing matches)
+//   1. `?brand=<slug>` query string  (override admin pra preview)
+//   2. Host header                    (produção white-label)
+//   3. fallback Redentia              (último recurso)
 //
-// No cookie persistence — the resolution is fully stateless, which
-// means the same URL always produces the same tenant regardless of
-// history, session or device.
+// Diferente da versão anterior (que tinha `HOST_TO_SLUG` map hardcoded
+// vindo de `brand.ts`), agora **chama o backend** pra resolver. Brand
+// canônica vive na DB, o frontend só consome.
 //
-// ============================================================
-// Notes on interaction with other subdomain middlewares:
+// Cache: O backend cacheia em Redis 60s. SSR não cacheia adicional —
+// `event.context.tenantBrand` é per-request, isolado.
 //
-// - `api.redentia.com.br`, `creative.redentia.com.br`,
-//   `whitelabel.redentia.com.br` are PRODUCT subdomains, not
-//   TENANT subdomains. They rewrite the URL internally to serve
-//   /api-portal/*, /creative/*, /whitelabel/* — the active brand
-//   for those is always Redentia (they're Redentia-owned surfaces).
-//   This middleware respects those hosts and returns early without
-//   setting a tenant, letting them keep the default.
-//
-// - `api.saraivainvest.com.br` → rewrite by api-subdomain + set
-//   tenantSlug = 'saraiva-invest'. This is handled by the two
-//   middlewares running in order: tenant-resolver first decides
-//   the brand based on the root domain, then api-subdomain does
-//   the URL rewrite. End result: user sees Saraiva-branded API
-//   portal at api.saraivainvest.com.br.
+// Resultado escrito no contexto:
+//   - event.context.tenantSlug:  string (slug ou 'redentia' fallback)
+//   - event.context.tenantBrand: BrandConfig completa pronta pra
+//     `useState('brand:active')` consumir no plugin tenant.server.ts
 // ============================================================
 
-import { brands, type BrandSlug } from '~/config/brand'
+import { seedBrand } from '~/config/seed-brand'
+// Phase 5: build-time host map. Quando o frontend builda, o script
+// `scripts/generate-host-map.ts` consulta `/api/tenants/list-public`
+// e regrava `app/config/host-map.json` com `{host: slug}`.
+// JSON estatico (sem fetch em runtime). Pra hosts conhecidos pulamos
+// o fetch da API (~50-100ms). Pra hosts novos (tenant criado desde o
+// ultimo build), cai no fallback API normal — sem regressao.
+// O arquivo eh checado in pra git com `map: {}` default — primeira
+// build em prod popula via Vercel build step.
+import hostMapJson from '~/config/host-map.json'
+const HOST_MAP: Record<string, string> = (hostMapJson?.map ?? {}) as Record<string, string>
 
-/**
- * Maps a host (without port) to a tenant slug. Built at import time
- * from the brand.domain fields in brand.ts, so adding a new tenant is
- * a single-line change in that file — no need to touch the middleware.
- *
- * For each brand we register:
- *   - The canonical `www.foo.com.br` (from brand.domain)
- *   - The naked `foo.com.br`
- *   - The `.localhost` variant for dev (e.g. `holder.localhost`)
- */
-function buildHostMap(): Map<string, BrandSlug> {
-  const map = new Map<string, BrandSlug>()
-  for (const [slug, config] of Object.entries(brands) as [BrandSlug, typeof brands[BrandSlug]][]) {
-    const domain = config.domain?.toLowerCase().replace(/^https?:\/\//, '').split('/')[0]
-    if (!domain) continue
-    // Canonical with www prefix
-    map.set(domain, slug)
-    // Naked domain (strip www.)
-    if (domain.startsWith('www.')) {
-      map.set(domain.slice(4), slug)
-    }
-    // Dev: slug.localhost (e.g. holder.localhost)
-    map.set(`${slug}.localhost`, slug)
-    // Dev: without trailing portion (e.g. saraiva.localhost)
-    const firstWord = slug.split('-')[0]
-    if (firstWord !== slug) map.set(`${firstWord}.localhost`, slug)
-  }
-  return map
-}
-
-const HOST_TO_SLUG = buildHostMap()
-
-/**
- * Product subdomains belong to Redentia (the dev-facing surfaces).
- * These are NOT tenant subdomains — they render the same UI regardless
- * of which tenant is "active", so the resolver should skip them and let
- * their own subdomain middlewares do the URL rewrite.
- *
- * Note: `api.saraivainvest.com.br` is still a tenant subdomain for Saraiva
- * (tenant-resolver would pick up `saraivainvest.com.br` as the root host).
- * Only the literal `api.redentia.com.br` / `creative.redentia.com.br` /
- * `whitelabel.redentia.com.br` are skipped here — those map to Redentia
- * brand and their subdomain middlewares handle URL rewriting.
- */
 const PRODUCT_SUBDOMAIN_HOSTS = new Set([
   'api.redentia.com.br',
   'api.localhost',
@@ -108,35 +55,49 @@ function firstString(value: unknown): string | undefined {
   return undefined
 }
 
-function resolveSlugFromHost(host: string): BrandSlug | null {
-  const clean = host.split(':')[0].toLowerCase()
-
-  // Product subdomains: always Redentia
-  if (PRODUCT_SUBDOMAIN_HOSTS.has(clean)) return 'redentia'
-
-  // Exact match first
-  const exact = HOST_TO_SLUG.get(clean)
-  if (exact) return exact
-
-  // Walk up subdomains: `foo.bar.saraivainvest.com.br` → `bar.saraivainvest.com.br`
-  // → `saraivainvest.com.br`. Lets us catch things like `preview.holder.com.br`.
-  const parts = clean.split('.')
-  for (let i = 1; i < parts.length - 1; i++) {
-    const candidate = parts.slice(i).join('.')
-    const match = HOST_TO_SLUG.get(candidate)
-    if (match) return match
-  }
-
-  return null
+function normalizeHost(raw: string): string {
+  return raw.split(':')[0].toLowerCase()
 }
 
-export default defineEventHandler((event) => {
-  // Never try to resolve for internal Nuxt/Nitro paths or API calls.
-  // Those don't render a tenant-branded page anyway.
-  //
-  // Exception: `/api/_debug/tenant` needs the resolver to run so the
-  // endpoint can report back whether the middleware is active and what
-  // slug it resolved. This is a diagnostic-only carve-out.
+async function fetchBrandFromBackend(
+  event: any,
+  params: { slug?: string; host?: string },
+): Promise<any | null> {
+  // Per-request memo (em event.context.__brandCache) — evita refetch
+  // se o middleware reentrar pro mesmo slug/host na MESMA request. NAO
+  // pode ser module-scope: ai um restart de Redis no backend nao seria
+  // visto pelo SSR ate dev server reiniciar. Backend ja cacheia 60s no
+  // Redis, deixa o storage canonico la.
+  const cache: Map<string, any> = (event.context.__brandCache ??= new Map())
+  const cacheKey = params.slug ? `slug:${params.slug}` : `host:${params.host}`
+  if (cache.has(cacheKey)) return cache.get(cacheKey)
+
+  const config = useRuntimeConfig()
+  // apiBaseUrl ja tem /api (ex: 'https://redentia-api.saraivada.com/api').
+  const raw = (config.public?.apiBaseUrl as string) || 'https://redentia-api.saraivada.com/api'
+  const apiBase = raw.replace(/\/$/, '')
+
+  try {
+    const url = params.slug
+      ? `${apiBase}/brand/resolve/${encodeURIComponent(params.slug)}`
+      : `${apiBase}/brand/resolve-by-host?host=${encodeURIComponent(params.host || '')}`
+
+    const resp = await $fetch<{ data: any }>(url, {
+      timeout: 3000,  // SSR não pode esperar muito — 3s é teto razoável
+      retry: 1,
+      headers: { Accept: 'application/json' },
+    })
+    cache.set(cacheKey, resp.data)
+    return resp.data
+  } catch (e) {
+    // Backend down / 404 / timeout — retorna null pra cair no seed
+    cache.set(cacheKey, null)
+    return null
+  }
+}
+
+export default defineEventHandler(async (event) => {
+  // Skip rotas internas Nuxt/Nitro/API — não renderizam tenant
   const url = getRequestURL(event)
   const isDebugEndpoint = url.pathname === '/api/_debug/tenant'
   if (
@@ -152,27 +113,54 @@ export default defineEventHandler((event) => {
     return
   }
 
-  // 1. Query string override — highest priority.
-  //    Works in production AND dev: `www.redentia.com.br/?brand=holder`
-  //    lets you see the Holder brand running on Redentia's domain.
+  const host = normalizeHost(getRequestHeader(event, 'host') || '')
+
+  // Product subdomains (api.redentia.com.br etc) sempre Redentia
+  if (PRODUCT_SUBDOMAIN_HOSTS.has(host)) {
+    event.context.tenantSlug = 'redentia'
+    event.context.tenantBrand = await fetchBrandFromBackend(event, { slug: 'redentia' }) || seedBrand
+    return
+  }
+
+  // 1. Query override (admin preview)
   const queryBrand = firstString(url.searchParams.get('brand'))
-  if (queryBrand && queryBrand in brands) {
-    event.context.tenantSlug = queryBrand as BrandSlug
-    return
+  if (queryBrand && /^[a-z0-9\-]+$/.test(queryBrand)) {
+    const brand = await fetchBrandFromBackend(event, { slug: queryBrand })
+    if (brand) {
+      event.context.tenantSlug = brand.slug
+      event.context.tenantBrand = brand
+      return
+    }
+    // Slug não encontrado — segue pro próximo resolver
   }
 
-  // 2. Host header — the production default.
-  //    User hits `www.saraivainvest.com.br` → slug = 'saraiva-invest'.
-  const host = getRequestHeader(event, 'host') || ''
-  const hostSlug = resolveSlugFromHost(host)
-  if (hostSlug) {
-    event.context.tenantSlug = hostSlug
-    return
+  // 2. Host header → tenants.domain match
+  if (host) {
+    // 2a. Build-time host map shortcut: pra hosts conhecidos, vamos
+    //     direto pro slug (1 fetch em vez de 2). Tenants criados ou
+    //     com domain alterado APOS o ultimo build caem no path normal.
+    const knownSlug = HOST_MAP[host]
+    if (knownSlug) {
+      const brand = await fetchBrandFromBackend(event, { slug: knownSlug })
+      if (brand) {
+        event.context.tenantSlug = brand.slug
+        event.context.tenantBrand = brand
+        return
+      }
+    }
+
+    // 2b. Path normal: API resolve por host (caso tenant novo ainda
+    //     nao no build map, ou host map vazio em dev).
+    const brand = await fetchBrandFromBackend(event, { host })
+    if (brand) {
+      event.context.tenantSlug = brand.slug
+      event.context.tenantBrand = brand
+      return
+    }
   }
 
-  // 3. Default — Redentia.
-  //    Applies to `localhost:3000`, `127.0.0.1`, `*.vercel.app` previews,
-  //    or any unrecognized host. The composable layer will still fall back
-  //    to the local brand.ts config for 'redentia' — no API call needed.
+  // 3. Fallback Redentia (busca do backend, com seed como ultimo recurso)
+  const fallback = await fetchBrandFromBackend(event, { slug: 'redentia' })
   event.context.tenantSlug = 'redentia'
+  event.context.tenantBrand = fallback || seedBrand
 })

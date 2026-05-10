@@ -988,8 +988,11 @@
       two-section layout and keeps the developer-tools story in
       a single scroll.
     -->
+    <!-- Phase 4: removed `brand.hero.variant === 'terminal'` gate.
+         Terminal variant foi deletada (sem tenant usando). Agora a
+         section apiProduct depende apenas de showSection('apiProduct'). -->
     <section
-      v-if="showSection('apiProduct') && !authStore.isAuthenticated && brand.hero.variant === 'terminal'"
+      v-if="showSection('apiProduct') && !authStore.isAuthenticated"
       :style="{ order: sectionOrder('apiProduct'), borderColor: brand.colors.border, backgroundColor: brand.colors.background }"
       class="api-product-section relative mt-16 overflow-hidden border-t"
     >
@@ -1397,24 +1400,20 @@
     </section>
 
     <!-- ============ FAQ home publica ============
-         So aparece pra visitante nao-logado, depois das sections de produto.
-         Ancora long-tails de busca ("redentia e gratis", "redentia confiavel",
-         "como funciona redentia"), com schema FAQPage emitido pelo proprio
-         componente. Container max-w-3xl pra leitura confortavel + spacing
-         vertical generoso (quiet-section).
-         `order: 999` força esta seção para o FIM do flex container — todas
-         as outras sections usam `:style="{ order: sectionOrder(id) }"` com
-         valores derivados de brand.homeSections (tipicamente 0-30). -->
+         Phase 5+: agora config-driven. Toggle via `homeSections.faq`
+         + ordem via sectionOrder. Conteudo via `brand.faq.{eyebrow,
+         title, items}`. Defaults caem em `homeFaqItems` se config
+         vazia. Schema FAQPage emitido pelo proprio MoleculesFAQ. -->
     <section
-      v-if="!authStore.isAuthenticated"
+      v-if="showSection('faq') && !authStore.isAuthenticated"
       class="quiet-section relative"
-      :style="{ order: 999, borderColor: 'var(--brand-border)' }"
+      :style="{ order: sectionOrder('faq'), borderColor: 'var(--brand-border)' }"
     >
       <div class="mx-auto max-w-3xl px-6">
         <MoleculesFAQ
-          eyebrow="Dúvidas comuns"
-          :title="`Perguntas frequentes sobre a ${brand.name}`"
-          :items="homeFaqItems"
+          :eyebrow="brand.faq?.eyebrow || 'Dúvidas comuns'"
+          :title="brand.faq?.title || `Perguntas frequentes sobre a ${brand.name}`"
+          :items="resolvedFaqItems"
         />
       </div>
     </section>
@@ -1562,6 +1561,22 @@ const homeFaqItems = computed(() => [
     answer: `O cancelamento é feito direto no painel da conta, em Configurações → Gerenciar plano, em 2 cliques. Sem ligação, sem retenção. Você mantém acesso ao plano pago até o fim do período já pago e depois volta automaticamente para o plano gratuito, sem perder histórico nem carteiras importadas.`,
   },
 ])
+
+// FAQ resolvido: prefere `brand.faq.items` quando configurado, fallback
+// para o conjunto hardcoded acima. Substitui `{name}` pelo brand.name
+// pra strings vindas do admin (admin nao precisa repetir o nome).
+const resolvedFaqItems = computed(() => {
+  const items = (brand as any).faq?.items
+  if (!Array.isArray(items) || items.length === 0) {
+    return homeFaqItems.value
+  }
+  const sub = (s: string) => typeof s === 'string'
+    ? s.replace(/\{name\}/g, brand.name).replace(/\{brand\}/g, brand.name)
+    : s
+  return items
+    .filter((it: any) => it && it.question && it.answer)
+    .map((it: any) => ({ question: sub(it.question), answer: sub(it.answer) }))
+})
 
 usePageSeo({
   title: brand.seo.title,

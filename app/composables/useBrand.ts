@@ -1,53 +1,48 @@
-import { brand as defaultBrand, brands } from '~/config/brand'
-import type { BrandSlug } from '~/config/brand'
-
 /**
- * Tenant-aware brand state, server-first resolution.
+ * useBrand — composable read-only do brand atual.
  *
- * The authoritative decision about WHICH tenant is active happens in
- * `server/middleware/0-tenant-resolver.ts` (host > query > default).
- * That middleware writes the slug into `event.context.tenantSlug`,
- * and the Nitro plugin `plugins/tenant.server.ts` reads it to populate
- * this `useState('brand:active')` store BEFORE any Vue component runs.
+ * **Phase 1 architecture (post brand.ts kill):**
  *
- * As a result, `useBrand()` is just a reader, by the time anything
- * calls it, the state is guaranteed to be correct. No init function,
- * no race condition, no hydration mismatch.
+ *   - Brand canônico vive na DB (tabela `tenants`), servido por
+ *     `/api/brand/resolve-by-host` ou `/api/brand/resolve/{slug}`
+ *   - SSR middleware `0-tenant-resolver.ts` resolve por host header,
+ *     fetcha do backend (cache Redis 60s), escreve em event.context
+ *   - Plugin `tenant.server.ts` injeta no `useState('brand:active')`
+ *   - SSR payload serializa o state pro client — zero re-fetch
  *
- * CRITICAL: `useState` is request-isolated on the SSR side but a
- * singleton on the client. That's exactly what we want:
- *   - Server: each incoming request gets a fresh state populated by
- *     the Nitro plugin, so two concurrent users on different tenants
- *     never see each other's config.
- *   - Client: after hydration, the state is a singleton across all
- *     components of the current SPA session. Client-side navigations
- *     that change `?brand=` are handled by `plugins/brand-router.client.ts`
- *     which re-applies the config via `applyBrandOverride()` below.
+ * **Comportamento:**
+ *   - Server: state é request-isolado — request A no me-poupe.com.br
+ *     e request B simultâneo no primorico.com.br nunca veem state
+ *     trocado
+ *   - Client (após hydration): state é singleton. Navegação SPA
+ *     com `?brand=X` muda state via `applyBrandOverride()` (async,
+ *     fetch da API)
  *
- * Components call `useBrand()` and consume fields like `brand.colors.text`
- * directly, consumer-side reactivity works because we return a reactive
- * proxy (not a ref). Client-side overrides go through `applyBrandOverride()`
- * which mutates the proxy in place so every subscribed template updates.
+ * Componentes consomem `useBrand()` e leem `brand.colors.text` etc.
+ * Reatividade flui porque retornamos o reactive proxy.
+ *
+ * **Fallback (raríssimo):** se a state ainda não foi populada
+ * (algo deu errado no SSR), cai no `seedBrand` — config minimal
+ * Redentia que evita tela branca.
  */
 
+import { seedBrand } from '~/config/seed-brand'
+
 /**
- * Internal: returns the shared reactive brand state.
- *
- * The factory is only ever invoked on the client as a safety net,
- * on the server, `plugins/tenant.server.ts` creates the state first
- * (with the correct tenant already applied) before any component
- * runs. If the plugin runs we're fine; if it somehow doesn't, we
- * fall back to Redentia to avoid crashing.
+ * Retorna o reactive state compartilhado. Em SSR, o plugin
+ * `tenant.server.ts` populou antes desta função ser chamada;
+ * em client, o state veio serializado do payload SSR.
  */
 function useBrandState() {
   return useState('brand:active', () =>
-    reactive(JSON.parse(JSON.stringify(defaultBrand)))
+    reactive(JSON.parse(JSON.stringify(seedBrand))),
   )
 }
 
 /**
- * Public API, returns the current brand config as a reactive proxy.
- * Templates can use it directly: `{{ brand.colors.primary }}` etc.
+ * API pública. Templates leem `brand.colors.primary`, `brand.logo.full`,
+ * `brand.features.showAIAdvisor`, etc. Reativo — qualquer mudança via
+ * `applyBrandOverride()` propaga.
  */
 export const useBrand = () => {
   const state = useBrandState()
@@ -55,34 +50,61 @@ export const useBrand = () => {
 }
 
 /**
- * Applies a client-side brand override without a full page reload.
+ * Aplica override client-side (sem full reload). Usado por
+ * `brand-router.client.ts` quando a query `?brand=X` muda durante
+ * navegação SPA.
  *
- * Used by `plugins/brand-router.client.ts` when the user navigates
- * between `?brand=X` URLs inside the same SPA session. Server-side
- * is never involved, the resolver middleware already did its job
- * on the initial request.
+ * **Async** porque busca do backend — diferente da versão anterior
+ * que tinha um `brands` map local. Garante que qualquer slug existente
+ * no banco funcione, não só os que estavam hardcoded.
  *
- * If the slug isn't in the local `brand.ts`, this falls back to the
- * current state (no-op). There's no API lookup here: for anything not
- * in the local config, the user needs a fresh request so the server
- * middleware can decide what to do (including calling the API for
- * dynamic tenants).
+ * Returns `true` se conseguiu aplicar, `false` se slug não bate
+ * (caller pode decidir o que fazer — ex.: full page reload).
  */
-export function applyBrandOverride(slug: string) {
-  const localBrand = brands[slug as BrandSlug]
-  if (!localBrand) return false
+export async function applyBrandOverride(slug: string): Promise<boolean> {
+  if (!slug || !/^[a-z0-9\-]+$/.test(slug)) return false
 
-  const state = useBrandState()
-  // Object.assign mutates in place so the reactive proxy stays the
-  // same object identity, all templates already tracking it update
-  // simultaneously without needing to re-establish watchers.
-  Object.assign(state.value, JSON.parse(JSON.stringify(localBrand)))
-  return true
+  try {
+    const config = useRuntimeConfig()
+    const raw = (config.public?.apiBaseUrl as string) || ''
+    const apiBase = raw.replace(/\/$/, '')  // apiBaseUrl ja tem /api
+    const resp = await $fetch<{ data: any }>(
+      `${apiBase}/brand/resolve/${encodeURIComponent(slug)}`,
+      { timeout: 5000, retry: 1 },
+    )
+    if (!resp?.data) return false
+
+    // Normaliza paths /storage/... pra absoluto (Phase 2 — assets vivem
+    // no backend storage, frontend domain nao serve esse path)
+    const apiOrigin = apiBase.replace(/\/api\/?$/, '')
+    const normalized: any = { ...resp.data }
+    if (normalized.logo && typeof normalized.logo === 'object') {
+      const fixed: Record<string, any> = {}
+      for (const [k, v] of Object.entries(normalized.logo)) {
+        fixed[k] = (typeof v === 'string' && v.startsWith('/storage/'))
+          ? `${apiOrigin}${v}`
+          : v
+      }
+      normalized.logo = fixed
+    }
+
+    const state = useBrandState()
+    // Mutate in place — mantém identity do reactive proxy, todos
+    // os watchers/computeds já estabelecidos continuam funcionando
+    Object.assign(state.value, JSON.parse(JSON.stringify(normalized)))
+
+    const resolvedSlug = useState<string | null>('brand:resolved-slug', () => null)
+    resolvedSlug.value = slug
+
+    return true
+  } catch {
+    return false
+  }
 }
 
 /**
- * Returns the current tenant slug (useful for analytics, logging,
- * conditional logic in components that need to know "am I on Holder?").
+ * Slug atual do tenant. Útil pra analytics, logging, condicionais
+ * que precisam saber "estou no tenant X?".
  */
 export function useTenantSlug(): string {
   return useState<string | null>('brand:resolved-slug').value || 'redentia'

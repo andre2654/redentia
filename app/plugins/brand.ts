@@ -1,4 +1,6 @@
-import { brand as defaultBrand, brands } from '~/config/brand'
+// Phase 1: brand.ts foi morto. Tipo agora vem do seed-brand (mesma shape).
+// Live brand vem do useBrand() — populado via SSR + API backend.
+import { seedBrand as defaultBrand } from '~/config/seed-brand'
 
 const borderRadiusMap = {
   sharp: { sm: '4px', md: '8px', lg: '12px', xl: '16px', full: '9999px' },
@@ -29,16 +31,26 @@ function getBgPatterns(isLight: boolean): Record<string, (primary: string) => st
  * de `themes.{mode}` sobre `colors` base. Espelha a logica do `applyMode`
  * mas e pure (sem mutar `brand.colors`). Usado pra emitir CSS de ambos
  * modos simultaneamente.
+ *
+ * `baseColors` precisa ser a paleta CANONICA (defaultMode), nao a versao
+ * possivelmente mutada por applyMode em tempo de execucao. Caller passa
+ * o snapshot — sem ele, lemos b.colors mas o resultado pode estar
+ * "contaminado" pelo modo ativo (bug onde dark + light blocks acabam
+ * com a mesma palette).
  */
-function resolveColorsForMode(b: typeof defaultBrand, mode: 'dark' | 'light'): typeof defaultBrand.colors {
-  const baseColors = b.colors
+function resolveColorsForMode(
+  b: typeof defaultBrand,
+  mode: 'dark' | 'light',
+  baseColors?: typeof defaultBrand.colors,
+): typeof defaultBrand.colors {
+  const base = baseColors ?? b.colors
   const overrides = b.themes?.[mode]
-  if (!overrides) return baseColors
+  if (!overrides) return base
   return {
-    ...baseColors,
+    ...base,
     ...overrides,
     gradient: {
-      ...baseColors.gradient,
+      ...base.gradient,
       ...(overrides.gradient ?? {}),
     },
   }
@@ -59,8 +71,12 @@ function resolveColorsForMode(b: typeof defaultBrand, mode: 'dark' | 'light'): t
  * compartilhadas entre modos. Resultado: CSS resolve modo correto sem
  * JS, eliminando flash em hidratacao SSR mesmo na 1a visita absoluta.
  */
-function buildVarsBody(b: typeof defaultBrand, mode: 'dark' | 'light'): string {
-  const c = resolveColorsForMode(b, mode)
+function buildVarsBody(
+  b: typeof defaultBrand,
+  mode: 'dark' | 'light',
+  baseColors?: typeof defaultBrand.colors,
+): string {
+  const c = resolveColorsForMode(b, mode, baseColors)
   const isLight = mode === 'light'
 
   return `color-scheme: ${mode};
@@ -135,8 +151,12 @@ function buildVarsBody(b: typeof defaultBrand, mode: 'dark' | 'light'): string {
  * tanto na 1a visita (sem cookie, OS pref via media query) quanto apos
  * toggle manual (class no <html>).
  */
-function buildModeBlock(b: typeof defaultBrand, mode: 'dark' | 'light'): string {
-  const body = buildVarsBody(b, mode)
+function buildModeBlock(
+  b: typeof defaultBrand,
+  mode: 'dark' | 'light',
+  baseColors?: typeof defaultBrand.colors,
+): string {
+  const body = buildVarsBody(b, mode, baseColors)
   const otherMode = mode === 'dark' ? 'light' : 'dark'
 
   return `@media (prefers-color-scheme: ${mode}) {
@@ -149,28 +169,36 @@ function buildModeBlock(b: typeof defaultBrand, mode: 'dark' | 'light'): string 
 }`
 }
 
-function buildCssVars(b: typeof defaultBrand): string {
-  const radius = borderRadiusMap[b.theme.borderRadius]
-  const anim = animationMap[b.theme.animation]
-  const tenantSupportsBoth = !!(b.themes?.dark || b.themes?.light)
+function buildCssVars(b: typeof defaultBrand, baseColors?: typeof defaultBrand.colors): string {
+  // Defensivo: theme/borderRadius/animation podem nao existir em
+  // brands legacy ou em estados transientes (SSR antes do API
+  // resolver completar). Caímos pra defaults conservadores em vez
+  // de quebrar a página inteira.
+  const themeBlock: any = (b as any).theme || {}
+  const radiusKey = (themeBlock.borderRadius || 'rounded') as keyof typeof borderRadiusMap
+  const animKey = (themeBlock.animation || 'smooth') as keyof typeof animationMap
+  const radius = borderRadiusMap[radiusKey] || borderRadiusMap.rounded
+  const anim = animationMap[animKey] || animationMap.smooth
+  const tenantSupportsBoth = !!((b as any).themes?.dark || (b as any).themes?.light)
 
   // Tenants single-mode (sem `themes`) so emitem o seletor do seu defaultMode.
   // Tenants multi-mode emitem ambos os blocos — CSS resolve via media query
   // (1a visita) ou via class no <html> (apos cookie/toggle).
   const blocks: string[] = []
   if (tenantSupportsBoth) {
-    blocks.push(buildModeBlock(b, 'dark'))
-    blocks.push(buildModeBlock(b, 'light'))
+    blocks.push(buildModeBlock(b, 'dark', baseColors))
+    blocks.push(buildModeBlock(b, 'light', baseColors))
   } else {
     const fallbackMode: 'dark' | 'light' = b.defaultMode === 'light' ? 'light' : 'dark'
-    blocks.push(buildModeBlock(b, fallbackMode))
+    blocks.push(buildModeBlock(b, fallbackMode, baseColors))
   }
 
   // Shared brand-agnostic vars (font, radii, durations) — same in both modes.
   // Emitted in plain `:root` so they apply regardless of mode class.
-  const isLight = b.theme.mode === 'light'
+  const isLight = themeBlock.mode === 'light'
   const bgPatterns = getBgPatterns(isLight)
-  const bgPattern = (bgPatterns[b.theme.backgroundPattern] ?? bgPatterns.none)(b.colors.primary)
+  const bgPatternKey = (themeBlock.backgroundPattern || 'none') as string
+  const bgPattern = (bgPatterns[bgPatternKey] ?? bgPatterns.none)(b.colors.primary)
 
   const sharedRoot = `:root {
   --brand-font: '${b.font.family}', sans-serif;
@@ -233,16 +261,31 @@ export default defineNuxtPlugin({
   // ship one palette and CAN'T render in the opposite mode — the
   // colorMode toggle becomes a visual lie if we honor it. So we lock
   // the resolved mode to the tenant's `defaultMode` whenever
-  // `themes` is missing. Source of truth: the canonical brand from
-  // `brands` map (NOT the live reactive `brand`, since we mutate
-  // brand.theme.mode below and that creates a feedback loop).
-  function getCanonicalBrand(): typeof defaultBrand {
-    return (brands as Record<string, typeof defaultBrand>)[brand.slug] ?? defaultBrand
-  }
+  // `themes` is missing.
+  //
+  // Phase 1: o brand vem do backend agora (não há mais "brands map"
+  // canônico no frontend). O próprio `brand` reativo é a fonte —
+  // lemos themes/defaultMode dele direto. Se o backend serviu um
+  // brand quebrado/parcial, o `seedBrand` já garantiu defaults.
   function tenantSupportsMultiMode(): boolean {
-    const canonical = getCanonicalBrand()
-    return !!(canonical.themes && (canonical.themes.light || canonical.themes.dark))
+    const themes = (brand as any).themes
+    if (!themes) return false
+    if (Array.isArray(themes)) return themes.length > 0
+    return !!(themes.light || themes.dark)
   }
+
+  // Snapshot das cores BASE da marca (defaultMode). Capturado na
+  // primeira invocacao de applyMode, reutilizado pra reset entre
+  // toggles. Necessario porque `brand.colors` e mutado live —
+  // sem snapshot, perdemos o palette original ao trocar de modo.
+  // Reativo pra que o `useHead` computed re-emita CSS quando o
+  // snapshot finalmente eh capturado (server-side roda antes do
+  // applyMode client, entao baseColorsSnapshot pode ser null no SSR).
+  const baseColorsSnapshot = ref<any>(null)
+  // Capturamos o snapshot logo AQUI (em vez de dentro de applyMode)
+  // pra que ja esteja disponivel no primeiro render do `useHead`
+  // computed. Usar JSON clone evita reference-shared mutation.
+  baseColorsSnapshot.value = JSON.parse(JSON.stringify(brand.colors))
 
   function resolveMode(): 'dark' | 'light' {
     // Single-mode tenant — pinned to its defaultMode regardless of OS
@@ -250,17 +293,17 @@ export default defineNuxtPlugin({
     // the OS resolves to 'light' but the tenant only has dark
     // colors → mismatched <html class>, color-scheme, and :style.
     if (!tenantSupportsMultiMode()) {
-      return getCanonicalBrand().defaultMode === 'light' ? 'light' : 'dark'
+      return (brand as any).defaultMode === 'light' ? 'light' : 'dark'
     }
     if (colorMode.value === 'dark' || colorMode.value === 'light') return colorMode.value
     if (colorMode.preference === 'dark' || colorMode.preference === 'light') return colorMode.preference
-    return brand.defaultMode === 'light' ? 'light' : 'dark'
+    return (brand as any).defaultMode === 'light' ? 'light' : 'dark'
   }
 
   function applyMode(resolved: 'dark' | 'light') {
-    const canonical = getCanonicalBrand()
-    const baseColors = canonical.colors
-    const overrides = canonical.themes?.[resolved]
+    // Snapshot ja foi capturado no setup. Reuse pra reset entre toggles.
+    const baseColors = baseColorsSnapshot.value
+    const overrides = (brand as any).themes?.[resolved]
     Object.assign(brand.colors, baseColors)
     if (overrides) {
       Object.assign(brand.colors, overrides)
@@ -271,7 +314,8 @@ export default defineNuxtPlugin({
     } else {
       brand.colors.gradient = { ...baseColors.gradient }
     }
-    brand.theme.mode = resolved
+    if ((brand as any).theme) (brand as any).theme.mode = resolved
+    else (brand as any).theme = { mode: resolved }
     // Force-clean the <html> class to a single mode token.
     if (import.meta.client) {
       const html = document.documentElement
@@ -365,7 +409,7 @@ export default defineNuxtPlugin({
     },
     style: [
       {
-        innerHTML: computed(() => buildCssVars(brand)),
+        innerHTML: computed(() => buildCssVars(brand, baseColorsSnapshot.value)),
       },
     ],
   })
@@ -433,19 +477,17 @@ export default defineNuxtPlugin({
             },
             description: brand.seo?.description,
             foundingDate: '2024',
-            // Lista canonica dos perfis publicos da Redentia. Cada link e
+            // Lista canonica dos perfis publicos da marca. Cada link e
             // um sinal de identidade pra LLMs disambig — quanto mais
             // amplo o `sameAs[]`, mais robusto o vinculo entre o nome
-            // "Redentia" e essa entidade especifica. Adicione conforme
-            // novas presencas oficiais (X/Twitter, YouTube, etc).
-            sameAs: brand.slug === 'redentia'
-              ? [
-                  'https://www.linkedin.com/company/redentia',
-                  'https://www.instagram.com/redentia.oficial',
-                  'https://estudo.redentia.com.br',
-                  'https://api.redentia.com.br',
-                ]
-              : [],
+            // da marca e essa entidade especifica.
+            //
+            // Fonte: brand.social (tenant-aware) filtrado pra URLs
+            // nao-vazias. Funciona pra qualquer tenant — antes era
+            // hardcoded so pra Redentia, vazando white-label.
+            sameAs: Object.values(brand.social ?? {}).filter(
+              (url): url is string => typeof url === 'string' && url.trim() !== '',
+            ),
             // E-E-A-T anchor: declara expertise em entidades reais que
             // o Google reconhece como autoridades do dominio financeiro
             // brasileiro. Faz a Redentia "conhecer sobre" os mesmos
@@ -471,7 +513,7 @@ export default defineNuxtPlugin({
             contactPoint: {
               '@type': 'ContactPoint',
               contactType: 'customer support',
-              email: 'contato@redentia.com.br',
+              email: brand.email || `contato@${(brand.url || '').replace(/^https?:\/\/(www\.)?/, '')}`,
               availableLanguage: ['pt-BR'],
             },
           })

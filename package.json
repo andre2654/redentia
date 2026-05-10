@@ -3,9 +3,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "nuxt build",
+    "build:host-map": "tsx scripts/generate-host-map.ts",
+    "build": "npm run build:host-map && nuxt build",
     "dev": "nuxt dev",
-    "generate": "nuxt generate",
+    "generate": "npm run build:host-map && nuxt generate",
     "preview": "nuxt preview",
     "start": "nuxt start",
     "postinstall": "nuxt prepare",

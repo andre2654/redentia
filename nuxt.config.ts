@@ -1,5 +1,9 @@
 import svgLoader from 'vite-svg-loader'
-import { brand } from './app/config/brand'
+// nuxt.config eh build-time, nao tem como ser reativo a tenant. Usa
+// o `seedBrand` (defaults Redentia) pra static SEO/manifest metadata.
+// Em runtime, o `useHead` dinamico em plugins/brand.ts sobrescreve
+// title/description/themeColor com a config do tenant ativo.
+import { seedBrand as brand } from './app/config/seed-brand'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -711,6 +715,35 @@ export default defineNuxtConfig({
           'cache-control': 'public, max-age=0, s-maxage=300, stale-while-revalidate=86400',
         },
       },
+
+      // Phase 5: edge cache pra rotas de marketing (home + landing pages).
+      // Vercel CDN cacheia por host header automaticamente — entao 1
+      // request resolvido vira cache hit pra todos os outros visitantes
+      // do MESMO tenant. Cache miss vai pra serverless (~200ms), hits
+      // sao ~5ms. Stale-while-revalidate 1 dia evita cliffs em deploys.
+      '/': {
+        headers: {
+          'cache-control': 'public, max-age=0, s-maxage=300, stale-while-revalidate=86400',
+        },
+      },
+      '/assessores': {
+        headers: { 'cache-control': 'public, max-age=0, s-maxage=300, stale-while-revalidate=86400' },
+      },
+      '/investidores': {
+        headers: { 'cache-control': 'public, max-age=0, s-maxage=300, stale-while-revalidate=86400' },
+      },
+      // Pages de search/explore — cacheaveis com TTL mais curto pq o
+      // conteudo (lista de tickers) e relativamente estatico.
+      '/search': {
+        headers: { 'cache-control': 'public, max-age=0, s-maxage=120, stale-while-revalidate=600' },
+      },
+      // Asset pages (/asset/PETR4): cacheaveis pq o conteudo central
+      // (preco, fundamentals) muda em ciclos longos. Frontend faz
+      // hydration adicional pra prices live.
+      '/asset/**': {
+        headers: { 'cache-control': 'public, max-age=0, s-maxage=120, stale-while-revalidate=600' },
+      },
+
       // Assets de video servidos com cache imutavel. Vercel ja faz isso
       // pra /_nuxt/* mas /assets/* (servido pelo public/) precisa explicit.
       '/assets/videos/**': {

@@ -272,10 +272,25 @@ const openedMenu = ref<NavKey | null>(null)
 interface NavItem { label: string; to: string; description?: string }
 interface NavColumn { heading: string; items: NavItem[] }
 
+const features = computed(() => (brand as any).features ?? {})
+// Master flag de rankings (Phase 6): se off, esconde grupo inteiro do
+// header + sidebar + tira links do mobile menu. Backward-compat: se
+// algum flag granular antigo (showDividendYieldRanking, showMonthly...)
+// estiver ON, considera rankings habilitado tambem.
+const rankingsEnabled = computed(() => {
+  const f = features.value
+  return f.showRankings === true
+    || f.showDividendYieldRanking === true
+    || f.showMonthlyMoversRanking === true
+})
+const calculatorsEnabled = computed(() => features.value.showCalculators !== false)
+const guidesEnabled = computed(() => features.value.showGuides !== false)
+
 const navGroups = computed<Array<
   | { key: NavKey; label: string; kind: 'mega'; width: number; columns: NavColumn[] }
   | { key: NavKey; label: string; kind: 'simple'; width: number; items: NavItem[] }
->>(() => [
+>>(() => {
+  const groups: Array<any> = [
   {
     key: 'explore',
     label: 'Explorar',
@@ -341,10 +356,19 @@ const navGroups = computed<Array<
     kind: 'simple',
     width: 260,
     items: [
-      { label: 'Calculadoras', to: '/calculadora' },
+      ...(calculatorsEnabled.value ? [{ label: 'Calculadoras', to: '/calculadora' }] : []),
       { label: 'Análise setorial', to: '/setor' },
-      { label: 'Guias e conteúdo', to: '/guias' },
+      ...(guidesEnabled.value ? [{ label: 'Guias e conteúdo', to: '/guias' }] : []),
     ],
   },
-])
+  ]
+  // Filtra grupos vazios (ex: tools sem nenhum item) e o rankings inteiro
+  // se off. Resultado e o nav real visivel pro tenant.
+  return groups
+    .filter((g: any) => {
+      if (g.key === 'rankings' && !rankingsEnabled.value) return false
+      if (g.kind === 'simple' && Array.isArray(g.items) && g.items.length === 0) return false
+      return true
+    })
+})
 </script>

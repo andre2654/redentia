@@ -53,11 +53,45 @@ export const useTenantsService = () => {
     })
   }
 
+  // ── Phase 2: asset upload ──
+
+  type AssetSlot =
+    | 'fullLight' | 'fullDark' | 'iconLight' | 'iconDark'
+    | 'favicon' | 'faviconIco' | 'appleTouchIcon'
+    | 'icon192' | 'icon512'
+    | 'og' | 'email'
+
+  /**
+   * Upload de asset (logo/favicon/og) pra um tenant. Backend salva em
+   * `storage/app/public/tenants/{slug}/{slot}.{ext}`, atualiza
+   * `tenant.config.logo[slot]` com o `/storage/...` path, e invalida
+   * cache Redis. Retorna URL publica pronta pra setar no `<img src>`.
+   *
+   * Tipos aceitos: PNG/JPG/WebP/ICO. SVG bloqueado (XSS via <script>).
+   * Cap: 2MB por upload.
+   */
+  async function uploadAsset(id: number, slot: AssetSlot, file: File) {
+    const fd = new FormData()
+    fd.append('slot', slot)
+    fd.append('file', file)
+    return authFetch<{ data: { slot: AssetSlot; url: string; size: number; mime: string } }>(
+      `${adminURL}/${id}/assets`,
+      { method: 'POST', body: fd },
+    )
+  }
+
+  async function deleteAsset(id: number, slot: AssetSlot) {
+    return authFetch<{ data: { slot: AssetSlot; deleted: true } }>(
+      `${adminURL}/${id}/assets`,
+      { method: 'DELETE', body: { slot } },
+    )
+  }
+
   // ── Public resolution ──
 
   async function resolve(slug: string) {
     return $fetch<{ data: ITenant }>(`${publicURL}/resolve/${slug}`)
   }
 
-  return { list, show, create, update, remove, toggleActive, duplicate, resolve }
+  return { list, show, create, update, remove, toggleActive, duplicate, uploadAsset, deleteAsset, resolve }
 }

@@ -1,11 +1,16 @@
-// Brand-aware static-like accessor, reads from active brand config
-import { brand as activeBrand } from '~/config/brand'
+// Brand-aware static-like accessor.
+//
+// Phase 1: nao importa mais brand.ts (morto). Usa o seedBrand como
+// fallback quando consumer nao passou pelo useBrand() (ex: chamado em
+// modulo de top-level antes de Vue setup). Pra reatividade total,
+// consumir via `useChartColors()` abaixo.
+import { seedBrand } from '~/config/seed-brand'
 
 export const ChartColors = {
-  get positive() { return activeBrand.colors.positive },
-  get negative() { return activeBrand.colors.negative },
-  get secondary() { return activeBrand.colors.secondary },
-  get neutral() { return activeBrand.colors.neutral },
+  get positive() { return seedBrand.colors.positive },
+  get negative() { return seedBrand.colors.negative },
+  get secondary() { return seedBrand.colors.secondary },
+  get neutral() { return seedBrand.colors.neutral },
 } as const
 
 /**
@@ -18,8 +23,13 @@ export const ChartColors = {
  * value, and Chart.js options re-evaluate when the chart is re-built.
  */
 export function useChartColors() {
-  const brand = useBrand()
-  const isLight = () => brand.theme.mode === 'light'
+  const brand = useBrand() as any
+  // brand.theme pode nao existir no payload inicial do seed —
+  // fallback pro defaultMode da config ou 'dark'.
+  const isLight = () => {
+    if (brand.theme?.mode) return brand.theme.mode === 'light'
+    return brand.defaultMode === 'light'
+  }
   return {
     get positive() { return brand.colors.positive },
     get negative() { return brand.colors.negative },

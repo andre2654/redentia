@@ -200,7 +200,7 @@
             </MoleculesMobileMenuGroup>
 
             <MoleculesMobileMenuGroup
-              v-if="brand.features?.showDividendYieldRanking || brand.features?.showMonthlyMoversRanking"
+              v-if="brand.features?.showRankings || brand.features?.showDividendYieldRanking || brand.features?.showMonthlyMoversRanking"
               label="Rankings"
               icon="i-lucide-trophy"
               :child-paths="[
@@ -362,17 +362,23 @@ const userPlanDisplay = computed(() => {
 })
 
 const publicLinks = computed(() => {
+  const f = brand.features ?? {}
   const links: Array<{ to: string; label: string; icon: string }> = [
     { to: '/', label: brand.nav.mobileHome || 'Início', icon: 'i-lucide-home' },
   ]
-  if (brand.features?.showDividendYieldRanking || brand.features?.showMonthlyMoversRanking) {
+  // Master flag de rankings (Phase 6) com backward-compat.
+  if (f.showRankings || f.showDividendYieldRanking || f.showMonthlyMoversRanking) {
     links.push({ to: '/ranking', label: 'Rankings', icon: 'i-lucide-trophy' })
   }
-  if (brand.features?.showDividendCalendar) {
+  if (f.showDividendCalendar) {
     links.push({ to: '/dividendos/calendario', label: 'Calendário de Dividendos', icon: 'i-lucide-calendar-days' })
   }
-  links.push({ to: '/calculadora', label: brand.nav.calculators || 'Calculadoras', icon: 'i-lucide-calculator' })
-  links.push({ to: '/guias', label: brand.nav.mobileGuides || 'Guias', icon: 'i-lucide-book-open' })
+  if (f.showCalculators !== false) {
+    links.push({ to: '/calculadora', label: brand.nav.calculators || 'Calculadoras', icon: 'i-lucide-calculator' })
+  }
+  if (f.showGuides !== false) {
+    links.push({ to: '/guias', label: brand.nav.mobileGuides || 'Guias', icon: 'i-lucide-book-open' })
+  }
   return links
 })
 

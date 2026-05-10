@@ -399,7 +399,10 @@
 </template>
 
 <script setup lang="ts">
-import { brand as defaultBrand } from '~/config/brand'
+// Phase 1: brand.ts foi morto. Builder usa o brand reativo via useBrand().
+// Pra preview de cores fora do tenant atual (ainda em estudo), pode-se
+// fetchar via /api/brand/resolve/{slug} no futuro.
+import { seedBrand as defaultBrand } from '~/config/seed-brand'
 
 definePageMeta({ layout: false, isPublicRoute: true, hideInstallAppBanner: true })
 useHead({
