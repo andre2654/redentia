@@ -16,14 +16,25 @@
       />
     </div>
 
-    <details class="colors-form__advanced">
-      <summary>Gradient (3 stops)</summary>
-      <div class="colors-form__gradient">
+    <!-- Phase 6.x: convertido de <details> pra toggle Vue.
+         <details> + child components com scoped CSS as vezes nao
+         renderiza filhos. Toggle reativo eh predizivel. -->
+    <div class="colors-form__advanced">
+      <button
+        type="button"
+        class="colors-form__advanced-toggle"
+        :aria-expanded="gradientOpen"
+        @click="gradientOpen = !gradientOpen"
+      >
+        <span class="colors-form__advanced-arrow" :class="{ 'colors-form__advanced-arrow--open': gradientOpen }" aria-hidden="true">▸</span>
+        Gradient (3 stops)
+      </button>
+      <div v-if="gradientOpen" class="colors-form__gradient">
         <ColorField label="From" :model-value="colorAt('gradient.from')" @update:model-value="onChange('gradient.from', $event)" />
         <ColorField label="Via" :model-value="colorAt('gradient.via')" @update:model-value="onChange('gradient.via', $event)" />
         <ColorField label="To" :model-value="colorAt('gradient.to')" @update:model-value="onChange('gradient.to', $event)" />
       </div>
-    </details>
+    </div>
   </div>
 </template>
 
@@ -41,6 +52,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'change', path: string, value: any): void
 }>()
+
+const gradientOpen = ref(false)
 
 // Subset das cores que admins editam. Resto fica no JSON cru.
 const COLOR_DEFS = [
@@ -105,12 +118,27 @@ function onChange(key: string, value: string) {
   border-top: 1px solid color-mix(in srgb, var(--brand-text) 8%, transparent);
   padding-top: 12px;
 }
-.colors-form__advanced summary {
+.colors-form__advanced-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 0;
+  padding: 4px 0;
   cursor: pointer;
   font-size: 12px;
   font-weight: 600;
   color: var(--brand-text);
   user-select: none;
+}
+.colors-form__advanced-arrow {
+  display: inline-block;
+  transition: transform 0.15s ease;
+  font-size: 10px;
+  color: color-mix(in srgb, var(--brand-text) 50%, transparent);
+}
+.colors-form__advanced-arrow--open {
+  transform: rotate(90deg);
 }
 .colors-form__gradient {
   display: grid;
