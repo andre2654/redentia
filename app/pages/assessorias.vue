@@ -1,0 +1,4145 @@
+<!--
+  /assessorias, landing B2B para captacao de assessorias na primeira fase
+  do programa Redentia White-Label.
+
+  ESTRATEGIA
+  Diferente da /raio-x (B2C, anuncios Meta para investidor PF), essa page
+  e para o dono/socio de assessoria. O CTA e LEAD (modal com 4 perguntas
+  qualificadoras), nao cadastro grátis. Volume baixo, ticket alto, ciclo
+  consultivo.
+
+  PSICOLOGIA APLICADA
+  - Hero: Loss Aversion + rhetorical question "Sua assessoria parece
+    igual a todas as outras?" prima a dor de comoditizacao antes de falar
+    do produto. Marketing-psychology: Painkiller > Vitamin.
+  - Bloco de dor: Mere Exposure / espelhamento, lista 5 sintomas que o
+    visitante reconhece. Pratfall: admite que o problema e situacional,
+    nao falha do assessor.
+  - Consequencia: Loss Aversion explicita, "vira commodity", "margem
+    pressionada". Status-quo bias INVERTIDO, ficar parado tambem custa.
+  - Solucao: Framing positivo. NOVA categoria "plataforma de inteligencia",
+    nao "mais um software".
+  - Demonstracao visual: Availability heuristic, exemplos concretos
+    reduzem risco percebido.
+  - Beneficios: Foco no DONO da assessoria (diferenciacao, percepcao
+    de valor, presenca, argumento comercial, retencao), nao so no
+    cliente final.
+  - Escassez: 10 vagas COM JUSTIFICATIVA (proximidade operacional). Nao
+    e "9 vagas restantes" fake, e limite real de bandwidth.
+  - Prova: argumentos macro de mercado + numeros reais da plataforma
+    (5 marcas no whitelabel, +33k carteiras analisadas).
+  - FAQ: resolve objecoes ANTES de pedir o lead. Reduz friccao do form.
+  - Form: 4 perguntas curtas + nome/email/empresa/telefone. Hick's Law,
+    nao overwhelm. Default Effect: opcao mais provavel primeiro nos selects.
+
+  COPY RULE
+  Sem em-dash (memoria do projeto: " — " entrega AI). Vírgulas no lugar.
+-->
+<script setup lang="ts">
+definePageMeta({
+  layout: 'landing',
+  isPublicRoute: true,
+  hideInstallAppBanner: true,
+  hideQuickSearch: true,
+})
+
+const brand = useBrand()
+
+// Scroll reveal igual /raio-x
+useScrollReveal()
+
+// Estado do modal de lead. Compartilha o componente
+// MoleculesLeadCaptureModal com /whitelabel, mas com perguntas B2B.
+const leadModalOpen = ref(false)
+function openLeadModal() {
+  leadModalOpen.value = true
+}
+
+// ============ CARROSSEL DO MOCK ============
+// Alterna entre 3 telas DENTRO do mock pra mostrar amplitude da
+// plataforma no hero (Painel -> Asset -> Chat IA -> repeat).
+// Entre cada page, mostra um "loading screen" rapido com a marca
+// "SUA MARCA" + frase contextual (varia por page de destino).
+// Auto-cycle. Pausa em hover. Controle manual via dots.
+type MockPage = 1 | 2 | 3
+const mockPage = ref<MockPage>(1)
+
+// Tempos do ciclo:
+//   - VISIBLE: tempo que cada page fica visivel
+//   - LOADING: tempo que a tela de loading "SUA MARCA" fica
+const MOCK_PAGE_VISIBLE = 5500
+const MOCK_LOADING_DURATION = 950
+
+let mockTimer: ReturnType<typeof setTimeout> | null = null
+
+// Estado da tela de loading entre transicoes
+const isMockLoading = ref(false)
+const mockLoadingPhrase = ref('Com sua identidade, do logo ao domínio')
+
+// Frase que mostra durante o loading, mapeada pra page de DESTINO.
+// Cada uma destaca um aspecto distinto do produto que aquela page revela.
+const LOADING_PHRASES: Record<MockPage, string> = {
+  1: 'Com seu próprio painel de inteligência',
+  2: 'Com seu próprio raio-X de ativos',
+  3: 'Com seu próprio chat com IA',
+}
+
+const mockMenuActive = computed(() => {
+  if (mockPage.value === 1) return 'painel'
+  if (mockPage.value === 2) return 'carteira'
+  return 'chat'
+})
+
+const mockPages = [
+  { n: 1 as MockPage, label: 'Painel' },
+  { n: 2 as MockPage, label: 'PETR4' },
+  { n: 3 as MockPage, label: 'Chat IA' },
+]
+
+// Transicao "loading -> swap page -> hide loading". Usada tanto pelo
+// auto-cycle quanto pelo click manual nos dots.
+async function transitionToPage(target: MockPage) {
+  if (target === mockPage.value) return
+  mockLoadingPhrase.value = LOADING_PHRASES[target]
+  isMockLoading.value = true
+  await new Promise((r) => setTimeout(r, MOCK_LOADING_DURATION))
+  mockPage.value = target
+  // pequeno delay pra page de destino comecar a fade-in antes do
+  // loading sair, evita "flash" de fundo
+  await new Promise((r) => setTimeout(r, 180))
+  isMockLoading.value = false
+}
+
+function goToMockPage(p: MockPage) {
+  // Click manual reseta o ciclo automatico, pra nao trocar logo em
+  // seguida e confundir o usuario.
+  pauseMockCycle()
+  transitionToPage(p).then(() => {
+    // retoma o cycle se o mouse nao estiver em cima
+    if (!isMouseOverMock) startMockCycle()
+  })
+}
+
+let isMouseOverMock = false
+
+function scheduleNextCycle() {
+  if (mockTimer) return
+  mockTimer = setTimeout(async () => {
+    mockTimer = null
+    const next = (mockPage.value === 3 ? 1 : (mockPage.value + 1)) as MockPage
+    await transitionToPage(next)
+    if (!isMouseOverMock) scheduleNextCycle()
+  }, MOCK_PAGE_VISIBLE)
+}
+
+function startMockCycle() {
+  isMouseOverMock = false
+  if (!isMockLoading.value) scheduleNextCycle()
+}
+
+function pauseMockCycle() {
+  isMouseOverMock = true
+  if (mockTimer) {
+    clearTimeout(mockTimer)
+    mockTimer = null
+  }
+}
+
+onMounted(() => {
+  // So roda no client. SSR-safe.
+  if (typeof window !== 'undefined') scheduleNextCycle()
+})
+onBeforeUnmount(() => pauseMockCycle())
+
+// ============ TENANT PREVIEWS (iframes na section "Veja na pratica") ============
+// 3 tenants reais que rodam em produção via white-label da Redentia.
+// Cada card abre o tenant em produção numa nova aba ao clicar no CTA.
+// O iframe DENTRO do card mostra a home renderizada do tenant, com
+// scale CSS pra caber no card (so visualizacao, pointer-events disabled).
+const tenantPreviews = [
+  {
+    slug: 'lifetime',
+    name: 'Lifetime Investimentos',
+    mark: 'LT',
+    tag: 'Assessoria de investimentos',
+    badgeLabel: 'Preview',
+    badgeKind: 'preview',
+    bg: '#0E1F2E',
+    fg: '#F4F7FA',
+    font: "var(--brand-font)",
+    italic: false,
+    iframeUrl: '/?brand=lifetime',
+    url: 'https://www.redentia.com.br/?brand=lifetime',
+    features: ['Chat com IA', 'Raio-X da carteira', 'Relatórios pro cliente'],
+    ctaLabel: 'Ver preview',
+  },
+  {
+    slug: 'me-poupe',
+    name: 'Me Poupe!',
+    mark: 'MP',
+    tag: 'Educação e investimentos',
+    badgeLabel: 'Demo',
+    badgeKind: 'demo',
+    bg: '#FFD93D',
+    fg: '#1A0A2E',
+    font: "var(--brand-font)",
+    italic: false,
+    iframeUrl: '/?brand=me-poupe',
+    url: 'https://www.redentia.com.br/?brand=me-poupe',
+    features: ['Insights personalizados', 'Alertas e oportunidades', 'Portal com sua marca'],
+    ctaLabel: 'Explorar demo',
+  },
+  {
+    slug: 'investidor-sardinha',
+    name: 'Investidor Sardinha',
+    mark: 'IS',
+    tag: 'Research e fundamentos',
+    badgeLabel: 'Preview',
+    badgeKind: 'preview',
+    bg: '#F6F1E8',
+    fg: '#1F1A12',
+    font: "'IBM Plex Serif', serif",
+    italic: true,
+    iframeUrl: '/?brand=investidor-sardinha',
+    url: 'https://www.redentia.com.br/?brand=investidor-sardinha',
+    features: ['Análise fundamentalista', 'Resumo inteligente', 'Domínio próprio'],
+    ctaLabel: 'Abrir plataforma',
+  },
+]
+
+// (As perguntas qualificadoras agora vivem dentro de
+// MoleculesAssessoriaLeadFullscreen como 5 perguntas Sim/Não. A versão
+// anterior usava 4 selects/textarea e era renderizada pelo modal
+// compartilhado MoleculesLeadCaptureModal.)
+
+// SEO
+const runtimeConfig = useRuntimeConfig()
+const siteUrl = computed(() => {
+  const url = runtimeConfig.public?.siteUrl || brand.url
+  return String(url).endsWith('/') ? String(url).slice(0, -1) : String(url)
+})
+
+usePageSeo({
+  title: `Assessoria com IA, na sua marca | ${brand.name}`,
+  description: 'Sua assessoria pode oferecer uma plataforma própria com IA para análise de carteira, notícias e riscos. Primeira fase: 10 vagas. Fale com o time.',
+  path: '/assessorias',
+})
+</script>
+
+<template>
+  <!-- Banner anuncio no topo. Fluxo normal (some no scroll), antes do
+       header sticky do landing layout. Reforca a escassez (10 vagas)
+       desde o primeiro pixel da page, sem competir com a headline. -->
+  <button
+    type="button"
+    class="ass-topbanner"
+    @click="openLeadModal"
+  >
+    <span class="ass-topbanner__dot" aria-hidden="true" />
+    <span class="ass-topbanner__text">
+      <strong>Só venderemos para 10 assessorias</strong>
+    </span>
+    <span class="ass-topbanner__cta">
+      Quero participar
+      <span aria-hidden="true">→</span>
+    </span>
+  </button>
+
+  <div class="lp">
+    <!-- ============================================================
+         1. HERO, com a pancada principal
+         ============================================================ -->
+    <section class="lp-hero">
+      <!-- Atmospheric amber radial igual /raio-x -->
+      <div
+        class="lp-hero__glow"
+        aria-hidden="true"
+        :style="{
+          background: `radial-gradient(ellipse 70% 60% at 50% 0%, color-mix(in srgb, ${brand.colors.primary} 26%, transparent), transparent 65%)`,
+        }"
+      />
+
+      <div class="lp-container">
+        <div class="lp-hero__grid">
+          <!-- LEFT: copy + CTA -->
+          <div class="lp-hero__copy">
+            <h1 class="lp-hero__headline">
+              Sua assessoria é melhor.
+              <span class="lp-hero__italic ass-hero__italic-underline">Mas o cliente percebe?</span>
+            </h1>
+
+            <p class="lp-hero__subhead">
+              Se a entrega parece igual, o cliente compara por preço. A Redentia transforma sua assessoria em uma <strong>plataforma própria de IA</strong>, com sua marca, seu domínio e uma experiência premium para o cliente.
+            </p>
+
+            <p class="lp-hero__lead">
+              Chat com IA, raio-X da carteira, notícias, riscos e contexto, tudo com a identidade da sua assessoria.
+            </p>
+
+            <button
+              type="button"
+              class="lp-hero__cta"
+              @click="openLeadModal"
+            >
+              Quero ver minha assessoria com IA
+              <span aria-hidden="true">→</span>
+            </button>
+
+            <ul class="lp-hero__trust">
+              <li>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 6L9 17l-5-5" />
+                </svg>
+                Sua marca, seu domínio
+              </li>
+              <li>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 6L9 17l-5-5" />
+                </svg>
+                Deploy em até 7 dias
+              </li>
+              <li>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 6L9 17l-5-5" />
+                </svg>
+                Sem time de tecnologia
+              </li>
+            </ul>
+          </div>
+
+          <!-- RIGHT: dashboard mock GRANDE da assessoria FICTICIA "Sua Marca AI".
+               Mostra a plataforma como o cliente final veria, NA marca da assessoria,
+               com header dark + grid 3x2 de cards + 3 floats sobrepostos. Reforca
+               o "isso poderia ser meu" antes mesmo do leitor rolar. -->
+          <div class="ass-hero__visual">
+            <!-- Wrapper 3D: aplica perspective+rotation no conjunto inteiro
+                 (dashboard + floats), pra eles "tiltarem" juntos. Hover
+                 atenua o angulo (sensacao de "endireita pra mostrar"). -->
+            <div
+              class="ass-hero__tilt"
+              @mouseenter="pauseMockCycle"
+              @mouseleave="startMockCycle"
+            >
+            <div class="ass-dash">
+              <!-- Browser chrome (mac-style) -->
+              <div class="ass-dash__chrome">
+                <div class="ass-dash__chrome-dots">
+                  <span /><span /><span />
+                </div>
+                <div class="ass-dash__addrbar">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  suamarca.com.br
+                </div>
+              </div>
+
+              <!-- App da assessoria, header preto + grid de cards -->
+              <div class="ass-dash__app">
+                <header class="ass-dash__nav">
+                  <div class="ass-dash__brand">
+                    <div class="ass-dash__brand-mark" aria-hidden="true">SM</div>
+                    <div class="ass-dash__brand-meta">
+                      <span class="ass-dash__brand-name">SUA MARCA</span>
+                      <span class="ass-dash__brand-sub">Assessoria de Investimentos</span>
+                    </div>
+                  </div>
+                  <nav class="ass-dash__menu" aria-hidden="true">
+                    <span :class="{ 'is-active': mockMenuActive === 'painel' }">Painel</span>
+                    <span :class="{ 'is-active': mockMenuActive === 'carteira' }">Carteira</span>
+                    <span>Relatórios</span>
+                    <span>Insights</span>
+                    <span :class="{ 'is-active': mockMenuActive === 'chat' }">Chat IA</span>
+                    <span>Documentos</span>
+                  </nav>
+                  <div class="ass-dash__user">
+                    <span class="ass-dash__bell" aria-hidden="true">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                      <span class="ass-dash__bell-dot" />
+                    </span>
+                    <span class="ass-dash__avatar">CL</span>
+                  </div>
+                </header>
+
+                <!-- ====================================================
+                     CARROSSEL DE 3 PAGES NO MOCK (Painel | Asset | Chat)
+                     Auto-cycle via mockPage ref. Pausa em hover.
+                     Transition fade entre as pages.
+                     ==================================================== -->
+                <div class="ass-dash__pages">
+                  <!-- Tela de loading "SUA MARCA" + frase contextual.
+                       Fica em cima das pages durante a transicao. -->
+                  <Transition name="ass-loading-fade">
+                    <div v-if="isMockLoading" class="ass-dash__loading" aria-hidden="true">
+                      <div class="ass-dash__loading-inner">
+                        <div class="ass-dash__loading-mark">
+                          <span class="ass-dash__loading-mark-text">SM</span>
+                          <div class="ass-dash__loading-spinner" />
+                        </div>
+                        <h3 class="ass-dash__loading-brand">SUA MARCA</h3>
+                        <p class="ass-dash__loading-phrase" :key="mockLoadingPhrase">{{ mockLoadingPhrase }}</p>
+                      </div>
+                    </div>
+                  </Transition>
+
+                  <Transition name="ass-mockfade" mode="out-in">
+
+                  <!-- =========== PAGE 1: PAINEL / DASHBOARD =========== -->
+                  <div v-if="mockPage === 1" key="painel" class="ass-painel">
+                    <div class="ass-asset__crumb">
+                      <span class="is-current">Painel</span>
+                      <span class="ass-asset__crumb-sep">·</span>
+                      <span>Olá, Carlos. Hoje, 14:32</span>
+                    </div>
+                    <div class="ass-dash__grid">
+                      <article class="ass-dash__card">
+                        <header class="ass-dash__card-head">
+                          <span class="ass-dash__card-icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 16%, transparent)`, color: brand.colors.primary }">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l6 6"/></svg>
+                          </span>
+                          <span class="ass-dash__card-title">Raio-X da carteira</span>
+                        </header>
+                        <div class="ass-dash__donut-wrap">
+                          <div class="ass-dash__donut" aria-hidden="true">
+                            <div class="ass-dash__donut-center">
+                              <span class="ass-dash__donut-value">R$ 1,24M</span>
+                              <span class="ass-dash__donut-delta">-1,8%</span>
+                            </div>
+                          </div>
+                          <ul class="ass-dash__legend">
+                            <li><span class="ass-dash__legend-dot" style="background:#D8881A"/>Renda Variável<em>42%</em></li>
+                            <li><span class="ass-dash__legend-dot" style="background:#3B82F6"/>FIIs<em>18%</em></li>
+                            <li><span class="ass-dash__legend-dot" style="background:#10B981"/>Renda Fixa<em>28%</em></li>
+                            <li><span class="ass-dash__legend-dot" style="background:#9CA3AF"/>Exterior<em>8%</em></li>
+                            <li><span class="ass-dash__legend-dot" style="background:#D1D5DB"/>Caixa<em>4%</em></li>
+                          </ul>
+                        </div>
+                        <a class="ass-dash__card-link">Ver carteira completa →</a>
+                      </article>
+
+                      <article class="ass-dash__card">
+                        <header class="ass-dash__card-head">
+                          <span class="ass-dash__card-icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 16%, transparent)`, color: brand.colors.primary }">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                          </span>
+                          <span class="ass-dash__card-title">O que mexeu hoje</span>
+                          <span class="ass-dash__card-link ass-dash__card-link--inline">Ver tudo</span>
+                        </header>
+                        <ul class="ass-dash__movers">
+                          <li>
+                            <span class="ass-dash__mover-dot" :style="{ background: brand.colors.negative || '#dc2626' }" />
+                            <span class="ass-dash__mover-label"><strong>PETR4</strong> caiu com petróleo</span>
+                            <span class="ass-dash__mover-pct ass-dash__mover-pct--neg">-3,2%</span>
+                          </li>
+                          <li>
+                            <span class="ass-dash__mover-dot" :style="{ background: brand.colors.positive || '#10b981' }" />
+                            <span class="ass-dash__mover-label"><strong>IVVB11</strong> compensou com dólar</span>
+                            <span class="ass-dash__mover-pct ass-dash__mover-pct--pos">+1,1%</span>
+                          </li>
+                          <li>
+                            <span class="ass-dash__mover-dot" :style="{ background: brand.colors.negative || '#dc2626' }" />
+                            <span class="ass-dash__mover-label"><strong>Bancos</strong> com Copom hawkish</span>
+                            <span class="ass-dash__mover-pct ass-dash__mover-pct--neg">-0,9%</span>
+                          </li>
+                        </ul>
+                        <p class="ass-dash__movers-foot">Ibovespa <span class="ass-dash__mover-pct--neg">-1,42%</span> · Dólar <span class="ass-dash__mover-pct--pos">+0,58%</span></p>
+                      </article>
+
+                      <article class="ass-dash__card">
+                        <header class="ass-dash__card-head">
+                          <span class="ass-dash__card-icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 16%, transparent)`, color: brand.colors.primary }">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L8 8l4 4 4-4z"/><path d="M2 12l6 4 4-4-4-4z"/><path d="M22 12l-6-4-4 4 4 4z"/><path d="M12 22l4-6-4-4-4 4z"/></svg>
+                          </span>
+                          <span class="ass-dash__card-title">Assistente IA</span>
+                        </header>
+                        <p class="ass-dash__ai-greet">Olá, Carlos! <em>Como posso ajudar hoje?</em></p>
+                        <div class="ass-dash__ai-bubble">
+                          Explique pro cliente por que a carteira caiu hoje.
+                          <span class="ass-dash__ai-cursor" aria-hidden="true">↗</span>
+                        </div>
+                        <p class="ass-dash__ai-suglabel">Sugestões</p>
+                        <div class="ass-dash__ai-sugs">
+                          <span>Resumir o dia</span>
+                          <span>Quais ativos pesaram?</span>
+                        </div>
+                      </article>
+
+                      <article class="ass-dash__card">
+                        <header class="ass-dash__card-head">
+                          <span class="ass-dash__card-icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 16%, transparent)`, color: brand.colors.primary }">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                          </span>
+                          <span class="ass-dash__card-title">Relatório para cliente</span>
+                        </header>
+                        <p class="ass-dash__report-meta">Relatório semanal · 02/05/2026</p>
+                        <p class="ass-dash__report-body">Resumo, desempenho, alocação e perspectivas.</p>
+                        <div class="ass-dash__report-row">
+                          <button class="ass-dash__btn">Gerar relatório</button>
+                          <div class="ass-dash__report-thumb" aria-hidden="true">
+                            <span class="ass-dash__report-thumb-mark">SM</span>
+                            <div class="ass-dash__report-thumb-lines">
+                              <span /><span /><span /><span />
+                            </div>
+                          </div>
+                        </div>
+                      </article>
+
+                      <article class="ass-dash__card">
+                        <header class="ass-dash__card-head">
+                          <span class="ass-dash__card-icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 16%, transparent)`, color: brand.colors.primary }">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                          </span>
+                          <span class="ass-dash__card-title">Insights personalizados</span>
+                          <span class="ass-dash__card-link ass-dash__card-link--inline">Ver todos</span>
+                        </header>
+                        <ul class="ass-dash__insights">
+                          <li>Sua exposição ao setor <strong>financeiro</strong> está acima da média.</li>
+                          <li>Janela histórica sugere cautela com <strong>renda variável local</strong>.</li>
+                          <li>O dólar pode seguir volátil nas próximas semanas.</li>
+                        </ul>
+                      </article>
+
+                      <article class="ass-dash__card">
+                        <header class="ass-dash__card-head">
+                          <span class="ass-dash__card-icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 16%, transparent)`, color: brand.colors.primary }">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                          </span>
+                          <span class="ass-dash__card-title">Alertas e oportunidades</span>
+                          <span class="ass-dash__card-link ass-dash__card-link--inline">Ver todos</span>
+                        </header>
+                        <div class="ass-dash__alert ass-dash__alert--warn">
+                          <span class="ass-dash__alert-tag">Alerta</span>
+                          <span>Aumento de risco no setor bancário.</span>
+                        </div>
+                        <div class="ass-dash__alert ass-dash__alert--ok">
+                          <span class="ass-dash__alert-tag">Oportunidade</span>
+                          <span>NTNB35 com prêmio acima da média.</span>
+                        </div>
+                      </article>
+                    </div>
+                  </div>
+
+                  <!-- =========== PAGE 2: ASSET PETR4 =========== -->
+                  <div v-else-if="mockPage === 2" key="asset" class="ass-asset">
+                  <!-- Breadcrumb fina + ticker -->
+                  <div class="ass-asset__crumb">
+                    <span>Painel</span>
+                    <span class="ass-asset__crumb-sep">›</span>
+                    <span>Carteira</span>
+                    <span class="ass-asset__crumb-sep">›</span>
+                    <span class="is-current">PETR4</span>
+                  </div>
+
+                  <!-- Hero do asset: logo + ticker + nome + setor + preco -->
+                  <div class="ass-asset__hero">
+                    <div class="ass-asset__id">
+                      <div class="ass-asset__logo" aria-hidden="true">
+                        <span>P</span>
+                      </div>
+                      <div class="ass-asset__ident">
+                        <h2 class="ass-asset__ticker">PETR4</h2>
+                        <p class="ass-asset__name">Petróleo Brasileiro S.A.</p>
+                        <p class="ass-asset__sector">&gt; Energia · Petróleo, Gás e Biocombustíveis</p>
+                      </div>
+                    </div>
+                    <div class="ass-asset__price">
+                      <div class="ass-asset__price-row">
+                        <span class="ass-asset__price-currency">R$</span>
+                        <span class="ass-asset__price-value">38,42</span>
+                      </div>
+                      <div class="ass-asset__price-foot">
+                        <span class="ass-asset__chip ass-asset__chip--neg">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="7" x2="17" y2="17"/><polyline points="17 7 17 17 7 17"/></svg>
+                          -3,20%
+                        </span>
+                        <span class="ass-asset__price-when">HOJE · 14:32</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Stats row, 6 colunas como na page real -->
+                  <div class="ass-asset__stats">
+                    <div><span>Volume</span><strong>R$ 1,8 bi</strong></div>
+                    <div><span>Var. 12m</span><strong class="is-pos">+12,4%</strong></div>
+                    <div><span>Mín 52s</span><strong>32,80</strong></div>
+                    <div><span>Máx 52s</span><strong>42,15</strong></div>
+                    <div><span>P/L</span><strong>4,2x</strong></div>
+                    <div><span>DY 12m</span><strong class="is-pos">14,8%</strong></div>
+                  </div>
+
+                  <!-- Chart -->
+                  <div class="ass-asset__chart">
+                    <div class="ass-asset__chart-head">
+                      <span class="ass-asset__chart-label">HISTÓRICO DE COTAÇÃO</span>
+                      <div class="ass-asset__chart-range">
+                        <span>1D</span><span>1S</span><span class="is-active">1M</span><span>3M</span><span>1A</span><span>5A</span>
+                      </div>
+                    </div>
+                    <svg class="ass-asset__chart-svg" viewBox="0 0 700 180" preserveAspectRatio="none" aria-hidden="true">
+                      <defs>
+                        <linearGradient id="ass-asset-grad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" :stop-color="brand.colors.negative || '#dc2626'" stop-opacity="0.3" />
+                          <stop offset="100%" :stop-color="brand.colors.negative || '#dc2626'" stop-opacity="0" />
+                        </linearGradient>
+                      </defs>
+                      <!-- Grid horizontal sutil -->
+                      <line x1="0" y1="45" x2="700" y2="45" stroke="#E4E4E7" stroke-width="1" stroke-dasharray="2,4"/>
+                      <line x1="0" y1="90" x2="700" y2="90" stroke="#E4E4E7" stroke-width="1" stroke-dasharray="2,4"/>
+                      <line x1="0" y1="135" x2="700" y2="135" stroke="#E4E4E7" stroke-width="1" stroke-dasharray="2,4"/>
+                      <!-- Linha do ativo, queda no fim -->
+                      <path d="M0,80 L40,72 L80,90 L120,68 L160,76 L200,55 L240,62 L280,48 L320,58 L360,42 L400,52 L440,38 L480,60 L520,82 L560,108 L600,120 L640,142 L700,158 L700,180 L0,180 Z" fill="url(#ass-asset-grad)" />
+                      <path d="M0,80 L40,72 L80,90 L120,68 L160,76 L200,55 L240,62 L280,48 L320,58 L360,42 L400,52 L440,38 L480,60 L520,82 L560,108 L600,120 L640,142 L700,158" :stroke="brand.colors.negative || '#dc2626'" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+                      <!-- Pontilho sob o ultimo ponto -->
+                      <circle cx="700" cy="158" r="4" :fill="brand.colors.negative || '#dc2626'" />
+                      <circle cx="700" cy="158" r="9" :fill="brand.colors.negative || '#dc2626'" fill-opacity="0.18" />
+                    </svg>
+                  </div>
+
+                  <!-- Linha de cards: AI insight + dividendos + noticia -->
+                  <div class="ass-asset__row">
+                    <article class="ass-asset__card ass-asset__card--ai">
+                      <header class="ass-asset__card-head">
+                        <span class="ass-dash__card-icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 16%, transparent)`, color: brand.colors.primary }">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L8 8l4 4 4-4z"/><path d="M2 12l6 4 4-4-4-4z"/><path d="M22 12l-6-4-4 4 4 4z"/><path d="M12 22l4-6-4-4-4 4z"/></svg>
+                        </span>
+                        <span class="ass-asset__card-title">Análise IA · Sua marca</span>
+                      </header>
+                      <p class="ass-asset__ai-text">
+                        PETR4 cai <strong>3,2%</strong> hoje pressionada pela queda do <strong>Brent abaixo de US$ 78</strong> e ata do Copom mais hawkish. <strong>Dividend yield de 14,8%</strong> segue defendendo a tese, mas próximas distribuições podem desacelerar se o petróleo seguir caindo.
+                      </p>
+                      <div class="ass-asset__ai-tags">
+                        <span>Risco macro</span>
+                        <span>Yield ainda alto</span>
+                        <span>Setor pressionado</span>
+                      </div>
+                    </article>
+
+                    <article class="ass-asset__card">
+                      <header class="ass-asset__card-head">
+                        <span class="ass-dash__card-icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 16%, transparent)`, color: brand.colors.primary }">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        </span>
+                        <span class="ass-asset__card-title">Dividendos</span>
+                      </header>
+                      <ul class="ass-asset__divs">
+                        <li><span>15/04/2026</span><strong class="is-pos">R$ 1,28</strong></li>
+                        <li><span>15/01/2026</span><strong class="is-pos">R$ 1,15</strong></li>
+                        <li><span>15/10/2025</span><strong class="is-pos">R$ 0,98</strong></li>
+                      </ul>
+                      <p class="ass-asset__divs-foot">Próximo: <strong>15/07/2026</strong></p>
+                    </article>
+
+                    <article class="ass-asset__card">
+                      <header class="ass-asset__card-head">
+                        <span class="ass-dash__card-icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 16%, transparent)`, color: brand.colors.primary }">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8z"/></svg>
+                        </span>
+                        <span class="ass-asset__card-title">Notícias do ativo</span>
+                      </header>
+                      <ul class="ass-asset__news">
+                        <li>
+                          <span class="ass-asset__news-time">há 1h</span>
+                          <span>Brent cai 2,4% com receio de demanda chinesa fraca</span>
+                        </li>
+                        <li>
+                          <span class="ass-asset__news-time">há 4h</span>
+                          <span>Petrobras anuncia novo plano estratégico para 2026-2030</span>
+                        </li>
+                        <li>
+                          <span class="ass-asset__news-time">ontem</span>
+                          <span>Conselho aprova distribuição extraordinária de dividendos</span>
+                        </li>
+                      </ul>
+                    </article>
+                  </div>
+                </div>
+
+                <!-- =========== PAGE 3: CHAT IA =========== -->
+                <div v-else key="chat" class="ass-chat">
+                  <div class="ass-asset__crumb">
+                    <span>Painel</span>
+                    <span class="ass-asset__crumb-sep">›</span>
+                    <span class="is-current">Chat IA · Sua marca</span>
+                  </div>
+
+                  <div class="ass-chat__header">
+                    <div>
+                      <h2 class="ass-chat__title">Carteira do Carlos · análise do dia</h2>
+                      <p class="ass-chat__sub">Conversa em andamento · 4 mensagens · contexto carregado</p>
+                    </div>
+                    <span class="ass-chat__badge">
+                      <span class="ass-chat__badge-dot" />
+                      Sua Marca AI
+                    </span>
+                  </div>
+
+                  <div class="ass-chat__thread">
+                    <!-- Mensagem do assessor -->
+                    <div class="ass-chat__msg ass-chat__msg--user">
+                      <span class="ass-chat__msg-avatar ass-chat__msg-avatar--user">C</span>
+                      <div class="ass-chat__msg-bubble">
+                        Como o Copom de ontem afetou a carteira do Carlos hoje? Preciso explicar pra ele em 1 frase.
+                      </div>
+                    </div>
+
+                    <!-- Resposta da IA -->
+                    <div class="ass-chat__msg ass-chat__msg--ai">
+                      <span class="ass-chat__msg-avatar ass-chat__msg-avatar--ai">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L8 8l4 4 4-4z"/><path d="M2 12l6 4 4-4-4-4z"/><path d="M22 12l-6-4-4 4 4 4z"/><path d="M12 22l4-6-4-4-4 4z"/></svg>
+                      </span>
+                      <div class="ass-chat__msg-bubble ass-chat__msg-bubble--ai">
+                        <p>A ata mais hawkish puxou a curva longa de juros pra cima, e isso bateu em <strong>3 frentes da carteira do Carlos</strong>:</p>
+                        <ul class="ass-chat__bullets">
+                          <li><strong>Bancos (-0,9%)</strong>, ITUB4 e BBDC4 sofreram com expectativa de Selic terminal mais alta.</li>
+                          <li><strong>FIIs (-1,2%)</strong>, especialmente HGLG11, reagiram à curva de juros.</li>
+                          <li><strong>NTNB35 (+0,4%)</strong>, IPCA+ defendeu a parte de renda fixa.</li>
+                        </ul>
+                        <p class="ass-chat__sumline">
+                          <strong>Resumo em 1 frase:</strong> "O Copom mais duro pressionou bancos e FIIs, mas a NTNB35 que você comprou em janeiro funcionou exatamente como hedge."
+                        </p>
+                        <div class="ass-chat__sources">
+                          <span class="ass-chat__sources-label">FONTES</span>
+                          <span class="ass-chat__source">Ata Copom · BCB</span>
+                          <span class="ass-chat__source">Carteira Carlos · 09/05</span>
+                          <span class="ass-chat__source">Curva DI · B3</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Sugestões de follow-up -->
+                    <div class="ass-chat__sugs">
+                      <span class="ass-chat__sugs-label">Continuar em</span>
+                      <button class="ass-chat__sug">Gerar PDF para enviar ao Carlos</button>
+                      <button class="ass-chat__sug">Comparar com a carteira modelo</button>
+                      <button class="ass-chat__sug">Sugerir rebalance</button>
+                    </div>
+                  </div>
+
+                  <!-- Input bar -->
+                  <div class="ass-chat__input">
+                    <span class="ass-chat__input-icon" :style="{ color: brand.colors.primary }">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                    </span>
+                    <span class="ass-chat__input-placeholder">Pergunte sobre carteiras, ativos, contexto, ou um cliente...</span>
+                    <span class="ass-chat__input-send" :style="{ background: brand.colors.primary }">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                    </span>
+                  </div>
+                </div>
+
+                  </Transition>
+                </div>
+
+                <!-- Pager dots, controle manual entre as 3 pages -->
+                <div class="ass-dash__pager" role="tablist" aria-label="Telas da plataforma">
+                  <button
+                    v-for="p in mockPages"
+                    :key="p.n"
+                    type="button"
+                    role="tab"
+                    :aria-selected="mockPage === p.n"
+                    :class="['ass-dash__pager-dot', { 'is-active': mockPage === p.n }]"
+                    @click="goToMockPage(p.n)"
+                  >
+                    <span class="ass-dash__pager-label">{{ p.label }}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Float 1: performance no dia (top right) -->
+            <div class="ass-float ass-float--perf" aria-hidden="true">
+              <div class="ass-float__head">Performance no dia</div>
+              <div class="ass-float__row">
+                <div class="ass-float__col">
+                  <span class="ass-float__num" :style="{ color: brand.colors.negative || '#dc2626' }">-1,8%</span>
+                  <span class="ass-float__sub">R$ -22.340</span>
+                </div>
+                <svg class="ass-float__spark" viewBox="0 0 70 36" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <linearGradient id="ass-float-spark" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" :stop-color="brand.colors.negative || '#dc2626'" stop-opacity="0.35" />
+                      <stop offset="100%" :stop-color="brand.colors.negative || '#dc2626'" stop-opacity="0" />
+                    </linearGradient>
+                  </defs>
+                  <path d="M0,10 L10,8 L20,12 L30,7 L40,18 L50,15 L60,24 L70,28 L70,36 L0,36 Z" fill="url(#ass-float-spark)" />
+                  <path d="M0,10 L10,8 L20,12 L30,7 L40,18 L50,15 L60,24 L70,28" :stroke="brand.colors.negative || '#dc2626'" stroke-width="1.5" fill="none" />
+                </svg>
+              </div>
+            </div>
+
+            <!-- Float 2: clientes ativos (bottom left) -->
+            <div class="ass-float ass-float--clients" aria-hidden="true">
+              <span class="ass-float__icon-wrap" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 16%, transparent)`, color: brand.colors.primary }">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </span>
+              <div>
+                <span class="ass-float__sub">Clientes ativos</span>
+                <span class="ass-float__big">127 <em>+8 esta semana</em></span>
+              </div>
+            </div>
+
+            <!-- Float 3: plataforma com sua marca (bottom right) -->
+            <div class="ass-float ass-float--brand" aria-hidden="true">
+              <span class="ass-float__icon-wrap" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 16%, transparent)`, color: brand.colors.primary }">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </span>
+              <div>
+                <span class="ass-float__title">Plataforma com sua marca</span>
+                <span class="ass-float__sub">Seu domínio · Seu logo · Sua cor. Experiência 100% personalizada.</span>
+              </div>
+            </div>
+            </div><!-- /.ass-hero__tilt -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         1.5. PREVIEWS REAIS, iframes de tenants em producao
+         Posicionada logo abaixo do hero. Reduz risco percebido cedo,
+         mostra que ja existe gente real rodando o produto white-label.
+         3 cards clicaveis abrem o tenant em producao em nova aba.
+         ============================================================ -->
+    <section class="ass-previews reveal-on-scroll">
+      <div class="lp-container">
+        <div class="lp-section-head ass-previews__head">
+          <p class="lp-eyebrow lp-eyebrow--center lp-eyebrow--pulsing" style="margin: 0 auto;">
+            <span class="lp-eyebrow__dot" aria-hidden="true" />
+            PRODUTO REAL · DEMOS · EXPERIÊNCIAS
+          </p>
+          <h2 class="lp-section-title">
+            Veja na prática
+            <span class="lp-section-title__italic">como isso aparece.</span>
+          </h2>
+          <p class="ass-previews__lead">
+            Plataformas prontas, com sua marca, seu domínio e uma experiência premium pro cliente final.
+          </p>
+          <p class="ass-previews__hint">
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17l9.2-9.2M17 17V8H8"/></svg>
+            Clique nos cards para abrir cada plataforma em produção.
+          </p>
+        </div>
+
+        <div class="ass-previews__grid">
+          <article
+            v-for="p in tenantPreviews"
+            :key="p.slug"
+            class="ass-preview__card"
+          >
+            <a class="ass-preview__head" :href="p.url" target="_blank" rel="noopener">
+              <span
+                class="ass-preview__badge"
+                :class="`ass-preview__badge--${p.badgeKind}`"
+              >
+                <svg v-if="p.badgeKind === 'preview'" xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg v-else xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                {{ p.badgeLabel }}
+              </span>
+              <div class="ass-preview__brand">
+                <span
+                  class="ass-preview__logo"
+                  :style="{ background: p.bg, color: p.fg, fontFamily: p.font, fontStyle: p.italic ? 'italic' : 'normal' }"
+                >{{ p.mark }}</span>
+                <div class="ass-preview__id">
+                  <span class="ass-preview__name">{{ p.name }}</span>
+                  <span class="ass-preview__tag">{{ p.tag }}</span>
+                </div>
+                <span class="ass-preview__ext" aria-hidden="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7M17 7H8M17 7V16"/></svg>
+                </span>
+              </div>
+            </a>
+
+            <div class="ass-preview__frame">
+              <iframe
+                class="ass-preview__iframe"
+                :src="p.iframeUrl"
+                :title="`Preview da plataforma ${p.name}`"
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+              />
+              <!-- Overlay gradient pro fade do bottom -->
+              <div class="ass-preview__frame-fade" aria-hidden="true" />
+            </div>
+
+            <ul class="ass-preview__features">
+              <li v-for="f in p.features" :key="f">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" :stroke="brand.colors.primary" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/></svg>
+                {{ f }}
+              </li>
+            </ul>
+
+            <a class="ass-preview__cta" :href="p.url" target="_blank" rel="noopener">
+              {{ p.ctaLabel }}
+              <span aria-hidden="true">→</span>
+            </a>
+          </article>
+        </div>
+
+        <!-- Faixa de trust embaixo + CTA pra lead -->
+        <div class="ass-previews__foot">
+          <div class="ass-previews__foot-item">
+            <span class="ass-previews__foot-icon" :style="{ color: brand.colors.primary }">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            </span>
+            <div class="ass-previews__foot-text">
+              <strong>Sua marca, seu domínio</strong>
+              <span>Plataforma 100% personalizada.</span>
+            </div>
+          </div>
+          <div class="ass-previews__foot-item">
+            <span class="ass-previews__foot-icon" :style="{ color: brand.colors.primary }">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>
+            </span>
+            <div class="ass-previews__foot-text">
+              <strong>Deploy em até 7 dias</strong>
+              <span>Do contrato ao ar, rapidinho.</span>
+            </div>
+          </div>
+          <div class="ass-previews__foot-item">
+            <span class="ass-previews__foot-icon" :style="{ color: brand.colors.primary }">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            </span>
+            <div class="ass-previews__foot-text">
+              <strong>Sem time de tecnologia</strong>
+              <span>A gente cuida de tudo pra você.</span>
+            </div>
+          </div>
+          <div class="ass-previews__foot-item">
+            <span class="ass-previews__foot-icon" :style="{ color: brand.colors.primary }">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </span>
+            <div class="ass-previews__foot-text">
+              <strong>Pronto para clientes</strong>
+              <span>Profissional, segura, confiável.</span>
+            </div>
+          </div>
+          <button
+            type="button"
+            class="lp-hero__cta ass-previews__foot-cta"
+            @click="openLeadModal"
+          >
+            Quero algo assim para minha assessoria
+            <span aria-hidden="true">→</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         2. BLOCO DE DOR, aprofundar a ferida
+         ============================================================ -->
+    <section class="lp-problem reveal-on-scroll">
+      <div class="lp-container">
+        <div class="lp-problem__inner">
+          <p class="lp-eyebrow lp-eyebrow--center">DIAGNÓSTICO</p>
+          <h2 class="lp-section-title">
+            Quando tudo parece igual,
+            <span class="lp-section-title__italic">o cliente escolhe pelo preço.</span>
+          </h2>
+
+          <p class="lp-problem__lead">
+            Hoje, muitas assessorias entregam a mesma experiência aos olhos do cliente: <strong>WhatsApp, reunião, relatório, carteira recomendada e rentabilidade</strong>. Quando o cliente não enxerga diferencial claro, ele começa a comparar taxa, preço, promessa, rentabilidade. E aí sua assessoria vira commodity.
+          </p>
+        </div>
+
+        <!-- Cards de dor, 5 sintomas que o dono da assessoria reconhece -->
+        <div class="ass-pain__grid">
+          <article class="ass-pain__card">
+            <div class="ass-pain__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)` }">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="brand.colors.primary" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+            </div>
+            <p>O cliente <strong>não sabe explicar</strong> por que sua assessoria é diferente.</p>
+          </article>
+
+          <article class="ass-pain__card">
+            <div class="ass-pain__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)` }">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="brand.colors.primary" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            </div>
+            <p>Sua entrega <strong>parece igual</strong> à de outras assessorias do mercado.</p>
+          </article>
+
+          <article class="ass-pain__card">
+            <div class="ass-pain__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)` }">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="brand.colors.primary" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+            </div>
+            <p>O cliente compara você com <strong>corretora, banco ou app</strong>.</p>
+          </article>
+
+          <article class="ass-pain__card">
+            <div class="ass-pain__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)` }">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="brand.colors.primary" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            </div>
+            <p>O relacionamento depende demais do <strong>assessor individual</strong>, não da estrutura.</p>
+          </article>
+
+          <article class="ass-pain__card">
+            <div class="ass-pain__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)` }">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="brand.colors.primary" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            </div>
+            <p>Sua assessoria parece <strong>menos moderna</strong> do que deveria.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         3. CONSEQUENCIA, custo de nao mudar
+         ============================================================ -->
+    <section class="ass-stakes reveal-on-scroll">
+      <div class="lp-container">
+        <div class="ass-stakes__inner">
+          <p class="lp-eyebrow lp-eyebrow--center">CONSEQUÊNCIA</p>
+          <h2 class="lp-section-title">
+            O problema não é parecer simples.
+            <span class="lp-section-title__italic">É parecer substituível.</span>
+          </h2>
+
+          <ul class="ass-stakes__chain">
+            <li>
+              <strong>Se o cliente não percebe diferença,</strong>
+              <span>ele questiona o preço.</span>
+            </li>
+            <li>
+              <strong>Se ele questiona o preço,</strong>
+              <span>sua margem fica pressionada.</span>
+            </li>
+            <li>
+              <strong>Se sua entrega parece igual,</strong>
+              <span>qualquer promessa concorrente vira ameaça real.</span>
+            </li>
+          </ul>
+
+          <p class="ass-stakes__punch">
+            Assessoria que não mostra diferencial
+            <span class="ass-stakes__punch-italic">vira comparação de taxa.</span>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         4. SOLUCAO, nova categoria
+         ============================================================ -->
+    <section class="ass-solution reveal-on-scroll">
+      <div
+        class="ass-solution__glow"
+        aria-hidden="true"
+        :style="{
+          background: `radial-gradient(ellipse 60% 50% at 50% 30%, color-mix(in srgb, ${brand.colors.primary} 22%, transparent), transparent 65%)`,
+        }"
+      />
+      <div class="lp-container">
+        <div class="lp-section-head">
+          <p class="lp-eyebrow lp-eyebrow--center">A SAÍDA</p>
+          <h2 class="lp-section-title">
+            Transforme sua assessoria em uma
+            <span class="lp-section-title__italic">plataforma de inteligência.</span>
+          </h2>
+          <p class="ass-solution__lead">
+            Com a Redentia, sua assessoria oferece uma experiência digital própria para o cliente acompanhar carteira, mercado, notícias, riscos e impactos com IA. <strong>Não é só mais um relatório. Não é só mais uma reunião. É uma plataforma da sua assessoria</strong> para gerar clareza, presença e diferenciação.
+          </p>
+        </div>
+
+        <div class="ass-solution__grid">
+          <article class="ass-solution__card">
+            <div class="ass-solution__num">01</div>
+            <h3>Plataforma com a <em>sua marca</em>.</h3>
+            <p>Domínio próprio, paleta da assessoria, logo, fonte, voz. Zero menção da Redentia no produto final. O cliente vê uma plataforma da sua casa.</p>
+          </article>
+
+          <article class="ass-solution__card">
+            <div class="ass-solution__num">02</div>
+            <h3>IA pra análise de <em>carteira, notícias e mercado</em>.</h3>
+            <p>O cliente entende por que a carteira mexeu, qual notícia impactou, qual setor pesou. Tudo cruzado com fundamentos, contexto macro e comportamento histórico.</p>
+          </article>
+
+          <article class="ass-solution__card">
+            <div class="ass-solution__num">03</div>
+            <h3>Experiência digital pra elevar <em>percepção de valor</em>.</h3>
+            <p>Sai do WhatsApp, reunião, PDF. O cliente entra num ambiente da assessoria, com análise viva, alertas e contexto. A entrega deixa de ser invisível.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- NOTA: a antiga "section 5 - DEMONSTRACAO VISUAL" (.ass-demo) foi
+         removida em 2026-05-11. Era um grid de 6 cards textuais com exemplos
+         de output da IA (PETR4, Bancos, IVVB11, etc). Substituida pela
+         section "Veja na pratica" no topo da page (logo abaixo do hero),
+         que mostra IFRAMES reais de tenants em producao em vez de exemplos
+         hipoteticos. Mais convincente, menos abstrato. -->
+
+    <!-- ============================================================
+         5. BENEFICIOS PARA A ASSESSORIA, foco no dono
+         ============================================================ -->
+    <section class="ass-benefits reveal-on-scroll">
+      <div class="lp-container">
+        <div class="lp-section-head">
+          <p class="lp-eyebrow lp-eyebrow--center">PARA A ASSESSORIA</p>
+          <h2 class="lp-section-title">
+            O que muda
+            <span class="lp-section-title__italic">para sua assessoria?</span>
+          </h2>
+        </div>
+
+        <div class="ass-benefits__grid">
+          <article class="ass-benefits__item">
+            <span class="ass-benefits__num">01</span>
+            <h3>Diferenciação comercial</h3>
+            <p>Sua assessoria deixa de vender só atendimento e passa a mostrar uma <strong>plataforma com sua marca</strong>. O cliente tem algo concreto pra associar à casa, além do nome do assessor.</p>
+          </article>
+
+          <article class="ass-benefits__item">
+            <span class="ass-benefits__num">02</span>
+            <h3>Mais percepção de valor</h3>
+            <p>O cliente enxerga <strong>análises, contexto, riscos, notícias e impacto na carteira</strong>. A entrega vira visível, e a relação preço/valor para de pesar a favor da concorrência.</p>
+          </article>
+
+          <article class="ass-benefits__item">
+            <span class="ass-benefits__num">03</span>
+            <h3>Mais presença digital</h3>
+            <p>A experiência sai do <strong>WhatsApp, reunião e PDF</strong>. O cliente abre o app da sua assessoria, vê dados vivos, recebe alertas, sente que tem onde voltar.</p>
+          </article>
+
+          <article class="ass-benefits__item">
+            <span class="ass-benefits__num">04</span>
+            <h3>Argumento pra captar mais</h3>
+            <p>Seu time comercial demonstra a <strong>plataforma da casa</strong> em pitch de novos clientes. Vira diferencial concreto numa categoria onde quase tudo é discurso.</p>
+          </article>
+
+          <article class="ass-benefits__item">
+            <span class="ass-benefits__num">05</span>
+            <h3>Retenção e relacionamento</h3>
+            <p>O cliente tem <strong>mais motivos pra voltar</strong> ao ambiente da assessoria. Cada visita reforça a marca da casa, em vez do logo da corretora.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         7. ESCASSEZ, 10 vagas com justificativa
+         ============================================================ -->
+    <section class="ass-scarcity reveal-on-scroll">
+      <div
+        class="ass-scarcity__glow"
+        aria-hidden="true"
+        :style="{
+          background: `radial-gradient(ellipse 50% 60% at 50% 50%, color-mix(in srgb, ${brand.colors.primary} 28%, transparent), transparent 65%)`,
+        }"
+      />
+      <div class="lp-container">
+        <div class="ass-scarcity__inner">
+          <p class="lp-eyebrow lp-eyebrow--center lp-eyebrow--pulsing" style="margin: 0 auto 18px;">
+            <span class="lp-eyebrow__dot" aria-hidden="true" />
+            PRIMEIRA FASE
+          </p>
+
+          <h2 class="lp-section-title">
+            Só vamos vender pra
+            <span class="lp-section-title__italic">10 assessorias.</span>
+          </h2>
+
+          <p class="ass-scarcity__lead">
+            Não é promoção, é capacidade real. Cada plataforma é montada por nós, com a sua marca, no seu domínio, e <strong>adaptada ao jeito que sua assessoria atende</strong>. Por isso o teto: só conseguimos fazer isso bem para 10 nesta primeira leva. Depois, abre a próxima janela.
+          </p>
+
+          <button
+            type="button"
+            class="lp-hero__cta ass-scarcity__cta"
+            @click="openLeadModal"
+          >
+            Quero para a minha assessoria
+            <span aria-hidden="true">→</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         8. PROVA / CREDIBILIDADE, por que agora
+         ============================================================ -->
+    <section class="ass-proof reveal-on-scroll">
+      <div class="lp-container">
+        <div class="lp-section-head">
+          <p class="lp-eyebrow lp-eyebrow--center">CONTEXTO</p>
+          <h2 class="lp-section-title">
+            Por que
+            <span class="lp-section-title__italic">agora?</span>
+          </h2>
+        </div>
+
+        <div class="ass-proof__grid">
+          <article class="ass-proof__card">
+            <div class="ass-proof__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`, color: brand.colors.primary }">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M6 8h12M6 12h8M6 16h6"/></svg>
+            </div>
+            <h3>Cliente acostumado com experiência digital</h3>
+            <p>Bancos, corretoras e fintechs já elevaram o padrão. A assessoria que ainda entrega só relatório por PDF parece <strong>defasada por contraste</strong>.</p>
+          </article>
+
+          <article class="ass-proof__card">
+            <div class="ass-proof__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`, color: brand.colors.primary }">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            </div>
+            <h3>Atenção do investidor está em disputa</h3>
+            <p>Apps, influencers, newsletters, podcasts. Sua assessoria não compete só por <strong>dinheiro</strong>, compete por <strong>tempo de tela</strong> com tudo isso.</p>
+          </article>
+
+          <article class="ass-proof__card">
+            <div class="ass-proof__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`, color: brand.colors.primary }">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L8 8l4 4 4-4z"/><path d="M2 12l6 4 4-4-4-4z"/><path d="M22 12l-6-4-4 4 4 4z"/><path d="M12 22l4-6-4-4-4 4z"/></svg>
+            </div>
+            <h3>IA virou expectativa, não novidade</h3>
+            <p>O cliente já usa ChatGPT pra pedir opinião sobre a carteira. Sua casa precisa ter <strong>uma IA com a sua marca</strong>, ou ele vai usar a do outro.</p>
+          </article>
+
+          <article class="ass-proof__card">
+            <div class="ass-proof__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`, color: brand.colors.primary }">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            </div>
+            <h3>Quem cria experiência sai do funil de comoditização</h3>
+            <p>Assessoria que vira <strong>plataforma</strong> deixa de depender de WhatsApp, PDF e reunião pra existir na cabeça do cliente. Cria pertencimento.</p>
+          </article>
+        </div>
+
+        <!-- Stats row da plataforma Redentia -->
+        <div class="ass-proof__stats">
+          <div class="ass-proof__stat">
+            <span class="ass-proof__stat-num">5</span>
+            <span class="ass-proof__stat-label">marcas no ar com a infra Redentia</span>
+          </div>
+          <div class="ass-proof__stat">
+            <span class="ass-proof__stat-num">33k+</span>
+            <span class="ass-proof__stat-label">carteiras analisadas pela IA</span>
+          </div>
+          <div class="ass-proof__stat">
+            <span class="ass-proof__stat-num">15</span>
+            <span class="ass-proof__stat-label">feeds de notícias agregados a cada 10 min</span>
+          </div>
+          <div class="ass-proof__stat">
+            <span class="ass-proof__stat-num">7d</span>
+            <span class="ass-proof__stat-label">do go-decision ao produto deployado</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         9. FAQ, objecoes
+         ============================================================ -->
+    <section class="ass-faq reveal-on-scroll">
+      <div class="lp-container">
+        <div class="lp-section-head">
+          <p class="lp-eyebrow lp-eyebrow--center">DÚVIDAS</p>
+          <h2 class="lp-section-title">
+            O que perguntam antes
+            <span class="lp-section-title__italic">de começar.</span>
+          </h2>
+        </div>
+
+        <div class="ass-faq__list">
+          <details class="ass-faq__item">
+            <summary>
+              <span>Isso é para substituir o assessor?</span>
+              <span class="ass-faq__chev" aria-hidden="true">+</span>
+            </summary>
+            <p>Não. É para <strong>aumentar a percepção de valor</strong> do trabalho do assessor e dar escala ao relacionamento. O assessor continua sendo a relação humana, a plataforma é o ambiente onde essa relação ganha amplificação digital.</p>
+          </details>
+
+          <details class="ass-faq__item">
+            <summary>
+              <span>A plataforma fica com a marca da minha assessoria?</span>
+              <span class="ass-faq__chev" aria-hidden="true">+</span>
+            </summary>
+            <p>Sim. Domínio próprio, logo, paleta, fonte, voz. <strong>Zero menção da Redentia</strong> no produto final que o cliente vê. Para o investidor, é uma plataforma da sua casa, não um software de terceiro.</p>
+          </details>
+
+          <details class="ass-faq__item">
+            <summary>
+              <span>Preciso ter time de tecnologia?</span>
+              <span class="ass-faq__chev" aria-hidden="true">+</span>
+            </summary>
+            <p>Não. A Redentia entrega toda a camada de tecnologia: infra, dados de mercado, calculadoras, IA, design system. Você cuida do <strong>relacionamento</strong> e da <strong>marca</strong>, a gente cuida do resto.</p>
+          </details>
+
+          <details class="ass-faq__item">
+            <summary>
+              <span>É para todos os clientes ou só alguns?</span>
+              <span class="ass-faq__chev" aria-hidden="true">+</span>
+            </summary>
+            <p>Pode começar com <strong>clientes premium, base selecionada ou uso comercial pra demonstração</strong>. Não precisa rolar pra base inteira no dia 1. Várias assessorias começam com 30 a 50 clientes pra calibrar antes de abrir.</p>
+          </details>
+
+          <details class="ass-faq__item">
+            <summary>
+              <span>Como funciona a implementação?</span>
+              <span class="ass-faq__chev" aria-hidden="true">+</span>
+            </summary>
+            <p>O primeiro passo é uma <strong>conversa rápida</strong> pra entender o modelo da assessoria, o perfil do cliente e avaliar fit pra primeira fase. A partir daí, definimos identidade visual, escopo e prazo. Da call ao deploy, o ciclo médio é de 7 dias.</p>
+          </details>
+
+          <details class="ass-faq__item">
+            <summary>
+              <span>E se a gente já tem um app próprio?</span>
+              <span class="ass-faq__chev" aria-hidden="true">+</span>
+            </summary>
+            <p>A Redentia funciona como <strong>plataforma standalone</strong> (mais comum) ou como camada de inteligência embedded via API. No segundo caso, conversamos sobre o ponto de integração que faz mais sentido pra sua stack.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         10. CTA FINAL, repete a promessa e chama pra acao
+         ============================================================ -->
+    <section class="lp-final reveal-on-scroll">
+      <div
+        class="lp-final__glow"
+        aria-hidden="true"
+        :style="{
+          background: `radial-gradient(ellipse 70% 60% at 50% 50%, color-mix(in srgb, ${brand.colors.primary} 26%, transparent), transparent 65%)`,
+        }"
+      />
+      <div class="lp-container">
+        <div class="lp-final__inner">
+          <p class="lp-eyebrow lp-eyebrow--center">PRIMEIRA FASE</p>
+          <h2 class="lp-section-title">
+            Sua assessoria pode ser uma das
+            <span class="lp-section-title__italic">10 primeiras.</span>
+          </h2>
+
+          <p class="lp-final__lead">
+            Veja como a Redentia transforma sua assessoria em uma plataforma de inteligência para os seus clientes investidores. Conversa de 20 minutos, sem proposta de 40 páginas.
+          </p>
+
+          <button
+            type="button"
+            class="lp-hero__cta ass-final__cta"
+            @click="openLeadModal"
+          >
+            Quero participar da primeira fase
+            <span aria-hidden="true">→</span>
+          </button>
+
+          <p class="lp-final__legal">
+            Resposta do time em até 24h úteis · assessorias@redentia.com.br
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Modal de captura de lead DEDICADO a /assessorias.
+         Fullscreen, multi-step (1: identificacao, 2: 5 perguntas Sim/Não).
+         Backend recebe source='assessoria' + metadata.answers via mesmo
+         endpoint /api/leads. Modal antigo (centrado, 1-step) continua
+         servindo /whitelabel e /api intactos. -->
+    <MoleculesAssessoriaLeadFullscreen v-model:open="leadModalOpen" />
+  </div>
+</template>
+
+<style scoped>
+/* =================================================================
+ * Estilos base reusados de /raio-x. Em vez de duplicar, importei
+ * apenas o que e visualmente diferente da raio-x e estendi com
+ * classes ass-* especificas dessa landing.
+ *
+ * Onde reuso:
+ *   .lp-container, .lp-eyebrow, .lp-section-title*, .lp-section-head,
+ *   .lp-hero*, .lp-mockup*, .lp-problem, .lp-final*,
+ *   .lp-eyebrow--pulsing, .lp-eyebrow__dot, .reveal-on-scroll
+ *
+ * Por que duplicar aqui mesmo: o <style scoped> da /raio-x nao vaza,
+ * cada page tem o proprio. Fizemos um copy-paste consciente. Se
+ * extrairmos pra .css global no futuro, dois arquivos atualizam.
+ * Por enquanto o tradeoff e aceitavel pra manter cada landing
+ * autocontida (vital pra performance de bundle de marketing).
+ * ================================================================= */
+
+/* ============ TOP BANNER (anuncio acima do landing header) ============
+   Faixa amber sutil em fluxo normal (some no scroll). Mostra a escassez
+   "ASSESSORIAS · PRIMEIRA FASE · 10 vagas" desde o pixel zero. Click
+   abre o modal de lead direto. */
+.ass-topbanner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  width: 100%;
+  padding: 9px 24px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--brand-primary) 18%, transparent) 0%,
+    color-mix(in srgb, var(--brand-primary) 28%, transparent) 50%,
+    color-mix(in srgb, var(--brand-primary) 18%, transparent) 100%
+  );
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--brand-primary) 40%, transparent);
+  font-family: var(--brand-font);
+  color: #1A0A2E;
+  cursor: pointer;
+  text-align: center;
+  transition: filter 200ms;
+}
+.ass-topbanner:hover { filter: brightness(0.98); }
+
+.ass-topbanner__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--brand-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-primary) 38%, transparent);
+  animation: lp-eyebrow-pulse 2.4s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.ass-topbanner__text {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+.ass-topbanner__text strong {
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+.ass-topbanner__sep { opacity: 0.4; }
+
+.ass-topbanner__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: #1A0A2E;
+  color: var(--brand-primary);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0;
+  transition: filter 200ms, transform 200ms;
+}
+.ass-topbanner:hover .ass-topbanner__cta {
+  filter: brightness(1.15);
+  transform: translateX(2px);
+}
+
+@media (max-width: 640px) {
+  /* Em mobile, oculta o CTA pra simplificar (clique no banner inteiro
+     ja abre o modal). E quebra texto pra duas linhas se precisar. */
+  .ass-topbanner__cta { display: none; }
+  .ass-topbanner { padding: 8px 16px; }
+  .ass-topbanner__text { font-size: 11px; }
+  .ass-topbanner__text strong { font-size: 10px; }
+}
+
+.lp {
+  width: 100%;
+  position: relative;
+  /* IMPORTANTE: usar `clip` em vez de `hidden`. Quando overflow-x = hidden
+     e overflow-y nao e definido (visible), a spec do W3C forca overflow-y
+     a computar pra `auto`, criando um scroll container DENTRO do .lp e
+     resultando em DOIS scrolls verticais visiveis na page (window + .lp).
+     `clip` corta o overflow horizontal sem criar contexto de scroll,
+     entao overflow-y permanece visible e existe so o scroll do window. */
+  overflow-x: clip;
+}
+
+/* NOTA: removi `content-visibility: auto` que copiei do /raio-x. Naquela
+   landing faz sentido porque o trafego e majoritariamente paid via Meta
+   Ads (alto volume + bounce rapido), entao economizar render off-screen
+   importa. Aqui a /assessorias e B2B inbound (volume baixo, ticket
+   alto), e o intrinsic-size 800px reservado nao bate com a altura real
+   das sections (770-1072px), causando scroll-jank ao crescer/encolher
+   o layout on-the-fly. Sem content-visibility, scroll fica suave. */
+
+.lp-container {
+  /* Removi max-width fixo (era 1200px) pra dar mais espaco lateral pro
+     hero e pro mock da plataforma. Em monitores 4K isso pode espacar
+     demais o conteudo, entao ainda limito em 1600px como teto sutil. */
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+@media (min-width: 768px) {
+  .lp-container { padding: 0 40px; }
+}
+@media (min-width: 1280px) {
+  .lp-container { padding: 0 56px; }
+}
+
+/* ============ EYEBROW + TITLES (igual /raio-x) ============ */
+.lp-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--brand-primary);
+  margin: 0;
+}
+.lp-eyebrow--center { text-align: center; }
+
+.lp-eyebrow--pulsing {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+}
+.lp-eyebrow--center.lp-eyebrow--pulsing {
+  margin-left: auto;
+  margin-right: auto;
+}
+.lp-eyebrow__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--brand-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-primary) 25%, transparent);
+  animation: lp-eyebrow-pulse 2.4s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes lp-eyebrow-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.55; transform: scale(0.8); }
+}
+
+.lp-section-title {
+  font-size: 32px;
+  font-weight: 300;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  color: var(--brand-text);
+  margin: 12px 0 0;
+  text-wrap: balance;
+}
+@media (min-width: 768px) { .lp-section-title { font-size: 48px; } }
+
+.lp-section-title__italic {
+  font-family: 'Instrument Serif', serif;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--brand-primary);
+  display: block;
+}
+
+.lp-section-head {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto 48px;
+}
+@media (min-width: 768px) { .lp-section-head { margin-bottom: 64px; } }
+
+/* ============ HERO (igual /raio-x) ============ */
+.lp-hero {
+  position: relative;
+  padding: 56px 0 72px;
+  isolation: isolate;
+}
+@media (min-width: 768px) { .lp-hero { padding: 88px 0 112px; } }
+
+.lp-hero__glow {
+  position: absolute;
+  inset: -120px -10% auto -10%;
+  height: 720px;
+  filter: blur(60px);
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.85;
+  will-change: opacity;
+  transform: translateZ(0);
+}
+
+.lp-hero__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 48px;
+  align-items: center;
+}
+/* Desktop: copy menor, dashboard MUITO maior. Inverte a propor de
+   1.05/1 (raio-x) pra 0.85/1.4. Mostra a plataforma como protagonista
+   visual, copy como suporte. */
+@media (min-width: 1024px) {
+  .lp-hero__grid {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.4fr);
+    gap: 56px;
+  }
+}
+@media (min-width: 1280px) {
+  .lp-hero__grid {
+    gap: 72px;
+  }
+}
+
+.lp-hero__copy { display: flex; flex-direction: column; gap: 18px; }
+
+.lp-hero__headline {
+  font-size: 38px;
+  font-weight: 300;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--brand-text);
+  margin: 6px 0 0;
+  text-wrap: balance;
+}
+@media (min-width: 768px) { .lp-hero__headline { font-size: 60px; } }
+
+.lp-hero__italic {
+  font-family: 'Instrument Serif', serif;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--brand-primary);
+  display: block;
+  margin-top: 4px;
+}
+
+/* Sublinhado curvo amber embaixo de "Mas o cliente percebe?". SVG inline
+   no background, escala com o texto. Pseudo-element pra nao precisar
+   de markup extra. */
+.ass-hero__italic-underline {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 14px;
+}
+.ass-hero__italic-underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 4px;
+  height: 10px;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 10' preserveAspectRatio='none'><path d='M2 7 Q 50 1 100 5 T 198 6' stroke='%23D8881A' stroke-width='2.5' fill='none' stroke-linecap='round'/></svg>") no-repeat center / 100% 100%;
+  pointer-events: none;
+}
+
+.lp-hero__subhead {
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--brand-text);
+  margin: 0;
+  font-weight: 400;
+}
+.lp-hero__subhead strong {
+  color: var(--brand-primary);
+  font-weight: 600;
+}
+@media (min-width: 768px) { .lp-hero__subhead { font-size: 21px; } }
+
+.lp-hero__lead {
+  font-size: 15px;
+  line-height: 1.6;
+  color: color-mix(in srgb, var(--brand-text) 75%, transparent);
+  margin: 0;
+  max-width: 540px;
+}
+@media (min-width: 768px) { .lp-hero__lead { font-size: 16px; } }
+
+/* Big CTA (igual raio-x) */
+.lp-hero__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 16px 28px;
+  border-radius: 14px;
+  border: 0;
+  background: var(--brand-primary);
+  color: #fff;
+  font-family: var(--brand-font);
+  font-size: 15.5px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  transition: transform 200ms, filter 200ms, box-shadow 200ms;
+  box-shadow: 0 14px 32px -12px color-mix(in srgb, var(--brand-primary) 65%, transparent);
+  white-space: nowrap;
+  width: fit-content;
+}
+.lp-hero__cta:hover {
+  filter: brightness(0.94);
+  transform: translateY(-1px);
+  box-shadow: 0 18px 40px -12px color-mix(in srgb, var(--brand-primary) 75%, transparent);
+}
+
+.lp-hero__trust {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 13px;
+  color: color-mix(in srgb, var(--brand-text) 65%, transparent);
+}
+.lp-hero__trust li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.lp-hero__trust svg { color: var(--brand-positive, #10b981); }
+
+/* ============ HERO DASHBOARD MOCK (.ass-dash + .ass-float) ============
+   Substitui o mockup pequeno do raio-x. Aqui o objetivo e mostrar a
+   PLATAFORMA como protagonista visual: header dark, grid 3x2 de cards,
+   floats sobrepostos. Tudo CSS puro, sem images externas.
+
+   Acessibilidade: todos os elementos do dashboard sao decorativos
+   (aria-hidden ou role implicit), nao competem com o copy do hero
+   pro screen reader. CTA e os trust badges seguem sendo os pontos
+   acionaveis. */
+.ass-hero__visual {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* Perspective declarado no parent (nao no item rotacionado) pra que
+     o efeito 3D respeite a posicao do observador (centro da viewport).
+     Valor alto (1800px) suaviza a deformacao, mais "premium" que valores
+     baixos (~600px) que distorcem demais. */
+  perspective: 1800px;
+  perspective-origin: 50% 40%;
+}
+
+/* Wrapper que recebe o tilt 3D. Engloba dashboard + floats. Hover
+   atenua o angulo, ideia de "ele endireita pra te mostrar melhor".
+   Em mobile (<1024px) o tilt e desativado pra nao apertar o conteudo. */
+.ass-hero__tilt {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform-style: preserve-3d;
+  transform: rotateY(0deg) rotateX(0deg);
+  transition: transform 700ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: transform;
+}
+@media (min-width: 1024px) {
+  .ass-hero__tilt {
+    /* Tilt: leve rotacao no eixo Y (perspectiva editorial premium) +
+       um toquinho no X (sensacao de "olhando de cima"). */
+    transform: rotateY(-9deg) rotateX(3deg);
+  }
+  .ass-hero__tilt:hover {
+    /* Hover suaviza pra quase frontal pra deixar o conteudo legivel
+       quando o usuario engaja. */
+    transform: rotateY(-3deg) rotateX(1deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ass-hero__tilt {
+    transform: none !important;
+    transition: none;
+  }
+}
+
+.ass-dash {
+  position: relative;
+  width: 100%;
+  /* Sem max-width — o mock ocupa todo o espaco da coluna do hero
+     (que ja e ~1.4fr no grid desktop). */
+  border-radius: 16px;
+  background: #FFFFFF;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 55%, transparent);
+  box-shadow:
+    0 40px 90px -28px color-mix(in srgb, var(--brand-primary) 32%, transparent),
+    0 18px 44px -16px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #0F1116;
+}
+
+/* ====== Browser chrome (mac-style top bar) ====== */
+.ass-dash__chrome {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+  background: #F4F4F5;
+  border-bottom: 1px solid color-mix(in srgb, var(--brand-border) 55%, transparent);
+}
+.ass-dash__chrome-dots {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.ass-dash__chrome-dots span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.ass-dash__chrome-dots span:nth-child(1) { background: #ff5f57; }
+.ass-dash__chrome-dots span:nth-child(2) { background: #febc2e; }
+.ass-dash__chrome-dots span:nth-child(3) { background: #28c840; }
+.ass-dash__addrbar {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  max-width: 280px;
+  margin: 0 auto;
+  padding: 4px 12px;
+  border-radius: 6px;
+  background: #FFFFFF;
+  font-size: 11px;
+  color: #71717A;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 45%, transparent);
+}
+
+/* ====== App da assessoria ====== */
+.ass-dash__app {
+  background: #FAFAFB;
+}
+
+/* Header preto da plataforma da assessoria */
+.ass-dash__nav {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 12px 18px;
+  background: #0F1116;
+  color: #FAFAFB;
+}
+.ass-dash__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.ass-dash__brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: #FFFFFF;
+  color: #0F1116;
+  font-family: 'Instrument Serif', serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.ass-dash__brand-meta {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+.ass-dash__brand-name {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #FFFFFF;
+}
+.ass-dash__brand-sub {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.55);
+  letter-spacing: 0.02em;
+}
+
+.ass-dash__menu {
+  display: none;
+  flex: 1;
+  align-items: center;
+  gap: 18px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.65);
+}
+@media (min-width: 768px) {
+  .ass-dash__menu { display: inline-flex; }
+}
+.ass-dash__menu span {
+  position: relative;
+  padding-bottom: 2px;
+  cursor: default;
+}
+.ass-dash__menu span.is-active {
+  color: var(--brand-primary);
+}
+.ass-dash__menu span.is-active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -10px;
+  height: 2px;
+  background: var(--brand-primary);
+}
+
+.ass-dash__user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+.ass-dash__bell {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.7);
+}
+.ass-dash__bell-dot {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--brand-primary);
+  box-shadow: 0 0 0 2px #0F1116;
+}
+.ass-dash__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #71717A, #3F3F46);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #FFFFFF;
+}
+
+/* ====== Grid de cards 3x2 ====== */
+.ass-dash__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  padding: 12px;
+}
+@media (min-width: 540px) {
+  .ass-dash__grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 768px) {
+  .ass-dash__grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 14px;
+  }
+}
+
+.ass-dash__card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 12px 12px;
+  border-radius: 10px;
+  background: #FFFFFF;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 50%, transparent);
+}
+
+.ass-dash__card-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #0F1116;
+  letter-spacing: -0.005em;
+}
+.ass-dash__card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  flex-shrink: 0;
+}
+.ass-dash__card-title { flex: 1; }
+.ass-dash__card-link {
+  font-size: 9.5px;
+  color: var(--brand-primary);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  cursor: default;
+}
+.ass-dash__card-link--inline { margin-left: auto; }
+
+/* =================================================================
+ * MOCK CARROSSEL: 3 pages alternam dentro do dashboard.
+ * - .ass-dash__pages: container que estabiliza altura entre transicoes
+ * - .ass-mockfade-*: classes da Vue <Transition>
+ * - .ass-dash__pager: dots embaixo do mock
+ * ================================================================= */
+.ass-dash__pages {
+  position: relative;
+  /* Estabiliza altura, a maior page (Painel com 6 cards 3x2) define
+     o piso; outras pages crescem pra dentro desse box. Evita layout
+     shift do hero quando troca page. */
+  min-height: 500px;
+}
+@media (min-width: 768px) {
+  .ass-dash__pages { min-height: 540px; }
+}
+
+.ass-mockfade-enter-active,
+.ass-mockfade-leave-active {
+  transition: opacity 360ms cubic-bezier(0.4, 0, 0.2, 1),
+              transform 360ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.ass-mockfade-enter-from {
+  opacity: 0;
+  transform: translateY(8px) scale(0.995);
+}
+.ass-mockfade-leave-to {
+  opacity: 0;
+  transform: translateY(-8px) scale(0.995);
+}
+
+/* ============ LOADING SCREEN entre transicoes ============
+   "SUA MARCA" + spinner amber + frase contextual da page de destino.
+   Aparece por ~950ms, depois a page nova faz fade-in por baixo.
+   Reforca a ideia central da landing: a plataforma e branded como
+   sua marca, em todos os contextos. */
+.ass-dash__loading {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    180deg,
+    #FFFFFF 0%,
+    color-mix(in srgb, var(--brand-primary) 6%, #FFFFFF) 100%
+  );
+  /* Glow amber sutil de fundo */
+  background-image:
+    radial-gradient(ellipse 70% 50% at 50% 50%,
+      color-mix(in srgb, var(--brand-primary) 14%, transparent),
+      transparent 60%),
+    linear-gradient(180deg, #FFFFFF, color-mix(in srgb, var(--brand-primary) 5%, #FFFFFF));
+}
+
+.ass-loading-fade-enter-active {
+  transition: opacity 240ms ease-out;
+}
+.ass-loading-fade-leave-active {
+  transition: opacity 320ms ease-in;
+}
+.ass-loading-fade-enter-from,
+.ass-loading-fade-leave-to {
+  opacity: 0;
+}
+
+.ass-dash__loading-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 32px;
+}
+
+.ass-dash__loading-mark {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+}
+.ass-dash__loading-mark-text {
+  position: relative;
+  z-index: 2;
+  font-family: 'Instrument Serif', serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: #0F1116;
+  letter-spacing: -0.02em;
+}
+.ass-dash__loading-spinner {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2.5px solid color-mix(in srgb, var(--brand-primary) 18%, transparent);
+  border-top-color: var(--brand-primary);
+  animation: ass-loading-spin 720ms linear infinite;
+}
+@keyframes ass-loading-spin {
+  to { transform: rotate(360deg); }
+}
+
+.ass-dash__loading-brand {
+  margin: 0;
+  font-family: 'Instrument Serif', serif;
+  font-size: 32px;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--brand-primary);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+@media (min-width: 768px) {
+  .ass-dash__loading-brand { font-size: 38px; }
+}
+
+.ass-dash__loading-phrase {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #3F3F46;
+  text-align: center;
+  letter-spacing: -0.005em;
+  /* Fade-in da frase, separado da fade do overlay, pra dar
+     "vida" mesmo se a frase mudar entre dois loadings. */
+  animation: ass-loading-phrase-in 460ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes ass-loading-phrase-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ass-mockfade-enter-active,
+  .ass-mockfade-leave-active,
+  .ass-loading-fade-enter-active,
+  .ass-loading-fade-leave-active { transition: none; }
+  .ass-dash__loading-spinner,
+  .ass-dash__loading-phrase { animation: none; }
+}
+
+/* Page Painel: padding lateral pra o breadcrumb e header da page nao
+   ficarem colados na borda do mock. O `.ass-dash__grid` ja tem padding
+   proprio, entao zero o lateral dele aqui pra nao dobrar (continuaria
+   funcionando independente nas outras pages). */
+.ass-painel {
+  padding: 14px 16px 0;
+}
+.ass-painel .ass-dash__grid {
+  padding-left: 0;
+  padding-right: 0;
+  padding-top: 14px;
+}
+@media (min-width: 768px) {
+  .ass-painel { padding: 16px 20px 0; }
+  .ass-painel .ass-dash__grid { padding-top: 16px; }
+}
+
+/* Pager dots embaixo do dashboard */
+.ass-dash__pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 16px 14px;
+  background: #FAFAFB;
+  border-top: 1px solid color-mix(in srgb, var(--brand-border) 50%, transparent);
+}
+.ass-dash__pager-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  background: transparent;
+  font-family: var(--brand-font);
+  font-size: 10.5px;
+  font-weight: 500;
+  color: #71717A;
+  cursor: pointer;
+  transition: all 200ms;
+}
+.ass-dash__pager-dot::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #D4D4D8;
+  transition: background 200ms;
+}
+.ass-dash__pager-dot:hover {
+  color: #0F1116;
+}
+.ass-dash__pager-dot:hover::before {
+  background: #71717A;
+}
+.ass-dash__pager-dot.is-active {
+  background: color-mix(in srgb, var(--brand-primary) 12%, transparent);
+  border-color: color-mix(in srgb, var(--brand-primary) 28%, transparent);
+  color: var(--brand-primary);
+}
+.ass-dash__pager-dot.is-active::before {
+  background: var(--brand-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-primary) 22%, transparent);
+}
+
+/* =================================================================
+ * MOCK INTERNO: page de chat IA (estilo /help, perplexity-like).
+ * Header da conversa + thread (msg user + msg AI com sources) +
+ * sugestoes de follow-up + input bar.
+ * ================================================================= */
+.ass-chat {
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+@media (min-width: 768px) {
+  .ass-chat { padding: 16px 20px 20px; }
+}
+
+.ass-chat__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid color-mix(in srgb, var(--brand-border) 50%, transparent);
+}
+.ass-chat__title {
+  margin: 0;
+  font-family: 'Instrument Serif', serif;
+  font-size: 18px;
+  font-weight: 400;
+  color: #0F1116;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+.ass-chat__sub {
+  margin: 2px 0 0;
+  font-size: 10px;
+  color: #71717A;
+}
+.ass-chat__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--brand-primary) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 28%, transparent);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--brand-primary);
+  white-space: nowrap;
+}
+.ass-chat__badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--brand-primary);
+  animation: lp-eyebrow-pulse 2.4s ease-in-out infinite;
+}
+
+.ass-chat__thread {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px 0 6px;
+}
+
+.ass-chat__msg {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.ass-chat__msg--user { flex-direction: row-reverse; }
+.ass-chat__msg-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  font-family: 'Instrument Serif', serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #FFFFFF;
+  flex-shrink: 0;
+}
+.ass-chat__msg-avatar--user {
+  background: linear-gradient(135deg, #71717A, #3F3F46);
+}
+.ass-chat__msg-avatar--ai {
+  background: linear-gradient(135deg, var(--brand-primary), color-mix(in srgb, var(--brand-primary) 70%, #B85F0A));
+}
+
+.ass-chat__msg-bubble {
+  padding: 10px 13px;
+  border-radius: 12px 12px 12px 4px;
+  background: color-mix(in srgb, var(--brand-text) 4%, transparent);
+  font-size: 11px;
+  line-height: 1.5;
+  color: #0F1116;
+  max-width: 78%;
+}
+.ass-chat__msg--user .ass-chat__msg-bubble {
+  border-radius: 12px 12px 4px 12px;
+  background: color-mix(in srgb, var(--brand-primary) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 24%, transparent);
+}
+.ass-chat__msg-bubble--ai {
+  background: #FFFFFF;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 55%, transparent);
+  max-width: 92%;
+  padding: 12px 14px;
+}
+.ass-chat__msg-bubble p {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.55;
+  color: #0F1116;
+}
+.ass-chat__msg-bubble p strong {
+  color: #0F1116;
+  font-weight: 600;
+}
+.ass-chat__msg-bubble p + p { margin-top: 6px; }
+
+.ass-chat__bullets {
+  list-style: none;
+  margin: 8px 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.ass-chat__bullets li {
+  position: relative;
+  padding-left: 12px;
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: #3F3F46;
+}
+.ass-chat__bullets li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 7px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--brand-primary);
+}
+.ass-chat__bullets li strong { color: #0F1116; font-weight: 600; }
+
+.ass-chat__sumline {
+  margin-top: 10px !important;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--brand-primary) 8%, transparent);
+  border-left: 3px solid var(--brand-primary);
+  font-size: 10.5px !important;
+  font-style: italic;
+}
+
+.ass-chat__sources {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px dashed color-mix(in srgb, var(--brand-border) 55%, transparent);
+}
+.ass-chat__sources-label {
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #71717A;
+  margin-right: 2px;
+}
+.ass-chat__source {
+  display: inline-flex;
+  padding: 2px 7px;
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--brand-text) 5%, transparent);
+  font-size: 9.5px;
+  color: #3F3F46;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 50%, transparent);
+}
+
+.ass-chat__sugs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 0 0 38px; /* alinha com a bubble da AI */
+}
+.ass-chat__sugs-label {
+  font-size: 9.5px;
+  color: #71717A;
+  font-weight: 500;
+  margin-right: 2px;
+}
+.ass-chat__sug {
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: #FFFFFF;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 55%, transparent);
+  font-family: var(--brand-font);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--brand-primary);
+  cursor: default;
+  transition: all 180ms;
+}
+.ass-chat__sug:hover {
+  background: color-mix(in srgb, var(--brand-primary) 8%, transparent);
+  border-color: color-mix(in srgb, var(--brand-primary) 32%, transparent);
+}
+
+.ass-chat__input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  padding: 9px 11px 9px 13px;
+  border-radius: 12px;
+  background: #FFFFFF;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 60%, transparent);
+  box-shadow: 0 4px 14px -6px rgba(0, 0, 0, 0.08);
+}
+.ass-chat__input-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.ass-chat__input-placeholder {
+  flex: 1;
+  font-size: 11px;
+  color: #A1A1AA;
+}
+.ass-chat__input-send {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+/* =================================================================
+ * MOCK INTERNO: page de asset (/asset/petr4 estilo).
+ * Reproduz a estrutura real do app: hero ticker + chart + cards.
+ * Tudo em escala reduzida (font 9-12px) pra caber no preview.
+ * ================================================================= */
+.ass-asset {
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+@media (min-width: 768px) {
+  .ass-asset { padding: 16px 20px 20px; }
+}
+
+.ass-asset__crumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: #71717A;
+  font-weight: 500;
+}
+.ass-asset__crumb .is-current {
+  color: var(--brand-primary);
+  font-weight: 600;
+}
+.ass-asset__crumb-sep {
+  color: #D4D4D8;
+}
+
+/* Hero do asset: logo + identificacao | preco grande */
+.ass-asset__hero {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid color-mix(in srgb, var(--brand-border) 50%, transparent);
+}
+
+.ass-asset__id {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.ass-asset__logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #007D3F, #00B85C);
+  color: #FFFFFF;
+  font-family: 'Instrument Serif', serif;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  flex-shrink: 0;
+  box-shadow: 0 6px 16px -6px rgba(0, 125, 63, 0.4);
+}
+.ass-asset__ident {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.ass-asset__ticker {
+  font-family: 'Instrument Serif', serif;
+  font-size: 26px;
+  font-weight: 400;
+  color: #0F1116;
+  margin: 0;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+.ass-asset__name {
+  font-size: 11px;
+  font-weight: 600;
+  color: #3F3F46;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 320px;
+}
+.ass-asset__sector {
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #A1A1AA;
+  margin: 1px 0 0;
+}
+
+.ass-asset__price {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+.ass-asset__price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+.ass-asset__price-currency {
+  font-size: 12px;
+  color: #71717A;
+  font-variant-numeric: tabular-nums;
+}
+.ass-asset__price-value {
+  font-size: 32px;
+  font-weight: 300;
+  color: #0F1116;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.ass-asset__price-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ass-asset__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.ass-asset__chip--neg {
+  background: color-mix(in srgb, var(--brand-negative, #dc2626) 14%, transparent);
+  color: var(--brand-negative, #dc2626);
+}
+.ass-asset__chip--pos {
+  background: color-mix(in srgb, var(--brand-positive, #10b981) 14%, transparent);
+  color: var(--brand-positive, #10b981);
+}
+.ass-asset__price-when {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #A1A1AA;
+}
+
+/* Stats row 6 colunas */
+.ass-asset__stats {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  padding: 10px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--brand-border) 50%, transparent);
+}
+.ass-asset__stats > div {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.ass-asset__stats span {
+  font-size: 8.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #A1A1AA;
+}
+.ass-asset__stats strong {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #0F1116;
+  font-variant-numeric: tabular-nums;
+}
+.ass-asset__stats strong.is-pos { color: var(--brand-positive, #10b981); }
+.ass-asset__stats strong.is-neg { color: var(--brand-negative, #dc2626); }
+
+/* Chart */
+.ass-asset__chart {
+  padding-bottom: 12px;
+  border-bottom: 1px solid color-mix(in srgb, var(--brand-border) 50%, transparent);
+}
+.ass-asset__chart-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.ass-asset__chart-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #71717A;
+}
+.ass-asset__chart-range {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 6px;
+  background: #F4F4F5;
+}
+.ass-asset__chart-range span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 600;
+  color: #71717A;
+  cursor: default;
+}
+.ass-asset__chart-range span.is-active {
+  background: #FFFFFF;
+  color: var(--brand-primary);
+  box-shadow: 0 1px 3px -1px rgba(0, 0, 0, 0.1);
+}
+.ass-asset__chart-svg {
+  width: 100%;
+  height: 140px;
+  display: block;
+}
+@media (min-width: 768px) {
+  .ass-asset__chart-svg { height: 170px; }
+}
+
+/* Linha de cards */
+.ass-asset__row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+@media (min-width: 540px) {
+  .ass-asset__row { grid-template-columns: 1.4fr 1fr 1.2fr; }
+}
+
+.ass-asset__card {
+  padding: 12px;
+  border-radius: 10px;
+  background: #FAFAFB;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 45%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ass-asset__card--ai {
+  background: color-mix(in srgb, var(--brand-primary) 5%, transparent);
+  border-color: color-mix(in srgb, var(--brand-primary) 24%, transparent);
+}
+.ass-asset__card-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #0F1116;
+}
+.ass-asset__card-title { letter-spacing: -0.005em; }
+
+.ass-asset__ai-text {
+  margin: 0;
+  font-size: 10.5px;
+  line-height: 1.55;
+  color: #3F3F46;
+}
+.ass-asset__ai-text strong { color: #0F1116; font-weight: 600; }
+.ass-asset__ai-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 2px;
+}
+.ass-asset__ai-tags span {
+  display: inline-flex;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.7);
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--brand-primary);
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 28%, transparent);
+}
+
+.ass-asset__divs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ass-asset__divs li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px;
+  border-radius: 5px;
+  background: #FFFFFF;
+  font-size: 10px;
+  color: #71717A;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 45%, transparent);
+  font-variant-numeric: tabular-nums;
+}
+.ass-asset__divs li strong {
+  font-weight: 600;
+  font-size: 10.5px;
+  color: #0F1116;
+}
+.ass-asset__divs li strong.is-pos { color: var(--brand-positive, #10b981); }
+.ass-asset__divs-foot {
+  margin: 4px 0 0;
+  padding-top: 6px;
+  border-top: 1px dashed color-mix(in srgb, var(--brand-border) 55%, transparent);
+  font-size: 9.5px;
+  color: #71717A;
+}
+.ass-asset__divs-foot strong { color: #0F1116; font-weight: 600; }
+
+.ass-asset__news {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.ass-asset__news li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 10px;
+  line-height: 1.4;
+  color: #3F3F46;
+}
+.ass-asset__news-time {
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--brand-primary);
+}
+
+/* ============ ESTILOS LEGACY DO MOCK ANTERIOR (donut/movers/AI chat/etc)
+   Mantidos pra evitar quebra se o mock anterior voltar via toggle
+   futuro. Se for confirmar permanencia da page de asset, da pra
+   apagar tudo daqui pra baixo desse bloco em uma proxima limpeza. */
+.ass-dash__donut-wrap {
+  display: grid;
+  grid-template-columns: 76px 1fr;
+  gap: 12px;
+  align-items: center;
+  padding-top: 4px;
+}
+.ass-dash__donut {
+  position: relative;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: conic-gradient(
+    #D8881A 0% 42%,
+    #3B82F6 42% 60%,
+    #10B981 60% 88%,
+    #9CA3AF 88% 96%,
+    #D1D5DB 96% 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ass-dash__donut::before {
+  content: '';
+  position: absolute;
+  inset: 14px;
+  background: #FFFFFF;
+  border-radius: 50%;
+}
+.ass-dash__donut-center {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  line-height: 1.1;
+  padding: 0 4px;
+}
+.ass-dash__donut-label {
+  font-size: 6px;
+  color: #71717A;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.ass-dash__donut-value {
+  font-size: 8.5px;
+  font-weight: 700;
+  color: #0F1116;
+  font-variant-numeric: tabular-nums;
+  margin-top: 1px;
+}
+.ass-dash__donut-delta {
+  font-size: 6.5px;
+  font-weight: 600;
+  color: var(--brand-negative, #dc2626);
+  font-variant-numeric: tabular-nums;
+  margin-top: 1px;
+}
+
+.ass-dash__legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 9.5px;
+  color: #3F3F46;
+}
+.ass-dash__legend li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.ass-dash__legend em {
+  margin-left: auto;
+  font-style: normal;
+  font-weight: 600;
+  color: #0F1116;
+  font-variant-numeric: tabular-nums;
+}
+.ass-dash__legend-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* ====== Card 2: Movers ====== */
+.ass-dash__movers {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.ass-dash__movers li {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 10.5px;
+  color: #3F3F46;
+}
+.ass-dash__mover-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.ass-dash__mover-label { flex: 1; }
+.ass-dash__mover-label strong { color: #0F1116; font-weight: 600; }
+.ass-dash__mover-pct {
+  font-size: 10px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+.ass-dash__mover-pct--neg { color: var(--brand-negative, #dc2626); }
+.ass-dash__mover-pct--pos { color: var(--brand-positive, #10b981); }
+.ass-dash__movers-foot {
+  margin: 6px 0 0;
+  padding-top: 7px;
+  border-top: 1px dashed color-mix(in srgb, var(--brand-border) 55%, transparent);
+  font-size: 9.5px;
+  color: #71717A;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ====== Card 3: AI Chat ====== */
+.ass-dash__ai-greet {
+  margin: 0;
+  font-size: 10.5px;
+  color: #0F1116;
+  font-weight: 500;
+}
+.ass-dash__ai-greet em {
+  font-style: normal;
+  color: #71717A;
+  font-weight: 400;
+}
+.ass-dash__ai-bubble {
+  position: relative;
+  padding: 9px 11px;
+  border-radius: 10px 10px 10px 2px;
+  background: color-mix(in srgb, var(--brand-primary) 9%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 24%, transparent);
+  font-size: 10px;
+  line-height: 1.45;
+  color: #0F1116;
+}
+.ass-dash__ai-cursor {
+  position: absolute;
+  right: 8px;
+  bottom: 6px;
+  font-size: 9px;
+  color: var(--brand-primary);
+}
+.ass-dash__ai-suglabel {
+  margin: 4px 0 0;
+  font-size: 9px;
+  color: #71717A;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.ass-dash__ai-sugs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.ass-dash__ai-sugs span {
+  display: inline-flex;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: #F4F4F5;
+  font-size: 9.5px;
+  color: #3F3F46;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 50%, transparent);
+}
+
+/* ====== Card 4: Report ====== */
+.ass-dash__report-meta {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 500;
+  color: #0F1116;
+}
+.ass-dash__report-body {
+  margin: 0;
+  font-size: 9.5px;
+  color: #71717A;
+  line-height: 1.45;
+}
+.ass-dash__report-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+.ass-dash__btn {
+  padding: 6px 11px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--brand-primary) 14%, transparent);
+  color: var(--brand-primary);
+  font-size: 9.5px;
+  font-weight: 600;
+  border: 0;
+  cursor: default;
+}
+.ass-dash__report-thumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  padding: 6px 8px;
+  border-radius: 5px;
+  background: #F4F4F5;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 50%, transparent);
+}
+.ass-dash__report-thumb-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  background: #0F1116;
+  color: #FFFFFF;
+  font-family: 'Instrument Serif', serif;
+  font-size: 8px;
+  font-weight: 600;
+}
+.ass-dash__report-thumb-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ass-dash__report-thumb-lines span {
+  display: block;
+  width: 32px;
+  height: 2px;
+  border-radius: 1px;
+  background: #D4D4D8;
+}
+.ass-dash__report-thumb-lines span:nth-child(2) { width: 26px; }
+.ass-dash__report-thumb-lines span:nth-child(3) { width: 30px; }
+.ass-dash__report-thumb-lines span:nth-child(4) { width: 22px; }
+
+/* ====== Card 5: Insights ====== */
+.ass-dash__insights {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ass-dash__insights li {
+  position: relative;
+  padding-left: 11px;
+  font-size: 10px;
+  line-height: 1.4;
+  color: #3F3F46;
+}
+.ass-dash__insights li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 5px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--brand-primary);
+}
+.ass-dash__insights li strong { color: #0F1116; font-weight: 600; }
+
+/* ====== Card 6: Alerts ====== */
+.ass-dash__alert {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 10px;
+  border-radius: 7px;
+  font-size: 10px;
+  color: #3F3F46;
+}
+.ass-dash__alert--warn {
+  background: color-mix(in srgb, var(--brand-negative, #dc2626) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-negative, #dc2626) 22%, transparent);
+}
+.ass-dash__alert--ok {
+  background: color-mix(in srgb, var(--brand-positive, #10b981) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-positive, #10b981) 22%, transparent);
+}
+.ass-dash__alert-tag {
+  display: inline-flex;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.ass-dash__alert--warn .ass-dash__alert-tag {
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--brand-negative, #dc2626);
+}
+.ass-dash__alert--ok .ass-dash__alert-tag {
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--brand-positive, #10b981);
+}
+
+/* ============ FLOATS sobrepostos ao dashboard ============ */
+.ass-float {
+  position: absolute;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: #FFFFFF;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 55%, transparent);
+  box-shadow:
+    0 16px 40px -14px rgba(0, 0, 0, 0.16),
+    0 6px 18px -8px rgba(0, 0, 0, 0.10);
+  font-size: 11px;
+  line-height: 1.3;
+  color: #0F1116;
+  white-space: nowrap;
+  animation: ass-float-in 700ms cubic-bezier(0.22, 0.61, 0.36, 1) backwards;
+  /* Transition do transform pra animar entre os translateZ default <->
+     hover suavemente. Mesma duracao do .ass-hero__tilt pra sincronizar. */
+  transition: transform 700ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+@keyframes ass-float-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0)   scale(1); }
+}
+
+/* Float "Performance no dia" — top right do mock.
+   translateZ positivo o tira do plano do dashboard pra frente, dando
+   profundidade real ao efeito 3D. So aplica em desktop pq mobile nao
+   tem tilt. */
+.ass-float--perf {
+  top: -22px;
+  right: -10px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  padding: 12px 16px;
+  animation-delay: 600ms;
+}
+@media (min-width: 1024px) {
+  .ass-float--perf { transform: translateZ(60px); }
+  .ass-hero__tilt:hover .ass-float--perf { transform: translateZ(40px); }
+}
+.ass-float__head {
+  font-size: 9.5px;
+  font-weight: 600;
+  color: #71717A;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.ass-float__row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.ass-float__col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.ass-float__num {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.ass-float__sub {
+  font-size: 9.5px;
+  color: #71717A;
+  font-variant-numeric: tabular-nums;
+  margin-top: 2px;
+}
+.ass-float__spark {
+  width: 70px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+/* Float "Clientes ativos" — bottom left do mock */
+.ass-float--clients {
+  bottom: -18px;
+  left: -10px;
+  animation-delay: 850ms;
+}
+@media (min-width: 1024px) {
+  .ass-float--clients { transform: translateZ(50px); }
+  .ass-hero__tilt:hover .ass-float--clients { transform: translateZ(30px); }
+}
+.ass-float__icon-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+.ass-float__big {
+  display: block;
+  font-size: 18px;
+  font-weight: 700;
+  color: #0F1116;
+  letter-spacing: -0.015em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.05;
+}
+.ass-float__big em {
+  font-style: normal;
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--brand-positive, #10b981);
+  margin-left: 4px;
+}
+
+/* Float "Plataforma com sua marca" — bottom right do mock */
+.ass-float--brand {
+  bottom: -28px;
+  right: -10px;
+  max-width: 270px;
+  white-space: normal;
+  align-items: flex-start;
+  animation-delay: 1100ms;
+}
+@media (min-width: 1024px) {
+  .ass-float--brand { transform: translateZ(70px); }
+  .ass-hero__tilt:hover .ass-float--brand { transform: translateZ(50px); }
+}
+.ass-float__title {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #0F1116;
+  letter-spacing: -0.005em;
+  margin-bottom: 2px;
+}
+.ass-float--brand .ass-float__sub {
+  white-space: normal;
+  font-size: 9.5px;
+  line-height: 1.4;
+}
+
+@media (max-width: 1023px) {
+  /* Em mobile, recolhe os floats pra dentro do card e diminui um pouco
+     pra nao cortar nas bordas. */
+  .ass-float--perf  { top: 6px;     right: 6px; }
+  .ass-float--clients { bottom: 6px; left: 6px; }
+  .ass-float--brand { display: none; }
+}
+
+/* =================================================================
+ * 1.5. PREVIEWS REAIS, iframes de tenants em producao
+ * Posicionada logo abaixo do hero. 3 cards com:
+ *   - badge (Preview/Demo)
+ *   - header com logo + nome + tagline + icone external
+ *   - iframe scaled da home do tenant
+ *   - features (3 checks)
+ *   - CTA outline amber
+ * Embaixo: faixa horizontal de 4 trust + CTA primary lead.
+ * ================================================================= */
+.ass-previews {
+  position: relative;
+  padding: 80px 0 96px;
+  background: color-mix(in srgb, var(--brand-surface) 30%, var(--brand-background));
+  border-top: 1px solid color-mix(in srgb, var(--brand-border) 25%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--brand-border) 25%, transparent);
+}
+@media (min-width: 768px) {
+  .ass-previews { padding: 96px 0 112px; }
+}
+
+/* Header centralizado: eyebrow + headline + lead + hint, todos centrados */
+.ass-previews__head {
+  text-align: center;
+  margin: 0 auto 36px;
+  max-width: 720px;
+}
+.ass-previews__head .lp-section-title { text-align: center; }
+
+.ass-previews__lead {
+  margin: 18px auto 0;
+  max-width: 580px;
+  font-size: 16px;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--brand-text) 75%, transparent);
+}
+
+.ass-previews__hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 18px auto 0;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--brand-primary);
+}
+.ass-previews__hint svg { flex-shrink: 0; }
+
+.ass-previews__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  margin-top: 36px;
+}
+@media (min-width: 768px) {
+  .ass-previews__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 22px;
+  }
+}
+@media (min-width: 1100px) {
+  .ass-previews__grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+  }
+}
+
+.ass-preview__card {
+  display: flex;
+  flex-direction: column;
+  background: #FFFFFF;
+  border-radius: 18px;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 55%, transparent);
+  box-shadow: 0 14px 36px -16px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: transform 280ms cubic-bezier(0.22, 0.61, 0.36, 1),
+              box-shadow 280ms cubic-bezier(0.22, 0.61, 0.36, 1),
+              border-color 280ms;
+}
+.ass-preview__card:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--brand-primary) 35%, transparent);
+  box-shadow: 0 24px 52px -16px color-mix(in srgb, var(--brand-primary) 22%, transparent),
+              0 8px 22px -10px rgba(0, 0, 0, 0.10);
+}
+
+.ass-preview__head {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 18px 20px 16px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.ass-preview__badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.ass-preview__badge--preview {
+  background: color-mix(in srgb, var(--brand-primary) 14%, transparent);
+  color: var(--brand-primary);
+  border: 1px solid color-mix(in srgb, var(--brand-primary) 28%, transparent);
+}
+.ass-preview__badge--demo {
+  background: color-mix(in srgb, var(--brand-positive, #10b981) 14%, transparent);
+  color: var(--brand-positive, #10b981);
+  border: 1px solid color-mix(in srgb, var(--brand-positive, #10b981) 28%, transparent);
+}
+
+.ass-preview__brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 28px;
+}
+.ass-preview__logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  flex-shrink: 0;
+}
+.ass-preview__id {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+.ass-preview__name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0F1116;
+  letter-spacing: -0.01em;
+}
+.ass-preview__tag {
+  font-size: 12px;
+  color: color-mix(in srgb, var(--brand-text) 60%, transparent);
+}
+.ass-preview__ext {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--brand-primary) 10%, transparent);
+  color: var(--brand-primary);
+  flex-shrink: 0;
+  transition: all 200ms;
+}
+.ass-preview__card:hover .ass-preview__ext {
+  background: var(--brand-primary);
+  color: #FFFFFF;
+  transform: rotate(-8deg);
+}
+
+/* Iframe scaled. O iframe renderiza em 1280x800 e e escalado pra
+   caber no card (que muda com breakpoint). Pointer-events none pra
+   nao permitir interacao acidental, o CTA e o que abre. */
+.ass-preview__frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: linear-gradient(180deg, #F4F4F5 0%, #FAFAFB 100%);
+  border-top: 1px solid color-mix(in srgb, var(--brand-border) 50%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--brand-border) 50%, transparent);
+}
+.ass-preview__iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1280px;
+  height: 800px;
+  border: 0;
+  pointer-events: none;
+  transform-origin: top left;
+  /* Default mobile/tablet (col larga ~600-700px): scale ~0.45-0.55 */
+  transform: scale(0.5);
+}
+@media (min-width: 768px) {
+  /* 2 cols no tablet, col ~ 360-420px */
+  .ass-preview__iframe { transform: scale(0.34); }
+}
+@media (min-width: 1100px) {
+  /* 3 cols, col ~ 340-380px */
+  .ass-preview__iframe { transform: scale(0.30); }
+}
+@media (min-width: 1280px) {
+  /* col ~ 400-450px */
+  .ass-preview__iframe { transform: scale(0.34); }
+}
+@media (min-width: 1500px) {
+  /* col ~ 470-520px */
+  .ass-preview__iframe { transform: scale(0.40); }
+}
+.ass-preview__frame-fade {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 60px;
+  background: linear-gradient(180deg, transparent, rgba(255, 255, 255, 0.7));
+  pointer-events: none;
+}
+
+.ass-preview__features {
+  list-style: none;
+  margin: 0;
+  padding: 16px 20px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.ass-preview__features li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: color-mix(in srgb, var(--brand-text) 75%, transparent);
+}
+.ass-preview__features svg { flex-shrink: 0; }
+
+.ass-preview__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 12px 20px 18px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1.5px solid color-mix(in srgb, var(--brand-primary) 32%, transparent);
+  background: transparent;
+  color: var(--brand-primary);
+  font-family: var(--brand-font);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  text-decoration: none;
+  transition: all 200ms;
+}
+.ass-preview__cta:hover {
+  background: var(--brand-primary);
+  color: #FFFFFF;
+  border-color: var(--brand-primary);
+  transform: translateY(-1px);
+}
+
+/* Faixa de trust + CTA principal embaixo dos cards */
+.ass-previews__foot {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  align-items: center;
+  margin-top: 36px;
+  padding: 22px 24px;
+  border-radius: 16px;
+  background: #FFFFFF;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 55%, transparent);
+  box-shadow: 0 14px 36px -18px rgba(0, 0, 0, 0.08);
+}
+@media (min-width: 768px) {
+  .ass-previews__foot {
+    grid-template-columns: repeat(2, 1fr) auto;
+    gap: 14px 28px;
+    padding: 22px 28px;
+  }
+}
+@media (min-width: 1280px) {
+  .ass-previews__foot {
+    grid-template-columns: repeat(4, 1fr) auto;
+    gap: 18px 28px;
+    padding: 24px 32px;
+  }
+}
+
+.ass-previews__foot-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.ass-previews__foot-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--brand-primary) 12%, transparent);
+  flex-shrink: 0;
+}
+.ass-previews__foot-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+  min-width: 0;
+}
+.ass-previews__foot-text strong {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #0F1116;
+  letter-spacing: -0.005em;
+}
+.ass-previews__foot-text span {
+  font-size: 12px;
+  color: color-mix(in srgb, var(--brand-text) 60%, transparent);
+}
+
+.ass-previews__foot-cta {
+  margin-top: 0;
+  white-space: nowrap;
+}
+
+/* ============ 2. PROBLEM (igual raio-x) + pain grid ============ */
+.lp-problem {
+  padding: 80px 0;
+}
+@media (min-width: 768px) { .lp-problem { padding: 112px 0; } }
+
+.lp-problem__inner {
+  text-align: center;
+  max-width: 760px;
+  margin: 0 auto 56px;
+}
+.lp-problem__lead {
+  font-size: 17px;
+  line-height: 1.65;
+  color: color-mix(in srgb, var(--brand-text) 80%, transparent);
+  margin: 22px 0 0;
+}
+@media (min-width: 768px) { .lp-problem__lead { font-size: 19px; } }
+.lp-problem__lead strong {
+  color: var(--brand-text);
+  font-weight: 600;
+}
+
+.ass-pain__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+@media (min-width: 640px) {
+  .ass-pain__grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+}
+@media (min-width: 1024px) {
+  /* 5 cards: 3 em cima, 2 embaixo (centralizadas) */
+  .ass-pain__grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 18px;
+  }
+  .ass-pain__card:nth-child(1) { grid-column: 1 / span 2; }
+  .ass-pain__card:nth-child(2) { grid-column: 3 / span 2; }
+  .ass-pain__card:nth-child(3) { grid-column: 5 / span 2; }
+  .ass-pain__card:nth-child(4) { grid-column: 2 / span 2; }
+  .ass-pain__card:nth-child(5) { grid-column: 4 / span 2; }
+}
+
+.ass-pain__card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 20px 22px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--brand-text) 4%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-border) 38%, transparent);
+  transition: border-color 220ms, transform 220ms, background 220ms;
+}
+.ass-pain__card:hover {
+  border-color: color-mix(in srgb, var(--brand-primary) 40%, transparent);
+  background: color-mix(in srgb, var(--brand-primary) 5%, transparent);
+  transform: translateY(-2px);
+}
+.ass-pain__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+.ass-pain__card p {
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--brand-text) 80%, transparent);
+  margin: 0;
+}
+.ass-pain__card p strong {
+  color: var(--brand-text);
+  font-weight: 600;
+}
+
+/* ============ 3. STAKES / CONSEQUENCIA ============ */
+.ass-stakes {
+  padding: 64px 0 72px;
+  background: color-mix(in srgb, var(--brand-surface) 35%, var(--brand-background));
+  border-top: 1px solid color-mix(in srgb, var(--brand-border) 25%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--brand-border) 25%, transparent);
+}
+@media (min-width: 768px) { .ass-stakes { padding: 96px 0 112px; } }
+
+.ass-stakes__inner {
+  text-align: center;
+  max-width: 780px;
+  margin: 0 auto;
+}
+
+.ass-stakes__chain {
+  list-style: none;
+  margin: 36px auto 0;
+  padding: 0;
+  max-width: 620px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ass-stakes__chain li {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--brand-text) 4%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-border) 35%, transparent);
+  text-align: left;
+}
+.ass-stakes__chain li strong {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--brand-primary);
+  letter-spacing: 0.005em;
+}
+.ass-stakes__chain li span {
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--brand-text);
+}
+
+.ass-stakes__punch {
+  margin: 36px auto 0;
+  font-size: 22px;
+  line-height: 1.35;
+  color: var(--brand-text);
+  font-weight: 400;
+  max-width: 640px;
+  text-wrap: balance;
+}
+@media (min-width: 768px) {
+  .ass-stakes__punch { font-size: 30px; }
+}
+.ass-stakes__punch-italic {
+  font-family: 'Instrument Serif', serif;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--brand-primary);
+  display: block;
+  margin-top: 4px;
+}
+
+/* ============ 4. SOLUTION ============ */
+.ass-solution {
+  position: relative;
+  padding: 80px 0 96px;
+  isolation: isolate;
+}
+@media (min-width: 768px) { .ass-solution { padding: 112px 0 128px; } }
+
+.ass-solution__glow {
+  position: absolute;
+  inset: 0 -20%;
+  filter: blur(70px);
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.6;
+  will-change: opacity;
+  transform: translateZ(0);
+}
+
+.ass-solution__lead {
+  margin: 22px auto 0;
+  max-width: 640px;
+  font-size: 16px;
+  line-height: 1.65;
+  color: color-mix(in srgb, var(--brand-text) 78%, transparent);
+}
+.ass-solution__lead strong {
+  color: var(--brand-text);
+  font-weight: 600;
+}
+
+.ass-solution__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+}
+@media (min-width: 768px) {
+  .ass-solution__grid { grid-template-columns: repeat(3, 1fr); gap: 22px; }
+}
+
+.ass-solution__card {
+  position: relative;
+  padding: 32px 28px 30px;
+  border-radius: 18px;
+  background: var(--brand-surface);
+  border: 1px solid color-mix(in srgb, var(--brand-border) 55%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: border-color 220ms, transform 220ms, box-shadow 220ms;
+}
+.ass-solution__card:hover {
+  border-color: color-mix(in srgb, var(--brand-primary) 50%, transparent);
+  transform: translateY(-3px);
+  box-shadow: 0 24px 48px -16px color-mix(in srgb, var(--brand-primary) 24%, transparent);
+}
+
+.ass-solution__num {
+  font-family: 'Instrument Serif', serif;
+  font-size: 30px;
+  font-weight: 400;
+  color: var(--brand-primary);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.ass-solution__card h3 {
+  font-size: 19px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  color: var(--brand-text);
+  margin: 0;
+  line-height: 1.3;
+}
+.ass-solution__card h3 em {
+  font-family: 'Instrument Serif', serif;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--brand-primary);
+}
+.ass-solution__card p {
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--brand-text) 75%, transparent);
+  margin: 0;
+}
+
+/* (CSS .ass-demo* removido junto com a section em 2026-05-11.
+   Substituida pela section .ass-previews com iframes reais.) */
+
+/* ============ 5. BENEFITS ============ */
+.ass-benefits {
+  padding: 80px 0 96px;
+  background: color-mix(in srgb, var(--brand-surface) 30%, var(--brand-background));
+  border-top: 1px solid color-mix(in srgb, var(--brand-border) 25%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--brand-border) 25%, transparent);
+}
+@media (min-width: 768px) { .ass-benefits { padding: 112px 0 128px; } }
+
+.ass-benefits__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+@media (min-width: 640px) {
+  .ass-benefits__grid { grid-template-columns: repeat(2, 1fr); gap: 18px; }
+}
+@media (min-width: 1024px) {
+  /* 5 itens, 3+2 layout */
+  .ass-benefits__grid { grid-template-columns: repeat(6, 1fr); gap: 20px; }
+  .ass-benefits__item:nth-child(1) { grid-column: 1 / span 2; }
+  .ass-benefits__item:nth-child(2) { grid-column: 3 / span 2; }
+  .ass-benefits__item:nth-child(3) { grid-column: 5 / span 2; }
+  .ass-benefits__item:nth-child(4) { grid-column: 2 / span 2; }
+  .ass-benefits__item:nth-child(5) { grid-column: 4 / span 2; }
+}
+
+.ass-benefits__item {
+  position: relative;
+  padding: 28px 24px 26px;
+  border-radius: 18px;
+  background: var(--brand-background);
+  border: 1px solid color-mix(in srgb, var(--brand-border) 50%, transparent);
+  transition: border-color 220ms, transform 220ms;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ass-benefits__item:hover {
+  border-color: color-mix(in srgb, var(--brand-primary) 40%, transparent);
+  transform: translateY(-2px);
+}
+.ass-benefits__num {
+  font-family: 'Instrument Serif', serif;
+  font-size: 24px;
+  font-weight: 400;
+  color: var(--brand-primary);
+  line-height: 1;
+}
+.ass-benefits__item h3 {
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--brand-text);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+.ass-benefits__item p {
+  font-size: 14px;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--brand-text) 72%, transparent);
+  margin: 0;
+}
+.ass-benefits__item p strong {
+  color: var(--brand-text);
+  font-weight: 600;
+}
+
+/* ============ 7. SCARCITY ============ */
+.ass-scarcity {
+  position: relative;
+  padding: 88px 0 96px;
+  isolation: isolate;
+  text-align: center;
+}
+@media (min-width: 768px) { .ass-scarcity { padding: 120px 0 128px; } }
+
+.ass-scarcity__glow {
+  position: absolute;
+  inset: -10% -10%;
+  filter: blur(60px);
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.7;
+  will-change: opacity;
+  transform: translateZ(0);
+}
+
+.ass-scarcity__inner {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.ass-scarcity__lead {
+  margin: 22px auto 32px;
+  max-width: 600px;
+  font-size: 16px;
+  line-height: 1.65;
+  color: color-mix(in srgb, var(--brand-text) 78%, transparent);
+}
+.ass-scarcity__lead strong {
+  color: var(--brand-text);
+  font-weight: 600;
+}
+
+.ass-scarcity__cta {
+  margin: 32px auto 0;
+}
+
+/* ============ 8. PROOF ============ */
+.ass-proof {
+  padding: 80px 0 96px;
+}
+@media (min-width: 768px) { .ass-proof { padding: 112px 0 128px; } }
+
+.ass-proof__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+@media (min-width: 640px) {
+  .ass-proof__grid { grid-template-columns: repeat(2, 1fr); gap: 22px; }
+}
+
+.ass-proof__card {
+  padding: 28px 26px 30px;
+  border-radius: 18px;
+  background: var(--brand-surface);
+  border: 1px solid color-mix(in srgb, var(--brand-border) 55%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: border-color 220ms, transform 220ms;
+}
+.ass-proof__card:hover {
+  border-color: color-mix(in srgb, var(--brand-primary) 45%, transparent);
+  transform: translateY(-2px);
+}
+.ass-proof__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 11px;
+  flex-shrink: 0;
+}
+.ass-proof__card h3 {
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--brand-text);
+  margin: 0;
+  line-height: 1.3;
+}
+.ass-proof__card p {
+  font-size: 14px;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--brand-text) 72%, transparent);
+  margin: 0;
+}
+.ass-proof__card p strong {
+  color: var(--brand-text);
+  font-weight: 600;
+}
+
+.ass-proof__stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin: 56px auto 0;
+  max-width: 920px;
+}
+@media (min-width: 768px) {
+  .ass-proof__stats { grid-template-columns: repeat(4, 1fr); gap: 18px; }
+}
+
+.ass-proof__stat {
+  text-align: center;
+  padding: 24px 14px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--brand-surface) 60%, transparent);
+  border: 1px solid color-mix(in srgb, var(--brand-border) 35%, transparent);
+}
+.ass-proof__stat-num {
+  display: block;
+  font-family: 'Instrument Serif', serif;
+  font-size: 36px;
+  font-weight: 400;
+  color: var(--brand-primary);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.ass-proof__stat-label {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: color-mix(in srgb, var(--brand-text) 70%, transparent);
+}
+
+/* ============ 9. FAQ ============ */
+.ass-faq {
+  padding: 80px 0 96px;
+  border-top: 1px solid color-mix(in srgb, var(--brand-border) 25%, transparent);
+}
+@media (min-width: 768px) { .ass-faq { padding: 112px 0 128px; } }
+
+.ass-faq__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.ass-faq__item {
+  border-radius: 14px;
+  background: var(--brand-surface);
+  border: 1px solid color-mix(in srgb, var(--brand-border) 50%, transparent);
+  overflow: hidden;
+  transition: border-color 220ms;
+}
+.ass-faq__item[open] {
+  border-color: color-mix(in srgb, var(--brand-primary) 40%, transparent);
+}
+
+.ass-faq__item summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 22px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--brand-text);
+  list-style: none;
+  user-select: none;
+}
+.ass-faq__item summary::-webkit-details-marker { display: none; }
+
+.ass-faq__chev {
+  font-size: 22px;
+  font-weight: 300;
+  color: var(--brand-primary);
+  transition: transform 200ms;
+  flex-shrink: 0;
+}
+.ass-faq__item[open] .ass-faq__chev {
+  transform: rotate(45deg);
+}
+
+.ass-faq__item p {
+  padding: 0 22px 22px;
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: color-mix(in srgb, var(--brand-text) 78%, transparent);
+}
+.ass-faq__item p strong {
+  color: var(--brand-text);
+  font-weight: 600;
+}
+
+/* ============ 10. FINAL ============ */
+.lp-final {
+  position: relative;
+  padding: 96px 0 112px;
+  text-align: center;
+  isolation: isolate;
+}
+@media (min-width: 768px) { .lp-final { padding: 128px 0 144px; } }
+
+.lp-final__glow {
+  position: absolute;
+  inset: -10% -10%;
+  filter: blur(60px);
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.7;
+  will-change: opacity;
+  transform: translateZ(0);
+}
+
+.lp-final__inner {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.lp-final__lead {
+  margin: 18px auto 32px;
+  max-width: 580px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: color-mix(in srgb, var(--brand-text) 75%, transparent);
+}
+
+.ass-final__cta {
+  margin: 0 auto;
+}
+
+.lp-final__legal {
+  margin: 22px auto 0;
+  font-size: 12.5px;
+  color: color-mix(in srgb, var(--brand-text) 55%, transparent);
+}
+
+/* ============ SCROLL REVEAL ============ */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 700ms cubic-bezier(0.4, 0, 0.2, 1),
+              transform 700ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+.reveal-on-scroll.is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal-on-scroll {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+</style>

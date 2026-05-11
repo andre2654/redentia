@@ -1,21 +1,33 @@
 <!--
   MoleculesLeadCaptureModal, reusable lead capture form.
 
-  Used by the Whitelabel and API Portal landing pages to capture
-  interest from potential customers. Opens as a modal overlay,
-  collects name/email/company/phone/message, and POSTs to the
-  Laravel backend at /api/leads.
+  Used by the Whitelabel, API Portal e Assessorias landing pages para
+  capturar interesse de potenciais clientes. Abre como modal overlay,
+  coleta nome/email/empresa/telefone/mensagem + perguntas customizadas
+  opcionais, e POSTa para /api/leads.
 
-  Usage:
+  Usage basico:
     <MoleculesLeadCaptureModal
       v-model:open="showModal"
       source="whitelabel"
       :plan="selectedPlan"
     />
 
-  The `source` prop determines which landing page the lead came from.
-  The `plan` prop (optional) pre-selects the pricing tier the user
-  clicked on, e.g. 'growth' if they clicked "Escolher Growth →".
+  Usage com perguntas extras (B2B survey-style, ex: assessorias):
+    <MoleculesLeadCaptureModal
+      v-model:open="showModal"
+      source="assessoria"
+      title="Quero participar da primeira fase"
+      submit-label="Quero participar"
+      :questions="[
+        { id: 'role', label: 'Voce e:', type: 'select', required: true,
+          options: ['Dono/socio de assessoria', 'Assessor de investimentos', ...] },
+        { id: 'why',  label: 'Por que ...?', type: 'textarea', required: false },
+      ]"
+    />
+
+  Respostas das perguntas customizadas vao em metadata.answers (JSON),
+  legivel no admin via /backoffice/leads.
 -->
 
 <template>
@@ -61,10 +73,10 @@
             <div class="flex items-center justify-between">
               <div>
                 <div class="text-[10px] font-bold uppercase tracking-[0.2em]" :style="{ color: 'var(--brand-primary)' }">
-                  {{ source === 'whitelabel' ? 'White-Label' : 'API' }}{{ plan ? ` · ${plan.toUpperCase()}` : '' }}
+                  {{ eyebrowLabel }}{{ plan ? ` · ${plan.toUpperCase()}` : '' }}
                 </div>
                 <h2 class="mt-1 text-lg" :style="{ color: 'var(--brand-text)' }">
-                  {{ title || (source === 'whitelabel' ? 'Fale com o time' : 'Solicitar acesso') }}
+                  {{ title || defaultTitle }}
                 </h2>
               </div>
               <button
@@ -157,8 +169,49 @@
               </div>
             </div>
 
-            <!-- Message -->
-            <div>
+            <!-- Custom B2B questions (optional, per-page schema). Renderiza
+                 selects e textareas DEPOIS do bloco fixo de identificacao,
+                 ANTES da mensagem livre. Respostas vao em metadata.answers. -->
+            <template v-for="q in (questions ?? [])" :key="q.id">
+              <div>
+                <label class="mb-1.5 block text-xs font-medium uppercase tracking-wider" :style="{ color: 'var(--brand-text-muted)' }">
+                  {{ q.label }}{{ q.required ? ' *' : '' }}
+                </label>
+                <select
+                  v-if="q.type === 'select'"
+                  v-model="answers[q.id]"
+                  :required="q.required"
+                  class="w-full rounded-xl border px-4 py-3 text-sm outline-none transition focus:ring-2"
+                  :style="{
+                    backgroundColor: 'var(--brand-input-bg)',
+                    borderColor: 'var(--brand-input-border)',
+                    color: 'var(--brand-text)',
+                    '--tw-ring-color': 'var(--brand-primary)',
+                  }"
+                >
+                  <option value="" disabled>Selecione...</option>
+                  <option v-for="opt in (q.options || [])" :key="opt" :value="opt">{{ opt }}</option>
+                </select>
+                <textarea
+                  v-else-if="q.type === 'textarea'"
+                  v-model="answers[q.id]"
+                  :required="q.required"
+                  :placeholder="q.placeholder || ''"
+                  rows="3"
+                  class="w-full resize-none rounded-xl border px-4 py-3 text-sm outline-none transition focus:ring-2"
+                  :style="{
+                    backgroundColor: 'var(--brand-input-bg)',
+                    borderColor: 'var(--brand-input-border)',
+                    color: 'var(--brand-text)',
+                    '--tw-ring-color': 'var(--brand-primary)',
+                  }"
+                />
+              </div>
+            </template>
+
+            <!-- Message (oculto quando o page passa perguntas custom, pra
+                 nao duplicar com a textarea do "Por que...") -->
+            <div v-if="!hideMessage">
               <label class="mb-1.5 block text-xs font-medium uppercase tracking-wider" :style="{ color: 'var(--brand-text-muted)' }">
                 Mensagem
               </label>
@@ -193,8 +246,8 @@
               }"
             >
               <UIcon v-if="state === 'loading'" name="i-lucide-loader-2" class="size-4 motion-safe:animate-spin" />
-              <UIcon v-else :name="source === 'whitelabel' ? 'i-lucide-send' : 'i-lucide-key'" class="size-4" />
-              {{ state === 'loading' ? 'Enviando...' : (source === 'whitelabel' ? 'Enviar contato' : 'Solicitar API Key') }}
+              <UIcon v-else :name="submitIcon" class="size-4" />
+              {{ state === 'loading' ? 'Enviando...' : (submitLabel || defaultSubmitLabel) }}
             </button>
 
             <p class="text-center text-[11px]" :style="{ color: 'var(--brand-text-muted)' }">
@@ -211,10 +264,24 @@
 const brand = useBrand()
 const config = useRuntimeConfig()
 
+interface LeadQuestion {
+  id: string
+  label: string
+  type: 'select' | 'textarea'
+  options?: string[]
+  placeholder?: string
+  required?: boolean
+}
+
 const props = defineProps<{
-  source: 'whitelabel' | 'api' | 'creative' | 'other'
+  source: 'whitelabel' | 'api' | 'creative' | 'assessoria' | 'other'
   plan?: string
   title?: string
+  eyebrow?: string
+  submitLabel?: string
+  submitIcon?: string
+  questions?: LeadQuestion[]
+  hideMessage?: boolean
 }>()
 
 const isOpen = defineModel<boolean>('open', { default: false })
@@ -230,6 +297,39 @@ const form = reactive({
   message: '',
 })
 
+// Respostas das perguntas customizadas (por id de pergunta)
+const answers = reactive<Record<string, string>>({})
+
+// Defaults derivados do source quando o page nao passa override.
+// Mantem retrocompat com whitelabel + api existentes.
+const eyebrowLabel = computed(() => {
+  if (props.eyebrow) return props.eyebrow
+  if (props.source === 'whitelabel') return 'White-Label'
+  if (props.source === 'api') return 'API'
+  if (props.source === 'assessoria') return 'Assessorias · Primeira fase'
+  return 'Contato'
+})
+
+const defaultTitle = computed(() => {
+  if (props.source === 'whitelabel') return 'Fale com o time'
+  if (props.source === 'api') return 'Solicitar acesso'
+  if (props.source === 'assessoria') return 'Quero participar da primeira fase'
+  return 'Fale com o time'
+})
+
+const defaultSubmitLabel = computed(() => {
+  if (props.source === 'whitelabel') return 'Enviar contato'
+  if (props.source === 'api') return 'Solicitar API Key'
+  if (props.source === 'assessoria') return 'Quero participar'
+  return 'Enviar'
+})
+
+const submitIcon = computed(() => {
+  if (props.submitIcon) return props.submitIcon
+  if (props.source === 'api') return 'i-lucide-key'
+  return 'i-lucide-send'
+})
+
 // Reset form when modal opens
 watch(isOpen, (open) => {
   if (open) {
@@ -240,6 +340,9 @@ watch(isOpen, (open) => {
     form.company = ''
     form.phone = ''
     form.message = ''
+    // Reset respostas customizadas
+    for (const k of Object.keys(answers)) delete answers[k]
+    for (const q of (props.questions ?? [])) answers[q.id] = ''
   }
 })
 
@@ -249,8 +352,24 @@ async function onSubmit() {
     return
   }
 
+  // Valida perguntas required
+  for (const q of (props.questions ?? [])) {
+    if (q.required && !(answers[q.id] || '').trim()) {
+      errorMsg.value = `Por favor, preencha "${q.label}".`
+      return
+    }
+  }
+
   state.value = 'loading'
   errorMsg.value = ''
+
+  // Constroi payload de answers (label -> resposta) pra ficar legivel
+  // no admin sem precisar de schema separado.
+  const answersPayload: Record<string, string> = {}
+  for (const q of (props.questions ?? [])) {
+    const v = (answers[q.id] || '').trim()
+    if (v) answersPayload[q.label] = v
+  }
 
   try {
     await $fetch(`${config.public.apiBaseUrl}/leads`, {
@@ -267,6 +386,7 @@ async function onSubmit() {
           url: window.location.href,
           referrer: document.referrer || undefined,
           userAgent: navigator.userAgent,
+          answers: Object.keys(answersPayload).length ? answersPayload : undefined,
         },
       },
     })
