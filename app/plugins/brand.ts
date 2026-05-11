@@ -274,18 +274,24 @@ export default defineNuxtPlugin({
     return !!(themes.light || themes.dark)
   }
 
-  // Snapshot das cores BASE da marca (defaultMode). Capturado na
-  // primeira invocacao de applyMode, reutilizado pra reset entre
-  // toggles. Necessario porque `brand.colors` e mutado live —
-  // sem snapshot, perdemos o palette original ao trocar de modo.
-  // Reativo pra que o `useHead` computed re-emita CSS quando o
-  // snapshot finalmente eh capturado (server-side roda antes do
-  // applyMode client, entao baseColorsSnapshot pode ser null no SSR).
-  const baseColorsSnapshot = ref<any>(null)
-  // Capturamos o snapshot logo AQUI (em vez de dentro de applyMode)
-  // pra que ja esteja disponivel no primeiro render do `useHead`
-  // computed. Usar JSON clone evita reference-shared mutation.
-  baseColorsSnapshot.value = JSON.parse(JSON.stringify(brand.colors))
+  // Snapshot das cores BASE da marca (defaultMode). Persistido via
+  // `useState` pra que SSR e client compartilhem a MESMA captura
+  // pre-mutacao.
+  //
+  // Bug que isso resolve: o factory do useState so roda quando o
+  // state ainda nao existe. No SSR, isso eh ANTES de `applyMode`
+  // mutar `brand.colors` (porque `useBrand()` ja foi chamado no
+  // tenant.server.ts plugin com a config crua da API). Capturamos
+  // ai a paleta PURA do defaultMode. Esse valor entao serializa no
+  // SSR payload e e hidratado no client.
+  //
+  // Sem isso (usando `ref()` local), o client ressetuper recapturava
+  // `brand.colors` JA mutado pelo applyMode do SSR — entao snapshot
+  // dark virava o que ja era light (ou vice-versa), e o CSS de
+  // `:root.dark` saia com valores light.
+  const baseColorsSnapshot = useState<any>('brand:base-colors', () =>
+    JSON.parse(JSON.stringify(brand.colors)),
+  )
 
   function resolveMode(): 'dark' | 'light' {
     // Single-mode tenant — pinned to its defaultMode regardless of OS
