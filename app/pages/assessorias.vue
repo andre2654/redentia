@@ -1300,44 +1300,11 @@ useHead({
       </div>
     </section>
 
-    <!-- ============================================================
-         10. CTA FINAL, repete a promessa e chama pra acao
-         ============================================================ -->
-    <section class="lp-final reveal-on-scroll">
-      <div
-        class="lp-final__glow"
-        aria-hidden="true"
-        :style="{
-          background: `radial-gradient(ellipse 70% 60% at 50% 50%, color-mix(in srgb, ${brand.colors.primary} 26%, transparent), transparent 65%)`,
-        }"
-      />
-      <div class="lp-container">
-        <div class="lp-final__inner">
-          <p class="lp-eyebrow lp-eyebrow--center">PRIMEIRA FASE</p>
-          <h2 class="lp-section-title">
-            Sua assessoria pode ser uma das
-            <span class="lp-section-title__italic">10 primeiras.</span>
-          </h2>
-
-          <p class="lp-final__lead">
-            Veja como a Redentia transforma sua assessoria em uma plataforma de inteligência para os seus clientes investidores. Conversa de 20 minutos, sem proposta de 40 páginas.
-          </p>
-
-          <button
-            type="button"
-            class="lp-hero__cta ass-final__cta"
-            @click="openLeadModal"
-          >
-            Quero participar da primeira fase
-            <span aria-hidden="true">→</span>
-          </button>
-
-          <p class="lp-final__legal">
-            Resposta do time em até 24h úteis · assessorias@redentia.com.br
-          </p>
-        </div>
-      </div>
-    </section>
+    <!-- NOTA: section "10. CTA FINAL" (.lp-final) removida em 2026-05-11.
+         O proprio FAQ ja arremata a navegacao e o banner sticky no topo +
+         CTAs distribuidos ao longo da page (hero, escassez, faixa de
+         previews) garantem reach do lead modal. Manter um CTA final
+         duplicado virou ruido. -->
 
     <!-- Modal de captura de lead DEDICADO a /assessorias.
          Fullscreen, multi-step (1: identificacao, 2: 5 perguntas Sim/Não).
@@ -4090,48 +4057,8 @@ useHead({
   font-weight: 600;
 }
 
-/* ============ 10. FINAL ============ */
-.lp-final {
-  position: relative;
-  padding: 96px 0 112px;
-  text-align: center;
-  isolation: isolate;
-}
-@media (min-width: 768px) { .lp-final { padding: 128px 0 144px; } }
-
-.lp-final__glow {
-  position: absolute;
-  inset: -10% -10%;
-  filter: blur(60px);
-  z-index: -1;
-  pointer-events: none;
-  opacity: 0.7;
-  will-change: opacity;
-  transform: translateZ(0);
-}
-
-.lp-final__inner {
-  max-width: 720px;
-  margin: 0 auto;
-}
-
-.lp-final__lead {
-  margin: 18px auto 32px;
-  max-width: 580px;
-  font-size: 16px;
-  line-height: 1.6;
-  color: color-mix(in srgb, var(--brand-text) 75%, transparent);
-}
-
-.ass-final__cta {
-  margin: 0 auto;
-}
-
-.lp-final__legal {
-  margin: 22px auto 0;
-  font-size: 12.5px;
-  color: color-mix(in srgb, var(--brand-text) 55%, transparent);
-}
+/* (CSS .lp-final* + .ass-final__cta removidos junto com a section
+   em 2026-05-11. Section nao existe mais.) */
 
 /* ============ SCROLL REVEAL ============ */
 .reveal-on-scroll {
