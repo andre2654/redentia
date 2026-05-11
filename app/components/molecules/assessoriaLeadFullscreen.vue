@@ -367,14 +367,30 @@ onBeforeUnmount(() => {
 
 <style scoped>
 /* ============ FULLSCREEN OVERLAY ============ */
+/* Light mode forcado dentro do escopo do modal: overrides as CSS vars
+   pra garantir aparencia consistente independente do mode da page de
+   fundo (que pode estar em dark). O modal e form-heavy e fica MUITO
+   melhor em light: contraste mais alto, leitura mais facil em form
+   longo. Primary/positive/negative ficam intocados (sao cores de
+   destaque, nao mudam entre modes). */
 .ass-fs {
+  --brand-background: #FAFAFB;
+  --brand-text: #1A0A2E;
+  --brand-text-muted: rgba(26, 10, 46, 0.6);
+  --brand-surface: #FFFFFF;
+  --brand-border: rgba(26, 10, 46, 0.14);
+  --brand-input-bg: #FFFFFF;
+  --brand-input-border: rgba(26, 10, 46, 0.2);
+  /* Forca scrollbar/autocomplete/selection nativo em light mode */
+  color-scheme: light;
+
   position: fixed;
   inset: 0;
   z-index: 9999;
   display: flex;
   flex-direction: column;
-  background: var(--brand-background, #FAFAFB);
-  color: var(--brand-text, #0F1116);
+  background: #FAFAFB;
+  color: #1A0A2E;
   font-family: var(--brand-font);
   overflow-y: auto;
   overflow-x: hidden;
