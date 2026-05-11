@@ -1,39 +1,39 @@
 <!--
-  /assessorias, landing B2B para captacao de assessorias na primeira fase
-  do programa Redentia White-Label.
+  /assessorias-diferencie-solucao, landing B2B SOLUCAO-focused.
 
   ESTRATEGIA
-  Diferente da /raio-x (B2C, anuncios Meta para investidor PF), essa page
-  e para o dono/socio de assessoria. O CTA e LEAD (modal com 4 perguntas
-  qualificadoras), nao cadastro grátis. Volume baixo, ticket alto, ciclo
-  consultivo.
+  Page IRMA da /assessorias mas com voz oposta. A /assessorias bate na
+  DOR (commoditizacao, "vira comparacao de taxa", loss aversion). Essa
+  aqui bate na SOLUCAO ("sua assessoria com plataforma propria de IA"),
+  com tom positivo, mostrando experiencia, diferencial e visao.
 
-  PSICOLOGIA APLICADA
-  - Hero: Loss Aversion + rhetorical question "Sua assessoria parece
-    igual a todas as outras?" prima a dor de comoditizacao antes de falar
-    do produto. Marketing-psychology: Painkiller > Vitamin.
-  - Bloco de dor: Mere Exposure / espelhamento, lista 5 sintomas que o
-    visitante reconhece. Pratfall: admite que o problema e situacional,
-    nao falha do assessor.
-  - Consequencia: Loss Aversion explicita, "vira commodity", "margem
-    pressionada". Status-quo bias INVERTIDO, ficar parado tambem custa.
-  - Solucao: Framing positivo. NOVA categoria "plataforma de inteligencia",
-    nao "mais um software".
-  - Demonstracao visual: Availability heuristic, exemplos concretos
-    reduzem risco percebido.
-  - Beneficios: Foco no DONO da assessoria (diferenciacao, percepcao
-    de valor, presenca, argumento comercial, retencao), nao so no
-    cliente final.
-  - Escassez: 10 vagas COM JUSTIFICATIVA (proximidade operacional). Nao
-    e "9 vagas restantes" fake, e limite real de bandwidth.
-  - Prova: argumentos macro de mercado + numeros reais da plataforma
-    (5 marcas no whitelabel, +33k carteiras analisadas).
-  - FAQ: resolve objecoes ANTES de pedir o lead. Reduz friccao do form.
-  - Form: 4 perguntas curtas + nome/email/empresa/telefone. Hick's Law,
-    nao overwhelm. Default Effect: opcao mais provavel primeiro nos selects.
+  Mesmo modal fullscreen, mesmo banner topo, mesma identidade visual,
+  mesmo light-only forcado, mesmo mockup tilted 3D, mesmas iframes de
+  tenants reais. So o conteudo das sections varia. Em dia de teste A/B
+  com paid traffic, da pra mandar uma audiencia pra cada page e ver
+  qual estilo (dor vs solucao) converte mais por segmento.
+
+  PSICOLOGIA APLICADA (diferencas vs /assessorias)
+  - Hero: outcome-driven em vez de pain-driven. "Sua assessoria com
+    uma plataforma propria de IA" como afirmacao, nao como pergunta
+    retorica que mexe com ego.
+  - Section "O que e": clareza > intriga. Visitante precisa entender
+    o produto antes de absorver beneficio. Cards diretos.
+  - Visual com iframes reais: disponibilidade heuristica, mostra que
+    ja existe gente real rodando.
+  - Diferenciacao: vira o tema central, nao a dor. "Pare de vender so
+    atendimento. Mostre uma plataforma."
+  - Antes/Depois: tabela de contraste. Simplifica decisao via framing
+    side-by-side (contrast effect).
+  - Casos de uso: visualiza aplicacao. B2B precisa de "como eu usaria",
+    nao so "o que faz".
+  - Implementacao em passos: remove medo (BJ Fogg ability). 4 passos
+    reduzem o perceived effort.
+  - Escassez: mesma justificativa, mesmo numero. Coerencia entre as
+    2 landings reforca credibilidade.
 
   COPY RULE
-  Sem em-dash (memoria do projeto: " — " entrega AI). Vírgulas no lugar.
+  Sem em-dash (memoria do projeto: " — " entrega AI). Virgulas no lugar.
 -->
 <script setup lang="ts">
 definePageMeta({
@@ -159,8 +159,9 @@ onBeforeUnmount(() => pauseMockCycle())
 // vida e nao parecer screenshot estatico. So roda quando a page
 // correspondente vira ativa (e re-roda em cada visita).
 //
-// PAGE 1 (Painel): carta editorial sobe de baixo pra cima dentro do
-//                  Painel (animation CSS no mount, dispara via v-if).
+// PAGE 1 (Painel): card "Relatorio para cliente" sobe de baixo pra
+//                  cima estilo papel saindo de envelope, em CSS only
+//                  (animation no keyframe, dispara no mount).
 // PAGE 3 (Chat IA): simulacao de typing — input digita letra por
 //                   letra, depois msg do user surge, depois typing
 //                   dots da IA, depois resposta aparece.
@@ -291,16 +292,12 @@ const siteUrl = computed(() => {
 })
 
 usePageSeo({
-  title: `Assessoria com IA, na sua marca | ${brand.name}`,
-  description: 'Sua assessoria pode oferecer uma plataforma própria com IA para análise de carteira, notícias e riscos. Primeira fase: 10 vagas. Fale com o time.',
-  path: '/assessorias',
+  title: `Plataforma própria de IA para sua assessoria | ${brand.name}`,
+  description: 'Diferencie sua assessoria com uma plataforma própria de IA: análise de carteira, notícias, riscos e impactos de mercado, na sua marca, no seu domínio. Primeira fase: 10 assessorias.',
+  path: '/assessorias-diferencie-solucao',
 })
 
-// Forca a page inteira em light mode independente do mode atual do
-// brand. Aplica classe no <body> via useHead, e o segundo bloco
-// <style> (nao-scoped) faz override das CSS vars do brand. Saindo
-// da page (route change), Nuxt remove a classe automaticamente, e
-// a page volta ao mode normal do brand.
+// Forca a page inteira em light mode (mesmo padrao da /assessorias).
 useHead({
   bodyAttrs: {
     class: 'assessorias-light-only',
@@ -346,16 +343,16 @@ useHead({
           <!-- LEFT: copy + CTA -->
           <div class="lp-hero__copy">
             <h1 class="lp-hero__headline">
-              Sua assessoria é melhor.
-              <span class="lp-hero__italic ass-hero__italic-underline">Mas o cliente percebe?</span>
+              Sua assessoria com uma
+              <span class="lp-hero__italic ass-hero__italic-underline">plataforma própria de IA.</span>
             </h1>
 
             <p class="lp-hero__subhead">
-              Se a entrega parece igual, o cliente compara por preço. A Redentia transforma sua assessoria em uma <strong>plataforma própria de IA</strong>, com sua marca, seu domínio e uma experiência premium para o cliente.
+              Com a Redentia, sua assessoria oferece aos clientes uma experiência digital para acompanhar <strong>carteira, notícias, riscos, ativos impactados e movimentos de mercado</strong>, com a sua marca.
             </p>
 
             <p class="lp-hero__lead">
-              Chat com IA, raio-X da carteira, notícias, riscos e contexto, tudo com a identidade da sua assessoria.
+              Sai do "mais um WhatsApp e PDF" e entra numa plataforma própria que o cliente abre, entende e volta. Diferencial real, do logo ao último insight.
             </p>
 
             <button
@@ -363,7 +360,7 @@ useHead({
               class="lp-hero__cta"
               @click="openLeadModal"
             >
-              Quero ver minha assessoria com IA
+              Quero ver como ficaria na minha assessoria
               <span aria-hidden="true">→</span>
             </button>
 
@@ -1081,103 +1078,68 @@ useHead({
     </section>
 
     <!-- ============================================================
-         2. BLOCO DE DOR, aprofundar a ferida
+         2. O QUE E, clareza > intriga
          ============================================================ -->
-    <section class="lp-problem reveal-on-scroll">
+    <section class="sol-what reveal-on-scroll">
       <div class="lp-container">
-        <div class="lp-problem__inner">
-          <p class="lp-eyebrow lp-eyebrow--center">DIAGNÓSTICO</p>
+        <div class="lp-section-head">
+          <p class="lp-eyebrow lp-eyebrow--center">O QUE É</p>
           <h2 class="lp-section-title">
-            Quando tudo parece igual,
-            <span class="lp-section-title__italic">o cliente escolhe pelo preço.</span>
+            Uma experiência digital da sua assessoria,
+            <span class="lp-section-title__italic">para os seus clientes.</span>
           </h2>
-
-          <p class="lp-problem__lead">
-            Hoje, muitas assessorias entregam a mesma experiência aos olhos do cliente: <strong>WhatsApp, reunião, relatório, carteira recomendada e rentabilidade</strong>. Quando o cliente não enxerga diferencial claro, ele começa a comparar taxa, preço, promessa, rentabilidade. E aí sua assessoria vira commodity.
+          <p class="sol-what__lead">
+            A Redentia entrega uma plataforma com IA para ajudar o cliente a entender melhor a própria carteira. Em vez de depender só de <strong>WhatsApp, reunião e relatório</strong>, o cliente acessa um ambiente próprio com análises, impacto de mercado, notícias relevantes, riscos e o "por que" do que mexeu hoje.
           </p>
         </div>
 
-        <!-- Cards de dor, 5 sintomas que o dono da assessoria reconhece -->
-        <div class="ass-pain__grid">
-          <article class="ass-pain__card">
-            <div class="ass-pain__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)` }">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="brand.colors.primary" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+        <div class="sol-what__grid">
+          <article class="sol-what__card">
+            <div class="sol-what__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`, color: brand.colors.primary }">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>
             </div>
-            <p>O cliente <strong>não sabe explicar</strong> por que sua assessoria é diferente.</p>
+            <h3>Carteira</h3>
+            <p>O cliente acompanha <strong>ativos, exposição e composição</strong> em tempo real.</p>
           </article>
 
-          <article class="ass-pain__card">
-            <div class="ass-pain__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)` }">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="brand.colors.primary" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          <article class="sol-what__card">
+            <div class="sol-what__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`, color: brand.colors.primary }">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8z"/></svg>
             </div>
-            <p>Sua entrega <strong>parece igual</strong> à de outras assessorias do mercado.</p>
+            <h3>Notícias</h3>
+            <p>A IA cruza notícias relevantes <strong>com os ativos da carteira</strong> do cliente.</p>
           </article>
 
-          <article class="ass-pain__card">
-            <div class="ass-pain__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)` }">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="brand.colors.primary" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          <article class="sol-what__card">
+            <div class="sol-what__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`, color: brand.colors.primary }">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
             </div>
-            <p>O cliente compara você com <strong>corretora, banco ou app</strong>.</p>
+            <h3>Impactos</h3>
+            <p>Mostra o que <strong>ajudou ou pressionou</strong> o resultado, com explicação clara.</p>
           </article>
 
-          <article class="ass-pain__card">
-            <div class="ass-pain__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)` }">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="brand.colors.primary" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          <article class="sol-what__card">
+            <div class="sol-what__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`, color: brand.colors.primary }">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             </div>
-            <p>O relacionamento depende demais do <strong>assessor individual</strong>, não da estrutura.</p>
-          </article>
-
-          <article class="ass-pain__card">
-            <div class="ass-pain__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)` }">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" :stroke="brand.colors.primary" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-            </div>
-            <p>Sua assessoria parece <strong>menos moderna</strong> do que deveria.</p>
+            <h3>Riscos</h3>
+            <p>Identifica <strong>concentração, setores e pontos de atenção</strong> antes do cliente perguntar.</p>
           </article>
         </div>
       </div>
     </section>
 
-    <!-- ============================================================
-         3. CONSEQUENCIA, custo de nao mudar
-         ============================================================ -->
-    <section class="ass-stakes reveal-on-scroll">
-      <div class="lp-container">
-        <div class="ass-stakes__inner">
-          <p class="lp-eyebrow lp-eyebrow--center">CONSEQUÊNCIA</p>
-          <h2 class="lp-section-title">
-            O problema não é parecer simples.
-            <span class="lp-section-title__italic">É parecer substituível.</span>
-          </h2>
+    <!-- NOTA: section "Consequencia" (.ass-stakes) da /assessorias foi
+         removida nesta page. Landing de SOLUCAO nao precisa agitar dor
+         (loss aversion), o tom e construtivo. -->
 
-          <ul class="ass-stakes__chain">
-            <li>
-              <strong>Se o cliente não percebe diferença,</strong>
-              <span>ele questiona o preço.</span>
-            </li>
-            <li>
-              <strong>Se ele questiona o preço,</strong>
-              <span>sua margem fica pressionada.</span>
-            </li>
-            <li>
-              <strong>Se sua entrega parece igual,</strong>
-              <span>qualquer promessa concorrente vira ameaça real.</span>
-            </li>
-          </ul>
-
-          <p class="ass-stakes__punch">
-            Assessoria que não mostra diferencial
-            <span class="ass-stakes__punch-italic">vira comparação de taxa.</span>
-          </p>
-        </div>
-      </div>
-    </section>
 
     <!-- ============================================================
-         4. SOLUCAO, nova categoria
+         4. DIFERENCIACAO, beneficio central
          ============================================================ -->
-    <section class="ass-solution reveal-on-scroll">
+    <section class="sol-diff reveal-on-scroll">
       <div
-        class="ass-solution__glow"
+        class="sol-diff__glow"
         aria-hidden="true"
         :style="{
           background: `radial-gradient(ellipse 60% 50% at 50% 30%, color-mix(in srgb, ${brand.colors.primary} 22%, transparent), transparent 65%)`,
@@ -1185,33 +1147,39 @@ useHead({
       />
       <div class="lp-container">
         <div class="lp-section-head">
-          <p class="lp-eyebrow lp-eyebrow--center">A SAÍDA</p>
+          <p class="lp-eyebrow lp-eyebrow--center">DIFERENCIAÇÃO</p>
           <h2 class="lp-section-title">
-            Transforme sua assessoria em uma
-            <span class="lp-section-title__italic">plataforma de inteligência.</span>
+            Pare de vender só atendimento.
+            <span class="lp-section-title__italic">Mostre uma plataforma.</span>
           </h2>
-          <p class="ass-solution__lead">
-            Com a Redentia, sua assessoria oferece uma experiência digital própria para o cliente acompanhar carteira, mercado, notícias, riscos e impactos com IA. <strong>Não é só mais um relatório. Não é só mais uma reunião. É uma plataforma da sua assessoria</strong> para gerar clareza, presença e diferenciação.
+          <p class="sol-diff__lead">
+            Toda assessoria fala de atendimento, confiança e acompanhamento. Para o cliente, isso soa parecido. Com a Redentia, sua assessoria passa a mostrar <strong>uma experiência concreta</strong>: uma plataforma própria, com IA, pro cliente acompanhar a carteira com clareza.
           </p>
         </div>
 
-        <div class="ass-solution__grid">
-          <article class="ass-solution__card">
-            <div class="ass-solution__num">01</div>
-            <h3>Plataforma com a <em>sua marca</em>.</h3>
-            <p>Domínio próprio, paleta da assessoria, logo, fonte, voz. Zero menção da Redentia no produto final. O cliente vê uma plataforma da sua casa.</p>
+        <div class="sol-diff__grid">
+          <article class="sol-diff__card">
+            <div class="sol-diff__num">01</div>
+            <h3>Diferenciação <em>comercial</em></h3>
+            <p>Sua assessoria deixa de parecer igual às outras. Tem algo concreto pra mostrar em reunião, no pitch, no LinkedIn.</p>
           </article>
 
-          <article class="ass-solution__card">
-            <div class="ass-solution__num">02</div>
-            <h3>IA pra análise de <em>carteira, notícias e mercado</em>.</h3>
-            <p>O cliente entende por que a carteira mexeu, qual notícia impactou, qual setor pesou. Tudo cruzado com fundamentos, contexto macro e comportamento histórico.</p>
+          <article class="sol-diff__card">
+            <div class="sol-diff__num">02</div>
+            <h3>Mais <em>percepção de valor</em></h3>
+            <p>O cliente enxerga análises, contexto, inteligência. A entrega vira visível. A relação preço-valor pesa a seu favor.</p>
           </article>
 
-          <article class="ass-solution__card">
-            <div class="ass-solution__num">03</div>
-            <h3>Experiência digital pra elevar <em>percepção de valor</em>.</h3>
-            <p>Sai do WhatsApp, reunião, PDF. O cliente entra num ambiente da assessoria, com análise viva, alertas e contexto. A entrega deixa de ser invisível.</p>
+          <article class="sol-diff__card">
+            <div class="sol-diff__num">03</div>
+            <h3>Mais <em>presença digital</em></h3>
+            <p>A relação sai do WhatsApp, ganha um ambiente próprio. O cliente abre o app da sua casa, não da corretora.</p>
+          </article>
+
+          <article class="sol-diff__card">
+            <div class="sol-diff__num">04</div>
+            <h3>Mais <em>argumento de venda</em></h3>
+            <p>Seu time comercial demonstra a plataforma ao captar novos clientes. Diferencial concreto em categoria de muito discurso.</p>
           </article>
         </div>
       </div>
@@ -1225,49 +1193,158 @@ useHead({
          hipoteticos. Mais convincente, menos abstrato. -->
 
     <!-- ============================================================
-         5. BENEFICIOS PARA A ASSESSORIA, foco no dono
+         5. ANTES vs DEPOIS, contraste lado a lado
          ============================================================ -->
-    <section class="ass-benefits reveal-on-scroll">
+    <section class="sol-compare reveal-on-scroll">
       <div class="lp-container">
         <div class="lp-section-head">
-          <p class="lp-eyebrow lp-eyebrow--center">PARA A ASSESSORIA</p>
+          <p class="lp-eyebrow lp-eyebrow--center">ANTES E DEPOIS</p>
           <h2 class="lp-section-title">
-            O que muda
-            <span class="lp-section-title__italic">para sua assessoria?</span>
+            Antes, sua assessoria entregava análise.
+            <span class="lp-section-title__italic">Agora, entrega experiência.</span>
           </h2>
         </div>
 
-        <div class="ass-benefits__grid">
-          <article class="ass-benefits__item">
-            <span class="ass-benefits__num">01</span>
-            <h3>Diferenciação comercial</h3>
-            <p>Sua assessoria deixa de vender só atendimento e passa a mostrar uma <strong>plataforma com sua marca</strong>. O cliente tem algo concreto pra associar à casa, além do nome do assessor.</p>
+        <div class="sol-compare__grid">
+          <div class="sol-compare__col sol-compare__col--before">
+            <p class="sol-compare__head">Antes da Redentia</p>
+            <ul>
+              <li>WhatsApp como canal principal</li>
+              <li>Relatório em PDF mensal</li>
+              <li>Reunião pontual de revisão</li>
+              <li>Cliente perguntando "por que caiu?"</li>
+              <li>Diferencial difícil de explicar</li>
+              <li>Dependência do assessor individual</li>
+            </ul>
+          </div>
+
+          <div class="sol-compare__col sol-compare__col--after">
+            <p class="sol-compare__head">Com a Redentia</p>
+            <ul>
+              <li><strong>Plataforma própria</strong> com sua marca</li>
+              <li><strong>IA</strong> para análise de carteira</li>
+              <li><strong>Notícias</strong> conectadas aos ativos</li>
+              <li>Cliente <strong>entendendo impactos</strong> sozinho</li>
+              <li><strong>Diferencial visível</strong> a cada acesso</li>
+              <li>Experiência <strong>escalável</strong> da assessoria</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         6. CASOS DE USO, como a assessoria usa na pratica
+         ============================================================ -->
+    <section class="sol-uses reveal-on-scroll">
+      <div class="lp-container">
+        <div class="lp-section-head">
+          <p class="lp-eyebrow lp-eyebrow--center">CASOS DE USO</p>
+          <h2 class="lp-section-title">
+            Como sua assessoria
+            <span class="lp-section-title__italic">pode usar a Redentia.</span>
+          </h2>
+        </div>
+
+        <div class="sol-uses__grid">
+          <article class="sol-uses__card">
+            <div class="sol-uses__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`, color: brand.colors.primary }">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <h3>Para clientes premium</h3>
+            <p>Ofereça experiência diferenciada aos clientes de maior valor da casa.</p>
           </article>
 
-          <article class="ass-benefits__item">
-            <span class="ass-benefits__num">02</span>
-            <h3>Mais percepção de valor</h3>
-            <p>O cliente enxerga <strong>análises, contexto, riscos, notícias e impacto na carteira</strong>. A entrega vira visível, e a relação preço/valor para de pesar a favor da concorrência.</p>
+          <article class="sol-uses__card">
+            <div class="sol-uses__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`, color: brand.colors.primary }">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <h3>Para captação</h3>
+            <p>Mostre a plataforma em reunião comercial e suba a percepção de sofisticação.</p>
           </article>
 
-          <article class="ass-benefits__item">
-            <span class="ass-benefits__num">03</span>
-            <h3>Mais presença digital</h3>
-            <p>A experiência sai do <strong>WhatsApp, reunião e PDF</strong>. O cliente abre o app da sua assessoria, vê dados vivos, recebe alertas, sente que tem onde voltar.</p>
+          <article class="sol-uses__card">
+            <div class="sol-uses__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`, color: brand.colors.primary }">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </div>
+            <h3>Para relacionamento</h3>
+            <p>Crie novos motivos pro cliente voltar ao ambiente da casa, sem ser cobrança.</p>
           </article>
 
-          <article class="ass-benefits__item">
-            <span class="ass-benefits__num">04</span>
-            <h3>Argumento pra captar mais</h3>
-            <p>Seu time comercial demonstra a <strong>plataforma da casa</strong> em pitch de novos clientes. Vira diferencial concreto numa categoria onde quase tudo é discurso.</p>
+          <article class="sol-uses__card">
+            <div class="sol-uses__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`, color: brand.colors.primary }">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <h3>Para retenção</h3>
+            <p>O cliente entende carteira, mercado e riscos antes de questionar valor.</p>
           </article>
 
-          <article class="ass-benefits__item">
-            <span class="ass-benefits__num">05</span>
-            <h3>Retenção e relacionamento</h3>
-            <p>O cliente tem <strong>mais motivos pra voltar</strong> ao ambiente da assessoria. Cada visita reforça a marca da casa, em vez do logo da corretora.</p>
+          <article class="sol-uses__card">
+            <div class="sol-uses__icon" :style="{ background: `color-mix(in srgb, ${brand.colors.primary} 14%, transparent)`, color: brand.colors.primary }">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+            <h3>Para posicionamento</h3>
+            <p>Mostre que sua assessoria não é só atendimento. É inteligência, tech e experiência.</p>
           </article>
         </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         7. IMPLEMENTACAO, remover medo
+         ============================================================ -->
+    <section class="sol-steps reveal-on-scroll">
+      <div class="lp-container">
+        <div class="lp-section-head">
+          <p class="lp-eyebrow lp-eyebrow--center">IMPLEMENTAÇÃO</p>
+          <h2 class="lp-section-title">
+            Você não precisa construir
+            <span class="lp-section-title__italic">uma fintech do zero.</span>
+          </h2>
+          <p class="sol-steps__lead">
+            A Redentia entrega a camada de tecnologia para sua assessoria oferecer uma experiência digital própria aos clientes. Sem montar time de produto, design, dados ou desenvolvimento. <strong>Você cuida da relação, a gente cuida da tech.</strong>
+          </p>
+        </div>
+
+        <ol class="sol-steps__list">
+          <li class="sol-steps__step">
+            <span class="sol-steps__num">01</span>
+            <div class="sol-steps__body">
+              <h3>Diagnóstico</h3>
+              <p>Entendemos o modelo da sua assessoria e o perfil de cliente que você atende.</p>
+            </div>
+          </li>
+          <li class="sol-steps__step">
+            <span class="sol-steps__num">02</span>
+            <div class="sol-steps__body">
+              <h3>Configuração da experiência</h3>
+              <p>Adaptamos a plataforma para a sua marca: domínio, paleta, logo, voz e escopo.</p>
+            </div>
+          </li>
+          <li class="sol-steps__step">
+            <span class="sol-steps__num">03</span>
+            <div class="sol-steps__body">
+              <h3>Ativação inicial</h3>
+              <p>Você começa com base selecionada de clientes ou usa pra demonstração comercial.</p>
+            </div>
+          </li>
+          <li class="sol-steps__step">
+            <span class="sol-steps__num">04</span>
+            <div class="sol-steps__body">
+              <h3>Evolução</h3>
+              <p>Acompanhamos feedbacks e ajustamos a experiência pra gerar mais valor ao longo do tempo.</p>
+            </div>
+          </li>
+        </ol>
+
+        <button
+          type="button"
+          class="lp-hero__cta sol-steps__cta"
+          @click="openLeadModal"
+        >
+          Quero ver a Redentia na minha assessoria
+          <span aria-hidden="true">→</span>
+        </button>
       </div>
     </section>
 
@@ -1290,12 +1367,12 @@ useHead({
           </p>
 
           <h2 class="lp-section-title">
-            Só vamos vender pra
+            Primeira fase limitada a
             <span class="lp-section-title__italic">10 assessorias.</span>
           </h2>
 
           <p class="ass-scarcity__lead">
-            Não é promoção, é capacidade real. Cada plataforma é montada por nós, com a sua marca, no seu domínio, e <strong>adaptada ao jeito que sua assessoria atende</strong>. Por isso o teto: só conseguimos fazer isso bem para 10 nesta primeira leva. Depois, abre a próxima janela.
+            Nesta etapa, vamos implementar a Redentia com <strong>apenas 10 assessorias</strong>. O motivo é simples: a solução pede proximidade, adaptação da experiência e acompanhamento da operação comercial de cada escritório. Por isso, poucas assessorias agora, profundidade depois.
           </p>
 
           <button
@@ -1303,7 +1380,7 @@ useHead({
             class="lp-hero__cta ass-scarcity__cta"
             @click="openLeadModal"
           >
-            Quero para a minha assessoria
+            Quero participar da primeira fase
             <span aria-hidden="true">→</span>
           </button>
         </div>
@@ -1316,10 +1393,10 @@ useHead({
     <section class="ass-proof reveal-on-scroll">
       <div class="lp-container">
         <div class="lp-section-head">
-          <p class="lp-eyebrow lp-eyebrow--center">CONTEXTO</p>
+          <p class="lp-eyebrow lp-eyebrow--center">PROVA</p>
           <h2 class="lp-section-title">
-            Por que
-            <span class="lp-section-title__italic">agora?</span>
+            Uma nova camada de inteligência
+            <span class="lp-section-title__italic">para assessorias modernas.</span>
           </h2>
         </div>
 
@@ -1395,18 +1472,18 @@ useHead({
         <div class="ass-faq__list">
           <details class="ass-faq__item">
             <summary>
-              <span>Isso é para substituir o assessor?</span>
+              <span>A plataforma fica com a marca da minha assessoria?</span>
               <span class="ass-faq__chev" aria-hidden="true">+</span>
             </summary>
-            <p>Não. É para <strong>aumentar a percepção de valor</strong> do trabalho do assessor e dar escala ao relacionamento. O assessor continua sendo a relação humana, a plataforma é o ambiente onde essa relação ganha amplificação digital.</p>
+            <p>Sim. Domínio próprio, logo, paleta, fonte, voz. <strong>Zero menção da Redentia</strong> no produto final que o cliente vê. Pro investidor, é uma plataforma da sua casa, não um software de terceiro.</p>
           </details>
 
           <details class="ass-faq__item">
             <summary>
-              <span>A plataforma fica com a marca da minha assessoria?</span>
+              <span>Isso substitui o assessor?</span>
               <span class="ass-faq__chev" aria-hidden="true">+</span>
             </summary>
-            <p>Sim. Domínio próprio, logo, paleta, fonte, voz. <strong>Zero menção da Redentia</strong> no produto final que o cliente vê. Para o investidor, é uma plataforma da sua casa, não um software de terceiro.</p>
+            <p>Não. A Redentia <strong>aumenta a percepção de valor</strong> do assessor, dando mais clareza, contexto e escala ao relacionamento. O assessor segue como relação humana, a plataforma amplifica.</p>
           </details>
 
           <details class="ass-faq__item">
@@ -1414,41 +1491,74 @@ useHead({
               <span>Preciso ter time de tecnologia?</span>
               <span class="ass-faq__chev" aria-hidden="true">+</span>
             </summary>
-            <p>Não. A Redentia entrega toda a camada de tecnologia: infra, dados de mercado, calculadoras, IA, design system. Você cuida do <strong>relacionamento</strong> e da <strong>marca</strong>, a gente cuida do resto.</p>
+            <p>Não. A Redentia entrega a camada tecnológica: infra, dados de mercado, calculadoras, IA, design system. Você cuida do <strong>relacionamento</strong> e da <strong>marca</strong>, a gente cuida do resto.</p>
           </details>
 
           <details class="ass-faq__item">
             <summary>
-              <span>É para todos os clientes ou só alguns?</span>
+              <span>Preciso começar com toda a base?</span>
               <span class="ass-faq__chev" aria-hidden="true">+</span>
             </summary>
-            <p>Pode começar com <strong>clientes premium, base selecionada ou uso comercial pra demonstração</strong>. Não precisa rolar pra base inteira no dia 1. Várias assessorias começam com 30 a 50 clientes pra calibrar antes de abrir.</p>
+            <p>Não. Você pode começar com <strong>clientes premium, base selecionada ou usar como ferramenta comercial</strong> pra demonstração. Várias assessorias rodam com 30 a 50 clientes na ativação inicial pra calibrar.</p>
           </details>
 
           <details class="ass-faq__item">
             <summary>
-              <span>Como funciona a implementação?</span>
+              <span>É uma plataforma de recomendação de investimento?</span>
               <span class="ass-faq__chev" aria-hidden="true">+</span>
             </summary>
-            <p>O primeiro passo é uma <strong>conversa rápida</strong> pra entender o modelo da assessoria, o perfil do cliente e avaliar fit pra primeira fase. A partir daí, definimos identidade visual, escopo e prazo. Da call ao deploy, o ciclo médio é de 7 dias.</p>
+            <p>Não. A proposta é ajudar o cliente a <strong>entender carteira, notícias, riscos e impactos de mercado</strong>. Recomendações e estratégia continuam com a assessoria, como sempre foi.</p>
           </details>
 
           <details class="ass-faq__item">
             <summary>
-              <span>E se a gente já tem um app próprio?</span>
+              <span>Por que só 10 assessorias na primeira fase?</span>
               <span class="ass-faq__chev" aria-hidden="true">+</span>
             </summary>
-            <p>A Redentia funciona como <strong>plataforma standalone</strong> (mais comum) ou como camada de inteligência embedded via API. No segundo caso, conversamos sobre o ponto de integração que faz mais sentido pra sua stack.</p>
+            <p>Porque a primeira fase pede <strong>proximidade e personalização na implementação</strong>. Cada plataforma é adaptada ao modelo da casa. Pra fazer isso bem, abrimos só 10 vagas iniciais. Depois, abre a próxima janela.</p>
           </details>
         </div>
       </div>
     </section>
 
-    <!-- NOTA: section "10. CTA FINAL" (.lp-final) removida em 2026-05-11.
-         O proprio FAQ ja arremata a navegacao e o banner sticky no topo +
-         CTAs distribuidos ao longo da page (hero, escassez, faixa de
-         previews) garantem reach do lead modal. Manter um CTA final
-         duplicado virou ruido. -->
+    <!-- ============================================================
+         11. CTA FINAL, fecha com visao + acao
+         ============================================================ -->
+    <section class="sol-final reveal-on-scroll">
+      <div
+        class="sol-final__glow"
+        aria-hidden="true"
+        :style="{
+          background: `radial-gradient(ellipse 70% 60% at 50% 50%, color-mix(in srgb, ${brand.colors.primary} 26%, transparent), transparent 65%)`,
+        }"
+      />
+      <div class="lp-container">
+        <div class="sol-final__inner">
+          <p class="lp-eyebrow lp-eyebrow--center">PRIMEIRA FASE</p>
+          <h2 class="lp-section-title">
+            Sua assessoria pode ser uma das primeiras
+            <span class="lp-section-title__italic">com plataforma própria de IA.</span>
+          </h2>
+
+          <p class="sol-final__lead">
+            Mostre tecnologia, inteligência e clareza para os seus clientes. <strong>Diferencie sua marca antes que o mercado inteiro faça igual.</strong>
+          </p>
+
+          <button
+            type="button"
+            class="lp-hero__cta sol-final__cta"
+            @click="openLeadModal"
+          >
+            Quero ver uma demonstração
+            <span aria-hidden="true">→</span>
+          </button>
+
+          <p class="sol-final__legal">
+            Conversa de 20 minutos, sem proposta de 40 páginas · assessorias@redentia.com.br
+          </p>
+        </div>
+      </div>
+    </section>
 
     <!-- Modal de captura de lead DEDICADO a /assessorias.
          Fullscreen, multi-step (1: identificacao, 2: 5 perguntas Sim/Não).
@@ -2578,11 +2688,11 @@ useHead({
 
 /* ============ ANIMACOES INTERNAS DO MOCK ============
    Disparam quando a page corresponde monta dentro do <Transition>.
-   Cada bubble do chat e a carta do painel ganham vida propria,
-   evitando que o mock pareca um screenshot estatico. */
+   Cada bubble do chat e o card de relatorio do painel ganham vida
+   propria, evitando que o mock pareca um screenshot estatico. */
 
 /* Bubble do chat aparecendo: slide-up + fade. Aplicado em
-   user msg, AI typing, AI response e sugestoes. */
+   user msg, AI typing e AI response. */
 .ass-chat__msg--enter {
   animation: ass-chat-msg-in 360ms cubic-bezier(0.22, 0.61, 0.36, 1) backwards;
 }
@@ -2613,6 +2723,12 @@ useHead({
 @keyframes ass-chat-typing-bounce {
   0%, 60%, 100% { opacity: 0.35; transform: translateY(0); }
   30% { opacity: 1; transform: translateY(-4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ass-chat__msg--enter,
+  .ass-chat__input-caret,
+  .ass-chat__typing span { animation: none; }
 }
 
 /* =================================================================
@@ -2651,6 +2767,8 @@ useHead({
      Visual de "tem mais embaixo, voce so esta vendo a primeira parte",
      coerente com o feel "preview do produto" do mock. */
   max-height: 230px;
+  /* Fade-out gradiente no rodape via mask, escondendo o corte abrupto.
+     Aceleração da animação roda igual (so altera o que e visivel). */
   -webkit-mask-image: linear-gradient(180deg,
     #000 0%, #000 70%, transparent 100%);
   mask-image: linear-gradient(180deg,
@@ -2660,6 +2778,7 @@ useHead({
   animation: ass-letter-rise 700ms cubic-bezier(0.22, 0.61, 0.36, 1) 320ms backwards;
 }
 
+/* Watermark gigante SUA MARCA atras do conteudo */
 .ass-letter__watermark {
   position: absolute;
   inset: 0;
@@ -2676,6 +2795,7 @@ useHead({
   white-space: nowrap;
 }
 
+/* Header: edicao | monograma | data */
 .ass-letter__head {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -2716,6 +2836,7 @@ useHead({
   font-style: italic;
 }
 
+/* Salutation italic + serif */
 .ass-letter__salut {
   margin: 12px 0 6px;
   font-size: 14px;
@@ -2731,6 +2852,7 @@ useHead({
   color: var(--brand-primary);
 }
 
+/* Corpo da carta */
 .ass-letter__body {
   margin: 0 0 10px;
   font-size: 11.5px;
@@ -2741,8 +2863,12 @@ useHead({
 }
 .ass-letter__body strong { font-weight: 600; }
 .ass-letter__body em { font-style: italic; color: rgba(43, 36, 25, 0.85); }
-.ass-letter__hl { color: #1f6b32; font-weight: 700; }
+.ass-letter__hl {
+  color: #1f6b32;
+  font-weight: 700;
+}
 
+/* Stats row inline */
 .ass-letter__stats {
   display: flex;
   align-items: center;
@@ -2791,6 +2917,7 @@ useHead({
   background: rgba(170, 130, 60, 0.3);
 }
 
+/* Régua ornamental com flor */
 .ass-letter__rule {
   display: flex;
   align-items: center;
@@ -2818,6 +2945,7 @@ useHead({
   opacity: 0.7;
 }
 
+/* Footer: closing + signature */
 .ass-letter__foot {
   display: flex;
   flex-direction: column;
@@ -2851,9 +2979,6 @@ useHead({
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ass-chat__msg--enter,
-  .ass-chat__input-caret,
-  .ass-chat__typing span,
   .ass-letter { animation: none; }
 }
 
@@ -4310,6 +4435,435 @@ useHead({
 .ass-benefits__item p strong {
   color: var(--brand-text);
   font-weight: 600;
+}
+
+/* =================================================================
+ * SECTIONS EXCLUSIVAS DA /assessorias-diferencie-solucao
+ * .sol-what       — 4 cards (Carteira/Noticias/Impactos/Riscos)
+ * .sol-diff       — 4 benefit cards numerados
+ * .sol-compare    — tabela 2 colunas Antes/Depois
+ * .sol-uses       — 5 use case cards
+ * .sol-steps      — 4 numbered implementation steps
+ * .sol-final      — CTA final
+ * ================================================================= */
+
+/* ============ SOL-WHAT (4 cards: Carteira/Noticias/Impactos/Riscos) ============ */
+.sol-what {
+  padding: 80px 0 96px;
+}
+@media (min-width: 768px) { .sol-what { padding: 112px 0 128px; } }
+
+.sol-what__lead {
+  margin: 22px auto 0;
+  max-width: 660px;
+  font-size: 16px;
+  line-height: 1.65;
+  color: color-mix(in srgb, var(--brand-text) 78%, transparent);
+}
+.sol-what__lead strong {
+  color: var(--brand-text);
+  font-weight: 600;
+}
+
+.sol-what__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+@media (min-width: 640px) {
+  .sol-what__grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+}
+@media (min-width: 1024px) {
+  .sol-what__grid { grid-template-columns: repeat(4, 1fr); gap: 22px; }
+}
+
+.sol-what__card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 26px 24px;
+  border-radius: 16px;
+  background: var(--brand-surface);
+  border: 1px solid color-mix(in srgb, var(--brand-border) 50%, transparent);
+  transition: border-color 220ms, transform 220ms;
+}
+.sol-what__card:hover {
+  border-color: color-mix(in srgb, var(--brand-primary) 40%, transparent);
+  transform: translateY(-2px);
+}
+.sol-what__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 11px;
+  flex-shrink: 0;
+}
+.sol-what__card h3 {
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--brand-text);
+  margin: 0;
+}
+.sol-what__card p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--brand-text) 72%, transparent);
+}
+.sol-what__card p strong { color: var(--brand-text); font-weight: 600; }
+
+/* ============ SOL-DIFF (4 benefit cards) ============ */
+.sol-diff {
+  position: relative;
+  padding: 80px 0 96px;
+  isolation: isolate;
+}
+@media (min-width: 768px) { .sol-diff { padding: 112px 0 128px; } }
+.sol-diff__glow {
+  position: absolute;
+  inset: 0 -20%;
+  filter: blur(70px);
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.6;
+  will-change: opacity;
+  transform: translateZ(0);
+}
+.sol-diff__lead {
+  margin: 22px auto 0;
+  max-width: 660px;
+  font-size: 16px;
+  line-height: 1.65;
+  color: color-mix(in srgb, var(--brand-text) 78%, transparent);
+}
+.sol-diff__lead strong { color: var(--brand-text); font-weight: 600; }
+
+.sol-diff__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+@media (min-width: 768px) { .sol-diff__grid { grid-template-columns: repeat(2, 1fr); gap: 22px; } }
+@media (min-width: 1100px) { .sol-diff__grid { grid-template-columns: repeat(4, 1fr); gap: 20px; } }
+
+.sol-diff__card {
+  position: relative;
+  padding: 28px 24px 26px;
+  border-radius: 18px;
+  background: var(--brand-surface);
+  border: 1px solid color-mix(in srgb, var(--brand-border) 55%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: border-color 220ms, transform 220ms, box-shadow 220ms;
+}
+.sol-diff__card:hover {
+  border-color: color-mix(in srgb, var(--brand-primary) 50%, transparent);
+  transform: translateY(-3px);
+  box-shadow: 0 24px 48px -16px color-mix(in srgb, var(--brand-primary) 24%, transparent);
+}
+.sol-diff__num {
+  font-family: 'Instrument Serif', serif;
+  font-size: 26px;
+  font-weight: 400;
+  color: var(--brand-primary);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.sol-diff__card h3 {
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  color: var(--brand-text);
+  margin: 0;
+  line-height: 1.3;
+}
+.sol-diff__card h3 em {
+  font-family: 'Instrument Serif', serif;
+  font-style: italic;
+  font-weight: 400;
+  color: var(--brand-primary);
+}
+.sol-diff__card p {
+  font-size: 14px;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--brand-text) 72%, transparent);
+  margin: 0;
+}
+
+/* ============ SOL-COMPARE (tabela antes/depois) ============ */
+.sol-compare {
+  padding: 80px 0 96px;
+  background: color-mix(in srgb, var(--brand-surface) 30%, var(--brand-background));
+  border-top: 1px solid color-mix(in srgb, var(--brand-border) 25%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--brand-border) 25%, transparent);
+}
+@media (min-width: 768px) { .sol-compare { padding: 112px 0 128px; } }
+
+.sol-compare__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  max-width: 920px;
+  margin: 0 auto;
+}
+@media (min-width: 768px) {
+  .sol-compare__grid { grid-template-columns: 1fr 1fr; gap: 20px; }
+}
+
+.sol-compare__col {
+  padding: 28px 26px 32px;
+  border-radius: 18px;
+  border: 1px solid color-mix(in srgb, var(--brand-border) 40%, transparent);
+}
+.sol-compare__head {
+  margin: 0 0 18px;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.sol-compare__col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.sol-compare__col li {
+  position: relative;
+  padding-left: 26px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.sol-compare__col li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 5px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 65% 65%;
+}
+.sol-compare__col--before {
+  background: color-mix(in srgb, var(--brand-text) 4%, transparent);
+}
+.sol-compare__col--before .sol-compare__head {
+  color: color-mix(in srgb, var(--brand-text) 55%, transparent);
+}
+.sol-compare__col--before li {
+  color: color-mix(in srgb, var(--brand-text) 60%, transparent);
+}
+.sol-compare__col--before li::before {
+  background-color: color-mix(in srgb, var(--brand-text) 12%, transparent);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2.5'%3E%3Cline x1='18' y1='6' x2='6' y2='18'/%3E%3Cline x1='6' y1='6' x2='18' y2='18'/%3E%3C/svg%3E");
+}
+.sol-compare__col--after {
+  background: color-mix(in srgb, var(--brand-primary) 8%, transparent);
+  border-color: color-mix(in srgb, var(--brand-primary) 38%, transparent);
+  box-shadow: 0 24px 48px -20px color-mix(in srgb, var(--brand-primary) 28%, transparent);
+}
+.sol-compare__col--after .sol-compare__head {
+  color: var(--brand-primary);
+}
+.sol-compare__col--after li {
+  color: var(--brand-text);
+}
+.sol-compare__col--after li::before {
+  background-color: color-mix(in srgb, var(--brand-primary) 22%, transparent);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23D8881A' stroke-width='3'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+}
+.sol-compare__col--after li strong { font-weight: 600; }
+
+/* ============ SOL-USES (5 use case cards) ============ */
+.sol-uses {
+  padding: 80px 0 96px;
+}
+@media (min-width: 768px) { .sol-uses { padding: 112px 0 128px; } }
+
+.sol-uses__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+@media (min-width: 640px) {
+  .sol-uses__grid { grid-template-columns: repeat(2, 1fr); gap: 18px; }
+}
+@media (min-width: 1024px) {
+  /* 5 cards, 3+2 layout */
+  .sol-uses__grid { grid-template-columns: repeat(6, 1fr); gap: 20px; }
+  .sol-uses__card:nth-child(1) { grid-column: 1 / span 2; }
+  .sol-uses__card:nth-child(2) { grid-column: 3 / span 2; }
+  .sol-uses__card:nth-child(3) { grid-column: 5 / span 2; }
+  .sol-uses__card:nth-child(4) { grid-column: 2 / span 2; }
+  .sol-uses__card:nth-child(5) { grid-column: 4 / span 2; }
+}
+
+.sol-uses__card {
+  padding: 22px 22px 24px;
+  border-radius: 16px;
+  background: var(--brand-surface);
+  border: 1px solid color-mix(in srgb, var(--brand-border) 50%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: border-color 220ms, transform 220ms;
+}
+.sol-uses__card:hover {
+  border-color: color-mix(in srgb, var(--brand-primary) 45%, transparent);
+  transform: translateY(-2px);
+}
+.sol-uses__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+.sol-uses__card h3 {
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--brand-text);
+  margin: 0;
+}
+.sol-uses__card p {
+  font-size: 14px;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--brand-text) 72%, transparent);
+  margin: 0;
+}
+
+/* ============ SOL-STEPS (4 implementation steps) ============ */
+.sol-steps {
+  padding: 80px 0 96px;
+  background: color-mix(in srgb, var(--brand-surface) 30%, var(--brand-background));
+  border-top: 1px solid color-mix(in srgb, var(--brand-border) 25%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--brand-border) 25%, transparent);
+}
+@media (min-width: 768px) { .sol-steps { padding: 112px 0 128px; } }
+
+.sol-steps__lead {
+  margin: 22px auto 0;
+  max-width: 660px;
+  font-size: 16px;
+  line-height: 1.65;
+  color: color-mix(in srgb, var(--brand-text) 78%, transparent);
+}
+.sol-steps__lead strong { color: var(--brand-text); font-weight: 600; }
+
+.sol-steps__list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 768px) {
+  .sol-steps__list { grid-template-columns: 1fr 1fr; gap: 20px; }
+}
+
+.sol-steps__step {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  padding: 22px 22px 24px;
+  border-radius: 16px;
+  background: var(--brand-background);
+  border: 1px solid color-mix(in srgb, var(--brand-border) 50%, transparent);
+  transition: border-color 220ms;
+}
+.sol-steps__step:hover {
+  border-color: color-mix(in srgb, var(--brand-primary) 40%, transparent);
+}
+.sol-steps__num {
+  font-family: 'Instrument Serif', serif;
+  font-size: 36px;
+  font-weight: 400;
+  color: var(--brand-primary);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+.sol-steps__body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-width: 0;
+}
+.sol-steps__body h3 {
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--brand-text);
+  margin: 0;
+}
+.sol-steps__body p {
+  font-size: 14px;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--brand-text) 72%, transparent);
+  margin: 0;
+}
+
+.sol-steps__cta {
+  margin: 36px auto 0;
+  display: flex;
+}
+
+/* ============ SOL-FINAL (CTA final) ============ */
+.sol-final {
+  position: relative;
+  padding: 96px 0 112px;
+  text-align: center;
+  isolation: isolate;
+}
+@media (min-width: 768px) { .sol-final { padding: 128px 0 144px; } }
+.sol-final__glow {
+  position: absolute;
+  inset: -10% -10%;
+  filter: blur(60px);
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.7;
+  will-change: opacity;
+  transform: translateZ(0);
+}
+.sol-final__inner {
+  max-width: 720px;
+  margin: 0 auto;
+}
+.sol-final__lead {
+  margin: 18px auto 32px;
+  max-width: 580px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: color-mix(in srgb, var(--brand-text) 75%, transparent);
+}
+.sol-final__lead strong { color: var(--brand-text); font-weight: 600; }
+.sol-final__cta { margin: 0 auto; }
+.sol-final__legal {
+  margin: 22px auto 0;
+  font-size: 12.5px;
+  color: color-mix(in srgb, var(--brand-text) 55%, transparent);
 }
 
 /* ============ 7. SCARCITY ============ */
