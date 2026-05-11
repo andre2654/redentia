@@ -54,9 +54,17 @@ defineEmits<{
 
 const brand = useBrand()
 
+// Day Trade ainda nao disponivel — desabilitado com badge "Em breve".
+// Quando a feature ficar pronta, basta remover `disabled` e `badge`.
 const options = [
   { value: 'carteira' as const, label: 'Carteira', icon: 'i-lucide-pie-chart' },
-  { value: 'day-trade' as const, label: 'Day Trade', icon: 'i-lucide-zap' },
+  {
+    value: 'day-trade' as const,
+    label: 'Day Trade',
+    icon: 'i-lucide-zap',
+    disabled: true,
+    badge: 'Em breve',
+  },
 ]
 </script>
 

@@ -54,7 +54,8 @@
       :style="modelValue === option.value
         ? { backgroundColor: 'var(--brand-primary)', color: 'var(--text-on-primary)' }
         : { backgroundColor: 'transparent', color: 'var(--text-body)' }"
-      :disabled="disabled"
+      :disabled="disabled || option.disabled"
+      :title="option.disabled && option.badge ? option.badge : undefined"
       :role="as === 'tabs' ? 'tab' : undefined"
       :aria-pressed="as === 'tabs' ? undefined : modelValue === option.value"
       :aria-selected="as === 'tabs' ? modelValue === option.value : undefined"
@@ -73,6 +74,15 @@
         aria-hidden="true"
       />
       <span v-if="option.label" :class="hideLabelOnMobile ? 'max-sm:hidden' : ''">{{ option.label }}</span>
+      <span
+        v-if="option.badge"
+        class="ml-1 inline-flex items-center rounded-full px-1.5 py-[1px] text-[9px] font-semibold uppercase tracking-wider"
+        :style="{
+          backgroundColor: 'color-mix(in srgb, var(--brand-primary) 16%, transparent)',
+          color: 'var(--brand-primary)',
+          letterSpacing: '0.08em',
+        }"
+      >{{ option.badge }}</span>
     </button>
   </div>
 </template>
@@ -83,6 +93,11 @@ type Option = {
   label?: string
   icon?: string
   ariaLabel?: string
+  /** Marca essa opcao especificamente como desabilitada (independente
+   *  do prop `disabled` global). Util pra "Em breve" / paywall. */
+  disabled?: boolean
+  /** Pequena tag inline ao lado do label (ex: "Em breve", "Beta"). */
+  badge?: string
 }
 
 const props = withDefaults(
@@ -132,14 +147,21 @@ function onKeydown(e: KeyboardEvent, _val: T) {
   const idx = props.options.findIndex((o) => o.value === modelValue.value)
   if (idx < 0) return
   let next = idx
-  if (e.key === 'ArrowLeft') next = idx - 1
-  else if (e.key === 'ArrowRight') next = idx + 1
-  else if (e.key === 'Home') next = 0
-  else if (e.key === 'End') next = props.options.length - 1
-  if (next < 0) next = props.options.length - 1
-  if (next >= props.options.length) next = 0
+  // Skip opcoes disabled — usa um loop ate achar uma habilitada.
+  const max = props.options.length
+  for (let step = 0; step < max; step++) {
+    if (e.key === 'ArrowLeft') next = next - 1
+    else if (e.key === 'ArrowRight') next = next + 1
+    else if (e.key === 'Home') next = 0
+    else if (e.key === 'End') next = max - 1
+    if (next < 0) next = max - 1
+    if (next >= max) next = 0
+    if (!props.options[next].disabled) break
+    // Home/End nao iteram — se a primeira/ultima estiver disabled, sai
+    if (e.key === 'Home' || e.key === 'End') break
+  }
+  if (props.options[next].disabled) return
   modelValue.value = props.options[next].value
-  // Foca o novo tab (igual padrao WAI tabs)
   const target = e.currentTarget as HTMLElement
   const parent = target.parentElement
   const buttons = parent?.querySelectorAll('button')
