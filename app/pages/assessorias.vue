@@ -224,6 +224,17 @@ usePageSeo({
   description: 'Sua assessoria pode oferecer uma plataforma própria com IA para análise de carteira, notícias e riscos. Primeira fase: 10 vagas. Fale com o time.',
   path: '/assessorias',
 })
+
+// Forca a page inteira em light mode independente do mode atual do
+// brand. Aplica classe no <body> via useHead, e o segundo bloco
+// <style> (nao-scoped) faz override das CSS vars do brand. Saindo
+// da page (route change), Nuxt remove a classe automaticamente, e
+// a page volta ao mode normal do brand.
+useHead({
+  bodyAttrs: {
+    class: 'assessorias-light-only',
+  },
+})
 </script>
 
 <template>
@@ -4141,5 +4152,41 @@ usePageSeo({
     transform: none;
     transition: none;
   }
+}
+</style>
+
+<!--
+  Bloco <style> NAO scoped. Necessario porque ataca o <body> via classe
+  setada por useHead, que esta FORA do escopo dessa page. Vue scoped
+  CSS nao vaza pra fora do componente; as regras desse bloco precisam
+  ser globais.
+
+  Override das CSS vars do brand garante que a page /assessorias
+  permanece em light mode mesmo se o brand atual estiver configurado
+  pra dark. Usado em conjunto com useHead({ bodyAttrs.class }).
+-->
+<style>
+body.assessorias-light-only {
+  --brand-background: #FAFAFB;
+  --brand-text: #1A0A2E;
+  --brand-text-muted: rgba(26, 10, 46, 0.6);
+  --brand-surface: #FFFFFF;
+  --brand-surface-hover: #F4F4F5;
+  --brand-border: rgba(26, 10, 46, 0.14);
+  --brand-input-bg: #FFFFFF;
+  --brand-input-bg-hover: #FAFAFB;
+  --brand-input-border: rgba(26, 10, 46, 0.2);
+  --text-heading: #1A0A2E;
+  --text-body: rgba(26, 10, 46, 0.85);
+  --text-muted: rgba(26, 10, 46, 0.55);
+  --bg-base: #FAFAFB;
+  --bg-elevated: #FFFFFF;
+  --bg-overlay: #F4F4F5;
+  --border-subtle: rgba(26, 10, 46, 0.10);
+  --border-default: rgba(26, 10, 46, 0.18);
+  --border-strong: rgba(26, 10, 46, 0.30);
+  background: #FAFAFB !important;
+  color: #1A0A2E;
+  color-scheme: light;
 }
 </style>
