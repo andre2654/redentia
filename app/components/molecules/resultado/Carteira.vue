@@ -81,15 +81,14 @@
       <MoleculesResultadoCarteiraMetrics :stats="stats" :period="period" />
     </section>
 
-    <!-- ============ 6. HISTÓRICO ============ -->
-    <section class="flex flex-col gap-4">
-      <SectionHeading
-        :brand="brand"
-        eyebrow="Histórico"
-        title="Operações no período"
-      />
-      <MoleculesResultadoCarteiraTradesTable :trades="stats.trades" />
-    </section>
+    <!-- ============ 6. POSIÇÕES EM ABERTO ============
+         Mostra o que esta carregando na carteira AGORA, com P&L
+         unrealized (mark-to-market). Substitui a tabela antiga de
+         operacoes fechadas — o user quer ver "o que tenho hoje e
+         quanto estou ganhando/perdendo nelas", nao "o que fechei
+         no periodo". Operacoes fechadas viraram dado de
+         backend (drill-down do heatmap, equity curve). -->
+    <MoleculesResultadoCarteiraOpenPositions :trades="allTimeStats.trades" />
 
     <!-- ============ 7. LEITURAS ============ -->
     <section class="flex flex-col gap-4">
@@ -116,16 +115,27 @@
          de janela curta (7d/30d) tornariam o heatmap inutilmente
          vazio. Computamos a serie diretamente de `props.trades`. -->
     <section class="flex flex-col gap-4">
-      <SectionHeading
-        :brand="brand"
-        eyebrow="Calendário"
-        title="Resultado dia a dia"
-        lead="Janela fixa dos últimos 6 meses. Cada celula e um dia. Quanto mais saturada, maior o impacto. Verde = lucro, vermelho = perda, neutro = sem operacao."
-      />
+      <div class="flex flex-wrap items-end justify-between gap-3">
+        <SectionHeading
+          :brand="brand"
+          eyebrow="Calendário"
+          :title="heatmapMode === 'sells' ? 'Resultado dia a dia' : 'Proventos dia a dia'"
+          :lead="heatmapMode === 'sells'
+            ? 'Janela fixa dos últimos 6 meses. Verde = vendas com lucro, vermelho = vendas com prejuízo.'
+            : 'Janela fixa dos últimos 6 meses. Verde = dias com dividendos, JCP ou rendimentos de FII creditados.'"
+        />
+        <AtomsSegmented
+          v-model="heatmapMode"
+          :options="heatmapModeOptions"
+          size="sm"
+          aria-label="Tipo de evento no calendário"
+        />
+      </div>
       <MoleculesResultadoCarteiraHeatmap
-        :series="last6MonthsSeries"
+        :series="heatmapSeries"
         :period="period"
         :trades="props.trades"
+        :mode="heatmapMode"
         size="huge"
       />
     </section>
@@ -217,13 +227,24 @@ const equityDailySlice = computed<DailyPnLPoint[]>(() => {
   return out
 })
 
+// ============ Heatmap mode toggle ============
+// User pode alternar o calendario entre:
+//   - 'sells'    → so vendas/operacoes fechadas (P&L de fato realizado)
+//   - 'dividends' → so dividendos / JCP / income (recebimentos passivos)
+// Isso permite responder duas perguntas distintas:
+//   "em que dias eu ganhei dinheiro VENDENDO?"
+//   "em que dias caiu provento na conta?"
+type HeatmapMode = 'sells' | 'dividends'
+const heatmapMode = ref<HeatmapMode>('sells')
+const heatmapModeOptions = [
+  { value: 'sells' as const, label: 'Resultado' },
+  { value: 'dividends' as const, label: 'Proventos' },
+]
+
 // ============ 6-month daily series (calendario heatmap) ============
-// Janela fixa, sem depender do period selector. Agregamos `props.trades`
-// diretamente em P&L diario nos ultimos 180 dias (~6 meses corridos).
-// Esta logica espelha o que `useResultadoStats.dailySeries` faz, mas
-// num escopo independente. Quando o backend real entrar (Fase 3),
-// movemos isso pra um helper compartilhado.
-const last6MonthsSeries = computed<DailyPnLPoint[]>(() => {
+// Helper: agrega trades em P&L diario nos ultimos 6 meses, com filtro
+// de side opcional. Janela fixa — independe do period selector.
+function build6mSeries(filter: (t: MockTrade) => boolean): DailyPnLPoint[] {
   const now = Date.now()
   const sixMonthsAgo = new Date()
   sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6)
@@ -231,20 +252,37 @@ const last6MonthsSeries = computed<DailyPnLPoint[]>(() => {
 
   const dailyMap = new Map<string, { pnl: number; trades: number }>()
   for (const t of props.trades) {
-    const ref = t.closedAt ?? t.openedAt
-    const dateMs = new Date(ref).getTime()
+    if (!t.closedAt) continue
+    if (!filter(t)) continue
+    const dateMs = new Date(t.closedAt).getTime()
     if (!Number.isFinite(dateMs) || dateMs < startMs || dateMs > now) continue
-    const date = ref.slice(0, 10)
+    const date = t.closedAt.slice(0, 10)
     const cur = dailyMap.get(date) || { pnl: 0, trades: 0 }
     cur.pnl += t.resultAmount ?? 0
     cur.trades += 1
     dailyMap.set(date, cur)
   }
-
   return Array.from(dailyMap.entries())
     .map(([date, v]) => ({ date, pnl: v.pnl, trades: v.trades }))
     .sort((a, b) => a.date.localeCompare(b.date))
-})
+}
+
+// Vendas / operacoes fechadas: tudo que NAO e provento
+const sellsSeries = computed<DailyPnLPoint[]>(() =>
+  build6mSeries((t) => !isIncomeTrade(t)),
+)
+// Proventos: DIVIDEND + JCP + INCOME (rendimento de FII)
+const dividendsSeries = computed<DailyPnLPoint[]>(() =>
+  build6mSeries(isIncomeTrade),
+)
+
+function isIncomeTrade(t: MockTrade): boolean {
+  return t.side === 'DIVIDEND' || t.side === 'JCP' || t.side === 'INCOME'
+}
+
+const heatmapSeries = computed<DailyPnLPoint[]>(() =>
+  heatmapMode.value === 'sells' ? sellsSeries.value : dividendsSeries.value,
+)
 
 const periodOptions = [
   { value: '7d' as const, label: '7d' },

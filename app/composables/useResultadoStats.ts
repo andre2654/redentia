@@ -116,7 +116,7 @@ export function useResultadoStats(
     for (const t of filtered) {
       const r = t.resultAmount ?? 0
       totalVolume += t.volume
-      if (t.side === 'DIVIDEND' || t.side === 'JCP') {
+      if (t.side === 'DIVIDEND' || t.side === 'JCP' || t.side === 'INCOME') {
         incomePnL += r
       } else if (t.closedAt) {
         realizedPnL += r
@@ -133,7 +133,7 @@ export function useResultadoStats(
     // dividendo nao tem "win/loss" semantico, posicao aberta ainda esta
     // viva e seria injusto contar como win/loss).
     const closedOps = filtered.filter(
-      (t) => t.closedAt && t.side !== 'DIVIDEND' && t.side !== 'JCP',
+      (t) => t.closedAt && t.side !== 'DIVIDEND' && t.side !== 'JCP' && t.side !== 'INCOME',
     )
     const winners = closedOps.filter((t) => (t.resultAmount ?? 0) > 0)
     const losers = closedOps.filter((t) => (t.resultAmount ?? 0) < 0)
@@ -172,7 +172,7 @@ export function useResultadoStats(
     const todayIso = new Date(now).toISOString().slice(0, 10)
     const dailyMap = new Map<string, { pnl: number; trades: number }>()
     for (const t of filtered) {
-      const isOpen = !t.closedAt && t.side !== 'DIVIDEND' && t.side !== 'JCP'
+      const isOpen = !t.closedAt && t.side !== 'DIVIDEND' && t.side !== 'JCP' && t.side !== 'INCOME'
       const ref = isOpen ? todayIso : (t.closedAt ?? t.openedAt)
       const date = ref.slice(0, 10) // YYYY-MM-DD
       const cur = dailyMap.get(date) || { pnl: 0, trades: 0 }

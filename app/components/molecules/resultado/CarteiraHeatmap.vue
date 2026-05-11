@@ -186,14 +186,18 @@
 
             <div class="heatmap-drill__totals">
               <div class="heatmap-drill__total-cell">
-                <span class="heatmap-drill__total-label">Resultado do dia</span>
+                <span class="heatmap-drill__total-label">
+                  {{ mode === 'dividends' ? 'Proventos do dia' : 'Resultado do dia' }}
+                </span>
                 <span
                   class="heatmap-drill__total-value tabular-nums"
                   :style="{ color: drillResultColor(drilldownDayPnl) }"
                 >{{ drillFormatResult(drilldownDayPnl) }}</span>
               </div>
               <div class="heatmap-drill__total-cell">
-                <span class="heatmap-drill__total-label">Operações</span>
+                <span class="heatmap-drill__total-label">
+                  {{ mode === 'dividends' ? 'Pagamentos' : 'Operações' }}
+                </span>
                 <span
                   class="heatmap-drill__total-value tabular-nums"
                   :style="{ color: brand.colors.text }"
@@ -254,10 +258,18 @@ const props = withDefaults(
      * trades, o clique e no-op.
      */
     trades?: import('~/composables/useMockTrades').MockTrade[]
+    /**
+     * Filtra o drill-down por tipo de evento:
+     *   'sells'     → so vendas (closedAt + side BUY/SELL)
+     *   'dividends' → so dividendos / JCP / income
+     * Default 'sells' mantem comportamento antigo.
+     */
+    mode?: 'sells' | 'dividends'
   }>(),
   {
     size: 'compact',
     trades: () => [],
+    mode: 'sells',
   },
 )
 
@@ -359,17 +371,24 @@ function closeDrilldown() {
   selectedDate.value = null
 }
 
+// Lista APENAS trades realizados nesse dia, filtrados por `mode`:
+//   'sells'     → vendas (operacoes fechadas com closedAt + side BUY/SELL)
+//   'dividends' → dividendos / JCP creditados
+// Posicoes em aberto nunca entram aqui (closedAt null) — o "Resultado
+// do dia" e sempre P&L realizado, nao mark-to-market flutuante.
 const drilldownTrades = computed(() => {
   if (!selectedDate.value) return []
+  const isIncome = (t: typeof props.trades[number]) =>
+    t.side === 'DIVIDEND' || t.side === 'JCP' || t.side === 'INCOME'
+
   return props.trades
     .filter((t) => {
-      const ref = t.closedAt ?? t.openedAt
-      return ref.slice(0, 10) === selectedDate.value
+      if (!t.closedAt) return false
+      if (t.closedAt.slice(0, 10) !== selectedDate.value) return false
+      return props.mode === 'dividends' ? isIncome(t) : !isIncome(t)
     })
     .sort((a, b) => {
-      const aRef = a.closedAt ?? a.openedAt
-      const bRef = b.closedAt ?? b.openedAt
-      return new Date(aRef).getTime() - new Date(bRef).getTime()
+      return new Date(a.closedAt!).getTime() - new Date(b.closedAt!).getTime()
     })
 })
 
