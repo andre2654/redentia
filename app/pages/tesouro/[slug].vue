@@ -1,6 +1,25 @@
 <template>
   <NuxtLayout :name="layoutName">
-    <div class="relative z-10 flex flex-col px-4 pt-4">
+    <!-- Variant router: mentor (Primo Rico) / showtime (Me Poupe) / default -->
+    <TesouroMentor
+      v-if="brand.assetPage?.variant === 'mentor'"
+      :data="data"
+      :paper-name="prettyName(data?.name ?? slug)"
+      :indexer-label="indexerLabel"
+      :maturity-date="formatMaturityLong(data?.maturity_date)"
+      :format-money="formatMoney"
+    />
+
+    <TesouroShowtime
+      v-else-if="brand.assetPage?.variant === 'showtime'"
+      :data="data"
+      :paper-name="prettyName(data?.name ?? slug)"
+      :indexer-label="indexerLabel"
+      :maturity-date="formatMaturityLong(data?.maturity_date)"
+      :format-money="formatMoney"
+    />
+
+    <div v-else class="relative z-10 flex flex-col px-4 pt-4">
       <div class="flex flex-col">
         <!-- Hero Dashboard Card: ambient amber glow (tesouro sempre é "neutro") -->
         <section class="border-b pb-8" :style="{ borderColor: brand.colors.border }">

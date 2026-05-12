@@ -3,12 +3,12 @@
     <label class="hero-form__field">
       <span class="hero-form__label">Variant</span>
       <select :value="hero?.variant || 'centered'" class="admin-input" @change="onSelectChange('hero.variant', $event)">
-        <option value="centered">Centered (manifesto generico)</option>
+        <option value="centered">Centered (manifesto generico / fallback)</option>
         <option value="radiograph">Radiograph (input + score demo, B2C self-directed)</option>
-        <option value="quiet">Quiet (premium / lightness as luxury)</option>
-        <option value="terminal">Terminal (Bloomberg-reimagined)</option>
-        <option value="mentor">Mentor (book-cover orange chunky, Primo Rico)</option>
-        <option value="split">Split (founder + quote, Me Poupe)</option>
+        <option value="quiet">Quiet (premium / lightness as luxury, Redentia)</option>
+        <option value="mentor">Mentor (book-cover masterclass, Primo Rico)</option>
+        <option value="showtime">Showtime (TV show / pop magazine, Me Poupe)</option>
+        <option value="split">Split (founder + quote, generic)</option>
         <option value="minimal">Minimal (data-first, Sardinha)</option>
         <option value="institutional">Institutional (sobrio, assessoria)</option>
       </select>

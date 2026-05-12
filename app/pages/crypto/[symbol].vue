@@ -1,6 +1,46 @@
 <template>
   <NuxtLayout :name="layoutName">
-    <div class="relative z-10 flex flex-col px-4 pt-4">
+    <!-- Variant router: tenants podem trocar layout inteiro da page de crypto
+         via `assetPage.variant`. Default = Bloomberg-terminal Redentia. -->
+    <CryptoMentor
+      v-if="brand.assetPage?.variant === 'mentor'"
+      :crypto="crypto"
+      :symbol-upper="symbol.toUpperCase()"
+      :format-price-number="formatPriceNumberCrypto"
+    >
+      <template #chart-controls>
+        <MoleculesPeriodSelector v-model="selectedTimeRange" :loading="isLoadingChart" />
+      </template>
+      <template #chart>
+        <AtomsGraphLine
+          :data="chartData"
+          :legend="`${(crypto?.symbol ?? symbol).toString().toUpperCase()} · R$`"
+          :height="360"
+          :loading="isLoadingChart"
+        />
+      </template>
+    </CryptoMentor>
+
+    <CryptoShowtime
+      v-else-if="brand.assetPage?.variant === 'showtime'"
+      :crypto="crypto"
+      :symbol-upper="symbol.toUpperCase()"
+      :format-price-number="formatPriceNumberCrypto"
+    >
+      <template #chart-controls>
+        <MoleculesPeriodSelector v-model="selectedTimeRange" :loading="isLoadingChart" />
+      </template>
+      <template #chart>
+        <AtomsGraphLine
+          :data="chartData"
+          :legend="`${(crypto?.symbol ?? symbol).toString().toUpperCase()} · R$`"
+          :height="320"
+          :loading="isLoadingChart"
+        />
+      </template>
+    </CryptoShowtime>
+
+    <div v-else class="relative z-10 flex flex-col px-4 pt-4">
       <div class="flex flex-col">
         <!-- Hero Dashboard Card: ambient gradient + sparkline -->
         <section class="border-b pb-8" :style="{ borderColor: brand.colors.border }">

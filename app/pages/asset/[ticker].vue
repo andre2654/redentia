@@ -3,11 +3,79 @@
     :name="layoutName"
     container-class="md:px-0"
   >
-    <!-- Phase 4: removidas as 6 variants experimentais
-         (research/mentor/showtime/editorial/playbook/holder). Nenhum
-         tenant usava (`assetPage.variant` null em todos). Esse bloco
-         agora eh o layout unico. -->
-    <div class="relative z-10 flex flex-col px-4 pt-4">
+    <!-- ========================================================
+         VARIANT ROUTER
+         Tenants podem trocar o layout inteiro da asset page via
+         `assetPage.variant` no JSONB do tenant. Cada variant e um
+         componente proprio em `components/asset/Asset{Variant}.vue`
+         que consome utility classes .font-{variant}-* declaradas em
+         main.css. Default (Redentia / Bloomberg terminal) renderiza
+         se nenhum variant casa.
+         ======================================================== -->
+
+    <!-- MENTOR (Primo Rico, "masterclass / book-cover") -->
+    <AssetMentor
+      v-if="brand.assetPage?.variant === 'mentor'"
+      :asset="asset"
+      :ticker-upper="tickerUpper"
+      :asset-name="assetName"
+      :resolved-logo="resolvedLogo"
+      :is-loading-asset="isLoadingAsset"
+      :failed-logos="failedLogos"
+      :format-price-number="formatPriceNumber"
+      :basic-indicators="basicIndicators"
+      :mentor-quick-stats="mentorQuickStats"
+      :mentor-fundamentals-list="mentorFundamentalsList"
+      :mentor-asset-quote="mentorAssetQuote"
+      :mentor-thesis-text="mentorThesisText"
+      :mentor-one-liner="mentorOneLiner"
+    >
+      <template #chart-controls>
+        <MoleculesPeriodSelector v-model="selectedTimeRange" :loading="isLoadingChart" />
+      </template>
+      <template #chart>
+        <AtomsGraphLine
+          :data="chartData"
+          :legend="chartLabel"
+          :height="360"
+          :loading="isLoadingChart"
+          :markers="chartMarkers"
+          @marker-click="onMarkerClick"
+        />
+      </template>
+    </AssetMentor>
+
+    <!-- SHOWTIME (Me Poupe!, "TV show / pop magazine") -->
+    <AssetShowtime
+      v-else-if="brand.assetPage?.variant === 'showtime'"
+      :asset="asset"
+      :ticker-upper="tickerUpper"
+      :asset-name="assetName"
+      :resolved-logo="resolvedLogo"
+      :is-loading-asset="isLoadingAsset"
+      :failed-logos="failedLogos"
+      :format-price-number="formatPriceNumber"
+      :showtime-quick-panel="showtimeQuickPanel"
+      :showtime-indicator-cards="showtimeIndicatorCards"
+      :asset-editorial-date="assetEditorialDate"
+    >
+      <template #chart-controls>
+        <MoleculesPeriodSelector v-model="selectedTimeRange" :loading="isLoadingChart" />
+      </template>
+      <template #chart>
+        <AtomsGraphLine
+          :data="chartData"
+          :legend="chartLabel"
+          :height="320"
+          :loading="isLoadingChart"
+          :markers="chartMarkers"
+          @marker-click="onMarkerClick"
+        />
+      </template>
+    </AssetShowtime>
+
+    <!-- DEFAULT: Redentia Bloomberg-terminal layout -->
+    <div v-else class="relative z-10 flex flex-col px-4 pt-4">
       <div class="flex flex-col">
         <!-- Hero Dashboard Card: ambient gradient + 3-col grid + sparkline -->
         <section class="border-b pb-8" :style="{ borderColor: brand.colors.border }">
@@ -1019,10 +1087,6 @@ const chatSuggestions = [
   'Vale a pena investir em ETFs?',
 ]
 
-function handleChatCardClick() {
-  blockChat.value = true
-}
-
 interface ChartPoint {
   date: string
   value: number
@@ -1100,40 +1164,6 @@ function formatDyShort(value: unknown): string {
   const num = Number(str)
   if (!Number.isFinite(num)) return '-'
   return `${num.toFixed(2)}%`
-}
-
-// =======================================================
-// Event date formatters used by the playbook 'Movimentos
-// Notáveis' timeline. Each commentary date is split into
-// month / day / year stacks for the date sticker.
-// =======================================================
-const PT_MONTHS_SHORT = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ']
-function parseEventDate(value: unknown): Date | null {
-  if (!value) return null
-  // Accept Date, ISO string, "YYYY-MM-DD", or "DD/MM/YYYY".
-  if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value
-  const s = String(value).trim()
-  if (!s) return null
-  // DD/MM/YYYY → YYYY-MM-DD
-  const br = s.match(/^(\d{2})\/(\d{2})\/(\d{4})/)
-  if (br) {
-    const d = new Date(`${br[3]}-${br[2]}-${br[1]}`)
-    return Number.isNaN(d.getTime()) ? null : d
-  }
-  const d = new Date(s)
-  return Number.isNaN(d.getTime()) ? null : d
-}
-function formatEventMonth(value: unknown): string {
-  const d = parseEventDate(value)
-  return d ? PT_MONTHS_SHORT[d.getMonth()] : '-'
-}
-function formatEventDay(value: unknown): string {
-  const d = parseEventDate(value)
-  return d ? String(d.getDate()).padStart(2, '0') : '-'
-}
-function formatEventYear(value: unknown): string {
-  const d = parseEventDate(value)
-  return d ? String(d.getFullYear()) : '-'
 }
 
 // Current volume, tries fundamentus first, then asset field
@@ -1221,210 +1251,6 @@ const assetEditorialDate = computed(() => {
   }
 })
 
-// A short narrated line that frames the day's price move in plain language.
-const editorialPriceNarration = computed(() => {
-  const pct = Number(asset.value?.change_percent)
-  if (!Number.isFinite(pct)) return ''
-  const abs = Math.abs(pct)
-  if (abs < 0.2) return 'A ação negocia praticamente estável, em linha com o pregão anterior.'
-  if (pct > 0 && abs < 1) return 'A ação sobe de forma discreta, dentro da oscilação típica do pregão.'
-  if (pct > 0 && abs < 3) return 'A ação sobe de forma consistente, acima da variação média do Ibovespa.'
-  if (pct > 0) return 'A ação avança com força no pregão de hoje, movimento que merece contexto antes de decisão.'
-  if (pct < 0 && abs < 1) return 'A ação recua levemente, sem sinalizar mudança de tendência.'
-  if (pct < 0 && abs < 3) return 'A ação recua, em movimento correspondente ao que vemos no setor hoje.'
-  return 'A ação cai com intensidade. Recomendamos aguardar contexto antes de qualquer movimento.'
-})
-
-// A short thesis paragraph that introduces the fundamentals chapter.
-const editorialThesisText = computed(() => {
-  const ind = basicIndicators.value
-  if (!ind) return ''
-  const pl = parseFloat(String(ind.pl).replace(',', '.'))
-  const dy = parseFloat(String(ind.dividendYield).replace(',', '.').replace('%', ''))
-  const fragments: string[] = []
-  if (Number.isFinite(pl) && pl > 0) {
-    if (pl < 8) fragments.push(`negocia a ${ind.pl} vezes lucros, um múltiplo descontado em relação à média histórica do mercado brasileiro`)
-    else if (pl < 15) fragments.push(`negocia a ${ind.pl} vezes lucros, múltiplo em linha com o que consideramos justo`)
-    else fragments.push(`negocia a ${ind.pl} vezes lucros, múltiplo que exige um crescimento consistente para se justificar`)
-  }
-  if (Number.isFinite(dy) && dy > 0) {
-    if (dy >= 6) fragments.push(`distribui ${ind.dividendYield} ao ano em proventos, acima da média de pares nacionais`)
-    else if (dy >= 3) fragments.push(`distribui ${ind.dividendYield} ao ano em proventos, nível compatível com empresas maduras`)
-    else fragments.push(`distribui ${ind.dividendYield} em proventos, política de dividendos ainda modesta`)
-  }
-  if (fragments.length === 0) {
-    return `${asset.value?.name || tickerUpper.value} é acompanhada regularmente pela nossa mesa. Os números abaixo resumem a fotografia mais recente.`
-  }
-  return `${asset.value?.name || tickerUpper.value} ${fragments.join(', e ')}.`
-})
-
-// Fundamentals as a narrated list, different shape than the terminal grid.
-const editorialFundamentalsList = computed(() => {
-  const ind = basicIndicators.value
-  if (!ind) return []
-  return [
-    { label: 'Preço sobre lucro', value: ind.pl },
-    { label: 'Preço sobre valor patrimonial', value: ind.pvpa },
-    { label: 'Dividend yield nos últimos 12 meses', value: ind.dividendYield },
-    { label: 'Retorno sobre patrimônio', value: ind.roe },
-    { label: 'Margem líquida', value: ind.netMargin },
-  ]
-})
-
-// ==========================================================
-// Research variant helpers (Investidor Sardinha, AUVP paper)
-// ==========================================================
-
-// Indicators table with per-row methodological reading
-const researchAssetIndicators = computed(() => {
-  const ind = basicIndicators.value
-  if (!ind) return []
-  return [
-    {
-      label: 'Preço sobre lucro',
-      code: 'P/L · múltiplo de lucros',
-      value: ind.pl,
-      reading: 'Abaixo de 10 sugere desconto frente ao histórico brasileiro.',
-    },
-    {
-      label: 'Preço sobre valor patrimonial',
-      code: 'P/VP · book value',
-      value: ind.pvpa,
-      reading: 'Abaixo de 1: negocia por menos do que vale no papel. Investigue o motivo.',
-    },
-    {
-      label: 'Dividend yield 12M',
-      code: 'DY · proventos anualizados',
-      value: ind.dividendYield,
-      reading: 'Acima de 6% indica empresa geradora de caixa madura.',
-    },
-    {
-      label: 'Retorno sobre patrimônio',
-      code: 'ROE · eficiência do capital',
-      value: ind.roe,
-      reading: 'Acima de 15% ao longo de anos é sinal de vantagem competitiva.',
-    },
-    {
-      label: 'Retorno sobre ativos',
-      code: 'ROA · eficiência geral',
-      value: ind.roa,
-      reading: 'Menos manipulável que o ROE, ignora a alavancagem.',
-    },
-    {
-      label: 'Margem líquida',
-      code: 'MG.Líq · lucro sobre receita',
-      value: ind.netMargin,
-      reading: 'Dois dígitos sustentados indicam negócio com moat real.',
-    },
-  ]
-})
-
-// Thesis paragraph, long-form narrative combining the indicators
-const researchAssetThesis = computed(() => {
-  const ind = basicIndicators.value
-  const name = asset.value?.name || tickerUpper.value
-  if (!ind) {
-    return `${name} está sob observação da mesa de análise AUVP. Os dados fundamentais ainda não estão disponíveis neste relatório, mas isso não dispensa o estudo: leia a última carta aos acionistas, entenda o modelo de negócio, compare com três pares diretos e pergunte-se se você compraria a empresa inteira pelo valor de mercado atual. Preço é ruído; fundamento é sinal.`
-  }
-  const pl = parseFloat(String(ind.pl).replace(',', '.'))
-  const dy = parseFloat(String(ind.dividendYield).replace(',', '.').replace('%', ''))
-  const parts: string[] = []
-  parts.push(`${name} negocia a ${ind.pl} vezes lucros e entrega dividend yield de ${ind.dividendYield} nos últimos doze meses.`)
-  if (Number.isFinite(pl) && pl < 10) {
-    parts.push(' Múltiplo em território historicamente descontado, pode indicar oportunidade, pode indicar que o mercado sabe algo que nós não sabemos. O estudo é justamente esse: descobrir qual das duas hipóteses é verdadeira.')
-  } else if (Number.isFinite(pl) && pl > 20) {
-    parts.push(' Múltiplo esticado em relação à média brasileira. Para justificar, a empresa precisa entregar crescimento consistente nos próximos anos, o que exige análise do histórico e do guidance.')
-  } else {
-    parts.push(' Múltiplo em linha com o que consideramos razoável para ativos do seu porte e setor.')
-  }
-  if (Number.isFinite(dy) && dy >= 6) {
-    parts.push(' A distribuição de proventos é consistente com empresas maduras, o que reforça a tese de buy and hold para gerar renda passiva.')
-  }
-  parts.push(' A conclusão final, por princípio, é sua: os números servem como insumo, não como veredicto.')
-  return parts.join('')
-})
-
-// Quick panel on the right of the cover, compact session data
-const researchAssetQuickPanel = computed(() => {
-  const ind = basicIndicators.value
-  const price = Number(asset.value?.market_price)
-  const changePct = Number(asset.value?.change_percent)
-  const rows: { label: string; note?: string; value: string }[] = []
-
-  rows.push({
-    label: 'Último fechamento',
-    note: 'cotação oficial B3',
-    value: Number.isFinite(price) ? `R$ ${formatPriceNumber(price)}` : '-',
-  })
-  rows.push({
-    label: 'Variação do dia',
-    note: 'pregão corrente',
-    value: Number.isFinite(changePct)
-      ? `${changePct >= 0 ? '+' : ''}${changePct.toFixed(2).replace('.', ',')}%`
-      : '-',
-  })
-  rows.push({
-    label: 'Market cap',
-    note: 'valor de mercado',
-    value: formatMarketCapShort(asset.value?.market_cap) || '-',
-  })
-  rows.push({
-    label: 'Volume do dia',
-    note: 'negócios em R$',
-    value: formatVolumeShort(currentVolume.value) || '-',
-  })
-  if (ind?.dividendYield) {
-    rows.push({
-      label: 'Dividend yield',
-      note: 'últimos 12 meses',
-      value: String(ind.dividendYield),
-    })
-  }
-  if (ind?.pl) {
-    rows.push({
-      label: 'P/L',
-      note: 'múltiplo de lucros',
-      value: String(ind.pl),
-    })
-  }
-  return rows
-})
-
-// Dividends list rendered in §4, formatted dates and limited to 10 recent
-const researchAssetDividends = computed(() => {
-  const raw = Array.isArray(dividendsData.value) ? dividendsData.value : []
-  const sorted = [...raw]
-    .filter((d: any) => d?.payment_date)
-    .sort((a: any, b: any) => {
-      const da = new Date(a.payment_date).getTime()
-      const db = new Date(b.payment_date).getTime()
-      return db - da
-    })
-    .slice(0, 10)
-  return sorted.map((d: any) => {
-    const rate = Number(d.rate)
-    let dateStr = '-'
-    try {
-      const dt = new Date(d.payment_date)
-      dateStr = dt.toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-      })
-    } catch {}
-    return {
-      paymentDate: dateStr,
-      label: d.label || 'Provento',
-      rate: Number.isFinite(rate)
-        ? rate.toLocaleString('pt-BR', {
-            minimumFractionDigits: 4,
-            maximumFractionDigits: 6,
-          })
-        : '-',
-    }
-  })
-})
-
 // ==========================================================
 // SHOWTIME VARIANT, Me Poupe! asset page helpers
 // ==========================================================
@@ -1491,121 +1317,6 @@ const showtimeIndicatorCards = computed(() => {
     explain: 'O quanto a empresa gera de retorno pro dono. Acima de 10% é festa do aluguel!',
   })
   return cards
-})
-
-// Dividends list preview (6 most recent)
-const showtimeDividendsPreview = computed(() => {
-  const raw = Array.isArray(dividendsData.value) ? dividendsData.value : []
-  return [...raw]
-    .filter((d: any) => d?.payment_date)
-    .sort((a: any, b: any) => {
-      const da = new Date(a.payment_date).getTime()
-      const db = new Date(b.payment_date).getTime()
-      return db - da
-    })
-    .slice(0, 6)
-})
-
-function formatShowtimeDate(d: string | undefined): string {
-  if (!d) return '-'
-  try {
-    return new Date(d).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })
-  } catch {
-    return '-'
-  }
-}
-
-function formatDividendRate(rate: string | number | undefined): string {
-  const n = Number(rate)
-  if (!Number.isFinite(n)) return '-'
-  return n.toLocaleString('pt-BR', { minimumFractionDigits: 4, maximumFractionDigits: 6 })
-}
-
-// AUVP filters applied to the asset, 4 pass/fail checks
-const researchAssetFilters = computed(() => {
-  const ind = basicIndicators.value
-  if (!ind) return []
-  const parseNum = (v: unknown) => {
-    if (v == null) return NaN
-    const s = String(v).replace('%', '').replace(',', '.').trim()
-    const n = Number(s)
-    return Number.isFinite(n) ? n : NaN
-  }
-  const roe = parseNum(ind.roe)
-  const netMargin = parseNum(ind.netMargin)
-  const pl = parseNum(ind.pl)
-  const pvp = parseNum(ind.pvpa)
-
-  return [
-    {
-      label: 'Retorno sobre patrimônio',
-      rule: 'ROE ≥ 10% (geração de valor)',
-      observed: ind.roe || '-',
-      passes: Number.isFinite(roe) && roe >= 10,
-    },
-    {
-      label: 'Margem líquida',
-      rule: 'margem ≥ 10% (competitividade sustentável)',
-      observed: ind.netMargin || '-',
-      passes: Number.isFinite(netMargin) && netMargin >= 10,
-    },
-    {
-      label: 'Múltiplo de lucros',
-      rule: 'P/L ≤ 15 (margem de segurança)',
-      observed: ind.pl || '-',
-      passes: Number.isFinite(pl) && pl > 0 && pl <= 15,
-    },
-    {
-      label: 'Preço sobre valor patrimonial',
-      rule: 'P/VP ≤ 1,5 (não pagar caro pelo book)',
-      observed: ind.pvpa || '-',
-      passes: Number.isFinite(pvp) && pvp > 0 && pvp <= 1.5,
-    },
-  ]
-})
-
-// Next steps, the AUVP ecosystem hooks specific to asset page
-const researchAssetNextSteps = [
-  {
-    kind: 'CURSO',
-    title: 'AUVP Escola',
-    body: 'Aprofunde o método por trás dos filtros. Mais de 90 horas de aula sobre análise fundamentalista aplicada à realidade brasileira.',
-    cta: 'Entrar na escola',
-    url: 'https://auvp.com.br',
-  },
-  {
-    kind: 'PLATAFORMA',
-    title: 'AUVP Analítica',
-    body: 'Compare este ativo com pares diretos, histórico próprio e médias setoriais. Screener e comparativos avançados.',
-    cta: 'Comparar pares',
-    url: 'https://analitica.auvp.com.br',
-  },
-  {
-    kind: 'COMUNIDADE',
-    title: 'Grupo VIP · Telegram',
-    body: 'Debata este case com outros sardinhas estudando o mesmo setor. Canal oficial fechado para alunos AUVP.',
-    cta: 'Entrar no grupo',
-    url: 'https://t.me/investidorsardinha',
-  },
-]
-
-// Short verdict, used in the highlighted red-pen callout
-const researchAssetVerdict = computed(() => {
-  const ind = basicIndicators.value
-  if (!ind) return 'Caso sob observação, dados insuficientes para análise.'
-  const pl = parseFloat(String(ind.pl).replace(',', '.'))
-  const dy = parseFloat(String(ind.dividendYield).replace(',', '.').replace('%', ''))
-  const roe = parseFloat(String(ind.roe).replace(',', '.').replace('%', ''))
-  if (Number.isFinite(dy) && dy >= 6 && Number.isFinite(roe) && roe >= 10) {
-    return 'Passa nos filtros de geração de caixa e retorno sobre capital.'
-  }
-  if (Number.isFinite(pl) && pl < 10 && Number.isFinite(roe) && roe >= 10) {
-    return 'Múltiplo descontado com retorno aceitável, caso para aprofundar o estudo.'
-  }
-  if (Number.isFinite(pl) && pl > 25) {
-    return 'Múltiplo esticado, exige convicção alta no crescimento futuro.'
-  }
-  return 'Caso neutro pelos filtros metodológicos, recomenda-se estudo aprofundado.'
 })
 
 // ==========================================================
@@ -1709,14 +1420,6 @@ const mentorOneLiner = computed(() => {
   if (Number.isFinite(pl) && pl < 10) return 'Múltiplo descontado, vale entender se é oportunidade ou value trap.'
   return 'Um caso que merece estudo antes de virar posição.'
 })
-
-// Roman numerals for the fundamentals list prefix in editorial mode.
-function romanNumeralAsset(n: number): string {
-  const romans: Record<number, string> = {
-    1: 'I', 2: 'II', 3: 'III', 4: 'IV', 5: 'V', 6: 'VI', 7: 'VII', 8: 'VIII',
-  }
-  return romans[n] || String(n)
-}
 
 // Smart/AI-interpreted indicators register
 const smartCells = computed(() => {
@@ -2239,12 +1942,6 @@ async function fetchDividendsData() {
     dividendsData.value = []
   }
   isLoadingDividends.value = false
-}
-
-function redirectToLogin(source: string) {
-  navigateTo(
-    `/auth/login?redirect=/${source === 'calculadora' ? 'calculadora' : 'help'}`
-  )
 }
 
 async function fetchFundamentusData() {

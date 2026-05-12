@@ -40,14 +40,26 @@
       :ifix-indicator="ifixIndicator"
     />
 
-    <!-- ========== HERO: MENTOR (Primo Rico, book-cover orange chunky) ========== -->
-    <!-- Restored 2026-05-12. Foi deletado na Phase 4 como "experimental",
-         mas e a identidade canonica do tenant Primo Rico (capa do livro
-         "Do Mil ao Milhao"). Consome brand.hero.{badge,title,subtitle,
-         founderQuote,trustIndicators,ctaLabel,ctaSecondaryLabel,ctaIcon}
-         e brand.founder.{name,photo}. -->
+    <!-- ========== HERO: MENTOR (Primo Rico, book-cover masterclass) ========== -->
+    <!-- Identidade canonica do Primo Rico (capa do livro "Do Mil ao Milhao").
+         Tape "MANUAL DO PRIMO", grid 4/8, ticker monumental, pull-quote italic.
+         Consome utility classes .font-mentor-* declaradas em main.css. -->
     <HomeHeroMentor
       v-if="brand.hero.variant === 'mentor'"
+      :ibov-series="ibovSeries"
+      :ibov-last-price="ibovLastPrice"
+      :ibov-indicator="ibovIndicator"
+      :ibov-variation-color="ibovVariationColor"
+      :ifix-last-price="ifixLastPrice"
+      :ifix-indicator="ifixIndicator"
+    />
+
+    <!-- ========== HERO: SHOWTIME (Me Poupe!, TV show / pop magazine) ========== -->
+    <!-- Identidade canonica do Me Poupe!. Lower-third "AO VIVO", chunky-shadow
+         headline com highlighter, founder em backdrop circular + sticker NOVO!.
+         Consome utility classes .font-showtime-* declaradas em main.css. -->
+    <HomeHeroShowtime
+      v-if="brand.hero.variant === 'showtime'"
       :ibov-series="ibovSeries"
       :ibov-last-price="ibovLastPrice"
       :ibov-indicator="ibovIndicator"

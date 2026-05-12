@@ -662,12 +662,6 @@ table td, table th, [data-tnum] {
   letter-spacing: 0.005em;
 }
 
-.font-academic-sans {
-  font-family: 'IBM Plex Sans', -apple-system, sans-serif;
-  font-weight: 400;
-  letter-spacing: 0.005em;
-}
-
 .font-academic-mono {
   font-family: 'IBM Plex Mono', 'Menlo', 'Courier New', monospace;
   font-feature-settings: 'tnum' 1, 'zero' 1;
@@ -694,44 +688,6 @@ table td, table th, [data-tnum] {
     transparent 92%
   );
   padding: 0 0.08em;
-}
-
-/* Red pen underline — wavy, as if hand-drawn */
-.red-pen-underline {
-  text-decoration: underline;
-  text-decoration-style: wavy;
-  text-decoration-color: var(--brand-primary);
-  text-decoration-thickness: 1.5px;
-  text-underline-offset: 4px;
-}
-
-/* Margin note — floats to the right of the main column as a glossa */
-.margin-note {
-  font-family: 'IBM Plex Sans', -apple-system, sans-serif;
-  font-weight: 400;
-  font-style: italic;
-  font-size: 12px;
-  line-height: 1.45;
-  color: var(--brand-text-muted);
-}
-
-/* Footnote marker (superscript asterisk/number) */
-.footnote-marker {
-  font-feature-settings: 'sups' 1;
-  color: var(--brand-primary);
-  font-weight: 600;
-}
-
-/* Dropcap that looks like a Ben Graham textbook opener */
-.academic-dropcap::first-letter {
-  font-family: 'IBM Plex Serif', 'Times New Roman', serif;
-  font-weight: 600;
-  float: left;
-  font-size: 4.5em;
-  line-height: 0.9;
-  padding-right: 0.1em;
-  padding-top: 0.05em;
-  color: var(--brand-primary);
 }
 
 /* Thin dashed rule — like a classroom blackboard separator */
@@ -1172,4 +1128,205 @@ button:disabled {
   .border-yellow-500,
   .border-blue-400,
   .border-blue-500 { border-color: var(--brand-primary) !important; }
+}
+
+/* ================================================================
+ * VARIANT DESIGN PRIMITIVES
+ *
+ * Utility classes que cada variant component (HomeHeroMentor.vue,
+ * AssetShowtime.vue, etc.) consome via `class="..."`. Diferente de
+ * overrides escopados via `:root[data-hero-variant]`, essas classes
+ * sao primitivas neutras: voce escolhe usar via componente, nao
+ * pelo tenant ativo. Resultado: nenhum specificity war, nenhum
+ * `!important`, e variants nunca vazam pra tenants que nao os
+ * pediram explicitamente.
+ *
+ * Cores derivam de `var(--brand-*)`, entao cada tenant que ative
+ * uma variant continua usando sua propria paleta (Primo Rico amber
+ * com mentor, Me Poupe amarelo com showtime, etc.).
+ * ================================================================ */
+
+/* === MENTOR (Primo Rico: "book-cover masterclass") =============== */
+/*
+ * Montserrat Black 900 uppercase. Tipografia que GRITA, leading
+ * compressed 0.88. Usar em hero ticker, capitulo titles, pull quotes.
+ */
+.font-mentor-display {
+  font-family: 'Montserrat', 'Inter', sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  line-height: 0.88;
+}
+
+/* Eyebrow editorial "MANUAL DO PRIMO" / "CAPITULO I". 11px tracked 0.22em */
+.font-mentor-eyebrow {
+  font-family: 'Montserrat', 'Inter', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 11px;
+}
+
+/* Pull-quote do founder. Italic uppercase 800. */
+.font-mentor-quote {
+  font-family: 'Montserrat', 'Inter', sans-serif;
+  font-weight: 800;
+  font-style: italic;
+  text-transform: uppercase;
+  letter-spacing: -0.015em;
+  line-height: 0.92;
+}
+
+/* Chunky horizontal divider, 4px bar. */
+.mentor-rule {
+  height: 4px;
+  border: 0;
+}
+
+/* === ACADEMIC (Investidor Sardinha: "AUVP research paper") ======== */
+/* Primitivas declaradas mais acima neste arquivo (linhas ~648-742):
+ *   .font-academic-display, .font-academic-body, .font-academic-mono,
+ *   .font-academic-label, .red-pen, .dashed-rule
+ * Adicionar novas variantes academic aqui quando precisar. */
+
+/* === SHOWTIME (Me Poupe!: "TV show / pop magazine") =============== */
+/*
+ * Poppins Black 900 + sticker rotacionados, washi-tape, lower-thirds
+ * com dot pulsando. Tom de programa de TV irreverente, nao de bancário.
+ */
+.font-showtime-display {
+  font-family: 'Poppins', -apple-system, 'Segoe UI', sans-serif;
+  font-weight: 900;
+  letter-spacing: -0.025em;
+  line-height: 0.92;
+}
+
+.font-showtime-body {
+  font-family: 'Poppins', -apple-system, 'Segoe UI', sans-serif;
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1.55;
+}
+
+.font-showtime-label {
+  font-family: 'Poppins', -apple-system, 'Segoe UI', sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 11px;
+}
+
+/* Sticker amarelo redondo rotacionado, pra "NOVO!", "BORA!", "#1" */
+.sticker-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  background: var(--brand-primary);
+  color: var(--brand-background);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-radius: 9999px;
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--brand-primary) 45%, transparent);
+  transform: rotate(-4deg);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.sticker-badge:hover {
+  transform: rotate(-2deg) scale(1.05);
+}
+
+/* Card "polaroid" rotacionado com sombra tint amber. */
+.showtime-frame {
+  position: relative;
+  background: var(--brand-surface);
+  border: 2px solid color-mix(in srgb, var(--brand-text) 18%, transparent);
+  box-shadow:
+    0 2px 0 color-mix(in srgb, var(--brand-primary) 30%, transparent),
+    0 12px 40px color-mix(in srgb, var(--brand-background) 60%, transparent);
+}
+.showtime-frame--tilt-left {
+  transform: rotate(-1.5deg);
+}
+.showtime-frame--tilt-right {
+  transform: rotate(1.2deg);
+}
+
+/* Washi tape — fita diagonal listrada no canto do card. */
+.washi-tape {
+  position: absolute;
+  top: -10px;
+  left: 30px;
+  width: 90px;
+  height: 22px;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--brand-primary),
+    var(--brand-primary) 10px,
+    color-mix(in srgb, var(--brand-primary) 70%, black) 10px,
+    color-mix(in srgb, var(--brand-primary) 70%, black) 20px
+  );
+  transform: rotate(-6deg);
+  box-shadow: 0 4px 10px color-mix(in srgb, var(--brand-primary) 35%, transparent);
+}
+
+/* Lower-third TV-broadcast com dot pulsando. */
+.lower-third {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 1.25rem 0.5rem 0.75rem;
+  background: var(--brand-primary);
+  color: var(--brand-background);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 11px;
+  border-radius: 4px;
+  box-shadow: 0 6px 24px color-mix(in srgb, var(--brand-primary) 35%, transparent);
+}
+.lower-third::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: var(--brand-background);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-background) 30%, transparent);
+  animation: showtime-pulse 1.4s ease-in-out infinite;
+}
+@keyframes showtime-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.15); }
+}
+
+/* Highlighter handdrawn — marker amarelo sob palavra-chave. */
+.highlighter {
+  background-image: linear-gradient(
+    to bottom,
+    transparent 58%,
+    color-mix(in srgb, var(--brand-primary) 65%, transparent) 58%,
+    color-mix(in srgb, var(--brand-primary) 65%, transparent) 94%,
+    transparent 94%
+  );
+  padding: 0 0.12em;
+  display: inline;
+}
+
+/* Drop shadow chunky 4+8px (efeito titulo de programa de TV). */
+.chunky-shadow {
+  text-shadow:
+    4px 4px 0 color-mix(in srgb, var(--brand-primary) 40%, transparent),
+    8px 8px 0 color-mix(in srgb, var(--brand-background) 70%, transparent);
+}
+
+/* Scribble divider — linha ondulada handdrawn SVG. */
+.scribble-rule {
+  width: 100%;
+  height: 14px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 14' preserveAspectRatio='none'%3E%3Cpath d='M0 7 Q 12.5 0 25 7 T 50 7 T 75 7 T 100 7 T 125 7 T 150 7 T 175 7 T 200 7' fill='none' stroke='%23FACC15' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-size: 200px 14px;
 }

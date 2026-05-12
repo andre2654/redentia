@@ -1,121 +1,131 @@
 <!--
-  HERO: MENTOR — Primo Rico. Aspirational book-cover orange chunky.
-  Inspirado na capa do livro "Do Mil ao Milhao" do Thiago Nigro:
-  tipografia EXTRABOLD uppercase com letter-spacing, foto do founder
-  em destaque, badge tipo selo editorial, CTAs pill shape, trust
-  indicators em selos enfileirados.
+  HERO: MENTOR — Primo Rico. "Book-cover masterclass" identidade.
+  Inspirado na capa do livro "Do Mil ao Milhao" do Thiago Nigro: top tape
+  laranja com "MANUAL DO PRIMO · FICHA TECNICA", grid assimetrico 4/8
+  (foto founder / headline monumental), ticker GIGANTE em font-mentor-display,
+  chapter heading "CAPITULO I", pull quote em font-mentor-quote italic.
 
-  Restored on 2026-05-12 — extracted out of the legacy HomeHero.vue
-  mega-file (deleted in Phase 4). Same shape do componente
-  HomeHeroCentered/Quiet — recebe os props live IBOV/IFIX por
-  compatibilidade com <component :is>, mas nao usa (manifesto-style).
+  Restored 2026-05-12 (segunda restauracao). Primeira versao usava
+  font-weight inline + uppercase; agora consume as utility classes
+  semanticas .font-mentor-* que vivem em main.css — primitivas estaveis
+  por variant, zero specificity wars, paleta amber vem do tenant ativo.
 -->
 <template>
-  <section class="mentor-hero relative overflow-hidden">
-    <!-- Background: book-cover style — gradient laranja → preto + textura sutil -->
+  <section class="mentor-hero relative overflow-hidden" :style="{ backgroundColor: brand.colors.background, color: brand.colors.text }">
+    <!-- Top tape: faixa laranja com selo editorial -->
     <div
-      class="mentor-hero__bg pointer-events-none absolute inset-0 -z-10"
-      :style="{
-        background: `radial-gradient(ellipse 80% 60% at 20% 30%, color-mix(in srgb, var(--brand-primary) 28%, transparent), transparent 70%), linear-gradient(180deg, var(--brand-background) 0%, color-mix(in srgb, var(--brand-background) 95%, var(--brand-primary)) 100%)`,
-      }"
-      aria-hidden="true"
-    />
-    <!-- Faixa lateral laranja ("spine" do livro) -->
-    <div
-      class="mentor-hero__spine pointer-events-none absolute left-0 top-0 bottom-0 -z-10 hidden md:block"
-      :style="{ backgroundColor: 'var(--brand-primary)' }"
-      aria-hidden="true"
-    />
+      class="mentor-hero__tape relative flex items-center gap-4 px-6 py-3 md:px-10"
+      :style="{ backgroundColor: brand.colors.primary, color: brand.colors.background }"
+    >
+      <span class="font-mentor-eyebrow">{{ tapeBadge }}</span>
+      <span class="flex-1 border-t" :style="{ borderColor: `${brand.colors.background}40` }" />
+      <span class="font-mentor-eyebrow">{{ tickerTag }}</span>
+    </div>
 
-    <div class="mentor-hero__container relative mx-auto flex max-w-7xl flex-col items-center gap-10 px-6 py-16 md:flex-row md:gap-16 md:px-10 md:py-24 lg:py-28">
-      <!-- LEFT: Foto do founder em destaque (se existir) -->
+    <!-- HERO: grid assimetrico 4/8 -->
+    <div class="relative grid gap-0 md:grid-cols-12">
+      <!-- LEFT (col-span-4): foto founder + identidade -->
       <div
-        v-if="brand.founder?.photo || brand.hero?.image"
-        class="mentor-hero__founder relative flex flex-1 items-end justify-center md:justify-start"
+        class="relative flex flex-col justify-end px-6 py-10 md:col-span-4 md:px-10 md:py-14"
+        :style="{ backgroundColor: brand.colors.tertiary || brand.colors.surface }"
       >
-        <!-- Glow atras da foto -->
-        <div
-          class="absolute -inset-20 rounded-full blur-3xl"
-          :style="{ backgroundColor: `color-mix(in srgb, var(--brand-primary) 18%, transparent)` }"
-        />
-        <NuxtImg
-          :src="brand.hero?.image || brand.founder.photo"
-          :alt="brand.founder?.name || 'Founder'"
-          class="relative w-[16rem] max-w-none object-contain drop-shadow-2xl sm:w-[20rem] md:w-[26rem] lg:w-[30rem]"
-        />
-      </div>
+        <!-- Faixa lateral laranja na borda direita -->
+        <div class="absolute right-0 top-0 h-full w-1" :style="{ backgroundColor: brand.colors.primary }" />
 
-      <!-- RIGHT: Headline editorial chunky + CTAs + trust -->
-      <div class="mentor-hero__content flex flex-1 flex-col items-center text-center md:items-start md:text-left">
-        <!-- Badge editorial (selo "MANUAL DO PRIMO") -->
-        <div
-          v-if="brand.hero?.badge"
-          class="mentor-hero__badge mb-6 inline-flex items-center gap-2 px-4 py-2"
+        <!-- Founder photo: book-cover headshot, large -->
+        <NuxtImg
+          v-if="brand.founder?.photo"
+          :src="brand.founder.photo"
+          :alt="brand.founder?.name || 'Founder'"
+          class="mb-6 h-48 w-48 rounded-2xl object-cover shadow-2xl md:h-56 md:w-56"
+        />
+
+        <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
+          O MENTOR
+        </span>
+        <p
+          class="font-mentor-display mt-2"
           :style="{
-            backgroundColor: 'var(--brand-primary)',
-            color: 'var(--text-on-primary, #000000)',
+            color: brand.colors.text,
+            fontSize: 'clamp(1.75rem, 3vw, 2.5rem)',
           }"
         >
-          <UIcon name="i-lucide-book-open" class="size-3.5" />
-          <span class="text-[11px] font-bold uppercase tracking-[0.18em]">{{ brand.hero.badge }}</span>
-        </div>
+          {{ brand.founder?.name || brand.name }}
+        </p>
+        <p
+          v-if="brand.founder?.role"
+          class="mt-3 text-sm font-semibold uppercase"
+          :style="{ color: `${brand.colors.text}CC`, letterSpacing: '0.08em' }"
+        >
+          {{ brand.founder.role }}
+        </p>
+      </div>
 
-        <!-- Headline GIGANTE uppercase extrabold (book-cover style) -->
+      <!-- RIGHT (col-span-8): headline monumental + CTAs -->
+      <div class="flex flex-col justify-center px-6 py-14 md:col-span-8 md:px-14 md:py-20">
+        <span class="font-mentor-eyebrow" :style="{ color: brand.colors.primary }">
+          {{ brand.hero?.badge || 'CAPITULO I · CONSTRUA PATRIMONIO' }}
+        </span>
+
+        <!-- Title monumental: ticker-style, weight 900, clamp escalavel -->
         <h1
-          class="mentor-hero__headline mb-6 text-[44px] leading-[0.95] tracking-[-0.02em] sm:text-[60px] md:text-[78px] lg:text-[92px]"
-          :class="[brand.font?.headingWeight || 'font-extrabold', brand.font?.headingStyle || 'uppercase tracking-wide']"
+          class="font-mentor-display mt-4"
           :style="{
-            color: 'var(--brand-text)',
-            fontFamily: `'${brand.font?.family || 'Montserrat'}', sans-serif`,
+            color: brand.colors.text,
+            fontSize: 'clamp(2.5rem, 6vw, 5.5rem)',
+            lineHeight: '0.88',
           }"
         >
           <template v-for="(line, idx) in headlineLines" :key="`l-${idx}`">
-            <span class="block" :style="{ color: idx === headlineLines.length - 1 ? 'var(--brand-primary)' : 'var(--brand-text)' }">{{ line }}</span>
+            <span class="block" :style="{ color: idx === headlineLines.length - 1 ? brand.colors.primary : brand.colors.text }">{{ line }}</span>
           </template>
         </h1>
 
-        <!-- Subtitle -->
+        <!-- Subtitle / dek -->
         <p
           v-if="brand.hero?.subtitle"
-          class="mentor-hero__subtitle mb-8 max-w-xl text-[15px] leading-relaxed md:text-[17px]"
-          :style="{ color: 'var(--brand-text-muted, var(--brand-text))' }"
+          class="mentor-hero__subtitle mt-8 max-w-xl text-base leading-relaxed md:text-lg"
+          :style="{ color: `${brand.colors.text}CC` }"
         >
           {{ brand.hero.subtitle }}
         </p>
 
-        <!-- Founder quote em destaque (selo de assinatura) -->
+        <!-- Pull quote do founder, italic monumental -->
         <div
           v-if="brand.hero?.founderQuote"
-          class="mentor-hero__quote mb-8 max-w-md border-l-4 pl-4"
-          :style="{ borderColor: 'var(--brand-primary)' }"
+          class="mentor-hero__quote mt-10 max-w-2xl border-l-4 pl-6"
+          :style="{ borderColor: brand.colors.primary }"
         >
           <p
-            class="text-sm italic leading-relaxed md:text-base"
-            :style="{ color: `color-mix(in srgb, var(--brand-text) 80%, transparent)` }"
+            class="font-mentor-quote"
+            :style="{
+              color: brand.colors.text,
+              fontSize: 'clamp(1.25rem, 2vw, 1.75rem)',
+            }"
           >
             &ldquo;{{ brand.hero.founderQuote }}&rdquo;
           </p>
           <p
             v-if="brand.founder?.name"
-            class="mt-2 text-[11px] font-semibold uppercase tracking-[0.15em]"
-            :style="{ color: 'var(--brand-primary)' }"
+            class="font-mentor-eyebrow mt-3"
+            :style="{ color: brand.colors.primary }"
           >
             {{ brand.founder.name }}
           </p>
         </div>
 
-        <!-- CTAs pill shape (book-cover energy) -->
-        <div class="mentor-hero__ctas flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
+        <!-- CTAs editorial pill -->
+        <div class="mentor-hero__ctas mt-10 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
           <NuxtLink
             v-if="brand.hero?.ctaLabel"
             :to="brand.hero?.ctaHref || '/auth/register'"
-            class="mentor-hero__cta-primary group inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5 text-[14px] font-bold uppercase tracking-wide transition-transform hover:scale-[1.03]"
+            class="mentor-hero__cta-primary group inline-flex items-center justify-center gap-2 rounded-full px-7 py-3.5 transition-transform hover:scale-[1.03]"
             :style="{
-              backgroundColor: 'var(--brand-primary)',
-              color: 'var(--text-on-primary, #000000)',
+              backgroundColor: brand.colors.primary,
+              color: brand.colors.background,
             }"
           >
-            <span>{{ brand.hero.ctaLabel }}</span>
+            <span class="font-mentor-eyebrow !text-xs">{{ brand.hero.ctaLabel }}</span>
             <UIcon
               :name="brand.hero?.ctaIcon || 'i-lucide-arrow-right'"
               class="size-4 transition-transform group-hover:translate-x-1"
@@ -125,41 +135,53 @@
           <NuxtLink
             v-if="brand.hero?.ctaSecondaryLabel"
             :to="brand.hero?.ctaSecondaryHref || '/auth/login'"
-            class="inline-flex items-center justify-center rounded-full border-2 px-7 py-3.5 text-[14px] font-bold uppercase tracking-wide transition-colors hover:opacity-80"
+            class="inline-flex items-center justify-center rounded-full border-2 px-7 py-3.5 transition-colors hover:opacity-80"
             :style="{
-              borderColor: 'var(--brand-text)',
-              color: 'var(--brand-text)',
+              borderColor: brand.colors.text,
+              color: brand.colors.text,
             }"
           >
-            {{ brand.hero.ctaSecondaryLabel }}
+            <span class="font-mentor-eyebrow !text-xs">{{ brand.hero.ctaSecondaryLabel }}</span>
           </NuxtLink>
         </div>
 
-        <!-- Trust indicators em selos -->
+        <!-- Trust indicators editorial -->
         <ul
           v-if="trustIndicators.length"
-          class="mentor-hero__trust mt-10 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[12.5px] md:justify-start"
-          :style="{ color: 'var(--brand-text-muted, var(--brand-text))' }"
+          class="mentor-hero__trust mt-12 flex flex-wrap items-center gap-x-6 gap-y-2"
         >
           <li
             v-for="(item, idx) in trustIndicators"
             :key="`trust-${idx}`"
-            class="inline-flex items-center gap-1.5"
+            class="inline-flex items-center gap-2"
           >
             <span
               class="size-1.5 rounded-full"
-              :style="{ backgroundColor: 'var(--brand-primary)' }"
+              :style="{ backgroundColor: brand.colors.primary }"
             />
-            <span class="font-semibold uppercase tracking-wide">{{ item }}</span>
+            <span class="font-mentor-eyebrow" :style="{ color: `${brand.colors.text}99` }">
+              {{ item }}
+            </span>
           </li>
         </ul>
       </div>
     </div>
+
+    <!-- Mentor-rule: barra grossa entre o hero e a proxima section -->
+    <hr class="mentor-rule" :style="{ backgroundColor: brand.colors.primary }" />
   </section>
 </template>
 
 <script setup lang="ts">
 const brand = useBrand() as any
+
+const tapeBadge = computed(() => {
+  return brand.hero?.tapeBadge || 'MANUAL DO PRIMO · CAPA DO LIVRO'
+})
+
+const tickerTag = computed(() => {
+  return brand.hero?.tickerTag || (brand.shortName || brand.name || '').toUpperCase()
+})
 
 const headlineLines = computed<string[]>(() => {
   const title: string = brand.hero?.title || brand.tagline || brand.name || ''
@@ -186,18 +208,16 @@ defineProps<{
   isolation: isolate;
 }
 
-.mentor-hero__spine {
-  width: 8px;
+.mentor-hero__tape {
+  /* Tape laranja "tipografica" — pequena rotacao sutil pra parecer
+     selo aplicado, mas mantida em 0 deg pra nao quebrar layout em telas
+     pequenas. Box-shadow grossa amber pra dar peso de capa. */
+  box-shadow:
+    0 8px 24px -6px color-mix(in srgb, var(--brand-primary) 50%, transparent);
 }
 
-.mentor-hero__headline {
-  font-feature-settings: 'ss01' on, 'ss02' on;
+.mentor-hero__subtitle {
   text-wrap: balance;
-}
-
-.mentor-hero__badge {
-  border-radius: 4px;
-  box-shadow: 0 4px 12px -4px color-mix(in srgb, var(--brand-primary) 50%, transparent);
 }
 
 .mentor-hero__cta-primary {
