@@ -382,102 +382,124 @@
         />
       </div>
       <template v-else>
-        <!-- Maiores Altas -->
-        <UCarousel
-          v-slot="{ item }"
-          class="w-full"
-          loop
-          :items="assetCategories"
-          :ui="{ item: 'basis-1/1 md:basis-1/2 lg:basis-1/3 xl:basis-1/4', container: 'bg-transparent' }"
-        >
-          <div
-            class="flex w-full flex-col gap-2 px-2 py-4"
-            :class="rankingCardClass"
-            :style="rankingCardStyle(brand.colors.positive)"
+        <!-- Variant router: cada tenant pode trocar o visual do ranking
+             completo (altas + baixas) via brand.hero.variant. Default
+             eh o layout quiet Redentia abaixo. -->
+        <MoleculesHomeRankingsMentor
+          v-if="brand.hero?.variant === 'mentor'"
+          :asset-categories="assetCategories"
+          :top-assets="topAssets"
+          :ranking-link-queries="rankingLinkQueries"
+          :slice-ranking="sliceRanking"
+        />
+        <MoleculesHomeRankingsShowtime
+          v-else-if="brand.hero?.variant === 'showtime'"
+          :asset-categories="assetCategories"
+          :top-assets="topAssets"
+          :ranking-link-queries="rankingLinkQueries"
+          :slice-ranking="sliceRanking"
+        />
+        <template v-else>
+          <!-- Maiores Altas (default Redentia quiet) -->
+          <UCarousel
+            v-slot="{ item }"
+            class="w-full"
+            loop
+            :items="assetCategories"
+            :ui="{ item: 'basis-1/1 md:basis-1/2 lg:basis-1/3 xl:basis-1/4', container: 'bg-transparent' }"
           >
-            <!-- Header quiet: eyebrow positive sutil + h3 normal weight, ver todos como link inline -->
-            <div class="mb-4 flex items-end justify-between border-b pb-3" style="border-color: var(--border-subtle);">
-              <div class="flex flex-col gap-1">
-                <span class="inline-flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-positive)' }" translate="no">
-                  <UIcon name="i-lucide-trending-up" class="h-3 w-3" aria-hidden="true" />
-                  Maiores altas
-                </span>
-                <h3 class="text-[15px] font-medium leading-tight" style="color: var(--text-heading);">{{ item.label }}</h3>
+            <div
+              class="flex w-full flex-col gap-2 px-2 py-4"
+              :class="rankingCardClass"
+              :style="rankingCardStyle(brand.colors.positive)"
+            >
+              <!-- Header quiet: eyebrow positive sutil + h3 normal weight, ver todos como link inline -->
+              <div class="mb-4 flex items-end justify-between border-b pb-3" style="border-color: var(--border-subtle);">
+                <div class="flex flex-col gap-1">
+                  <span class="inline-flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-positive)' }" translate="no">
+                    <UIcon name="i-lucide-trending-up" class="h-3 w-3" aria-hidden="true" />
+                    Maiores altas
+                  </span>
+                  <h3 class="text-[15px] font-medium leading-tight" style="color: var(--text-heading);">{{ item.label }}</h3>
+                </div>
+                <NuxtLink
+                  :to="{ path: '/search', query: rankingLinkQueries.top[item.key] }"
+                  class="inline-flex items-center gap-1 text-[12px] font-medium transition-colors hover:underline"
+                  :style="{ color: 'var(--brand-primary)' }"
+                  :aria-label="`Ver todos ${item.label} em alta`"
+                >
+                  <span>Ver todos</span>
+                  <UIcon name="i-lucide-arrow-right" class="h-3 w-3" aria-hidden="true" />
+                </NuxtLink>
               </div>
-              <NuxtLink
-                :to="{ path: '/search', query: rankingLinkQueries.top[item.key] }"
-                class="inline-flex items-center gap-1 text-[12px] font-medium transition-colors hover:underline"
-                :style="{ color: 'var(--brand-primary)' }"
-                :aria-label="`Ver todos ${item.label} em alta`"
-              >
-                <span>Ver todos</span>
-                <UIcon name="i-lucide-arrow-right" class="h-3 w-3" aria-hidden="true" />
-              </NuxtLink>
+              <!-- Lista -->
+              <div class="flex flex-col">
+                <AtomsTickerListItem
+                  v-for="stock in sliceRanking(topAssets.top[item.key])"
+                  :key="stock?.ticker"
+                  :stock="stock"
+                  class="border-b"
+                  style="border-color: var(--brand-border);"
+                />
+              </div>
             </div>
-            <!-- Lista -->
-            <div class="flex flex-col">
-              <AtomsTickerListItem
-                v-for="stock in sliceRanking(topAssets.top[item.key])"
-                :key="stock?.ticker"
-                :stock="stock"
-                class="border-b"
-                style="border-color: var(--brand-border);"
-              />
-            </div>
-          </div>
-        </UCarousel>
+          </UCarousel>
 
-        <!-- Maiores Baixas -->
-        <UCarousel
-          v-slot="{ item }"
-          class="w-full"
-          loop
-          :items="assetCategories"
-          :ui="{ item: 'basis-1/1 md:basis-1/2 lg:basis-1/3 xl:basis-1/4', container: 'bg-transparent' }"
-        >
-          <div
-            class="flex w-full flex-col gap-2 px-2 py-4"
-            :class="rankingCardClass"
-            :style="rankingCardStyle(brand.colors.negative)"
+          <!-- Maiores Baixas (default Redentia quiet) -->
+          <UCarousel
+            v-slot="{ item }"
+            class="w-full"
+            loop
+            :items="assetCategories"
+            :ui="{ item: 'basis-1/1 md:basis-1/2 lg:basis-1/3 xl:basis-1/4', container: 'bg-transparent' }"
           >
-            <!-- Header quiet: eyebrow negative sutil + h3 normal, ver todos link -->
-            <div class="mb-4 flex items-end justify-between border-b pb-3" style="border-color: var(--border-subtle);">
-              <div class="flex flex-col gap-1">
-                <span class="inline-flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-negative)' }" translate="no">
-                  <UIcon name="i-lucide-trending-down" class="h-3 w-3" aria-hidden="true" />
-                  Maiores baixas
-                </span>
-                <h3 class="text-[15px] font-medium leading-tight" style="color: var(--text-heading);">{{ item.label }}</h3>
+            <div
+              class="flex w-full flex-col gap-2 px-2 py-4"
+              :class="rankingCardClass"
+              :style="rankingCardStyle(brand.colors.negative)"
+            >
+              <!-- Header quiet: eyebrow negative sutil + h3 normal, ver todos link -->
+              <div class="mb-4 flex items-end justify-between border-b pb-3" style="border-color: var(--border-subtle);">
+                <div class="flex flex-col gap-1">
+                  <span class="inline-flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.12em]" :style="{ color: 'var(--brand-negative)' }" translate="no">
+                    <UIcon name="i-lucide-trending-down" class="h-3 w-3" aria-hidden="true" />
+                    Maiores baixas
+                  </span>
+                  <h3 class="text-[15px] font-medium leading-tight" style="color: var(--text-heading);">{{ item.label }}</h3>
+                </div>
+                <NuxtLink
+                  :to="{ path: '/search', query: rankingLinkQueries.bottom[item.key] }"
+                  class="inline-flex items-center gap-1 text-[12px] font-medium transition-colors hover:underline"
+                  :style="{ color: 'var(--brand-primary)' }"
+                  :aria-label="`Ver todos ${item.label} em queda`"
+                >
+                  <span>Ver todos</span>
+                  <UIcon name="i-lucide-arrow-right" class="h-3 w-3" aria-hidden="true" />
+                </NuxtLink>
               </div>
-              <NuxtLink
-                :to="{ path: '/search', query: rankingLinkQueries.bottom[item.key] }"
-                class="inline-flex items-center gap-1 text-[12px] font-medium transition-colors hover:underline"
-                :style="{ color: 'var(--brand-primary)' }"
-                :aria-label="`Ver todos ${item.label} em queda`"
-              >
-                <span>Ver todos</span>
-                <UIcon name="i-lucide-arrow-right" class="h-3 w-3" aria-hidden="true" />
-              </NuxtLink>
+              <!-- Lista -->
+              <div class="flex flex-col">
+                <AtomsTickerListItem
+                  v-for="stock in sliceRanking(topAssets.bottom[item.key])"
+                  :key="stock?.ticker"
+                  :stock="stock"
+                  class="border-b"
+                  style="border-color: var(--brand-border);"
+                />
+              </div>
             </div>
-            <!-- Lista -->
-            <div class="flex flex-col">
-              <AtomsTickerListItem
-                v-for="stock in sliceRanking(topAssets.bottom[item.key])"
-                :key="stock?.ticker"
-                :stock="stock"
-                class="border-b"
-                style="border-color: var(--brand-border);"
-              />
-            </div>
-          </div>
-        </UCarousel>
+          </UCarousel>
+        </template>
       </template>
 
       <!-- Crypto rankings — depois dos filtros inteligentes pra manter o
            ritmo: primeiro a grid do B3, depois atalhos, depois cripto,
-           depois tesouro. Só renderiza pra tenants que tão na variante
-           terminal (Redentia) porque o bloco tá dentro desse v-if. -->
-      <LazyMoleculesCryptoRankings />
+           depois tesouro.
+
+           Gate: tenants podem desativar o bloco via brand.features.showCrypto
+           (Me Poupe! por exemplo nao quer cripto na home — fora do tom
+           "TV pop magazine"). Default true mantem behavior atual. -->
+      <LazyMoleculesCryptoRankings v-if="showCrypto" />
 
       <!-- Tesouro Direto — após rankings + filtros inteligentes -->
       <div class="px-4 md:px-0">
@@ -1787,6 +1809,13 @@ function sliceRanking(items: any[] | undefined) {
   if (!items) return []
   return items.slice(0, brand.homePage.rankingCard.itemsPerCategory)
 }
+
+// Crypto rankings gate: tenants podem desativar o bloco inteiro via
+// `brand.features.showCrypto: false` (ex: Me Poupe! fica fora do tom).
+// Default = true pra preservar behavior atual.
+const showCrypto = computed(() => {
+  return (brand as any).features?.showCrypto !== false
+})
 
 const categoryGridCols = computed(() => {
   const cols = brand.homePage.categoryCard.columns

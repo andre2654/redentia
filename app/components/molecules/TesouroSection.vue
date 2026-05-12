@@ -1,5 +1,25 @@
 <template>
-  <section class="pt-12 md:pt-16">
+  <!-- Variant router: cada tenant pode trocar a estetica completa da
+       section Tesouro Direto via brand.hero.variant. Mantemos o fetch
+       aqui (single source) e delegamos rendering pra componentes especificos
+       quando o variant casa. Default = layout quiet Redentia. -->
+  <MoleculesTesouroSectionMentor
+    v-if="!isLoading && brand.hero?.variant === 'mentor'"
+    :indexer-slides="indexerSlides"
+    :pretty-name="prettyName"
+    :format-rate="formatRate"
+    :format-money="formatMoney"
+    :format-maturity="formatMaturity"
+  />
+  <MoleculesTesouroSectionShowtime
+    v-else-if="!isLoading && brand.hero?.variant === 'showtime'"
+    :indexer-slides="indexerSlides"
+    :pretty-name="prettyName"
+    :format-rate="formatRate"
+    :format-money="formatMoney"
+    :format-maturity="formatMaturity"
+  />
+  <section v-else class="pt-12 md:pt-16">
     <!-- Header quiet -->
     <header class="mb-8 flex flex-col gap-2 px-4 md:px-0">
       <span class="eyebrow">Renda fixa pública</span>
