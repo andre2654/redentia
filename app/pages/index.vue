@@ -421,7 +421,7 @@
                 :key="stock?.ticker"
                 :stock="stock"
                 class="border-b"
-                :style="{ borderColor: brand.colors.border }"
+                style="border-color: var(--brand-border);"
               />
             </div>
           </div>
@@ -466,7 +466,7 @@
                 :key="stock?.ticker"
                 :stock="stock"
                 class="border-b"
-                :style="{ borderColor: brand.colors.border }"
+                style="border-color: var(--brand-border);"
               />
             </div>
           </div>

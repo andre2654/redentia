@@ -322,7 +322,7 @@ useHead({
       <strong>Só venderemos para 10 assessorias</strong>
     </span>
     <span class="ass-topbanner__cta">
-      Quero participar
+      Falar com o time
       <span aria-hidden="true">→</span>
     </span>
   </button>
@@ -363,7 +363,7 @@ useHead({
               class="lp-hero__cta"
               @click="openLeadModal"
             >
-              Quero ver minha assessoria com IA
+              Pedir diagnóstico gratuito
               <span aria-hidden="true">→</span>
             </button>
 
@@ -1073,7 +1073,7 @@ useHead({
             class="lp-hero__cta ass-previews__foot-cta"
             @click="openLeadModal"
           >
-            Quero algo assim para minha assessoria
+            Pedir uma demo na minha marca
             <span aria-hidden="true">→</span>
           </button>
         </div>
@@ -1294,6 +1294,9 @@ useHead({
             <span class="lp-section-title__italic">10 assessorias.</span>
           </h2>
 
+          <!-- TODO (Andre): substituir "próxima janela" por data real quando
+               definir o cronograma da segunda leva. Ex: "Próxima janela em
+               julho/2026." Deadline absoluto fortalece a escassez. -->
           <p class="ass-scarcity__lead">
             Não é promoção, é capacidade real. Cada plataforma é montada por nós, com a sua marca, no seu domínio, e <strong>adaptada ao jeito que sua assessoria atende</strong>. Por isso o teto: só conseguimos fazer isso bem para 10 nesta primeira leva. Depois, abre a próxima janela.
           </p>
@@ -1303,7 +1306,7 @@ useHead({
             class="lp-hero__cta ass-scarcity__cta"
             @click="openLeadModal"
           >
-            Quero para a minha assessoria
+            Pedir avaliação
             <span aria-hidden="true">→</span>
           </button>
         </div>
@@ -1440,15 +1443,61 @@ useHead({
             </summary>
             <p>A Redentia funciona como <strong>plataforma standalone</strong> (mais comum) ou como camada de inteligência embedded via API. No segundo caso, conversamos sobre o ponto de integração que faz mais sentido pra sua stack.</p>
           </details>
+
+          <details class="ass-faq__item">
+            <summary>
+              <span>Qual o investimento?</span>
+              <span class="ass-faq__chev" aria-hidden="true">+</span>
+            </summary>
+            <p>Modelos comerciais <strong>ajustados ao porte e ao número de clientes</strong> da assessoria. Definimos juntos depois do diagnóstico, sem proposta de 40 páginas.</p>
+          </details>
         </div>
       </div>
     </section>
 
-    <!-- NOTA: section "10. CTA FINAL" (.lp-final) removida em 2026-05-11.
-         O proprio FAQ ja arremata a navegacao e o banner sticky no topo +
-         CTAs distribuidos ao longo da page (hero, escassez, faixa de
-         previews) garantem reach do lead modal. Manter um CTA final
-         duplicado virou ruido. -->
+    <!-- ============================================================
+         10. CTA FINAL, fecha a voz PAS com decisao binaria
+         Restituida em 2026-05-12 apos auditoria copy. A audit anterior
+         removeu por considerar redundante, mas a skill landing-page-
+         copywriter trata Final CTA como section obrigatoria (urgency
+         + risk reversal + verbo forte). Aqui fecha a narrativa PAS
+         (commodity vs diferencial) com a mesma legal-line da /diferencie.
+         ============================================================ -->
+    <section class="ass-final reveal-on-scroll">
+      <div
+        class="ass-final__glow"
+        aria-hidden="true"
+        :style="{
+          background: `radial-gradient(ellipse 70% 60% at 50% 50%, color-mix(in srgb, ${brand.colors.primary} 26%, transparent), transparent 65%)`,
+        }"
+      />
+      <div class="lp-container">
+        <div class="ass-final__inner">
+          <p class="lp-eyebrow lp-eyebrow--center">DECISÃO</p>
+          <h2 class="lp-section-title">
+            Ou sua assessoria mostra diferencial,
+            <span class="lp-section-title__italic">ou vira comparação de taxa.</span>
+          </h2>
+
+          <p class="ass-final__lead">
+            Hoje seu cliente já compara taxa, preço, promessa, rentabilidade. Quem traz <strong>um ambiente próprio, com IA, na própria marca</strong>, sai do funil de commodity antes do mercado inteiro fazer igual.
+          </p>
+
+          <button
+            type="button"
+            class="lp-hero__cta ass-final__cta"
+            @click="openLeadModal"
+          >
+            Pedir diagnóstico gratuito
+            <span aria-hidden="true">→</span>
+          </button>
+
+          <p class="ass-final__legal">
+            Conversa de 20 minutos, sem proposta de 40 páginas · assessorias@redentia.com.br
+          </p>
+        </div>
+      </div>
+    </section>
 
     <!-- Modal de captura de lead DEDICADO a /assessorias.
          Fullscreen, multi-step (1: identificacao, 2: 5 perguntas Sim/Não).
@@ -1779,6 +1828,20 @@ useHead({
   box-shadow: 0 14px 32px -12px color-mix(in srgb, var(--brand-primary) 65%, transparent);
   white-space: nowrap;
   width: fit-content;
+  max-width: 100%;
+}
+/* Em mobile apertado (<= 480px), encolhe padding e fonte pra evitar
+   estouro horizontal em textos longos como "Pedir uma demo na minha
+   marca". Permite wrap em 2 linhas como fallback se mesmo assim
+   nao couber. */
+@media (max-width: 480px) {
+  .lp-hero__cta {
+    padding: 14px 20px;
+    font-size: 14.5px;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.25;
+  }
 }
 .lp-hero__cta:hover {
   filter: brightness(0.94);
@@ -2100,11 +2163,36 @@ useHead({
   position: relative;
   /* Estabiliza altura, a maior page (Painel com 6 cards 3x2) define
      o piso; outras pages crescem pra dentro desse box. Evita layout
-     shift do hero quando troca page. */
-  min-height: 500px;
+     shift do hero quando troca page. Mobile: piso menor pra nao
+     dominar a viewport (eram 500px ~= 80% da altura util). */
+  min-height: 380px;
 }
 @media (min-width: 768px) {
   .ass-dash__pages { min-height: 540px; }
+}
+
+/* ====== Compactacao mobile do mock ======
+   Em <= 640px, encolhe chrome, nav e elementos internos. O bloco
+   .ass-dash__pages e cortado em max-height fixo + fade gradient pro
+   conteudo interno (Painel/Asset/Chat) que naturalmente expande em
+   coluna estreita nao dominar a viewport. Resultado: mock total cai
+   de ~658px (era ~80% viewport) pra ~430px (~50% viewport). */
+@media (max-width: 640px) {
+  .ass-dash__chrome { padding: 7px 10px; gap: 10px; }
+  .ass-dash__chrome-dots span { width: 8px; height: 8px; }
+  .ass-dash__chrome-dots { gap: 5px; }
+  .ass-dash__addrbar { max-width: 200px; padding: 3px 10px; font-size: 10px; }
+  .ass-dash__nav { padding: 9px 14px; gap: 12px; }
+  .ass-dash__brand-mark { width: 26px; height: 26px; font-size: 12px; border-radius: 5px; }
+  .ass-dash__brand-name { font-size: 10px; }
+  .ass-dash__brand-sub { font-size: 8.5px; }
+  .ass-dash__pages {
+    min-height: 340px;
+    max-height: 340px;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 78%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 78%, transparent 100%);
+  }
 }
 
 .ass-mockfade-enter-active,
@@ -4512,8 +4600,44 @@ useHead({
   font-weight: 600;
 }
 
-/* (CSS .lp-final* + .ass-final__cta removidos junto com a section
-   em 2026-05-11. Section nao existe mais.) */
+/* ============ 10. FINAL CTA (PAS closer) ============
+   Restituida em 2026-05-12. Espelha a .sol-final da /diferencie-solucao
+   visualmente, mas com voz dura PAS (titulo "ou ... ou ..."). */
+.ass-final {
+  position: relative;
+  padding: 96px 0 112px;
+  text-align: center;
+  isolation: isolate;
+}
+@media (min-width: 768px) { .ass-final { padding: 128px 0 144px; } }
+.ass-final__glow {
+  position: absolute;
+  inset: -10% -10%;
+  filter: blur(60px);
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.7;
+  will-change: opacity;
+  transform: translateZ(0);
+}
+.ass-final__inner {
+  max-width: 720px;
+  margin: 0 auto;
+}
+.ass-final__lead {
+  margin: 18px auto 32px;
+  max-width: 580px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: color-mix(in srgb, var(--brand-text) 75%, transparent);
+}
+.ass-final__lead strong { color: var(--brand-text); font-weight: 600; }
+.ass-final__cta { margin: 0 auto; }
+.ass-final__legal {
+  margin: 22px auto 0;
+  font-size: 12.5px;
+  color: color-mix(in srgb, var(--brand-text) 55%, transparent);
+}
 
 /* ============ SCROLL REVEAL ============ */
 .reveal-on-scroll {

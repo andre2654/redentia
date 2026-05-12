@@ -7,6 +7,10 @@
         <option value="radiograph">Radiograph (input + score demo, B2C self-directed)</option>
         <option value="quiet">Quiet (premium / lightness as luxury)</option>
         <option value="terminal">Terminal (Bloomberg-reimagined)</option>
+        <option value="mentor">Mentor (book-cover orange chunky, Primo Rico)</option>
+        <option value="split">Split (founder + quote, Me Poupe)</option>
+        <option value="minimal">Minimal (data-first, Sardinha)</option>
+        <option value="institutional">Institutional (sobrio, assessoria)</option>
       </select>
     </label>
 

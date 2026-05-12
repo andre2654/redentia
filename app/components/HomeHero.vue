@@ -40,6 +40,22 @@
       :ifix-indicator="ifixIndicator"
     />
 
+    <!-- ========== HERO: MENTOR (Primo Rico, book-cover orange chunky) ========== -->
+    <!-- Restored 2026-05-12. Foi deletado na Phase 4 como "experimental",
+         mas e a identidade canonica do tenant Primo Rico (capa do livro
+         "Do Mil ao Milhao"). Consome brand.hero.{badge,title,subtitle,
+         founderQuote,trustIndicators,ctaLabel,ctaSecondaryLabel,ctaIcon}
+         e brand.founder.{name,photo}. -->
+    <HomeHeroMentor
+      v-if="brand.hero.variant === 'mentor'"
+      :ibov-series="ibovSeries"
+      :ibov-last-price="ibovLastPrice"
+      :ibov-indicator="ibovIndicator"
+      :ibov-variation-color="ibovVariationColor"
+      :ifix-last-price="ifixLastPrice"
+      :ifix-indicator="ifixIndicator"
+    />
+
 
 
     <!-- ========== HERO: SPLIT (Me Poupe, energetico, personalidade, pop) ========== -->

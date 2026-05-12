@@ -319,7 +319,7 @@ useHead({
       <strong>Só venderemos para 10 assessorias</strong>
     </span>
     <span class="ass-topbanner__cta">
-      Quero participar
+      Falar com o time
       <span aria-hidden="true">→</span>
     </span>
   </button>
@@ -360,7 +360,7 @@ useHead({
               class="lp-hero__cta"
               @click="openLeadModal"
             >
-              Quero ver como ficaria na minha assessoria
+              Pedir diagnóstico gratuito
               <span aria-hidden="true">→</span>
             </button>
 
@@ -1070,7 +1070,7 @@ useHead({
             class="lp-hero__cta ass-previews__foot-cta"
             @click="openLeadModal"
           >
-            Quero algo assim para minha assessoria
+            Pedir uma demo na minha marca
             <span aria-hidden="true">→</span>
           </button>
         </div>
@@ -1221,12 +1221,12 @@ useHead({
           <div class="sol-compare__col sol-compare__col--after">
             <p class="sol-compare__head">Com a Redentia</p>
             <ul>
-              <li><strong>Plataforma própria</strong> com sua marca</li>
-              <li><strong>IA</strong> para análise de carteira</li>
-              <li><strong>Notícias</strong> conectadas aos ativos</li>
-              <li>Cliente <strong>entendendo impactos</strong> sozinho</li>
-              <li><strong>Diferencial visível</strong> a cada acesso</li>
-              <li>Experiência <strong>escalável</strong> da assessoria</li>
+              <li>Plataforma própria, <strong>no ar em até 7 dias</strong></li>
+              <li>IA <strong>responde em segundos</strong> sobre carteira e mercado</li>
+              <li>Notícias <strong>cruzadas em tempo real</strong> com os ativos</li>
+              <li>Cliente <strong>entende sozinho</strong>, antes de ligar</li>
+              <li>Diferencial <strong>visível a cada acesso</strong></li>
+              <li>Experiência <strong>escalável</strong>, sem time de tech</li>
             </ul>
           </div>
         </div>
@@ -1310,28 +1310,28 @@ useHead({
           <li class="sol-steps__step">
             <span class="sol-steps__num">01</span>
             <div class="sol-steps__body">
-              <h3>Diagnóstico</h3>
+              <h3>Diagnóstico <span class="sol-steps__time">~1 dia</span></h3>
               <p>Entendemos o modelo da sua assessoria e o perfil de cliente que você atende.</p>
             </div>
           </li>
           <li class="sol-steps__step">
             <span class="sol-steps__num">02</span>
             <div class="sol-steps__body">
-              <h3>Configuração da experiência</h3>
+              <h3>Configuração da experiência <span class="sol-steps__time">~3 dias</span></h3>
               <p>Adaptamos a plataforma para a sua marca: domínio, paleta, logo, voz e escopo.</p>
             </div>
           </li>
           <li class="sol-steps__step">
             <span class="sol-steps__num">03</span>
             <div class="sol-steps__body">
-              <h3>Ativação inicial</h3>
+              <h3>Ativação inicial <span class="sol-steps__time">~2 dias</span></h3>
               <p>Você começa com base selecionada de clientes ou usa pra demonstração comercial.</p>
             </div>
           </li>
           <li class="sol-steps__step">
             <span class="sol-steps__num">04</span>
             <div class="sol-steps__body">
-              <h3>Evolução</h3>
+              <h3>Evolução <span class="sol-steps__time">contínua</span></h3>
               <p>Acompanhamos feedbacks e ajustamos a experiência pra gerar mais valor ao longo do tempo.</p>
             </div>
           </li>
@@ -1342,7 +1342,7 @@ useHead({
           class="lp-hero__cta sol-steps__cta"
           @click="openLeadModal"
         >
-          Quero ver a Redentia na minha assessoria
+          Agendar conversa de 20 min
           <span aria-hidden="true">→</span>
         </button>
       </div>
@@ -1371,6 +1371,9 @@ useHead({
             <span class="lp-section-title__italic">10 assessorias.</span>
           </h2>
 
+          <!-- TODO (Andre): substituir "profundidade depois" por data real
+               quando definir o cronograma da segunda leva. Ex: "Próxima
+               janela em julho/2026." Deadline absoluto fortalece a escassez. -->
           <p class="ass-scarcity__lead">
             Nesta etapa, vamos implementar a Redentia com <strong>apenas 10 assessorias</strong>. O motivo é simples: a solução pede proximidade, adaptação da experiência e acompanhamento da operação comercial de cada escritório. Por isso, poucas assessorias agora, profundidade depois.
           </p>
@@ -1380,7 +1383,7 @@ useHead({
             class="lp-hero__cta ass-scarcity__cta"
             @click="openLeadModal"
           >
-            Quero participar da primeira fase
+            Pedir avaliação
             <span aria-hidden="true">→</span>
           </button>
         </div>
@@ -1517,6 +1520,14 @@ useHead({
             </summary>
             <p>Porque a primeira fase pede <strong>proximidade e personalização na implementação</strong>. Cada plataforma é adaptada ao modelo da casa. Pra fazer isso bem, abrimos só 10 vagas iniciais. Depois, abre a próxima janela.</p>
           </details>
+
+          <details class="ass-faq__item">
+            <summary>
+              <span>Qual o investimento?</span>
+              <span class="ass-faq__chev" aria-hidden="true">+</span>
+            </summary>
+            <p>Modelos comerciais <strong>ajustados ao porte e ao número de clientes</strong> da assessoria. Definimos juntos depois do diagnóstico, sem proposta de 40 páginas.</p>
+          </details>
         </div>
       </div>
     </section>
@@ -1549,7 +1560,7 @@ useHead({
             class="lp-hero__cta sol-final__cta"
             @click="openLeadModal"
           >
-            Quero ver uma demonstração
+            Agendar minha conversa de 20 min
             <span aria-hidden="true">→</span>
           </button>
 
@@ -1889,6 +1900,20 @@ useHead({
   box-shadow: 0 14px 32px -12px color-mix(in srgb, var(--brand-primary) 65%, transparent);
   white-space: nowrap;
   width: fit-content;
+  max-width: 100%;
+}
+/* Em mobile apertado (<= 480px), encolhe padding e fonte pra evitar
+   estouro horizontal em textos longos como "Pedir uma demo na minha
+   marca". Permite wrap em 2 linhas como fallback se mesmo assim
+   nao couber. */
+@media (max-width: 480px) {
+  .lp-hero__cta {
+    padding: 14px 20px;
+    font-size: 14.5px;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.25;
+  }
 }
 .lp-hero__cta:hover {
   filter: brightness(0.94);
@@ -2210,11 +2235,36 @@ useHead({
   position: relative;
   /* Estabiliza altura, a maior page (Painel com 6 cards 3x2) define
      o piso; outras pages crescem pra dentro desse box. Evita layout
-     shift do hero quando troca page. */
-  min-height: 500px;
+     shift do hero quando troca page. Mobile: piso menor pra nao
+     dominar a viewport (eram 500px ~= 80% da altura util). */
+  min-height: 380px;
 }
 @media (min-width: 768px) {
   .ass-dash__pages { min-height: 540px; }
+}
+
+/* ====== Compactacao mobile do mock ======
+   Em <= 640px, encolhe chrome, nav e elementos internos. O bloco
+   .ass-dash__pages e cortado em max-height fixo + fade gradient pro
+   conteudo interno (Painel/Asset/Chat) que naturalmente expande em
+   coluna estreita nao dominar a viewport. Resultado: mock total cai
+   de ~658px (era ~80% viewport) pra ~430px (~50% viewport). */
+@media (max-width: 640px) {
+  .ass-dash__chrome { padding: 7px 10px; gap: 10px; }
+  .ass-dash__chrome-dots span { width: 8px; height: 8px; }
+  .ass-dash__chrome-dots { gap: 5px; }
+  .ass-dash__addrbar { max-width: 200px; padding: 3px 10px; font-size: 10px; }
+  .ass-dash__nav { padding: 9px 14px; gap: 12px; }
+  .ass-dash__brand-mark { width: 26px; height: 26px; font-size: 12px; border-radius: 5px; }
+  .ass-dash__brand-name { font-size: 10px; }
+  .ass-dash__brand-sub { font-size: 8.5px; }
+  .ass-dash__pages {
+    min-height: 340px;
+    max-height: 340px;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 78%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 78%, transparent 100%);
+  }
 }
 
 .ass-mockfade-enter-active,
@@ -4815,7 +4865,22 @@ useHead({
   font-weight: 500;
   letter-spacing: -0.01em;
   color: var(--brand-text);
-  margin: 0;
+  margin: 0 0 6px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.sol-steps__time {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--brand-primary) 14%, transparent);
+  color: color-mix(in srgb, var(--brand-text) 70%, transparent);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
 }
 .sol-steps__body p {
   font-size: 14px;
