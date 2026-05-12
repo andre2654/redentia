@@ -28,8 +28,13 @@
          mercado. Apenas border-bottom de 1 px pra separar da seção
          seguinte. Duas instâncias do carrossel porque a variante big
          renderiza logos + preço maiores no desktop; mobile usa a
-         versão compacta. -->
+         versão compacta.
+
+         Gate: tenants podem esconder a régua via `brand.features.showTickerRail`
+         (Me Poupe! por exemplo fica fora do tom pop magazine com o ticker
+         de mercado direto debaixo do hero). Default true mantem behavior. -->
     <div
+      v-if="showTickerRail"
       class="w-full border-b py-4"
       style="background: var(--bg-elevated); border-bottom-color: var(--border-subtle);"
     >
@@ -1815,6 +1820,12 @@ function sliceRanking(items: any[] | undefined) {
 // Default = true pra preservar behavior atual.
 const showCrypto = computed(() => {
   return (brand as any).features?.showCrypto !== false
+})
+
+// Ticker rail gate: regua de tickers ao vivo debaixo do hero. Me Poupe!
+// nao usa (visual showtime ja tem propria gramatica). Default true.
+const showTickerRail = computed(() => {
+  return (brand as any).features?.showTickerRail !== false
 })
 
 const categoryGridCols = computed(() => {
