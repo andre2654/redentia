@@ -18,7 +18,7 @@
 
     <div class="dv-value">
       <span class="dv-value__currency">R$</span>
-      <span class="dv-value__amount">{{ formatted }}</span>
+      <span class="dv-value__amount" :style="{ fontSize: amountFontSize + 'px' }">{{ formatted }}</span>
       <span class="dv-value__period">/mês</span>
     </div>
 
@@ -45,6 +45,15 @@ interface Props {
 const props = defineProps<Props>()
 
 const formatted = computed(() => Math.round(props.monthly).toLocaleString('pt-BR'))
+
+// Big numeral shrinks for long amounts. "R$" + amount + "/mês" share
+// the row; we budget ~150px for the amount itself before forcing
+// font-size down so nothing overflows the card.
+const amountFontSize = computed(() => {
+  const len = formatted.value.length || 1
+  const ideal = 150 / (len * 0.55)
+  return Math.max(44, Math.min(120, Math.floor(ideal)))
+})
 </script>
 
 <style scoped>

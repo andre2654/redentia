@@ -18,7 +18,7 @@
     <div class="sc-title__rule" aria-hidden="true" />
 
     <div class="sc-score">
-      <span class="sc-score__num">{{ score }}</span>
+      <span class="sc-score__num" :style="{ fontSize: numFontSize + 'px' }">{{ score }}</span>
       <span class="sc-score__outof">/100</span>
     </div>
 
@@ -68,6 +68,14 @@ const tagline = computed(() => {
   if (props.score >= 65) return 'Bom nível, com espaço para evoluir'
   if (props.score >= 45) return 'Atenção: dá pra melhorar'
   return 'Carteira pede ajustes urgentes'
+})
+
+// Shrink the big numeral so "100" + "/100" fits the card width.
+const numFontSize = computed(() => {
+  const len = String(props.score || 0).length || 1
+  if (len <= 1) return 140
+  if (len === 2) return 130
+  return 110
 })
 </script>
 

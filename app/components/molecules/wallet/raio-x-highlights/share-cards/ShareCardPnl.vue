@@ -21,7 +21,7 @@
     <div class="pn-value">
       <span class="pn-value__sign">{{ sign }}</span>
       <span class="pn-value__currency">R$</span>
-      <span class="pn-value__amount">{{ formatted }}</span>
+      <span class="pn-value__amount" :style="{ fontSize: amountFontSize + 'px' }">{{ formatted }}</span>
     </div>
 
     <p class="pn-context">
@@ -70,6 +70,16 @@ const glow = computed(() => positive.value
 const formatted = computed(() => Math.abs(props.amount).toLocaleString('pt-BR', {
   maximumFractionDigits: 0,
 }))
+
+// Big numerals need to shrink when the amount has lots of digits or
+// the "R$ 9.999.999" composition would overflow the card's usable
+// width. Instrument Serif digit is ≈0.55em wide; we budget ~190px
+// for the amount itself (the rest goes to "+", "R$", gaps, etc).
+const amountFontSize = computed(() => {
+  const len = formatted.value.length || 1
+  const ideal = 190 / (len * 0.55)
+  return Math.max(46, Math.min(100, Math.floor(ideal)))
+})
 
 const daysFormatted = computed(() => props.days.toLocaleString('pt-BR'))
 

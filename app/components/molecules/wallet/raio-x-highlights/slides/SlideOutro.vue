@@ -214,10 +214,27 @@ const riskCardProps = computed(() => {
   const pctMatch = text.match(/(\d{1,3})\s*%/)
   const value: number | string = pctMatch ? parseInt(pctMatch[1]!, 10) : '!'
   const suffix = pctMatch ? '%' : ''
+
+  // Risk bodies from the analysis service are paragraph-length prose
+  // ("Os três principais ativos (X, Y, Z) representam 26% da
+  // carteira, o que pode aumentar o risco em caso de desempenho
+  // negativo."). That overflows the 320px share-card. Prefer the
+  // parenthesised asset list if present — it's the most concrete,
+  // shareable nugget. Otherwise fall back to the first short clause.
+  const body = r.body ?? ''
+  const parenMatch = body.match(/\(([^)]+)\)/)
+  let shortBody = ''
+  if (parenMatch?.[1]) {
+    shortBody = parenMatch[1].trim()
+  } else {
+    const firstClause = body.split(/[.;]/)[0]?.trim() ?? ''
+    shortBody = firstClause.length > 90 ? `${firstClause.slice(0, 88).trim()}…` : firstClause
+  }
+
   return {
     value,
     suffix,
-    body: r.body,
+    body: shortBody,
     pillLabel: r.severity === 'high' ? 'Risco alto' : r.severity === 'medium' ? 'Risco médio' : 'Risco baixo',
   }
 })
@@ -277,12 +294,20 @@ async function shareCard(idx: number) {
   const target = cardEls.value[idx]
   if (!target) return
 
+  // Capture ONLY the card chrome (the polaroid). The article wrapping
+  // it also contains the action overlay (.sl-share__card-actions with
+  // the "Compartilhar" button), and we definitely don't want that
+  // baked into the PNG.
+  const chrome = (target.querySelector('.card-chrome') as HTMLElement | null) ?? target
+
   sharingIdx.value = idx
   try {
     const html2canvas = (await import('html2canvas-pro')).default
-    const canvas = await html2canvas(target, {
+    // scale: 3 puts a 320x569 card at 960x1707 px — close to Instagram
+    // story resolution (1080x1920) without the perf hit of going to 4.
+    const canvas = await html2canvas(chrome, {
       backgroundColor: null,
-      scale: 2,
+      scale: 3,
       useCORS: true,
       logging: false,
     })
@@ -298,8 +323,8 @@ async function shareCard(idx: number) {
       && navigator.canShare({ files: [file] })) {
       await navigator.share({
         files: [file],
-        title: 'Meu Raio-X · Redent.IA',
-        text: 'Olha meu Raio-X de carteira pela Redent.IA',
+        title: 'Meu Raio-X · Redentia',
+        text: 'Olha meu Raio-X de carteira pela Redentia',
       })
     } else {
       const url = URL.createObjectURL(blob)

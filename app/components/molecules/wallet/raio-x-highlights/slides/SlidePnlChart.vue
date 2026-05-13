@@ -1,19 +1,22 @@
 <!--
-  SlidePnlChart — full-bleed cinematic equity-curve reveal.
+  SlidePnlChart — split-screen P&L reveal.
 
-  Camera = SVG viewBox. Animated every frame to:
-    - Open zoomed in on the very start of the curve
-    - Pan right tracking the leading edge as the line draws
-    - Pull back gradually so by the end the whole curve is on screen
+  Top (hero) is a cinematic close-up: the SVG viewBox is locked to a
+  tight zoom that PANS to follow the pen as the line draws. No
+  zoom-out at the end — the framing stays close so the curve always
+  reads as prominent.
 
-  The leading dot uses path.getPointAtLength() so it sits EXACTLY on
-  the rendered (bezier-smoothed) curve — not on a linear interpolation
-  of the data points. That fixes the visual drift between dot and line.
+  Bottom (minimap) is a small overview that shows the entire chart
+  being drawn in real time, synchronized to the same `progress` value.
+  This is what gives the user context for where in the journey the
+  hero camera is currently focused.
 
-  Layout: the slide is positioned absolute inside the modal stage to
-  break out of the parent's padding. Headline lives in a top overlay
-  with generous safe area; the final-value badge floats centered above
-  the lower third so it sits at a comfortable reading height.
+  Two SVGs share the same path data (`linePath` / `pathLength`) and
+  the same `dashOffset` so the line draws in lockstep across both.
+
+  The leading dot uses path.getPointAtLength() in the HERO SVG so it
+  sits EXACTLY on the rendered (bezier-smoothed) curve — not on a
+  linear interpolation of the data points.
 -->
 <template>
   <div class="sl-pnl-fs">
@@ -29,7 +32,9 @@
       </h2>
     </header>
 
-    <!-- Full-bleed SVG canvas. The viewBox is the camera. -->
+    <!-- HERO: cinematic close-up. SVG viewBox is the camera, locked
+         to a tight zoom that pans to follow the pen. -->
+    <div class="sl-pnl-fs__hero">
     <svg
       ref="svgEl"
       class="sl-pnl-fs__svg"
@@ -101,18 +106,52 @@
         <circle :r="lineWidth * 0.6" fill="#fff" />
       </g>
     </svg>
+    </div>
 
-    <!-- CENTER stack: badge + sub caption sit together, perfectly
-         centred in the viewport. They appear at the end so the user's
-         eye is naturally drawn here once the camera settles. -->
+    <!-- MINIMAP: minimal bottom strip showing the whole chart being
+         drawn. No background panel — just the line itself floating
+         on the slide. Synced to the hero via shared linePath /
+         pathLength / dashOffset. -->
+    <div class="sl-pnl-fs__minimap" aria-hidden="true">
+      <svg
+        class="sl-pnl-fs__minimap-svg"
+        :viewBox="`0 0 ${vbW} ${vbH}`"
+        preserveAspectRatio="none"
+      >
+        <path
+          :d="linePath"
+          fill="none"
+          :stroke="trendColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          :stroke-dasharray="pathLength || 1"
+          :stroke-dashoffset="dashOffset"
+          vector-effect="non-scaling-stroke"
+          opacity="0.55"
+        />
+        <circle
+          v-if="leadingPoint"
+          :cx="leadingPoint.x"
+          :cy="leadingPoint.y"
+          r="4"
+          :fill="trendColor"
+          vector-effect="non-scaling-stroke"
+        />
+      </svg>
+    </div>
+
+    <!-- CENTER stack: badge + sub caption sit together. Anchored to
+         the hero center (above the minimap) so they don't overlap
+         the overview strip at the bottom. -->
     <div class="sl-pnl-fs__center">
       <Transition name="sl-pnl-fs-badge">
         <div
           v-if="progress > 0.96"
           class="sl-pnl-fs__badge"
           :style="{
-            borderColor: `color-mix(in srgb, ${trendColor} 50%, transparent)`,
-            boxShadow: `0 0 38px color-mix(in srgb, ${trendColor} 42%, transparent), 0 20px 60px -20px rgba(0,0,0,0.6)`,
+            '--trend-color': trendColor,
+            textShadow: `0 0 48px color-mix(in srgb, ${trendColor} 55%, transparent), 0 6px 32px rgba(0,0,0,0.55)`,
           }"
         >
           <div class="sl-pnl-fs__badge-line">
@@ -210,7 +249,10 @@ const deltaAbs = computed(() => Math.abs(lastValue.value - firstValue.value))
 const deltaSign = computed(() => (lastValue.value >= firstValue.value ? '+' : '−'))
 const deltaPct = computed(() => {
   if (!firstValue.value) return 0
-  return ((lastValue.value - firstValue.value) / firstValue.value) * 100
+  // Divide by abs(firstValue) so a negative starting balance doesn't
+  // flip the sign of the percentage. Going from -2962 to +2932 is a
+  // gain, not a -199% loss.
+  return ((lastValue.value - firstValue.value) / Math.abs(firstValue.value)) * 100
 })
 const deltaPctLabel = computed(() => {
   const v = deltaPct.value
@@ -234,18 +276,51 @@ const points = computed(() => {
   const s = sampled.value
   if (s.length < 2) return [] as Array<{ x: number; y: number }>
   const vals = s.map((p) => p.value)
-  const min = Math.min(...vals)
-  const max = Math.max(...vals)
+
+  // Y-range anchored on the JOURNEY (first → last value) rather than
+  // raw data min/max. We add 50% headroom on each side, then clamp
+  // any data point outside this range to the bounds. This way:
+  //   - The start-to-end trend is the visual hero (always centered
+  //     and prominent on screen).
+  //   - A brief midpath spike that's 10x the journey range gets
+  //     clipped to the top edge instead of compressing the rest of
+  //     the journey into a 2% sliver at the bottom.
+  //   - The badge value (last) sits at a predictable position in
+  //     the upper portion of the chart.
+  // For flat journeys (first ≈ last), we fall back to the absolute
+  // data range so the chart still has something to show.
+  const first = vals[0]!
+  const last = vals[vals.length - 1]!
+  const journeyMin = Math.min(first, last)
+  const journeyMax = Math.max(first, last)
+  const journeySpan = journeyMax - journeyMin
+
+  let min: number
+  let max: number
+  if (journeySpan > 0.5) {
+    min = journeyMin - journeySpan * 0.5
+    max = journeyMax + journeySpan * 0.5
+  } else {
+    min = Math.min(...vals)
+    max = Math.max(...vals)
+  }
+
   const range = max - min || 1
   // Data fits between padLeft and (vbW - padRight). The big right
   // padding leaves a "future zone" that the camera can pan into,
   // so the final frame has visible breathing room after the pen.
   const innerW = vbW - padLeft - padRight
   const innerH = vbH.value - padY * 2
-  return s.map((p, i) => ({
-    x: padLeft + (i / (s.length - 1)) * innerW,
-    y: padY + innerH - ((p.value - min) / range) * innerH,
-  }))
+  return s.map((p, i) => {
+    // Clamp values that fall outside the journey-anchored range so
+    // outlier spikes touch the top/bottom of the chart instead of
+    // escaping vertically.
+    const clamped = Math.max(min, Math.min(max, p.value))
+    return {
+      x: padLeft + (i / (s.length - 1)) * innerW,
+      y: padY + innerH - ((clamped - min) / range) * innerH,
+    }
+  })
 })
 
 // Smooth cubic-bezier path. Tension factor controls how loose the
@@ -267,7 +342,10 @@ function buildSmoothPath(pts: Array<{ x: number; y: number }>, tension = 0.22): 
   return d
 }
 
-const linePath = computed(() => buildSmoothPath(points.value, 0.22))
+// Tension 0.16 keeps the line smooth without large bezier overshoots
+// on sharp transitions. Higher values (0.22+) caused the control
+// points to extend well above/below the data on spiky series.
+const linePath = computed(() => buildSmoothPath(points.value, 0.16))
 
 const areaPath = computed(() => {
   const pts = points.value
@@ -307,10 +385,10 @@ const grid = computed(() => {
 const progress = ref(0)
 const camProgress = ref(0)
 let raf: number | null = null
-// 8.5s gives the camera enough breathing room to keep up with the pen.
-// At 6s the line outran the pan/zoom and the leading edge "escaped"
-// the frame on the way right.
-const TOTAL_MS = 8500
+// 10s lets the user actually savor the line drawing. easeOutQuart
+// front-loads the action, so the visible "drawing" feels meatier
+// when stretched over 10s than at the previous 8.5s.
+const TOTAL_MS = 10000
 const START_DELAY = 250
 
 function easeOutQuart(t: number) { return 1 - Math.pow(1 - t, 4) }
@@ -482,102 +560,37 @@ const viewBox = computed(() => {
   const db = dataBounds.value
   if (!lp || !db.spanX) return `0 0 ${vbW} ${vbH.value}`
 
-  const cp = camProgress.value          // 0..1, eased
-  // smoothstep helper for blending
-  const smooth = (t: number) => t * t * (3 - 2 * t)
-
-  // ============ Two-phase camera ============
+  // ============ Cinematic camera ============
   //
-  // Phase 1 (cp 0..0.5): TIGHT TRACK. Window stays small (~28-44% of
-  // the data span). Camera follows the leading edge tightly on BOTH
-  // axes — feels like a drone hugging the pen.
+  // Tight zoom that tracks the pen on both axes — like a drone
+  // following the leading edge as the curve generates. The minimap
+  // below shows the full chart for context.
   //
-  // Phase 2 (cp 0.5..1.0): PULL BACK. Window grows to reveal the full
-  // curve. Focus blends from the pen toward the geometric midpoint of
-  // the data bounds so the camera "lets go" of the pen and shows the
-  // whole story.
-  //
-  // This split fixes the case where a user has a long flat section
-  // followed by a sudden spike (BOOM). With the old single-phase
-  // camera, the spike inflated the data range, pushing the mid-point
-  // into empty space and leaving the curve at the edge of the frame.
-  // Now the wide phase only kicks in *after* the user has watched the
-  // pen build up — and the final guard nails the whole curve to the
-  // centre regardless of shape.
+  // At the very end (last ~15% of progress) we ease out to a slightly
+  // wider framing so the user can take in a bit more of the journey
+  // when the badge appears. Not a full zoom-out (minimap covers
+  // that) — just enough to feel like the camera "settles".
+  const baseWindowW = Math.max(560, db.spanX * 0.28 + padLeft + padRight * 0.15)
 
-  let windowW: number
-  let focusX: number
-  let focusY: number
-
-  // X anchor where the focus point sits inside the frame: 0 = left,
-  // 1 = right. We slide it from 0.55 (pen slightly biased right
-  // during the tight track) to 0.70 (last point near the right edge
-  // by the end of the pull-back, with empty horizon on its right).
-  let anchorX = 0.55
-
-  // Phase split: zoom-in lasts 70% of the timeline, zoom-out only
-  // the final 30%. The tight-track phase needs the breathing room
-  // so the user feels the pen actually getting somewhere before the
-  // camera pulls back to reveal the whole journey.
-  const PHASE_SPLIT = 0.70
-
-  if (cp < PHASE_SPLIT) {
-    // ---- Phase 1: tight track (drone hugging the pen) ----
-    const t1 = smooth(cp / PHASE_SPLIT)
-    const tightMin = db.spanX * 0.28 + padX * 2
-    const tightMax = db.spanX * 0.55 + padX * 2
-    windowW = tightMin + (tightMax - tightMin) * t1
-    focusX = lp.x
-    focusY = lp.y
-  } else {
-    // ---- Phase 2: pull-back, focus on the END of the chart ----
-    const t2 = smooth((cp - PHASE_SPLIT) / (1 - PHASE_SPLIT))
-    // Window sized to fit the trail AND show the future-zone empty
-    // canvas to the right of the pen. wideMax overshoots the span so
-    // the first point still has room on the left while the pen sits
-    // at 70% with 30% of empty horizon to its right.
-    const wideMin = db.spanX * 0.55 + padLeft + padRight * 0.5
-    const wideMax = db.spanX * 1.25 + padLeft + padRight
-    windowW = wideMin + (wideMax - wideMin) * t2
-    focusX = lp.x * (1 - t2) + db.lastX * t2
-    focusY = lp.y * (1 - t2) + db.midY * t2
-    // Anchor at 0.7 means the pen sits at 70% across the frame —
-    // with the future-zone empty canvas (padRight) the remaining
-    // 30% of the frame is visible "what's next" breathing room.
-    // Reads as "we arrived but there's still horizon ahead".
-    anchorX = 0.55 + 0.15 * t2
+  const cp = camProgress.value
+  let zoomFactor = 1
+  if (cp > 0.82) {
+    const t = (cp - 0.82) / 0.18
+    const eased = t * t * (3 - 2 * t)
+    zoomFactor = 1 + 0.45 * eased   // up to 1.45x at the very end
   }
 
-  // CRITICAL for mobile: use the ACTUAL container aspect ratio rather
-  // than the static viewBox ratio. With preserveAspectRatio="slice" on
-  // a vertical mobile viewport, mismatched ratios crop the SVG sides —
-  // and that's exactly where the pen ends up sitting at the final
-  // frame. Matching the window height to the container's height keeps
-  // the slice from cutting anything off.
+  const windowW = baseWindowW * zoomFactor
   const windowH = windowW / containerRatio.value
 
-  let x = focusX - windowW * anchorX
-  let y = focusY - windowH * 0.5
-
-  // ============ Final guard (last 15%) ============
-  // Lock the framing so the LAST point sits exactly at 85% across the
-  // frame and the entire data range fits. Without this guard, a curve
-  // with extreme vertical span (long flat + boom) could still land
-  // the last point near the very edge.
-  const guardT = Math.max(0, Math.min(1, (cp - 0.85) / 0.15))
-  if (guardT > 0) {
-    // Pen at 70% — leaves ~30% of horizon empty to the right (the
-    // future-zone we built into the canvas). Reads as "arrived at
-    // the end with road still ahead".
-    const finalAnchor = 0.70
-    const finalX = db.lastX - windowW * finalAnchor
-    const finalY = db.midY - windowH * 0.5
-    x = x * (1 - guardT) + finalX * guardT
-    y = y * (1 - guardT) + finalY * guardT
-  }
+  // Pen anchored slightly right of center; trail visible to the
+  // left, a sliver of "what's coming" to the right. Y tracks pen so
+  // spikes feel dramatic (camera rises with the pen).
+  const anchorX = 0.6
+  const x = lp.x - windowW * anchorX
+  const y = lp.y - windowH * 0.5
 
   currentWindow.value = { x, y, w: windowW, h: windowH }
-
   return `${x.toFixed(1)} ${y.toFixed(1)} ${windowW.toFixed(1)} ${windowH.toFixed(1)}`
 })
 
@@ -599,13 +612,56 @@ function formatBrlAbs(v: number): string {
   display: block;
 }
 
-/* Full-bleed SVG */
+/* HERO: cinematic close-up. Takes the full slide minus the bottom
+   strip reserved for the minimap. .sl-pnl-fs has bottom: -100px to
+   bleed past the modal stage, so the hero's bottom must clear that
+   overshoot AND leave room for the minimap (60px tall at bottom:140px
+   = top edge at bottom: 200px). 220px gives a small gap. */
+.sl-pnl-fs__hero {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 220px;
+  overflow: hidden;
+}
+
 .sl-pnl-fs__svg {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   display: block;
+}
+
+/* MINIMAP: minimal bottom strip. Just the line floating on the
+   slide, no panel/border/blur. The slide overflows 100px past the
+   modal viewport bottom (.sl-pnl-fs inset bottom: -100px), so we
+   need bottom >= 130px here to land inside the visible area. */
+.sl-pnl-fs__minimap {
+  position: absolute;
+  left: 32px;
+  right: 32px;
+  bottom: 140px;
+  height: 60px;
+  z-index: 3;
+  opacity: 0;
+  transform: translateY(8px);
+  animation: sl-pnl-fs-minimap-in 700ms ease-out 600ms forwards;
+  pointer-events: none;
+}
+
+.sl-pnl-fs__minimap-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+@keyframes sl-pnl-fs-minimap-in {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ============ TOP overlay — safe-area aware ============
@@ -671,10 +727,13 @@ function formatBrlAbs(v: number): string {
   text-shadow: 0 0 24px currentColor;
 }
 
-/* ============ Center stack — holds the badge + caption ============ */
+/* ============ Center stack — holds the badge + caption ============
+   Anchored to the centre of the HERO area (above the minimap), not
+   the full slide. The minimap is smaller now (60px) so the offset
+   from the geometric centre is smaller too. */
 .sl-pnl-fs__center {
   position: absolute;
-  top: 50%;
+  top: calc(50% - 60px);
   left: 50%;
   transform: translate(-50%, -50%);
   display: flex;
@@ -688,17 +747,15 @@ function formatBrlAbs(v: number): string {
   text-align: center;
 }
 
-/* ============ Final value badge ============ */
+/* ============ Final value — typography-only =============
+   No card, no border, no backdrop. Big editorial number floating
+   in the cinematic frame, with a soft text-shadow halo for legibility
+   over the curve behind it. */
 .sl-pnl-fs__badge {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  padding: 16px 26px;
-  background: rgba(20, 12, 30, 0.86);
-  border: 1px solid;
-  border-radius: 12px;
-  backdrop-filter: blur(14px);
+  gap: 10px;
   font-variant-numeric: tabular-nums;
   text-align: center;
 }
@@ -706,28 +763,30 @@ function formatBrlAbs(v: number): string {
 .sl-pnl-fs__badge-line {
   display: inline-flex;
   align-items: baseline;
-  gap: 10px;
+  gap: 12px;
 }
 
 .sl-pnl-fs__badge-sign {
-  font-size: clamp(28px, 4vw, 36px);
+  font-size: clamp(40px, 7vw, 64px);
   font-weight: 200;
-  line-height: 1;
-}
-
-.sl-pnl-fs__badge-val {
-  font-size: clamp(36px, 5.5vw, 52px);
-  font-weight: 400;
-  color: #fff;
   line-height: 1;
   letter-spacing: -0.02em;
 }
 
+.sl-pnl-fs__badge-val {
+  font-size: clamp(52px, 9vw, 92px);
+  font-weight: 300;
+  color: #fff;
+  line-height: 1;
+  letter-spacing: -0.035em;
+}
+
 .sl-pnl-fs__badge-pct {
-  font-size: 12px;
+  font-size: clamp(12px, 1.4vw, 14px);
   font-weight: 500;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
+  opacity: 0.92;
 }
 
 /* ============ Caption — sits inside the center stack ============ */

@@ -19,7 +19,7 @@
     <div class="rk-title__rule" aria-hidden="true" />
 
     <div class="rk-value">
-      <span class="rk-value__num">{{ valueLabel }}</span>
+      <span class="rk-value__num" :style="{ fontSize: numFontSize + 'px' }">{{ valueLabel }}</span>
       <span v-if="suffix" class="rk-value__suffix">{{ suffix }}</span>
     </div>
 
@@ -67,6 +67,18 @@ const props = withDefaults(defineProps<Props>(), {
 const valueLabel = computed(() => typeof props.value === 'number'
   ? props.value.toLocaleString('pt-BR')
   : props.value)
+
+// Shrink the big number so even "100" + "%" fits comfortably within
+// the card width. Tuned down from earlier (160/150/130) — at full
+// size the "26%" dominated the polaroid and squashed the body text
+// and pill below it.
+const numFontSize = computed(() => {
+  const len = String(valueLabel.value).length || 1
+  if (len <= 1) return 130
+  if (len === 2) return 120
+  if (len === 3) return 100
+  return Math.max(70, Math.floor(200 / (len * 0.55)))
+})
 
 // Allow {hl}word{/hl} markers in the body string to be rendered gold.
 const bodyHtml = computed(() => {
@@ -137,7 +149,7 @@ const bodyHtml = computed(() => {
 }
 
 .rk-value__suffix {
-  font-size: 56px;
+  font-size: 44px;
   font-weight: 400;
   color: #fff;
   line-height: 0.9;
@@ -145,11 +157,20 @@ const bodyHtml = computed(() => {
 
 .rk-context {
   font-size: 14px;
-  line-height: 1.45;
+  line-height: 1.4;
   color: rgba(255, 255, 255, 0.85);
   margin: 8px 0 0;
-  max-width: 84%;
+  max-width: 86%;
   text-align: center;
+  /* Hard cap so a long risk body can't push the pill into the
+     footer. Two lines is plenty for the asset list / short clause
+     we feed in from SlideOutro. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+          line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
 }
 
 :deep(.rk-context__hi) {

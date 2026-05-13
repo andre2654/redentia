@@ -84,14 +84,17 @@
         </main>
 
         <!-- Tap zones (invisible, sit OVER the slide content). Hold
-             anywhere else to pause. -->
+             anywhere else to pause. Hidden on interactive slides
+             (outro share-card carousel) so they don't eat swipes. -->
         <button
+          v-if="!isInteractiveSlide"
           type="button"
           class="rxh__tap rxh__tap--prev"
           aria-label="Slide anterior"
           @click="timeline.rewind()"
         />
         <button
+          v-if="!isInteractiveSlide"
           type="button"
           class="rxh__tap rxh__tap--next"
           aria-label="Próximo slide"
@@ -178,13 +181,13 @@ const slides = computed(() => {
   })
 
   // P&L chart — only shown when we have an actual equity curve. The
-  // camera dolly + line-drawing reveal lasts ~6s, so we give the slide
-  // 6500ms total to let the final badge breathe.
+  // camera dolly + line-drawing reveal lasts ~10s, so we give the
+  // slide 10500ms total to let the final badge breathe.
   const curve = (props.equityCurve ?? []).filter((p) => p && typeof p.value === 'number')
   if (curve.length >= 2) {
     out.push({
       id: 'pnl-chart',
-      durationMs: 6500,
+      durationMs: 10500,
       component: SlidePnlChart,
       propsFactory: () => ({ series: curve }),
     })
@@ -363,6 +366,15 @@ const activeSlideComponent = computed(() => {
 const activeSlideProps = computed(() => {
   const s = slides.value[timeline.currentIndex.value]
   return s?.propsFactory() ?? {}
+})
+
+// On the outro slide the user needs the entire surface for the share-card
+// carousel (swipe to navigate cards, tap to share, etc). The 30%-wide
+// tap zones on each side otherwise eat horizontal drags and break
+// swipe-to-next-card on mobile.
+const isInteractiveSlide = computed(() => {
+  const s = slides.value[timeline.currentIndex.value]
+  return s?.id === 'outro'
 })
 
 // ============ Hold-to-pause (long press) ============

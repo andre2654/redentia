@@ -48,12 +48,12 @@
         <slot />
       </div>
 
-      <!-- Footer: REDENT.IA + tagline -->
+      <!-- Footer: REDENTIA + tagline -->
       <div class="card-chrome__footer">
         <span class="card-chrome__star" aria-hidden="true">
           <ShareCardStar size="11" />
         </span>
-        <span class="card-chrome__brand">REDENT.IA</span>
+        <span class="card-chrome__brand">REDENTIA</span>
         <span class="card-chrome__tagline">— Faça seu Raio-X com IA —</span>
       </div>
 

@@ -80,10 +80,6 @@
         <div class="sl-stress__floor" aria-hidden="true" />
       </div>
     </div>
-
-    <p class="sl-stress__hint rxh-stagger" style="--rxh-delay: 600ms">
-      A câmera percorre os três cenários
-    </p>
   </div>
 </template>
 
@@ -159,17 +155,20 @@ function cardStyle(i: number, _s: ReturnType<typeof normalized.value[0]>) {
   if (count === 1) {
     return { transform: 'translate3d(0, 0, 0)' }
   }
-  // Three-card layout: positions at x = -380, 0, +380, with the side
-  // ones pushed back a touch and rotated to face the centre slightly.
+  // Three-card layout: all cards at the SAME z so each one ends up
+  // the same visual size when the camera rotates to face it. The
+  // side cards are rotated inward (rotateY ±22°) for the 3D feel;
+  // when the camera (rig) counter-rotates to look at one, the card's
+  // own rotation cancels out and it appears face-on.
   const positions = [
-    { x: -440, z: -120, rot: 22 },
-    { x: 0,    z: 0,    rot: 0 },
-    { x: 440,  z: -120, rot: -22 },
+    { x: -440, z: 0, rot: 22 },
+    { x: 0,    z: 0, rot: 0 },
+    { x: 440,  z: 0, rot: -22 },
   ]
-  // Two-card fallback: side-by-side, slight angles.
+  // Two-card fallback: side-by-side, slight angles, same z.
   const positions2 = [
-    { x: -260, z: -40, rot: 14 },
-    { x: 260,  z: -40, rot: -14 },
+    { x: -260, z: 0, rot: 14 },
+    { x: 260,  z: 0, rot: -14 },
   ]
   const p = (count === 3 ? positions : positions2)[i] ?? positions[1]!
   return {
@@ -231,7 +230,9 @@ const camDurationMs = 7000
 .sl-stress__stage {
   position: relative;
   width: 100%;
-  height: clamp(360px, 50vh, 460px);
+  /* Stage must be tall enough to fit the card (440-480px) plus a
+     little breathing room above and below for the perspective tilt. */
+  height: clamp(480px, 62vh, 520px);
   perspective: 1500px;
   perspective-origin: 50% 45%;
   margin: 8px 0 4px;
@@ -253,14 +254,17 @@ const camDurationMs = 7000
 }
 
 @keyframes sl-stress-camera {
-  /* 0%: open already framed on Subprime (left card). Rig is pushed
-     right so the left card sits centre, with a slight yaw so we see
-     into its face. */
-  0%   { transform: translate3d(440px, 0, 60px) rotateY(-14deg); }
-  /* 50%: dolly across to COVID, face-on. */
+  /* Camera Z is constant throughout (80px), so each card sits at the
+     SAME distance from the viewer when centered — that's what keeps
+     them all the same visual size at their focal moment. The camera
+     rotates ±22° to counter the side cards' rotateY(±22°), so each
+     card becomes face-on when it's the one being looked at. */
+  /* 0%: framed on the left card (Subprime). */
+  0%   { transform: translate3d(440px, 0, 80px) rotateY(-22deg); }
+  /* 50%: dolly across to the centre card (COVID), face-on. */
   50%  { transform: translate3d(0, 0, 80px) rotateY(0deg); }
-  /* 100%: arrive at Bolha IA on the right, symmetric yaw. */
-  100% { transform: translate3d(-440px, 0, 60px) rotateY(14deg); }
+  /* 100%: arrive at the right card (Bolha IA), symmetric yaw. */
+  100% { transform: translate3d(-440px, 0, 80px) rotateY(22deg); }
 }
 
 /* ============ Cards ============ */
@@ -268,9 +272,11 @@ const camDurationMs = 7000
   position: absolute;
   top: 50%;
   left: 50%;
-  width: clamp(280px, 32vw, 380px);
-  height: clamp(320px, 42vh, 420px);
-  margin: calc(clamp(320px, 42vh, 420px) / -2) 0 0 calc(clamp(280px, 32vw, 380px) / -2);
+  /* Minimums bumped so the card has real presence on mobile portrait
+     (where vw/vh clamps used to win and left the card cramped). */
+  width: clamp(340px, 38vw, 400px);
+  height: clamp(440px, 56vh, 480px);
+  margin: calc(clamp(440px, 56vh, 480px) / -2) 0 0 calc(clamp(340px, 38vw, 400px) / -2);
   border-radius: 14px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%),
