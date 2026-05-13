@@ -371,6 +371,7 @@ async function shareCard(idx: number) {
 
   try {
     const html2canvas = (await import('html2canvas-pro')).default
+    // scale: 3.4 → 320px capture lands at ~1088px wide (Instagram
     // story spec is 1080×1920).
     const canvas = await html2canvas(target, {
       backgroundColor: null,
