@@ -14,7 +14,14 @@ export interface HighlightsSlideMeta {
 }
 
 export interface UseHighlightsTimelineOptions {
-  slides: HighlightsSlideMeta[]
+  /**
+   * Slide list. Pass an array for static lists, or a getter function
+   * for reactive lists that may grow after the composable is set up
+   * (e.g. when async data like the equity curve arrives and unlocks
+   * additional slides). The getter is re-read on every access so
+   * the timeline always reflects the latest slide count.
+   */
+  slides: HighlightsSlideMeta[] | (() => HighlightsSlideMeta[])
   onDone?: () => void
   autoStart?: boolean
 }
@@ -30,7 +37,11 @@ export function useHighlightsTimeline(opts: UseHighlightsTimelineOptions) {
   let pausedElapsed = 0
   let lastTick = 0
 
-  const currentSlide = computed(() => opts.slides[currentIndex.value] ?? null)
+  function getSlides(): HighlightsSlideMeta[] {
+    return typeof opts.slides === 'function' ? opts.slides() : opts.slides
+  }
+
+  const currentSlide = computed(() => getSlides()[currentIndex.value] ?? null)
 
   function reset() {
     currentIndex.value = 0
@@ -77,7 +88,7 @@ export function useHighlightsTimeline(opts: UseHighlightsTimelineOptions) {
   }
 
   function advance() {
-    if (currentIndex.value >= opts.slides.length - 1) {
+    if (currentIndex.value >= getSlides().length - 1) {
       // Already on the LAST slide. Stay put — the last slide is
       // user-controlled (share screen). Do NOT fire onDone here, or
       // a stray tap-next on mobile would close the modal before the
@@ -105,7 +116,7 @@ export function useHighlightsTimeline(opts: UseHighlightsTimelineOptions) {
   }
 
   function goTo(index: number) {
-    const target = Math.max(0, Math.min(opts.slides.length - 1, index))
+    const target = Math.max(0, Math.min(getSlides().length - 1, index))
     currentIndex.value = target
     progress.value = 0
     slideStart = performance.now()

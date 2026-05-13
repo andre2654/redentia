@@ -483,6 +483,11 @@ async function shareCard(idx: number) {
   align-items: center;
   gap: 8px;
   margin-top: -8px;
+  /* Isolation kills any blend-mode bleed from the backdrop particles
+     so the dots render flat (no halo around them). */
+  isolation: isolate;
+  position: relative;
+  z-index: 2;
 }
 
 .sl-share__dot {
@@ -490,19 +495,29 @@ async function shareCard(idx: number) {
   height: 8px;
   border-radius: 999px;
   border: 0;
-  background: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.22);
   cursor: pointer;
   transition: background 180ms ease-out, width 180ms ease-out;
   padding: 0;
+  /* Belt-and-suspenders against ambient glow / focus rings / blur. */
+  box-shadow: none;
+  filter: none;
+  outline: none;
+  mix-blend-mode: normal;
+}
+
+.sl-share__dot:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.4);
+  outline-offset: 2px;
 }
 
 .sl-share__dot:hover {
-  background: rgba(255, 255, 255, 0.32);
+  background: rgba(255, 255, 255, 0.4);
 }
 
 .sl-share__dot.is-active {
-  width: 28px;
-  background: #d9a635;
+  width: 22px;
+  background: rgba(255, 255, 255, 0.85);
 }
 
 /* ============ Share button overlay ============ */

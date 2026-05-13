@@ -164,7 +164,18 @@ const props = withDefaults(defineProps<Props>(), {
 // the pen at the final frame. Without this, the pen rams the
 // canvas edge and the camera has nowhere to go.
 const vbW = 2000
-const vbH = 800
+// Aspect ratio of the SVG container on screen. Measured at mount and
+// re-measured on resize. Default is the legacy 2.5 desktop ratio
+// (vbW 2000 / vbH 800). vbH computed below uses this to keep the
+// content scaling to the actual viewport — without it, the curve
+// would shrink to a thin sliver on mobile portrait screens.
+const containerRatio = ref(2.5)
+// vbH adapts to the container's aspect ratio. On a vertical mobile
+// viewport we grow the canvas height so the curve scales to fill the
+// taller frame — otherwise the camera window grew vertically but the
+// content stayed in the same 800-unit band, ending up as a thin
+// sliver. Min height kept at 800 so desktop is unchanged.
+const vbH = computed(() => Math.max(800, Math.round(vbW / containerRatio.value)))
 const padLeft = 60
 const padRight = 360
 const padY = 120
@@ -230,7 +241,7 @@ const points = computed(() => {
   // padding leaves a "future zone" that the camera can pan into,
   // so the final frame has visible breathing room after the pen.
   const innerW = vbW - padLeft - padRight
-  const innerH = vbH - padY * 2
+  const innerH = vbH.value - padY * 2
   return s.map((p, i) => ({
     x: padLeft + (i / (s.length - 1)) * innerW,
     y: padY + innerH - ((p.value - min) / range) * innerH,
@@ -262,7 +273,7 @@ const areaPath = computed(() => {
   const pts = points.value
   if (!pts.length) return ''
   const linePart = linePath.value
-  const baseY = vbH - padY
+  const baseY = vbH.value - padY
   return `${linePart} L${pts[pts.length - 1]!.x.toFixed(2)},${baseY} L${pts[0]!.x.toFixed(2)},${baseY} Z`
 })
 
@@ -285,7 +296,7 @@ watch(linePath, async () => {
 }, { immediate: true })
 
 const grid = computed(() => {
-  const inner = vbH - padY * 2
+  const inner = vbH.value - padY * 2
   return [0.25, 0.5, 0.75].map((t) => padY + inner * t)
 })
 
@@ -341,15 +352,52 @@ function play() {
   raf = requestAnimationFrame(tick)
 }
 
+// Track the real on-screen aspect ratio of the SVG container. The
+// viewBox uses preserveAspectRatio="slice" so it crops to fill. On a
+// mobile portrait viewport the slice cut off the right side of the
+// chart (where the pen lives at the final frame). Sizing windowH to
+// match the container ratio means the viewBox already matches the
+// viewport ratio, so slice has nothing to crop.
+let resizeObserver: ResizeObserver | null = null
+
+function updateContainerRatio() {
+  const el = svgEl.value
+  if (!el) return
+  const rect = el.getBoundingClientRect()
+  if (rect.width > 0 && rect.height > 0) {
+    const raw = rect.width / rect.height
+    // Floor at 0.7 — at narrower ratios (mobile portrait the chart
+    // gets too compressed vertically and the curve reads as a thin
+    // ribbon. 0.7 forces the camera to frame in a wider proportion
+    // even when the screen is vertical. Desktop ratios (>= 1.2) pass
+    // through unchanged.
+    containerRatio.value = Math.max(0.7, raw)
+  }
+}
+
 onMounted(() => {
   // Measure first, then play so leadingPoint is valid from frame 0.
   nextTick(() => {
+    updateContainerRatio()
     measurePath()
     play()
+    // Re-measure on resize (handles rotation + responsive layout).
+    if (typeof ResizeObserver !== 'undefined' && svgEl.value) {
+      resizeObserver = new ResizeObserver(updateContainerRatio)
+      resizeObserver.observe(svgEl.value)
+    } else if (typeof window !== 'undefined') {
+      window.addEventListener('resize', updateContainerRatio)
+    }
   })
 })
 onBeforeUnmount(() => {
   if (raf != null) cancelAnimationFrame(raf)
+  if (resizeObserver) {
+    resizeObserver.disconnect()
+    resizeObserver = null
+  } else if (typeof window !== 'undefined') {
+    window.removeEventListener('resize', updateContainerRatio)
+  }
 })
 
 // ============ Derived outputs ============
@@ -393,7 +441,7 @@ const lineWidth = computed(() => {
 })
 
 // ============ Camera (viewBox) ============
-const currentWindow = ref({ x: 0, y: 0, w: vbW, h: vbH })
+const currentWindow = ref({ x: 0, y: 0, w: vbW, h: vbH.value })
 
 // Pre-compute the data-point bounding box once per series so the
 // camera always knows where the curve actually lives — not where the
@@ -401,10 +449,11 @@ const currentWindow = ref({ x: 0, y: 0, w: vbW, h: vbH })
 const dataBounds = computed(() => {
   const pts = points.value
   if (!pts.length) {
+    const h = vbH.value
     return {
-      firstX: 0, lastX: vbW, firstY: vbH / 2, lastY: vbH / 2,
-      minY: 0, maxY: vbH, spanX: vbW, spanY: vbH,
-      midX: vbW / 2, midY: vbH / 2,
+      firstX: 0, lastX: vbW, firstY: h / 2, lastY: h / 2,
+      minY: 0, maxY: h, spanX: vbW, spanY: h,
+      midX: vbW / 2, midY: h / 2,
     }
   }
   const xs = pts.map((p) => p.x)
@@ -430,7 +479,7 @@ const dataBounds = computed(() => {
 const viewBox = computed(() => {
   const lp = leadingPoint.value
   const db = dataBounds.value
-  if (!lp || !db.spanX) return `0 0 ${vbW} ${vbH}`
+  if (!lp || !db.spanX) return `0 0 ${vbW} ${vbH.value}`
 
   const cp = camProgress.value          // 0..1, eased
   // smoothstep helper for blending
@@ -498,7 +547,13 @@ const viewBox = computed(() => {
     anchorX = 0.55 + 0.15 * t2
   }
 
-  const windowH = windowW * (vbH / vbW)
+  // CRITICAL for mobile: use the ACTUAL container aspect ratio rather
+  // than the static viewBox ratio. With preserveAspectRatio="slice" on
+  // a vertical mobile viewport, mismatched ratios crop the SVG sides —
+  // and that's exactly where the pen ends up sitting at the final
+  // frame. Matching the window height to the container's height keeps
+  // the slice from cutting anything off.
+  const windowH = windowW / containerRatio.value
 
   let x = focusX - windowW * anchorX
   let y = focusY - windowH * 0.5

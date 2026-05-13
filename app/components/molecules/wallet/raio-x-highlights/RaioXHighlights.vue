@@ -322,7 +322,11 @@ const meta = computed<HighlightsSlideMeta[]>(() =>
 )
 
 const timeline = useHighlightsTimeline({
-  slides: meta.value,
+  // Pass a getter so the timeline picks up slides that materialise
+  // async (e.g. pnl-chart when equityCurve loads, stress when positions
+  // arrive). Passing meta.value would snapshot the list at setup time
+  // and lock out late-arriving slides.
+  slides: () => meta.value,
   onDone: () => close(),
   autoStart: false,
 })
