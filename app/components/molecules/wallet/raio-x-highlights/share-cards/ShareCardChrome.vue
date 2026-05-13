@@ -48,10 +48,10 @@
         <slot />
       </div>
 
-      <!-- Footer: REDENTIA + tagline -->
+      <!-- Footer: Redentia logo + brand + tagline -->
       <div class="card-chrome__footer">
-        <span class="card-chrome__star" aria-hidden="true">
-          <ShareCardStar size="11" />
+        <span class="card-chrome__logo" aria-hidden="true">
+          <ShareCardLogo size="26" />
         </span>
         <span class="card-chrome__brand">REDENTIA</span>
         <span class="card-chrome__tagline">— Faça seu Raio-X com IA —</span>
@@ -79,6 +79,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import ShareCardStar from './ShareCardStar.vue'
+import ShareCardLogo from './ShareCardLogo.vue'
 
 interface Props {
   /** Paper background gradient — fits the card category. */
@@ -287,6 +288,13 @@ const halftone = (() => {
 .card-chrome__star {
   color: #d9a635;
   margin-bottom: 4px;
+}
+
+.card-chrome__logo {
+  color: #d9a635;
+  margin-bottom: 6px;
+  display: inline-flex;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
 }
 
 .card-chrome__brand {

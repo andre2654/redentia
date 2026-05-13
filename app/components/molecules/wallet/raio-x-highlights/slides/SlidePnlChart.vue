@@ -275,7 +275,6 @@ const trendCopy = computed(() => {
 const points = computed(() => {
   const s = sampled.value
   if (s.length < 2) return [] as Array<{ x: number; y: number }>
-  const vals = s.map((p) => p.value)
 
   // Y-range anchored on the JOURNEY (first → last value) rather than
   // raw data min/max. We add 50% headroom on each side, then clamp
@@ -289,8 +288,8 @@ const points = computed(() => {
   //     the upper portion of the chart.
   // For flat journeys (first ≈ last), we fall back to the absolute
   // data range so the chart still has something to show.
-  const first = vals[0]!
-  const last = vals[vals.length - 1]!
+  const first = s[0]!.value
+  const last = s[s.length - 1]!.value
   const journeyMin = Math.min(first, last)
   const journeyMax = Math.max(first, last)
   const journeySpan = journeyMax - journeyMin
@@ -301,8 +300,17 @@ const points = computed(() => {
     min = journeyMin - journeySpan * 0.5
     max = journeyMax + journeySpan * 0.5
   } else {
-    min = Math.min(...vals)
-    max = Math.max(...vals)
+    // Single loop avoids Math.min(...vals) / Math.max(...vals) which
+    // each build a temp args array of 140 entries (one per sample).
+    let dataMin = Infinity
+    let dataMax = -Infinity
+    for (let i = 0; i < s.length; i++) {
+      const v = s[i]!.value
+      if (v < dataMin) dataMin = v
+      if (v > dataMax) dataMax = v
+    }
+    min = dataMin
+    max = dataMax
   }
 
   const range = max - min || 1
@@ -382,6 +390,19 @@ const grid = computed(() => {
 // `progress` (eased) drives the line stroke + clip-path. `camProgress`
 // (different easing) drives the viewBox so the camera moves more
 // smoothly and keeps up with the pen instead of chasing it.
+//
+// PERF NOTES (per-frame work, ~60fps):
+//   - `dashOffset` recomputes (cheap math)
+//   - `leadingPoint` calls `el.getPointAtLength(len * progress)` — one
+//     SVG DOM call. Necessary for the dot to sit on the bezier exactly.
+//   - `viewBox` runs smoothstep blends + builds a 4-number string.
+//   - `clipWidth` and `lineWidth` recompute (cheap math).
+//
+// What does NOT run per-frame:
+//   - `points`, `linePath`, `areaPath`, `dataBounds`, `pathLength`,
+//     `grid` — these only update when `props.series` or
+//     `containerRatio` change (rare). The `watch(linePath)` only
+//     fires when the series changes, not on progress.
 const progress = ref(0)
 const camProgress = ref(0)
 let raf: number | null = null
@@ -450,7 +471,13 @@ function updateContainerRatio() {
     // scales to fill the available area on both desktop and mobile.
     // Floor at 0.35 just to guard against pathological ultra-tall
     // containers (e.g. iPhone landscape with notch overlap).
-    containerRatio.value = Math.max(0.35, raw)
+    const next = Math.max(0.35, raw)
+    // Perf: skip if the change is < 1% — ResizeObserver fires for
+    // every sub-pixel layout shift, and otherwise this would trigger
+    // the points → linePath → pathLength → areaPath chain on each
+    // hit, including expensive el.getTotalLength() DOM measurements.
+    if (Math.abs(next - containerRatio.value) < 0.01) return
+    containerRatio.value = next
   }
 }
 
