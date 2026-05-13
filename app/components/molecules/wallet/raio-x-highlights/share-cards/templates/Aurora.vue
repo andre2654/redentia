@@ -205,15 +205,21 @@ const auStyle = computed(() => {
   width: 100%;
   overflow: hidden;
 }
+/* Solid white text + tinted halo (no gradient text). Originally we
+   used `background-clip: text` for a white→tint vertical gradient on
+   the numeral, but html2canvas-pro silently drops the text clip when
+   exporting to PNG — the result is a solid gradient rectangle in
+   place of the digits. Solid white + a generous text-shadow halo
+   keeps the luminous fintech feel and exports reliably. */
 .au__num {
   font-family: 'Instrument Serif', serif;
   line-height: 0.85;
   letter-spacing: -0.05em;
-  background: linear-gradient(180deg, #fff 0%, var(--tint) 100%);
-  -webkit-background-clip: text;
-          background-clip: text;
-  color: transparent;
-  text-shadow: 0 0 60px color-mix(in srgb, var(--tint) 35%, transparent);
+  color: #fff;
+  text-shadow:
+    0 0 60px var(--tint),
+    0 0 28px color-mix(in srgb, var(--tint) 70%, transparent),
+    0 4px 18px rgba(0, 0, 0, 0.35);
   max-width: 100%;
   white-space: nowrap;
 }
@@ -222,11 +228,11 @@ const auStyle = computed(() => {
   font-family: 'Instrument Serif', serif;
   line-height: 0.95;
   letter-spacing: -0.03em;
-  background: linear-gradient(180deg, #fff 0%, var(--tint) 100%);
-  -webkit-background-clip: text;
-          background-clip: text;
-  color: transparent;
-  text-shadow: 0 0 40px color-mix(in srgb, var(--tint) 30%, transparent);
+  color: #fff;
+  text-shadow:
+    0 0 50px var(--tint),
+    0 0 24px color-mix(in srgb, var(--tint) 65%, transparent),
+    0 4px 18px rgba(0, 0, 0, 0.3);
   white-space: nowrap;
   max-width: 100%;
 }

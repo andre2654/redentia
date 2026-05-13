@@ -185,7 +185,6 @@ const props = withDefaults(defineProps<Props>(), {
   userName: '',
 })
 
-defineEmits<{ close: [] }>()
 
 // ============ Templates registry ============
 // shallowRef on the components themselves so Vue doesn't deeply track
