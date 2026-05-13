@@ -623,7 +623,7 @@ export default defineNuxtConfig({
     // Bypassa adblockers e iOS ATT que bloqueiam o pixel JS.
     // Combinado com pixel browser via event_id (deduplicacao Meta).
     // NUNCA usar prefixo NUXT_PUBLIC_ — token nao pode vazar pro client.
-    metaPixelIdServer: process.env.META_PIXEL_ID || process.env.NUXT_PUBLIC_META_PIXEL_ID || '860063501994992',
+    metaPixelIdServer: process.env.META_PIXEL_ID || process.env.NUXT_PUBLIC_META_PIXEL_ID || '26687981637519908',
     metaCapiAccessToken: process.env.META_CAPI_ACCESS_TOKEN || '',
     public: {
       apiBaseUrl:

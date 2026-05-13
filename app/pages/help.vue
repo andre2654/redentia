@@ -451,10 +451,21 @@ const routeContext = computed<{ type: 'asset' | 'crypto' | 'tesouro' | 'home' | 
   () => null,
 )
 
+const router = useRouter()
 const chat = useChatStream({
   tenantSlug: brand.slug ?? 'redentia',
   tier,
   routeContext,
+  // When the chat finishes running a raio-x analysis, push the user
+  // into the wallet and auto-play the Highlights cinematic story.
+  // Slight delay so the user sees the chat's "Análise pronta" line
+  // before the screen flips. `openHighlights=1` is the trigger the
+  // wallet listens for on mount.
+  onPortfolioAnalyzed: () => {
+    setTimeout(() => {
+      router.push('/wallet?openHighlights=1&from=chat')
+    }, 1200)
+  },
 })
 
 // Goal anchoring state — kept around so the goal-link side effect of

@@ -177,7 +177,17 @@ const hasPositions = computed(() => props.positions?.length > 0)
 // Asset class taxonomy (mantemos sincronizado com wallet/index.vue
 // CLASS_LABELS — idealmente extrair pra um modulo compartilhado).
 // =============================================================
-type AssetClass = 'STOCK' | 'REIT' | 'ETF' | 'BDR' | 'TREASURY' | 'CRYPTO' | 'OTHER'
+// Scenarios + impact math live in `~/composables/useStressScenarios` so
+// the wallet card and the Raio-X Highlights slide stay in sync.
+import {
+  STRESS_SCENARIOS,
+  allocationByClass,
+  scenarioImpact,
+  type StressAssetClass,
+  type StressScenarioCanon,
+} from '~/composables/useStressScenarios'
+
+type AssetClass = StressAssetClass
 
 const CLASS_META: Record<AssetClass, { label: string; color: string }> = {
   STOCK:    { label: 'Ações',    color: '#3b82f6' },
@@ -189,114 +199,14 @@ const CLASS_META: Record<AssetClass, { label: string; color: string }> = {
   OTHER:    { label: 'Outros',   color: '#94a3b8' },
 }
 
-interface Scenario {
-  id: string
-  name: string
-  icon: string
-  year_label: string  // tombstone numero gigante de fundo
-  type: 'real' | 'hipotetico'
-  tone: 'crisis' | 'severe' | 'projection'
-  period: string
-  duration: string
-  recovery: string
-  headline: string
-  baseline_ibov: number
-  impact_by_class: Record<AssetClass, number>
-}
+type Scenario = StressScenarioCanon
 
-const scenarios: Scenario[] = [
-  {
-    id: 'covid-2020',
-    name: 'Pandemia COVID-19',
-    icon: 'i-lucide-biohazard',
-    year_label: '2020',
-    type: 'real',
-    tone: 'crisis',
-    period: 'fev-mar 2020',
-    duration: '32 dias',
-    recovery: '~5 meses',
-    headline: 'Choque global de liquidez com lockdowns simultâneos. IBOV cedeu 45% em pouco mais de um mês, S&P 500 perdeu 34%, FIIs caíram 34%.',
-    baseline_ibov: -45,
-    impact_by_class: {
-      STOCK:    -45,
-      REIT:     -34,
-      ETF:      -38,
-      BDR:      -35,
-      TREASURY: -8,
-      CRYPTO:   -50,
-      OTHER:    -30,
-    },
-  },
-  {
-    id: 'subprime-2008',
-    name: 'Crise do Subprime',
-    icon: 'i-lucide-trending-down',
-    year_label: '2008',
-    type: 'real',
-    tone: 'severe',
-    period: 'set 2008 - mar 2009',
-    duration: '6 meses',
-    recovery: '~2,5 anos',
-    headline: 'Colapso bancário global após a falência do Lehman Brothers. IBOV recuou 54%, S&P 500 perdeu 57%, recuperação total levou anos.',
-    baseline_ibov: -54,
-    impact_by_class: {
-      STOCK:    -54,
-      REIT:     -38,
-      ETF:      -50,
-      BDR:      -55,
-      TREASURY: -3,
-      CRYPTO:   0,
-      OTHER:    -40,
-    },
-  },
-  {
-    id: 'ai-bubble-2026',
-    name: 'Estouro da bolha de IA',
-    icon: 'i-lucide-cpu',
-    year_label: '202?',
-    type: 'hipotetico',
-    tone: 'projection',
-    period: 'projeção 2026-2027',
-    duration: '~12 meses',
-    recovery: '18-24 meses',
-    headline: 'Cenário hipotético: tese de hyperscalers (Nvidia, Microsoft, Meta) é revisada bruscamente. BDRs e ETFs internacionais sofrem mais; FIIs e Tesouro tendem a oferecer abrigo.',
-    baseline_ibov: -25,
-    impact_by_class: {
-      STOCK:    -25,
-      REIT:     -10,
-      ETF:      -35,
-      BDR:      -50,
-      TREASURY: 5,
-      CRYPTO:   -45,
-      OTHER:    -20,
-    },
-  },
-]
+const scenarios = STRESS_SCENARIOS
 
-const allocation = computed<Record<AssetClass, number>>(() => {
-  const totals: Record<string, number> = {}
-  let total = 0
-  for (const p of props.positions) {
-    const cls = (p.asset_class || 'OTHER') as AssetClass
-    const v = p.current_value ?? p.quantity * (p.current_price ?? p.average_price)
-    totals[cls] = (totals[cls] || 0) + v
-    total += v
-  }
-  const out = { STOCK: 0, REIT: 0, ETF: 0, BDR: 0, TREASURY: 0, CRYPTO: 0, OTHER: 0 } as Record<AssetClass, number>
-  if (!total) return out
-  for (const k of Object.keys(totals) as AssetClass[]) {
-    out[k] = (totals[k] / total) * 100
-  }
-  return out
-})
+const allocation = computed<Record<AssetClass, number>>(() => allocationByClass(props.positions))
 
 function impactFor(s: Scenario): number {
-  const a = allocation.value
-  let impact = 0
-  for (const k of Object.keys(s.impact_by_class) as AssetClass[]) {
-    impact += (a[k] / 100) * s.impact_by_class[k]
-  }
-  return Number(impact.toFixed(1))
+  return scenarioImpact(s, allocation.value)
 }
 
 function estimatedLoss(s: Scenario): number {

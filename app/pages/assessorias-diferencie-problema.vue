@@ -293,7 +293,7 @@ const siteUrl = computed(() => {
 usePageSeo({
   title: `Assessoria com IA, na sua marca | ${brand.name}`,
   description: 'Sua assessoria pode oferecer uma plataforma própria com IA para análise de carteira, notícias e riscos. Primeira fase: 10 vagas. Fale com o time.',
-  path: '/assessorias',
+  path: '/assessorias-diferencie-problema',
 })
 
 // Forca a page inteira em light mode independente do mode atual do

@@ -172,12 +172,34 @@
              dimensions + diagnostic + thesis + stress + macro +
              alternatives). So renderiza com analysis. -->
         <template v-if="analysis">
-          <SectionHeading
-            :brand="brand"
-            eyebrow="9 dimensões"
-            title="Como cada eixo da sua carteira está pontuando"
-            :lead="analysis.summary_md || undefined"
-          />
+          <div class="flex items-end justify-between gap-4 flex-wrap">
+            <SectionHeading
+              :brand="brand"
+              eyebrow="9 dimensões"
+              title="Como cada eixo da sua carteira está pontuando"
+              :lead="analysis.summary_md || undefined"
+            />
+            <button
+              type="button"
+              class="raiox-fullscreen-btn"
+              :style="{
+                color: brand.colors.text,
+                borderColor: `color-mix(in srgb, ${brand.colors.text} 20%, transparent)`,
+                backgroundColor: `color-mix(in srgb, ${brand.colors.primary} 6%, transparent)`,
+              }"
+              data-testid="raiox-highlights-btn"
+              @click="highlightsOpen = true"
+            >
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polygon points="5 3 19 12 5 21 5 3" />
+              </svg>
+              <span>Ver Highlights</span>
+              <span
+                class="raiox-fullscreen-btn__badge"
+                :style="{ color: brand.colors.primary, borderColor: `color-mix(in srgb, ${brand.colors.primary} 32%, transparent)` }"
+              >novo</span>
+            </button>
+          </div>
 
           <MoleculesWalletSnowflake
             v-if="snowflakeAxes.length"
@@ -191,7 +213,32 @@
             :positions="positions"
             :total-value="totalValue"
           />
+
+          <RaioXHighlights
+            :open="highlightsOpen"
+            :analysis="analysis"
+            :report="report"
+            :positions="positions"
+            :total-value="totalValue"
+            :user-name="userFirstName"
+            :equity-curve="equityCurve"
+            @close="highlightsOpen = false"
+          />
         </template>
+
+        <!-- ============ 4.5 CTA: ANALISE DE RESULTADO ============
+             Card premium que leva pra /wallet/resultado. Mostra P&L
+             gigante quando disponivel; quando nao tem (sem Pluggy),
+             vira convite pra conectar. Cor verde/vermelha tinge o
+             card inteiro. -->
+        <MoleculesWalletResultadoCTA
+          v-if="positions.length"
+          :total-value="totalValue"
+          :pnl-amount="pnlAmount"
+          :pnl-pct="pnlPct"
+          :positions-count="positions.length"
+          :has-connection="connections.length > 0"
+        />
 
         <!-- ============ 5. CALENDARIO UNIFICADO ============
              Big calendar mensal que agrega proventos (dividendos +
@@ -216,6 +263,8 @@ import {
   analyzePortfolio,
   type PortfolioReport,
 } from '~/composables/usePortfolioScore'
+import RaioXHighlights from '~/components/molecules/wallet/raio-x-highlights/RaioXHighlights.vue'
+import { usePortfolioTradesService, type EquityCurvePoint } from '~/services/portfolioTrades'
 
 definePageMeta({ layout: 'default' })
 // Paywall agora vive em middleware/requires-subscription.global.ts —
@@ -243,6 +292,32 @@ const authStore = useAuthStore()
 const onboarding = useOnboardingChecklist()
 const router = useRouter()
 const pluggy = usePluggyService()
+
+// ============ Raio-X Highlights (cinematic story mode) ============
+// Stories-style fullscreen experience over the dashboard, narrating
+// the analysis. Opened from the "Ver Highlights" button next to the
+// SectionHeading.
+const highlightsOpen = ref(false)
+const userFirstName = computed(() => {
+  const name = authStore.me?.name || ''
+  return name.split(/\s+/)[0] || ''
+})
+
+// Equity curve feeds the opening 3D P&L slide. Best-effort fetch — if
+// the user has no trades / no Pluggy yet, the slide just gets skipped.
+const equityCurve = ref<Array<{ date: string; value: number }>>([])
+const tradesService = usePortfolioTradesService()
+async function loadEquityCurve() {
+  try {
+    const resp = await tradesService.getEquityCurve()
+    equityCurve.value = (resp.data ?? []).map((p: EquityCurvePoint) => ({
+      date: p.date,
+      value: p.equity,
+    }))
+  } catch {
+    equityCurve.value = []
+  }
+}
 
 // ============ PLUGGY / OPEN FINANCE ============
 // Lista de conexoes Pluggy do user. Carregada uma vez junto com positions
@@ -891,6 +966,10 @@ async function loadAll() {
   // Saldos bancarios (Pluggy accounts) — independente de positions e
   // connections, render proprio. Disparado em paralelo.
   void loadBankAccounts()
+  // Equity curve: feeds the opening 3D P&L slide of the Raio-X
+  // Highlights. Best-effort — empty array if the user has no
+  // Pluggy trades yet (the slide just gets skipped in that case).
+  void loadEquityCurve()
 }
 
 async function reload() {
@@ -913,7 +992,37 @@ onMounted(async () => {
   } finally {
     loading.value = false
   }
+
+  // Auto-open the Highlights cinematic when arriving with the trigger
+  // query (set by /help after `portfolio.analyzed`). The watcher below
+  // handles the race where positions/analysis are still loading at
+  // mount time.
 })
+
+// Tracks whether we still owe the user an auto-open. Set on mount from
+// the query param, cleared once the player is actually opened (or if
+// the user navigates somewhere else and the query loses the marker).
+const pendingAutoHighlights = ref(false)
+const initialRoute = useRoute()
+if (initialRoute.query.openHighlights === '1') {
+  pendingAutoHighlights.value = true
+}
+
+// Open the player as soon as we have everything it needs.
+watch(
+  [analysis, () => positions.value.length, pendingAutoHighlights],
+  ([a, n, pending]) => {
+    if (!pending) return
+    if (!a || !n) return
+    highlightsOpen.value = true
+    pendingAutoHighlights.value = false
+    // Strip the trigger from the URL so a refresh doesn't replay.
+    router.replace({
+      query: { ...initialRoute.query, openHighlights: undefined, from: undefined },
+    })
+  },
+  { immediate: true },
+)
 
 // MVP: refetch when navigating from /help?intent=import-portfolio
 // (chat-service has already saved by the time we land here).
@@ -924,3 +1033,43 @@ watch(() => route.fullPath, async (path, prev) => {
   }
 })
 </script>
+
+<style scoped>
+.raiox-fullscreen-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border-radius: 6px;
+  border: 1px solid;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: filter 200ms ease-out, transform 120ms ease-out, background-color 200ms ease-out;
+  flex-shrink: 0;
+  font-family: inherit;
+}
+.raiox-fullscreen-btn:hover {
+  filter: brightness(0.96);
+}
+.raiox-fullscreen-btn:active {
+  transform: translateY(1px);
+}
+.raiox-fullscreen-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-ring-focus, 0 0 0 3px rgba(245, 166, 35, 0.22));
+}
+
+.raiox-fullscreen-btn__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border: 1px solid;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+</style>

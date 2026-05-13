@@ -736,59 +736,83 @@ function calcBenchmarks(assets: PortfolioAsset[]): BenchmarkComparison[] {
 }
 
 function calcStressScenarios(assets: PortfolioAsset[]): StressScenario[] {
-  const ibovExposure = assets.filter(a => a.category === 'acoes-br' || a.category === 'etf-br').reduce((s, a) => s + a.weight, 0)
-  const dollarExposure = assets.filter(a => a.internacional).reduce((s, a) => s + a.weight, 0)
-  const fiiExposure = assets.filter(a => a.category === 'fii-tijolo' || a.category === 'fii-papel').reduce((s, a) => s + a.weight, 0)
-  const cryptoExposure = assets.filter(a => a.category === 'cripto').reduce((s, a) => s + a.weight, 0)
-  const rfExposure = assets.filter(a => a.category.startsWith('renda-fixa')).reduce((s, a) => s + a.weight, 0)
+  // Pesos sao percentuais (0-100). Calculamos exposicoes por classe pra
+  // alimentar tres cenarios historicos.
+  const ibovExp     = assets.filter(a => a.category === 'acoes-br' || a.category === 'etf-br').reduce((s, a) => s + a.weight, 0) / 100
+  const fiiExp      = assets.filter(a => a.category === 'fii-tijolo' || a.category === 'fii-papel').reduce((s, a) => s + a.weight, 0) / 100
+  const bdrExp      = assets.filter(a => a.category === 'bdr' || a.category === 'etf-intl').reduce((s, a) => s + a.weight, 0) / 100
+  const cryptoExp   = assets.filter(a => a.category === 'cripto').reduce((s, a) => s + a.weight, 0) / 100
+  const rfExp       = assets.filter(a => a.category.startsWith('renda-fixa')).reduce((s, a) => s + a.weight, 0) / 100
+  const intlExp     = assets.filter(a => a.internacional).reduce((s, a) => s + a.weight, 0) / 100
 
-  const scenarios: StressScenario[] = []
+  // Subprime · 2008
+  // Referencias historicas: Ibov YoY -41%, FIIs ainda incipientes mas
+  // proxy de -22%, USD/BRL +30% (R$1.55 -> R$2.50), CDI ~9% a.a.
+  // (mantemos RF positivo). Ativos internacionais sofreram MENOS no
+  // BRL por causa do cambio (S&P -38% USD compensado por +30% USD/BRL
+  // ~= -12% em BRL).
+  const subprimeImpact =
+    -(ibovExp * 41)        // ações BR
+    - (fiiExp * 22)
+    - (bdrExp * 12)
+    - (cryptoExp * 0)      // não existia ainda — neutro pra didática
+    + (rfExp * 1.0)        // CDI rendendo no ano
 
-  // Cenario 1: Crash de 20% no Ibov
-  const crashImpact = -(ibovExposure * 20 + fiiExposure * 8 + cryptoExposure * 30) + (rfExposure * 0.5)
-  scenarios.push({
-    id: 'crash-ibov',
-    icon: 'i-lucide-trending-down',
-    title: 'Crash de -20% no Ibovespa',
-    description: 'Cenario de queda forte do mercado domestico, similar a marco/2020.',
-    impact: crashImpact,
-    resilience: crashImpact > -10 ? 'forte' : crashImpact > -18 ? 'media' : 'fraca',
-  })
+  // COVID · 2020 (pico do estresse em março/2020)
+  // Ibov -45% do topo, FIIs -28%, BDRs/internacionais -22% em BRL,
+  // cripto -40% no panic, RF segurou. USD subiu +30% no pico.
+  const covidImpact =
+    -(ibovExp * 36)
+    - (fiiExp * 28)
+    - (bdrExp * 18)
+    - (cryptoExp * 35)
+    + (rfExp * 0.5)
+    + (intlExp * 8)        // hedge cambial residual
 
-  // Cenario 2: Alta de 30% do dolar
-  const dollarImpact = (dollarExposure * 28) - (ibovExposure * 4)
-  scenarios.push({
-    id: 'dollar-spike',
-    icon: 'i-lucide-globe',
-    title: 'Alta de +30% do dolar',
-    description: 'Real desvaloriza, ativos dolarizados se valorizam, mercado domestico sofre.',
-    impact: dollarImpact,
-    resilience: dollarImpact > -2 ? 'forte' : dollarImpact > -8 ? 'media' : 'fraca',
-  })
+  // Bolha de IA · cenario hipotetico
+  // Reversao -40% dos multiplos de tech. Ibov contido (-12%) pelo
+  // peso baixo de tech no indice, BDRs/ETFs internacionais sofrem (-38%).
+  // Cripto correlacionou com tech (-30%). RF se beneficia do flight to
+  // safety.
+  const aiBubbleImpact =
+    -(ibovExp * 12)
+    - (bdrExp * 38)
+    - (cryptoExp * 30)
+    - (fiiExp * 4)
+    + (rfExp * 1.5)
 
-  // Cenario 3: Selic sobe 4pp (de 11% pra 15%)
-  const selicImpact = (rfExposure * 4) - (ibovExposure * 8) - (fiiExposure * 12)
-  scenarios.push({
-    id: 'selic-up',
-    icon: 'i-lucide-arrow-up-right',
-    title: 'Selic sobe para 15%',
-    description: 'Renda fixa atrai fluxo, FIIs e acoes pagam o pato.',
-    impact: selicImpact,
-    resilience: selicImpact > -2 ? 'forte' : selicImpact > -8 ? 'media' : 'fraca',
-  })
+  function resilienceOf(impact: number): 'forte' | 'media' | 'fraca' {
+    if (impact > -10) return 'forte'
+    if (impact > -22) return 'media'
+    return 'fraca'
+  }
 
-  // Cenario 4: Selic cai 4pp (pra 7%)
-  const selicDownImpact = (ibovExposure * 14) + (fiiExposure * 18) - (rfExposure * 2)
-  scenarios.push({
-    id: 'selic-down',
-    icon: 'i-lucide-arrow-down-right',
-    title: 'Selic cai para 7%',
-    description: 'Bull market classico para variavel. Renda fixa perde atratividade.',
-    impact: selicDownImpact,
-    resilience: selicDownImpact > 5 ? 'forte' : selicDownImpact > 0 ? 'media' : 'fraca',
-  })
-
-  return scenarios
+  return [
+    {
+      id: 'subprime-2008',
+      icon: 'i-lucide-banknote',
+      title: 'Subprime · 2008',
+      description: 'Crise de credito global. Ibov caiu -41% em 2008, FIIs -22%, USD +30%. Sua perda projetada pondera ações BR, FIIs, BDRs e o ganho da renda fixa no CDI ~9% a.a.',
+      impact: subprimeImpact,
+      resilience: resilienceOf(subprimeImpact),
+    },
+    {
+      id: 'covid-2020',
+      icon: 'i-lucide-activity',
+      title: 'COVID · 2020',
+      description: 'Pico da crise sanitaria em marco/2020. Ibov -36% do topo, FIIs -28%, cripto -35%. Calculado sobre suas posições atuais com hedge cambial residual.',
+      impact: covidImpact,
+      resilience: resilienceOf(covidImpact),
+    },
+    {
+      id: 'bolha-ia',
+      icon: 'i-lucide-cpu',
+      title: 'Bolha de IA · 202X',
+      description: 'Hipotese: reversao -40% dos multiplos de tech. BDRs e ETFs internacionais sofrem mais, Ibov contido pelo peso baixo de tech, cripto acompanha. Renda fixa se beneficia.',
+      impact: aiBubbleImpact,
+      resilience: resilienceOf(aiBubbleImpact),
+    },
+  ]
 }
 
 function calcAlternatives(assets: PortfolioAsset[]): AssetAlternative[] {

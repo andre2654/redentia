@@ -291,11 +291,25 @@ export interface ChatMessage {
   meta?: ChatMessageMeta
 }
 
+export interface PortfolioAnalyzedEvent {
+  score: number
+  score_band: 'critico' | 'atencao' | 'bom' | 'excelente'
+  top_strengths_count?: number
+  top_risks_count?: number
+}
+
 export interface UseChatStreamOptions {
   tenantSlug: string
   tier?: Ref<ChatTier>
   routeContext?: Ref<{ type: 'asset' | 'crypto' | 'tesouro' | 'home' | null; ticker?: string } | null>
   initialSessionId?: string
+  /**
+   * Fired when the chat tool `import_portfolio` finishes running a
+   * raio-x analysis (SSE event `portfolio.analyzed`). The caller can
+   * use it to navigate the user away from the chat into the wallet
+   * and auto-play the Highlights story.
+   */
+  onPortfolioAnalyzed?: (event: PortfolioAnalyzedEvent) => void
 }
 
 export function useChatStream(opts: UseChatStreamOptions) {
@@ -1144,6 +1158,23 @@ export function useChatStream(opts: UseChatStreamOptions) {
           })
         } catch {
           /* composable unavailable in tests */
+        }
+        break
+      }
+      case 'portfolio.analyzed': {
+        // Backend has finished `runRaioXAnalysis` and POSTed the
+        // payload to Laravel. We forward the summary up to the caller
+        // so they can pivot the UX (eg. push the user into the wallet
+        // and open the Highlights story automatically).
+        try {
+          opts.onPortfolioAnalyzed?.({
+            score: Number(data?.score ?? 0),
+            score_band: data?.score_band ?? 'bom',
+            top_strengths_count: data?.top_strengths_count,
+            top_risks_count: data?.top_risks_count,
+          })
+        } catch {
+          /* host callback shouldn't kill the stream */
         }
         break
       }

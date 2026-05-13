@@ -1,9 +1,10 @@
 <!--
   MoleculesAssessoriaLeadFullscreen, modal fullscreen multi-step para
-  capturar leads B2B na landing /assessorias.
+  capturar leads B2B nas landings de assessoria
+  (/assessorias-diferencie-problema e /assessorias-diferencie-solucao).
 
   Diferente do MoleculesLeadCaptureModal (modal centrado, 1-step) que e
-  compartilhado com /whitelabel e /api, esse aqui e DEDICADO a /assessorias
+  compartilhado com /whitelabel e /api, esse aqui e DEDICADO as 2 landings de assessoria
   e ocupa a tela inteira em 2 etapas:
 
     1. Identificacao: nome, email, telefone
@@ -224,6 +225,7 @@
 <script setup lang="ts">
 const brand = useBrand()
 const config = useRuntimeConfig()
+const metaPixel = useMetaPixel()
 
 const isOpen = defineModel<boolean>('open', { default: false })
 
@@ -314,6 +316,21 @@ async function submit() {
         },
       },
     })
+
+    // Dispara o evento Lead (Pixel + CAPI) com content_name distinto pra
+    // permitir Custom Conversions segmentadas no Events Manager (landing
+    // de problema/dor vs landing de solucao). value=500 e estimativa de
+    // pipeline contribuido por lead qualificado, ajustar conforme o real
+    // LTV B2B amadurece.
+    const isSolucaoLanding = typeof window !== 'undefined'
+      && window.location.pathname.includes('diferencie-solucao')
+    metaPixel.track('Lead', {
+      content_name: isSolucaoLanding ? 'assessorias-diferencie-solucao' : 'assessorias-diferencie-problema',
+      content_category: 'b2b-assessoria',
+      value: 500,
+      currency: 'BRL',
+    })
+
     stepTransitionName.value = 'ass-fs-step-fwd'
     currentStep.value = 'success'
     state.value = 'idle'
