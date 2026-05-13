@@ -366,12 +366,13 @@ function updateContainerRatio() {
   const rect = el.getBoundingClientRect()
   if (rect.width > 0 && rect.height > 0) {
     const raw = rect.width / rect.height
-    // Floor at 0.7 — at narrower ratios (mobile portrait the chart
-    // gets too compressed vertically and the curve reads as a thin
-    // ribbon. 0.7 forces the camera to frame in a wider proportion
-    // even when the screen is vertical. Desktop ratios (>= 1.2) pass
-    // through unchanged.
-    containerRatio.value = Math.max(0.7, raw)
+    // Use the raw container ratio. vbH adapts via computed so the
+    // viewBox aspect always matches the on-screen aspect, which means
+    // preserveAspectRatio="slice" never crops anything AND the curve
+    // scales to fill the available area on both desktop and mobile.
+    // Floor at 0.35 just to guard against pathological ultra-tall
+    // containers (e.g. iPhone landscape with notch overlap).
+    containerRatio.value = Math.max(0.35, raw)
   }
 }
 
