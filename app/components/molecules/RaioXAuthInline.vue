@@ -1,7 +1,11 @@
 <!--
   MoleculesRaioXAuthInline — inline form usado nos 3 spots do /raio-x
   (hero, video, final CTA). Default = WhatsApp PIN; toggle "por email"
-  abre o magic link tradicional.
+  agora tambem usa PIN (antes era link clicavel).
+
+  Migration historico (2026-05-13): trocamos email link clicavel por
+  PIN 6 digitos. Mesmo flow do WhatsApp — pin_input compartilhado entre
+  os dois canais, so difere o submit (magicPinVerify vs magicLinkVerify).
 
   Por que extrair do raio-x.vue:
     - 3 formularios duplicados na pagina, todos com mesmo state.
@@ -14,7 +18,7 @@
 
   EVENTOS:
     @sent: { channel: 'phone' | 'email' }      — primeira parte enviada
-    @verified: { redirectTo, isNewUser, user } — auth completa (so phone)
+    @verified: { redirectTo, isNewUser, user } — auth completa (ambos canais)
 
   PROPS:
     - cta-text: texto do botao primary (default "Faça o Raio-X grátis")
@@ -50,7 +54,14 @@ const emit = defineEmits<{
 }>()
 
 const router = useRouter()
-const { magicLinkRequest, magicPinRequest, magicPinVerify, magicPinResend } = useAuthService()
+const {
+  magicLinkRequest,
+  magicLinkVerify,
+  magicLinkResend,
+  magicPinRequest,
+  magicPinVerify,
+  magicPinResend,
+} = useAuthService()
 const { track } = useMetaPixel()
 const authStore = useAuthStore()
 
@@ -58,7 +69,10 @@ const authStore = useAuthStore()
 // no onMounted (vide useAuthChannels abaixo). Toggle manual "Prefere por
 // email?" continua disponivel.
 const channel = ref<'phone' | 'email'>('phone')
-const step = ref<'input' | 'pin' | 'sent'>('input')
+// step "sent" foi removido em 2026-05-13 — antes mostrava "verifique seu
+// email" depois do magicLinkRequest, agora cai direto no step "pin" igual
+// o WhatsApp (PIN no email = mesmo UX, sem context switch pro browser).
+const step = ref<'input' | 'pin'>('input')
 
 // Auto-fallback baseado em health do Evolution. Cache 30s na ponta +
 // 30s no backend = no max 1 fetch por minuto por usuario.
@@ -160,7 +174,16 @@ function switchTo(next: 'phone' | 'email') {
   channel.value = next
   step.value = 'input'
   errorMsg.value = ''
+  pinDigits.value = ['', '', '', '', '', '']
 }
+
+/**
+ * Display do destino no step PIN — phone formatado pelo mask, ou email
+ * direto. Usado pra mostrar "Codigo enviado pra X".
+ */
+const pinDestinationLabel = computed<string>(() => {
+  return channel.value === 'phone' ? phoneMasked.value : email.value
+})
 
 // ============ PIXEL ============
 function fireLead(via: string) {
@@ -246,33 +269,30 @@ function onPinPaste(event: ClipboardEvent) {
   if (pinIsComplete.value) verifyPin()
 }
 
+/**
+ * Verify PIN — roteia pelo channel ativo. Phone = magicPinVerify
+ * (Sanctum token vem em `resp.token`). Email = magicLinkVerify
+ * (Sanctum vem em `resp.access_token`).
+ */
 async function verifyPin() {
   if (!pinIsComplete.value || submitting.value) return
   submitting.value = true
   errorMsg.value = ''
   try {
     const pin = pinDigits.value.join('')
-    const resp = await magicPinVerify({ phone: fullPhoneE164NoPlus(), pin })
-    if (!resp.token) throw new Error('Token nao recebido')
-    authStore.addToken(resp.token)
-    await authStore.fetchProfile()
 
-    track('CompleteRegistration', {
-      content_name: resp.is_new_user ? 'Landing RaioX Magic PIN Signup' : 'Landing RaioX Magic PIN Login',
-      content_category: 'landing_conversion',
-      content_ids: ['raio-x'],
-      content_type: 'product',
-      currency: 'BRL',
-      value: 50,
-    })
+    if (channel.value === 'phone') {
+      const resp = await magicPinVerify({ phone: fullPhoneE164NoPlus(), pin })
+      if (!resp.token) throw new Error('Token nao recebido')
+      await applyAuth(resp.token, resp.user, resp.is_new_user, resp.redirect_to, 'WhatsApp PIN')
+      return
+    }
 
-    emit('verified', {
-      redirectTo: resp.redirect_to || props.redirectTo,
-      isNewUser: !!resp.is_new_user,
-      user: resp.user,
-    })
-
-    setTimeout(() => router.push(resp.redirect_to || props.redirectTo), 200)
+    // channel === 'email'
+    const cleanedEmail = email.value.trim().toLowerCase()
+    const resp = await magicLinkVerify({ email: cleanedEmail, pin })
+    if (!resp.access_token) throw new Error('Token nao recebido')
+    await applyAuth(resp.access_token, resp.user as AuthUser, resp.is_new_user, resp.redirect_to, 'Email PIN')
   }
   catch (err: unknown) {
     const apiError = err as { data?: { message?: string } }
@@ -285,7 +305,43 @@ async function verifyPin() {
   }
 }
 
-// ============ EMAIL FLOW (fallback) ============
+/**
+ * Compartilhado phone/email — salva token, refetch profile, fire pixel
+ * + emit verified, navega.
+ */
+async function applyAuth(
+  token: string,
+  user: AuthUser | undefined,
+  isNewUser: boolean | undefined,
+  redirectTo: string | undefined,
+  via: string,
+) {
+  authStore.addToken(token)
+  await authStore.fetchProfile()
+
+  track('CompleteRegistration', {
+    content_name: isNewUser
+      ? `Landing RaioX ${via} Signup`
+      : `Landing RaioX ${via} Login`,
+    content_category: 'landing_conversion',
+    content_ids: ['raio-x'],
+    content_type: 'product',
+    currency: 'BRL',
+    value: 50,
+  })
+
+  if (user) {
+    emit('verified', {
+      redirectTo: redirectTo || props.redirectTo,
+      isNewUser: !!isNewUser,
+      user,
+    })
+  }
+
+  setTimeout(() => router.push(redirectTo || props.redirectTo), 200)
+}
+
+// ============ EMAIL FLOW (envia PIN, abre step pin compartilhado) ============
 async function submitEmail() {
   if (!emailIsValid.value || submitting.value) return
   submitting.value = true
@@ -295,8 +351,11 @@ async function submitEmail() {
       email: email.value.trim().toLowerCase(),
       redirect_to: props.redirectTo,
     })
-    fireLead('Magic Link Request')
-    step.value = 'sent'
+    fireLead('Email PIN Request')
+    step.value = 'pin'
+    startCooldown(30)
+    pinDigits.value = ['', '', '', '', '', '']
+    nextTick(() => pinRefs.value[0]?.focus())
     emit('sent', { channel: 'email' })
   }
   catch (err: unknown) {
@@ -306,6 +365,44 @@ async function submitEmail() {
   finally {
     submitting.value = false
   }
+}
+
+/**
+ * Resend email PIN. Mesma logica do resendPin (phone) mas usa endpoint
+ * de email. Usado pelo botao "Reenviar codigo" no step pin quando
+ * channel === 'email'.
+ */
+async function resendEmailPin() {
+  if (!canResend.value) return
+  errorMsg.value = ''
+  submitting.value = true
+  try {
+    await magicLinkResend({
+      email: email.value.trim().toLowerCase(),
+      redirect_to: props.redirectTo,
+    })
+    startCooldown(30)
+    pinDigits.value = ['', '', '', '', '', '']
+    nextTick(() => pinRefs.value[0]?.focus())
+  }
+  catch (err: unknown) {
+    const apiError = err as { data?: { message?: string } }
+    errorMsg.value = apiError?.data?.message || 'Erro ao reenviar código.'
+  }
+  finally {
+    submitting.value = false
+  }
+}
+
+/**
+ * Wrapper que roteia o reenvio pelo channel ativo. Phone usa
+ * magicPinResend (WhatsApp), email usa magicLinkResend.
+ */
+function resendCurrent() {
+  if (channel.value === 'phone') {
+    return resendPin()
+  }
+  return resendEmailPin()
 }
 </script>
 
@@ -351,11 +448,13 @@ async function submitEmail() {
       </button>
     </template>
 
-    <!-- =========== PIN INPUT (after phone submit) =========== -->
-    <template v-else-if="channel === 'phone' && step === 'pin'">
+<!-- =========== PIN INPUT (after phone OR email submit) ===========
+         Compartilhado entre os 2 canais — o destination label muda
+         conforme channel ativo, mas a UX e identica. -->
+    <template v-else-if="step === 'pin'">
       <div class="raiox-auth__pin-wrap">
         <p class="raiox-auth__pin-help">
-          Código enviado pra <strong>{{ phoneMasked }}</strong>
+          Código enviado pra <strong>{{ pinDestinationLabel }}</strong>
         </p>
         <div class="raiox-auth__pin" @paste="onPinPaste">
           <input
@@ -380,7 +479,7 @@ async function submitEmail() {
             type="button"
             class="raiox-auth__pin-resend"
             :disabled="!canResend"
-            @click="resendPin"
+            @click="resendCurrent"
           >
             {{ canResend ? 'Reenviar código' : `Reenviar em ${resendCooldown}s` }}
           </button>
@@ -389,7 +488,7 @@ async function submitEmail() {
             class="raiox-auth__pin-back"
             @click="step = 'input'"
           >
-            Usar outro telefone
+            {{ channel === 'phone' ? 'Usar outro telefone' : 'Usar outro email' }}
           </button>
         </div>
       </div>
@@ -437,16 +536,6 @@ async function submitEmail() {
       </button>
     </template>
 
-    <!-- =========== EMAIL SENT (after submit) =========== -->
-    <template v-else>
-      <div class="raiox-auth__email-sent">
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>
-        </svg>
-        <strong>Verifique seu email</strong>
-        <span>Mandamos um link mágico pra <em>{{ email }}</em>. Abre o email, clica e pronto.</span>
-      </div>
-    </template>
   </div>
 </template>
 
@@ -755,39 +844,4 @@ async function submitEmail() {
   color: var(--brand-text, #111);
 }
 
-/* ============ EMAIL SENT ============ */
-.raiox-auth__email-sent {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 8px;
-  padding: 18px 20px;
-  border-radius: 14px;
-  border: 1.5px solid color-mix(in srgb, var(--brand-primary) 22%, transparent);
-  background: color-mix(in srgb, var(--brand-primary) 6%, transparent);
-  color: var(--brand-text, #111);
-}
-
-.raiox-auth__email-sent svg {
-  color: var(--brand-primary);
-}
-
-.raiox-auth__email-sent strong {
-  font-size: 15px;
-  font-weight: 600;
-}
-
-.raiox-auth__email-sent span {
-  font-size: 13px;
-  line-height: 1.45;
-  color: color-mix(in srgb, var(--brand-text, #111) 75%, transparent);
-  max-width: 320px;
-}
-
-.raiox-auth__email-sent em {
-  font-style: normal;
-  color: var(--brand-text, #111);
-  font-weight: 600;
-}
 </style>

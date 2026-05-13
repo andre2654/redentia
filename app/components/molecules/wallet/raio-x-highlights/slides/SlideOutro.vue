@@ -104,7 +104,12 @@
               </button>
             </div>
 
-            <!-- The card itself — dynamic template by type+choice -->
+            <!-- Card frame stays at natural 320×569 in CSS terms.
+                 Mobile applies CSS `zoom` to shrink the frame AND its
+                 layout box uniformly — so adjacent elements reflow
+                 around the smaller size without manual wrapping math.
+                 shareCard() resets zoom during capture so the PNG
+                 exports at full 320px native resolution. -->
             <div class="sl-share__card-frame">
               <component
                 :is="templateComponentFor(card.id)"
@@ -354,11 +359,22 @@ async function shareCard(idx: number) {
   if (!target) return
 
   sharingIdx.value = idx
+  // Temporarily neutralise the CSS `zoom` shrink (mobile) so
+  // html2canvas captures the card at its natural 320×569 size. This
+  // causes a brief visual flash where the card grows during capture
+  // (~200ms while "Gerando imagem…" is shown), but guarantees the
+  // exported PNG is at full resolution for Instagram stories.
+  const originalZoom = target.style.zoom
+  target.style.zoom = '1'
+  // Force reflow before capture so html2canvas reads the new size.
+  void target.offsetHeight
+
   try {
     const html2canvas = (await import('html2canvas-pro')).default
+    // story spec is 1080×1920).
     const canvas = await html2canvas(target, {
       backgroundColor: null,
-      scale: 3,
+      scale: 3.4,
       useCORS: true,
       logging: false,
     })
@@ -396,6 +412,9 @@ async function shareCard(idx: number) {
     }
   } finally {
     sharingIdx.value = null
+    // Restore the visual zoom-down (CSS will reapply it as the
+    // inline override is cleared).
+    target.style.zoom = originalZoom
   }
 }
 </script>
@@ -443,6 +462,17 @@ async function shareCard(idx: number) {
 }
 
 @media (max-width: 880px) {
+  .sl-share {
+    /* Shrink the card preview on mobile via CSS `zoom`. Unlike
+       `transform: scale`, zoom shrinks BOTH visual rendering AND
+       layout box so the surrounding flow reflows correctly without
+       overflow tricks. Text/spacing proportions inside the card
+       stay identical to desktop. shareCard() temporarily resets
+       zoom for capture so the exported PNG is at full resolution. */
+    --card-zoom: 0.72;
+    --card-w: 230px; /* 320 * 0.72 ≈ 230 — used by .sl-share__pad */
+  }
+  .sl-share__card-frame { zoom: var(--card-zoom, 1); }
   .sl-share__inner {
     grid-template-columns: 1fr;
     grid-template-rows: auto auto auto;
@@ -544,14 +574,18 @@ async function shareCard(idx: number) {
 }
 .sl-share__carousel::-webkit-scrollbar { display: none; }
 
-/* Spacers so first/last card can centre fully in the viewport. */
+/* Spacers so first/last card can centre fully in the viewport.
+   Width-aware via --card-w so the centring math stays correct when
+   the card preview is shrunk on mobile (320px → 224px). */
 .sl-share__pad {
-  flex: 0 0 calc(50% - 160px);
+  flex: 0 0 calc(50% - var(--card-w, 320px) / 2);
 }
 
 .sl-share__card {
-  flex: 0 0 320px;
-  width: 320px;
+  /* Card width follows the frame's effective rendered width. With
+     `zoom` on the frame, getBoundingClientRect already reflects the
+     shrunk size, so we let the flex sizing key off auto + min-content. */
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -560,12 +594,15 @@ async function shareCard(idx: number) {
   scroll-snap-stop: always;
 }
 
-/* The card frame holds the actual rendered template. Sized 9:16,
-   used as the html2canvas capture target. */
+/* Frame is ALWAYS 320×569 in CSS terms so internal text + spacing
+   proportions stay identical across viewports. Mobile applies CSS
+   `zoom` to shrink the frame AND its layout box uniformly — so the
+   carousel and surrounding elements reflow around the smaller size
+   automatically. shareCard() resets zoom during capture. */
 .sl-share__card-frame {
   position: relative;
   width: 320px;
-  aspect-ratio: 9 / 16;
+  height: 569px;
   border-radius: 18px;
   overflow: hidden;
   isolation: isolate;

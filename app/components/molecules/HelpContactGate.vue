@@ -4,31 +4,32 @@
 
   CONTEXTO:
     O fluxo passwordless via WhatsApp PIN cria users com SO o telefone
-    (sem nome, sem email). O fluxo magic link cria users com SO o email
+    (sem nome, sem email). O fluxo email PIN cria users com SO o email
     (sem telefone). Pra abrir o /help, precisamos dos dois:
 
       - telefone → confirmacao + canal de alertas (WhatsApp)
-      - email    → fallback de comunicados, magic link, recovery
+      - email    → fallback de comunicados, recovery, comunicacao formal
 
     Esse gate substitui o antigo PhoneGateModal. Diferente dele:
 
       1. Usa fluxo real de PIN via WhatsApp (request-pin → verify-pin)
          em vez de "salvar e confiar" — anti-fraude.
       2. Trata 2 etapas: telefone primeiro, depois email (se faltar).
-      3. Email vai por magic link — backend gera link com signature
-         contact-gate-update:{user_id}, user clica, abre /auth/magic-link/verify
-         que redireciona pra /help. Aqui mostramos "verifica seu email"
-         enquanto isso.
+      3. Email tambem vai por PIN 6 digitos. Migration historico
+         (2026-05-13): antes era magic link clicavel — em prod 6/6
+         tokens contact-gate ficaram com used_at=NULL (users pediam,
+         recebiam, mas nao clicavam). PIN no email = mesmo UX do
+         WhatsApp, sem context switch pro browser.
 
   STATE MACHINE:
     nothing-needed → gate fechado (user tem phone E email)
     needs-phone    → step="phone-input" → "phone-pin" → (se faltar email) → needs-email
-    needs-email    → step="email-input" → "email-sent" (aguarda click no link)
+    needs-email    → step="email-input" → "email-pin" (digita PIN) → close
 
   REATIVIDADE:
-    Estado deriva de authStore.me.{celular,email}. Apos verifyPhonePin
-    (que retorna user atualizado), atualizamos o store e o computed
-    re-avalia. Se faltar email ainda, gate fica aberto na proxima etapa.
+    Estado deriva de authStore.me.{celular,email}. Apos verify (phone ou
+    email), atualizamos o store e o computed re-avalia. Quando ambos
+    contatos estao preenchidos, emit('ready') fecha o gate.
 -->
 <script setup lang="ts">
 import { vMaska } from 'maska/vue'
@@ -47,11 +48,12 @@ const authStore = useAuthStore()
 const {
   requestPhonePin,
   verifyPhonePin,
-  requestEmailLink,
+  requestEmailPin,
+  verifyEmailPin,
 } = useAuthService()
 
 // ============ ESTADO ============
-type Step = 'phone-input' | 'phone-pin' | 'email-input' | 'email-sent'
+type Step = 'phone-input' | 'phone-pin' | 'email-input' | 'email-pin'
 
 // Computed: o que falta no user logado AGORA. Reativo a authStore.me.
 const missingPhone = computed(() => !authStore.me?.celular)
@@ -67,13 +69,16 @@ watch([missingPhone, missingEmail], ([noPhone, noEmail]) => {
     if (step.value !== 'phone-pin') step.value = 'phone-input'
   }
   else if (noEmail) {
-    if (step.value !== 'email-sent') step.value = 'email-input'
+    // Mantem em email-pin se ja estamos digitando o codigo
+    if (step.value !== 'email-pin') step.value = 'email-input'
   }
 }, { immediate: true })
 
 // ============ PHONE STATE ============
 const celular = ref('')
 const phoneFocused = ref(false)
+// pinDigits compartilhado entre phone-pin e email-pin (sao a mesma UI,
+// so muda o handler do submit). Reset ao trocar step.
 const pinDigits = ref<string[]>(['', '', '', '', '', ''])
 const pinRefs = ref<HTMLInputElement[]>([])
 const resendCooldown = ref(0)
@@ -124,7 +129,7 @@ watch(step, async (next) => {
   await nextTick()
   if (next === 'phone-input') phoneInputEl.value?.focus()
   if (next === 'email-input') emailInputEl.value?.focus()
-  if (next === 'phone-pin') pinRefs.value[0]?.focus()
+  if (next === 'phone-pin' || next === 'email-pin') pinRefs.value[0]?.focus()
 })
 
 watch(() => authStore.isAuthenticated, () => {
@@ -192,7 +197,7 @@ function onPinInput(event: Event, idx: number) {
   const val = input.value.replace(/\D+/g, '').slice(-1)
   pinDigits.value[idx] = val
   if (val && idx < 5) pinRefs.value[idx + 1]?.focus()
-  if (pinIsComplete.value) verifyPhone()
+  if (pinIsComplete.value) verifyCurrentPin()
 }
 
 function onPinKeydown(event: KeyboardEvent, idx: number) {
@@ -212,7 +217,7 @@ function onPinPaste(event: ClipboardEvent) {
   for (let i = 0; i < 6; i++) pinDigits.value[i] = digits[i] ?? ''
   const lastIdx = Math.min(digits.length - 1, 5)
   if (lastIdx >= 0) pinRefs.value[lastIdx]?.focus()
-  if (pinIsComplete.value) verifyPhone()
+  if (pinIsComplete.value) verifyCurrentPin()
 }
 
 async function verifyPhone() {
@@ -252,18 +257,80 @@ async function submitEmail() {
   errorMsg.value = ''
   try {
     const cleaned = email.value.trim().toLowerCase()
-    await requestEmailLink(cleaned)
-    step.value = 'email-sent'
+    await requestEmailPin(cleaned)
+    step.value = 'email-pin'
+    startCooldown(30)
+    pinDigits.value = ['', '', '', '', '', '']
+    nextTick(() => pinRefs.value[0]?.focus())
   }
   catch (err: unknown) {
     const apiError = err as { data?: { message?: string } }
-    errorMsg.value = apiError?.data?.message || (err instanceof Error ? err.message : 'Erro ao enviar link.')
+    errorMsg.value = apiError?.data?.message || (err instanceof Error ? err.message : 'Erro ao enviar código.')
   }
   finally {
     submitting.value = false
   }
 }
 
+async function resendEmail() {
+  if (!canResend.value) return
+  errorMsg.value = ''
+  submitting.value = true
+  try {
+    const cleaned = email.value.trim().toLowerCase()
+    await requestEmailPin(cleaned)
+    startCooldown(30)
+    pinDigits.value = ['', '', '', '', '', '']
+    nextTick(() => pinRefs.value[0]?.focus())
+  }
+  catch (err: unknown) {
+    const apiError = err as { data?: { message?: string } }
+    errorMsg.value = apiError?.data?.message || 'Erro ao reenviar código.'
+  }
+  finally {
+    submitting.value = false
+  }
+}
+
+async function verifyEmail() {
+  if (!pinIsComplete.value || submitting.value) return
+  submitting.value = true
+  errorMsg.value = ''
+  try {
+    const cleaned = email.value.trim().toLowerCase()
+    const pin = pinDigits.value.join('')
+    const resp = await verifyEmailPin(cleaned, pin)
+    // Atualiza store com user fresh (agora tem email).
+    if (resp?.user) {
+      authStore.setMeFromUser(resp.user as any)
+    }
+    // Pequeno delay pra UI mostrar sucesso visual antes de fechar.
+    setTimeout(() => emit('ready'), 150)
+  }
+  catch (err: unknown) {
+    const apiError = err as { data?: { message?: string } }
+    errorMsg.value = apiError?.data?.message || (err instanceof Error ? err.message : 'Código inválido.')
+    pinDigits.value = ['', '', '', '', '', '']
+    nextTick(() => pinRefs.value[0]?.focus())
+  }
+  finally {
+    submitting.value = false
+  }
+}
+
+/**
+ * Wrappers que roteiam verify/resend pelo step ativo. Usados pelos
+ * handlers do PIN compartilhado entre phone-pin e email-pin.
+ */
+function verifyCurrentPin() {
+  if (step.value === 'phone-pin') return verifyPhone()
+  if (step.value === 'email-pin') return verifyEmail()
+}
+
+function resendCurrentPin() {
+  if (step.value === 'phone-pin') return resendPin()
+  if (step.value === 'email-pin') return resendEmail()
+}
 </script>
 
 <template>
@@ -388,7 +455,7 @@ async function submitEmail() {
               type="button"
               class="contact-gate__submit"
               :disabled="!pinIsComplete || submitting"
-              @click="verifyPhone"
+              @click="verifyCurrentPin"
             >
               <UIcon v-if="submitting" name="i-lucide-loader-2" class="size-4 animate-spin" aria-hidden="true" />
               <UIcon v-else name="i-lucide-check" class="size-4" aria-hidden="true" />
@@ -400,7 +467,7 @@ async function submitEmail() {
                 type="button"
                 class="contact-gate__link"
                 :disabled="!canResend"
-                @click="resendPin"
+                @click="resendCurrentPin"
               >
                 {{ canResend ? 'Reenviar código' : `Reenviar em ${resendCooldown}s` }}
               </button>
@@ -425,7 +492,7 @@ async function submitEmail() {
               Adicione um email pra continuar.
             </h2>
             <p class="contact-gate__lead">
-              Vamos enviar um <strong>link de confirmação</strong> pro email que você
+              Vamos enviar um <strong>código de 6 dígitos</strong> pro email que você
               cadastrar. Usamos pra recovery de conta e comunicados importantes.
             </p>
 
@@ -453,41 +520,80 @@ async function submitEmail() {
               >
                 <UIcon v-if="submitting" name="i-lucide-loader-2" class="size-4 animate-spin" aria-hidden="true" />
                 <UIcon v-else name="i-lucide-mail" class="size-4" aria-hidden="true" />
-                <span>{{ submitting ? 'Enviando…' : 'Enviar link de confirmação' }}</span>
+                <span>{{ submitting ? 'Enviando…' : 'Receber código por email' }}</span>
               </button>
             </form>
 
             <p class="contact-gate__fineprint">
-              Confirmamos por link pra evitar erros de digitação. O email fica privado.
+              O código aparece no assunto do email. Sem cliques, sem spam folder. Mais rápido.
             </p>
           </template>
 
-          <!-- =========== EMAIL SENT =========== -->
+          <!-- =========== EMAIL PIN =========== -->
           <template v-else>
-            <div class="contact-gate__icon-wrap contact-gate__icon-wrap--success" aria-hidden="true">
+            <div class="contact-gate__icon-wrap" aria-hidden="true">
               <span class="contact-gate__icon-glow" />
-              <UIcon name="i-lucide-mail-check" class="contact-gate__icon size-7" />
+              <UIcon name="i-lucide-shield-check" class="contact-gate__icon size-7" />
             </div>
-            <p class="contact-gate__eyebrow">VERIFIQUE SEU EMAIL</p>
+            <p class="contact-gate__eyebrow">DIGITE O CÓDIGO</p>
             <h2 class="contact-gate__title">
-              Link enviado pro <em>{{ email }}</em>
+              Digite os 6 dígitos
             </h2>
             <p class="contact-gate__lead">
-              Abre o email e clica em <strong>"Confirmar email"</strong>.
-              O link expira em 15 minutos.
+              Mandamos um código pro email <strong>{{ email }}</strong>.
             </p>
+
+            <div class="contact-gate__pin" @paste="onPinPaste">
+              <input
+                v-for="(_, idx) in pinDigits"
+                :key="idx"
+                :ref="(el) => { if (el) pinRefs[idx] = el as HTMLInputElement }"
+                v-model="pinDigits[idx]"
+                type="text"
+                inputmode="numeric"
+                pattern="[0-9]*"
+                maxlength="1"
+                class="contact-gate__pin-box"
+                :aria-label="`Digito ${idx + 1} de 6`"
+                @input="onPinInput($event, idx)"
+                @keydown="onPinKeydown($event, idx)"
+                @focus="(e) => (e.target as HTMLInputElement).select()"
+              >
+            </div>
+
+            <p v-if="errorMsg" class="contact-gate__error contact-gate__error--center">{{ errorMsg }}</p>
 
             <button
               type="button"
-              class="contact-gate__submit contact-gate__submit--ghost"
-              @click="step = 'email-input'"
+              class="contact-gate__submit"
+              :disabled="!pinIsComplete || submitting"
+              @click="verifyCurrentPin"
             >
-              <UIcon name="i-lucide-arrow-left" class="size-4" aria-hidden="true" />
-              <span>Usar outro email</span>
+              <UIcon v-if="submitting" name="i-lucide-loader-2" class="size-4 animate-spin" aria-hidden="true" />
+              <UIcon v-else name="i-lucide-check" class="size-4" aria-hidden="true" />
+              <span>{{ submitting ? 'Verificando…' : 'Confirmar' }}</span>
             </button>
 
+            <div class="contact-gate__pin-actions">
+              <button
+                type="button"
+                class="contact-gate__link"
+                :disabled="!canResend"
+                @click="resendCurrentPin"
+              >
+                {{ canResend ? 'Reenviar código' : `Reenviar em ${resendCooldown}s` }}
+              </button>
+              <button
+                type="button"
+                class="contact-gate__link contact-gate__link--muted"
+                @click="step = 'email-input'"
+              >
+                Usar outro email
+              </button>
+            </div>
+
             <p class="contact-gate__fineprint">
-              Não chegou? Verifique a caixa de spam.
+              Não chegou? Verifique a caixa de spam. O código está no assunto do email.
             </p>
           </template>
         </div>

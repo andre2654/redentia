@@ -123,24 +123,26 @@ export const useAuthService = () => {
   }
 
   /**
-   * Magic Link flow — passwordless auth.
+   * Email PIN flow — passwordless auth.
    *
-   * STEP 1 (request): user manda email + redirect_to. Backend gera token,
-   * salva em magic_link_tokens (15min TTL), envia email com link tipo
-   * `https://redentia.com.br/auth/magic-link/verify?token=...`.
+   * Migration historico (2026-05-13): trocamos link clicavel por PIN
+   * 6 digitos. Link tinha deliverability ruim (em prod 6/6 tokens
+   * contact-gate ficaram com used_at=NULL — users pediam, recebiam,
+   * mas nao clicavam). PIN no email = mesmo UX do WhatsApp.
    *
-   * STEP 2 (verify): user clica no link. Frontend extrai token da URL,
-   * chama esta funcao. Backend valida, cria/login user, retorna Sanctum
-   * token + user + redirect_to + isNewUser. Frontend salva token e
-   * navega pra redirect_to.
+   * STEP 1 (request): user manda email + redirect_to. Backend gera PIN
+   * 6 digitos, salva sha256 em magic_link_tokens (10min TTL), envia
+   * email com PIN grande tipo OTP.
    *
-   * REDIRECT TO:
-   *   - /auth/register page → "/" (home)
-   *   - /raio-x gate → "/wallet?onboarding=true" (com tickers em sessionStorage)
-   *   - /auth/login page → "/" (home)
+   * STEP 2 (verify): user le PIN no email, volta pro app, digita.
+   * Frontend chama verifyPin com email + PIN. Backend valida hash_equals
+   * + attempts<5, cria/login user, retorna Sanctum token + redirect_to.
    *
-   * Anti-enumeration: backend SEMPRE retorna 200 no request, mesmo se o
-   * email nao gerou link (ex: rate limit). UI nao revela "email existe".
+   * STEP 3 (resend): conveniencia — re-dispara o PIN. Mesmo rate limit
+   * do request (5 req/5min por email).
+   *
+   * Anti-enumeration: backend SEMPRE retorna 200 no request.
+   * Anti-bruteforce: 5 attempts errados = lock no PIN.
    */
   async function magicLinkRequest(body: {
     email: string
@@ -153,7 +155,10 @@ export const useAuthService = () => {
     })
   }
 
-  async function magicLinkVerify(token: string): Promise<{
+  async function magicLinkVerify(body: {
+    email: string
+    pin: string
+  }): Promise<{
     access_token: string
     token_type?: string
     user?: { id: string | number; name?: string; email: string }
@@ -163,7 +168,18 @@ export const useAuthService = () => {
     return await $fetch(`${baseURL}/magic-link/verify`, {
       method: 'POST',
       credentials: 'include',
-      body: { token },
+      body,
+    })
+  }
+
+  async function magicLinkResend(body: {
+    email: string
+    redirect_to: string
+  }): Promise<{ message: string }> {
+    return await $fetch<{ message: string }>(`${baseURL}/magic-link/resend`, {
+      method: 'POST',
+      credentials: 'include',
+      body,
     })
   }
 
@@ -278,22 +294,22 @@ export const useAuthService = () => {
     })
   }
 
-  async function requestEmailLink(email: string): Promise<{ message: string }> {
-    return await $fetch<{ message: string }>(`${baseURL}/me/email/request-link`, {
+  async function requestEmailPin(email: string): Promise<{ message: string }> {
+    return await $fetch<{ message: string }>(`${baseURL}/me/email/request-pin`, {
       method: 'POST',
       headers: authHeaders(),
       body: { email },
     })
   }
 
-  async function verifyEmailLink(token: string): Promise<{
+  async function verifyEmailPin(email: string, pin: string): Promise<{
     message: string
     user: { id: number; name: string | null; email: string | null; celular: string | null; role: string }
   }> {
-    return await $fetch(`${baseURL}/me/email/verify-link`, {
+    return await $fetch(`${baseURL}/me/email/verify-pin`, {
       method: 'POST',
       headers: authHeaders(),
-      body: { token },
+      body: { email, pin },
     })
   }
 
@@ -310,12 +326,13 @@ export const useAuthService = () => {
     resetPassword,
     magicLinkRequest,
     magicLinkVerify,
+    magicLinkResend,
     magicPinRequest,
     magicPinVerify,
     magicPinResend,
     requestPhonePin,
     verifyPhonePin,
-    requestEmailLink,
-    verifyEmailLink,
+    requestEmailPin,
+    verifyEmailPin,
   }
 }
