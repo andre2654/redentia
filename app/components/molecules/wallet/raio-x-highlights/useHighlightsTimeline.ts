@@ -78,10 +78,14 @@ export function useHighlightsTimeline(opts: UseHighlightsTimelineOptions) {
 
   function advance() {
     if (currentIndex.value >= opts.slides.length - 1) {
+      // Already on the LAST slide. Stay put — the last slide is
+      // user-controlled (share screen). Do NOT fire onDone here, or
+      // a stray tap-next on mobile would close the modal before the
+      // user can interact with the share cards. The user closes the
+      // modal explicitly via the X button.
       finished.value = true
       progress.value = 1
       stop()
-      opts.onDone?.()
       return
     }
     currentIndex.value += 1
