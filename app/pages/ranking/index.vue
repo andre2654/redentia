@@ -676,30 +676,39 @@ function formatBrl(n: number): string {
 
 function formatMetric(metric: Metric, row: any): string {
   switch (metric) {
-    case 'marketCap':
-    case 'revenue':
-    case 'netIncome':
+    case 'marketCap': {
+      const v = pickFirst(row.market_cap)
+      return formatMoney(v)
+    }
+    case 'revenue': {
+      const v = pickFirst(row.total_revenue, row.revenue)
+      return formatMoney(v)
+    }
+    case 'netIncome': {
+      const v = pickFirst(row.net_income, row.profit, row.income)
+      return formatMoney(v)
+    }
     case 'cash': {
-      const v = pickFirst(
-        row.market_cap,
-        row.total_revenue,
-        row.net_income,
-        row.cash_and_equivalents,
-        row.total_cash,
-      )
+      const v = pickFirst(row.total_cash, row.cash_and_equivalents, row.cash)
       return formatMoney(v)
     }
     case 'dividendYield': {
+      // Backend Redentia sempre devolve em decimal (0.08 = 8%). Antes da
+      // sanitizacao do scraper, casos extremos (DY > 100% por value trap)
+      // quebravam a heuristica v < 1.
       const v = pickFirst(row.dividend_yield, row.dy)
-      // Backend devolve em decimal (0.08) ou em percent (8.0); detecta automaticamente.
-      const fromDecimal = v < 1 && v > 0
-      return formatPctVal(v, fromDecimal)
+      return formatPctVal(v, true)
     }
-    case 'roe':
+    case 'roe': {
+      // Backend Redentia sempre devolve em decimal (0.15 = 15%, 1.07 = 107%).
+      // Heuristica antiga (v < 1) quebrava com ROE > 100% (ex: CGAS5 = 1.07
+      // virava 1.1% em vez de 107.3%).
+      const v = pickFirst(row.roe, row.return_on_equity)
+      return formatPctVal(v, true)
+    }
     case 'netMargin': {
-      const v = pickFirst(row.roe, row.return_on_equity, row.net_margin, row.profit_margins)
-      const fromDecimal = v < 1 && v > -1 && v !== 0
-      return formatPctVal(v, fromDecimal)
+      const v = pickFirst(row.net_margin, row.profit_margins)
+      return formatPctVal(v, true)
     }
     case 'grahamDiscount':
     case 'bazinDiscount':
@@ -739,10 +748,16 @@ function formatMetric(metric: Metric, row: any): string {
       const v = pickFirst(row.buy_hold_score, row.buy_and_hold_score, row.score)
       return Number.isFinite(v) ? `${Math.round(v)}/10` : '-'
     }
-    case 'revenueGrowth5Y':
-    case 'netIncomeGrowth5Y': {
-      const v = pickFirst(row.revenue_growth_5y, row.net_income_growth_5y, row.cagr_5y)
+    case 'revenueGrowth5Y': {
+      const v = pickFirst(row.revenue_growth_5y, row.cagr_5y)
       // Backend pode devolver decimal (0.15) ou percent (15.0); detecta automaticamente.
+      const fromDecimal = Math.abs(v) < 5 && v !== 0
+      const sign = v >= 0 ? '+' : ''
+      const fmt = formatPctVal(v, fromDecimal)
+      return fmt === '-' ? '-' : `${sign}${fmt}`
+    }
+    case 'netIncomeGrowth5Y': {
+      const v = pickFirst(row.net_income_growth_5y, row.cagr_5y)
       const fromDecimal = Math.abs(v) < 5 && v !== 0
       const sign = v >= 0 ? '+' : ''
       const fmt = formatPctVal(v, fromDecimal)

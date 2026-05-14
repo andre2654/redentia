@@ -18,67 +18,24 @@
 -->
 <template>
   <NuxtLayout name="default" title="Calendário de Dividendos">
-    <section class="flex flex-col gap-6 px-6 py-8">
-      <!-- ============ Hero ============ -->
-      <div class="flex flex-col gap-3">
-        <NuxtLink
-          to="/dividendos"
-          class="flex items-center gap-1 text-xs transition hover:opacity-80"
-          :style="{ color: 'var(--brand-text-muted)' }"
-        >
-          <UIcon name="i-lucide-chevron-left" class="size-3" />
-          Dividendos
-        </NuxtLink>
-        <div class="flex items-center gap-3">
-          <div
-            class="flex size-12 items-center justify-center rounded-xl"
-            :style="{ backgroundColor: 'color-mix(in srgb, var(--brand-primary) 14%, transparent)' }"
-          >
-            <UIcon
-              name="i-lucide-calendar-days"
-              class="size-6"
-              :style="{ color: 'var(--brand-primary)' }"
-            />
-          </div>
-          <div>
-            <p
-              class="text-[10px] font-medium uppercase tracking-[0.15em]"
-              :style="{ color: 'var(--brand-text-muted)' }"
-            >
-              Calendário
-            </p>
-            <h1
-              class="font-light"
-              :style="{
-                color: 'var(--brand-text)',
-                fontSize: 'clamp(28px, 4vw, 36px)',
-                lineHeight: 1.05,
-                letterSpacing: '-1px',
-              }"
-            >Calendário de Dividendos: Próximos Pagamentos da B3 2026</h1>
-          </div>
-        </div>
-        <p class="max-w-2xl text-base" :style="{ color: 'var(--brand-text-muted)' }">
-          Todos os próximos pagamentos de dividendos, juros sobre capital
-          próprio e rendimentos anunciados pelas empresas listadas na B3.
-          Atualizado diariamente.
-        </p>
-      </div>
+    <RankingUiShell
+      back-to="/dividendos"
+      back-label="Voltar para Dividendos"
+      status-meta="Próximos pagamentos · B3"
+    >
+      <template #hero>
+        <RankingUiHero eyebrow="Calendário · B3 2026" :chips="heroChips">
+          <template #title>
+            Calendário de <em>Dividendos:</em> Próximos Pagamentos da B3 2026
+          </template>
+          <template #lead>
+            Todos os próximos pagamentos de dividendos, juros sobre capital próprio e rendimentos anunciados pelas empresas listadas na B3. Atualizado diariamente.
+          </template>
+        </RankingUiHero>
+      </template>
 
-      <!-- ============ Answer-first paragraph (SEO) ============ -->
-      <div
-        class="max-w-3xl rounded-2xl border p-5"
-        :style="{
-          backgroundColor: `color-mix(in srgb, var(--brand-surface) 60%, var(--brand-background))`,
-          borderColor: `color-mix(in srgb, var(--brand-border) 50%, transparent)`,
-        }"
-      >
-        <p class="text-base leading-relaxed" :style="{ color: 'var(--brand-text)' }">
-          O calendário de dividendos lista os próximos pagamentos de dividendos, JCP (Juros sobre Capital Próprio) e rendimentos anunciados pelas empresas da B3 (ações) e fundos imobiliários (FIIs). Cada pagamento tem 3 datas-chave: data-com (último dia pra estar com a ação e ter direito ao provento), data-ex (dia em que a ação passa a ser negociada SEM o provento), e data de pagamento. Para receber, basta ter a ação na carteira até a data-com.
-        </p>
-      </div>
-
-      <!-- ============ Month nav ============ -->
+      <section class="cal-content">
+        <!-- ============ Month nav ============ -->
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div class="flex items-center gap-2">
           <button
@@ -248,6 +205,11 @@
         :style="{ color: 'var(--brand-text-muted)' }"
       >
         Nenhum pagamento de dividendos para {{ monthLabel.toLowerCase() }}.
+      </p>
+
+      <!-- ============ Answer-first paragraph (abaixo do calendário, centralizado) ============ -->
+      <p class="cal-answer-first">
+        O calendário de dividendos lista os próximos pagamentos de dividendos, JCP (Juros sobre Capital Próprio) e rendimentos anunciados pelas empresas da B3 (ações) e fundos imobiliários (FIIs). Cada pagamento tem 3 datas-chave: data-com (último dia pra estar com a ação e ter direito ao provento), data-ex (dia em que a ação passa a ser negociada SEM o provento), e data de pagamento. Para receber, basta ter a ação na carteira até a data-com.
       </p>
 
       <!-- ============ Editorial copy (Stripe-style) ============
@@ -708,7 +670,8 @@
           </div>
         </section>
       </div>
-    </section>
+      </section>
+    </RankingUiShell>
 
     <!-- ============ Day drawer (modal) ============ -->
     <Teleport to="body">
@@ -834,6 +797,8 @@
 </template>
 
 <script setup lang="ts">
+import type { RankingHeroChip } from '~/components/ranking-ui/Hero.vue'
+
 definePageMeta({
   isPublicRoute: true,
   hideInstallAppBanner: true,
@@ -843,6 +808,14 @@ import { dividendAccent, readableOn } from '~/utils/color'
 
 const brand = useBrand()
 const service = useAssetsService()
+
+// Chips do hero (V5)
+const heroChips: RankingHeroChip[] = [
+  { label: 'Próximos 180 dias', tone: 'positive' },
+  { label: 'Data-com + data-ex' },
+  { label: 'Ações e FIIs' },
+  { label: 'Atualizado diário' },
+]
 
 // Layout: usa `default` em todos os casos. O proprio layouts/default.vue ja
 // delega pra `unauthenticated` quando `!authStore.isAuthenticated`, entao
@@ -1384,6 +1357,34 @@ const tickerLinks = [
 </script>
 
 <style scoped>
+/* ============ V5 content wrapper ============ */
+.cal-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 48px 24px 64px;
+  max-width: 1200px;
+  margin: 0 auto;
+  border-top: 1px solid var(--border-subtle);
+}
+@media (min-width: 768px) {
+  .cal-content { padding: 64px 32px 96px; }
+}
+@media (min-width: 1024px) {
+  .cal-content { padding: 80px 56px 120px; }
+}
+
+.cal-answer-first {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--brand-text-muted);
+  text-align: center;
+  max-width: 68ch;
+  margin: 8px auto 0;
+}
+
 /* ============ Month nav buttons ============ */
 .cal-nav-btn {
   display: inline-flex;

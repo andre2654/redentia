@@ -213,7 +213,7 @@ function formatBRL(value: number) {
   margin: 0 0 8px;
 }
 .rk-leader-value {
-  font-size: clamp(72px, 11vw, 140px);
+  font-size: clamp(56px, 9vw, 120px);
   font-weight: 300;
   line-height: 0.95;
   letter-spacing: -0.05em;
@@ -221,6 +221,9 @@ function formatBRL(value: number) {
   color: var(--brand-primary);
   margin: 0;
   text-shadow: 0 14px 60px color-mix(in srgb, var(--brand-primary) 22%, transparent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .rk-leader-value span {
   font-size: 0.4em;

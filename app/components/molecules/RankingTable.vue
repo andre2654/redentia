@@ -22,6 +22,9 @@
       <div v-if="showColumn('bazinPrice')" class="w-28 text-right">Preço Bazin</div>
       <div v-if="showColumn('upsidePct')" class="w-24 text-right">Upside</div>
       <div v-if="showColumn('buyHoldScore')" class="w-32 text-right">Buy & Hold</div>
+      <div v-if="showColumn('revenueGrowth5y')" class="w-32 text-right">Cresc. Receita 5a</div>
+      <div v-if="showColumn('netIncomeGrowth5y')" class="w-32 text-right">Cresc. Lucro 5a</div>
+      <div v-if="showColumn('mentionCount')" class="w-24 text-right">Menções</div>
       <div v-if="showColumn('change')" class="w-24 text-right">
         {{ changeLabel }}
       </div>
@@ -241,6 +244,37 @@
             </div>
           </div>
 
+          <!-- Revenue Growth 5y -->
+          <div
+            v-if="showColumn('revenueGrowth5y')"
+            class="hidden w-32 text-right text-sm font-semibold tabular-nums md:block"
+            :style="{
+              color: Number(row.revenue_growth_5y) >= 0 ? brand.colors.positive : 'var(--brand-negative)',
+            }"
+          >
+            {{ formatPercent(row.revenue_growth_5y, true) }}
+          </div>
+
+          <!-- Net Income Growth 5y -->
+          <div
+            v-if="showColumn('netIncomeGrowth5y')"
+            class="hidden w-32 text-right text-sm font-semibold tabular-nums md:block"
+            :style="{
+              color: Number(row.net_income_growth_5y) >= 0 ? brand.colors.positive : 'var(--brand-negative)',
+            }"
+          >
+            {{ formatPercent(row.net_income_growth_5y, true) }}
+          </div>
+
+          <!-- Mention Count -->
+          <div
+            v-if="showColumn('mentionCount')"
+            class="hidden w-24 text-right text-sm font-semibold tabular-nums md:block"
+            :style="{ color: 'var(--brand-primary)' }"
+          >
+            {{ row.mention_count != null ? Number(row.mention_count).toLocaleString('pt-BR') : '-' }}
+          </div>
+
           <!-- Change -->
           <div
             v-if="showColumn('change')"
@@ -401,6 +435,9 @@ type Column =
   | 'bazinPrice'
   | 'upsidePct'
   | 'buyHoldScore'
+  | 'revenueGrowth5y'
+  | 'netIncomeGrowth5y'
+  | 'mentionCount'
 
 interface RankingRow {
   ticker: string
@@ -423,6 +460,9 @@ interface RankingRow {
   bazin_price?: number | string | null
   upside_pct?: number | string | null
   buy_hold_score?: number | string | null
+  revenue_growth_5y?: number | string | null
+  net_income_growth_5y?: number | string | null
+  mention_count?: number | string | null
 }
 
 const props = withDefaults(

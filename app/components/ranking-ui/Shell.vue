@@ -17,7 +17,7 @@
       <span v-if="statusMeta" class="rk-shell-status-meta">{{ statusMeta }}</span>
     </div>
 
-    <div class="rk-shell-split">
+    <div :class="['rk-shell-split', !$slots.leader && 'rk-shell-split--solo']">
       <header class="rk-shell-hero rk-block-hero">
         <slot name="hero" />
         <p v-if="lastUpdated" class="rk-shell-meta">
@@ -144,6 +144,11 @@ withDefaults(
     max-width: 1440px;
     margin: 0 auto;
   }
+  .rk-shell-split--solo {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 1200px;
+  }
+  .rk-shell-split--solo .rk-block-hero { border-right: none; }
   .rk-block-hero {
     border-right: 1px solid var(--border-subtle);
     order: unset;

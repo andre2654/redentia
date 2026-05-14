@@ -22,7 +22,7 @@
           :ticker="leader.stock || leader.ticker || ''"
           :name="leader.name"
           :sector="leader.sector"
-          :value="Number(leader.dividend_yield ?? 0)"
+          :value="Number(leader.dividend_yield ?? 0) * 100"
           value-label="DY 12 meses"
           :price="Number(leader.market_price ?? leader.close ?? 0)"
         />

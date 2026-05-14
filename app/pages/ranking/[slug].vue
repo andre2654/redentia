@@ -1313,7 +1313,7 @@ const RANKINGS_INFO: Record<string, RankingConfig> = {
       { icon: 'i-lucide-calendar', text: 'Atualizado diariamente' },
       { icon: 'i-lucide-trending-up', text: 'Top crescimento' },
     ],
-    columns: ['revenue', 'change', 'marketCap', 'pe'],
+    columns: ['revenueGrowth5y', 'marketCap', 'change', 'pe'],
     fetcher: (s, type) => s.getRevenueGrowth5Y(type, 50),
     educationalSections: [
       {
@@ -1393,7 +1393,7 @@ const RANKINGS_INFO: Record<string, RankingConfig> = {
       { icon: 'i-lucide-calendar', text: 'Atualizado diariamente' },
       { icon: 'i-lucide-coins', text: 'Lucro líquido' },
     ],
-    columns: ['netIncome', 'revenue', 'marketCap', 'change'],
+    columns: ['netIncomeGrowth5y', 'marketCap', 'change', 'roe'],
     fetcher: (s, type) => s.getNetIncomeGrowth5Y(type, 50),
     educationalSections: [
       {
@@ -1553,7 +1553,7 @@ const RANKINGS_INFO: Record<string, RankingConfig> = {
       { icon: 'i-lucide-calendar', text: 'Atualizado diariamente' },
       { icon: 'i-lucide-radio', text: 'Buzz do mercado' },
     ],
-    columns: ['change', 'marketCap', 'dy', 'pe'],
+    columns: ['mentionCount', 'change', 'marketCap', 'dy'],
     fetcher: (s, type) => s.getNewsMentions(type, 50, 30),
     educationalSections: [
       {
@@ -1688,11 +1688,11 @@ const { data: rows, pending } = await useAsyncData(
 // coluna primária de um ranking. Cai pra `change_percent` se nada bater.
 type LeaderFormat = 'number' | 'compactNumber' | 'compactBrl'
 
-const PRIMARY_COL_MAP: Record<string, { field: string; label: string; unit: string; decimals: number; format?: LeaderFormat }> = {
-  dy: { field: 'dividend_yield', label: 'DY 12 meses', unit: '%', decimals: 1 },
+const PRIMARY_COL_MAP: Record<string, { field: string; label: string; unit: string; decimals: number; format?: LeaderFormat; fromDecimal?: boolean }> = {
+  dy: { field: 'dividend_yield', label: 'DY 12 meses', unit: '%', decimals: 1, fromDecimal: true },
   pe: { field: 'trailing_pe', label: 'P/L', unit: '', decimals: 1 },
-  roe: { field: 'roe', label: 'ROE 12m', unit: '%', decimals: 1 },
-  netMargin: { field: 'net_margin', label: 'Margem líquida', unit: '%', decimals: 1 },
+  roe: { field: 'roe', label: 'ROE 12m', unit: '%', decimals: 1, fromDecimal: true },
+  netMargin: { field: 'net_margin', label: 'Margem líquida', unit: '%', decimals: 1, fromDecimal: true },
   revenue: { field: 'total_revenue', label: 'Receita 12m', unit: '', decimals: 0, format: 'compactBrl' },
   netIncome: { field: 'net_income', label: 'Lucro líquido', unit: '', decimals: 0, format: 'compactBrl' },
   cash: { field: 'total_cash', label: 'Caixa', unit: '', decimals: 0, format: 'compactBrl' },
@@ -1702,6 +1702,9 @@ const PRIMARY_COL_MAP: Record<string, { field: string; label: string; unit: stri
   buyHoldScore: { field: 'buy_hold_score', label: 'B&H Score', unit: '', decimals: 1 },
   marketCap: { field: 'market_cap', label: 'Market cap', unit: '', decimals: 0, format: 'compactNumber' },
   change: { field: 'change_percent', label: 'Variação', unit: '%', decimals: 1 },
+  revenueGrowth5y: { field: 'revenue_growth_5y', label: 'Cresc. receita 5a', unit: '%', decimals: 1, fromDecimal: true },
+  netIncomeGrowth5y: { field: 'net_income_growth_5y', label: 'Cresc. lucro 5a', unit: '%', decimals: 1, fromDecimal: true },
+  mentionCount: { field: 'mention_count', label: 'Menções (30d)', unit: '', decimals: 0 },
 }
 
 const leader = computed(() => {
@@ -1717,7 +1720,8 @@ const primaryColMeta = computed(() => {
 
 const leaderValue = computed(() => {
   if (!leader.value) return 0
-  return leader.value[primaryColMeta.value.field] ?? 0
+  const raw = leader.value[primaryColMeta.value.field] ?? 0
+  return primaryColMeta.value.fromDecimal ? Number(raw) * 100 : Number(raw)
 })
 
 const leaderValueLabel = computed(() => primaryColMeta.value.label)
